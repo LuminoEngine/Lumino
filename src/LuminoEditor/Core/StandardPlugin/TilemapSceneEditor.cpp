@@ -176,12 +176,40 @@ ln::UIElement* SceneNavigatorExtension::getNavigationPane()
 //==============================================================================
 // TilemapSceneEditor
 
+ln::Result TilemapSceneEditor::init()
+{
+    AssetEditor::init();
+    m_modePane = ln::makeObject<ln::EditorPane>();
+    m_modePane->setBackgroundColor(ln::Color::Red);
+    m_inspectorPane = ln::makeObject<ln::EditorPane>();
+    m_inspectorPane->setBackgroundColor(ln::Color::Green);
+
+    m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ m_modePane });
+    m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
+    m_toolPanes = ln::makeList<Ref<ln::EditorPane>>();
+    return true;
+}
+
 void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
 }
 
 void TilemapSceneEditor::onClosed()
 {
+}
+
+Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(ln::EditorPaneKind kind)
+{
+    switch (kind)
+    {
+    case ln::EditorPaneKind::Mode:
+        return m_modePanes;
+    case ln::EditorPaneKind::Inspector:
+        return m_inspectorPanes;
+    case ln::EditorPaneKind::Tool:
+        return m_toolPanes;
+    }
+    return nullptr;
 }
 
 //==============================================================================

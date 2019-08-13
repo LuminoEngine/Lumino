@@ -1,7 +1,7 @@
 ﻿
 #include "InspectorPane.hpp"
-
-InspectorPane::InspectorPane()
-{
-}
-
+//
+//InspectorPane::InspectorPane()
+//{
+//}
+//

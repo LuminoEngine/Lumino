@@ -25,6 +25,8 @@ void MainWindow::onLoaded()
 	renderView()->setBackgroundColor(ln::Color::White);
 	renderView()->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
 
+    m_documentManager = ln::makeObject<DocumentManager>();
+
 	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
 	layout1->setOrientation(ln::Orientation::Horizontal);
     addElement(layout1);
@@ -32,9 +34,9 @@ void MainWindow::onLoaded()
 
     m_mainHSplitter = ln::makeObject<ln::UISplitter>();
     m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Auto);
-    m_mainHSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
+    m_mainHSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 300);
     m_mainHSplitter->setCellDefinition(2);
-    m_mainHSplitter->setCellDefinition(3, ln::UILayoutLengthType::Direct, 200);
+    m_mainHSplitter->setCellDefinition(3, ln::UILayoutLengthType::Direct, 300);
     //addElement(m_mainHSplitter);
     layout1->addChild(m_mainHSplitter, ln::UILayoutLengthType::Ratio);
 
@@ -47,8 +49,7 @@ void MainWindow::onLoaded()
 
         //--------
 
-        m_modePanesArea = ln::makeObject<ToolPanesArea>();
-        m_mainHSplitter->addElement(m_modePanesArea);
+        m_mainHSplitter->addElement(m_documentManager->modePanesArea());
 
         //--------
 
@@ -59,23 +60,19 @@ void MainWindow::onLoaded()
         m_mainHSplitter->addElement(m_mainVSplitter);
 
 		{
-            m_documentManager = ln::makeObject<DocumentManager>();
 			m_mainVSplitter->addElement(m_documentManager);
 
 			//--------
 
-			m_toolPanesArea = ln::makeObject<ToolPanesArea>();
-			m_mainVSplitter->addElement(m_toolPanesArea);
+			m_mainVSplitter->addElement(m_documentManager->toolPanesArea());
 
 			m_outputPane = ln::makeObject<OutputPane>();
-			m_toolPanesArea->addPane(m_outputPane);
+            m_documentManager->toolPanesArea()->addPane(m_outputPane);
 		}
 
 		//--------
 
-		m_inspectorPanesArea = ln::makeObject<ToolPanesArea>();
-        m_inspectorPanesArea->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 1));
-        m_mainHSplitter->addElement(m_inspectorPanesArea);
+        m_mainHSplitter->addElement(m_documentManager->inspectorPanesArea());
     }
 
 

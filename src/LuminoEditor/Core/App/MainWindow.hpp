@@ -19,8 +19,6 @@ public:
     const Ref<NavigatorManager>& navigatorManager() const { return m_navigatorManager; }
     const Ref<DocumentManager>& documentManager() const { return m_documentManager; }
 
-    const Ref<ToolPanesArea>& toolPanesArea() const { return m_toolPanesArea; }
-    const Ref<ToolPanesArea>& inspectorPanesArea() const { return m_inspectorPanesArea; }
 
     const Ref<OutputPane>& outputPane() const { return m_outputPane; }
     const Ref<ProblemsPane>& problemsPane() const { return m_problemsPane; }
@@ -38,10 +36,6 @@ private:
 
 	Ref<NavigatorManager> m_navigatorManager;
 	Ref<DocumentManager> m_documentManager;
-
-    Ref<ToolPanesArea> m_modePanesArea;
-	Ref<ToolPanesArea> m_toolPanesArea;
-	Ref<ToolPanesArea> m_inspectorPanesArea;
 
 	Ref<OutputPane> m_outputPane;
 	Ref<ProblemsPane> m_problemsPane;

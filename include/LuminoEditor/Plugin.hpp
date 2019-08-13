@@ -5,6 +5,7 @@ class UIFrame;
 class NavigationMenuItem;
 class AssetImporter;
 class AssetEditor;
+class EditorPane;
 class IEditorExtension;
 
 enum class EditorExtensionType
@@ -19,6 +20,13 @@ enum class EditorExtensionType
 
     // 別の AssetEditor を拡張する
     AssetSubEditor,
+};
+
+enum class EditorPaneKind
+{
+    Mode,
+    Inspector,
+    Tool,
 };
 
 // Plugin に限らず、トランスパイらによって生成されたモジュールなども含む、DynamicLoad のルートインターフェイス。
@@ -106,6 +114,8 @@ public:
     // AssetEditor は派生クラスのメンバ変数など内部 AssetEditorViewModel を持つことができるが、
     // それをアクティブにしたい場合はこの実装で処理を行う。
     virtual void onActivate() {}
+
+    virtual Ref<List<Ref<EditorPane>>> getEditorPanes(EditorPaneKind kind) { return nullptr; }
 };
 
 using GetModuleClassFunc = ::ln::IPluginModule*();

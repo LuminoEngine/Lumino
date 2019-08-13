@@ -8,7 +8,7 @@ OutputPane::OutputPane()
 
 void OutputPane::init()
 {
-    ToolPane::init();
+    EditorPane::init();
 
     setBackgroundColor(ln::Color::White);
 

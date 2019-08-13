@@ -2,7 +2,7 @@
 #include "ToolPanesArea.hpp"
 
 class ProblemsPane
-    : public ToolPane
+    : public ln::EditorPane
 {
 public:
 	ProblemsPane();

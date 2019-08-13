@@ -2,7 +2,7 @@
 #include "ToolPanesArea.hpp"
 
 class OutputPane
-	: public ToolPane
+	: public ln::EditorPane
 {
 public:
 	OutputPane();

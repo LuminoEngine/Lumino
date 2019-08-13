@@ -2,6 +2,7 @@
 
 namespace ln { class AssetEditor; }
 class StartupView;
+class ToolPanesArea;
 
 // Tab-Document だけではなく、Inspector や AssetBrowerToolPane など、複数の View から参照・編集されるデータを扱うクラス。
 // 様々な View の中央に位置して各 View とメッセージをやり取りしたりする。
@@ -31,7 +32,12 @@ public:
 	DocumentManager();
     ln::Result init();
 
+    const Ref<ToolPanesArea>& modePanesArea() const { return m_modePanesArea; }
+    const Ref<ToolPanesArea>& toolPanesArea() const { return m_toolPanesArea; }
+    const Ref<ToolPanesArea>& inspectorPanesArea() const { return m_inspectorPanesArea; }
+
     void addDocument(Document* doc);
+    void setActiveDocument(Document* doc);
 
 protected:
 
@@ -43,6 +49,11 @@ private:
     Ref<ln::UITabBar> m_documentTabs;
     Ref<StartupView> m_startupView;
     ln::List<Ref<Document>> m_documents;
+    Document* m_activeDocument;
+
+    Ref<ToolPanesArea> m_modePanesArea;
+    Ref<ToolPanesArea> m_toolPanesArea;
+    Ref<ToolPanesArea> m_inspectorPanesArea;
 };
 
 class AssetEditorDocument
@@ -51,6 +62,9 @@ class AssetEditorDocument
 public:
     AssetEditorDocument();
     ln::Result init(ln::AssetModel* asset, ln::AssetEditor* editorModel);
+
+    const Ref<ln::AssetModel>& asset() const { return m_asset; }
+    const Ref<ln::AssetEditor>& editor() const { return m_editor; }
 
 protected:
 

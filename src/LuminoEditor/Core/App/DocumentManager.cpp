@@ -1,6 +1,7 @@
 ﻿
 #include <LuminoEditor/Plugin.hpp>
 #include "StartupView.hpp"
+#include "ToolPanesArea.hpp"
 #include "DocumentManager.hpp"
 
 //==============================================================================
@@ -52,6 +53,10 @@ ln::Result DocumentManager::init()
     //m_startupView->setHeight(300);
     //m_mainLayout->addChild(m_startupView);
 
+    m_modePanesArea = ln::makeObject<ToolPanesArea>();
+    m_toolPanesArea = ln::makeObject<ToolPanesArea>();
+    m_inspectorPanesArea = ln::makeObject<ToolPanesArea>();
+
     return true;
 }
 
@@ -74,10 +79,34 @@ void DocumentManager::addDocument(Document* doc)
     m_documentTabs->setSelectedTab(tab);
 }
 
+void DocumentManager::setActiveDocument(Document* doc)
+{
+    if (doc) {
+        m_activeDocument = doc;
+        m_switchLayout->setActive(doc->mainFrame());
+
+        if (auto assetEditorDoc = dynamic_cast<AssetEditorDocument*>(doc)) {
+            for (auto& pane : assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Mode)) {
+                m_modePanesArea->addPane(pane);
+            }
+            for (auto& pane : assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Inspector)) {
+                m_inspectorPanesArea->addPane(pane);
+            }
+            for (auto& pane : assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Tool)) {
+                m_toolPanesArea->addPane(pane);
+            }
+        }
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+    }
+}
+
 void DocumentManager::documentTabs_SelectionChanged(ln::UISelectionChangedEventArgs* e)
 {
     auto tab = m_documentTabs->selectedTab();
-    m_switchLayout->setActive(tab->data()->getObject<Document>()->mainFrame());
+    auto doc = tab->data()->getObject<Document>();
+    setActiveDocument(doc);
 }
 
 

@@ -1,16 +1,20 @@
 ﻿#pragma once
 
-class ToolPane
+namespace ln {
+
+class EditorPane
 	: public ln::UIControl
 {
 public:
-	ToolPane();
+    EditorPane();
 
 
 protected:
 
 private:
 };
+
+} // namespace ln
 
 class ToolPanesArea
     : public ln::UIControl
@@ -19,7 +23,7 @@ public:
 	ToolPanesArea();
     void init();
 
-	void addPane(ToolPane* pane);
+	void addPane(ln::EditorPane* pane);
 
 protected:
 

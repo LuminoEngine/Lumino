@@ -1,6 +1,6 @@
 #pragma once
 #include <LuminoEditor/Plugin.hpp>
-
+#include "../App/ToolPanesArea.hpp"
 
 class SceneList
     : public ln::UIControl
@@ -38,8 +38,18 @@ private:
 class TilemapSceneEditor : public ln::AssetEditor
 {
 public:
+    ln::Result init();
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
     virtual void onClosed() override;
+    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(ln::EditorPaneKind kind) override;
+
+private:
+    Ref<ln::EditorPane> m_modePane;
+    Ref<ln::EditorPane> m_inspectorPane;
+
+    Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;
+    Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
+    Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
 };
 
 class TilemapSceneEditorExtension

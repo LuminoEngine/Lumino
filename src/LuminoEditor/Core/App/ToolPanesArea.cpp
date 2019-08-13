@@ -2,12 +2,15 @@
 #include "Application.hpp"
 #include "ToolPanesArea.hpp"
 
+namespace ln {
 //==============================================================================
-// ToolPane
+// EditorPane
 
-ToolPane::ToolPane()
+EditorPane::EditorPane()
 {
 }
+
+} // namespace ln
 
 //==============================================================================
 // ToolPanesArea
@@ -22,7 +25,7 @@ void ToolPanesArea::init()
     //setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 1));
 }
 
-void ToolPanesArea::addPane(ToolPane* pane)
+void ToolPanesArea::addPane(ln::EditorPane* pane)
 {
     addElement(pane);
 }
