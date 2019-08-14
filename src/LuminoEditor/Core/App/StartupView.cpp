@@ -32,6 +32,10 @@ ln::Result StartupView::init()
     m_openProjectButton->setVerticalContentAlignment(ln::VAlignment::Center);
     layout->addChild(m_openProjectButton);
 
+    auto icon = ln::makeObject<ln::UIIcon>();
+    icon->setIconName(u"file");
+    m_openProjectButton->addInlineElement(icon, ln::UIInlineLayout::Left);
+
 
 	auto text = ln::makeObject<ln::UITextField>();
 	text->setWidth(200);

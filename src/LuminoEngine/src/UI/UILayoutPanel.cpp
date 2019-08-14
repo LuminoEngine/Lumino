@@ -268,7 +268,9 @@ Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& 
     //Rect bounds(childrenOffset, childrenBoundSize);
 	Rect contentArea = detail::LayoutHelper::arrangeClientArea(ownerElement, finalSize);
 
-    return staticArrangeChildrenArea(ownerElement, contentArea);
+    staticArrangeChildrenArea(ownerElement, contentArea);
+
+    return finalSize;
 }
 
 //==============================================================================

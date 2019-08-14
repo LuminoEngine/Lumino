@@ -102,8 +102,8 @@ void UIControl::addInlineElement(UIElement* element, UIInlineLayout layout)
         { 0, 1 }, { 1, 1 }, { 2, 1 },
         { 0, 2 }, { 1, 2 }, { 2, 2 },
     };
-    element->getGridLayoutInfo()->layoutRow = pts[(int)layout].x;
-    element->getGridLayoutInfo()->layoutColumn = pts[(int)layout].y;
+    element->getGridLayoutInfo()->layoutRow = pts[(int)layout].y;
+    element->getGridLayoutInfo()->layoutColumn = pts[(int)layout].x;
     m_inlineElements.add(element);
     addVisualChild(element);
 
@@ -163,7 +163,7 @@ Size UIControl::measureOverride(const Size& constraint)
 {
     if (m_aligned3x3GridLayoutArea) {
         // 論理子要素の領域 (content area)
-        Size childrenAreaSize = UIFrameLayout2::staticMeasureChildrenAreaSize(this, constraint);
+        Size childrenAreaSize = Size::Zero;// UIFrameLayout2::staticMeasureChildrenAreaSize(this, constraint);
         // Inline 要素も含めた領域 (client area)
         Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(m_inlineElements, constraint, childrenAreaSize);
         // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
@@ -206,7 +206,7 @@ Size UIControl::arrangeOverride(const Size& finalSize)
         Rect contentArea;
         m_aligned3x3GridLayoutArea->arrange(m_inlineElements, clientArea, &contentArea);
         // 論理子要素を arrange
-        return UIFrameLayout2::staticArrangeChildrenArea(this, contentArea);
+        return finalSize;// UIFrameLayout2::staticArrangeChildrenArea(this, contentArea);
     }
     else {
         //UILayoutPanel* layout = layoutPanel();
@@ -283,25 +283,29 @@ Size UIAligned3x3GridLayoutArea::measure(const List<Ref<UIElement>>& inlineEleme
         int tc = std::min(std::max(column + columnSpan - 1, 0), 3);
         float leftLineOffset = (br == 0) ? 0 : m_rows[br - 1].desiredLastOffset;
         float topLineOffset = (bc == 0) ? 0 : m_columns[bc - 1].desiredLastOffset;
-        m_rows[tr].desiredLastOffset = std::max(m_rows[tr].desiredLastOffset, leftLineOffset + childDesiredSize.width);
-        m_columns[tc].desiredLastOffset = std::max(m_columns[tr].desiredLastOffset, topLineOffset + childDesiredSize.height);
+        m_rows[tr].desiredLastOffset = std::max(m_rows[tr].desiredLastOffset, leftLineOffset + childDesiredSize.height);
+        m_columns[tc].desiredLastOffset = std::max(m_columns[tr].desiredLastOffset, topLineOffset + childDesiredSize.width);
     }
 
     // contentSize を中央のセルとして計算する
-    m_rows[1].desiredLastOffset = std::max(m_rows[1].desiredLastOffset, m_rows[0].desiredLastOffset + contentDesiredSize.width);
-    m_columns[1].desiredLastOffset = std::max(m_columns[1].desiredLastOffset, m_columns[0].desiredLastOffset + contentDesiredSize.height);
+    m_rows[1].desiredLastOffset = std::max(m_rows[1].desiredLastOffset, m_rows[0].desiredLastOffset + contentDesiredSize.height);
+    m_columns[1].desiredLastOffset = std::max(m_columns[1].desiredLastOffset, m_columns[0].desiredLastOffset + contentDesiredSize.width);
 
     // 各セルの desiredSize を確定させる
     for (int i = 0; i < 3; i++)
     {
         float pr = (i == 0) ? 0.0f : m_rows[i - 1].desiredLastOffset;
         float pc = (i == 0) ? 0.0f : m_columns[i - 1].desiredLastOffset;
+
+        if (m_rows[i].desiredLastOffset < pr) m_rows[i].desiredLastOffset = pr;
+        if (m_columns[i].desiredLastOffset < pc) m_columns[i].desiredLastOffset = pc;
+
         m_rows[i].desiredSize = m_rows[i].desiredLastOffset - pr;
         m_columns[i].desiredSize = m_columns[i].desiredLastOffset - pc;
     }
 
     // 計算が終わると、右端と下端の次の分割線の位置がサイズとみなせる
-    return Size(m_rows[2].desiredLastOffset, m_columns[2].desiredLastOffset);
+    return Size(m_columns[2].desiredLastOffset, m_rows[2].desiredLastOffset);
 }
 
 void UIAligned3x3GridLayoutArea::arrange(const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect)
@@ -315,17 +319,17 @@ void UIAligned3x3GridLayoutArea::arrange(const List<Ref<UIElement>>& inlineEleme
     m_columns[2].actualSize = m_columns[2].desiredSize;
 
     // 中心は Ratio. ただ1つしかないので残った領域をそのまま使う
-    m_rows[1].actualSize = finalArea.width - m_rows[0].actualSize - m_rows[2].actualSize;
+    m_rows[1].actualSize = finalArea.height - m_rows[0].actualSize - m_rows[2].actualSize;
     m_columns[1].actualSize = finalArea.width - m_columns[0].actualSize - m_columns[2].actualSize;
 
     // actualOffset を確定させる
     Vector2 offset(0.0f, 0.0f);
     for (int i = 0; i < 3; i++)
     {
-        m_rows[i].actualOffset = offset.x;
-        m_columns[i].actualOffset = offset.y;
-        offset.x += m_rows[i].actualSize;
-        offset.y += m_columns[i].actualSize;
+        m_rows[i].actualOffset = offset.y;
+        m_columns[i].actualOffset = offset.x;
+        offset.y += m_rows[i].actualSize;
+        offset.x += m_columns[i].actualSize;
     }
 
     // arrange
@@ -335,22 +339,22 @@ void UIAligned3x3GridLayoutArea::arrange(const List<Ref<UIElement>>& inlineEleme
         int row, column, rowSpan, columnSpan;
         getGridInfoHelper(child, &row, &column, &rowSpan, &columnSpan);
 
-        Rect rect(finalArea.x + m_rows[row].actualOffset, finalArea.y + m_columns[column].actualOffset, 0, 0);
+        Rect rect(finalArea.x + m_columns[column].actualOffset, finalArea.y + m_rows[row].actualOffset, 0, 0);
         for (int i = 0; i < rowSpan; i++) {
-            rect.width += m_rows[row + i].actualSize;
+            rect.height += m_rows[row + i].actualSize;
         }
         for (int i = 0; i < columnSpan; i++) {
-            rect.height += m_columns[column + i].actualSize;
+            rect.width += m_columns[column + i].actualSize;
         }
 
         child->arrangeLayout(rect);
     }
 
     // content area (呼び出し側でレイアウトするのに使う)
-    outActualContentRect->x = finalArea.x + m_rows[1].actualOffset;
-    outActualContentRect->y = finalArea.y + m_columns[1].actualOffset;
-    outActualContentRect->width = m_rows[1].actualSize;
-    outActualContentRect->height = m_columns[1].actualSize;
+    outActualContentRect->x = finalArea.x + m_columns[1].actualOffset;
+    outActualContentRect->y = finalArea.y + m_rows[1].actualOffset;
+    outActualContentRect->width = m_columns[1].actualSize;
+    outActualContentRect->height = m_rows[1].actualSize;
 }
 
 void UIAligned3x3GridLayoutArea::getGridInfoHelper(UIElement* element, int* row, int* column, int* rowSpan, int* columnSpan) const
