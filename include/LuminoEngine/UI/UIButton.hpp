@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "UIControl.hpp"
+#include "UIContainerElement.hpp"
 
 namespace ln {
 class UITextBlock;
@@ -12,7 +12,7 @@ enum class UICheckState
 };
 
 class UIButtonBase
-	: public UIControl
+	: public UIContainerElement
 {
 public:
 	UIButtonBase();

@@ -163,7 +163,7 @@ Size UIControl::measureOverride(const Size& constraint)
 {
     if (m_aligned3x3GridLayoutArea) {
         // 論理子要素の領域 (content area)
-        Size childrenAreaSize = Size::Zero;// UIFrameLayout2::staticMeasureChildrenAreaSize(this, constraint);
+        Size childrenAreaSize = UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
         // Inline 要素も含めた領域 (client area)
         Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(m_inlineElements, constraint, childrenAreaSize);
         // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
@@ -206,7 +206,9 @@ Size UIControl::arrangeOverride(const Size& finalSize)
         Rect contentArea;
         m_aligned3x3GridLayoutArea->arrange(m_inlineElements, clientArea, &contentArea);
         // 論理子要素を arrange
-        return finalSize;// UIFrameLayout2::staticArrangeChildrenArea(this, contentArea);
+        UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
+
+        return finalSize;
     }
     else {
         //UILayoutPanel* layout = layoutPanel();

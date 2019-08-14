@@ -18,7 +18,7 @@ UIButtonBase::UIButtonBase()
 
 void UIButtonBase::init()
 {
-    UIControl::init();
+    UIContainerElement::init();
     auto vsm = getVisualStateManager();
 	vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);

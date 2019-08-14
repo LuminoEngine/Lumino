@@ -83,8 +83,9 @@ void UIContext::setupDefaultStyle()
 			{
 				auto s = e->mainStyleClass()->mainStyle();
                 s->minWidth = 64;
-                s->minHeight = 36;
+                //s->minHeight = 36;
                 s->margin = Thickness(8);   // TODO: spacing?
+                s->padding = theme->spacing(1);
 				s->horizontalContentAlignment = HAlignment::Center;
 				s->verticalContentAlignment = VAlignment::Center;
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);

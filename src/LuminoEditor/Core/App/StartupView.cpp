@@ -34,7 +34,9 @@ ln::Result StartupView::init()
 
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(u"file");
-    m_openProjectButton->addInlineElement(icon, ln::UIInlineLayout::Left);
+    icon->setHorizontalAlignment(ln::HAlignment::Center);
+    icon->setMargin(ln::Thickness(0, 0, 0, 4));
+    m_openProjectButton->addInlineElement(icon, ln::UIInlineLayout::Top);
 
 
 	auto text = ln::makeObject<ln::UITextField>();

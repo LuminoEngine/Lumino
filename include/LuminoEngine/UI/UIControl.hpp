@@ -111,6 +111,8 @@ public:
 
 	void removeAllChildren();
 
+    // 要素の外側に張り付くものに利用する。
+    // アイコンボタンを作るとき、外側ではなく文字側に張り付くようなものは、addContent で、Icon と TextBlock を並べた BoxLayout を追加する。
     void addInlineElement(UIElement* element, UIInlineLayout layout);
 
 	///**
@@ -139,13 +141,14 @@ protected:
     bool m_enabledDirectChildrenContentAlignment;
 
     List<Ref<UIElement>> m_logicalChildren;
+
+    Ref<detail::UIAligned3x3GridLayoutArea> m_aligned3x3GridLayoutArea;
+    List<Ref<UIElement>> m_inlineElements;
 private:
 
     //Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less
 
-    Ref<detail::UIAligned3x3GridLayoutArea> m_aligned3x3GridLayoutArea;
-    List<Ref<UIElement>> m_inlineElements;
 };
 
 
