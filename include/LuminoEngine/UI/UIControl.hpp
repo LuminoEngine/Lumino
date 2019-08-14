@@ -33,7 +33,37 @@ Leaf がベースでいいかな。これは普通の UIControl。
     子要素の配置領域を UIContentsArea みたいにクラス化しておいて、このクラスは領域の上下左右にアイコンなどビジュアル要素を任意に足せるようにしてみる。
     で、各種 Control はこれをヘルパーとして使う。
     こんな方針でいいかな。
+    →アイコンだけでなく、コンテンツ周辺のコントロール追加全体的に使用したい。例えば、テキストボックスの右側にボタン追加したり。
 
+    ### 任意要素の追加を提供するべきか？
+    直近ではボタンを追加したい。
+    その方法だけど…
+    ・google 検索ページのinputには、音声入力ボタンと検索ボタン、2つが横に並んでいる。
+    ・NumUpDown は上下に並ぶ２つのボタンで実装される。
+    ・パスワードinputとかは、pushbutton ではなくToggleButton を使うこともある。
+    ・ボタンクリックでコンテキストメニューを出すようなカスタムボタンを配置したいこともある。プロパティグリッドのドロップダウンとか。
+    ・VisualStudio のソリューションエクスプローラ検索欄では、ドロップダウンのテキストボックスの中に検索ボタンがある
+    ・ECサイトとか、検索バーの左側にカテゴリのドロップダウン付けたり
+    ContainerItem だと、
+    ・シーンのアウトラインのツリービューで、アイテムの右側に[表示/非表示]と[編集ロック]ボタンを置いたり。
+
+    正しくやる方法 (ContentControl なら、addChild で Layout と Icon と TextBlock 追加したり、LeafControl なら measureOverride) は
+    それはそれでいいんだけど、ただアイコン追加するだけのためにそれをやるのはめんどくさすぎる。
+
+    ただ、setIcon() みたいな関数は公開しないほうがいいと思う。
+    Window はタイトルバーへのアイコン設定関数を公開するが、それと混乱する。
+
+    UE4はaddChild で Layout と Icon と TextBlockで作るらしい。
+    https://www.reddit.com/r/unrealengine/comments/4f1z8v/how_can_i_make_a_button_with_both_text_and_a_icon/
+
+    検索ボックスの実装。
+    UnrealEngine\Engine\Source\Runtime\Slate\Private\Widgets\Input\SSearchBox.cpp
+    SEditableTextBox が持っている TSharedPtr<SHorizontalBox> Box; に slot を差し込む形でボタンを配置している。
+
+    …やっぱりvisualは自分でlayoutつかってレイアウトして、ContentPresenter とか使って子要素配置してもらうのが正しいのか・・・。
+
+    JavaFX では、TextField を枠無しにして、ボタンと並べるみたい。
+    https://lawrencepremkumar.wordpress.com/2012/09/15/custom-textfield-in-javafx-2-2/
 */
 class UIControl
 	: public UIElement

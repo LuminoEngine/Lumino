@@ -40,7 +40,7 @@ void TilesetList::init()
 
 
     auto project = lna::Workspace::instance()->project();
-    m_assetRootDir = ln::Path(project->assetsDir(), u"Tileset");
+    m_assetRootDir = ln::Path(project->assetsDir(), u"Tilesets");
 
     m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
     m_model->setRootPath(m_assetRootDir);

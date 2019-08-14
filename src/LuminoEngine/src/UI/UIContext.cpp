@@ -257,6 +257,16 @@ void UIContext::setupDefaultStyle()
                 s->backgroundColor = theme->get(u"tab.activeBackground");
 			}
 		}
+        //--------------------------------
+        // UITextField
+        {
+            if (auto s = sheet->obtainStyle(u"UITextField")) {
+                s->padding = Thickness(4);
+                s->borderThickness = Thickness(1);
+                s->setBorderColor(Color::Gray);
+                //s->backgroundColor = theme->get(u"tab.inactiveBackground");
+            }
+        }
     }
 
     m_styleContext->addStyleSheet(sheet);

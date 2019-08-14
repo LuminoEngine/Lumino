@@ -85,14 +85,23 @@ void DocumentManager::setActiveDocument(Document* doc)
         m_switchLayout->setActive(doc->mainFrame());
 
         if (auto assetEditorDoc = dynamic_cast<AssetEditorDocument*>(doc)) {
-            for (auto& pane : assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Mode)) {
-                m_modePanesArea->addPane(pane);
+            auto list = assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Mode);
+            if (list) {
+                for (auto& pane : list) {
+                    m_modePanesArea->addPane(pane);
+                }
             }
-            for (auto& pane : assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Inspector)) {
-                m_inspectorPanesArea->addPane(pane);
+            list = assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Inspector);
+            if (list) {
+                for (auto& pane : list) {
+                    m_inspectorPanesArea->addPane(pane);
+                }
             }
-            for (auto& pane : assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Tool)) {
-                m_toolPanesArea->addPane(pane);
+            list = assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Tool);
+            if (list) {
+                for (auto& pane : list) {
+                    m_toolPanesArea->addPane(pane);
+                }
             }
         }
     }
