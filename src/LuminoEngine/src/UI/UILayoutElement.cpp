@@ -267,7 +267,7 @@ Size LayoutHelper::measureElementSpacing(UILayoutElement* element)
     return spacing;
 }
 
-Size LayoutHelper::measureElementBodySize(UILayoutElement* element)
+Size LayoutHelper::measureElementClientSize(UILayoutElement* element)
 {
     Size size(element->m_finalStyle->width, element->m_finalStyle->height);
     Size bodySize;
@@ -286,8 +286,8 @@ Size LayoutHelper::measureElementBodySize(UILayoutElement* element)
 
 Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize)
 {
-    Size size(element->m_finalStyle->width, element->m_finalStyle->height);
-	Size desiredSize = Size::max(measureElementBodySize(element), childrenDesiredSize);
+    //Size size(element->m_finalStyle->width, element->m_finalStyle->height);
+	Size desiredSize = Size::max(measureElementClientSize(element), childrenDesiredSize);
 
 	//// NaN の場合、この要素として必要な最小サイズは 0 となる。
 	//desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
@@ -307,7 +307,7 @@ Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constrai
 	return Size::min(desiredSize, constraint);
 }
 
-Rect LayoutHelper::arrangeContentArea(UILayoutElement* element, const Size& finalSize)
+Rect LayoutHelper::arrangeClientArea(UILayoutElement* element, const Size& finalSize)
 {
 	Rect area;
 

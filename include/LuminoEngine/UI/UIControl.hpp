@@ -4,6 +4,24 @@
 namespace ln {
 class UILayoutPanel;
 
+namespace detail {
+class UIAligned3x3GridLayoutArea;
+}
+
+enum class UIInlineLayout
+{
+    TopLeft,
+    Top,
+    TopRight,
+    Left,
+    Center,
+    Right,
+    BottomLeft,
+    Bottom,
+    BottomRight,
+};
+
+
 // TODO: TextBox の TextArea みたいに、UIElement の派生ではなくて、内部的なパーツとして利用する ScrollArea みたいなのを作ってみたらどうだろう。
 // → 2019/8/12 作業中。いったん ScrollViewer を継承から外した
 /*
@@ -93,6 +111,7 @@ public:
 
 	void removeAllChildren();
 
+    void addInlineElement(UIElement* element, UIInlineLayout layout);
 
 	///**
 	//	子要素をレイアウトするための UILayoutPanel を設定します。
@@ -124,8 +143,44 @@ private:
 
     //Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less
+
+    Ref<detail::UIAligned3x3GridLayoutArea> m_aligned3x3GridLayoutArea;
+    List<Ref<UIElement>> m_inlineElements;
 };
 
+
+namespace detail {
+
+class UIAligned3x3GridLayoutArea
+    : public Object
+{
+public:
+    Size measure(const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize);
+    void arrange(const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect);
+
+LN_CONSTRUCT_ACCESS:
+    UIAligned3x3GridLayoutArea();
+    void init();
+
+private:
+    void getGridInfoHelper(UIElement* element, int* row, int* column, int* rowSpan, int* columnSpan) const;
+
+    struct LineInfo
+    {
+        // このセルの右辺または下辺の座標 = 次のセルの左辺または上辺の座標。
+        // このセルの右または下のラインの座標と考える。
+        float desiredLastOffset = 0.0f;
+
+        float desiredSize = 0.0f;
+        float actualOffset = 0.0f;
+        float actualSize = 0.0f;
+    };
+
+    std::array<LineInfo, 3> m_rows;
+    std::array<LineInfo, 3> m_columns;
+};
+
+} // namespace detail
 
 
 } // namespace ln

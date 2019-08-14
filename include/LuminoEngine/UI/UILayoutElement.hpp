@@ -186,10 +186,12 @@ class LayoutHelper
 public:
 
     static Size measureElementSpacing(UILayoutElement* element);    // border + padding
-    static Size measureElementBodySize(UILayoutElement* element);    // chrome デバッガの青い部分
+    static Size measureElementClientSize(UILayoutElement* element);    // chrome デバッガの青い部分
 	// 単純に element のサイズによった measure を行う。measureOverride() の中で使用することを想定している。
 	static Size measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize);
-	static Rect arrangeContentArea(UILayoutElement* element, const Size& finalSize);
+
+    // padding, border の分を減じた領域を計算する
+	static Rect arrangeClientArea(UILayoutElement* element, const Size& finalSize);
 
 	//static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{

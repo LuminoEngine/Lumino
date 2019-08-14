@@ -193,7 +193,9 @@ public:
     static Ref<UIFrameLayout2> create();
 
     // TODO: internal
+    static Size staticMeasureChildrenAreaSize(UIElement* ownerElement, const Size& constraint);
     static Size staticMeasureOverride(UIElement* ownerElement, const Size& constraint);
+    static Size staticArrangeChildrenArea(UIElement* ownerElement, const Rect& finalArea);
     static Size staticArrangeOverride(UIElement* ownerElement, const Size& finalSize);
 
 LN_PROTECTED_INTERNAL_ACCESS:
@@ -334,39 +336,6 @@ LN_CONSTRUCT_ACCESS:
 private:
 	int m_activeIndex;
 };
-
-namespace detail {
-
-class UIAligned3x3GridLayoutArea
-    : public Object
-{
-public:
-    Size measure(const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentSize);
-    void arrange(const List<Ref<UIElement>>& inlineElements, const Size& finalSize, Rect* outActualContentRect);
-
-LN_CONSTRUCT_ACCESS:
-    UIAligned3x3GridLayoutArea();
-    void init();
-
-private:
-    void getGridInfoHelper(UIElement* element, int* row, int* column, int* rowSpan, int* columnSpan) const;
-
-    struct LineInfo
-    {
-        // このセルの右辺または下辺の座標 = 次のセルの左辺または上辺の座標。
-        // このセルの右または下のラインの座標と考える。
-        float desiredLastOffset = 0.0f;
-
-        float desiredSize = 0.0f;
-        float actualOffset = 0.0f;
-        float actualSize = 0.0f;
-    };
-
-    std::array<LineInfo, 3> m_rows;
-    std::array<LineInfo, 3> m_columns;
-};
-
-} // namespace detail
 
 
 
