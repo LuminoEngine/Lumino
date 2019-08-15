@@ -1,4 +1,6 @@
 ﻿
+#include <Workspace.hpp>
+#include <Project.hpp>
 #include "AssetPicker.hpp"
 
 namespace ln {
@@ -19,7 +21,32 @@ void AssetPicker::init()
 
     m_button = makeObject<UIToggleButton>();
     m_button->setText(u"test");
+    m_button->connectOnChecked([this](UIEventArgs* e) { m_popup->open(); });
+    m_button->connectOnUnchecked([this](UIEventArgs* e) { m_popup->close(); });
     m_hbox->addChild(m_button);
+
+    m_popup = ln::makeObject<ln::UIPopup>();
+    m_hbox->addChild(m_popup);
+    m_popup->setPlacementTarget(m_button);
+    {
+        m_listView = ln::makeObject<ln::UIListView>();
+        m_listView->getGridLayoutInfo()->layoutWeight = 1;
+        //m_listView->connectOnItemClick(ln::bind(this, &TilesetList::listView_onItemClick));
+        m_popup->addElement(m_listView);
+
+
+        auto project = lna::Workspace::instance()->project();
+        auto assetRootDir = u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets";//ln::Path(project->assetsDir(), u"Tilesets");
+
+        m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+        m_model->setRootPath(assetRootDir);
+        m_listView->setViewModel(m_model);
+    }
+
+
+    //auto popupContent = ln::makeObject<ln::UITextBlock>();
+    //popupContent->setText(u"POP");
+    //layout->addChild(popup);
 }
 
 

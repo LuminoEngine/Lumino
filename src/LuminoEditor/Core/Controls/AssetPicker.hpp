@@ -17,6 +17,9 @@ private:
     Ref<UIHBoxLayout2> m_hbox;
     Ref<UIVBoxLayout2> m_vbox;
     Ref<UIToggleButton> m_button;
+    Ref<UIPopup> m_popup;
+    Ref<UIListView> m_listView;
+    Ref<UIFileSystemCollectionModel> m_model;
 };
 
 } // namespace ln
