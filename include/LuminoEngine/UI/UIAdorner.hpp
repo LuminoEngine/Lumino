@@ -32,6 +32,7 @@ public:
     void add(UIAdorner* adorner);
     void remove(UIAdorner* adorner);
 
+    void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
     void measureLayout(const Size& availableSize);
     void arrangeLayout(const Rect& localSlotRect);
     void render(UIRenderingContext* context);

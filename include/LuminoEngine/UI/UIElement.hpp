@@ -5,6 +5,7 @@
 #include "UIEvents.hpp"
 
 namespace ln {
+class UILayoutContext;
 class UIRenderingContext;
 class UIRenderView;
 class UIContext;
@@ -55,12 +56,12 @@ struct GridLayoutInfo
 
 }
 
-class UILayoutContext
-	: public Object
-{
-public:
-	float m_dpiScaleFactor;
-};
+//class UILayoutContext
+//	: public Object
+//{
+//public:
+//	float m_dpiScaleFactor;
+//};
 
 
 class UIViewModel

@@ -17,15 +17,11 @@ UIPopup::UIPopup()
 void UIPopup::init()
 {
 	UIElement::init();
-    specialElementFlags().set(detail::UISpecialElementFlags::VisualLeaf);
-}
+    specialElementFlags().set(detail::UISpecialElementFlags::Popup);
 
-void UIPopup::setContent(UIElement* content)
-{
-    m_content = content;
-    if (m_content) {
-        addVisualChild(m_content);
-    }
+    // UIAdorner で左上を PlacementTarget と合わせてもらう
+    setHorizontalAlignment(HAlignment::Left);
+    setVerticalAlignment(VAlignment::Top);
 }
 
 void UIPopup::setPlacementTarget(UIElement* target)
@@ -40,14 +36,13 @@ void UIPopup::setPlacementMode(PlacementMode mode)
 
 void UIPopup::open()
 {
-    if (!m_content) return;
     if (!m_placementTarget) return;
 
     if (!m_opend)
     {
         if (!m_adorner) {
             m_adorner = makeObject<UIAdorner>(m_placementTarget);
-            m_adorner->setContent(m_content);
+            m_adorner->setContent(this);
         }
 
         UIRenderView* renderView = getRenderView();

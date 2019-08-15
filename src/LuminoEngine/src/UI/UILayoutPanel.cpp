@@ -4,6 +4,18 @@
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 
 namespace ln {
+    
+//==============================================================================
+// UILayoutContext
+
+UILayoutContext::UILayoutContext()
+{
+}
+
+void UILayoutContext::init()
+{
+    Object::init();
+}
 
 //==============================================================================
 // UILayoutPanel2
@@ -351,6 +363,10 @@ Size UIStackLayout2::measureOverride(const Size& constraint)
     for (int i = 0; i < childCount; i++)
     {
         UIElement* child = getVisualChild(i);
+        if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) {   // TODO: layoutcontext のメソッドで判定
+            m_cellDefinitions[i].desiredSize = 0;
+            continue;
+        }
         child->measureLayout(size);
 
         const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -430,6 +446,7 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
     if (isHorizontal()) {
         for (int iChild = 0; iChild < childCount; iChild++) {
             auto* child = getVisualChild(iChild);
+            if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) continue; // TODO: layoutcontext のメソッドで判定
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
             child->arrangeLayout(childRect);
@@ -438,6 +455,7 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
     else {
         for (int iChild = 0; iChild < childCount; iChild++) {
             auto* child = getVisualChild(iChild);
+            if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) continue; // TODO: layoutcontext のメソッドで判定
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
             child->arrangeLayout(childRect);

@@ -448,6 +448,10 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
         if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
             UIContext* context = getContext();
             updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
+            // TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
+            if (m_renderView) {
+                m_renderView->adornerLayer()->updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
+            }
         }
         if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout)) {
             updateLayoutTree();

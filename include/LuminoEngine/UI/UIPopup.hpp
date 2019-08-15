@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "UIElement.hpp"
+#include "UIContainerElement.hpp"
 
 namespace ln {
 class UIAdorner;
@@ -11,10 +11,9 @@ enum class PlacementMode
 
 // TODO: レイアウトや描画は行わず、イベントルーティングだけ行うフラグとか用意してみる
 class UIPopup
-    : public UIElement
+    : public UIContainerElement
 {
 public:
-    void setContent(UIElement* content);
     void setPlacementTarget(UIElement* target);
     void setPlacementMode(PlacementMode mode);
 
@@ -28,7 +27,6 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
-    Ref<UIElement> m_content;
     Ref<UIElement> m_placementTarget;
     PlacementMode m_placementMode;
     Ref<UIAdorner> m_adorner;

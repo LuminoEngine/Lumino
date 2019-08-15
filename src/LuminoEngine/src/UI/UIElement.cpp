@@ -726,7 +726,18 @@ void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
 
 void UIElement::render(UIRenderingContext* context)
 {
-    if (isRenderVisible())
+    bool enable = false;
+    if (m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::Popup)) {
+        if (context->m_adornerRendering) {
+            enable = true;
+        }
+    }
+    else {
+        enable = true;
+    }
+
+
+    if (enable && isRenderVisible())
     {
 
 
@@ -784,11 +795,9 @@ void UIElement::render(UIRenderingContext* context)
         context->popState();	// TODO: scoped
 
         // child elements
-        if (!m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::VisualLeaf)) {
-            int count = getVisualChildrenCount();
-            for (int i = 0; i < count; i++) {
-                getVisualChild(i)->render(context);
-            }
+        int count = getVisualChildrenCount();
+        for (int i = 0; i < count; i++) {
+            getVisualChild(i)->render(context);
         }
     }
 

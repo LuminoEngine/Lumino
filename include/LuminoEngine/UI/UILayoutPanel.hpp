@@ -17,6 +17,20 @@ enum class UILayoutLengthType
     Ratio,				/**< レイアウト後、残りの領域を使う */
 };
 
+class UILayoutContext
+    : public Object
+{
+public:
+    
+LN_CONSTRUCT_ACCESS:
+    UILayoutContext();
+    void init();
+
+public: // TODO: internal
+
+};
+
+
 namespace detail {
 struct GridDefinitionData
 {

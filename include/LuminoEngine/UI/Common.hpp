@@ -44,7 +44,10 @@ enum class UISpecialElementFlags
     // 子 Visual 要素のレイアウトと描画を行わない。
     // イベントルーティングは通常通り行う。
     // 子 Visual 要素のレイアウトと描画を別の場所で行うときに使う。
-    VisualLeaf = 1 << 2,
+    //VisualLeaf = 1 << 2,
+
+    // 通常の論理ツリー上に配置され、レイアウトと描画は Adorner など別のフェーズで行う
+    Popup = 1 << 2,
 
     // 
     //LayoutInvisible = 1 << 3,
