@@ -93,7 +93,7 @@ Size UIPopupAdorner::measureOverride(const Size& constraint)
 
 Size UIPopupAdorner::arrangeOverride(const Size& finalSize)
 {
-    UIElement::arrangeOverride(finalSize);s
+    UIElement::arrangeOverride(finalSize);
 
     // TODO: 簡易 bottom
     m_popup->arrangeLayout(Rect(0, finalSize.height, finalSize));

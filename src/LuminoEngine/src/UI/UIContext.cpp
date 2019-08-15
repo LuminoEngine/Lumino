@@ -270,6 +270,19 @@ void UIContext::setupDefaultStyle()
                 //s->backgroundColor = theme->get(u"tab.inactiveBackground");
             }
         }
+        //--------------------------------
+        // UITextField
+        {
+            if (auto s = sheet->obtainStyle(u"UIPopup")) {
+                s->minWidth = 8;
+                s->minHeight = 8;
+                s->padding = theme->spacing(1);
+                s->backgroundColor = UIColors::get(UIColorHues::White);
+                s->cornerRadius = CornerRadius(4);
+                s->shadowBlurRadius = 4;
+                s->shadowOffsetY = 2;
+            }
+        }
     }
 
     m_styleContext->addStyleSheet(sheet);

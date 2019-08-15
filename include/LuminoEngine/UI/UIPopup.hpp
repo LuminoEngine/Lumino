@@ -24,6 +24,9 @@ public:
     void open();
     void close();
 
+protected:
+    virtual const String& elementName() const  override { static String name = u"UIPopup"; return name; }
+
 LN_CONSTRUCT_ACCESS:
     UIPopup();
     void init();
