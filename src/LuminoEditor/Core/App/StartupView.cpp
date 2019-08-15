@@ -39,6 +39,26 @@ ln::Result StartupView::init()
     m_openProjectButton->addInlineElement(icon, ln::UIInlineLayout::Top);
 
 
+
+
+
+    auto popupContent = ln::makeObject<ln::UITextBlock>();
+    popupContent->setText(u"POP");
+    auto popup = ln::makeObject<ln::UIPopup>();
+    popup->setContent(popupContent);
+    popup->setPlacementTarget(m_openProjectButton);
+    layout->addChild(popup);
+
+
+    auto popupButton = ln::makeObject<ln::UIButton>();
+    popupButton->setWidth(200);
+    popupButton->setText(u"Popup");
+    popupButton->setHorizontalContentAlignment(ln::HAlignment::Center);
+    popupButton->setVerticalContentAlignment(ln::VAlignment::Center);
+    popupButton->connectOnClicked([popup](ln::UIEventArgs* e) { if (!popup->isOpend()) popup->open(); else popup->close(); });
+    layout->addChild(popupButton);
+
+
 	auto text = ln::makeObject<ln::UITextField>();
 	text->setWidth(200);
 	text->setHeight(30);

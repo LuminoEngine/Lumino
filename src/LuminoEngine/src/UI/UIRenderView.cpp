@@ -4,6 +4,7 @@
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
+#include <LuminoEngine/UI/UIAdorner.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
@@ -26,13 +27,28 @@ void UIRenderView::init()
 	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
 
+    m_adornerLayer = makeObject<UIAdornerLayer>();
+
 	m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
 	addDrawElementListManager(m_drawElementListCollector);
 }
 
+UIAdornerLayer* UIRenderView::adornerLayer() const
+{
+    return m_adornerLayer;
+}
+
 void UIRenderView::setRootElement(UIElement* element)
 {
+    if (m_rootElement) {
+        m_rootElement->m_renderView = nullptr;
+    }
+
     m_rootElement = element;
+
+    if (m_rootElement) {
+        m_rootElement->m_renderView = this;
+    }
 }
 
 void UIRenderView::onUpdateFrame(float elapsedSeconds)
@@ -49,6 +65,8 @@ void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
 {
 	m_rootElement->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
     m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
+    m_adornerLayer->measureLayout(finalGlobalRect.getSize());
+    m_adornerLayer->arrangeLayout(finalGlobalRect);
 }
 
 UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
@@ -94,6 +112,8 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
             }
             m_rootElement->render(m_renderingContext);
             m_renderingContext->m_frameWindowRenderingGraphicsContext = nullptr;
+
+            m_adornerLayer->render(m_renderingContext);
         }
 
 

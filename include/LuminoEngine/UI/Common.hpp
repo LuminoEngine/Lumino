@@ -40,6 +40,11 @@ enum class UISpecialElementFlags
 {
 	None = 0,
 	FrameWindow = 1 << 1,
+
+    // 子 Visual 要素のレイアウトと描画を行わない。
+    // イベントルーティングは通常通り行う。
+    // 子 Visual 要素のレイアウトと描画を別の場所で行うときに使う。
+    VisualLeaf = 1 << 2,
 };
 
 }

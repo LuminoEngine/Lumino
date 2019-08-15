@@ -4,6 +4,7 @@
 namespace ln {
 class UIRenderingContext;
 class UIElement;
+class UIAdornerLayer;
 namespace detail {
 class FlatRenderingPipeline;
 } // namespace detail
@@ -26,6 +27,8 @@ public:
 	//void renderTree(GraphicsContext* graphicsContext, UIElement* element);
     virtual void render(GraphicsContext* graphicsContext) override;
 
+    UIAdornerLayer* adornerLayer() const;
+
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -38,6 +41,7 @@ private:
 	Ref<detail::DrawElementListCollector> m_drawElementListCollector;
     Ref<RenderViewPoint> m_viewPoint;
     Ref<UIElement> m_rootElement;
+    Ref<UIAdornerLayer> m_adornerLayer;
 };
 
 } // namespace ln

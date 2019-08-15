@@ -17,6 +17,7 @@ class UIAction;
 class UIContainerElement;
 class UIControl;
 class UIFrameWindow;
+class UIAdornerLayer;
 enum class BlendMode : uint8_t;
 struct Color;
 struct ColorTone;
@@ -329,6 +330,7 @@ public: // TODO: internal
     virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
+    UIRenderView* getRenderView();
 
 public:	// TODO: internal protected
     void focus();
@@ -432,7 +434,11 @@ public: // TODO: internal
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
+    
+    // TODO: ↓ UIRenderView にまとめてしまっていいかも
     UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
+    UIRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
+    
     UIElement* m_visualParent;
     UIControl* m_logicalParent;    // TODO: Layout も親となりえる。
 	Ref<List<Ref<UIElement>>> m_visualChildren;

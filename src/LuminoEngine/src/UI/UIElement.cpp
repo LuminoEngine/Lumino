@@ -480,6 +480,17 @@ UIElement* UIElement::getFrameWindow()
 	return nullptr;
 }
 
+UIRenderView* UIElement::getRenderView()
+{
+    if (m_renderView) {
+        return m_renderView;
+    }
+    if (m_visualParent) {
+        return m_visualParent->getRenderView();
+    }
+    return nullptr;
+}
+
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
     if (isHitTestVisibleCore())
@@ -773,9 +784,11 @@ void UIElement::render(UIRenderingContext* context)
         context->popState();	// TODO: scoped
 
         // child elements
-        int count = getVisualChildrenCount();
-        for (int i = 0; i < count; i++) {
-            getVisualChild(i)->render(context);
+        if (!m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::VisualLeaf)) {
+            int count = getVisualChildrenCount();
+            for (int i = 0; i < count; i++) {
+                getVisualChild(i)->render(context);
+            }
         }
     }
 

@@ -7,6 +7,7 @@
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
+#include <LuminoEngine/UI/UIAdorner.hpp>
 #include "UIManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
@@ -318,6 +319,11 @@ void UIFrameWindow::updateLayoutTree()
     Rect clientRect(0, 0, m_clientSize);
 	updateLayout(clientRect);
     updateFinalLayoutHierarchical(clientRect);
+    // TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
+    if (m_renderView) {
+        m_renderView->adornerLayer()->measureLayout(m_clientSize);
+        m_renderView->adornerLayer()->arrangeLayout(clientRect);
+    }
 }
 
 // 強制的にウィンドウサイズとする

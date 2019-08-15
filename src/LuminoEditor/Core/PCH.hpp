@@ -25,6 +25,7 @@
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIListView.hpp>
 #include <LuminoEngine/UI/UITextField.hpp>
+#include <LuminoEngine/UI/UIPopup.hpp>
 
 #include "CLI.hpp"
 
