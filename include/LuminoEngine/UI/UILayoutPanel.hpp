@@ -255,7 +255,7 @@ private:
     List<CellDefinition> m_cellDefinitions;
 };
 
-class UIVBoxLayout2
+class UIHBoxLayout2
     : public UIStackLayout2
 {
 public:
@@ -264,15 +264,14 @@ LN_CONSTRUCT_ACCESS:
     void init();
 };
 
-class UIHBoxLayout2
-	: public UIStackLayout2
+class UIVBoxLayout2
+    : public UIStackLayout2
 {
 public:
 
 LN_CONSTRUCT_ACCESS:
-	void init();
+    void init();
 };
-
 
 
 // 指定方向に無限のサイズを想定する StackLayout と異なり、こちらは有限サイズでレイアウトを行う。

@@ -1,6 +1,7 @@
 ﻿
 #include "Application.hpp"
 #include "StartupView.hpp"
+#include "../Controls/AssetPicker.hpp"  // TODO: Test
 
 StartupView::StartupView()
 {
@@ -64,6 +65,10 @@ ln::Result StartupView::init()
 	text->setHeight(30);
 	text->setText(u"Hello\nLumino");
 	layout->addChild(text);
+
+    auto ap = ln::makeObject<ln::AssetPicker>();
+    layout->addChild(ap);
+
 
 
 	//auto m_mainViewport = ln::makeObject<ln::UIViewport>();

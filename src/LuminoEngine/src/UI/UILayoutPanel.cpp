@@ -499,6 +499,15 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
 }
 
 //==============================================================================
+// UIHBoxLayout2
+
+void UIHBoxLayout2::init()
+{
+    UIStackLayout2::init();
+    setOrientation(Orientation::Horizontal);
+}
+
+//==============================================================================
 // UIVBoxLayout2
 
 void UIVBoxLayout2::init()
@@ -506,16 +515,6 @@ void UIVBoxLayout2::init()
     UIStackLayout2::init();
     setOrientation(Orientation::Vertical);
 }
-
-//==============================================================================
-// UIHBoxLayout2
-
-void UIHBoxLayout2::init()
-{
-	UIStackLayout2::init();
-	setOrientation(Orientation::Horizontal);
-}
-
 
 //==============================================================================
 // UIBoxLayout3

@@ -122,8 +122,10 @@ void UIContext::setupDefaultStyle()
 			if (auto s = sheet->obtainStyle(u"UIToggleButton:MouseOver")) {
 			}
 			if (auto s = sheet->obtainStyle(u"UIToggleButton:Pressed")) {
+                s->backgroundColor = UIColors::get(UIColorHues::Grey, 6);
 			}
 			if (auto s = sheet->obtainStyle(u"UIToggleButton:Checked")) {
+                s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
 			}
 		}
 		//--------------------------------
