@@ -1,13 +1,15 @@
 ﻿#pragma once
 #include "UIContainerElement.hpp"
+#include "UIAdorner.hpp"
 
 namespace ln {
-class UIAdorner;
+class UIPopupAdorner;
 
 enum class PlacementMode
 {
     Bottom,
 };
+
 
 // TODO: レイアウトや描画は行わず、イベントルーティングだけ行うフラグとか用意してみる
 class UIPopup
@@ -31,6 +33,26 @@ private:
     PlacementMode m_placementMode;
     Ref<UIAdorner> m_adorner;
     bool m_opend;
+
+    friend class UIPopupAdorner;
+};
+
+class UIPopupAdorner
+    : public UIAdorner
+{
+public:
+    virtual Size measureOverride(const Size& constraint) override;
+    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
+    virtual void render(UIRenderingContext* context) override;
+
+LN_CONSTRUCT_ACCESS:
+    UIPopupAdorner();
+    void init(UIElement* adornedElement, UIPopup* popup);
+
+private:
+    Ref<UIElement> m_adornedElement;
+    Ref<UIElement> m_popup;
 };
 
 } // namespace ln

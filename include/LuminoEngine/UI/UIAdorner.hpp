@@ -9,12 +9,6 @@ class UIAdorner
 {
 public:
     UIElement* adornedElement() const;
-    void setContent(UIElement* element);
-    UIElement* content() const;
-
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
-    virtual void render(UIRenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
     UIAdorner();
@@ -22,7 +16,6 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<UIElement> m_adornedElement;
-    Ref<UIElement> m_content;
 };
 
 class UIAdornerLayer
