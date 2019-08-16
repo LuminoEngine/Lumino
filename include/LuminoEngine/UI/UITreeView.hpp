@@ -59,6 +59,7 @@ protected:
 
     // base interface
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
+    virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:

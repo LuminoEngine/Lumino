@@ -143,12 +143,25 @@ void UIItemsControl::addItem(UICollectionItem* item)
 	if (LN_REQUIRE(item)) return;
 	m_selectionTargets.add(item);
 	item->m_ownerCollectionControl = this;
-    //addElement(item);
 
     m_logicalChildren.add(item);
     item->setLogicalParent(this);
 
     m_itemssHostLayout->addVisualChild(item);
+}
+
+void UIItemsControl::removeAllItems()
+{
+    for (auto& item : m_selectionTargets) {
+        item->m_ownerCollectionControl = nullptr;
+    }
+    m_selectionTargets.clear();
+
+    for (auto& item : m_logicalChildren) {
+        item->setLogicalParent(nullptr);
+        m_itemssHostLayout->removeVisualChild(item);
+    }
+    m_logicalChildren.clear();
 }
 
 EventConnection UIItemsControl::connectOnItemClick(UIClickEventHandler handler)

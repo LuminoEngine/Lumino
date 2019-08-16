@@ -6,15 +6,25 @@
 #include "AssetBrowserNavigator.hpp"
 
 //==============================================================================
+// AssetBrowserTreeViewModel
+
+bool AssetBrowserTreeViewModel::onTestFilter(const ln::Path& path)
+{
+    return ln::FileSystem::existsDirectory(path);
+}
+
+    
+//==============================================================================
 // AssetBrowserTreeView
 
-void AssetBrowserTreeView::init()
+void AssetBrowserTreeView::init(AssetBrowserNavigatorExtension* owner)
 {
     UITreeView::init();
+    m_owner = owner;
 
 
-    m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
-    m_model->setExcludeFilters(ln::makeList<ln::String>({u"*.lnasset"}));
+    m_model = ln::makeObject<AssetBrowserTreeViewModel>();
+    //m_model->setExcludeFilters(ln::makeList<ln::String>({u"*.lnasset"}));
     setViewModel(m_model);
 }
 
@@ -25,22 +35,25 @@ void AssetBrowserTreeView::setPath(const ln::Path & path)
 
 Ref<ln::UITreeItem> AssetBrowserTreeView::onRenderItem(ln::UICollectionItemModel* viewModel)
 {
-    auto item = UITreeView::onRenderItem(viewModel);
+    return UITreeView::onRenderItem(viewModel);
+    //auto item = UITreeView::onRenderItem(viewModel);
 
-    auto project = lna::Workspace::instance()->project();
-    if (project->assetDatabase()->isImportedAssetFile(m_model->filePath(viewModel))) {
+    //auto project = lna::Workspace::instance()->project();
+    //if (project->assetDatabase()->isImportedAssetFile(m_model->filePath(viewModel))) {
 
-    }
-    else {
-        item->setTextColor(ln::Color::Gray);
-    }
+    //}
+    //else {
+    //    item->setTextColor(ln::Color::Gray);
+    //}
 
-    return item;
+    //return item;
 }
 
 void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e)
 {
     UITreeView::onItemClick(item, e);
+    auto path = m_model->filePath(static_cast<ln::UICollectionItemModel*>(item->m_viewModel.get()));
+    m_owner->setAssetListPathFromTreeClick(path);
 
 #if 0
     if (e->getClickCount() == 2) {
@@ -62,16 +75,17 @@ void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArg
 
 bool AssetBrowserListViewModel::onTestFilter(const ln::Path& path)
 {
-    // ignore folder
-    return !ln::FileSystem::existsDirectory(path);
+    // ignore folder and other files
+    return lna::AssetDatabase::isAssetFile(path);
 }
 
 //==============================================================================
 // AssetBrowserListView
 
-void AssetBrowserListView::init()
+void AssetBrowserListView::init(AssetBrowserNavigatorExtension* owner)
 {
     UIListView::init();
+    m_owner = owner;
 
     auto project = lna::Workspace::instance()->project();
 
@@ -98,20 +112,33 @@ void AssetBrowserNavigatorExtension::init()
     m_splitter->setCellDefinition(0, ln::UILayoutLengthType::Ratio, 1);
     m_splitter->setCellDefinition(1, ln::UILayoutLengthType::Ratio, 1);
 
-	m_treeView = ln::makeObject<AssetBrowserTreeView>();
+	m_treeView = ln::makeObject<AssetBrowserTreeView>(this);
 	m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
 	m_treeView->getGridLayoutInfo()->layoutRow = 0;
     m_splitter->addElement(m_treeView);
 
-    m_listView = ln::makeObject<AssetBrowserListView>();
-    m_listView->getGridLayoutInfo()->layoutRow = 1;
+    m_layout2 = ln::makeObject<ln::UIVBoxLayout2>();
+    m_layout2->getGridLayoutInfo()->layoutRow = 1;
+    m_splitter->addElement(m_layout2);
+
+    m_importButton = ln::makeObject<ln::UIButton>();
+    m_importButton->setText(u"Import");
+    m_layout2->addChild(m_importButton);
+
+    m_listView = ln::makeObject<AssetBrowserListView>(this);
     m_listView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 3));
-    m_splitter->addElement(m_listView);
+    m_treeView->getGridLayoutInfo()->layoutWeight = 1;
+    m_layout2->addChild(m_listView);
 
 
     auto project = lna::Workspace::instance()->project();
     m_treeView->setPath(project->assetsDir());
     m_listView->setPath(project->assetsDir());
+}
+
+void AssetBrowserNavigatorExtension::setAssetListPathFromTreeClick(const ln::Path& path)
+{
+    m_listView->setPath(path);
 }
 
 void AssetBrowserNavigatorExtension::onAttached()

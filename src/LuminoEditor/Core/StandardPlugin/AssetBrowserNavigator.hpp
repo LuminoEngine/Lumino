@@ -2,11 +2,20 @@
 #include <LuminoEditor/Plugin.hpp>
 #include "../UIExtension.hpp"
 
+class AssetBrowserNavigatorExtension;
 
-class AssetBrowserTreeView : public ln::UITreeView
+class AssetBrowserTreeViewModel
+    : public ln::UIFileSystemCollectionModel
+{
+protected:
+    virtual bool onTestFilter(const ln::Path& path) override;
+};
+
+class AssetBrowserTreeView
+    : public ln::UITreeView
 {
 public:
-    void init();
+    void init(AssetBrowserNavigatorExtension* owner);
     void setPath(const ln::Path& path);
 
 protected:
@@ -14,7 +23,8 @@ protected:
     virtual Ref<ln::UITreeItem> onRenderItem(ln::UICollectionItemModel* viewModel) override;
 
 private:
-    Ref<ln::UIFileSystemCollectionModel> m_model;
+    AssetBrowserNavigatorExtension* m_owner;
+    Ref<AssetBrowserTreeViewModel> m_model;
 };
 
 
@@ -26,15 +36,17 @@ protected:
 
 };
 
-class AssetBrowserListView : public ln::UIListView
+class AssetBrowserListView
+    : public ln::UIListView
 {
 public:
-    void init();
+    void init(AssetBrowserNavigatorExtension* owner);
     void setPath(const ln::Path& path);
 
 protected:
 
 private:
+    AssetBrowserNavigatorExtension* m_owner;
     Ref<AssetBrowserListViewModel> m_model;
 };
 
@@ -46,6 +58,7 @@ class AssetBrowserNavigatorExtension
 {
 public:
     void init();
+    void setAssetListPathFromTreeClick(const ln::Path& path);
 
 protected:
     virtual const ln::Char* id() const { return u"AD796B88-7EAA-4AC9-B9F8-22CB366823E2"; }
@@ -59,6 +72,8 @@ private:
     Ref<ln::NavigationMenuItem> m_navbarItemContent;
     Ref<ln::UISplitter> m_splitter;
     Ref<AssetBrowserTreeView> m_treeView;
+    Ref<ln::UIVBoxLayout2> m_layout2;
+    Ref<ln::UIButton> m_importButton;
     Ref<AssetBrowserListView> m_listView;
 };
 

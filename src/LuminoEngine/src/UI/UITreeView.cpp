@@ -262,6 +262,14 @@ void UITreeView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
 	makeChildItems(nullptr);
 }
 
+void UITreeView::onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e)
+{
+    if (e->action() == UICollectionChangedAction::Reset) {
+        removeAllChildren();
+        makeChildItems(nullptr);
+    }
+}
+
 Size UITreeView::arrangeOverride(const Size& finalSize)
 {
     return UIItemsControl::arrangeOverride(finalSize);

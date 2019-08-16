@@ -30,7 +30,12 @@ Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
     return asset;
 }
 
-bool AssetDatabase::isImportedAssetFile(const ln::Path& file) const
+bool AssetDatabase::isAssetFile(const ln::Path& file)
+{
+    return file.hasExtension(ln::AssetModel::AssetFileExtension);
+}
+
+bool AssetDatabase::isImportedAssetFile(const ln::Path& file)
 {
     return ln::FileSystem::existsFile(file.str() + ln::AssetModel::AssetFileExtension);
 }
