@@ -116,6 +116,11 @@ void UIFileSystemCollectionModel::refresh()
     }
 }
 
+bool UIFileSystemCollectionModel::onTestFilter(const Path& path)
+{
+    return true;
+}
+
 UIFileSystemCollectionModel::FileSystemNode* UIFileSystemCollectionModel::getNode(UICollectionItemModel* index)
 {
     if (!index) {
@@ -126,14 +131,14 @@ UIFileSystemCollectionModel::FileSystemNode* UIFileSystemCollectionModel::getNod
 	return node;
 }
 
-Ref<UIFileSystemCollectionModel::FileSystemNode> UIFileSystemCollectionModel::makeNode(const Path& path) const
+Ref<UIFileSystemCollectionModel::FileSystemNode> UIFileSystemCollectionModel::makeNode(const Path& path)
 {
 	auto node = makeRef<FileSystemNode>(path);
 	constructChildNodes(node, false);
 	return node;
 }
 
-void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node, bool reset) const
+void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node, bool reset)
 {
 	if (node->dirty || reset)
 	{
@@ -143,7 +148,9 @@ void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node, bool
 			auto& path = node->path;
 			auto dirs = FileSystem::getDirectories(path, StringRef(), SearchOption::TopDirectoryOnly);
 			for (auto& dir : dirs) {
-				node->children.add(makeRef<FileSystemNode>(dir));
+                if (testFilter(dir)) {
+                    node->children.add(makeRef<FileSystemNode>(dir));
+                }
 			}
 			auto files = FileSystem::getFiles(path, StringRef(), SearchOption::TopDirectoryOnly);
 			for (auto& file : files) {
@@ -169,7 +176,7 @@ void UIFileSystemCollectionModel::refreshHierarchical(UICollectionItemModel* mod
     }
 }
 
-bool UIFileSystemCollectionModel::testFilter(const Path& path) const
+bool UIFileSystemCollectionModel::testFilter(const Path& path)
 {
     if (m_excludeFilters) {
         for (auto& f : m_excludeFilters) {
@@ -179,7 +186,7 @@ bool UIFileSystemCollectionModel::testFilter(const Path& path) const
         }
     }
 
-    return true;
+    return onTestFilter(path);
 }
 
 } // namespace ln

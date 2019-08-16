@@ -58,6 +58,15 @@ void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArg
 }
 
 //==============================================================================
+// AssetBrowserListViewModel
+
+bool AssetBrowserListViewModel::onTestFilter(const ln::Path& path)
+{
+    // ignore folder
+    return !ln::FileSystem::existsDirectory(path);
+}
+
+//==============================================================================
 // AssetBrowserListView
 
 void AssetBrowserListView::init()
@@ -66,7 +75,7 @@ void AssetBrowserListView::init()
 
     auto project = lna::Workspace::instance()->project();
 
-    m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    m_model = ln::makeObject<AssetBrowserListViewModel>();
     setViewModel(m_model);
 }
 

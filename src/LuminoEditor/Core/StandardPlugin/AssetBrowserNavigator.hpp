@@ -18,6 +18,14 @@ private:
 };
 
 
+class AssetBrowserListViewModel
+    : public ln::UIFileSystemCollectionModel
+{
+protected:
+    virtual bool onTestFilter(const ln::Path& path) override;
+
+};
+
 class AssetBrowserListView : public ln::UIListView
 {
 public:
@@ -27,7 +35,7 @@ public:
 protected:
 
 private:
-    Ref<ln::UIFileSystemCollectionModel> m_model;
+    Ref<AssetBrowserListViewModel> m_model;
 };
 
 

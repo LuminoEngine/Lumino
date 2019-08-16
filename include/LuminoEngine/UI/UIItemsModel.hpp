@@ -77,6 +77,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
+    virtual bool onTestFilter(const Path& path);
 
 private:
 	class FileSystemNode : public RefObject
@@ -89,10 +90,10 @@ private:
 	};
 
 	FileSystemNode* getNode(UICollectionItemModel* index);
-	Ref<FileSystemNode> makeNode(const Path& path) const;
-	void constructChildNodes(FileSystemNode* node, bool reset) const;
+	Ref<FileSystemNode> makeNode(const Path& path);
+	void constructChildNodes(FileSystemNode* node, bool reset);
     void refreshHierarchical(UICollectionItemModel* model);
-    bool testFilter(const Path& path) const;
+    bool testFilter(const Path& path);
 
 	Ref<FileSystemNode> m_rootNode;
     Ref<UICollectionItemModel> m_rootModel;
