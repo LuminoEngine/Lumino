@@ -41,6 +41,9 @@ const UIEventType   UIEvents::SelectionChanged = 24;
 const UIEventType	UIEvents::ExecuteCommandEvent = 201;
 const UIEventType	UIEvents::CanExecuteCommandEvent = 202;
 const UIEventType	UIEvents::CanExecuteChangedEvent = 203;
+
+const UIEventType   UIEvents::NotifyPropertyChanged = 301;
+
 const UIEventType	UIEvents::RequestVisualUpdateEvent = 101;
 const UIEventType	UIEvents::RequestVisualRedrawEvent = 102;
 
@@ -418,6 +421,60 @@ void UICommandEventArgs::init(UIElement* sender, UIEventType type, UICommand* co
     UIEventArgs::init(sender, type);
     m_command = command;
     m_canExecute = true;
+}
+
+//==============================================================================
+// UINotifyPropertyChangedEventArgs
+
+LN_OBJECT_IMPLEMENT(UINotifyPropertyChangedEventArgs, UIEventArgs) {}
+
+Ref<UINotifyPropertyChangedEventArgs> UINotifyPropertyChangedEventArgs::create(UIElement* sender, UIEventType type, const StringRef& propertyName, bool caching)
+{
+    if (caching) {
+        auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+        Ref<UINotifyPropertyChangedEventArgs> ptr(pool->create<UINotifyPropertyChangedEventArgs>(sender, type, propertyName), false);
+        return ptr;
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+Ref<UINotifyPropertyChangedEventArgs> UINotifyPropertyChangedEventArgs::create(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count, bool caching)
+{
+    if (caching) {
+        auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+        Ref<UINotifyPropertyChangedEventArgs> ptr(pool->create<UINotifyPropertyChangedEventArgs>(sender, type, action, startIndex, count), false);
+        return ptr;
+    }
+    else {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+}
+
+UINotifyPropertyChangedEventArgs::UINotifyPropertyChangedEventArgs()
+    : m_action(UICollectionChangedAction::Reset)
+{
+}
+
+void UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, const StringRef& propertyName)
+{
+    UIEventArgs::init(sender, type);
+    m_action = UICollectionChangedAction::Reset;
+    m_name = propertyName;
+    m_startIndex = 0;
+    m_count = 0;
+}
+
+void UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count)
+{
+    UIEventArgs::init(sender, type);
+    m_action = action;
+    m_name = String::Empty;
+    m_startIndex = startIndex;
+    m_count = count;
 }
 
 } // namespace ln

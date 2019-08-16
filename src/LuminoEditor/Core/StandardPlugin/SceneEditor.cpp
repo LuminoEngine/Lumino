@@ -1,4 +1,4 @@
-#include "SceneEditor.hpp"
+﻿#include "SceneEditor.hpp"
 
 void SceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {

@@ -69,6 +69,7 @@ class UIViewModel
 {
 public:
     virtual void notify(const StringRef& propertyName = StringRef());
+    virtual void notify(UINotifyPropertyChangedEventArgs* e);
 
 	void subscribe(UIElement* observer)	// TODO: connection 返すようにした方がいいかも？
 	{
@@ -344,7 +345,7 @@ public:	// TODO: internal protected
 	
     //virtual void onSetup(); // インスタンス構築直後。VisualTree や Style, Layout は構築されているとは限らない。初回 update 前に this のプロパティを設定するために使う。
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel);
-    virtual void onSourcePropertyChanged(const StringRef& name);
+    virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e);
     virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);
 

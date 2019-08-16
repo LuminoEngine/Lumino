@@ -52,6 +52,9 @@ ln::Result EditorApplication::init()
     m_workspace = ln::makeObject<lna::Workspace>();
     onInit();
 
+    m_editorContext = ln::makeObject<lna::EditorContext>();
+    m_editorContext->m_application = this;
+    m_editorContext->m_mainWindow = mainWindow();
 
     return true;
 }

@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+namespace lna {
+class EditorContext;
+}
+
 namespace ln {
 class UIFrame;
 class NavigationMenuItem;
@@ -10,6 +14,8 @@ class IEditorExtension;
 
 enum class EditorExtensionType
 {
+    Default,
+
     AssetNavigator,
 
     /** アセットをインポートするための拡張機能 */
@@ -41,6 +47,10 @@ public:
     virtual int getEditorExtensionCount() = 0;
     virtual IEditorExtension* getEditorExtension(int index) = 0;
 
+    // メインプロジェクトが開かれ、関係するプラグインがロードされたときに呼び出される
+    virtual void onActivate(lna::EditorContext* context) = 0;
+
+    virtual void onDeactivate(lna::EditorContext* context) = 0;
 };
 
 class IEditorExtension

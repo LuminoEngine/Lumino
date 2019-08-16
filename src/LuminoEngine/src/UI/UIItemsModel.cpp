@@ -72,6 +72,7 @@ Ref<UICollectionItemModel> UIFileSystemCollectionModel::setRootPath(const Path& 
 {
 	m_rootNode = makeNode(path);
     m_rootModel = makeObject<UICollectionItemModel>(this, 0, 0, nullptr, makeVariant(m_rootNode));
+    notify(UINotifyPropertyChangedEventArgs::create(nullptr, UIEvents::NotifyPropertyChanged, UICollectionChangedAction::Reset, 0, 0));
     return m_rootModel;
 }
 
@@ -83,7 +84,10 @@ void UIFileSystemCollectionModel::setExcludeFilters(List<String>* value)
 int UIFileSystemCollectionModel::getRowCount(UICollectionItemModel* index)
 {
 	auto node = getNode(index);
-	return node->children.size();
+    if (!node) 
+        return 0;
+    else
+    	return node->children.size();
 }
 
 Ref<UICollectionItemModel> UIFileSystemCollectionModel::getIndex(int row, int column, UICollectionItemModel* parent)

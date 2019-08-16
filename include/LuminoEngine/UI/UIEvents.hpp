@@ -107,7 +107,7 @@ public:
     static const UIEventType	CanExecuteCommandEvent;
     static const UIEventType	CanExecuteChangedEvent;
 
-
+    static const UIEventType    NotifyPropertyChanged;
 
 
     static const UIEventType	RequestVisualUpdateEvent;
@@ -371,6 +371,33 @@ LN_CONSTRUCT_ACCESS:
 public:
     UICommand* m_command;
     bool m_canExecute;
+};
+
+
+/** PropertyChanged と CollectionChanged 共用。プロパティの場合は Reset 固定。 */
+class UINotifyPropertyChangedEventArgs
+    : public UIEventArgs
+{
+    LN_OBJECT;
+public:
+    static Ref<UINotifyPropertyChangedEventArgs> create(UIElement* sender, UIEventType type, const StringRef& propertyName, bool caching = true);
+    static Ref<UINotifyPropertyChangedEventArgs> create(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count, bool caching = true);
+
+    UICollectionChangedAction action() const { return m_action; }
+    const String& name() const { return m_name; }
+    int startIndex() const { return m_startIndex; }
+    int count() const { return m_count; }
+
+LN_CONSTRUCT_ACCESS:
+    UINotifyPropertyChangedEventArgs();
+    void init(UIElement* sender, UIEventType type, const StringRef& propertyName);
+    void init(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count);
+
+public:
+    UICollectionChangedAction m_action;
+    String m_name;
+    int m_startIndex;
+    int m_count;
 };
 
 /**

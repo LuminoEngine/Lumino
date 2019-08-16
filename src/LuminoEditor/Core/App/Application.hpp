@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <Workspace.hpp>
+#include "EditorContext.hpp"
 
 class MainWindow;
 
@@ -36,6 +37,7 @@ private:
     void onNewProject(ln::UICommandEventArgs* e);
     void onOpenProject(ln::UICommandEventArgs* e);
 
-    ln::Ref<lna::Workspace> m_workspace;
+    Ref<lna::Workspace> m_workspace;
+    Ref<lna::EditorContext> m_editorContext;
 };
 

@@ -27,6 +27,19 @@ enum class UIVisibility : uint8_t
     Collapsed,
 };
 
+
+enum class UICollectionChangedAction
+{
+    Add,
+    Move,
+    Remove,
+    Replace,
+
+    /** コレクションの内容が大幅に変わった */
+    Reset,
+};
+
+
 namespace detail {
 
 // TODO: UI モジュールではなく共通の場所に持っていく。WorldObject も似たような管理を行う。

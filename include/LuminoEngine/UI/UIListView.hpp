@@ -39,7 +39,7 @@ protected:
     // base interface
     virtual const String& elementName() const  override { static String name = u"UIListView"; return name; }
     virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
-    virtual void onSourcePropertyChanged(const StringRef& name) override;
+    virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
     virtual Size measureOverride(const Size& constraint) override;
     virtual Size arrangeOverride(const Size& finalSize) override;
 

@@ -12,6 +12,9 @@ source_group("Sources" FILES ${LN_SOURCES_EditorCore})
 file(GLOB LN_SOURCES_StandardPlugin StandardPlugin/*.hpp StandardPlugin/*.cpp)
 source_group("StandardPlugin" FILES ${LN_SOURCES_StandardPlugin})
 
+file(GLOB LN_SOURCES_TilemapPlugin TilemapPlugin/*.hpp TilemapPlugin/*.cpp)
+source_group("TilemapPlugin" FILES ${LN_SOURCES_TilemapPlugin})
+
 file(GLOB LN_SOURCES_Controls Controls/*.hpp Controls/*.cpp)
 source_group("Controls" FILES ${LN_SOURCES_Controls})
 
@@ -23,6 +26,7 @@ set(
 	${LOCAL_HEADERS}
 	${LN_SOURCES_EditorCore}
 	${LN_SOURCES_StandardPlugin}
+	${LN_SOURCES_TilemapPlugin}
 	${LN_SOURCES_Controls}
 	${LN_SOURCES_App}
 )

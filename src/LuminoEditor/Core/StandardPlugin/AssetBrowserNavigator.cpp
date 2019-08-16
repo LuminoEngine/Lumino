@@ -12,13 +12,15 @@ void AssetBrowserTreeView::init()
 {
     UITreeView::init();
 
-    auto project = lna::Workspace::instance()->project();
 
     m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
     m_model->setExcludeFilters(ln::makeList<ln::String>({u"*.lnasset"}));
-    m_model->setRootPath(project->assetsDir());
-    //model->setRootPath(u"D:/Proj/LN/Lumino");
     setViewModel(m_model);
+}
+
+void AssetBrowserTreeView::setPath(const ln::Path & path)
+{
+    m_model->setRootPath(path);
 }
 
 Ref<ln::UITreeItem> AssetBrowserTreeView::onRenderItem(ln::UICollectionItemModel* viewModel)
@@ -39,6 +41,8 @@ Ref<ln::UITreeItem> AssetBrowserTreeView::onRenderItem(ln::UICollectionItemModel
 void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e)
 {
     UITreeView::onItemClick(item, e);
+
+#if 0
     if (e->getClickCount() == 2) {
 
         auto path = m_model->filePath(static_cast<ln::UICollectionItemModel*>(item->m_viewModel.get()));
@@ -50,6 +54,25 @@ void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArg
             EditorApplication::instance()->importFile(path);
         }
     }
+#endif
+}
+
+//==============================================================================
+// AssetBrowserListView
+
+void AssetBrowserListView::init()
+{
+    UIListView::init();
+
+    auto project = lna::Workspace::instance()->project();
+
+    m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    setViewModel(m_model);
+}
+
+void AssetBrowserListView::setPath(const ln::Path& path)
+{
+    m_model->setRootPath(path);
 }
 
 //==============================================================================
@@ -61,9 +84,25 @@ void AssetBrowserNavigatorExtension::init()
     m_navbarItemContent = ln::makeObject<ln::NavigationMenuItem>();
     m_navbarItemContent->setIconName(u"file");
 
+    m_splitter = ln::makeObject<ln::UISplitter>();
+    m_splitter->setOrientation(ln::Orientation::Vertical);
+    m_splitter->setCellDefinition(0, ln::UILayoutLengthType::Ratio, 1);
+    m_splitter->setCellDefinition(1, ln::UILayoutLengthType::Ratio, 1);
+
 	m_treeView = ln::makeObject<AssetBrowserTreeView>();
 	m_treeView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 2));
 	m_treeView->getGridLayoutInfo()->layoutRow = 0;
+    m_splitter->addElement(m_treeView);
+
+    m_listView = ln::makeObject<AssetBrowserListView>();
+    m_listView->getGridLayoutInfo()->layoutRow = 1;
+    m_listView->setBackgroundColor(ln::UIColors::get(ln::UIColorHues::Grey, 3));
+    m_splitter->addElement(m_listView);
+
+
+    auto project = lna::Workspace::instance()->project();
+    m_treeView->setPath(project->assetsDir());
+    m_listView->setPath(project->assetsDir());
 }
 
 void AssetBrowserNavigatorExtension::onAttached()
@@ -81,7 +120,7 @@ ln::NavigationMenuItem* AssetBrowserNavigatorExtension::getNavigationMenuItem()
 
 ln::UIElement* AssetBrowserNavigatorExtension::getNavigationPane()
 {
-	return m_treeView;
+	return m_splitter;
 }
 
 //

@@ -1,27 +1,27 @@
-#pragma once
+﻿#pragma once
 #include <LuminoEditor/Plugin.hpp>
 
 /*
-    �^�C���}�b�v���V�[���G�f�B�^�Ƃ��������ɋ������ĕҏW���������ǂǂ�����H
+    タイルマップをシーンエディタといい感じに協調して編集したいけどどうする？
     ----------
-    Sub-Scene �̍l�����ōs���Ă݂悤�B
-    Scene �̓v���n�u���g��Ȃ��ꍇ�A����ȃI�u�W�F�N�g�c���[�̃f�[�^�ƂȂ�ƂȂ�B
+    Sub-Scene の考え方で行ってみよう。
+    Scene はプレハブを使わない場合、巨大なオブジェクトツリーのデータとなるとなる。
     
-    �v���n�u���g���ꍇ�͂��̈ꕔ����ʂ� .lnasset �t�@�C���ɒǂ��o���A�ʂ� EditorView �ŕҏW�ł���B
+    プレハブを使う場合はその一部分を別の .lnasset ファイルに追い出せ、別の EditorView で編集できる。
     
-    �������A�v���n�u�����Ȃ��ꍇ�� View ��ҏW���� SceneEditor �̎q Editor �Ƃ��Ĉ���Ȃ����΂Ȃ�Ȃ��B
-    �Ȃ��Ȃ�AScene ��\�� AssetObject �� Tilemap ��\�� AssetObject �𕪂��邱�Ƃ͂ł��Ȃ�����B
-    �i�v���n�u������΂����񂾂��ǁc�j
-    �v���n�u������ƁAScene �p�� Tilemap �p�� 2 �̃^�u���J���K�v������A������Ɣς킵���B
-    �f�[�^�̕\���Ƃ��Ă͐������񂾂낤���ǁA�����Ɨ������Ȃ��ƍŏ��Ƃ����ɂ����B
+    しかし、プレハブ化しない場合は View を編集中の SceneEditor の子 Editor として扱わなけれればならない。
+    なぜなら、Scene を表す AssetObject と Tilemap を表す AssetObject を分けることはできないから。
+    （プレハブ化すればいいんだけど…）
+    プレハブ化すると、Scene 用と Tilemap 用で 2 つのタブを開く必要があり、ちょっと煩わしい。
+    データの表現としては正しいんだろうけど、そうと理解しないと最初とっつきにくい。
     
-    �Ȃ̂ŁASceneEditor �Ƃ����ЂƂ� View �̒��ɁA�ʂ� View �� Eclipse �̃p�[�X�y�N�e�B�u�؂�ւ��݂����ɓ���ł���悤�ɂ������B
-    �� WorldObject �̕ҏW�͊�{�I�ɉE���̃C���X�y�N�^�ōs�����ATilemap �̂悤�ɃC���X�y�N�^�ł͑���Ȃ����͕̂� View ���J���A�݂����ȁB
+    なので、SceneEditor というひとつの View の中に、別の View を Eclipse のパースペクティブ切り替えみたいに内包できるようにしたい。
+    → WorldObject の編集は基本的に右側のインスペクタで行うが、Tilemap のようにインスペクタでは足りないものは別 View を開く、みたいな。
 
     [2019/8/12]
-    ��������ƁA���������� Object �ҏW�� Ext �̈ʒu�Â��́A�C�ӂ� Editor �ɑ΂���g���A�Ƃ������ƂɂȂ�B
-    SceneEditor ���g������ TilemapEditor �Ƃ��A���邢�� Scene �łȂ��Ă��ADatabase �̃f�t�H���g�� Editor ���g��������̂Ƃ����l������B
-    ����n�̊g���́A���炩�� Editor ���J������ Manager ���猟�����āA���� Editor �ɃA�^�b�`���āA���Ƃ͕K�v�ȃ^�C�~���O�œ����Ă��炤�݂����ȓ����ɂȂ�B
+    そうすると、そういった Object 編集の Ext の位置づけは、任意の Editor に対する拡張、ということになる。
+    SceneEditor を拡張する TilemapEditor とか、あるいは Scene でなくても、Database のデフォルトの Editor を拡張するものとかも考えられる。
+    これ系の拡張は、何らかの Editor を開いたら Manager から検索して、その Editor にアタッチして、あとは必要なタイミングで動いてもらうみたいな動きになる。
 */
 class SceneEditor : public ln::AssetEditor
 {

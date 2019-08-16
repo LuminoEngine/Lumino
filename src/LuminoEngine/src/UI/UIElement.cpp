@@ -23,8 +23,14 @@ namespace ln {
 
 void UIViewModel::notify(const StringRef& propertyName)
 {
+    auto args = UINotifyPropertyChangedEventArgs::create(nullptr, UIEvents::NotifyPropertyChanged, propertyName);
+    notify(args);
+}
+
+void UIViewModel::notify(UINotifyPropertyChangedEventArgs* e)
+{
     for (auto& target : m_observers) {
-        target->onSourcePropertyChanged(propertyName);
+        target->onSourcePropertyChanged(e);
     }
 }
 
@@ -592,7 +598,7 @@ void UIElement::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldVi
     newViewModel->subscribe(this);
 }
 
-void UIElement::onSourcePropertyChanged(const StringRef& name)
+void UIElement::onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e)
 {
 }
 

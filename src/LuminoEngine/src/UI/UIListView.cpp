@@ -103,10 +103,10 @@ void UIListView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
     refresh();
 }
 
-void UIListView::onSourcePropertyChanged(const StringRef& name)
+void UIListView::onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e)
 {
-    UIItemsControl::onSourcePropertyChanged(name);
-    if (name.isEmpty()) {
+    UIItemsControl::onSourcePropertyChanged(e);
+    if (e->name().isEmpty()) {
         refresh();
     }
 }
