@@ -90,8 +90,10 @@ lna::Project* EditorApplication::mainProject() const
     return m_workspace->project();
 }
 
+// deprecated
 void EditorApplication::importFile(const ln::Path& filePath)
 {
+    assert(0);
     if (m_workspace->project())
     {
         auto exts = m_workspace->project()->pluginManager()->getAssetImporterExtensions(filePath);

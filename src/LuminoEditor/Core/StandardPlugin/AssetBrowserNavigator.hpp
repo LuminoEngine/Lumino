@@ -42,12 +42,15 @@ class AssetBrowserListView
 public:
     void init(AssetBrowserNavigatorExtension* owner);
     void setPath(const ln::Path& path);
+    const Ref<AssetBrowserListViewModel>& model() const { return m_model; }
+    const ln::Path& path() const { return m_path; }
 
 protected:
 
 private:
     AssetBrowserNavigatorExtension* m_owner;
     Ref<AssetBrowserListViewModel> m_model;
+    ln::Path m_path;
 };
 
 
@@ -69,6 +72,8 @@ protected:
 	virtual ln::UIElement* getNavigationPane() override;
 
 private:
+    void onImport(ln::UIEventArgs* e);
+
     Ref<ln::NavigationMenuItem> m_navbarItemContent;
     Ref<ln::UISplitter> m_splitter;
     Ref<AssetBrowserTreeView> m_treeView;

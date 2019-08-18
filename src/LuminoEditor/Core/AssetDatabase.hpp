@@ -11,6 +11,10 @@ public:
     // 拡張子不要
     Ref<ln::AssetModel> openAsset(const ln::Path& filePath);
 
+    // 拡張子から種類を自動判別してインポート。.lnasset を作る。
+    // パスが同じ場合はコピーしない。
+    ln::Result importAsset(const ln::Path& sourceFilePath, const ln::Path& destinationFilePath);
+
     static bool isAssetFile(const ln::Path& file);
     static bool isImportedAssetFile(const ln::Path& file);  // TODO: obsolete
     static bool isExternalFile(const ln::Path& file) { return !isImportedAssetFile(file); }

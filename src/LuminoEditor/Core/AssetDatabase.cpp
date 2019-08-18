@@ -30,6 +30,22 @@ Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
     return asset;
 }
 
+ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::Path& destinationFilePath)
+{
+    if (sourceFilePath.hasExtension("png")) {
+
+        auto texture = ln::makeObject<ln::Texture2D>(sourceFilePath);
+        auto asset = ln::makeObject<ln::AssetModel>(texture);
+        asset->saveInternal(destinationFilePath.str() + ln::AssetModel::AssetFileExtension);
+
+        if (ln::Path::compare(sourceFilePath, destinationFilePath) != 0)
+            ln::FileSystem::copyFile(sourceFilePath, destinationFilePath, ln::FileCopyOption::Overwrite);
+
+        return true;
+    }
+    return false;
+}
+
 bool AssetDatabase::isAssetFile(const ln::Path& file)
 {
     return file.hasExtension(ln::AssetModel::AssetFileExtension);

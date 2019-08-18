@@ -1,8 +1,10 @@
 ﻿
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <Workspace.hpp>
 #include <Project.hpp>
 #include <AssetDatabase.hpp>
 #include "../App/Application.hpp"
+#include "../App/MainWindow.hpp"
 #include "AssetBrowserNavigator.hpp"
 
 //==============================================================================
@@ -96,6 +98,7 @@ void AssetBrowserListView::init(AssetBrowserNavigatorExtension* owner)
 void AssetBrowserListView::setPath(const ln::Path& path)
 {
     m_model->setRootPath(path);
+    m_path = path;
 }
 
 //==============================================================================
@@ -123,6 +126,7 @@ void AssetBrowserNavigatorExtension::init()
 
     m_importButton = ln::makeObject<ln::UIButton>();
     m_importButton->setText(u"Import");
+    m_importButton->connectOnClicked(ln::bind(this, &AssetBrowserNavigatorExtension::onImport));
     m_layout2->addChild(m_importButton);
 
     m_listView = ln::makeObject<AssetBrowserListView>(this);
@@ -157,6 +161,17 @@ ln::NavigationMenuItem* AssetBrowserNavigatorExtension::getNavigationMenuItem()
 ln::UIElement* AssetBrowserNavigatorExtension::getNavigationPane()
 {
 	return m_splitter;
+}
+
+void AssetBrowserNavigatorExtension::onImport(ln::UIEventArgs* e)
+{
+    auto dlg = ln::PlatformFileOpenDialog::create();
+    if (dlg->showDialog(EditorApplication::instance()->mainWindow()->platformWindow())) {
+        auto src = dlg->getFilePath();
+        auto dst = ln::Path(m_listView->path(), src.fileName());
+        EditorApplication::instance()->mainProject()->assetDatabase()->importAsset(src, dst);
+        m_listView->model()->refresh();
+    }
 }
 
 //
