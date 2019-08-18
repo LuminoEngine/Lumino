@@ -256,8 +256,8 @@ public:
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
 
     VulkanBuffer* buffer() { return &m_buffer; }
-    VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
-    VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
+    VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
+    VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.nativeBufferMemory(); }
 
     VulkanBuffer* m_mappedResource = nullptr;
 
@@ -279,8 +279,8 @@ public:
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
 
     VulkanBuffer* buffer() { return &m_buffer; }
-    VkBuffer vulkanBuffer() const { return m_buffer.vulkanBuffer(); }
-    VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.vulkanBufferMemory(); }
+    VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
+    VkDeviceMemory vulkanDeviceMemory() const { return m_buffer.nativeBufferMemory(); }
     VkIndexType indexType() const { return m_indexType; }
 
     VulkanBuffer* m_mappedResource = nullptr;
@@ -504,7 +504,7 @@ public:
 
     const std::vector<byte_t>& data() const { return m_data; }
     VulkanBuffer* buffer() { return &m_uniformBuffer; }
-    VkBuffer vulkanBuffer() const { return m_uniformBuffer.vulkanBuffer(); }
+    VkBuffer vulkanBuffer() const { return m_uniformBuffer.nativeBuffer(); }
     uint32_t descriptorWriteInfoIndex = 0;
     uint32_t bindingIndex = 0;
 

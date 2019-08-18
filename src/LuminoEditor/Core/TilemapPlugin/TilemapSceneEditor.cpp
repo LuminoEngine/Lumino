@@ -85,6 +85,7 @@ PGMMV では統合されてたけど、大きなオブジェクトがあるときに、その後ろのタイルを選
 #include <Workspace.hpp>
 #include <Project.hpp>
 #include <AssetDatabase.hpp>
+#include <PluginManager.hpp>
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
@@ -158,6 +159,105 @@ void TilemapSceneListPane::listView_onItemClick(ln::UIClickEventArgs* e)
 }
 
 //==============================================================================
+// TilemapSceneEditor
+
+ln::Result TilemapSceneEditor::init()
+{
+    AssetEditor::init();
+    m_modePane = ln::makeObject<ln::EditorPane>();
+    m_modePane->setBackgroundColor(ln::Color::Red);
+    m_inspectorPane = ln::makeObject<ln::EditorPane>();
+    m_inspectorPane->setBackgroundColor(ln::Color::Green);
+
+    m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ m_modePane });
+    m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
+    m_toolPanes = ln::makeList<Ref<ln::EditorPane>>();
+    return true;
+}
+
+void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
+{
+    auto m_mainViewport = ln::makeObject<ln::UIViewport>();
+    frame->addElement(m_mainViewport);
+    //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
+
+
+    auto m_mainWorld = ln::makeObject<ln::World>();
+    auto m_mainCamera = ln::makeObject<ln::Camera>();
+    auto m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
+    m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+    m_mainWorldRenderView->setCamera(m_mainCamera);
+    m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+    m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
+    m_mainViewport->addRenderView(m_mainWorldRenderView);
+
+    m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
+
+    // test
+    {
+        auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4, 4);
+        sprite->setSourceRect(0, 0, 16, 16);
+        sprite->setPosition(0, 2, 0);
+        m_mainWorld->addObject(sprite);
+
+
+        auto tilemap = ln::makeObject<ln::Tilemap>();
+        tilemap->setShadingModel(ln::ShadingModel::UnLighting);
+        m_mainWorld->addObject(tilemap);
+
+
+        // TODO: test
+        auto tilesetMaterial = ln::makeObject<ln::Material>();
+        tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
+
+        auto tileset = ln::makeObject<ln::Tileset>();
+        tileset->reset(tilesetMaterial, 16, 16);
+
+        auto layer = ln::makeObject<ln::TilemapLayer>();
+        layer->resize(5, 5);
+        layer->setTileSize(ln::Size(1, 1));
+        layer->setOrientation(ln::TilemapOrientation::UpFlow);
+        layer->setTileId(0, 0, 1);
+        layer->setTileId(1, 1, 1);
+        layer->setTileId(0, 4, 1);
+        layer->setTileId(1, 4, 1);
+        layer->setTileId(2, 4, 1);
+        layer->setTileId(3, 4, 1);
+        layer->setTileId(4, 4, 1);
+        auto tilemapModel = ln::makeObject<ln::TilemapModel>();
+        tilemapModel->addTileset(tileset);
+        tilemapModel->addLayer(layer);
+        tilemap->setTilemapModel(tilemapModel);
+    }
+}
+
+void TilemapSceneEditor::onClosed()
+{
+}
+
+Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(ln::EditorPaneKind kind)
+{
+    switch (kind)
+    {
+    case ln::EditorPaneKind::Mode:
+        return m_modePanes;
+    case ln::EditorPaneKind::Inspector:
+        return m_inspectorPanes;
+    case ln::EditorPaneKind::Tool:
+        return m_toolPanes;
+    }
+    return nullptr;
+}
+
+//==============================================================================
+// TilemapSceneEditorPloxy
+
+Ref<ln::AssetEditor> TilemapSceneEditorPloxy::createEditor()
+{
+    return ln::makeObject<TilemapSceneEditor>();
+}
+
+//==============================================================================
 // TilemapSceneNavigator
 
 void TilemapSceneNavigator::init()
@@ -188,10 +288,14 @@ void TilemapSceneEditorExtensionModule::onActivate(lna::EditorContext* context)
 {
     m_navigator = ln::makeObject<TilemapSceneNavigator>();
     context->mainWindow()->navigatorManager()->addNavigator(m_navigator);
+
+    m_editorPloxy = ln::makeObject<TilemapSceneEditorPloxy>();
+    context->application()->mainProject()->pluginManager()->addAssetEditorPloxy(m_editorPloxy);
 }
 
 void TilemapSceneEditorExtensionModule::onDeactivate(lna::EditorContext* context)
 {
+    context->application()->mainProject()->pluginManager()->removeAssetEditorPloxy(m_editorPloxy);
 }
 
 } // namespace lna

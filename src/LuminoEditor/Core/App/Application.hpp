@@ -32,6 +32,7 @@ protected:
     virtual void onInit() override;
 
 private:
+    void openProject(const ln::Path& filePath);
     void closeProject();
 
     void onNewProject(ln::UICommandEventArgs* e);

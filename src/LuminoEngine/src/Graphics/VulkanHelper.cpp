@@ -977,8 +977,8 @@ void VulkanLinearAllocator::free(void* ptr) noexcept
 
 VulkanBuffer::VulkanBuffer()
     : m_deviceContext(nullptr)
-    , m_buffer(VK_NULL_HANDLE)
-    , m_bufferMemory(VK_NULL_HANDLE)
+    , m_nativeBuffer(VK_NULL_HANDLE)
+    , m_nativeBufferMemory(VK_NULL_HANDLE)
     , m_size(0)
 	, m_allocator(nullptr)
 {
@@ -986,113 +986,50 @@ VulkanBuffer::VulkanBuffer()
 
 Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
 {
-    LN_CHECK(!m_deviceContext);
 	if (LN_REQUIRE(deviceContext)) return false;
-	m_deviceContext = deviceContext;
+    dispose();
 
+	m_deviceContext = deviceContext;
+    m_size = size;
     allocator = (allocator) ? allocator : m_deviceContext->vulkanAllocator();
     m_allocator = allocator;
 
-
-    m_size = size;
+    auto device = m_deviceContext->vulkanDevice();
 
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-    LN_VK_CHECK(vkCreateBuffer(m_deviceContext->vulkanDevice(), &bufferInfo, m_allocator, &m_buffer));
-
-
+    LN_VK_CHECK(vkCreateBuffer(device, &bufferInfo, m_allocator, &m_nativeBuffer));
 
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
+    vkGetBufferMemoryRequirements(device, m_nativeBuffer, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
 
-    LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, m_allocator, &m_bufferMemory));
-
-    LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
-
-/*
-	if (!resetBuffer(size, usage)) {
-		return false;
-	}
-	if (!resetMemoryBuffer(properties, m_deviceContext->vulkanAllocator())) {
-		return false;
-	}*/
+    LN_VK_CHECK(vkAllocateMemory(device, &allocInfo, m_allocator, &m_nativeBufferMemory));
+    LN_VK_CHECK(vkBindBufferMemory(device, m_nativeBuffer, m_nativeBufferMemory, 0));
 
     return true;
 }
 
-//Result VulkanBuffer::init(VulkanDevice* deviceContext)
-//{
-//	if (LN_REQUIRE(deviceContext)) return false;
-//	m_deviceContext = deviceContext;
-//    return true;
-//}
-
-//Result VulkanBuffer::resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage)
-//{
-//	if (m_buffer) {
-//		vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, m_deviceContext->vulkanAllocator());
-//		m_buffer = VK_NULL_HANDLE;
-//	}
-//
-//	m_size = size;
-//
-//	VkBufferCreateInfo bufferInfo = {};
-//	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-//	bufferInfo.size = size;
-//	bufferInfo.usage = usage;
-//	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-//
-//	LN_VK_CHECK(vkCreateBuffer(m_deviceContext->vulkanDevice(), &bufferInfo, m_deviceContext->vulkanAllocator(), &m_buffer));
-//
-//	return true;
-//}
-//
-//Result VulkanBuffer::resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator)
-//{
-//	if (m_bufferMemory) {
-//		vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, m_allocator);
-//		m_bufferMemory = VK_NULL_HANDLE;
-//        printf("reaadcl\n");
-//	}
-//
-//	m_allocator = allocator;
-//
-//	VkMemoryRequirements memRequirements;
-//	vkGetBufferMemoryRequirements(m_deviceContext->vulkanDevice(), m_buffer, &memRequirements);
-//
-//	VkMemoryAllocateInfo allocInfo = {};
-//	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-//	allocInfo.allocationSize = memRequirements.size;
-//	m_deviceContext->findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex);
-//
-//	LN_VK_CHECK(vkAllocateMemory(m_deviceContext->vulkanDevice(), &allocInfo, m_allocator, &m_bufferMemory));
-//
-//	LN_VK_CHECK(vkBindBufferMemory(m_deviceContext->vulkanDevice(), m_buffer, m_bufferMemory, 0));
-//
-//	return true;
-//}
-
 void VulkanBuffer::dispose()
 {
+    auto device = m_deviceContext->vulkanDevice();
 	const VkAllocationCallbacks* allocator = m_allocator ? m_allocator : m_deviceContext->vulkanAllocator();
 
-    if (m_bufferMemory) {
-        vkFreeMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, allocator);
-        m_bufferMemory = VK_NULL_HANDLE;
+    if (m_nativeBufferMemory) {
+        vkFreeMemory(device, m_nativeBufferMemory, allocator);
+        m_nativeBufferMemory = VK_NULL_HANDLE;
     }
 
-    if (m_buffer) {
-        vkDestroyBuffer(m_deviceContext->vulkanDevice(), m_buffer, allocator);
-        m_buffer = VK_NULL_HANDLE;
+    if (m_nativeBuffer) {
+        vkDestroyBuffer(device, m_nativeBuffer, allocator);
+        m_nativeBuffer = VK_NULL_HANDLE;
     }
 
     m_deviceContext = nullptr;
@@ -1101,7 +1038,7 @@ void VulkanBuffer::dispose()
 void* VulkanBuffer::map()
 {
     void* mapped;
-    if (vkMapMemory(m_deviceContext->vulkanDevice(), m_bufferMemory, 0, m_size, 0, &mapped) != VK_SUCCESS) {
+    if (vkMapMemory(m_deviceContext->vulkanDevice(), m_nativeBufferMemory, 0, m_size, 0, &mapped) != VK_SUCCESS) {
         LN_LOG_ERROR << "Failed vkMapMemory";
         return nullptr;
     }
@@ -1110,7 +1047,7 @@ void* VulkanBuffer::map()
 
 void VulkanBuffer::unmap()
 {
-    vkUnmapMemory(m_deviceContext->vulkanDevice(), m_bufferMemory);
+    vkUnmapMemory(m_deviceContext->vulkanDevice(), m_nativeBufferMemory);
 }
 
 void VulkanBuffer::setData(size_t offset, const void* data, VkDeviceSize size)
@@ -1415,7 +1352,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 	// コマンドバッファに乗せる
 	VkBufferCopy copyRegion = {};
 	copyRegion.size = size;
-	vkCmdCopyBuffer(m_commandBuffer, buffer->vulkanBuffer(), destination->vulkanBuffer(), 1, &copyRegion);
+	vkCmdCopyBuffer(m_commandBuffer, buffer->nativeBuffer(), destination->nativeBuffer(), 1, &copyRegion);
 
 #if 1   // TODO: test
     VkBufferMemoryBarrier barrier = {};
@@ -1428,7 +1365,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
 
     barrier.srcQueueFamilyIndex = m_deviceContext->graphicsQueueFamilyIndex();
     barrier.dstQueueFamilyIndex = m_deviceContext->graphicsQueueFamilyIndex();
-    barrier.buffer = destination->vulkanBuffer();
+    barrier.buffer = destination->nativeBuffer();
     //barrier.offset;
     barrier.size = size;
 
@@ -1454,7 +1391,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBufferToImage(size_t size, const VkBuf
     VulkanBuffer* buffer = allocateBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
     // コマンドバッファに乗せる
-    vkCmdCopyBufferToImage(m_commandBuffer, buffer->vulkanBuffer(), destination->vulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    vkCmdCopyBufferToImage(m_commandBuffer, buffer->nativeBuffer(), destination->vulkanImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
     // 戻り先で書いてもらう
     return buffer;

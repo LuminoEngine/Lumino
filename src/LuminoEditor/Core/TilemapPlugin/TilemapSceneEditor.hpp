@@ -41,6 +41,31 @@ private:
     Ref<TilemapSceneListPane> m_sceneListPane;
 };
 
+class TilemapSceneEditor
+    : public ln::AssetEditor
+{
+public:
+    ln::Result init();
+    virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
+    virtual void onClosed() override;
+    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(ln::EditorPaneKind kind) override;
+
+private:
+    Ref<ln::EditorPane> m_modePane;
+    Ref<ln::EditorPane> m_inspectorPane;
+
+    Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;
+    Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
+    Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
+};
+
+class TilemapSceneEditorPloxy
+    : public ln::AssetEditorPloxy
+{
+public:
+    virtual ln::String targetTypeName() override { return u"Scene"; }
+    virtual Ref<ln::AssetEditor> createEditor() override;
+};
 
 class TilemapSceneEditorExtensionModule
     : public ln::Object
@@ -52,6 +77,7 @@ public:
 
 private:
     Ref<TilemapSceneNavigator> m_navigator;
+    Ref<TilemapSceneEditorPloxy> m_editorPloxy;
 };
 
 } // namespace lna 

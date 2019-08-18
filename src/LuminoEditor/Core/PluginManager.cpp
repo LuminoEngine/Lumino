@@ -72,6 +72,16 @@ void PluginManager::deactivateAllExtensions(EditorContext* context)
     }
 }
 
+void PluginManager::addAssetEditorPloxy(ln::AssetEditorPloxy* ploxy)
+{
+    m_assetEditorPloxy.add(ploxy);
+}
+
+void PluginManager::removeAssetEditorPloxy(ln::AssetEditorPloxy* ploxy)
+{
+    m_assetEditorPloxy.remove(ploxy);
+}
+
 ln::List<ln::IAssetNavigatorExtension*> PluginManager::getAssetNavigatorExtensions() const
 {
     ln::List<ln::IAssetNavigatorExtension*> result;
@@ -121,6 +131,17 @@ ln::List<std::pair<ln::IAssetEditorExtension*, Ref<ln::AssetEditor>>> PluginMana
                     }
                 }
             }
+        }
+    }
+    return result;
+}
+
+ln::List<ln::AssetEditorPloxy*> PluginManager::geAssetEditorPloxy(const ln::String& assetType) const
+{
+    ln::List<ln::AssetEditorPloxy*> result;
+    for (auto& ploxy : m_assetEditorPloxy) {
+        if (assetType == ploxy->targetTypeName()) {
+            result.add(ploxy);
         }
     }
     return result;

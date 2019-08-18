@@ -1725,7 +1725,7 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
             return false;
         }
         stagingBuffer.setData(0, initialData, bufferSize);
-        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.nativeBuffer(), vulkanBuffer(), bufferSize);
         stagingBuffer.dispose();
     }
 #else
@@ -1804,7 +1804,7 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
             return false;
         }
         stagingBuffer.setData(0, initialData, bufferSize);
-        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.nativeBuffer(), vulkanBuffer(), bufferSize);
         stagingBuffer.dispose();
     }
 
@@ -1864,7 +1864,7 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
             return false;
         }
 
-        m_deviceContext->copyBufferToImageImmediately(stagingBuffer.vulkanBuffer(), m_image.vulkanImage(), width, height);
+        m_deviceContext->copyBufferToImageImmediately(stagingBuffer.nativeBuffer(), m_image.vulkanImage(), width, height);
 
 
 		if (mipmap) {
@@ -2209,7 +2209,7 @@ void VulkanRenderTarget::readData(void* outData)
                 commandBuffer,
                 m_image->vulkanImage(),
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                destBuffer.vulkanBuffer(),
+                destBuffer.nativeBuffer(),
                 1, &region);
         }
 
@@ -2713,7 +2713,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-        info.buffer = buffer->vulkanBuffer();
+        info.buffer = buffer->nativeBuffer();
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];

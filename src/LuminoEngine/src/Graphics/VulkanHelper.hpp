@@ -326,27 +326,23 @@ public:
 
 // 頂点バッファ、インデックスバッファ、レンダーターゲット転送のための一時バッファなど、様々な目的で使用する汎用バッファ。
 class VulkanBuffer
-	//: public RefObject
 {
 public:
     VulkanBuffer();
     Result init(VulkanDevice* deviceContext, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
-	//Result init(VulkanDevice* deviceContext);
-	//Result resetBuffer(VkDeviceSize size, VkBufferUsageFlags usage);
-	//Result resetMemoryBuffer(VkMemoryPropertyFlags properties, const VkAllocationCallbacks* allocator);
     void dispose();
     VulkanDevice* deviceContext() const { return m_deviceContext; }
+    VkBuffer nativeBuffer() const { return m_nativeBuffer; }
+    VkDeviceMemory nativeBufferMemory() const { return m_nativeBufferMemory; }
     VkDeviceSize size() const { return m_size; }
-    VkBuffer vulkanBuffer() const { return m_buffer; }
-    VkDeviceMemory vulkanBufferMemory() const { return m_bufferMemory; }
     void* map();
     void unmap();
     void setData(size_t offset, const void* data, VkDeviceSize size);
 
 private:
     VulkanDevice* m_deviceContext;
-    VkBuffer m_buffer;
-    VkDeviceMemory m_bufferMemory;
+    VkBuffer m_nativeBuffer;
+    VkDeviceMemory m_nativeBufferMemory;
     VkDeviceSize m_size;
 	const VkAllocationCallbacks* m_allocator;	// CommandBuffer が使用する一時メモリは Device とは Allocator が異なる
 };

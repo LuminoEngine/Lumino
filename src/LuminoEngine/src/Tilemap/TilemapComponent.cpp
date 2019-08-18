@@ -28,22 +28,6 @@ TilemapComponent::~TilemapComponent()
 void TilemapComponent::init()
 {
     VisualComponent::init();
-
-    auto tileset = makeObject<Tileset>();
-    auto layer = makeObject<TilemapLayer>();
-    layer->resize(5, 5);
-    layer->setTileSize(Size(1, 1));
-    layer->setOrientation(TilemapOrientation::UpFlow);
-    layer->setTileId(0, 0, 1);
-    layer->setTileId(1, 1, 1);
-    layer->setTileId(0, 4, 1);
-    layer->setTileId(1, 4, 1);
-    layer->setTileId(2, 4, 1);
-    layer->setTileId(3, 4, 1);
-    layer->setTileId(4, 4, 1);
-    m_tilemapModel = makeObject<TilemapModel>();
-    m_tilemapModel->addTileset(tileset);
-    m_tilemapModel->addLayer(layer);
 }
 
 void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)

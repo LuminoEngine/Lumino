@@ -56,6 +56,9 @@ ln::Result EditorApplication::init()
     m_editorContext->m_application = this;
     m_editorContext->m_mainWindow = mainWindow();
 
+    // TODO: test
+    openProject(u"D:/Proj/LN/PrivateProjects/HC0/HC0.lnproj");
+
     return true;
 }
 
@@ -111,13 +114,13 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
     if (m_workspace->project())
     {
         auto asset = m_workspace->project()->assetDatabase()->openAsset(filePath);
-        auto exts = m_workspace->project()->pluginManager()->geAssetEditorExtensions(asset->assetType());
-        if (exts.size() != 1) {
+        auto proxies = m_workspace->project()->pluginManager()->geAssetEditorPloxy(asset->assetType());
+        if (proxies.size() != 1) {
             LN_NOTIMPLEMENTED();
             return;
         }
 
-        auto editor = exts[0].second;
+        auto editor = proxies[0]->createEditor();
         mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
     }
 }
@@ -144,6 +147,30 @@ void EditorApplication::onInit()
     ln::Engine::mainUIContext()->styleContext()->addStyleSheet(sheet);
 }
 
+void EditorApplication::openProject(const ln::Path& filePath)
+{
+    closeProject();
+
+    m_workspace->openProject2(filePath);
+
+    mainWindow()->navigatorManager()->resetNavigators();
+
+    mainProject()->pluginManager()->activateAllExtensions(m_editorContext);
+
+    //mainWindow()->mainHSplitter()->resetCellSize(0);
+
+    //m_contentsViewManager->setup(m_workspace->project(), "ARPG-HC0");
+
+    //m_assetBrowserContentsViewProvider = new AssetBrowserContentsViewProvider(m_workspace->project(), this);
+    //m_contentsViewManager->addContentsViewProvider(m_assetBrowserContentsViewProvider);
+
+    ////m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(m_workspace->project(), this);
+    ////m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
+
+    //m_audioContentsViewProvider->view()->setRootDir(
+    //    LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));
+}
+
 void EditorApplication::closeProject()
 {
 }
@@ -158,26 +185,7 @@ void EditorApplication::onOpenProject(ln::UICommandEventArgs* e)
     if (dlg->showDialog(mainWindow()->platformWindow())) {
         auto filePath = dlg->getFilePath();
         if (!filePath.isEmpty()) {
-            closeProject();
-
-            m_workspace->openProject2(filePath);
-
-            mainWindow()->navigatorManager()->resetNavigators();
-
-            mainProject()->pluginManager()->activateAllExtensions(m_editorContext);
-
-            //mainWindow()->mainHSplitter()->resetCellSize(0);
-
-            //m_contentsViewManager->setup(m_workspace->project(), "ARPG-HC0");
-
-            //m_assetBrowserContentsViewProvider = new AssetBrowserContentsViewProvider(m_workspace->project(), this);
-            //m_contentsViewManager->addContentsViewProvider(m_assetBrowserContentsViewProvider);
-
-            ////m_spritesetContentsViewProvider = new SpritesetContentsViewProvider(m_workspace->project(), this);
-            ////m_contentsViewManager->addContentsViewProvider(m_spritesetContentsViewProvider);
-
-            //m_audioContentsViewProvider->view()->setRootDir(
-            //    LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));
+            openProject(filePath);
         }
     }
 }

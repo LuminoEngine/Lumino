@@ -106,6 +106,15 @@ public:
 };
 
 
+class AssetEditorPloxy : public ln::Object
+{
+public:
+    virtual ln::String targetTypeName() = 0;
+    virtual Ref<AssetEditor> createEditor() = 0;
+};
+
+
+
 enum class AssetEditorViewType
 {
     Scene,
