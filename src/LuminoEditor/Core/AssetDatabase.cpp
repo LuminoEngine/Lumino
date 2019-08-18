@@ -1,4 +1,6 @@
 ﻿
+#include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../LuminoEngine/src/Asset/AssetManager.hpp"
 #include "Project.hpp"
 #include "AssetDatabase.hpp"
 
@@ -33,8 +35,10 @@ Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
 ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::Path& destinationFilePath)
 {
     if (sourceFilePath.hasExtension("png")) {
-
         auto texture = ln::makeObject<ln::Texture2D>(sourceFilePath);
+        texture->setAssetId(ln::Uuid::generate());
+        texture->setAssetSource(destinationFilePath.fileName());
+
         auto asset = ln::makeObject<ln::AssetModel>(texture);
         asset->saveInternal(destinationFilePath.str() + ln::AssetModel::AssetFileExtension);
 
@@ -67,15 +71,7 @@ bool AssetDatabase::isImportedAssetFile(const ln::Path& file)
 
 ln::Result AssetDatabase::init(Project* owner)
 {
-    // TODO: 量が多くなると重くなるのでインデックス作成スレッド建てたい
-    auto assetFiles = ln::FileSystem::getFiles(owner->assetsDir(), u"*.lnasset", ln::SearchOption::Recursive);
-    for (auto asset : assetFiles) {
-        auto id = ln::AssetModel::readAssetId(asset);
-        if (!id.isEmpty()) {
-            m_assetIndex[id] = asset;
-        }
-    }
-         
+    ln::detail::EngineDomain::assetManager()->buildAssetIndexFromLocalFiles(owner->assetsDir());
 
     return true;
 }

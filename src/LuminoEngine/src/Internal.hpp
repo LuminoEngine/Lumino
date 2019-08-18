@@ -6,4 +6,5 @@
 #define LN_PROTECTED_INTERNAL_ACCESS public
 #include <LuminoCore.hpp>
 #include <LuminoEngine/Engine/Object.hpp>
+#include <LuminoEngine/Engine/Property.hpp>
 #include "Engine/EngineDomain.hpp"

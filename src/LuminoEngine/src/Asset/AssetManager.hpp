@@ -31,16 +31,20 @@ public:
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
     Ref<Shader> loadShader(const StringRef& filePath);
 
+    // TODO: for develop & debug
+    void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
 
 private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
-	Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount);
+	Ref<Stream> openFileStreamInternalFromIndex(const StringRef& id);
+    Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
 
     List<Ref<AssetArchive>> m_requestedArchives;
 	List<AssetArchive*> m_actualArchives;
 	AssetStorageAccessPriority m_storageAccessPriority;
+    std::unordered_map<ln::Uuid, ln::Path> m_assetIndex;
 };
 
 } // namespace detail

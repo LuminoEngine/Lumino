@@ -178,6 +178,9 @@ void GraphicsManager::init(const Settings& settings)
 		m_defaultSamplerState->setFrozen(true);
 	}
 
+
+    EngineDomain::registerType<Texture2D>();
+
     LN_LOG_DEBUG << "GraphicsManager Initialization ended.";
 }
 

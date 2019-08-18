@@ -3,6 +3,7 @@
 #include "../../LuminoCore/src/IO/PathHelper.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Asset/AssetObject.hpp>
 #include "AssetArchive.hpp"
 #include "AssetManager.hpp"
 
@@ -102,7 +103,10 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
         u".png",
     };
 
-    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+    Ref<Stream> stream = openFileStreamInternalFromIndex(filePath);
+    if (!stream) {
+        openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+    }
 
 	// TODO: cache
 
@@ -125,6 +129,20 @@ Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
 
     auto ref = makeObject<Shader>(Path(filePath).fileNameWithoutExtension(), stream);
     return ref;
+}
+
+void AssetManager::buildAssetIndexFromLocalFiles(const ln::Path& assetDir)
+{
+    m_assetIndex.clear();
+
+    // TODO: 量が多くなると重くなるのでインデックス作成スレッド建てたい
+    auto assetFiles = ln::FileSystem::getFiles(assetDir, u"*.lnasset", ln::SearchOption::Recursive);
+    for (auto asset : assetFiles) {
+        auto id = AssetModel::readAssetId(asset);
+        if (!id.isEmpty()) {
+            m_assetIndex[id] = asset;
+        }
+    }
 }
 
 void AssetManager::refreshActualArchives()
@@ -186,6 +204,17 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 	}
 
 	return false;
+}
+
+Ref<Stream> AssetManager::openFileStreamInternalFromIndex(const StringRef& id)
+{
+    auto itr = m_assetIndex.find(Uuid(id));
+    if (itr != m_assetIndex.end()) {
+        return FileStream::create(itr->second);
+    }
+    else {
+        return nullptr;
+    }
 }
 
 Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount)

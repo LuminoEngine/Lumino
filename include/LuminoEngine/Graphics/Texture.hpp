@@ -111,14 +111,19 @@ public:
 
     void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 
+    // TODO: internal
+    void setAssetSource(const Path& path) { m_assetSource = path; }
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
     virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
+    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();
     virtual ~Texture2D();
+    void init();
 
     /** @copydoc create(int, int) */
     LN_METHOD()
@@ -140,6 +145,7 @@ private:
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
+    Path m_assetSource;
     void* m_rhiLockedBuffer;
     bool m_initialUpdate;
     bool m_modified;

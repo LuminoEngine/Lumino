@@ -56,7 +56,10 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
-LN_OBJECT_IMPLEMENT(Texture2D, Texture) {}
+LN_OBJECT_IMPLEMENT(Texture2D, Texture)
+{
+    context->registerType<Texture2D>({});
+}
 
 Ref<Texture2D> Texture2D::create(int width, int height)
 {
@@ -88,6 +91,11 @@ Texture2D::~Texture2D()
 {
 }
 
+void Texture2D::init()
+{
+    Texture::init();
+}
+
 void Texture2D::init(int width, int height)
 {
     init(width, height, TextureFormat::RGBA8);
@@ -97,7 +105,7 @@ void Texture2D::init(int width, int height, TextureFormat format)
 {
     width = std::max(1, width);
     height = std::max(1, height);
-    Texture::init();
+    init();
     m_bitmap = makeObject<Bitmap2D>(width, height, GraphicsHelper::translateToPixelFormat(format));
     m_initialUpdate = true;
     m_modified = true;
@@ -109,6 +117,7 @@ void Texture2D::init(const StringRef& filePath, TextureFormat format)
     auto bitmap = makeObject<Bitmap2D>();
     bitmap->load(filePath);
     init(bitmap, format);
+    m_assetSource = ln::Path(filePath);
 }
 
 void Texture2D::init(Stream* stream, TextureFormat format)
@@ -121,7 +130,7 @@ void Texture2D::init(Stream* stream, TextureFormat format)
 void Texture2D::init(Bitmap2D* bitmap, TextureFormat format)
 {
     m_bitmap = bitmap;
-    Texture::init();
+    init();
 
     detail::TextureInternal::setDesc(this, m_bitmap->width(), m_bitmap->height(), format);
     // TODO: check and convert format
@@ -249,6 +258,13 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
     m_modified = false;
     return m_rhiObject;
 }
+
+void Texture2D::serialize(Archive& ar)
+{
+    Texture::serialize(ar);
+    ar & makeNVP(u"Source", m_assetSource);
+}
+
 
 //==============================================================================
 // RenderTargetTexture

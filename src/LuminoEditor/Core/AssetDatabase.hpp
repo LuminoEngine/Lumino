@@ -29,7 +29,6 @@ public:// TODO:
     ln::Result init(Project* owner);
 
     Project* m_ownerProject;
-    std::unordered_map<ln::Uuid, ln::Path> m_assetIndex;
 };
 
 } // namespace lna

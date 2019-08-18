@@ -196,6 +196,9 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 
     // TODO: test
     {
+        editorContext()->mainProject()->assetDatabase()->importAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png", "D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png");
+
+
         auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4, 4);
         sprite->setSourceRect(0, 0, 16, 16);
         sprite->setPosition(0, 2, 0);
@@ -209,7 +212,8 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
         m_mainWorldAsset->addChild(tilemapAsset);
 
         auto tilesetMaterial = ln::makeObject<ln::Material>();
-        tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
+        //tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
+        tilesetMaterial->setMainTexture(ln::Assets::loadTexture(u"32066696-1621-4EED-820D-535BB2F22A9D"));
 
         auto tileset = ln::makeObject<ln::Tileset>();
         tileset->reset(tilesetMaterial, 16, 16);
