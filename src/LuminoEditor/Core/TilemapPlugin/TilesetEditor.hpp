@@ -6,6 +6,12 @@ class NavigationBarItem;
 
 namespace lna {
 
+class TilesetListModel
+    : public ln::UIFileSystemCollectionModel
+{
+protected:
+    virtual bool onTestFilter(const ln::Path& path) override { return path.hasExtension(ln::AssetModel::AssetFileExtension); }
+};
 
 class TilesetListPane
     : public ln::UIControl
@@ -17,7 +23,7 @@ private:
     void addButton_onClick(ln::UIEventArgs* e);
     void listView_onItemClick(ln::UIClickEventArgs* e);
 
-    Ref<ln::UIFileSystemCollectionModel> m_model;
+    Ref<TilesetListModel> m_model;
     Ref<ln::UIListView> m_listview;
     ln::Path m_assetRootDir;
 };

@@ -70,8 +70,6 @@ public:
 
     void refresh();
 
-
-
 LN_CONSTRUCT_ACCESS:
 	UIFileSystemCollectionModel();
 	void init();
