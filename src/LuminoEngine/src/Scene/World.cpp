@@ -14,6 +14,12 @@ namespace ln {
 //==============================================================================
 // World
 
+LN_OBJECT_IMPLEMENT(World, Object)
+{
+    context->registerType<World>({/*
+        makeRef<PropertyInfo>("TimeScale", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(World, float, timeScale, setTimeScale)),*/ });
+}
+
 World::World()
 	: m_rootWorldObjectList(makeList<Ref<WorldObject>>())
     , m_timeScale(1.0f)
@@ -156,6 +162,13 @@ void World::onPostUpdate(float elapsedSeconds)
 		m_rootWorldObjectList->remove(obj);
 	}
 	m_destroyList.clear();
+}
+
+void World::serialize(Archive& ar)
+{
+    Object::serialize(ar);
+
+    ar & ln::makeNVP(u"Children", *m_rootWorldObjectList);
 }
 
 detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* viewPoint)

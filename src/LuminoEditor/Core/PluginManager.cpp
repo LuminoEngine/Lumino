@@ -3,7 +3,7 @@
 #include "StandardPlugin/AssetBrowserNavigator.hpp"
 #include "StandardPlugin/StandardPluginModule.hpp"
 #include "TilemapPlugin/TilesetEditor.hpp"
-#include "TilemapPlugin/TilemapSceneEditor.hpp"
+#include "TilemapSceneExtension/TilemapSceneEditor.hpp"
 
 namespace lna {
 

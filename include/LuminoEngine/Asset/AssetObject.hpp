@@ -22,6 +22,20 @@ class AssetProperty;
 //   - AssetModel を派生して使うことはない。
 // - 基本的な使い方も SerializedObject と同じく、update -> プロパティset -> apply がワンセット。
 //   - apply で Undo スタックに変更履歴が詰まれる。これにより複数のプロパティをまとめてひとつの undo に入れることも可能。
+// - Target がプロパティとして持っている Object は、基本的に別 Asset を示す GUID で保存される。
+//   - 別 Asset ファイルに保存したくない場合は、各 Object の serialize を実装する。（RigidBody の Shapes とかはこれになる）
+//   - というか、C++ でリフレクションは相当厳しいので、まずは基本方針 serialize 実装かな。ちなみに Urho3D は Save/Load で行っている。
+/*
+    [2019/8/18] 保存について
+    ----------
+    AssetModel では保存まで面倒見ないほうがいいかも。
+    このあたりのやり方は Urho3D あたりが参考になるが、ひとまず泥臭くいくしかないかなというところ。
+
+    なので、ランタイム実行時にシーンロードするときなど、load のためだけに一時的な AssetModel をたくさん作る必要はない。
+    （ルートだけは必要。IDとかをシリアライズする必要があるので）
+
+    現時点では loadInternal とか持っているが、後で消す。
+*/
 class AssetModel
     : public Object
 {
@@ -41,7 +55,12 @@ public:
 
 	Ref<AssetProperty> findProperty(const String& path);
 
-    
+    void addChild(AssetModel* model);
+    void removeChild(AssetModel* model);
+    const List<Ref<AssetModel>> children() const { return m_children; }
+
+    void setId(const Uuid& id) { m_id = id; }
+    const Uuid& setId() const { return m_id; }
 
     // TODO: internal
     ln::Result loadInternal(const ln::Path& filePath);
@@ -59,6 +78,7 @@ private:
 	Ref<Object> m_target;
     Ref<AssetModel> m_parent;
     List<Ref<AssetModel>> m_children;
+    Uuid m_id;
 };
 
 class AssetProperty

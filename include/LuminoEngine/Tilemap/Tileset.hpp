@@ -25,8 +25,9 @@ public:
     void setTilePixelSize(int width, int height);
     void setTileImageRect(int tileId, int x, int y, int width, int height);
 
-    //int tilePixelWidth() const { return m_tilePixelWidth; }
-    //int tilePixelHeight() const { return m_tilePixelHeight; }
+    int tilePixelWidth() const { return m_tilePixelWidth; }
+    int tilePixelHeight() const { return m_tilePixelHeight; }
+    Material* material() const;
 
     void setMaterial(Material* material);
 
@@ -46,8 +47,8 @@ private:
 
     void resetInfo();
 
-    //int m_tilePixelWidth;
-    //int m_tilePixelHeight;
+    int m_tilePixelWidth;
+    int m_tilePixelHeight;
     //int m_horizontalTileCount;
     //Size m_tileUVSize;
     std::vector<Tile> m_tiles;

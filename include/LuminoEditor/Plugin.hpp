@@ -135,6 +135,11 @@ public:
     virtual void onActivate() {}
 
     virtual Ref<List<Ref<EditorPane>>> getEditorPanes(EditorPaneKind kind) { return nullptr; }
+
+    lna::EditorContext* editorContext() const { return m_editorContext; }
+
+public: // TODO: internal
+    lna::EditorContext* m_editorContext;
 };
 
 using GetModuleClassFunc = ::ln::IPluginModule*();

@@ -19,8 +19,8 @@ Ref<Tileset> Tileset::create()
 }
 
 Tileset::Tileset()
-    //: m_tilePixelWidth(32)
-    //, m_tilePixelHeight(32)
+    : m_tilePixelWidth(32)
+    , m_tilePixelHeight(32)
     //: m_tileScale(1.0f)
 {
 }
@@ -58,8 +58,8 @@ void Tileset::resize(int tileCount)
 
 void Tileset::setTilePixelSize(int width, int height)
 {
-    //m_tilePixelWidth = width;
-    //m_tilePixelHeight = height;
+    m_tilePixelWidth = width;
+    m_tilePixelHeight = height;
     //resetInfo();
     m_tileScale.x = 1.0f / width;
     m_tileScale.y = 1.0f / height;
@@ -68,6 +68,11 @@ void Tileset::setTilePixelSize(int width, int height)
 void Tileset::setTileImageRect(int tileId, int x, int y, int width, int height)
 {
     m_tiles[tileId].sourceRect.set(x, y, width, height);
+}
+
+Material* Tileset::material() const
+{
+    return m_material;
 }
 
 void Tileset::setMaterial(Material* material)

@@ -5,12 +5,13 @@
 #include "Application.hpp"
 
 namespace lna {
-//
-//void EditorContext::activateAllExtensions()
-//{
-//    m_application->mainProject()->pluginManager()->
-//}
-//
+
+
+Project* EditorContext::mainProject() const
+{
+    return application()->mainProject();
+}
+
 //void EditorContext::deactivateAllExtensions()
 //{
 //}

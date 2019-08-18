@@ -5,6 +5,7 @@
 
 
 namespace lna {
+class TilemapSceneModePane;
 
 class TilemapSceneListModel
     : public ln::UIFileSystemCollectionModel
@@ -51,7 +52,7 @@ public:
     virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(ln::EditorPaneKind kind) override;
 
 private:
-    Ref<ln::EditorPane> m_modePane;
+    Ref<TilemapSceneModePane> m_modePane;
     Ref<ln::EditorPane> m_inspectorPane;
 
     Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;

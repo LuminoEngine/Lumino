@@ -46,6 +46,14 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
     return false;
 }
 
+ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePath)
+{
+    auto t = ln::AssetModel::create(asset);
+    ln::String json = ln::JsonSerializer::serialize(*t, ln::JsonFormatting::Indented);
+    ln::FileSystem::writeAllText(filePath, json);
+    return true;
+}
+
 bool AssetDatabase::isAssetFile(const ln::Path& file)
 {
     return file.hasExtension(ln::AssetModel::AssetFileExtension);

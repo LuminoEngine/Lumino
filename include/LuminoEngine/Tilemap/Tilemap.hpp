@@ -8,6 +8,7 @@ class TilemapComponent;
 class Tilemap
 	: public VisualObject
 {
+    LN_OBJECT;
 public:
     static Ref<Tilemap> create();
 

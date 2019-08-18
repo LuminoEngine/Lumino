@@ -121,6 +121,7 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
         }
 
         auto editor = proxies[0]->createEditor();
+        editor->m_editorContext = m_editorContext;
         mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
     }
 }

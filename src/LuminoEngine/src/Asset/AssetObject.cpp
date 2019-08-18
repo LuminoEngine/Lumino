@@ -52,9 +52,10 @@ ln::Result AssetModel::saveInternal(const ln::Path& filePath)
 
 void AssetModel::serialize(Archive& ar)
 {
+    ar & makeNVP(u"Id", m_id);
     ar & makeNVP(u"AssetType", m_assetType);
     ar & makeNVP(u"Object", m_target);
-    ar & makeNVP(u"Children", m_children);
+    //ar & makeNVP(u"Children", m_children);
 }
 
 Object* AssetModel::target() const
@@ -73,6 +74,16 @@ Ref<AssetProperty> AssetModel::findProperty(const String& path)
 	else {
 		return makeObject<AssetProperty>(ref);
 	}
+}
+
+void AssetModel::addChild(AssetModel* model)
+{
+    m_children.add(model);
+}
+
+void AssetModel::removeChild(AssetModel* model)
+{
+    m_children.remove(model);
 }
 
 

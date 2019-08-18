@@ -15,6 +15,9 @@ public:
     // パスが同じ場合はコピーしない。
     ln::Result importAsset(const ln::Path& sourceFilePath, const ln::Path& destinationFilePath);
 
+    // 拡張子不要
+    ln::Result createAsset(ln::Object* asset, const ln::Path& filePath);
+
     static bool isAssetFile(const ln::Path& file);
     static bool isImportedAssetFile(const ln::Path& file);  // TODO: obsolete
     static bool isExternalFile(const ln::Path& file) { return !isImportedAssetFile(file); }

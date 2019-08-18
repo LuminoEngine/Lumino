@@ -90,7 +90,7 @@ PGMMV では統合されてたけど、大きなオブジェクトがあるときに、その後ろのタイルを選
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
 #include "TilemapSceneEditor.hpp"
-
+#include "TilemapSceneModePane.hpp"
 
 
 namespace lna {
@@ -164,12 +164,11 @@ void TilemapSceneListPane::listView_onItemClick(ln::UIClickEventArgs* e)
 ln::Result TilemapSceneEditor::init()
 {
     AssetEditor::init();
-    m_modePane = ln::makeObject<ln::EditorPane>();
-    m_modePane->setBackgroundColor(ln::Color::Red);
+    m_modePane = ln::makeObject<TilemapSceneModePane>();
     m_inspectorPane = ln::makeObject<ln::EditorPane>();
     m_inspectorPane->setBackgroundColor(ln::Color::Green);
 
-    m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ m_modePane });
+    m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_modePane) });
     m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
     m_toolPanes = ln::makeList<Ref<ln::EditorPane>>();
     return true;
@@ -183,6 +182,8 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 
 
     auto m_mainWorld = ln::makeObject<ln::World>();
+    auto m_mainWorldAsset = ln::AssetModel::create(m_mainWorld);
+
     auto m_mainCamera = ln::makeObject<ln::Camera>();
     auto m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
     m_mainWorldRenderView->setTargetWorld(m_mainWorld);
@@ -193,7 +194,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 
     m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
 
-    // test
+    // TODO: test
     {
         auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4, 4);
         sprite->setSourceRect(0, 0, 16, 16);
@@ -202,11 +203,11 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 
 
         auto tilemap = ln::makeObject<ln::Tilemap>();
+        auto tilemapAsset = ln::AssetModel::create(tilemap);
         tilemap->setShadingModel(ln::ShadingModel::UnLighting);
         m_mainWorld->addObject(tilemap);
+        m_mainWorldAsset->addChild(tilemapAsset);
 
-
-        // TODO: test
         auto tilesetMaterial = ln::makeObject<ln::Material>();
         tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
 
@@ -228,7 +229,11 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
         tilemapModel->addTileset(tileset);
         tilemapModel->addLayer(layer);
         tilemap->setTilemapModel(tilemapModel);
+
+        m_modePane->setTileset(tileset);
     }
+
+    editorContext()->mainProject()->assetDatabase()->createAsset(m_mainWorld, u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/test.lnasset");
 }
 
 void TilemapSceneEditor::onClosed()

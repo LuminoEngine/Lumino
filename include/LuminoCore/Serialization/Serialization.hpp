@@ -543,50 +543,7 @@ private:
 		m_nodeInfoStack.back().classVersion = getClassVersion<TValue>();
 	}
 
-	void popNodeWrite()
-	{
-		// 空の serialize を呼び出した場合、state は変わっていない。
-		// 空の Object として扱いたいので、ここで Object 状態にしておく。
-		if (m_nodeInfoStack.back().headState == NodeHeadState::Ready) {
-			moveState(NodeHeadState::Object);
-		}
-
-		if (m_nodeInfoStack.size() >= 2 && m_nodeInfoStack[m_nodeInfoStack.size() - 2].headState == NodeHeadState::WrapperObject) {
-		}
-		else {
-			// serialize が空実装ではないが、makeArrayTag など Tag 設定だけして子値の process を行わなかった場合はコンテナ開始タグが書き込まれていないため、ここで書き込む。
-			if (m_nodeInfoStack.back().headState == NodeHeadState::Object ||
-				m_nodeInfoStack.back().headState == NodeHeadState::Array) {
-				if (!m_nodeInfoStack.back().containerOpend) {
-					preWriteValue();
-				}
-			}
-		}
-
-		//bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::PrimitiveValue);
-        bool containerOpend = m_nodeInfoStack.back().containerOpend;
-        NodeHeadState nodeType = m_nodeInfoStack.back().headState;
-
-		m_nodeInfoStack.pop_back();
-
-		// Close containers
-        if (containerOpend)
-		{
-			if (nodeType == NodeHeadState::Object || nodeType == NodeHeadState::WrapperObject) {
-				m_store->writeObjectEnd();
-			}
-			else if (nodeType == NodeHeadState::Array) {
-				m_store->writeArrayEnd();
-			}
-            else {
-                LN_UNREACHABLE();
-            }
-		}
-
-		if (!m_nodeInfoStack.empty()) {
-			m_nodeInfoStack.back().nextBaseCall = false;
-		}
-	}
+    void popNodeWrite();
 
 	void writeClassVersion()
 	{

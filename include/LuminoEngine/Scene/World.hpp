@@ -21,6 +21,7 @@ class WorldSceneGraphRenderingContext;
 class World
 	: public Object
 {
+    LN_OBJECT;
 public:
     /** オブジェクトを World に追加します。 */
     void addObject(WorldObject* obj);
@@ -32,6 +33,7 @@ public:
 	ReadOnlyList<Ref<WorldObject>>* rootObjects() const;
 
     void setTimeScale(float value) { m_timeScale = value; }
+    float timeScale() const { return m_timeScale; }
 
 protected:
     // update sequence
@@ -40,6 +42,9 @@ protected:
     virtual void onUpdate(float elapsedSeconds);
     virtual void onInternalAnimationUpdate(float elapsedSeconds);
     virtual void onPostUpdate(float elapsedSeconds);
+
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	World();
