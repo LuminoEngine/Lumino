@@ -164,6 +164,8 @@ void EditorApplication::onOpenProject(ln::UICommandEventArgs* e)
 
             mainWindow()->navigatorManager()->resetNavigators();
 
+            mainProject()->pluginManager()->activateAllExtensions(m_editorContext);
+
             //mainWindow()->mainHSplitter()->resetCellSize(0);
 
             //m_contentsViewManager->setup(m_workspace->project(), "ARPG-HC0");

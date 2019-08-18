@@ -9,11 +9,21 @@
 //==============================================================================
 // NavigationBarItem
 
-void NavigationBarItem::init(NavigatorManager* manager, ln::IAssetNavigatorExtension* navigator)
+void NavigationBarItem::init(NavigatorManager* manager, Navigator* navigator)
 {
 	UICollectionItem::init();
 	m_navigatorManager = manager;
 	m_navigator = navigator;
+}
+
+void NavigationBarItem::addIcon(const ln::StringRef& iconName)
+{
+    auto icon = ln::makeObject<ln::UIIcon>();
+    icon->setIconName(iconName);
+    icon->setHorizontalAlignment(ln::HAlignment::Center);
+    icon->setVerticalAlignment(ln::VAlignment::Center);
+    icon->setFontSize(24);
+    addElement(icon);
 }
 
 void NavigationBarItem::onSelected(ln::UIEventArgs* e)
@@ -44,21 +54,44 @@ void NavigationBar::init(NavigatorManager* manager)
     //setVerticalContentAlignment(ln::VAlignment::Center);
 }
 
-void NavigationBar::addItem(ln::IAssetNavigatorExtension* ext)
+void NavigationBar::addNavigator(Navigator* navigator)
 {
+    //auto item = navigator->getNavigationMenuItem();
+    //item->setWidth(ItemSize);
+    //item->setHeight(ItemSize);
+
+    //UIItemsControl::addItem(item);
+
+
     // TODO: ContentAlignment でカバーしたい
-	ln::UIElement* element = ext->getNavigationMenuItem();
+    ln::UIElement* element = navigator->getNavigationMenuItem();
     element->setHorizontalAlignment(ln::HAlignment::Center);
     element->setVerticalAlignment(ln::VAlignment::Center);
     element->setFontSize(24);
-
-	auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, ext);
-	item->addElement(element);
+    
+    auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, navigator);
+    item->addElement(element);
     item->setWidth(ItemSize);
     item->setHeight(ItemSize);
-
-	UIItemsControl::addItem(item);
+    
+    UIItemsControl::addItem(item);
 }
+
+//void NavigationBar::addItem(ln::IAssetNavigatorExtension* ext)
+//{
+//    // TODO: ContentAlignment でカバーしたい
+//	ln::UIElement* element = ext->getNavigationMenuItem();
+//    element->setHorizontalAlignment(ln::HAlignment::Center);
+//    element->setVerticalAlignment(ln::VAlignment::Center);
+//    element->setFontSize(24);
+//
+//	auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, ext);
+//	item->addElement(element);
+//    item->setWidth(ItemSize);
+//    item->setHeight(ItemSize);
+//
+//	UIItemsControl::addItem(item);
+//}
 
 ////==============================================================================
 //// Navigator
@@ -107,23 +140,30 @@ void NavigatorManager::resetNavigators()
     //m_layout->addChild(m_assetBrowserNavigator->createView());
 
 
-    auto exts = EditorApplication::instance()->mainProject()->pluginManager()->getAssetNavigatorExtensions();
-    for (auto& ext : exts) {
-        ext->onAttached();
-        m_navigationBar->addItem(ext);
-		m_switchLayout->addChild(ext->getNavigationPane());
-		m_navigators.add(ext);
-    }
+  //  auto exts = EditorApplication::instance()->mainProject()->pluginManager()->getAssetNavigatorExtensions();
+  //  for (auto& ext : exts) {
+  //      ext->onAttached();
+  //      m_navigationBar->addItem(ext);
+		//m_switchLayout->addChild(ext->getNavigationPane());
+		//m_navigators.add(ext);
+  //  }
 
 	if (!m_navigators.isEmpty()) {
 		setCurrent(m_navigators[0]);
 	}
 }
 
-void NavigatorManager::setCurrent(ln::IAssetNavigatorExtension* nav)
+void NavigatorManager::addNavigator(Navigator* navigator)
 {
-	int index = m_navigators.indexOf(nav);
-    if (nav) {
+    m_navigationBar->addNavigator(navigator);
+    m_switchLayout->addChild(navigator->getNavigationPane());
+    m_navigators.add(navigator);
+}
+
+void NavigatorManager::setCurrent(Navigator* navigator)
+{
+	int index = m_navigators.indexOf(navigator);
+    if (navigator) {
 		m_switchLayout->setActiveIndex(index);
         navigationViewOpen();
     }

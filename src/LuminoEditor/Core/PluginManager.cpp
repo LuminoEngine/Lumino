@@ -2,7 +2,7 @@
 #include "PluginManager.hpp"
 #include "StandardPlugin/AssetBrowserNavigator.hpp"
 #include "StandardPlugin/StandardPluginModule.hpp"
-//#include "StandardPlugin/TilesetEditor.hpp"
+#include "TilemapPlugin/TilesetEditor.hpp"
 //#include "StandardPlugin/TilemapSceneEditor.hpp"
 
 namespace lna {
@@ -23,6 +23,7 @@ ln::Result PluginManager::init(Project* owner)
 {
     m_ownerProject = owner;
     m_standartPluginModule = ln::makeObject<StandardPluginModule>();
+    m_tilesetEditorExtensionModule = ln::makeObject<TilesetEditorExtensionModule>();
     return true;
 }
 
@@ -51,7 +52,22 @@ void PluginManager::reloadPlugins()
 #endif
 
     m_pluginModules.add(m_standartPluginModule);
+    m_pluginModules.add(m_tilesetEditorExtensionModule);
     
+}
+
+void PluginManager::activateAllExtensions(EditorContext* context)
+{
+    for (auto& module : m_pluginModules) {
+        module->onActivate(context);
+    }
+}
+
+void PluginManager::deactivateAllExtensions(EditorContext* context)
+{
+    for (auto& module : m_pluginModules) {
+        module->onDeactivate(context);
+    }
 }
 
 ln::List<ln::IAssetNavigatorExtension*> PluginManager::getAssetNavigatorExtensions() const

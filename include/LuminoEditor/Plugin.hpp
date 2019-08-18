@@ -44,8 +44,8 @@ class IModuleInterface
 class IPluginModule : public IModuleInterface
 {
 public:
-    virtual int getEditorExtensionCount() = 0;
-    virtual IEditorExtension* getEditorExtension(int index) = 0;
+    virtual int getEditorExtensionCount() { return 0; }
+    virtual IEditorExtension* getEditorExtension(int index) { return nullptr; }
 
     // メインプロジェクトが開かれ、関係するプラグインがロードされたときに呼び出される
     virtual void onActivate(lna::EditorContext* context) = 0;
@@ -61,7 +61,7 @@ public:
     virtual EditorExtensionType getExtensionType() const = 0;
 };
 
-
+// depreceted
 class IAssetNavigatorExtension : public IEditorExtension
 {
 public:
