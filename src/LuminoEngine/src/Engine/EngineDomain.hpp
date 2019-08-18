@@ -10,6 +10,7 @@ namespace ln
 //class SceneGraph3D;
 //class World2D;
 //class World3D;
+class EngineContext;
 
 namespace detail
 {
@@ -52,10 +53,11 @@ public:
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
 	static RuntimeManager* runtimeManager();
+    static EngineContext* engineContext();
 	
 	template<class T>
 	static void registerType() {
-		T::_lnref_registerTypeInfo(engineManager()->engineContext());
+		T::_lnref_registerTypeInfo(engineContext());
 	}
 };
 

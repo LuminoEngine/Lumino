@@ -85,6 +85,9 @@ public:
 	// TODO: internal
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
 
+    void setAssetId(const Uuid& id) { m_assetId = id; }
+    const Uuid& assetId() const { return m_assetId; }
+
 private:
     detail::WeakRefInfo* requestWeakRefInfo();
     static TypeInfo* _lnref_getTypeInfo();
@@ -93,6 +96,7 @@ private:
     detail::WeakRefInfo* m_weakRefInfo;
     std::mutex m_weakRefInfoMutex;
 	intptr_t m_runtimeData;
+    Uuid m_assetId;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;

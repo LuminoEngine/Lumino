@@ -33,6 +33,10 @@ public:
 	/** 文字列に変換します。*/
 	String toString() const;
 
+    bool isEmpty() const;
+
+    const std::vector<byte_t>& data() const { return m_data; }
+
 	// copy
 	Uuid(const Uuid &other);
 	Uuid& operator=(const Uuid& other);
@@ -47,3 +51,11 @@ private:
 
 } // namespace ln
 
+// for unordered_map key
+namespace std {
+template<>
+struct hash<ln::Uuid>
+{
+    std::size_t operator()(const ln::Uuid& key) const;
+};
+} // namespace std

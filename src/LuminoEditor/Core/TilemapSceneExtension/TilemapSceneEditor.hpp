@@ -64,7 +64,7 @@ class TilemapSceneEditorPloxy
     : public ln::AssetEditorPloxy
 {
 public:
-    virtual ln::String targetTypeName() override { return u"Scene"; }
+    virtual ln::String targetTypeName() override { return u"World"; }
     virtual Ref<ln::AssetEditor> createEditor() override;
 };
 

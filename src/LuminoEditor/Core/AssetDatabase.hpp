@@ -8,6 +8,7 @@ class AssetDatabase
 	: public ln::Object
 {
 public:
+
     // 拡張子不要
     Ref<ln::AssetModel> openAsset(const ln::Path& filePath);
 
@@ -28,6 +29,7 @@ public:// TODO:
     ln::Result init(Project* owner);
 
     Project* m_ownerProject;
+    std::unordered_map<ln::Uuid, ln::Path> m_assetIndex;
 };
 
 } // namespace lna

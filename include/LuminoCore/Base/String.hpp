@@ -960,6 +960,6 @@ struct hash<ln::String>
 {
     std::size_t operator()(const ln::String& key) const;
 };
-}
+} // namespace std
 
 #include "StringFormat.inl"

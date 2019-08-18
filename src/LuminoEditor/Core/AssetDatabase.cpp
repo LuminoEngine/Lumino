@@ -49,6 +49,7 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
 ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePath)
 {
     auto t = ln::AssetModel::create(asset);
+    asset->setAssetId(ln::Uuid::generate());
     ln::String json = ln::JsonSerializer::serialize(*t, ln::JsonFormatting::Indented);
     ln::FileSystem::writeAllText(filePath, json);
     return true;
@@ -66,6 +67,16 @@ bool AssetDatabase::isImportedAssetFile(const ln::Path& file)
 
 ln::Result AssetDatabase::init(Project* owner)
 {
+    // TODO: 量が多くなると重くなるのでインデックス作成スレッド建てたい
+    auto assetFiles = ln::FileSystem::getFiles(owner->assetsDir(), u"*.lnasset", ln::SearchOption::Recursive);
+    for (auto asset : assetFiles) {
+        auto id = ln::AssetModel::readAssetId(asset);
+        if (!id.isEmpty()) {
+            m_assetIndex[id] = asset;
+        }
+    }
+         
+
     return true;
 }
 

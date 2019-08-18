@@ -3,6 +3,7 @@
 #include "../Scene/VisualObject.hpp"
 
 namespace ln {
+class TilemapModel;
 class TilemapComponent;
 
 class Tilemap

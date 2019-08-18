@@ -810,6 +810,11 @@ RuntimeManager* EngineDomain::runtimeManager()
 	return engineManager()->runtimeManager();
 }
 
+EngineContext* EngineDomain::engineContext()
+{
+    return engineManager()->engineContext();
+}
+
 } // namespace detail
 } // namespace ln
 

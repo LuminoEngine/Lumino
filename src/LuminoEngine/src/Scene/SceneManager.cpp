@@ -2,6 +2,11 @@
 #include "Internal.hpp"
 #include "SceneManager.hpp"
 
+// for registerType
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Sprite.hpp>
+#include <LuminoEngine/Tilemap/Tilemap.hpp>
+
 namespace ln {
 namespace detail {
 
@@ -20,6 +25,10 @@ SceneManager::~SceneManager()
 void SceneManager::init()
 {
     LN_LOG_DEBUG << "SceneManager Initialization started.";
+
+    EngineDomain::registerType<World>();
+    EngineDomain::registerType<Sprite>();
+    EngineDomain::registerType<Tilemap>();
 
     LN_LOG_DEBUG << "SceneManager Initialization ended.";
 }

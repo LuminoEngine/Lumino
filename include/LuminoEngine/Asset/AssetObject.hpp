@@ -59,14 +59,13 @@ public:
     void removeChild(AssetModel* model);
     const List<Ref<AssetModel>> children() const { return m_children; }
 
-    void setId(const Uuid& id) { m_id = id; }
-    const Uuid& setId() const { return m_id; }
-
     // TODO: internal
     ln::Result loadInternal(const ln::Path& filePath);
     ln::Result saveInternal(const ln::Path& filePath);
     LN_SERIALIZE_CLASS_VERSION(1);
     void serialize(Archive& ar);
+
+    static ln::Uuid readAssetId(const ln::Path& filePath);
 
 LN_CONSTRUCT_ACCESS:
     AssetModel();
@@ -78,7 +77,6 @@ private:
 	Ref<Object> m_target;
     Ref<AssetModel> m_parent;
     List<Ref<AssetModel>> m_children;
-    Uuid m_id;
 };
 
 class AssetProperty
