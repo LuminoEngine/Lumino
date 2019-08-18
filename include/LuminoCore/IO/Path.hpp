@@ -21,6 +21,8 @@ namespace ln {
 class Path
 {
 public:
+    static const Path Empty;
+
     Path();
     Path(const Path& path);
 

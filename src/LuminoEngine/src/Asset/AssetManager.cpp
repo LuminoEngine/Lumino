@@ -103,10 +103,14 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
         u".png",
     };
 
-    Ref<Stream> stream = openFileStreamInternalFromIndex(filePath);
-    if (!stream) {
-        openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+    auto path = findFilePathFromIndex(filePath);
+    if (!path.isEmpty()) {
+       auto asset = makeObject<AssetModel>();
+       JsonSerializer::deserialize(ln::FileSystem::readAllText(path), path.parent(), *asset);
+       return static_cast<Texture2D*>(asset->target());
     }
+
+    Ref<Stream> stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
 
 	// TODO: cache
 
@@ -206,14 +210,14 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 	return false;
 }
 
-Ref<Stream> AssetManager::openFileStreamInternalFromIndex(const StringRef& id)
+const Path& AssetManager::findFilePathFromIndex(const StringRef& id) const
 {
     auto itr = m_assetIndex.find(Uuid(id));
     if (itr != m_assetIndex.end()) {
-        return FileStream::create(itr->second);
+        return itr->second;
     }
     else {
-        return nullptr;
+        return Path::Empty;
     }
 }
 

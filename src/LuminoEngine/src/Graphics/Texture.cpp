@@ -117,7 +117,6 @@ void Texture2D::init(const StringRef& filePath, TextureFormat format)
     auto bitmap = makeObject<Bitmap2D>();
     bitmap->load(filePath);
     init(bitmap, format);
-    m_assetSource = ln::Path(filePath);
 }
 
 void Texture2D::init(Stream* stream, TextureFormat format)
@@ -263,6 +262,10 @@ void Texture2D::serialize(Archive& ar)
 {
     Texture::serialize(ar);
     ar & makeNVP(u"Source", m_assetSource);
+    if (ar.isLoading()) {
+        auto path = Path(ar.basePath(), m_assetSource);
+        init(path);
+    }
 }
 
 

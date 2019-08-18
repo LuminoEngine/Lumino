@@ -25,6 +25,8 @@ namespace ln {
 //const Char Path::AltSeparator = (Char)PathTraits::AltDirectorySeparatorChar;
 //const Char Path::VolumeSeparator = (Char)PathTraits::VolumeSeparatorChar;
 
+const Path Path::Empty;
+
 Path::Path()
 {
 }

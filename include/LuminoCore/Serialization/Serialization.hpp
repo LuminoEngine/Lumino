@@ -67,6 +67,9 @@ public:
 
 	int classVersion() const { return m_nodeInfoStack.back().classVersion; }
 
+    void setBasePath(const String& path) { m_basePath = path; }
+    const String& basePath() const { return m_basePath; }
+
 	template<typename T>
 	Archive& operator & (T && value)
 	{
@@ -946,6 +949,7 @@ private:
     NodeInfo m_current; // (Load) Value も含む。serialize の直前、current は m_nodeInfoStack に積まれ、新しい Node を current とする。
 	int64_t	m_archiveVersion;
 	detail::NameValuePairBase*	m_nextReadValueDefault = nullptr;
+    String m_basePath;
 };
 
 
@@ -1029,6 +1033,15 @@ public:
 		return ar.toString(formatting);
 	}
 
+    template<typename TValue>
+    static String serialize(TValue&& value, const String& basePath, JsonFormatting formatting = JsonFormatting::Indented)
+    {
+        JsonTextOutputArchive ar;
+        ar.setBasePath(basePath);
+        ar.save(std::forward<TValue>(value));
+        return ar.toString(formatting);
+    }
+
 	/**
 	 * JSON 文字列をオブジェクトへデシリアライズします。
 	 * @param[in] 	jsonText	: JSON 文字列
@@ -1040,6 +1053,14 @@ public:
 		JsonTextInputArchive ar(jsonText);
 		ar.load(value);
 	}
+
+    template<typename TValue>
+    static void deserialize(const StringRef& jsonText, const String& basePath, TValue& value)
+    {
+        JsonTextInputArchive ar(jsonText);
+        ar.setBasePath(basePath);
+        ar.load(value);
+    }
 };
 
 } // namespace ln

@@ -37,7 +37,7 @@ public:
 private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
-	Ref<Stream> openFileStreamInternalFromIndex(const StringRef& id);
+	const Path& findFilePathFromIndex(const StringRef& id) const;
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
 
