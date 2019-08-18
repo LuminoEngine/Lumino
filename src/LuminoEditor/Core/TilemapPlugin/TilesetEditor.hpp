@@ -50,7 +50,7 @@ public:
     virtual void onDeactivate(lna::EditorContext* context) override;
 
 private:
-    Ref<TilesetNavigator> m_tilesetNavigator;
+    Ref<TilesetNavigator> m_navigator;
 };
 
 } // namespace lna

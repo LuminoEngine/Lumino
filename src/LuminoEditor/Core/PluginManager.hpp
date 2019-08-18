@@ -6,6 +6,7 @@ namespace lna {
 class Project;
 class StandardPluginModule;
 class TilesetEditorExtensionModule;
+class TilemapSceneEditorExtensionModule;
 class EditorContext;
 
 class PluginManager
@@ -29,6 +30,7 @@ private:
     ln::List<ln::IPluginModule*> m_pluginModules;
     ln::Ref<StandardPluginModule> m_standartPluginModule;
     ln::Ref<TilesetEditorExtensionModule> m_tilesetEditorExtensionModule;
+    ln::Ref<TilemapSceneEditorExtensionModule> m_tilemapSceneEditorExtensionModule;
 };
 
 

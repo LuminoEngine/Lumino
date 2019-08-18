@@ -87,12 +87,17 @@ PGMMV では統合されてたけど、大きなオブジェクトがあるときに、その後ろのタイルを選
 #include <AssetDatabase.hpp>
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
+#include "../App/MainWindow.hpp"
 #include "TilemapSceneEditor.hpp"
 
-//==============================================================================
-// SceneList
 
-void SceneList::init()
+
+namespace lna {
+    
+//==============================================================================
+// TilemapSceneListPane
+
+void TilemapSceneListPane::init()
 {
     UIControl::init();
 
@@ -109,7 +114,7 @@ void SceneList::init()
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");
-        addButton->connectOnClicked(ln::bind(this, &SceneList::addButton_onClick));
+        addButton->connectOnClicked(ln::bind(this, &TilemapSceneListPane::addButton_onClick));
         layout2->addChild(addButton);
 
         auto deleteButton = ln::UIButton::create(u"Delete");
@@ -118,19 +123,19 @@ void SceneList::init()
 
     m_listview = ln::makeObject<ln::UIListView>();
     m_listview->getGridLayoutInfo()->layoutWeight = 1;
-    m_listview->connectOnItemClick(ln::bind(this, &SceneList::listView_onItemClick));
+    m_listview->connectOnItemClick(ln::bind(this, &TilemapSceneListPane::listView_onItemClick));
     layout1->addChild(m_listview);
 
 
     auto project = lna::Workspace::instance()->project();
     m_assetRootDir = ln::Path(project->assetsDir(), u"Scenes");
 
-    m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    m_model = ln::makeObject<TilemapSceneListModel>();
     m_model->setRootPath(m_assetRootDir);
     m_listview->setViewModel(m_model);
 }
 
-void SceneList::addButton_onClick(ln::UIEventArgs* e)
+void TilemapSceneListPane::addButton_onClick(ln::UIEventArgs* e)
 {
     auto Scene = ln::makeObject<ln::Scene>();
     auto asset = ln::makeObject<ln::AssetModel>(Scene);
@@ -144,7 +149,112 @@ void SceneList::addButton_onClick(ln::UIEventArgs* e)
     m_model->refresh();
 }
 
-void SceneList::listView_onItemClick(ln::UIClickEventArgs* e)
+void TilemapSceneListPane::listView_onItemClick(ln::UIClickEventArgs* e)
+{
+    if (e->clickCount() == 2) {
+        auto path = m_model->filePath(ln::static_pointer_cast<ln::UICollectionItemModel>(e->sender()->m_viewModel));
+        EditorApplication::instance()->openAssetFile(path);
+    }
+}
+
+//==============================================================================
+// TilemapSceneNavigator
+
+void TilemapSceneNavigator::init()
+{
+    m_navigationBarItem = ln::makeObject<ln::UIIcon>();
+    m_navigationBarItem->setIconName(u"globe");
+    m_navigationBarItem->setHorizontalAlignment(ln::HAlignment::Center);
+    m_navigationBarItem->setVerticalAlignment(ln::VAlignment::Center);
+    m_navigationBarItem->setFontSize(24);
+    
+    m_sceneListPane = ln::makeObject<TilemapSceneListPane>();
+}
+
+ln::UIElement* TilemapSceneNavigator::getNavigationMenuItem()
+{
+    return m_navigationBarItem;
+}
+
+ln::UIElement* TilemapSceneNavigator::getNavigationPane()
+{
+    return m_sceneListPane;
+}
+
+//==============================================================================
+// TilemapSceneEditorExtensionModule
+
+void TilemapSceneEditorExtensionModule::onActivate(lna::EditorContext* context)
+{
+    m_navigator = ln::makeObject<TilemapSceneNavigator>();
+    context->mainWindow()->navigatorManager()->addNavigator(m_navigator);
+}
+
+void TilemapSceneEditorExtensionModule::onDeactivate(lna::EditorContext* context)
+{
+}
+
+} // namespace lna
+
+
+#if 0
+
+//==============================================================================
+// TilemapSceneListPane
+
+void TilemapSceneListPane::init()
+{
+    UIControl::init();
+
+    auto layout1 = ln::makeObject<ln::UIBoxLayout3>();
+    layout1->setOrientation(ln::Orientation::Vertical);
+    addElement(layout1);
+
+    auto layout2 = ln::makeObject<ln::UIHBoxLayout2>();
+    layout1->addChild(layout2);
+    {
+        auto caption = ln::UITextBlock::create(u"Scene");
+        caption->setMargin(ln::Thickness(8, 0));    // TODO: theme からとりたい
+        caption->setVerticalAlignment(ln::VAlignment::Center);
+        layout2->addChild(caption);
+
+        auto addButton = ln::UIButton::create(u"Add");
+        addButton->connectOnClicked(ln::bind(this, &TilemapSceneListPane::addButton_onClick));
+        layout2->addChild(addButton);
+
+        auto deleteButton = ln::UIButton::create(u"Delete");
+        layout2->addChild(deleteButton);
+    }
+
+    m_listview = ln::makeObject<ln::UIListView>();
+    m_listview->getGridLayoutInfo()->layoutWeight = 1;
+    m_listview->connectOnItemClick(ln::bind(this, &TilemapSceneListPane::listView_onItemClick));
+    layout1->addChild(m_listview);
+
+
+    auto project = lna::Workspace::instance()->project();
+    m_assetRootDir = ln::Path(project->assetsDir(), u"Scenes");
+
+    m_model = ln::makeObject<ln::UIFileSystemCollectionModel>();
+    m_model->setRootPath(m_assetRootDir);
+    m_listview->setViewModel(m_model);
+}
+
+void TilemapSceneListPane::addButton_onClick(ln::UIEventArgs* e)
+{
+    auto Scene = ln::makeObject<ln::Scene>();
+    auto asset = ln::makeObject<ln::AssetModel>(Scene);
+
+    auto project = lna::Workspace::instance()->project();
+
+    auto path = ln::Path::getUniqueFilePathInDirectory(m_assetRootDir, u"Scene-", ln::AssetModel::AssetFileExtension.c_str());
+
+    asset->saveInternal(path);
+
+    m_model->refresh();
+}
+
+void TilemapSceneListPane::listView_onItemClick(ln::UIClickEventArgs* e)
 {
     if (e->clickCount() == 2) {
         auto path = m_model->filePath(ln::static_pointer_cast<ln::UICollectionItemModel>(e->sender()->m_viewModel));
@@ -160,7 +270,7 @@ void SceneNavigatorExtension::onAttached()
     m_item = ln::makeObject<ln::NavigationMenuItem>();
     m_item->setIconName(u"globe");  // map, image
 
-    m_list = ln::makeObject<SceneList>();
+    m_list = ln::makeObject<TilemapSceneListPane>();
 }
 
 ln::NavigationMenuItem* SceneNavigatorExtension::getNavigationMenuItem()
@@ -244,3 +354,5 @@ ln::Ref<ln::AssetEditor> TilemapSceneEditorExtension::createEditor()
 {
     return ln::makeObject<TilemapSceneEditor>();
 }
+
+#endif

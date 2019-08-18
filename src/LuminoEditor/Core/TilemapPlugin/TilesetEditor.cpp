@@ -101,8 +101,8 @@ ln::UIElement* TilesetNavigator::getNavigationPane()
 
 void TilesetEditorExtensionModule::onActivate(lna::EditorContext* context)
 {
-    m_tilesetNavigator = ln::makeObject<TilesetNavigator>();
-    context->mainWindow()->navigatorManager()->addNavigator(m_tilesetNavigator);
+    m_navigator = ln::makeObject<TilesetNavigator>();
+    context->mainWindow()->navigatorManager()->addNavigator(m_navigator);
 }
 
 void TilesetEditorExtensionModule::onDeactivate(lna::EditorContext* context)
