@@ -118,6 +118,91 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
+
+                float viewWidth = m_viewPoint->viewPixelSize.width;
+                float viewHeight = m_viewPoint->viewPixelSize.height;
+
+
+                Matrix ref;
+                ln::Matrix refVP = ref * m_viewPoint->viewProjMatrix;
+                auto vtow = [refVP, viewWidth, viewHeight](const ln::Vector3& pos) { return ln::Vector3::unproject(pos, refVP, 0, 0, viewWidth, viewHeight, 0.3f, 1000); };
+
+
+                Vector3 frustumRayTL = Vector3::normalize(vtow(Vector3(0, 0, 1)) - vtow(Vector3(0, 0, 0))/*cam->viewportToWorldPoint(Vector3(0, 0, 0))*/);
+                Vector3 frustumRayTR = Vector3::normalize(vtow(Vector3(viewWidth, 0, 1)) - vtow(Vector3(viewWidth, 0, 0))/*cam->viewportToWorldPoint(Vector3(640, 0, 0))*/);
+                Vector3 frustumRayBL = Vector3::normalize(vtow(Vector3(0, viewHeight, 1)) - vtow(Vector3(0, viewHeight, 0))/*cam->viewportToWorldPoint(Vector3(0, 480, 0))*/);
+
+                m_clearMaterial->setVector(u"frustumRayTL", Vector4(frustumRayTL, 0));
+                m_clearMaterial->setVector(u"frustumRayTR", Vector4(frustumRayTR, 0));
+                m_clearMaterial->setVector(u"frustumRayBL", Vector4(frustumRayBL, 0));
+
+
+                static const float EARTH_RADIUS = 6370997.0f;
+                static const float EARTH_ATMOSPHERE_RADIUS = EARTH_RADIUS * 1.025f;
+
+                Vector3 cameraPos = Vector3(0, EARTH_RADIUS* 1.01f, 0);// = cam->getTransform()->position.Get();
+                                                                       //cameraPos.normalize();
+                                                                       //Vector3 cameraPos = Vector3(0, 0, 10);
+                                                                       //Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
+                                                                       //Vector3 lightPos = Vector3::normalize(Vector3(0.3, -0.1, 1));
+                //Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
+                Vector3 lightPos = Vector3::normalize(Vector3(0, 0.15, 1));
+
+                float fCameraHeight = cameraPos.length();
+                float fCameraHeight2 = fCameraHeight * fCameraHeight;
+
+                const float red = 0.680f;
+                const float green = 0.550f;
+                const float blue = 0.440f;
+                const auto invWav = [](float waveLength) { return 1.0f / pow(waveLength, 4.0f); };
+
+                Vector3 invWavelength = Vector3(invWav(red), invWav(green), invWav(blue));
+
+
+
+                float fInnerRadius = EARTH_RADIUS;
+                float fInnerRadius2 = fInnerRadius * fInnerRadius;
+
+                float fOuterRadius = EARTH_ATMOSPHERE_RADIUS;
+                float fOuterRadius2 = fOuterRadius * fOuterRadius;
+
+                float fScale = 1.0f / (fOuterRadius - fInnerRadius);
+
+                const float Kr = 0.0025f - 0.00015f;//static_cast<float>(gui.slider(L"Kr").value);
+                const float Km = 0.0010f + 0.0015f;// static_cast<float>(gui.slider(L"Km").value);
+                const float Esun = 1300.0f;
+
+                float fKrESun = Kr * Esun;
+                float fKmESun = Km * Esun;
+                float fKr4PI = Kr * 4.0f* Math::PI;
+                float fKm4PI = Km * 4.0f*Math::PI;
+
+                const float rayleighScaleDepth = 0.25f;
+                float fScaleDepth = rayleighScaleDepth;
+                float fScaleOverScaleDepth = (1.0f / (fOuterRadius - fInnerRadius)) / rayleighScaleDepth;
+                float g = -0.999f;
+                float exposure = 0.05 + 0.03;// static_cast<float>(gui.slider(L"Exposure").value);
+
+
+                m_clearMaterial->setVector(_T("v3CameraPos"), Vector4(cameraPos, 0));
+                m_clearMaterial->setFloat(_T("fCameraHeight"), fCameraHeight);
+                m_clearMaterial->setVector(_T("v3LightPos"), Vector4(lightPos, 0));
+                m_clearMaterial->setFloat(_T("fCameraHeight2"), fCameraHeight2);
+                m_clearMaterial->setVector(_T("v3InvWavelength"), Vector4(invWavelength, 0));
+                m_clearMaterial->setFloat(_T("fScale"), fScale);
+                m_clearMaterial->setFloat(_T("fOuterRadius"), fOuterRadius);
+                m_clearMaterial->setFloat(_T("fOuterRadius2"), fOuterRadius2);
+                m_clearMaterial->setFloat(_T("fInnerRadius"), fInnerRadius);
+                m_clearMaterial->setFloat(_T("fInnerRadius2"), fInnerRadius2);
+                m_clearMaterial->setFloat(_T("fKrESun"), fKrESun);
+                m_clearMaterial->setFloat(_T("fKmESun"), fKmESun);
+                m_clearMaterial->setFloat(_T("fKr4PI"), fKr4PI);
+                m_clearMaterial->setFloat(_T("fKm4PI"), fKm4PI);
+                m_clearMaterial->setFloat(_T("fScaleDepth"), fScaleDepth);
+                m_clearMaterial->setFloat(_T("fScaleOverScaleDepth"), fScaleOverScaleDepth);
+                m_clearMaterial->setFloat(_T("g"), g);
+                m_clearMaterial->setFloat(_T("exposure"), exposure);
+
                 renderingContext->pushState();
                 renderingContext->setDepthWriteEnabled(false);
                 renderingContext->setMaterial(m_clearMaterial);
