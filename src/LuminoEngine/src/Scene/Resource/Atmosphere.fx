@@ -68,8 +68,8 @@ float g;
 float exposure;
 
 
-
-
+float4x4 _localWorld;
+const float _nearClip = 0.3;
 const float3 _LightColor0 = float3(1, 1, 1);
 const float3 _WorldSpaceLightPos0 = float3(0, 0.75,  0.75);	// directional light direction
 const float _Exposure = 1.3;
@@ -96,6 +96,21 @@ static const float kCameraHeight = 0.0001;
 #define kRAYLEIGH (lerp(0.0, 0.0025, pow(_AtmosphereThickness,2.5)))		// Rayleigh constant
 #define kMIE 0.0010      		// Mie constant
 #define kSUN_BRIGHTNESS 20.0 	// Sun brightness
+
+#define kMAX_SCATTER 50.0 // Maximum scattering value, to prevent math overflows on Adrenos
+
+static const float kSunScale = 400.0 * kSUN_BRIGHTNESS;
+static const float kKmESun = kMIE * kSUN_BRIGHTNESS;
+static const float kKm4PI = kMIE * 4.0 * 3.14159265;
+static const float kScale = 1.0 / (OUTER_RADIUS - 1.0);
+static const float kScaleDepth = 0.25;
+static const float kScaleOverScaleDepth = (1.0 / (OUTER_RADIUS - 1.0)) / 0.25;
+static const float kSamples = 2.0; // THIS IS UNROLLED MANUALLY, DON'T TOUCH
+
+#define MIE_G (-0.990)
+#define MIE_G2 0.9801
+
+#define SKY_GROUND_THRESHOLD 0.02
 
 struct VSOutput
 {
@@ -130,6 +145,12 @@ float getRayleighPhase(float3 light, float3 ray)
 	return getRayleighPhase(eyeCos * eyeCos);
 }
 
+float scale(float inCos)
+{
+	float x = 1.0 - inCos;
+	return 0.25 * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
+}
+
 VSOutput VS_Main(LN_VSInput v)
 {
 	VSOutput o;
@@ -139,7 +160,7 @@ VSOutput VS_Main(LN_VSInput v)
 	float3 kScatteringWavelength = lerp (
 		kDefaultScatteringWavelength-kVariableRangeForScatteringWavelength,
 		kDefaultScatteringWavelength+kVariableRangeForScatteringWavelength,
-		half3(1,1,1) - kSkyTintInGammaSpace); // using Tint in sRGB gamma allows for more visually linear interpolation and to keep (.5) at (128, gray in sRGB) point
+		float3(1,1,1) - kSkyTintInGammaSpace); // using Tint in sRGB gamma allows for more visually linear interpolation and to keep (.5) at (128, gray in sRGB) point
 	float3 kInvWavelength = 1.0 / pow(kScatteringWavelength, 4);
 
 	float kKrESun = kRAYLEIGH * kSUN_BRIGHTNESS;
@@ -148,7 +169,9 @@ VSOutput VS_Main(LN_VSInput v)
 	float3 cameraPos = float3(0,kInnerRadius + kCameraHeight,0); 	// The camera's current position
 
 	// Get the ray from the camera to the vertex and its length (which is the far point of the ray passing through the atmosphere)
-	float3 eyeRay = normalize(mul((float3x3)ln_World, float3(v.Pos.xy, 1.0)));
+	float3 viewportPos = float3(v.Pos.x, v.Pos.y, 1.0);
+	float3 eyeRayRaw = mul((float3x3)_localWorld, viewportPos);
+	float3 eyeRay = normalize(eyeRayRaw);
 
 	float far = 0.0;
 	float3 cIn, cOut;
@@ -156,16 +179,100 @@ VSOutput VS_Main(LN_VSInput v)
 
 	if(eyeRay.y >= 0.0)
 	{
-		cIn = float3(0, 0, 0);
-		cOut = float3(1, 1, 1);
+		// Sky
+		// Calculate the length of the "atmosphere"
+		far = sqrt(kOuterRadius2 + kInnerRadius2 * eyeRay.y * eyeRay.y - kInnerRadius2) - kInnerRadius * eyeRay.y;
+
+		float3 pos = cameraPos + far * eyeRay;
+
+		// Calculate the ray's starting position, then calculate its scattering offset
+		float height = kInnerRadius + kCameraHeight;
+		float depth = exp(kScaleOverScaleDepth * (-kCameraHeight));
+		float startAngle = dot(eyeRay, cameraPos) / height;
+		float startOffset = depth*scale(startAngle);
+
+
+		// Initialize the scattering loop variables
+		float sampleLength = far / kSamples;
+		float scaledLength = sampleLength * kScale;
+		float3 sampleRay = eyeRay * sampleLength;
+		float3 samplePoint = cameraPos + sampleRay * 0.5;
+
+		// Now loop through the sample rays
+		float3 frontColor = float3(0.0, 0.0, 0.0);
+		// Weird workaround: WP8 and desktop FL_9_1 do not like the for loop here
+		// (but an almost identical loop is perfectly fine in the ground calculations below)
+		// Just unrolling this manually seems to make everything fine again.
+//				for(int i=0; i<int(kSamples); i++)
+		{
+			float height = length(samplePoint);
+			float depth = exp(kScaleOverScaleDepth * (kInnerRadius - height));
+			float lightAngle = dot(_WorldSpaceLightPos0.xyz, samplePoint) / height;
+			float cameraAngle = dot(eyeRay, samplePoint) / height;
+			float scatter = (startOffset + depth*(scale(lightAngle) - scale(cameraAngle)));
+			float3 attenuate = exp(-clamp(scatter, 0.0, kMAX_SCATTER) * (kInvWavelength * kKr4PI + kKm4PI));
+
+			frontColor += attenuate * (depth * scaledLength);
+			samplePoint += sampleRay;
+		}
+		{
+			float height = length(samplePoint);
+			float depth = exp(kScaleOverScaleDepth * (kInnerRadius - height));
+			float lightAngle = dot(_WorldSpaceLightPos0.xyz, samplePoint) / height;
+			float cameraAngle = dot(eyeRay, samplePoint) / height;
+			float scatter = (startOffset + depth*(scale(lightAngle) - scale(cameraAngle)));
+			float3 attenuate = exp(-clamp(scatter, 0.0, kMAX_SCATTER) * (kInvWavelength * kKr4PI + kKm4PI));
+
+			frontColor += attenuate * (depth * scaledLength);
+			samplePoint += sampleRay;
+		}
+
+
+
+		// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
+		cIn = frontColor * (kInvWavelength * kKrESun);
+		cOut = frontColor * kKmESun;
 	}
 	else
 	{
-		cIn = float3(1, 1, 1);
-		cOut = float3(0, 0, 0);
+		// Ground
+		far = (-kCameraHeight) / (min(-0.001, eyeRay.y));
+
+		float3 pos = cameraPos + far * eyeRay;
+
+		// Calculate the ray's starting position, then calculate its scattering offset
+		float depth = exp((-kCameraHeight) * (1.0/kScaleDepth));
+		float cameraAngle = dot(-eyeRay, pos);
+		float lightAngle = dot(_WorldSpaceLightPos0.xyz, pos);
+		float cameraScale = scale(cameraAngle);
+		float lightScale = scale(lightAngle);
+		float cameraOffset = depth*cameraScale;
+		float temp = (lightScale + cameraScale);
+
+		// Initialize the scattering loop variables
+		float sampleLength = far / kSamples;
+		float scaledLength = sampleLength * kScale;
+		float3 sampleRay = eyeRay * sampleLength;
+		float3 samplePoint = cameraPos + sampleRay * 0.5;
+
+		// Now loop through the sample rays
+		float3 frontColor = float3(0.0, 0.0, 0.0);
+		float3 attenuate;
+//				for(int i=0; i<int(kSamples); i++) // Loop removed because we kept hitting SM2.0 temp variable limits. Doesn't affect the image too much.
+		{
+			float height = length(samplePoint);
+			float depth = exp(kScaleOverScaleDepth * (kInnerRadius - height));
+			float scatter = depth*temp - cameraOffset;
+			attenuate = exp(-clamp(scatter, 0.0, kMAX_SCATTER) * (kInvWavelength * kKr4PI + kKm4PI));
+			frontColor += attenuate * (depth * scaledLength);
+			samplePoint += sampleRay;
+		}
+
+		cIn = frontColor * (kInvWavelength * kKrESun + kKmESun);
+		cOut = clamp(attenuate, 0.0, 1.0);
 	}
 
-	o.vertex 			= -v.Pos;
+	o.vertex 			= viewportPos;
 	o.groundColor	= _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
 	o.skyColor	= _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 	o.sunColor	= _Exposure * (cOut * _LightColor0.xyz);
@@ -179,9 +286,58 @@ VSOutput VS_Main(LN_VSInput v)
 	return o;
 }
 //------------------------------------------------------------------------------
+
+float getMiePhase(float eyeCos, float eyeCos2)
+{
+	float temp = 1.0 + MIE_G2 - 2.0 * MIE_G * eyeCos;
+	temp = pow(temp, pow(_SunSize,0.65) * 10);
+	temp = max(temp,1.0e-4); // prevent division by zero, esp. in half precision
+	temp = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + eyeCos2) / temp;
+
+	//	temp = pow(temp, .454545);
+	return temp;
+}
+
 float4 PS_Main(PSInput input) : SV_TARGET
 {
-	return float4(input.skyColor, 1.0);
+	float3 col = float3(0.0, 0.0, 0.0);
+
+	//col = mul((float3x3)ln_World, float3(0, 0, 1));
+	//return float4(col,1.0);
+
+
+
+	float3 ray = normalize(mul((float3x3)_localWorld, input.vertex));
+	//return float4(ray, 1);
+	
+	// test
+	if(ray.y <= 0.0) {
+		// sky
+		//return float4(1, 0, 0, 1);
+	}
+	else {
+		//return float4(1, 1, 1, 1);
+	}
+
+
+	float y = ray.y / SKY_GROUND_THRESHOLD;
+
+	col = lerp(input.skyColor, input.groundColor, saturate(y));
+
+#if 1
+	if(y < 0.0)
+	{
+		float eyeCos = dot(_WorldSpaceLightPos0.xyz, ray);
+		float eyeCos2 = eyeCos * eyeCos;
+		float mie = getMiePhase(eyeCos, eyeCos2);
+
+		col += mie * input.sunColor;
+	}
+#endif
+
+	//col = LINEAR_2_OUTPUT(col);
+
+	return float4(col,1.0);
 }
 
 //------------------------------------------------------------------------------

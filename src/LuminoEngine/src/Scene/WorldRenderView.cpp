@@ -71,6 +71,7 @@ void WorldRenderView::setCamera(Camera* camera)
     }
 }
 
+
 void WorldRenderView::render(GraphicsContext* graphicsContext)
 {
 	if (m_camera)
@@ -124,17 +125,24 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
 
                 //Matrix ref;
-                //ln::Matrix refVP = /*ref * */m_viewPoint->viewProjMatrix;
-                //auto vtow = [refVP, viewWidth, viewHeight](const ln::Vector3& pos) { return ln::Vector3::unproject(pos, refVP, 0, 0, viewWidth, viewHeight, 0.3f, 1000); };
+                ln::Matrix refVP = m_viewPoint->viewProjMatrix;
+                auto vtow = [refVP, viewWidth, viewHeight](const ln::Vector3& pos) { return ln::Vector3::unproject(pos, refVP, 0, 0, viewWidth, viewHeight, 0.3f, 1000); };
 
 
                 Vector3 frustumRayTL;// = Vector3::normalize(vtow(Vector3(0, 0, 1)) - vtow(Vector3(0, 0, 0))/*cam->viewportToWorldPoint(Vector3(0, 0, 0))*/);
                 Vector3 frustumRayTR;// = Vector3::normalize(vtow(Vector3(viewWidth, 0, 1)) - vtow(Vector3(viewWidth, 0, 0))/*cam->viewportToWorldPoint(Vector3(640, 0, 0))*/);
                 Vector3 frustumRayBL;// = Vector3::normalize(vtow(Vector3(0, viewHeight, 1)) - vtow(Vector3(0, viewHeight, 0))/*cam->viewportToWorldPoint(Vector3(0, 480, 0))*/);
+                //frustumRayTL = 
+                //frustumRayTL = m_camera->screenToWorldRay(Vector2(0, 0)).direction;
+                //frustumRayTR = m_camera->screenToWorldRay(Vector2(viewWidth, 0)).direction;
+                //frustumRayBL = m_camera->screenToWorldRay(Vector2(0, viewHeight)).direction;
 
-                frustumRayTL = m_camera->screenToWorldRay(Vector2(0, 0)).direction;
-                frustumRayTR = m_camera->screenToWorldRay(Vector2(viewWidth, 0)).direction;
-                frustumRayBL = m_camera->screenToWorldRay(Vector2(0, viewHeight)).direction;
+                auto v = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+                ViewFrustum vf(v * m_viewPoint->projMatrix);
+                Vector3 points[8];
+                vf.getCornerPoints(points);
+                frustumRayTL = Vector3::normalize(points[5] - points[1]);
+
 
 
                 m_clearMaterial->setVector(u"frustumRayTL", Vector4(frustumRayTL, 0));
@@ -211,8 +219,29 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 m_clearMaterial->setFloat(_T("g"), g);
                 m_clearMaterial->setFloat(_T("exposure"), exposure);
 
+                Matrix rot = m_viewPoint->viewMatrix;//m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
+                rot.m41 = rot.m42 = rot.m43 = 0.0f;
+                Matrix ss = Matrix::makeScaling(std::abs(frustumRayTL.x), std::abs(frustumRayTL.y), std::abs(frustumRayTL.z));
+                Matrix mm = ss * rot;
+                auto p0r = Vector3::transformCoord(Vector3(-1, -1, 1), mm);
+                auto p1r = Vector3::transformCoord(Vector3(1, -1, 1), mm);
+                auto p2r = Vector3::transformCoord(Vector3(-1, 1, 1), mm);
+                auto p3r = Vector3::transformCoord(Vector3(1, 1, 1), mm);
+                auto p0 = Vector3::normalize(p0r);
+                auto p1 = Vector3::normalize(p1r);
+                auto p2 = Vector3::normalize(p2r);
+                auto p3 = Vector3::normalize(p3r);
+                m_clearMaterial->setMatrix(u"_localWorld", mm);
+                printf("----\n");
+                p0.print();
+                p1.print();
+                p2.print();
+                p3.print();
+                printf("----\n");
+                //lookAt.print();
+                //rot.inverse();
                 renderingContext->pushState();
-                renderingContext->setTransfrom(m_viewPoint->worldMatrix);
+                renderingContext->setTransfrom(mm);
                 renderingContext->setDepthWriteEnabled(false);
                 renderingContext->setMaterial(m_clearMaterial);
                 renderingContext->drawScreenRectangle();
