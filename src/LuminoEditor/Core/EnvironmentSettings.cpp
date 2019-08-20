@@ -38,25 +38,9 @@ void BuildEnvironment::setupPathes()
         }
         
 #ifdef  LN_DEBUG
-        // デバッグ用。実行ファイルの位置からさかのぼっていって、build.csproj が見つかればそこから必要なパスを作ってみる
-        if (m_luminoPackageRootDir.isEmpty())
-        {
-            ln::Path path = ln::Environment::executablePath();
-            ln::Path luminoRepoRoot;
-            while (!path.isRoot())
-            {
-                if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
-                    luminoRepoRoot = path;
-                    break;
-                }
-                path = path.parent();
-            }
-            CLI::info("Using debug mode build environment pathes.");
-
-            LN_LOG_DEBUG << luminoRepoRoot;
-
-            m_luminoPackageRootDir = ln::Path::combine(luminoRepoRoot, u"build", u"LocalPackage");
-        }
+		if (m_luminoPackageRootDir.isEmpty()) {
+			m_luminoPackageRootDir = findLocalPackageForTesting();
+		}
 #endif
         // まだ見つからなければ環境変数を探してみる
         if (m_luminoPackageRootDir.isEmpty())
@@ -185,6 +169,38 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 	}
 
     return true;
+}
+
+ln::Path BuildEnvironment::findLocalPackageForTesting()
+{
+	ln::Path result;
+
+	// デバッグ用。実行ファイルの位置からさかのぼっていって、build.csproj が見つかればそこから必要なパスを作ってみる
+	{
+		CLI::info("Using debug mode build environment pathes.");
+
+		auto luminoRepoRoot = findRepositoryRootForTesting();
+		LN_LOG_DEBUG << luminoRepoRoot;
+
+		result = ln::Path::combine(luminoRepoRoot, u"build", u"LocalPackage");
+	}
+
+	return result;
+}
+
+ln::Path BuildEnvironment::findRepositoryRootForTesting()
+{
+	ln::Path path = ln::Environment::executablePath();
+	ln::Path luminoRepoRoot;
+	while (!path.isRoot())
+	{
+		if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
+			luminoRepoRoot = path;
+			break;
+		}
+		path = path.parent();
+	}
+	return luminoRepoRoot;
 }
 
 ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir)

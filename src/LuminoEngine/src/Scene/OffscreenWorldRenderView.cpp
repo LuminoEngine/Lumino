@@ -29,7 +29,8 @@ void OffscreenWorldRenderView::init()
 void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)
 {
     m_renderTarget = renderTarget;
-    setActualPixelSize(Size(m_renderTarget->width(), m_renderTarget->height()));
+	// TODO: dp単位に変換
+    setActualSize(Size(m_renderTarget->width(), m_renderTarget->height()));
 }
 
 RenderTargetTexture* OffscreenWorldRenderView::renderTarget() const

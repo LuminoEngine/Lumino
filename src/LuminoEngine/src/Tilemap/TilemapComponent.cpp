@@ -35,6 +35,32 @@ void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)
     m_tilemapModel = tilemapModel;
 }
 
+bool TilemapComponent::intersectTile(const Ray& ray, PointI* tilePoint)
+{
+	if (!m_tilemapModel) return false;
+
+	Matrix worldInverse = Matrix::makeInverse(worldObject()->worldMatrix());
+	Ray localRay(Vector3::transformCoord(ray.origin, worldInverse), Vector3::transformCoord(ray.direction, worldInverse), ray.distance);
+
+	// TODO: ひとまず、 Z- を正面とする
+	Plane plane(Vector3::Zero, -Vector3::UnitZ);
+
+	Vector3 pt;
+	if (plane.intersects(ray, &pt)) {
+		// TODO: スケールを考慮したい
+		int x = static_cast<int>(pt.x);
+		int y = static_cast<int>(pt.y);
+		if (m_tilemapModel->isValidTile(x, y)) {
+			if (tilePoint) {
+				tilePoint->x = x;
+				tilePoint->y = y;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
 void TilemapComponent::onRender(RenderingContext* context)
 {
     Matrix worldInverse = Matrix::makeInverse(worldObject()->worldMatrix());
@@ -43,7 +69,7 @@ void TilemapComponent::onRender(RenderingContext* context)
     Matrix viewMatrix = Matrix::makeLookAtLH(viewLocal.position(), viewLocal.position() + viewLocal.front(), viewLocal.up());
     ViewFrustum frustum(viewMatrix * context->viewPoint()->projMatrix);
 
-    // ひとまず、 Z- を正面とする
+    // TODO: ひとまず、 Z- を正面とする
     Plane plane(transrom()->position(), -transrom()->getFront());
 
     // TODO: 原点と正面方向
@@ -84,6 +110,12 @@ void TilemapComponent::onRender(RenderingContext* context)
 
     
     m_tilemapModel->render(context, worldObject()->worldMatrix(), bounds);
+}
+
+void TilemapComponent::serialize(Archive& ar)
+{
+	VisualComponent::serialize(ar);
+	ar & makeNVP(u"Model", m_tilemapModel);
 }
 
 } // namespace ln

@@ -64,6 +64,11 @@ void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& th
     // TODO: bounding box
 }
 
+void UIRenderingContext::drawBoxBorderLine(const Rect& rect, float thickness, const Color& color, bool borderInset)
+{
+	drawBoxBorderLine(rect, Thickness(thickness), color, color, color, color, CornerRadius(), borderInset);
+}
+
 void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset)
 {
 	auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(

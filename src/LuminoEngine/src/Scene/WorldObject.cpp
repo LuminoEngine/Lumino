@@ -230,6 +230,13 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
+void WorldObject::serialize(Archive& ar)
+{
+	Object::serialize(ar);
+	ar & ln::makeNVP(u"Components", *m_components);
+	ar & ln::makeNVP(u"Children", *m_children);
+}
+
 void WorldObject::attachWorld(World* world)
 {
 	if (LN_REQUIRE(world)) return;

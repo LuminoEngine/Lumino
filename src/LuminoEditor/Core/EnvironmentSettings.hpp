@@ -37,6 +37,9 @@ public:
 	const ln::Path& androidNdkRootDir() const { return m_androidNdkRootDir; }
 	const ln::Path& androidCMakeToolchain() const { return m_androidCMakeToolchain; }
 
+	static ln::Path findLocalPackageForTesting();
+	static ln::Path findRepositoryRootForTesting();
+
 private:
 	static ln::Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
 

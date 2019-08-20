@@ -319,11 +319,68 @@ public:
 	}
 };
 
+//template<
+//	typename TValue,
+//	typename std::enable_if<std::is_abstract<TValue>::value_type, std::nullptr_t>::type = nullptr>
+//	void serialize(Archive& ar, Ref<TValue>& value)
+//{
+//	bool isNull = (value == nullptr);
+//	ar.makeSmartPtrTag(&isNull);
+//
+//	ln::String typeName;
+//	if (ar.isSaving()) {
+//		typeName = TypeInfo::getTypeInfo(value)->name();
+//	}
+//	ar.makeTypeInfo(&typeName);
+//	//TODO: ここで makeTypeInfo すると、その中では setNextName しているため、現在の nextName をうわがいてしまう
+//
+//	if (ar.isSaving()) {
+//		if (!isNull) {
+//			ar.process(*value.get());
+//		}
+//	}
+//	else {
+//		if (!isNull) {
+//			if (!typeName.isEmpty()) {
+//				auto obj = TypeInfo::createInstance(typeName);
+//				value = dynamic_pointer_cast<TValue>(obj);
+//			}
+//
+//			//// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
+//			//if (!value) {
+//			//	value = makeObject<TValue>();
+//			//}
+//
+//			ar.process(*value.get());
+//		}
+//		else {
+//			value = nullptr;
+//		}
+//	}
+//}
+
+namespace detail {
+	
+template<
+	typename T,
+	typename std::enable_if<std::is_abstract<T>::value, std::nullptr_t>::type = nullptr>
+Ref<T> makeObjectHelper() {
+	return nullptr;
+}
+
+template<
+	typename T,
+	typename std::enable_if<!std::is_abstract<T>::value, std::nullptr_t>::type = nullptr>
+Ref<T> makeObjectHelper() {
+	return makeObject<T>();
+}
+
+} // namespace detail
 
 template<
 	typename TValue,
 	typename std::enable_if<detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
-	void serialize(Archive& ar, Ref<TValue>& value)
+void serialize(Archive& ar, Ref<TValue>& value)
 {
 	bool isNull = (value == nullptr);
 	ar.makeSmartPtrTag(&isNull);
@@ -348,39 +405,18 @@ template<
 			}
 
 			// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
+			// TODO: Abstract 対策のためいったん無効化。多分有効化する必要はない気がするけど…。
 			if (!value) {
-				value = makeObject<TValue>();
+				value = detail::makeObjectHelper<TValue>();
 			}
-
-			ar.process(*value.get());
+			if (value) {
+				ar.process(*value.get());
+			}
 		}
 		else {
 			value = nullptr;
 		}
 	}
-
-	//ar.makeSmartPtrTag();
-
-	//ln::String type = u"TypeTest";
-	//ar.makeTypeInfo(&type);
-
-	//if (ar.isLoading())
-	//{
-	//	if (!value)
-	//	{
-	//		value = makeObject<TValue>();
-	//	}
-	//	ar.process(*value.get());
-	//	//value->serialize(ar);
-	//}
-	//else
-	//{
-	//	if (value)
-	//	{
-	//		//value->serialize(ar);
-	//		ar.process(*value.get());
-	//	}
-	//}
 }
 
 } // namespace ln

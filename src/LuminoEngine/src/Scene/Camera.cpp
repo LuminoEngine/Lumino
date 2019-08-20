@@ -47,17 +47,17 @@ const Matrix& Camera::viewProjectionMatrix() const
     return m_component->getViewProjectionMatrix();
 }
 
-Vector3 Camera::worldToViewportPoint(const Vector3& position) const
+Vector3 Camera::worldToScreenPoint(const Vector3& position) const
 {
     WorldRenderView* view = renderView();
-	const Size& size = view->actualPixelSize();
+	const Size& size = view->actualSize();
 	return Vector3::project(position, m_component->getViewProjectionMatrix(), 0.0f, 0.0f, size.width, size.height, m_component->getNearClip(), m_component->getFarClip());
 }
 
-Vector3 Camera::viewportToWorldPoint(const Vector3& position) const
+Vector3 Camera::screenToWorldPoint(const Vector3& position) const
 {
     WorldRenderView* view = renderView();
-	const Size& size = view->actualPixelSize();
+	const Size& size = view->actualSize();
     float nearClip = m_component->getNearClip();
     float farClip = m_component->getFarClip();
 	Vector3 v;
@@ -65,6 +65,17 @@ Vector3 Camera::viewportToWorldPoint(const Vector3& position) const
 	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
 	v.z = (position.z - nearClip) / (farClip - nearClip);
 	return Vector3::transformCoord(v, m_component->getViewProjectionMatrixInverse());
+}
+
+Ray Camera::screenToWorldRay(const Vector2& position) const
+{
+	float farClip = m_component->getFarClip();
+	Vector3 pt = screenToWorldPoint(Vector3(position, farClip));
+	Vector3 origin = m_component->worldObject()->worldMatrix().position();
+	return Ray(
+		origin,
+		Vector3::normalize(pt - origin),
+		Vector3::distance(pt, origin));
 }
 
 RenderViewClearMode Camera::clearMode() const

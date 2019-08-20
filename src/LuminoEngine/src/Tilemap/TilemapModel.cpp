@@ -129,12 +129,23 @@ void TilemapModel::init(const StringRef& filePath)
 
 void TilemapModel::addTileset(Tileset* tileset)
 {
-    m_tilesets.add({ tileset, m_tilesetIdSpan * m_tilesets.size() });
+    m_tilesets.add(tileset);
 }
 
 void TilemapModel::addLayer(AbstractTilemapLayer* layer)
 {
     m_layers.add(layer);
+}
+
+bool TilemapModel::isValidTile(int x, int y) const
+{
+	if (x < 0 || y < 0) return false;
+	for (auto& layer : m_layers) {
+		if (layer->getWidth() <= x || layer->getHeight() <= y) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void TilemapModel::render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds)
@@ -148,9 +159,16 @@ void TilemapModel::render(RenderingContext* context, const Matrix& transform, co
 bool TilemapModel::fetchTileset(int tileGlobalId, Tileset** outTileset, int* outTileLocalId)
 {
     // TODO:
-    *outTileset = m_tilesets[0].tileset;
+    *outTileset = m_tilesets[0];
     *outTileLocalId = tileGlobalId;
     return true;
+}
+
+void TilemapModel::serialize(Archive& ar)
+{
+	Object::serialize(ar);
+	ar & makeNVP(u"tilesets", m_tilesets);
+	ar & makeNVP(u"layers", m_layers);
 }
 
 } // namespace ln

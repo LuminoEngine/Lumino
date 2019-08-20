@@ -56,9 +56,12 @@ public:
 
     void setTileId(int x, int y, int id);
 
-    virtual int getWidth() const override { return m_size.width; }
-    virtual int getHeight() const override { return m_size.height; }
+    virtual int getWidth() const override { return m_width; }
+    virtual int getHeight() const override { return m_height; }
     virtual int getTileId(int x, int y) const override;
+
+	LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     TilemapLayer();
@@ -67,8 +70,9 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height);
 
 private:
-    List<int> m_data;
-    SizeI m_size;
+	int m_width;
+	int m_height;
+	List<int> m_data;
 };
 
 } // namespace ln

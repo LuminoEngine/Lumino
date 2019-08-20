@@ -3,6 +3,7 @@
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
+#include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>
 #include <Project.hpp>
 #include <AssetDatabase.hpp>
@@ -47,7 +48,8 @@ ln::Result EditorApplication::init()
     ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();
 
-    ln::Font::registerFontFromFile(u"D:/Proj/LN/Lumino/tools/mplus-font/mplus-1c-regular.ttf");
+	auto root = lna::BuildEnvironment::findRepositoryRootForTesting();
+    ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));
 
     m_workspace = ln::makeObject<lna::Workspace>();
     onInit();

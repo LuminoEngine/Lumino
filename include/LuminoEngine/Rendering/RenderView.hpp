@@ -52,8 +52,9 @@ public:
 	const Color& backgroundColor() const { return m_backgroundColor; }
 	void setBackgroundColor(const Color& value) { m_backgroundColor = value; }
 
-    // フレーム開始時に決定
-    const Size& actualPixelSize() const { return m_actualPixelSize; }
+    // フレーム開始時に決定 (unit:dp)
+	const Point& actualScreenOffset() const { return m_actualScreenOffset; }
+    const Size& actualSize() const { return m_actualSize; }
 
     LN_METHOD(Event)
     EventConnection connectOnUIEvent(UIEventHandler handler);
@@ -70,7 +71,8 @@ public: // TODO: protected
 
 LN_INTERNAL_ACCESS:
 	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
-    void setActualPixelSize(const Size& size) { m_actualPixelSize = size; }
+	void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
+    void setActualSize(const Size& size) { m_actualSize = size; }
 
 private:
 	detail::RenderingManager* m_manager;
@@ -80,7 +82,8 @@ private:
 
 	RenderViewClearMode m_clearMode;
 	Color m_backgroundColor;
-    Size m_actualPixelSize;
+	Point m_actualScreenOffset;
+    Size m_actualSize;
 
     Event<UIEventHandler> m_onUIEvent;
 };

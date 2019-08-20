@@ -5,6 +5,7 @@
 
 
 namespace lna {
+class TilemapSceneEditorModel;
 class TilemapSceneModePane;
 
 class TilemapSceneListModel
@@ -51,13 +52,25 @@ public:
     virtual void onClosed() override;
     virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(ln::EditorPaneKind kind) override;
 
+	ln::TilemapComponent* targetTilemapComponent() const { return m_tilemap->tilemapComponent(); }
+
 private:
+	void WorldRenderView_OnUIEvent(ln::UIEventArgs* e);
+
+	Ref<TilemapSceneEditorModel> m_model;
+
     Ref<TilemapSceneModePane> m_modePane;
     Ref<ln::EditorPane> m_inspectorPane;
 
     Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
+
+	Ref<ln::UIViewport> m_mainViewport;
+	Ref<ln::WorldRenderView> m_mainWorldRenderView;
+	Ref<ln::Camera> m_mainCamera;
+	Ref<ln::Tilemap> m_tilemap;
+	Ref<ln::TilemapLayer> m_currentLayer;
 };
 
 class TilemapSceneEditorPloxy

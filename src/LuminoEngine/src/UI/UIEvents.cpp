@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include "UIManager.hpp"
@@ -88,7 +89,6 @@ void UIEventArgs::init(UIElement* sender, UIEventType type)
 
 LN_OBJECT_IMPLEMENT(UIMouseEventArgs, UIEventArgs) {}
 
-//------------------------------------------------------------------------------
 Ref<UIMouseEventArgs> UIMouseEventArgs::create(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching)
 {
     if (caching)
@@ -104,7 +104,6 @@ Ref<UIMouseEventArgs> UIMouseEventArgs::create(UIElement* sender, UIEventType ty
     }
 }
 
-//------------------------------------------------------------------------------
 UIMouseEventArgs::UIMouseEventArgs()
     : m_button(MouseButtons::None)
     , m_position(0, 0)
@@ -112,12 +111,10 @@ UIMouseEventArgs::UIMouseEventArgs()
 {
 }
 
-//------------------------------------------------------------------------------
 UIMouseEventArgs::~UIMouseEventArgs()
 {
 }
 
-//------------------------------------------------------------------------------
 void UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount)
 {
     UIEventArgs::init(sender, type);
@@ -127,11 +124,16 @@ void UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons bu
     m_clickCount = clickCount;
 }
 
-//------------------------------------------------------------------------------
 Point UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 {
     const Rect& rc = relativeTo->finalGlobalRect();
     return Point(m_position.x - rc.x, m_position.y - rc.y);
+}
+
+Point UIMouseEventArgs::getPosition(RenderView* relativeTo) const
+{
+	auto pt = relativeTo->actualScreenOffset();
+	return Point(m_position.x - pt.x, m_position.y - pt.y);
 }
 
 //==============================================================================

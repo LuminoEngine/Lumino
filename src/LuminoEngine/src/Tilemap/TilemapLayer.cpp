@@ -168,23 +168,32 @@ void TilemapLayer::init()
 
 void TilemapLayer::resize(int width, int height)
 {
-    m_size.set(width, height);
+	m_width = width;
+	m_height = height;
     m_data.resize(width * height);
 }
 
 void TilemapLayer::setTileId(int x, int y, int id)
 {
-    m_data[y * m_size.width + x] = id;
+    m_data[y * m_width + x] = id;
 }
 
 int TilemapLayer::getTileId(int x, int y) const
 {
     // TODO: round
     // clamp
-    if (x < 0 || m_size.width <= x) return 0;
-    if (y < 0 || m_size.height <= y) return 0;
+    if (x < 0 || m_width <= x) return 0;
+    if (y < 0 || m_height <= y) return 0;
 
-    return m_data[y * m_size.width + x];
+    return m_data[y * m_width + x];
+}
+
+void TilemapLayer::serialize(Archive& ar)
+{
+	Object::serialize(ar);
+	ar & makeNVP(u"width", m_width);
+	ar & makeNVP(u"height", m_height);
+	ar & makeNVP(u"data", m_data);
 }
 
 } // namespace ln

@@ -14,6 +14,7 @@
 #include <LuminoEngine/UI/UITreeView.hpp>
 #include <LuminoCore/Base/Event.hpp>
 #include <LuminoEngine/Platform/PlatformDialogs.hpp>
+#include <LuminoEngine/Tilemap/TilemapComponent.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UITreeView.hpp>

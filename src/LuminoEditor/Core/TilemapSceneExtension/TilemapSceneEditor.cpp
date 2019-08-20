@@ -89,6 +89,7 @@ PGMMV では統合されてたけど、大きなオブジェクトがあるときに、その後ろのタイルを選
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
+#include "TilemapSceneEditorModel.hpp"
 #include "TilemapSceneEditor.hpp"
 #include "TilemapSceneModePane.hpp"
 
@@ -164,32 +165,36 @@ void TilemapSceneListPane::listView_onItemClick(ln::UIClickEventArgs* e)
 ln::Result TilemapSceneEditor::init()
 {
     AssetEditor::init();
-    m_modePane = ln::makeObject<TilemapSceneModePane>();
+	m_model = ln::makeObject<TilemapSceneEditorModel>();
+
+    m_modePane = ln::makeObject<TilemapSceneModePane>(m_model);
     m_inspectorPane = ln::makeObject<ln::EditorPane>();
     m_inspectorPane->setBackgroundColor(ln::Color::Green);
 
     m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_modePane) });
     m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
     m_toolPanes = ln::makeList<Ref<ln::EditorPane>>();
+
     return true;
 }
 
 void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
-    auto m_mainViewport = ln::makeObject<ln::UIViewport>();
+	m_mainViewport = ln::makeObject<ln::UIViewport>();
     frame->addElement(m_mainViewport);
     //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
 
 
     auto m_mainWorld = ln::makeObject<ln::World>();
-    auto m_mainWorldAsset = ln::AssetModel::create(m_mainWorld);
+    //auto m_mainWorldAsset = ln::AssetModel::create(m_mainWorld);
 
-    auto m_mainCamera = ln::makeObject<ln::Camera>();
-    auto m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
+    m_mainCamera = ln::makeObject<ln::Camera>();
+    m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
     m_mainWorldRenderView->setTargetWorld(m_mainWorld);
     m_mainWorldRenderView->setCamera(m_mainCamera);
     m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
     m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
+	m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &TilemapSceneEditor::WorldRenderView_OnUIEvent));
     m_mainViewport->addRenderView(m_mainWorldRenderView);
 
     m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
@@ -199,17 +204,17 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
         //editorContext()->mainProject()->assetDatabase()->importAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png", "D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png");
 
 
-        auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4, 4);
-        sprite->setSourceRect(0, 0, 16, 16);
-        sprite->setPosition(0, 2, 0);
-        m_mainWorld->addObject(sprite);
+        //auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4, 4);
+        //sprite->setSourceRect(0, 0, 16, 16);
+        //sprite->setPosition(0, 2, 0);
+        //m_mainWorld->addObject(sprite);
 
 
-        auto tilemap = ln::makeObject<ln::Tilemap>();
-        auto tilemapAsset = ln::AssetModel::create(tilemap);
-        tilemap->setShadingModel(ln::ShadingModel::UnLighting);
-        m_mainWorld->addObject(tilemap);
-        m_mainWorldAsset->addChild(tilemapAsset);
+		m_tilemap = ln::makeObject<ln::Tilemap>();
+        //auto tilemapAsset = ln::AssetModel::create(tilemap);
+		m_tilemap->setShadingModel(ln::ShadingModel::UnLighting);
+        m_mainWorld->addObject(m_tilemap);
+        //m_mainWorldAsset->addChild(tilemapAsset);
 
         //tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
         auto tilesetTexture = ln::Assets::loadTexture(u"32066696-1621-4EED-820D-535BB2F22A9D");
@@ -219,21 +224,21 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
         auto tileset = ln::makeObject<ln::Tileset>();
         tileset->reset(tilesetMaterial, 16, 16);
 
-        auto layer = ln::makeObject<ln::TilemapLayer>();
-        layer->resize(5, 5);
-        layer->setTileSize(ln::Size(1, 1));
-        layer->setOrientation(ln::TilemapOrientation::UpFlow);
-        layer->setTileId(0, 0, 1);
-        layer->setTileId(1, 1, 1);
-        layer->setTileId(0, 4, 1);
-        layer->setTileId(1, 4, 1);
-        layer->setTileId(2, 4, 1);
-        layer->setTileId(3, 4, 1);
-        layer->setTileId(4, 4, 1);
+		m_currentLayer = ln::makeObject<ln::TilemapLayer>();
+		m_currentLayer->resize(5, 5);
+		m_currentLayer->setTileSize(ln::Size(1, 1));
+		m_currentLayer->setOrientation(ln::TilemapOrientation::UpFlow);
+		m_currentLayer->setTileId(0, 0, 1);
+		m_currentLayer->setTileId(1, 1, 1);
+		m_currentLayer->setTileId(0, 4, 1);
+		m_currentLayer->setTileId(1, 4, 1);
+		m_currentLayer->setTileId(2, 4, 1);
+		m_currentLayer->setTileId(3, 4, 1);
+		m_currentLayer->setTileId(4, 4, 1);
         auto tilemapModel = ln::makeObject<ln::TilemapModel>();
         tilemapModel->addTileset(tileset);
-        tilemapModel->addLayer(layer);
-        tilemap->setTilemapModel(tilemapModel);
+        tilemapModel->addLayer(m_currentLayer);
+		m_tilemap->setTilemapModel(tilemapModel);
 
         m_modePane->setTileset(tileset);
     }
@@ -257,6 +262,21 @@ Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(ln::Editor
         return m_toolPanes;
     }
     return nullptr;
+}
+
+void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
+{
+	if (e->type() == ln::UIEvents::MouseMoveEvent) {
+		auto me = static_cast<ln::UIMouseEventArgs*>(e);
+		auto pt = me->getPosition(m_mainWorldRenderView);
+		auto ray = m_mainCamera->screenToWorldRay(pt);
+		ln::PointI tilePt;
+		if (targetTilemapComponent()->intersectTile(ray, &tilePt)) {
+			m_currentLayer->setTileId(tilePt.x, tilePt.y, 1);
+			m_mainViewport->invalidateVisual();
+		}
+		e->handled = true;
+	}
 }
 
 //==============================================================================

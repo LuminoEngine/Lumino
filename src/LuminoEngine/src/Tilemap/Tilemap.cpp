@@ -39,5 +39,10 @@ void Tilemap::setTilemapModel(TilemapModel* tilemapModel)
     m_component->setTilemapModel(tilemapModel);
 }
 
+TilemapComponent* Tilemap::tilemapComponent() const
+{
+	return m_component;
+}
+
 } // namespace ln
 

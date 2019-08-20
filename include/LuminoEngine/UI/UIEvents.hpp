@@ -5,6 +5,7 @@
 #include "../Platform/PlatformEvent.hpp"
 
 namespace ln {
+class RenderView;
 class UICommand;
 class UIElement;
 class UIEventArgs;
@@ -164,6 +165,7 @@ public:
 
 	/** 指定した要素から見た相対的なマウス ポインターの位置を返します。*/
 	Point getPosition(UIElement* relativeTo) const;
+	Point getPosition(RenderView* relativeTo) const;
 
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();

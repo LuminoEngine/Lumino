@@ -103,7 +103,7 @@ void CameraOrbitControlComponent::startPan(const Vector2& mousePos)
 
 void CameraOrbitControlComponent::handleMouseMoveRotate(const Vector2& mousePos)
 {
-    float clientHeight = m_camera->renderView()->actualPixelSize().height;
+    float clientHeight = m_camera->renderView()->actualSize().height;
 
     m_rotateEnd = mousePos;
 
@@ -199,7 +199,7 @@ void CameraOrbitControlComponent::dollyOut(float dollyScale)
 
 void CameraOrbitControlComponent::pan(float deltaX, float deltaY)
 {
-    Size clientSize = m_camera->renderView()->actualPixelSize();
+    Size clientSize = m_camera->renderView()->actualSize();
     Matrix matrix = m_camera->worldMatrix();
 
     ProjectionMode mode = m_camera->cameraComponent()->projectionMode();

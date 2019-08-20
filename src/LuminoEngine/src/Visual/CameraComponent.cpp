@@ -69,7 +69,7 @@ void CameraComponent::updateMatrices()
     // ・１度も update されない状態での描画に備える render
 
     if (m_ownerRenderView) {
-        const Size& viewSize = m_ownerRenderView->actualPixelSize();
+        const Size& viewSize = m_ownerRenderView->actualSize();
         if (LN_REQUIRE(!Math::isNaN(viewSize.width) && !Math::isNaN(viewSize.height))) return;
         if (LN_REQUIRE(viewSize.width > 0 && viewSize.height > 0)) return;
 

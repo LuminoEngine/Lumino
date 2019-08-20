@@ -15,6 +15,8 @@ public:
 
     void setTilemapModel(TilemapModel* tilemapModel);
 
+	TilemapComponent* tilemapComponent() const;
+
 protected:
 
 LN_CONSTRUCT_ACCESS:

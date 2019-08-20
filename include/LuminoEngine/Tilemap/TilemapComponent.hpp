@@ -11,9 +11,13 @@ class TilemapComponent
 {
 public:
     void setTilemapModel(TilemapModel* tilemapModel);
+	bool intersectTile(const Ray& ray, PointI* tilePoint);
 
 protected:
     void onRender(RenderingContext* context);
+
+	LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     TilemapComponent();

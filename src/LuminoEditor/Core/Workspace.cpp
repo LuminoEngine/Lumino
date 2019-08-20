@@ -29,12 +29,12 @@ Workspace* Workspace::instance()
 //}
 
 Workspace::Workspace()
-	: m_devTools(ln::makeRef<BuildEnvironment>())
+	: m_buildEnvironment(ln::makeRef<BuildEnvironment>())
 {
     assert(!s_instance);
     s_instance = this;
 
-	m_devTools->setupPathes();
+	m_buildEnvironment->setupPathes();
 }
 
 Workspace::~Workspace()
@@ -62,7 +62,7 @@ ln::Result Workspace::runProject(const ln::String& target)
 		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
 
 		ln::Process proc;
-		proc.setProgram(m_devTools->python2());
+		proc.setProgram(m_buildEnvironment->python2());
 		proc.setArguments({u"-m", u"SimpleHTTPServer", u"8000"});
 		proc.setWorkingDirectory(buildDir);
 		proc.setUseShellExecute(false);
@@ -100,10 +100,7 @@ ln::Result Workspace::restoreProject()
 
 ln::Result Workspace::dev_installTools() const
 {
-	m_devTools->prepareEmscriptenSdk();
-
-
-
+	m_buildEnvironment->prepareEmscriptenSdk();
     return true;
 }
 
