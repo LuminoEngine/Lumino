@@ -35,25 +35,29 @@ void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)
     m_tilemapModel = tilemapModel;
 }
 
-bool TilemapComponent::intersectTile(const Ray& ray, PointI* tilePoint)
+bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
 {
 	if (!m_tilemapModel) return false;
 
 	Matrix worldInverse = Matrix::makeInverse(worldObject()->worldMatrix());
-	Ray localRay(Vector3::transformCoord(ray.origin, worldInverse), Vector3::transformCoord(ray.direction, worldInverse), ray.distance);
+	Ray localRay(Vector3::transformCoord(rayOnWorld.origin, worldInverse), Vector3::transformCoord(rayOnWorld.direction, worldInverse), rayOnWorld.distance);
+
+    AbstractTilemapLayer* layer = m_tilemapModel->layer(0);
 
 	// TODO: ひとまず、 Z- を正面とする
 	Plane plane(Vector3::Zero, -Vector3::UnitZ);
 
 	Vector3 pt;
-	if (plane.intersects(ray, &pt)) {
+	if (plane.intersects(localRay, &pt)) {
+        if (pt.x < 0.0 || pt.y < 0.0) return false;   // 小数切り捨てで、-0.99..~0.0 が 0 として扱われる問題の回避
+
 		// TODO: スケールを考慮したい
 		int x = static_cast<int>(pt.x);
 		int y = static_cast<int>(pt.y);
 		if (m_tilemapModel->isValidTile(x, y)) {
 			if (tilePoint) {
 				tilePoint->x = x;
-				tilePoint->y = y;
+				tilePoint->y = (layer->getHeight() - y) - 1;
 			}
 			return true;
 		}

@@ -137,6 +137,11 @@ void TilemapModel::addLayer(AbstractTilemapLayer* layer)
     m_layers.add(layer);
 }
 
+AbstractTilemapLayer* TilemapModel::layer(int index) const
+{
+    return m_layers[index];
+}
+
 bool TilemapModel::isValidTile(int x, int y) const
 {
 	if (x < 0 || y < 0) return false;

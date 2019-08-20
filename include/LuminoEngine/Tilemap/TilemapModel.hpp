@@ -13,6 +13,7 @@ class AbstractTilemapLayer;
 // それにアニメーションを考慮して、AutoTile ひとつ分の最大オフセットは 1024.
 // Tileset span 65536 でも十分足りそう。
 // 0~163843 を通常タイル、‬16384~32767 をAutoTile, 32768~65535 はReserved にしてみる。
+// - UE4 にならって、左上を 0,0 とする。
 class TilemapModel
 	: public Object
 {
@@ -21,6 +22,7 @@ public:
 
     void addTileset(Tileset* tileset);
     void addLayer(AbstractTilemapLayer* layer);
+    AbstractTilemapLayer* layer(int index) const;
 
 	bool isValidTile(int x, int y) const;
 

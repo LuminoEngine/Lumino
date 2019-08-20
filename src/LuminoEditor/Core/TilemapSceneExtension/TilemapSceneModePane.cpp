@@ -31,7 +31,7 @@ void TilemapSceneModePane::setTileset(ln::Tileset* tileset)
         m_material->setMainTexture(texture);
 
 		m_tileSize.width = texture->width() / 8;
-		m_tileSize.height = texture->height() / 8;
+        m_tileSize.height = m_tileSize.width;
 		m_displayScale.x = DisplayTileSize / m_tileSize.width;
 		m_displayScale.y = DisplayTileSize / m_tileSize.height;
 

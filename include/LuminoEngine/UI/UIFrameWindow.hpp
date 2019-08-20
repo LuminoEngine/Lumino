@@ -54,6 +54,7 @@ private:
     UIFrameWindow* m_owner;
     Point m_mousePosition;
     MouseClickTracker m_mouseClickTrackers[8];
+    MouseButtons m_pressedButton;
 };
 
 } // namespace detail

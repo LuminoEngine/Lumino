@@ -33,6 +33,8 @@ void CameraOrbitControlComponent::onAttached(WorldObject* owner)
 
 void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
 {
+    if (e->handled) return;
+
     if (e->type() == UIEvents::MouseDownEvent)
     {
         auto me = static_cast<UIMouseEventArgs*>(e);

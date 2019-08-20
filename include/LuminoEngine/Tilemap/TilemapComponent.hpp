@@ -11,7 +11,7 @@ class TilemapComponent
 {
 public:
     void setTilemapModel(TilemapModel* tilemapModel);
-	bool intersectTile(const Ray& ray, PointI* tilePoint);
+	bool intersectTile(const Ray& rayOnWorld, PointI* tilePoint);
 
 protected:
     void onRender(RenderingContext* context);

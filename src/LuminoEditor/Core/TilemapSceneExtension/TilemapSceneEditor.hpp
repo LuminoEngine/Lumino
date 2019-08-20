@@ -71,6 +71,7 @@ private:
 	Ref<ln::Camera> m_mainCamera;
 	Ref<ln::Tilemap> m_tilemap;
 	Ref<ln::TilemapLayer> m_currentLayer;
+    bool m_tilePutting = true;
 };
 
 class TilemapSceneEditorPloxy
