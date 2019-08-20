@@ -110,6 +110,7 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	// ライトがひとつもない場合はライティングなしを選択
 	if (!m_ownerRenderer->lightClusters().hasLight()) {
 		requestedShadingModel = ShadingModel::UnLighting;
+        // TODO: わざわざ UnLighting テクニック用意しないとならないので面倒というか忘れやすい
 	}
 
 	ShaderTechniqueClass classSet;

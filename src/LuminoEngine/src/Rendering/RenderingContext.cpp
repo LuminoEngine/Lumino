@@ -243,6 +243,28 @@ void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix&
 	LN_NOTIMPLEMENTED();
 }
 
+void RenderingContext::drawScreenRectangle()
+{
+    class DrawScreenRectangle : public detail::RenderDrawElement
+    {
+    public:
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        {
+            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
+        }
+    };
+
+    m_builder->advanceFence();
+
+    auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(
+        m_manager->blitRenderFeature(),
+        m_builder->blitRenderFeatureStageParameters());
+    element->targetPhase = RendringPhase::Default;
+
+    m_builder->advanceFence();
+
+}
+
 void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     blit(source, destination, nullptr);

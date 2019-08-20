@@ -1019,20 +1019,23 @@ Result VulkanBuffer::init(VulkanDevice* deviceContext, VkDeviceSize size, VkBuff
 
 void VulkanBuffer::dispose()
 {
-    auto device = m_deviceContext->vulkanDevice();
-	const VkAllocationCallbacks* allocator = m_allocator ? m_allocator : m_deviceContext->vulkanAllocator();
+    if (m_deviceContext)
+    {
+        auto device = m_deviceContext->vulkanDevice();
+        const VkAllocationCallbacks* allocator = m_allocator ? m_allocator : m_deviceContext->vulkanAllocator();
 
-    if (m_nativeBufferMemory) {
-        vkFreeMemory(device, m_nativeBufferMemory, allocator);
-        m_nativeBufferMemory = VK_NULL_HANDLE;
+        if (m_nativeBufferMemory) {
+            vkFreeMemory(device, m_nativeBufferMemory, allocator);
+            m_nativeBufferMemory = VK_NULL_HANDLE;
+        }
+
+        if (m_nativeBuffer) {
+            vkDestroyBuffer(device, m_nativeBuffer, allocator);
+            m_nativeBuffer = VK_NULL_HANDLE;
+        }
+
+        m_deviceContext = nullptr;
     }
-
-    if (m_nativeBuffer) {
-        vkDestroyBuffer(device, m_nativeBuffer, allocator);
-        m_nativeBuffer = VK_NULL_HANDLE;
-    }
-
-    m_deviceContext = nullptr;
 }
 
 void* VulkanBuffer::map()

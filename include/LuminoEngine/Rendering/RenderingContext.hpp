@@ -113,6 +113,9 @@ public:
     void drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform = Matrix());
 	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix());
 
+    /** 四辺の位置が -1.0~1.0 の矩形を描画します。座標変換行列に単位行列を使用することで、スクリーン全体を覆う矩形を描画することができます。 */
+    void drawScreenRectangle();
+
     // これは主に Post effect の実装で使用します。
     // 実際に処理が行われるのはレンダリングパイプラインの ImageEffect フェーズです。
     // 通常、drawMesh や drawSprite とは実行されるタイミングが異なるため、Post effect の実装のみを目的として使用してください。

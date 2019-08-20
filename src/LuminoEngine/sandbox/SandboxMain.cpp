@@ -183,7 +183,7 @@ int main(int argc, char** argv)
 #endif
 	GlobalLogger::addStdErrAdapter();
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+    EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
@@ -235,11 +235,11 @@ int main(int argc, char** argv)
 
 
     
-    ft->clear(Color::White);
-    ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
-    ft->map(MapMode::Read)->save(u"test.png");
+    //ft->clear(Color::White);
+    //ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
+    //ft->map(MapMode::Read)->save(u"test.png");
 
-    auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
+    //auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
 
 
 #if 0

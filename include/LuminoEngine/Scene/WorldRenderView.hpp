@@ -4,6 +4,7 @@
 #include "../Rendering/RenderView.hpp"
 
 namespace ln {
+class Material;
 class World;
 class Camera;
 class RenderingContext;
@@ -42,6 +43,7 @@ private:
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
     Ref<RenderViewPoint> m_viewPoint;
+    Ref<Material> m_clearMaterial;
 
     Ref<StaticMeshModel> m_gridPlane;
     bool m_visibleGridPlane;

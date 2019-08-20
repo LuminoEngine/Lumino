@@ -6,6 +6,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
 #include <LuminoEngine/Tilemap/Tilemap.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
 
 namespace ln {
 namespace detail {
@@ -25,6 +26,8 @@ SceneManager::~SceneManager()
 void SceneManager::init()
 {
     LN_LOG_DEBUG << "SceneManager Initialization started.";
+
+    m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/Atmosphere.fx");
 
     EngineDomain::registerType<World>();
     EngineDomain::registerType<Sprite>();

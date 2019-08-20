@@ -13,6 +13,7 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
+#include "SceneManager.hpp"
 
 namespace ln {
 
@@ -36,6 +37,9 @@ void WorldRenderView::init()
     m_sceneRenderingPipeline->init();
     m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
+
+    m_clearMaterial = makeObject<Material>();
+    m_clearMaterial->setShader(detail::EngineDomain::sceneManager()->atmosphereShader());
 
     createGridPlane();
 }
@@ -110,7 +114,15 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
 
 			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+				//renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+
+                //renderingContext->setBaseTransfrom(Matrix::Identity);
+                //renderingContext->setTransfrom(Matrix::Identity);
+                renderingContext->pushState();
+                renderingContext->setDepthWriteEnabled(false);
+                renderingContext->setMaterial(m_clearMaterial);
+                renderingContext->drawScreenRectangle();
+                renderingContext->popState();
 			}
 
             m_targetWorld->renderObjects();

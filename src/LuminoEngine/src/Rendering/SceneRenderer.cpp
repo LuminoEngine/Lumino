@@ -265,9 +265,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 				onSetAdditionalShaderPassVariables(tech->shader());
 
-				for (ShaderPass* pass : tech->passes())
+				for (ShaderPass* pass2 : tech->passes())
 				{
-					graphicsContext->setShaderPass(pass);
+					graphicsContext->setShaderPass(pass2);
 
 					element->onDraw(graphicsContext, currentStage->renderFeature);
 				}

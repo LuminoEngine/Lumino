@@ -4,6 +4,7 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 
 namespace ln {
+class Shader;
 class World;
 
 namespace detail {
@@ -26,6 +27,7 @@ public:
 
     void setActiveWorld(World* world) { m_activeWorld = world; }
     World* activeWorld() const { return m_activeWorld; }
+    const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
 
 private:
 	void executeCommands();
@@ -53,6 +55,7 @@ private:
 	std::stack<Ref<Scene>>	m_sceneStack;	// not contains m_activeScene
 
     World* m_activeWorld;
+    Ref<Shader> m_atmosphereShader;
 };
 
 } // namespace detail
