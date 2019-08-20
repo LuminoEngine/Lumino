@@ -123,14 +123,19 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 float viewHeight = m_viewPoint->viewPixelSize.height;
 
 
-                Matrix ref;
-                ln::Matrix refVP = ref * m_viewPoint->viewProjMatrix;
-                auto vtow = [refVP, viewWidth, viewHeight](const ln::Vector3& pos) { return ln::Vector3::unproject(pos, refVP, 0, 0, viewWidth, viewHeight, 0.3f, 1000); };
+                //Matrix ref;
+                //ln::Matrix refVP = /*ref * */m_viewPoint->viewProjMatrix;
+                //auto vtow = [refVP, viewWidth, viewHeight](const ln::Vector3& pos) { return ln::Vector3::unproject(pos, refVP, 0, 0, viewWidth, viewHeight, 0.3f, 1000); };
 
 
-                Vector3 frustumRayTL = Vector3::normalize(vtow(Vector3(0, 0, 1)) - vtow(Vector3(0, 0, 0))/*cam->viewportToWorldPoint(Vector3(0, 0, 0))*/);
-                Vector3 frustumRayTR = Vector3::normalize(vtow(Vector3(viewWidth, 0, 1)) - vtow(Vector3(viewWidth, 0, 0))/*cam->viewportToWorldPoint(Vector3(640, 0, 0))*/);
-                Vector3 frustumRayBL = Vector3::normalize(vtow(Vector3(0, viewHeight, 1)) - vtow(Vector3(0, viewHeight, 0))/*cam->viewportToWorldPoint(Vector3(0, 480, 0))*/);
+                Vector3 frustumRayTL;// = Vector3::normalize(vtow(Vector3(0, 0, 1)) - vtow(Vector3(0, 0, 0))/*cam->viewportToWorldPoint(Vector3(0, 0, 0))*/);
+                Vector3 frustumRayTR;// = Vector3::normalize(vtow(Vector3(viewWidth, 0, 1)) - vtow(Vector3(viewWidth, 0, 0))/*cam->viewportToWorldPoint(Vector3(640, 0, 0))*/);
+                Vector3 frustumRayBL;// = Vector3::normalize(vtow(Vector3(0, viewHeight, 1)) - vtow(Vector3(0, viewHeight, 0))/*cam->viewportToWorldPoint(Vector3(0, 480, 0))*/);
+
+                frustumRayTL = m_camera->screenToWorldRay(Vector2(0, 0)).direction;
+                frustumRayTR = m_camera->screenToWorldRay(Vector2(viewWidth, 0)).direction;
+                frustumRayBL = m_camera->screenToWorldRay(Vector2(0, viewHeight)).direction;
+
 
                 m_clearMaterial->setVector(u"frustumRayTL", Vector4(frustumRayTL, 0));
                 m_clearMaterial->setVector(u"frustumRayTR", Vector4(frustumRayTR, 0));
@@ -140,13 +145,16 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 static const float EARTH_RADIUS = 6370997.0f;
                 static const float EARTH_ATMOSPHERE_RADIUS = EARTH_RADIUS * 1.025f;
 
-                Vector3 cameraPos = Vector3(0, EARTH_RADIUS* 1.01f, 0);// = cam->getTransform()->position.Get();
-                                                                       //cameraPos.normalize();
-                                                                       //Vector3 cameraPos = Vector3(0, 0, 10);
-                                                                       //Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
-                                                                       //Vector3 lightPos = Vector3::normalize(Vector3(0.3, -0.1, 1));
+                //Vector3 cameraPos = Vector3(0, EARTH_RADIUS* 1.01f, 0);// = cam->getTransform()->position.Get();
+                //cameraPos.normalize();
+                //Vector3 cameraPos = Vector3(0, 0, 10);
+                Vector3 cameraPos = m_viewPoint->viewPosition;
+                cameraPos.y += EARTH_RADIUS;
+                //Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
+                //Vector3 lightPos = Vector3::normalize(Vector3(0.3, -0.1, 1));
                 //Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
-                Vector3 lightPos = Vector3::normalize(Vector3(0, 0.15, 1));
+                //Vector3 lightPos = Vector3::normalize(Vector3(0, 0.15, 1));
+                Vector3 lightPos = Vector3::normalize(Vector3(0, 0.5, 1));
 
                 float fCameraHeight = cameraPos.length();
                 float fCameraHeight2 = fCameraHeight * fCameraHeight;
@@ -204,6 +212,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 m_clearMaterial->setFloat(_T("exposure"), exposure);
 
                 renderingContext->pushState();
+                renderingContext->setTransfrom(m_viewPoint->worldMatrix);
                 renderingContext->setDepthWriteEnabled(false);
                 renderingContext->setMaterial(m_clearMaterial);
                 renderingContext->drawScreenRectangle();
