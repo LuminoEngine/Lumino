@@ -26,11 +26,11 @@ VSOutput VS_Main(LN_VSInput v)
 
 	float3 viewportPos = float3(v.Pos.x, v.Pos.y, 1.0);
 	float3 localRay = mul(viewportPos, (float3x3)_scaleMatrix);
-	float3 eyeRayRaw = mul(localRay, (float3x3)_localWorld);
-	float3 eyeRay = normalize(eyeRayRaw);
+	//float3 eyeRayRaw = mul((float3x3)_localWorld, viewportPos);
+	//float3 eyeRay = normalize(eyeRayRaw);
 
 	o.vertex = viewportPos;
-	o.eyeRay = eyeRay;
+	o.eyeRay = localRay;
 
 	return o;
 }
@@ -39,7 +39,10 @@ VSOutput VS_Main(LN_VSInput v)
 
 float4 PS_Main(PSInput input) : SV_TARGET
 {
-	float3 color = round((input.eyeRay + 1.0) / 2.0);
+	float3 localRay = mul(input.vertex, (float3x3)_scaleMatrix);
+	float4 eyeRayRaw = mul(float4(localRay, 1.0), _localWorld);
+	float3 eyeRay = normalize(eyeRayRaw.xyz / eyeRayRaw.w);
+	float3 color = round((eyeRay + 1.0) / 2.0);
 
 	return float4(color, 1);
 }

@@ -145,9 +145,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
 
 
-                m_clearMaterial->setVector(u"frustumRayTL", Vector4(frustumRayTL, 0));
-                m_clearMaterial->setVector(u"frustumRayTR", Vector4(frustumRayTR, 0));
-                m_clearMaterial->setVector(u"frustumRayBL", Vector4(frustumRayBL, 0));
+                //m_clearMaterial->setVector(u"frustumRayTL", Vector4(frustumRayTL, 0));
+                //m_clearMaterial->setVector(u"frustumRayTR", Vector4(frustumRayTR, 0));
+                //m_clearMaterial->setVector(u"frustumRayBL", Vector4(frustumRayBL, 0));
 
 
                 static const float EARTH_RADIUS = 6370997.0f;
@@ -200,29 +200,29 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 float exposure = 0.05 + 0.03;// static_cast<float>(gui.slider(L"Exposure").value);
 
 
-                m_clearMaterial->setVector(_T("v3CameraPos"), Vector4(cameraPos, 0));
-                m_clearMaterial->setFloat(_T("fCameraHeight"), fCameraHeight);
-                m_clearMaterial->setVector(_T("v3LightPos"), Vector4(lightPos, 0));
-                m_clearMaterial->setFloat(_T("fCameraHeight2"), fCameraHeight2);
-                m_clearMaterial->setVector(_T("v3InvWavelength"), Vector4(invWavelength, 0));
-                m_clearMaterial->setFloat(_T("fScale"), fScale);
-                m_clearMaterial->setFloat(_T("fOuterRadius"), fOuterRadius);
-                m_clearMaterial->setFloat(_T("fOuterRadius2"), fOuterRadius2);
-                m_clearMaterial->setFloat(_T("fInnerRadius"), fInnerRadius);
-                m_clearMaterial->setFloat(_T("fInnerRadius2"), fInnerRadius2);
-                m_clearMaterial->setFloat(_T("fKrESun"), fKrESun);
-                m_clearMaterial->setFloat(_T("fKmESun"), fKmESun);
-                m_clearMaterial->setFloat(_T("fKr4PI"), fKr4PI);
-                m_clearMaterial->setFloat(_T("fKm4PI"), fKm4PI);
-                m_clearMaterial->setFloat(_T("fScaleDepth"), fScaleDepth);
-                m_clearMaterial->setFloat(_T("fScaleOverScaleDepth"), fScaleOverScaleDepth);
-                m_clearMaterial->setFloat(_T("g"), g);
-                m_clearMaterial->setFloat(_T("exposure"), exposure);
+                //m_clearMaterial->setVector(_T("v3CameraPos"), Vector4(cameraPos, 0));
+                //m_clearMaterial->setFloat(_T("fCameraHeight"), fCameraHeight);
+                //m_clearMaterial->setVector(_T("v3LightPos"), Vector4(lightPos, 0));
+                //m_clearMaterial->setFloat(_T("fCameraHeight2"), fCameraHeight2);
+                //m_clearMaterial->setVector(_T("v3InvWavelength"), Vector4(invWavelength, 0));
+                //m_clearMaterial->setFloat(_T("fScale"), fScale);
+                //m_clearMaterial->setFloat(_T("fOuterRadius"), fOuterRadius);
+                //m_clearMaterial->setFloat(_T("fOuterRadius2"), fOuterRadius2);
+                //m_clearMaterial->setFloat(_T("fInnerRadius"), fInnerRadius);
+                //m_clearMaterial->setFloat(_T("fInnerRadius2"), fInnerRadius2);
+                //m_clearMaterial->setFloat(_T("fKrESun"), fKrESun);
+                //m_clearMaterial->setFloat(_T("fKmESun"), fKmESun);
+                //m_clearMaterial->setFloat(_T("fKr4PI"), fKr4PI);
+                //m_clearMaterial->setFloat(_T("fKm4PI"), fKm4PI);
+                //m_clearMaterial->setFloat(_T("fScaleDepth"), fScaleDepth);
+                //m_clearMaterial->setFloat(_T("fScaleOverScaleDepth"), fScaleOverScaleDepth);
+                //m_clearMaterial->setFloat(_T("g"), g);
+                //m_clearMaterial->setFloat(_T("exposure"), exposure);
 
-				Matrix rot = m_viewPoint->viewMatrix;// _viewPoint->worldMatrix;// //Matrix::makeInverse(m_viewPoint->viewMatrix);//// m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
+				Matrix rot =Matrix::makeInverse(m_viewPoint->viewMatrix);//m_viewPoint->viewMatrix;//  _viewPoint->worldMatrix;// //// m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
                 rot.m41 = rot.m42 = rot.m43 = 0.0f;
-                Matrix ss = Matrix::makeScaling(std::abs(frustumRayTR.x), std::abs(frustumRayTR.y), std::abs(frustumRayTR.z));
-				Matrix mm = ss * rot;// rot;
+                Matrix ss = Matrix::makeScaling(frustumRayTR.x, frustumRayTR.y, frustumRayTR.z);
+				Matrix mm = rot * ss;// rot;
                 auto p0r = Vector3::transformCoord(Vector3(-1, 1, 1), mm);
                 auto p1r = Vector3::transformCoord(Vector3(1, 1, 1), mm);
                 auto p2r = Vector3::transformCoord(Vector3(1, -1, 1), mm);
@@ -231,7 +231,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 auto p1 = Vector3::normalize(p1r);
                 auto p2 = Vector3::normalize(p2r);
 				auto p3 = Vector3::normalize(p3r);
-                m_clearMaterial->setMatrix(u"_localWorld", ss * /*Matrix::makeTranspose*/(rot));
+                m_clearMaterial->setMatrix(u"_localWorld", rot);
+                m_clearMaterial->setMatrix(u"_scaleMatrix", ss);
                 printf("----\n");
 				camera.viewDirection.print();
 				rot.front().print();
