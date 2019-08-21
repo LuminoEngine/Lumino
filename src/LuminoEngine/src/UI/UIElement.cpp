@@ -499,7 +499,8 @@ UIRenderView* UIElement::getRenderView()
 
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
-    if (isHitTestVisibleCore())
+	// this は not hit test でも、Visibility なら Child は test したい
+    if (isRenderVisible())
     {
         // 後ろからループする。後のモノが上に描画されるので、この方が自然。
         // TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
@@ -510,9 +511,11 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
             if (e != nullptr) return e;
         }
 
-        if (onHitTest(frameClientPosition)) {
-            return this;
-        }
+		if (m_isHitTestVisible) {
+			if (onHitTest(frameClientPosition)) {
+				return this;
+			}
+		}
     }
 
     return nullptr;

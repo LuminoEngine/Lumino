@@ -141,7 +141,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 ViewFrustum vf(v * m_viewPoint->projMatrix);
                 Vector3 points[8];
                 vf.getCornerPoints(points);
-                frustumRayTL = Vector3::normalize(points[5] - points[1]);
+				frustumRayTR = Vector3::normalize(points[7] - points[3]);
 
 
 
@@ -219,20 +219,21 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 m_clearMaterial->setFloat(_T("g"), g);
                 m_clearMaterial->setFloat(_T("exposure"), exposure);
 
-                Matrix rot = m_viewPoint->viewMatrix;//m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
-                rot.m41 = rot.m42 = rot.m43 = 0.0f;
-                Matrix ss = Matrix::makeScaling(std::abs(frustumRayTL.x), std::abs(frustumRayTL.y), std::abs(frustumRayTL.z));
+				Matrix rot = Matrix::makeInverse(m_viewPoint->viewMatrix);//m_viewPoint->viewMatrix;// m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
+                //rot.m41 = rot.m42 = rot.m43 = 0.0f;
+                Matrix ss = Matrix::makeScaling(std::abs(frustumRayTR.x), std::abs(frustumRayTR.y), std::abs(frustumRayTR.z));
                 Matrix mm = ss * rot;
-                auto p0r = Vector3::transformCoord(Vector3(-1, -1, 1), mm);
-                auto p1r = Vector3::transformCoord(Vector3(1, -1, 1), mm);
-                auto p2r = Vector3::transformCoord(Vector3(-1, 1, 1), mm);
-                auto p3r = Vector3::transformCoord(Vector3(1, 1, 1), mm);
+                auto p0r = Vector3::transformCoord(Vector3(-1, 1, 1), mm);
+                auto p1r = Vector3::transformCoord(Vector3(1, 1, 1), mm);
+                auto p2r = Vector3::transformCoord(Vector3(1, -1, 1), mm);
+                auto p3r = Vector3::transformCoord(Vector3(-1, -1, 1), mm);
                 auto p0 = Vector3::normalize(p0r);
                 auto p1 = Vector3::normalize(p1r);
                 auto p2 = Vector3::normalize(p2r);
                 auto p3 = Vector3::normalize(p3r);
                 m_clearMaterial->setMatrix(u"_localWorld", mm);
                 printf("----\n");
+				camera.viewDirection.print();
                 p0.print();
                 p1.print();
                 p2.print();

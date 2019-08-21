@@ -199,8 +199,9 @@ int main(int argc, char** argv)
 
     GlobalLogger::addStdErrAdapter();
 	GlobalLogger::setLevel(LogLevel::Verbose);
-    EngineSettings::setMainWindowSize(640, 480);
-    EngineSettings::setMainBackBufferSize(640, 480);
+	int div = 2;
+    EngineSettings::setMainWindowSize(640 / div, 480 / div);
+    EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
 
 
 	Engine::initialize();
@@ -217,7 +218,8 @@ int main(int argc, char** argv)
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
-
+	Engine::mainCamera()->setPosition(0, 0, 0);
+	
 
     auto ft = Texture2D::create(512, 256);
     //Font::registerFontFromFile(u"meiryo.ttc");
@@ -400,6 +402,7 @@ int main(int argc, char** argv)
 	{
 
 		while (Engine::update()) {
+			Engine::mainCamera()->setEulerAngles(sin(Engine::totalTime()), 0, 0);
             printf("--------------------------\n");
             //obj1->setPosition(cos(Engine::totalTime()), 0, sin(Engine::totalTime()));
 		}

@@ -100,8 +100,6 @@ static const float kCameraHeight = 0.0001;
 
 #define kMAX_SCATTER 50.0 // Maximum scattering value, to prevent math overflows on Adrenos
 
-static const half kHDSundiskIntensityFactor = 15.0;
-
 static const float kSunScale = 400.0 * kSUN_BRIGHTNESS;
 static const float kKmESun = kMIE * kSUN_BRIGHTNESS;
 static const float kKm4PI = kMIE * 4.0 * 3.14159265;
@@ -134,19 +132,9 @@ struct PSInput
 };
 
 //------------------------------------------------------------------------------
-#define UNITY_COLORSPACE_GAMMA
-#define SKYBOX_COLOR_IN_TARGET_COLOR_SPACE 1
-#if 1	// GAMMA
-	#define COLOR_2_GAMMA(color) color
-	#define COLOR_2_LINEAR(color) color*color
-	#define LINEAR_2_OUTPUT(color) sqrt(color)
-#else
-	#define GAMMA 2.2
-	// HACK: to get gfx-tests in Gamma mode to agree until UNITY_ACTIVE_COLORSPACE_IS_GAMMA is working properly
-	#define COLOR_2_GAMMA(color) ((unity_ColorSpaceDouble.r>2.0) ? pow(color,1.0/GAMMA) : color)
-	#define COLOR_2_LINEAR(color) color
-	#define LINEAR_2_LINEAR(color) color
-#endif
+#define COLOR_2_GAMMA(color) color
+#define COLOR_2_LINEAR(color) color*color
+#define LINEAR_2_OUTPUT(color) sqrt(color)
 
 float getRayleighPhase(float eyeCos2)
 {
@@ -288,29 +276,14 @@ VSOutput VS_Main(LN_VSInput v)
 	o.vertex 			= -viewportPos;
 	o.groundColor	= _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
 	o.skyColor	= _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
-
-	float lightColorIntensity = clamp(length(_LightColor0.xyz), 0.25, 1);
-	o.sunColor    = kHDSundiskIntensityFactor * saturate(cOut) * _LightColor0.xyz / lightColorIntensity;
-
-#if defined(UNITY_COLORSPACE_GAMMA) && SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
-	o.groundColor = sqrt(o.groundColor);
-	o.skyColor    = sqrt(o.skyColor);
-	o.sunColor= sqrt(o.sunColor);
-#endif
+	o.sunColor	= _Exposure * (cOut * _LightColor0.xyz);
 
 
+	o.skyColor = cOut;
 
-	if(eyeRay.y >= 0.0)
-	{
-		o.skyColor	= float3(0, 0, 1);
-		o.groundColor	= float3(0, 0, 0);
-	}
-	else {
-		o.skyColor	= float3(0, 0, 0);
-		o.groundColor	= float3(0, 1, 0);
-
-	}
-
+	//OUT.groundColor	= sqrt(OUT.groundColor);
+	//OUT.skyColor	= sqrt(OUT.skyColor);
+	//OUT.sunColor= sqrt(OUT.sunColor);
 	return o;
 }
 //------------------------------------------------------------------------------
@@ -321,9 +294,8 @@ float getMiePhase(float eyeCos, float eyeCos2)
 	temp = pow(temp, pow(_SunSize,0.65) * 10);
 	temp = max(temp,1.0e-4); // prevent division by zero, esp. in half precision
 	temp = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + eyeCos2) / temp;
- #if defined(UNITY_COLORSPACE_GAMMA) && SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
-	temp = pow(temp, .454545);
-#endif
+
+	//	temp = pow(temp, .454545);
 	return temp;
 }
 
@@ -344,18 +316,25 @@ float4 PS_Main(PSInput input) : SV_TARGET
 {
 	float3 col = float3(0.0, 0.0, 0.0);
 
+	//col = mul((float3x3)ln_World, float3(0, 0, 1));
+	//return float4(col,1.0);
+
+
+
 	float3 ray = normalize(mul((float3x3)_localWorld, input.vertex));
 	
+
 	float y = ray.y / SKY_GROUND_THRESHOLD;
 
 	// test
-	if(ray.y < 0.0) {
+	if(ray.y >= 0.0) {
 		// sky
-		return float4(input.skyColor, 1);
+		//return float4(0.5, 0.5, 1, 1);
 	}
 	else {
-		return float4(input.groundColor, 1);
+		//return float4(1, 1, 1, 1);
 	}
+
 
 	col = lerp(input.skyColor, input.groundColor, saturate(y));
 
@@ -363,12 +342,16 @@ float4 PS_Main(PSInput input) : SV_TARGET
 	if(y < 0.0)
 	{
 		col += input.sunColor * calcSunAttenuation(_WorldSpaceLightPos0.xyz, -ray);
+
+		//float eyeCos = dot(_WorldSpaceLightPos0.xyz, ray);
+		//float eyeCos2 = eyeCos * eyeCos;
+		//float mie = getMiePhase(eyeCos, eyeCos2);
+		//col += mie * input.sunColor;
 	}
 #endif
 
-#if defined(UNITY_COLORSPACE_GAMMA) && !SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
-	col = LINEAR_2_OUTPUT(col);
-#endif
+	//col = LINEAR_2_OUTPUT(col);
+
 	return float4(col,1.0);
 }
 
