@@ -219,7 +219,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 m_clearMaterial->setFloat(_T("g"), g);
                 m_clearMaterial->setFloat(_T("exposure"), exposure);
 
-				Matrix rot = Matrix::makeInverse(m_viewPoint->viewMatrix);//m_viewPoint->viewMatrix;// m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
+				Matrix rot = m_viewPoint->worldMatrix;// m_viewPoint->viewMatrix; //Matrix::makeInverse(m_viewPoint->viewMatrix);//// m_viewPoint->worldMatrix;//Matrix::makeLookAtLH
                 //rot.m41 = rot.m42 = rot.m43 = 0.0f;
                 Matrix ss = Matrix::makeScaling(std::abs(frustumRayTR.x), std::abs(frustumRayTR.y), std::abs(frustumRayTR.z));
                 Matrix mm = ss * rot;
@@ -234,6 +234,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 m_clearMaterial->setMatrix(u"_localWorld", mm);
                 printf("----\n");
 				camera.viewDirection.print();
+				rot.front().print();
                 p0.print();
                 p1.print();
                 p2.print();

@@ -81,6 +81,8 @@ void CameraComponent::updateMatrices()
 	    // ビュー行列
 	    m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.position(), lookAt, m_upDirection);
 
+		//auto f = Matrix::makeInverse(m_viewMatrix).front();
+
 	    //if (m_reflectionPlane.Normal != Vector3::Zero)
 	    //{
 	    //	m_viewMatrix = Matrix::makeReflection(m_reflectionPlane) * m_viewMatrix;

@@ -285,7 +285,7 @@ VSOutput VS_Main(LN_VSInput v)
 		cOut = clamp(attenuate, 0.0, 1.0);
 	}
 
-	o.vertex 			= -viewportPos;
+	o.vertex 			= viewportPos;
 	o.groundColor	= _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
 	o.skyColor	= _Exposure * (cIn * getRayleighPhase(_WorldSpaceLightPos0.xyz, -eyeRay));
 
@@ -344,12 +344,16 @@ float4 PS_Main(PSInput input) : SV_TARGET
 {
 	float3 col = float3(0.0, 0.0, 0.0);
 
+	float3 f = mul((float3x3)_localWorld, float3(0, 0, 1));
+	return float4(f, 1);
+
 	float3 ray = normalize(mul((float3x3)_localWorld, input.vertex));
+	return float4(ray, 1);
 	
 	float y = ray.y / SKY_GROUND_THRESHOLD;
 
 	// test
-	if(ray.y < 0.0) {
+	if(ray.y >= 0.0) {
 		// sky
 		return float4(input.skyColor, 1);
 	}

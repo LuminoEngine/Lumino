@@ -402,8 +402,12 @@ int main(int argc, char** argv)
 	{
 
 		while (Engine::update()) {
-			Engine::mainCamera()->setEulerAngles(sin(Engine::totalTime()), 0, 0);
-            printf("--------------------------\n");
+			printf("--------------------------\n");
+			float s = (sin(Engine::totalTime()) * (Math::PI / 2));
+			std::cout << s << std::endl;
+			Engine::mainCamera()->setEulerAngles(s, 0, 0);
+			//Engine::mainCamera()->setEulerAngles(Math::PI / 8, 0, 0);
+			//Engine::mainCamera()->setEulerAngles(Math::PI / 4, 0, 0);
             //obj1->setPosition(cos(Engine::totalTime()), 0, sin(Engine::totalTime()));
 		}
 
