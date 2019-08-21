@@ -178,6 +178,16 @@ int UISandboxMain();
 
 int main(int argc, char** argv)
 {
+	setlocale(LC_ALL, "");
+	auto e0 = exp(160 * (-0.0001));
+	auto e1 = exp(0.0001);
+	auto e2 = exp(0.5);
+	auto e3 = exp(0.9);
+	auto e4 = exp(1.0);
+	auto e5 = exp(2.0);
+	auto e6 = exp(3.0);
+	auto e7 = exp(4.0);
+
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -198,7 +208,7 @@ int main(int argc, char** argv)
 
 
     GlobalLogger::addStdErrAdapter();
-	GlobalLogger::setLevel(LogLevel::Verbose);
+	//GlobalLogger::setLevel(LogLevel::Verbose);
 	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
@@ -218,7 +228,7 @@ int main(int argc, char** argv)
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
-	Engine::mainCamera()->setPosition(0, 0, 0);
+	//Engine::mainCamera()->setPosition(0, 0, 0);
 	
 
     auto ft = Texture2D::create(512, 256);
@@ -403,9 +413,11 @@ int main(int argc, char** argv)
 
 		while (Engine::update()) {
 			printf("--------------------------\n");
-			float s = (sin(Engine::totalTime()) * (Math::PI / 2));
-			std::cout << s << std::endl;
-			Engine::mainCamera()->setEulerAngles(s, 0, 0);
+			//float t = Engine::totalTime() / 2;
+			//float s = (sin(t) * (Math::PI / 2));
+			//std::cout << s << std::endl;
+			//Engine::mainCamera()->setEulerAngles(s, 0, 0);
+
 			//Engine::mainCamera()->setEulerAngles(Math::PI / 8, 0, 0);
 			//Engine::mainCamera()->setEulerAngles(Math::PI / 4, 0, 0);
             //obj1->setPosition(cos(Engine::totalTime()), 0, sin(Engine::totalTime()));
