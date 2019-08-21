@@ -155,7 +155,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
                 //Vector3 cameraPos = Vector3(0, EARTH_RADIUS* 1.01f, 0);// = cam->getTransform()->position.Get();
                 //cameraPos.normalize();
-                //Vector3 cameraPos = Vector3(0, 0, 10);
+                //Vector3 cameraPos = Vector3(0, 0, 0);
                 Vector3 cameraPos = m_viewPoint->viewPosition;
                 ;// cameraPos.y += EARTH_RADIUS;
                 //Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
@@ -201,7 +201,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
 
                 m_clearMaterial->setVector(_T("v3CameraPos"), Vector4(cameraPos, 0));
-                m_clearMaterial->setFloat(_T("fCameraHeight"), fCameraHeight);
+                //m_clearMaterial->setFloat(_T("fCameraHeight"), fCameraHeight);
                 //m_clearMaterial->setVector(_T("v3LightPos"), Vector4(lightPos, 0));
                 //m_clearMaterial->setFloat(_T("fCameraHeight2"), fCameraHeight2);
                 //m_clearMaterial->setVector(_T("v3InvWavelength"), Vector4(invWavelength, 0));

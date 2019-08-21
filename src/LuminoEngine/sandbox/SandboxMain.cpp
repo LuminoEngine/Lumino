@@ -176,17 +176,24 @@ template<
 
 int UISandboxMain();
 
+Vector3 IntersectionPos(Vector3 rayPos, Vector3 rayDir, float sphereRadius)
+{
+    const float A = Vector3::dot(rayDir, rayDir);
+    const float B = 2.0*Vector3::dot(rayPos, rayDir);
+    const float C = Vector3::dot(rayPos, rayPos) - sphereRadius * sphereRadius;
+
+    return B * B - 4.0*A*C < 0.000001 ? Vector3(0, 0, 0) : (rayPos + rayDir * (0.5*(-B + sqrt(B*B - 4.0*A*C)) / A));
+}
+
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
-	auto e0 = exp(160 * (-0.0001));
-	auto e1 = exp(0.0001);
-	auto e2 = exp(0.5);
-	auto e3 = exp(0.9);
-	auto e4 = exp(1.0);
-	auto e5 = exp(2.0);
-	auto e6 = exp(3.0);
-	auto e7 = exp(4.0);
+    auto e0 = powf(0.650, 4);
+
+    const float EARTH_RADIUS = 6370997.0;
+    const float fOuterRadius = EARTH_RADIUS * 1.025;
+    Vector3 cameraPos = Vector3(0, EARTH_RADIUS, -10);
+    auto re = IntersectionPos(cameraPos, Vector3(0, 0, 1), fOuterRadius);
 
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -227,6 +234,7 @@ int main(int argc, char** argv)
 
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
+    //Engine::mainCamera()->setPosition(0, 0, 25);
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 	//Engine::mainCamera()->setPosition(0, 0, 0);
 	
