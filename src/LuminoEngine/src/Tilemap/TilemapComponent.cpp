@@ -17,6 +17,11 @@ namespace ln {
 //==============================================================================
 // TilemapComponent
 
+LN_OBJECT_IMPLEMENT(TilemapComponent, VisualComponent)
+{
+    context->registerType<TilemapComponent>({});
+}
+
 TilemapComponent::TilemapComponent()
 {
 }
@@ -28,6 +33,11 @@ TilemapComponent::~TilemapComponent()
 void TilemapComponent::init()
 {
     VisualComponent::init();
+}
+
+TilemapModel* TilemapComponent::tilemapModel() const
+{
+    return m_tilemapModel;
 }
 
 void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)

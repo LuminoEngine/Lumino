@@ -9,8 +9,11 @@ class TilemapModel;
 class TilemapComponent
 	: public VisualComponent
 {
+    LN_OBJECT;
 public:
+    TilemapModel* tilemapModel() const;
     void setTilemapModel(TilemapModel* tilemapModel);
+
 	bool intersectTile(const Ray& rayOnWorld, PointI* tilePoint);
 
 protected:

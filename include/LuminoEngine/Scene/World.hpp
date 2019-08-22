@@ -35,6 +35,10 @@ public:
     void setTimeScale(float value) { m_timeScale = value; }
     float timeScale() const { return m_timeScale; }
 
+
+    /** この World に含まれている WorldObject のうち、指定した型のコンポーネントを持っている最初の WorldObject を返します。 */
+    WorldObject* findObjectByComponentType(const TypeInfo* type) const;
+
 protected:
     // update sequence
     virtual void onPreUpdate(float elapsedSeconds);

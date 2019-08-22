@@ -6,10 +6,11 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Tilemap/Tilemap.hpp>
-#include <LuminoEngine/Tilemap/TilemapModel.hpp>
-#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
+#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
+#include <LuminoEngine/Tilemap/TilemapModel.hpp>
+#include <LuminoEngine/Tilemap/TilemapComponent.hpp>
+#include <LuminoEngine/Tilemap/Tilemap.hpp>
 
 namespace ln {
 namespace detail {
@@ -34,10 +35,12 @@ void SceneManager::init()
 
     EngineDomain::registerType<World>();
     EngineDomain::registerType<Sprite>();
-    EngineDomain::registerType<Tilemap>();
-    EngineDomain::registerType<TilemapModel>();
-    EngineDomain::registerType<TilemapLayer>();
+
     EngineDomain::registerType<Tileset>();
+    EngineDomain::registerType<TilemapLayer>();
+    EngineDomain::registerType<TilemapModel>();
+    EngineDomain::registerType<TilemapComponent>();
+    EngineDomain::registerType<Tilemap>();
 
     LN_LOG_DEBUG << "SceneManager Initialization ended.";
 }

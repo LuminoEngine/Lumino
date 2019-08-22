@@ -21,6 +21,7 @@ class TilemapModel
 public:
     static Ref<TilemapModel> create();
 
+    Tileset* tileset() const;
     void addTileset(Tileset* tileset);
     void addLayer(AbstractTilemapLayer* layer);
     AbstractTilemapLayer* layer(int index) const;

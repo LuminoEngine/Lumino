@@ -19,6 +19,9 @@ public:
 
 protected:
 
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
+
 LN_CONSTRUCT_ACCESS:
     Tilemap();
 	virtual ~Tilemap();

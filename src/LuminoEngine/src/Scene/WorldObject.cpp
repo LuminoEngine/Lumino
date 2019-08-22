@@ -187,6 +187,24 @@ const Matrix& WorldObject::worldMatrix()
     return m_worldMatrix;
 }
 
+Component* WorldObject::findComponentByType(const TypeInfo* type) const
+{
+    return m_components->findIf([&](auto& x) { return TypeInfo::getTypeInfo(x) == type; }).valueOr(nullptr);
+}
+
+bool WorldObject::traverse(detail::IWorldObjectVisitor* visitor)
+{
+    if (!visitor->visit(this)) {
+        return false;
+    }
+    for (auto& child : m_children) {
+        if (!child->traverse(visitor)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void WorldObject::onPreUpdate()
 {
 }
@@ -235,6 +253,13 @@ void WorldObject::serialize(Archive& ar)
 	Object::serialize(ar);
 	ar & ln::makeNVP(u"Components", *m_components);
 	ar & ln::makeNVP(u"Children", *m_children);
+
+    if (ar.isLoading()) {
+        for (auto& c : m_components) {
+            c->m_object = this;
+            c->onAttached(this);
+        }
+    }
 }
 
 void WorldObject::attachWorld(World* world)

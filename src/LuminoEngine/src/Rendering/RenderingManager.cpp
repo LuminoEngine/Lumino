@@ -34,6 +34,7 @@ RenderingManager::RenderingManager()
 void RenderingManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "RenderingManager Initialization started.";
+    EngineDomain::registerType<Material>();
 
     m_graphicsManager = settings.graphicsManager;
     m_fontManager = settings.fontManager;
@@ -130,7 +131,6 @@ void RenderingManager::init(const Settings& settings)
         material->shadingModel = ShadingModel::UnLighting;
         m_builtinMaterials[(int)BuiltinMaterial::UnLighting] = material;
     }
-
 
     LN_LOG_DEBUG << "RenderingManager Initialization ended.";
 }

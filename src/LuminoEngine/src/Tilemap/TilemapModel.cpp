@@ -16,7 +16,10 @@ namespace ln {
 //==============================================================================
 // TilemapModel
 
-LN_OBJECT_IMPLEMENT(TilemapModel, Object) {}
+LN_OBJECT_IMPLEMENT(TilemapModel, Object)
+{
+    context->registerType<TilemapModel>({});
+}
 
 Ref<TilemapModel> TilemapModel::create()
 {
@@ -127,6 +130,11 @@ void TilemapModel::init(const StringRef& filePath)
             }
         }
     }
+}
+
+Tileset* TilemapModel::tileset() const
+{
+    return m_tilesets[0];
 }
 
 void TilemapModel::addTileset(Tileset* tileset)

@@ -11,7 +11,10 @@ namespace ln {
 //==============================================================================
 // Tileset
 
-LN_OBJECT_IMPLEMENT(Tileset, Object) {}
+LN_OBJECT_IMPLEMENT(Tileset, Object)
+{
+    context->registerType<Tileset>({});
+}
 
 Ref<Tileset> Tileset::create()
 {
@@ -107,6 +110,16 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
         m_material);
 }
 
+void Tileset::serialize(Archive& ar)
+{
+    Object::serialize(ar);
+    ar & makeNVP(u"tilePixelWidth", m_tilePixelWidth);
+    ar & makeNVP(u"tilePixelHeight", m_tilePixelHeight);
+    ar & makeNVP(u"tileScale", m_tileScale);
+    ar & makeNVP(u"material", m_material);
+    ar & makeNVP(u"tiles", m_tiles);
+}
+
 void Tileset::resetInfo()
 {
     //if (!m_material) return;
@@ -116,6 +129,11 @@ void Tileset::resetInfo()
 
     //m_tileUVSize.width = static_cast<float>(m_tilePixelWidth) / m_material->mainTexture()->width();
     //m_tileUVSize.height = static_cast<float>(m_tilePixelHeight) / m_material->mainTexture()->height();
+}
+
+void Tileset::Tile::serialize(Archive& ar)
+{
+    ar & makeNVP(u"sourceRect", sourceRect);
 }
 
 } // namespace ln

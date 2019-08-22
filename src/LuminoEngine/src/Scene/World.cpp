@@ -86,6 +86,36 @@ ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const
 	return m_rootWorldObjectList;
 }
 
+// Multi-Lang 対応のため、テンプレートではなく基本は TypeInfo で検索する
+WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
+{
+    class LocalVisitor : public detail::IWorldObjectVisitor
+    {
+    public:
+        const TypeInfo* type;
+        WorldObject* result = nullptr;
+        virtual bool visit(WorldObject* obj)
+        {
+            for (auto& component : obj->m_components) {
+                if (TypeInfo::getTypeInfo(component) == type) {
+                    result = obj;
+                    return false;
+                }
+            }
+            return true;
+        }
+    } visitor;
+    visitor.type = type;
+
+    for (auto& obj : m_rootWorldObjectList) {
+        if (!obj->traverse(&visitor)) {
+            break;
+        }
+    }
+
+    return visitor.result;
+}
+
 void World::removeRootObject(WorldObject* obj)
 {
 	if (m_rootWorldObjectList->remove(obj)) {
@@ -169,6 +199,12 @@ void World::serialize(Archive& ar)
     Object::serialize(ar);
 
     ar & ln::makeNVP(u"Children", *m_rootWorldObjectList);
+
+    if (ar.isLoading()) {
+        for (auto& obj : m_rootWorldObjectList) {
+            obj->attachWorld(this);
+        }
+    }
 }
 
 detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* viewPoint)

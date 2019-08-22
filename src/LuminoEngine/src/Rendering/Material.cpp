@@ -167,10 +167,10 @@ void AbstractMaterial::updateShaderVariables(Shader* target)
 // https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
 // https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
 
-//static const uint32_t Material_ColorPropertyNameId = CRCHash::compute(_LT("Color"));
-//static const uint32_t Material_RoughnessPropertyNameId = CRCHash::compute(_LT("Roughness"));
-//static const uint32_t Material_MetallicPropertyNameId = CRCHash::compute(_LT("Metallic"));
-//static const uint32_t Material_SpecularPropertyNameId = CRCHash::compute(_LT("Specular"));
+LN_OBJECT_IMPLEMENT(Material, Object)
+{
+    context->registerType<Material>({});
+}
 
 static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
@@ -264,6 +264,12 @@ void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData)
 void Material::translateToPhongMaterialData(detail::PhongMaterialData* outData)
 {
 	LN_NOTIMPLEMENTED();
+}
+
+void Material::serialize(Archive& ar)
+{
+    AbstractMaterial::serialize(ar);
+    ar & makeNVP(u"mainTexture", m_mainTexture);
 }
 
 

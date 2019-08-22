@@ -39,7 +39,7 @@ void AssetModel::init(Object* target)
 ln::Result AssetModel::loadInternal(const ln::Path& filePath)
 {
     String json = FileSystem::readAllText(filePath);
-    JsonSerializer::deserialize(json, *this);
+    JsonSerializer::deserialize(json, filePath.parent(), *this);
     m_assetFilePath = filePath;
     return true;
 }

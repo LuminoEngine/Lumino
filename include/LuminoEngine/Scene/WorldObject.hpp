@@ -77,7 +77,14 @@ private:
     Vector3 m_center;
 };
 
-}
+class IWorldObjectVisitor
+{
+public:
+    // 継続する場合は true, やめる場合は false
+    virtual bool visit(WorldObject* obj) = 0;
+};
+
+} // namespace detail
 
 
 /** World 内の全エンティティのベースクラスです。 */
@@ -158,6 +165,12 @@ public:
 	void removeFromWorld();
 
     const Matrix& worldMatrix();
+
+
+    /** この WorldObject に含まれている Component のうち、指定した型である最初の Component を返します。 */
+    Component* findComponentByType(const TypeInfo* type) const;
+
+    bool traverse(detail::IWorldObjectVisitor* visitor);
 
 protected:
     // 物理演算・衝突判定の前

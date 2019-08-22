@@ -144,7 +144,7 @@ public:	// TODO:
     // TODO: internal
     void updateShaderVariables(Shader* target);
 
-private:
+protected:  // TODO:
 	//void LinkVariables();
 	//ShaderValue* FindShaderValue(const StringRef& name);
 	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
@@ -201,7 +201,7 @@ LN_INTERNAL_ACCESS:
 class Material
 	: public AbstractMaterial
 {
-	//LN_OBJECT;
+	LN_OBJECT;
 public:
 	static Ref<Material> create();
     static Ref<Material> create(Texture* mainTexture);
@@ -217,6 +217,9 @@ public:
 protected:
 	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
 	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	Material();

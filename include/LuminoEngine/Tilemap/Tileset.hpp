@@ -34,6 +34,10 @@ public:
 public: // TODO: internal
     void drawTile(RenderingContext* context, int tileId, const Vector3& pos, const Size& tileSize);
 
+protected:
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
+
 LN_CONSTRUCT_ACCESS:
     Tileset();
 	virtual ~Tileset();
@@ -43,6 +47,8 @@ private:
     struct Tile
     {
         Rect sourceRect;    // unit: px
+
+        void serialize(Archive& ar);
     };
 
     void resetInfo();
@@ -51,9 +57,9 @@ private:
     int m_tilePixelHeight;
     //int m_horizontalTileCount;
     //Size m_tileUVSize;
-    std::vector<Tile> m_tiles;
     Vector2 m_tileScale;
     Ref<Material> m_material;
+    List<Tile> m_tiles;
 };
 
 } // namespace ln
