@@ -44,6 +44,7 @@ private:
 	Ref<Camera> m_camera;
     Ref<RenderViewPoint> m_viewPoint;
     Ref<Material> m_clearMaterial;
+	Ref<StaticMeshModel> m_skyProjectionPlane;
 
     Ref<StaticMeshModel> m_gridPlane;
     bool m_visibleGridPlane;

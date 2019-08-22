@@ -13,6 +13,7 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
+#include "../Mesh/MeshGenerater.hpp"
 #include "SceneManager.hpp"
 
 namespace ln {
@@ -42,6 +43,37 @@ void WorldRenderView::init()
     m_clearMaterial->setShader(detail::EngineDomain::sceneManager()->atmosphereShader());
 
     createGridPlane();
+
+	{
+		detail::PlaneMeshGenerater2 gen;
+		gen.size = Vector2(2, 2);
+		gen.sliceH = 10;
+		gen.sliceV = 10;
+		gen.direction = detail::PlaneMeshDirection::ZMinus;
+
+
+		auto meshResource = makeObject<MeshResource>();
+		meshResource->resizeVertexBuffer(gen.vertexCount());
+		meshResource->resizeIndexBuffer(gen.indexCount());
+		meshResource->addSection(0, gen.indexCount() / 3, 0);
+
+
+		detail::MeshGeneraterBuffer buffer;
+		auto vb = meshResource->requestVertexData(MeshResource::VBG_Basic);
+		IndexBufferFormat fmt;
+		auto ib = meshResource->requestIndexData(&fmt);
+		buffer.setBuffer((Vertex*)vb, ib, fmt, 0);
+		buffer.generate(&gen);
+
+
+		auto meshContainer = makeObject<MeshContainer>();
+		meshContainer->setMeshResource(meshResource);
+
+		m_skyProjectionPlane = makeObject<StaticMeshModel>();
+		m_skyProjectionPlane->addMeshContainer(meshContainer);
+
+		m_skyProjectionPlane->addMaterial(m_clearMaterial);
+	}
 }
 
 void WorldRenderView::setTargetWorld(World* world)
@@ -247,7 +279,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 renderingContext->setTransfrom(mm);
                 renderingContext->setDepthWriteEnabled(false);
                 renderingContext->setMaterial(m_clearMaterial);
-                renderingContext->drawScreenRectangle();
+                //renderingContext->drawScreenRectangle();
+
+				renderingContext->drawMesh(m_skyProjectionPlane->meshContainers()[0]->meshResource(), 0);
                 renderingContext->popState();
 			}
 

@@ -82,6 +82,8 @@ float scale(float fCos)
 
 VSOutput VS_Main(LN_VSInput v)
 {
+
+
 #if 0	// original code
 	// Get the ray from the camera to the vertex, and its length (which is the far point of the ray passing through the atmosphere)
 	vec3 v3Pos = gl_Vertex.xyz;			// これは、fOuterRadius 分の半径を持つ球メッシュの頂点
@@ -104,11 +106,43 @@ VSOutput VS_Main(LN_VSInput v)
 	float3 eyeRay = normalize(mul(localRay, (float3x3)_localWorld));	// 回転乗算のみなので、原点からの方向である
 	o.eyeRay = eyeRay;
 
+	return o;
+}
+//------------------------------------------------------------------------------
 
+#define MIE_G (-0.999)//(-0.990)
+#define MIE_G2 0.9801
 
-	
+float getMiePhase(float eyeCos, float eyeCos2)
+{
+	float temp = 1.0 + MIE_G2 - 2.0 * MIE_G * eyeCos;
+	temp = pow(temp, pow(_SunSize,0.65) * 10);
+	temp = max(temp,1.0e-4); // prevent division by zero, esp. in half precision
+	temp = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + eyeCos2) / temp;
+ #if defined(UNITY_COLORSPACE_GAMMA) && SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
+	temp = pow(temp, .454545);
+#endif
+	return temp;
+}
+
+half calcSunAttenuation(half3 lightPos, half3 ray)
+{
+#if 0 // SKYBOX_SUNDISK == SKYBOX_SUNDISK_SIMPLE
+	half3 delta = lightPos - ray;
+	half dist = length(delta);
+	half spot = 1.0 - smoothstep(0.0, _SunSize, dist);
+	return spot * spot;
+#else // SKYBOX_SUNDISK_HQ
+	half focusedEyeCos = pow(saturate(dot(lightPos, ray)), _SunSizeConvergence);
+	return getMiePhase(-focusedEyeCos, focusedEyeCos * focusedEyeCos);
+#endif
+}
+
+float4 PS_Main(PSInput input) : SV_TARGET
+{
 	float3 fWavelength4 = pow(fWavelength, 4.0);
 	float3 v3InvWavelength = 1.0 / fWavelength4;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
+	float3 eyeRay = input.eyeRay;
 	
 	float3 cameraPos = v3CameraPos;
 	cameraPos.y += fInnerRadius;
@@ -150,59 +184,19 @@ VSOutput VS_Main(LN_VSInput v)
 		float3 v3Attenuate = exp(-fScatter * (v3InvWavelength * fKr4PI + fKm4PI));
 		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
 		v3SamplePoint += v3SampleRay;
+
+		//o.TestColor = float3(0, 0, 0);
+		//o.TestColor = v3FrontColor * 100000;
+		//o.TestColor.r = fKr4PI * 100;;
+		//o.TestColor.g = fKm4PI * 100;;
 	}
+	//return float4(v3FrontColor, 1);
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
 	/* secondaryColor */ float3 FrontSecondaryColor.rgb = v3FrontColor * fKmESun;
 	/* primaryColor */ float3 FrontColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun);
-	float3 v3Direction = -v3Ray;
+	float3 v3Direction = -v3Ray;//v3CameraPos - v3Pos;
 
-
-
-
-
-
-	o.v3Direction = v3Direction;
-	o.FrontColor = FrontColor;
-	o.FrontSecondaryColor = FrontSecondaryColor;
-	return o;
-}
-//------------------------------------------------------------------------------
-
-#define MIE_G (-0.999)//(-0.990)
-#define MIE_G2 0.9801
-
-float getMiePhase(float eyeCos, float eyeCos2)
-{
-	float temp = 1.0 + MIE_G2 - 2.0 * MIE_G * eyeCos;
-	temp = pow(temp, pow(_SunSize,0.65) * 10);
-	temp = max(temp,1.0e-4); // prevent division by zero, esp. in half precision
-	temp = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + eyeCos2) / temp;
- #if defined(UNITY_COLORSPACE_GAMMA) && SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
-	temp = pow(temp, .454545);
-#endif
-	return temp;
-}
-
-half calcSunAttenuation(half3 lightPos, half3 ray)
-{
-#if 0 // SKYBOX_SUNDISK == SKYBOX_SUNDISK_SIMPLE
-	half3 delta = lightPos - ray;
-	half dist = length(delta);
-	half spot = 1.0 - smoothstep(0.0, _SunSize, dist);
-	return spot * spot;
-#else // SKYBOX_SUNDISK_HQ
-	half focusedEyeCos = pow(saturate(dot(lightPos, ray)), _SunSizeConvergence);
-	return getMiePhase(-focusedEyeCos, focusedEyeCos * focusedEyeCos);
-#endif
-}
-
-float4 PS_Main(PSInput input) : SV_TARGET
-{	
-	float3 FrontSecondaryColor = input.FrontSecondaryColor;
-	float3 FrontColor = input.FrontColor;
-	float3 v3Direction = input.v3Direction;
-	float3 v3Ray = v3Direction;
 
 	//-----------------------------------------------
 
@@ -219,7 +213,6 @@ float4 PS_Main(PSInput input) : SV_TARGET
 	float3 c = float3(1.0, 1.0, 1.0) - exp(-exposure * (raycolor + miecolor));
 
 
-#if 0
 	{
 		float3 cOut = FrontSecondaryColor;
 		float3 lightColor = float3(1, 1, 1);
@@ -227,12 +220,11 @@ float4 PS_Main(PSInput input) : SV_TARGET
 		float3 sunColor = kHDSundiskIntensityFactor * saturate(cOut) * lightColor / lightColorIntensity;
 		c += sunColor * calcSunAttenuation(v3LightPos, v3Ray);
 	}
-#endif
 	
 
 	float4 color;
 	color.rgb = c;
-	color.a = 1;//color.b;
+	color.a = color.b;
 	return color;
 #else
 	float fCos = dot(v3LightPos, v3Direction) / length(v3Direction);
