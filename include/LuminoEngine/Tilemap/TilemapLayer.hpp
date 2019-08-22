@@ -16,6 +16,7 @@ enum class TilemapOrientation
 class AbstractTilemapLayer
 	: public Object
 {
+    LN_OBJECT;
 public:
 
     //void resize(int width, int height);
@@ -49,6 +50,7 @@ private:
 class TilemapLayer
     : public AbstractTilemapLayer
 {
+    LN_OBJECT;
 public:
     static Ref<TilemapLayer> create();
 

@@ -57,6 +57,7 @@ public:
 private:
 	void WorldRenderView_OnUIEvent(ln::UIEventArgs* e);
 
+    Ref<ln::AssetModel> m_assetModel;
 	Ref<TilemapSceneEditorModel> m_model;
 
     Ref<TilemapSceneModePane> m_modePane;

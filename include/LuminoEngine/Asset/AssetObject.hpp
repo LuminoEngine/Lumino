@@ -53,6 +53,8 @@ public:
 
     Object* target() const;
 
+    Path assetFilePath() const { return  m_assetFilePath; }
+
 	Ref<AssetProperty> findProperty(const String& path);
 
     void addChild(AssetModel* model);
@@ -77,6 +79,7 @@ private:
 	Ref<Object> m_target;
     Ref<AssetModel> m_parent;
     List<Ref<AssetModel>> m_children;
+    Path m_assetFilePath;
 };
 
 class AssetProperty

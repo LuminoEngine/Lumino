@@ -244,6 +244,8 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     }
 
     editorContext()->mainProject()->assetDatabase()->createAsset(m_mainWorld, u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/test.lnasset");
+ 
+    //editorContext()->mainProject()->assetDatabase()->saveAsset(m_assetModel);
 }
 
 void TilemapSceneEditor::onClosed()

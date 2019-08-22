@@ -5,8 +5,11 @@
 // for registerType
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
-#include <LuminoEngine/Tilemap/Tilemap.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Tilemap/Tilemap.hpp>
+#include <LuminoEngine/Tilemap/TilemapModel.hpp>
+#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
+#include <LuminoEngine/Tilemap/Tileset.hpp>
 
 namespace ln {
 namespace detail {
@@ -27,11 +30,14 @@ void SceneManager::init()
 {
     LN_LOG_DEBUG << "SceneManager Initialization started.";
 
-    m_atmosphereShader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
+    m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
 
     EngineDomain::registerType<World>();
     EngineDomain::registerType<Sprite>();
     EngineDomain::registerType<Tilemap>();
+    EngineDomain::registerType<TilemapModel>();
+    EngineDomain::registerType<TilemapLayer>();
+    EngineDomain::registerType<Tileset>();
 
     LN_LOG_DEBUG << "SceneManager Initialization ended.";
 }

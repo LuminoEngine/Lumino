@@ -16,6 +16,8 @@ namespace ln {
 //==============================================================================
 // TilemapModel
 
+LN_OBJECT_IMPLEMENT(TilemapModel, Object) {}
+
 Ref<TilemapModel> TilemapModel::create()
 {
     return makeObject<TilemapModel>();

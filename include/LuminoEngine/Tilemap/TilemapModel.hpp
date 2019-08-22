@@ -17,6 +17,7 @@ class AbstractTilemapLayer;
 class TilemapModel
 	: public Object
 {
+    LN_OBJECT;
 public:
     static Ref<TilemapModel> create();
 

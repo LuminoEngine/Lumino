@@ -9,6 +9,11 @@ namespace ln {
 //==============================================================================
 // AbstractTilemapLayer
 
+LN_OBJECT_IMPLEMENT(AbstractTilemapLayer, Object)
+{
+    context->registerType<AbstractTilemapLayer>({});
+}
+
 AbstractTilemapLayer::AbstractTilemapLayer()
     : m_tileSize(1, 1)
     , m_orientation(TilemapOrientation::UpFlow)
@@ -147,6 +152,11 @@ void AbstractTilemapLayer::render(TilemapModel* model, RenderingContext* context
 
 //==============================================================================
 // TilemapLayer
+
+LN_OBJECT_IMPLEMENT(TilemapLayer, AbstractTilemapLayer)
+{
+    context->registerType<TilemapLayer>({});
+}
 
 Ref<TilemapLayer> TilemapLayer::create()
 {

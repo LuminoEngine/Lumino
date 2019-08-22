@@ -59,6 +59,13 @@ ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePat
     return true;
 }
 
+ln::Result AssetDatabase::saveAsset(ln::AssetModel* asset)
+{
+    if (LN_REQUIRE(asset)) return false;
+    if (LN_REQUIRE(!asset->assetFilePath().isEmpty())) return false;
+    return asset->saveInternal(asset->assetFilePath());
+}
+
 bool AssetDatabase::isAssetFile(const ln::Path& file)
 {
     return file.hasExtension(ln::AssetModel::AssetFileExtension);

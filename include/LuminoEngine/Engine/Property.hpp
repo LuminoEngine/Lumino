@@ -462,7 +462,7 @@ public:
 
 		if (m_typeInfoSet.find(typeInfo->name()) == m_typeInfoSet.end())
 		{
-			typeInfo->m_factory = []() { return makeObject<TClassType>(); };
+			typeInfo->m_factory = []() { return detail::makeObjectHelper<TClassType>(); };
 
 			m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
 
