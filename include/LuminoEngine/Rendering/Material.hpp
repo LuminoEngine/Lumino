@@ -232,43 +232,43 @@ private:
 
 
 /** 非物理ベースレンダリングで使用される Phong シェーディング用のマテリアルです。 */
-class PhongMaterial
-	: public AbstractMaterial
-{
-	//LN_OBJECT;
-public:
-	static const String DiffuseParameterName;
-	static const String AmbientParameterName;
-	static const String EmissiveParameterName;
-	static const String SpecularParameterName;
-	static const String SpecularPowerParameterName;
-
-	static const Color DefaultDiffuse;
-	static const Color DefaultAmbient;
-	static const Color DefaultSpecular;
-	static const Color DefaultEmissive;
-	static const float DefaultPower;
-
-	static Ref<PhongMaterial> create();
-
-	void setDiffuse(const Color& value);
-	void setAmbient(const Color& value);
-	void setEmissive(const Color& value);
-	void setSpecular(const Color& value);
-	void setSpecularPower(float value);
-
-protected:
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
-
-LN_CONSTRUCT_ACCESS:
-	PhongMaterial();
-	virtual ~PhongMaterial();
-	void init();
-
-private:
-	detail::PhongMaterialData m_data;
-};
+//class PhongMaterial
+//	: public AbstractMaterial
+//{
+//	//LN_OBJECT;
+//public:
+//	static const String DiffuseParameterName;
+//	static const String AmbientParameterName;
+//	static const String EmissiveParameterName;
+//	static const String SpecularParameterName;
+//	static const String SpecularPowerParameterName;
+//
+//	static const Color DefaultDiffuse;
+//	static const Color DefaultAmbient;
+//	static const Color DefaultSpecular;
+//	static const Color DefaultEmissive;
+//	static const float DefaultPower;
+//
+//	static Ref<PhongMaterial> create();
+//
+//	void setDiffuse(const Color& value);
+//	void setAmbient(const Color& value);
+//	void setEmissive(const Color& value);
+//	void setSpecular(const Color& value);
+//	void setSpecularPower(float value);
+//
+//protected:
+//	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
+//	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+//
+//LN_CONSTRUCT_ACCESS:
+//	PhongMaterial();
+//	virtual ~PhongMaterial();
+//	void init();
+//
+//private:
+//	detail::PhongMaterialData m_data;
+//};
 
 } // namespace ln
 

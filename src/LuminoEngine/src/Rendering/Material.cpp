@@ -229,7 +229,6 @@ void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phong
     init();
     setMainTexture(mainTexture);
     setColor(phongMaterialData.diffuse);
-    //setSpecular(phongMaterialData.power);
 }
 
 void Material::setColor(const Color& value)
@@ -268,84 +267,84 @@ void Material::translateToPhongMaterialData(detail::PhongMaterialData* outData)
 }
 
 
-//==============================================================================
-// PhongMaterial
-
-//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhongMaterial, PhongMaterial);
-
-const String PhongMaterial::DiffuseParameterName(u"_Diffuse");
-const String PhongMaterial::AmbientParameterName(u"_Ambient");
-const String PhongMaterial::EmissiveParameterName(u"_Emissive");
-const String PhongMaterial::SpecularParameterName(u"_Specular");
-const String PhongMaterial::SpecularPowerParameterName(u"_Power");
-
-const Color PhongMaterial::DefaultDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
-const Color PhongMaterial::DefaultAmbient(0.0f, 0.0f, 0.0f, 0.0f);
-const Color PhongMaterial::DefaultSpecular(0.5f, 0.5f, 0.5f, 0.5f);
-const Color PhongMaterial::DefaultEmissive(0.0f, 0.0f, 0.0f, 0.0f);
-const float PhongMaterial::DefaultPower = 50.0f;
-
-Ref<PhongMaterial> PhongMaterial::create()
-{
-	return makeObject<PhongMaterial>();
-}
-
-PhongMaterial::PhongMaterial()
-	: AbstractMaterial(detail::MaterialType::Phong)
-{
-}
-
-PhongMaterial::~PhongMaterial()
-{
-}
-
-void PhongMaterial::init()
-{
-	AbstractMaterial::init();
-}
-
-void PhongMaterial::setDiffuse(const Color& value)
-{
-	m_data.diffuse = value;
-	setColor(DiffuseParameterName, value);
-}
-
-void PhongMaterial::setAmbient(const Color& value)
-{
-	m_data.ambient = value;
-	setColor(AmbientParameterName, value);
-}
-
-void PhongMaterial::setEmissive(const Color& value)
-{
-	m_data.emissive = value;
-	setColor(EmissiveParameterName, value);
-}
-
-void PhongMaterial::setSpecular(const Color& value)
-{
-	m_data.specular = value;
-	setColor(SpecularParameterName, value);
-}
-
-void PhongMaterial::setSpecularPower(float value)
-{
-	m_data.power = value;
-	setFloat(SpecularPowerParameterName, value);
-}
-
-void PhongMaterial::translateToPBRMaterialData(detail::PbrMaterialData* outData)
-{
-	outData->color = m_data.diffuse;
-	outData->roughness = Material_DefaultRoughness;
-	outData->metallic = Material_DefaultMetallic;
-	//outData->specular = Material_DefaultSpecular;
-}
-
-void PhongMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)
-{
-	*outData = m_data;
-}
+////==============================================================================
+//// PhongMaterial
+//
+////LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhongMaterial, PhongMaterial);
+//
+//const String PhongMaterial::DiffuseParameterName(u"_Diffuse");
+//const String PhongMaterial::AmbientParameterName(u"_Ambient");
+//const String PhongMaterial::EmissiveParameterName(u"_Emissive");
+//const String PhongMaterial::SpecularParameterName(u"_Specular");
+//const String PhongMaterial::SpecularPowerParameterName(u"_Power");
+//
+//const Color PhongMaterial::DefaultDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+//const Color PhongMaterial::DefaultAmbient(0.0f, 0.0f, 0.0f, 0.0f);
+//const Color PhongMaterial::DefaultSpecular(0.5f, 0.5f, 0.5f, 0.5f);
+//const Color PhongMaterial::DefaultEmissive(0.0f, 0.0f, 0.0f, 0.0f);
+//const float PhongMaterial::DefaultPower = 50.0f;
+//
+//Ref<PhongMaterial> PhongMaterial::create()
+//{
+//	return makeObject<PhongMaterial>();
+//}
+//
+//PhongMaterial::PhongMaterial()
+//	: AbstractMaterial(detail::MaterialType::Phong)
+//{
+//}
+//
+//PhongMaterial::~PhongMaterial()
+//{
+//}
+//
+//void PhongMaterial::init()
+//{
+//	AbstractMaterial::init();
+//}
+//
+//void PhongMaterial::setDiffuse(const Color& value)
+//{
+//	m_data.diffuse = value;
+//	setColor(DiffuseParameterName, value);
+//}
+//
+//void PhongMaterial::setAmbient(const Color& value)
+//{
+//	m_data.ambient = value;
+//	setColor(AmbientParameterName, value);
+//}
+//
+//void PhongMaterial::setEmissive(const Color& value)
+//{
+//	m_data.emissive = value;
+//	setColor(EmissiveParameterName, value);
+//}
+//
+//void PhongMaterial::setSpecular(const Color& value)
+//{
+//	m_data.specular = value;
+//	setColor(SpecularParameterName, value);
+//}
+//
+//void PhongMaterial::setSpecularPower(float value)
+//{
+//	m_data.power = value;
+//	setFloat(SpecularPowerParameterName, value);
+//}
+//
+//void PhongMaterial::translateToPBRMaterialData(detail::PbrMaterialData* outData)
+//{
+//	outData->color = m_data.diffuse;
+//	outData->roughness = Material_DefaultRoughness;
+//	outData->metallic = Material_DefaultMetallic;
+//	//outData->specular = Material_DefaultSpecular;
+//}
+//
+//void PhongMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)
+//{
+//	*outData = m_data;
+//}
 
 } // namespace ln
 

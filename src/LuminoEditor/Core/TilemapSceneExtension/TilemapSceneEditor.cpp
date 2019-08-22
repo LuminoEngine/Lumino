@@ -185,7 +185,8 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
 
 
-    auto m_mainWorld = ln::makeObject<ln::World>();
+    auto m_mainWorld = ln::makeObject<ln::World>(); //dynamic_cast<ln::World*>(asset->target());//
+    if (LN_REQUIRE(m_mainWorld)) return;
     //auto m_mainWorldAsset = ln::AssetModel::create(m_mainWorld);
 
     m_mainCamera = ln::makeObject<ln::Camera>();
@@ -200,6 +201,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
 
     // TODO: test
+    if (1)
     {
         //editorContext()->mainProject()->assetDatabase()->importAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png", "D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png");
 
