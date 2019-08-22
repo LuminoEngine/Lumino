@@ -3,13 +3,16 @@
 
 float4x4 _localWorld;
 float4x4 _scaleMatrix;
+const float _SunSize = 0.04;
+const float _SunSizeConvergence = 5.0;
 
 #if 1
 const float EARTH_RADIUS = 6370997.0;//10.0
 const float PI = 3.14159;
 const float Kr = 0.0025 - 0.00015;		// Rayleigh scattering constant
-const float Km = 0.0010 + 0.0015;		// Mie scattering constant
+const float Km = 0.0010 - 0.0005;		// Mie scattering constant
 const float ESun = 1300.0;		// Sun brightness constant
+const float exposure = 0.08;
 #else
 const float EARTH_RADIUS = 6370997.0;//10.0
 const float PI = 3.14159;
@@ -23,7 +26,7 @@ const float3 fWavelength = float3(0.650, 0.570, 0.475);
 float3 v3CameraPos;		// The camera's current position
 //const float fCameraHeight = 0.1;	// The camera's current height
 
-const float3 v3LightPos = float3(0, 1, 0);		// The direction vector to the light source
+const float3 v3LightPos = float3(0, 0, 1);		// The direction vector to the light source
 const float fOuterRadius = EARTH_RADIUS * 1.025;						// The outer (atmosphere) radius
 const float fOuterRadius2 = fOuterRadius * fOuterRadius;	// fOuterRadius^2
 const float fInnerRadius = EARTH_RADIUS;							// The inner (planetary) radius
@@ -36,8 +39,10 @@ const float fScale = 1.0 / (fOuterRadius - fInnerRadius);			// 1 / (fOuterRadius
 const float fScaleDepth = 0.25;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
 const float fScaleOverScaleDepth = ((1.0 / (fOuterRadius - fInnerRadius)) / fScaleDepth);
 
-const int nSamples = 2;
-const float fSamples = 2.0;
+const int nSamples = 5;//2
+const float fSamples = 5.0;//2.0
+
+const float kHDSundiskIntensityFactor = 15.0;
 
 struct VSOutput
 {
@@ -46,6 +51,7 @@ struct VSOutput
 	float3  FrontColor	: TEXCOORD1;
 	float3  FrontSecondaryColor	: TEXCOORD2;
 	float3  TestColor	: TEXCOORD3;
+	float3  eyeRay	: TEXCOORD4;
 };
 
 struct PSInput
@@ -54,6 +60,7 @@ struct PSInput
 	float3  FrontColor	: TEXCOORD1;
 	float3  FrontSecondaryColor	: TEXCOORD2;
 	float3  TestColor	: TEXCOORD3;
+	float3  eyeRay	: TEXCOORD4;
 };
 
 
@@ -75,8 +82,6 @@ float scale(float fCos)
 
 VSOutput VS_Main(LN_VSInput v)
 {
-	float3 fWavelength4 = pow(fWavelength, 4.0);
-	float3 v3InvWavelength = 1.0 / fWavelength4;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
 
 
 #if 0	// original code
@@ -90,36 +95,78 @@ VSOutput VS_Main(LN_VSInput v)
 	VSOutput o;
 	o.svPos = float4(v.Pos, 1.0);
 	o.TestColor = float3(0, 0, 0);
+	o.v3Direction = float3(0, 0, 0);
+	o.FrontColor = float3(0, 0, 0);
+	o.FrontSecondaryColor = float3(0, 0, 0);
+	o.TestColor = float3(0, 0, 0);
+
 
 	float3 viewportPos = float3(v.Pos.x, v.Pos.y, 1.0);
 	float3 localRay = mul(viewportPos, (float3x3)_scaleMatrix);
 	float3 eyeRay = normalize(mul(localRay, (float3x3)_localWorld));	// 回転乗算のみなので、原点からの方向である
+	o.eyeRay = eyeRay;
 
+	return o;
+}
+//------------------------------------------------------------------------------
+
+#define MIE_G (-0.999)//(-0.990)
+#define MIE_G2 0.9801
+
+float getMiePhase(float eyeCos, float eyeCos2)
+{
+	float temp = 1.0 + MIE_G2 - 2.0 * MIE_G * eyeCos;
+	temp = pow(temp, pow(_SunSize,0.65) * 10);
+	temp = max(temp,1.0e-4); // prevent division by zero, esp. in half precision
+	temp = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + eyeCos2) / temp;
+ #if defined(UNITY_COLORSPACE_GAMMA) && SKYBOX_COLOR_IN_TARGET_COLOR_SPACE
+	temp = pow(temp, .454545);
+#endif
+	return temp;
+}
+
+half calcSunAttenuation(half3 lightPos, half3 ray)
+{
+#if 0 // SKYBOX_SUNDISK == SKYBOX_SUNDISK_SIMPLE
+	half3 delta = lightPos - ray;
+	half dist = length(delta);
+	half spot = 1.0 - smoothstep(0.0, _SunSize, dist);
+	return spot * spot;
+#else // SKYBOX_SUNDISK_HQ
+	half focusedEyeCos = pow(saturate(dot(lightPos, ray)), _SunSizeConvergence);
+	return getMiePhase(-focusedEyeCos, focusedEyeCos * focusedEyeCos);
+#endif
+}
+
+float4 PS_Main(PSInput input) : SV_TARGET
+{
+	float3 fWavelength4 = pow(fWavelength, 4.0);
+	float3 v3InvWavelength = 1.0 / fWavelength4;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
+	float3 eyeRay = input.eyeRay;
+	
 	float3 cameraPos = v3CameraPos;
 	cameraPos.y += fInnerRadius;
 	float3 skyPos = IntersectionPos(cameraPos, eyeRay, fOuterRadius);
 	if (skyPos.x == 0) {
 		// TODO: Camera is out of celestial sphere.
 		//clip(-1);
-		skyPos = float3(0, 0, 0);
+		//skyPos = float3(0, 0, 0);
 	}
 
 	float3 v3Ray = skyPos - cameraPos;
-	o.TestColor = v3Ray;// / fOuterRadius;
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
 	float fCameraHeight = length(cameraPos);
 
 	// Calculate the ray's starting position, then calculate its scattering offset
-	float3 v3Start = v3CameraPos;
+	float3 v3Start = cameraPos;
 	float fHeight = length(v3Start);
 	float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
 	float fStartAngle = dot(v3Ray, v3Start) / fHeight;
 	float fStartOffset = fDepth*scale(fStartAngle);
 
 	// Initialize the scattering loop variables
-	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
 	float fSampleLength = fFar / fSamples;
 	float fScaledLength = fSampleLength * fScale;
 	float3 v3SampleRay = v3Ray * fSampleLength;
@@ -143,29 +190,50 @@ VSOutput VS_Main(LN_VSInput v)
 		//o.TestColor.r = fKr4PI * 100;;
 		//o.TestColor.g = fKm4PI * 100;;
 	}
+	//return float4(v3FrontColor, 1);
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
-	o.FrontSecondaryColor.rgb = v3FrontColor * fKmESun;
-	o.FrontColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun);
-	o.v3Direction = -v3Ray;//v3CameraPos - v3Pos;
+	/* secondaryColor */ float3 FrontSecondaryColor.rgb = v3FrontColor * fKmESun;
+	/* primaryColor */ float3 FrontColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun);
+	float3 v3Direction = -v3Ray;//v3CameraPos - v3Pos;
 
-	return o;
-}
-//------------------------------------------------------------------------------
 
-#define MIE_G (-0.990)
-#define MIE_G2 0.9801
+	//-----------------------------------------------
 
-float4 PS_Main(PSInput input) : SV_TARGET
-{
-	return float4(input.TestColor, 1);
+#if 1
+	float fCos = dot(v3LightPos, v3Direction) / length(v3Direction);
+	float fRayPhase = 0.75 * (1.0 + fCos * fCos);
 
-	float fCos = dot(v3LightPos, input.v3Direction) / length(input.v3Direction);
-	float fMiePhase = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + fCos*fCos) / pow(1.0 + MIE_G2 - 2.0*MIE_G*fCos, 1.5);
+	float fMiePhase = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + fCos*fCos) / pow(abs(1.0 + MIE_G2 - 2.0*MIE_G*fCos), 1.5);
+	
+	float3 raycolor = (FrontColor*fRayPhase).xyz;
+	float3 miecolor = (FrontSecondaryColor*fMiePhase).xyz;
+	
+
+	float3 c = float3(1.0, 1.0, 1.0) - exp(-exposure * (raycolor + miecolor));
+
+
+	{
+		float3 cOut = FrontSecondaryColor;
+		float3 lightColor = float3(1, 1, 1);
+		float lightColorIntensity = clamp(length(lightColor), 0.25, 1);
+		float3 sunColor = kHDSundiskIntensityFactor * saturate(cOut) * lightColor / lightColorIntensity;
+		c += sunColor * calcSunAttenuation(v3LightPos, v3Ray);
+	}
+	
+
 	float4 color;
-    color.rgb = input.FrontColor + fMiePhase * input.FrontSecondaryColor;
+	color.rgb = c;
 	color.a = color.b;
 	return color;
+#else
+	float fCos = dot(v3LightPos, v3Direction) / length(v3Direction);
+	float fMiePhase = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + fCos*fCos) / pow(1.0 + MIE_G2 - 2.0*MIE_G*fCos, 1.5);
+	float4 color;
+    color.rgb = FrontColor + fMiePhase * FrontSecondaryColor;
+	color.a = color.b;
+	return color;
+#endif
 }
 //------------------------------------------------------------------------------
 

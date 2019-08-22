@@ -176,24 +176,167 @@ template<
 
 int UISandboxMain();
 
+
+
+
+const float EARTH_RADIUS = 10.0;
+const float PI = 3.14159;
+const float Kr = 0.0025 - 0.00015;		// Rayleigh scattering constant
+const float Km = 0.0010 - 0.0005;		// Mie scattering constant
+const float ESun = 1300.0;		// Sun brightness constant
+const float exposure = 0.08;
+
+
+const Vector3 fWavelength = Vector3(0.650, 0.570, 0.475);
+
+Vector3 v3CameraPos = Vector3(0, 0, 0.1);		// The camera's current position
+//const float fCameraHeight = 0.1;	// The camera's current height
+
+const Vector3 v3LightPos = Vector3(0, 0, 1);		// The direction vector to the light source
+const float fOuterRadius = EARTH_RADIUS * 1.025;						// The outer (atmosphere) radius
+const float fOuterRadius2 = fOuterRadius * fOuterRadius;	// fOuterRadius^2
+const float fInnerRadius = EARTH_RADIUS;							// The inner (planetary) radius
+const float fInnerRadius2 = fInnerRadius * fInnerRadius;	// fInnerRadius^2
+const float fKrESun = Kr * ESun;
+const float fKmESun = Km * ESun;
+const float fKr4PI = Kr * 4.0 * PI;
+const float fKm4PI = Km * 4.0 * PI;
+const float fScale = 1.0 / (fOuterRadius - fInnerRadius);			// 1 / (fOuterRadius - fInnerRadius)
+const float fScaleDepth = 0.25;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
+const float fScaleOverScaleDepth = (fScale / fScaleDepth);
+
+const int nSamples = 5;//2
+const float fSamples = 5.0;//2.0
+
+#define MIE_G (-0.999)//(-0.990)
+#define MIE_G2 0.9801
+
 Vector3 IntersectionPos(Vector3 rayPos, Vector3 rayDir, float sphereRadius)
 {
-    const float A = Vector3::dot(rayDir, rayDir);
-    const float B = 2.0*Vector3::dot(rayPos, rayDir);
-    const float C = Vector3::dot(rayPos, rayPos) - sphereRadius * sphereRadius;
+	const float A = Vector3::dot(rayDir, rayDir);
+	const float B = 2.0*Vector3::dot(rayPos, rayDir);
+	const float C = Vector3::dot(rayPos, rayPos) - sphereRadius * sphereRadius;
 
-    return B * B - 4.0*A*C < 0.000001 ? Vector3(0, 0, 0) : (rayPos + rayDir * (0.5*(-B + sqrt(B*B - 4.0*A*C)) / A));
+	return B * B - 4.0*A*C < 0.000001 ? Vector3(0, 0, 0) : (rayPos + rayDir * (0.5*(-B + sqrt(B*B - 4.0*A*C)) / A));
 }
+
+float scale(float fCos)
+{
+	float x = 1.0 - fCos;
+	return fScaleDepth * exp(-0.00287 + x * (0.459 + x * (3.83 + x * (-6.80 + x * 5.25))));
+}
+
+Vector3 exp(Vector3 v)
+{
+	return Vector3(exp(v.x), exp(v.y), exp(v.z));
+};
+
+Vector4 PS_Main()
+{
+	Vector3 fWavelength4 = Vector3(pow(fWavelength.x, 4.0), pow(fWavelength.y, 4.0), pow(fWavelength.z, 4.0));
+	Vector3 v3InvWavelength = 1.0 / fWavelength4;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
+	Vector3 eyeRay = Vector3(0, 0, 1);//input.eyeRay;
+
+	Vector3 cameraPos = v3CameraPos;
+	cameraPos.y += fInnerRadius;
+	Vector3 skyPos = IntersectionPos(cameraPos, eyeRay, fOuterRadius);
+	if (skyPos.x == 0) {
+		// TODO: Camera is out of celestial sphere.
+		//clip(-1);
+		//skyPos = Vector3(0, 0, 0);
+	}
+
+	Vector3 v3Ray = skyPos - cameraPos;
+	float fFar = v3Ray.length();
+	v3Ray /= fFar;
+
+	float fCameraHeight = cameraPos.length();
+
+	// Calculate the ray's starting position, then calculate its scattering offset
+	Vector3 v3Start = cameraPos;
+	float fHeight = v3Start.length();
+	float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
+	float fStartAngle = Vector3::dot(v3Ray, v3Start) / fHeight;
+	float fStartOffset = fDepth * scale(fStartAngle);
+
+	// Initialize the scattering loop variables
+	float fSampleLength = fFar / fSamples;
+	float fScaledLength = fSampleLength * fScale;
+	Vector3 v3SampleRay = v3Ray * fSampleLength;
+	Vector3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
+
+	// Now loop through the sample rays
+	Vector3 v3FrontColor = Vector3(0.0, 0.0, 0.0);
+	for (int i = 0; i < nSamples; i++)
+	{
+		float fHeight = v3SamplePoint.length();
+		float t = fScaleOverScaleDepth * (fInnerRadius - fHeight);
+		float fDepth = exp(t);
+		float fLightAngle = Vector3::dot(v3LightPos, v3SamplePoint) / fHeight;
+		float fCameraAngle = Vector3::dot(v3Ray, v3SamplePoint) / fHeight;
+		float fScatter = (fStartOffset + fDepth * (scale(fLightAngle) - scale(fCameraAngle)));
+		Vector3 s = -fScatter * (v3InvWavelength * fKr4PI + fKm4PI);
+		Vector3 v3Attenuate = exp(s);
+		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
+		v3SamplePoint += v3SampleRay;
+
+		//o.TestColor = Vector3(0, 0, 0);
+		//o.TestColor = v3FrontColor * 100000;
+		//o.TestColor.r = fKr4PI * 100;;
+		//o.TestColor.g = fKm4PI * 100;;
+	}
+	return Vector4(v3FrontColor, 1);
+
+	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
+	/* secondaryColor */ Vector3 FrontSecondaryColor = v3FrontColor * fKmESun;
+	/* primaryColor */ Vector3 FrontColor = v3FrontColor * (v3InvWavelength * fKrESun);
+	Vector3 v3Direction = -v3Ray;//v3CameraPos - v3Pos;
+
+
+	//-----------------------------------------------
+
+	float fCos = Vector3::dot(v3LightPos, v3Direction) / v3Direction.length();
+	float fRayPhase = 0.75 * (1.0 + fCos * fCos);
+
+	float fMiePhase = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + fCos * fCos) / pow(abs(1.0 + MIE_G2 - 2.0*MIE_G*fCos), 1.5);
+
+	Vector3 raycolor = (FrontColor*fRayPhase);
+	Vector3 miecolor = (FrontSecondaryColor*fMiePhase);
+
+
+	Vector3 c = Vector3(1.0, 1.0, 1.0) - exp(-exposure * (raycolor + miecolor));
+
+	return Vector4(c, 1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
     auto e0 = powf(0.650, 4);
 
-    const float EARTH_RADIUS = 6370997.0;
-    const float fOuterRadius = EARTH_RADIUS * 1.025;
-    Vector3 cameraPos = Vector3(0, EARTH_RADIUS, -10);
-    auto re = IntersectionPos(cameraPos, Vector3(0, 0, 1), fOuterRadius);
+	PS_Main();
 
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
