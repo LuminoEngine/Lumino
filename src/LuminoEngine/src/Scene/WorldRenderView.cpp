@@ -47,8 +47,8 @@ void WorldRenderView::init()
 	{
 		detail::PlaneMeshGenerater2 gen;
 		gen.size = Vector2(2, 2);
-		gen.sliceH = 10;
-		gen.sliceV = 10;
+		gen.sliceH = 30;
+		gen.sliceV = 30;
 		gen.direction = detail::PlaneMeshDirection::ZMinus;
 
 
@@ -280,7 +280,6 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
                 renderingContext->setDepthWriteEnabled(false);
                 renderingContext->setMaterial(m_clearMaterial);
                 //renderingContext->drawScreenRectangle();
-
 				renderingContext->drawMesh(m_skyProjectionPlane->meshContainers()[0]->meshResource(), 0);
                 renderingContext->popState();
 			}

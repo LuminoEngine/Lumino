@@ -9,15 +9,15 @@ const float _SunSizeConvergence = 5.0;
 #if 1
 const float EARTH_RADIUS = 6370997.0;//10.0
 const float PI = 3.14159;
-const float Kr = 0.0020;		// Rayleigh scattering constant
-const float Km = 0.0005;		// Mie scattering constant
+const float Kr = 0.0025 - 0.00015;		// Rayleigh scattering constant
+const float Km = 0.0010 - 0.0005;		// Mie scattering constant
 const float ESun = 1300.0;		// Sun brightness constant
-const float exposure = 0.04;//1.3;//0.08;//
+const float exposure = 0.08;
 #else
 const float EARTH_RADIUS = 6370997.0;//10.0
 const float PI = 3.14159;
 const float Kr = 0.0025;		// Rayleigh scattering constant
-const float Km = 0.0010;//0.0010;		// Mie scattering constant
+const float Km = 0.0010;		// Mie scattering constant
 const float ESun = 20.0f;		// Sun brightness constant
 #endif
 
@@ -25,10 +25,6 @@ const float3 fWavelength = float3(0.650, 0.570, 0.475);
 
 float3 v3CameraPos;		// The camera's current position
 //const float fCameraHeight = 0.1;	// The camera's current height
-
-const float3 _Exposure = exposure;
-const float3 _LightColor0 = float3(1, 1, 1);
-const float3 _GroundColor = float3(0.369, 0.349, 0.341);//float3(1, 1, 1);
 
 const float3 v3LightPos = normalize(float3(0, 1, 1));		// The direction vector to the light source
 const float fOuterRadius = EARTH_RADIUS * 1.025;						// The outer (atmosphere) radius
@@ -56,10 +52,6 @@ struct VSOutput
 	float3  FrontSecondaryColor	: TEXCOORD2;
 	float3  TestColor	: TEXCOORD3;
 	float3  eyeRay	: TEXCOORD4;
-	
-	float3	groundColor		: TEXCOORD5;
-	float3	skyColor		: TEXCOORD6;
-	float3	sunColor		: TEXCOORD7;
 };
 
 struct PSInput
@@ -69,17 +61,10 @@ struct PSInput
 	float3  FrontSecondaryColor	: TEXCOORD2;
 	float3  TestColor	: TEXCOORD3;
 	float3  eyeRay	: TEXCOORD4;
-	
-	float3	groundColor		: TEXCOORD5;
-	float3	skyColor		: TEXCOORD6;
-	float3	sunColor		: TEXCOORD7;
 };
 
 
 //------------------------------------------------------------------------------
-#define COLOR_2_LINEAR(color) color*color
-
-
 float3 IntersectionPos(float3 rayPos, float3 rayDir, float sphereRadius)
 {
 	const float A = dot(rayDir, rayDir);
@@ -93,17 +78,6 @@ float scale(float fCos)
 {
 	float x = 1.0 - fCos;
 	return fScaleDepth * exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
-}
-
-float getRayleighPhase(float eyeCos2)
-{
-	return 0.75 + 0.75*eyeCos2;
-	//return  0.75 * (1.0 + eyeCos2);
-}
-float getRayleighPhase(float3 viewToSun, float3 ray)
-{
-	float eyeCos	= dot(viewToSun, ray);
-	return getRayleighPhase(eyeCos * eyeCos);
 }
 
 VSOutput VS_Main(LN_VSInput v)
@@ -158,44 +132,33 @@ VSOutput VS_Main(LN_VSInput v)
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
+	float fCameraHeight = length(cameraPos);
 
+	// Calculate the ray's starting position, then calculate its scattering offset
+	float3 v3Start = cameraPos;
+	float fHeight = length(v3Start);
+	float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
+	float fStartAngle = dot(v3Ray, v3Start) / fHeight;
+	float fStartOffset = fDepth*scale(fStartAngle);
 
-		float3 v3FrontColor = float3(0.0, 0.0, 0.0);
-	if (v3Ray.y >= 0.0)
+	// Initialize the scattering loop variables
+	float fSampleLength = fFar / fSamples;
+	float fScaledLength = fSampleLength * fScale;
+	float3 v3SampleRay = v3Ray * fSampleLength;
+	float3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
+
+	// Now loop through the sample rays
+	float3 v3FrontColor = float3(0.0, 0.0, 0.0);
+	for(int i=0; i<nSamples; i++)
 	{
-
-		float fCameraHeight = length(cameraPos);
-
-		// Calculate the ray's starting position, then calculate its scattering offset
-		float3 v3Start = cameraPos;
-		float fHeight = length(v3Start);
-		float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
-		float fStartAngle = dot(v3Ray, v3Start) / fHeight;
-		float fStartOffset = fDepth*scale(fStartAngle);
-
-		// Initialize the scattering loop variables
-		float fSampleLength = fFar / fSamples;
-		float fScaledLength = fSampleLength * fScale;
-		float3 v3SampleRay = v3Ray * fSampleLength;
-		float3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
-
-		// Now loop through the sample rays
-		for(int i=0; i<nSamples; i++)
-		{
-			float fHeight = length(v3SamplePoint);
-			float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fHeight));
-			float fLightAngle = dot(v3LightPos, v3SamplePoint) / fHeight;
-			float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
-			float fScatter = (fStartOffset + fDepth*(scale(fLightAngle) - scale(fCameraAngle)));
-			float3 v3Attenuate = exp(-fScatter * (v3InvWavelength * fKr4PI + fKm4PI));
-			v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
-			v3SamplePoint += v3SampleRay;
-		}
-
-	}
-	else {
-		v3FrontColor = _GroundColor;
-		//FrontColor = _GroundColor;
+		float fHeight = length(v3SamplePoint);
+		float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fHeight));
+		float fLightAngle = dot(v3LightPos, v3SamplePoint) / fHeight;
+		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
+		float fScatter = (fStartOffset + fDepth*(scale(fLightAngle) - scale(fCameraAngle)));
+		float3 v3Attenuate = exp(-fScatter * (v3InvWavelength * fKr4PI + fKm4PI));
+		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
+		v3SamplePoint += v3SampleRay;
 	}
 
 	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
@@ -204,14 +167,10 @@ VSOutput VS_Main(LN_VSInput v)
 	float3 v3Direction = -v3Ray;
 
 
-	float3 cIn = v3FrontColor;
-	float3 cOut = FrontSecondaryColor;
-	o.groundColor	= _Exposure * (cIn + COLOR_2_LINEAR(_GroundColor) * cOut);
-	o.skyColor	= _Exposure * (cIn * getRayleighPhase(v3LightPos, v3Direction));
-	o.sunColor	= _Exposure * (cOut * _LightColor0.xyz);
 
 
-	o.groundColor = _GroundColor;
+
+
 	o.v3Direction = v3Direction;
 	o.FrontColor = FrontColor;
 	o.FrontSecondaryColor = FrontSecondaryColor;
@@ -219,9 +178,8 @@ VSOutput VS_Main(LN_VSInput v)
 }
 //------------------------------------------------------------------------------
 
-#define MIE_G (-0.990)//(-0.999)//	// -0.999 だと対応大きい & 内部の色がオーバーフローして中抜けするようだ
-#define MIE_G2 (MIE_G * MIE_G)//0.9801
-#define SKY_GROUND_THRESHOLD 0.04
+#define MIE_G (-0.999)//(-0.990)
+#define MIE_G2 0.9801
 
 float getMiePhase(float eyeCos, float eyeCos2)
 {
@@ -233,11 +191,6 @@ float getMiePhase(float eyeCos, float eyeCos2)
 	temp = pow(temp, .454545);
 #endif
 	return temp;
-}
-
-float getMiePhase_Gem(float eyeCos, float eyeCos2)
-{
-	return 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + eyeCos2) / pow(abs(1.0 + MIE_G2 - 2.0*MIE_G*eyeCos), 1.5);
 }
 
 half calcSunAttenuation(half3 lightPos, half3 ray)
@@ -263,57 +216,19 @@ float4 PS_Main(PSInput input) : SV_TARGET
 
 	//-----------------------------------------------
 
-#if 0	////////
-
-	float3 col = half3(0.0, 0.0, 0.0);
-	float3 ray = v3Ray;
-	float y = ray.y / SKY_GROUND_THRESHOLD;
-	col = lerp(input.skyColor, input.groundColor, saturate(y));
-	//return float4(input.skyColor, 1);
-	
-	if(y < 0.0)
-	{
-		float3 c = input.sunColor * calcSunAttenuation(v3LightPos, -ray);
-		return float4(c, 1);
-		col += c;
-	}
-
-	
-	return float4(col, 1);
-	
-#endif
-#if 1	////////
-
-	
-	//return float4(FrontSecondaryColor, 1);	// 地面白、空は黒
-	//return float4(FrontColor, 1);	// まっしろ。地面は黒 (nan かな)
-	//return float4(normalize(FrontColor), 1);	// 青。地面付近は 黄色。地面は真っ青。
-
-
+#if 1
 	float fCos = dot(v3LightPos, v3Direction) / length(v3Direction);
-	float fRayPhase = getRayleighPhase(fCos * fCos);//0.75 * (1.0 + fCos * fCos);	// Rayleigh
+	float fRayPhase = 0.75 * (1.0 + fCos * fCos);
 
-	float fMiePhase = getMiePhase_Gem(fCos, fCos * fCos);
+	float fMiePhase = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + fCos*fCos) / pow(abs(1.0 + MIE_G2 - 2.0*MIE_G*fCos), 1.5);
 	// fMiePhase: contains sun
 
 	float3 raycolor = (FrontColor*fRayPhase).xyz;
 	float3 miecolor = (FrontSecondaryColor*fMiePhase).xyz;
-	//miecolor = saturate(miecolor);
-	//miecolor = float3(0 ,0, 0);
-	// miecolor は真っ白。中抜けはしてない
-
 	
 
 	float3 c = float3(1.0, 1.0, 1.0) - exp(-exposure * (raycolor + miecolor));
 
-
-	float y = v3Ray.y / SKY_GROUND_THRESHOLD;
-
-	float3 groundColor = c;
-	if (v3Ray.y > 0.0001) {
-		groundColor = input.groundColor;
-	}
-	c = lerp(c, groundColor, saturate(y));
 
 #if 0
 	{
@@ -330,11 +245,13 @@ float4 PS_Main(PSInput input) : SV_TARGET
 	color.rgb = c;
 	color.a = 1;//color.b;
 	return color;
-#endif
-#if 0	////////
+#else
 	float fCos = dot(v3LightPos, v3Direction) / length(v3Direction);
-	float fMiePhase = getMiePhase_Gem(fCos, fCos * fCos);
-	return float4(FrontColor + fMiePhase * FrontSecondaryColor, 1);
+	float fMiePhase = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + fCos*fCos) / pow(1.0 + MIE_G2 - 2.0*MIE_G*fCos, 1.5);
+	float4 color;
+    color.rgb = FrontColor + fMiePhase * FrontSecondaryColor;
+	color.a = color.b;
+	return color;
 #endif
 }
 //------------------------------------------------------------------------------
