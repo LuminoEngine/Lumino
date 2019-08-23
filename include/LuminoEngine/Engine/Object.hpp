@@ -84,6 +84,7 @@ public:
 
 	// TODO: internal
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
+    virtual void onSetAssetFilePath(const Path& filePath);
 
     void setAssetId(const Uuid& id) { m_assetId = id; }
     const Uuid& assetId() const { return m_assetId; }

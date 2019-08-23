@@ -477,6 +477,7 @@ void EngineManager::initializeAssetManager()
 
         m_assetManager = ln::makeRef<AssetManager>();
         m_assetManager->init(settings);
+        m_assetManager->setAssetStorageAccessPriority(m_settings.assetStorageAccessPriority);
 
         for (auto& e : m_settings.assetArchives) {
             m_assetManager->addAssetArchive(e.filePath, e.password);

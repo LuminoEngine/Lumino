@@ -25,6 +25,8 @@ public:
 
     static Ref<Shader> loadShader(const StringRef& filePath);
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
+
+    static Ref<Object> loadAsset(const StringRef& filePath);
 };
 
 class AssetImporter

@@ -138,6 +138,23 @@ Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
     return ref;
 }
 
+Ref<Object> AssetManager::loadAsset(const StringRef& filePath)
+{
+    static const Char* exts[] = {
+        u".lnasset",
+    };
+
+    Path sourceFile;
+    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
+    if (LN_ENSURE_IO(stream, filePath)) return nullptr;
+    auto text = FileSystem::readAllText(stream);
+
+    auto asset = ln::makeObject<ln::AssetModel>();
+    JsonSerializer::deserialize(text, sourceFile.parent(), *asset);
+    asset->onSetAssetFilePath(sourceFile);
+    return asset->target();
+}
+
 void AssetManager::buildAssetIndexFromLocalFiles(const ln::Path& assetDir)
 {
     m_assetIndex.clear();
@@ -158,6 +175,8 @@ void AssetManager::refreshActualArchives()
 
 	switch (m_storageAccessPriority)
 	{
+    case AssetStorageAccessPriority::AllowLocalDirectory:
+        break;
 	case AssetStorageAccessPriority::DirectoryFirst:
 		for (auto& ac : m_requestedArchives) {
 			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
@@ -232,13 +251,21 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 
 	auto unifiedFilePath = Path(filePath).unify();
 	for (auto& path : paths) {
-		for (auto& archive : m_actualArchives) {
-			auto stream = archive->openFileStream(path);
-			if (stream) {
-				*outPath = path;
-				return stream;
-			}
-		}
+        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+            if (FileSystem::existsFile(path)) {
+                *outPath = path;
+                return FileStream::create(path, FileOpenMode::Read);
+            }
+        }
+        else {
+            for (auto& archive : m_actualArchives) {
+                auto stream = archive->openFileStream(path);
+                if (stream) {
+                    *outPath = path;
+                    return stream;
+                }
+            }
+        }
 	}
 
 	return nullptr;

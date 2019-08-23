@@ -31,7 +31,7 @@ void SceneManager::init()
 {
     LN_LOG_DEBUG << "SceneManager Initialization started.";
 
-    m_atmosphereShader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
+    m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
 
     EngineDomain::registerType<World>();
     EngineDomain::registerType<Sprite>();

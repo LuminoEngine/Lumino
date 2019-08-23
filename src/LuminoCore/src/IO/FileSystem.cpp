@@ -6,6 +6,7 @@
 #include <LuminoCore/Base/Buffer.hpp>
 #include <LuminoCore/Text/Encoding.hpp>
 #include <LuminoCore/IO/FileSystem.hpp>
+#include <LuminoCore/IO/Stream.hpp>
 #if defined(LN_OS_WIN32)
 #include "FileSystem_Win32.hpp"
 #else
@@ -239,6 +240,15 @@ static String readAllTextHelper(const ByteBuffer& buffer, TextEncoding* encoding
 String FileSystem::readAllText(const StringRef& filePath, TextEncoding* encoding)
 {
     ByteBuffer buffer(FileSystem::readAllBytes(filePath));
+    return readAllTextHelper(buffer, encoding);
+}
+
+String FileSystem::readAllText(Stream* stream, TextEncoding* encoding)
+{
+    if (LN_REQUIRE(stream->canRead())) return String::Empty;
+    size_t size = stream->length();
+    ByteBuffer buffer(size);
+    stream->read(buffer.data(), size);
     return readAllTextHelper(buffer, encoding);
 }
 

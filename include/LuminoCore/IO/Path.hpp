@@ -177,6 +177,7 @@ public:
      * このパスと target はディレクトリの絶対パスである必要があります。
      */
     Path makeRelative(const Path& target) const;
+    static Path makeRelative(const Path& base, const Path& target) { return Path(base).makeRelative(target); }
 
     /**
      * このパスの拡張子を変更した新しいパスを返します。

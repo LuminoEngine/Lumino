@@ -30,6 +30,7 @@ public:
 	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 	Ref<Texture2D> loadTexture(const StringRef& filePath);
     Ref<Shader> loadShader(const StringRef& filePath);
+    Ref<Object> loadAsset(const StringRef& filePath);
 
     // TODO: for develop & debug
     void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
@@ -38,6 +39,7 @@ private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
 	const Path& findFilePathFromIndex(const StringRef& id) const;
+    const Path& findFilePathInternal(const StringRef& filePath, const Char** exts, int extsCount);
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
 

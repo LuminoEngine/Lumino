@@ -64,6 +64,10 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
+void Object::onSetAssetFilePath(const Path& filePath)
+{
+}
+
 detail::WeakRefInfo* Object::requestWeakRefInfo()
 {
     std::lock_guard<std::mutex> lock(m_weakRefInfoMutex);

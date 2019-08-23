@@ -1,6 +1,7 @@
 ﻿
 #include "../Project.hpp"
 #include "../PluginManager.hpp"
+#include "../AssetDatabase.hpp"
 #include "EditorContext.hpp"
 #include "Application.hpp"
 

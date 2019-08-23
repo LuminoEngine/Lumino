@@ -32,6 +32,10 @@ Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
 }
 
+Ref<Object> Assets::loadAsset(const StringRef& filePath)
+{
+    return detail::EngineDomain::assetManager()->loadAsset(filePath);
+}
 
 //=============================================================================
 // AssetImporter
