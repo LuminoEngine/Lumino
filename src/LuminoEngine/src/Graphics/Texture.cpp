@@ -261,10 +261,18 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
 void Texture2D::serialize(Archive& ar)
 {
     Texture::serialize(ar);
-    ar & makeNVP(u"Source", m_assetSource);
+	auto path = m_assetSourceFullPath;
+	if (ar.isSaving()) {
+		// save to relative path.
+		path = Path(ar.basePath()).makeRelative(path);
+	}
+	
+	ar & makeNVP(u"Source", path);
+
     if (ar.isLoading()) {
-        auto path = Path(ar.basePath(), m_assetSource);
-        init(path);
+		// convert relative path to full path.
+		m_assetSourceFullPath = Path(ar.basePath(), path);
+        init(m_assetSourceFullPath);
     }
 }
 

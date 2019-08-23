@@ -1,6 +1,7 @@
 #pragma once
 
 namespace lna {
+class EditorContext;
 
 enum class TilemapBrushSource
 {
@@ -35,6 +36,8 @@ class TilemapSceneEditorModel
 public:
 	TilemapSceneEditorModel();
 	const Ref<TilemapBrush>& tilemapBrush() const { return m_tilemapBrush; }
+
+	static ln::Result createNewTilemapSceneAsset(lna::EditorContext* context, const ln::Path& filePath);
 
 private:
 	Ref<TilemapBrush> m_tilemapBrush;

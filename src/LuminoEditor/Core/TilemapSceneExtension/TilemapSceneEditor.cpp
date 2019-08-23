@@ -89,76 +89,14 @@ PGMMV では統合されてたけど、大きなオブジェクトがあるときに、その後ろのタイルを選
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
+#include "TilemapSceneNavigator.hpp"
 #include "TilemapSceneEditorModel.hpp"
 #include "TilemapSceneEditor.hpp"
 #include "TilemapSceneModePane.hpp"
 
 
 namespace lna {
-    
-//==============================================================================
-// TilemapSceneListPane
-
-void TilemapSceneListPane::init()
-{
-    UIControl::init();
-
-    auto layout1 = ln::makeObject<ln::UIBoxLayout3>();
-    layout1->setOrientation(ln::Orientation::Vertical);
-    addElement(layout1);
-
-    auto layout2 = ln::makeObject<ln::UIHBoxLayout2>();
-    layout1->addChild(layout2);
-    {
-        auto caption = ln::UITextBlock::create(u"Scene");
-        caption->setMargin(ln::Thickness(8, 0));    // TODO: theme からとりたい
-        caption->setVerticalAlignment(ln::VAlignment::Center);
-        layout2->addChild(caption);
-
-        auto addButton = ln::UIButton::create(u"Add");
-        addButton->connectOnClicked(ln::bind(this, &TilemapSceneListPane::addButton_onClick));
-        layout2->addChild(addButton);
-
-        auto deleteButton = ln::UIButton::create(u"Delete");
-        layout2->addChild(deleteButton);
-    }
-
-    m_listview = ln::makeObject<ln::UIListView>();
-    m_listview->getGridLayoutInfo()->layoutWeight = 1;
-    m_listview->connectOnItemClick(ln::bind(this, &TilemapSceneListPane::listView_onItemClick));
-    layout1->addChild(m_listview);
-
-
-    auto project = lna::Workspace::instance()->project();
-    m_assetRootDir = ln::Path(project->assetsDir(), u"Scenes");
-
-    m_model = ln::makeObject<TilemapSceneListModel>();
-    m_model->setRootPath(m_assetRootDir);
-    m_listview->setViewModel(m_model);
-}
-
-void TilemapSceneListPane::addButton_onClick(ln::UIEventArgs* e)
-{
-    auto Scene = ln::makeObject<ln::Scene>();
-    auto asset = ln::makeObject<ln::AssetModel>(Scene);
-
-    auto project = lna::Workspace::instance()->project();
-
-    auto path = ln::Path::getUniqueFilePathInDirectory(m_assetRootDir, u"Scene-", ln::AssetModel::AssetFileExtension.c_str());
-
-    asset->saveInternal(path);
-
-    m_model->refresh();
-}
-
-void TilemapSceneListPane::listView_onItemClick(ln::UIClickEventArgs* e)
-{
-    if (e->clickCount() == 2) {
-        auto path = m_model->filePath(ln::static_pointer_cast<ln::UICollectionItemModel>(e->sender()->m_viewModel));
-        EditorApplication::instance()->openAssetFile(path);
-    }
-}
-
+   
 //==============================================================================
 // TilemapSceneEditor
 
@@ -200,51 +138,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 
     m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
 
-    // TODO: test
-    if (0)
-    {
-        //editorContext()->mainProject()->assetDatabase()->importAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png", "D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png");
-
-
-        //auto sprite = ln::Sprite::create(ln::Texture2D::create(u"D:/Documents/LuminoProjects/RinoTutorial/Assets/player.png"), 4, 4);
-        //sprite->setSourceRect(0, 0, 16, 16);
-        //sprite->setPosition(0, 2, 0);
-        //m_mainWorld->addObject(sprite);
-
-
-		m_tilemap = ln::makeObject<ln::Tilemap>();
-        //auto tilemapAsset = ln::AssetModel::create(tilemap);
-		m_tilemap->setShadingModel(ln::ShadingModel::UnLighting);
-        m_mainWorld->addObject(m_tilemap);
-        //m_mainWorldAsset->addChild(tilemapAsset);
-
-        //tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
-        auto tilesetTexture = ln::Assets::loadTexture(u"32066696-1621-4EED-820D-535BB2F22A9D");
-        auto tilesetMaterial = ln::makeObject<ln::Material>();
-        tilesetMaterial->setMainTexture(tilesetTexture);
-
-        auto tileset = ln::makeObject<ln::Tileset>();
-        tileset->reset(tilesetMaterial, 16, 16);
-
-		m_currentLayer = ln::makeObject<ln::TilemapLayer>();
-		m_currentLayer->resize(5, 5);
-		m_currentLayer->setTileSize(ln::Size(1, 1));
-		m_currentLayer->setOrientation(ln::TilemapOrientation::UpFlow);
-		m_currentLayer->setTileId(0, 0, 1);
-		m_currentLayer->setTileId(1, 1, 1);
-		m_currentLayer->setTileId(0, 4, 1);
-		m_currentLayer->setTileId(1, 4, 1);
-		m_currentLayer->setTileId(2, 4, 1);
-		m_currentLayer->setTileId(3, 4, 1);
-		m_currentLayer->setTileId(4, 4, 1);
-        auto tilemapModel = ln::makeObject<ln::TilemapModel>();
-        tilemapModel->addTileset(tileset);
-        tilemapModel->addLayer(m_currentLayer);
-		m_tilemap->setTilemapModel(tilemapModel);
-
-        m_modePane->setTileset(tileset);
-    }
-
+   
     m_tilemap = static_cast<ln::Tilemap*>(m_mainWorld->findObjectByComponentType(ln::TypeInfo::getTypeInfo<ln::TilemapComponent>()));
     m_modePane->setTileset(m_tilemap->tilemapComponent()->tilemapModel()->tileset());
     //m_tilemap->tilemapComponent();
@@ -321,30 +215,6 @@ void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
 Ref<ln::AssetEditor> TilemapSceneEditorPloxy::createEditor()
 {
     return ln::makeObject<TilemapSceneEditor>();
-}
-
-//==============================================================================
-// TilemapSceneNavigator
-
-void TilemapSceneNavigator::init()
-{
-    m_navigationBarItem = ln::makeObject<ln::UIIcon>();
-    m_navigationBarItem->setIconName(u"globe");
-    m_navigationBarItem->setHorizontalAlignment(ln::HAlignment::Center);
-    m_navigationBarItem->setVerticalAlignment(ln::VAlignment::Center);
-    m_navigationBarItem->setFontSize(24);
-    
-    m_sceneListPane = ln::makeObject<TilemapSceneListPane>();
-}
-
-ln::UIElement* TilemapSceneNavigator::getNavigationMenuItem()
-{
-    return m_navigationBarItem;
-}
-
-ln::UIElement* TilemapSceneNavigator::getNavigationPane()
-{
-    return m_sceneListPane;
 }
 
 //==============================================================================

@@ -24,6 +24,7 @@ public:
     MainWindow* mainWindow() const;
     const ln::Ref<lna::Workspace>& workspace() const { return m_workspace; }
     lna::Project* mainProject() const;
+	const ln::Ref<lna::EditorContext>& editorContext() const { return m_editorContext; }
 
     void importFile(const ln::Path& filePath);
     void openAssetFile(const ln::Path& filePath);

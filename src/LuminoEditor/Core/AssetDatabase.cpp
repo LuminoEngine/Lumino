@@ -37,7 +37,7 @@ ln::Result AssetDatabase::importAsset(const ln::Path& sourceFilePath, const ln::
     if (sourceFilePath.hasExtension("png")) {
         auto texture = ln::makeObject<ln::Texture2D>(sourceFilePath);
         texture->setAssetId(ln::Uuid::generate());
-        texture->setAssetSource(destinationFilePath.fileName());
+        texture->setAssetSource(destinationFilePath);
 
         auto asset = ln::makeObject<ln::AssetModel>(texture);
         asset->saveInternal(destinationFilePath.str() + ln::AssetModel::AssetFileExtension);
@@ -54,7 +54,7 @@ ln::Result AssetDatabase::createAsset(ln::Object* asset, const ln::Path& filePat
 {
     auto t = ln::AssetModel::create(asset);
     asset->setAssetId(ln::Uuid::generate());
-    ln::String json = ln::JsonSerializer::serialize(*t, ln::JsonFormatting::Indented);
+    ln::String json = ln::JsonSerializer::serialize(*t, filePath.parent(), ln::JsonFormatting::Indented);
     ln::FileSystem::writeAllText(filePath, json);
     return true;
 }

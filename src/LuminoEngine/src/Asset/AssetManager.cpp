@@ -110,12 +110,14 @@ Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
        return static_cast<Texture2D*>(asset->target());
     }
 
-    Ref<Stream> stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+	Path sourceFile;
+    Ref<Stream> stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
 
 	// TODO: cache
 
     // TODO: mipmap
 	auto ref = makeObject<Texture2D>(stream, TextureFormat::RGBA8);
+	ref->setAssetSource(sourceFile);
 	return ref;
 }
 
@@ -126,7 +128,8 @@ Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
         u".fx",
     };
 
-    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+	Path sourceFile;
+    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
     if (LN_ENSURE_IO(stream, filePath)) return nullptr;
 
     // TODO: cache
@@ -221,7 +224,7 @@ const Path& AssetManager::findFilePathFromIndex(const StringRef& id) const
     }
 }
 
-Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount)
+Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath)
 {
 	List<Path> paths;
 	paths.reserve(extsCount);
@@ -232,6 +235,7 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 		for (auto& archive : m_actualArchives) {
 			auto stream = archive->openFileStream(path);
 			if (stream) {
+				*outPath = path;
 				return stream;
 			}
 		}

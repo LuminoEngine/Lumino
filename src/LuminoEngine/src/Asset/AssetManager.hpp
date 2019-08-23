@@ -38,7 +38,7 @@ private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
 	const Path& findFilePathFromIndex(const StringRef& id) const;
-    Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount);
+    Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
 
     List<Ref<AssetArchive>> m_requestedArchives;
