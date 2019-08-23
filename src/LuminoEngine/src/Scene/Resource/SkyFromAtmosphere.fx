@@ -30,7 +30,7 @@ const float3 _Exposure = exposure;
 const float3 _LightColor0 = float3(1, 1, 1);
 const float3 _GroundColor = float3(0.369, 0.349, 0.341);//float3(1, 1, 1);
 
-const float3 v3LightPos = normalize(float3(0, 1, 1));		// The direction vector to the light source
+const float3 v3LightPos = normalize(float3(0, 0, 1));		// The direction vector to the light source
 const float fOuterRadius = EARTH_RADIUS * 1.025;						// The outer (atmosphere) radius
 const float fOuterRadius2 = fOuterRadius * fOuterRadius;	// fOuterRadius^2
 const float fInnerRadius = EARTH_RADIUS;							// The inner (planetary) radius
@@ -221,7 +221,7 @@ VSOutput VS_Main(LN_VSInput v)
 
 #define MIE_G (-0.990)//(-0.999)//	// -0.999 だと対応大きい & 内部の色がオーバーフローして中抜けするようだ
 #define MIE_G2 (MIE_G * MIE_G)//0.9801
-#define SKY_GROUND_THRESHOLD 0.04
+#define SKY_GROUND_THRESHOLD 0.12
 
 float getMiePhase(float eyeCos, float eyeCos2)
 {

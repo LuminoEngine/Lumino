@@ -47,8 +47,8 @@ void WorldRenderView::init()
 	{
 		detail::PlaneMeshGenerater2 gen;
 		gen.size = Vector2(2, 2);
-		gen.sliceH = 30;
-		gen.sliceV = 30;
+		gen.sliceH = 50;
+		gen.sliceV = 50;
 		gen.direction = detail::PlaneMeshDirection::ZMinus;
 
 
