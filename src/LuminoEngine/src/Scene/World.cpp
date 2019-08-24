@@ -6,6 +6,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 
@@ -21,7 +22,7 @@ LN_OBJECT_IMPLEMENT(World, Object)
 }
 
 World::World()
-	: m_rootWorldObjectList(makeList<Ref<WorldObject>>())
+	: m_sceneList(makeList<Ref<Scene>>())
     , m_timeScale(1.0f)
 {
 }
@@ -58,79 +59,42 @@ void World::onDispose(bool explicitDisposing)
 
 void World::addObject(WorldObject* obj)
 {
-    if (LN_REQUIRE(obj)) return;
-    if (LN_REQUIRE(!obj->m_world)) return;
-    m_rootWorldObjectList->add(obj);
-	obj->attachWorld(this);
+    masterScene()->addObject(obj);
 }
 
+// TODO: テスト用。置き場考えておく。
 void World::removeAllObjects()
 {
-    for (int i = m_rootWorldObjectList->size() - 1; i >= 0; i--)
-    {
-		auto& obj = m_rootWorldObjectList[i];
-        if (!obj->isSpecialObject())
-        {
-			if (obj->destroyed()) {
-				m_destroyList.remove(obj);
-			}
-
-			obj->detachWorld();
-            m_rootWorldObjectList->removeAt(i);
-        }
-    }
+    masterScene()->removeAllObjects();
 }
 
 ReadOnlyList<Ref<WorldObject>>* World::rootObjects() const
 {
-	return m_rootWorldObjectList;
+	return masterScene()->m_rootWorldObjectList;
 }
 
-// Multi-Lang 対応のため、テンプレートではなく基本は TypeInfo で検索する
 WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
 {
-    class LocalVisitor : public detail::IWorldObjectVisitor
-    {
-    public:
-        const TypeInfo* type;
-        WorldObject* result = nullptr;
-        virtual bool visit(WorldObject* obj)
-        {
-            for (auto& component : obj->m_components) {
-                if (TypeInfo::getTypeInfo(component) == type) {
-                    result = obj;
-                    return false;
-                }
-            }
-            return true;
-        }
-    } visitor;
-    visitor.type = type;
-
-    for (auto& obj : m_rootWorldObjectList) {
-        if (!obj->traverse(&visitor)) {
-            break;
+    for (auto& scene : m_sceneList) {
+        auto obj = scene->findObjectByComponentType(type);
+        if (obj) {
+            return obj;
         }
     }
 
-    return visitor.result;
+    return nullptr;
 }
 
-void World::removeRootObject(WorldObject* obj)
+Scene* World::masterScene() const
 {
-	if (m_rootWorldObjectList->remove(obj)) {
-		if (obj->destroyed()) {
-			m_destroyList.remove(obj);
-		}
-		obj->detachWorld();
-	}
+    if (m_sceneList->isEmpty()) return nullptr;
+    return m_sceneList->front();
 }
 
 void World::updateObjectsWorldMatrix()
 {
-    for (auto& obj : m_rootWorldObjectList)
-    {
-        obj->updateWorldMatrixHierarchical();
+    for (auto& scene : m_sceneList) {
+        scene->updateObjectsWorldMatrix();
     }
 }
 
@@ -148,9 +112,8 @@ void World::onPreUpdate(float elapsedSeconds)
 {
     m_effectContext->update(elapsedSeconds);
 
-    for (auto& obj : m_rootWorldObjectList)
-    {
-        obj->onPreUpdate();
+    for (auto& scene : m_sceneList) {
+        scene->onPreUpdate(elapsedSeconds);
     }
 }
 
@@ -170,11 +133,8 @@ void World::onInternalPhysicsUpdate(float elapsedSeconds)
 
 void World::onUpdate(float elapsedSeconds)
 {
-    // onUpdate 内で新しい WorldObject が作成され、m_rootWorldObjectList に add される場合に備えて
-    // イテレータによる列挙は行わない。新しく追加されたものは、このループで
-    // 今のフレーム中の最初の onUpdate が呼ばれる。
-    for (int i = 0; i < m_rootWorldObjectList->size(); i++) {
-        m_rootWorldObjectList[i]->updateFrame(elapsedSeconds);
+    for (auto& scene : m_sceneList) {
+        scene->update(elapsedSeconds);
     }
 }
 
@@ -184,28 +144,23 @@ void World::onInternalAnimationUpdate(float elapsedSeconds)
 
 void World::onPostUpdate(float elapsedSeconds)
 {
-
-	for (WorldObject* obj : m_destroyList) {
-		//obj->removeFromWorld();
-
-		obj->detachWorld();
-		m_rootWorldObjectList->remove(obj);
-	}
-	m_destroyList.clear();
-}
-
-void World::serialize(Archive& ar)
-{
-    Object::serialize(ar);
-
-    ar & ln::makeNVP(u"Children", *m_rootWorldObjectList);
-
-    if (ar.isLoading()) {
-        for (auto& obj : m_rootWorldObjectList) {
-            obj->attachWorld(this);
-        }
+    for (auto& scene : m_sceneList) {
+        scene->onPostUpdate(elapsedSeconds);
     }
 }
+
+//void World::serialize(Archive& ar)
+//{
+//    Object::serialize(ar);
+//
+//    ar & ln::makeNVP(u"Children", *m_rootWorldObjectList);
+//
+//    if (ar.isLoading()) {
+//        for (auto& obj : m_rootWorldObjectList) {
+//            obj->attachWorld(this);
+//        }
+//    }
+//}
 
 detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* viewPoint)
 {
@@ -216,15 +171,8 @@ detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* v
 
 void World::renderObjects()
 {
-    for (auto& obj : m_rootWorldObjectList)
-    {
-        obj->render();
-
-        for (auto& c : obj->m_components)
-        {
-            c->onPrepareRender(m_renderingContext); // TODO: 全体の前にした方がいいかも
-            c->render(m_renderingContext);
-        }
+    for (auto& scene : m_sceneList) {
+        scene->renderObjects(m_renderingContext);
     }
 
     m_renderingContext->pushState(true);

@@ -17,6 +17,7 @@ class UIContainerElement;
 class PhysicsWorld;
 class PhysicsWorld2D;
 class World;
+class Scene;
 class WorldRenderView;
 class Camera;
 class AmbientLight;
@@ -178,6 +179,7 @@ private:
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
     Ref<UIContainerElement> m_mainUIRoot;   // m_mainUIRenderView の RootElement
     Ref<World> m_mainWorld;
+    Ref<Scene> m_mainScene;
     Ref<Camera> m_mainCamera;
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;

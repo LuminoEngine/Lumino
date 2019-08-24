@@ -5,6 +5,7 @@
 
 namespace ln {
 class World;
+class Scene;
 class WorldObject;
 class Component;
 namespace detail {
@@ -162,7 +163,7 @@ public:
 	bool destroyed() const { return m_destroyed; }
 
 	/** このオブジェクトを直ちに World から除外します。このメソッドは World のアップデートシーケンス中に呼び出してはなりません。 */
-	void removeFromWorld();
+	void removeFromScene();
 
     const Matrix& worldMatrix();
 
@@ -204,8 +205,8 @@ public: // TODO:
     void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
     bool isSpecialObject() const { return m_isSpecialObject; }
     detail::WorldObjectTransform* transform() const { return m_transform; }
-	void attachWorld(World* world);
-	void detachWorld();
+	void attachScene(Scene* scene);
+	void detachScene();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
     void render();
@@ -213,7 +214,7 @@ public: // TODO:
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();
 
-    World* m_world;
+    Scene* m_scene;
     WorldObject* m_parent;
     Ref<detail::WorldObjectTransform> m_transform;
     Ref<List<String>> m_tags;
@@ -225,6 +226,7 @@ public: // TODO:
 	bool m_destroyed;
 
     friend class World;
+    friend class Scene;
 };
 
 namespace ed {

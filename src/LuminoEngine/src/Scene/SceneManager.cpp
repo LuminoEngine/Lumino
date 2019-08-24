@@ -94,10 +94,10 @@ void SceneManager::returnScene()
 void SceneManager::updateFrame()
 {
 	executeCommands();
-	if (m_activeScene != nullptr)
-	{
-		m_activeScene->update();
-	}
+	//if (m_activeScene != nullptr)
+	//{
+	//	m_activeScene->update();
+	//}
 }
 
 void SceneManager::executeCommands()

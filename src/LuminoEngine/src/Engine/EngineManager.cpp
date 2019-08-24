@@ -10,6 +10,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
@@ -135,6 +136,10 @@ void EngineManager::init()
         {
             m_mainWorld = makeObject<World>();
             m_sceneManager->setActiveWorld(m_mainWorld);
+
+
+            m_mainScene = makeObject<Scene>();
+            m_mainWorld->m_sceneList->add(m_mainScene);
 
             //m_mainAmbientLight = makeObject<AmbientLight>();
             //m_mainDirectionalLight = makeObject<DirectionalLight>();

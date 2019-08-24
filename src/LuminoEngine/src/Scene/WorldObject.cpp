@@ -3,6 +3,7 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include "SceneManager.hpp"
 
@@ -112,7 +113,7 @@ Matrix WorldObjectTransform::getLocalMatrix() const
 LN_OBJECT_IMPLEMENT(WorldObject, Object) {}
 
 WorldObject::WorldObject()
-    : m_world(nullptr)
+    : m_scene(nullptr)
     , m_parent(nullptr)
     , m_transform(makeRef<detail::WorldObjectTransform>(this))
     , m_tags(makeList<String>())
@@ -164,19 +165,19 @@ void WorldObject::addComponent(Component* component)
 void WorldObject::destroy()
 {
 	m_destroyed = true;
-	if (m_world) {
-		m_world->m_destroyList.add(this);
+	if (m_scene) {
+        m_scene->m_destroyList.add(this);
 	}
 }
 
-void WorldObject::removeFromWorld()
+void WorldObject::removeFromScene()
 {
-	if (m_world) {
+	if (m_scene) {
 		if (m_parent) {
 			LN_NOTIMPLEMENTED();
 		}
 		else {
-			m_world->removeRootObject(this);
+            m_scene->removeRootObject(this);
 		}
 	}
 }
@@ -262,24 +263,24 @@ void WorldObject::serialize(Archive& ar)
     }
 }
 
-void WorldObject::attachWorld(World* world)
+void WorldObject::attachScene(Scene* scene)
 {
-	if (LN_REQUIRE(world)) return;
-	if (LN_REQUIRE(!m_world)) return;
-	m_world = world;
+	if (LN_REQUIRE(scene)) return;
+	if (LN_REQUIRE(!m_scene)) return;
+	m_scene = scene;
 	for (auto& c : m_components) {
-		c->onAttachedWorld(world);
+		c->onAttachedScene(scene);
 	}
 }
 
-void WorldObject::detachWorld()
+void WorldObject::detachScene()
 {
-	if (m_world) {
-		World* old = m_world;
-		m_world = nullptr;
+	if (m_scene) {
+		Scene* old = m_scene;
+		m_scene = nullptr;
 
 		for (auto& c : m_components) {
-			c->onDetachedWorld(old);
+			c->onDetachedScene(old);
 		}
 	}
 }

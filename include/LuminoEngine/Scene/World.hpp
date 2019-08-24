@@ -4,6 +4,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class Scene;
 class AnimationContext;
 class WorldRenderView;
 class WorldObject;
@@ -39,6 +40,8 @@ public:
     /** この World に含まれている WorldObject のうち、指定した型のコンポーネントを持っている最初の WorldObject を返します。 */
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
 
+    Scene* masterScene() const;
+
 protected:
     // update sequence
     virtual void onPreUpdate(float elapsedSeconds);
@@ -47,8 +50,8 @@ protected:
     virtual void onInternalAnimationUpdate(float elapsedSeconds);
     virtual void onPostUpdate(float elapsedSeconds);
 
-    LN_SERIALIZE_CLASS_VERSION(1);
-    virtual void serialize(Archive& ar) override;
+    //LN_SERIALIZE_CLASS_VERSION(1);
+    //virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	World();
@@ -61,7 +64,6 @@ public: // TODO: internal
     const Ref<PhysicsWorld>& physicsWorld() const { return m_physicsWorld; }
 	const Ref<PhysicsWorld2D>& physicsWorld2D() const { return m_physicsWorld2D; }
     const Ref<EffectContext>& effectContext() const { return m_effectContext; }
-	void removeRootObject(WorldObject* obj);
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
@@ -72,8 +74,9 @@ public: // TODO: internal
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
     Ref<EffectContext> m_effectContext;
 
-    Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
-	List<WorldObject*> m_destroyList;
+    Ref<List<Ref<Scene>>> m_sceneList;
+ //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
+	//List<WorldObject*> m_destroyList;
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
     float m_timeScale;
 

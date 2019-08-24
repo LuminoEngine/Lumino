@@ -42,11 +42,11 @@ void Component::onDetaching(WorldObject* owner)
 {
 }
 
-void Component::onAttachedWorld(World* newOwner)
+void Component::onAttachedScene(Scene* newOwner)
 {
 }
 
-void Component::onDetachedWorld(World* oldOwner)
+void Component::onDetachedScene(Scene* oldOwner)
 {
 }
 

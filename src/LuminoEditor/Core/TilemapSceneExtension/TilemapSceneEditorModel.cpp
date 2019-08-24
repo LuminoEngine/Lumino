@@ -56,12 +56,12 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
     scene->addObject(tilemap);
 
 	//tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
-	auto tilesetTexture = ln::Assets::loadTexture(u"32066696-1621-4EED-820D-535BB2F22A9D");
-	auto tilesetMaterial = ln::makeObject<ln::Material>();
-	tilesetMaterial->setMainTexture(tilesetTexture);
+	//auto tilesetTexture = ln::Assets::loadTexture(u"360782C3-EAD5-421E-8887-D2B10E09781C");
+	//auto tilesetMaterial = ln::makeObject<ln::Material>();
+	//tilesetMaterial->setMainTexture(tilesetTexture);
 
 	auto tileset = dynamic_cast<ln::Tileset*>(tilesetAsset->target()); //ln::makeObject<ln::Tileset>();
-	tileset->reset(tilesetMaterial, 16, 16);
+	//tileset->reset(tilesetMaterial, 16, 16);
 
 	auto layer = ln::makeObject<ln::TilemapLayer>();
 	layer->resize(5, 5);
@@ -79,7 +79,7 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 	tilemapModel->addLayer(layer);
 	tilemap->setTilemapModel(tilemapModel);
 
-	return context->mainProject()->assetDatabase()->createAsset(mainWorld, filePath);
+	return context->mainProject()->assetDatabase()->createAsset(scene, filePath);
 }
 
 } // namespace lna

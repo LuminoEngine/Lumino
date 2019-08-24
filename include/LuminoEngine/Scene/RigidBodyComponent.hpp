@@ -93,8 +93,8 @@ LN_CONSTRUCT_ACCESS:
 	virtual void onDispose(bool explicitDisposing) override;
 
 protected:
-	virtual void onAttachedWorld(World* newOwner) override;
-	virtual void onDetachedWorld(World* oldOwner) override;
+	virtual void onAttachedScene(Scene* newOwner) override;
+	virtual void onDetachedScene(Scene* oldOwner) override;
 	virtual void onBeforeStepSimulation() override;
 	virtual void onAfterStepSimulation() override;
     virtual void onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;
@@ -141,8 +141,8 @@ LN_CONSTRUCT_ACCESS:
     virtual void onDispose(bool explicitDisposing) override;
 
 protected:
-    virtual void onAttachedWorld(World* newOwner) override;
-    virtual void onDetachedWorld(World* oldOwner) override;
+    virtual void onAttachedScene(Scene* newOwner) override;
+    virtual void onDetachedScene(Scene* oldOwner) override;
     virtual void onBeforeStepSimulation() override;
     virtual void onAfterStepSimulation() override;
     virtual void onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact) override;

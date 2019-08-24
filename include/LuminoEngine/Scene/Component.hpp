@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class Scene;
 class World;
 class WorldObject;
 class RenderingContext;
@@ -27,8 +28,8 @@ protected:
     // 以下、すべて空実装
     virtual void onAttached(WorldObject* owner);
     virtual void onDetaching(WorldObject* owner);
-	virtual void onAttachedWorld(World* newOwner);
-	virtual void onDetachedWorld(World* oldOwner);
+	virtual void onAttachedScene(Scene* newOwner);
+	virtual void onDetachedScene(Scene* oldOwner);
     virtual void onUpdate(float elapsedSeconds);
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);
@@ -44,6 +45,7 @@ public:
 private:
     virtual void render(RenderingContext* context);
 
+    friend class Scene;
     friend class World;
     friend class WorldObject;
 };
