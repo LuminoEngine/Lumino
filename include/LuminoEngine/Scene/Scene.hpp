@@ -40,7 +40,7 @@ protected:
 
 	/** フレーム更新 */
 	LN_METHOD()
-	virtual void onUpdate(float elapsedSeconds);
+	virtual void onUpdate();
     virtual void onPostUpdate(float elapsedSeconds);
 
 public:	// TODO: Editor integration

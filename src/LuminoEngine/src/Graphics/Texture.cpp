@@ -8,6 +8,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Font/Font.hpp>
+#include <LuminoEngine/Asset/Assets.hpp>
 #include "../Font/TextLayoutEngine.hpp"
 #include "RenderTargetTextureCache.hpp"
 
@@ -261,7 +262,7 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
 void Texture2D::serialize(Archive& ar)
 {
     Texture::serialize(ar);
-	auto path = m_assetSourceFullPath;
+	auto path = m_assetSourcePath;
 	if (ar.isSaving()) {
 		// save to relative path.
 		path = Path(ar.basePath()).makeRelative(path);
@@ -271,8 +272,9 @@ void Texture2D::serialize(Archive& ar)
 
     if (ar.isLoading()) {
 		// convert relative path to full path.
-		m_assetSourceFullPath = Path(ar.basePath(), path);
-        init(m_assetSourceFullPath);
+        m_assetSourcePath = Path(ar.basePath(), path);
+        auto stream = Assets::openFileStream(m_assetSourcePath);
+        init(stream);
     }
 }
 

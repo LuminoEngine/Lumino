@@ -27,6 +27,8 @@ public:
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 
     static Ref<Object> loadAsset(const StringRef& filePath);
+
+    static Ref<Stream> openFileStream(const StringRef& filePath);
 };
 
 class AssetImporter

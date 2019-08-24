@@ -37,6 +37,11 @@ Ref<Object> Assets::loadAsset(const StringRef& filePath)
     return detail::EngineDomain::assetManager()->loadAsset(filePath);
 }
 
+Ref<Stream> Assets::openFileStream(const StringRef& filePath)
+{
+    return detail::EngineDomain::assetManager()->openFileStream(filePath);
+}
+
 //=============================================================================
 // AssetImporter
 

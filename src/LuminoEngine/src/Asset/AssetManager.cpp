@@ -252,6 +252,7 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 	auto unifiedFilePath = Path(filePath).unify();
 	for (auto& path : paths) {
         if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+            path = path.canonicalize();
             if (FileSystem::existsFile(path)) {
                 *outPath = path;
                 return FileStream::create(path, FileOpenMode::Read);

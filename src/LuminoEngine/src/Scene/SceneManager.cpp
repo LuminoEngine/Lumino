@@ -3,6 +3,7 @@
 #include "SceneManager.hpp"
 
 // for registerType
+#include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
@@ -53,13 +54,14 @@ void SceneManager::dispose()
 
 Scene* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
 {
-    LN_NOTIMPLEMENTED();
+    auto scene = dynamic_pointer_cast<Scene>(Assets::loadAsset(sceneAssetFilePath));
+    activeWorld()->m_sceneList->add(scene);
     return nullptr;
 }
 
 void SceneManager::unloadScene(Scene* scene)
 {
-    LN_NOTIMPLEMENTED();
+    activeWorld()->m_sceneList->remove(scene);
 }
 
 #if 0

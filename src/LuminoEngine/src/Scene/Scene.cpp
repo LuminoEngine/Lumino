@@ -58,14 +58,8 @@ void Scene::onDeactivated()
 {
 }
 
-void Scene::onUpdate(float elapsedSeconds)
+void Scene::onUpdate()
 {
-    // onUpdate 内で新しい WorldObject が作成され、m_rootWorldObjectList に add される場合に備えて
-    // イテレータによる列挙は行わない。新しく追加されたものは、このループで
-    // 今のフレーム中の最初の onUpdate が呼ばれる。
-    for (int i = 0; i < m_rootWorldObjectList->size(); i++) {
-        m_rootWorldObjectList[i]->updateFrame(elapsedSeconds);
-    }
 }
 
 void Scene::onPostUpdate(float elapsedSeconds)
@@ -81,7 +75,14 @@ void Scene::onPostUpdate(float elapsedSeconds)
 
 void Scene::update(float elapsedSeconds)
 {
-	onUpdate(elapsedSeconds);
+    // onUpdate 内で新しい WorldObject が作成され、m_rootWorldObjectList に add される場合に備えて
+    // イテレータによる列挙は行わない。新しく追加されたものは、このループで
+    // 今のフレーム中の最初の onUpdate が呼ばれる。
+    for (int i = 0; i < m_rootWorldObjectList->size(); i++) {
+        m_rootWorldObjectList[i]->updateFrame(elapsedSeconds);
+    }
+
+	onUpdate();
 }
 
 

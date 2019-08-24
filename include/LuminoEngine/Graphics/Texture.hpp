@@ -112,7 +112,7 @@ public:
     void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 
     // TODO: internal
-    void setAssetSource(const Path& path) { m_assetSourceFullPath = path; }
+    void setAssetSource(const Path& path) { m_assetSourcePath = path; }
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -145,7 +145,7 @@ private:
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
-    Path m_assetSourceFullPath;
+    Path m_assetSourcePath;
     void* m_rhiLockedBuffer;
     bool m_initialUpdate;
     bool m_modified;
