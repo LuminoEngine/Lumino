@@ -22,7 +22,10 @@ namespace ln {
 //==============================================================================
 // Scene
 
-LN_OBJECT_IMPLEMENT(Scene, Object) {}
+LN_OBJECT_IMPLEMENT(Scene, Object)
+{
+    context->registerType<Scene>({});
+}
 
 Scene::Scene()
 {

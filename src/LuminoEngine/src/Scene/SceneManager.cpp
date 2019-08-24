@@ -34,6 +34,7 @@ void SceneManager::init()
     m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
 
     EngineDomain::registerType<World>();
+    EngineDomain::registerType<Scene>();
     EngineDomain::registerType<Sprite>();
 
     EngineDomain::registerType<Tileset>();
@@ -50,6 +51,18 @@ void SceneManager::dispose()
 	releaseAndTerminateAllRunningScenes();
 }
 
+Scene* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
+{
+    LN_NOTIMPLEMENTED();
+    return nullptr;
+}
+
+void SceneManager::unloadScene(Scene* scene)
+{
+    LN_NOTIMPLEMENTED();
+}
+
+#if 0
 void SceneManager::gotoScene(Scene* scene)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
@@ -76,6 +89,7 @@ void SceneManager::returnScene()
 	c.scene = nullptr;
 	m_eventQueue.push_back(c);
 }
+#endif
 
 void SceneManager::updateFrame()
 {

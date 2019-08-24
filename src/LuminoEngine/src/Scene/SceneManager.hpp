@@ -18,9 +18,14 @@ public:
 	void init();
 	void dispose();
 
+    Scene* loadScene(const StringRef& sceneAssetFilePath);
+    void unloadScene(Scene* scene);
+
+#if 0
 	void gotoScene(Scene* scene);
 	void callScene(Scene* scene);
 	void returnScene();
+#endif
 	Scene* activeScene() const { return m_activeScene; }
 
 	void updateFrame();

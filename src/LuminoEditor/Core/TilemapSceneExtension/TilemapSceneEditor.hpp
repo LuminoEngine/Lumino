@@ -33,6 +33,7 @@ private:
     Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
 
+    Ref<ln::World> m_mainWorld;
 	Ref<ln::UIViewport> m_mainViewport;
 	Ref<ln::WorldRenderView> m_mainWorldRenderView;
 	Ref<ln::Camera> m_mainCamera;

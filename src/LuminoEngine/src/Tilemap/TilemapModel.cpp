@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
-#include <tmxlite/Map.hpp>
-#include <tmxlite/Layer.hpp>
-#include <tmxlite/TileLayer.hpp>
+//#include <tmxlite/Map.hpp>
+//#include <tmxlite/Layer.hpp>
+//#include <tmxlite/TileLayer.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
 #include <LuminoEngine/Tilemap/TilemapLayer.hpp>
 #include <LuminoEngine/Tilemap/TilemapModel.hpp>
@@ -39,6 +39,7 @@ void TilemapModel::init()
 {
     Object::init();
 
+#if 0
     if (0) // TODO: test
     {
         tmx::Map map;
@@ -77,10 +78,12 @@ void TilemapModel::init()
             }
         }
     }
+#endif
 }
 
 void TilemapModel::init(const StringRef& filePath)
 {
+#if 0
     tmx::Map tmxMap;
     if (tmxMap.load(filePath.toStdString().c_str()))
     {
@@ -130,6 +133,8 @@ void TilemapModel::init(const StringRef& filePath)
             }
         }
     }
+#endif
+    LN_NOTIMPLEMENTED();
 }
 
 Tileset* TilemapModel::tileset() const

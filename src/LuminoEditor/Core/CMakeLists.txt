@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0.0)
+﻿cmake_minimum_required (VERSION 3.0.0)
 project(EditorCore)
 
 set(LN_ROOT_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../include)

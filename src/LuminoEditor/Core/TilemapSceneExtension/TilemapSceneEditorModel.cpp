@@ -49,11 +49,11 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 
 	auto tilesetAsset = context->assetDatabase()->openAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1");
 
-	auto mainWorld = ln::makeObject<ln::World>();
+    auto scene = ln::makeObject<ln::Scene>();
 
 	auto tilemap = ln::makeObject<ln::Tilemap>();
 	tilemap->setShadingModel(ln::ShadingModel::UnLighting);
-	mainWorld->addObject(tilemap);
+    scene->addObject(tilemap);
 
 	//tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
 	auto tilesetTexture = ln::Assets::loadTexture(u"32066696-1621-4EED-820D-535BB2F22A9D");

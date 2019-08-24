@@ -123,21 +123,27 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
 
 
-    auto m_mainWorld = dynamic_cast<ln::World*>(asset->target());//ln::makeObject<ln::World>(); //
-    if (LN_REQUIRE(m_mainWorld)) return;
+    //auto m_mainWorld = dynamic_cast<ln::World*>(asset->target());//ln::makeObject<ln::World>(); //
+    //if (LN_REQUIRE(m_mainWorld)) return;
     //auto m_mainWorldAsset = ln::AssetModel::create(m_mainWorld);
 
-    m_mainCamera = ln::makeObject<ln::Camera>();
-    m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
-    m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-    m_mainWorldRenderView->setCamera(m_mainCamera);
-    m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
-    m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
-	m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &TilemapSceneEditor::WorldRenderView_OnUIEvent));
-    m_mainViewport->addRenderView(m_mainWorldRenderView);
+    // create world and view
+    {
+        m_mainWorld = ln::makeObject<ln::World>();
+        m_mainCamera = ln::makeObject<ln::Camera>();
+        m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
+        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+        m_mainWorldRenderView->setCamera(m_mainCamera);
+        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+        m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
+        m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &TilemapSceneEditor::WorldRenderView_OnUIEvent));
+        m_mainViewport->addRenderView(m_mainWorldRenderView);
 
-    m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
+        m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
+    }
 
+
+    auto scene = dynamic_cast<ln::Scene*>(asset->target());
    
     m_tilemap = static_cast<ln::Tilemap*>(m_mainWorld->findObjectByComponentType(ln::TypeInfo::getTypeInfo<ln::TilemapComponent>()));
     m_modePane->setTileset(m_tilemap->tilemapComponent()->tilemapModel()->tileset());
