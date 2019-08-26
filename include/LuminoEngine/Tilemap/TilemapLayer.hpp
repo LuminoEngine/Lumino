@@ -13,6 +13,7 @@ enum class TilemapOrientation
     DownFlow,
 };
 
+// 
 class AbstractTilemapLayer
 	: public Object
 {

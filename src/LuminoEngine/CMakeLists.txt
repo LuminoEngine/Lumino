@@ -410,20 +410,7 @@ set(LN_SOURCES_Scene
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 
-set(LN_SOURCES_Tilemap
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Tilemap.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapLayer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapModel.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Tileset.hpp
-    src/Tilemap/Internal.hpp
-    src/Tilemap/Tilemap.cpp
-    src/Tilemap/TilemapComponent.cpp
-    src/Tilemap/TilemapLayer.cpp
-    src/Tilemap/TilemapModel.cpp
-    src/Tilemap/Tileset.cpp
-)
+file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
 file(GLOB LN_SOURCES_Runtime
 	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h

@@ -133,6 +133,7 @@ void Tileset::resetInfo()
 
 void Tileset::Tile::serialize(Archive& ar)
 {
+	ar & makeNVP(u"passageFlags", passageFlags);
     ar & makeNVP(u"sourceRect", sourceRect);
 }
 

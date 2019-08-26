@@ -96,218 +96,6 @@ public:
 };
 
 
-//template<
-//	class T,
-//	typename std::enable_if<std::is_base_of<ln::Object, T>::value && std::is_base_of<ln::RefObject, T>::value, std::nullptr_t>::type = nullptr>
-//void staticFactory() {
-//	std::cout << "ln::Object" << std::endl;
-//}
-//
-//template<
-//	class T,
-//	typename std::enable_if<!std::is_base_of<ln::Object, T>::value && std::is_base_of<ln::RefObject, T>::value, std::nullptr_t>::type = nullptr>
-//void staticFactory() {
-//	std::cout << "ln::RefObject" << std::endl;
-//}
-//
-//template <class T>
-//auto staticFactory2() -> decltype(ln::makeRef<T>(), void())
-//{
-//	std::cout << "ln::RefObject" << std::endl;
-//}
-//
-//template <class T>
-//auto staticFactory2() -> decltype(T::_lnref_getThisTypeInfo(), void())
-//{
-//	std::cout << "ln::Object" << std::endl;
-//}
-//
-
-//template<
-//	class T,
-//	typename std::enable_if<decltype(T::_lnref_getThisTypeInfo(), true), std::nullptr_t>::type = nullptr>
-//Ref<T> staticFactory3()
-//{
-//	std::cout << "ln::RefObject" << std::endl;
-//	return Ref<T>();
-//}
-//
-//template<
-//	class T>
-//Ref<T> staticFactory3()
-//{
-//	std::cout << "ln::Object" << std::endl;
-//	return Ref<T>();
-//}
-//
-
-
-
-// TypeInfo* _lnref_getTypeInfo(); をメンバ関数として持っているか
-template<typename T>
-class has_lnref_getTypeInfo_function2
-{
-private:
-	template<typename U>
-	static auto check(U&& v) -> decltype(v.dispose(), std::true_type());
-	static auto check(...) -> decltype(std::false_type());
-
-public:
-	typedef decltype(check(std::declval<T>())) type;
-	static bool const value = type::value;
-};
-
-
-template<
-	typename TValue,
-	typename std::enable_if<!has_lnref_getTypeInfo_function2<TValue>::value, std::nullptr_t>::type = nullptr>
-void staticFactory3()
-{
-	std::cout << "ln::RefObject" << std::endl;
-}
-
-template<
-	typename TValue,
-	typename std::enable_if<has_lnref_getTypeInfo_function2<TValue>::value, std::nullptr_t>::type = nullptr>
-	void staticFactory3()
-{
-	std::cout << "ln::Object" << std::endl;
-}
-
-int UISandboxMain();
-
-
-
-
-const float EARTH_RADIUS = 10.0;
-const float PI = 3.14159;
-const float Kr = 0.0025 - 0.00015;		// Rayleigh scattering constant
-const float Km = 0.0010 - 0.0005;		// Mie scattering constant
-const float ESun = 1300.0;		// Sun brightness constant
-const float exposure = 0.08;
-
-
-const Vector3 fWavelength = Vector3(0.650, 0.570, 0.475);
-
-Vector3 v3CameraPos = Vector3(0, 0, 0.1);		// The camera's current position
-//const float fCameraHeight = 0.1;	// The camera's current height
-
-const Vector3 v3LightPos = Vector3(0, 0, 1);		// The direction vector to the light source
-const float fOuterRadius = EARTH_RADIUS * 1.025;						// The outer (atmosphere) radius
-const float fOuterRadius2 = fOuterRadius * fOuterRadius;	// fOuterRadius^2
-const float fInnerRadius = EARTH_RADIUS;							// The inner (planetary) radius
-const float fInnerRadius2 = fInnerRadius * fInnerRadius;	// fInnerRadius^2
-const float fKrESun = Kr * ESun;
-const float fKmESun = Km * ESun;
-const float fKr4PI = Kr * 4.0 * PI;
-const float fKm4PI = Km * 4.0 * PI;
-const float fScale = 1.0 / (fOuterRadius - fInnerRadius);			// 1 / (fOuterRadius - fInnerRadius)
-const float fScaleDepth = 0.25;		// The scale depth (i.e. the altitude at which the atmosphere's average density is found)
-const float fScaleOverScaleDepth = (fScale / fScaleDepth);
-
-const int nSamples = 5;//2
-const float fSamples = 5.0;//2.0
-
-#define MIE_G (-0.999)//(-0.990)
-#define MIE_G2 0.9801
-
-Vector3 IntersectionPos(Vector3 rayPos, Vector3 rayDir, float sphereRadius)
-{
-	const float A = Vector3::dot(rayDir, rayDir);
-	const float B = 2.0*Vector3::dot(rayPos, rayDir);
-	const float C = Vector3::dot(rayPos, rayPos) - sphereRadius * sphereRadius;
-
-	return B * B - 4.0*A*C < 0.000001 ? Vector3(0, 0, 0) : (rayPos + rayDir * (0.5*(-B + sqrt(B*B - 4.0*A*C)) / A));
-}
-
-float scale(float fCos)
-{
-	float x = 1.0 - fCos;
-	return fScaleDepth * exp(-0.00287 + x * (0.459 + x * (3.83 + x * (-6.80 + x * 5.25))));
-}
-
-Vector3 exp(Vector3 v)
-{
-	return Vector3(exp(v.x), exp(v.y), exp(v.z));
-};
-
-Vector4 PS_Main()
-{
-	Vector3 fWavelength4 = Vector3(pow(fWavelength.x, 4.0), pow(fWavelength.y, 4.0), pow(fWavelength.z, 4.0));
-	Vector3 v3InvWavelength = 1.0 / fWavelength4;	// 1 / pow(wavelength, 4) for the red, green, and blue channels
-	Vector3 eyeRay = Vector3(0, 0, 1);//input.eyeRay;
-
-	Vector3 cameraPos = v3CameraPos;
-	cameraPos.y += fInnerRadius;
-	Vector3 skyPos = IntersectionPos(cameraPos, eyeRay, fOuterRadius);
-	if (skyPos.x == 0) {
-		// TODO: Camera is out of celestial sphere.
-		//clip(-1);
-		//skyPos = Vector3(0, 0, 0);
-	}
-
-	Vector3 v3Ray = skyPos - cameraPos;
-	float fFar = v3Ray.length();
-	v3Ray /= fFar;
-
-	float fCameraHeight = cameraPos.length();
-
-	// Calculate the ray's starting position, then calculate its scattering offset
-	Vector3 v3Start = cameraPos;
-	float fHeight = v3Start.length();
-	float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
-	float fStartAngle = Vector3::dot(v3Ray, v3Start) / fHeight;
-	float fStartOffset = fDepth * scale(fStartAngle);
-
-	// Initialize the scattering loop variables
-	float fSampleLength = fFar / fSamples;
-	float fScaledLength = fSampleLength * fScale;
-	Vector3 v3SampleRay = v3Ray * fSampleLength;
-	Vector3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
-
-	// Now loop through the sample rays
-	Vector3 v3FrontColor = Vector3(0.0, 0.0, 0.0);
-	for (int i = 0; i < nSamples; i++)
-	{
-		float fHeight = v3SamplePoint.length();
-		float t = fScaleOverScaleDepth * (fInnerRadius - fHeight);
-		float fDepth = exp(t);
-		float fLightAngle = Vector3::dot(v3LightPos, v3SamplePoint) / fHeight;
-		float fCameraAngle = Vector3::dot(v3Ray, v3SamplePoint) / fHeight;
-		float fScatter = (fStartOffset + fDepth * (scale(fLightAngle) - scale(fCameraAngle)));
-		Vector3 s = -fScatter * (v3InvWavelength * fKr4PI + fKm4PI);
-		Vector3 v3Attenuate = exp(s);
-		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
-		v3SamplePoint += v3SampleRay;
-
-		//o.TestColor = Vector3(0, 0, 0);
-		//o.TestColor = v3FrontColor * 100000;
-		//o.TestColor.r = fKr4PI * 100;;
-		//o.TestColor.g = fKm4PI * 100;;
-	}
-	return Vector4(v3FrontColor, 1);
-
-	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
-	/* secondaryColor */ Vector3 FrontSecondaryColor = v3FrontColor * fKmESun;
-	/* primaryColor */ Vector3 FrontColor = v3FrontColor * (v3InvWavelength * fKrESun);
-	Vector3 v3Direction = -v3Ray;//v3CameraPos - v3Pos;
-
-
-	//-----------------------------------------------
-
-	float fCos = Vector3::dot(v3LightPos, v3Direction) / v3Direction.length();
-	float fRayPhase = 0.75 * (1.0 + fCos * fCos);
-
-	float fMiePhase = 1.5 * ((1.0 - MIE_G2) / (2.0 + MIE_G2)) * (1.0 + fCos * fCos) / pow(abs(1.0 + MIE_G2 - 2.0*MIE_G*fCos), 1.5);
-
-	Vector3 raycolor = (FrontColor*fRayPhase);
-	Vector3 miecolor = (FrontSecondaryColor*fMiePhase);
-
-
-	Vector3 c = Vector3(1.0, 1.0, 1.0) - exp(-exposure * (raycolor + miecolor));
-
-	return Vector4(c, 1);
-}
 
 
 
@@ -317,26 +105,48 @@ Vector4 PS_Main()
 
 
 
+#define URI_STATIC_BUILD
+#include "D:/Tech/Cpp/uriparser/include/uriparser/Uri.h"
+#pragma comment(lib, "D:/Tech/Cpp/uriparser/_build/Debug/uriparser.lib")
 
 
 
-
-
-
-
-
-
-
-
-
-
+//#define CURL_STATICLIB
+//#include <curl/curl.h>
+//#pragma comment(lib, "D:/Tech/Cpp/curl/_build/lib/Debug/libcurl-d.lib")
+//#pragma comment(lib, "ws2_32.lib")
 
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
-    auto e0 = powf(0.650, 4);
 
-	PS_Main();
+
+	UriUriA uri;
+	//const char * const uriString = "file:///home/user/song.mp3";
+	const char * const uriString = "lnasset://assets/user/song.mp3";
+	const char * errorPos;
+	if (uriParseSingleUriA(&uri, uriString, &errorPos) != URI_SUCCESS) {
+
+			return 1;
+	}
+	/* Success */
+	uriFreeUriMembersA(&uri);
+
+	//{
+	//	CURLUcode rc;
+	//	CURLU *url = curl_url();
+	//	rc = curl_url_set(url, CURLUPART_URL, "file://assets1/Tilesets/Tileset-1.lnasset", CURLU_NON_SUPPORT_SCHEME);
+	//	if (!rc) {
+	//		char *scheme, *path;
+	//		rc = curl_url_get(url, CURLUPART_SCHEME, &scheme, 0);
+	//		rc = curl_url_get(url, CURLUPART_PATH, &path, 0);
+	//		if (!rc) {
+	//			printf("the scheme is %s\n", scheme);
+	//			curl_free(scheme);
+	//		}
+	//		curl_url_cleanup(url);
+	//	}
+	//}
 
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -348,13 +158,6 @@ int main(int argc, char** argv)
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
 	//return UISandboxMain();
-
-
-
-
-	//static_assert(std::is_base_of<ln::Object, ed::SceneAsset>::value, "error");
-	staticFactory3<ed::SceneAsset>();
-	staticFactory3<ln::Stream>();
 
 
     GlobalLogger::addStdErrAdapter();
