@@ -60,6 +60,10 @@ private:
     struct Tile
     {
 		TileCollisionType collisionType = TileCollisionType::PassageFlags;
+
+        // bit が ON である方向へは移動できない。下位から、↓、←、→、↑。NumPad の順。
+        // 進入不可能地形は 下位が 0xF.
+        // このタイルの移動判定は無視し、下レイヤーの flag を使う場合は 0x10 で論理積する。
 		uint8_t passageFlags = 0x00;
 
         Rect sourceRect;    // unit: px
