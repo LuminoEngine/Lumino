@@ -41,6 +41,7 @@ public:
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
 
     Scene* masterScene() const;
+	void addScene(Scene* scene);
 
 protected:
     // update sequence

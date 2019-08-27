@@ -21,6 +21,9 @@ class Scene
 	: public Object
 {
 	LN_OBJECT;
+public:
+	World* world() const { return m_world; }
+
 protected:
 	/** 開始処理 */
 	LN_METHOD()
@@ -42,6 +45,7 @@ protected:
 	LN_METHOD()
 	virtual void onUpdate();
     virtual void onPostUpdate(float elapsedSeconds);
+
 
 public:	// TODO: Editor integration
 	void setup(const ln::Path& filePath);
@@ -73,6 +77,7 @@ public: // TODO: internal
     void removeRootObject(WorldObject* obj);
     void removeAllObjects();
 
+	World* m_world;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
     List<WorldObject*> m_destroyList;
 

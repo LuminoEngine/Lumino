@@ -72,19 +72,41 @@ void BoxCollisionShape2D::init(float width, float height)
     init(Size(width, height));
 }
 
-b2Shape* BoxCollisionShape2D::resolveBox2DShape()
+void BoxCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2FixtureDef& baseFixtureDef, float mass)
 {
 	if (!m_shape || isDirty())
 	{
-        // Box2D はシェイプの境界にわずかなマージンを持たせる。
-        // このため、2Dワールドを拡大してみると、キャラクターと地面の間に1px分の隙間が見えてしまうようなことがある。
-        // 対策として、マージンを打ち消す (b2_linearSlop * 2) ようにしてみる。
+		// Box2D はシェイプの境界にわずかなマージンを持たせる。
+		// このため、2Dワールドを拡大してみると、キャラクターと地面の間に1px分の隙間が見えてしまうようなことがある。
+		// 対策として、マージンを打ち消す (b2_linearSlop * 2) ようにしてみる。
 		m_shape = std::make_unique<b2PolygonShape>();
 		m_shape->SetAsBox(m_size.width * 0.5f - (b2_linearSlop * 2), m_size.height * 0.5f - (b2_linearSlop * 2), LnToB2(position()), rotation());
 		clearDirty();
 	}
-	return m_shape.get();
+
+	b2MassData massData;
+	m_shape->ComputeMass(&massData, 1);
+	float volume = massData.mass;	// ComputeMass に密度 1 で計算すると、質量 = 体積となる
+
+	b2FixtureDef fixtureDef = baseFixtureDef;
+	fixtureDef.shape = m_shape.get();
+	fixtureDef.density = mass / volume;	// 密度 = 質量 / 体積
+	targetBody->CreateFixture(&fixtureDef);
 }
+
+//b2Shape* BoxCollisionShape2D::resolveBox2DShape()
+//{
+//	if (!m_shape || isDirty())
+//	{
+//        // Box2D はシェイプの境界にわずかなマージンを持たせる。
+//        // このため、2Dワールドを拡大してみると、キャラクターと地面の間に1px分の隙間が見えてしまうようなことがある。
+//        // 対策として、マージンを打ち消す (b2_linearSlop * 2) ようにしてみる。
+//		m_shape = std::make_unique<b2PolygonShape>();
+//		m_shape->SetAsBox(m_size.width * 0.5f - (b2_linearSlop * 2), m_size.height * 0.5f - (b2_linearSlop * 2), LnToB2(position()), rotation());
+//		clearDirty();
+//	}
+//	return m_shape.get();
+//}
 
 
 //==============================================================================
@@ -113,7 +135,7 @@ void EdgeCollisionShape2D::addPoint(const Vector2& point)
     dirty();
 }
 
-b2Shape* EdgeCollisionShape2D::resolveBox2DShape()
+void EdgeCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2FixtureDef& baseFixtureDef, float mass)
 {
     if (!m_shape || isDirty())
     {
@@ -126,7 +148,50 @@ b2Shape* EdgeCollisionShape2D::resolveBox2DShape()
         }
         clearDirty();
     }
-    return m_shape.get();
+
+	b2FixtureDef fixtureDef = baseFixtureDef;
+	fixtureDef.shape = m_shape.get();
+	fixtureDef.density = 0.0f;	// Edge は体積を持つことはできない
+	targetBody->CreateFixture(&fixtureDef);
+}
+
+//==============================================================================
+// EdgeListCollisionShape2D
+
+EdgeListCollisionShape2D::EdgeListCollisionShape2D()
+{
+}
+
+void EdgeListCollisionShape2D::init()
+{
+	CollisionShape2D::init();
+}
+
+void EdgeListCollisionShape2D::addLine(const Vector2& p1, const Vector2& p2)
+{
+	m_points.push_back({p1, p2});
+	dirty();
+}
+
+void EdgeListCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2FixtureDef& baseFixtureDef, float mass)
+{
+	if (isDirty())
+	{
+		m_shapes.clear();
+		for (auto& pt : m_points) {
+			auto shape = std::make_unique<b2EdgeShape>();
+			shape->Set(LnToB2(pt.first), LnToB2(pt.second));
+			m_shapes.push_back(std::move(shape));
+		}
+		clearDirty();
+	}
+
+	for (auto& shape : m_shapes) {
+		b2FixtureDef fixtureDef = baseFixtureDef;
+		fixtureDef.shape = shape.get();
+		fixtureDef.density = 0.0f;	// Edge は体積を持つことはできない
+		targetBody->CreateFixture(&fixtureDef);
+	}
 }
 
 //==============================================================================
@@ -292,14 +357,12 @@ void TriggerBody2D::onBeforeStepSimulation()
 
 		for (auto& collitionShape : m_shapes)
 		{
-			b2Shape* shape = collitionShape->resolveBox2DShape();
 			b2FixtureDef fixtureDef;
-			fixtureDef.shape = shape;
 			fixtureDef.isSensor = true;
 			fixtureDef.filter.categoryBits = m_group;
 			fixtureDef.filter.maskBits = m_groupMask;
 			fixtureDef.filter.groupIndex = 0;
-			m_fixtures.push_back(m_body->CreateFixture(&fixtureDef));
+			collitionShape->resolveBox2DShape(m_body, fixtureDef, 0.0f);
         }
     }
 
@@ -319,7 +382,7 @@ void TriggerBody2D::removeBodyFromBox2DWorld()
     if (m_body) {
         m_body->GetWorld()->DestroyBody(m_body);
         m_body = nullptr;
-        m_fixtures.clear();
+        //m_fixtures.clear();
     }
 }
 
@@ -368,7 +431,7 @@ Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 
 RigidBody2D::RigidBody2D()
     : m_body(nullptr)
-    , m_fixtures()
+    //, m_fixtures()
 	, m_rotation(0)
     , m_mass(0.0f)
     , m_friction(0.0f)
@@ -398,7 +461,7 @@ void RigidBody2D::onDispose(bool explicitDisposing)
 		// m_body->CreateFixture で作成した fixture はこの中で解放される
 		m_body->GetWorld()->DestroyBody(m_body);
 		m_body = nullptr;
-		m_fixtures.clear();
+		//m_fixtures.clear();
 	}
 
 	PhysicsObject2D::onDispose(explicitDisposing);
@@ -536,23 +599,16 @@ void RigidBody2D::onBeforeStepSimulation()
 
 		for (auto& collitionShape : m_shapes)
 		{
-			b2Shape* shape = collitionShape->resolveBox2DShape();	// TODO:
-
-			b2MassData massData;
-			shape->ComputeMass(&massData, 1);
-			float volume = massData.mass;	// ComputeMass に密度 1 で計算すると、質量 = 体積となる
-
 			b2FixtureDef fixtureDef;
-			fixtureDef.shape = shape;
+			//fixtureDef.shape = shape;
 			fixtureDef.userData = this;
 			fixtureDef.friction = m_friction;
 			fixtureDef.restitution = m_restitution;
-			fixtureDef.density = m_mass / volume;	// 密度 = 質量 / 体積
 			fixtureDef.isSensor = false;
 			fixtureDef.filter.categoryBits = m_group;
 			fixtureDef.filter.maskBits = m_groupMask;
 			fixtureDef.filter.groupIndex = 0;
-			m_fixtures.push_back(m_body->CreateFixture(&fixtureDef));
+			collitionShape->resolveBox2DShape(m_body, fixtureDef, m_mass);
 		}
 	}
 
@@ -606,7 +662,7 @@ void RigidBody2D::onRemoveFromPhysicsWorld()
 	if (m_body) {
 		m_body->GetWorld()->DestroyBody(m_body);
 		m_body = nullptr;
-		m_fixtures.clear();
+		//m_fixtures.clear();
 	}
 }
 

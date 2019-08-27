@@ -5,7 +5,7 @@
 namespace ln {
 class RenderingContext;
 class Tileset;
-class AbstractTilemapLayer;
+class TilemapLayer;
 
 // 基本タイルは、横8タイル、縦最大 ‭8191‬ タイルまで。最大 ID は 65535.
 // ただし、現実的には 4096px 程度に抑えてほしいので、16x16 タイルを使ったとしても、最大は 8 * 256 = 2048 個。
@@ -22,11 +22,15 @@ public:
     static Ref<TilemapModel> create();
 
     Tileset* tileset() const;
-    void addTileset(Tileset* tileset);
-    void addLayer(AbstractTilemapLayer* layer);
-    AbstractTilemapLayer* layer(int index) const;
+    void setTileset(Tileset* tileset);
+    void addLayer(TilemapLayer* layer);
+	TilemapLayer* layer(int index) const;
 
+	const Size& tileSize() const;
+	int width() const;
+	int height() const;
 	bool isValidTile(int x, int y) const;
+	uint8_t tilePassageFlags(int x, int y) const;
 
 public: // TODO: internal
     void render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds);
@@ -49,8 +53,8 @@ private:
     //    int startId;
     //};
 
-    List<Ref<Tileset>> m_tilesets;
-    List<Ref<AbstractTilemapLayer>> m_layers;
+    Ref<Tileset> m_tileset;
+    List<Ref<TilemapLayer>> m_layers;
     int m_tilesetIdSpan;
 };
 

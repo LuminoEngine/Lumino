@@ -91,6 +91,15 @@ Scene* World::masterScene() const
     return m_sceneList->front();
 }
 
+void World::addScene(Scene* scene)
+{
+	if (LN_REQUIRE(scene)) return;
+	if (LN_REQUIRE(!scene->m_world)) return;
+	m_sceneList->add(scene);
+	scene->m_world = this;
+
+}
+
 void World::updateObjectsWorldMatrix()
 {
     for (auto& scene : m_sceneList) {

@@ -144,7 +144,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 
     // attach as main scene
     auto scene = dynamic_cast<ln::Scene*>(asset->target());
-    m_mainWorld->m_sceneList->add(scene);
+    m_mainWorld->addScene(scene);
    
     m_tilemap = static_cast<ln::Tilemap*>(m_mainWorld->findObjectByComponentType(ln::TypeInfo::getTypeInfo<ln::TilemapComponent>()));
     m_modePane->setTileset(m_tilemap->tilemapComponent()->tilemapModel()->tileset());

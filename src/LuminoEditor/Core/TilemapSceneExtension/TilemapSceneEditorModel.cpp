@@ -66,7 +66,6 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 	auto layer = ln::makeObject<ln::TilemapLayer>();
 	layer->resize(5, 5);
 	layer->setTileSize(ln::Size(1, 1));
-	layer->setOrientation(ln::TilemapOrientation::UpFlow);
 	layer->setTileId(0, 0, 1);
 	layer->setTileId(1, 1, 1);
 	layer->setTileId(0, 4, 1);
@@ -75,7 +74,7 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 	layer->setTileId(3, 4, 1);
 	layer->setTileId(4, 4, 1);
 	auto tilemapModel = ln::makeObject<ln::TilemapModel>();
-	tilemapModel->addTileset(tileset);
+	tilemapModel->setTileset(tileset);
 	tilemapModel->addLayer(layer);
 	tilemap->setTilemapModel(tilemapModel);
 

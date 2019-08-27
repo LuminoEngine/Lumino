@@ -5,6 +5,7 @@
 namespace ln {
 class Material;
 class TilemapModel;
+class RigidBody2D;
 
 class TilemapComponent
 	: public VisualComponent
@@ -17,6 +18,8 @@ public:
 	bool intersectTile(const Ray& rayOnWorld, PointI* tilePoint);
 
 protected:
+	virtual void onAttachedScene(Scene* newOwner) override;
+	virtual void onDetachedScene(Scene* oldOwner) override;
     void onRender(RenderingContext* context);
 
 	LN_SERIALIZE_CLASS_VERSION(1);
@@ -29,6 +32,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<TilemapModel> m_tilemapModel;
+	Ref<RigidBody2D> m_rigidBody;
 };
 
 } // namespace ln

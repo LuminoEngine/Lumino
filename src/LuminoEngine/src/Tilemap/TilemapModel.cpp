@@ -139,22 +139,40 @@ void TilemapModel::init(const StringRef& filePath)
 
 Tileset* TilemapModel::tileset() const
 {
-    return m_tilesets[0];
+    return m_tileset;
 }
 
-void TilemapModel::addTileset(Tileset* tileset)
+void TilemapModel::setTileset(Tileset* tileset)
 {
-    m_tilesets.add(tileset);
+    m_tileset = tileset;
 }
 
-void TilemapModel::addLayer(AbstractTilemapLayer* layer)
+void TilemapModel::addLayer(TilemapLayer* layer)
 {
     m_layers.add(layer);
 }
 
-AbstractTilemapLayer* TilemapModel::layer(int index) const
+TilemapLayer* TilemapModel::layer(int index) const
 {
     return m_layers[index];
+}
+
+const Size& TilemapModel::tileSize() const
+{
+	// TODO:
+	return m_layers.front()->tileSize();
+}
+
+int TilemapModel::width() const
+{
+	// TODO:
+	return m_layers.front()->getWidth();
+}
+
+int TilemapModel::height() const
+{
+	// TODO:
+	return m_layers.front()->getHeight();
 }
 
 bool TilemapModel::isValidTile(int x, int y) const
@@ -168,6 +186,19 @@ bool TilemapModel::isValidTile(int x, int y) const
 	return true;
 }
 
+uint8_t TilemapModel::tilePassageFlags(int x, int y) const
+{
+	for (int i = m_layers.size() - 1; i >= 0; i--) {
+		auto tileId = m_layers[i]->tileId(x, y);
+		auto flags = m_tileset->tilePassageFlags(tileId);
+		if ((flags & 0x10) != 0) {
+			continue;	// 下層のタイルに任せる
+		}
+		return flags;
+	}
+	return 0;
+}
+
 void TilemapModel::render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds)
 {
     for (auto& layer : m_layers)
@@ -179,7 +210,7 @@ void TilemapModel::render(RenderingContext* context, const Matrix& transform, co
 bool TilemapModel::fetchTileset(int tileGlobalId, Tileset** outTileset, int* outTileLocalId)
 {
     // TODO:
-    *outTileset = m_tilesets[0];
+    *outTileset = m_tileset;
     *outTileLocalId = tileGlobalId;
     return true;
 }
@@ -188,21 +219,16 @@ void TilemapModel::serialize(Archive& ar)
 {
 	Object::serialize(ar);
 
-    List<String> tilesets;
+    String tilesetPath;
     if (ar.isSaving()) {
-        for (auto& tileset : m_tilesets) {
-            tilesets.add(Path::makeRelative(ar.basePath(), tileset->m_assetFilePath));
-        }
+		tilesetPath = Path::makeRelative(ar.basePath(), m_tileset->m_assetFilePath);
     }
 
-	ar & makeNVP(u"tilesets", tilesets);
+	ar & makeNVP(u"tileset", tilesetPath);
 	ar & makeNVP(u"layers", m_layers);
 
     if (ar.isLoading()) {
-        m_tilesets.clear();
-        for (auto& tileset : tilesets) {
-            addTileset(dynamic_pointer_cast<Tileset>(Assets::loadAsset(Path(ar.basePath(), tileset))));
-        }
+		setTileset(dynamic_pointer_cast<Tileset>(Assets::loadAsset(Path(ar.basePath(), tilesetPath))));
     }
 }
 

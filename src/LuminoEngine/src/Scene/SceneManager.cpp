@@ -55,7 +55,7 @@ void SceneManager::dispose()
 Scene* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
 {
     auto scene = dynamic_pointer_cast<Scene>(Assets::loadAsset(sceneAssetFilePath));
-    activeWorld()->m_sceneList->add(scene);
+    activeWorld()->addScene(scene);
     return nullptr;
 }
 

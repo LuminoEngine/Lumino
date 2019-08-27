@@ -29,7 +29,8 @@ LN_OBJECT_IMPLEMENT(Scene, Object)
 }
 
 Scene::Scene()
-    : m_rootWorldObjectList(makeList<Ref<WorldObject>>())
+    : m_world(nullptr)
+	, m_rootWorldObjectList(makeList<Ref<WorldObject>>())
 {
 }
 

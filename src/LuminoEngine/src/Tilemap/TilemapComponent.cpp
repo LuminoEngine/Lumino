@@ -1,7 +1,10 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Tilemap/TilemapModel.hpp>
 #include <LuminoEngine/Tilemap/TilemapComponent.hpp>
+#include "TilemapPhysicsObject.hpp"
 
 #include <LuminoEngine/Scene/WorldObject.hpp>   // for WorldObjectTransform
 #include <LuminoEngine/Rendering/RenderView.hpp>    // for RenderViewPoint
@@ -43,6 +46,11 @@ TilemapModel* TilemapComponent::tilemapModel() const
 void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)
 {
     m_tilemapModel = tilemapModel;
+
+
+	m_rigidBody = makeObject<RigidBody2D>();
+	m_rigidBody->addCollisionShape(detail::TilemapPhysicsObject::createTilemapCollisionShape(m_tilemapModel));
+
 }
 
 bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
@@ -52,7 +60,7 @@ bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
 	Matrix worldInverse = Matrix::makeInverse(worldObject()->worldMatrix());
 	Ray localRay(Vector3::transformCoord(rayOnWorld.origin, worldInverse), Vector3::transformCoord(rayOnWorld.direction, worldInverse), rayOnWorld.distance);
 
-    AbstractTilemapLayer* layer = m_tilemapModel->layer(0);
+	TilemapLayer* layer = m_tilemapModel->layer(0);
 
 	// TODO: ひとまず、 Z- を正面とする
 	Plane plane(Vector3::Zero, -Vector3::UnitZ);
@@ -73,6 +81,16 @@ bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
 		}
 	}
 	return false;
+}
+
+void TilemapComponent::onAttachedScene(Scene* newOwner)
+{
+	newOwner->world()->physicsWorld2D()->addPhysicsObject(m_rigidBody);
+}
+
+void TilemapComponent::onDetachedScene(Scene* oldOwner)
+{
+	m_rigidBody->removeFromPhysicsWorld();
 }
 
 void TilemapComponent::onRender(RenderingContext* context)
