@@ -22,6 +22,7 @@ public:
 
 private:
 	void WorldRenderView_OnUIEvent(ln::UIEventArgs* e);
+	void handleTickEvent(ln::UITimerEventArgs* e);
 
     Ref<ln::AssetModel> m_assetModel;
 	Ref<TilemapSceneEditorModel> m_model;
@@ -33,6 +34,7 @@ private:
     Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
 
+	Ref<ln::UIActiveTimer> m_timer;
     Ref<ln::World> m_mainWorld;
 	Ref<ln::UIViewport> m_mainViewport;
 	Ref<ln::WorldRenderView> m_mainWorldRenderView;

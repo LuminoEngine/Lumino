@@ -84,6 +84,8 @@ public: // TODO: internal
 	// TODO: Editor integration
 	ln::Path m_filePath;
 
+	bool m_initialUpdate;
+
     friend class ed::SceneAsset;
 	friend class detail::SceneManager;
     friend class World;

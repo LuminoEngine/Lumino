@@ -167,6 +167,8 @@ public:
 
     const Matrix& worldMatrix();
 
+	Scene* scene() const { return m_scene; }
+
 
     /** この WorldObject に含まれている Component のうち、指定した型である最初の Component を返します。 */
     Component* findComponentByType(const TypeInfo* type) const;
@@ -207,6 +209,7 @@ public: // TODO:
     detail::WorldObjectTransform* transform() const { return m_transform; }
 	void attachScene(Scene* scene);
 	void detachScene();
+	void start();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
     void render();

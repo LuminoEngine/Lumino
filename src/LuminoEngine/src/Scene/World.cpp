@@ -97,7 +97,7 @@ void World::addScene(Scene* scene)
 	if (LN_REQUIRE(!scene->m_world)) return;
 	m_sceneList->add(scene);
 	scene->m_world = this;
-
+	scene->m_initialUpdate = true;
 }
 
 void World::updateObjectsWorldMatrix()

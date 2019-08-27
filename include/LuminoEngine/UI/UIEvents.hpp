@@ -102,7 +102,8 @@ public:
     static const UIEventType	Click;
 
     static const UIEventType    SelectionChanged;
-    
+
+	static const UIEventType	Timer;
 
     static const UIEventType	ExecuteCommandEvent;
     static const UIEventType	CanExecuteCommandEvent;
@@ -402,6 +403,26 @@ public:
     int m_count;
 };
 
+/** Timer イベントの引数です。 */
+class UITimerEventArgs
+	: public UIEventArgs
+{
+	LN_OBJECT;
+public:
+	/** UITimerEventArgs のインスタンスを作成します。*/
+	static Ref<UITimerEventArgs> create(UIElement* sender, UIEventType type, float elapsedSeconds, bool caching = true);
+
+	int elapsedSeconds() const { return m_elapsedSeconds; }
+
+LN_CONSTRUCT_ACCESS:
+	UITimerEventArgs();
+	virtual ~UITimerEventArgs() = default;
+	void init(UIElement* sender, UIEventType type, float elapsedSeconds);
+
+private:
+	float m_elapsedSeconds;
+};
+
 /**
 	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
@@ -427,6 +448,8 @@ using UIClickEventHandler = std::function<void(UIClickEventArgs* e)>;
 using UISelectionChangedEventHandler = std::function<void(UISelectionChangedEventArgs* e)>;
 
 using UICommandEventHandler = std::function<void(UICommandEventArgs* e)>;
+
+using UITimerEventHandler = std::function<void(UITimerEventArgs* e)>;
 
 } // namespace ln
 

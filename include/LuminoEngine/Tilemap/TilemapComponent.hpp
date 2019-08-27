@@ -18,7 +18,7 @@ public:
 	bool intersectTile(const Ray& rayOnWorld, PointI* tilePoint);
 
 protected:
-	virtual void onAttachedScene(Scene* newOwner) override;
+	virtual void onStart() override;
 	virtual void onDetachedScene(Scene* oldOwner) override;
     void onRender(RenderingContext* context);
 

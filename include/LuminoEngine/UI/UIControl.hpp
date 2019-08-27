@@ -3,6 +3,7 @@
 
 namespace ln {
 class UILayoutPanel;
+class UIActiveTimer;
 
 namespace detail {
 class UIAligned3x3GridLayoutArea;
@@ -126,6 +127,9 @@ public:
 
 	const List<Ref<UIElement>>& logicalChildren() const { return m_logicalChildren; }
 
+	void registerActiveTimer(UIActiveTimer* timer);
+	void unregisterActiveTimer(UIActiveTimer* timer);
+
 protected:
 	///** この要素内の子ビジュアル要素の数を取得します。 */
 	//virtual int getVisualChildrenCount() const;
@@ -145,6 +149,7 @@ protected:
     Ref<detail::UIAligned3x3GridLayoutArea> m_aligned3x3GridLayoutArea;
     List<Ref<UIElement>> m_inlineElements;
 private:
+	List<Ref<UIActiveTimer>> m_activeTimers;
 
     //Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less

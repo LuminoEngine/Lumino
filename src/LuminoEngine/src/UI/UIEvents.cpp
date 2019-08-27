@@ -39,6 +39,8 @@ const UIEventType	UIEvents::Click = 23;
 
 const UIEventType   UIEvents::SelectionChanged = 24;
 
+const UIEventType   UIEvents::Timer = 25;
+
 const UIEventType	UIEvents::ExecuteCommandEvent = 201;
 const UIEventType	UIEvents::CanExecuteCommandEvent = 202;
 const UIEventType	UIEvents::CanExecuteChangedEvent = 203;
@@ -477,6 +479,37 @@ void UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type,
     m_name = String::Empty;
     m_startIndex = startIndex;
     m_count = count;
+}
+
+//==============================================================================
+// UITimerEventArgs
+
+LN_OBJECT_IMPLEMENT(UITimerEventArgs, UIEventArgs) {}
+
+Ref<UITimerEventArgs> UITimerEventArgs::create(UIElement* sender, UIEventType type, float elapsedSeconds, bool caching)
+{
+	if (caching)
+	{
+		auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
+		Ref<UITimerEventArgs> ptr(pool->create<UITimerEventArgs>(sender, type, elapsedSeconds), false);
+		return ptr;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+}
+
+UITimerEventArgs::UITimerEventArgs()
+	: m_elapsedSeconds(0.0f)
+{
+}
+
+void UITimerEventArgs::init(UIElement* sender, UIEventType type, float elapsedSeconds)
+{
+	UIEventArgs::init(sender, type);
+	m_elapsedSeconds = elapsedSeconds;
 }
 
 } // namespace ln

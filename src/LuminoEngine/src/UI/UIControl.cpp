@@ -3,6 +3,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIControl.hpp>
+#include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include "UIManager.hpp"
 
 namespace ln {
@@ -159,6 +160,26 @@ void UIControl::addInlineElement(UIElement* element, UIInlineLayout layout)
 //	//}
 //}
 //
+
+
+void UIControl::registerActiveTimer(UIActiveTimer* timer)
+{
+	if (LN_REQUIRE(timer)) return;
+	if (LN_REQUIRE(!timer->m_owner)) return;
+	m_activeTimers.add(timer);
+	timer->m_owner = this;
+	detail::EngineDomain::uiManager()->registerActiveTimer(timer);
+}
+
+void UIControl::unregisterActiveTimer(UIActiveTimer* timer)
+{
+	if (LN_REQUIRE(timer)) return;
+	if (LN_REQUIRE(timer->m_owner == this)) return;
+	m_activeTimers.remove(timer);
+	timer->m_owner = nullptr;
+	detail::EngineDomain::uiManager()->unregisterActiveTimer(timer);
+}
+
 Size UIControl::measureOverride(const Size& constraint)
 {
     if (m_aligned3x3GridLayoutArea) {

@@ -5,6 +5,8 @@ class Application;
 class UIContext;
 class UIContainerElement;
 class UIFrameLayout;
+class UIActiveTimer;
+
 namespace detail {
 class PlatformManager;
 class GraphicsManager;
@@ -56,6 +58,10 @@ public:
 
 	//const Ref<UIFrameLayout>& defaultLayout() const { return m_defaultLayout; }
 
+	void registerActiveTimer(UIActiveTimer* timer);
+	void unregisterActiveTimer(UIActiveTimer* timer);
+	void tickGlobal(float elapsedSeconds);
+
 private:
     struct EventQueueItem
     {
@@ -74,6 +80,7 @@ private:
     UIElement* m_forcusedElement;
 	//Ref<UIFrameLayout> m_defaultLayout;
     std::deque<EventQueueItem> m_eventQueue;
+	List<Ref<UIActiveTimer>> m_activeTimers;
 
 };
 

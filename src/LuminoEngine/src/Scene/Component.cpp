@@ -34,6 +34,10 @@ void Component::render(RenderingContext* context)
     onRender(context);
 }
 
+void Component::onStart()
+{
+}
+
 void Component::onAttached(WorldObject* owner)
 {
 }

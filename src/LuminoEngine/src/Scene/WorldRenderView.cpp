@@ -147,8 +147,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
 
 			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-				//renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
-
+				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+			}
+			else if (clearMode() == RenderViewClearMode::Sky) {
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
 

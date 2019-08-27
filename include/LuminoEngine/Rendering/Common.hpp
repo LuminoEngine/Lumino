@@ -64,6 +64,7 @@ enum class RenderViewClearMode
 {
 	None,
 	ColorAndDepth,
+	Sky,
 };
 
 // 

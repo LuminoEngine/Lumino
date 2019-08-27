@@ -137,6 +137,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
         m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
         m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
         m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &TilemapSceneEditor::WorldRenderView_OnUIEvent));
+		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(true);
         m_mainViewport->addRenderView(m_mainWorldRenderView);
 
         m_mainCamera->addComponent(ln::makeObject<ln::CameraOrbitControlComponent>());
@@ -153,6 +154,10 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     //editorContext()->mainProject()->assetDatabase()->createAsset(m_mainWorld, u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/test.lnasset");
  
     //editorContext()->mainProject()->assetDatabase()->saveAsset(m_assetModel);
+
+	m_timer = ln::makeObject<ln::UIActiveTimer>();
+	m_timer->connectOnTick(ln::bind(this, &TilemapSceneEditor::handleTickEvent));
+	m_mainViewport->registerActiveTimer(m_timer);
 
     printf("");
 }
@@ -214,6 +219,11 @@ void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
  //           }
  //       }
 	//}
+}
+
+void TilemapSceneEditor::handleTickEvent(ln::UITimerEventArgs* e)
+{
+	m_mainWorld->updateFrame(e->elapsedSeconds());
 }
 
 //==============================================================================

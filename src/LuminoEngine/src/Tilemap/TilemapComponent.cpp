@@ -48,8 +48,6 @@ void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)
     m_tilemapModel = tilemapModel;
 
 
-	m_rigidBody = makeObject<RigidBody2D>();
-	m_rigidBody->addCollisionShape(detail::TilemapPhysicsObject::createTilemapCollisionShape(m_tilemapModel));
 
 }
 
@@ -83,13 +81,16 @@ bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
 	return false;
 }
 
-void TilemapComponent::onAttachedScene(Scene* newOwner)
+void TilemapComponent::onStart()
 {
-	newOwner->world()->physicsWorld2D()->addPhysicsObject(m_rigidBody);
+	m_rigidBody = makeObject<RigidBody2D>();
+	m_rigidBody->addCollisionShape(detail::TilemapPhysicsObject::createTilemapCollisionShape(m_tilemapModel));
+	worldObject()->scene()->world()->physicsWorld2D()->addPhysicsObject(m_rigidBody);
 }
 
 void TilemapComponent::onDetachedScene(Scene* oldOwner)
 {
+	// TODO: onStop とか。
 	m_rigidBody->removeFromPhysicsWorld();
 }
 

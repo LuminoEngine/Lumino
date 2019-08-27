@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include <LuminoEngine/UI/UIActiveTimer.hpp>
 #include "UIEventArgsPool.hpp"
 #include "UIManager.hpp"
 
@@ -162,6 +163,23 @@ void UIManager::handleGlobalRoutedEvent(UIEventArgs* e)
     if (m_application) {
         ApplicationHelper::callOnRoutedEvent(m_application, e);
     }
+}
+
+void UIManager::registerActiveTimer(UIActiveTimer* timer)
+{
+	m_activeTimers.add(timer);
+}
+
+void UIManager::unregisterActiveTimer(UIActiveTimer* timer)
+{
+	m_activeTimers.remove(timer);
+}
+
+void UIManager::tickGlobal(float elapsedSeconds)
+{
+	for (auto& timer : m_activeTimers) {
+		timer->tick(elapsedSeconds);
+	}
 }
 
 } // namespace detail

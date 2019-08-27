@@ -285,6 +285,13 @@ void WorldObject::detachScene()
 	}
 }
 
+void WorldObject::start()
+{
+	for (auto& c : m_components) {
+		c->onStart();
+	}
+}
+
 void WorldObject::updateFrame(float elapsedSeconds)
 {
     onUpdate(elapsedSeconds);

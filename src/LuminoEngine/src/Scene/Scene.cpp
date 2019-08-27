@@ -31,6 +31,7 @@ LN_OBJECT_IMPLEMENT(Scene, Object)
 Scene::Scene()
     : m_world(nullptr)
 	, m_rootWorldObjectList(makeList<Ref<WorldObject>>())
+	, m_initialUpdate(true)
 {
 }
 
@@ -185,6 +186,14 @@ void Scene::updateObjectsWorldMatrix()
 
 void Scene::onPreUpdate(float elapsedSeconds)
 {
+	if (m_initialUpdate) {
+		for (auto& obj : m_rootWorldObjectList) {
+			obj->start();
+		}
+		m_initialUpdate = false;
+	}
+
+
     for (auto& obj : m_rootWorldObjectList)
     {
         obj->onPreUpdate();
