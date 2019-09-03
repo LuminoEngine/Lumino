@@ -140,8 +140,8 @@ bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRat
 	{
 		for (int x = 0; x < bmp1->width(); ++x)
 		{
-			ColorI c1 = mixPixels(bmp1, x, y);
-			ColorI c2 = mixPixels(bmp2, x, y);
+            auto c1 = mixPixels(bmp1, x, y);
+            auto c2 = mixPixels(bmp2, x, y);
 			if (abs(c1.r - c2.r) <= colorRange &&
 				abs(c1.g - c2.g) <= colorRange &&
 				abs(c1.b - c2.b) <= colorRange &&

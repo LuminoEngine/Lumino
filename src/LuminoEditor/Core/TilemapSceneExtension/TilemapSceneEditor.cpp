@@ -107,7 +107,7 @@ ln::Result TilemapSceneEditor::init()
 
     m_modePane = ln::makeObject<TilemapSceneModePane>(m_model);
     m_inspectorPane = ln::makeObject<ln::EditorPane>();
-    m_inspectorPane->setBackgroundColor(ln::Color::Green);
+    m_inspectorPane->setBackgroundColor(ln::Color::LightGray);
 
     m_modePanes = ln::makeList<Ref<ln::EditorPane>>({ ln::static_pointer_cast<ln::EditorPane>(m_modePane) });
     m_inspectorPanes = ln::makeList<Ref<ln::EditorPane>>({ m_inspectorPane });
@@ -134,7 +134,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
         m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
         m_mainWorldRenderView->setTargetWorld(m_mainWorld);
         m_mainWorldRenderView->setCamera(m_mainCamera);
-        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
+        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::Sky);
         m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
         m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &TilemapSceneEditor::WorldRenderView_OnUIEvent));
 		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(true);
@@ -148,7 +148,9 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     m_mainWorld->addScene(scene);
    
     m_tilemap = static_cast<ln::Tilemap*>(m_mainWorld->findObjectByComponentType(ln::TypeInfo::getTypeInfo<ln::TilemapComponent>()));
+    m_tilemap->setBlendMode(ln::BlendMode::Alpha);
     m_modePane->setTileset(m_tilemap->tilemapComponent()->tilemapModel()->tileset());
+    m_currentLayer = m_tilemap->tilemapComponent()->tilemapModel()->layer(0);
     //m_tilemap->tilemapComponent();
 
     //editorContext()->mainProject()->assetDatabase()->createAsset(m_mainWorld, u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/test.lnasset");
@@ -158,8 +160,6 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 	m_timer = ln::makeObject<ln::UIActiveTimer>();
 	m_timer->connectOnTick(ln::bind(this, &TilemapSceneEditor::handleTickEvent));
 	m_mainViewport->registerActiveTimer(m_timer);
-
-    printf("");
 }
 
 void TilemapSceneEditor::onClosed()

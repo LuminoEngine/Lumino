@@ -141,7 +141,7 @@ void EditorApplication::onInit()
 
     auto sheet = ln::makeObject<ln::UIStyleSheet>();
 	if (auto s = sheet->obtainStyle(u"NavigationBarItem")) {
-		s->borderThickness = ln::Thickness(4, 0, 4, 0);
+		s->borderThickness = ln::Thickness(4, 0, 0, 0);
 		s->borderInset = true;
 	}
     if (auto s = sheet->obtainStyle(u"NavigationBarItem:Unselected")) {

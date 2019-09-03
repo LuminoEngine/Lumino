@@ -105,9 +105,9 @@ public:
 
 
 
-#define URI_STATIC_BUILD
-#include "D:/Tech/Cpp/uriparser/include/uriparser/Uri.h"
-#pragma comment(lib, "D:/Tech/Cpp/uriparser/_build/Debug/uriparser.lib")
+//#define URI_STATIC_BUILD
+//#include "D:/Tech/Cpp/uriparser/include/uriparser/Uri.h"
+//#pragma comment(lib, "D:/Tech/Cpp/uriparser/_build/Debug/uriparser.lib")
 
 
 
@@ -121,16 +121,16 @@ int main(int argc, char** argv)
 	setlocale(LC_ALL, "");
 
 
-	UriUriA uri;
-	//const char * const uriString = "file:///home/user/song.mp3";
-	const char * const uriString = "lnasset://assets/user/song.mp3";
-	const char * errorPos;
-	if (uriParseSingleUriA(&uri, uriString, &errorPos) != URI_SUCCESS) {
+	//UriUriA uri;
+	////const char * const uriString = "file:///home/user/song.mp3";
+	//const char * const uriString = "lnasset://assets/user/song.mp3";
+	//const char * errorPos;
+	//if (uriParseSingleUriA(&uri, uriString, &errorPos) != URI_SUCCESS) {
 
-			return 1;
-	}
-	/* Success */
-	uriFreeUriMembersA(&uri);
+	//		return 1;
+	//}
+	///* Success */
+	//uriFreeUriMembersA(&uri);
 
 	//{
 	//	CURLUcode rc;

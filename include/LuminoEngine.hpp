@@ -92,6 +92,7 @@
 #include "LuminoEngine/Tilemap/Tileset.hpp"
 #include "LuminoEngine/Tilemap/TilemapLayer.hpp"
 #include "LuminoEngine/Tilemap/TilemapModel.hpp"
+#include "LuminoEngine/Tilemap/TilemapComponent.hpp"
 #include "LuminoEngine/Tilemap/Tilemap.hpp"
 
 #include "LuminoEngine/Effect/EffectContext.hpp"

@@ -15,6 +15,8 @@ public:
     TilemapModel* tilemapModel() const;
     void setTilemapModel(TilemapModel* tilemapModel);
 
+    const Ref<RigidBody2D>& rigidBody() const { return m_rigidBody; }
+
 	bool intersectTile(const Ray& rayOnWorld, PointI* tilePoint);
 
 protected:
