@@ -402,7 +402,9 @@ void serialize(Archive& ar, Ref<TValue>& value)
 		if (!isNull) {
 			if (!typeName.isEmpty()) {
 				auto obj = TypeInfo::createInstance(typeName);
-				value = dynamic_pointer_cast<TValue>(obj);
+				if (obj) {
+					value = dynamic_pointer_cast<TValue>(obj);
+				}
 			}
 
 			// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。

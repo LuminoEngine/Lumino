@@ -272,7 +272,7 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("pcre"))
             {
-                Utils.DownloadFile("ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-10.31.zip", "pcre2-10.31.zip");
+                Utils.DownloadFile("ftp://ftp.pcre.org/pub/pcre/pcre2-10.31.zip", "pcre2-10.31.zip");
                 Utils.ExtractZipFile("pcre2-10.31.zip", reposDir, true);
                 Directory.Move("pcre2-10.31", "pcre");
             }

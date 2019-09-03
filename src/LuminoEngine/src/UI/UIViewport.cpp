@@ -32,6 +32,7 @@ void UIViewport::init()
 
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
     m_blitMaterial = makeObject<Material>();
+	m_blitMaterial->setBlendMode(BlendMode::Normal);
 }
 
 void UIViewport::onDispose(bool explicitDisposing)

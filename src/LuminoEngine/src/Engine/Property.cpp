@@ -26,7 +26,6 @@ Ref<Object> TypeInfo::createInstance(const String& typeName)
 		return info->createInstance();
 	}
 	else {
-        LN_ERROR(u"Unregisterd type.");
 		return nullptr;
 	}
 }
