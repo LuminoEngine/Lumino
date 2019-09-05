@@ -19,6 +19,7 @@ public:
 
 	static String LuminoCLI;
 	static Ref<DepthBuffer> depthBuffer;
+	static RenderTargetTexture* lastBackBuffer;
 };
 
 #define LN_TEST_CLEAN_SCENE \

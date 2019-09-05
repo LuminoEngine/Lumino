@@ -14,7 +14,7 @@ namespace ln {
 
 SwapChain::SwapChain()
     : m_rhiObject(nullptr)
-    , m_backbuffer(nullptr)
+    , m_backbuffers()
     , m_imageIndex(0)
 {
 }
@@ -28,15 +28,13 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
     // TODO: onChangeDevice でバックバッファをアタッチ
     GraphicsResource::init();
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
-    m_rhiObject->acquireNextImage(&m_imageIndex);
-    m_backbuffer = makeObject<RenderTargetTexture>(this);
-    detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, false);
+	resetRHIBackbuffers();
 }
 
 void SwapChain::onDispose(bool explicitDisposing)
 {
     m_rhiObject = nullptr;
-    m_backbuffer = nullptr;
+	m_backbuffers.clear();
 	GraphicsResource::onDispose(explicitDisposing);
 }
 
@@ -44,26 +42,36 @@ void SwapChain::onChangeDevice(detail::IGraphicsDevice* device)
 {
 }
 
-RenderTargetTexture* SwapChain::backbuffer() const
+RenderTargetTexture* SwapChain::currentBackbuffer() const
 {
-    return m_backbuffer;
+    return m_backbuffers[m_imageIndex];
 }
 
 void SwapChain::resizeBackbuffer(int width, int height)
 {
     if (LN_ENSURE(m_rhiObject->resizeBackbuffer(width, height))) return;
-    detail::TextureInternal::resetSwapchainFrameIfNeeded(m_backbuffer, true);
+	resetRHIBackbuffers();
+}
+
+void SwapChain::resetRHIBackbuffers()
+{
+	uint32_t count = m_rhiObject->getBackbufferCount();
+	m_backbuffers.resize(count);
+	for (uint32_t i = 0; i < count; i++) {
+		auto buffer = makeObject<RenderTargetTexture>(this);
+		detail::TextureInternal::resetRHIObject(buffer, m_rhiObject->getRenderTarget(i));
+		m_backbuffers[i] = buffer;
+	}
+
+	m_rhiObject->acquireNextImage(&m_imageIndex);
 }
 
 void SwapChain::present(GraphicsContext* context)
 {
 	auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+	auto nativeContext = detail::GraphicsContextInternal::commitState(context);
 
-    //GraphicsContext* context = detail::GraphicsResourceInternal::manager(this)->graphicsContext();
-    //detail::IGraphicsContext* nativeContext = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext();
-    detail::IGraphicsContext* nativeContext = detail::GraphicsContextInternal::commitState(context);
-
-    detail::GraphicsContextInternal::flushCommandRecoding(context, backbuffer());
+    detail::GraphicsContextInternal::flushCommandRecoding(context, currentBackbuffer());
 
     // TODO: threading
 	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);
@@ -78,11 +86,6 @@ void SwapChain::present(GraphicsContext* context)
 			device->collectGarbageObjects();
 		});
 	
-
-    // この後 readData などでバックバッファのイメージをキャプチャしたりするので、
-    // ここでは次に使うべきバッファの番号だけを取り出しておく。
-    // バックバッファをラップしている RenderTarget が次に resolve されたときに、
-    // 実際にこの番号を使って、ラップするべきバッファを取り出す。
     m_rhiObject->acquireNextImage(&m_imageIndex);
 }
 

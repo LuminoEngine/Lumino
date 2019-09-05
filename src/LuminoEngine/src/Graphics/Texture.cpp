@@ -305,7 +305,6 @@ void RenderTargetTexture::releaseTemporary(RenderTargetTexture* renderTarget)
 RenderTargetTexture::RenderTargetTexture()
     : m_rhiObject(nullptr)
     , m_ownerSwapchain(nullptr)
-    , m_swapchainImageIndex(-1)
     , m_nativeObject(0)
     , m_modified(true)
     , m_hasNativeObject(false)
@@ -339,7 +338,6 @@ void RenderTargetTexture::init(SwapChain* owner)
 {
     Texture::init();
     m_ownerSwapchain = owner;
-    resetSwapchainFrameIfNeeded(false);
 }
 
 void RenderTargetTexture::init(intptr_t nativeObject, TextureFormat format)
@@ -360,6 +358,15 @@ void RenderTargetTexture::resetSize(int width, int height)
     width = std::max(1, width);
     height = std::max(1, height);
     detail::TextureInternal::setDesc(this, width, height, format());
+}
+
+void RenderTargetTexture::resetRHIObject(detail::ITexture* rhiObject)
+{
+	LN_CHECK(rhiObject);
+	m_rhiObject = rhiObject;
+	auto size = m_rhiObject->realSize();
+	detail::TextureInternal::setDesc(this, size.width, size.height, m_rhiObject->getTextureFormat());
+	m_modified = false;
 }
 
 void RenderTargetTexture::onDispose(bool explicitDisposing)
@@ -408,25 +415,6 @@ detail::ITexture* RenderTargetTexture::resolveRHIObject(GraphicsContext* context
 void RenderTargetTexture::onChangeDevice(detail::IGraphicsDevice* device)
 {
     LN_NOTIMPLEMENTED();
-}
-
-// ちょっとイメージしづらいかもしれないけど、これはレガシーAPI の Backbuffer の ReadData を正しくするための仕組み。
-// Native Swapchain は内部的に複数の RenderTarget を持っていて。これは通常 present のたびに切り替える。
-// で、そうすると present 直後に ReadData して最新の描画結果を得るには、その present 時点の ImageIndex の RenderTarget を取り出さなければならない。
-// ImageIndex を Lumino の API として公開するのはちょっとユーザー負担が増えてしまうので、この層でカバーする。
-void RenderTargetTexture::resetSwapchainFrameIfNeeded(bool force)
-{
-    if (m_ownerSwapchain) {
-        int imageIndex = detail::SwapChainInternal::imageIndex(m_ownerSwapchain);
-        if (m_swapchainImageIndex != imageIndex || force) {
-            m_swapchainImageIndex = imageIndex;
-            m_rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, m_ownerSwapchain, nullptr)->getRenderTarget(m_swapchainImageIndex);
-
-            auto size = m_rhiObject->realSize();
-            detail::TextureInternal::setDesc(this, size.width, size.height, m_rhiObject->getTextureFormat());
-            m_modified = false;
-        }
-    }
 }
 
 namespace detail {

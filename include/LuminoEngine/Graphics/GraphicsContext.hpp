@@ -163,7 +163,6 @@ private:
         RasterizerStateDesc rasterizerState;
         DepthStencilStateDesc depthStencilState;
         std::array<Ref<RenderTargetTexture>, 4> renderTargets;
-        std::array<int, 4> swapchainImageIndex;
         Ref<DepthBuffer> depthBuffer;
         Rect viewportRect;
         Rect scissorRect;

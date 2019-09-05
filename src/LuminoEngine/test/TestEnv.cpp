@@ -4,6 +4,7 @@
 
 String TestEnv::LuminoCLI;
 Ref<DepthBuffer> TestEnv::depthBuffer;
+RenderTargetTexture* TestEnv::lastBackBuffer;
 
 void TestEnv::setup()
 {
@@ -30,8 +31,8 @@ void TestEnv::setup()
         //Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
     }
 
-	RenderTargetTexture* backbuffer = Engine::mainWindow()->swapChain()->backbuffer();
-	depthBuffer = DepthBuffer::create(backbuffer->width(), backbuffer->height());
+	lastBackBuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
+	depthBuffer = DepthBuffer::create(lastBackBuffer->width(), lastBackBuffer->height());
 
 #ifdef LN_OS_WIN32
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
@@ -47,6 +48,7 @@ void TestEnv::teardown()
 
 void TestEnv::updateFrame()
 {
+	lastBackBuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
     detail::EngineDomain::engineManager()->updateFrame();
     detail::EngineDomain::engineManager()->renderFrame();
     detail::EngineDomain::engineManager()->presentFrame();
@@ -55,13 +57,13 @@ void TestEnv::updateFrame()
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
 	context->resetState();
-	context->setRenderTarget(0, Engine::mainWindow()->swapChain()->backbuffer());
+	context->setRenderTarget(0, Engine::mainWindow()->swapChain()->currentBackbuffer());
 	context->setDepthBuffer(depthBuffer);
 }
 
 Ref<Bitmap2D> TestEnv::capture()
 {
-	return detail::TextureInternal::readData(Engine::mainWindow()->swapChain()->backbuffer(), Engine::graphicsContext());
+	return detail::TextureInternal::readData(lastBackBuffer, Engine::graphicsContext());
 }
 
 void TestEnv::saveScreenShot(const Char* filePath)

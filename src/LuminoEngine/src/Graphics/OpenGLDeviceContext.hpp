@@ -223,6 +223,7 @@ public:
 	GLSwapChain(OpenGLDevice* device);
 	virtual ~GLSwapChain() = default;
 	virtual void dispose() override;
+	virtual uint32_t getBackbufferCount() override { return 1; }
     virtual void acquireNextImage(int* outImageIndex) override { *outImageIndex = 0; }
     virtual ITexture* getRenderTarget(int imageIndex) const override;
 	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;

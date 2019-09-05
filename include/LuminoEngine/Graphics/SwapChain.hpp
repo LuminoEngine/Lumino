@@ -26,8 +26,8 @@ class LN_API SwapChain
     : public GraphicsResource
 {
 public:
-    /** バックバッファを取得します。 */
-    RenderTargetTexture* backbuffer() const;
+    /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
+    RenderTargetTexture* currentBackbuffer() const;
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -40,12 +40,13 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     void resizeBackbuffer(int width, int height);
+	void resetRHIBackbuffers();
     void present(GraphicsContext* context);
     detail::ISwapChain* resolveRHIObject(GraphicsContext* context, bool* outModified) const;
     int imageIndex() const { return m_imageIndex; }
 
     Ref<detail::ISwapChain> m_rhiObject;
-    Ref<RenderTargetTexture> m_backbuffer;
+    List<Ref<RenderTargetTexture>> m_backbuffers;
     int m_imageIndex;
 
     friend class detail::GraphicsResourceInternal;

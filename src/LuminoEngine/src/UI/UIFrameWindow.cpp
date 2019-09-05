@@ -273,7 +273,7 @@ void UIFrameWindow::renderContents()
 {
 	assert(!m_depthBuffer);
 
-	RenderTargetTexture* backbuffer = m_swapChain->backbuffer();
+	RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
 	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
 	m_graphicsContext->setRenderTarget(0, backbuffer);

@@ -8,7 +8,7 @@ class ICommandList;
 }
 
 /**  */
-class CommandBuffer
+class GraphicsCommandBuffer
     : public GraphicsResource
 {
 public:
@@ -18,8 +18,8 @@ protected:
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
-	CommandBuffer();
-    virtual ~CommandBuffer();
+	GraphicsCommandBuffer();
+    virtual ~GraphicsCommandBuffer();
 
     /** @copydoc create(int, int) */
     void init();

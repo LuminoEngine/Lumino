@@ -201,12 +201,11 @@ LN_CONSTRUCT_ACCESS:
     void resetSize(int width, int height);
 
 private:
+	void resetRHIObject(detail::ITexture* rhiObject);
     Ref<Bitmap2D> readData(GraphicsContext* context);
-    void resetSwapchainFrameIfNeeded(bool force);
 
     Ref<detail::ITexture> m_rhiObject;
     SwapChain* m_ownerSwapchain;
-    int m_swapchainImageIndex;
     intptr_t m_nativeObject;
     bool m_modified;
     bool m_hasNativeObject;
@@ -224,8 +223,7 @@ public:
     static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
     static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
     static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget, GraphicsContext* context) { return renderTarget->readData(context); }
-    static int getSwapchainImageIndex(RenderTargetTexture* renderTarget) { return renderTarget->m_swapchainImageIndex; }
-    static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
+	static void resetRHIObject(RenderTargetTexture* renderTarget, detail::ITexture* rhiObject) { renderTarget->resetRHIObject(rhiObject); }
     static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
     static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
     static void resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget);

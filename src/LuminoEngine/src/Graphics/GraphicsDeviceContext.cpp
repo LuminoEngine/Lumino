@@ -533,6 +533,41 @@ IShaderSamplerBuffer::IShaderSamplerBuffer()
 	LN_LOG_VERBOSE << "IShaderSamplerBuffer [0x" << this << "] constructed.";
 }
 
+//=============================================================================
+// NativeRenderPassCache
+
+NativeRenderPassCache::NativeRenderPassCache(IGraphicsDevice* device)
+	: m_device(device)
+	, m_hashMap()
+{
+}
+
+IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+void NativeRenderPassCache::invalidate(IRenderPass* value)
+{
+	if (value) {
+		m_hashMap.erase(value->cacheKeyHash);
+	}
+}
+
+uint64_t NativeRenderPassCache::computeHash(const FindKey& key)
+{
+	MixHash hash;
+	for (size_t i = 0; i < key.renderTargets.size(); i++) {
+		// TODO: Format だけでもいいかも。Vulkan はそうだった。
+		hash.add(key.renderTargets[i]);
+	}
+	// TODO: Format だけでもいいかも。Vulkan はそうだった。
+	hash.add(key.depthBuffer);
+	hash.add(key.clearFlags);
+	return hash.value();
+}
+
 } // namespace detail
 } // namespace ln
 

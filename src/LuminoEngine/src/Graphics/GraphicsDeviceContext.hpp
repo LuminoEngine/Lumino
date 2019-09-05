@@ -314,6 +314,8 @@ class ISwapChain
 {
 public:
 	ISwapChain();
+
+	virtual uint32_t getBackbufferCount() = 0;
     
     // 次のフレーム描画を開始できるようにデバイスに要求し、描画先となるカラーバッファのインデックスを取得する。
     virtual void acquireNextImage(int* outImageIndex) = 0;
@@ -327,6 +329,16 @@ public:
 
 protected:
 	virtual ~ISwapChain() = default;
+};
+
+class IRenderPass
+	: public IGraphicsDeviceObject
+{
+public:
+	uint64_t cacheKeyHash = 0;
+
+protected:
+	virtual ~IRenderPass() = default;
 };
 
 
@@ -517,6 +529,32 @@ public:
 protected:
 	IShaderSamplerBuffer();
 	virtual ~IShaderSamplerBuffer() = default;
+};
+
+
+
+
+class NativeRenderPassCache
+{
+public:
+	struct FindKey
+	{
+		std::array<ITexture*, MaxMultiRenderTargets> renderTargets = {};
+		IDepthBuffer* depthBuffer = nullptr;
+		ClearFlags clearFlags = ClearFlags::All;
+		Color clearColor = Color(0, 0, 0, 0);
+		float clearZ = 1.0f;
+		uint8_t clearStencil = 0x00;
+	};
+
+	NativeRenderPassCache(IGraphicsDevice* device);
+	IRenderPass* findOrCreate(const FindKey& key);
+	void invalidate(IRenderPass* value);
+	static uint64_t computeHash(const FindKey& key);
+
+private:
+	IGraphicsDevice* m_device;
+	std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
 };
 
 } // namespace detail
