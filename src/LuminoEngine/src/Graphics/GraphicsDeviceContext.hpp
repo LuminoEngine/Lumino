@@ -331,6 +331,7 @@ protected:
 	virtual ~ISwapChain() = default;
 };
 
+// Note: Framebuffer も兼ねる。Vulkan では分けることで subpass を実現するが、Metal や DX12 では無いし、そこまで最適化する必要も今はない。
 class IRenderPass
 	: public IGraphicsDeviceObject
 {
@@ -556,6 +557,7 @@ private:
 	IGraphicsDevice* m_device;
 	std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
 };
+
 
 } // namespace detail
 } // namespace ln

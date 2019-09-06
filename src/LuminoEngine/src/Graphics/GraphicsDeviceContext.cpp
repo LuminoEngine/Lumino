@@ -544,8 +544,28 @@ NativeRenderPassCache::NativeRenderPassCache(IGraphicsDevice* device)
 
 IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	uint64_t hash = computeHash(key);
+	auto itr = m_hashMap.find(hash);
+	if (itr != m_hashMap.end()) {
+		return itr->second;
+	}
+	else {
+		std::array<ITexture*, MaxMultiRenderTargets> renderTargets;
+		size_t i = 0;
+		for (; i < key.renderTargets.size(); i++) {
+			if (!key.renderTargets[i]) break;
+			renderTargets[i] = key.renderTargets[i];
+		}
+
+		auto renderPass = m_device->createRenderPass(renderTargets.data(), i, key.depthBuffer, key.clearFlags, key.clearColor, key.clearZ, key.clearStencil);
+
+		renderPass = makeRef<VulkanRenderPass>();
+		if (!renderPass->init(m_deviceContext, key.state, key.loadOpClear)) {
+			return nullptr;
+		}
+		add(hash, renderPass);
+		return renderPass;
+	}
 }
 
 void NativeRenderPassCache::invalidate(IRenderPass* value)
