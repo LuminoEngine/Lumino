@@ -43,6 +43,8 @@ IGraphicsResource::~IGraphicsResource()
 
 IGraphicsDevice::IGraphicsDevice()
 	: m_graphicsContext(nullptr)
+	, m_renderPassCache(std::make_unique<NativeRenderPassCache>(this))
+	, m_pipelineCache(std::make_unique<NativePipelineCache>(this))
 {
 }
 
@@ -73,10 +75,27 @@ Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const S
 	return ptr;
 }
 
+Ref<IRenderPass> IGraphicsDevice::createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)
+{
+	Ref<IRenderPass> ptr = onCreateRenderPass(renderTargets, renderTargetCount, depthBuffer, clearFlags, clearColor, clearZ, clearStencil);
+	if (ptr) {
+		ptr->m_device = this;
+		m_aliveObjects.push_back(ptr);
+
+		// Preserve dependent object references
+		for (uint32_t i = 0; i < renderTargetCount; i++) {
+			ptr->m_renderTargets[i] = renderTargets[i];
+		}
+		ptr->m_depthBuffer = depthBuffer;
+	}
+	return ptr;
+}
+
 Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexElement* elements, int elementsCount)
 {
 	Ref<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
 	if (ptr) {
+		ptr->m_hash = IVertexDeclaration::computeHash(elements, elementsCount);
 		m_aliveObjects.push_back(ptr);
 	}
 	return ptr;
@@ -169,6 +188,16 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	}
 
 	if (ptr) {
+		m_aliveObjects.push_back(ptr);
+	}
+	return ptr;
+}
+
+Ref<IPipeline> IGraphicsDevice::createPipeline(IRenderPass* renderPass, const GraphicsContextState& state)
+{
+	Ref<IPipeline> ptr = onCreatePipeline(renderPass, state);
+	if (ptr) {
+		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
 	}
 	return ptr;
@@ -443,7 +472,6 @@ void IGraphicsContext::endCommit()
 }
 
 
-
 //=============================================================================
 // ISwapChain
 
@@ -453,11 +481,38 @@ ISwapChain::ISwapChain()
 }
 
 //=============================================================================
+// IRenderPass
+
+void IRenderPass::dispose()
+{
+	if (m_device) {
+		m_device->renderPassCache()->invalidate(this);
+		m_device = nullptr;
+	}
+
+	IGraphicsDeviceObject::dispose();
+}
+
+//=============================================================================
 // IVertexDeclaration
 
 IVertexDeclaration::IVertexDeclaration()
 {
 	LN_LOG_VERBOSE << "IVertexDeclaration [0x" << this << "] constructed.";
+}
+
+uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int count)
+{
+	MixHash hash;
+	hash.add(count);
+	for (int i = 0; i < count; i++) {
+		auto& e = elements[i];
+		hash.add(e.StreamIndex);
+		hash.add(e.Type);
+		hash.add(e.Usage);
+		hash.add(e.UsageIndex);
+	}
+	return hash.value();
 }
 
 //=============================================================================
@@ -534,12 +589,26 @@ IShaderSamplerBuffer::IShaderSamplerBuffer()
 }
 
 //=============================================================================
+// IPipeline
+
+void IPipeline::dispose()
+{
+	if (m_device) {
+		m_device->pipelineCache()->invalidate(this);
+		m_device = nullptr;
+	}
+
+	IGraphicsDeviceObject::dispose();
+}
+
+//=============================================================================
 // NativeRenderPassCache
 
 NativeRenderPassCache::NativeRenderPassCache(IGraphicsDevice* device)
 	: m_device(device)
 	, m_hashMap()
 {
+	assert(m_device);
 }
 
 IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
@@ -558,12 +627,11 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 		}
 
 		auto renderPass = m_device->createRenderPass(renderTargets.data(), i, key.depthBuffer, key.clearFlags, key.clearColor, key.clearZ, key.clearStencil);
-
-		renderPass = makeRef<VulkanRenderPass>();
-		if (!renderPass->init(m_deviceContext, key.state, key.loadOpClear)) {
+		if (!renderPass) {
 			return nullptr;
 		}
-		add(hash, renderPass);
+
+		m_hashMap.insert({ hash, renderPass });
 		return renderPass;
 	}
 }
@@ -585,6 +653,56 @@ uint64_t NativeRenderPassCache::computeHash(const FindKey& key)
 	// TODO: Format だけでもいいかも。Vulkan はそうだった。
 	hash.add(key.depthBuffer);
 	hash.add(key.clearFlags);
+	return hash.value();
+}
+
+//=============================================================================
+// NativePipelineCache
+
+NativePipelineCache::NativePipelineCache(IGraphicsDevice* device)
+	: m_device(device)
+	, m_hashMap()
+{
+	assert(m_device);
+}
+
+IPipeline* NativePipelineCache::findOrCreate(const FindKey& key)
+{
+	uint64_t hash = computeHash(key);
+	auto itr = m_hashMap.find(hash);
+	if (itr != m_hashMap.end()) {
+		return itr->second;
+	}
+	else {
+		auto pipeline = m_device->createPipeline(key.renderPass, key.state);
+		if (!pipeline) {
+			return nullptr;
+		}
+
+		m_hashMap.insert({ hash, pipeline });
+		return pipeline;
+	}
+}
+
+void NativePipelineCache::invalidate(IPipeline* value)
+{
+	if (value) {
+		m_hashMap.erase(value->cacheKeyHash);
+	}
+}
+
+uint64_t NativePipelineCache::computeHash(const FindKey& key)
+{
+	uint64_t vertexDeclarationHash = (key.state.pipelineState.vertexDeclaration) ? key.state.pipelineState.vertexDeclaration->hash() : 0;
+
+	MixHash hash;
+	hash.add(key.state.pipelineState.blendState);
+	hash.add(key.state.pipelineState.rasterizerState);
+	hash.add(key.state.pipelineState.depthStencilState);
+	hash.add(key.state.pipelineState.topology);
+	hash.add(vertexDeclarationHash);
+	hash.add(key.state.shaderPass);
+	hash.add(key.renderPass);
 	return hash.value();
 }
 

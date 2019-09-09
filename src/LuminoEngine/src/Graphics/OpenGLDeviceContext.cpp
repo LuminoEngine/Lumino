@@ -388,6 +388,12 @@ Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 	return ptr;
 }
 
+Ref<IPipeline> OpenGLDevice::onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Ref<IGraphicsContext> OpenGLDevice::onCreateGraphicsContext()
 {
 	auto ptr = makeRef<GLGraphicsContext>();
@@ -396,7 +402,6 @@ Ref<IGraphicsContext> OpenGLDevice::onCreateGraphicsContext()
 	}
 	return ptr;
 }
-
 
 //=============================================================================
 // GLGraphicsContext

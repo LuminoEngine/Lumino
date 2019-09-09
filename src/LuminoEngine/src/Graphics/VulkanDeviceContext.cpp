@@ -273,6 +273,12 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
+Ref<IPipeline> VulkanDevice::onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Ref<IGraphicsContext> VulkanDevice::onCreateGraphicsContext()
 {
 	LN_NOTIMPLEMENTED();
@@ -1672,27 +1678,12 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
         m_bindings[element.StreamIndex].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
     }
 
-    m_hash = computeHash(m_elements);
-
     return true;
 }
 
 void VulkanVertexDeclaration::dispose()
 {
     IVertexDeclaration::dispose();
-}
-
-uint64_t VulkanVertexDeclaration::computeHash(const std::vector<VertexElement>& elements)
-{
-    MixHash hash;
-    hash.add(elements.size());
-    for (auto& e : elements) {
-        hash.add(e.StreamIndex);
-        hash.add(e.Type);
-        hash.add(e.Usage);
-        hash.add(e.UsageIndex);
-    }
-    return hash.value();
 }
 
 //==============================================================================

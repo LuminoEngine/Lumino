@@ -25,6 +25,9 @@ class IShaderPass;
 class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
+class IPipeline;
+class NativeRenderPassCache;
+class NativePipelineCache;
 
 enum class DeviceResourceType
 {
@@ -166,6 +169,7 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+	Ref<IPipeline> createPipeline(IRenderPass* renderPass, const GraphicsContextState& state);
 	Ref<IGraphicsContext> createGraphicsContext();
 
 	void flushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
@@ -175,6 +179,10 @@ public:
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
 	static Result getOpenGLCurrentFramebufferTextureId(int* id);
+
+
+	const std::unique_ptr<NativeRenderPassCache>& renderPassCache() const { return m_renderPassCache; }
+	const std::unique_ptr<NativePipelineCache>& pipelineCache() const { return m_pipelineCache; }
 
 protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
@@ -191,6 +199,7 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
+	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) = 0;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() = 0;
 	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) = 0;
 
@@ -224,12 +233,16 @@ public:	// TODO:
 	IGraphicsContext* m_graphicsContext;
 	GraphicsDeviceCaps m_caps;
 	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
+
+	std::unique_ptr<NativeRenderPassCache> m_renderPassCache;
+	std::unique_ptr<NativePipelineCache> m_pipelineCache;
 };
 
 class IGraphicsContext
     : public RefObject
 {
 public:
+	// LuminoGraphis を他のフレームワークに組み込むときに、バックエンドが DX9 や OpenGL などステートマシンベースである場合に使用する
 	void enterRenderState();
 	void leaveRenderState();
 
@@ -338,14 +351,29 @@ class IRenderPass
 public:
 	uint64_t cacheKeyHash = 0;
 
+	virtual void dispose();
+
 protected:
 	virtual ~IRenderPass() = default;
-};
 
+private:
+	IGraphicsDevice* m_device = nullptr;
+	std::array<Ref<ITexture>, MaxMultiRenderTargets> m_renderTargets;
+	Ref<IDepthBuffer> m_depthBuffer;
+
+	// TODO: init 用意した方がいい気がする
+	friend class IGraphicsDevice;
+};
 
 class IVertexDeclaration
 	: public IGraphicsDeviceObject
 {
+public:
+	uint64_t m_hash;
+
+	uint64_t hash() const { return m_hash; }
+	static uint64_t computeHash(const VertexElement* elements, int count);
+
 protected:
 	IVertexDeclaration();
 	virtual ~IVertexDeclaration() = default;
@@ -532,6 +560,23 @@ protected:
 	virtual ~IShaderSamplerBuffer() = default;
 };
 
+class IPipeline
+	: public IGraphicsDeviceObject
+{
+public:
+	uint64_t cacheKeyHash = 0;
+
+	virtual void dispose();
+
+protected:
+	virtual ~IPipeline() = default;
+
+private:
+	IGraphicsDevice* m_device = nullptr;
+
+	// TODO: init 用意した方がいい気がする
+	friend class IGraphicsDevice;
+};
 
 
 
@@ -558,6 +603,45 @@ private:
 	std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
 };
 
+class NativePipelineCache
+{
+public:
+	struct FindKey
+	{
+		const GraphicsContextState& state;
+		IRenderPass* renderPass;
+	};
+
+	NativePipelineCache(IGraphicsDevice* device);
+	IPipeline* findOrCreate(const FindKey& key);
+	void invalidate(IPipeline* value);
+	static uint64_t computeHash(const FindKey& key);
+
+private:
+	IGraphicsDevice* m_device;
+	std::unordered_map<uint64_t, Ref<IPipeline>> m_hashMap;
+};
+
+class NativeCommandListPool
+{
+public:
+	NativeCommandListPool(IGraphicsDevice* device);
+	ICommandList* get();	// get or wait
+
+private:
+	IGraphicsDevice* m_device;
+	std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
+
+	/*
+	UseCases:
+
+	他Engine組み込み (UIFrameWindowあたり):
+		auto commandList = device->getCommandList(VkCommandList など);
+		commandList->・・・Rendering モジュールで使う
+
+
+	*/
+};
 
 } // namespace detail
 } // namespace ln

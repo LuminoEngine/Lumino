@@ -73,6 +73,7 @@ protected:
     virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) override;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
 	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) override;
 
@@ -234,16 +235,13 @@ public:
     const std::vector<VertexElement>& elements() const { return m_elements; }
     const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
     const std::vector<AttributeDescriptionSource>& vertexAttributeDescriptionSources() const { return m_attributeSources; }
-    uint64_t hash() const { return m_hash; }
 
 private:
-    static uint64_t computeHash(const std::vector<VertexElement>& elements);
 
     std::vector<VertexElement> m_elements;
     uint32_t m_maxStreamCount;
     std::vector<VkVertexInputBindingDescription> m_bindings;
     std::vector<AttributeDescriptionSource> m_attributeSources;
-    uint64_t m_hash;
 };
 
 class VulkanVertexBuffer
