@@ -65,8 +65,8 @@ void SwapChain::resetRHIBackbuffers()
 		m_backbuffers[i] = buffer;
 
 		// commandList
-		//auto commandList = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createCommandList();
-		//m_commandLists.push_back(commandList);
+		auto commandList = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createCommandList();
+		m_commandLists.push_back(commandList);
 	}
 
 	m_rhiObject->acquireNextImage(&m_imageIndex);

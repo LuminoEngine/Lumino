@@ -37,7 +37,7 @@ void GraphicsContext::init(RenderingType renderingType)
     Object::init();
     m_renderingType = renderingType;
     m_manager = detail::EngineDomain::graphicsManager();
-    m_context = m_manager->deviceContext()->createCommandList();
+    //m_context = m_manager->deviceContext()->createCommandList();
     m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
     m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
     m_lastCommit.reset();
@@ -96,6 +96,18 @@ void GraphicsContext::resetState()
 {
     m_staging.reset();
     m_dirtyFlags = DirtyFlags_All;
+}
+
+bool GraphicsContext::beginFrame(SwapChain* swapChain)
+{
+    if (LN_REQUIRE(!m_context)) return false;
+    m_context = detail::SwapChainInternal::currentCommandList(swapChain);
+}
+
+void GraphicsContext::endFrame()
+{
+    if (LN_REQUIRE(m_context)) return;
+    m_context = nullptr;
 }
 
 void GraphicsContext::setBlendState(const BlendStateDesc& value)

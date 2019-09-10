@@ -62,6 +62,7 @@ class SwapChainInternal
 public:
     static void setBackendBufferSize(SwapChain* swapChain, int width, int height);
     static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
+    static const Ref<detail::ICommandList>& currentCommandList(SwapChain* swapChain) { return swapChain->currentCommandList(); }
     static void resizeBackbuffer(SwapChain* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
     static void present(SwapChain* swapChain, GraphicsContext* context) { swapChain->present(context); }
     static int imageIndex(SwapChain* swapChain) { return swapChain->imageIndex(); }

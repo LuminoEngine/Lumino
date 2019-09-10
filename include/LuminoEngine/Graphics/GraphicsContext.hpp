@@ -30,6 +30,9 @@ public:
     static const int MaxVertexStreams = detail::MaxVertexStreams;
 
 public:
+    bool beginFrame(SwapChain* swapChain);
+    void endFrame();
+
     /** BlendState を設定します。 */
     void setBlendState(const BlendStateDesc& value);
 
