@@ -41,7 +41,7 @@ void InternalPrimitiveRenderer::drawMeshGenerater(const MeshGenerater* generator
     m_generators.add(gen);
 }
 
-void InternalPrimitiveRenderer::flush(IGraphicsContext* context)
+void InternalPrimitiveRenderer::flush(ICommandList* context)
 {
     if (m_generators.isEmpty()) return;
 
@@ -186,11 +186,11 @@ void PrimitiveRenderFeature::init(RenderingManager* manager)
 void PrimitiveRenderFeature::flush(GraphicsContext* context)
 {
     GraphicsManager* manager = m_manager->graphicsManager();
-    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
+	ICommandList* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_2(
         PrimitiveRenderFeature_flush, context,
         InternalPrimitiveRenderer*, m_internal,
-        IGraphicsContext*, c,
+		ICommandList*, c,
         {
             m_internal->flush(c);
         });

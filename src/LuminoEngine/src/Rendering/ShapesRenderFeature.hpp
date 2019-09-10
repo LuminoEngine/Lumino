@@ -155,7 +155,7 @@ public:
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
 
-	void renderCommandList(IGraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
+	void renderCommandList(ICommandList* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
 
 private:
 	enum class PathType

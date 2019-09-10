@@ -19,7 +19,7 @@ public:
 
     void drawMeshGenerater(const MeshGenerater* generator);
 
-    void flush(IGraphicsContext* context);
+    void flush(ICommandList* context);
 
 private:
     void prepareBuffers(IGraphicsDevice* device, int vertexCount, int indexCount);

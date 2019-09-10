@@ -58,7 +58,7 @@ public:
 	const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 
 protected:
-	virtual IGraphicsContext* getGraphicsContext() const;
+	virtual ICommandList* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<ICommandList> onCreateCommandList() override;
@@ -74,8 +74,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
 	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) override;
-	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
-	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) override;
+	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	virtual ICommandQueue* getGraphicsCommandQueue() override;
 	virtual ICommandQueue* getComputeCommandQueue() override;
 
@@ -129,7 +128,7 @@ public: // TODO:
 };
 
 class VulkanGraphicsContext
-	: public IGraphicsContext
+	: public ICommandList
 {
 public:
 	VulkanGraphicsContext();

@@ -131,7 +131,7 @@ private:
     GraphicsContext();
     virtual ~GraphicsContext();
     void init(RenderingType renderingType);
-    void init(detail::IGraphicsContext* context);
+    void init(detail::ICommandList* context);
 
     void enterRenderState();
     void leaveRenderState();
@@ -140,7 +140,7 @@ private:
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
-    detail::IGraphicsContext* commitState();
+    detail::ICommandList* commitState();
     //void submitCommandList();
 
     enum DirtyFlags
@@ -177,7 +177,7 @@ private:
     };
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::IGraphicsContext> m_context;
+    Ref<detail::ICommandList> m_context;
     Ref<detail::RenderingCommandList> m_recordingCommandList;
     Ref<detail::RenderingCommandList> m_executingCommandList;
     RenderingType m_renderingType;
@@ -197,7 +197,7 @@ public:
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
     static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
-    static IGraphicsContext* commitState(GraphicsContext* self) { return self->commitState(); }
+    static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
     static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
     static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
 };

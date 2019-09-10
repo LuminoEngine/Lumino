@@ -37,7 +37,7 @@ void InternalSpriteTextRender::init(RenderingManager* manager)
     prepareBuffers(512);
 }
 
-void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture)
+void InternalSpriteTextRender::render(ICommandList* context, const GlyphData* dataList, uint32_t dataCount, ITexture* glyphsTexture)
 {
 	// GPU 最適化のため、できるだけ map 範囲が被らないように循環バッファを使った実装にする。
 	// 特に OpenGL (Radeon HD 8490) では、次のネイティブコマンド実行 (glFlush など) までの間に
@@ -174,7 +174,7 @@ void InternalSpriteTextRender::putRectangle(Vertex* buffer, const Matrix& transf
     }
 }
 
-void InternalSpriteTextRender::flush(IGraphicsContext* context, ITexture* glyphsTexture, uint32_t startSprite, uint32_t spriteCount)
+void InternalSpriteTextRender::flush(ICommandList* context, ITexture* glyphsTexture, uint32_t startSprite, uint32_t spriteCount)
 {
 	context->setVertexDeclaration(m_vertexDeclaration);
 	context->setVertexBuffer(0, m_vertexBuffer);
@@ -323,11 +323,11 @@ void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphT
 
 
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
+	ICommandList* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_5(
 		SpriteTextRenderFeature_flushInternal, context,
 		InternalSpriteTextRender*, m_internal,
-        IGraphicsContext*, c,
+		ICommandList*, c,
 		RenderBulkData, dataListData,
 		int, dataCount,
 		Ref<ITexture>, glyphsTexture,

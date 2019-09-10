@@ -75,6 +75,11 @@ Ref<ISwapChain> IGraphicsDevice::createSwapChain(PlatformWindow* window, const S
 	return ptr;
 }
 
+Ref<ICommandList> IGraphicsDevice::createCommandList()
+{
+	return onCreateCommandList();
+}
+
 Ref<IRenderPass> IGraphicsDevice::createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)
 {
 	Ref<IRenderPass> ptr = onCreateRenderPass(renderTargets, renderTargetCount, depthBuffer, clearFlags, clearColor, clearZ, clearStencil);
@@ -203,12 +208,7 @@ Ref<IPipeline> IGraphicsDevice::createPipeline(IRenderPass* renderPass, const Gr
 	return ptr;
 }
 
-Ref<IGraphicsContext> IGraphicsDevice::createGraphicsContext()
-{
-	return onCreateGraphicsContext();
-}
-
-void IGraphicsDevice::flushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget)
+void IGraphicsDevice::flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
 	onFlushCommandBuffer(context, affectRendreTarget);
 }
@@ -273,9 +273,9 @@ void IGraphicsDevice::collectGarbageObjects()
 }
 
 //=============================================================================
-// IGraphicsContext
+// ICommandList
 
-IGraphicsContext::IGraphicsContext()
+ICommandList::ICommandList()
 	: m_device(nullptr)
     , m_stateDirtyFlags(GraphicsContextStateDirtyFlags_All)
     , m_staging()
@@ -283,52 +283,52 @@ IGraphicsContext::IGraphicsContext()
 {
 }
 
-Result IGraphicsContext::init(IGraphicsDevice* owner)
+Result ICommandList::init(IGraphicsDevice* owner)
 {
 	m_device = owner;
 	return true;
 }
 
-void IGraphicsContext::enterRenderState()
+void ICommandList::enterRenderState()
 {
 	onSaveExternalRenderState();
 }
 
-void IGraphicsContext::leaveRenderState()
+void ICommandList::leaveRenderState()
 {
 	onRestoreExternalRenderState();
 }
 
-void IGraphicsContext::begin()
+void ICommandList::begin()
 {
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
     onBeginCommandRecoding();
 }
 
-void IGraphicsContext::end()
+void ICommandList::end()
 {
     onEndCommandRecoding();
 }
 
-void IGraphicsContext::setBlendState(const BlendStateDesc& value)
+void ICommandList::setBlendState(const BlendStateDesc& value)
 {
     m_staging.pipelineState.blendState = value;
     m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-void IGraphicsContext::setRasterizerState(const RasterizerStateDesc& value)
+void ICommandList::setRasterizerState(const RasterizerStateDesc& value)
 {
     m_staging.pipelineState.rasterizerState = value;
     m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-void IGraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
+void ICommandList::setDepthStencilState(const DepthStencilStateDesc& value)
 {
     m_staging.pipelineState.depthStencilState = value;
     m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-void IGraphicsContext::setColorBuffer(int index, ITexture* value)
+void ICommandList::setColorBuffer(int index, ITexture* value)
 {
     if (m_staging.framebufferState.renderTargets[index] != value) {
         m_staging.framebufferState.renderTargets[index] = value;
@@ -336,7 +336,7 @@ void IGraphicsContext::setColorBuffer(int index, ITexture* value)
     }
 }
 
-void IGraphicsContext::setDepthBuffer(IDepthBuffer* value)
+void ICommandList::setDepthBuffer(IDepthBuffer* value)
 {
     if (m_staging.framebufferState.depthBuffer != value) {
         m_staging.framebufferState.depthBuffer = value;
@@ -344,7 +344,7 @@ void IGraphicsContext::setDepthBuffer(IDepthBuffer* value)
     }
 }
 
-void IGraphicsContext::setViewportRect(const RectI& value)
+void ICommandList::setViewportRect(const RectI& value)
 {
     if (m_staging.regionRects.viewportRect != value) {
         m_staging.regionRects.viewportRect = value;
@@ -352,7 +352,7 @@ void IGraphicsContext::setViewportRect(const RectI& value)
     }
 }
 
-void IGraphicsContext::setScissorRect(const RectI& value)
+void ICommandList::setScissorRect(const RectI& value)
 {
     if (m_staging.regionRects.scissorRect != value) {
         m_staging.regionRects.scissorRect = value;
@@ -360,7 +360,7 @@ void IGraphicsContext::setScissorRect(const RectI& value)
     }
 }
 
-void IGraphicsContext::setVertexDeclaration(IVertexDeclaration* value)
+void ICommandList::setVertexDeclaration(IVertexDeclaration* value)
 {
     if (m_staging.pipelineState.vertexDeclaration != value) {
         m_staging.pipelineState.vertexDeclaration = value;
@@ -368,7 +368,7 @@ void IGraphicsContext::setVertexDeclaration(IVertexDeclaration* value)
     }
 }
 
-void IGraphicsContext::setVertexBuffer(int streamIndex, IVertexBuffer* value)
+void ICommandList::setVertexBuffer(int streamIndex, IVertexBuffer* value)
 {
     if (m_staging.primitive.vertexBuffers[streamIndex] != value) {
         m_staging.primitive.vertexBuffers[streamIndex] = value;
@@ -376,7 +376,7 @@ void IGraphicsContext::setVertexBuffer(int streamIndex, IVertexBuffer* value)
     }
 }
 
-void IGraphicsContext::setIndexBuffer(IIndexBuffer* value)
+void ICommandList::setIndexBuffer(IIndexBuffer* value)
 {
     if (m_staging.primitive.indexBuffer != value) {
         m_staging.primitive.indexBuffer = value;
@@ -384,7 +384,7 @@ void IGraphicsContext::setIndexBuffer(IIndexBuffer* value)
     }
 }
 
-void IGraphicsContext::setShaderPass(IShaderPass* value)
+void ICommandList::setShaderPass(IShaderPass* value)
 {
     if (m_staging.shaderPass != value) {
         m_staging.shaderPass = value;
@@ -392,58 +392,58 @@ void IGraphicsContext::setShaderPass(IShaderPass* value)
     }
 }
 
-void IGraphicsContext::setPrimitiveTopology(PrimitiveTopology value)
+void ICommandList::setPrimitiveTopology(PrimitiveTopology value)
 {
     m_staging.pipelineState.topology = value;
 }
 
-void* IGraphicsContext::map(IGraphicsResource* resource, uint32_t offset, uint32_t size)
+void* ICommandList::map(IGraphicsResource* resource, uint32_t offset, uint32_t size)
 {
     return onMapResource(resource, offset, size);
 }
 
-void IGraphicsContext::unmap(IGraphicsResource* resource)
+void ICommandList::unmap(IGraphicsResource* resource)
 {
     onUnmapResource(resource);
 }
 
-void IGraphicsContext::setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+void ICommandList::setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
 {
     onSetSubData(resource, offset, data, length);
 }
 
-void IGraphicsContext::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+void ICommandList::setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     onSetSubData2D(resource, x, y, width, height, data, dataSize);
 }
 
-void IGraphicsContext::setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+void ICommandList::setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
 {
     onSetSubData3D(resource, x, y, z, width, height, depth, data, dataSize);
 }
 
-void IGraphicsContext::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void ICommandList::clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     commitStatus(GraphicsContextSubmitSource_Clear);
     onClearBuffers(flags, color, z, stencil);
     endCommit();
 }
 
-void IGraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
+void ICommandList::drawPrimitive(int startVertex, int primitiveCount)
 {
     commitStatus(GraphicsContextSubmitSource_Draw);
     onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
     endCommit();
 }
 
-void IGraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
+void ICommandList::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
     commitStatus(GraphicsContextSubmitSource_Draw);
     onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
     endCommit();
 }
 
-void IGraphicsContext::commitStatus(GraphicsContextSubmitSource submitSource)
+void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 {
     if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
@@ -465,7 +465,7 @@ void IGraphicsContext::commitStatus(GraphicsContextSubmitSource submitSource)
     onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
 }
 
-void IGraphicsContext::endCommit()
+void ICommandList::endCommit()
 {
     m_committed = m_staging;
     m_stateDirtyFlags = GraphicsContextStateDirtyFlags_None;

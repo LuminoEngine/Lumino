@@ -65,7 +65,7 @@ private:
 		PrimitiveTopology						primitiveType;
 	};
 
-	void drawMeshImplOnRenderThread(IGraphicsContext* context, const DrawMeshCommandData& data);
+	void drawMeshImplOnRenderThread(ICommandList* context, const DrawMeshCommandData& data);
 
 	RenderingManager* m_manager;
 

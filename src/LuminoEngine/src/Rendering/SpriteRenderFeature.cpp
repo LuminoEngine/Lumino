@@ -289,7 +289,7 @@ public:
 	}
 };
 
-void InternalSpriteRenderer::flush(IGraphicsContext* context)
+void InternalSpriteRenderer::flush(ICommandList* context)
 {
 	int spriteCount = m_spriteDataList.size();
 	if (spriteCount == 0) {
@@ -464,10 +464,10 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 void SpriteRenderFeature::flush(GraphicsContext* context)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
-    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
+	ICommandList* c = GraphicsContextInternal::commitState(context);
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderFeature_flush, context,
-        IGraphicsContext*, c,
+		ICommandList*, c,
 		InternalSpriteRenderer*, m_internal,
 		{
 			m_internal->flush(c);

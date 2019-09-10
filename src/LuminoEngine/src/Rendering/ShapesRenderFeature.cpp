@@ -198,7 +198,7 @@ void InternalShapesRenderer::requestBuffers(int vertexCount, int indexCount, Ver
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::renderCommandList(IGraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
+void InternalShapesRenderer::renderCommandList(ICommandList* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
 {
 	extractBasePoints(commandList);
 	calcExtrudedDirection();
@@ -936,11 +936,11 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
     // commandList が持っているポインタは RenderingCommandList の LinearAllocator で確保したものなのでそのまま RenderCommand に乗せてOK
 
     GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
+	ICommandList* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_3(
         ShapesRenderFeature_renderCommandList, context,
         InternalShapesRenderer*, m_internal,
-        IGraphicsContext*, c,
+		ICommandList*, c,
         ShapesRendererCommandList, commandList,
         {
             m_internal->renderCommandList(c, &commandList);

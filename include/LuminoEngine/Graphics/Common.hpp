@@ -315,7 +315,7 @@ class RenderingCommandList;
 class GraphicsManager;
 class GraphicsContextInternal;
 class IGraphicsDevice;
-class IGraphicsContext;
+class ICommandList;
 class ITexture;
 class ISamplerState;
 

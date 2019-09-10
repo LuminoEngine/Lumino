@@ -291,7 +291,7 @@ void OpenGLDevice::dispose()
     IGraphicsDevice::dispose();
 }
 
-IGraphicsContext* OpenGLDevice::getGraphicsContext() const
+ICommandList* OpenGLDevice::getGraphicsContext() const
 {
 	return m_graphicsContext;
 }
@@ -402,15 +402,6 @@ Ref<IPipeline> OpenGLDevice::onCreatePipeline(IRenderPass* ownerRenderPass, cons
 	return nullptr;
 }
 
-Ref<IGraphicsContext> OpenGLDevice::onCreateGraphicsContext()
-{
-	auto ptr = makeRef<GLGraphicsContext>();
-	if (!ptr->init(this)) {
-		return nullptr;
-	}
-	return ptr;
-}
-
 ICommandQueue* OpenGLDevice::getGraphicsCommandQueue()
 {
 	return m_graphicsQueue;
@@ -437,7 +428,7 @@ GLGraphicsContext::GLGraphicsContext()
 Result GLGraphicsContext::init(OpenGLDevice* owner)
 {
 	LN_CHECK(owner);
-	IGraphicsContext::init(owner);
+	ICommandList::init(owner);
 	m_device = owner;
 
 	GL_CHECK(glGenVertexArrays(1, &m_vao));

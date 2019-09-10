@@ -11,7 +11,6 @@ struct Color;
 
 namespace detail {
 class PlatformWindow;
-class IGraphicsContext;
 class ISwapChain;
 class ICommandList;
 class ICommandQueue;
@@ -171,11 +170,10 @@ public:
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
 	Ref<IPipeline> createPipeline(IRenderPass* renderPass, const GraphicsContextState& state);
-	Ref<IGraphicsContext> createGraphicsContext();
 
-	void flushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
+	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
-	virtual IGraphicsContext* getGraphicsContext() const = 0;
+	virtual ICommandList* getGraphicsContext() const = 0;
 	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
 	virtual ICommandQueue* getComputeCommandQueue() = 0;
 
@@ -203,8 +201,7 @@ protected:
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) = 0;
-	virtual Ref<IGraphicsContext> onCreateGraphicsContext() = 0;
-	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) = 0;
+	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
 /////////
 	//virtual void onBeginCommandRecoding() = 0;
@@ -233,7 +230,7 @@ protected:
 public:	// TODO:
 	void collectGarbageObjects();
 
-	IGraphicsContext* m_graphicsContext;
+	ICommandList* m_graphicsContext;
 	GraphicsDeviceCaps m_caps;
 	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
 
@@ -241,7 +238,7 @@ public:	// TODO:
 	std::unique_ptr<NativePipelineCache> m_pipelineCache;
 };
 
-class IGraphicsContext
+class ICommandList
     : public RefObject
 {
 public:
@@ -286,8 +283,8 @@ public:
     IGraphicsDevice* device() const { return m_device; }
 
 public:	// TODO:
-	IGraphicsContext();
-    virtual ~IGraphicsContext() = default;
+	ICommandList();
+    virtual ~ICommandList() = default;
 	Result init(IGraphicsDevice* owner);
 
 	virtual void onSaveExternalRenderState() = 0;

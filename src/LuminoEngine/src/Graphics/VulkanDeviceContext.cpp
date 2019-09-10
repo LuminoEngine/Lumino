@@ -151,7 +151,7 @@ void VulkanDevice::dispose()
     }
 }
 
-IGraphicsContext* VulkanDevice::getGraphicsContext() const
+ICommandList* VulkanDevice::getGraphicsContext() const
 {
 	return m_graphicsContext;
 }
@@ -279,15 +279,9 @@ Ref<IPipeline> VulkanDevice::onCreatePipeline(IRenderPass* ownerRenderPass, cons
 	return nullptr;
 }
 
-Ref<IGraphicsContext> VulkanDevice::onCreateGraphicsContext()
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
-}
-
 // TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
 // CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
-void VulkanDevice::onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget)
+void VulkanDevice::onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
 {
 	auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
 	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
@@ -869,7 +863,7 @@ VulkanGraphicsContext::VulkanGraphicsContext()
 Result VulkanGraphicsContext::init(VulkanDevice* owner)
 {
 	LN_CHECK(owner);
-	IGraphicsContext::init(owner);
+	ICommandList::init(owner);
 	m_device = owner;
 
 	m_recodingCommandBuffer = makeRef<VulkanCommandBuffer>();
