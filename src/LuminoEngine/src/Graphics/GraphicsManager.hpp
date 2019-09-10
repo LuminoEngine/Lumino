@@ -5,6 +5,7 @@
 namespace ln {
 class GraphicsContext; 
 class GraphicsResource;
+class CommandQueue;
 class Texture2D;
 class SamplerState;
 
@@ -46,6 +47,8 @@ public:
 	const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
 	const Ref<GraphicsContext>& graphicsContext2() const { return m_graphicsContext; }
     const Ref<GraphicsContext>& mainWindowGraphicsContext() const { return m_graphicsContext; }
+	const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
+	const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 	const Ref<RenderingQueue>& renderingQueue() const { return m_renderingQueue; }
 	RenderingType renderingType() const { return RenderingType::Immediate; }
@@ -65,6 +68,9 @@ private:
 
 	Ref<IGraphicsDevice> m_deviceContext;
 	Ref<GraphicsContext> m_graphicsContext;
+	Ref<CommandQueue> m_graphicsQueue;
+	Ref<CommandQueue> m_computeQueue;
+
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	Ref<RenderingQueue> m_renderingQueue;
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;

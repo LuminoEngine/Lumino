@@ -18,6 +18,14 @@ public:
 };
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, NewAPI)
+{
+	auto queue = Graphics::graphicsQueue();
+
+
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 {
 	// # 時計回り (左ねじ) で描画できること

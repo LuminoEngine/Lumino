@@ -14,6 +14,7 @@ class PlatformWindow;
 class IGraphicsContext;
 class ISwapChain;
 class ICommandList;
+class ICommandQueue;
 class IRenderPass;
 class IVertexDeclaration;
 class IVertexBuffer;
@@ -175,6 +176,8 @@ public:
 	void flushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
 	virtual IGraphicsContext* getGraphicsContext() const = 0;
+	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
+	virtual ICommandQueue* getComputeCommandQueue() = 0;
 
     // utility
     Ref<IShaderPass> createShaderPassFromUnifiedShaderPass(const UnifiedShader* unifiedShader, UnifiedShader::PassId passId, DiagnosticsManager* diag);
@@ -342,6 +345,17 @@ public:
 
 protected:
 	virtual ~ISwapChain() = default;
+};
+
+// OpenGL の場合は、現在のコンテキストに対してただ glFlush するだけ。Compute は非対応。
+class ICommandQueue
+	: public IGraphicsDeviceObject
+{
+public:
+	virtual Result submit(ICommandList* commandList) = 0;
+
+protected:
+	virtual ~ICommandQueue() = default;
 };
 
 // Note: Framebuffer も兼ねる。Vulkan では分けることで subpass を実現するが、Metal や DX12 では無いし、そこまで最適化する必要も今はない。
@@ -635,8 +649,20 @@ private:
 	/*
 	UseCases:
 
+	普通に使うとき:
+		auto commandList = GraphicsCommandList::get(swapchain);
+		commandList->・・・Rendering モジュールで使う
+		graphicsQueue->submit(commandList);
+
+	スポット的に使うとき(Compute や RenderTargetあらかじめ作ったり)：
+		auto commandList = GraphicsCommandList::get();
+		commandList->・・・
+		computeQueue->submit(commandList);
+
 	他Engine組み込み (UIFrameWindowあたり):
-		auto commandList = device->getCommandList(VkCommandList など);
+		IGraphicsDevice* device = ...;
+		auto commandListRHI = device->getCommandList(VkCommandList など);
+		auto commandList = GraphicsCommandList::get(commandListRHI);
 		commandList->・・・Rendering モジュールで使う
 
 

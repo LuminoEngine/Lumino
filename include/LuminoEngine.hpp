@@ -41,6 +41,7 @@
 #include "LuminoEngine/Graphics/SwapChain.hpp"
 #include "LuminoEngine/Graphics/GraphicsContext.hpp"
 #include "LuminoEngine/Graphics/Bitmap.hpp"
+#include "LuminoEngine/Graphics/Graphics.hpp"
 
 #include "LuminoEngine/Font/Font.hpp"
 

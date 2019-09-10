@@ -303,6 +303,18 @@ void VulkanDevice::onFlushCommandBuffer(IGraphicsContext* context, ITexture* aff
 	t->setImageAvailableSemaphoreRef(nullptr);
 }
 
+ICommandQueue* VulkanDevice::getGraphicsCommandQueue()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+ICommandQueue* VulkanDevice::getComputeCommandQueue()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
 {
     VkPhysicalDeviceMemoryProperties memProperties;

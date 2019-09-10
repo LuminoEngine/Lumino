@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/GraphicsResource.hpp>
+#include <LuminoEngine/Graphics/CommandQueue.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include "GraphicsManager.hpp"
@@ -159,6 +160,16 @@ void GraphicsManager::init(const Settings& settings)
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
 	m_graphicsContext = makeObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
+
+	if (auto queue = m_deviceContext->getGraphicsCommandQueue()) {
+		m_graphicsQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);
+		m_graphicsQueue->init(queue);
+	}
+	if (auto queue = m_deviceContext->getComputeCommandQueue()) {
+		m_computeQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);
+		m_computeQueue->init(queue);
+	}
+
 
 	m_renderingQueue = makeRef<RenderingQueue>();
 

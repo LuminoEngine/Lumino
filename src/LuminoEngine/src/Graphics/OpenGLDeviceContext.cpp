@@ -266,6 +266,10 @@ void OpenGLDevice::init(const Settings& settings)
         }
     }
 
+	m_graphicsQueue = makeRef<GLCommandQueue>();
+	if (!m_graphicsQueue->init()) {
+		return;
+	}
 
 	m_graphicsContext = makeRef<GLGraphicsContext>();
 	m_graphicsContext->init(this);
@@ -278,6 +282,10 @@ void OpenGLDevice::dispose()
 	if (m_graphicsContext) {
 		m_graphicsContext->dispose();
 		m_graphicsContext = nullptr;
+	}
+	if (m_graphicsQueue) {
+		m_graphicsQueue->dispose();
+		m_graphicsQueue = nullptr;
 	}
 
     IGraphicsDevice::dispose();
@@ -401,6 +409,17 @@ Ref<IGraphicsContext> OpenGLDevice::onCreateGraphicsContext()
 		return nullptr;
 	}
 	return ptr;
+}
+
+ICommandQueue* OpenGLDevice::getGraphicsCommandQueue()
+{
+	return m_graphicsQueue;
+}
+
+ICommandQueue* OpenGLDevice::getComputeCommandQueue()
+{
+	// Not supported.
+	return nullptr;
 }
 
 //=============================================================================
@@ -1081,6 +1100,23 @@ void EmptyGLContext::swap(GLSwapChain* swapChain)
 {
 }
 
+//==============================================================================
+// GLCommandQueue
+
+GLCommandQueue::GLCommandQueue()
+{
+}
+
+Result GLCommandQueue::init()
+{
+	return true;
+}
+
+Result GLCommandQueue::submit(ICommandList* commandList)
+{
+	glFlush();
+	return true;
+}
 
 //==============================================================================
 // GLVertexDeclaration

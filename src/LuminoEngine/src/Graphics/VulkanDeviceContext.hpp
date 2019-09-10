@@ -76,6 +76,8 @@ protected:
 	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) override;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
 	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) override;
+	virtual ICommandQueue* getGraphicsCommandQueue() override;
+	virtual ICommandQueue* getComputeCommandQueue() override;
 
 public: // TODO:
     struct PhysicalDeviceInfo

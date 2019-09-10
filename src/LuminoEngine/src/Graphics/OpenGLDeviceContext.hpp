@@ -92,6 +92,7 @@ namespace detail {
 class GLGraphicsContext;
 class GLContext;
 class GLSwapChain;
+class GLCommandQueue;
 class GLIndexBuffer;
 class GLRenderTargetTexture;
 class GLShaderPass;
@@ -149,12 +150,15 @@ protected:
 	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) override;
 	virtual Ref<IGraphicsContext> onCreateGraphicsContext() override;
 	virtual void onFlushCommandBuffer(IGraphicsContext* context, ITexture* affectRendreTarget) override {}
+	virtual ICommandQueue* getGraphicsCommandQueue() override;
+	virtual ICommandQueue* getComputeCommandQueue() override;
 
 private:
 	Ref<GLContext> m_glContext;
 	MemoryStream m_uniformTempBuffer;
 	BinaryWriter m_uniformTempBufferWriter;
 	//int m_lastUsedAttribIndex;
+	Ref<GLCommandQueue> m_graphicsQueue;	// dummy
 	Ref<GLGraphicsContext> m_graphicsContext;
 	Caps m_caps;
 };
@@ -256,6 +260,16 @@ private:
     GLuint m_defaultFBO;
     int m_backengBufferWidth;
     int m_backengBufferHeight;
+};
+
+// 他の Graphics API との処理を抽象化するためのダミー。
+class GLCommandQueue
+	: public ICommandQueue
+{
+public:
+	GLCommandQueue();
+	Result init();
+	virtual Result submit(ICommandList* commandList) override;
 };
 
 struct GLVertexElement
