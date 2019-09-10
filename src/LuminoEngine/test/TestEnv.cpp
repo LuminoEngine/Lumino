@@ -54,6 +54,11 @@ void TestEnv::updateFrame()
     detail::EngineDomain::engineManager()->presentFrame();
 }
 
+GraphicsContext* TestEnv::graphicsContext()
+{
+	return Engine::graphicsContext();
+}
+
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
 	context->resetState();
@@ -63,7 +68,7 @@ void TestEnv::resetGraphicsContext(GraphicsContext* context)
 
 Ref<Bitmap2D> TestEnv::capture()
 {
-	return detail::TextureInternal::readData(lastBackBuffer, Engine::graphicsContext());
+	return detail::TextureInternal::readData(lastBackBuffer, TestEnv::graphicsContext());
 }
 
 void TestEnv::saveScreenShot(const Char* filePath)

@@ -27,7 +27,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	
 	//* [ ] Basic rendering
@@ -78,7 +78,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexBuffer(0, vb1);
     ctx->setVertexLayout(vd1);
@@ -182,7 +182,7 @@ TEST_F(Test_Graphics_HlslEffect, UnifiedShader)
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Color, 0);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 
 	//* [ ] Basic rendering
@@ -220,7 +220,7 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 	auto vd1 = makeObject<VertexLayout>();
 	vd1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexDeclaration(vd1);
 	ctx->setVertexBuffer(0, vb1);

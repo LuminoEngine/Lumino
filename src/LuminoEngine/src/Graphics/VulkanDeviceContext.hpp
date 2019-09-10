@@ -254,6 +254,8 @@ public:
     virtual void dispose() override;
     virtual size_t getBytesSize() override { return m_buffer.size(); }
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
+	virtual void* map() override { return m_buffer.map(); }
+	virtual void unmap() override { m_buffer.unmap(); }
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }
@@ -274,9 +276,10 @@ public:
     VulkanIndexBuffer();
     Result init(VulkanDevice* deviceContext, GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData);
     virtual void dispose() override;
-    
     virtual size_t getBytesSize() override { return m_buffer.size(); }
     virtual GraphicsResourceUsage usage() const override { return m_usage; }
+	virtual void* map() override { return m_buffer.map(); }
+	virtual void unmap() override { m_buffer.unmap(); }
 
     VulkanBuffer* buffer() { return &m_buffer; }
     VkBuffer vulkanBuffer() const { return m_buffer.nativeBuffer(); }

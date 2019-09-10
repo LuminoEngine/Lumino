@@ -131,7 +131,7 @@ private:
     GraphicsContext();
     virtual ~GraphicsContext();
     void init(RenderingType renderingType);
-    void init(detail::ICommandList* context);
+    //void init(detail::ICommandList* context);
 
     void enterRenderState();
     void leaveRenderState();
@@ -197,6 +197,7 @@ public:
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
     static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
+	static const Ref<detail::ICommandList>& getCommandListForTransfer(GraphicsContext* self) { return self->m_context; }
     static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
     static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
     static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }

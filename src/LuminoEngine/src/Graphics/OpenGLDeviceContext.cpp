@@ -198,6 +198,7 @@ OpenGLDevice::OpenGLDevice()
 	: m_glContext(nullptr)
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
+	, m_commandListCreated(false)
 {
 }
 
@@ -271,18 +272,18 @@ void OpenGLDevice::init(const Settings& settings)
 		return;
 	}
 
-	m_graphicsContext = makeRef<GLGraphicsContext>();
-	m_graphicsContext->init(this);
+	//m_graphicsContext = makeRef<GLGraphicsContext>();
+	//m_graphicsContext->init(this);
 
 	LN_LOG_DEBUG << "OpenGLDeviceContext::init end";
 }
 
 void OpenGLDevice::dispose()
 {
-	if (m_graphicsContext) {
-		m_graphicsContext->dispose();
-		m_graphicsContext = nullptr;
-	}
+	//if (m_graphicsContext) {
+	//	m_graphicsContext->dispose();
+	//	m_graphicsContext = nullptr;
+	//}
 	if (m_graphicsQueue) {
 		m_graphicsQueue->dispose();
 		m_graphicsQueue = nullptr;
@@ -291,10 +292,10 @@ void OpenGLDevice::dispose()
     IGraphicsDevice::dispose();
 }
 
-ICommandList* OpenGLDevice::getGraphicsContext() const
-{
-	return m_graphicsContext;
-}
+//ICommandList* OpenGLDevice::getGraphicsContext() const
+//{
+//	return m_graphicsContext;
+//}
 
 void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 {
@@ -316,8 +317,15 @@ Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const Si
 
 Ref<ICommandList> OpenGLDevice::onCreateCommandList()
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
+
+	auto ptr = makeRef<GLGraphicsContext>();
+	if (!ptr->init(this)) {
+		return nullptr;
+	}
+
+	m_commandListCreated = true;
+	return ptr;
 }
 
 Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)

@@ -689,7 +689,7 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
 	// TODO: SwapChain だけでいいはず
-	m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
+	//m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
 }
 
 bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)

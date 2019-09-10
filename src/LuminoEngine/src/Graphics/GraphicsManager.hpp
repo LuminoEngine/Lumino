@@ -12,6 +12,7 @@ class SamplerState;
 namespace detail {
 class PlatformWindow;
 class IGraphicsDevice;
+class ICommandList;
 class RenderTargetTextureCacheManager;
 class DepthBufferCacheManager;
 class FrameBufferCache;
@@ -45,8 +46,7 @@ public:
 	// 必要な時に GraphicsManager または GraphicsContext から取得すること。
 	// TODO: こういう事情がでてきたので、以前のバージョンのように IGraphicsDevice をリソース関係と描画関係で分離するのもアリかもしれない。
 	const Ref<IGraphicsDevice>& deviceContext() const { return m_deviceContext; }
-	const Ref<GraphicsContext>& graphicsContext2() const { return m_graphicsContext; }
-    const Ref<GraphicsContext>& mainWindowGraphicsContext() const { return m_graphicsContext; }
+    //const Ref<GraphicsContext>& mainWindowGraphicsContext() const { return m_graphicsContext; }
 	const Ref<CommandQueue>& graphicsQueue() const { return m_graphicsQueue; }
 	const Ref<CommandQueue>& computeQueue() const { return m_computeQueue; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
@@ -67,7 +67,7 @@ private:
 	void createVulkanContext(const Settings& settings);
 
 	Ref<IGraphicsDevice> m_deviceContext;
-	Ref<GraphicsContext> m_graphicsContext;
+	//Ref<GraphicsContext> m_graphicsContext;
 	Ref<CommandQueue> m_graphicsQueue;
 	Ref<CommandQueue> m_computeQueue;
 

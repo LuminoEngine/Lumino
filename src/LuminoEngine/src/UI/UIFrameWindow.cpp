@@ -231,7 +231,7 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
 	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
-
+	m_graphicsContext = makeObject<GraphicsContext>(detail::EngineDomain::graphicsManager()->renderingType());
 
     m_platformWindow->attachEventListener(this);
 

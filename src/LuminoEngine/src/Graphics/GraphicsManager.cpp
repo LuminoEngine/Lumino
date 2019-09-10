@@ -159,7 +159,7 @@ void GraphicsManager::init(const Settings& settings)
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
-	m_graphicsContext = makeObject<GraphicsContext>(m_deviceContext->getGraphicsContext());
+	//m_graphicsContext = makeObject<GraphicsContext>(renderingType());
 
 	if (auto queue = m_deviceContext->getGraphicsCommandQueue()) {
 		m_graphicsQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);
@@ -217,7 +217,7 @@ void GraphicsManager::dispose()
 	m_depthBufferCacheManager = nullptr;
 	m_renderTargetTextureCacheManager = nullptr;
 
-	m_graphicsContext->dispose();
+	//m_graphicsContext->dispose();
 	m_deviceContext->dispose();
 }
 

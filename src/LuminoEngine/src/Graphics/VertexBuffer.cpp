@@ -107,7 +107,7 @@ void* VertexBuffer::map(MapMode mode)
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-            m_rhiMappedBuffer = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext()->map(m_rhiObject, 0, size());
+            m_rhiMappedBuffer = m_rhiObject->map();
         }
 
         m_modified = true;
@@ -154,11 +154,12 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, 
     m_mappedBuffer = nullptr;
 
     if (m_modified) {
-        detail::IGraphicsDevice* device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
         if (m_rhiMappedBuffer) {
-            device->getGraphicsContext()->unmap(m_rhiObject);
+			m_rhiObject->unmap();
             m_rhiMappedBuffer = nullptr;
         } else {
+			auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
             size_t requiredSize = size();
             if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage) {
                 m_rhiObject = device->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
@@ -166,8 +167,8 @@ detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, 
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IVertexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    VertexBuffer_SetSubData, context, detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
-                        device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
+                    VertexBuffer_SetSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
+						commandList->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }
         }

@@ -42,8 +42,7 @@ IGraphicsResource::~IGraphicsResource()
 // IGraphicsDevice
 
 IGraphicsDevice::IGraphicsDevice()
-	: m_graphicsContext(nullptr)
-	, m_renderPassCache(std::make_unique<NativeRenderPassCache>(this))
+	: m_renderPassCache(std::make_unique<NativeRenderPassCache>(this))
 	, m_pipelineCache(std::make_unique<NativePipelineCache>(this))
 {
 }
@@ -62,7 +61,6 @@ void IGraphicsDevice::dispose()
 
 void IGraphicsDevice::refreshCaps()
 {
-	m_graphicsContext = getGraphicsContext();
 	onGetCaps(&m_caps);
 }
 

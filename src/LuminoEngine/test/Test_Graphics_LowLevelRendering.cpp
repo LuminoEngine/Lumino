@@ -41,7 +41,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 
         for (int i = 0; i < 5; i++)
         {
-            auto ctx = Engine::graphicsContext();
+            auto ctx = TestEnv::graphicsContext();
             TestEnv::resetGraphicsContext(ctx);
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer);
@@ -60,7 +60,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 {
 
 	{
-		auto ctx = Engine::graphicsContext();
+		auto ctx = TestEnv::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
 		ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"));
@@ -68,7 +68,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 
 	//* [ ] Viewport や Scissor の影響を受けず、全体をクリアできること。
 	{
-		auto ctx = Engine::graphicsContext();
+		auto ctx = TestEnv::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
 		ctx->setViewportRect(Rect(0, 0, 10, 10));
 		ctx->setScissorRect(Rect(0, 0, 10, 10));
@@ -80,7 +80,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 	{
 		auto t1 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 		auto t2 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
-		auto ctx = Engine::graphicsContext();
+		auto ctx = TestEnv::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
 
 		// 両方 Blue でクリアして、
@@ -95,8 +95,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
 
 		// Red, Blue
-		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t1, Engine::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
-		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t2, Engine::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t1, TestEnv::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
+		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t2, TestEnv::graphicsContext()), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
 	}
 }
 
@@ -130,7 +130,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 		vb1->setResourcePool(pool);
 		vb2->setResourcePool(pool);
 
-		auto ctx = Engine::graphicsContext();
+		auto ctx = TestEnv::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
@@ -246,7 +246,7 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	vd1->addElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
 	vd1->addElement(2, VertexElementType::Float4, VertexElementUsage::TexCoord, 1);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setVertexBuffer(1, vb2);
@@ -297,7 +297,7 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 		auto ib1 = makeObject<IndexBuffer>(3, IndexBufferFormat::UInt16, usage);
 		ib1->setResourcePool(pool);
 
-		auto ctx = Engine::graphicsContext();
+		auto ctx = TestEnv::graphicsContext();
 		TestEnv::resetGraphicsContext(ctx);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
@@ -359,7 +359,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 	};
 	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(m_vertexDecl1);
 	ctx->setVertexBuffer(0, vertexBuffer);
@@ -428,7 +428,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 		Vector4(-1, 0, 0, 1),
 	};
 	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(m_vertexDecl1);
 	ctx->setVertexBuffer(0, vertexBuffer);
@@ -687,7 +687,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
@@ -736,7 +736,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture3D)
 
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
@@ -785,7 +785,7 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 	shader1->findParameter("g_texture1")->setTexture(tex1);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
@@ -852,7 +852,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	};
 	auto vb3 = makeObject<VertexBuffer>(sizeof(v3), v3, GraphicsResourceUsage::Static);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(vertexDecl1);
 	ctx->setIndexBuffer(nullptr);
@@ -1042,7 +1042,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 
         auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
 
-        auto ctx = Engine::graphicsContext();
+        auto ctx = TestEnv::graphicsContext();
         TestEnv::resetGraphicsContext(ctx);
 
         RenderTargetTexture* oldRT = ctx->renderTarget(0);

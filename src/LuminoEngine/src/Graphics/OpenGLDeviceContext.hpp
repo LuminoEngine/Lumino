@@ -132,7 +132,7 @@ public:
 
 
 protected:
-	virtual ICommandList* getGraphicsContext() const;
+	//virtual ICommandList* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<ICommandList> onCreateCommandList() override;
@@ -158,8 +158,9 @@ private:
 	BinaryWriter m_uniformTempBufferWriter;
 	//int m_lastUsedAttribIndex;
 	Ref<GLCommandQueue> m_graphicsQueue;	// dummy
-	Ref<GLGraphicsContext> m_graphicsContext;
+	//Ref<GLGraphicsContext> m_graphicsContext;
 	Caps m_caps;
+	bool m_commandListCreated;
 };
 
 class GLGraphicsContext
@@ -326,7 +327,8 @@ public:
 
 	void setSubData(size_t offset, const void* data, size_t length);
 	void* map(uint32_t offset, uint32_t size);
-	void unmap();
+	virtual void* map() override { return map(0, m_size); }
+	virtual void unmap() override;
 
 private:
 	GLuint m_glVertexBuffer;
@@ -352,7 +354,8 @@ public:
 
 	void setSubData(size_t offset, const void* data, size_t length);
 	void* map(uint32_t offset, uint32_t size);
-	void unmap();
+	virtual void* map() override { return map(0, m_size); }
+	virtual void unmap() override;
 
 private:
 	GLuint m_indexBufferId;

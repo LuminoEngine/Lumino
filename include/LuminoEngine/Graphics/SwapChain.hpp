@@ -39,6 +39,7 @@ LN_CONSTRUCT_ACCESS:
     void init(detail::PlatformWindow* window, const SizeI& backbufferSize);
 
 private:
+	const Ref<detail::ICommandList>& currentCommandList() const { return m_commandLists[m_imageIndex]; }
     void resizeBackbuffer(int width, int height);
 	void resetRHIBackbuffers();
     void present(GraphicsContext* context);
@@ -47,6 +48,7 @@ private:
 
     Ref<detail::ISwapChain> m_rhiObject;
     List<Ref<RenderTargetTexture>> m_backbuffers;
+	std::vector<Ref<detail::ICommandList>> m_commandLists;
     int m_imageIndex;
 
     friend class detail::GraphicsResourceInternal;

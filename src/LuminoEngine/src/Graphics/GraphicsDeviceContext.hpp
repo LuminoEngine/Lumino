@@ -173,7 +173,7 @@ public:
 
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
-	virtual ICommandList* getGraphicsContext() const = 0;
+	//virtual ICommandList* getGraphicsContext() const = 0;
 	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
 	virtual ICommandQueue* getComputeCommandQueue() = 0;
 
@@ -230,7 +230,6 @@ protected:
 public:	// TODO:
 	void collectGarbageObjects();
 
-	ICommandList* m_graphicsContext;
 	GraphicsDeviceCaps m_caps;
 	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
 
@@ -398,7 +397,8 @@ public:
     virtual DeviceResourceType resourceType() const { return DeviceResourceType::VertexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
-	//virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
+	virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
+	virtual void unmap() = 0;
 
 protected:
 	IVertexBuffer();
@@ -413,7 +413,8 @@ public:
     virtual DeviceResourceType resourceType() const { return DeviceResourceType::IndexBuffer; }
 	virtual size_t getBytesSize() = 0;
 	virtual GraphicsResourceUsage usage() const = 0;
-	//virtual void setSubData(size_t offset, const void* data, size_t length) = 0;
+	virtual void* map() = 0;	// write only. 初期化用. dynamic に書き換えたい場合は CommandList のデータ転送を使用すること.
+	virtual void unmap() = 0;
 
 protected:
 	IIndexBuffer();

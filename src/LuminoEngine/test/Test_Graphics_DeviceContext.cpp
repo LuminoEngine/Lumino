@@ -76,7 +76,7 @@ TEST_F(Test_Graphics_DeviceContext, Clear)
 
 
 
-            auto ctx = Engine::graphicsContext();
+            auto ctx = TestEnv::graphicsContext();
             TestEnv::resetGraphicsContext(ctx);
             //ctx->setDepthBuffer(nullptr);
             //ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
@@ -92,7 +92,7 @@ TEST_F(Test_Graphics_DeviceContext, Clear)
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_DeviceContext-Clear-1.png"));
     }
     {
-        auto ctx = Engine::graphicsContext();
+        auto ctx = TestEnv::graphicsContext();
         TestEnv::resetGraphicsContext(ctx);
         ctx->setDepthBuffer(nullptr);
         ctx->clear(ClearFlags::All, Color::Red, 1.0f, 0);
@@ -124,7 +124,7 @@ TEST_F(Test_Graphics_DeviceContext, BasicTriangle)
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
 
-    auto ctx = Engine::graphicsContext();
+    auto ctx = TestEnv::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
     {
         DepthStencilStateDesc state;
@@ -174,7 +174,7 @@ TEST_F(Test_Graphics_DeviceContext, IndexBuffer)
 	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 	auto indexBuffer = makeObject<IndexBuffer>(LN_ARRAY_SIZE_OF(i1), IndexBufferFormat::UInt16, i1, GraphicsResourceUsage::Static);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 
     ctx->setDepthBuffer(nullptr);
@@ -206,7 +206,7 @@ TEST_F(Test_Graphics_DeviceContext, ConstantBuffer)
 
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v1), v1, GraphicsResourceUsage::Static);
 
-    auto ctx = Engine::graphicsContext();
+    auto ctx = TestEnv::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
     {
         DepthStencilStateDesc state;

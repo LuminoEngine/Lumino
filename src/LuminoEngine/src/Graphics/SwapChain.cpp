@@ -57,10 +57,16 @@ void SwapChain::resetRHIBackbuffers()
 {
 	uint32_t count = m_rhiObject->getBackbufferCount();
 	m_backbuffers.resize(count);
+	m_commandLists.resize(count);
 	for (uint32_t i = 0; i < count; i++) {
+		// backbuffer
 		auto buffer = makeObject<RenderTargetTexture>(this);
 		detail::TextureInternal::resetRHIObject(buffer, m_rhiObject->getRenderTarget(i));
 		m_backbuffers[i] = buffer;
+
+		// commandList
+		//auto commandList = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createCommandList();
+		//m_commandLists.push_back(commandList);
 	}
 
 	m_rhiObject->acquireNextImage(&m_imageIndex);

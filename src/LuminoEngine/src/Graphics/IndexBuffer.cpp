@@ -96,7 +96,7 @@ void* IndexBuffer::map(MapMode mode)
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-            m_rhiMappedBuffer = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext()->map(m_rhiObject, 0, bytesSize());
+			m_rhiMappedBuffer = m_rhiObject->map();
         }
 
         m_modified = true;
@@ -201,9 +201,10 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bo
     if (m_modified) {
         detail::IGraphicsDevice* device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
         if (m_rhiMappedBuffer) {
-            device->getGraphicsContext()->unmap(m_rhiObject);
+			m_rhiObject->unmap();
             m_rhiMappedBuffer = nullptr;
         } else {
+			detail::ICommandList* commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
             size_t requiredSize = bytesSize();
             if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage) {
                 m_rhiObject = device->createIndexBuffer(m_usage, m_format, size(), m_buffer.data());
@@ -211,8 +212,8 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bo
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IIndexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    IndexBuffer_setSubData, context, detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
-                        device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
+                    IndexBuffer_setSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::IIndexBuffer>, rhiObject, {
+						commandList->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }
         }

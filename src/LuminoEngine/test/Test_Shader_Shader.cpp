@@ -42,7 +42,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 
     shader1->findParameter("_Texture")->setTexture(tex1);
 
-    auto ctx = Engine::graphicsContext();
+    auto ctx = TestEnv::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
     ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
@@ -82,7 +82,7 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     // PixelShader からのみ参照されるパラメータ
     shader1->findParameter("_Color2")->setVector(Vector4(0, 0, 1, 1));
 
-    auto ctx = Engine::graphicsContext();
+    auto ctx = TestEnv::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
     ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
@@ -118,7 +118,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
     t2->clear(Color::Green);
     shader1->findParameter("_Texture2")->setTexture(t2);
 
-    auto ctx = Engine::graphicsContext();
+    auto ctx = TestEnv::graphicsContext();
     TestEnv::resetGraphicsContext(ctx);
     ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
@@ -157,7 +157,7 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 	};
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto ctx = Engine::graphicsContext();
+	auto ctx = TestEnv::graphicsContext();
 	TestEnv::resetGraphicsContext(ctx);
 	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);

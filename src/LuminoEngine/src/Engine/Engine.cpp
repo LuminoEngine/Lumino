@@ -175,7 +175,8 @@ void Engine::setShowDebugFpsEnabled(bool enabled)
 
 GraphicsContext* Engine::graphicsContext()
 {
-	return detail::EngineDomain::graphicsManager()->mainWindowGraphicsContext();
+	return detail::EngineDomain::engineManager()->mainWindow()->m_graphicsContext;
+	//return detail::EngineDomain::graphicsManager()->mainWindowGraphicsContext();
 }
 
 UIContext* Engine::mainUIContext()

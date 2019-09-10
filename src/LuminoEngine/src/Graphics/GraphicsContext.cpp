@@ -44,17 +44,17 @@ void GraphicsContext::init(RenderingType renderingType)
     resetState();
 }
 
-void GraphicsContext::init(detail::ICommandList* context)
-{
-    LN_DCHECK(context);
-    Object::init();
-    m_manager = detail::EngineDomain::graphicsManager();
-    m_context = context;
-    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
-    m_lastCommit.reset();
-    resetState();
-}
+//void GraphicsContext::init(detail::ICommandList* context)
+//{
+//    LN_DCHECK(context);
+//    Object::init();
+//    m_manager = detail::EngineDomain::graphicsManager();
+//    m_context = context;
+//    m_recordingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+//    m_executingCommandList = makeRef<detail::RenderingCommandList>(m_manager->linearAllocatorPageManager());
+//    m_lastCommit.reset();
+//    resetState();
+//}
 
 void GraphicsContext::enterRenderState()
 {
