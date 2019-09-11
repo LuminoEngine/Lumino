@@ -64,6 +64,7 @@ void SwapChain::endFrame()
 {
 	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
+	//auto nativeContext = detail::GraphicsContextInternal::commitState(m_graphicsContext);
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
 }
 
@@ -89,7 +90,6 @@ void SwapChain::resetRHIBackbuffers()
 void SwapChain::present(GraphicsContext* context)
 {
 	auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
-	auto nativeContext = detail::GraphicsContextInternal::commitState(context);
 
 
     // TODO: threading

@@ -13,6 +13,8 @@
 #include "../Platform/PlatformManager.hpp"
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests
+#include "../imgui/imgui.h"
+
 
 namespace ln {
 
@@ -238,6 +240,11 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
     SizeI size;
     m_platformWindow->getSize(&size);
     resetSize(size.toFloatSize());
+
+	if (!m_imguiContext.init()) {
+		return;
+	}
+
 }
 
 void UIFrameWindow::resetSize(const Size& size)
@@ -249,6 +256,8 @@ void UIFrameWindow::resetSize(const Size& size)
 
 void UIFrameWindow::onDispose(bool explicitDisposing)
 {
+	m_imguiContext.dispose();
+
     if (m_renderView) {
         m_renderView->dispose();
         m_renderView = nullptr;
@@ -299,9 +308,37 @@ void UIFrameWindow::present()
 
     detail::EngineDomain::effectManager()->testDraw();
 
+	// TODO: test
+	{
+		// Platform NewFrame
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
+			io.DisplaySize = ImVec2(m_clientSize.width, m_clientSize.height);
+		}
+
+		ImGui::NewFrame();
+		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+
+		if (ImGui::Button("Button"))
+			printf("click\n");
+		ImGui::SameLine();
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
+
+		ImGui::EndFrame();
+
+
+		m_imguiContext.render(m_renderingGraphicsContext);
+	}
+	m_swapChain->endFrame();
+
 	detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
 
-	m_swapChain->endFrame();
 }
 
 SwapChain* UIFrameWindow::swapChain() const

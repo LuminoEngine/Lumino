@@ -5,6 +5,7 @@
 #include "Common.hpp"
 #include "UIEvents.hpp"
 #include "UIContainerElement.hpp"
+#include "ImGuiIntegration.hpp"
 
 namespace ln {
 namespace detail { class PlatformWindow; class UIManager; }
@@ -116,6 +117,7 @@ public:  // TODO: internal
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
 	UIFrameWindowUpdateMode m_updateMode;
+	detail::ImGuiContext m_imguiContext;
 
 	Event<UIEventHandler> m_onClosed;
 	bool m_autoDisposePlatformWindow;
