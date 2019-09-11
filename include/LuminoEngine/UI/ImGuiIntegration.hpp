@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../../../src/LuminoEngine/src/imgui/imgui.h"
+#include "../../../build/ExternalSource/imgui/imgui.h"
 
 namespace ln {
 class VertexLayout;
@@ -8,13 +8,16 @@ class IndexBuffer;
 class Texture2D;
 
 namespace detail {
+struct PlatformEventArgs;
 
 class ImGuiContext
 {
 public:
 	bool init();
 	void dispose();
+    void updateFrame(float elapsedSeconds);
 	void render(GraphicsContext* graphicsContext);
+    bool handlePlatformEvent(const detail::PlatformEventArgs& e);
 
 private:
 	Ref<Texture2D> m_fontTexture;

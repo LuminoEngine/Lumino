@@ -410,6 +410,19 @@ set(LN_SOURCES_Scene
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 
+set(LN_SOURCES_UI
+    ${LN_SOURCES_UI}
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imconfig.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.cpp
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_draw.cpp
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_internal.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_widgets.cpp
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_rectpack.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_textedit.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_truetype.h
+)
+
 file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
 file(GLOB LN_SOURCES_Runtime

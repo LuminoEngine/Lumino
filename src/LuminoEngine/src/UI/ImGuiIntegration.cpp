@@ -1,4 +1,6 @@
 ﻿#include "Internal.hpp"
+#include <LuminoEngine/Platform/PlatformEvent.hpp>
+#include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
@@ -26,8 +28,12 @@ bool ImGuiContext::init()
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+	ImGui::StyleColorsLight();
 	//ImGui::StyleColorsClassic();
+
+    ImGuiStyle* style = &ImGui::GetStyle();
+    ImVec4* colors = style->Colors;
+    colors[ImGuiCol_WindowBg] = ImVec4(0.94f, 0.94f, 0.94f, 0.70f);
 
 	// Load Fonts
 	io.Fonts->AddFontDefault();
@@ -58,6 +64,21 @@ bool ImGuiContext::init()
 void ImGuiContext::dispose()
 {
 	ImGui::DestroyContext();
+}
+
+void ImGuiContext::updateFrame(float elapsedSeconds)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.DeltaTime = elapsedSeconds;
+
+    // Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
+    if (io.WantSetMousePos)
+    {
+        LN_NOTIMPLEMENTED();
+        //POINT pos = { (int)io.MousePos.x, (int)io.MousePos.y };
+        //::ClientToScreen(g_hWnd, &pos);
+        //::SetCursorPos(pos.x, pos.y);
+    }
 }
 
 void ImGuiContext::render(GraphicsContext* graphicsContext)
@@ -169,6 +190,60 @@ void ImGuiContext::render(GraphicsContext* graphicsContext)
 		global_idx_offset += cmd_list->IdxBuffer.Size;
 		global_vtx_offset += cmd_list->VtxBuffer.Size;
 	}
+}
+
+bool ImGuiContext::handlePlatformEvent(const detail::PlatformEventArgs& e)
+{
+    if (ImGui::GetCurrentContext() == NULL)
+        return 0;
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    switch (e.type)
+    {
+        case PlatformEventType::MouseDown:
+        {
+            int button = 0;
+            if (e.mouse.button == MouseButtons::Left) { button = 0; }
+            if (e.mouse.button == MouseButtons::Right) { button = 1; }
+            if (e.mouse.button == MouseButtons::Middle) { button = 2; }
+            if (e.mouse.button == MouseButtons::X1) { button = 3; }
+            if (e.mouse.button == MouseButtons::X2) { button = 4; }
+            io.MouseDown[button] = true;
+            return true;
+        }
+        case PlatformEventType::MouseUp:
+        {
+            int button = 0;
+            if (e.mouse.button == MouseButtons::Left) { button = 0; }
+            if (e.mouse.button == MouseButtons::Right) { button = 1; }
+            if (e.mouse.button == MouseButtons::Middle) { button = 2; }
+            if (e.mouse.button == MouseButtons::X1) { button = 3; }
+            if (e.mouse.button == MouseButtons::X2) { button = 4; }
+            io.MouseDown[button] = false;
+            return true;
+        }
+        case PlatformEventType::MouseMove:
+        {
+            auto clientPt = e.sender->pointFromScreen(PointI(e.mouseMove.screenX, e.mouseMove.screenY));
+            io.MousePos = ImVec2((float)clientPt.x, (float)clientPt.y);
+            break;
+        }
+        case PlatformEventType::MouseWheel:
+            io.MouseWheel += e.wheel.delta;
+            return true;
+        case PlatformEventType::KeyDown:
+            io.KeysDown[(int)e.key.keyCode] = 1;
+            return true;
+        case PlatformEventType::KeyUp:
+            io.KeysDown[(int)e.key.keyCode] = 0;
+            return true;
+        case PlatformEventType::KeyChar:io.AddInputCharacter(e.key.keyChar);
+            return true;
+        default:
+            break;
+    }
+    return false;
 }
 
 } // namespace detail

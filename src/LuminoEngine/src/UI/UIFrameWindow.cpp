@@ -13,7 +13,6 @@
 #include "../Platform/PlatformManager.hpp"
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests
-#include "../imgui/imgui.h"
 
 
 namespace ln {
@@ -282,6 +281,8 @@ void UIFrameWindow::renderContents()
 {
 	assert(!m_depthBuffer);
 
+    m_imguiContext.updateFrame(0.0166f);
+
 	m_renderingGraphicsContext = m_swapChain->beginFrame();
 
 	RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
@@ -414,6 +415,10 @@ void UIFrameWindow::onUpdateLayout(const Rect& finalGlobalRect)
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
+    if (m_imguiContext.handlePlatformEvent(e)) {
+        return true;
+    }
+
 	switch (e.type)
 	{
 	case PlatformEventType::close:

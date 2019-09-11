@@ -307,6 +307,10 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
             }
+            if (!Directory.Exists("imgui"))
+            {
+                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
