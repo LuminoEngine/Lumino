@@ -29,6 +29,9 @@ public:
     /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
     RenderTargetTexture* currentBackbuffer() const;
 
+	GraphicsContext* beginFrame();
+	void endFrame();
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
@@ -49,6 +52,7 @@ private:
     Ref<detail::ISwapChain> m_rhiObject;
     List<Ref<RenderTargetTexture>> m_backbuffers;
 	std::vector<Ref<detail::ICommandList>> m_commandLists;
+	Ref<GraphicsContext> m_graphicsContext;
     int m_imageIndex;
 
     friend class detail::GraphicsResourceInternal;

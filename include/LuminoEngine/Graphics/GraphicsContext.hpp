@@ -30,9 +30,6 @@ public:
     static const int MaxVertexStreams = detail::MaxVertexStreams;
 
 public:
-    bool beginFrame(SwapChain* swapChain);
-    void endFrame();
-
     /** BlendState を設定します。 */
     void setBlendState(const BlendStateDesc& value);
 
@@ -135,6 +132,7 @@ private:
     virtual ~GraphicsContext();
     void init(RenderingType renderingType);
     //void init(detail::ICommandList* context);
+	void resetCommandList(detail::ICommandList* commandList);
 
     void enterRenderState();
     void leaveRenderState();
@@ -197,6 +195,7 @@ namespace detail {
 class GraphicsContextInternal
 {
 public:
+	static void resetCommandList(GraphicsContext* self, detail::ICommandList* commandLsit) { self->resetCommandList(commandLsit); }
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
     static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }

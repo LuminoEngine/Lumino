@@ -231,7 +231,7 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
 	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
-	m_graphicsContext = makeObject<GraphicsContext>(detail::EngineDomain::graphicsManager()->renderingType());
+	//m_graphicsContext = makeObject<GraphicsContext>(detail::EngineDomain::graphicsManager()->renderingType());
 
     m_platformWindow->attachEventListener(this);
 
@@ -273,11 +273,13 @@ void UIFrameWindow::renderContents()
 {
 	assert(!m_depthBuffer);
 
+	m_renderingGraphicsContext = m_swapChain->beginFrame();
+
 	RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
 	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
-	m_graphicsContext->setRenderTarget(0, backbuffer);
-    m_graphicsContext->setDepthBuffer(m_depthBuffer);
+	m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
+	m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
 	//ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
@@ -286,7 +288,7 @@ void UIFrameWindow::present()
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(m_graphicsContext);
+		m_renderView->render(m_renderingGraphicsContext);
 	}
 
 	if (m_depthBuffer) {
@@ -297,9 +299,9 @@ void UIFrameWindow::present()
 
     detail::EngineDomain::effectManager()->testDraw();
 
-	detail::SwapChainInternal::present(m_swapChain, m_graphicsContext);
-	m_manager->graphicsManager()->renderingQueue()->submit(m_graphicsContext);
+	detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
 
+	m_swapChain->endFrame();
 }
 
 SwapChain* UIFrameWindow::swapChain() const
@@ -534,25 +536,31 @@ void UINativeFrameWindow::init()
 
 void UINativeFrameWindow::attachRenderingThread(RenderingType renderingType)
 {
-    if (LN_REQUIRE(!m_graphicsContext)) return;
-    m_graphicsContext = makeObject<GraphicsContext>(renderingType);
+	// TODO: GraphicsContext の持ち方を変えた。要検討
+	assert(0);
+    //if (LN_REQUIRE(!m_graphicsContext)) return;
+    //m_graphicsContext = makeObject<GraphicsContext>(renderingType);
 }
 
 void UINativeFrameWindow::detachRenderingThread()
 {
-    if (m_graphicsContext) {
-        m_graphicsContext->dispose();
-        m_graphicsContext = nullptr;
-    }
+	// TODO: GraphicsContext の持ち方を変えた。要検討
+	assert(0);
+    //if (m_graphicsContext) {
+    //    m_graphicsContext->dispose();
+    //    m_graphicsContext = nullptr;
+    //}
 }
 
 void UINativeFrameWindow::onDispose(bool explicitDisposing)
 {
 	UIFrameWindow::onDispose(explicitDisposing);
-	if (m_graphicsContext) {
-		m_graphicsContext->dispose();
-		m_graphicsContext = nullptr;
-	}
+	// TODO: GraphicsContext の持ち方を変えた。要検討
+	assert(0);
+	//if (m_graphicsContext) {
+	//	m_graphicsContext->dispose();
+	//	m_graphicsContext = nullptr;
+	//}
 }
 
 void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
@@ -560,11 +568,11 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
     m_renderingRenderTarget = renderTarget;
     m_depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
 
-	detail::GraphicsContextInternal::enterRenderState(m_graphicsContext);
+	detail::GraphicsContextInternal::enterRenderState(m_renderingGraphicsContext);
 
-	m_graphicsContext->resetState();
-	m_graphicsContext->setRenderTarget(0, renderTarget);
-	m_graphicsContext->setDepthBuffer(m_depthBuffer);
+	m_renderingGraphicsContext->resetState();
+	m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
+	m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
 }
 
 void UINativeFrameWindow::renderContents()
@@ -572,7 +580,7 @@ void UINativeFrameWindow::renderContents()
     if (m_renderView)
     {
         m_renderView->setRootElement(this);
-        m_renderView->render(m_graphicsContext);
+        m_renderView->render(m_renderingGraphicsContext);
     }
 }
 
@@ -584,7 +592,7 @@ void UINativeFrameWindow::endRendering()
     }
     m_renderingRenderTarget = nullptr;
 
-	detail::GraphicsContextInternal::leaveRenderState(m_graphicsContext);
+	detail::GraphicsContextInternal::leaveRenderState(m_renderingGraphicsContext);
 }
 
 } // namespace ln

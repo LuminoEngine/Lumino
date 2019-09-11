@@ -84,7 +84,7 @@ public:
 	void updateLayoutTree();
 	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
     const Ref<UIRenderView>& renderView() const { return m_renderView; }
-    const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
+    //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
 	void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
@@ -109,7 +109,8 @@ public:  // TODO: internal
 	//detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
-    Ref<GraphicsContext> m_graphicsContext;
+    //Ref<GraphicsContext> m_graphicsContext;
+	GraphicsContext* m_renderingGraphicsContext;
 	Ref<SwapChain>	m_swapChain;
 	Ref<DepthBuffer> m_depthBuffer;
 	Ref<UIRenderView> m_renderView;

@@ -28,6 +28,7 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
     // TODO: onChangeDevice でバックバッファをアタッチ
     GraphicsResource::init();
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
+	m_graphicsContext = makeObject<GraphicsContext>(detail::EngineDomain::graphicsManager()->renderingType());
 	resetRHIBackbuffers();
 }
 
@@ -53,6 +54,19 @@ void SwapChain::resizeBackbuffer(int width, int height)
 	resetRHIBackbuffers();
 }
 
+GraphicsContext* SwapChain::beginFrame()
+{
+	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
+	return m_graphicsContext;
+}
+
+void SwapChain::endFrame()
+{
+	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
+	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
+	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
+}
+
 void SwapChain::resetRHIBackbuffers()
 {
 	uint32_t count = m_rhiObject->getBackbufferCount();
@@ -66,7 +80,7 @@ void SwapChain::resetRHIBackbuffers()
 
 		// commandList
 		auto commandList = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createCommandList();
-		m_commandLists.push_back(commandList);
+		m_commandLists[i] = commandList;
 	}
 
 	m_rhiObject->acquireNextImage(&m_imageIndex);
@@ -77,7 +91,6 @@ void SwapChain::present(GraphicsContext* context)
 	auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
 	auto nativeContext = detail::GraphicsContextInternal::commitState(context);
 
-    detail::GraphicsContextInternal::flushCommandRecoding(context, currentBackbuffer());
 
     // TODO: threading
 	detail::ISwapChain* rhi = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISwapChain>(nullptr, this, nullptr);

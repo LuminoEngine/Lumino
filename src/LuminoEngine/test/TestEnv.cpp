@@ -59,6 +59,11 @@ GraphicsContext* TestEnv::graphicsContext()
 	return Engine::graphicsContext();
 }
 
+SwapChain* TestEnv::mainWindowSwapChain()
+{
+	return Engine::mainWindow()->swapChain();
+}
+
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
 	context->resetState();
@@ -66,19 +71,34 @@ void TestEnv::resetGraphicsContext(GraphicsContext* context)
 	context->setDepthBuffer(depthBuffer);
 }
 
-Ref<Bitmap2D> TestEnv::capture()
+GraphicsContext* TestEnv::beginFrame()
 {
-	return detail::TextureInternal::readData(lastBackBuffer, TestEnv::graphicsContext());
+	auto ctx = TestEnv::mainWindowSwapChain()->beginFrame();
+	resetGraphicsContext(ctx);
+	return ctx;
 }
 
-void TestEnv::saveScreenShot(const Char* filePath)
+void TestEnv::endFrame()
 {
-    capture()->save(filePath);
+	TestEnv::mainWindowSwapChain()->endFrame();
 }
 
-bool TestEnv::equalsScreenShot(const Char* filePath, int passRate)
+Ref<Bitmap2D> TestEnv::capture(RenderTargetTexture* renderTarget)
 {
-	bool r = TestEnv::equalsBitmapFile(capture(), filePath, passRate);
+	if (renderTarget)
+		return detail::TextureInternal::readData(renderTarget, nullptr);
+	else
+		return detail::TextureInternal::readData(lastBackBuffer, TestEnv::graphicsContext());
+}
+
+void TestEnv::saveScreenShot(const Char* filePath, RenderTargetTexture* renderTarget)
+{
+    capture(renderTarget)->save(filePath);
+}
+
+bool TestEnv::equalsScreenShot(const Char* filePath, RenderTargetTexture* renderTarget, int passRate)
+{
+	bool r = TestEnv::equalsBitmapFile(capture(renderTarget), filePath, passRate);
 	return r;
 }
 
@@ -165,17 +185,17 @@ bool TestEnv::equalsBitmapFile(Bitmap2D* bmp1, const Char* filePath, int passRat
 	return pass >= thr;
 }
 
-bool TestEnv::checkScreenShot(const Char* filePath, int passRate, bool save)
+bool TestEnv::checkScreenShot(const Char* filePath, RenderTargetTexture* renderTarget, int passRate, bool save)
 {
 	if (save)
 	{
-		saveScreenShot(filePath);
+		saveScreenShot(filePath, renderTarget);
 		return true;
 	}
 	else
 	{
-		saveScreenShot(LN_ASSETFILE("Result/0.png"));
-		return equalsScreenShot(filePath, passRate);
+		saveScreenShot(LN_ASSETFILE("Result/0.png"), renderTarget);
+		return equalsScreenShot(filePath, renderTarget, passRate);
 	}
 }
 

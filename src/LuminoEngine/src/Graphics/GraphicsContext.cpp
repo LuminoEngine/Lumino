@@ -56,6 +56,20 @@ void GraphicsContext::init(RenderingType renderingType)
 //    resetState();
 //}
 
+void GraphicsContext::resetCommandList(detail::ICommandList* commandList)
+{
+	if (commandList) {
+		// begin frame
+		if (LN_REQUIRE(!m_context)) return;
+		m_context = commandList;
+	}
+	else {
+		// end frame
+		if (LN_REQUIRE(m_context)) return;
+		m_context = nullptr;
+	}
+}
+
 void GraphicsContext::enterRenderState()
 {
     LN_ENQUEUE_RENDER_COMMAND_1(
@@ -96,18 +110,6 @@ void GraphicsContext::resetState()
 {
     m_staging.reset();
     m_dirtyFlags = DirtyFlags_All;
-}
-
-bool GraphicsContext::beginFrame(SwapChain* swapChain)
-{
-    if (LN_REQUIRE(!m_context)) return false;
-    m_context = detail::SwapChainInternal::currentCommandList(swapChain);
-}
-
-void GraphicsContext::endFrame()
-{
-    if (LN_REQUIRE(m_context)) return;
-    m_context = nullptr;
 }
 
 void GraphicsContext::setBlendState(const BlendStateDesc& value)
