@@ -484,7 +484,7 @@ ISwapChain::ISwapChain()
 void IRenderPass::dispose()
 {
 	if (m_device) {
-		m_device->renderPassCache()->invalidate(this);
+		//m_device->renderPassCache()->invalidate(this);
 		m_device = nullptr;
 	}
 
@@ -614,7 +614,8 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 	uint64_t hash = computeHash(key);
 	auto itr = m_hashMap.find(hash);
 	if (itr != m_hashMap.end()) {
-		return itr->second;
+		itr->second.referenceCount++;
+		return itr->second.value;
 	}
 	else {
 		std::array<ITexture*, MaxMultiRenderTargets> renderTargets;
@@ -624,20 +625,28 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 			renderTargets[i] = key.renderTargets[i];
 		}
 
-		auto renderPass = m_device->createRenderPass(renderTargets.data(), i, key.depthBuffer, key.clearFlags, key.clearColor, key.clearZ, key.clearStencil);
+		auto renderPass = m_device->createRenderPass(renderTargets.data(), i, key.depthBuffer, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
 		if (!renderPass) {
 			return nullptr;
 		}
 
-		m_hashMap.insert({ hash, renderPass });
+		m_hashMap.insert({ hash, { 1, renderPass } });
 		return renderPass;
 	}
 }
 
-void NativeRenderPassCache::invalidate(IRenderPass* value)
+void NativeRenderPassCache::release(IRenderPass* value)
 {
 	if (value) {
-		m_hashMap.erase(value->cacheKeyHash);
+		auto itr = m_hashMap.find(value->cacheKeyHash);
+		if (itr != m_hashMap.end()) {
+			itr->second.referenceCount--;
+			if (itr->second.referenceCount <= 0) {
+				// TODO: 削除しない。すぐに削除されても、また同じパラメータで使うかもしれない。
+				// 後々最大数の設定は必要だろう。その時も、次回 create するときに空きが無ければ消すようにしたい。
+				//m_hashMap.erase(itr);
+			}
+		}
 	}
 }
 

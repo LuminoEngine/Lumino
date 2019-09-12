@@ -601,18 +601,24 @@ public:
 		IDepthBuffer* depthBuffer = nullptr;
 		ClearFlags clearFlags = ClearFlags::All;
 		Color clearColor = Color(0, 0, 0, 0);
-		float clearZ = 1.0f;
+		float clearDepth = 1.0f;
 		uint8_t clearStencil = 0x00;
 	};
 
 	NativeRenderPassCache(IGraphicsDevice* device);
 	IRenderPass* findOrCreate(const FindKey& key);
-	void invalidate(IRenderPass* value);
+	void release(IRenderPass* value);
 	static uint64_t computeHash(const FindKey& key);
 
 private:
+	struct Entry
+	{
+		int referenceCount = 0;
+		Ref<IRenderPass> value;
+	};
+
 	IGraphicsDevice* m_device;
-	std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
+	std::unordered_map<uint64_t, Entry> m_hashMap;
 };
 
 class NativePipelineCache
