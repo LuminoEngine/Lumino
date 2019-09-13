@@ -14,7 +14,10 @@ class DepthBuffer;
 class Shader;
 class ShaderPass;
 class SwapChain;
-namespace detail { class RenderingQueue; }
+namespace detail {
+class RenderingQueue;
+class IRenderPass;
+}
 
 /*
  * グラフィクスデバイスへの描画呼出しを発行するためのクラスです。
@@ -102,6 +105,15 @@ public:
     /** IndexBuffer を取得します。 */
     ShaderPass* shaderPass() const;
 
+	/** RenderPass を設定します。 */
+	void setRenderPass(RenderPass* value);
+
+	///** RenderPass を開始します。 */
+	//void beginRenderPass(RenderPass* value);
+
+	///** RenderPass を終了します。 */
+	//void endRenderPass();
+
     /** デフォルト設定を復元します。 */
     void resetState();
 
@@ -141,6 +153,7 @@ private:
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
+	void closeRenderPass();
     detail::ICommandList* commitState();
     //void submitCommandList();
 
@@ -155,6 +168,7 @@ private:
         DirtyFlags_PipelinePrimitiveState = 1 << 6,
         DirtyFlags_PrimitiveBuffers = 1 << 7,
         DirtyFlags_ShaderPass = 1 << 8,
+		DirtyFlags_RenderPass = 1 << 9,
         DirtyFlags_All = 0xFFFFFFFF,
     };
 
@@ -173,6 +187,7 @@ private:
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
         PrimitiveTopology topology;
+		Ref<RenderPass> renderPass;
 
         void reset();
     };
@@ -184,6 +199,7 @@ private:
     RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
+	Ref<detail::IRenderPass> m_currentRHIRenderPass;
     uint32_t m_dirtyFlags;
     bool m_recordingBegan;
 
@@ -198,6 +214,8 @@ public:
 	static void resetCommandList(GraphicsContext* self, detail::ICommandList* commandLsit) { self->resetCommandList(commandLsit); }
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
     static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
+	static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }
+	static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecodingIfNeeded(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
 	static const Ref<detail::ICommandList>& getCommandListForTransfer(GraphicsContext* self) { return self->m_context; }
     static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }

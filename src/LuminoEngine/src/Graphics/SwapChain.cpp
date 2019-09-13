@@ -57,12 +57,14 @@ void SwapChain::resizeBackbuffer(int width, int height)
 GraphicsContext* SwapChain::beginFrame()
 {
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
+	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
 	return m_graphicsContext;
 }
 
 void SwapChain::endFrame()
 {
 	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
+	detail::GraphicsContextInternal::endCommandRecoding(m_graphicsContext);
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
 	//auto nativeContext = detail::GraphicsContextInternal::commitState(m_graphicsContext);
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);

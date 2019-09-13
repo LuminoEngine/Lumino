@@ -310,6 +310,7 @@ void UIFrameWindow::present()
     detail::EngineDomain::effectManager()->testDraw();
 
 	// TODO: test
+	if (0)
 	{
 		// Platform NewFrame
 		{

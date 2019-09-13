@@ -147,4 +147,37 @@ void RenderPass::releaseRHI()
 	}
 }
 
+////==============================================================================
+//// RenderPassPool
+//namespace detail {
+//
+//RenderPassPool::RenderPassPool(GraphicsManager* manager)
+//{
+//}
+//
+//RenderPass* RenderPassPool::findOrCreate(const FindKey& key)
+//{
+//	uint64_t hash = computeHash(key);
+//	auto itr = m_hashMap.find(hash);
+//	if (itr != m_hashMap.end()) {
+//		return itr->second;
+//	}
+//	else {
+//		// TODO: Pool を使い切ったら、使っていないものを消す
+//
+//		auto pipeline = m_device->createPipeline(key.renderPass, key.state);
+//		if (!pipeline) {
+//			return nullptr;
+//		}
+//
+//		m_hashMap.insert({ hash, pipeline });
+//		return pipeline;
+//	}
+//}
+//
+//uint64_t RenderPassPool::computeHash(const FindKey& key)
+//{
+//}
+//
+//} // namespace detail
 } // namespace ln

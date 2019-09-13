@@ -41,7 +41,7 @@ public:
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	RenderPass();
@@ -66,4 +66,36 @@ private:
     friend class detail::GraphicsResourceInternal;
 };
 
+//namespace detail {
+//class GraphicsManager;
+//
+//class RenderPassPool
+//{
+//public:
+//	struct FindKey
+//	{
+//		std::array<RenderTargetTexture*, MaxMultiRenderTargets> renderTargets = {};
+//		DepthBuffer* depthBuffer = nullptr;
+//		ClearFlags clearFlags = ClearFlags::All;
+//		Color clearColor = Color(0, 0, 0, 0);
+//		float clearDepth = 1.0f;
+//		uint8_t clearStencil = 0x00;
+//	};
+//
+//	RenderPassPool(GraphicsManager* manager);
+//	RenderPass* findOrCreate(const FindKey& key);
+//	static uint64_t computeHash(const FindKey& key);
+//
+//private:
+//	struct Entry
+//	{
+//		int referenceCount = 0;
+//		Ref<IRenderPass> value;
+//	};
+//
+//	GraphicsManager* m_manager;
+//	std::unordered_map<uint64_t, Ref<RenderPass>> m_hashMap;
+//};
+//
+//} // namespace detail
 } // namespace ln

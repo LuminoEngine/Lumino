@@ -78,9 +78,9 @@ Ref<ICommandList> IGraphicsDevice::createCommandList()
 	return onCreateCommandList();
 }
 
-Ref<IRenderPass> IGraphicsDevice::createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)
+Ref<IRenderPass> IGraphicsDevice::createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
 {
-	Ref<IRenderPass> ptr = onCreateRenderPass(renderTargets, renderTargetCount, depthBuffer, clearFlags, clearColor, clearZ, clearStencil);
+	Ref<IRenderPass> ptr = onCreateRenderPass(renderTargets, renderTargetCount, depthBuffer, clearFlags, clearColor, clearDepth, clearStencil);
 	if (ptr) {
 		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
@@ -308,6 +308,16 @@ void ICommandList::end()
     onEndCommandRecoding();
 }
 
+void ICommandList::beginRenderPass(IRenderPass* value)
+{
+	onBeginRenderPass(value);
+}
+
+void ICommandList::endRenderPass(IRenderPass* value)
+{
+	onEndRenderPass(value);
+}
+
 void ICommandList::setBlendState(const BlendStateDesc& value)
 {
     m_staging.pipelineState.blendState = value;
@@ -394,6 +404,11 @@ void ICommandList::setPrimitiveTopology(PrimitiveTopology value)
 {
     m_staging.pipelineState.topology = value;
 }
+//
+//void ICommandList::setRenderPass(IRenderPass* value)
+//{
+//	m_staging.renderPass = value;
+//}
 
 void* ICommandList::map(IGraphicsResource* resource, uint32_t offset, uint32_t size)
 {
@@ -450,15 +465,6 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 
     // TODO: modified check
 
-    onUpdatePipelineState(m_staging.pipelineState.blendState, m_staging.pipelineState.rasterizerState, m_staging.pipelineState.depthStencilState);
-
-    onUpdateShaderPass(m_staging.shaderPass);
-
-    onUpdateFrameBuffers(m_staging.framebufferState.renderTargets.data(), m_staging.framebufferState.renderTargets.size(), m_staging.framebufferState.depthBuffer);
-
-    onUpdateRegionRects(m_staging.regionRects.viewportRect, m_staging.regionRects.scissorRect, m_staging.framebufferState.renderTargets[0]->realSize());
-
-    onUpdatePrimitiveData(m_staging.pipelineState.vertexDeclaration, m_staging.primitive.vertexBuffers.data(), m_staging.primitive.vertexBuffers.size(), m_staging.primitive.indexBuffer);
 
     onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
 }

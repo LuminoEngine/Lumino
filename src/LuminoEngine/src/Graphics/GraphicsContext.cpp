@@ -8,6 +8,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
@@ -255,9 +256,30 @@ ShaderPass* GraphicsContext::shaderPass() const
     return m_staging.shaderPass;
 }
 
+void GraphicsContext::setRenderPass(RenderPass* value)
+{
+	if (m_staging.renderPass != value) {
+		m_staging.renderPass = value;
+		m_dirtyFlags |= DirtyFlags_RenderPass;
+	}
+}
+
+//void GraphicsContext::beginRenderPass(RenderPass* value)
+//{
+//	//if (m_staging.renderPass != value) {
+//	//	m_staging.renderPass = value;
+//	//	m_dirtyFlags |= DirtyFlags_RenderPass;
+//	//}
+//}
+//
+//void GraphicsContext::endRenderPass()
+//{
+//
+//}
+
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-    beginCommandRecodingIfNeeded();
+	if (LN_REQUIRE(m_recordingBegan)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_5(
         GraphicsContext_clear, this,
@@ -272,7 +294,7 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
 
 void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 {
-    beginCommandRecodingIfNeeded();
+	if (LN_REQUIRE(m_recordingBegan)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
@@ -286,7 +308,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 
 void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
-    beginCommandRecodingIfNeeded();
+	if (LN_REQUIRE(m_recordingBegan)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
@@ -315,6 +337,7 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
 void GraphicsContext::endCommandRecodingIfNeeded()
 {
     if (m_recordingBegan) {
+		closeRenderPass();
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, this,
             detail::ICommandList*, m_context,
@@ -334,7 +357,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
 		auto device = m_manager->deviceContext();
         detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, affectRendreTarget, nullptr);
         LN_ENQUEUE_RENDER_COMMAND_3(
-            GraphicsContext_beginCommandRecodingIfNeeded, this,
+            GraphicsContext_flushCommandRecoding, this,
 			detail::IGraphicsDevice*, device,
             detail::ICommandList*, m_context,
             detail::ITexture*, rhiObject,
@@ -342,6 +365,20 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
 				device->flushCommandBuffer(m_context, rhiObject);
             });
     }
+}
+
+void GraphicsContext::closeRenderPass()
+{
+	if (m_currentRHIRenderPass) {
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			GraphicsContext_closeRenderPass, this,
+			detail::ICommandList*, m_context,
+			detail::IRenderPass*, m_currentRHIRenderPass,
+			{
+				m_context->endRenderPass(m_currentRHIRenderPass);
+			});
+		m_currentRHIRenderPass = nullptr;
+	}
 }
 
 // IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
@@ -352,6 +389,30 @@ detail::ICommandList* GraphicsContext::commitState()
     // こうしておかないと、
     // 頂点バッファset > 描画 > 頂点バッファ更新 > 描画
     // といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
+
+	// RenderPass
+	{
+		detail::IRenderPass* newRenderPass = nullptr;
+		bool modified = false;
+		if (m_staging.renderPass) {
+			newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_lastCommit.renderPass, &modified);
+		}
+
+		if (m_currentRHIRenderPass != newRenderPass || modified) {
+			closeRenderPass();
+		}
+
+		if (newRenderPass) {
+			m_currentRHIRenderPass = newRenderPass;
+			LN_ENQUEUE_RENDER_COMMAND_2(
+				GraphicsContext_closeRenderPass, this,
+				detail::ICommandList*, m_context,
+				detail::IRenderPass*, m_currentRHIRenderPass,
+				{
+					m_context->beginRenderPass(m_currentRHIRenderPass);
+				});
+		}
+	}
 
     // BlendState
     if ((m_dirtyFlags & DirtyFlags_BlendState) != 0) {

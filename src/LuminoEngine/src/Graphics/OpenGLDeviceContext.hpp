@@ -94,7 +94,9 @@ class GLContext;
 class GLSwapChain;
 class GLCommandQueue;
 class GLIndexBuffer;
+class GLTextureBase;
 class GLRenderTargetTexture;
+class GLDepthBuffer;
 class GLShaderPass;
 class GLShaderUniformBuffer;
 class GLShaderUniform;
@@ -136,7 +138,7 @@ protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<ICommandList> onCreateCommandList() override;
-	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil) override;
+	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
@@ -171,18 +173,16 @@ public:
 	Result init(OpenGLDevice* owner);
 	void dispose();
 	void setActiveShaderPass(GLShaderPass* pass);
+	GLuint fbo() const { return m_fbo; }
 
 protected:
 	virtual void onSaveExternalRenderState() override;
 	virtual void onRestoreExternalRenderState() override;
 	virtual void onBeginCommandRecoding() override {}
 	virtual void onEndCommandRecoding() override {}
-	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
-	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
-	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
-	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
-	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
-	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override {}
+	virtual void onBeginRenderPass(IRenderPass* renderPass) override;
+	virtual void onEndRenderPass(IRenderPass* renderPass) override;
+	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override;
 	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) override;
 	virtual void onUnmapResource(IGraphicsResource* resource) override;
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
@@ -270,6 +270,31 @@ public:
 	GLCommandQueue();
 	Result init();
 	virtual Result submit(ICommandList* commandList) override;
+};
+
+class GLRenderPass
+	: public IRenderPass
+{
+public:
+	GLRenderPass();
+	Result init(OpenGLDevice* device, ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+	virtual void dispose() override;
+
+	void bind(GLGraphicsContext* context);
+
+	//ClearFlags clearFlags() const { return m_clearFlags; }
+	//const Color& clearColor() const { return m_clearColor; }
+	//float clearDepth() const { return m_clearDepth; }
+	//uint8_t clearStencil() const { return m_clearStencil; }
+
+private:
+	OpenGLDevice* m_device;
+	std::array<Ref<GLTextureBase>, MaxMultiRenderTargets> m_renderTargets;
+	Ref<GLDepthBuffer> m_depthBuffer;
+	ClearFlags m_clearFlags;
+	Color m_clearColor;
+	float m_clearDepth;
+	uint8_t m_clearStencil;
 };
 
 struct GLVertexElement
