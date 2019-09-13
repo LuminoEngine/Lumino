@@ -38,6 +38,7 @@
 #include "LuminoEngine/Graphics/VertexBuffer.hpp"
 #include "LuminoEngine/Graphics/IndexBuffer.hpp"
 #include "LuminoEngine/Graphics/Texture.hpp"
+#include "LuminoEngine/Graphics/RenderPass.hpp"
 #include "LuminoEngine/Graphics/SwapChain.hpp"
 #include "LuminoEngine/Graphics/GraphicsContext.hpp"
 #include "LuminoEngine/Graphics/Bitmap.hpp"

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
@@ -33,6 +34,8 @@ void UIViewport::init()
     m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
+
+	m_renderPass = makeObject<RenderPass>();
 }
 
 void UIViewport::onDispose(bool explicitDisposing)
@@ -113,13 +116,16 @@ void UIViewport::onUpdateLayout(const Rect& finalGlobalRect)
 void UIViewport::onRender(UIRenderingContext* context)
 {
     GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
-    auto* renderTarget = graphicsContext->renderTarget(0);
+    //auto* renderTarget = graphicsContext->renderTarget(0);
+	Ref<RenderPass> oldRenderPass = graphicsContext->renderPass();
 
     // TODO: dp -> px 変換
     Size viewSize = m_finalGlobalRect.getSize();
 
     Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(viewSize.width, viewSize.height, TextureFormat::RGBA8, false);
-    graphicsContext->setRenderTarget(0, primaryTarget);
+    //graphicsContext->setRenderTarget(0, primaryTarget);
+	m_renderPass->setRenderTarget(0, primaryTarget);
+	graphicsContext->setRenderPass(m_renderPass);
     graphicsContext->clear(ClearFlags::All, Color::Gray);
 
     for (auto& view : m_renderViews) {
@@ -136,7 +142,8 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     //RenderTargetTexture::releaseTemporary(primaryTarget);
 
-    graphicsContext->setRenderTarget(0, renderTarget);
+    //graphicsContext->setRenderTarget(0, renderTarget);
+	graphicsContext->setRenderPass(oldRenderPass);
 
 #if 0
     // TODO: ViewBoxTransform

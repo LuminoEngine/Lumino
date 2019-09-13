@@ -53,6 +53,9 @@ void IGraphicsDevice::init()
 
 void IGraphicsDevice::dispose()
 {
+	m_pipelineCache->clear();
+	m_renderPassCache->clear();
+
 	for (auto& obj : m_aliveObjects) {
 		obj->dispose();
 	}
@@ -336,21 +339,21 @@ void ICommandList::setDepthStencilState(const DepthStencilStateDesc& value)
     m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_PipelineState;
 }
 
-void ICommandList::setColorBuffer(int index, ITexture* value)
-{
-    if (m_staging.framebufferState.renderTargets[index] != value) {
-        m_staging.framebufferState.renderTargets[index] = value;
-        m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
-    }
-}
-
-void ICommandList::setDepthBuffer(IDepthBuffer* value)
-{
-    if (m_staging.framebufferState.depthBuffer != value) {
-        m_staging.framebufferState.depthBuffer = value;
-        m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
-    }
-}
+//void ICommandList::setColorBuffer(int index, ITexture* value)
+//{
+//    if (m_staging.framebufferState.renderTargets[index] != value) {
+//        m_staging.framebufferState.renderTargets[index] = value;
+//        m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
+//    }
+//}
+//
+//void ICommandList::setDepthBuffer(IDepthBuffer* value)
+//{
+//    if (m_staging.framebufferState.depthBuffer != value) {
+//        m_staging.framebufferState.depthBuffer = value;
+//        m_stateDirtyFlags |= GraphicsContextStateDirtyFlags_FrameBuffers;
+//    }
+//}
 
 void ICommandList::setViewportRect(const RectI& value)
 {
@@ -458,7 +461,7 @@ void ICommandList::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 
 void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 {
-    if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
+    //if (LN_REQUIRE(m_staging.framebufferState.renderTargets[0])) return;
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
 
@@ -615,6 +618,14 @@ NativeRenderPassCache::NativeRenderPassCache(IGraphicsDevice* device)
 	assert(m_device);
 }
 
+void NativeRenderPassCache::clear()
+{
+	for (auto& pair : m_hashMap) {
+		pair.second.value->dispose();
+	}
+	m_hashMap.clear();
+}
+
 IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 {
 	uint64_t hash = computeHash(key);
@@ -677,6 +688,14 @@ NativePipelineCache::NativePipelineCache(IGraphicsDevice* device)
 	, m_hashMap()
 {
 	assert(m_device);
+}
+
+void NativePipelineCache::clear()
+{
+	for (auto& pair : m_hashMap) {
+		pair.second->dispose();
+	}
+	m_hashMap.clear();
 }
 
 IPipeline* NativePipelineCache::findOrCreate(const FindKey& key)

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -217,6 +218,7 @@ void UIFrameWindow::init()
 {
 	UIContainerElement::init();
     m_manager = detail::EngineDomain::uiManager();
+	m_renderPass = makeObject<RenderPass>();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
@@ -288,9 +290,12 @@ void UIFrameWindow::renderContents()
 	RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
 	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
-	m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
-	m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
-	//ctx->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
+	m_renderPass->setRenderTarget(0, backbuffer);
+	m_renderPass->setDepthBuffer(m_depthBuffer);
+	m_renderingGraphicsContext->setRenderPass(m_renderPass);
+	//m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
+	//m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
+	//m_renderingGraphicsContext->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
 void UIFrameWindow::present()
@@ -614,8 +619,11 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
 	detail::GraphicsContextInternal::enterRenderState(m_renderingGraphicsContext);
 
 	m_renderingGraphicsContext->resetState();
-	m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
-	m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
+	//m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
+	//m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
+	m_renderPass->setRenderTarget(0, renderTarget);
+	m_renderPass->setDepthBuffer(m_depthBuffer);
+	m_renderingGraphicsContext->setRenderPass(m_renderPass);
 }
 
 void UINativeFrameWindow::renderContents()

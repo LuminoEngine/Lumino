@@ -142,7 +142,7 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
 
 		m_dirty = false;
 	}
-	return nullptr;
+	return m_rhiObject;
 }
 
 void RenderPass::releaseRHI()

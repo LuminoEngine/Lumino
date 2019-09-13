@@ -137,40 +137,40 @@ void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
     }
 }
 
-void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
-{
-    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return;
-
-    if (m_staging.renderTargets[index] != value) {
-        m_staging.renderTargets[index] = value;
-        m_dirtyFlags |= DirtyFlags_Framebuffer;
-    }
-
-    if (index == 0 && value) {
-        auto rect = Rect(0, 0, value->width(), value->height());
-        setViewportRect(rect);
-        setScissorRect(rect);
-    }
-}
-
-RenderTargetTexture* GraphicsContext::renderTarget(int index) const
-{
-    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return nullptr;
-    return m_staging.renderTargets[index];
-}
-
-void GraphicsContext::setDepthBuffer(DepthBuffer* value)
-{
-    if (m_staging.depthBuffer != value) {
-        m_staging.depthBuffer = value;
-        m_dirtyFlags |= DirtyFlags_Framebuffer;
-    }
-}
-
-DepthBuffer* GraphicsContext::depthBuffer() const
-{
-    return m_staging.depthBuffer;
-}
+//void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
+//{
+//    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return;
+//
+//    if (m_staging.renderTargets[index] != value) {
+//        m_staging.renderTargets[index] = value;
+//        m_dirtyFlags |= DirtyFlags_Framebuffer;
+//    }
+//
+//    if (index == 0 && value) {
+//        auto rect = Rect(0, 0, value->width(), value->height());
+//        setViewportRect(rect);
+//        setScissorRect(rect);
+//    }
+//}
+//
+//RenderTargetTexture* GraphicsContext::renderTarget(int index) const
+//{
+//    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return nullptr;
+//    return m_staging.renderTargets[index];
+//}
+//
+//void GraphicsContext::setDepthBuffer(DepthBuffer* value)
+//{
+//    if (m_staging.depthBuffer != value) {
+//        m_staging.depthBuffer = value;
+//        m_dirtyFlags |= DirtyFlags_Framebuffer;
+//    }
+//}
+//
+//DepthBuffer* GraphicsContext::depthBuffer() const
+//{
+//    return m_staging.depthBuffer;
+//}
 
 void GraphicsContext::setViewportRect(const Rect& value)
 {
@@ -400,22 +400,22 @@ detail::ICommandList* GraphicsContext::commitState()
 		detail::IRenderPass* newRenderPass = nullptr;
 		bool modified = false;
 		if (m_staging.renderPass) {
-			newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_lastCommit.renderPass, &modified);
+			newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_staging.renderPass, &modified);
 		}
 
 		if (m_currentRHIRenderPass != newRenderPass || modified) {
 			closeRenderPass();
-		}
 
-		if (newRenderPass) {
-			m_currentRHIRenderPass = newRenderPass;
-			LN_ENQUEUE_RENDER_COMMAND_2(
-				GraphicsContext_closeRenderPass, this,
-				detail::ICommandList*, m_context,
-				detail::IRenderPass*, m_currentRHIRenderPass,
-				{
-					m_context->beginRenderPass(m_currentRHIRenderPass);
-				});
+			if (newRenderPass) {
+				m_currentRHIRenderPass = newRenderPass;
+				LN_ENQUEUE_RENDER_COMMAND_2(
+					GraphicsContext_closeRenderPass, this,
+					detail::ICommandList*, m_context,
+					detail::IRenderPass*, m_currentRHIRenderPass,
+					{
+						m_context->beginRenderPass(m_currentRHIRenderPass);
+					});
+			}
 		}
 	}
 
@@ -462,40 +462,51 @@ detail::ICommandList* GraphicsContext::commitState()
     }
 
     // RenderTarget, DepthBuffer
-    {
-        bool anyModified = false;
-        bool modified = false;
+    //{
+    //    bool anyModified = false;
+    //    bool modified = false;
 
-        using RenderTargetArray = std::array<detail::ITexture*, detail::MaxMultiRenderTargets>;
-        RenderTargetArray renderTargets;
-        for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
-            auto& value = m_staging.renderTargets[i];
-            renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, value, &modified);
-            anyModified |= modified;
-        }
+    //    using RenderTargetArray = std::array<detail::ITexture*, detail::MaxMultiRenderTargets>;
+    //    RenderTargetArray renderTargets;
+    //    for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
+    //        auto& value = m_staging.renderTargets[i];
+    //        renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, value, &modified);
+    //        anyModified |= modified;
+    //    }
 
-        detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(this, m_staging.depthBuffer, &modified);
-        anyModified |= modified;
+    //    detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(this, m_staging.depthBuffer, &modified);
+    //    anyModified |= modified;
 
-        if ((m_dirtyFlags & DirtyFlags_Framebuffer) != 0 || anyModified) {
-            LN_ENQUEUE_RENDER_COMMAND_3(
-                GraphicsContext_setDepthBuffer, this,
-                detail::ICommandList*, m_context,
-                RenderTargetArray, renderTargets,
-                detail::IDepthBuffer*, depthBuffer,
-                {
-                    for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
-                        m_context->setColorBuffer(i, renderTargets[i]);
-                    }
-                    m_context->setDepthBuffer(depthBuffer);
-                });
-        }
-    }
+    //    if ((m_dirtyFlags & DirtyFlags_Framebuffer) != 0 || anyModified) {
+    //        LN_ENQUEUE_RENDER_COMMAND_3(
+    //            GraphicsContext_setDepthBuffer, this,
+    //            detail::ICommandList*, m_context,
+    //            RenderTargetArray, renderTargets,
+    //            detail::IDepthBuffer*, depthBuffer,
+    //            {
+    //                for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
+    //                    m_context->setColorBuffer(i, renderTargets[i]);
+    //                }
+    //                m_context->setDepthBuffer(depthBuffer);
+    //            });
+    //    }
+    //}
 
     // Viewport, Scissor
     if ((m_dirtyFlags & DirtyFlags_RegionRects) != 0) {
+		SizeI size(m_staging.renderPass->renderTarget(0)->width(), m_staging.renderPass->renderTarget(0)->height());
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
+
+		if (viewportRect.width < 0 || viewportRect.height < 0) {
+			viewportRect.width = size.width;
+			viewportRect.height = size.height;
+		}
+		if (scissorRect.width < 0 || scissorRect.height < 0) {
+			scissorRect.width = size.width;
+			scissorRect.height = size.height;
+		}
+
         LN_ENQUEUE_RENDER_COMMAND_3(
             GraphicsContext_setDepthBuffer, this,
             detail::ICommandList*, m_context,
@@ -600,16 +611,17 @@ void GraphicsContext::State::reset()
     blendState = BlendStateDesc();
     rasterizerState = RasterizerStateDesc();
     depthStencilState = DepthStencilStateDesc();
-    renderTargets = {};
-    depthBuffer = nullptr;
-    viewportRect = Rect();
-    scissorRect = Rect();
+    //renderTargets = {};
+    //depthBuffer = nullptr;
+    viewportRect = Rect(0, 0, -1, -1);
+    scissorRect = Rect(0, 0, -1, -1);
     VertexLayout = nullptr;
     vertexBuffers = {};
     indexBuffer = nullptr;
     shader = nullptr;
     shaderPass = nullptr;
     topology = PrimitiveTopology::TriangleList;
+	renderPass = nullptr;
 }
 
 } // namespace ln

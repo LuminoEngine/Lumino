@@ -254,8 +254,8 @@ public:
     void setBlendState(const BlendStateDesc& value);
     void setRasterizerState(const RasterizerStateDesc& value);
     void setDepthStencilState(const DepthStencilStateDesc& value);
-    void setColorBuffer(int index, ITexture* value);
-    void setDepthBuffer(IDepthBuffer* value);
+    //void setColorBuffer(int index, ITexture* value);
+    //void setDepthBuffer(IDepthBuffer* value);
     void setViewportRect(const RectI& value);
     void setScissorRect(const RectI& value);
     void setVertexDeclaration(IVertexDeclaration* value);
@@ -606,6 +606,7 @@ public:
 	};
 
 	NativeRenderPassCache(IGraphicsDevice* device);
+	void clear();
 	IRenderPass* findOrCreate(const FindKey& key);
 	void release(IRenderPass* value);
 	static uint64_t computeHash(const FindKey& key);
@@ -621,6 +622,7 @@ private:
 	std::unordered_map<uint64_t, Entry> m_hashMap;
 };
 
+// IRenderPass のライフサイクル (createとdispose) はこの中で管理する
 class NativePipelineCache
 {
 public:
@@ -631,6 +633,7 @@ public:
 	};
 
 	NativePipelineCache(IGraphicsDevice* device);
+	void clear();
 	IPipeline* findOrCreate(const FindKey& key);
 	void invalidate(IPipeline* value);
 	static uint64_t computeHash(const FindKey& key);

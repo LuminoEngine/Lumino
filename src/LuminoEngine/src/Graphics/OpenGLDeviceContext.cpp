@@ -732,7 +732,7 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 	{
 		auto& viewportRect = state.regionRects.viewportRect;
 		auto& scissorRect = state.regionRects.scissorRect;
-		auto& targetSize = m_currentRenderPass->viewSize();
+		auto targetSize = m_currentRenderPass->viewSize();
 
 		GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
 		GL_CHECK(glEnable(GL_SCISSOR_TEST));
@@ -1165,6 +1165,11 @@ Result GLRenderPass::init(OpenGLDevice* device, ITexture** renderTargets, uint32
 
 void GLRenderPass::dispose()
 {
+}
+
+SizeI GLRenderPass::viewSize() const
+{
+	return m_renderTargets[0]->realSize();
 }
 
 void GLRenderPass::bind(GLGraphicsContext* context)

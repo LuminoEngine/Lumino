@@ -70,20 +70,22 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 
 	//* [ ] 複数 RT 設定時は index 0 だけクリアされること。
 	{
+		auto renderPass = makeObject<RenderPass>();
 		auto t1 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 		auto t2 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 
 		auto ctx = TestEnv::beginFrame();
+		ctx->setRenderPass(renderPass);
 
 		// 両方 Blue でクリアして、
-		ctx->setRenderTarget(0, t1);
+		renderPass->setRenderTarget(0, t1);
 		ctx->clear(ClearFlags::Color, Color::Blue, 1.0f, 0);
-		ctx->setRenderTarget(0, t2);
+		renderPass->setRenderTarget(0, t2);
 		ctx->clear(ClearFlags::Color, Color::Blue, 1.0f, 0);
 
 		// 2つ set して Red で clear
-		ctx->setRenderTarget(0, t1);
-		ctx->setRenderTarget(1, t2);
+		renderPass->setRenderTarget(0, t1);
+		renderPass->setRenderTarget(1, t2);
 		ctx->clear(ClearFlags::Color, Color::Red, 1.0f, 0);
 
 		TestEnv::endFrame();
@@ -446,8 +448,8 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 		TestEnv::endFrame();
 		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"));
 
-		ctx->setViewportRect(Rect(0, 0, 160, 120));		// reset
-		ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
+		//ctx->setViewportRect(Rect(0, 0, 160, 120));		// reset
+		//ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
 	}
 }
 
@@ -465,15 +467,16 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 	};
 	auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-	auto ctx = TestEnv::beginFrame();
-	ctx->setVertexLayout(m_vertexDecl1);
-	ctx->setVertexBuffer(0, vertexBuffer);
-	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
 	auto renderAndCapture = [&]() {
+		auto ctx = TestEnv::beginFrame();
+		ctx->setVertexLayout(m_vertexDecl1);
+		ctx->setVertexBuffer(0, vertexBuffer);
+		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
+		TestEnv::endFrame();
 		return TestEnv::capture()->getPixel32(0, 0);
 	};
 
@@ -1127,8 +1130,10 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
 
 		auto ctx = TestEnv::beginFrame();
+        RenderTargetTexture* oldRT = ctx->renderPass()->renderTarget(0);
+		auto renderPass = makeObject<RenderPass>();
+		ctx->setRenderPass(renderPass);
 
-        RenderTargetTexture* oldRT = ctx->renderTarget(0);
 
         // まず renderTarget1 へ緑色の三角形を描く
         {
@@ -1136,7 +1141,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer1);
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-            ctx->setRenderTarget(0, renderTarget1);
+			renderPass->setRenderTarget(0, renderTarget1);
             ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
@@ -1148,7 +1153,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->setVertexLayout(vertexDecl2);
             ctx->setVertexBuffer(0, vertexBuffer2);
             ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
-            ctx->setRenderTarget(0, oldRT);
+			renderPass->setRenderTarget(0, oldRT);
             ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
             ctx->drawPrimitive(0, 2);

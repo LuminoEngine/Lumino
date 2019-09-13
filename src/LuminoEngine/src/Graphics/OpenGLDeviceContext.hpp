@@ -92,6 +92,7 @@ namespace detail {
 class GLGraphicsContext;
 class GLContext;
 class GLSwapChain;
+class GLRenderPass;
 class GLCommandQueue;
 class GLIndexBuffer;
 class GLTextureBase;
@@ -281,7 +282,7 @@ public:
 	Result init(OpenGLDevice* device, ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
 	virtual void dispose() override;
 
-	SizeI viewSize() const { return m_renderTargets[0]->realSize(); }
+	SizeI viewSize() const;
 	void bind(GLGraphicsContext* context);
 
 	//ClearFlags clearFlags() const { return m_clearFlags; }

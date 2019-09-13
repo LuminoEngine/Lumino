@@ -60,6 +60,7 @@ GraphicsContext* SwapChain::beginFrame()
 {
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
+	m_graphicsContext->resetState();
 	m_graphicsContext->setRenderPass(m_renderPasses[m_imageIndex]);
 	return m_graphicsContext;
 }
