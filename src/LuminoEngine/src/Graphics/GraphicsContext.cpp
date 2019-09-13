@@ -264,6 +264,11 @@ void GraphicsContext::setRenderPass(RenderPass* value)
 	}
 }
 
+RenderPass* GraphicsContext::renderPass() const
+{
+	return m_staging.renderPass;
+}
+
 //void GraphicsContext::beginRenderPass(RenderPass* value)
 //{
 //	//if (m_staging.renderPass != value) {

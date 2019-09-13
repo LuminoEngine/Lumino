@@ -108,6 +108,9 @@ public:
 	/** RenderPass を設定します。 */
 	void setRenderPass(RenderPass* value);
 
+	/** RenderPass を取得します。 */
+	RenderPass* renderPass() const;
+
 	///** RenderPass を開始します。 */
 	//void beginRenderPass(RenderPass* value);
 
