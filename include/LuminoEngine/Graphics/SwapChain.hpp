@@ -50,7 +50,9 @@ private:
     int imageIndex() const { return m_imageIndex; }
 
     Ref<detail::ISwapChain> m_rhiObject;
-    List<Ref<RenderTargetTexture>> m_backbuffers;
+	std::vector<Ref<RenderTargetTexture>> m_backbuffers;
+	std::vector<Ref<DepthBuffer>> m_depthBuffers;
+	std::vector<Ref<RenderPass>> m_renderPasses;
 	std::vector<Ref<detail::ICommandList>> m_commandLists;
 	Ref<GraphicsContext> m_graphicsContext;
     int m_imageIndex;

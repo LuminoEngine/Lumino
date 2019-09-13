@@ -493,7 +493,7 @@ void GLGraphicsContext::onRestoreExternalRenderState()
 
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass)
 {
-	static_cast<GLRenderPass*>(renderPass)->bind(this);
+	//static_cast<GLRenderPass*>(renderPass)->bind(this);
 }
 
 void GLGraphicsContext::onEndRenderPass(IRenderPass* renderPass)

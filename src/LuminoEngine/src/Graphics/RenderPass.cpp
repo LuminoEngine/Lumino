@@ -38,6 +38,13 @@ void RenderPass::init()
     GraphicsResource::init();
 }
 
+void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	init();
+	setRenderTarget(0, renderTarget);
+	setDepthBuffer(depthBuffer);
+}
+
 void RenderPass::onDispose(bool explicitDisposing)
 {
 	releaseRHI();

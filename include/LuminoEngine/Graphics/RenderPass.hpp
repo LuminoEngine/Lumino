@@ -49,6 +49,7 @@ LN_CONSTRUCT_ACCESS:
 
     /** @copydoc create() */
     void init();
+	void init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 private:
     detail::IRenderPass* resolveRHIObject(GraphicsContext* context, bool* outModified);
