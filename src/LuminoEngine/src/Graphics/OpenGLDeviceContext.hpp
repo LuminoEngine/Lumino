@@ -199,6 +199,7 @@ private:
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 	GLuint m_fbo;
 	GLIndexBuffer* m_currentIndexBuffer;
+	GLRenderPass* m_currentRenderPass = nullptr;
 	GLShaderPass* m_activeShaderPass;
 
 	struct
@@ -280,6 +281,7 @@ public:
 	Result init(OpenGLDevice* device, ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
 	virtual void dispose() override;
 
+	SizeI viewSize() const { return m_renderTargets[0]->realSize(); }
 	void bind(GLGraphicsContext* context);
 
 	//ClearFlags clearFlags() const { return m_clearFlags; }

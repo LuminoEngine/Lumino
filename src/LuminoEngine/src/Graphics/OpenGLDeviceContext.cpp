@@ -493,7 +493,8 @@ void GLGraphicsContext::onRestoreExternalRenderState()
 
 void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass)
 {
-	//static_cast<GLRenderPass*>(renderPass)->bind(this);
+	m_currentRenderPass = static_cast<GLRenderPass*>(renderPass);
+	m_currentRenderPass->bind(this);
 }
 
 void GLGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
@@ -502,7 +503,7 @@ void GLGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
 
 void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource)
 {
-#if 0	// UpdateFrameBuffers
+#if 1	// UpdateFrameBuffers
 #else
 	{
 		auto& renderTargets = state.framebufferState.renderTargets;
@@ -731,7 +732,7 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 	{
 		auto& viewportRect = state.regionRects.viewportRect;
 		auto& scissorRect = state.regionRects.scissorRect;
-		auto& targetSize = state.framebufferState.renderTargets[0]->realSize();
+		auto& targetSize = m_currentRenderPass->viewSize();
 
 		GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
 		GL_CHECK(glEnable(GL_SCISSOR_TEST));
