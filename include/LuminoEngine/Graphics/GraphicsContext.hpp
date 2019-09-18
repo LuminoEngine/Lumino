@@ -14,7 +14,10 @@ class DepthBuffer;
 class Shader;
 class ShaderPass;
 class SwapChain;
-namespace detail { class RenderingQueue; }
+namespace detail {
+class RenderingQueue;
+class IRenderPass;
+}
 
 /*
  * グラフィクスデバイスへの描画呼出しを発行するためのクラスです。
@@ -48,17 +51,17 @@ public:
     /** DepthStencilState を取得します。 */
     const DepthStencilStateDesc& depthStencilState() const { return m_staging.depthStencilState; }
 
-    /** RenderTarget を設定します。index 0 に設定した場合、Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
-    void setRenderTarget(int index, RenderTargetTexture* value);
+    ///** RenderTarget を設定します。index 0 に設定した場合、Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
+    //void setRenderTarget(int index, RenderTargetTexture* value);
 
-    /** RenderTarget を取得します。 */
-    RenderTargetTexture* renderTarget(int index) const;
+    ///** RenderTarget を取得します。 */
+    //RenderTargetTexture* renderTarget(int index) const;
 
-    /** DepthBuffer を設定します。 */
-    void setDepthBuffer(DepthBuffer* value);
+    ///** DepthBuffer を設定します。 */
+    //void setDepthBuffer(DepthBuffer* value);
 
-    /** DepthBuffer を取得します。 */
-    DepthBuffer* depthBuffer() const;
+    ///** DepthBuffer を取得します。 */
+    //DepthBuffer* depthBuffer() const;
 
     /** ビューポートの矩形を設定します。 */
     void setViewportRect(const Rect& value);
@@ -102,6 +105,18 @@ public:
     /** IndexBuffer を取得します。 */
     ShaderPass* shaderPass() const;
 
+	/** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
+	void setRenderPass(RenderPass* value);
+
+	/** RenderPass を取得します。 */
+	RenderPass* renderPass() const;
+
+	///** RenderPass を開始します。 */
+	//void beginRenderPass(RenderPass* value);
+
+	///** RenderPass を終了します。 */
+	//void endRenderPass();
+
     /** デフォルト設定を復元します。 */
     void resetState();
 
@@ -141,6 +156,7 @@ private:
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
+	void closeRenderPass();
     detail::ICommandList* commitState();
     //void submitCommandList();
 
@@ -151,10 +167,11 @@ private:
         DirtyFlags_RasterizerState = 1 << 2,
         DirtyFlags_DepthStencilState = 1 << 3,
         DirtyFlags_RegionRects = 1 << 4,
-        DirtyFlags_Framebuffer = 1 << 5,
+        //DirtyFlags_Framebuffer = 1 << 5,
         DirtyFlags_PipelinePrimitiveState = 1 << 6,
         DirtyFlags_PrimitiveBuffers = 1 << 7,
         DirtyFlags_ShaderPass = 1 << 8,
+		DirtyFlags_RenderPass = 1 << 9,
         DirtyFlags_All = 0xFFFFFFFF,
     };
 
@@ -163,8 +180,8 @@ private:
         BlendStateDesc blendState;
         RasterizerStateDesc rasterizerState;
         DepthStencilStateDesc depthStencilState;
-        std::array<Ref<RenderTargetTexture>, 4> renderTargets;
-        Ref<DepthBuffer> depthBuffer;
+        //std::array<Ref<RenderTargetTexture>, 4> renderTargets;
+        //Ref<DepthBuffer> depthBuffer;
         Rect viewportRect;
         Rect scissorRect;
         Ref<VertexLayout> VertexLayout;
@@ -173,6 +190,7 @@ private:
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
         PrimitiveTopology topology;
+		Ref<RenderPass> renderPass;
 
         void reset();
     };
@@ -184,6 +202,7 @@ private:
     RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
+	Ref<detail::IRenderPass> m_currentRHIRenderPass;
     uint32_t m_dirtyFlags;
     bool m_recordingBegan;
 
@@ -198,6 +217,8 @@ public:
 	static void resetCommandList(GraphicsContext* self, detail::ICommandList* commandLsit) { self->resetCommandList(commandLsit); }
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
     static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
+	static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }
+	static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecodingIfNeeded(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
 	static const Ref<detail::ICommandList>& getCommandListForTransfer(GraphicsContext* self) { return self->m_context; }
     static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }

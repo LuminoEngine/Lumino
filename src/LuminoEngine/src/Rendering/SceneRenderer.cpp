@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -53,6 +54,8 @@ SceneRenderer::SceneRenderer()
 
 void SceneRenderer::init()
 {
+	m_renderPass = makeObject<RenderPass>();
+
 	m_skinningMatricesTexture = makeObject<Texture2D>(4, 1024, TextureFormat::RGBA32F);
 	m_skinningMatricesTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 	m_skinningLocalQuaternionsTexture = makeObject<Texture2D>(1, 1024, TextureFormat::RGBA32F);
@@ -85,17 +88,21 @@ void SceneRenderer::render(
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();
 
+	m_renderPass->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
+	m_renderPass->setDepthBuffer(defaultFrameBuffer.depthBuffer);
+	graphicsContext->setRenderPass(m_renderPass);
 
 	//if (clearColorBuffer)
 	{
         // TODO: 暫定。
-        graphicsContext->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
-        graphicsContext->setDepthBuffer(defaultFrameBuffer.depthBuffer);
+        //graphicsContext->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
+        //graphicsContext->setDepthBuffer(defaultFrameBuffer.depthBuffer);
         graphicsContext->clear(ClearFlags::Depth, Color::White);
 		// TODO: 前回の最後のステートが残っていることがある。clear したいやつの弊害だけ、とりあえず暫定処置。シザーも必要になりそう。
 		//coreRenderer->setViewport(RectI(0, 0, defaultRenderTarget->getSize()));
 		//coreRenderer->clear(ClearFlags::All, clearColor);
 	}
+	
 
 
 
@@ -558,7 +565,8 @@ void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage
 				target = defaultFrameBufferInPass.renderTarget[i];
 			}
 
-			context->setRenderTarget(i, target);
+			//context->setRenderTarget(i, target);
+			m_renderPass->setRenderTarget(i, target);
 
 			if (i == 0) {
 				renderTarget0 = target;
@@ -570,10 +578,12 @@ void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage
 	{
 		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();
 		if (depthBuffer) {
-			context->setDepthBuffer(depthBuffer);
+			//context->setDepthBuffer(depthBuffer);
+			m_renderPass->setDepthBuffer(depthBuffer);
 		}
 		else {
-			context->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
+			//context->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
+			m_renderPass->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
 		}
 	}
 

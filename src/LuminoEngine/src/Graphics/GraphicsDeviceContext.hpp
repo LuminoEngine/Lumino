@@ -81,6 +81,7 @@ struct GraphicsContextState
     DeviceRegionRectsState regionRects;
     DevicePrimitiveState primitive;
     IShaderPass* shaderPass = nullptr;
+	//IRenderPass* renderPass = nullptr;
 };
 
 enum GraphicsContextStateDirtyFlags
@@ -158,7 +159,7 @@ public:
 
 	Ref<ISwapChain> createSwapChain(PlatformWindow* window, const SizeI& backbufferSize);
 	Ref<ICommandList> createCommandList();
-	Ref<IRenderPass> createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil);
+	Ref<IRenderPass> createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
 	Ref<IVertexDeclaration> createVertexDeclaration(const VertexElement* elements, int elementsCount);
 	Ref<IVertexBuffer> createVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData = nullptr);
 	Ref<IIndexBuffer> createIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData = nullptr);
@@ -189,7 +190,7 @@ protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) = 0;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) = 0;
 	virtual Ref<ICommandList> onCreateCommandList() = 0;
-	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil) = 0;
+	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) = 0;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) = 0;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) = 0;
@@ -248,11 +249,13 @@ public:
     /////////
     void begin();
     void end();
+	void beginRenderPass(IRenderPass* value);
+	void endRenderPass(IRenderPass* value);
     void setBlendState(const BlendStateDesc& value);
     void setRasterizerState(const RasterizerStateDesc& value);
     void setDepthStencilState(const DepthStencilStateDesc& value);
-    void setColorBuffer(int index, ITexture* value);
-    void setDepthBuffer(IDepthBuffer* value);
+    //void setColorBuffer(int index, ITexture* value);
+    //void setDepthBuffer(IDepthBuffer* value);
     void setViewportRect(const RectI& value);
     void setScissorRect(const RectI& value);
     void setVertexDeclaration(IVertexDeclaration* value);
@@ -290,11 +293,8 @@ public:	// TODO:
 	virtual void onRestoreExternalRenderState() = 0;
 	virtual void onBeginCommandRecoding() = 0;
 	virtual void onEndCommandRecoding() = 0;
-	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
-	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
-	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
-	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
-	virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
+	virtual void onBeginRenderPass(IRenderPass* renderPass) = 0;
+	virtual void onEndRenderPass(IRenderPass* renderPass) = 0;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
 
 	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) = 0;
@@ -601,20 +601,28 @@ public:
 		IDepthBuffer* depthBuffer = nullptr;
 		ClearFlags clearFlags = ClearFlags::All;
 		Color clearColor = Color(0, 0, 0, 0);
-		float clearZ = 1.0f;
+		float clearDepth = 1.0f;
 		uint8_t clearStencil = 0x00;
 	};
 
 	NativeRenderPassCache(IGraphicsDevice* device);
+	void clear();
 	IRenderPass* findOrCreate(const FindKey& key);
-	void invalidate(IRenderPass* value);
+	void release(IRenderPass* value);
 	static uint64_t computeHash(const FindKey& key);
 
 private:
+	struct Entry
+	{
+		int referenceCount = 0;
+		Ref<IRenderPass> value;
+	};
+
 	IGraphicsDevice* m_device;
-	std::unordered_map<uint64_t, Ref<IRenderPass>> m_hashMap;
+	std::unordered_map<uint64_t, Entry> m_hashMap;
 };
 
+// IRenderPass のライフサイクル (createとdispose) はこの中で管理する
 class NativePipelineCache
 {
 public:
@@ -625,6 +633,7 @@ public:
 	};
 
 	NativePipelineCache(IGraphicsDevice* device);
+	void clear();
 	IPipeline* findOrCreate(const FindKey& key);
 	void invalidate(IPipeline* value);
 	static uint64_t computeHash(const FindKey& key);

@@ -892,23 +892,11 @@ void VulkanGraphicsContext::onEndCommandRecoding()
 	m_recodingCommandBuffer->endRecording();
 }
 
-void VulkanGraphicsContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
+void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass)
 {
 }
 
-void VulkanGraphicsContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
-{
-}
-
-void VulkanGraphicsContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
-{
-}
-
-void VulkanGraphicsContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
-{
-}
-
-void VulkanGraphicsContext::onUpdateShaderPass(IShaderPass* newPass)
+void VulkanGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
 {
 }
 

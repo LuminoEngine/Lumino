@@ -96,6 +96,7 @@ private:
 	const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
 	//Ref<AbstractMaterial> m_defaultMaterial;
+	Ref<RenderPass> m_renderPass;
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 
