@@ -105,7 +105,7 @@ public:
     /** IndexBuffer を取得します。 */
     ShaderPass* shaderPass() const;
 
-	/** RenderPass を設定します。 */
+	/** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
 	void setRenderPass(RenderPass* value);
 
 	/** RenderPass を取得します。 */

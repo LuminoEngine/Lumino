@@ -262,6 +262,14 @@ void GraphicsContext::setRenderPass(RenderPass* value)
 		m_staging.renderPass = value;
 		m_dirtyFlags |= DirtyFlags_RenderPass;
 	}
+
+	if (value) {
+		if (auto target = value->renderTarget(0)) {
+			auto rect = Rect(0, 0, target->width(), target->height());
+			setViewportRect(rect);
+			setScissorRect(rect);
+		}
+	}
 }
 
 RenderPass* GraphicsContext::renderPass() const
