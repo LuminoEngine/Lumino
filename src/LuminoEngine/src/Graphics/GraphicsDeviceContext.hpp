@@ -384,9 +384,16 @@ public:
 	uint64_t hash() const { return m_hash; }
 	static uint64_t computeHash(const VertexElement* elements, int count);
 
+	virtual void dispose();
+
 protected:
 	IVertexDeclaration();
 	virtual ~IVertexDeclaration() = default;
+
+private:
+	IGraphicsDevice* m_device = nullptr;
+
+	friend class IGraphicsDevice;
 };
 
 
@@ -592,6 +599,7 @@ protected:
 
 private:
 	//IGraphicsDevice* m_device = nullptr;
+	const IVertexDeclaration* m_sourceVertexLayout = nullptr;
 	const IRenderPass* m_sourceRenderPass = nullptr;
 	const IShaderPass* m_sourceShaderPass = nullptr;
 
@@ -647,6 +655,7 @@ public:
 	NativePipelineCache(IGraphicsDevice* device);
 	void clear();
 	IPipeline* findOrCreate(const FindKey& key);
+	void invalidate(IVertexDeclaration* value);
 	void invalidate(IRenderPass* value);
 	void invalidate(IShaderPass* value);
 	static uint64_t computeHash(const FindKey& key);

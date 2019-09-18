@@ -101,6 +101,7 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
 {
 	Ref<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
 	if (ptr) {
+		ptr->m_device = this;
 		ptr->m_hash = IVertexDeclaration::computeHash(elements, elementsCount);
 		m_aliveObjects.push_back(ptr);
 	}
@@ -204,6 +205,7 @@ Ref<IPipeline> IGraphicsDevice::createPipeline(IRenderPass* renderPass, const Gr
 {
 	Ref<IPipeline> ptr = onCreatePipeline(renderPass, state);
 	if (ptr) {
+		ptr->m_sourceVertexLayout = state.pipelineState.vertexDeclaration;
 		ptr->m_sourceRenderPass = renderPass;
 		ptr->m_sourceShaderPass = state.shaderPass;
 	}
@@ -509,6 +511,16 @@ IVertexDeclaration::IVertexDeclaration()
 	LN_LOG_VERBOSE << "IVertexDeclaration [0x" << this << "] constructed.";
 }
 
+void IVertexDeclaration::dispose()
+{
+	if (m_device) {
+		m_device->pipelineCache()->invalidate(this);
+		m_device = nullptr;
+	}
+
+	IGraphicsDeviceObject::dispose();
+}
+
 uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int count)
 {
 	MixHash hash;
@@ -721,6 +733,16 @@ IPipeline* NativePipelineCache::findOrCreate(const FindKey& key)
 
 		m_hashMap.insert({ hash, pipeline });
 		return pipeline;
+	}
+}
+
+void NativePipelineCache::invalidate(IVertexDeclaration* value)
+{
+	for (auto& itr : m_hashMap) {
+		if (itr.second->m_sourceVertexLayout == value) {
+			itr.second->dispose();
+			m_hashMap.erase(itr.first);
+		}
 	}
 }
 
