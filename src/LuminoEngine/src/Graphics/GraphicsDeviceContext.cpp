@@ -194,6 +194,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	}
 
 	if (ptr) {
+		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
 	}
 	return ptr;
@@ -203,8 +204,8 @@ Ref<IPipeline> IGraphicsDevice::createPipeline(IRenderPass* renderPass, const Gr
 {
 	Ref<IPipeline> ptr = onCreatePipeline(renderPass, state);
 	if (ptr) {
-		ptr->m_device = this;
-		m_aliveObjects.push_back(ptr);
+		ptr->m_sourceRenderPass = renderPass;
+		ptr->m_sourceShaderPass = state.shaderPass;
 	}
 	return ptr;
 }
@@ -493,7 +494,7 @@ ISwapChain::ISwapChain()
 void IRenderPass::dispose()
 {
 	if (m_device) {
-		//m_device->renderPassCache()->invalidate(this);
+		m_device->pipelineCache()->invalidate(this);
 		m_device = nullptr;
 	}
 
@@ -571,6 +572,15 @@ IShaderPass::IShaderPass()
 	LN_LOG_VERBOSE << "IShaderPass [0x" << this << "] constructed.";
 }
 
+void IShaderPass::dispose()
+{
+	if (m_device) {
+		m_device->pipelineCache()->invalidate(this);
+		m_device = nullptr;
+	}
+	IGraphicsDeviceObject::dispose();
+}
+
 //=============================================================================
 // IShaderPass
 
@@ -600,12 +610,7 @@ IShaderSamplerBuffer::IShaderSamplerBuffer()
 
 void IPipeline::dispose()
 {
-	if (m_device) {
-		m_device->pipelineCache()->invalidate(this);
-		m_device = nullptr;
-	}
-
-	IGraphicsDeviceObject::dispose();
+	//IGraphicsDeviceObject::dispose();
 }
 
 //=============================================================================
@@ -696,10 +701,13 @@ void NativePipelineCache::clear()
 		pair.second->dispose();
 	}
 	m_hashMap.clear();
+	m_device = nullptr;
 }
 
 IPipeline* NativePipelineCache::findOrCreate(const FindKey& key)
 {
+	if (LN_REQUIRE(m_device)) return nullptr;
+
 	uint64_t hash = computeHash(key);
 	auto itr = m_hashMap.find(hash);
 	if (itr != m_hashMap.end()) {
@@ -716,12 +724,32 @@ IPipeline* NativePipelineCache::findOrCreate(const FindKey& key)
 	}
 }
 
-void NativePipelineCache::invalidate(IPipeline* value)
+void NativePipelineCache::invalidate(IRenderPass* value)
 {
-	if (value) {
-		m_hashMap.erase(value->cacheKeyHash);
+	for (auto& itr : m_hashMap) {
+		if (itr.second->m_sourceRenderPass == value) {
+			itr.second->dispose();
+			m_hashMap.erase(itr.first);
+		}
 	}
 }
+
+void NativePipelineCache::invalidate(IShaderPass* value)
+{
+	for (auto& itr : m_hashMap) {
+		if (itr.second->m_sourceShaderPass == value) {
+			itr.second->dispose();
+			m_hashMap.erase(itr.first);
+		}
+	}
+}
+
+//void NativePipelineCache::invalidate(IPipeline* value)
+//{
+//	if (value) {
+//		m_hashMap.erase(value->cacheKeyHash);
+//	}
+//}
 
 uint64_t NativePipelineCache::computeHash(const FindKey& key)
 {

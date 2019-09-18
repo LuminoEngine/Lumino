@@ -525,9 +525,16 @@ public:
 
 	virtual IShaderSamplerBuffer* samplerBuffer() const = 0;
 
+	virtual void dispose();
+
 protected:
 	IShaderPass();
 	virtual ~IShaderPass() = default;
+
+private:
+	IGraphicsDevice* m_device = nullptr;
+
+	friend class IGraphicsDevice;
 };
 
 class IShaderUniformBuffer
@@ -573,7 +580,7 @@ protected:
 };
 
 class IPipeline
-	: public IGraphicsDeviceObject
+	: public RefObject
 {
 public:
 	uint64_t cacheKeyHash = 0;
@@ -584,14 +591,18 @@ protected:
 	virtual ~IPipeline() = default;
 
 private:
-	IGraphicsDevice* m_device = nullptr;
+	//IGraphicsDevice* m_device = nullptr;
+	const IRenderPass* m_sourceRenderPass = nullptr;
+	const IShaderPass* m_sourceShaderPass = nullptr;
 
 	// TODO: init 用意した方がいい気がする
 	friend class IGraphicsDevice;
+	friend class NativePipelineCache;
 };
 
 
 
+// IRenderPass のライフサイクル (createとdispose) はこの中で管理する
 class NativeRenderPassCache
 {
 public:
@@ -622,7 +633,8 @@ private:
 	std::unordered_map<uint64_t, Entry> m_hashMap;
 };
 
-// IRenderPass のライフサイクル (createとdispose) はこの中で管理する
+// IPipeline のライフサイクル (createとdispose) はこの中で管理する。
+// IShaderPass または IRenderPass の dispose 時に、invalidate が呼ばれ、関係している IPipeline が削除される。
 class NativePipelineCache
 {
 public:
@@ -635,7 +647,8 @@ public:
 	NativePipelineCache(IGraphicsDevice* device);
 	void clear();
 	IPipeline* findOrCreate(const FindKey& key);
-	void invalidate(IPipeline* value);
+	void invalidate(IRenderPass* value);
+	void invalidate(IShaderPass* value);
 	static uint64_t computeHash(const FindKey& key);
 
 private:
