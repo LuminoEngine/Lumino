@@ -273,7 +273,7 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
-Ref<IPipeline> VulkanDevice::onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state)
+Ref<IPipeline> VulkanDevice::onCreatePipeline(const DevicePipelineStateDesc& state)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
@@ -900,7 +900,7 @@ void VulkanGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
 {
 }
 
-void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource)
+void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
 {
 }
 

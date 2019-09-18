@@ -73,7 +73,7 @@ protected:
     virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
-	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) override;
+	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	virtual ICommandQueue* getGraphicsCommandQueue() override;
 	virtual ICommandQueue* getComputeCommandQueue() override;
@@ -145,7 +145,7 @@ protected:
 	virtual void onEndCommandRecoding() override;
 	virtual void onBeginRenderPass(IRenderPass* renderPass) override;
 	virtual void onEndRenderPass(IRenderPass* renderPass) override;
-	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override;
+	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
 	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) override;
 	virtual void onUnmapResource(IGraphicsResource* resource) override;
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;

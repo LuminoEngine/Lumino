@@ -47,6 +47,7 @@ struct GraphicsDeviceCaps
 	UnifiedShaderTriple requestedShaderTriple;
 };
 
+// obsolete
 struct DevicePipelineState
 {
 	IVertexDeclaration* vertexDeclaration = nullptr;
@@ -54,6 +55,17 @@ struct DevicePipelineState
 	RasterizerStateDesc rasterizerState;
 	DepthStencilStateDesc depthStencilState;
 	PrimitiveTopology topology = PrimitiveTopology::TriangleList;
+};
+
+struct DevicePipelineStateDesc
+{
+	BlendStateDesc blendState;
+	RasterizerStateDesc rasterizerState;
+	DepthStencilStateDesc depthStencilState;
+	PrimitiveTopology topology = PrimitiveTopology::TriangleList;
+	IVertexDeclaration* vertexDeclaration = nullptr;
+	IShaderPass* shaderPass = nullptr;
+	IRenderPass* renderPass = nullptr;
 };
 
 struct DeviceFramebufferState
@@ -170,7 +182,7 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
-	Ref<IPipeline> createPipeline(IRenderPass* renderPass, const GraphicsContextState& state);
+	Ref<IPipeline> createPipeline(const DevicePipelineStateDesc& state);
 
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
@@ -201,7 +213,7 @@ protected:
 	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) = 0;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) = 0;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
-	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) = 0;
+	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) = 0;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
 /////////
@@ -254,8 +266,6 @@ public:
     void setBlendState(const BlendStateDesc& value);
     void setRasterizerState(const RasterizerStateDesc& value);
     void setDepthStencilState(const DepthStencilStateDesc& value);
-    //void setColorBuffer(int index, ITexture* value);
-    //void setDepthBuffer(IDepthBuffer* value);
     void setViewportRect(const RectI& value);
     void setScissorRect(const RectI& value);
     void setVertexDeclaration(IVertexDeclaration* value);
@@ -295,7 +305,7 @@ public:	// TODO:
 	virtual void onEndCommandRecoding() = 0;
 	virtual void onBeginRenderPass(IRenderPass* renderPass) = 0;
 	virtual void onEndRenderPass(IRenderPass* renderPass) = 0;
-	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
+	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) = 0;
 
 	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) = 0;
 	virtual void onUnmapResource(IGraphicsResource* resource) = 0;
@@ -319,6 +329,7 @@ private:
     uint32_t m_stateDirtyFlags;
     GraphicsContextState m_staging;
     GraphicsContextState m_committed;
+	IRenderPass* m_currentRenderPass;
 };
 
 class ISwapChain
@@ -596,6 +607,9 @@ public:
 
 protected:
 	virtual ~IPipeline() = default;
+	const IVertexDeclaration* vertexLayout() const { return m_sourceVertexLayout; }
+	const IRenderPass* renderPass() const { return m_sourceRenderPass; }
+	const IShaderPass* shaderPass() const { return m_sourceShaderPass; }
 
 private:
 	//IGraphicsDevice* m_device = nullptr;
@@ -646,11 +660,12 @@ private:
 class NativePipelineCache
 {
 public:
-	struct FindKey
-	{
-		const GraphicsContextState& state;
-		IRenderPass* renderPass;
-	};
+	//struct FindKey
+	//{
+	//	const GraphicsContextState& state;
+	//	IRenderPass* renderPass;
+	//};
+	using FindKey = DevicePipelineStateDesc;
 
 	NativePipelineCache(IGraphicsDevice* device);
 	void clear();
