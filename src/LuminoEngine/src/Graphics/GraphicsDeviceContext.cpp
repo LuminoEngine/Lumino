@@ -655,6 +655,7 @@ void NativeRenderPassCache::clear()
 		pair.second.value->dispose();
 	}
 	m_hashMap.clear();
+	DiagnosticsManager::activeDiagnostics()->setCounterValue(ProfilingItem::Graphics_RenderPassCount, m_hashMap.size());
 }
 
 IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
@@ -679,6 +680,7 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 		}
 
 		m_hashMap.insert({ hash, { 1, renderPass } });
+		DiagnosticsManager::activeDiagnostics()->setCounterValue(ProfilingItem::Graphics_RenderPassCount, m_hashMap.size());
 		return renderPass;
 	}
 }
