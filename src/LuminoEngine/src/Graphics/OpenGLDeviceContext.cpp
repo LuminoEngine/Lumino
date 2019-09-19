@@ -198,7 +198,7 @@ OpenGLDevice::OpenGLDevice()
 	: m_glContext(nullptr)
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
-	, m_commandListCreated(false)
+	//, m_commandListCreated(false)
 {
 }
 
@@ -317,14 +317,14 @@ Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const Si
 
 Ref<ICommandList> OpenGLDevice::onCreateCommandList()
 {
-	if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
+	//if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
 
 	auto ptr = makeRef<GLGraphicsContext>();
 	if (!ptr->init(this)) {
 		return nullptr;
 	}
 
-	m_commandListCreated = true;
+	//m_commandListCreated = true;
 	return ptr;
 }
 

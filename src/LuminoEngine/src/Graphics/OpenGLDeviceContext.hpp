@@ -163,7 +163,7 @@ private:
 	Ref<GLCommandQueue> m_graphicsQueue;	// dummy
 	//Ref<GLGraphicsContext> m_graphicsContext;
 	Caps m_caps;
-	bool m_commandListCreated;
+	//bool m_commandListCreated;
 };
 
 class GLGraphicsContext
