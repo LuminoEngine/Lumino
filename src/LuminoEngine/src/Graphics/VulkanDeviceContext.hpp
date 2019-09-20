@@ -24,6 +24,7 @@ namespace detail {
 class VulkanGraphicsContext;
 class VulkanSwapChain;
 class VulkanRenderTarget;
+class VulkanDepthBuffer;
 class VulkanShaderUniformBuffer;
 class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
@@ -62,7 +63,8 @@ protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<ICommandList> onCreateCommandList() override;
-	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil) override;
+	virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
+	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
@@ -73,7 +75,6 @@ protected:
     virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
-	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override;
 	virtual ICommandQueue* getGraphicsCommandQueue() override;
 	virtual ICommandQueue* getComputeCommandQueue() override;
@@ -211,6 +212,69 @@ private:
     uint32_t m_currentFrame;
 
     std::vector<Ref<VulkanCommandBuffer>> m_inFlightCommandBuffers;
+};
+
+class VulkanFramebuffer2;
+
+// Vulkan のデータ構造としては RenderPass と Framebuffer は 1:n. Subpass とかを使うときに同一のフォーマットであれば、ある RenderPass の begin～end の間に複数の Framebuffer を使うことができる。（ハズ。要確認）
+// ただ、複雑さ回避のため、ひとまず subpass は対応しない。
+// そのため Lumino のデータ構造としては１つのRenderPassの中に1つのFramebufferを持たせている。
+class VulkanRenderPass2
+	: public IRenderPass
+{
+public:
+	VulkanRenderPass2();
+	Result init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+	void dispose();
+	VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
+
+private:
+	VulkanDevice* m_device;
+	VkRenderPass m_nativeRenderPass;
+	Ref<VulkanFramebuffer2> m_framebuffer;
+	ClearFlags m_clearFlags;
+	Color m_clearColor;
+	float m_clearDepth;
+	uint8_t m_clearStencil;
+};
+
+class VulkanFramebuffer2
+	: public RefObject
+{
+public:
+	VulkanFramebuffer2();
+	Result init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state);
+	void dispose();
+	VulkanRenderPass2* ownerRenderPass() const { return m_ownerRenderPass; }
+	VkFramebuffer nativeFramebuffer() const { return m_framebuffer; }
+
+private:
+	VulkanDevice* m_device;
+	VulkanRenderPass2* m_ownerRenderPass;
+	VkFramebuffer m_framebuffer;
+	std::array<Ref<VulkanRenderTarget>, MaxMultiRenderTargets> m_renderTargets;
+	Ref<VulkanDepthBuffer> m_depthBuffer;
+};
+
+// Dynamic としてマークしている state は次の通り。
+// - VK_DYNAMIC_STATE_VIEWPORT,
+// - VK_DYNAMIC_STATE_SCISSOR,
+// - VK_DYNAMIC_STATE_BLEND_CONSTANTS,
+// - VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+// なお、これらは computeHash に含める必要はない。
+class VulkanPipeline2
+	: public IPipeline
+{
+public:
+	VulkanPipeline2();
+	Result init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state);
+	void dispose();
+	VkPipeline nativePipeline() const { return m_pipeline; }
+
+private:
+	VulkanDevice* m_device;
+	VulkanRenderPass2* m_ownerRenderPass;
+	VkPipeline m_pipeline;
 };
 
 class VulkanVertexDeclaration
@@ -421,6 +485,7 @@ public:
     Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height);
     void dispose();
     const VulkanImage* image() const { return &m_image; }
+	VkFormat nativeFormat() const { return m_deviceContext->findDepthFormat(); }
 
 private:
     VulkanDevice* m_deviceContext;

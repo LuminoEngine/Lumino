@@ -81,18 +81,29 @@ Ref<ICommandList> IGraphicsDevice::createCommandList()
 	return onCreateCommandList();
 }
 
-Ref<IRenderPass> IGraphicsDevice::createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
+Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
 {
-	Ref<IRenderPass> ptr = onCreateRenderPass(renderTargets, renderTargetCount, depthBuffer, clearFlags, clearColor, clearDepth, clearStencil);
+	Ref<IRenderPass> ptr = onCreateRenderPass(buffers, clearFlags, clearColor, clearDepth, clearStencil);
 	if (ptr) {
 		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
 
 		// Preserve dependent object references
-		for (uint32_t i = 0; i < renderTargetCount; i++) {
-			ptr->m_renderTargets[i] = renderTargets[i];
+		for (uint32_t i = 0; i < buffers.renderTargets.size(); i++) {
+			ptr->m_renderTargets[i] = buffers.renderTargets[i];
 		}
-		ptr->m_depthBuffer = depthBuffer;
+		ptr->m_depthBuffer = buffers.depthBuffer;
+	}
+	return ptr;
+}
+
+Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& state)
+{
+	Ref<IPipeline> ptr = onCreatePipeline(state);
+	if (ptr) {
+		ptr->m_sourceVertexLayout = state.vertexDeclaration;
+		ptr->m_sourceRenderPass = state.renderPass;
+		ptr->m_sourceShaderPass = state.shaderPass;
 	}
 	return ptr;
 }
@@ -197,17 +208,6 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	if (ptr) {
 		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
-	}
-	return ptr;
-}
-
-Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& state)
-{
-	Ref<IPipeline> ptr = onCreatePipeline(state);
-	if (ptr) {
-		ptr->m_sourceVertexLayout = state.vertexDeclaration;
-		ptr->m_sourceRenderPass = state.renderPass;
-		ptr->m_sourceShaderPass = state.shaderPass;
 	}
 	return ptr;
 }
@@ -667,14 +667,15 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 		return itr->second.value;
 	}
 	else {
-		std::array<ITexture*, MaxMultiRenderTargets> renderTargets;
+		 DeviceFramebufferState buffers;
 		size_t i = 0;
 		for (; i < key.renderTargets.size(); i++) {
 			if (!key.renderTargets[i]) break;
-			renderTargets[i] = key.renderTargets[i];
+			buffers.renderTargets[i] = key.renderTargets[i];
 		}
+		buffers.depthBuffer = key.depthBuffer;
 
-		auto renderPass = m_device->createRenderPass(renderTargets.data(), i, key.depthBuffer, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
+		auto renderPass = m_device->createRenderPass(buffers, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
 		if (!renderPass) {
 			return nullptr;
 		}

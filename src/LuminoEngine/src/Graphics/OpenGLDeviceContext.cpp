@@ -328,10 +328,19 @@ Ref<ICommandList> OpenGLDevice::onCreateCommandList()
 	return ptr;
 }
 
-Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
+Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
 {
 	auto ptr = makeRef<GLRenderPass>();
-	if (!ptr->init(this, renderTargets, renderTargetCount, depthBuffer, clearFlags, clearColor, clearDepth, clearStencil)) {
+	if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
+		return nullptr;
+	}
+	return ptr;
+}
+
+Ref<IPipeline> OpenGLDevice::onCreatePipeline(const DevicePipelineStateDesc& state)
+{
+	auto ptr = makeRef<GLPipeline>();
+	if (!ptr->init(this, state)) {
 		return nullptr;
 	}
 	return ptr;
@@ -404,15 +413,6 @@ Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 {
 	auto ptr = makeRef<GLShaderPass>();
 	ptr->init(this, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag);
-	return ptr;
-}
-
-Ref<IPipeline> OpenGLDevice::onCreatePipeline(const DevicePipelineStateDesc& state)
-{
-	auto ptr = makeRef<GLPipeline>();
-	if (!ptr->init(this, state)) {
-		return nullptr;
-	}
 	return ptr;
 }
 
@@ -1131,15 +1131,15 @@ GLRenderPass::GLRenderPass()
 {
 }
 
-Result GLRenderPass::init(OpenGLDevice* device, ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
+Result GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
 {
 	m_device = device;
 	
-	for (auto i = 0; i < renderTargetCount; i++) {
-		m_renderTargets[i] = static_cast<GLTextureBase*>(renderTargets[i]);
+	for (auto i = 0; i < buffers.renderTargets.size(); i++) {
+		m_renderTargets[i] = static_cast<GLTextureBase*>(buffers.renderTargets[i]);
 	}
 
-	m_depthBuffer = static_cast<GLDepthBuffer*>(depthBuffer);
+	m_depthBuffer = static_cast<GLDepthBuffer*>(buffers.depthBuffer);
 	m_clearFlags = clearFlags;
 	m_clearColor = clearColor;
 	m_clearDepth = clearDepth;
