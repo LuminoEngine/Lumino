@@ -898,7 +898,7 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = m_recodingCommandBuffer->m_currentRenderPass->nativeRenderPass();
+	renderPassInfo.renderPass = renderPass->nativeRenderPass();
 	renderPassInfo.framebuffer = renderPass->framebuffer()->nativeFramebuffer();
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent.width = viewSize.width;
@@ -956,8 +956,10 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 	}
 
 	if (submitSource == GraphicsContextSubmitSource_Draw) {
-		auto vulkanPipeline = static_cast<VulkanPipeline2*>(pipeline);
-		vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->nativePipeline());
+		if (pipeline) {
+			auto vulkanPipeline = static_cast<VulkanPipeline2*>(pipeline);
+			vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->nativePipeline());
+		}
 
 
 		{

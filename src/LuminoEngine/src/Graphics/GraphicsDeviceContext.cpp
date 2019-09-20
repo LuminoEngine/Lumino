@@ -473,20 +473,25 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
 
+	if (m_staging.shaderPass) {
 
-    // TODO: modified check
+		// TODO: modified check
 
-	DevicePipelineStateDesc state;
-	state.blendState = m_staging.pipelineState.blendState;
-	state.rasterizerState = m_staging.pipelineState.rasterizerState;
-	state.depthStencilState = m_staging.pipelineState.depthStencilState;
-	state.topology = m_staging.pipelineState.topology;
-	state.vertexDeclaration = m_staging.pipelineState.vertexDeclaration;
-	state.shaderPass = m_staging.shaderPass;
-	state.renderPass = m_currentRenderPass;
-	IPipeline* pipeline = m_device->pipelineCache()->findOrCreate(state);
+		DevicePipelineStateDesc state;
+		state.blendState = m_staging.pipelineState.blendState;
+		state.rasterizerState = m_staging.pipelineState.rasterizerState;
+		state.depthStencilState = m_staging.pipelineState.depthStencilState;
+		state.topology = m_staging.pipelineState.topology;
+		state.vertexDeclaration = m_staging.pipelineState.vertexDeclaration;
+		state.shaderPass = m_staging.shaderPass;
+		state.renderPass = m_currentRenderPass;
+		IPipeline* pipeline = m_device->pipelineCache()->findOrCreate(state);
 
-    onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
+		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
+	}
+	else {
+		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, nullptr);
+	}
 }
 
 void ICommandList::endCommit()
