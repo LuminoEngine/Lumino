@@ -890,16 +890,117 @@ void VulkanGraphicsContext::onEndCommandRecoding()
 	m_recodingCommandBuffer->endRecording();
 }
 
-void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass)
+void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 {
+	auto* renderPass = static_cast<VulkanRenderPass2*>(renderPass_);
+	auto& framebuffer = renderPass->framebuffer();
+	auto viewSize = renderPass->framebuffer()->renderTargets()[0]->realSize();
+
+	VkRenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = m_recodingCommandBuffer->m_currentRenderPass->nativeRenderPass();
+	renderPassInfo.framebuffer = renderPass->framebuffer()->nativeFramebuffer();
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent.width = viewSize.width;
+	renderPassInfo.renderArea.extent.height = viewSize.height;
+
+	VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
+	uint32_t count = 0;
+	if (testFlag(renderPass->clearFlags(), ClearFlags::Color))
+	{
+		auto& color = renderPass->clearColor();
+		for (uint32_t ii = 0; ii < framebuffer->renderTargets().size(); ii++) {
+			if (framebuffer->renderTargets()[ii]) {
+				clearValues[count].color = { color.r, color.g, color.b, color.a };
+				count++;
+			}
+		}
+	}
+	if ((testFlag(renderPass->clearFlags(), ClearFlags::Depth) || testFlag(renderPass->clearFlags(), ClearFlags::Stencil))) {
+		if (framebuffer->depthBuffer()) {
+			clearValues[count].depthStencil = { renderPass->clearDepth(), renderPass->clearStencil() };
+			count++;
+		}
+	}
+
+	renderPassInfo.clearValueCount = count;
+	renderPassInfo.pClearValues = clearValues;
+
+	vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void VulkanGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
 {
+	vkCmdEndRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer());
 }
 
 void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
 {
+	// TODO: modify チェック (以下の CmdSet や Bind は inside RenderPass である必要はない)
+	{
+		VkViewport viewport;
+		viewport.x = state.regionRects.viewportRect.x;
+		viewport.y = state.regionRects.viewportRect.height + state.regionRects.viewportRect.y;
+		viewport.width = state.regionRects.viewportRect.width;
+		viewport.height = -state.regionRects.viewportRect.height;   // height マイナスで、DirectX や OpenGL と同じ座標系になる
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		vkCmdSetViewport(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &viewport);
+
+		VkRect2D scissor;
+		scissor.offset.x = state.regionRects.scissorRect.x;
+		scissor.offset.y = state.regionRects.scissorRect.y;
+		scissor.extent.width = state.regionRects.scissorRect.width;
+		scissor.extent.height = state.regionRects.scissorRect.height;
+		vkCmdSetScissor(m_recodingCommandBuffer->vulkanCommandBuffer(), 0, 1, &scissor);
+	}
+
+	if (submitSource == GraphicsContextSubmitSource_Draw) {
+		auto vulkanPipeline = static_cast<VulkanPipeline2*>(pipeline);
+		vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->nativePipeline());
+
+
+		{
+			std::array<VkBuffer, MaxVertexStreams> vertexBuffers;
+			int vbCount = 0;
+			for (int i = 0; i < state.primitive.vertexBuffers.size(); i++) {
+				if (state.primitive.vertexBuffers[i]) {
+					auto* vertexBuffer = static_cast<VulkanVertexBuffer*>(state.primitive.vertexBuffers[i]);
+					VkBuffer buffer = vertexBuffer->vulkanBuffer();//[] = { vertexBuffer->vulkanBuffer() };
+					VkDeviceSize offset = 0;//[] = { 0 };
+					vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 1, &buffer, &offset);
+				}
+				//else {
+				//    VkBuffer buffer = VK_NULL_HANDLE;
+				//    VkDeviceSize offset = 0;
+				//    vkCmdBindVertexBuffers(m_recodingCommandBuffer->vulkanCommandBuffer(), i, 0, &buffer, &offset);
+				//}
+			}
+
+			auto* indexBuffer = static_cast<VulkanIndexBuffer*>(state.primitive.indexBuffer);
+
+
+			if (indexBuffer) {
+				vkCmdBindIndexBuffer(m_recodingCommandBuffer->vulkanCommandBuffer(), indexBuffer->vulkanBuffer(), 0, indexBuffer->indexType());
+			}
+		}
+
+		{
+			auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
+
+			// UniformBuffer は copy コマンドを使って更新できる。
+			// TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
+			//VulkanBuffer* buffer = m_recodingCommandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
+			//VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(shaderPass->getUniformBuffer(0));
+			//uniformBuffer->setData(&ubo, sizeof(ubo));
+
+
+			std::array<VkDescriptorSet, DescriptorType_Count> sets;
+			m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
+			vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
+
+		}
+	}
 }
 
 void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size)
@@ -1067,6 +1168,8 @@ void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, 
 
 Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
 {
+#if 1
+#else
 	const GraphicsContextState& state = stagingState();
 	uint32_t stateDirtyFlags = stagingStateDirtyFlags();
 
@@ -1246,6 +1349,7 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 
 	//
 	}
+#endif
 
     m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
 

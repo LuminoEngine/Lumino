@@ -227,6 +227,12 @@ public:
 	Result init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
 	void dispose();
 	VkRenderPass nativeRenderPass() const { return m_nativeRenderPass; }
+	const Ref<VulkanFramebuffer2>& framebuffer() const { return m_framebuffer; }
+
+	ClearFlags clearFlags() const { return m_clearFlags; }
+	const Color& clearColor() const { return m_clearColor; }
+	float clearDepth() const { return m_clearDepth; }
+	uint8_t clearStencil() const { return m_clearStencil; }
 
 private:
 	VulkanDevice* m_device;
@@ -247,6 +253,8 @@ public:
 	void dispose();
 	VulkanRenderPass2* ownerRenderPass() const { return m_ownerRenderPass; }
 	VkFramebuffer nativeFramebuffer() const { return m_framebuffer; }
+	const std::array<Ref<VulkanRenderTarget>, MaxMultiRenderTargets>& renderTargets() const { return m_renderTargets; }
+	const Ref<VulkanDepthBuffer>& depthBuffer() const { return m_depthBuffer; }
 
 private:
 	VulkanDevice* m_device;
