@@ -538,8 +538,10 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 		m_currentIndexBuffer = static_cast<GLIndexBuffer*>(state.primitive.indexBuffer);
 	}
 
-	auto* glPipeline = static_cast<GLPipeline*>(pipeline);
-	glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer);
+    if (pipeline) {
+        auto* glPipeline = static_cast<GLPipeline*>(pipeline);
+        glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer);
+    }
 
 #else
 	// UpdateStatus

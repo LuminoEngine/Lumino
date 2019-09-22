@@ -38,7 +38,9 @@ enum class EditorPaneKind
 // Plugin に限らず、トランスパイらによって生成されたモジュールなども含む、DynamicLoad のルートインターフェイス。
 class IModuleInterface
 {
-
+public:
+    virtual const ln::Char* moduleId() const = 0;
+    virtual const ln::Char* moduleDisplayName() const = 0;
 };
 
 class IPluginModule : public IModuleInterface

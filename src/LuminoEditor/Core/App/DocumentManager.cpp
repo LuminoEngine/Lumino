@@ -71,7 +71,7 @@ void DocumentManager::addDocument(Document* doc)
 
     auto tab = ln::makeObject<ln::UITabItem>();
     auto text = ln::makeObject<ln::UITextBlock>();
-    text->setText(u"Scene");
+    text->setText(u"Tab");  // TODO: AssetEditor から、Document 経由で設定したい。プロパティ変更を scribe する必要があるかも。
     tab->addElement(text);
     tab->setData(ln::makeVariant(doc));
     m_documentTabs->addTab(tab);
