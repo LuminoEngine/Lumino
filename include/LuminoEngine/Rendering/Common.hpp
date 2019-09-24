@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/Common.hpp>
 
 namespace ln {
 
@@ -113,8 +114,21 @@ enum class ShadowDirection
     Outside,
 };
 
+
+struct FrameBuffer
+{
+	Ref<RenderTargetTexture> renderTarget[detail::MaxMultiRenderTargets];
+	Ref<DepthBuffer> depthBuffer;
+};
+
 namespace detail {
 
+
+enum class RenderDrawElementType
+{
+	Geometry,	// Material を用いてポリゴンを描画する
+	Clear,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+};
 
 
 enum class SpriteFlipFlags : uint8_t

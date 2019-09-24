@@ -947,8 +947,15 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
         });
 }
 
-void ShapesRenderFeature::flush(GraphicsContext* context)
+RenderFeatureBatch* ShapesRenderFeature::submitBatch(GraphicsContext* context)
 {
+	// TODO:
+	return nullptr;
+}
+
+void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 } // namespace detail

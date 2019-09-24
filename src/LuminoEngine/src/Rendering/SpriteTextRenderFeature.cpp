@@ -231,9 +231,17 @@ void SpriteTextRenderFeature::drawFlexGlyphRun(GraphicsContext* context, const F
 	}
 }
 
-void SpriteTextRenderFeature::flush(GraphicsContext* context)
+RenderFeatureBatch* SpriteTextRenderFeature::submitBatch(GraphicsContext* context)
 {
 	flushInternal(context, m_drawingFont->getFontGlyphTextureCache());
+
+	// TODO:
+	return nullptr;
+}
+
+void SpriteTextRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 void SpriteTextRenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)

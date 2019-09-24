@@ -183,20 +183,30 @@ void PrimitiveRenderFeature::init(RenderingManager* manager)
 //    m_lastPrimitiveType = PrimitiveType::LineList;
 //}
 
-void PrimitiveRenderFeature::flush(GraphicsContext* context)
+RenderFeatureBatch* PrimitiveRenderFeature::submitBatch(GraphicsContext* context)
 {
-    GraphicsManager* manager = m_manager->graphicsManager();
+	GraphicsManager* manager = m_manager->graphicsManager();
 	ICommandList* c = GraphicsContextInternal::commitState(context);
-    LN_ENQUEUE_RENDER_COMMAND_2(
-        PrimitiveRenderFeature_flush, context,
-        InternalPrimitiveRenderer*, m_internal,
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		PrimitiveRenderFeature_flush, context,
+		InternalPrimitiveRenderer*, m_internal,
 		ICommandList*, c,
-        {
-            m_internal->flush(c);
-        });
+		{
+			m_internal->flush(c);
+		});
 
-    m_lastPrimitiveType = nullptr;
+	m_lastPrimitiveType = nullptr;
+
+	// TODO:
+	return nullptr;
 }
+
+void PrimitiveRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+
 
 } // namespace detail
 } // namespace ln

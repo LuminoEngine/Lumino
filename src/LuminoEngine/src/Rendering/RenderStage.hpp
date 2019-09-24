@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
-#include "../Engine/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 
 namespace ln {
 class Shader;
@@ -210,12 +210,6 @@ private:
 	size_t m_typeId;
 };
 
-enum class RenderDrawElementType
-{
-	Geometry,	// Material を用いてポリゴンを描画する
-	Clear,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
-};
-
 // インスタンスは DrawElementList の LinearAllocator に配置される。
 // clear や draw 系のメソッド呼び出しをおこなう。
 // ステートは変更するべきではない。
@@ -290,7 +284,7 @@ private:
  * State と Command(DrawElement) を固めて持っておくイメージ。
  * 基本的にどんなタイミングでも、「RenderStage を描画」すれば同じジオメトリが表示される。
  * 
- * 
+ * ↑× なんやかんややっているうちに、単なる state の塊になってきた。
  * 
  * 
  */
@@ -352,6 +346,9 @@ public:
     const Color& getBlendColorFinal(RenderDrawElement* element) const;
     const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
+	static void applyFrameBufferStatus(GraphicsContext* context, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
+	static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, AbstractMaterial* priorityMaterial);
+	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 private:
 

@@ -51,7 +51,8 @@ public:
 	void drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex);
 	//void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 
-	virtual void flush(GraphicsContext* context) override;
+	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:
 	struct DrawMeshCommandData

@@ -73,8 +73,15 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 		});
 }
 
-void MeshRenderFeature::flush(GraphicsContext* context)
+RenderFeatureBatch* MeshRenderFeature::submitBatch(GraphicsContext* context)
 {
+	// TODO:
+	return nullptr;
+}
+
+void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 void MeshRenderFeature::drawMeshImplOnRenderThread(ICommandList* context, const DrawMeshCommandData& data)

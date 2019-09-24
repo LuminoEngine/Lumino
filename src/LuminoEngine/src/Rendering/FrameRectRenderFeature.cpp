@@ -396,17 +396,25 @@ void FrameRectRenderFeature::draw(GraphicsContext* context, const Rect& rect, co
         });
 }
 
-void FrameRectRenderFeature::flush(GraphicsContext* context)
+RenderFeatureBatch* FrameRectRenderFeature::submitBatch(GraphicsContext* context)
 {
-    GraphicsManager* manager = m_internal->manager()->graphicsManager();
+	GraphicsManager* manager = m_internal->manager()->graphicsManager();
 	ICommandList* c = GraphicsContextInternal::commitState(context);
-    LN_ENQUEUE_RENDER_COMMAND_2(
-        FrameRectRenderFeature_flush, context,
-        InternalFrameRectRenderer*, m_internal,
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		FrameRectRenderFeature_flush, context,
+		InternalFrameRectRenderer*, m_internal,
 		ICommandList*, c,
-        {
-            m_internal->flush(c);
-        });
+		{
+			m_internal->flush(c);
+		});
+
+	// TODO:
+	return nullptr;
+}
+
+void FrameRectRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 } // namespace detail

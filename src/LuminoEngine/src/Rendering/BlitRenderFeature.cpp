@@ -48,8 +48,15 @@ void BlitRenderFeature::blit(GraphicsContext* context)
         });
 }
 
-void BlitRenderFeature::flush(GraphicsContext* context)
+RenderFeatureBatch* BlitRenderFeature::submitBatch(GraphicsContext* context)
 {
+	// TODO:
+	return nullptr;
+}
+
+void BlitRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 void BlitRenderFeature::blitImplOnRenderThread(ICommandList* context)

@@ -86,8 +86,9 @@ public:
     template<class TFactory>
     void drawMeshGenerater(GraphicsContext* context, const TFactory& generator)
     {
+		// TODO: toporogy も RenderStage のパラメータに持っていく
         if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
-            flush(context);
+			submitBatch(context);
         }
         m_lastPrimitiveType = generator.primitiveType();
 
@@ -105,7 +106,8 @@ public:
 
 
 
-	virtual void flush(GraphicsContext* context) override;
+	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:

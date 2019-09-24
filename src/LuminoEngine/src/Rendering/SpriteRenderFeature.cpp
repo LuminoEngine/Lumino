@@ -461,7 +461,7 @@ void SpriteRenderFeature::onActiveRenderFeatureChanged(const detail::CameraInfo&
 
 }
 
-void SpriteRenderFeature::flush(GraphicsContext* context)
+RenderFeatureBatch* SpriteRenderFeature::submitBatch(GraphicsContext* context)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
 	ICommandList* c = GraphicsContextInternal::commitState(context);
@@ -472,6 +472,14 @@ void SpriteRenderFeature::flush(GraphicsContext* context)
 		{
 			m_internal->flush(c);
 		});
+
+	// TODO:
+	return nullptr;
+}
+
+void SpriteRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 void SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect)

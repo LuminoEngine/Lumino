@@ -14,7 +14,7 @@
 
 #include "GraphicsDeviceContext.hpp"
 #include "MixHash.hpp"
-#include "../../LuminoCore/src/Base/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 
 // VK_core
 extern PFN_vkCreateInstance vkCreateInstance;

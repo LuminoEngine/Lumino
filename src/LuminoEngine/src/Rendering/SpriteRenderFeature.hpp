@@ -145,7 +145,8 @@ public:
         SpriteFlipFlags flipFlags);
 
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
-	virtual void flush(GraphicsContext* context) override;
+	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
     static void makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect);
 

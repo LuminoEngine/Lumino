@@ -75,7 +75,8 @@ public:
     void draw(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
 
 protected:
-	virtual void flush(GraphicsContext* context) override;
+	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:

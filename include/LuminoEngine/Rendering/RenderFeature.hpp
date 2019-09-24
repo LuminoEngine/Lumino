@@ -1,33 +1,96 @@
 ﻿#pragma once
+#include <LuminoCore/Base/LinearAllocator.hpp>
 
 namespace ln {
 class GraphicsContext;
 class ShaderTechnique;
+class RenderFeature;
 namespace detail {
+class RenderingManager;
 struct CameraInfo;
 struct ElementInfo;
 struct SubsetInfo;
+class RenderFeatureBatchList;
 class RenderDrawElement;
-}
+class RenderStage;
+class SceneRendererPass;
 
 // Rendering モジュールの後段の出力結果。
 // RenderingContext(DrawElementListBuilder) によって作られた DrawElementList は SceneRenderer に入力されると、
 // Zソートやカリング・ステートのグループ化を考慮して RenderFeatureBatch のリストに変換される。
 // 最終的には各 RenderFeature が RenderFeatureBatch を実行することで、GraphicsContext へ描画命令が渡る。
+// 
 // RenderFeatureBatch が出来上がっている時点で、SpriteRenderer など Dynamic な VertexBuffer 等はすべて出来上がっている状態にしておく。
 // RenderFeatureBatch 実行中は map や setData で、VertexBuffer や Texture 等への書きこみはできない。
 // なぜこんな仕組みにしているかというと、特に Vulkan の RenderPass 実行中はデータ転送系のコマンドを実行できないため。
+//
+// RenderFeatureBatch は new してはならない。SceneRenderer から渡される LinearAllocator を使うこと。
+// 
 class RenderFeatureBatch
 {
+public:
+	RenderFeatureBatch(RenderFeature* owner);
+	const detail::RenderStage* stage() const { return m_stage; }
+	detail::RenderDrawElementType type() const { return m_type; }
+	void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
+	const Matrix* worldTransformPtr() const { return m_worldTransform; }
+	void render(GraphicsContext* context);
 
+private:
+	RenderFeature* m_owner;
+	RenderFeatureBatch* m_next;
+	detail::RenderStage* m_stage;
+	detail::RenderDrawElementType m_type;
+
+	// DrawElement が持っている CombinedWorldTransform への参照。
+	// null の場合は Matrix::Identity とみなす。
+	// 単純に RenderFeatureBatch のサイズを増やしたくないのでポインタで用意してある。
+	// RenderFeatureBatch の寿命は SceneRenderer の内部だけであり、その間は DrawElement(が持っている CombinedWorldTransform) が消えることはない。
+	// Sprite や SpriteText など DynamicVertexBuffer を作るものたちは、Vertex を作るときに Transform するので、これは null となる。
+	// StaticMesh (サブセット単位) などはこれに値がセットされる。
+	const Matrix* m_worldTransform;
+
+	friend class RenderFeatureBatchList;
 };
+
+class RenderFeatureBatchList
+{
+public:
+	RenderFeatureBatchList(detail::RenderingManager* manager);
+	void clear();
+	void setCurrentStage(detail::RenderStage* stage);
+
+	template<class T>
+	T* addNewBatch()
+	{
+		void* buffer = m_allocator->allocate(sizeof(T));
+		T* batch = new (buffer)T();
+		add(batch);
+		return batch;
+	}
+
+	void render(GraphicsContext* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
+
+private:
+	void add(RenderFeatureBatch* batch);
+
+	detail::RenderingManager* m_manager;
+	Ref<detail::LinearAllocator> m_allocator;
+	detail::RenderStage* m_currentStage;
+	RenderFeatureBatch* m_head;
+	RenderFeatureBatch* m_tail;
+};
+
+} // namespace detail
 
 class RenderFeature
 	: public Object
 {
 public:
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo);
-	virtual void flush(GraphicsContext* context) = 0;
+
+	virtual detail::RenderFeatureBatch* submitBatch(GraphicsContext* context) = 0;
+	virtual void renderBatch(GraphicsContext* context, detail::RenderFeatureBatch* batch) = 0;
 
     // 主に PrimitiveRenderFeature など、バッチ描画を行うクラスのために用意したプロパティ。
     // true を返すようにオーバーライドすると、SceneRenderer は DrawElement が持っている Transform を ElementInfo に渡さなくなる。(単位行列になる)

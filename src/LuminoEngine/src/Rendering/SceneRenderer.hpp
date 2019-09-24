@@ -85,10 +85,6 @@ protected:
 
 
 private:
-	void applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
-	void applyGeometryStatus(GraphicsContext* context, RenderStage* stage, AbstractMaterial* priorityMaterial);
-	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
-
 	detail::RenderingManager* m_manager;
 	List<Ref<SceneRendererPass>> m_renderingPassList;
 

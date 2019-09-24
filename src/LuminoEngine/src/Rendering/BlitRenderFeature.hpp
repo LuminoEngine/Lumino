@@ -43,7 +43,8 @@ public:
 
 	void blit(GraphicsContext* context);
 
-	virtual void flush(GraphicsContext* context) override;
+	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:
 	void blitImplOnRenderThread(ICommandList* context);

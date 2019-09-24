@@ -1,2 +1,3 @@
 #pragma once
-#include "../../../LuminoCore/src/Base/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
+
