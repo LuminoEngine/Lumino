@@ -587,7 +587,7 @@ add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
 )
-target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui)
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)

@@ -12,6 +12,7 @@
 #include "UIManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
+#include <imgui.h>
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests
 
