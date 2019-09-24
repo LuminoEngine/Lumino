@@ -44,8 +44,9 @@ void ToneImageEffect::onUpdateFrame(float elapsedSeconds)
 
 void ToneImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+	m_material->setMainTexture(source);
     m_material->setVector(u"_Tone", m_toneValue.getValue());
-    context->blit(source, destination, m_material);
+    context->blit(m_material, destination);
 }
 
 } // namespace ln

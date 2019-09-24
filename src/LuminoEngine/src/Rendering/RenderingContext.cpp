@@ -265,48 +265,77 @@ void RenderingContext::drawScreenRectangle()
 
 }
 
-void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
+//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
+//{
+//    blit(source, destination, nullptr);
+//}
+//
+//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material) 
+//{
+//    class Blit : public detail::RenderDrawElement
+//    {
+//    public:
+//        Ref<RenderTargetTexture> source;
+//
+//        virtual void onSubsetInfoOverride(detail::SubsetInfo* subsetInfo)
+//        {
+//            if (source) {
+//                subsetInfo->materialTexture = source;
+//            }
+//        }
+//
+//        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+//        {
+//            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
+//        }
+//    };
+//
+//    // TODO: scoped_gurad
+//    RenderTargetTexture* oldTarget = renderTarget(0);
+//    setRenderTarget(0, destination);
+//
+//    m_builder->setMaterial(material);
+//
+//    m_builder->advanceFence();
+//
+//    auto* element = m_builder->addNewDrawElement<Blit>(
+//        m_manager->blitRenderFeature(),
+//        m_builder->blitRenderFeatureStageParameters());
+//    element->targetPhase = RendringPhase::ImageEffect;
+//    element->source = source;
+//
+//    setRenderTarget(0, oldTarget);
+//
+//    m_builder->advanceFence();
+//}
+
+void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* destination)
 {
-    blit(source, destination, nullptr);
-}
+	class Blit : public detail::RenderDrawElement
+	{
+	public:
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		{
+			static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
+		}
+	};
 
-void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material) 
-{
-    class Blit : public detail::RenderDrawElement
-    {
-    public:
-        Ref<RenderTargetTexture> source;
+	// TODO: scoped_gurad
+	RenderTargetTexture* oldTarget = renderTarget(0);
+	setRenderTarget(0, destination);
 
-        virtual void onSubsetInfoOverride(detail::SubsetInfo* subsetInfo)
-        {
-            if (source) {
-                subsetInfo->materialTexture = source;
-            }
-        }
+	m_builder->setMaterial(source);
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
-        }
-    };
+	m_builder->advanceFence();
 
-    // TODO: scoped_gurad
-    RenderTargetTexture* oldTarget = renderTarget(0);
-    setRenderTarget(0, destination);
+	auto* element = m_builder->addNewDrawElement<Blit>(
+		m_manager->blitRenderFeature(),
+		m_builder->blitRenderFeatureStageParameters());
+	element->targetPhase = RendringPhase::ImageEffect;
 
-    m_builder->setMaterial(material);
+	setRenderTarget(0, oldTarget);
 
-    m_builder->advanceFence();
-
-    auto* element = m_builder->addNewDrawElement<Blit>(
-        m_manager->blitRenderFeature(),
-        m_builder->blitRenderFeatureStageParameters());
-    element->targetPhase = RendringPhase::ImageEffect;
-    element->source = source;
-
-    setRenderTarget(0, oldTarget);
-
-    m_builder->advanceFence();
+	m_builder->advanceFence();
 }
 
 void RenderingContext::drawSprite(
