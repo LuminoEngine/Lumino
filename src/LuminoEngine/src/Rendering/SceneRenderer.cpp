@@ -238,7 +238,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				subsetInfo.colorScale = currentStage->getColorScaleFinal(element);
 				subsetInfo.blendColor = currentStage->getBlendColorFinal(element);
 				subsetInfo.tone = currentStage->getToneFinal(element);
-				element->onSubsetInfoOverride(&subsetInfo);
+				//element->onSubsetInfoOverride(&subsetInfo);
 
 				ShaderTechnique* tech = pass->selectShaderTechnique(
                     meshProcess,
@@ -269,13 +269,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				{
 					graphicsContext->setShaderPass(pass2);
 
-					element->onDraw(graphicsContext, currentStage->renderFeature);
+					element->onDraw(graphicsContext, currentStage->renderFeature, &subsetInfo);
 				}
 			}
 			else if (element->elementType == RenderDrawElementType::Clear)
 			{
 				RenderStage::applyGeometryStatus(graphicsContext, currentStage, nullptr);
-				element->onDraw(graphicsContext, currentStage->renderFeature);
+				element->onDraw(graphicsContext, currentStage->renderFeature, nullptr);
 			}
 			else
 			{

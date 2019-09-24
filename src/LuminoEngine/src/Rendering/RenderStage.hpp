@@ -227,14 +227,14 @@ public:
     // 必要に応じて SubsetInfo の調整を行う。
     // 特に不透明度の操作など、Phase との整合性に注意すること。
     // 現在は blit のような特殊な用途に置いて、Material 確保などのメモリ節約のために使用している。
-    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo);
+    //virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo);
 
 	// 描画実行。
 	// 純粋に描画のみを行うこと。
 	// ステートは RenderFeature::onStateChanged に通知済み。
 	// もしどうしてもステートを変更したい場合、描画した後は必ず元に戻さなければならない。
 	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
-	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature) = 0;
+	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature, const SubsetInfo* subsetInfo) = 0;
 
     // DrawElementListBuilder で DrawElement が作られたときに確定する。
 	const Matrix& combinedWorldMatrix() const { return m_combinedWorldMatrix; }

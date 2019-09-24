@@ -150,7 +150,7 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
 		float z;
 		uint8_t stencil;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
 			context->clear(flags, color, z, stencil);
 		}
@@ -175,7 +175,7 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     public:
         detail::SingleLineGenerater data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
             static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(context, data);
         }
@@ -199,7 +199,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
     public:
         detail::PlaneMeshGenerater data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
             static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(context, data);
         }
@@ -220,7 +220,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     public:
         detail::RegularSphereMeshFactory data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
             static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(context, data);
         }
@@ -248,7 +248,7 @@ void RenderingContext::drawScreenRectangle()
     class DrawScreenRectangle : public detail::RenderDrawElement
     {
     public:
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
             static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
         }
@@ -314,7 +314,7 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 	class Blit : public detail::RenderDrawElement
 	{
 	public:
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
 			static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
 		}
@@ -361,7 +361,7 @@ void RenderingContext::drawSprite(
 		BillboardType billboardType;
         detail::SpriteFlipFlags flipFlags;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
 				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
@@ -397,7 +397,7 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 		int startVertex;
 		int primitiveCount;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
 			context->setVertexLayout(vertexDeclaration);
 			context->setVertexBuffer(0, vertexBuffer);
@@ -443,7 +443,7 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
             }
         }
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
             static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, meshResource, sectionIndex);
         }

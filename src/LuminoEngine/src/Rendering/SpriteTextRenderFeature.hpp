@@ -126,7 +126,7 @@ public:
 		}
 	}
 
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
     {
 		if (glyphRun) {
 			static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawFlexGlyphRun(context, glyphRun, combinedWorldMatrix());
@@ -149,7 +149,7 @@ public:
 		return FontHelper::resolveFontCore(font, dpiScale);
 	}
 
-	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
 	{
 		static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawChar(context, codePoint, color, combinedWorldMatrix());
 	}

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "RenderStage.hpp"
 #include "RenderingManager.hpp"
@@ -288,14 +289,11 @@ class DrawShapesElement : public RenderDrawElement
 public:
 	ShapesRendererCommandList commandList;
 
-    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo) override
+    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
     {
 		m_srcTextureSize.width = subsetInfo->materialTexture->width();
 		m_srcTextureSize.height = subsetInfo->materialTexture->height();
-    }
 
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-    {
 		static_cast<detail::ShapesRenderFeature*>(renderFeatures)->renderCommandList(context, commandList);
     }
 

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Drawing.hpp>
 #include "RenderStage.hpp"
@@ -93,14 +94,11 @@ public:
     Rect srcRect;
     BrushWrapMode wrapMode;
 
-    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo) override
+    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
     {
-        m_srcTextureSize.width = subsetInfo->materialTexture->width();
+		m_srcTextureSize.width = subsetInfo->materialTexture->width();
 		m_srcTextureSize.height = subsetInfo->materialTexture->height();
-    }
 
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-    {
 		static_cast<detail::FrameRectRenderFeature*>(renderFeatures)->draw(
             context, rect, transform, imageDrawMode, borderThickness, srcRect, wrapMode, m_srcTextureSize);
     }

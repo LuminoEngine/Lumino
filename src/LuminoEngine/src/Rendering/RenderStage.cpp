@@ -40,9 +40,9 @@ void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTe
 {
 }
 
-void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
-{
-}
+//void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
+//{
+//}
 
 //==============================================================================
 // RenderStage
