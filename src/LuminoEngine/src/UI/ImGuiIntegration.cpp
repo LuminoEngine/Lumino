@@ -63,7 +63,10 @@ bool ImGuiContext::init()
 
 void ImGuiContext::dispose()
 {
-	ImGui::DestroyContext();
+	if (m_fontTexture) {
+		ImGui::DestroyContext();
+		m_fontTexture = nullptr;
+	}
 }
 
 void ImGuiContext::updateFrame(float elapsedSeconds)
