@@ -10,6 +10,18 @@ struct SubsetInfo;
 class RenderDrawElement;
 }
 
+// Rendering モジュールの後段の出力結果。
+// RenderingContext(DrawElementListBuilder) によって作られた DrawElementList は SceneRenderer に入力されると、
+// Zソートやカリング・ステートのグループ化を考慮して RenderFeatureBatch のリストに変換される。
+// 最終的には各 RenderFeature が RenderFeatureBatch を実行することで、GraphicsContext へ描画命令が渡る。
+// RenderFeatureBatch が出来上がっている時点で、SpriteRenderer など Dynamic な VertexBuffer 等はすべて出来上がっている状態にしておく。
+// RenderFeatureBatch 実行中は map や setData で、VertexBuffer や Texture 等への書きこみはできない。
+// なぜこんな仕組みにしているかというと、特に Vulkan の RenderPass 実行中はデータ転送系のコマンドを実行できないため。
+class RenderFeatureBatch
+{
+
+};
+
 class RenderFeature
 	: public Object
 {
