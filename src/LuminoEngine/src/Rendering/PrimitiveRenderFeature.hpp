@@ -86,11 +86,11 @@ public:
     template<class TFactory>
     void drawMeshGenerater(GraphicsContext* context, const TFactory& generator)
     {
-		// TODO: toporogy も RenderStage のパラメータに持っていく
-        if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
-			submitBatch(context, nullptr);
-        }
-        m_lastPrimitiveType = generator.primitiveType();
+		//// TODO: toporogy も RenderStage のパラメータに持っていく
+  //      if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
+		//	submitBatch(context, nullptr);
+  //      }
+  //      m_lastPrimitiveType = generator.primitiveType();
 
         LN_ENQUEUE_RENDER_COMMAND_2(
             PrimitiveRenderFeature_drawMeshGenerater, context,
@@ -111,7 +111,7 @@ public:
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
-    Optional<PrimitiveTopology> m_lastPrimitiveType;
+    //Optional<PrimitiveTopology> m_lastPrimitiveType;
 	RenderingManager* m_manager;
     Ref<InternalPrimitiveRenderer> m_internal;
 };

@@ -261,6 +261,10 @@ void RenderStage::applyGeometryStatus(GraphicsContext* context, const RenderStag
 		state.depthWriteEnabled = stage->isDepthWriteEnabledFinal(priorityMaterial);
 		context->setDepthStencilState(state);
 	}
+	// Topology
+	{
+		context->setPrimitiveTopology(stage->geometryStageParameters->primitiveTopology);
+	}
 }
 
 void RenderStage::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)

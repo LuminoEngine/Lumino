@@ -181,6 +181,7 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
         }
     };
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::LineList);
     auto* element = m_builder->addNewDrawElement<DrawLine>(
         m_manager->primitiveRenderFeature(),
         m_builder->primitiveRenderFeatureStageParameters());
@@ -205,6 +206,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
         }
     };
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawPlane>(
         m_manager->primitiveRenderFeature(),
         m_builder->primitiveRenderFeatureStageParameters());
@@ -226,6 +228,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
         }
     };
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawSphere>(
         m_manager->primitiveRenderFeature(),
         m_builder->primitiveRenderFeatureStageParameters());
@@ -256,6 +259,7 @@ void RenderingContext::drawScreenRectangle()
 
     m_builder->advanceFence();
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
@@ -328,6 +332,7 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 
 	m_builder->advanceFence();
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	auto* element = m_builder->addNewDrawElement<Blit>(
 		m_manager->blitRenderFeature(),
 		m_builder->blitRenderFeatureStageParameters());
@@ -368,6 +373,7 @@ void RenderingContext::drawSprite(
 		}
 	};
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	m_builder->setMaterial(material);
 	auto* element = m_builder->addNewDrawElement<DrawSprite>(
 		m_manager->spriteRenderFeature(),
@@ -393,7 +399,7 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 	public:
 		Ref<VertexLayout> vertexDeclaration;
 		Ref<VertexBuffer> vertexBuffer;
-		PrimitiveTopology topology;
+		//PrimitiveTopology topology;
 		int startVertex;
 		int primitiveCount;
 
@@ -401,15 +407,16 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 		{
 			context->setVertexLayout(vertexDeclaration);
 			context->setVertexBuffer(0, vertexBuffer);
-			context->setPrimitiveTopology(topology);
+			//context->setPrimitiveTopology(topology);
 			context->drawPrimitive(startVertex, primitiveCount);
 		}
 	};
 
+	m_builder->setPrimitiveTopology(topology);
 	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(nullptr, nullptr);
 	element->vertexDeclaration = vertexDeclaration;
 	element->vertexBuffer = vertexBuffer;
-	element->topology = topology;
+	//element->topology = topology;
 	element->startVertex = startVertex;
 	element->primitiveCount = primitiveCount;
 }
@@ -451,6 +458,7 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
 
     if (meshResource->isInitialEmpty()) return;
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawMesh>(
         m_manager->meshRenderFeature(),
         m_builder->meshRenderFeatureStageParameters());
@@ -508,6 +516,7 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
         formattedText->font = m_manager->fontManager()->defaultFont();
     }
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
         m_manager->spriteTextRenderFeature(),
         m_builder->spriteTextRenderFeatureStageParameters());
@@ -521,6 +530,7 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
 
 void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* font)
 {
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	auto* element = m_builder->addNewDrawElement<detail::DrawCharElement>(
 		m_manager->spriteTextRenderFeature(),
 		m_builder->spriteTextRenderFeatureStageParameters());
@@ -544,6 +554,7 @@ void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* fo
 
 void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
 {
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
 		m_manager->spriteTextRenderFeature(),
 		m_builder->spriteTextRenderFeatureStageParameters());

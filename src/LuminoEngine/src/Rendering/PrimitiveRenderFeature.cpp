@@ -195,7 +195,7 @@ void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::Rende
 			m_internal->flush(c);
 		});
 
-	m_lastPrimitiveType = nullptr;
+	//m_lastPrimitiveType = nullptr;
 
 	// TODO: add Batch
 }
