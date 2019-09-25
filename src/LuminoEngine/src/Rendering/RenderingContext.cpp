@@ -374,7 +374,7 @@ void RenderingContext::drawSprite(
 		{
 #ifdef LN_RENDERING_MIGRATION
 			static_cast<detail::SpriteRenderFeature2*>(renderFeatures)->drawRequest(
-				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+				context, combinedWorldMatrix() * transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
 #else
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
 				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);

@@ -775,6 +775,9 @@ void SpriteRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBa
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
+
+	m_batchData.spriteOffset = 0;
+	m_batchData.spriteCount = 0;
 }
 
 void SpriteRenderFeature2::prepareBuffers(GraphicsContext* context, int spriteCount)
