@@ -126,18 +126,18 @@ void InternalPrimitiveRenderer::prepareBuffers(IGraphicsDevice* context, int ver
 }
 
 //==============================================================================
-// PrimitiveRenderFeature
+// MeshGeneraterRenderFeature
 
-PrimitiveRenderFeature::PrimitiveRenderFeature()
+MeshGeneraterRenderFeature::MeshGeneraterRenderFeature()
 	: m_manager(nullptr)
 {
 }
 
-PrimitiveRenderFeature::~PrimitiveRenderFeature()
+MeshGeneraterRenderFeature::~MeshGeneraterRenderFeature()
 {
 }
 
-void PrimitiveRenderFeature::init(RenderingManager* manager)
+void MeshGeneraterRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
@@ -183,7 +183,7 @@ void PrimitiveRenderFeature::init(RenderingManager* manager)
 //    m_lastPrimitiveType = PrimitiveType::LineList;
 //}
 
-void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+void MeshGeneraterRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
 	ICommandList* c = GraphicsContextInternal::commitState(context);
@@ -200,7 +200,7 @@ void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::Rende
 	// TODO: add Batch
 }
 
-void PrimitiveRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
 {
 	LN_NOTIMPLEMENTED();
 }

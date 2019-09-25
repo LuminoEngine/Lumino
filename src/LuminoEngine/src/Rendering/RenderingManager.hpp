@@ -14,7 +14,7 @@ class BlitRenderFeature;
 class SpriteRenderFeature;
 class SpriteRenderFeature2;
 class MeshRenderFeature;
-class PrimitiveRenderFeature;
+class MeshGeneraterRenderFeature;
 class SpriteTextRenderFeature;
 class FrameRectRenderFeature;
 class ShapesRenderFeature;
@@ -152,7 +152,7 @@ public:
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
 	const Ref<SpriteRenderFeature2>& spriteRenderFeature2() const { return m_spriteRenderFeature2; }
 	const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
-    const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
+    const Ref<MeshGeneraterRenderFeature>& meshGeneraterRenderFeature() const { return m_meshGeneraterRenderFeature; }
     const Ref<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
 	const Ref<FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
 	const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
@@ -171,7 +171,7 @@ private:
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
 	Ref<SpriteRenderFeature2> m_spriteRenderFeature2;
 	Ref<MeshRenderFeature> m_meshRenderFeature;
-    Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
+    Ref<MeshGeneraterRenderFeature> m_meshGeneraterRenderFeature;
     Ref<SpriteTextRenderFeature> m_spriteTextRenderFeature;
 	Ref<FrameRectRenderFeature> m_frameRectRenderFeature;
 	Ref<ShapesRenderFeature> m_shapesRenderFeature;

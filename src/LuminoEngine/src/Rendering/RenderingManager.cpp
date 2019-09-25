@@ -26,7 +26,7 @@ RenderingManager::RenderingManager()
     , m_standardVertexDeclaration(nullptr)
 	, m_spriteRenderFeature(nullptr)
 	, m_meshRenderFeature(nullptr)
-    , m_primitiveRenderFeature(nullptr)
+    , m_meshGeneraterRenderFeature(nullptr)
 	, m_stageDataPageManager(nullptr)
 {
 }
@@ -55,7 +55,7 @@ void RenderingManager::init(const Settings& settings)
     m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
 	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
     m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
-    m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>(this);
+    m_meshGeneraterRenderFeature = makeObject<MeshGeneraterRenderFeature>(this);
     m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);
 	m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
 	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
@@ -146,7 +146,7 @@ void RenderingManager::dispose()
 	m_shapesRenderFeature = nullptr;
 	m_frameRectRenderFeature = nullptr;
     m_spriteTextRenderFeature = nullptr;
-    m_primitiveRenderFeature = nullptr;
+    m_meshGeneraterRenderFeature = nullptr;
 	m_meshRenderFeature = nullptr;
 	m_spriteRenderFeature = nullptr;
     m_blitRenderFeature = nullptr;

@@ -71,7 +71,7 @@ public:
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
 	SpriteRenderFeatureStageParameters2* spriteRenderFeatureStageParameters2() { return &m_spriteRenderFeatureStageParameters2; }
 	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
-    PrimitiveRenderFeatureStageParameters* primitiveRenderFeatureStageParameters() { return &m_primitiveRenderFeatureStageParameters; }
+	MeshGeneraterRenderFeatureStageParameters* meshGeneraterRenderFeatureStageParameters() { return &m_meshGeneraterRenderFeatureStageParameters; }
 	SpriteTextRenderFeatureStageParameters* spriteTextRenderFeatureStageParameters() { return &m_spriteTextRenderFeatureStageParameters; }
 	FrameRectRenderFeatureStageParameters* frameRectRenderFeatureStageParameters() { return &m_frameRectRenderFeatureStageParameters; }
 	ShapesRenderFeatureStageParameters* shapesRenderFeatureStageParameters() { return &m_shapesRenderFeatureStageParameters; }
@@ -143,7 +143,7 @@ private:
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
 	SpriteRenderFeatureStageParameters2 m_spriteRenderFeatureStageParameters2;
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
-    PrimitiveRenderFeatureStageParameters m_primitiveRenderFeatureStageParameters;
+	MeshGeneraterRenderFeatureStageParameters m_meshGeneraterRenderFeatureStageParameters;
 	SpriteTextRenderFeatureStageParameters m_spriteTextRenderFeatureStageParameters;
 	FrameRectRenderFeatureStageParameters m_frameRectRenderFeatureStageParameters;
 	ShapesRenderFeatureStageParameters m_shapesRenderFeatureStageParameters;

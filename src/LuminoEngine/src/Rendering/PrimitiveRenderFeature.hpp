@@ -44,12 +44,12 @@ private:
 
 // 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
 // TODO: 後で消す。
-class PrimitiveRenderFeatureStageParameters
+class MeshGeneraterRenderFeatureStageParameters
 	: public RenderFeatureStageParameters
 {
 public:
-    PrimitiveRenderFeatureStageParameters()
-		: RenderFeatureStageParameters(CRCHash::compute("PrimitiveRenderFeatureStageParameters"))
+	MeshGeneraterRenderFeatureStageParameters()
+		: RenderFeatureStageParameters(CRCHash::compute("MeshGeneraterRenderFeatureStageParameters"))
 	{
 	}
 
@@ -72,12 +72,12 @@ private:
 // MeshRenderFeature が Mesh(VertexBuffer, IndexBuffer) を受け取って描画するのに対し、
 // こちらは形状の情報（球なら中心位置と半径）を受け取って描画する。そのためデータサイズを非常に小さく抑えることができる。
 // また、スプライトのようなバッファリングによるドローコール削減も狙う。
-class PrimitiveRenderFeature
+class MeshGeneraterRenderFeature
 	: public RenderFeature
 {
 public:
-    PrimitiveRenderFeature();
-	~PrimitiveRenderFeature();
+	MeshGeneraterRenderFeature();
+	~MeshGeneraterRenderFeature();
 	void init(RenderingManager* manager);
 
 

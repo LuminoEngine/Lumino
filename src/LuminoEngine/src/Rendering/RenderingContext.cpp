@@ -181,14 +181,14 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(context, data);
+            static_cast<detail::MeshGeneraterRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(context, data);
         }
     };
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::LineList);
     auto* element = m_builder->addNewDrawElement<DrawLine>(
-        m_manager->primitiveRenderFeature(),
-        m_builder->primitiveRenderFeatureStageParameters());
+        m_manager->meshGeneraterRenderFeature(),
+        m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.point1 = from;
     element->data.point1Color = fromColor;
     element->data.point2 = to;
@@ -206,14 +206,14 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(context, data);
+            static_cast<detail::MeshGeneraterRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(context, data);
         }
     };
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawPlane>(
-        m_manager->primitiveRenderFeature(),
-        m_builder->primitiveRenderFeatureStageParameters());
+        m_manager->meshGeneraterRenderFeature(),
+        m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.size.set(width, depth);
     element->data.setColor(color);
     element->data.setTransform(element->combinedWorldMatrix());
@@ -228,14 +228,14 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(context, data);
+            static_cast<detail::MeshGeneraterRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(context, data);
         }
     };
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawSphere>(
-        m_manager->primitiveRenderFeature(),
-        m_builder->primitiveRenderFeatureStageParameters());
+        m_manager->meshGeneraterRenderFeature(),
+        m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.m_radius = radius;
     element->data.m_slices = slices;
     element->data.m_stacks = stacks;
@@ -409,6 +409,31 @@ void RenderingContext::drawSprite(
 
 void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
 {
+#ifdef LN_RENDERING_MIGRATION
+	class DrawPrimitive : public detail::RenderDrawElement
+	{
+	public:
+		Ref<VertexLayout> vertexDeclaration;
+		Ref<VertexBuffer> vertexBuffer;
+		int startVertex;
+		int primitiveCount;
+
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
+		{
+			LN_NOTIMPLEMENTED();
+			//context->setVertexLayout(vertexDeclaration);
+			//context->setVertexBuffer(0, vertexBuffer);
+			//context->drawPrimitive(startVertex, primitiveCount);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(topology);
+	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(nullptr, nullptr);
+	element->vertexDeclaration = vertexDeclaration;
+	element->vertexBuffer = vertexBuffer;
+	element->startVertex = startVertex;
+	element->primitiveCount = primitiveCount;
+#else
 	class DrawPrimitive : public detail::RenderDrawElement
 	{
 	public:
@@ -434,6 +459,7 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 	//element->topology = topology;
 	element->startVertex = startVertex;
 	element->primitiveCount = primitiveCount;
+#endif
 }
 
 // LOD なし。というか直接描画
