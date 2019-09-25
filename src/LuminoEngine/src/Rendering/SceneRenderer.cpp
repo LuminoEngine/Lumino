@@ -194,6 +194,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	prepare();
 
 #ifdef LN_RENDERING_MIGRATION
+	for (auto& renderFeature : m_manager->renderFeatures()) {
+		renderFeature->beginRendering();
+	}
+
 	m_renderFeatureBatchList.clear();
 
 	// Create batch list.
@@ -284,6 +288,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 	// Render batch-list.
 	{
+		const RenderStage* currentStage = nullptr;
 		RenderFeatureBatch* batch = m_renderFeatureBatchList.firstBatch();
 		while (batch)
 		{
@@ -291,8 +296,16 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			const AbstractMaterial* finalMaterial = batch->finalMaterial();
 			const SubsetInfo& subsetInfo = batch->subsetInfo();
 
+			// ステートの変わり目チェック
+			if (currentStage != stage)	// この時点ではポインタ比較だけでよい。中身が異なることは保証済み
+			{
+				currentStage = stage;
+				RenderStage::applyFrameBufferStatus(graphicsContext, currentStage, defaultFrameBuffer);
+			}
+
 			if (!finalMaterial) {
 				// Shader 使わない描画 (clear)
+				RenderStage::applyGeometryStatus(graphicsContext, currentStage, nullptr);
 				batch->render(graphicsContext);
 			}
 			else {
@@ -333,6 +346,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
 					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
 					finalMaterial->updateShaderVariables(tech->shader());
+					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 				}
 
 				onSetAdditionalShaderPassVariables(tech->shader());
@@ -347,6 +361,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 			batch = batch->next();
 		}
+	}
+
+	for (auto& renderFeature : m_manager->renderFeatures()) {
+		renderFeature->endRendering();
 	}
 
 #else

@@ -51,14 +51,35 @@ void RenderingManager::init(const Settings& settings)
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
 	m_clearRenderFeature = makeObject<ClearRenderFeature>();
+	m_renderFeatures.add(m_clearRenderFeature);
+
     m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
+	m_renderFeatures.add(m_blitRenderFeature);
+
     m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
+	m_renderFeatures.add(m_spriteRenderFeature);
+
 	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
+	m_renderFeatures.add(m_spriteRenderFeature2);
+
     m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
+	m_renderFeatures.add(m_meshRenderFeature);
+
     m_meshGeneraterRenderFeature = makeObject<MeshGeneraterRenderFeature>(this);
+	m_renderFeatures.add(m_meshGeneraterRenderFeature);
+
+	m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>();
+	m_renderFeatures.add(m_primitiveRenderFeature);
+
     m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);
+	m_renderFeatures.add(m_spriteTextRenderFeature);
+
 	m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
+	m_renderFeatures.add(m_frameRectRenderFeature);
+
 	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
+	m_renderFeatures.add(m_shapesRenderFeature);
+
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 

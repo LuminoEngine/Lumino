@@ -333,10 +333,10 @@ public:
 
 	AbstractMaterial* getMaterialFinal(AbstractMaterial* priorityValue, AbstractMaterial* sceneDefaultMaterial) const;
 	ShadingModel getShadingModelFinal(const AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
-	BlendMode getBlendModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	CullMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-    ComparisonFunc getDepthTestFuncFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	bool isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	BlendMode getBlendModeFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	CullMode getCullingModeFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+    ComparisonFunc getDepthTestFuncFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	bool isDepthWriteEnabledFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	//const Matrix& getTransformFinal() const { return geometryStageParameters->; }
 	//Brush* getBrushFinal() const { return renderingContextParameters.getBrush(); }
 	//Pen* getPenFinal() const { return nullptr; }	// TODO:
@@ -350,7 +350,7 @@ public:
     const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
 	static void applyFrameBufferStatus(GraphicsContext* context, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
-	static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, AbstractMaterial* priorityMaterial);
+	static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const AbstractMaterial* priorityMaterial);
 	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 private:

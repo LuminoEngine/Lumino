@@ -206,6 +206,53 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFea
 }
 
 
+//==============================================================================
+// PrimitiveRenderFeature
+
+PrimitiveRenderFeature::PrimitiveRenderFeature()
+{
+}
+
+void PrimitiveRenderFeature::init()
+{
+	m_primitives.reserve(16);
+	m_batchData.offset = 0;
+	m_batchData.count = 0;
+}
+
+void PrimitiveRenderFeature::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount)
+{
+	m_primitives.add({ vertexDeclaration, vertexBuffer, startVertex, primitiveCount });
+	m_batchData.count++;
+}
+
+void PrimitiveRenderFeature::beginRendering()
+{
+	m_primitives.clear();
+	m_batchData.offset = 0;
+	m_batchData.count = 0;
+}
+
+void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+{
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+
+	m_batchData.offset = m_batchData.offset + m_batchData.count;
+	m_batchData.count = 0;
+}
+
+void PrimitiveRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	auto localBatch = static_cast<Batch*>(batch);
+
+	for (int i = 0; i < localBatch->data.count; i++) {
+		auto& data = m_primitives[localBatch->data.offset + i];
+		context->setVertexLayout(data.vertexLayout);
+		context->setVertexBuffer(0, data.vertexBuffer);
+		context->drawPrimitive(data.startVertex, data.primitiveCount);
+	}
+}
 
 } // namespace detail
 } // namespace ln

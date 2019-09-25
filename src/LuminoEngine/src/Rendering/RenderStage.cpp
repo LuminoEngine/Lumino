@@ -117,7 +117,7 @@ ShadingModel RenderStage::getShadingModelFinal(const AbstractMaterial* finalMate
 	return finalMaterial->shadingModel;
 }
 
-BlendMode RenderStage::getBlendModeFinal(AbstractMaterial* finalMaterial) const
+BlendMode RenderStage::getBlendModeFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getBlendMode().hasValue())
 		return finalMaterial->getBlendMode().value();
@@ -130,7 +130,7 @@ BlendMode RenderStage::getBlendModeFinal(AbstractMaterial* finalMaterial) const
 	return BlendMode::Normal;
 }
 
-CullMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) const
+CullMode RenderStage::getCullingModeFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getCullingMode().hasValue())
 		return finalMaterial->getCullingMode().value();
@@ -143,7 +143,7 @@ CullMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) const
 	return CullMode::Back;
 }
 
-ComparisonFunc RenderStage::getDepthTestFuncFinal(AbstractMaterial* finalMaterial) const
+ComparisonFunc RenderStage::getDepthTestFuncFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthTestEnabled().hasValue())
 		return (finalMaterial->isDepthTestEnabled().value()) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
@@ -156,7 +156,7 @@ ComparisonFunc RenderStage::getDepthTestFuncFinal(AbstractMaterial* finalMateria
     return ComparisonFunc::LessEqual;
 }
 
-bool RenderStage::isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial) const
+bool RenderStage::isDepthWriteEnabledFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthWriteEnabled().hasValue())
 		return finalMaterial->isDepthWriteEnabled().value();
@@ -237,7 +237,7 @@ void RenderStage::applyFrameBufferStatus(GraphicsContext* context, const RenderS
 	}
 }
 
-void RenderStage::applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, AbstractMaterial* priorityMaterial)
+void RenderStage::applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const AbstractMaterial* priorityMaterial)
 {
 	// BlendState
 	{

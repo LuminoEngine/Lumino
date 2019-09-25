@@ -109,6 +109,9 @@ class RenderFeature
 	: public Object
 {
 public:
+	virtual void beginRendering() {}
+	virtual void endRendering() {}
+
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo);
 
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) = 0;

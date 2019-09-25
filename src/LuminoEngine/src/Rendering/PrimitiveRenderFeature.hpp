@@ -116,6 +116,44 @@ private:
     Ref<InternalPrimitiveRenderer> m_internal;
 };
 
+class PrimitiveRenderFeature
+	: public RenderFeature
+{
+public:
+	PrimitiveRenderFeature();
+	void init();
+
+	void drawPrimitive(VertexLayout* vertexLayout, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount);
+
+	virtual void beginRendering() override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+
+private:
+	struct PrimitveData
+	{
+		Ref<VertexLayout> vertexLayout;
+		Ref<VertexBuffer> vertexBuffer;
+		int startVertex;
+		int primitiveCount;
+	};
+
+	struct BatchData
+	{
+		int offset;
+		int count;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
+	List<PrimitveData> m_primitives;
+	BatchData m_batchData;
+};
+
 } // namespace detail
 } // namespace ln
 

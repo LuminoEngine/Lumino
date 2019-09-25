@@ -410,26 +410,27 @@ void RenderingContext::drawSprite(
 void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
 {
 #ifdef LN_RENDERING_MIGRATION
+	if (primitiveCount <= 0) return;
+
 	class DrawPrimitive : public detail::RenderDrawElement
 	{
 	public:
-		Ref<VertexLayout> vertexDeclaration;
+		Ref<VertexLayout> vertexLayout;
 		Ref<VertexBuffer> vertexBuffer;
 		int startVertex;
 		int primitiveCount;
 
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
-			LN_NOTIMPLEMENTED();
-			//context->setVertexLayout(vertexDeclaration);
-			//context->setVertexBuffer(0, vertexBuffer);
-			//context->drawPrimitive(startVertex, primitiveCount);
+			static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawPrimitive(vertexLayout, vertexBuffer, startVertex, primitiveCount);
 		}
 	};
 
 	m_builder->setPrimitiveTopology(topology);
-	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(nullptr, nullptr);
-	element->vertexDeclaration = vertexDeclaration;
+	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(
+		m_manager->primitiveRenderFeature(),
+		m_builder->meshGeneraterRenderFeatureStageParameters());	// TODO: めんどいので共有。あどで消すし…
+	element->vertexLayout = vertexDeclaration;
 	element->vertexBuffer = vertexBuffer;
 	element->startVertex = startVertex;
 	element->primitiveCount = primitiveCount;
