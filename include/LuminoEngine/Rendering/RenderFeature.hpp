@@ -29,7 +29,7 @@ class SceneRendererPass;
 class RenderFeatureBatch
 {
 public:
-	RenderFeatureBatch(RenderFeature* owner);
+	RenderFeatureBatch();
 	const detail::RenderStage* stage() const { return m_stage; }
 	detail::RenderDrawElementType type() const { return m_type; }
 	void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
@@ -61,18 +61,18 @@ public:
 	void setCurrentStage(detail::RenderStage* stage);
 
 	template<class T>
-	T* addNewBatch()
+	T* addNewBatch(RenderFeature* owner)
 	{
 		void* buffer = m_allocator->allocate(sizeof(T));
 		T* batch = new (buffer)T();
-		add(batch);
+		add(batch, owner);
 		return batch;
 	}
 
 	void render(GraphicsContext* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
 
 private:
-	void add(RenderFeatureBatch* batch);
+	void add(RenderFeatureBatch* batch, RenderFeature* owner);
 
 	detail::RenderingManager* m_manager;
 	Ref<detail::LinearAllocator> m_allocator;

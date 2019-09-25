@@ -16,8 +16,8 @@ namespace detail {
 //==============================================================================
 // RenderFeatureBatch
 
-RenderFeatureBatch::RenderFeatureBatch(RenderFeature* owner)
-	: m_owner(owner)
+RenderFeatureBatch::RenderFeatureBatch()
+	: m_owner(nullptr)
 	, m_next(nullptr)
 	, m_stage(nullptr)
 	, m_type(detail::RenderDrawElementType::Geometry)
@@ -56,11 +56,12 @@ void RenderFeatureBatchList::setCurrentStage(detail::RenderStage* stage)
 	m_currentStage = stage;
 }
 
-void RenderFeatureBatchList::add(RenderFeatureBatch* batch)
+void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner)
 {
 	if (LN_REQUIRE(batch)) return;
 	if (LN_REQUIRE(m_currentStage)) return;
 
+	batch->m_owner = owner;
 	batch->m_stage = m_currentStage;
 
 	if (!m_head) {

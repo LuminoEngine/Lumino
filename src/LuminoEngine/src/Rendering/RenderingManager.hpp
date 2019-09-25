@@ -11,6 +11,7 @@ class LinearAllocatorPageManager;
 class DrawElementListBuilder;
 class BlitRenderFeature;
 class SpriteRenderFeature;
+class SpriteRenderFeature2;
 class MeshRenderFeature;
 class PrimitiveRenderFeature;
 class SpriteTextRenderFeature;
@@ -146,6 +147,7 @@ public:
 	//const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
     const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
+	const Ref<SpriteRenderFeature2>& spriteRenderFeature2() const { return m_spriteRenderFeature2; }
 	const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
     const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
     const Ref<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
@@ -163,6 +165,7 @@ private:
 	//Ref<DrawElementListBuilder> m_renderStageListBuilder;
     Ref<BlitRenderFeature> m_blitRenderFeature;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
+	Ref<SpriteRenderFeature2> m_spriteRenderFeature2;
 	Ref<MeshRenderFeature> m_meshRenderFeature;
     Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
     Ref<SpriteTextRenderFeature> m_spriteTextRenderFeature;

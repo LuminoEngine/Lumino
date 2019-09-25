@@ -259,7 +259,7 @@ void RenderingContext::drawScreenRectangle()
 
     m_builder->advanceFence();
 
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
     auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
@@ -332,7 +332,7 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 
 	m_builder->advanceFence();
 
-	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
 	auto* element = m_builder->addNewDrawElement<Blit>(
 		m_manager->blitRenderFeature(),
 		m_builder->blitRenderFeatureStageParameters());

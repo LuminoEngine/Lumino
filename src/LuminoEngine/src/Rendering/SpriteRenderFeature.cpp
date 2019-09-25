@@ -530,6 +530,7 @@ SpriteRenderFeature2::SpriteRenderFeature2()
 void SpriteRenderFeature2::init(RenderingManager* manager)
 {
 	RenderFeature::init();
+	m_vertexLayout = manager->standardVertexDeclaration();
 	prepareBuffers(nullptr, 2048);
 	m_batchData.spriteOffset = 0;
 	m_batchData.spriteCount = 0;
@@ -756,10 +757,21 @@ void SpriteRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderF
 	if (m_mappedVertices) {
 		// TODO: unmap (今は自動だけど、明示した方が安心かも)
 	}
+
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+
+	m_batchData.spriteOffset = m_batchData.spriteOffset + m_batchData.spriteCount;
+	m_batchData.spriteCount = 0;
 }
 
 void SpriteRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
 {
+	auto localBatch = static_cast<Batch*>(batch);
+	context->setVertexLayout(m_vertexLayout);
+	context->setVertexBuffer(0, m_vertexBuffer);
+	context->setIndexBuffer(m_indexBuffer);
+	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
 }
 
 void SpriteRenderFeature2::prepareBuffers(GraphicsContext* context, int spriteCount)

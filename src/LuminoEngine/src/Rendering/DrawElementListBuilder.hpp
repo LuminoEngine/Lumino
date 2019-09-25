@@ -69,6 +69,7 @@ public:
 
     BlitRenderFeatureStageParameters* blitRenderFeatureStageParameters() { return &m_blitRenderFeatureStageParameters; }
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
+	SpriteRenderFeatureStageParameters2* spriteRenderFeatureStageParameters2() { return &m_spriteRenderFeatureStageParameters2; }
 	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
     PrimitiveRenderFeatureStageParameters* primitiveRenderFeatureStageParameters() { return &m_primitiveRenderFeatureStageParameters; }
 	SpriteTextRenderFeatureStageParameters* spriteTextRenderFeatureStageParameters() { return &m_spriteTextRenderFeatureStageParameters; }
@@ -140,6 +141,7 @@ private:
 	// (もしフレームワークに沿った流れでなくても大丈夫ならグローバル変数とかで受け取ったりしても大丈夫)
     BlitRenderFeatureStageParameters m_blitRenderFeatureStageParameters;
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
+	SpriteRenderFeatureStageParameters2 m_spriteRenderFeatureStageParameters2;
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
     PrimitiveRenderFeatureStageParameters m_primitiveRenderFeatureStageParameters;
 	SpriteTextRenderFeatureStageParameters m_spriteTextRenderFeatureStageParameters;

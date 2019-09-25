@@ -52,6 +52,7 @@ void RenderingManager::init(const Settings& settings)
 
     m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
     m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
+	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
     m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
     m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>(this);
     m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);

@@ -167,6 +167,32 @@ private:
 };
 
 
+
+
+class SpriteRenderFeatureStageParameters2
+	: public RenderFeatureStageParameters
+{
+public:
+	SpriteRenderFeatureStageParameters2()
+		: RenderFeatureStageParameters(CRCHash::compute("SpriteRenderFeatureStageParameters2"))
+	{
+	}
+
+	virtual bool equals(const RenderFeatureStageParameters* other) override
+	{
+		if (typeId() != other->typeId()) return false;
+		if (this == other) return true;
+		return false;
+	}
+
+	virtual void copyTo(RenderFeatureStageParameters* params) override
+	{
+		LN_CHECK(typeId() == params->typeId());
+	}
+
+private:
+};
+
 class SpriteRenderFeature2 : public RenderFeature
 {
 public:
@@ -201,6 +227,7 @@ private:
 
 	class Batch : public RenderFeatureBatch
 	{
+	public:
 		BatchData data;
 	};
 
