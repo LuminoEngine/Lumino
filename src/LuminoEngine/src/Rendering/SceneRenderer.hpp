@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+
 
 namespace ln {
 class AbstractMaterial;
@@ -87,6 +89,7 @@ protected:
 private:
 	detail::RenderingManager* m_manager;
 	List<Ref<SceneRendererPass>> m_renderingPassList;
+	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
 	const FrameBuffer* m_defaultFrameBuffer;

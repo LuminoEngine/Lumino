@@ -9,6 +9,7 @@ namespace detail {
 class IVertexDeclaration;
 class LinearAllocatorPageManager;
 class DrawElementListBuilder;
+class ClearRenderFeature;
 class BlitRenderFeature;
 class SpriteRenderFeature;
 class SpriteRenderFeature2;
@@ -145,6 +146,8 @@ public:
 	const Ref<VertexLayout>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
     const Ref<detail::IVertexDeclaration>& standardVertexDeclarationRHI() const { return m_standardVertexDeclarationRHI; }
 	//const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
+
+	const Ref<ClearRenderFeature>& clearRenderFeature() const { return m_clearRenderFeature; }
     const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
 	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
 	const Ref<SpriteRenderFeature2>& spriteRenderFeature2() const { return m_spriteRenderFeature2; }
@@ -163,6 +166,7 @@ private:
 	Ref<VertexLayout> m_standardVertexDeclaration;
     Ref<detail::IVertexDeclaration> m_standardVertexDeclarationRHI;
 	//Ref<DrawElementListBuilder> m_renderStageListBuilder;
+	Ref<ClearRenderFeature> m_clearRenderFeature;
     Ref<BlitRenderFeature> m_blitRenderFeature;
 	Ref<SpriteRenderFeature> m_spriteRenderFeature;
 	Ref<SpriteRenderFeature2> m_spriteRenderFeature2;

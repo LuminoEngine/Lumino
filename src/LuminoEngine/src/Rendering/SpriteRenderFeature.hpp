@@ -210,6 +210,7 @@ public:
 		BillboardType billboardType,
 		SpriteFlipFlags flipFlags);
 
+	virtual bool drawElementTransformNegate() const override { return true; }
 	virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;

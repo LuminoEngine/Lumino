@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 	m_rigidBody->setCollisionGroup(0x8000);
 	m_rigidBody->setCollisionGroupMask(0x0FFF);
 	sprite1->addComponent(m_rigidBody);
-	Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
+	//Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
 #if 0
     auto window1 = UIWindow::create();

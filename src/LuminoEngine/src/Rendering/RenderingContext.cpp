@@ -152,13 +152,17 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
 
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
+#ifdef LN_RENDERING_MIGRATION
+			static_cast<detail::ClearRenderFeature*>(renderFeatures)->clear(flags, color, z, stencil);
+#else
 			context->clear(flags, color, z, stencil);
+#endif
 		}
 	};
 
     m_builder->advanceFence();
 
-	auto* element = m_builder->addNewDrawElement<Clear>(nullptr, nullptr);
+	auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature(), nullptr);
 	element->elementType = detail::RenderDrawElementType::Clear;
 	element->flags = flags;
 	element->color = color;
@@ -368,16 +372,27 @@ void RenderingContext::drawSprite(
 
 		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
+#ifdef LN_RENDERING_MIGRATION
+			static_cast<detail::SpriteRenderFeature2*>(renderFeatures)->drawRequest(
+				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+#else
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
 				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+#endif
 		}
 	};
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	m_builder->setMaterial(material);
+#ifdef LN_RENDERING_MIGRATION
+	auto* element = m_builder->addNewDrawElement<DrawSprite>(
+		m_manager->spriteRenderFeature2(),
+		m_builder->spriteRenderFeatureStageParameters2());
+#else
 	auto* element = m_builder->addNewDrawElement<DrawSprite>(
 		m_manager->spriteRenderFeature(),
 		m_builder->spriteRenderFeatureStageParameters());
+#endif
 	element->transform = transform;
 	element->size.set(size.width, size.height);
 	element->anchorRatio = anchor;
@@ -430,28 +445,30 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
         Ref<MeshResource> meshResource;
         int sectionIndex;
 
-        virtual void onElementInfoOverride(detail::ElementInfo* elementInfo, detail::ShaderTechniqueClass_MeshProcess* meshProcess) override
-        {
-            if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
-                if (MeshContainer* container = meshResource->ownerContainer()) {
-                    if (StaticMeshModel* model = container->meshModel()) {
-                        if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
-                            //elementInfo->boneTexture->map()
-                            printf("skinned\n");
-                            *meshProcess = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
-                            Bitmap2D* bmp1 = elementInfo->boneTexture->map(MapMode::Write);
-                            Bitmap2D* bmp2 = elementInfo->boneLocalQuaternionTexture->map(MapMode::Write);
-                            static_cast<SkinnedMeshModel*>(model)->writeSkinningMatrices(
-                                reinterpret_cast<Matrix*>(bmp1->data()),
-                                reinterpret_cast<Quaternion*>(bmp2->data()));
-                        }
-                    }
-                }
-            }
-        }
+        //virtual void onElementInfoOverride(detail::ElementInfo* elementInfo, detail::ShaderTechniqueClass_MeshProcess* meshProcess) override
+        //{
+        //    if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
+        //        if (MeshContainer* container = meshResource->ownerContainer()) {
+        //            if (StaticMeshModel* model = container->meshModel()) {
+        //                if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
+        //                    //elementInfo->boneTexture->map()
+        //                    printf("skinned\n");
+        //                    *meshProcess = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+        //                    Bitmap2D* bmp1 = elementInfo->boneTexture->map(MapMode::Write);
+        //                    Bitmap2D* bmp2 = elementInfo->boneLocalQuaternionTexture->map(MapMode::Write);
+        //                    static_cast<SkinnedMeshModel*>(model)->writeSkinningMatrices(
+        //                        reinterpret_cast<Matrix*>(bmp1->data()),
+        //                        reinterpret_cast<Quaternion*>(bmp2->data()));
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
+			// TODO: boneTexture を送る仕組み
+			LN_NOTIMPLEMENTED();
             static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, meshResource, sectionIndex);
         }
     };

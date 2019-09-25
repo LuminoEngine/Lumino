@@ -256,6 +256,8 @@ public:
      */
     static Color parse(const StringRef& str);
 
+	static bool nearEqual(const Color& value1, const Color& value2) { return Vector4::nearEqual(value1.toVector4(), value2.toVector4()); }
+
     /** Vector4 へ変換します。 */
     const Vector4& toVector4() const { return *reinterpret_cast<const Vector4*>(this); }
 
@@ -381,6 +383,8 @@ public:
 
     /** この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。 */
     void addClamp(const ColorTone& tone);
+
+	static bool nearEqual(const ColorTone& value1, const ColorTone& value2) { return Vector4::nearEqual(value1.toVector4(), value2.toVector4()); }
 
     /** Vector4 へ変換します。 */
     const Vector4& toVector4() const { return *reinterpret_cast<const Vector4*>(this); }

@@ -50,6 +50,7 @@ void RenderingManager::init(const Settings& settings)
     m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
+	m_clearRenderFeature = makeObject<ClearRenderFeature>();
     m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
     m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
 	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);

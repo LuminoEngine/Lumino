@@ -530,6 +530,7 @@ SpriteRenderFeature2::SpriteRenderFeature2()
 void SpriteRenderFeature2::init(RenderingManager* manager)
 {
 	RenderFeature::init();
+	m_manager = manager;
 	m_vertexLayout = manager->standardVertexDeclaration();
 	prepareBuffers(nullptr, 2048);
 	m_batchData.spriteOffset = 0;
@@ -741,6 +742,8 @@ void SpriteRenderFeature2::drawRequest(
 		vertices[3].uv.x = r;
 		vertices[3].uv.y = b;
 	}
+
+	m_batchData.spriteCount++;
 }
 
 void SpriteRenderFeature2::onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo)

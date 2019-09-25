@@ -36,9 +36,9 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
-void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
-{
-}
+//void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
+//{
+//}
 
 //void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
 //{
@@ -105,7 +105,7 @@ AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue,
 	return sceneDefaultMaterial;
 }
 
-ShadingModel RenderStage::getShadingModelFinal(AbstractMaterial* finalMaterial) const
+ShadingModel RenderStage::getShadingModelFinal(const AbstractMaterial* finalMaterial) const
 {
 	assert(finalMaterial);
 

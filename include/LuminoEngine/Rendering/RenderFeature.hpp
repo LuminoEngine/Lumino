@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
+#include "../Shader/ShaderInterfaceFramework.hpp"
 
 namespace ln {
 class GraphicsContext;
 class ShaderTechnique;
 class RenderFeature;
+class AbstractMaterial;
 namespace detail {
 class RenderingManager;
 struct CameraInfo;
@@ -30,10 +32,18 @@ class RenderFeatureBatch
 {
 public:
 	RenderFeatureBatch();
+
+	RenderFeatureBatch* next() const { return m_next; }
 	const detail::RenderStage* stage() const { return m_stage; }
 	detail::RenderDrawElementType type() const { return m_type; }
+
 	void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
 	const Matrix* worldTransformPtr() const { return m_worldTransform; }
+	void setFinalMaterial(const AbstractMaterial* value) { m_finalMaterial = value; }
+	const AbstractMaterial* finalMaterial() const { return m_finalMaterial; }
+	void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
+	const SubsetInfo& subsetInfo() const { return m_subsetInfo; }
+
 	void render(GraphicsContext* context);
 
 private:
@@ -50,6 +60,9 @@ private:
 	// StaticMesh (サブセット単位) などはこれに値がセットされる。
 	const Matrix* m_worldTransform;
 
+	const AbstractMaterial* m_finalMaterial;
+	SubsetInfo m_subsetInfo;
+
 	friend class RenderFeatureBatchList;
 };
 
@@ -60,6 +73,8 @@ public:
 	void clear();
 	void setCurrentStage(detail::RenderStage* stage);
 
+	//void addClearBatch(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
+
 	template<class T>
 	T* addNewBatch(RenderFeature* owner)
 	{
@@ -69,7 +84,14 @@ public:
 		return batch;
 	}
 
-	void render(GraphicsContext* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
+	RenderFeatureBatch* firstBatch() const { return m_head; }
+	RenderFeatureBatch* lastBatch() const { return m_tail; }
+
+	//
+	//void prepareState(const CameraInfo& cameraInfo, RenderStage* stage, RenderDrawElement* element);
+
+	//
+	//void render(GraphicsContext* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
 
 private:
 	void add(RenderFeatureBatch* batch, RenderFeature* owner);
@@ -108,5 +130,36 @@ public:
 private:
 };
 
+
+namespace detail {
+
+class ClearRenderFeature : public RenderFeature
+{
+public:
+	void clear(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
+
+protected:
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, detail::RenderFeatureBatch* batch) override;
+
+private:
+	struct ClearInfo
+	{
+		ClearFlags flags;
+		Color color;
+		float depth;
+		uint8_t stencil;
+	};
+
+	class ClearBatch : public detail::RenderFeatureBatch
+	{
+	public:
+		ClearInfo data;
+	};
+
+	ClearInfo m_data;
+};
+
+} // namespace detail
 } // namespace ln
 

@@ -46,6 +46,7 @@ void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frame
 
 SceneRenderer::SceneRenderer()
 	: m_manager(detail::EngineDomain::renderingManager())
+	, m_renderFeatureBatchList(detail::EngineDomain::renderingManager())
 	, m_renderingPipeline(nullptr)
 	, m_zSortDistanceBase(ZSortDistanceBase::CameraScreenDistance)
 {
@@ -192,6 +193,163 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 	prepare();
 
+#ifdef LN_RENDERING_MIGRATION
+	m_renderFeatureBatchList.clear();
+
+	// Create batch list.
+	{
+		RenderStage* currentStage = nullptr;
+		const Matrix* currentWorldMatrix = nullptr;
+		AbstractMaterial* currentFinalMaterial = nullptr;
+		SubsetInfo currentSubsetInfo;
+		for (RenderDrawElement* element : m_renderingElementList)
+		{
+			bool submitRequested = false;
+			RenderStage* stage = element->stage();
+			assert(stage->renderFeature);
+
+			if (!stage->renderFeature->drawElementTransformNegate()) {
+				// バッチ機能を持たない RenderFeature であるので、毎回 flush する。
+				// 実際のところ Mesh とかを無理やりバッチ(Descripterを変更しないで連続描画)しようとしても、
+				// ほとんどの場合は WorldMatrix の変更が必要なので頑張ってやってもあまり恩恵がない。
+				submitRequested = true;
+			}
+			else {
+				// ステートの変わり目チェック
+				if (!currentStage || !currentStage->equals(stage)) {
+					submitRequested = true;
+				}
+			}
+
+			// ShaderDescripter
+			SubsetInfo subsetInfo;
+			const Matrix* worldMatrix = nullptr;
+			AbstractMaterial* finalMaterial = nullptr;
+			if (element->elementType == RenderDrawElementType::Geometry) {
+				if (stage->renderFeature->drawElementTransformNegate()) {
+					worldMatrix = nullptr;
+				}
+				else {
+					worldMatrix = &element->combinedWorldMatrix();
+				}
+
+				finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
+
+				if (finalMaterial)
+					subsetInfo.materialTexture = finalMaterial->mainTexture();
+				else
+					subsetInfo.materialTexture = nullptr;
+				subsetInfo.opacity = stage->getOpacityFinal(element);
+				subsetInfo.colorScale = stage->getColorScaleFinal(element);
+				subsetInfo.blendColor = stage->getBlendColorFinal(element);
+				subsetInfo.tone = stage->getToneFinal(element);
+			}
+			else {
+				subsetInfo.clear();
+			}
+
+			// ShaderDescripter に関係するパラメータの変更チェック
+			if (!submitRequested && m_renderFeatureBatchList.lastBatch() && !SubsetInfo::equals(currentSubsetInfo, subsetInfo)) {
+				submitRequested = true;
+			}
+
+			// Batch 確定
+			if (submitRequested) {
+				if (!currentStage) {
+					// 初回. 1つも draw 仕様としていないので submit は不要.
+				}
+				else {
+					currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
+					m_renderFeatureBatchList.lastBatch()->setWorldTransformPtr(currentWorldMatrix);
+					m_renderFeatureBatchList.lastBatch()->setFinalMaterial(currentFinalMaterial);
+					m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
+				}
+				currentWorldMatrix = worldMatrix;
+				currentFinalMaterial = finalMaterial;
+				currentSubsetInfo = subsetInfo;
+				currentStage = stage;
+				m_renderFeatureBatchList.setCurrentStage(currentStage);
+			}
+
+			element->onDraw(graphicsContext, currentStage->renderFeature, &subsetInfo);
+		}
+
+		if (currentStage) {
+			currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
+			m_renderFeatureBatchList.lastBatch()->setWorldTransformPtr(currentWorldMatrix);
+			m_renderFeatureBatchList.lastBatch()->setFinalMaterial(currentFinalMaterial);
+			m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
+		}
+	}
+
+	// Render batch-list.
+	{
+		RenderFeatureBatch* batch = m_renderFeatureBatchList.firstBatch();
+		while (batch)
+		{
+			const RenderStage* stage = batch->stage();
+			const AbstractMaterial* finalMaterial = batch->finalMaterial();
+			const SubsetInfo& subsetInfo = batch->subsetInfo();
+
+			if (!finalMaterial) {
+				// Shader 使わない描画 (clear)
+				batch->render(graphicsContext);
+			}
+			else {
+				ElementInfo elementInfo;
+				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
+				elementInfo.WorldMatrix = (batch->worldTransformPtr()) ? *batch->worldTransformPtr() : Matrix::Identity;
+				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
+				elementInfo.boneTexture = nullptr;	// TODO:
+				elementInfo.boneLocalQuaternionTexture = nullptr;	// TODO:
+
+				ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;	// TODO:
+				ShaderTechnique* tech = pass->selectShaderTechnique(
+					meshProcess,
+					finalMaterial->shader(),
+					stage->getShadingModelFinal(finalMaterial));
+
+				SubsetInfo localSubsetInfo = subsetInfo;
+				if (!localSubsetInfo.materialTexture) {
+					localSubsetInfo.materialTexture = m_manager->graphicsManager()->whiteTexture();
+				}
+
+
+				detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
+				//semanticsManager->updateCameraVariables(cameraInfo);
+				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+				//semanticsManager->updateSubsetVariables(subsetInfo);
+				//if (stage->renderFeature) {
+				//	stage->renderFeature->updateRenderParameters(element, tech, cameraInfo, elementInfo, subsetInfo);
+				//}
+				//else
+				// TODO: ↑SpriteTextRenderer が Font 取るのに使ってる。これは Batch に持っていくべきだろう。
+				{
+					RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, subsetInfo);
+				}
+
+				if (finalMaterial) {
+					PbrMaterialData pbrMaterialData;
+					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
+					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
+					finalMaterial->updateShaderVariables(tech->shader());
+				}
+
+				onSetAdditionalShaderPassVariables(tech->shader());
+
+				for (ShaderPass* pass2 : tech->passes())
+				{
+					graphicsContext->setShaderPass(pass2);
+					batch->render(graphicsContext);
+				}
+			}
+
+
+			batch = batch->next();
+		}
+	}
+
+#else
 	RenderStage* currentStage = nullptr;
 	for (RenderDrawElement* element : m_renderingElementList)
 	{
@@ -230,7 +388,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
 				elementInfo.boneTexture = m_skinningMatricesTexture;
 				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
-                element->onElementInfoOverride(&elementInfo, &meshProcess);
+                //element->onElementInfoOverride(&elementInfo, &meshProcess);
 
 				SubsetInfo subsetInfo;
 				subsetInfo.materialTexture = mainTexture;
@@ -287,142 +445,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 	if (currentStage) {
 		currentStage->flush(graphicsContext);
 	}
-
-#if 0
-
-	//DefaultStatus defaultStatus;
-	//defaultStatus.defaultRenderTarget[0] = defaultRenderTarget;
-	//defaultStatus.defaultRenderTarget[1] = defaultStatus.defaultRenderTarget[2] = defaultStatus.defaultRenderTarget[3] = nullptr;
-	//defaultStatus.defaultDepthBuffer = defaultDepthBuffer;
-
-	//pass->onBeginPass(&defaultStatus, drawElementListSet);
-
-	// DrawElement 描画
-	//int currentBatchIndex = -1;
-	//DrawElementBatch* currentState = nullptr;
-	//Shader* currentShader = nullptr;
-	RenderStage* currentStage = nullptr;
-	for (RenderDrawElement* element : m_renderingElementList)
-	{
-		bool visible = true;
-		//drawArgs.oenerList = element->m_ownerDrawElementList;
-
-		//DrawElementBatch* batch = element->m_ownerDrawElementList->getBatch(element->batchIndex);
-		RenderStage* stage = element->stage();//element->m_ownerDrawElementList->getRenderStage(element->batchIndex);
-
-		// ステートの変わり目チェック
-		//if (element->batchIndex != currentBatchIndex)
-		if (currentStage == nullptr || !currentStage->equals(stage) /*currentState->getHashCode() != batch->getHashCode()*/)
-		{
-			if (currentStage) {
-				currentStage->flush();
-			}
-			//context->flush();
-			//currentBatchIndex = element->batchIndex;
-			currentStage = stage;
-			applyFrameBufferStatus(context, currentStage);
-			//context->applyStatus(currentStage, defaultStatus);
-			//context->switchActiveRenderer(currentState->getRenderFeature());
-			//if (diag != nullptr) diag->changeRenderStage();
-		}
-
-		//context->switchActiveRenderer(element->renderFeature);
-
-		// 固定の内部シェーダを使わない場合はいろいろ設定する
-		//if (currentStage->getRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
-		//	!currentStage->getRenderFeature()->isStandaloneShader())
-		//if (context->getCurrentRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
-		//	!context->getCurrentRenderFeature()->isStandaloneShader())
-		//{
-			if (visible)
-			{
-				ElementInfo elementInfo;
-				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-				elementInfo.WorldMatrix = element->combinedWorldMatrix();
-				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
-				//elementInfo.boneTexture = m_skinningMatricesTexture;
-				//elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
-
-
-
-
-				//for (int i = 0; i < element->subsetCount; i++)
-				//{
-					//CombinedMaterial* material = currentState->getCombinedMaterial();
-					//RenderingPass2::RenderStageFinalData stageData;
-					//stageData.stage = currentStage;
-					//stageData.material = currentStage->getMaterialFinal(m_defaultMaterial, element->getPriorityMaterial(i));
-					//stageData.shader = currentStage->getShaderFinal(stageData.material);
-					//stageData.shadingModel = currentStage->getShadingModelFinal(stageData.material);
-
-					AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(m_defaultMaterial, nullptr);
-
-
-					applyGeometryStatus(context, currentStage, nullptr);
-
-
-
-					//ElementRenderingPolicy policy;
-					//pass->selectElementRenderingPolicy(element, stageData, &policy);
-					//visible = policy.visible;
-
-					ShaderTechnique* tech =  pass->selectShaderTechnique();
-
-					Shader* shader = policy.shader;
-
-
-					SubsetInfo subsetInfo;
-					subsetInfo.renderStage = currentStage;
-					subsetInfo.finalMaterial = stageData.material;
-					subsetInfo.materialTexture = (subsetInfo.finalMaterial != nullptr) ? subsetInfo.finalMaterial->getMaterialTexture(nullptr) : nullptr;
-					element->makeSubsetInfo(element->m_ownerDrawElementList, currentStage, &subsetInfo);
-
-					//currentState->IsStandaloneShaderRenderer
-
-					if (context->getCurrentRenderFeature() != nullptr)
-					{
-						context->getCurrentRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
-					}
-
-					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
-					shader->getSemanticsManager()->updateElementVariables(cameraInfo, elementInfo);
-					shader->getSemanticsManager()->updateSubsetVariables(subsetInfo);
-
-					//material->applyUserShaderValeues(shader);
-					stageData.material->applyUserShaderValeues(shader);
-
-
-					auto* stateManager = context->getRenderStateManager();
-
-					const List<ShaderPass*>& passes = policy.shaderTechnique->getPasses();
-					for (ShaderPass* pass : passes)
-					{
-						onShaderPassChainging(pass);
-						stateManager->setShaderPass(pass);
-
-						if (diag != nullptr) element->reportDiag(diag);
-						element->drawSubset(drawArgs, i);
-					}
-				//}
-			}
-		}
-		//else
-		//{
-		//	// 描画実行
-		//	if (visible)
-		//	{
-		//		if (diag != nullptr) element->reportDiag(diag);
-		//		for (int i = 0; i < element->subsetCount; i++)
-		//		{
-		//			element->drawSubset(drawArgs, i);
-		//		}
-		//	}
-		//}
-
-	}
-
-	//context->flush();
 #endif
+
+
 }
 
 void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)
