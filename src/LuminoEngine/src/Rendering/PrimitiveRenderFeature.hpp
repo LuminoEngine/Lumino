@@ -88,7 +88,7 @@ public:
     {
 		// TODO: toporogy も RenderStage のパラメータに持っていく
         if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
-			submitBatch(context);
+			submitBatch(context, nullptr);
         }
         m_lastPrimitiveType = generator.primitiveType();
 
@@ -106,7 +106,7 @@ public:
 
 
 
-	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }
 

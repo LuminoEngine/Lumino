@@ -89,7 +89,7 @@ class RenderFeature
 public:
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo);
 
-	virtual detail::RenderFeatureBatch* submitBatch(GraphicsContext* context) = 0;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) = 0;
 	virtual void renderBatch(GraphicsContext* context, detail::RenderFeatureBatch* batch) = 0;
 
     // 主に PrimitiveRenderFeature など、バッチ描画を行うクラスのために用意したプロパティ。

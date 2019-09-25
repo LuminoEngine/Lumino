@@ -51,7 +51,7 @@ public:
 	void drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex);
 	//void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 
-	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:

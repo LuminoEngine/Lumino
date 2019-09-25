@@ -231,12 +231,11 @@ void SpriteTextRenderFeature::drawFlexGlyphRun(GraphicsContext* context, const F
 	}
 }
 
-RenderFeatureBatch* SpriteTextRenderFeature::submitBatch(GraphicsContext* context)
+void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
 	flushInternal(context, m_drawingFont->getFontGlyphTextureCache());
 
-	// TODO:
-	return nullptr;
+	// TODO: add batch
 }
 
 void SpriteTextRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

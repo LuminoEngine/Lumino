@@ -152,6 +152,7 @@ public:
 	Optional<bool>				m_depthTestEnabled;
 	Optional<bool>				m_depthWriteEnabled;
 	Optional<ShadingModel>		shadingModel;
+	PrimitiveTopology primitiveTopology;
 
 	GeometryStageParameters()
 	{
@@ -166,6 +167,7 @@ public:
 		m_depthTestEnabled = nullptr;
 		m_depthWriteEnabled = nullptr;
 		shadingModel = nullptr;
+		primitiveTopology = PrimitiveTopology::TriangleList;
 		//builtinEffectData.reset();
 	}
 
@@ -177,7 +179,8 @@ public:
             m_cullingMode == other->m_cullingMode &&
             m_depthTestEnabled == other->m_depthTestEnabled &&
             m_depthWriteEnabled == other->m_depthWriteEnabled &&
-            shadingModel == other->shadingModel;// &&
+            shadingModel == other->shadingModel &&
+			primitiveTopology == other->primitiveTopology;// &&
 			//builtinEffectData.equals(&other->builtinEffectData);
 	}
 

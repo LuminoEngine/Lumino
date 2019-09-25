@@ -73,10 +73,9 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 		});
 }
 
-RenderFeatureBatch* MeshRenderFeature::submitBatch(GraphicsContext* context)
+void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
 	// TODO:
-	return nullptr;
 }
 
 void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

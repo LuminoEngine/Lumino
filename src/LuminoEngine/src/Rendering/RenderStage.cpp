@@ -79,8 +79,8 @@ bool RenderStage::equals(const RenderStage* other) const
 void RenderStage::flush(GraphicsContext* context)
 {
 	if (renderFeature) {
-		// TODO: return
-		renderFeature->submitBatch(context);
+		// TODO: batch list
+		renderFeature->submitBatch(context, nullptr);
 	}
 }
 

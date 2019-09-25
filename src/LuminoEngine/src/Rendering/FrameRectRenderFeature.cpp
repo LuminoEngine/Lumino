@@ -396,7 +396,7 @@ void FrameRectRenderFeature::draw(GraphicsContext* context, const Rect& rect, co
         });
 }
 
-RenderFeatureBatch* FrameRectRenderFeature::submitBatch(GraphicsContext* context)
+void FrameRectRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
 	GraphicsManager* manager = m_internal->manager()->graphicsManager();
 	ICommandList* c = GraphicsContextInternal::commitState(context);
@@ -408,8 +408,7 @@ RenderFeatureBatch* FrameRectRenderFeature::submitBatch(GraphicsContext* context
 			m_internal->flush(c);
 		});
 
-	// TODO:
-	return nullptr;
+	// TODO: add batch
 }
 
 void FrameRectRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

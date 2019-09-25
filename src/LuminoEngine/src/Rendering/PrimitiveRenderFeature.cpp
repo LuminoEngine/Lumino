@@ -183,7 +183,7 @@ void PrimitiveRenderFeature::init(RenderingManager* manager)
 //    m_lastPrimitiveType = PrimitiveType::LineList;
 //}
 
-RenderFeatureBatch* PrimitiveRenderFeature::submitBatch(GraphicsContext* context)
+void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
 	GraphicsManager* manager = m_manager->graphicsManager();
 	ICommandList* c = GraphicsContextInternal::commitState(context);
@@ -197,8 +197,7 @@ RenderFeatureBatch* PrimitiveRenderFeature::submitBatch(GraphicsContext* context
 
 	m_lastPrimitiveType = nullptr;
 
-	// TODO:
-	return nullptr;
+	// TODO: add Batch
 }
 
 void PrimitiveRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

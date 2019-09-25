@@ -48,10 +48,9 @@ void BlitRenderFeature::blit(GraphicsContext* context)
         });
 }
 
-RenderFeatureBatch* BlitRenderFeature::submitBatch(GraphicsContext* context)
+void BlitRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
 	// TODO:
-	return nullptr;
 }
 
 void BlitRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

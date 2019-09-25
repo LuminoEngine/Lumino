@@ -947,10 +947,9 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
         });
 }
 
-RenderFeatureBatch* ShapesRenderFeature::submitBatch(GraphicsContext* context)
+void ShapesRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
 	// TODO:
-	return nullptr;
 }
 
 void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

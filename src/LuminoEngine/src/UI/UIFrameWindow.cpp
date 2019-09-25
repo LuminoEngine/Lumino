@@ -416,9 +416,13 @@ void UIFrameWindow::onUpdateLayout(const Rect& finalGlobalRect)
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
-    if (m_imguiContext.handlePlatformEvent(e)) {
-        return true;
-    }
+	// TODO: test
+	if (0)
+	{
+		if (m_imguiContext.handlePlatformEvent(e)) {
+			return true;
+		}
+	}
 
 	switch (e.type)
 	{

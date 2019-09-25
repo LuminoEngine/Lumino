@@ -43,7 +43,7 @@ public:
 
 	void blit(GraphicsContext* context);
 
-	virtual RenderFeatureBatch* submitBatch(GraphicsContext* context) override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:

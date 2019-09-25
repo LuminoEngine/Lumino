@@ -44,6 +44,7 @@ public:
 	void setCullingMode(const Optional<CullMode>& value);
 	void setDepthTestEnabled(const Optional<bool>& value);
 	void setDepthWriteEnabled(const Optional<bool>& value);
+	void setPrimitiveTopology(PrimitiveTopology value);
 
 	void setShadingModel(const Optional<ShadingModel>& value);
 	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
