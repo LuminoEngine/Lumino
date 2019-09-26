@@ -91,12 +91,16 @@ void SpriteTextRenderFeature::beginRendering()
 	m_cacheTexture = nullptr;
 }
 
+void SpriteTextRenderFeature::endRendering()
+{
+    for (auto& font : m_renderingFonts) {
+        font->endCacheUsing();
+    }
+    m_renderingFonts.clear();
+}
+
 void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
-	if (!m_cacheTexture) {
-		return;	// まだ１度も draw してない
-	}
-
 	if (m_mappedVertices) {
 		// TODO: unmap (今は自動だけど、明示した方が安心かも)
 	}
@@ -104,6 +108,8 @@ void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::Rend
 	auto batch = batchList->addNewBatch<Batch>(this);
 	batch->data = m_batchData;
 	batch->overrideTexture = m_cacheTexture;
+
+    //static_cast<Texture2D*>(m_cacheTexture)->clear(Color::Red);
 
 	m_batchData.spriteOffset = m_batchData.spriteOffset + m_batchData.spriteCount;
 	m_batchData.spriteCount = 0;
@@ -128,10 +134,10 @@ void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, con
 
 void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int spriteCount)
 {
-	if (context) {
 		// TODO: 実行中の map は context->map 用意した方がいいかも
-		LN_NOTIMPLEMENTED();
-	}
+	//if (context) {
+	//	LN_NOTIMPLEMENTED();
+	//}
 
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -179,6 +185,7 @@ RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(de
 	if (font != m_currentFont && m_batchData.spriteCount > 0) {
 		submitBatch(context, batchList);
 		result = RequestBatchResult::Submitted;
+        m_renderingFonts.push_back(font);
 	}
 	m_currentFont = font;
 	return result;
@@ -206,11 +213,13 @@ void SpriteTextRenderFeature::addLayoutedGlyphItem(uint32_t codePoint, const Vec
 RequestBatchResult SpriteTextRenderFeature::resolveCache(detail::RenderFeatureBatchList* batchList, GraphicsContext* context)
 {
 	m_currentFont->getFontGlyphTextureCache(&m_cacheRequest);
-	if (m_cacheTexture != m_cacheRequest.texture) {
+	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
 		submitBatch(context, batchList);
+        m_cacheTexture = m_cacheRequest.texture;
 		return RequestBatchResult::Submitted;
 	}
 	else {
+        m_cacheTexture = m_cacheRequest.texture;
 		return RequestBatchResult::Staging;
 	}
 }

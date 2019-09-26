@@ -52,7 +52,8 @@ public:
 
 protected:
 	// RenderFeature interface
-	virtual void beginRendering();
+	virtual void beginRendering() override;
+    virtual void endRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }
@@ -103,6 +104,7 @@ private:
 	FontGlyphTextureCacheRequest m_cacheRequest;	// 1フレーム中繰り返し使う可変バッファ
 	std::vector<GlyphData> m_glyphLayoutDataList;	// 1フレーム中繰り返し使う可変バッファ
 	Texture* m_cacheTexture;
+    std::vector<Ref<FontCore>> m_renderingFonts;    // バッチ生成～描画終了まで参照を持って、終了時にキャッシュ終了を通知したい
 
 	// for onPlacementGlyph
 	const FormattedText* m_drawingFormattedText;

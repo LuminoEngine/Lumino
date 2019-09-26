@@ -12,6 +12,7 @@ namespace detail {
 	
 FontCore::FontCore()
 	: m_manager(nullptr)
+    , m_activeCacheIndex(0)
 {
 }
 
@@ -49,25 +50,26 @@ void FontCore::finalize()
 
 void FontCore::beginCacheUsing()
 {
-	m_activeCacheIndex = 0;
-	for (auto& cache : m_fontGlyphTextureCacheList) cache->clearIndex();
 }
 
 void FontCore::endCacheUsing()
 {
+	m_activeCacheIndex = 0;
+	for (auto& cache : m_fontGlyphTextureCacheList) cache->clearIndex();
 }
 
 void FontCore::getFontGlyphTextureCache(FontGlyphTextureCacheRequest* inout)
 {
 	for (int i = m_activeCacheIndex; i < m_fontGlyphTextureCacheList.size(); i++) {
-		if (!m_fontGlyphTextureCacheList[i]) {
-			m_fontGlyphTextureCacheList[i] = makeRef<FontGlyphTextureCache>();
-			m_fontGlyphTextureCacheList[i]->init(this);
+		if (!m_fontGlyphTextureCacheList[m_activeCacheIndex]) {
+			m_fontGlyphTextureCacheList[m_activeCacheIndex] = makeRef<FontGlyphTextureCache>();
+			m_fontGlyphTextureCacheList[m_activeCacheIndex]->init(this);
 		}
 
-		if (m_fontGlyphTextureCacheList[i]->requestGlyphs(inout)) {
+		if (m_fontGlyphTextureCacheList[m_activeCacheIndex]->requestGlyphs(inout)) {
 			return;
 		}
+        m_activeCacheIndex++;
 	}
 
 	// TODO: ここまで来た場合は一度にテクスチャに収まりきらないほど大量の文字を書こうとしたか、
