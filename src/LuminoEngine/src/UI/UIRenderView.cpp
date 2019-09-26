@@ -111,6 +111,11 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
                 m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
             }
             m_rootElement->render(m_renderingContext);
+
+
+			// TODO: test
+			m_renderingContext->drawText(u"Lumino", Color::White);
+
             m_renderingContext->m_frameWindowRenderingGraphicsContext = nullptr;
 
             m_adornerLayer->render(m_renderingContext);

@@ -340,6 +340,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 					stage->getShadingModelFinal(finalMaterial));
 
 				SubsetInfo localSubsetInfo = subsetInfo;
+				if (batch->overrideTexture) {
+					localSubsetInfo.materialTexture = batch->overrideTexture;
+				}
 				if (!localSubsetInfo.materialTexture) {
 					localSubsetInfo.materialTexture = m_manager->graphicsManager()->whiteTexture();
 				}

@@ -44,6 +44,8 @@ public:
 	const AbstractMaterial* finalMaterial() const { return m_finalMaterial; }
 	void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
 	const SubsetInfo& subsetInfo() const { return m_subsetInfo; }
+	
+	Texture* overrideTexture = nullptr;
 
 	void render(GraphicsContext* context);
 

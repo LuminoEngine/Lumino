@@ -37,14 +37,43 @@ void FontCore::finalize()
 	dispose();
 }
 
-FontGlyphTextureCache* FontCore::getFontGlyphTextureCache()
+//FontGlyphTextureCache* FontCore::getFontGlyphTextureCache()
+//{
+//	if (!m_fontGlyphTextureCache)
+//	{
+//		m_fontGlyphTextureCache = makeRef<FontGlyphTextureCache>();
+//		m_fontGlyphTextureCache->init(this);
+//	}
+//	return m_fontGlyphTextureCache;
+//}
+
+void FontCore::beginCacheUsing()
 {
-	if (!m_fontGlyphTextureCache)
-	{
-		m_fontGlyphTextureCache = makeRef<FontGlyphTextureCache>();
-		m_fontGlyphTextureCache->init(this);
+	m_activeCacheIndex = 0;
+	for (auto& cache : m_fontGlyphTextureCacheList) cache->clearIndex();
+}
+
+void FontCore::endCacheUsing()
+{
+}
+
+void FontCore::getFontGlyphTextureCache(FontGlyphTextureCacheRequest* inout)
+{
+	for (int i = m_activeCacheIndex; i < m_fontGlyphTextureCacheList.size(); i++) {
+		if (!m_fontGlyphTextureCacheList[i]) {
+			m_fontGlyphTextureCacheList[i] = makeRef<FontGlyphTextureCache>();
+			m_fontGlyphTextureCacheList[i]->init(this);
+		}
+
+		if (m_fontGlyphTextureCacheList[i]->requestGlyphs(inout)) {
+			return;
+		}
 	}
-	return m_fontGlyphTextureCache;
+
+	// TODO: ここまで来た場合は一度にテクスチャに収まりきらないほど大量の文字を書こうとしたか、
+	// 4枚分のキャッシュに収まらないほどの文字を書こうとした。
+	// 後者の場合は、今は現フレームでは使われていない文字もカウントしてしまうので対策の余地はある。
+	LN_NOTIMPLEMENTED();
 }
 
 } // namespace detail

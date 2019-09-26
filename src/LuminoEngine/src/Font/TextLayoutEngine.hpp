@@ -41,7 +41,7 @@ struct FlexGlyphRun
 	FlexText* owner = nullptr;
 	int startIndex = 0;
 	int glyphCount = 0;
-	Ref<FontCore> font;	// TODO: これ Font でいい気がする
+	Ref<Font> font;	// TODO: これ Font でいい気がする
 	Color color;
 	// TODO: ルビとかのサブグリフ用に startIndex, count を用意しておく
 };
@@ -56,7 +56,7 @@ public:
 		m_glyphRuns.clear();
 	}
 
-	void addGlyphRun(FlexGlyph* glyphs, int glyphsCount, FontCore* font, const Color& color)
+	void addGlyphRun(FlexGlyph* glyphs, int glyphsCount, Font* font, const Color& color)
 	{
 		FlexGlyphRun run;
 		run.owner = this;
