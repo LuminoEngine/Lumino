@@ -232,12 +232,13 @@ void RenderFeature::updateRenderParametersDefault(ShaderTechnique* tech, const d
 
 namespace detail {
 
-void ClearRenderFeature::clear(ClearFlags flags, const Color& color, float depth, uint8_t stencil)
+RequestBatchResult ClearRenderFeature::clear(detail::RenderFeatureBatchList* batchList, ClearFlags flags, const Color& color, float depth, uint8_t stencil)
 {
 	m_data.flags = flags;
 	m_data.color = color;
 	m_data.depth = depth;
 	m_data.stencil = stencil;
+	return RequestBatchResult::Staging;
 }
 
 void ClearRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)

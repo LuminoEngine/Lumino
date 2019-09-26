@@ -7,6 +7,7 @@ class GraphicsContext;
 class ShaderTechnique;
 class RenderFeature;
 class AbstractMaterial;
+
 namespace detail {
 class RenderingManager;
 struct CameraInfo;
@@ -139,7 +140,7 @@ namespace detail {
 class ClearRenderFeature : public RenderFeature
 {
 public:
-	void clear(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
+	RequestBatchResult clear(detail::RenderFeatureBatchList* batchList, ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
 protected:
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;

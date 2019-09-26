@@ -258,24 +258,40 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			}
 
 			// Batch 確定
+			RenderFeatureBatch* submittedBatch = nullptr;
 			if (submitRequested) {
 				if (!currentStage) {
 					// 初回. 1つも draw 仕様としていないので submit は不要.
 				}
 				else {
 					currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
-					m_renderFeatureBatchList.lastBatch()->setWorldTransformPtr(currentWorldMatrix);
-					m_renderFeatureBatchList.lastBatch()->setFinalMaterial(currentFinalMaterial);
-					m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
+					submittedBatch = m_renderFeatureBatchList.lastBatch();
 				}
+			}
+
+			auto result = element->onRequestBatch(&m_renderFeatureBatchList, graphicsContext, stage->renderFeature, &subsetInfo);
+			if (result == RequestBatchResult::Submitted) {
+				if (submittedBatch) {
+					// もし↑の submitBatch() でも新しい Batch が作られたなら、onRequestBatch では新しい Batch を作ってはならない
+					// (実際空なので意味はなく、もし作ってしまうと↓でいろいろ set しているものが submitBatch の Batch に掛からなくなってしまう)
+					LN_CHECK(submittedBatch == m_renderFeatureBatchList.lastBatch());
+				}
+				submittedBatch = m_renderFeatureBatchList.lastBatch();
+			}
+
+			if (submittedBatch) {
+				submittedBatch->setWorldTransformPtr(currentWorldMatrix);
+				submittedBatch->setFinalMaterial(currentFinalMaterial);
+				submittedBatch->setSubsetInfo(currentSubsetInfo);
+			}
+
+			if (submitRequested) {
 				currentWorldMatrix = worldMatrix;
 				currentFinalMaterial = finalMaterial;
 				currentSubsetInfo = subsetInfo;
 				currentStage = stage;
 				m_renderFeatureBatchList.setCurrentStage(currentStage);
 			}
-
-			element->onDraw(graphicsContext, currentStage->renderFeature, &subsetInfo);
 		}
 
 		if (currentStage) {
@@ -284,6 +300,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 			m_renderFeatureBatchList.lastBatch()->setFinalMaterial(currentFinalMaterial);
 			m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
 		}
+
 	}
 
 	// Render batch-list.

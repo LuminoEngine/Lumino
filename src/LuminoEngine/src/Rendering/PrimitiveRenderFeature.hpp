@@ -84,7 +84,7 @@ public:
 
     //void drawMeshGenerater(const MeshGenerater* generator);
     template<class TFactory>
-    void drawMeshGenerater(GraphicsContext* context, const TFactory& generator)
+	RequestBatchResult drawMeshGenerater(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const TFactory& generator)
     {
 		//// TODO: toporogy も RenderStage のパラメータに持っていく
   //      if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
@@ -99,6 +99,8 @@ public:
             {
                 m_internal->drawMeshGenerater(&generator);
             });
+
+		return RequestBatchResult::Staging;
     }
 
 
@@ -123,7 +125,7 @@ public:
 	PrimitiveRenderFeature();
 	void init();
 
-	void drawPrimitive(VertexLayout* vertexLayout, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount);
+	RequestBatchResult drawPrimitive(detail::RenderFeatureBatchList* batchList, VertexLayout* vertexLayout, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount);
 
 	virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;

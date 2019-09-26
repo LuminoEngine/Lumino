@@ -289,12 +289,15 @@ class DrawShapesElement : public RenderDrawElement
 public:
 	ShapesRendererCommandList commandList;
 
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
-    {
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+	{
 		m_srcTextureSize.width = subsetInfo->materialTexture->width();
 		m_srcTextureSize.height = subsetInfo->materialTexture->height();
 
-		static_cast<detail::ShapesRenderFeature*>(renderFeatures)->renderCommandList(context, commandList);
+		static_cast<detail::ShapesRenderFeature*>(renderFeature)->renderCommandList(context, commandList);
+
+		LN_NOTIMPLEMENTED();
+		return RequestBatchResult::Staging;
     }
 
 private:

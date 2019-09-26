@@ -94,13 +94,16 @@ public:
     Rect srcRect;
     BrushWrapMode wrapMode;
 
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
-    {
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+	{
 		m_srcTextureSize.width = subsetInfo->materialTexture->width();
 		m_srcTextureSize.height = subsetInfo->materialTexture->height();
 
-		static_cast<detail::FrameRectRenderFeature*>(renderFeatures)->draw(
+		static_cast<detail::FrameRectRenderFeature*>(renderFeature)->draw(
             context, rect, transform, imageDrawMode, borderThickness, srcRect, wrapMode, m_srcTextureSize);
+
+		LN_NOTIMPLEMENTED();
+		return RequestBatchResult::Staging;
     }
 
 private:

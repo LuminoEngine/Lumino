@@ -47,7 +47,7 @@ public:
 	MeshRenderFeature();
 	void init(RenderingManager* manager);
 
-	void drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex);
+	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
 
 	virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;

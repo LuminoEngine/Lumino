@@ -43,7 +43,7 @@ public:
     BlitRenderFeature();
 	void init(RenderingManager* manager);
 
-	void blit(GraphicsContext* context);
+	RequestBatchResult blit(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
 
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;

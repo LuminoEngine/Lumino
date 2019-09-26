@@ -16,6 +16,7 @@ namespace detail {
 class RenderStage;
 class DrawElementList;
 class DrawElementListBuilder;
+class RenderFeatureBatchList;
 struct ElementInfo;
 struct SubsetInfo;
 
@@ -237,7 +238,7 @@ public:
 	// ステートは RenderFeature::onStateChanged に通知済み。
 	// もしどうしてもステートを変更したい場合、描画した後は必ず元に戻さなければならない。
 	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
-	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature, const SubsetInfo* subsetInfo) = 0;
+	virtual RequestBatchResult onRequestBatch(RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const SubsetInfo* subsetInfo) = 0;
 
     // DrawElementListBuilder で DrawElement が作られたときに確定する。
 	const Matrix& combinedWorldMatrix() const { return m_combinedWorldMatrix; }

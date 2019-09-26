@@ -26,9 +26,9 @@ void MeshRenderFeature::init(RenderingManager* manager)
 	RenderFeature::init();
 }
 
-void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
 {
-	if (LN_REQUIRE(mesh != nullptr)) return;
+	if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 	auto* _this = this;
 
 	MeshSection section;
@@ -49,11 +49,12 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 	data.primitiveCount = section.primitiveCount;
 	data.primitiveType = PrimitiveTopology::TriangleList;
 
-	if (LN_REQUIRE(data.vertexBuffers[0])) return;
-	if (data.primitiveCount <= 0) return;
+	if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
+	if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
 
 	m_meshes.push_back(std::move(data));
 	m_batchData.count++;
+	return RequestBatchResult::Staging;
 }
 
 void MeshRenderFeature::beginRendering()

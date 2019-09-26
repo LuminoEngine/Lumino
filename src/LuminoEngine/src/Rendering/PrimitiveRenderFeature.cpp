@@ -220,10 +220,11 @@ void PrimitiveRenderFeature::init()
 	m_batchData.count = 0;
 }
 
-void PrimitiveRenderFeature::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount)
+RequestBatchResult PrimitiveRenderFeature::drawPrimitive(detail::RenderFeatureBatchList* batchList, VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount)
 {
 	m_primitives.add({ vertexDeclaration, vertexBuffer, startVertex, primitiveCount });
 	m_batchData.count++;
+	return RequestBatchResult::Staging;
 }
 
 void PrimitiveRenderFeature::beginRendering()

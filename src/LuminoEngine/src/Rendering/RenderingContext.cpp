@@ -150,10 +150,10 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
 		float z;
 		uint8_t stencil;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
 #ifdef LN_RENDERING_MIGRATION
-			static_cast<detail::ClearRenderFeature*>(renderFeatures)->clear(flags, color, z, stencil);
+			return static_cast<detail::ClearRenderFeature*>(renderFeature)->clear(batchList, flags, color, z, stencil);
 #else
 			context->clear(flags, color, z, stencil);
 #endif
@@ -179,9 +179,9 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     public:
         detail::SingleLineGenerater data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
         {
-            static_cast<detail::MeshGeneraterRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(context, data);
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::SingleLineGenerater>(batchList, context, data);
         }
     };
 
@@ -204,9 +204,9 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
     public:
         detail::PlaneMeshGenerater data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
-        {
-            static_cast<detail::MeshGeneraterRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(context, data);
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::PlaneMeshGenerater>(batchList, context, data);
         }
     };
 
@@ -226,9 +226,9 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     public:
         detail::RegularSphereMeshFactory data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
-        {
-            static_cast<detail::MeshGeneraterRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(context, data);
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::RegularSphereMeshFactory>(batchList, context, data);
         }
     };
 
@@ -255,9 +255,9 @@ void RenderingContext::drawScreenRectangle()
     class DrawScreenRectangle : public detail::RenderDrawElement
     {
     public:
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
-        {
-            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+            return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, context);
         }
     };
 
@@ -322,9 +322,9 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 	class Blit : public detail::RenderDrawElement
 	{
 	public:
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-			static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
+			return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, context);
 		}
 	};
 
@@ -370,11 +370,11 @@ void RenderingContext::drawSprite(
 		BillboardType billboardType;
         detail::SpriteFlipFlags flipFlags;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
 #ifdef LN_RENDERING_MIGRATION
-			static_cast<detail::SpriteRenderFeature2*>(renderFeatures)->drawRequest(
-				context, combinedWorldMatrix() * transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+			return static_cast<detail::SpriteRenderFeature2*>(renderFeature)->drawRequest(
+				batchList, context, combinedWorldMatrix() * transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
 #else
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
 				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
@@ -420,9 +420,9 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 		int startVertex;
 		int primitiveCount;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-			static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawPrimitive(vertexLayout, vertexBuffer, startVertex, primitiveCount);
+			return static_cast<detail::PrimitiveRenderFeature*>(renderFeature)->drawPrimitive(batchList, vertexLayout, vertexBuffer, startVertex, primitiveCount);
 		}
 	};
 
@@ -492,10 +492,10 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
         //    }
         //}
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
-        {
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
 			// TODO: boneTexture を送る仕組み
-            static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, meshResource, sectionIndex);
+            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, meshResource, sectionIndex);
         }
     };
 

@@ -49,7 +49,7 @@ void BlitRenderFeature::init(RenderingManager* manager)
 #endif
 }
 
-void BlitRenderFeature::blit(GraphicsContext* context)
+RequestBatchResult BlitRenderFeature::blit(detail::RenderFeatureBatchList* batchList, GraphicsContext* context)
 {
 #ifdef LN_RENDERING_MIGRATION
 	// blit は基本的にステート変更ごとに単発である。
@@ -66,6 +66,7 @@ void BlitRenderFeature::blit(GraphicsContext* context)
             _this->blitImplOnRenderThread(c);
         });
 #endif
+	return RequestBatchResult::Staging;
 }
 
 void BlitRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)

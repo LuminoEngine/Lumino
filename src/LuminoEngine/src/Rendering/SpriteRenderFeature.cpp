@@ -537,7 +537,8 @@ void SpriteRenderFeature2::init(RenderingManager* manager)
 	m_batchData.spriteCount = 0;
 }
 
-void SpriteRenderFeature2::drawRequest(
+RequestBatchResult SpriteRenderFeature2::drawRequest(
+	detail::RenderFeatureBatchList* batchList,
 	GraphicsContext* context,
 	const Matrix& transform,
 	const Vector2& size,
@@ -744,6 +745,7 @@ void SpriteRenderFeature2::drawRequest(
 	}
 
 	m_batchData.spriteCount++;
+	return RequestBatchResult::Staging;
 }
 
 void SpriteRenderFeature2::onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo)

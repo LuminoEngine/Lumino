@@ -216,8 +216,8 @@ int main(int argc, char** argv)
 	sprite1->addComponent(m_rigidBody);
 	Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
-	//auto sprite2 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
-	//sprite2->setPosition(1, 0, 0);
+	auto sprite2 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
+	sprite2->setPosition(1, 0, 1);
 
 #if 0
     auto window1 = UIWindow::create();

@@ -121,6 +121,14 @@ struct FrameBuffer
 	Ref<DepthBuffer> depthBuffer;
 };
 
+
+enum class RequestBatchResult
+{
+	Staging,	// request はステージされ、まだ Batch 化されていない
+	Submitted,	// 直前までの request は submit され、List に新しい Batch が追加された。最新の request はステージされ、まだ Batch 化されていない。
+				// なお、State が変わったため新しい Batch を作りたいとき、Batch の中身が 0 であるときは作ってはならない。
+};
+
 namespace detail {
 
 

@@ -129,14 +129,17 @@ public:
 		}
 	}
 
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
-    {
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+	{
 		if (glyphRun) {
-			static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawFlexGlyphRun(context, glyphRun, combinedWorldMatrix());
+			static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(context, glyphRun, combinedWorldMatrix());
 		}
 		else {
-			static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawText(context, formattedText, combinedWorldMatrix());
+			static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(context, formattedText, combinedWorldMatrix());
 		}
+
+		LN_NOTIMPLEMENTED();
+		return RequestBatchResult::Staging;
     }
 };
 
@@ -152,9 +155,12 @@ public:
 		return FontHelper::resolveFontCore(font, dpiScale);
 	}
 
-	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const SubsetInfo* subsetInfo) override
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 	{
-		static_cast<detail::SpriteTextRenderFeature*>(renderFeatures)->drawChar(context, codePoint, color, combinedWorldMatrix());
+		static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawChar(context, codePoint, color, combinedWorldMatrix());
+
+		LN_NOTIMPLEMENTED();
+		return RequestBatchResult::Staging;
 	}
 };
 

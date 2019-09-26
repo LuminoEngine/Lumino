@@ -199,7 +199,8 @@ public:
 	// srcRect は UV 座標系上の値を設定する。 (通常0～1)
 	// 以前は 2D メインな Sprite なのでピクセル単位で指定していたが、
 	// 考え方として他の RenderFeature と同様に「最終的な描画に使うメッシュを作る」方針で統一したい。
-	void drawRequest(
+	RequestBatchResult drawRequest(
+		detail::RenderFeatureBatchList* batchList,
 		GraphicsContext* context,
 		const Matrix& transform,
 		const Vector2& size,
