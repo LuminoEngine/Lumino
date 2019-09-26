@@ -495,7 +495,6 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
         virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
         {
 			// TODO: boneTexture を送る仕組み
-			LN_NOTIMPLEMENTED();
             static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, meshResource, sectionIndex);
         }
     };

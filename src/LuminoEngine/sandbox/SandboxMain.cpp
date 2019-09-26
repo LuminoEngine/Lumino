@@ -208,7 +208,7 @@ int main(int argc, char** argv)
     auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
 
 	auto m_rigidBody = ln::RigidBody2DComponent::create();
-	m_rigidBody->addCollisionShape(ln::BoxCollisionShape2D::create(2, 2));
+	m_rigidBody->addCollisionShape(ln::BoxCollisionShape2D::create(5, 2));
 	m_rigidBody->setMass(0);
 	m_rigidBody->setFixedRotation(true);
 	m_rigidBody->setCollisionGroup(0x8000);

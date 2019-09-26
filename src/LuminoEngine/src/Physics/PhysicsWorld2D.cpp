@@ -685,6 +685,7 @@ public:
 	{
         context->pushState();
         context->setBlendMode(BlendMode::Alpha);
+		context->setShadingModel(ShadingModel::UnLighting);
 
 		context->drawPrimitive(
 			detail::EngineDomain::renderingManager()->standardVertexDeclaration(),

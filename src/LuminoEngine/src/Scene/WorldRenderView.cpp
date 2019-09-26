@@ -22,7 +22,7 @@ namespace ln {
 // WorldRenderView
 
 WorldRenderView::WorldRenderView()
-    : m_visibleGridPlane(false)
+    : m_visibleGridPlane(true)
     , m_physicsDebugDrawEnabled(false)
 {
 }

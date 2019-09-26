@@ -85,11 +85,14 @@ public:
 	void drawFlexGlyphRun(GraphicsContext* context, const FlexGlyphRun* glyphRun, const Matrix& transform);
 
 protected:
+	// RenderFeature interface
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual void updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo) override;
-	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
     virtual bool drawElementTransformNegate() const override { return true; }
+
+	// TextLayoutEngine interface
+	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
 
 private:
 	void addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform);

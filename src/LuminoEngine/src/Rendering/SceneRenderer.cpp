@@ -338,7 +338,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 				//else
 				// TODO: ↑SpriteTextRenderer が Font 取るのに使ってる。これは Batch に持っていくべきだろう。
 				{
-					RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, subsetInfo);
+					RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, localSubsetInfo);
 				}
 
 				if (finalMaterial) {
