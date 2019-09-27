@@ -904,6 +904,7 @@ void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int 
 	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
 	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
 	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
+	// TODO: ↑Radeon で稀に吹っ飛ぶ
 	if (m_currentIndexBuffer->format() == IndexBufferFormat::UInt16)
 	{
 		GL_CHECK(glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex)));

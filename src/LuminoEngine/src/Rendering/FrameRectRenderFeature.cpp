@@ -87,6 +87,7 @@ void FrameRectRenderFeature::renderBatch(GraphicsContext* context, RenderFeature
 	context->setIndexBuffer(m_indexBuffer);
 	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
 
+	// TODO: ここじゃなくて begin か end で
 	m_batchData.spriteOffset = 0;
 	m_batchData.spriteCount = 0;
 }

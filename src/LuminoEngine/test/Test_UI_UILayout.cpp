@@ -8,20 +8,20 @@ class Test_UI_UILayout : public LuminoSceneTest {};
 //## Basic
 TEST_F(Test_UI_UILayout, Basic)
 {
-	//- [ ] Default
-	{
-		auto e1 = makeObject<UIElement>();
-		e1->setHorizontalAlignment(HAlignment::Left);
-		e1->setVerticalAlignment(VAlignment::Top);
-		e1->setBackgroundColor(Color::Red);
-		e1->setWidth(80);
-		e1->setHeight(60);
-		Engine::mainUIRoot()->addElement(e1);
+	////- [ ] Default
+	//{
+	//	auto e1 = makeObject<UIElement>();
+	//	e1->setHorizontalAlignment(HAlignment::Left);
+	//	e1->setVerticalAlignment(VAlignment::Top);
+	//	e1->setBackgroundColor(Color::Red);
+	//	e1->setWidth(80);
+	//	e1->setHeight(60);
+	//	Engine::mainUIRoot()->addElement(e1);
 
-		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-1.png"));
-		LN_TEST_CLEAN_SCENE;
-	}
+	//	TestEnv::updateFrame();
+	//	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-1.png"));
+	//	LN_TEST_CLEAN_SCENE;
+	//}
 
 	{
         auto parent1 = makeObject<UIContainerElement>();
