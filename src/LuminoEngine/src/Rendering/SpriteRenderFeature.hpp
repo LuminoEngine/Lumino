@@ -241,6 +241,8 @@ private:
 	Matrix m_viewInverseMatrix;
 	Vector3 m_viewDirection;
 	Vector3 m_viewPosition;
+
+	// sprite-batching
 	Ref<VertexLayout> m_vertexLayout;
 	Ref<VertexBuffer> m_vertexBuffer;
 	Ref<IndexBuffer> m_indexBuffer;

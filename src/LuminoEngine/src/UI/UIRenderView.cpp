@@ -111,10 +111,6 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
                 m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
             }
 
-            // TODO: test
-            m_renderingContext->setBlendMode(BlendMode::Alpha);
-            m_renderingContext->drawText(u"Lumino", Color::White);
-
             m_rootElement->render(m_renderingContext);
 
 

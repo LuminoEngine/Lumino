@@ -549,6 +549,8 @@ RequestBatchResult SpriteRenderFeature2::drawRequest(
 	BillboardType billboardType,
 	SpriteFlipFlags flipFlags)
 {
+	// TODO: buffer おおきくする
+
 	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
 	auto* vertices = m_mappedVertices + ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
 

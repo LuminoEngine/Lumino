@@ -152,8 +152,8 @@ public:
 //	virtual void onFontDataChanged(const ln::detail::FontData& newData);
 
 	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale);
-	const detail::FontDesc& finalFontDesc() const { return m_finalFontDesc; }
-
+	//const detail::FontDesc& finalFontDesc() const { return m_finalFontDesc; }
+	const Ref<Font>& finalFont() const { return m_finalFont; }
 
 	virtual Size measureLayout(const Size& constraint) { return Size::Zero; }
 	virtual Size arrangeLayout(const Size& areaSize) { return Size::Zero; }
@@ -177,7 +177,7 @@ private:
 	Optional<float> m_fontSize;
 	Optional<UIFontWeight> m_fontWeight;
 	Optional<UIFontStyle> m_fontStyle;
-	detail::FontDesc m_finalFontDesc;
+	Ref<Font> m_finalFont;	// TODO: これと、updateFontDescHierarchical での作成処理は Run にだけあればいいので、派生側に移動した方がメモリ消費少なくて済む
 
 	//ln::detail::DocumentsManager*		m_manager;
 	//TextElement*						m_parent;
@@ -258,7 +258,8 @@ public:
 	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale) override
 	{
 		RTInline::updateFontDescHierarchical(parent, defaultFont, dpiScale);
-		m_rawFont = detail::EngineDomain::fontManager()->lookupFontCore(finalFontDesc(), dpiScale);
+
+		//m_rawFont = detail::EngineDomain::fontManager()->lookupFontCore(finalFontDesc(), dpiScale);
 	}
 
 	virtual void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset) override;
@@ -283,7 +284,7 @@ private:
 	//ln::detail::SimpleStringBuilder<UTF32>	m_text;
 	//Ref<GlyphRun>				m_glyphRun;
 	String m_text;
-	Ref<detail::FontCore> m_rawFont;
+	//Ref<detail::FontCore> m_rawFont;
 	//List<RTGlyph> m_glyphs;
 	std::vector<detail::FlexGlyph> m_glyphs;
 	//Ref<detail::FlexGlyphRun> m_flexGlyphRun;
@@ -349,17 +350,29 @@ private:
 
 void RTTextElement::updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale)
 {
+	if (!m_finalFont) {
+		m_finalFont = makeObject<Font>();
+	}
+
 	if (parent) {
-		m_finalFontDesc.Family = (m_fontFamily) ? m_fontFamily.value() : parent->m_finalFontDesc.Family;
-		m_finalFontDesc.Size = (m_fontSize) ? m_fontSize.value() : parent->m_finalFontDesc.Size;
-		m_finalFontDesc.isBold = (m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parent->m_finalFontDesc.isBold;
-		m_finalFontDesc.isItalic = (m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : parent->m_finalFontDesc.isItalic;
+		m_finalFont->setFamily((m_fontFamily) ? m_fontFamily.value() : parent->m_finalFont->family());
+		m_finalFont->setSize((m_fontSize) ? m_fontSize.value() : parent->m_finalFont->size());
+		m_finalFont->setBold((m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parent->m_finalFont->isBold());
+		m_finalFont->setItalic((m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : parent->m_finalFont->isItalic());
+		//m_finalFontDesc.Family = (m_fontFamily) ? m_fontFamily.value() : parent->m_finalFontDesc.Family;
+		//m_finalFontDesc.Size = (m_fontSize) ? m_fontSize.value() : parent->m_finalFontDesc.Size;
+		//m_finalFontDesc.isBold = (m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parent->m_finalFontDesc.isBold;
+		//m_finalFontDesc.isItalic = (m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : parent->m_finalFontDesc.isItalic;
 	}
 	else {
-		m_finalFontDesc.Family = (m_fontFamily) ? m_fontFamily.value() : defaultFont.Family;
-		m_finalFontDesc.Size = (m_fontSize) ? m_fontSize.value() : defaultFont.Size;
-		m_finalFontDesc.isBold = (m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : defaultFont.isBold;
-		m_finalFontDesc.isItalic = (m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : defaultFont.isItalic;
+		m_finalFont->setFamily((m_fontFamily) ? m_fontFamily.value() : defaultFont.Family);
+		m_finalFont->setSize((m_fontSize) ? m_fontSize.value() : defaultFont.Size);
+		m_finalFont->setBold((m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : defaultFont.isBold);
+		m_finalFont->setItalic((m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : defaultFont.isItalic);
+		//m_finalFontDesc.Family = (m_fontFamily) ? m_fontFamily.value() : defaultFont.Family;
+		//m_finalFontDesc.Size = (m_fontSize) ? m_fontSize.value() : defaultFont.Size;
+		//m_finalFontDesc.isBold = (m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : defaultFont.isBold;
+		//m_finalFontDesc.isItalic = (m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : defaultFont.isItalic;
 	}
 }
 
@@ -416,8 +429,8 @@ void RTRun::updateVisualData(RTDocument* document, const Size& areaSize, const V
 
 #endif
 
-	LN_NOTIMPLEMENTED();	// TODO: m_rawFontの部分をかえた
-		//document->flexText()->addGlyphRun(m_glyphs.data(), m_glyphs.size(), m_rawFont, Color::White);
+	//LN_NOTIMPLEMENTED();	// TODO: m_rawFontの部分をかえた
+	document->flexText()->addGlyphRun(m_glyphs.data(), m_glyphs.size(), finalFont(), Color::White);
 }
 
 void RTRun::addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset)

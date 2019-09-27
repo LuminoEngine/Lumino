@@ -8,7 +8,78 @@
 namespace ln {
 namespace detail {
 
+#if 1
 
+// 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
+// TODO: 後で消す。
+class FrameRectRenderFeatureStageParameters
+	: public RenderFeatureStageParameters
+{
+public:
+	FrameRectRenderFeatureStageParameters()
+		: RenderFeatureStageParameters(CRCHash::compute("FrameRectRenderFeatureStageParameters"))
+	{
+	}
+
+	virtual bool equals(const RenderFeatureStageParameters* other) override
+	{
+		if (typeId() != other->typeId()) return false;
+		if (this == other) return true;
+		return true;
+	}
+
+	virtual void copyTo(RenderFeatureStageParameters* params) override
+	{
+		LN_CHECK(typeId() == params->typeId());
+	}
+
+private:
+};
+
+class FrameRectRenderFeature
+	: public RenderFeature
+{
+public:
+	FrameRectRenderFeature();
+	void init(RenderingManager* manager);
+
+	RequestBatchResult drawRequest(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
+
+protected:
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual bool drawElementTransformNegate() const override { return true; }
+
+private:
+	struct BatchData
+	{
+		int spriteOffset;
+		int spriteCount;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
+	void prepareBuffers(GraphicsContext* context, int spriteCount);
+	void addSprite(GraphicsContext* context, const Vector3& pos0, const Vector2& uv0, const Vector3& pos1, const Vector2& uv1, const Vector3& pos2, const Vector2& uv2, const Vector3& pos3, const Vector2& uv3);
+	void putRectangleStretch(GraphicsContext* context, const Rect& rect, const Rect& srcUVRect);
+	void putRectangleTiling(GraphicsContext* context, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect);
+	void putRectangle(GraphicsContext* context, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, BrushWrapMode wrapMode);
+	void putFrameRectangle(GraphicsContext* context, const Rect& rect, const Thickness& borderThickness, Rect srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
+
+	// sprite-batching
+	Ref<VertexLayout> m_vertexLayout;
+	Ref<VertexBuffer> m_vertexBuffer;
+	Ref<IndexBuffer> m_indexBuffer;
+	int m_buffersReservedSpriteCount;
+	BatchData m_batchData;
+	Vertex* m_mappedVertices;
+};
+
+#else
 
 class InternalFrameRectRenderer
     : public RefObject
@@ -83,6 +154,7 @@ protected:
 private:
 	Ref<InternalFrameRectRenderer> m_internal;
 };
+#endif
 
 class DrawFrameRectElement : public RenderDrawElement
 {
@@ -99,11 +171,8 @@ public:
 		m_srcTextureSize.width = subsetInfo->materialTexture->width();
 		m_srcTextureSize.height = subsetInfo->materialTexture->height();
 
-		static_cast<detail::FrameRectRenderFeature*>(renderFeature)->draw(
+		return static_cast<detail::FrameRectRenderFeature*>(renderFeature)->drawRequest(
             context, rect, transform, imageDrawMode, borderThickness, srcRect, wrapMode, m_srcTextureSize);
-
-		LN_NOTIMPLEMENTED();
-		return RequestBatchResult::Staging;
     }
 
 private:

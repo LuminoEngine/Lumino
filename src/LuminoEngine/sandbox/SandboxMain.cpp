@@ -238,12 +238,13 @@ int main(int argc, char** argv)
 
  //   window1->setLayoutPanel(UIStackLayout::create());
 
- //   auto text1 = UITextBlock::create();
- //   text1->setText(u"ABCDEFGabcdefg");
- //   //text1->setFontFamily(u"M+ 1c");
- //   text1->setFontSize(20);
- //   //text1->setTextColor(Color::White);
- //   window1->addElement(text1);
+    auto text1 = UITextBlock::create();
+    text1->setText(u"ABCDEFGabcdefg");
+    //text1->setFontFamily(u"M+ 1c");
+    //text1->setFontSize(20);
+    //text1->setTextColor(Color::White);
+    //window1->addElement(text1);
+	Engine::mainWindow()->addElement(text1);
 
  //   auto text2 = UITextBlock::create();
  //   text2->setText(u"sc");

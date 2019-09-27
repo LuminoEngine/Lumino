@@ -45,6 +45,7 @@ public:
 	void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
 	const SubsetInfo& subsetInfo() const { return m_subsetInfo; }
 	
+	// SpriteText で使っている。 TODO: これは MaskTexture みたいな位置づけにしてもいいかも。
 	Texture* overrideTexture = nullptr;
 
 	void render(GraphicsContext* context);

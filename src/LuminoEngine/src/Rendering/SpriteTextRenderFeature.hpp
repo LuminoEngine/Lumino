@@ -95,12 +95,15 @@ private:
 
 	RenderingManager* m_manager;
 	FontCore* m_currentFont;
+
+	// sprite-batching
 	Ref<VertexLayout> m_vertexLayout;
 	Ref<VertexBuffer> m_vertexBuffer;
 	Ref<IndexBuffer> m_indexBuffer;
 	int m_buffersReservedSpriteCount;
 	BatchData m_batchData;
 	Vertex* m_mappedVertices;
+
 	FontGlyphTextureCacheRequest m_cacheRequest;	// 1フレーム中繰り返し使う可変バッファ
 	std::vector<GlyphData> m_glyphLayoutDataList;	// 1フレーム中繰り返し使う可変バッファ
 	Texture* m_cacheTexture;
