@@ -206,6 +206,7 @@ UIElement* UIInputInjector::mouseHoveredElement()
 UIFrameWindow::UIFrameWindow()
 	: m_autoDisposePlatformWindow(true)
 	, m_updateMode(UIFrameWindowUpdateMode::Polling)
+	, m_ImGuiLayerEnabled(false)
 {
 }
 
@@ -281,7 +282,9 @@ void UIFrameWindow::renderContents()
 {
 	assert(!m_depthBuffer);
 
-    m_imguiContext.updateFrame(0.0166f);
+	if (m_ImGuiLayerEnabled) {
+		m_imguiContext.updateFrame(0.0166f);
+	}
 
 	m_renderingGraphicsContext = m_swapChain->beginFrame();
 
@@ -309,9 +312,9 @@ void UIFrameWindow::present()
 
     detail::EngineDomain::effectManager()->testDraw();
 
-	// TODO: test
-	if (0)
+	if (m_ImGuiLayerEnabled)
 	{
+
 		// Platform NewFrame
 		{
 			ImGuiIO& io = ImGui::GetIO();
@@ -320,17 +323,21 @@ void UIFrameWindow::present()
 		}
 
 		ImGui::NewFrame();
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 
 
-		if (ImGui::Button("Button"))
-			printf("click\n");
-		ImGui::SameLine();
+		m_onImGuiLayer.raise(nullptr);
 
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
+		//ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+		//ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+
+		//if (ImGui::Button("Button"))
+		//	printf("click\n");
+		//ImGui::SameLine();
+
+		//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		//ImGui::End();
 
 		ImGui::EndFrame();
 
@@ -416,9 +423,7 @@ void UIFrameWindow::onUpdateLayout(const Rect& finalGlobalRect)
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
-	// TODO: test
-	if (0)
-	{
+	if (m_ImGuiLayerEnabled) {
 		if (m_imguiContext.handlePlatformEvent(e)) {
 			return true;
 		}

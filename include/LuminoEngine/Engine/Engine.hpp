@@ -51,7 +51,7 @@ public:
 	static const Path& persistentDataPath();
 
     /** メインウィンドウのタイトルバーに、秒間の平均 FPS を表示します。簡易的なパフォーマンス測定に利用できます。(default: false) */
-    static void setShowDebugFpsEnabled(bool enabled);
+    //static void setShowDebugFpsEnabled(bool enabled);
 
 	static GraphicsContext* graphicsContext();
     static UIContext* mainUIContext();

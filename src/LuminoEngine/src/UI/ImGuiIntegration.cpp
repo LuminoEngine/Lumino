@@ -197,10 +197,22 @@ void ImGuiContext::render(GraphicsContext* graphicsContext)
 
 bool ImGuiContext::handlePlatformEvent(const detail::PlatformEventArgs& e)
 {
-    if (ImGui::GetCurrentContext() == NULL)
-        return 0;
+    if (!ImGui::GetCurrentContext())
+        return false;
 
-    ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
+
+
+	//if (ImGui::IsWindowFocused())
+	//{
+	//	printf("IsWindowFocused\n");
+	//	ImVec2 r_min, r_max;
+	//	if (ImGui::IsMouseHoveringRect(r_min, r_max)) {
+	//		printf("hob\n");
+	//	}
+	//}
+
+
 
     switch (e.type)
     {
@@ -213,7 +225,8 @@ bool ImGuiContext::handlePlatformEvent(const detail::PlatformEventArgs& e)
             if (e.mouse.button == MouseButtons::X1) { button = 3; }
             if (e.mouse.button == MouseButtons::X2) { button = 4; }
             io.MouseDown[button] = true;
-            return true;
+            //return true;
+			break;
         }
         case PlatformEventType::MouseUp:
         {
@@ -224,29 +237,39 @@ bool ImGuiContext::handlePlatformEvent(const detail::PlatformEventArgs& e)
             if (e.mouse.button == MouseButtons::X1) { button = 3; }
             if (e.mouse.button == MouseButtons::X2) { button = 4; }
             io.MouseDown[button] = false;
-            return true;
+			//return true;
+			break;
         }
         case PlatformEventType::MouseMove:
         {
             auto clientPt = e.sender->pointFromScreen(PointI(e.mouseMove.screenX, e.mouseMove.screenY));
             io.MousePos = ImVec2((float)clientPt.x, (float)clientPt.y);
-            break;
+			//return true;
+			break;
         }
         case PlatformEventType::MouseWheel:
             io.MouseWheel += e.wheel.delta;
-            return true;
+			//return true;
+			break;
         case PlatformEventType::KeyDown:
             io.KeysDown[(int)e.key.keyCode] = 1;
-            return true;
+			//return true;
+			break;
         case PlatformEventType::KeyUp:
             io.KeysDown[(int)e.key.keyCode] = 0;
-            return true;
+			//return true;
+			break;
         case PlatformEventType::KeyChar:io.AddInputCharacter(e.key.keyChar);
-            return true;
+			//return true;
+			break;
         default:
             break;
     }
-    return false;
+
+	return io.WantCaptureMouse;
+	//if (!io.WantCaptureMouse)
+	//	return false;
+    //return false;
 }
 
 } // namespace detail

@@ -89,6 +89,8 @@ public:
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
 	void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
 
+	void setImGuiLayerEnabled(bool value) { m_ImGuiLayerEnabled = value; }
+
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
@@ -120,7 +122,9 @@ public:  // TODO: internal
 	detail::ImGuiContext m_imguiContext;
 
 	Event<UIEventHandler> m_onClosed;
+	Event<UIEventHandler> m_onImGuiLayer;
 	bool m_autoDisposePlatformWindow;
+	bool m_ImGuiLayerEnabled;
 
 private:
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
