@@ -111,6 +111,11 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
             if (clearMode() == RenderViewClearMode::ColorAndDepth) {
                 m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
             }
+            else {
+                // TODO: 今のところ必ずこのあたりで Depth クリアしておかないと、バックバッファに対応する Depth をクリアするタイミングが無くなる。
+                // SceneRenderer にデフォルトの描画先として RenderTarget を渡しているが、それと合わせてクリア情報を渡してしまってもいいかもしれない。
+                m_renderingContext->clear(ClearFlags::Depth, backgroundColor(), 1.0f, 0x00);
+            }
 
             m_rootElement->render(m_renderingContext);
 
