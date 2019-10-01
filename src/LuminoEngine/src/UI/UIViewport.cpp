@@ -150,7 +150,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     
     m_blitMaterial->setMainTexture(m_primaryTarget);
-	context->setDepthTestEnabled(false);
+	//context->setDepthTestEnabled(false);
     context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
 
     //RenderTargetTexture::releaseTemporary(primaryTarget);
