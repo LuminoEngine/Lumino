@@ -113,6 +113,14 @@ void GraphicsContext::resetState()
     m_dirtyFlags = DirtyFlags_All;
 }
 
+//void GraphicsContext::beginRenderPass(RenderPass* value)
+//{
+//}
+//
+//void GraphicsContext::endRenderPass()
+//{
+//}
+
 void GraphicsContext::setBlendState(const BlendStateDesc& value)
 {
     if (!BlendStateDesc::equals(m_staging.blendState, value)) {
@@ -256,43 +264,81 @@ ShaderPass* GraphicsContext::shaderPass() const
     return m_staging.shaderPass;
 }
 
-void GraphicsContext::setRenderPass(RenderPass* value)
-{
-	if (m_staging.renderPass != value) {
-		m_staging.renderPass = value;
-		m_dirtyFlags |= DirtyFlags_RenderPass;
-	}
+//void GraphicsContext::setRenderPass(RenderPass* value)
+//{
+//	if (m_staging.renderPass != value) {
+//		m_staging.renderPass = value;
+//		m_dirtyFlags |= DirtyFlags_RenderPass;
+//	}
+//
+//	if (value) {
+//		if (auto target = value->renderTarget(0)) {
+//			auto rect = Rect(0, 0, target->width(), target->height());
+//			setViewportRect(rect);
+//			setScissorRect(rect);
+//		}
+//	}
+//}
 
-	if (value) {
-		if (auto target = value->renderTarget(0)) {
-			auto rect = Rect(0, 0, target->width(), target->height());
-			setViewportRect(rect);
-			setScissorRect(rect);
-		}
+//RenderPass* GraphicsContext::renderPass() const
+//{
+//	return m_staging.renderPass;
+//}
+
+void GraphicsContext::beginRenderPass(RenderPass* value)
+{
+	if (LN_REQUIRE(value)) return;
+	if (LN_REQUIRE(!m_currentRenderPass)) return;
+
+	m_currentRenderPass = value;
+	m_currentRenderPass->m_active = true;
+
+	// RenderPass
+	{
+		detail::IRenderPass* newRenderPass = nullptr;
+		bool modified = false;
+		newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_currentRenderPass, &modified);
+
+		//if (m_currentRHIRenderPass != newRenderPass || modified) {
+		//	closeRenderPass();
+
+			if (newRenderPass) {
+				m_currentRHIRenderPass = newRenderPass;
+				LN_ENQUEUE_RENDER_COMMAND_2(
+					GraphicsContext_closeRenderPass, this,
+					detail::ICommandList*, m_context,
+					detail::IRenderPass*, m_currentRHIRenderPass,
+					{
+						m_context->beginRenderPass(m_currentRHIRenderPass);
+					});
+			}
+		//}
 	}
 }
 
-RenderPass* GraphicsContext::renderPass() const
+void GraphicsContext::endRenderPass()
 {
-	return m_staging.renderPass;
-}
+	if (LN_REQUIRE(m_currentRenderPass)) return;
 
-//void GraphicsContext::beginRenderPass(RenderPass* value)
-//{
-//	//if (m_staging.renderPass != value) {
-//	//	m_staging.renderPass = value;
-//	//	m_dirtyFlags |= DirtyFlags_RenderPass;
-//	//}
-//}
-//
-//void GraphicsContext::endRenderPass()
-//{
-//
-//}
+	if (m_currentRHIRenderPass) {
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			GraphicsContext_closeRenderPass, this,
+			detail::ICommandList*, m_context,
+			detail::IRenderPass*, m_currentRHIRenderPass,
+			{
+				m_context->endRenderPass(m_currentRHIRenderPass);
+			});
+		m_currentRHIRenderPass = nullptr;
+	}
+
+	m_currentRenderPass->m_active = false;
+	m_currentRenderPass = nullptr;
+}
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	if (LN_REQUIRE(m_recordingBegan)) return;
+	if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_5(
         GraphicsContext_clear, this,
@@ -308,6 +354,7 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
 void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 {
 	if (LN_REQUIRE(m_recordingBegan)) return;
+	if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
@@ -322,6 +369,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
 	if (LN_REQUIRE(m_recordingBegan)) return;
+	if (LN_REQUIRE(m_currentRenderPass)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
@@ -350,7 +398,7 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
 void GraphicsContext::endCommandRecodingIfNeeded()
 {
     if (m_recordingBegan) {
-		closeRenderPass();
+		//closeRenderPass();
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, this,
             detail::ICommandList*, m_context,
@@ -380,19 +428,19 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
     }
 }
 
-void GraphicsContext::closeRenderPass()
-{
-	if (m_currentRHIRenderPass) {
-		LN_ENQUEUE_RENDER_COMMAND_2(
-			GraphicsContext_closeRenderPass, this,
-			detail::ICommandList*, m_context,
-			detail::IRenderPass*, m_currentRHIRenderPass,
-			{
-				m_context->endRenderPass(m_currentRHIRenderPass);
-			});
-		m_currentRHIRenderPass = nullptr;
-	}
-}
+//void GraphicsContext::closeRenderPass()
+//{
+//	if (m_currentRHIRenderPass) {
+//		LN_ENQUEUE_RENDER_COMMAND_2(
+//			GraphicsContext_closeRenderPass, this,
+//			detail::ICommandList*, m_context,
+//			detail::IRenderPass*, m_currentRHIRenderPass,
+//			{
+//				m_context->endRenderPass(m_currentRHIRenderPass);
+//			});
+//		m_currentRHIRenderPass = nullptr;
+//	}
+//}
 
 // IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
 // GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDevice へ送信した状態にする。
@@ -403,29 +451,6 @@ detail::ICommandList* GraphicsContext::commitState()
     // 頂点バッファset > 描画 > 頂点バッファ更新 > 描画
     // といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
 
-	// RenderPass
-	{
-		detail::IRenderPass* newRenderPass = nullptr;
-		bool modified = false;
-		if (m_staging.renderPass) {
-			newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_staging.renderPass, &modified);
-		}
-
-		if (m_currentRHIRenderPass != newRenderPass || modified) {
-			closeRenderPass();
-
-			if (newRenderPass) {
-				m_currentRHIRenderPass = newRenderPass;
-				LN_ENQUEUE_RENDER_COMMAND_2(
-					GraphicsContext_closeRenderPass, this,
-					detail::ICommandList*, m_context,
-					detail::IRenderPass*, m_currentRHIRenderPass,
-					{
-						m_context->beginRenderPass(m_currentRHIRenderPass);
-					});
-			}
-		}
-	}
 
     // BlendState
     if ((m_dirtyFlags & DirtyFlags_BlendState) != 0) {
@@ -502,7 +527,7 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // Viewport, Scissor
     if ((m_dirtyFlags & DirtyFlags_RegionRects) != 0) {
-		SizeI size(m_staging.renderPass->renderTarget(0)->width(), m_staging.renderPass->renderTarget(0)->height());
+		SizeI size(m_currentRenderPass->renderTarget(0)->width(), m_currentRenderPass->renderTarget(0)->height());
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
 
@@ -629,7 +654,7 @@ void GraphicsContext::State::reset()
     shader = nullptr;
     shaderPass = nullptr;
     topology = PrimitiveTopology::TriangleList;
-	renderPass = nullptr;
+	//renderPass = nullptr;
 }
 
 } // namespace ln

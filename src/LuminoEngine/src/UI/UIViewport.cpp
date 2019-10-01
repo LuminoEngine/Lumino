@@ -35,11 +35,16 @@ void UIViewport::init()
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
 
-	m_renderPass = makeObject<RenderPass>();
+	//m_renderPass = makeObject<RenderPass>();
 }
 
 void UIViewport::onDispose(bool explicitDisposing)
 {
+	if (m_primaryTarget) {
+		RenderTargetTexture::releaseTemporary(m_primaryTarget);
+		m_primaryTarget = nullptr;
+	}
+
     m_renderViews.clear();
 	UIContainerElement::onDispose(explicitDisposing);
 }
@@ -117,47 +122,43 @@ void UIViewport::onRender(UIRenderingContext* context)
 {
     GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
     //auto* renderTarget = graphicsContext->renderTarget(0);
-	Ref<RenderPass> oldRenderPass = graphicsContext->renderPass();
+	//Ref<RenderPass> oldRenderPass = graphicsContext->renderPass();
 
     // TODO: dp -> px 変換
     Size viewSize = m_finalGlobalRect.getSize();
 
-    Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(viewSize.width, viewSize.height, TextureFormat::RGBA8, false);
+	// このスコープ終端で RenderTargetTexture::releaseTemporary() するわけにはいかない。
+	// この RenderTarget は context->drawImage() に乗ってこのスコープの外側でも使われるため、次回の描画までは再利用されないようにしたい。
+	if (m_primaryTarget) {
+		RenderTargetTexture::releaseTemporary(m_primaryTarget);
+	}
+
+	m_primaryTarget = RenderTargetTexture::getTemporary(viewSize.width, viewSize.height, TextureFormat::RGBA8, false);
+
     //graphicsContext->setRenderTarget(0, primaryTarget);
-	m_renderPass->setRenderTarget(0, primaryTarget);
-	graphicsContext->setRenderPass(m_renderPass);
-    graphicsContext->clear(ClearFlags::All, Color::Gray);
+	//m_renderPass->setRenderTarget(0, primaryTarget);
+	//graphicsContext->beginRenderPass(m_renderPass);
+ //   graphicsContext->clear(ClearFlags::All, Color::Gray);	// TODO: renderPass の clear でカバー
 
     for (auto& view : m_renderViews) {
-        view->render(graphicsContext);
+        view->render(graphicsContext, m_primaryTarget);
     }
-    m_imageEffectRenderer->render(context, primaryTarget);
+    m_imageEffectRenderer->render(context, m_primaryTarget);
 
 
     //context->blit(primaryTarget, renderTarget);
 
     
-    m_blitMaterial->setMainTexture(primaryTarget);
+    m_blitMaterial->setMainTexture(m_primaryTarget);
+	context->setDepthTestEnabled(false);
     context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
 
     //RenderTargetTexture::releaseTemporary(primaryTarget);
 
     //graphicsContext->setRenderTarget(0, renderTarget);
-	graphicsContext->setRenderPass(oldRenderPass);
+	//graphicsContext->endRenderPass();
 
-#if 0
     // TODO: ViewBoxTransform
-
-    GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
-
-
-    for (auto& view : m_renderViews)
-    {
-        view->render(graphicsContext);
-    }
-
-    m_imageEffectRenderer->render(context, graphicsContext->renderTarget(0));
-#endif
 }
 
 void UIViewport::onRoutedEvent(UIEventArgs* e)

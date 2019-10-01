@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderingManager.hpp"
@@ -189,53 +190,53 @@ const ColorTone& RenderStage::getToneFinal(RenderDrawElement* element) const
     return element->builtinEffectData->tone;
 }
 
-void RenderStage::applyFrameBufferStatus(GraphicsContext* context, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)
-{
-	RenderTargetTexture* renderTarget0 = nullptr;
-
-	// RenderTarget
-	{
-		for (int i = 0; i < MaxMultiRenderTargets; i++)
-		{
-			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
-			if (!target) {
-				target = defaultFrameBufferInPass.renderTarget[i];
-			}
-
-			context->setRenderTarget(i, target);
-
-			if (i == 0) {
-				renderTarget0 = target;
-			}
-		}
-	}
-
-	// DepthBuffer
-	{
-		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();
-		if (depthBuffer) {
-			context->setDepthBuffer(depthBuffer);
-		}
-		else {
-			context->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
-		}
-	}
-
-	// Viewport
-	{
-		//const RectI& rect = stage->getViewportRectFinal();//getViewportRect();
-		//if (rect.width < 0)
-		//{
-		//	stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
-		//}
-		//else
-		//{
-		//	stateManager->setViewport(rect);
-		//}
-		// TODO:Viewport
-		// TODO: m_scissorRect
-	}
-}
+//void RenderStage::applyFrameBufferStatus(RenderPass* renderPass, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)
+//{
+//	RenderTargetTexture* renderTarget0 = nullptr;
+//
+//	// RenderTarget
+//	{
+//		for (int i = 0; i < MaxMultiRenderTargets; i++)
+//		{
+//			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
+//			if (!target) {
+//				target = defaultFrameBufferInPass.renderTarget[i];
+//			}
+//
+//			renderPass->setRenderTarget(i, target);
+//
+//			if (i == 0) {
+//				renderTarget0 = target;
+//			}
+//		}
+//	}
+//
+//	// DepthBuffer
+//	{
+//		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();
+//		if (depthBuffer) {
+//			renderPass->setDepthBuffer(depthBuffer);
+//		}
+//		else {
+//			renderPass->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
+//		}
+//	}
+//
+//	// Viewport
+//	{
+//		//const RectI& rect = stage->getViewportRectFinal();//getViewportRect();
+//		//if (rect.width < 0)
+//		//{
+//		//	stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
+//		//}
+//		//else
+//		//{
+//		//	stateManager->setViewport(rect);
+//		//}
+//		// TODO:Viewport
+//		// TODO: m_scissorRect
+//	}
+//}
 
 void RenderStage::applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const AbstractMaterial* priorityMaterial)
 {

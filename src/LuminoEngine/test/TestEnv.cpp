@@ -73,14 +73,18 @@ void TestEnv::resetGraphicsContext(GraphicsContext* context)
 
 GraphicsContext* TestEnv::beginFrame()
 {
-	auto ctx = TestEnv::mainWindowSwapChain()->beginFrame();
-	//resetGraphicsContext(ctx);
+	auto ctx = TestEnv::mainWindowSwapChain()->beginFrame2();
 	return ctx;
 }
 
 void TestEnv::endFrame()
 {
 	TestEnv::mainWindowSwapChain()->endFrame();
+}
+
+RenderPass* TestEnv::renderPass()
+{
+	return TestEnv::mainWindowSwapChain()->currentRenderPass();
 }
 
 Ref<Bitmap2D> TestEnv::capture(RenderTargetTexture* renderTarget)

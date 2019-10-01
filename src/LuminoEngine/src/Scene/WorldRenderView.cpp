@@ -105,13 +105,13 @@ void WorldRenderView::setCamera(Camera* camera)
 }
 
 
-void WorldRenderView::render(GraphicsContext* graphicsContext)
+void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
 {
 	if (m_camera)
 	{
-        FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
-        fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
+        //FrameBuffer fb;
+        //fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
+        //fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
 
         // TODO:
         detail::CameraInfo camera;
@@ -120,7 +120,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
             cc->updateMatrices();
             
             m_viewPoint->worldMatrix = m_camera->worldMatrix();
-            m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
+            m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
             m_viewPoint->viewPosition = camera.viewPosition = m_camera->position();
             m_viewPoint->viewDirection = camera.viewDirection = cc->getDirectionInternal().xyz();
             m_viewPoint->viewMatrix = camera.viewMatrix = cc->getViewMatrix();
@@ -311,7 +311,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 
 
 
-		m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
+		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, &camera, &elementListManagers());
 	}
 }
 

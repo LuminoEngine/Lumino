@@ -40,7 +40,8 @@ public:
     void init();
     void render(
         GraphicsContext* graphicsContext,
-        const FrameBuffer& frameBuffer,
+		RenderTargetTexture* renderTarget,
+        //const FrameBuffer& frameBuffer,
         const detail::CameraInfo* mainCameraInfo,
         const List<detail::DrawElementListCollector*>* elementListManagers);
 
@@ -59,7 +60,8 @@ public:
 	void init();
 	void render(
 		GraphicsContext* graphicsContext,
-		const FrameBuffer& frameBuffer,
+		RenderTargetTexture* renderTarget,
+		//const FrameBuffer& frameBuffer,
 		const detail::CameraInfo* mainCameraInfo,
 		const List<detail::DrawElementListCollector*>* elementListManagers);
 

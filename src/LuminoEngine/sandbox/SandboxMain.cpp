@@ -205,7 +205,7 @@ int main(int argc, char** argv)
     //ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
     //ft->map(MapMode::Read)->save(u"test.png");
 
- //   auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
+    auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
 
 	//auto m_rigidBody = ln::RigidBody2DComponent::create();
 	//m_rigidBody->addCollisionShape(ln::BoxCollisionShape2D::create(5, 2));

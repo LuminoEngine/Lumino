@@ -14,6 +14,7 @@ public:
 	static void resetGraphicsContext(GraphicsContext* context);
 	static GraphicsContext* beginFrame();
 	static void endFrame();
+	static RenderPass* renderPass();
 	static Ref<Bitmap2D> capture(RenderTargetTexture* renderTarget = nullptr);
 	static void saveScreenShot(const Char* filePath, RenderTargetTexture* renderTarget = nullptr);
 	static bool equalsScreenShot(const Char* filePath, RenderTargetTexture* renderTarget, int passRate);

@@ -26,7 +26,9 @@ public:
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
 
-	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -51,6 +53,10 @@ public:
 	virtual ~ClusteredShadingGeometryRenderingPass();
 	void init(ClusteredShadingSceneRenderer* ownerRenderer);
 
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual RenderPass* renderPass() const;
+
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
 		Shader* requestedShader,
@@ -67,6 +73,7 @@ private:
 	ShaderTechnique* m_defaultShaderTechnique;
 	//Ref<Shader>					m_unLightingShader;
 	//ShaderTechnique*			m_unLightingShaderTechnique;
+	Ref<RenderPass> m_renderPass;
 };
 
 class ShadowCasterPass
@@ -81,7 +88,9 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,

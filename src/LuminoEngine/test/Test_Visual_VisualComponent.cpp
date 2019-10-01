@@ -12,41 +12,41 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
 	{
         auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
 
-        //* [ ] Hide
-        auto sprite1 = Sprite::create(tex1, 3, 3);
-        //sprite1->setShadingModel(ShadingModel::UnLighting);
-        sprite1->setPosition(-6, 0, 0);
-        sprite1->setVisible(false);
+        ////* [ ] Hide
+        //auto sprite1 = Sprite::create(tex1, 3, 3);
+        ////sprite1->setShadingModel(ShadingModel::UnLighting);
+        //sprite1->setPosition(-6, 0, 0);
+        //sprite1->setVisible(false);
 
         //* [ ] Normal
         auto sprite2 = Sprite::create(tex1, 3, 3);
         //sprite2->setShadingModel(ShadingModel::UnLighting);
         sprite2->setPosition(-3, 0, 0);
 
-        //* [ ] Opacity
-        auto sprite3 = Sprite::create(tex1, 3, 3);
-        //sprite3->setShadingModel(ShadingModel::UnLighting);
-        sprite3->setPosition(-6, 3, 0);
-        sprite3->setBlendMode(BlendMode::Alpha);
-        sprite3->setOpacity(0.5);
+        ////* [ ] Opacity
+        //auto sprite3 = Sprite::create(tex1, 3, 3);
+        ////sprite3->setShadingModel(ShadingModel::UnLighting);
+        //sprite3->setPosition(-6, 3, 0);
+        //sprite3->setBlendMode(BlendMode::Alpha);
+        //sprite3->setOpacity(0.5);
 
-        //* [ ] ColorScale
-        auto sprite4 = Sprite::create(tex1, 3, 3);
-        //sprite4->setShadingModel(ShadingModel::UnLighting);
-        sprite4->setPosition(-3, 3, 0);
-        sprite4->setColorScale(Color(1, 0, 0, 1));
+        ////* [ ] ColorScale
+        //auto sprite4 = Sprite::create(tex1, 3, 3);
+        ////sprite4->setShadingModel(ShadingModel::UnLighting);
+        //sprite4->setPosition(-3, 3, 0);
+        //sprite4->setColorScale(Color(1, 0, 0, 1));
 
-        //* [ ] BlendColor
-        auto sprite5 = Sprite::create(tex1, 3, 3);
-        //sprite5->setShadingModel(ShadingModel::UnLighting);
-        sprite5->setPosition(0, 3, 0);
-        sprite5->setBlendColor(Color(1, 0, 0, 1));
+        ////* [ ] BlendColor
+        //auto sprite5 = Sprite::create(tex1, 3, 3);
+        ////sprite5->setShadingModel(ShadingModel::UnLighting);
+        //sprite5->setPosition(0, 3, 0);
+        //sprite5->setBlendColor(Color(1, 0, 0, 1));
 
-        //* [ ] Tone
-        auto sprite6 = Sprite::create(tex1, 3, 3);
-        //sprite6->setShadingModel(ShadingModel::UnLighting);
-        sprite6->setPosition(3, 3, 0);
-        sprite6->setTone(ColorTone(0.5, 0.3, 0.1, 1.0));
+        ////* [ ] Tone
+        //auto sprite6 = Sprite::create(tex1, 3, 3);
+        ////sprite6->setShadingModel(ShadingModel::UnLighting);
+        //sprite6->setPosition(3, 3, 0);
+        //sprite6->setTone(ColorTone(0.5, 0.3, 0.1, 1.0));
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-BuiltinEffects-1.png"));

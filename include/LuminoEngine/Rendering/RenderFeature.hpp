@@ -44,6 +44,8 @@ public:
 	const AbstractMaterial* finalMaterial() const { return m_finalMaterial; }
 	void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
 	const SubsetInfo& subsetInfo() const { return m_subsetInfo; }
+	void setRenderPass(RenderPass* value) { m_renderPass = value; }
+	RenderPass* renderPass() const { return m_renderPass; }
 	
 	// SpriteText で使っている。 TODO: これは MaskTexture みたいな位置づけにしてもいいかも。
 	Texture* overrideTexture = nullptr;
@@ -66,6 +68,7 @@ private:
 
 	const AbstractMaterial* m_finalMaterial;
 	SubsetInfo m_subsetInfo;
+	RenderPass* m_renderPass;
 
 	friend class RenderFeatureBatchList;
 };

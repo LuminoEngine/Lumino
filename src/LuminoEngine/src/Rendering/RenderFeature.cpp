@@ -22,6 +22,7 @@ RenderFeatureBatch::RenderFeatureBatch()
 	, m_stage(nullptr)
 	, m_type(detail::RenderDrawElementType::Geometry)
 	, m_worldTransform(nullptr)
+	, m_renderPass(nullptr)
 {
 }
 

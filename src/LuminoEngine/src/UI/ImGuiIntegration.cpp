@@ -5,6 +5,7 @@
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
@@ -58,6 +59,7 @@ bool ImGuiContext::init()
 
 	m_vertexLayout = detail::EngineDomain::renderingManager()->standardVertexDeclaration();
 	m_shader = detail::EngineDomain::renderingManager()->builtinShader(BuiltinShader::Sprite);
+	m_renderPass = makeObject<RenderPass>();
 
 	return true;
 }
@@ -85,7 +87,7 @@ void ImGuiContext::updateFrame(float elapsedSeconds)
     }
 }
 
-void ImGuiContext::render(GraphicsContext* graphicsContext)
+void ImGuiContext::render(GraphicsContext* graphicsContext, RenderTargetTexture* target)
 {
 	ImGui::Render();
 	ImDrawData* draw_data = ImGui::GetDrawData();
@@ -161,6 +163,9 @@ void ImGuiContext::render(GraphicsContext* graphicsContext)
 	m_shader->findParameter(u"ln_WorldViewIT")->setMatrix(Matrix::Identity);
 	graphicsContext->setShaderPass(m_shader->techniques()[0]->passes()[0]);
 
+	m_renderPass->setRenderTarget(0, target);
+	graphicsContext->beginRenderPass(m_renderPass);
+
 	// Render command lists
 	// (Because we merged all buffers into a single one, we maintain our own offset into them)
 	int global_vtx_offset = 0;
@@ -194,6 +199,8 @@ void ImGuiContext::render(GraphicsContext* graphicsContext)
 		global_idx_offset += cmd_list->IdxBuffer.Size;
 		global_vtx_offset += cmd_list->VtxBuffer.Size;
 	}
+
+	graphicsContext->endRenderPass();	// TODO: scoped
 }
 
 bool ImGuiContext::handlePlatformEvent(const detail::PlatformEventArgs& e)

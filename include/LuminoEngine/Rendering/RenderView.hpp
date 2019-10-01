@@ -34,8 +34,7 @@ public:
 	void clearDrawElementListManagers();
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
-    // index:0 にセットされている RT と depthBuffer へ描画
-    virtual void render(GraphicsContext* graphicsContext) = 0;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) = 0;
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;

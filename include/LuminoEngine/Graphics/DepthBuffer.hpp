@@ -19,7 +19,7 @@ public:
      */
     static Ref<DepthBuffer> create(int width, int height);
 
-    /** 一時的な DepthBuffer を取得します。 */
+    /** 一時的な DepthBuffer を取得します。（内容の保証はありません。使用する前に必ずクリアしてください） */
     static Ref<DepthBuffer> getTemporary(int width, int height);
 
     /** getTemporary で取得した一時的な DepthBuffer を解放します。 */

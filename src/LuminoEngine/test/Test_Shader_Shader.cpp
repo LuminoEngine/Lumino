@@ -46,6 +46,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
     // * [ ] default
     {
 		auto ctx = TestEnv::beginFrame();
+		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
@@ -55,6 +56,7 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
         ctx->drawPrimitive(0, 2);
 
+		ctx->endRenderPass();
 		TestEnv::endFrame();
         ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-IndependentSamplerState-1.png"));
     }
@@ -84,13 +86,14 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     shader1->findParameter("_Color2")->setVector(Vector4(0, 0, 1, 1));
 
 	auto ctx = TestEnv::beginFrame();
+	ctx->beginRenderPass(TestEnv::renderPass());
     ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
     ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
     ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
     ctx->drawPrimitive(0, 1);
-
+	ctx->endRenderPass();
 	TestEnv::endFrame();
 	ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-UniformBuffer-1.png"));
 }
@@ -122,6 +125,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 	// _Texture1 のみ (赤)
 	{
 		auto ctx = TestEnv::beginFrame();
+		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -129,6 +133,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 		ctx->drawPrimitive(0, 1);
+		ctx->endRenderPass();
 		TestEnv::endFrame();
 		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-1.png"));
 	}
@@ -136,6 +141,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 	// _Texture2 のみ (緑)
 	{
 		auto ctx = TestEnv::beginFrame();
+		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -143,6 +149,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
 		ctx->setShaderPass(shader1->techniques()[1]->passes()[0]);
 		ctx->drawPrimitive(0, 1);
+		ctx->endRenderPass();
 		TestEnv::endFrame();
 		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-2.png"));
 	}
@@ -150,6 +157,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 	// _Texture1 + _Texture2 (黄)
 	{
 		auto ctx = TestEnv::beginFrame();
+		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -157,6 +165,7 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
 		ctx->setShaderPass(shader1->techniques()[2]->passes()[0]);
 		ctx->drawPrimitive(0, 1);
+		ctx->endRenderPass();
 		TestEnv::endFrame();
 		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-MultiTechMultiTexture-3.png"));
 	}
@@ -179,12 +188,14 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	auto ctx = TestEnv::beginFrame();
+	ctx->beginRenderPass(TestEnv::renderPass());
 	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	ctx->drawPrimitive(0, 1);
+	ctx->endRenderPass();
 	TestEnv::endFrame();
 	ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Shader_Shader-NotProvidedVertexAttribute-1.png"));
 }

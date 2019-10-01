@@ -75,21 +75,21 @@ UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosit
     return m_rootElement->lookupMouseHoverElement(frameClientPosition);
 }
 
-void UIRenderView::render(GraphicsContext* graphicsContext)
+void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
 {
     if (m_rootElement)
     {
 
 
 
-        FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
-        fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
+        //FrameBuffer fb;
+        //fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
+        //fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
 
         // TODO:
         detail::CameraInfo camera;
         {
-            m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());	// TODO: 必要？
+            m_viewPoint->viewPixelSize = camera.viewPixelSize = Size(renderTarget->width(), renderTarget->height());	// TODO: 必要？
             m_viewPoint->viewPosition = camera.viewPosition = Vector3::Zero;
             m_viewPoint->viewDirection = camera.viewDirection = Vector3::UnitZ;
             m_viewPoint->viewMatrix = camera.viewMatrix = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);//Matrix();// 
@@ -104,8 +104,8 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
         // build draw elements
         {
             m_renderingContext->resetForBeginRendering();
-            m_renderingContext->setRenderTarget(0, fb.renderTarget[0]);
-            m_renderingContext->setDepthBuffer(fb.depthBuffer);
+            //m_renderingContext->setRenderTarget(0, fb.renderTarget[0]);
+            //m_renderingContext->setDepthBuffer(fb.depthBuffer);
             m_renderingContext->setViewPoint(m_viewPoint);
             m_renderingContext->m_frameWindowRenderingGraphicsContext = graphicsContext;
             if (clearMode() == RenderViewClearMode::ColorAndDepth) {
@@ -124,7 +124,7 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
 
 
 
-        m_sceneRenderingPipeline->render(graphicsContext, fb, &camera, &elementListManagers());
+        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, &camera, &elementListManagers());
     }
 }
 

@@ -42,9 +42,10 @@ private:
     detail::UIManager* m_manager;
     Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
     List<Ref<RenderView>> m_renderViews;
-	Ref<RenderPass> m_renderPass;
+	//Ref<RenderPass> m_renderPass;
     Size m_actualViewboxSize;
     Ref<Material> m_blitMaterial;
+	Ref<RenderTargetTexture> m_primaryTarget;
 };
 
 } // namespace ln

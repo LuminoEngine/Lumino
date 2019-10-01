@@ -25,7 +25,7 @@ public:
 	// TODO: internal
 	// 描画コマンド構築と実行まですべて行う
 	//void renderTree(GraphicsContext* graphicsContext, UIElement* element);
-    virtual void render(GraphicsContext* graphicsContext) override;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 
     UIAdornerLayer* adornerLayer() const;
 

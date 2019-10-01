@@ -220,7 +220,7 @@ void UIFrameWindow::init()
 {
 	UIContainerElement::init();
     m_manager = detail::EngineDomain::uiManager();
-	m_renderPass = makeObject<RenderPass>();
+	//m_renderPass = makeObject<RenderPass>();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
@@ -289,17 +289,18 @@ void UIFrameWindow::renderContents()
 		m_imguiContext.updateFrame(0.0166f);
 	}
 
-	m_renderingGraphicsContext = m_swapChain->beginFrame();
+	m_renderingGraphicsContext = m_swapChain->beginFrame2();
 
-	RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
-	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
+	//RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
+	//m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
-	m_renderPass->setRenderTarget(0, backbuffer);
-	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderingGraphicsContext->setRenderPass(m_renderPass);
-	//m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
-	//m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
-	//m_renderingGraphicsContext->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
+	//m_renderPass->setRenderTarget(0, backbuffer);
+	//m_renderPass->setDepthBuffer(m_depthBuffer);
+	//m_renderingGraphicsContext->setRenderPass(m_renderPass);
+
+	////m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
+	////m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
+	////m_renderingGraphicsContext->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
 void UIFrameWindow::present()
@@ -307,13 +308,13 @@ void UIFrameWindow::present()
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(m_renderingGraphicsContext);
+		m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
 
-	if (m_depthBuffer) {
-		DepthBuffer::releaseTemporary(m_depthBuffer);
-		m_depthBuffer = nullptr;
-	}
+	//if (m_depthBuffer) {
+	//	DepthBuffer::releaseTemporary(m_depthBuffer);
+	//	m_depthBuffer = nullptr;
+	//}
 
 
     detail::EngineDomain::effectManager()->testDraw();
@@ -348,7 +349,7 @@ void UIFrameWindow::present()
 		ImGui::EndFrame();
 
 
-		m_imguiContext.render(m_renderingGraphicsContext);
+		m_imguiContext.render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
 	m_swapChain->endFrame();
 
@@ -629,11 +630,11 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
 	detail::GraphicsContextInternal::enterRenderState(m_renderingGraphicsContext);
 
 	m_renderingGraphicsContext->resetState();
-	//m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
-	//m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setRenderTarget(0, renderTarget);
-	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderingGraphicsContext->setRenderPass(m_renderPass);
+	////m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
+	////m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
+	//m_renderPass->setRenderTarget(0, renderTarget);
+	//m_renderPass->setDepthBuffer(m_depthBuffer);
+	//m_renderingGraphicsContext->setRenderPass(m_renderPass);
 }
 
 void UINativeFrameWindow::renderContents()
@@ -641,7 +642,7 @@ void UINativeFrameWindow::renderContents()
     if (m_renderView)
     {
         m_renderView->setRootElement(this);
-        m_renderView->render(m_renderingGraphicsContext);
+        m_renderView->render(m_renderingGraphicsContext, m_renderingRenderTarget);
     }
 }
 

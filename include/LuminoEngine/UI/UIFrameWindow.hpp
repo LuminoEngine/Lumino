@@ -117,7 +117,7 @@ public:  // TODO: internal
 	GraphicsContext* m_renderingGraphicsContext;
 	Ref<SwapChain>	m_swapChain;
 	Ref<DepthBuffer> m_depthBuffer;
-	Ref<RenderPass> m_renderPass;
+	//Ref<RenderPass> m_renderPass;
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
 	UIFrameWindowUpdateMode m_updateMode;
@@ -168,6 +168,7 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
 private:
+	// TODO: ↓不要かも
     Ref<RenderTargetTexture> m_renderingRenderTarget;
     Ref<DepthBuffer> m_renderingDepthBuffer;
 };
