@@ -8,6 +8,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
@@ -136,40 +137,40 @@ void GraphicsContext::setDepthStencilState(const DepthStencilStateDesc& value)
     }
 }
 
-void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
-{
-    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return;
-
-    if (m_staging.renderTargets[index] != value) {
-        m_staging.renderTargets[index] = value;
-        m_dirtyFlags |= DirtyFlags_Framebuffer;
-    }
-
-    if (index == 0 && value) {
-        auto rect = Rect(0, 0, value->width(), value->height());
-        setViewportRect(rect);
-        setScissorRect(rect);
-    }
-}
-
-RenderTargetTexture* GraphicsContext::renderTarget(int index) const
-{
-    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return nullptr;
-    return m_staging.renderTargets[index];
-}
-
-void GraphicsContext::setDepthBuffer(DepthBuffer* value)
-{
-    if (m_staging.depthBuffer != value) {
-        m_staging.depthBuffer = value;
-        m_dirtyFlags |= DirtyFlags_Framebuffer;
-    }
-}
-
-DepthBuffer* GraphicsContext::depthBuffer() const
-{
-    return m_staging.depthBuffer;
-}
+//void GraphicsContext::setRenderTarget(int index, RenderTargetTexture* value)
+//{
+//    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return;
+//
+//    if (m_staging.renderTargets[index] != value) {
+//        m_staging.renderTargets[index] = value;
+//        m_dirtyFlags |= DirtyFlags_Framebuffer;
+//    }
+//
+//    if (index == 0 && value) {
+//        auto rect = Rect(0, 0, value->width(), value->height());
+//        setViewportRect(rect);
+//        setScissorRect(rect);
+//    }
+//}
+//
+//RenderTargetTexture* GraphicsContext::renderTarget(int index) const
+//{
+//    if (LN_REQUIRE_RANGE(index, 0, MaxMultiRenderTargets)) return nullptr;
+//    return m_staging.renderTargets[index];
+//}
+//
+//void GraphicsContext::setDepthBuffer(DepthBuffer* value)
+//{
+//    if (m_staging.depthBuffer != value) {
+//        m_staging.depthBuffer = value;
+//        m_dirtyFlags |= DirtyFlags_Framebuffer;
+//    }
+//}
+//
+//DepthBuffer* GraphicsContext::depthBuffer() const
+//{
+//    return m_staging.depthBuffer;
+//}
 
 void GraphicsContext::setViewportRect(const Rect& value)
 {
@@ -255,9 +256,43 @@ ShaderPass* GraphicsContext::shaderPass() const
     return m_staging.shaderPass;
 }
 
+void GraphicsContext::setRenderPass(RenderPass* value)
+{
+	if (m_staging.renderPass != value) {
+		m_staging.renderPass = value;
+		m_dirtyFlags |= DirtyFlags_RenderPass;
+	}
+
+	if (value) {
+		if (auto target = value->renderTarget(0)) {
+			auto rect = Rect(0, 0, target->width(), target->height());
+			setViewportRect(rect);
+			setScissorRect(rect);
+		}
+	}
+}
+
+RenderPass* GraphicsContext::renderPass() const
+{
+	return m_staging.renderPass;
+}
+
+//void GraphicsContext::beginRenderPass(RenderPass* value)
+//{
+//	//if (m_staging.renderPass != value) {
+//	//	m_staging.renderPass = value;
+//	//	m_dirtyFlags |= DirtyFlags_RenderPass;
+//	//}
+//}
+//
+//void GraphicsContext::endRenderPass()
+//{
+//
+//}
+
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-    beginCommandRecodingIfNeeded();
+	if (LN_REQUIRE(m_recordingBegan)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_5(
         GraphicsContext_clear, this,
@@ -272,7 +307,7 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
 
 void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 {
-    beginCommandRecodingIfNeeded();
+	if (LN_REQUIRE(m_recordingBegan)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
@@ -286,7 +321,7 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
 
 void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
-    beginCommandRecodingIfNeeded();
+	if (LN_REQUIRE(m_recordingBegan)) return;
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
@@ -315,6 +350,7 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
 void GraphicsContext::endCommandRecodingIfNeeded()
 {
     if (m_recordingBegan) {
+		closeRenderPass();
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, this,
             detail::ICommandList*, m_context,
@@ -334,7 +370,7 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
 		auto device = m_manager->deviceContext();
         detail::ITexture* rhiObject = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, affectRendreTarget, nullptr);
         LN_ENQUEUE_RENDER_COMMAND_3(
-            GraphicsContext_beginCommandRecodingIfNeeded, this,
+            GraphicsContext_flushCommandRecoding, this,
 			detail::IGraphicsDevice*, device,
             detail::ICommandList*, m_context,
             detail::ITexture*, rhiObject,
@@ -342,6 +378,20 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
 				device->flushCommandBuffer(m_context, rhiObject);
             });
     }
+}
+
+void GraphicsContext::closeRenderPass()
+{
+	if (m_currentRHIRenderPass) {
+		LN_ENQUEUE_RENDER_COMMAND_2(
+			GraphicsContext_closeRenderPass, this,
+			detail::ICommandList*, m_context,
+			detail::IRenderPass*, m_currentRHIRenderPass,
+			{
+				m_context->endRenderPass(m_currentRHIRenderPass);
+			});
+		m_currentRHIRenderPass = nullptr;
+	}
 }
 
 // IGraphicsDevice の clear, draw 系の機能を呼び出したい場合はこの戻り値を使うこと。
@@ -352,6 +402,30 @@ detail::ICommandList* GraphicsContext::commitState()
     // こうしておかないと、
     // 頂点バッファset > 描画 > 頂点バッファ更新 > 描画
     // といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
+
+	// RenderPass
+	{
+		detail::IRenderPass* newRenderPass = nullptr;
+		bool modified = false;
+		if (m_staging.renderPass) {
+			newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_staging.renderPass, &modified);
+		}
+
+		if (m_currentRHIRenderPass != newRenderPass || modified) {
+			closeRenderPass();
+
+			if (newRenderPass) {
+				m_currentRHIRenderPass = newRenderPass;
+				LN_ENQUEUE_RENDER_COMMAND_2(
+					GraphicsContext_closeRenderPass, this,
+					detail::ICommandList*, m_context,
+					detail::IRenderPass*, m_currentRHIRenderPass,
+					{
+						m_context->beginRenderPass(m_currentRHIRenderPass);
+					});
+			}
+		}
+	}
 
     // BlendState
     if ((m_dirtyFlags & DirtyFlags_BlendState) != 0) {
@@ -396,40 +470,51 @@ detail::ICommandList* GraphicsContext::commitState()
     }
 
     // RenderTarget, DepthBuffer
-    {
-        bool anyModified = false;
-        bool modified = false;
+    //{
+    //    bool anyModified = false;
+    //    bool modified = false;
 
-        using RenderTargetArray = std::array<detail::ITexture*, detail::MaxMultiRenderTargets>;
-        RenderTargetArray renderTargets;
-        for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
-            auto& value = m_staging.renderTargets[i];
-            renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, value, &modified);
-            anyModified |= modified;
-        }
+    //    using RenderTargetArray = std::array<detail::ITexture*, detail::MaxMultiRenderTargets>;
+    //    RenderTargetArray renderTargets;
+    //    for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
+    //        auto& value = m_staging.renderTargets[i];
+    //        renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(this, value, &modified);
+    //        anyModified |= modified;
+    //    }
 
-        detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(this, m_staging.depthBuffer, &modified);
-        anyModified |= modified;
+    //    detail::IDepthBuffer* depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(this, m_staging.depthBuffer, &modified);
+    //    anyModified |= modified;
 
-        if ((m_dirtyFlags & DirtyFlags_Framebuffer) != 0 || anyModified) {
-            LN_ENQUEUE_RENDER_COMMAND_3(
-                GraphicsContext_setDepthBuffer, this,
-                detail::ICommandList*, m_context,
-                RenderTargetArray, renderTargets,
-                detail::IDepthBuffer*, depthBuffer,
-                {
-                    for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
-                        m_context->setColorBuffer(i, renderTargets[i]);
-                    }
-                    m_context->setDepthBuffer(depthBuffer);
-                });
-        }
-    }
+    //    if ((m_dirtyFlags & DirtyFlags_Framebuffer) != 0 || anyModified) {
+    //        LN_ENQUEUE_RENDER_COMMAND_3(
+    //            GraphicsContext_setDepthBuffer, this,
+    //            detail::ICommandList*, m_context,
+    //            RenderTargetArray, renderTargets,
+    //            detail::IDepthBuffer*, depthBuffer,
+    //            {
+    //                for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
+    //                    m_context->setColorBuffer(i, renderTargets[i]);
+    //                }
+    //                m_context->setDepthBuffer(depthBuffer);
+    //            });
+    //    }
+    //}
 
     // Viewport, Scissor
     if ((m_dirtyFlags & DirtyFlags_RegionRects) != 0) {
+		SizeI size(m_staging.renderPass->renderTarget(0)->width(), m_staging.renderPass->renderTarget(0)->height());
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
+
+		if (viewportRect.width < 0 || viewportRect.height < 0) {
+			viewportRect.width = size.width;
+			viewportRect.height = size.height;
+		}
+		if (scissorRect.width < 0 || scissorRect.height < 0) {
+			scissorRect.width = size.width;
+			scissorRect.height = size.height;
+		}
+
         LN_ENQUEUE_RENDER_COMMAND_3(
             GraphicsContext_setDepthBuffer, this,
             detail::ICommandList*, m_context,
@@ -534,16 +619,17 @@ void GraphicsContext::State::reset()
     blendState = BlendStateDesc();
     rasterizerState = RasterizerStateDesc();
     depthStencilState = DepthStencilStateDesc();
-    renderTargets = {};
-    depthBuffer = nullptr;
-    viewportRect = Rect();
-    scissorRect = Rect();
+    //renderTargets = {};
+    //depthBuffer = nullptr;
+    viewportRect = Rect(0, 0, -1, -1);
+    scissorRect = Rect(0, 0, -1, -1);
     VertexLayout = nullptr;
     vertexBuffers = {};
     indexBuffer = nullptr;
     shader = nullptr;
     shaderPass = nullptr;
     topology = PrimitiveTopology::TriangleList;
+	renderPass = nullptr;
 }
 
 } // namespace ln

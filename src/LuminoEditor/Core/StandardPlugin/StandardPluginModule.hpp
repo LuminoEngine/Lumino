@@ -20,6 +20,8 @@ class StandardPluginModule
 {
 public:
     StandardPluginModule();
+    virtual const ln::Char* moduleId() const override { return u"1A07666A-50E3-4972-BF7E-7418CCA118F2"; }
+    virtual const ln::Char* moduleDisplayName() const override { return u"StandardPluginModule"; }
     virtual int getEditorExtensionCount() { return m_editorExtensions.size(); }
     virtual ln::IEditorExtension* getEditorExtension(int index) { return m_editorExtensions[index]; }
     virtual void onActivate(lna::EditorContext* context) {}

@@ -67,14 +67,14 @@ SwapChain* TestEnv::mainWindowSwapChain()
 void TestEnv::resetGraphicsContext(GraphicsContext* context)
 {
 	context->resetState();
-	context->setRenderTarget(0, Engine::mainWindow()->swapChain()->currentBackbuffer());
-	context->setDepthBuffer(depthBuffer);
+	//context->setRenderTarget(0, Engine::mainWindow()->swapChain()->currentBackbuffer());
+	//context->setDepthBuffer(depthBuffer);
 }
 
 GraphicsContext* TestEnv::beginFrame()
 {
 	auto ctx = TestEnv::mainWindowSwapChain()->beginFrame();
-	resetGraphicsContext(ctx);
+	//resetGraphicsContext(ctx);
 	return ctx;
 }
 

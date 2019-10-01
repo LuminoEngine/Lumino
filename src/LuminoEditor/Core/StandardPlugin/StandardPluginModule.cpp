@@ -53,17 +53,6 @@ StandardPluginModule::StandardPluginModule()
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
-    //{
-    //    auto ext = ln::makeObject<TilesetNavigatorExtension>();
-    //    m_editorExtensionInstances.add(ext);
-    //    m_editorExtensions.add(ext);
-    //}
-    //{
-    //    auto ext = ln::makeObject<TilesetEditorExtension>();
-    //    m_editorExtensionInstances.add(ext);
-    //    m_editorExtensions.add(ext);
-    //}
-
 }
 
 } // namespace lna

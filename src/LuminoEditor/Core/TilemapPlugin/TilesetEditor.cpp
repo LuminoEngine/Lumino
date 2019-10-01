@@ -8,19 +8,62 @@
 #include "TilesetNavigator.hpp"
 #include "TilesetEditor.hpp"
 
+
 namespace lna {
 
 //==============================================================================
-// TilesetEditorExtensionModule
+// TilesetView
 
-void TilesetEditorExtensionModule::onActivate(lna::EditorContext* context)
+void TilesetView::setTileset(ln::Tileset* tileset)
 {
-    m_navigator = ln::makeObject<TilesetNavigator>();
-    context->mainWindow()->navigatorManager()->addNavigator(m_navigator);
+    m_tileset = tileset;
 }
 
-void TilesetEditorExtensionModule::onDeactivate(lna::EditorContext* context)
+void TilesetView::onRender(ln::UIRenderingContext* context)
 {
+    if (m_tileset && m_tileset->material()) {
+        auto material = m_tileset->material();
+        auto texture = material->mainTexture();
+        if (texture) {
+            context->drawImage(ln::Rect(0, 0, texture->width(), texture->height()), material);
+        }
+    }
+}
+
+//==============================================================================
+// TilesetEditor
+
+ln::Result TilesetEditor::init()
+{
+    m_tilesetView = ln::makeObject<TilesetView>();
+    m_tilesetView->setHorizontalAlignment(ln::HAlignment::Stretch);
+    m_tilesetView->setVerticalAlignment(ln::VAlignment::Stretch);
+    return true;
+}
+
+void TilesetEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
+{
+    frame->addElement(m_tilesetView);
+
+    auto tileset = dynamic_cast<ln::Tileset*>(asset->target());
+    m_tilesetView->setTileset(tileset);
+}
+
+void TilesetEditor::onClosed()
+{
+}
+
+Ref<ln::List<Ref<ln::EditorPane>>> TilesetEditor::getEditorPanes(ln::EditorPaneKind kind)
+{
+    return nullptr;
+}
+
+//==============================================================================
+// TilesetEditorPloxy
+
+Ref<ln::AssetEditor> TilesetEditorPloxy::createEditor()
+{
+    return ln::makeObject<TilesetEditor>();
 }
 
 } // namespace lna
@@ -89,79 +132,6 @@ void TilesetList::listView_onItemClick(ln::UIClickEventArgs* e)
     }
 }
 
-//==============================================================================
-// TilesetNavigatorExtension
-
-void TilesetNavigatorExtension::onAttached()
-{
-    m_item = ln::makeObject<ln::NavigationMenuItem>();
-    m_item->setIconName(u"th");
-
-	m_tilesetList = ln::makeObject<TilesetList>();
-}
-
-ln::NavigationMenuItem* TilesetNavigatorExtension::getNavigationMenuItem()
-{
-    return m_item;
-}
-
-ln::UIElement* TilesetNavigatorExtension::getNavigationPane()
-{
-	return m_tilesetList;
-}
-
-//==============================================================================
-// TilesetImporter
-
-Ref<ln::AssetModel> TilesetImporter::onImport(const ln::Path& sourceFilePath)
-{
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-//==============================================================================
-// TilesetImporterExtension
-
-int TilesetImporterExtension::matchFilePath(const ln::Path& filePath)
-{
-    if (filePath.hasExtension(u"png")) {    // TODO: texture support
-        if (filePath.isRelative() && ln::Path::compare(filePath.parent().fileName(), u"Tileset") == 0) {
-            return BasePriority + 1;
-        }
-        else {
-            return BasePriority;
-        }
-    }
-    return 0;
-}
-
-Ref<ln::AssetImporter> TilesetImporterExtension::createImporter(const ln::Char* assetSourceFilePath)
-{
-    return nullptr;
-}
-
-//==============================================================================
-// TilesetEditor
-
-void TilesetEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
-{
-}
-
-void TilesetEditor::onClosed()
-{
-}
-
-//==============================================================================
-// TilesetEditorExtension
-
-TilesetEditorExtension::TilesetEditorExtension()
-{
-}
-
-ln::Ref<ln::AssetEditor> TilesetEditorExtension::createEditor()
-{
-    return ln::makeObject<TilesetEditor>();
-}
 
 #endif
 

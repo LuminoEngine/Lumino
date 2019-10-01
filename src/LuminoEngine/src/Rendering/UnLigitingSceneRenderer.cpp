@@ -49,6 +49,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 
 void UnLigitingSceneRenderer::init(RenderingManager* manager)
 {
+	SceneRenderer::init();
 	auto pass = makeRef<UnLigitingSceneRendererPass>();
 	pass->init(manager);
 	addPass(pass);

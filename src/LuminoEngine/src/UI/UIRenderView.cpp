@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
@@ -82,8 +83,8 @@ void UIRenderView::render(GraphicsContext* graphicsContext)
 
 
         FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->renderTarget(0);
-        fb.depthBuffer = graphicsContext->depthBuffer();
+        fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
+        fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
 
         // TODO:
         detail::CameraInfo camera;

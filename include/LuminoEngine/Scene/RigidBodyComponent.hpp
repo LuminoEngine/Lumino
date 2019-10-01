@@ -72,6 +72,9 @@ public:
 
     /** トルク衝撃を与えます。 */
     void applyTorqueImpulse(float torque) { m_body->applyTorqueImpulse(torque); }
+
+    /** このコンポーネントと関連づいている RigidBody2D を取得します。 */
+    RigidBody2D* rigidBody() const;
     
 
     /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/

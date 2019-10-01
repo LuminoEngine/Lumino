@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
@@ -34,6 +35,7 @@ void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
 	m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
+	m_renderPass = makeObject<RenderPass>();
 }
 
 void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
@@ -48,9 +50,12 @@ void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffe
 {
 	frameBuffer->renderTarget[0] = m_depthMap;
 	frameBuffer->depthBuffer = m_depthBuffer;
-	context->setRenderTarget(0, m_depthMap);
-	context->setDepthBuffer(m_depthBuffer);
-	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
+	m_renderPass->setRenderTarget(0, m_depthMap);
+	m_renderPass->setDepthBuffer(m_depthBuffer);
+	//context->setRenderTarget(0, m_depthMap);
+	//context->setDepthBuffer(m_depthBuffer);
+	context->setRenderPass(m_renderPass);
+	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);	// TODO: renderPassに統合していいと思う
 }
 
 ShaderTechnique* DepthPrepass::selectShaderTechnique(
@@ -198,6 +203,7 @@ void ShadowCasterPass::init()
 
 	m_shadowMap = makeObject<RenderTargetTexture>(1024, 1024, TextureFormat::RGBA32F, false);
 	m_depthBuffer = makeObject<DepthBuffer>(1024, 1024);
+	m_renderPass = makeObject<RenderPass>();
 
 	//g_m_shadowMap = m_shadowMap;
 }
@@ -212,8 +218,11 @@ void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameB
 {
 	frameBuffer->renderTarget[0] = m_shadowMap;
 	frameBuffer->depthBuffer = m_depthBuffer;
-	context->setRenderTarget(0, m_shadowMap);
-	context->setDepthBuffer(m_depthBuffer);
+	//context->setRenderTarget(0, m_shadowMap);
+	//context->setDepthBuffer(m_depthBuffer);
+	m_renderPass->setRenderTarget(0, m_shadowMap);
+	m_renderPass->setDepthBuffer(m_depthBuffer);
+	context->setRenderPass(m_renderPass);
 	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
 }
 

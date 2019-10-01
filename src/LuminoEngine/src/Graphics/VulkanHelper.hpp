@@ -581,8 +581,7 @@ private:
 
 // Framebuffer は RenderPass の子オブジェクトな位置づけとなる。
 // VkFramebuffer と、そのレイアウト定義に相当する VkRenderPass をセットで持つ。
-// ※ Vulkan のデータ構造上は Framebuffer と RenderPass は 1:1 であるが、
-//    VkRenderPass は VulkanRenderPassCache から取り出すので、m_framebuffer と m_renderPass は 1:1 ではない。
+// ※ Vulkan のデータ構造上は Framebuffer と RenderPass は n:1.
 //   フォーマットが共通なら VkRenderPass は共有される。
 class VulkanFramebuffer
     : public RefObject

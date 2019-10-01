@@ -1,7 +1,9 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
@@ -57,12 +59,16 @@ void SwapChain::resizeBackbuffer(int width, int height)
 GraphicsContext* SwapChain::beginFrame()
 {
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
+	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
+	m_graphicsContext->resetState();
+	m_graphicsContext->setRenderPass(m_renderPasses[m_imageIndex]);
 	return m_graphicsContext;
 }
 
 void SwapChain::endFrame()
 {
 	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
+	detail::GraphicsContextInternal::endCommandRecoding(m_graphicsContext);
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
 	//auto nativeContext = detail::GraphicsContextInternal::commitState(m_graphicsContext);
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
@@ -72,6 +78,8 @@ void SwapChain::resetRHIBackbuffers()
 {
 	uint32_t count = m_rhiObject->getBackbufferCount();
 	m_backbuffers.resize(count);
+	m_depthBuffers.resize(count);
+	m_renderPasses.resize(count);
 	m_commandLists.resize(count);
 	for (uint32_t i = 0; i < count; i++) {
 		// backbuffer
@@ -79,7 +87,15 @@ void SwapChain::resetRHIBackbuffers()
 		detail::TextureInternal::resetRHIObject(buffer, m_rhiObject->getRenderTarget(i));
 		m_backbuffers[i] = buffer;
 
-		// commandList
+		// DepthBuffer
+		auto depthBuffer = makeObject<DepthBuffer>(buffer->width(), buffer->height());
+		m_depthBuffers[i] = depthBuffer;
+
+		// RenderPass
+		auto renderPass = makeObject<RenderPass>(buffer, depthBuffer);
+		m_renderPasses[i] = renderPass;
+			
+		// CommandList
 		auto commandList = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createCommandList();
 		m_commandLists[i] = commandList;
 	}

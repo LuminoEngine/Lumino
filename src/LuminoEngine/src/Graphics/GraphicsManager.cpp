@@ -161,14 +161,14 @@ void GraphicsManager::init(const Settings& settings)
 
 	//m_graphicsContext = makeObject<GraphicsContext>(renderingType());
 
-	if (auto queue = m_deviceContext->getGraphicsCommandQueue()) {
-		m_graphicsQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);
-		m_graphicsQueue->init(queue);
-	}
-	if (auto queue = m_deviceContext->getComputeCommandQueue()) {
-		m_computeQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);
-		m_computeQueue->init(queue);
-	}
+	//if (auto queue = m_deviceContext->getGraphicsCommandQueue()) {
+	//	m_graphicsQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);
+	//	m_graphicsQueue->init(queue);
+	//}
+	//if (auto queue = m_deviceContext->getComputeCommandQueue()) {
+	//	m_computeQueue = Ref<CommandQueue>(LN_NEW CommandQueue(), false);
+	//	m_computeQueue->init(queue);
+	//}
 
 
 	m_renderingQueue = makeRef<RenderingQueue>();

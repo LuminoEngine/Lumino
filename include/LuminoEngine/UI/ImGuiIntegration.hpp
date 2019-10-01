@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "../../../build/ExternalSource/imgui/imgui.h"
 
 namespace ln {
 class VertexLayout;

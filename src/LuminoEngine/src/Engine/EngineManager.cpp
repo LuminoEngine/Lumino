@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -116,6 +117,12 @@ void EngineManager::init()
 	
 	m_engineContext = makeRef<EngineContext>();
 
+
+	{
+		m_activeDiagnostics = makeObject<DiagnosticsManager>();
+		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, u"RenderPass count");
+		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
+	}
 
 	initializeAllManagers();
 

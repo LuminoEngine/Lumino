@@ -9,6 +9,7 @@
 
 namespace ln {
 namespace detail { class PlatformWindow; class UIManager; }
+class RenderPass;
 class GraphicsContext;
 class SwapChain;
 class RenderTargetTexture;
@@ -116,6 +117,7 @@ public:  // TODO: internal
 	GraphicsContext* m_renderingGraphicsContext;
 	Ref<SwapChain>	m_swapChain;
 	Ref<DepthBuffer> m_depthBuffer;
+	Ref<RenderPass> m_renderPass;
 	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
 	UIFrameWindowUpdateMode m_updateMode;

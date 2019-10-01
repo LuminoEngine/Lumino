@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Font/Font.hpp>
@@ -109,8 +110,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext)
 	if (m_camera)
 	{
         FrameBuffer fb;
-        fb.renderTarget[0] = graphicsContext->renderTarget(0);
-        fb.depthBuffer = graphicsContext->depthBuffer();
+        fb.renderTarget[0] = graphicsContext->renderPass()->renderTarget(0);
+        fb.depthBuffer = graphicsContext->renderPass()->depthBuffer();
 
         // TODO:
         detail::CameraInfo camera;

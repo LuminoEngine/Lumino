@@ -92,9 +92,12 @@ namespace detail {
 class GLGraphicsContext;
 class GLContext;
 class GLSwapChain;
+class GLRenderPass;
 class GLCommandQueue;
 class GLIndexBuffer;
+class GLTextureBase;
 class GLRenderTargetTexture;
+class GLDepthBuffer;
 class GLShaderPass;
 class GLShaderUniformBuffer;
 class GLShaderUniform;
@@ -136,7 +139,8 @@ protected:
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<ICommandList> onCreateCommandList() override;
-	virtual Ref<IRenderPass> onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil) override;
+	virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
+	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
@@ -147,7 +151,6 @@ protected:
     virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
-	virtual Ref<IPipeline> onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state) override;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override {}
 	virtual ICommandQueue* getGraphicsCommandQueue() override;
 	virtual ICommandQueue* getComputeCommandQueue() override;
@@ -160,7 +163,7 @@ private:
 	Ref<GLCommandQueue> m_graphicsQueue;	// dummy
 	//Ref<GLGraphicsContext> m_graphicsContext;
 	Caps m_caps;
-	bool m_commandListCreated;
+	//bool m_commandListCreated;
 };
 
 class GLGraphicsContext
@@ -171,18 +174,16 @@ public:
 	Result init(OpenGLDevice* owner);
 	void dispose();
 	void setActiveShaderPass(GLShaderPass* pass);
+	GLuint fbo() const { return m_fbo; }
 
 protected:
 	virtual void onSaveExternalRenderState() override;
 	virtual void onRestoreExternalRenderState() override;
 	virtual void onBeginCommandRecoding() override {}
 	virtual void onEndCommandRecoding() override {}
-	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
-	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
-	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
-	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
-	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
-	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override {}
+	virtual void onBeginRenderPass(IRenderPass* renderPass) override;
+	virtual void onEndRenderPass(IRenderPass* renderPass) override;
+	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
 	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) override;
 	virtual void onUnmapResource(IGraphicsResource* resource) override;
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
@@ -199,6 +200,7 @@ private:
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 	GLuint m_fbo;
 	GLIndexBuffer* m_currentIndexBuffer;
+	GLRenderPass* m_currentRenderPass = nullptr;
 	GLShaderPass* m_activeShaderPass;
 
 	struct
@@ -270,6 +272,27 @@ public:
 	GLCommandQueue();
 	Result init();
 	virtual Result submit(ICommandList* commandList) override;
+};
+
+class GLRenderPass
+	: public IRenderPass
+{
+public:
+	GLRenderPass();
+	Result init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+	virtual void dispose() override;
+
+	SizeI viewSize() const;
+	void bind(GLGraphicsContext* context);
+
+private:
+	OpenGLDevice* m_device;
+	std::array<Ref<GLTextureBase>, MaxMultiRenderTargets> m_renderTargets;
+	Ref<GLDepthBuffer> m_depthBuffer;
+	ClearFlags m_clearFlags;
+	Color m_clearColor;
+	float m_clearDepth;
+	uint8_t m_clearStencil;
 };
 
 struct GLVertexElement
@@ -556,7 +579,7 @@ public:
 	virtual void dispose() override;
 
 	GLuint program() const { return m_program; }
-	void apply();
+	void apply() const;
 
 	//virtual int getUniformCount() const override;
 	//virtual IShaderUniform* getUniform(int index) const override;
@@ -670,6 +693,24 @@ private:
 
 	std::vector<Uniform> m_table;
 	std::vector<ExternalUnifrom> m_externalUniforms;    // TODO: 名前、virtual のほうがいいかも
+};
+
+class GLPipeline
+	: public IPipeline
+{
+public:
+	GLPipeline();
+	Result init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
+	virtual void dispose() override;
+	void bind(const std::array<IVertexBuffer*, MaxVertexStreams>& vertexBuffers, const IIndexBuffer* indexBuffer);
+	GLenum primitiveTopology() const { return m_primitiveTopology; }
+
+private:
+	OpenGLDevice* m_device;
+	BlendStateDesc m_blendState;
+	RasterizerStateDesc m_rasterizerState;
+	DepthStencilStateDesc m_depthStencilState;
+	GLenum m_primitiveTopology;
 };
 
 //=============================================================================

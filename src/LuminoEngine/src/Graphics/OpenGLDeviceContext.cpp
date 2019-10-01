@@ -198,7 +198,7 @@ OpenGLDevice::OpenGLDevice()
 	: m_glContext(nullptr)
 	, m_uniformTempBuffer()
 	, m_uniformTempBufferWriter(&m_uniformTempBuffer)
-	, m_commandListCreated(false)
+	//, m_commandListCreated(false)
 {
 }
 
@@ -317,21 +317,33 @@ Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const Si
 
 Ref<ICommandList> OpenGLDevice::onCreateCommandList()
 {
-	if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
+	//if (LN_REQUIRE(!m_commandListCreated)) return nullptr;	// OpenGL では複数 CommandList の作成を禁止する
 
 	auto ptr = makeRef<GLGraphicsContext>();
 	if (!ptr->init(this)) {
 		return nullptr;
 	}
 
-	m_commandListCreated = true;
+	//m_commandListCreated = true;
 	return ptr;
 }
 
-Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearZ, uint8_t clearStencil)
+Ref<IRenderPass> OpenGLDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	auto ptr = makeRef<GLRenderPass>();
+	if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
+		return nullptr;
+	}
+	return ptr;
+}
+
+Ref<IPipeline> OpenGLDevice::onCreatePipeline(const DevicePipelineStateDesc& state)
+{
+	auto ptr = makeRef<GLPipeline>();
+	if (!ptr->init(this, state)) {
+		return nullptr;
+	}
+	return ptr;
 }
 
 Ref<IVertexDeclaration> OpenGLDevice::onCreateVertexDeclaration(const VertexElement* elements, int elementsCount)
@@ -402,12 +414,6 @@ Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
 	auto ptr = makeRef<GLShaderPass>();
 	ptr->init(this, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag);
 	return ptr;
-}
-
-Ref<IPipeline> OpenGLDevice::onCreatePipeline(IRenderPass* ownerRenderPass, const GraphicsContextState& state)
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
 }
 
 ICommandQueue* OpenGLDevice::getGraphicsCommandQueue()
@@ -488,264 +494,275 @@ void GLGraphicsContext::onRestoreExternalRenderState()
 	setActiveShaderPass(nullptr);
 }
 
-void GLGraphicsContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
+void GLGraphicsContext::onBeginRenderPass(IRenderPass* renderPass)
 {
-	// BlendState
-	{
-		GLenum  blendOpTable[] =
-		{
-			GL_FUNC_ADD,
-			GL_FUNC_SUBTRACT,
-			GL_FUNC_REVERSE_SUBTRACT,
-			GL_MIN,
-			GL_MAX,
-		};
+	m_currentRenderPass = static_cast<GLRenderPass*>(renderPass);
+	m_currentRenderPass->bind(this);
+}
 
-		GLenum blendFactorTable[] =
+void GLGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
+{
+}
+
+void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
+{
+	// UpdateRegionRects
+	{
+		auto& viewportRect = state.regionRects.viewportRect;
+		auto& scissorRect = state.regionRects.scissorRect;
+		auto targetSize = m_currentRenderPass->viewSize();
+
+		GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
+		GL_CHECK(glEnable(GL_SCISSOR_TEST));
+		GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
+	}
+
+#if 1
+
+	// Update primitive data
+	{
+		//if (LN_REQUIRE(decls)) return;
+		//if (LN_REQUIRE(vertexBuufers)) return;
+		//if (LN_REQUIRE(vertexBuffersCount >= 1)) return;
+
+		// 複数の頂点バッファを使う
+		// https://qiita.com/y_UM4/items/75941cb75afb0a46aa5e
+
+		// IVertexDeclaration で指定された頂点レイアウトと、GLSL に書かれている attribute 変数の定義順序が一致していることを前提としている。
+		// ※0.4.0 以前は変数名を固定していたが、それを廃止。リフレクションっぽいことをこのモジュールの中でやりたくない。複雑になりすぎる。
+
+		if (m_vao) {
+			GL_CHECK(glBindVertexArray(m_vao));
+		}
+
+		m_currentIndexBuffer = static_cast<GLIndexBuffer*>(state.primitive.indexBuffer);
+	}
+
+    if (pipeline) {
+        auto* glPipeline = static_cast<GLPipeline*>(pipeline);
+        glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer);
+    }
+
+#else
+	// UpdateStatus
+	{
+		auto& blendState = state.pipelineState.blendState;
+		auto& rasterizerState = state.pipelineState.rasterizerState;
+		auto& depthStencilState = state.pipelineState.depthStencilState;
+
+		// BlendState
 		{
-			GL_ZERO,
-			GL_ONE,
-			GL_SRC_COLOR,
-			GL_ONE_MINUS_SRC_COLOR,
-			GL_SRC_ALPHA,
-			GL_ONE_MINUS_SRC_ALPHA,
-			GL_DST_COLOR,
-			GL_ONE_MINUS_DST_COLOR,
-			GL_DST_ALPHA,
-			GL_ONE_MINUS_DST_ALPHA
-		};
+			GLenum  blendOpTable[] =
+			{
+				GL_FUNC_ADD,
+				GL_FUNC_SUBTRACT,
+				GL_FUNC_REVERSE_SUBTRACT,
+				GL_MIN,
+				GL_MAX,
+			};
+
+			GLenum blendFactorTable[] =
+			{
+				GL_ZERO,
+				GL_ONE,
+				GL_SRC_COLOR,
+				GL_ONE_MINUS_SRC_COLOR,
+				GL_SRC_ALPHA,
+				GL_ONE_MINUS_SRC_ALPHA,
+				GL_DST_COLOR,
+				GL_ONE_MINUS_DST_COLOR,
+				GL_DST_ALPHA,
+				GL_ONE_MINUS_DST_ALPHA
+			};
 
 #ifdef GL_GLES_PROTOTYPES
-		// OpenGL ES is unsupported
+			// OpenGL ES is unsupported
 #else
-		if (blendState.independentBlendEnable)
-		{
-			for (int i = 0; i < 8; i++)	// TODO: num RT
+			if (blendState.independentBlendEnable)
 			{
-				const RenderTargetBlendDesc& desc = blendState.renderTargets[i];
+				for (int i = 0; i < 8; i++)	// TODO: num RT
+				{
+					const RenderTargetBlendDesc& desc = blendState.renderTargets[i];
+
+					// blendEnable
+					if (desc.blendEnable) {
+						GL_CHECK(glEnablei(GL_BLEND, i));
+					}
+					else {
+						GL_CHECK(glEnablei(GL_BLEND, i));
+					}
+
+					// sourceBlend
+					// destinationBlend
+					GL_CHECK(glBlendFuncSeparatei(i,
+						blendFactorTable[(int)desc.sourceBlend],
+						blendFactorTable[(int)desc.destinationBlend],
+						blendFactorTable[(int)desc.sourceBlendAlpha],
+						blendFactorTable[(int)desc.destinationBlendAlpha]));
+
+					// blendOp
+					GL_CHECK(glBlendEquationSeparatei(i,
+						blendOpTable[(int)desc.blendOp],
+						blendOpTable[(int)desc.blendOpAlpha]));
+				}
+			}
+			else
+#endif
+			{
+				const RenderTargetBlendDesc& desc = blendState.renderTargets[0];
 
 				// blendEnable
 				if (desc.blendEnable) {
-					GL_CHECK(glEnablei(GL_BLEND, i));
+					GL_CHECK(glEnable(GL_BLEND));
 				}
 				else {
-					GL_CHECK(glEnablei(GL_BLEND, i));
+					GL_CHECK(glDisable(GL_BLEND));
+				}
+
+				// blendOp
+				{
+					GL_CHECK(glBlendEquationSeparate(
+						blendOpTable[(int)desc.blendOp],
+						blendOpTable[(int)desc.blendOpAlpha]));
 				}
 
 				// sourceBlend
 				// destinationBlend
-				GL_CHECK(glBlendFuncSeparatei(i,
-					blendFactorTable[(int)desc.sourceBlend],
-					blendFactorTable[(int)desc.destinationBlend],
-					blendFactorTable[(int)desc.sourceBlendAlpha],
-					blendFactorTable[(int)desc.destinationBlendAlpha]));
-
-				// blendOp
-				GL_CHECK(glBlendEquationSeparatei(i,
-					blendOpTable[(int)desc.blendOp],
-					blendOpTable[(int)desc.blendOpAlpha]));
+				{
+					GL_CHECK(glBlendFuncSeparate(
+						blendFactorTable[(int)desc.sourceBlend],
+						blendFactorTable[(int)desc.destinationBlend],
+						blendFactorTable[(int)desc.sourceBlendAlpha],
+						blendFactorTable[(int)desc.destinationBlendAlpha]));
+				}
 			}
 		}
-		else
-#endif
-		{
-			const RenderTargetBlendDesc& desc = blendState.renderTargets[0];
 
-			// blendEnable
-			if (desc.blendEnable) {
-				GL_CHECK(glEnable(GL_BLEND));
+		// RasterizerState
+		{
+			// fillMode
+			{
+#ifdef GL_GLES_PROTOTYPES
+				// OpenGL ES is glPolygonMode unsupported
+#else
+				const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
+				GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)rasterizerState.fillMode]));
+#endif
+			}
+
+			// cullingMode
+			{
+				switch (rasterizerState.cullMode)
+				{
+				case CullMode::None:
+					GL_CHECK(glDisable(GL_CULL_FACE));
+					break;
+				case CullMode::Front:
+					GL_CHECK(glEnable(GL_CULL_FACE));
+					GL_CHECK(glCullFace(GL_BACK));
+					break;
+				case CullMode::Back:
+					GL_CHECK(glEnable(GL_CULL_FACE));
+					GL_CHECK(glCullFace(GL_FRONT));
+					break;
+				}
+			}
+		}
+
+		// DepthStencilState
+		{
+			GLenum cmpFuncTable[] =
+			{
+				GL_NEVER,		// Never
+				GL_LESS,		// Less
+				GL_LEQUAL,		// LessEqual
+				GL_GREATER,		// Greater
+				GL_GEQUAL,		// GreaterEqual
+				GL_EQUAL,		// Equal
+				GL_NOTEQUAL,	// NotEqual
+				GL_ALWAYS,		// Always
+			};
+
+			//// depthTestEnabled
+			//if (depthStencilState.depthTestEnabled) {
+			//	GL_CHECK(glEnable(GL_DEPTH_TEST));
+			//}
+			//else {
+			//	GL_CHECK(glDisable(GL_DEPTH_TEST));
+			//}
+
+			if (depthStencilState.depthTestFunc == ComparisonFunc::Always) {
+				GL_CHECK(glDisable(GL_DEPTH_TEST));
 			}
 			else {
-				GL_CHECK(glDisable(GL_BLEND));
+				GL_CHECK(glEnable(GL_DEPTH_TEST));
+				GL_CHECK(glDepthFunc(cmpFuncTable[(int)depthStencilState.depthTestFunc]));
 			}
 
-			// blendOp
-			{
-				GL_CHECK(glBlendEquationSeparate(
-					blendOpTable[(int)desc.blendOp],
-					blendOpTable[(int)desc.blendOpAlpha]));
+			// depthWriteEnabled
+			GL_CHECK(glDepthMask(depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
+
+			// stencilEnabled
+			if (depthStencilState.stencilEnabled) {
+				GL_CHECK(glEnable(GL_STENCIL_TEST));
+			}
+			else {
+				GL_CHECK(glDisable(GL_STENCIL_TEST));
 			}
 
-			// sourceBlend
-			// destinationBlend
+			// stencilFunc
+			// stencilReferenceValue
+			GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)depthStencilState.frontFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+			GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)depthStencilState.backFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+
+			// stencilFailOp
+			// stencilDepthFailOp
+			// stencilPassOp
+			GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
+			GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilPassOp]));
+			GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilPassOp]));
+		}
+	}
+
+	// PrimitiveData
+	{
+		//if (LN_REQUIRE(decls)) return;
+		//if (LN_REQUIRE(vertexBuufers)) return;
+		//if (LN_REQUIRE(vertexBuffersCount >= 1)) return;
+
+		// 複数の頂点バッファを使う
+		// https://qiita.com/y_UM4/items/75941cb75afb0a46aa5e
+
+		// IVertexDeclaration で指定された頂点レイアウトと、GLSL に書かれている attribute 変数の定義順序が一致していることを前提としている。
+		// ※0.4.0 以前は変数名を固定していたが、それを廃止。リフレクションっぽいことをこのモジュールの中でやりたくない。複雑になりすぎる。
+
+		if (m_vao) {
+			GL_CHECK(glBindVertexArray(m_vao));
+		}
+
+		if (state.pipelineState.vertexDeclaration)
+		{
+			GLVertexDeclaration* glDecl = static_cast<GLVertexDeclaration*>(state.pipelineState.vertexDeclaration);
+
+			for (int iElement = 0; iElement < m_device->caps().MAX_VERTEX_ATTRIBS; iElement++)
 			{
-				GL_CHECK(glBlendFuncSeparate(
-					blendFactorTable[(int)desc.sourceBlend],
-					blendFactorTable[(int)desc.destinationBlend],
-					blendFactorTable[(int)desc.sourceBlendAlpha],
-					blendFactorTable[(int)desc.destinationBlendAlpha]));
-			}
-		}
-	}
+				GLuint attrLoc = iElement;	// 本来は attribute 変数の location
 
-	// RasterizerState
-	{
-		// fillMode
-		{
-#ifdef GL_GLES_PROTOTYPES
-			// OpenGL ES is glPolygonMode unsupported
-#else
-			const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
-			GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)rasterizerState.fillMode]));
-#endif
-		}
-
-		// cullingMode
-		{
-			switch (rasterizerState.cullMode)
-			{
-			case CullMode::None:
-				GL_CHECK(glDisable(GL_CULL_FACE));
-				break;
-			case CullMode::Front:
-				GL_CHECK(glEnable(GL_CULL_FACE));
-				GL_CHECK(glCullFace(GL_BACK));
-				break;
-			case CullMode::Back:
-				GL_CHECK(glEnable(GL_CULL_FACE));
-				GL_CHECK(glCullFace(GL_FRONT));
-				break;
-			}
-		}
-	}
-
-	// DepthStencilState
-	{
-		GLenum cmpFuncTable[] =
-		{
-			GL_NEVER,		// Never
-			GL_LESS,		// Less
-			GL_LEQUAL,		// LessEqual
-			GL_GREATER,		// Greater
-			GL_GEQUAL,		// GreaterEqual
-			GL_EQUAL,		// Equal
-			GL_NOTEQUAL,	// NotEqual
-			GL_ALWAYS,		// Always
-		};
-
-		//// depthTestEnabled
-		//if (depthStencilState.depthTestEnabled) {
-		//	GL_CHECK(glEnable(GL_DEPTH_TEST));
-		//}
-		//else {
-		//	GL_CHECK(glDisable(GL_DEPTH_TEST));
-		//}
-
-		if (depthStencilState.depthTestFunc == ComparisonFunc::Always) {
-			GL_CHECK(glDisable(GL_DEPTH_TEST));
-		}
-		else {
-			GL_CHECK(glEnable(GL_DEPTH_TEST));
-			GL_CHECK(glDepthFunc(cmpFuncTable[(int)depthStencilState.depthTestFunc]));
-		}
-
-		// depthWriteEnabled
-		GL_CHECK(glDepthMask(depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
-
-		// stencilEnabled
-		if (depthStencilState.stencilEnabled) {
-			GL_CHECK(glEnable(GL_STENCIL_TEST));
-		}
-		else {
-			GL_CHECK(glDisable(GL_STENCIL_TEST));
-		}
-
-		// stencilFunc
-		// stencilReferenceValue
-		GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)depthStencilState.frontFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
-		GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)depthStencilState.backFace.stencilFunc], depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
-
-		// stencilFailOp
-		// stencilDepthFailOp
-		// stencilPassOp
-		GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
-		GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.frontFace.stencilPassOp]));
-		GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)depthStencilState.backFace.stencilPassOp]));
-	}
-}
-
-void GLGraphicsContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
-{
-	if (m_fbo) {
-		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
-	}
-
-	// color buffers
-	int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
-	for (int i = 0; i < renderTargetsCount; ++i)
-	{
-		if (renderTargets[i])
-		{
-			GLuint id = static_cast<GLTextureBase*>(renderTargets[i])->id();
-			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
-		}
-		else
-		{
-			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0));
-		}
-	}
-
-	// depth buffer
-	if (depthBuffer)
-	{
-		GLuint id = static_cast<GLDepthBuffer*>(depthBuffer)->id();
-		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id));
-		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id));
-	}
-	else
-	{
-		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
-		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0));
-	}
-
-	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
-		"glCheckFramebufferStatus failed 0x%08x",
-		glCheckFramebufferStatus(GL_FRAMEBUFFER));
-}
-
-void GLGraphicsContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
-{
-	GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
-	//GL_CHECK(glViewport(0, 0, 160, 60));
-	//GL_CHECK(glViewport(0, 0, 80, 60));
-
-	GL_CHECK(glEnable(GL_SCISSOR_TEST));
-	GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
-}
-
-void GLGraphicsContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
-{
-	//if (LN_REQUIRE(decls)) return;
-	//if (LN_REQUIRE(vertexBuufers)) return;
-	//if (LN_REQUIRE(vertexBuffersCount >= 1)) return;
-
-	// 複数の頂点バッファを使う
-	// https://qiita.com/y_UM4/items/75941cb75afb0a46aa5e
-
-	// IVertexDeclaration で指定された頂点レイアウトと、GLSL に書かれている attribute 変数の定義順序が一致していることを前提としている。
-	// ※0.4.0 以前は変数名を固定していたが、それを廃止。リフレクションっぽいことをこのモジュールの中でやりたくない。複雑になりすぎる。
-
-	if (m_vao) {
-		GL_CHECK(glBindVertexArray(m_vao));
-	}
-
-	if (decls && vertexBuufers)
-	{
-		GLVertexDeclaration* glDecl = static_cast<GLVertexDeclaration*>(decls);
-
-		for (int iElement = 0; iElement < m_device->caps().MAX_VERTEX_ATTRIBS; iElement++)
-		{
-			GLuint attrLoc = iElement;	// 本来は attribute 変数の location
-
-			if (iElement < glDecl->vertexElements().size())
-			{
-				const GLVertexElement& element = glDecl->vertexElements()[iElement];
-
-				if (vertexBuufers[element.streamIndex])
+				if (iElement < glDecl->vertexElements().size())
 				{
-					GL_CHECK(glEnableVertexAttribArray(attrLoc));
-					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(vertexBuufers[element.streamIndex])->vertexBufferId()));
-					GL_CHECK(glVertexAttribPointer(attrLoc, element.size, element.type, element.normalized, element.stride, (void*)(element.byteOffset)));
+					const GLVertexElement& element = glDecl->vertexElements()[iElement];
+
+					if (state.primitive.vertexBuffers[element.streamIndex])
+					{
+						GL_CHECK(glEnableVertexAttribArray(attrLoc));
+						GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<GLVertexBuffer*>(state.primitive.vertexBuffers[element.streamIndex])->vertexBufferId()));
+						GL_CHECK(glVertexAttribPointer(attrLoc, element.size, element.type, element.normalized, element.stride, (void*)(element.byteOffset)));
+					}
+					else
+					{
+						GL_CHECK(glDisableVertexAttribArray(attrLoc));
+						GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+					}
 				}
 				else
 				{
@@ -753,45 +770,37 @@ void GLGraphicsContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertex
 					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
 				}
 			}
-			else
-			{
-				GL_CHECK(glDisableVertexAttribArray(attrLoc));
-				GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
-			}
+
+			//int disableCount = m_lastUsedAttribIndex - iElement;
+			//if (disableCount > 0)
+			//{
+			//	for (int i = 0; i < disableCount; i++)
+			//	{
+			//		GL_CHECK(glDisableVertexAttribArray(attrLoc));
+			//		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+			//	}
+			//}
+
+			//m_lastUsedAttribIndex = iElement;
 		}
 
-		//int disableCount = m_lastUsedAttribIndex - iElement;
-		//if (disableCount > 0)
-		//{
-		//	for (int i = 0; i < disableCount; i++)
-		//	{
-		//		GL_CHECK(glDisableVertexAttribArray(attrLoc));
-		//		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
-		//	}
-		//}
-
-		//m_lastUsedAttribIndex = iElement;
+		m_currentIndexBuffer = static_cast<GLIndexBuffer*>(state.primitive.indexBuffer);
+		if (m_currentIndexBuffer) {
+			GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_currentIndexBuffer->indexBufferId()));
+		}
+		else {
+			GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+		}
 	}
 
-	m_currentIndexBuffer = static_cast<GLIndexBuffer*>(indexBuffer);
-	if (m_currentIndexBuffer)
-	{
-		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_currentIndexBuffer->indexBufferId()));
-	}
-	else
-	{
-		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-	}
 
-}
-
-void GLGraphicsContext::onUpdateShaderPass(IShaderPass* newPass)
-{
-	if (newPass)
+	// shaderPass
+	if (state.shaderPass)
 	{
-		GLShaderPass* pass = static_cast<GLShaderPass*>(newPass);
+		GLShaderPass* pass = static_cast<GLShaderPass*>(state.shaderPass);
 		pass->apply();
 	}
+#endif
 }
 
 void* GLGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size)
@@ -1116,6 +1125,79 @@ Result GLCommandQueue::submit(ICommandList* commandList)
 {
 	glFlush();
 	return true;
+}
+
+//==============================================================================
+// GLRenderPass
+
+GLRenderPass::GLRenderPass()
+{
+}
+
+Result GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
+{
+	m_device = device;
+	
+	for (auto i = 0; i < buffers.renderTargets.size(); i++) {
+		m_renderTargets[i] = static_cast<GLTextureBase*>(buffers.renderTargets[i]);
+	}
+
+	m_depthBuffer = static_cast<GLDepthBuffer*>(buffers.depthBuffer);
+	m_clearFlags = clearFlags;
+	m_clearColor = clearColor;
+	m_clearDepth = clearDepth;
+	m_clearStencil = clearStencil;
+	return true;
+}
+
+void GLRenderPass::dispose()
+{
+}
+
+SizeI GLRenderPass::viewSize() const
+{
+	return m_renderTargets[0]->realSize();
+}
+
+void GLRenderPass::bind(GLGraphicsContext* context)
+{
+	auto fbo = context->fbo();
+	if (fbo) {
+		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
+	}
+
+	// color buffers
+	int renderTargetsCount = m_renderTargets.size();
+	int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
+	for (int i = 0; i < renderTargetsCount; ++i)
+	{
+		if (m_renderTargets[i])
+		{
+			GLuint id = static_cast<GLTextureBase*>(m_renderTargets[i])->id();
+			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
+		}
+		else
+		{
+			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0));
+		}
+	}
+
+	// depth buffer
+	if (m_depthBuffer)
+	{
+		GLuint id = static_cast<GLDepthBuffer*>(m_depthBuffer)->id();
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id));
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id));
+	}
+	else
+	{
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0));
+		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0));
+	}
+
+	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
+		"glCheckFramebufferStatus failed 0x%08x",
+		glCheckFramebufferStatus(GL_FRAMEBUFFER));
 }
 
 //==============================================================================
@@ -1971,7 +2053,7 @@ void GLShaderPass::dispose()
 	IShaderPass::dispose();
 }
 
-void GLShaderPass::apply()
+void GLShaderPass::apply() const
 {
 	GL_CHECK(glUseProgram(m_program));
 	for (auto& buf : m_uniformBuffers) {
@@ -2579,6 +2661,297 @@ void GLLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture
 void GLLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
 {
 	m_externalUniforms[registerIndex].samplerState = static_cast<GLSamplerState*>(state);
+}
+
+//=============================================================================
+// GLPipeline
+
+GLPipeline::GLPipeline()
+	: m_device(nullptr)
+	, m_blendState()
+	, m_rasterizerState()
+	, m_depthStencilState()
+	, m_primitiveTopology(0)
+{
+}
+
+Result GLPipeline::init(OpenGLDevice* device, const DevicePipelineStateDesc& state)
+{
+	m_device = device;
+	m_blendState = state.blendState;
+	m_rasterizerState = state.rasterizerState;
+	m_depthStencilState = state.depthStencilState;
+
+	switch (state.topology)
+	{
+	case PrimitiveTopology::TriangleList:
+		m_primitiveTopology = GL_TRIANGLES;
+		break;
+	case PrimitiveTopology::TriangleStrip:
+		m_primitiveTopology = GL_TRIANGLE_STRIP;
+		break;
+	case PrimitiveTopology::TriangleFan:
+		m_primitiveTopology = GL_TRIANGLE_FAN;
+		break;
+	case PrimitiveTopology::LineList:
+		m_primitiveTopology = GL_LINES;
+		break;
+	case PrimitiveTopology::LineStrip:
+		m_primitiveTopology = GL_LINE_STRIP;
+		break;
+	case PrimitiveTopology::PointList:
+		m_primitiveTopology = GL_POINTS;
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+
+	return true;
+}
+
+void GLPipeline::dispose()
+{
+	IPipeline::dispose();
+}
+
+void GLPipeline::bind(const std::array<IVertexBuffer*, MaxVertexStreams>& vertexBuffers, const IIndexBuffer* indexBuffer)
+{
+	// UpdateStatus
+	{
+		// BlendState
+		{
+			GLenum  blendOpTable[] =
+			{
+				GL_FUNC_ADD,
+				GL_FUNC_SUBTRACT,
+				GL_FUNC_REVERSE_SUBTRACT,
+				GL_MIN,
+				GL_MAX,
+			};
+
+			GLenum blendFactorTable[] =
+			{
+				GL_ZERO,
+				GL_ONE,
+				GL_SRC_COLOR,
+				GL_ONE_MINUS_SRC_COLOR,
+				GL_SRC_ALPHA,
+				GL_ONE_MINUS_SRC_ALPHA,
+				GL_DST_COLOR,
+				GL_ONE_MINUS_DST_COLOR,
+				GL_DST_ALPHA,
+				GL_ONE_MINUS_DST_ALPHA
+			};
+
+#ifdef GL_GLES_PROTOTYPES
+			// OpenGL ES is unsupported
+#else
+			if (m_blendState.independentBlendEnable)
+			{
+				for (int i = 0; i < 8; i++)	// TODO: num RT
+				{
+					const RenderTargetBlendDesc& desc = m_blendState.renderTargets[i];
+
+					// blendEnable
+					if (desc.blendEnable) {
+						GL_CHECK(glEnablei(GL_BLEND, i));
+					}
+					else {
+						GL_CHECK(glEnablei(GL_BLEND, i));
+					}
+
+					// sourceBlend
+					// destinationBlend
+					GL_CHECK(glBlendFuncSeparatei(i,
+						blendFactorTable[(int)desc.sourceBlend],
+						blendFactorTable[(int)desc.destinationBlend],
+						blendFactorTable[(int)desc.sourceBlendAlpha],
+						blendFactorTable[(int)desc.destinationBlendAlpha]));
+
+					// blendOp
+					GL_CHECK(glBlendEquationSeparatei(i,
+						blendOpTable[(int)desc.blendOp],
+						blendOpTable[(int)desc.blendOpAlpha]));
+				}
+			}
+			else
+#endif
+			{
+				const RenderTargetBlendDesc& desc = m_blendState.renderTargets[0];
+
+				// blendEnable
+				if (desc.blendEnable) {
+					GL_CHECK(glEnable(GL_BLEND));
+				}
+				else {
+					GL_CHECK(glDisable(GL_BLEND));
+				}
+
+				// blendOp
+				{
+					GL_CHECK(glBlendEquationSeparate(
+						blendOpTable[(int)desc.blendOp],
+						blendOpTable[(int)desc.blendOpAlpha]));
+				}
+
+				// sourceBlend
+				// destinationBlend
+				{
+					GL_CHECK(glBlendFuncSeparate(
+						blendFactorTable[(int)desc.sourceBlend],
+						blendFactorTable[(int)desc.destinationBlend],
+						blendFactorTable[(int)desc.sourceBlendAlpha],
+						blendFactorTable[(int)desc.destinationBlendAlpha]));
+				}
+			}
+		}
+
+		// RasterizerState
+		{
+			// fillMode
+			{
+#ifdef GL_GLES_PROTOTYPES
+				// OpenGL ES is glPolygonMode unsupported
+#else
+				const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
+				GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK, tb[(int)m_rasterizerState.fillMode]));
+#endif
+			}
+
+			// cullingMode
+			{
+				switch (m_rasterizerState.cullMode)
+				{
+				case CullMode::None:
+					GL_CHECK(glDisable(GL_CULL_FACE));
+					break;
+				case CullMode::Front:
+					GL_CHECK(glEnable(GL_CULL_FACE));
+					GL_CHECK(glCullFace(GL_BACK));
+					break;
+				case CullMode::Back:
+					GL_CHECK(glEnable(GL_CULL_FACE));
+					GL_CHECK(glCullFace(GL_FRONT));
+					break;
+				}
+			}
+		}
+
+		// DepthStencilState
+		{
+			GLenum cmpFuncTable[] =
+			{
+				GL_NEVER,		// Never
+				GL_LESS,		// Less
+				GL_LEQUAL,		// LessEqual
+				GL_GREATER,		// Greater
+				GL_GEQUAL,		// GreaterEqual
+				GL_EQUAL,		// Equal
+				GL_NOTEQUAL,	// NotEqual
+				GL_ALWAYS,		// Always
+			};
+
+			//// depthTestEnabled
+			//if (depthStencilState.depthTestEnabled) {
+			//	GL_CHECK(glEnable(GL_DEPTH_TEST));
+			//}
+			//else {
+			//	GL_CHECK(glDisable(GL_DEPTH_TEST));
+			//}
+
+			if (m_depthStencilState.depthTestFunc == ComparisonFunc::Always) {
+				GL_CHECK(glDisable(GL_DEPTH_TEST));
+			}
+			else {
+				GL_CHECK(glEnable(GL_DEPTH_TEST));
+				GL_CHECK(glDepthFunc(cmpFuncTable[(int)m_depthStencilState.depthTestFunc]));
+			}
+
+			// depthWriteEnabled
+			GL_CHECK(glDepthMask(m_depthStencilState.depthWriteEnabled ? GL_TRUE : GL_FALSE));
+
+			// stencilEnabled
+			if (m_depthStencilState.stencilEnabled) {
+				GL_CHECK(glEnable(GL_STENCIL_TEST));
+			}
+			else {
+				GL_CHECK(glDisable(GL_STENCIL_TEST));
+			}
+
+			// stencilFunc
+			// stencilReferenceValue
+			GL_CHECK(glStencilFuncSeparate(GL_BACK, cmpFuncTable[(int)m_depthStencilState.frontFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+			GL_CHECK(glStencilFuncSeparate(GL_FRONT, cmpFuncTable[(int)m_depthStencilState.backFace.stencilFunc], m_depthStencilState.stencilReferenceValue, 0xFFFFFFFF));
+
+			// stencilFailOp
+			// stencilDepthFailOp
+			// stencilPassOp
+			GLenum stencilOpTable[] = { GL_KEEP, GL_REPLACE };
+			GL_CHECK(glStencilOpSeparate(GL_BACK, stencilOpTable[(int)m_depthStencilState.frontFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.frontFace.stencilPassOp]));
+			GL_CHECK(glStencilOpSeparate(GL_FRONT, stencilOpTable[(int)m_depthStencilState.backFace.stencilFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilDepthFailOp], stencilOpTable[(int)m_depthStencilState.backFace.stencilPassOp]));
+		}
+	}
+
+	// PrimitiveData
+	{
+		auto* glDecl = static_cast<const GLVertexDeclaration*>(vertexLayout());
+		if (glDecl)
+		{
+			for (int iElement = 0; iElement < m_device->caps().MAX_VERTEX_ATTRIBS; iElement++)
+			{
+				GLuint attrLoc = iElement;	// 本来は attribute 変数の location
+
+				if (iElement < glDecl->vertexElements().size())
+				{
+					const GLVertexElement& element = glDecl->vertexElements()[iElement];
+
+					if (vertexBuffers[element.streamIndex])
+					{
+						GL_CHECK(glEnableVertexAttribArray(attrLoc));
+						GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element.streamIndex])->vertexBufferId()));
+						GL_CHECK(glVertexAttribPointer(attrLoc, element.size, element.type, element.normalized, element.stride, (void*)(element.byteOffset)));
+					}
+					else
+					{
+						GL_CHECK(glDisableVertexAttribArray(attrLoc));
+						GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+					}
+				}
+				else
+				{
+					GL_CHECK(glDisableVertexAttribArray(attrLoc));
+					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+				}
+			}
+
+			//int disableCount = m_lastUsedAttribIndex - iElement;
+			//if (disableCount > 0)
+			//{
+			//	for (int i = 0; i < disableCount; i++)
+			//	{
+			//		GL_CHECK(glDisableVertexAttribArray(attrLoc));
+			//		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+			//	}
+			//}
+
+			//m_lastUsedAttribIndex = iElement;
+		}
+
+		auto* glIndexBuffer = static_cast<const GLIndexBuffer*>(indexBuffer);
+		if (glIndexBuffer) {
+			GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glIndexBuffer->indexBufferId()));
+		}
+		else {
+			GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+		}
+	}
+
+	// shaderPass
+	if (auto* pass = static_cast<const GLShaderPass*>(shaderPass()))
+	{
+		pass->apply();
+	}
 }
 
 } // namespace detail

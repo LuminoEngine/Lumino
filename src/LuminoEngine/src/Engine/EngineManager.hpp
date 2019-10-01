@@ -7,6 +7,7 @@
 #include "FpsController.hpp"
 
 namespace ln {
+class DiagnosticsManager;
 class EngineContext;
 class Application;
 class UIContext;
@@ -135,6 +136,7 @@ public:
 	const Ref<RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
 
     const FpsController& fpsController() const { return m_fpsController; }
+	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
@@ -187,6 +189,8 @@ private:
 	Ref<UIManager>					m_uiManager;
 	Ref<RuntimeManager> m_runtimeManager;
 	FpsController m_fpsController;
+
+	Ref<DiagnosticsManager> m_activeDiagnostics;
 
     //Application* m_application;
 	Path m_persistentDataPath;

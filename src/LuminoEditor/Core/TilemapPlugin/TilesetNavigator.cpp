@@ -61,6 +61,8 @@ void TilesetListPane::addButton_onClick(ln::UIEventArgs* e)
 	auto tileset = ln::makeObject<ln::Tileset>();
 	tileset->reset(tilesetMaterial, 16, 16);
 
+
+    // make unique path
 	auto path = ln::Path::getUniqueFilePathInDirectory(m_assetRootDir, u"Tileset-", ln::AssetModel::AssetFileExtension.c_str());
 	EditorContext::current()->mainProject()->assetDatabase()->createAsset(tileset, path);
 
