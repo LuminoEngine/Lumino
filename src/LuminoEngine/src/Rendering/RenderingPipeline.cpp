@@ -45,23 +45,24 @@ void SceneRenderingPipeline::init()
 
 void SceneRenderingPipeline::render(
     GraphicsContext* graphicsContext,
-    const FrameBuffer& frameBuffer,
+	RenderTargetTexture* renderTarget,
+    //const FrameBuffer& frameBuffer,
     const detail::CameraInfo* mainCameraInfo,
     const List<detail::DrawElementListCollector*>* elementListManagers)
 {
     m_elementListManagers = elementListManagers;
-    m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
+    m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
-    m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RendringPhase::Default);
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
-    m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::BeforeTransparencies);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RendringPhase::BeforeTransparencies);
 
     {
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RendringPhase::ImageEffect);
     }
 
     // 誤用防止
@@ -92,19 +93,20 @@ void FlatRenderingPipeline::init()
 
 void FlatRenderingPipeline::render(
 	GraphicsContext* graphicsContext,
-	const FrameBuffer& frameBuffer,
+	RenderTargetTexture* renderTarget,
+	//const FrameBuffer& frameBuffer,
 	const detail::CameraInfo* mainCameraInfo,
 	const List<detail::DrawElementListCollector*>* elementListManagers)
 {
 	m_elementListManagers = elementListManagers;
-	m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
+	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
-	m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
+	m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RendringPhase::Default);
 
     {
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RendringPhase::ImageEffect);
     }
 
 	// 誤用防止

@@ -385,7 +385,6 @@ bool CameraOrbitControlComponent::update()
     //position = m_target + offset;
     m_camera->setPosition(m_target + offset);
     m_camera->lookAt(m_target);
-    (m_target + offset).print();
 
     if (m_enableDamping) {
         m_sphericalDelta.theta *= (1.0f - m_dampingFactor);

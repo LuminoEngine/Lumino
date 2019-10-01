@@ -109,7 +109,7 @@ detail::ShaderParameterValue* AbstractMaterial::getValue(const ln::StringRef& na
 	return m_values.back().second.get();
 }
 
-void AbstractMaterial::updateShaderVariables(Shader* target)
+void AbstractMaterial::updateShaderVariables(Shader* target) const
 {
     // Material から Shader へ検索をかける。
     // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
@@ -256,12 +256,12 @@ void Material::setEmissive(const Color& value)
     m_data.emissive = value;
 }
 
-void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData)
+void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData) const
 {
 	*outData = m_data;
 }
 
-void Material::translateToPhongMaterialData(detail::PhongMaterialData* outData)
+void Material::translateToPhongMaterialData(detail::PhongMaterialData* outData) const
 {
 	LN_NOTIMPLEMENTED();
 }

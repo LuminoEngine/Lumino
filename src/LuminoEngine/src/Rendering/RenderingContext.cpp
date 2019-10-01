@@ -150,15 +150,19 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
 		float z;
 		uint8_t stencil;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
+#ifdef LN_RENDERING_MIGRATION
+			return static_cast<detail::ClearRenderFeature*>(renderFeature)->clear(batchList, flags, color, z, stencil);
+#else
 			context->clear(flags, color, z, stencil);
+#endif
 		}
 	};
 
     m_builder->advanceFence();
 
-	auto* element = m_builder->addNewDrawElement<Clear>(nullptr, nullptr);
+	auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature(), nullptr);
 	element->elementType = detail::RenderDrawElementType::Clear;
 	element->flags = flags;
 	element->color = color;
@@ -175,15 +179,16 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     public:
         detail::SingleLineGenerater data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
         {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::SingleLineGenerater>(context, data);
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::SingleLineGenerater>(batchList, context, data);
         }
     };
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::LineList);
     auto* element = m_builder->addNewDrawElement<DrawLine>(
-        m_manager->primitiveRenderFeature(),
-        m_builder->primitiveRenderFeatureStageParameters());
+        m_manager->meshGeneraterRenderFeature(),
+        m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.point1 = from;
     element->data.point1Color = fromColor;
     element->data.point2 = to;
@@ -199,15 +204,16 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
     public:
         detail::PlaneMeshGenerater data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::PlaneMeshGenerater>(context, data);
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::PlaneMeshGenerater>(batchList, context, data);
         }
     };
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawPlane>(
-        m_manager->primitiveRenderFeature(),
-        m_builder->primitiveRenderFeatureStageParameters());
+        m_manager->meshGeneraterRenderFeature(),
+        m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.size.set(width, depth);
     element->data.setColor(color);
     element->data.setTransform(element->combinedWorldMatrix());
@@ -220,15 +226,16 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     public:
         detail::RegularSphereMeshFactory data;
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::PrimitiveRenderFeature*>(renderFeatures)->drawMeshGenerater<detail::RegularSphereMeshFactory>(context, data);
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::RegularSphereMeshFactory>(batchList, context, data);
         }
     };
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawSphere>(
-        m_manager->primitiveRenderFeature(),
-        m_builder->primitiveRenderFeatureStageParameters());
+        m_manager->meshGeneraterRenderFeature(),
+        m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.m_radius = radius;
     element->data.m_slices = slices;
     element->data.m_stacks = stacks;
@@ -248,14 +255,15 @@ void RenderingContext::drawScreenRectangle()
     class DrawScreenRectangle : public detail::RenderDrawElement
     {
     public:
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+            return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, context);
         }
     };
 
     m_builder->advanceFence();
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
     auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
@@ -265,48 +273,78 @@ void RenderingContext::drawScreenRectangle()
 
 }
 
-void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
+//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination)
+//{
+//    blit(source, destination, nullptr);
+//}
+//
+//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material) 
+//{
+//    class Blit : public detail::RenderDrawElement
+//    {
+//    public:
+//        Ref<RenderTargetTexture> source;
+//
+//        virtual void onSubsetInfoOverride(detail::SubsetInfo* subsetInfo)
+//        {
+//            if (source) {
+//                subsetInfo->materialTexture = source;
+//            }
+//        }
+//
+//        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+//        {
+//            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
+//        }
+//    };
+//
+//    // TODO: scoped_gurad
+//    RenderTargetTexture* oldTarget = renderTarget(0);
+//    setRenderTarget(0, destination);
+//
+//    m_builder->setMaterial(material);
+//
+//    m_builder->advanceFence();
+//
+//    auto* element = m_builder->addNewDrawElement<Blit>(
+//        m_manager->blitRenderFeature(),
+//        m_builder->blitRenderFeatureStageParameters());
+//    element->targetPhase = RendringPhase::ImageEffect;
+//    element->source = source;
+//
+//    setRenderTarget(0, oldTarget);
+//
+//    m_builder->advanceFence();
+//}
+
+void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* destination)
 {
-    blit(source, destination, nullptr);
-}
+	class Blit : public detail::RenderDrawElement
+	{
+	public:
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::BlitRenderFeature*>(renderFeature)->blit(batchList, context);
+		}
+	};
 
-void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material) 
-{
-    class Blit : public detail::RenderDrawElement
-    {
-    public:
-        Ref<RenderTargetTexture> source;
+	// TODO: scoped_gurad
+	RenderTargetTexture* oldTarget = renderTarget(0);
+	setRenderTarget(0, destination);
 
-        virtual void onSubsetInfoOverride(detail::SubsetInfo* subsetInfo)
-        {
-            if (source) {
-                subsetInfo->materialTexture = source;
-            }
-        }
+	m_builder->setMaterial(source);
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::BlitRenderFeature*>(renderFeatures)->blit(context);
-        }
-    };
+	m_builder->advanceFence();
 
-    // TODO: scoped_gurad
-    RenderTargetTexture* oldTarget = renderTarget(0);
-    setRenderTarget(0, destination);
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
+	auto* element = m_builder->addNewDrawElement<Blit>(
+		m_manager->blitRenderFeature(),
+		m_builder->blitRenderFeatureStageParameters());
+	element->targetPhase = RendringPhase::ImageEffect;
 
-    m_builder->setMaterial(material);
+	setRenderTarget(0, oldTarget);
 
-    m_builder->advanceFence();
-
-    auto* element = m_builder->addNewDrawElement<Blit>(
-        m_manager->blitRenderFeature(),
-        m_builder->blitRenderFeatureStageParameters());
-    element->targetPhase = RendringPhase::ImageEffect;
-    element->source = source;
-
-    setRenderTarget(0, oldTarget);
-
-    m_builder->advanceFence();
+	m_builder->advanceFence();
 }
 
 void RenderingContext::drawSprite(
@@ -332,17 +370,29 @@ void RenderingContext::drawSprite(
 		BillboardType billboardType;
         detail::SpriteFlipFlags flipFlags;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
+#ifdef LN_RENDERING_MIGRATION
+			return static_cast<detail::SpriteRenderFeature2*>(renderFeature)->drawRequest(
+				batchList, context, combinedWorldMatrix() * transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+#else
 			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
 				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
+#endif
 		}
 	};
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	m_builder->setMaterial(material);
+#ifdef LN_RENDERING_MIGRATION
+	auto* element = m_builder->addNewDrawElement<DrawSprite>(
+		m_manager->spriteRenderFeature2(),
+		m_builder->spriteRenderFeatureStageParameters2());
+#else
 	auto* element = m_builder->addNewDrawElement<DrawSprite>(
 		m_manager->spriteRenderFeature(),
 		m_builder->spriteRenderFeatureStageParameters());
+#endif
 	element->transform = transform;
 	element->size.set(size.width, size.height);
 	element->anchorRatio = anchor;
@@ -359,30 +409,58 @@ void RenderingContext::drawSprite(
 
 void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
 {
+#ifdef LN_RENDERING_MIGRATION
+	if (primitiveCount <= 0) return;
+
+	class DrawPrimitive : public detail::RenderDrawElement
+	{
+	public:
+		Ref<VertexLayout> vertexLayout;
+		Ref<VertexBuffer> vertexBuffer;
+		int startVertex;
+		int primitiveCount;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::PrimitiveRenderFeature*>(renderFeature)->drawPrimitive(batchList, vertexLayout, vertexBuffer, startVertex, primitiveCount);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(topology);
+	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(
+		m_manager->primitiveRenderFeature(),
+		m_builder->meshGeneraterRenderFeatureStageParameters());	// TODO: めんどいので共有。あどで消すし…
+	element->vertexLayout = vertexDeclaration;
+	element->vertexBuffer = vertexBuffer;
+	element->startVertex = startVertex;
+	element->primitiveCount = primitiveCount;
+#else
 	class DrawPrimitive : public detail::RenderDrawElement
 	{
 	public:
 		Ref<VertexLayout> vertexDeclaration;
 		Ref<VertexBuffer> vertexBuffer;
-		PrimitiveTopology topology;
+		//PrimitiveTopology topology;
 		int startVertex;
 		int primitiveCount;
 
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
+		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
 		{
 			context->setVertexLayout(vertexDeclaration);
 			context->setVertexBuffer(0, vertexBuffer);
-			context->setPrimitiveTopology(topology);
+			//context->setPrimitiveTopology(topology);
 			context->drawPrimitive(startVertex, primitiveCount);
 		}
 	};
 
+	m_builder->setPrimitiveTopology(topology);
 	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(nullptr, nullptr);
 	element->vertexDeclaration = vertexDeclaration;
 	element->vertexBuffer = vertexBuffer;
-	element->topology = topology;
+	//element->topology = topology;
 	element->startVertex = startVertex;
 	element->primitiveCount = primitiveCount;
+#endif
 }
 
 // LOD なし。というか直接描画
@@ -394,34 +472,36 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
         Ref<MeshResource> meshResource;
         int sectionIndex;
 
-        virtual void onElementInfoOverride(detail::ElementInfo* elementInfo, detail::ShaderTechniqueClass_MeshProcess* meshProcess) override
-        {
-            if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
-                if (MeshContainer* container = meshResource->ownerContainer()) {
-                    if (StaticMeshModel* model = container->meshModel()) {
-                        if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
-                            //elementInfo->boneTexture->map()
-                            printf("skinned\n");
-                            *meshProcess = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
-                            Bitmap2D* bmp1 = elementInfo->boneTexture->map(MapMode::Write);
-                            Bitmap2D* bmp2 = elementInfo->boneLocalQuaternionTexture->map(MapMode::Write);
-                            static_cast<SkinnedMeshModel*>(model)->writeSkinningMatrices(
-                                reinterpret_cast<Matrix*>(bmp1->data()),
-                                reinterpret_cast<Quaternion*>(bmp2->data()));
-                        }
-                    }
-                }
-            }
-        }
+        //virtual void onElementInfoOverride(detail::ElementInfo* elementInfo, detail::ShaderTechniqueClass_MeshProcess* meshProcess) override
+        //{
+        //    if (elementInfo->boneTexture && elementInfo->boneLocalQuaternionTexture) {
+        //        if (MeshContainer* container = meshResource->ownerContainer()) {
+        //            if (StaticMeshModel* model = container->meshModel()) {
+        //                if (model->meshModelType() == detail::InternalMeshModelType::SkinnedMesh) {
+        //                    //elementInfo->boneTexture->map()
+        //                    printf("skinned\n");
+        //                    *meshProcess = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+        //                    Bitmap2D* bmp1 = elementInfo->boneTexture->map(MapMode::Write);
+        //                    Bitmap2D* bmp2 = elementInfo->boneLocalQuaternionTexture->map(MapMode::Write);
+        //                    static_cast<SkinnedMeshModel*>(model)->writeSkinningMatrices(
+        //                        reinterpret_cast<Matrix*>(bmp1->data()),
+        //                        reinterpret_cast<Quaternion*>(bmp2->data()));
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
-        virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-        {
-            static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, meshResource, sectionIndex);
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			// TODO: boneTexture を送る仕組み
+            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, meshResource, sectionIndex);
         }
     };
 
     if (meshResource->isInitialEmpty()) return;
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<DrawMesh>(
         m_manager->meshRenderFeature(),
         m_builder->meshRenderFeatureStageParameters());
@@ -479,6 +559,7 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
         formattedText->font = m_manager->fontManager()->defaultFont();
     }
 
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
     auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
         m_manager->spriteTextRenderFeature(),
         m_builder->spriteTextRenderFeatureStageParameters());
@@ -492,6 +573,7 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
 
 void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* font)
 {
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	auto* element = m_builder->addNewDrawElement<detail::DrawCharElement>(
 		m_manager->spriteTextRenderFeature(),
 		m_builder->spriteTextRenderFeatureStageParameters());
@@ -515,6 +597,7 @@ void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* fo
 
 void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
 {
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
 		m_manager->spriteTextRenderFeature(),
 		m_builder->spriteTextRenderFeatureStageParameters());

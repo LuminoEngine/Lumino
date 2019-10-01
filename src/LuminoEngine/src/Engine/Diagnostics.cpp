@@ -1,11 +1,17 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include "EngineManager.hpp"
 
 namespace ln {
 
 //==============================================================================
 // DiagnosticsManager
+
+DiagnosticsManager* DiagnosticsManager::activeDiagnostics()
+{
+	return detail::EngineDomain::engineManager()->activeDiagnostics();
+}
 
 DiagnosticsManager::DiagnosticsManager()
 	: m_items()
@@ -95,6 +101,26 @@ void DiagnosticsManager::dumpToLog() const
 	}
 }
 
+void DiagnosticsManager::registerProfilingItem(ProfilingItem* item)
+{
+	m_profilingItems.add(item);
+	auto section = Ref<ProfilingSection>(LN_NEW ProfilingSection(item), false);
+	section->init();
+	m_profilingValues[item] = section;
+}
+
+void DiagnosticsManager::setCounterValue(const ProfilingItem* key, int64_t value)
+{
+	m_profilingValues[key]->setValue(value);
+}
+
+void DiagnosticsManager::commitFrame()
+{
+	for (auto& pair : m_profilingValues) {
+		pair.second->commitFrame();
+	}
+}
+
 //==============================================================================
 // DiagnosticsItem
 
@@ -111,6 +137,38 @@ DiagnosticsItem::~DiagnosticsItem()
 void DiagnosticsItem::init()
 {
 	Object::init();
+}
+
+//==============================================================================
+// ProfilingItem
+
+Ref<ProfilingItem> ProfilingItem::Graphics_RenderPassCount;
+
+ProfilingItem::ProfilingItem()
+	: m_type(ProfilingItemType::Counter)
+	, m_name()
+{
+}
+
+void ProfilingItem::init(ProfilingItemType type, const StringRef& name)
+{
+	Object::init();
+	m_type = type;
+	m_name = name;
+}
+
+//==============================================================================
+// ProfilingSection
+
+ProfilingSection::ProfilingSection(ProfilingItem* owner)
+	: m_owner(owner)
+	, m_value(0)
+{
+}
+
+void ProfilingSection::commitFrame()
+{
+	m_committedValue = m_value;
 }
 
 } // namespace ln

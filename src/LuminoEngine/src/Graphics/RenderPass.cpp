@@ -21,11 +21,12 @@ RenderPass::RenderPass()
     : m_rhiObject()
 	, m_renderTargets{}
 	, m_depthBuffer()
-	, m_clearFlags(ClearFlags::All)
+	, m_clearFlags(ClearFlags::None)
 	, m_clearColor(0, 0, 0, 0)
 	, m_clearDepth(1.0f)
 	, m_clearStencil(0x00)
 	, m_dirty(true)
+	, m_active(false)
 {
 }
 
@@ -53,6 +54,7 @@ void RenderPass::onDispose(bool explicitDisposing)
 
 void RenderPass::setRenderTarget(int index, RenderTargetTexture* value)
 {
+	if (LN_REQUIRE(!m_active)) return;
 	if (LN_REQUIRE_RANGE(index, 0, GraphicsContext::MaxMultiRenderTargets)) return;
 
 	if (m_renderTargets[index] != value) {
@@ -69,6 +71,7 @@ RenderTargetTexture* RenderPass::renderTarget(int index) const
 
 void RenderPass::setDepthBuffer(DepthBuffer* value)
 {
+	if (LN_REQUIRE(!m_active)) return;
 	if (m_depthBuffer != value) {
 		m_depthBuffer = value;
 		m_dirty = true;
@@ -77,6 +80,7 @@ void RenderPass::setDepthBuffer(DepthBuffer* value)
 
 void RenderPass::setClearFlags(ClearFlags value)
 {
+	if (LN_REQUIRE(!m_active)) return;
 	if (m_clearFlags != value) {
 		m_clearFlags = value;
 		m_dirty = true;
@@ -85,6 +89,7 @@ void RenderPass::setClearFlags(ClearFlags value)
 
 void RenderPass::setClearColor(const Color& value)
 {
+	if (LN_REQUIRE(!m_active)) return;
 	if (m_clearColor != value) {
 		m_clearColor = value;
 		m_dirty = true;
@@ -93,6 +98,7 @@ void RenderPass::setClearColor(const Color& value)
 
 void RenderPass::setClearDepth(float value)
 {
+	if (LN_REQUIRE(!m_active)) return;
 	if (m_clearDepth != value) {
 		m_clearDepth = value;
 		m_dirty = true;
@@ -101,10 +107,20 @@ void RenderPass::setClearDepth(float value)
 
 void RenderPass::setClearStencil(uint8_t value)
 {
+	if (LN_REQUIRE(!m_active)) return;
 	if (m_clearStencil != value) {
 		m_clearStencil = value;
 		m_dirty = true;
 	}
+}
+
+void RenderPass::setClearValues(ClearFlags flags, const Color& color, float depth, uint8_t stencil)
+{
+	if (LN_REQUIRE(!m_active)) return;
+	setClearFlags(flags);
+	setClearColor(color);
+	setClearDepth(depth);
+	setClearStencil(stencil);
 }
 
 DepthBuffer* RenderPass::depthBuffer() const
@@ -114,6 +130,7 @@ DepthBuffer* RenderPass::depthBuffer() const
 
 void RenderPass::onChangeDevice(detail::IGraphicsDevice* device)
 {
+	if (LN_REQUIRE(!m_active)) return;
 	if (!device) {
 		releaseRHI();
 	}

@@ -5,6 +5,7 @@ class Bitmap2D;
 namespace detail {
 class FontManager;
 class FontGlyphTextureCache;
+class FontGlyphTextureCacheRequest;
 
 // https://www.freetype.org/freetype2/docs/tutorial/step2.html
 struct FontGlobalMetrics
@@ -66,6 +67,7 @@ struct VectorGlyphInfo
     List<uint16_t>			triangleIndices;	// 要素数は3の倍数となる
 };
 
+
 class FontCore
 	: public RefObject
 {
@@ -91,7 +93,10 @@ public:
 	virtual void lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo) = 0;
 	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) = 0;
 
-	FontGlyphTextureCache* getFontGlyphTextureCache();
+	//FontGlyphTextureCache* getFontGlyphTextureCache();
+	void beginCacheUsing();
+	void endCacheUsing();
+	void getFontGlyphTextureCache(FontGlyphTextureCacheRequest* inout);
 
 protected:
     FontCore();
@@ -100,7 +105,9 @@ protected:
 
 private:
 	FontManager* m_manager;
-	Ref<FontGlyphTextureCache> m_fontGlyphTextureCache;
+	std::array<Ref<FontGlyphTextureCache>, 4> m_fontGlyphTextureCacheList;
+	int m_activeCacheIndex;
+	//Ref<FontGlyphTextureCache> m_fontGlyphTextureCache;
 };
 
 } // namespace detail

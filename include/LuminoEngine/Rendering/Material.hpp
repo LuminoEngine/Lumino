@@ -77,8 +77,8 @@ protected:
 	void init();
 
 public: // TODO: internal
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) = 0;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) = 0;
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const = 0;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const = 0;
 
 //LN_INTERNAL_ACCESS:
 //	void reset();
@@ -142,7 +142,7 @@ public:	// TODO:
 	//static const float DefaultPower;	// (50.0f)
 
     // TODO: internal
-    void updateShaderVariables(Shader* target);
+    void updateShaderVariables(Shader* target) const;
 
 protected:  // TODO:
 	//void LinkVariables();
@@ -215,8 +215,8 @@ public:
     void setEmissive(const Color& value);
 
 protected:
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const override;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const override;
 
     LN_SERIALIZE_CLASS_VERSION(1);
     virtual void serialize(Archive& ar) override;

@@ -9,6 +9,8 @@ class SwapChain;
 class RenderPass;
 class Bitmap2D;
 class Bitmap3D;
+class RenderTargetTexture;
+class DepthBuffer;
 
 /** 描画方式 */
 enum class RenderingType

@@ -15,6 +15,7 @@ namespace detail {
 
 ImageEffectRenderer::ImageEffectRenderer()
     : m_manager(detail::EngineDomain::renderingManager())
+	, m_copyMaterial(makeObject<Material>())
 {
 }
 
@@ -60,7 +61,8 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 
         context->resetState();
 
-        context->blit(primaryTarget, inout);
+		m_copyMaterial->setMainTexture(primaryTarget);
+        context->blit(m_copyMaterial, inout);
 
         context->popState();
 

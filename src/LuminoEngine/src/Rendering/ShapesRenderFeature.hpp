@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "RenderStage.hpp"
 #include "RenderingManager.hpp"
@@ -147,17 +148,36 @@ private:
 	void addCommandNode(ListNode* cmd, CommandType type, const Matrix& transform);
 };
 
-class InternalShapesRenderer
-    : public RefObject
+
+class ShapesRenderFeature
+	: public RenderFeature
 {
 public:
-	InternalShapesRenderer();
+	ShapesRenderFeature();
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
 
-	void renderCommandList(ICommandList* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
+	RequestBatchResult requestDrawCommandList(GraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
+
+protected:
+	virtual void beginRendering() override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
+	struct BatchData
+	{
+		int indexOffset;
+		int indexCount;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
 	enum class PathType
 	{
 		Convex,
@@ -212,8 +232,7 @@ private:
 		float	alpha;
 	};
 
-	//void releaseCommandList(ShapesRendererCommandList* commandList);
-	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	//void prepareBuffers(GraphicsContext* context, int triangleCount);
 	Path* addPath(PathType type, const Matrix* transform, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void endPath(Path* path);
 	void extractBasePoints(ShapesRendererCommandList* commandList);
@@ -230,8 +249,16 @@ private:
 	Vector2 getAAExtDir(const BasePoint& pt) const { return (pt.enabledAA) ? pt.exDir : Vector2::Zero; }
 
 	RenderingManager* m_manager;
-	Ref<IVertexBuffer>		m_vertexBuffer;
-	Ref<IIndexBuffer>		m_indexBuffer;
+
+	Ref<VertexLayout> m_vertexLayout;
+	Ref<VertexBuffer> m_vertexBuffer;
+	Ref<IndexBuffer> m_indexBuffer;
+	size_t m_vertexUsedCount = 0;
+	size_t m_indexUsedCount = 0;
+	//int m_buffersReservedTriangleCount = 0;
+	BatchData m_batchData;
+
+
 	CacheBuffer<BasePoint>		m_basePoints;
 	CacheBuffer<OutlinePoint>	m_outlinePoints;
 	List<Path>					m_pathes;
@@ -265,41 +292,39 @@ public:
 private:
 };
 
-class ShapesRenderFeature
-	: public RenderFeature
-{
-public:
-	ShapesRenderFeature();
-	void init(RenderingManager* manager);
-
-    void renderCommandList(GraphicsContext* context, const ShapesRendererCommandList& commandList);
-
-protected:
-	virtual void flush(GraphicsContext* context) override;
-    virtual bool drawElementTransformNegate() const override { return true; }
-
-private:
-	Ref<InternalShapesRenderer> m_internal;
-};
+//class ShapesRenderFeature
+//	: public RenderFeature
+//{
+//public:
+//	ShapesRenderFeature();
+//	void init(RenderingManager* manager);
+//
+//    void renderCommandList(GraphicsContext* context, const ShapesRendererCommandList& commandList);
+//
+//protected:
+//	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+//	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+//    virtual bool drawElementTransformNegate() const override { return true; }
+//
+//private:
+//	Ref<InternalShapesRenderer> m_internal;
+//};
 
 class DrawShapesElement : public RenderDrawElement
 {
 public:
 	ShapesRendererCommandList commandList;
 
-    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo) override
-    {
-		m_srcTextureSize.width = subsetInfo->materialTexture->width();
-		m_srcTextureSize.height = subsetInfo->materialTexture->height();
-    }
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+	{
+		//m_srcTextureSize.width = subsetInfo->materialTexture->width();
+		//m_srcTextureSize.height = subsetInfo->materialTexture->height();
 
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-    {
-		static_cast<detail::ShapesRenderFeature*>(renderFeatures)->renderCommandList(context, commandList);
+		return static_cast<detail::ShapesRenderFeature*>(renderFeature)->requestDrawCommandList(context, &commandList);
     }
 
 private:
-    SizeI m_srcTextureSize;
+    //SizeI m_srcTextureSize;
 };
 
 } // namespace detail

@@ -12,6 +12,7 @@
 #include "UIManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
+#include <imgui.h>
 
 #include "../Effect/EffectManager.hpp"  // TODO: tests
 
@@ -207,6 +208,7 @@ UIElement* UIInputInjector::mouseHoveredElement()
 UIFrameWindow::UIFrameWindow()
 	: m_autoDisposePlatformWindow(true)
 	, m_updateMode(UIFrameWindowUpdateMode::Polling)
+	, m_ImGuiLayerEnabled(false)
 {
 }
 
@@ -218,7 +220,7 @@ void UIFrameWindow::init()
 {
 	UIContainerElement::init();
     m_manager = detail::EngineDomain::uiManager();
-	m_renderPass = makeObject<RenderPass>();
+	//m_renderPass = makeObject<RenderPass>();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
@@ -283,19 +285,22 @@ void UIFrameWindow::renderContents()
 {
 	assert(!m_depthBuffer);
 
-    m_imguiContext.updateFrame(0.0166f);
+	if (m_ImGuiLayerEnabled) {
+		m_imguiContext.updateFrame(0.0166f);
+	}
 
-	m_renderingGraphicsContext = m_swapChain->beginFrame();
+	m_renderingGraphicsContext = m_swapChain->beginFrame2();
 
-	RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
-	m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
+	//RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
+	//m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
 
-	m_renderPass->setRenderTarget(0, backbuffer);
-	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderingGraphicsContext->setRenderPass(m_renderPass);
-	//m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
-	//m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
-	//m_renderingGraphicsContext->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
+	//m_renderPass->setRenderTarget(0, backbuffer);
+	//m_renderPass->setDepthBuffer(m_depthBuffer);
+	//m_renderingGraphicsContext->setRenderPass(m_renderPass);
+
+	////m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
+	////m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
+	////m_renderingGraphicsContext->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
 void UIFrameWindow::present()
@@ -303,20 +308,20 @@ void UIFrameWindow::present()
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
-		m_renderView->render(m_renderingGraphicsContext);
+		m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
 
-	if (m_depthBuffer) {
-		DepthBuffer::releaseTemporary(m_depthBuffer);
-		m_depthBuffer = nullptr;
-	}
+	//if (m_depthBuffer) {
+	//	DepthBuffer::releaseTemporary(m_depthBuffer);
+	//	m_depthBuffer = nullptr;
+	//}
 
 
     detail::EngineDomain::effectManager()->testDraw();
 
-	// TODO: test
-	if (0)
+	if (m_ImGuiLayerEnabled)
 	{
+
 		// Platform NewFrame
 		{
 			ImGuiIO& io = ImGui::GetIO();
@@ -325,22 +330,26 @@ void UIFrameWindow::present()
 		}
 
 		ImGui::NewFrame();
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 
 
-		if (ImGui::Button("Button"))
-			printf("click\n");
-		ImGui::SameLine();
+		m_onImGuiLayer.raise(nullptr);
 
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
+		//ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+		//ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+
+		//if (ImGui::Button("Button"))
+		//	printf("click\n");
+		//ImGui::SameLine();
+
+		//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		//ImGui::End();
 
 		ImGui::EndFrame();
 
 
-		m_imguiContext.render(m_renderingGraphicsContext);
+		m_imguiContext.render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
 	m_swapChain->endFrame();
 
@@ -421,7 +430,7 @@ void UIFrameWindow::onUpdateLayout(const Rect& finalGlobalRect)
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
-	if (0) {
+	if (m_ImGuiLayerEnabled) {
 		if (m_imguiContext.handlePlatformEvent(e)) {
 			return true;
 		}
@@ -621,11 +630,11 @@ void UINativeFrameWindow::beginRendering(RenderTargetTexture* renderTarget)
 	detail::GraphicsContextInternal::enterRenderState(m_renderingGraphicsContext);
 
 	m_renderingGraphicsContext->resetState();
-	//m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
-	//m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setRenderTarget(0, renderTarget);
-	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderingGraphicsContext->setRenderPass(m_renderPass);
+	////m_renderingGraphicsContext->setRenderTarget(0, renderTarget);
+	////m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
+	//m_renderPass->setRenderTarget(0, renderTarget);
+	//m_renderPass->setDepthBuffer(m_depthBuffer);
+	//m_renderingGraphicsContext->setRenderPass(m_renderPass);
 }
 
 void UINativeFrameWindow::renderContents()
@@ -633,7 +642,7 @@ void UINativeFrameWindow::renderContents()
     if (m_renderView)
     {
         m_renderView->setRootElement(this);
-        m_renderView->render(m_renderingGraphicsContext);
+        m_renderView->render(m_renderingGraphicsContext, m_renderingRenderTarget);
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -34,6 +35,8 @@
 #include "../Runtime/RuntimeManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
+
+#include <imgui.h>
 
 namespace ln {
 namespace detail {
@@ -74,7 +77,9 @@ EngineManager::EngineManager()
     //, m_application(nullptr)
     , m_timeScale(1.0f)
 	, m_exitRequested(false)
-    , m_showDebugFpsEnabled(false)
+ //   , m_showDebugFpsEnabled(false)
+	//, m_debugToolEnabled(false)
+	, m_debugToolMode(DebugToolMode::Disable)
 #if defined(LN_OS_WIN32)
     , m_comInitialized(false)
     , m_oleInitialized(false)
@@ -113,6 +118,12 @@ void EngineManager::init()
 	m_engineContext = makeRef<EngineContext>();
 
 
+	{
+		m_activeDiagnostics = makeObject<DiagnosticsManager>();
+		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, u"RenderPass count");
+		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
+	}
+
 	initializeAllManagers();
 
     //if (!m_settings.externalRenderingManagement) {
@@ -121,6 +132,18 @@ void EngineManager::init()
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
+
+	if (m_settings.debugToolEnabled) {
+		setDebugToolMode(DebugToolMode::Minimalized);
+	}
+	else {
+		setDebugToolMode(DebugToolMode::Disable);
+	}
+
+	//m_debugToolEnabled = m_settings.debugToolEnabled;
+	//if (m_debugToolEnabled) {
+	//	m_showDebugFpsEnabled = true;
+	//}
 
     if (m_settings.defaultObjectsCreation)
     {
@@ -657,8 +680,8 @@ void EngineManager::presentFrame()
 		m_fpsController.processForMeasure();
 	}
 
-    if (m_showDebugFpsEnabled) {
-        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1})", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
+    if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
+        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
     }
 }
 
@@ -690,6 +713,8 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 
 	// TODO: SwapChain だけでいいはず
 	//m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
+
+	m_mainWindow->m_onImGuiLayer.connect(ln::bind(this, &EngineManager::handleImGuiDebugLayer));
 }
 
 bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
@@ -698,6 +723,11 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 	{
 	case PlatformEventType::close:
 		quit();
+		break;
+	case PlatformEventType::KeyDown:
+		if (e.key.keyCode == Keys::F8) {
+			toggleDebugToolMode();
+		}
 		break;
 	default:
 		break;
@@ -710,6 +740,64 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 	}
 
 	return false;
+}
+
+void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
+{
+	ImGui::Begin("Statistics");
+	ImGui::Text("FPS: %.2f, Cap: %.2f", m_fpsController.getFps(), m_fpsController.getCapacityFps());
+	ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
+	ImGui::Separator();
+	ImGui::End();
+}
+
+bool EngineManager::toggleDebugToolMode()
+{
+	switch (m_debugToolMode)
+	{
+	case DebugToolMode::Disable:
+		return false;
+	case DebugToolMode::Hidden:
+		setDebugToolMode(DebugToolMode::Minimalized);
+		return true;
+	case DebugToolMode::Minimalized:
+		setDebugToolMode(DebugToolMode::Activated);
+		return true;
+	case DebugToolMode::Activated:
+		setDebugToolMode(DebugToolMode::Hidden);
+		return true;
+	default:
+		LN_UNREACHABLE();
+		return false;
+	}
+}
+
+void EngineManager::setDebugToolMode(DebugToolMode mode)
+{
+	m_debugToolMode = mode;
+
+	if (m_mainWindow) {
+		switch (m_debugToolMode)
+		{
+		case DebugToolMode::Disable:
+			m_mainWindow->setImGuiLayerEnabled(false);
+			m_mainWindow->platformWindow()->setWindowTitle(m_settings.mainWindowTitle);
+			break;
+		case DebugToolMode::Hidden:
+			m_mainWindow->setImGuiLayerEnabled(false);
+			m_mainWindow->platformWindow()->setWindowTitle(m_settings.mainWindowTitle);
+			break;
+		case DebugToolMode::Minimalized:
+			m_mainWindow->setImGuiLayerEnabled(false);
+			break;
+		case DebugToolMode::Activated:
+			m_mainWindow->setImGuiLayerEnabled(true);
+			break;
+		default:
+			LN_UNREACHABLE();
+			break;
+		}
+	}
 }
 
 //==============================================================================

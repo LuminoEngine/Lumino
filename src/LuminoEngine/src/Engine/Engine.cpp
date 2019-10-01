@@ -168,10 +168,10 @@ const Path& Engine::persistentDataPath()
 	return detail::EngineDomain::engineManager()->persistentDataPath();
 }
 
-void Engine::setShowDebugFpsEnabled(bool enabled)
-{
-    return detail::EngineDomain::engineManager()->setShowDebugFpsEnabled(enabled);
-}
+//void Engine::setShowDebugFpsEnabled(bool enabled)
+//{
+//    return detail::EngineDomain::engineManager()->setShowDebugFpsEnabled(enabled);
+//}
 
 GraphicsContext* Engine::graphicsContext()
 {

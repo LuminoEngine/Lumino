@@ -56,13 +56,17 @@ void SwapChain::resizeBackbuffer(int width, int height)
 	resetRHIBackbuffers();
 }
 
-GraphicsContext* SwapChain::beginFrame()
+GraphicsContext* SwapChain::beginFrame2()
 {
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
 	m_graphicsContext->resetState();
-	m_graphicsContext->setRenderPass(m_renderPasses[m_imageIndex]);
 	return m_graphicsContext;
+}
+
+RenderPass* SwapChain::currentRenderPass() const
+{
+	return m_renderPasses[m_imageIndex];
 }
 
 void SwapChain::endFrame()
@@ -93,6 +97,7 @@ void SwapChain::resetRHIBackbuffers()
 
 		// RenderPass
 		auto renderPass = makeObject<RenderPass>(buffer, depthBuffer);
+		renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0x00);
 		m_renderPasses[i] = renderPass;
 			
 		// CommandList

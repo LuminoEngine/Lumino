@@ -207,6 +207,17 @@ int main(int argc, char** argv)
 
     auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
 
+	//auto m_rigidBody = ln::RigidBody2DComponent::create();
+	//m_rigidBody->addCollisionShape(ln::BoxCollisionShape2D::create(5, 2));
+	//m_rigidBody->setMass(0);
+	//m_rigidBody->setFixedRotation(true);
+	//m_rigidBody->setCollisionGroup(0x8000);
+	//m_rigidBody->setCollisionGroupMask(0x0FFF);
+	//sprite1->addComponent(m_rigidBody);
+	//Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
+
+	//auto sprite2 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
+	//sprite2->setPosition(1, 0, 1);
 
 #if 0
     auto window1 = UIWindow::create();
@@ -230,9 +241,10 @@ int main(int argc, char** argv)
  //   auto text1 = UITextBlock::create();
  //   text1->setText(u"ABCDEFGabcdefg");
  //   //text1->setFontFamily(u"M+ 1c");
- //   text1->setFontSize(20);
+ //   //text1->setFontSize(20);
  //   //text1->setTextColor(Color::White);
- //   window1->addElement(text1);
+ //   //window1->addElement(text1);
+	//Engine::mainWindow()->addElement(text1);
 
  //   auto text2 = UITextBlock::create();
  //   text2->setText(u"sc");
@@ -366,7 +378,7 @@ int main(int argc, char** argv)
 	{
 
 		while (Engine::update()) {
-			printf("--------------------------\n");
+			//printf("--------------------------\n");
 			//float t = Engine::totalTime() / 2;
 			//float s = (sin(t) * (Math::PI / 2));
 			//std::cout << s << std::endl;

@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+
 
 namespace ln {
 class AbstractMaterial;
@@ -29,9 +31,14 @@ public:
 	virtual void onBeginRender(SceneRenderer* sceneRenderer);
 	virtual void onEndRender(SceneRenderer* sceneRenderer);
 
-	// シャドウバッファの作成などのため、パス単位で RenderTarget を切り替えたい場合、ここで frameBuffer にセットする。
-	// この時点では GraphicsContext は自由に使ってもよい。ステート復元する必要はない。
-	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer);
+	// このパスのデフォルトの RenderPass を構築する。
+	// renderTarget と depthBuffer は、シーンレンダリングの最終出力先。
+	// もし G-Buffer を作るときなど、内部的な RenderTarget に書きたい場合はこれらは使用せずに派生側で各種バッファを用意する。
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+
+	// このパスを実行するときのデフォルトの RenderPass を取得する。
+	// インスタンスは、このパスの実行側の onBeginPass() で作っておく。
+	virtual RenderPass* renderPass() const = 0;
 
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
@@ -54,7 +61,8 @@ public:
 	void render(
 		GraphicsContext* graphicsContext,
         RenderingPipeline* renderingPipeline,
-		const FrameBuffer& defaultFrameBuffer,
+		RenderTargetTexture* renderTarget,
+		//const FrameBuffer& defaultFrameBuffer,
         const detail::CameraInfo& mainCameraInfo,
         RendringPhase targetPhase);
 
@@ -69,7 +77,7 @@ protected:
 
 	void addPass(SceneRendererPass* pass);
 
-	void renderPass(GraphicsContext* graphicsContext, SceneRendererPass* pass);
+	void renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass);
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
 	virtual void collect(const CameraInfo& cameraInfo);
@@ -85,18 +93,20 @@ protected:
 
 
 private:
-	void applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
-	void applyGeometryStatus(GraphicsContext* context, RenderStage* stage, AbstractMaterial* priorityMaterial);
-	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
+	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 	detail::RenderingManager* m_manager;
 	List<Ref<SceneRendererPass>> m_renderingPassList;
+	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
-	const FrameBuffer* m_defaultFrameBuffer;
+	//const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
 	//Ref<AbstractMaterial> m_defaultMaterial;
-	Ref<RenderPass> m_renderPass;
+	//Ref<RenderPass> m_renderPass;
+	List<Ref<RenderPass>> m_renderPassPool;
+	int m_renderPassPoolUsed;
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 

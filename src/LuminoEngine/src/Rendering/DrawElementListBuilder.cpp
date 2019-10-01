@@ -123,6 +123,14 @@ void DrawElementListBuilder::setDepthWriteEnabled(const Optional<bool>& value)
 	}
 }
 
+void DrawElementListBuilder::setPrimitiveTopology(PrimitiveTopology value)
+{
+	if (primaryGeometryStageParameters().primitiveTopology != value) {
+		primaryGeometryStageParameters().primitiveTopology = value;
+		m_modified = true;	// TODO: 最後に確定したもの (m_targetList->lastState() ) との差で付けたい
+	}
+}
+
 void DrawElementListBuilder::setShadingModel(const Optional<ShadingModel>& value)
 {
 	if (primaryGeometryStageParameters().shadingModel != value) {

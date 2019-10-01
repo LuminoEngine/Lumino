@@ -12,6 +12,90 @@
 namespace ln {
 namespace detail {
 
+#ifdef LN_RENDERING_MIGRATION
+
+//==============================================================================
+// MeshRenderFeature
+
+MeshRenderFeature::MeshRenderFeature()
+{
+}
+
+void MeshRenderFeature::init(RenderingManager* manager)
+{
+	RenderFeature::init();
+}
+
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
+{
+	if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
+	auto* _this = this;
+
+	MeshSection section;
+	VertexLayout* layout;
+	VertexBuffer* vb[MaxVertexStreams] = {};
+	int vbCount;
+	IndexBuffer* ib;
+	mesh->commitRenderData(sectionIndex, &section, &layout, vb, &vbCount, &ib);
+
+	DrawMeshData data;
+	data.vertexLayout = layout;
+	for (int i = 0; i < vbCount; ++i) {
+		data.vertexBuffers[i] = vb[i];
+	}
+	data.vertexBuffersCount = vbCount;
+	data.indexBuffer = ib;
+	data.startIndex = section.startIndex;
+	data.primitiveCount = section.primitiveCount;
+	data.primitiveType = PrimitiveTopology::TriangleList;
+
+	if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
+	if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
+
+	m_meshes.push_back(std::move(data));
+	m_batchData.count++;
+	return RequestBatchResult::Staging;
+}
+
+void MeshRenderFeature::beginRendering()
+{
+	m_meshes.clear();
+	m_batchData.offset = 0;
+	m_batchData.count = 0;
+}
+
+void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+{
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+
+	m_batchData.offset = m_batchData.offset + m_batchData.count;
+	m_batchData.count = 0;
+}
+
+void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	auto localBatch = static_cast<Batch*>(batch);
+
+	for (int i = 0; i < localBatch->data.count; i++) {
+		auto& data = m_meshes[localBatch->data.offset + i];
+
+		context->setVertexLayout(data.vertexLayout);
+		for (int i = 0; i < data.vertexBuffersCount; ++i) {
+			context->setVertexBuffer(i, data.vertexBuffers[i]);
+		}
+		context->setPrimitiveTopology(data.primitiveType);
+		if (data.indexBuffer) {
+			context->setIndexBuffer(data.indexBuffer);
+			context->drawPrimitiveIndexed(data.startIndex, data.primitiveCount);
+		}
+		else {
+			context->drawPrimitive(data.startIndex, data.primitiveCount);
+		}
+	}
+}
+
+#else
 //==============================================================================
 // MeshRenderFeature
 
@@ -73,8 +157,14 @@ void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, i
 		});
 }
 
-void MeshRenderFeature::flush(GraphicsContext* context)
+void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+	// TODO:
+}
+
+void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 void MeshRenderFeature::drawMeshImplOnRenderThread(ICommandList* context, const DrawMeshCommandData& data)
@@ -92,6 +182,7 @@ void MeshRenderFeature::drawMeshImplOnRenderThread(ICommandList* context, const 
         context->drawPrimitive(data.startIndex, data.primitiveCount);
     }
 }
+#endif
 
 } // namespace detail
 } // namespace ln

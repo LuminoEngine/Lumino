@@ -19,12 +19,6 @@ class SceneRenderer;
 class UIStyleInstance;
 }
 
-struct FrameBuffer
-{
-	Ref<RenderTargetTexture> renderTarget[detail::MaxMultiRenderTargets];
-	Ref<DepthBuffer> depthBuffer;
-};
-
 // RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
 // そのため render の実装は RenderingContext や GraphicsContext の状態に依存しないようにしなければならない。
 // TODO: onUpdateUILayout() など、少し UI に依存してきている。UI モジュールにもっていくのが正しい？
@@ -40,8 +34,7 @@ public:
 	void clearDrawElementListManagers();
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
-    // index:0 にセットされている RT と depthBuffer へ描画
-    virtual void render(GraphicsContext* graphicsContext) = 0;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) = 0;
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;

@@ -23,7 +23,7 @@ public:
     void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
 
     // TODO: internal
-    virtual void render(GraphicsContext* graphicsContext) override;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 
 protected:
     //virtual void onRoutedEvent(UIEventArgs* e) override;

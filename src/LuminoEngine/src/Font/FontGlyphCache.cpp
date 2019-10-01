@@ -59,6 +59,33 @@ bool FontGlyphTextureCache::init(FontCore* font)
 	return true;
 }
 
+void FontGlyphTextureCache::clearIndex()
+{
+	// TODO:
+}
+
+bool FontGlyphTextureCache::requestGlyphs(FontGlyphTextureCacheRequest* request)
+{
+	int missingCount = 0;
+	for (auto& item : request->glyphs) {
+		if (m_cachedGlyphInfoMap.find(item.codePoint) == m_cachedGlyphInfoMap.end()) {
+			missingCount++;
+		}
+	}
+	if (missingCount > m_indexStack.size()) {
+		// 新しい文字を作りたいが、このキャッシュには収まりきらない
+		return false;
+	}
+	else {
+		for (auto& item : request->glyphs) {
+			bool dummy;
+			lookupGlyphInfo(item.codePoint, &item.info, &dummy);
+		}
+		request->texture = m_fillGlyphsTexture;
+		return true;
+	}
+}
+
 void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush)
 {
 	LN_DCHECK(outInfo);

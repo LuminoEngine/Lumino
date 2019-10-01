@@ -126,18 +126,18 @@ void InternalPrimitiveRenderer::prepareBuffers(IGraphicsDevice* context, int ver
 }
 
 //==============================================================================
-// PrimitiveRenderFeature
+// MeshGeneraterRenderFeature
 
-PrimitiveRenderFeature::PrimitiveRenderFeature()
+MeshGeneraterRenderFeature::MeshGeneraterRenderFeature()
 	: m_manager(nullptr)
 {
 }
 
-PrimitiveRenderFeature::~PrimitiveRenderFeature()
+MeshGeneraterRenderFeature::~MeshGeneraterRenderFeature()
 {
 }
 
-void PrimitiveRenderFeature::init(RenderingManager* manager)
+void MeshGeneraterRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
@@ -183,19 +183,76 @@ void PrimitiveRenderFeature::init(RenderingManager* manager)
 //    m_lastPrimitiveType = PrimitiveType::LineList;
 //}
 
-void PrimitiveRenderFeature::flush(GraphicsContext* context)
+void MeshGeneraterRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
-    GraphicsManager* manager = m_manager->graphicsManager();
+	GraphicsManager* manager = m_manager->graphicsManager();
 	ICommandList* c = GraphicsContextInternal::commitState(context);
-    LN_ENQUEUE_RENDER_COMMAND_2(
-        PrimitiveRenderFeature_flush, context,
-        InternalPrimitiveRenderer*, m_internal,
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		PrimitiveRenderFeature_flush, context,
+		InternalPrimitiveRenderer*, m_internal,
 		ICommandList*, c,
-        {
-            m_internal->flush(c);
-        });
+		{
+			m_internal->flush(c);
+		});
 
-    m_lastPrimitiveType = nullptr;
+	//m_lastPrimitiveType = nullptr;
+
+	// TODO: add Batch
+}
+
+void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+
+//==============================================================================
+// PrimitiveRenderFeature
+
+PrimitiveRenderFeature::PrimitiveRenderFeature()
+{
+}
+
+void PrimitiveRenderFeature::init()
+{
+	m_primitives.reserve(16);
+	m_batchData.offset = 0;
+	m_batchData.count = 0;
+}
+
+RequestBatchResult PrimitiveRenderFeature::drawPrimitive(detail::RenderFeatureBatchList* batchList, VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount)
+{
+	m_primitives.add({ vertexDeclaration, vertexBuffer, startVertex, primitiveCount });
+	m_batchData.count++;
+	return RequestBatchResult::Staging;
+}
+
+void PrimitiveRenderFeature::beginRendering()
+{
+	m_primitives.clear();
+	m_batchData.offset = 0;
+	m_batchData.count = 0;
+}
+
+void PrimitiveRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+{
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+
+	m_batchData.offset = m_batchData.offset + m_batchData.count;
+	m_batchData.count = 0;
+}
+
+void PrimitiveRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	auto localBatch = static_cast<Batch*>(batch);
+
+	for (int i = 0; i < localBatch->data.count; i++) {
+		auto& data = m_primitives[localBatch->data.offset + i];
+		context->setVertexLayout(data.vertexLayout);
+		context->setVertexBuffer(0, data.vertexBuffer);
+		context->drawPrimitive(data.startVertex, data.primitiveCount);
+	}
 }
 
 } // namespace detail

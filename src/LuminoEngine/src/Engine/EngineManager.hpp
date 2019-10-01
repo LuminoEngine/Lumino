@@ -7,6 +7,7 @@
 #include "FpsController.hpp"
 
 namespace ln {
+class DiagnosticsManager;
 class EngineContext;
 class Application;
 class UIContext;
@@ -22,6 +23,7 @@ class WorldRenderView;
 class Camera;
 class AmbientLight;
 class DirectionalLight;
+class UIEventArgs;
 
 namespace detail {
 class PlatformManager;
@@ -62,6 +64,12 @@ struct EngineSettings
     intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
+#ifdef LN_DEBUG
+	bool debugToolEnabled = true;
+#else
+	bool debugToolEnabled = false;
+#endif
+
     bool defaultObjectsCreation = true;
     bool useGLFWWindowSystem = true;
     bool graphicsContextManagement = true;
@@ -128,10 +136,11 @@ public:
 	const Ref<RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
 
     const FpsController& fpsController() const { return m_fpsController; }
+	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
-    void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
+    //void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
 	void setMainWindow(ln::UIMainWindow* window);
 
     const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
@@ -147,7 +156,18 @@ public:
     const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 
 private:
+	enum class DebugToolMode
+	{
+		Disable,
+		Hidden,
+		Minimalized,
+		Activated,
+	};
+
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
+	void handleImGuiDebugLayer(UIEventArgs* e);
+	bool toggleDebugToolMode();
+	void setDebugToolMode(DebugToolMode mode);
 
 	EngineSettings m_settings;
 
@@ -170,6 +190,8 @@ private:
 	Ref<RuntimeManager> m_runtimeManager;
 	FpsController m_fpsController;
 
+	Ref<DiagnosticsManager> m_activeDiagnostics;
+
     //Application* m_application;
 	Path m_persistentDataPath;
 
@@ -189,7 +211,9 @@ private:
 
     float m_timeScale;
 	bool m_exitRequested;
-    bool m_showDebugFpsEnabled;
+ //   bool m_showDebugFpsEnabled;
+	//bool m_debugToolEnabled;
+	DebugToolMode m_debugToolMode;
 
 
 #if defined(LN_OS_WIN32)

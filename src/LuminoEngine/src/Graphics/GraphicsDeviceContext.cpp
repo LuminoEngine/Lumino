@@ -81,18 +81,29 @@ Ref<ICommandList> IGraphicsDevice::createCommandList()
 	return onCreateCommandList();
 }
 
-Ref<IRenderPass> IGraphicsDevice::createRenderPass(ITexture** renderTargets, uint32_t renderTargetCount, IDepthBuffer* depthBuffer, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
+Ref<IRenderPass> IGraphicsDevice::createRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
 {
-	Ref<IRenderPass> ptr = onCreateRenderPass(renderTargets, renderTargetCount, depthBuffer, clearFlags, clearColor, clearDepth, clearStencil);
+	Ref<IRenderPass> ptr = onCreateRenderPass(buffers, clearFlags, clearColor, clearDepth, clearStencil);
 	if (ptr) {
 		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
 
 		// Preserve dependent object references
-		for (uint32_t i = 0; i < renderTargetCount; i++) {
-			ptr->m_renderTargets[i] = renderTargets[i];
+		for (uint32_t i = 0; i < buffers.renderTargets.size(); i++) {
+			ptr->m_renderTargets[i] = buffers.renderTargets[i];
 		}
-		ptr->m_depthBuffer = depthBuffer;
+		ptr->m_depthBuffer = buffers.depthBuffer;
+	}
+	return ptr;
+}
+
+Ref<IPipeline> IGraphicsDevice::createPipeline(const DevicePipelineStateDesc& state)
+{
+	Ref<IPipeline> ptr = onCreatePipeline(state);
+	if (ptr) {
+		ptr->m_sourceVertexLayout = state.vertexDeclaration;
+		ptr->m_sourceRenderPass = state.renderPass;
+		ptr->m_sourceShaderPass = state.shaderPass;
 	}
 	return ptr;
 }
@@ -101,6 +112,7 @@ Ref<IVertexDeclaration> IGraphicsDevice::createVertexDeclaration(const VertexEle
 {
 	Ref<IVertexDeclaration> ptr = onCreateVertexDeclaration(elements, elementsCount);
 	if (ptr) {
+		ptr->m_device = this;
 		ptr->m_hash = IVertexDeclaration::computeHash(elements, elementsCount);
 		m_aliveObjects.push_back(ptr);
 	}
@@ -194,15 +206,6 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPass(const ShaderPassCreateInfo& c
 	}
 
 	if (ptr) {
-		m_aliveObjects.push_back(ptr);
-	}
-	return ptr;
-}
-
-Ref<IPipeline> IGraphicsDevice::createPipeline(IRenderPass* renderPass, const GraphicsContextState& state)
-{
-	Ref<IPipeline> ptr = onCreatePipeline(renderPass, state);
-	if (ptr) {
 		ptr->m_device = this;
 		m_aliveObjects.push_back(ptr);
 	}
@@ -281,6 +284,7 @@ ICommandList::ICommandList()
     , m_stateDirtyFlags(GraphicsContextStateDirtyFlags_All)
     , m_staging()
     , m_committed()
+	, m_currentRenderPass(nullptr)
 {
 }
 
@@ -313,12 +317,16 @@ void ICommandList::end()
 
 void ICommandList::beginRenderPass(IRenderPass* value)
 {
+	if (LN_REQUIRE(!m_currentRenderPass)) return;
+	m_currentRenderPass = value;
 	onBeginRenderPass(value);
 }
 
 void ICommandList::endRenderPass(IRenderPass* value)
 {
+	if (LN_REQUIRE(m_currentRenderPass && m_currentRenderPass == value)) return;
 	onEndRenderPass(value);
+	m_currentRenderPass = nullptr;
 }
 
 void ICommandList::setBlendState(const BlendStateDesc& value)
@@ -465,11 +473,25 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
 
+	if (m_staging.shaderPass) {
 
-    // TODO: modified check
+		// TODO: modified check
 
+		DevicePipelineStateDesc state;
+		state.blendState = m_staging.pipelineState.blendState;
+		state.rasterizerState = m_staging.pipelineState.rasterizerState;
+		state.depthStencilState = m_staging.pipelineState.depthStencilState;
+		state.topology = m_staging.pipelineState.topology;
+		state.vertexDeclaration = m_staging.pipelineState.vertexDeclaration;
+		state.shaderPass = m_staging.shaderPass;
+		state.renderPass = m_currentRenderPass;
+		IPipeline* pipeline = m_device->pipelineCache()->findOrCreate(state);
 
-    onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource);
+		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
+	}
+	else {
+		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, nullptr);
+	}
 }
 
 void ICommandList::endCommit()
@@ -493,7 +515,7 @@ ISwapChain::ISwapChain()
 void IRenderPass::dispose()
 {
 	if (m_device) {
-		//m_device->renderPassCache()->invalidate(this);
+		m_device->pipelineCache()->invalidate(this);
 		m_device = nullptr;
 	}
 
@@ -506,6 +528,16 @@ void IRenderPass::dispose()
 IVertexDeclaration::IVertexDeclaration()
 {
 	LN_LOG_VERBOSE << "IVertexDeclaration [0x" << this << "] constructed.";
+}
+
+void IVertexDeclaration::dispose()
+{
+	if (m_device) {
+		m_device->pipelineCache()->invalidate(this);
+		m_device = nullptr;
+	}
+
+	IGraphicsDeviceObject::dispose();
 }
 
 uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int count)
@@ -571,6 +603,15 @@ IShaderPass::IShaderPass()
 	LN_LOG_VERBOSE << "IShaderPass [0x" << this << "] constructed.";
 }
 
+void IShaderPass::dispose()
+{
+	if (m_device) {
+		m_device->pipelineCache()->invalidate(this);
+		m_device = nullptr;
+	}
+	IGraphicsDeviceObject::dispose();
+}
+
 //=============================================================================
 // IShaderPass
 
@@ -600,12 +641,7 @@ IShaderSamplerBuffer::IShaderSamplerBuffer()
 
 void IPipeline::dispose()
 {
-	if (m_device) {
-		m_device->pipelineCache()->invalidate(this);
-		m_device = nullptr;
-	}
-
-	IGraphicsDeviceObject::dispose();
+	//IGraphicsDeviceObject::dispose();
 }
 
 //=============================================================================
@@ -624,6 +660,7 @@ void NativeRenderPassCache::clear()
 		pair.second.value->dispose();
 	}
 	m_hashMap.clear();
+	DiagnosticsManager::activeDiagnostics()->setCounterValue(ProfilingItem::Graphics_RenderPassCount, m_hashMap.size());
 }
 
 IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
@@ -635,19 +672,21 @@ IRenderPass* NativeRenderPassCache::findOrCreate(const FindKey& key)
 		return itr->second.value;
 	}
 	else {
-		std::array<ITexture*, MaxMultiRenderTargets> renderTargets;
+		 DeviceFramebufferState buffers;
 		size_t i = 0;
 		for (; i < key.renderTargets.size(); i++) {
 			if (!key.renderTargets[i]) break;
-			renderTargets[i] = key.renderTargets[i];
+			buffers.renderTargets[i] = key.renderTargets[i];
 		}
+		buffers.depthBuffer = key.depthBuffer;
 
-		auto renderPass = m_device->createRenderPass(renderTargets.data(), i, key.depthBuffer, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
+		auto renderPass = m_device->createRenderPass(buffers, key.clearFlags, key.clearColor, key.clearDepth, key.clearStencil);
 		if (!renderPass) {
 			return nullptr;
 		}
 
 		m_hashMap.insert({ hash, { 1, renderPass } });
+		DiagnosticsManager::activeDiagnostics()->setCounterValue(ProfilingItem::Graphics_RenderPassCount, m_hashMap.size());
 		return renderPass;
 	}
 }
@@ -696,17 +735,20 @@ void NativePipelineCache::clear()
 		pair.second->dispose();
 	}
 	m_hashMap.clear();
+	m_device = nullptr;
 }
 
 IPipeline* NativePipelineCache::findOrCreate(const FindKey& key)
 {
+	if (LN_REQUIRE(m_device)) return nullptr;
+
 	uint64_t hash = computeHash(key);
 	auto itr = m_hashMap.find(hash);
 	if (itr != m_hashMap.end()) {
 		return itr->second;
 	}
 	else {
-		auto pipeline = m_device->createPipeline(key.renderPass, key.state);
+		auto pipeline = m_device->createPipeline(key);
 		if (!pipeline) {
 			return nullptr;
 		}
@@ -716,26 +758,78 @@ IPipeline* NativePipelineCache::findOrCreate(const FindKey& key)
 	}
 }
 
-void NativePipelineCache::invalidate(IPipeline* value)
+void NativePipelineCache::invalidate(IVertexDeclaration* value)
 {
-	if (value) {
-		m_hashMap.erase(value->cacheKeyHash);
+	for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ) {
+		if (itr->second->m_sourceVertexLayout == value) {
+			itr->second->dispose();
+			itr = m_hashMap.erase(itr);
+		}
+		else {
+			++itr;
+		}
 	}
 }
 
+void NativePipelineCache::invalidate(IRenderPass* value)
+{
+	for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ) {
+		if (itr->second->m_sourceRenderPass == value) {
+			itr->second->dispose();
+			itr = m_hashMap.erase(itr);
+		}
+		else {
+			++itr;
+		}
+	}
+}
+
+void NativePipelineCache::invalidate(IShaderPass* value)
+{
+	for (auto itr = m_hashMap.begin(); itr != m_hashMap.end(); ) {
+		if (itr->second->m_sourceShaderPass == value) {
+			itr->second->dispose();
+			itr = m_hashMap.erase(itr);
+		}
+		else {
+			++itr;
+		}
+	}
+}
+
+//void NativePipelineCache::invalidate(IPipeline* value)
+//{
+//	if (value) {
+//		m_hashMap.erase(value->cacheKeyHash);
+//	}
+//}
+
 uint64_t NativePipelineCache::computeHash(const FindKey& key)
 {
-	uint64_t vertexDeclarationHash = (key.state.pipelineState.vertexDeclaration) ? key.state.pipelineState.vertexDeclaration->hash() : 0;
+	uint64_t vertexDeclarationHash = (key.vertexDeclaration) ? key.vertexDeclaration->hash() : 0;
 
 	MixHash hash;
-	hash.add(key.state.pipelineState.blendState);
-	hash.add(key.state.pipelineState.rasterizerState);
-	hash.add(key.state.pipelineState.depthStencilState);
-	hash.add(key.state.pipelineState.topology);
+	hash.add(key.blendState);
+	hash.add(key.rasterizerState);
+	hash.add(key.depthStencilState);
+	hash.add(key.topology);
 	hash.add(vertexDeclarationHash);
-	hash.add(key.state.shaderPass);
+	hash.add(key.shaderPass);
 	hash.add(key.renderPass);
 	return hash.value();
+
+
+	//uint64_t vertexDeclarationHash = (key.state.pipelineState.vertexDeclaration) ? key.state.pipelineState.vertexDeclaration->hash() : 0;
+
+	//MixHash hash;
+	//hash.add(key.state.pipelineState.blendState);
+	//hash.add(key.state.pipelineState.rasterizerState);
+	//hash.add(key.state.pipelineState.depthStencilState);
+	//hash.add(key.state.pipelineState.topology);
+	//hash.add(vertexDeclarationHash);
+	//hash.add(key.state.shaderPass);
+	//hash.add(key.renderPass);
+	//return hash.value();
 }
 
 } // namespace detail

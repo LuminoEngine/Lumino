@@ -83,6 +83,11 @@ void RigidBody2DComponent::onAfterStepSimulation()
     }
 }
 
+RigidBody2D* RigidBody2DComponent::rigidBody() const
+{
+    return m_body;
+}
+
 EventConnection RigidBody2DComponent::connectOnCollisionEnter(CollisionEventHandler handler)
 {
     return m_onCollisionEnter.connect(handler);

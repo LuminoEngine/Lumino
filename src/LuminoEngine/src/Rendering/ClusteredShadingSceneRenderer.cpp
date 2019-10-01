@@ -46,16 +46,31 @@ void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
 	m_depthBuffer = nullptr;
 }
 
-void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+void DepthPrepass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	frameBuffer->renderTarget[0] = m_depthMap;
-	frameBuffer->depthBuffer = m_depthBuffer;
 	m_renderPass->setRenderTarget(0, m_depthMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
-	//context->setRenderTarget(0, m_depthMap);
-	//context->setDepthBuffer(m_depthBuffer);
-	context->setRenderPass(m_renderPass);
-	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);	// TODO: renderPassに統合していいと思う
+	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+}
+
+//void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//{
+//	frameBuffer->renderTarget[0] = m_depthMap;
+//	frameBuffer->depthBuffer = m_depthBuffer;
+//	m_renderPass->setRenderTarget(0, m_depthMap);
+//	m_renderPass->setDepthBuffer(m_depthBuffer);
+//	//context->setRenderTarget(0, m_depthMap);
+//	//context->setDepthBuffer(m_depthBuffer);
+//	//context->setRenderPass(m_renderPass);
+//	//context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);	// TODO: renderPassに統合していいと思う
+//	m_renderPass->setRenderTarget(0, m_depthMap);
+//	m_renderPass->setDepthBuffer(m_depthBuffer);
+//	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+//}
+
+RenderPass* DepthPrepass::renderPass() const
+{
+	return m_renderPass;
 }
 
 ShaderTechnique* DepthPrepass::selectShaderTechnique(
@@ -102,6 +117,35 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
 //		m_unLightingShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
 //	}
 //	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
+
+	m_renderPass = makeObject<RenderPass>();
+}
+
+void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	m_renderPass->setRenderTarget(0, renderTarget);
+	m_renderPass->setDepthBuffer(depthBuffer);
+	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+}
+
+//void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//{
+//	frameBuffer->renderTarget[0] = m_depthMap;
+//	frameBuffer->depthBuffer = m_depthBuffer;
+//	m_renderPass->setRenderTarget(0, m_depthMap);
+//	m_renderPass->setDepthBuffer(m_depthBuffer);
+//	//context->setRenderTarget(0, m_depthMap);
+//	//context->setDepthBuffer(m_depthBuffer);
+//	//context->setRenderPass(m_renderPass);
+//	//context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);	// TODO: renderPassに統合していいと思う
+//	m_renderPass->setRenderTarget(0, m_depthMap);
+//	m_renderPass->setDepthBuffer(m_depthBuffer);
+//	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+//}
+
+RenderPass* ClusteredShadingGeometryRenderingPass::renderPass() const
+{
+	return m_renderPass;
 }
 
 ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
@@ -213,17 +257,31 @@ void ShadowCasterPass::init()
 //	return m_defaultShader;
 //}
 
-
-void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+void ShadowCasterPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	frameBuffer->renderTarget[0] = m_shadowMap;
-	frameBuffer->depthBuffer = m_depthBuffer;
-	//context->setRenderTarget(0, m_shadowMap);
-	//context->setDepthBuffer(m_depthBuffer);
 	m_renderPass->setRenderTarget(0, m_shadowMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
-	context->setRenderPass(m_renderPass);
-	context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
+	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+}
+
+//void ShadowCasterPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//{
+//	frameBuffer->renderTarget[0] = m_shadowMap;
+//	frameBuffer->depthBuffer = m_depthBuffer;
+//	//context->setRenderTarget(0, m_shadowMap);
+//	//context->setDepthBuffer(m_depthBuffer);
+//	//m_renderPass->setRenderTarget(0, m_shadowMap);
+//	//m_renderPass->setDepthBuffer(m_depthBuffer);
+//	//context->setRenderPass(m_renderPass);
+//	//context->clear(ClearFlags::All, Color::Transparency, 1.0f, 0);
+//	m_renderPass->setRenderTarget(0, m_shadowMap);
+//	m_renderPass->setDepthBuffer(m_depthBuffer);
+//	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+//}
+//
+RenderPass* ShadowCasterPass::renderPass() const
+{
+	return m_renderPass;
 }
 
 ShaderTechnique* ShadowCasterPass::selectShaderTechnique(

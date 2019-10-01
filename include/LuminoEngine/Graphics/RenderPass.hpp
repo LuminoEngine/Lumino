@@ -4,6 +4,7 @@
 #include "GraphicsContext.hpp"
 
 namespace ln {
+class GraphicsContext;
 class RenderTargetTexture;
 class DepthBuffer;
 namespace detail {
@@ -11,6 +12,9 @@ class IRenderPass;
 }
 
 /**  */
+// Note: GraphicsContext に set 済みの RenderPass に対して後から setRenderTarget() しても描画結果は正しくなる。
+// ただし変更が発生するたびに IRenderPass の共有のためキャッシュを検索しに行くので、若干のオーバーヘッドが発生する。
+// 動的に変化させる必要が無ければ事前作成して、set～ はしないようにしておくとパフォーマンスが良くなる。
 class RenderPass
     : public GraphicsResource
 {
@@ -27,7 +31,7 @@ public:
 	/** DepthBuffer を取得します。 */
 	DepthBuffer* depthBuffer() const;
 
-	/** RenderPass 開始時にクリアする要素を設定します。(Default: All) */
+	/** RenderPass 開始時にクリアする要素を設定します。(Default: None) */
 	void setClearFlags(ClearFlags value);
 
 	/** RenderPass 開始時にレンダーターゲットをクリアする場合に使用する色を設定します。(Default: (0, 0, 0, 0)) */
@@ -38,6 +42,8 @@ public:
 
 	/** RenderPass 開始時にステンシルバッファをクリアする場合に使用するステンシル値を設定します。(Default: 0x00) */
 	void setClearStencil(uint8_t value);
+
+	void setClearValues(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -63,8 +69,10 @@ private:
 	float m_clearDepth;
 	uint8_t m_clearStencil;
 	bool m_dirty;
+	bool m_active;
 
     friend class detail::GraphicsResourceInternal;
+	friend class GraphicsContext;
 };
 
 //namespace detail {

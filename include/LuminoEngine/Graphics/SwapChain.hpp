@@ -29,7 +29,9 @@ public:
     /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
     RenderTargetTexture* currentBackbuffer() const;
 
-	GraphicsContext* beginFrame();
+	GraphicsContext* beginFrame2();	// 続いで currentRenderPass() で取得したパスの begin が必要。※begin 前に data-translate したりしたいので分けている。
+	RenderPass* currentRenderPass() const;
+
 	void endFrame();
 
 protected:

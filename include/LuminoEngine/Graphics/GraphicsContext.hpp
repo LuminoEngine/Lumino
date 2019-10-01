@@ -102,23 +102,23 @@ public:
     /** ShaderPass を設定します。 */
     void setShaderPass(ShaderPass* value);
 
-    /** IndexBuffer を取得します。 */
+    /** ShaderPass を取得します。 */
     ShaderPass* shaderPass() const;
-
-	/** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
-	void setRenderPass(RenderPass* value);
-
-	/** RenderPass を取得します。 */
-	RenderPass* renderPass() const;
-
-	///** RenderPass を開始します。 */
-	//void beginRenderPass(RenderPass* value);
-
-	///** RenderPass を終了します。 */
-	//void endRenderPass();
 
     /** デフォルト設定を復元します。 */
     void resetState();
+
+	///** RenderPass を設定します。Viewport と Scissor 領域は新しい RenderTarget のサイズに合わせて再設定されます。 */
+	//void setRenderPass(RenderPass* value);
+
+	///** RenderPass を取得します。 */
+	//RenderPass* renderPass() const;
+
+	/** RenderPass を開始します。 */
+	void beginRenderPass(RenderPass* value);
+
+	/** RenderPass を終了します。 */
+	void endRenderPass();
 
     /**
      * レンダーターゲット、深度バッファ、ステンシルバッファをクリアします。
@@ -156,7 +156,7 @@ private:
     void beginCommandRecodingIfNeeded();
     void endCommandRecodingIfNeeded();
     void flushCommandRecoding(RenderTargetTexture* affectRendreTarget);
-	void closeRenderPass();
+	//void closeRenderPass();
     detail::ICommandList* commitState();
     //void submitCommandList();
 
@@ -190,7 +190,6 @@ private:
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
         PrimitiveTopology topology;
-		Ref<RenderPass> renderPass;
 
         void reset();
     };
@@ -202,6 +201,7 @@ private:
     RenderingType m_renderingType;
     State m_staging;
     State m_lastCommit;
+	Ref<RenderPass> m_currentRenderPass;
 	Ref<detail::IRenderPass> m_currentRHIRenderPass;
     uint32_t m_dirtyFlags;
     bool m_recordingBegan;

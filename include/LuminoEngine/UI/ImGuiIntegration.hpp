@@ -1,11 +1,11 @@
 ﻿#pragma once
-#include "../../../build/ExternalSource/imgui/imgui.h"
 
 namespace ln {
 class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
 class Texture2D;
+class RenderPass;
 
 namespace detail {
 struct PlatformEventArgs;
@@ -16,7 +16,7 @@ public:
 	bool init();
 	void dispose();
     void updateFrame(float elapsedSeconds);
-	void render(GraphicsContext* graphicsContext);
+	void render(GraphicsContext* graphicsContext, RenderTargetTexture* target);
     bool handlePlatformEvent(const detail::PlatformEventArgs& e);
 
 private:
@@ -27,6 +27,7 @@ private:
 	Ref<VertexBuffer> m_vertexBuffer;
 	Ref<IndexBuffer> m_indexBuffer;
 	Ref<Shader> m_shader;
+	Ref<RenderPass> m_renderPass;
 };
 
 } // namespace detail

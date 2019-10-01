@@ -155,11 +155,11 @@ void ShapesRendererCommandList::addDrawBoxShadow(LinearAllocator* allocator, con
 }
 
 //==============================================================================
-// InternalShapesRenderer
+// ShapesRenderFeature
 
 static const int g_finalOffset = 0.0;
 
-InternalShapesRenderer::InternalShapesRenderer()
+ShapesRenderFeature::ShapesRenderFeature()
 	: m_manager(nullptr)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
@@ -171,34 +171,27 @@ InternalShapesRenderer::InternalShapesRenderer()
 }
 
 //------------------------------------------------------------------------------
-//InternalShapesRenderer::~InternalShapesRenderer()
+//ShapesRenderFeature::~ShapesRenderFeature()
 //{
 //	//LN_SAFE_RELEASE(m_vertexBuffer);
 //	//LN_SAFE_RELEASE(m_indexBuffer);
 //}
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::init(RenderingManager* manager)
+void ShapesRenderFeature::init(RenderingManager* manager)
 {
 	m_manager = manager;
 	m_basePoints.clearAndReserve(4096);
 	m_outlinePoints.clearAndReserve(4096);
 	m_vertexCache.clearAndReserve(4096);
 	m_indexCache.clearAndReserve(4096);
+	m_vertexLayout = m_manager->standardVertexDeclaration();
+	m_vertexBuffer = makeObject<VertexBuffer>(4096 * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
+	m_indexBuffer = makeObject<IndexBuffer>(4096, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex)
-{
-	////assert(vb != nullptr);
-	////assert(ib != nullptr);
-	////*outBeginVertexIndex = m_vertexCache.GetCount();
-	////*vb = m_vertexCache.request(vertexCount);
-	////*ib = m_indexCache.request(indexCount);
-}
-
-//------------------------------------------------------------------------------
-void InternalShapesRenderer::renderCommandList(ICommandList* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
+RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/)
 {
 	extractBasePoints(commandList);
 	calcExtrudedDirection();
@@ -246,20 +239,24 @@ void InternalShapesRenderer::renderCommandList(ICommandList* context, ShapesRend
 		//Driver::IRenderer* renderer = m_manager->getGraphicsDevice()->getRenderer();
 
 		// サイズが足りなければ再作成
-		//
         {
-            IGraphicsDevice* device = m_manager->graphicsManager()->deviceContext();
+			// VertexBuffer
+			int vertexBufferRequestSize = (m_vertexUsedCount + m_vertexCache.getCount()) * sizeof(Vertex);
+			if (!m_vertexBuffer) {
+				m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
+			}
+			else if (m_vertexBuffer->size() < vertexBufferRequestSize) {
+				m_vertexBuffer->resize(vertexBufferRequestSize);
+			}
 
-            if (m_vertexBuffer == nullptr || m_vertexBuffer->getBytesSize() < m_vertexCache.getBufferUsedByteCount())
-            {
-                //LN_SAFE_RELEASE(m_vertexBuffer);
-                m_vertexBuffer = device->createVertexBuffer(GraphicsResourceUsage::Dynamic, m_vertexCache.getBufferUsedByteCount(), nullptr);
-            }
-            if (m_indexBuffer == nullptr || m_indexBuffer->getBytesSize() < m_indexCache.getBufferUsedByteCount())
-            {
-                //LN_SAFE_RELEASE(m_indexBuffer);
-                m_indexBuffer = device->createIndexBuffer(GraphicsResourceUsage::Dynamic, IndexBufferFormat::UInt16, m_indexCache.getBufferUsedByteCount(), nullptr);
-            }
+			// IndexBuffer
+			int indexBufferRequestCount = (m_indexUsedCount + m_indexCache.getCount());
+			if (!m_indexBuffer) {
+				m_indexBuffer = makeObject<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+			}
+			else if (m_indexBuffer->size() < indexBufferRequestCount) {
+				m_indexBuffer->resize(indexBufferRequestCount);
+			}
         }
 
 
@@ -270,28 +267,40 @@ void InternalShapesRenderer::renderCommandList(ICommandList* context, ShapesRend
 		}
 
 
+		{
+			//TODO: context に setData つくる
+
+
+
+			auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
+			//memcpy(ib + m_indexUsedCount, m_indexCache.getBuffer(), m_indexCache.getCount() * sizeof(uint16_t));
+			auto head = ib + m_indexUsedCount;
+			for (int i = 0; i < m_indexCache.getCount(); i++) {
+				head[i] = m_vertexUsedCount + ((uint16_t*)m_indexCache.getBuffer())[i];
+			}
+			m_indexUsedCount += m_indexCache.getCount();
+
+
+
+			auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+			memcpy(vb + m_vertexUsedCount, m_vertexCache.getBuffer(), m_vertexCache.getCount() * sizeof(Vertex));
+			m_vertexUsedCount += m_vertexCache.getCount();
+
+
+			//context->setSubData(m_vertexBuffer, 0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+			//context->setSubData(m_indexBuffer, 0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
+
+			m_batchData.indexCount += m_indexCache.getCount();
+		}
 
 		// 描画する
-        context->setSubData(m_vertexBuffer, 0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
-        context->setSubData(m_indexBuffer, 0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
-		{
-			IVertexDeclaration* oldVertexDeclaration = context->vertexDeclaration();
-			IVertexBuffer* oldVertexBuffer = context->vertexBuffer(0);
-			IIndexBuffer* oldIndexBuffer = context->indexBuffer();
-			PrimitiveTopology oldPrimitiveTopology = context->primitiveTopology();
-
-            context->setVertexDeclaration(m_manager->standardVertexDeclarationRHI());
-            context->setVertexBuffer(0, m_vertexBuffer);
-            context->setIndexBuffer(m_indexBuffer);
-            context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-            context->drawPrimitiveIndexed(0, m_indexCache.getCount() / 3);
-
-			context->setVertexDeclaration(oldVertexDeclaration);
-			context->setVertexBuffer(0, oldVertexBuffer);
-			context->setIndexBuffer(oldIndexBuffer);
-			context->setPrimitiveTopology(oldPrimitiveTopology);
-		}
+		//{
+  //          context->setVertexLayout(m_vertexLayout);
+  //          context->setVertexBuffer(0, m_vertexBuffer);
+  //          context->setIndexBuffer(m_indexBuffer);
+  //          context->drawPrimitiveIndexed(0, m_indexCache.getCount() / 3);
+		//}
 	}
 
 	// キャッシュクリア
@@ -300,31 +309,110 @@ void InternalShapesRenderer::renderCommandList(ICommandList* context, ShapesRend
 	m_basePoints.clear();
 	m_outlinePoints.clear();
 	m_pathes.clear();
+
+	return RequestBatchResult::Staging;
+}
+
+void ShapesRenderFeature::beginRendering()
+{
+	m_vertexUsedCount = 0;
+	m_indexUsedCount = 0;
+	m_batchData.indexOffset = 0;
+	m_batchData.indexCount = 0;
+}
+
+void ShapesRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+{
+	//if (m_mappedVertices) {
+	//	// TODO: unmap (今は自動だけど、明示した方が安心かも)
+	//}
+
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+
+	m_batchData.indexOffset = m_batchData.indexOffset + m_batchData.indexCount;
+	m_batchData.indexCount = 0;
+}
+
+void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	auto localBatch = static_cast<Batch*>(batch);
+
+	context->setVertexLayout(m_vertexLayout);
+	context->setVertexBuffer(0, m_vertexBuffer);
+	context->setIndexBuffer(m_indexBuffer);
+	context->drawPrimitiveIndexed(localBatch->data.indexOffset, localBatch->data.indexCount / 3);
 }
 
 //------------------------------------------------------------------------------
-//void InternalShapesRenderer::releaseCommandList(ShapesRendererCommandList* commandList)
+//void ShapesRenderFeature::releaseCommandList(ShapesRendererCommandList* commandList)
 //{
 //	commandList->clear();
 //	m_manager->getShapesRendererCommandListCache()->releaseCommandList(commandList);
 //}
 
+//void ShapesRenderFeature::prepareBuffers(GraphicsContext* context, int triangleCount)
+//{
+//	//if (context) {
+//	//	// TODO: 実行中の map は context->map 用意した方がいいかも
+//	//	LN_NOTIMPLEMENTED();
+//	//}
+//
+//	if (m_buffersReservedTriangleCount < triangleCount)
+//	{
+//		size_t vertexCount = triangleCount * 3;
+//		if (LN_ENSURE(vertexCount < 0xFFFF)) {
+//			return;
+//		}
+//
+//		// VertexBuffer
+//		size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
+//		if (!m_vertexBuffer)
+//			m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
+//		else
+//			m_vertexBuffer->resize(vertexBufferSize);
+//
+//		// IndexBuffer
+//		size_t indexBufferSize = spriteCount * 3;
+//		if (!m_indexBuffer)
+//			m_indexBuffer = makeObject<IndexBuffer>(indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+//		else
+//			m_indexBuffer->resize(indexBufferSize);
+//		auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));	// TODO: 部分 map
+//		int idx = 0;
+//		int i2 = 0;
+//		for (int i = 0; i < spriteCount; ++i)
+//		{
+//			i2 = i * 6;
+//			idx = i * 4;
+//			ib[i2 + 0] = idx;
+//			ib[i2 + 1] = idx + 1;
+//			ib[i2 + 2] = idx + 2;
+//			ib[i2 + 3] = idx + 2;
+//			ib[i2 + 4] = idx + 1;
+//			ib[i2 + 5] = idx + 3;
+//		}
+//
+//		m_buffersReservedSpriteCount = spriteCount;
+//	}
+//}
+
 //------------------------------------------------------------------------------
-InternalShapesRenderer::Path* InternalShapesRenderer::addPath(PathType type, const Matrix* transform, const Color& color, PathWinding winding, PathAttribute attribute)
+ShapesRenderFeature::Path* ShapesRenderFeature::addPath(PathType type, const Matrix* transform, const Color& color, PathWinding winding, PathAttribute attribute)
 {
 	m_pathes.add(Path{ type, m_outlinePoints.getCount(), 0, color, winding, attribute, transform });
 	return &m_pathes.back();
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::endPath(Path* path)
+void ShapesRenderFeature::endPath(Path* path)
 {
 	path->pointCount = m_outlinePoints.getCount() - path->pointStart;
 }
 
 //------------------------------------------------------------------------------
 
-void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList* commandList)
+void ShapesRenderFeature::extractBasePoints(ShapesRendererCommandList* commandList)
 {
 	ShapesRendererCommandList::ListNode* node = commandList->head;
 	while (node)
@@ -334,7 +422,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList* comman
 	}
 }
 
-void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNode* command)
+void ShapesRenderFeature::extractBasePoints(ShapesRendererCommandList::ListNode* command)
 {
 	switch (command->type)
 	{
@@ -553,7 +641,7 @@ void InternalShapesRenderer::extractBasePoints(ShapesRendererCommandList::ListNo
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::makeBasePointsAndBorderComponent(const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, BorderComponent components[4])
+void ShapesRenderFeature::makeBasePointsAndBorderComponent(const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, BorderComponent components[4])
 {
 	float tlRad = cornerRadius.topLeft;
 	float trRad = cornerRadius.topRight;
@@ -638,13 +726,13 @@ void InternalShapesRenderer::makeBasePointsAndBorderComponent(const Rect& rect, 
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::calcExtrudedDirection()
+void ShapesRenderFeature::calcExtrudedDirection()
 {
 
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::expandVertices(const Path& path)
+void ShapesRenderFeature::expandVertices(const Path& path)
 {
 	for (int i = 0; i < path.pointCount; i++)
 	{
@@ -660,7 +748,7 @@ void InternalShapesRenderer::expandVertices(const Path& path)
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::expandFill(const Path& path)
+void ShapesRenderFeature::expandFill(const Path& path)
 {
 	int startIndex = m_vertexCache.getCount();
 
@@ -725,7 +813,7 @@ void InternalShapesRenderer::expandFill(const Path& path)
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::expandStrip2PointStroke(const Path& path)
+void ShapesRenderFeature::expandStrip2PointStroke(const Path& path)
 {
 	/*
 		0-2-4
@@ -750,7 +838,7 @@ void InternalShapesRenderer::expandStrip2PointStroke(const Path& path)
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::expandStrip3PointStroke(const Path& path)
+void ShapesRenderFeature::expandStrip3PointStroke(const Path& path)
 {
 	/*
 		0-3-6
@@ -785,7 +873,7 @@ void InternalShapesRenderer::expandStrip3PointStroke(const Path& path)
 }
 
 //------------------------------------------------------------------------------
-void InternalShapesRenderer::expandAntiAliasStroke(const Path& path, int startIndex)
+void ShapesRenderFeature::expandAntiAliasStroke(const Path& path, int startIndex)
 {
 	const float ext = 0.25f;
 	const float extAA = 0.5f;
@@ -885,7 +973,7 @@ void InternalShapesRenderer::expandAntiAliasStroke(const Path& path, int startIn
 	lastT		: firstCp ～ lastCp を 0.0～1.0 としたとき、どこまで点を打つか
 	center		: 生成する円弧の中心点 (AAのための押し出し方向を点に設定するために使用)
 */
-void InternalShapesRenderer::plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center)
+void ShapesRenderFeature::plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center)
 {
 	assert(firstT < lastT);
 	const int tess = 8;
@@ -916,6 +1004,7 @@ void InternalShapesRenderer::plotCornerBasePointsBezier(const Vector2& first, co
 	m_basePoints.add(pt);
 }
 
+#if 0
 //==============================================================================
 // ShapesRenderFeature
 
@@ -927,7 +1016,7 @@ ShapesRenderFeature::ShapesRenderFeature()
 void ShapesRenderFeature::init(RenderingManager* manager)
 {
     RenderFeature::init();
-    m_internal = makeRef<InternalShapesRenderer>();
+    m_internal = makeRef<ShapesRenderFeature>();
     m_internal->init(manager);
 }
 
@@ -939,7 +1028,7 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
 	ICommandList* c = GraphicsContextInternal::commitState(context);
     LN_ENQUEUE_RENDER_COMMAND_3(
         ShapesRenderFeature_renderCommandList, context,
-        InternalShapesRenderer*, m_internal,
+        ShapesRenderFeature*, m_internal,
 		ICommandList*, c,
         ShapesRendererCommandList, commandList,
         {
@@ -947,9 +1036,16 @@ void ShapesRenderFeature::renderCommandList(GraphicsContext* context, const Shap
         });
 }
 
-void ShapesRenderFeature::flush(GraphicsContext* context)
+void ShapesRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+	// TODO:
 }
+
+void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	LN_NOTIMPLEMENTED();
+}
+#endif
 
 } // namespace detail
 } // namespace ln

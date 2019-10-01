@@ -9,6 +9,8 @@
 #include "RenderStage.hpp"
 
 namespace ln {
+class VertexBuffer;
+class IndexBuffer;
 class Texture;
 namespace detail {
 
@@ -145,7 +147,8 @@ public:
         SpriteFlipFlags flipFlags);
 
     virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
-	virtual void flush(GraphicsContext* context) override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
     static void makeRenderSizeAndSourceRectHelper(Texture* texture, const Size& size, const Rect& sourceRect, Size* outSize, Rect* outSourceRect);
 
@@ -161,6 +164,91 @@ private:
 	InternalSpriteRenderer::State m_state;
 	Ref<InternalSpriteRenderer> m_internal;
     bool m_stateChanged;
+};
+
+
+
+
+class SpriteRenderFeatureStageParameters2
+	: public RenderFeatureStageParameters
+{
+public:
+	SpriteRenderFeatureStageParameters2()
+		: RenderFeatureStageParameters(CRCHash::compute("SpriteRenderFeatureStageParameters2"))
+	{
+	}
+
+	virtual bool equals(const RenderFeatureStageParameters* other) override
+	{
+		if (typeId() != other->typeId()) return false;
+		if (this == other) return true;
+		return false;
+	}
+
+	virtual void copyTo(RenderFeatureStageParameters* params) override
+	{
+		LN_CHECK(typeId() == params->typeId());
+	}
+
+private:
+};
+
+class SpriteRenderFeature2 : public RenderFeature
+{
+public:
+	// srcRect は UV 座標系上の値を設定する。 (通常0～1)
+	// 以前は 2D メインな Sprite なのでピクセル単位で指定していたが、
+	// 考え方として他の RenderFeature と同様に「最終的な描画に使うメッシュを作る」方針で統一したい。
+	RequestBatchResult drawRequest(
+		detail::RenderFeatureBatchList* batchList,
+		GraphicsContext* context,
+		const Matrix& transform,
+		const Vector2& size,
+		const Vector2& anchorRatio,
+		const Rect& srcRect,
+		const Color& color,
+		SpriteBaseDirection baseDirection,
+		BillboardType billboardType,
+		SpriteFlipFlags flipFlags);
+
+	virtual bool drawElementTransformNegate() const override { return true; }
+	virtual void onActiveRenderFeatureChanged(const detail::CameraInfo& mainCameraInfo) override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+
+LN_CONSTRUCT_ACCESS:
+	SpriteRenderFeature2();
+	void init(RenderingManager* manager);
+
+private:
+	struct BatchData
+	{
+		int spriteOffset;
+		int spriteCount;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
+	void prepareBuffers(GraphicsContext* context, int spriteCount);
+
+	RenderingManager* m_manager;
+	Matrix m_viewMatrix;
+	Matrix m_projMatrix;
+	Matrix m_viewInverseMatrix;
+	Vector3 m_viewDirection;
+	Vector3 m_viewPosition;
+
+	// sprite-batching
+	Ref<VertexLayout> m_vertexLayout;
+	Ref<VertexBuffer> m_vertexBuffer;
+	Ref<IndexBuffer> m_indexBuffer;
+	int m_buffersReservedSpriteCount;
+	BatchData m_batchData;
+	Vertex* m_mappedVertices;
 };
 
 } // namespace detail

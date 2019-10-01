@@ -1,5 +1,7 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "RenderingManager.hpp"
@@ -35,13 +37,13 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
-void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
-{
-}
+//void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
+//{
+//}
 
-void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
-{
-}
+//void RenderDrawElement::onSubsetInfoOverride(SubsetInfo* subsetInfo)
+//{
+//}
 
 //==============================================================================
 // RenderStage
@@ -78,7 +80,8 @@ bool RenderStage::equals(const RenderStage* other) const
 void RenderStage::flush(GraphicsContext* context)
 {
 	if (renderFeature) {
-		renderFeature->flush(context);
+		// TODO: batch list
+		renderFeature->submitBatch(context, nullptr);
 	}
 }
 
@@ -103,7 +106,7 @@ AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue,
 	return sceneDefaultMaterial;
 }
 
-ShadingModel RenderStage::getShadingModelFinal(AbstractMaterial* finalMaterial) const
+ShadingModel RenderStage::getShadingModelFinal(const AbstractMaterial* finalMaterial) const
 {
 	assert(finalMaterial);
 
@@ -115,7 +118,7 @@ ShadingModel RenderStage::getShadingModelFinal(AbstractMaterial* finalMaterial) 
 	return finalMaterial->shadingModel;
 }
 
-BlendMode RenderStage::getBlendModeFinal(AbstractMaterial* finalMaterial) const
+BlendMode RenderStage::getBlendModeFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getBlendMode().hasValue())
 		return finalMaterial->getBlendMode().value();
@@ -128,7 +131,7 @@ BlendMode RenderStage::getBlendModeFinal(AbstractMaterial* finalMaterial) const
 	return BlendMode::Normal;
 }
 
-CullMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) const
+CullMode RenderStage::getCullingModeFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getCullingMode().hasValue())
 		return finalMaterial->getCullingMode().value();
@@ -141,7 +144,7 @@ CullMode RenderStage::getCullingModeFinal(AbstractMaterial* finalMaterial) const
 	return CullMode::Back;
 }
 
-ComparisonFunc RenderStage::getDepthTestFuncFinal(AbstractMaterial* finalMaterial) const
+ComparisonFunc RenderStage::getDepthTestFuncFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthTestEnabled().hasValue())
 		return (finalMaterial->isDepthTestEnabled().value()) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
@@ -154,7 +157,7 @@ ComparisonFunc RenderStage::getDepthTestFuncFinal(AbstractMaterial* finalMateria
     return ComparisonFunc::LessEqual;
 }
 
-bool RenderStage::isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial) const
+bool RenderStage::isDepthWriteEnabledFinal(const AbstractMaterial* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthWriteEnabled().hasValue())
 		return finalMaterial->isDepthWriteEnabled().value();
@@ -185,6 +188,155 @@ const Color& RenderStage::getBlendColorFinal(RenderDrawElement* element) const
 const ColorTone& RenderStage::getToneFinal(RenderDrawElement* element) const
 {
     return element->builtinEffectData->tone;
+}
+
+//void RenderStage::applyFrameBufferStatus(RenderPass* renderPass, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)
+//{
+//	RenderTargetTexture* renderTarget0 = nullptr;
+//
+//	// RenderTarget
+//	{
+//		for (int i = 0; i < MaxMultiRenderTargets; i++)
+//		{
+//			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
+//			if (!target) {
+//				target = defaultFrameBufferInPass.renderTarget[i];
+//			}
+//
+//			renderPass->setRenderTarget(i, target);
+//
+//			if (i == 0) {
+//				renderTarget0 = target;
+//			}
+//		}
+//	}
+//
+//	// DepthBuffer
+//	{
+//		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();
+//		if (depthBuffer) {
+//			renderPass->setDepthBuffer(depthBuffer);
+//		}
+//		else {
+//			renderPass->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
+//		}
+//	}
+//
+//	// Viewport
+//	{
+//		//const RectI& rect = stage->getViewportRectFinal();//getViewportRect();
+//		//if (rect.width < 0)
+//		//{
+//		//	stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
+//		//}
+//		//else
+//		//{
+//		//	stateManager->setViewport(rect);
+//		//}
+//		// TODO:Viewport
+//		// TODO: m_scissorRect
+//	}
+//}
+
+void RenderStage::applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const AbstractMaterial* priorityMaterial)
+{
+	// BlendState
+	{
+		BlendMode mode = stage->getBlendModeFinal(priorityMaterial);
+		BlendStateDesc state;
+		state.independentBlendEnable = false;
+		makeBlendMode(mode, &state.renderTargets[0]);
+		context->setBlendState(state);
+	}
+	// RasterizerState
+	{
+		RasterizerStateDesc state;
+		state.fillMode = FillMode::Solid;
+		state.cullMode = stage->getCullingModeFinal(priorityMaterial);
+		context->setRasterizerState(state);
+	}
+	// DepthStencilState
+	{
+		DepthStencilStateDesc state;
+		state.depthTestFunc = stage->getDepthTestFuncFinal(priorityMaterial);
+		state.depthWriteEnabled = stage->isDepthWriteEnabledFinal(priorityMaterial);
+		context->setDepthStencilState(state);
+	}
+	// Topology
+	{
+		context->setPrimitiveTopology(stage->geometryStageParameters->primitiveTopology);
+	}
+}
+
+void RenderStage::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)
+{
+	// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
+	// TODO: アルファも一緒のブレンド方式にしているので、個別指定で改善できそう
+	switch (mode)
+	{
+	case BlendMode::Normal:
+		state->blendEnable = false;
+		state->sourceBlend = BlendFactor::One;
+		state->destinationBlend = BlendFactor::Zero;
+		state->blendOp = BlendOp::Add;
+		state->sourceBlendAlpha = BlendFactor::One;
+		state->destinationBlendAlpha = BlendFactor::Zero;
+		state->blendOpAlpha = BlendOp::Add;
+		break;
+	case BlendMode::Alpha:
+		state->blendEnable = true;
+		state->sourceBlend = BlendFactor::SourceAlpha;
+		state->destinationBlend = BlendFactor::InverseSourceAlpha;
+		state->blendOp = BlendOp::Add;
+		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+		state->destinationBlendAlpha = BlendFactor::InverseSourceAlpha;
+		state->blendOpAlpha = BlendOp::Add;
+		break;
+	case BlendMode::Add:
+		state->blendEnable = true;
+		state->sourceBlend = BlendFactor::SourceAlpha;
+		state->destinationBlend = BlendFactor::One;
+		state->blendOp = BlendOp::Add;
+		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+		state->destinationBlendAlpha = BlendFactor::One;
+		state->blendOpAlpha = BlendOp::Add;
+		break;
+	case BlendMode::Subtract:
+		state->blendEnable = true;
+		state->sourceBlend = BlendFactor::SourceAlpha;
+		state->destinationBlend = BlendFactor::One;
+		state->blendOp = BlendOp::ReverseSubtract;
+		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+		state->destinationBlendAlpha = BlendFactor::One;
+		state->blendOpAlpha = BlendOp::Add;
+		break;
+	case BlendMode::Multiply:
+		state->blendEnable = true;
+		state->sourceBlend = BlendFactor::Zero;	// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
+		state->destinationBlend = BlendFactor::SourceColor;
+		state->blendOp = BlendOp::Add;
+		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+		state->destinationBlendAlpha = BlendFactor::One;
+		state->blendOpAlpha = BlendOp::Add;
+		break;
+		//case BlendMode_Screen:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+		//	break;
+		//case BlendMode_Reverse:
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
+		//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
+		//	break;
+	default:
+		assert(0);
+		break;
+	}
 }
 
 //==============================================================================
