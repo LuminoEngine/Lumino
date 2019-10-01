@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+//#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
@@ -148,7 +149,8 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     //context->blit(primaryTarget, renderTarget);
 
-    
+    //detail::TextureInternal::readData(m_primaryTarget, graphicsContext)->save(u"test.png");
+
     m_blitMaterial->setMainTexture(m_primaryTarget);
 	//context->setDepthTestEnabled(false);
     context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
