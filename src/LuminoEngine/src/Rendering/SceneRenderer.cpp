@@ -208,7 +208,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 	prepare();
 
-#ifdef LN_RENDERING_MIGRATION
 	for (auto& renderFeature : m_manager->renderFeatures()) {
 		renderFeature->beginRendering();
 	}
@@ -424,106 +423,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	for (auto& renderFeature : m_manager->renderFeatures()) {
 		renderFeature->endRendering();
 	}
-
-#else
-	RenderStage* currentStage = nullptr;
-	for (RenderDrawElement* element : m_renderingElementList)
-	{
-		RenderStage* stage = element->stage();
-		// ステートの変わり目チェック
-		if (currentStage == nullptr || !currentStage->equals(stage))
-		{
-			if (currentStage) {
-				currentStage->flush(graphicsContext);
-			}
-			currentStage = stage;
-			RenderStage::applyFrameBufferStatus(graphicsContext, currentStage, defaultFrameBuffer);
-		}
-
-		// DrawElement drawing.
-		{
-
-			if (element->elementType == RenderDrawElementType::Geometry)
-			{
-				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
-				RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
-
-                Texture* mainTexture = nullptr;
-                if (finalMaterial) {
-                    mainTexture = finalMaterial->mainTexture();
-                }
-                if (!mainTexture) {
-                    mainTexture = m_manager->graphicsManager()->whiteTexture();
-                }
-
-                ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
-
-				ElementInfo elementInfo;
-				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix::Identity;
-				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
-				elementInfo.boneTexture = m_skinningMatricesTexture;
-				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
-                //element->onElementInfoOverride(&elementInfo, &meshProcess);
-
-				SubsetInfo subsetInfo;
-				subsetInfo.materialTexture = mainTexture;
-				subsetInfo.opacity = currentStage->getOpacityFinal(element);
-				subsetInfo.colorScale = currentStage->getColorScaleFinal(element);
-				subsetInfo.blendColor = currentStage->getBlendColorFinal(element);
-				subsetInfo.tone = currentStage->getToneFinal(element);
-				//element->onSubsetInfoOverride(&subsetInfo);
-
-				ShaderTechnique* tech = pass->selectShaderTechnique(
-                    meshProcess,
-					finalMaterial->shader(),
-					currentStage->getShadingModelFinal(finalMaterial));
-
-                detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
-				//semanticsManager->updateCameraVariables(cameraInfo);
-				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
-				//semanticsManager->updateSubsetVariables(subsetInfo);
-                if (currentStage->renderFeature) {
-                    currentStage->renderFeature->updateRenderParameters(element, tech, cameraInfo, elementInfo, subsetInfo);
-                }
-                else {
-                    RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, subsetInfo);
-                }
-
-				if (finalMaterial) {
-					PbrMaterialData pbrMaterialData;
-					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
-					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
-					finalMaterial->updateShaderVariables(tech->shader());
-				}
-
-				onSetAdditionalShaderPassVariables(tech->shader());
-
-				for (ShaderPass* pass2 : tech->passes())
-				{
-					graphicsContext->setShaderPass(pass2);
-
-					element->onDraw(graphicsContext, currentStage->renderFeature, &subsetInfo);
-				}
-			}
-			else if (element->elementType == RenderDrawElementType::Clear)
-			{
-				RenderStage::applyGeometryStatus(graphicsContext, currentStage, nullptr);
-				element->onDraw(graphicsContext, currentStage->renderFeature, nullptr);
-			}
-			else
-			{
-				LN_UNREACHABLE();
-			}
-		}
-	}
-
-	if (currentStage) {
-		currentStage->flush(graphicsContext);
-	}
-#endif
-
-
 }
 
 void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)

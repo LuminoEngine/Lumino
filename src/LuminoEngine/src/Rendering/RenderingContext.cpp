@@ -152,11 +152,7 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-#ifdef LN_RENDERING_MIGRATION
 			return static_cast<detail::ClearRenderFeature*>(renderFeature)->clear(batchList, flags, color, z, stencil);
-#else
-			context->clear(flags, color, z, stencil);
-#endif
 		}
 	};
 
@@ -372,27 +368,16 @@ void RenderingContext::drawSprite(
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-#ifdef LN_RENDERING_MIGRATION
 			return static_cast<detail::SpriteRenderFeature2*>(renderFeature)->drawRequest(
 				batchList, context, combinedWorldMatrix() * transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
-#else
-			static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-				context, transform, size, anchorRatio, srcRect, color, baseDirection, billboardType, flipFlags);
-#endif
 		}
 	};
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	m_builder->setMaterial(material);
-#ifdef LN_RENDERING_MIGRATION
 	auto* element = m_builder->addNewDrawElement<DrawSprite>(
 		m_manager->spriteRenderFeature2(),
 		m_builder->spriteRenderFeatureStageParameters2());
-#else
-	auto* element = m_builder->addNewDrawElement<DrawSprite>(
-		m_manager->spriteRenderFeature(),
-		m_builder->spriteRenderFeatureStageParameters());
-#endif
 	element->transform = transform;
 	element->size.set(size.width, size.height);
 	element->anchorRatio = anchor;
@@ -409,7 +394,6 @@ void RenderingContext::drawSprite(
 
 void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
 {
-#ifdef LN_RENDERING_MIGRATION
 	if (primitiveCount <= 0) return;
 
 	class DrawPrimitive : public detail::RenderDrawElement
@@ -434,33 +418,6 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 	element->vertexBuffer = vertexBuffer;
 	element->startVertex = startVertex;
 	element->primitiveCount = primitiveCount;
-#else
-	class DrawPrimitive : public detail::RenderDrawElement
-	{
-	public:
-		Ref<VertexLayout> vertexDeclaration;
-		Ref<VertexBuffer> vertexBuffer;
-		//PrimitiveTopology topology;
-		int startVertex;
-		int primitiveCount;
-
-		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures, const detail::SubsetInfo* subsetInfo) override
-		{
-			context->setVertexLayout(vertexDeclaration);
-			context->setVertexBuffer(0, vertexBuffer);
-			//context->setPrimitiveTopology(topology);
-			context->drawPrimitive(startVertex, primitiveCount);
-		}
-	};
-
-	m_builder->setPrimitiveTopology(topology);
-	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(nullptr, nullptr);
-	element->vertexDeclaration = vertexDeclaration;
-	element->vertexBuffer = vertexBuffer;
-	//element->topology = topology;
-	element->startVertex = startVertex;
-	element->primitiveCount = primitiveCount;
-#endif
 }
 
 // LOD なし。というか直接描画

@@ -39,7 +39,6 @@ public:
 private:
 };
 
-#ifdef LN_RENDERING_MIGRATION
 class MeshRenderFeature	// TODO: MeshSectionRenderFeature
 	: public RenderFeature
 {
@@ -80,43 +79,6 @@ private:
 	std::vector<DrawMeshData> m_meshes;
 	BatchData m_batchData;
 };
-#else
-// MeshSection 単位で描画する
-class MeshRenderFeature
-	: public RenderFeature
-{
-public:
-	MeshRenderFeature();
-	~MeshRenderFeature();
-	void init(RenderingManager* manager);
-
-	void drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-	//void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
-
-	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
-	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
-
-private:
-	struct DrawMeshCommandData
-	{
-		Ref<IVertexDeclaration>	vertexDeclaration;
-		Ref<IVertexBuffer>		vertexBuffers[MaxVertexStreams];
-		int									vertexBuffersCount;
-		Ref<IIndexBuffer>		indexBuffer;
-		int									startIndex;
-		int									primitiveCount;
-		PrimitiveTopology						primitiveType;
-	};
-
-	void drawMeshImplOnRenderThread(ICommandList* context, const DrawMeshCommandData& data);
-
-	RenderingManager* m_manager;
-
-	//GraphicsManager*		m_manager;
-	//Driver::IRenderer*		m_renderer;
-};
-#endif
-
 
 } // namespace detail
 } // namespace ln

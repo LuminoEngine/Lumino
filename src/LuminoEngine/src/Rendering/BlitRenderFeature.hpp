@@ -56,17 +56,8 @@ private:
 	};
 
 	RenderingManager* m_manager;
-#ifdef LN_RENDERING_MIGRATION
-	Ref<VertexLayout> m_vertexLayout;
+    Ref<VertexLayout> m_vertexLayout;
 	Ref<VertexBuffer> m_vertexBuffer;
-#else
-	void blitImplOnRenderThread(ICommandList* context);
-
-    Ref<IVertexBuffer> m_vertexBuffer;
-    Ref<IVertexDeclaration> m_vertexDeclaration;
-	//GraphicsManager*		m_manager;
-	//Driver::IRenderer*		m_renderer;
-#endif
 	int m_requestedCount;
 };
 
