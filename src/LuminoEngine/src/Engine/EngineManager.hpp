@@ -164,6 +164,11 @@ private:
 		Activated,
 	};
 
+	//struct DebugToolState
+	//{
+	//	bool 
+	//};
+
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
 	void handleImGuiDebugLayer(UIEventArgs* e);
 	bool toggleDebugToolMode();

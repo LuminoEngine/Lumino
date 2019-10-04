@@ -748,6 +748,21 @@ void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 	ImGui::Text("FPS: %.2f, Cap: %.2f", m_fpsController.getFps(), m_fpsController.getCapacityFps());
 	ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
 	ImGui::Separator();
+
+	if (ImGui::CollapsingHeader("RenderView debug"))
+	{
+		{
+			bool check = m_mainWorldRenderView->debugGridEnabled();
+			ImGui::Checkbox("Grid", &check);
+			m_mainWorldRenderView->setDebugGridEnabled(check);
+		}
+		{
+			bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();
+			ImGui::Checkbox("Physics", &check);
+			m_mainWorldRenderView->setPhysicsDebugDrawEnabled(check);
+		}
+	}
+
 	ImGui::End();
 }
 

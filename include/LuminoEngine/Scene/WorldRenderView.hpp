@@ -20,7 +20,11 @@ public:
     void setTargetWorld(World* world);
 	void setCamera(Camera* camera);
 
+	void setDebugGridEnabled(bool value) { m_visibleGridPlane = value; }
+	bool debugGridEnabled() const { return m_visibleGridPlane; }
+
     void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
+	bool physicsDebugDrawEnabled() const { return m_physicsDebugDrawEnabled; }
 
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;

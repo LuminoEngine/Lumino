@@ -216,8 +216,8 @@ int main(int argc, char** argv)
 	//sprite1->addComponent(m_rigidBody);
 	//Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
-	//auto sprite2 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
-	//sprite2->setPosition(1, 0, 1);
+	auto sprite2 = UISprite::create(Assets::loadTexture(u"Sprite1"));
+	Engine::mainUIRoot()->addElement(sprite2);
 
 #if 0
     auto window1 = UIWindow::create();
@@ -376,8 +376,13 @@ int main(int argc, char** argv)
 #endif
 
 	{
-
+		int x = 0;
 		while (Engine::update()) {
+			sprite2->setPosition(x, 0, 0);
+			++x;
+			//sprite1->setEulerAngles(0, Engine::totalTime(), 0);
+			
+
 			//printf("--------------------------\n");
 			//float t = Engine::totalTime() / 2;
 			//float s = (sin(t) * (Math::PI / 2));
@@ -387,6 +392,8 @@ int main(int argc, char** argv)
 			//Engine::mainCamera()->setEulerAngles(Math::PI / 8, 0, 0);
 			//Engine::mainCamera()->setEulerAngles(Math::PI / 4, 0, 0);
             //obj1->setPosition(cos(Engine::totalTime()), 0, sin(Engine::totalTime()));
+
+			//Engine::mainWindow()->swapChain()->currentBackbuffer
 		}
 
 	}

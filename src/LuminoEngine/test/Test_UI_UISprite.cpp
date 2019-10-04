@@ -1,11 +1,32 @@
 ﻿#include "Common.hpp"
 
-#ifdef LN_UNIT_TEST_EXPERIMENTAL
 
 //==============================================================================
 //# Testing UISprite
 class Test_UI_UISprite : public LuminoSceneTest {};
 
+//------------------------------------------------------------------------------
+//## FrameSec
+//TEST_F(Test_UI_UISprite, FrameSec)
+//{
+//	{
+//		auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
+//		auto sprite1 = makeObject<UISprite>(tex1);
+//		Engine::mainUIRoot()->addElement(sprite1);
+//
+//		for (int i = 0; i < 100; i++) {
+//			sprite1->setPosition(i, 0, 0);
+//			TestEnv::updateFrame();
+//			TestEnv::capture()->save(String::format(u"frame-{0}.png", i));
+//		}
+//
+//		LN_TEST_CLEAN_SCENE;
+//	}
+//}
+
+
+
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
 //------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_UI_UISprite, Basic)
