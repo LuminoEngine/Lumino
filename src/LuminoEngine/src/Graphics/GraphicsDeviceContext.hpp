@@ -251,7 +251,7 @@ public:	// TODO:
 };
 
 class ICommandList
-    : public RefObject
+    : public IGraphicsDeviceObject
 {
 public:
 	// LuminoGraphis を他のフレームワークに組み込むときに、バックエンドが DX9 や OpenGL などステートマシンベースである場合に使用する

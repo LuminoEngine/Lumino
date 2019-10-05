@@ -1200,8 +1200,6 @@ Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
 
 void VulkanCommandBuffer::dispose()
 {
-    //m_usingShaderPasses.clear();
-    //m_usingDescriptorSetsPools.clear();
     cleanInFlightResources();
 
 	m_stagingBufferPool.clear();

@@ -858,6 +858,8 @@ void VulkanGraphicsContext::dispose()
 		m_recodingCommandBuffer->dispose();
 		m_recodingCommandBuffer = nullptr;
 	}
+
+    ICommandList::dispose();
 }
 
 void VulkanGraphicsContext::onBeginCommandRecoding()
@@ -1859,6 +1861,11 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 
 void VulkanRenderPass2::dispose()
 {
+    if (m_framebuffer) {
+        m_framebuffer->dispose();
+        m_framebuffer = nullptr;
+    }
+
 	if (m_nativeRenderPass) {
 		vkDestroyRenderPass(m_device->vulkanDevice(), m_nativeRenderPass, m_device->vulkanAllocator());
 		m_nativeRenderPass = VK_NULL_HANDLE;

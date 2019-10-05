@@ -37,6 +37,8 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
 void SwapChain::onDispose(bool explicitDisposing)
 {
     m_rhiObject = nullptr;
+    m_commandLists.clear();
+    m_depthBuffers.clear();
 	m_backbuffers.clear();
 	GraphicsResource::onDispose(explicitDisposing);
 }

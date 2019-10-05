@@ -61,18 +61,19 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, Clear)
 {
-
 	{
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->clear(ClearFlags::All, Color::Blue, 1.0f, 0);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"), cbb);
 	}
 
 	//* [ ] Viewport や Scissor の影響を受けず、全体をクリアできること。
 	{
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setViewportRect(Rect(0, 0, 10, 10));
@@ -80,7 +81,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		ctx->clear(ClearFlags::All, Color::Green, 1.0f, 0);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-2.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-2.png"), cbb);
 	}
 
 	//* [ ] 複数 RT 設定時は index 0 だけクリアされること。
@@ -89,6 +90,7 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		auto t1 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 		auto t2 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 
 		// 両方 Blue でクリアして、
