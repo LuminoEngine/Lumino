@@ -33,7 +33,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 VulkanDevice::VulkanDevice()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
-	, m_graphicsContext(nullptr)
+	//, m_graphicsContext(nullptr)
     , m_enableValidationLayers(false)
 {
 }
@@ -76,10 +76,10 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 		return false;
 	}
 
-	m_graphicsContext = makeRef<VulkanGraphicsContext>();
-	if (!m_graphicsContext->init(this)) {
-		return false;
-	}
+	//m_graphicsContext = makeRef<VulkanGraphicsContext>();
+	//if (!m_graphicsContext->init(this)) {
+	//	return false;
+	//}
 
 	return true;
 }
@@ -91,10 +91,10 @@ void VulkanDevice::dispose()
     // CommandBuffer は次回描画開始時や、解放のタイミング (今の時点) で、これらのリソース参照をはずす。
     // このとき、ShaderPass に対しては、VulkanDescriptorSetsPool を返却する。ShaderPass は dispose でこの VulkanDescriptorSetsPool を削除するので、
     // ShaderPass を dispose ずる前に CommandBuffer の dispose() を行う必要がある。
-	if (m_graphicsContext) {
-		m_graphicsContext->dispose();
-		m_graphicsContext = nullptr;
-	}
+	//if (m_graphicsContext) {
+	//	m_graphicsContext->dispose();
+	//	m_graphicsContext = nullptr;
+	//}
 
     IGraphicsDevice::dispose();
 
@@ -123,10 +123,10 @@ void VulkanDevice::dispose()
     }
 }
 
-ICommandList* VulkanDevice::getGraphicsContext() const
-{
-	return m_graphicsContext;
-}
+//ICommandList* VulkanDevice::getGraphicsContext() const
+//{
+//	return m_graphicsContext;
+//}
 
 void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
 {
@@ -1037,7 +1037,7 @@ void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int
 	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
 	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
-	static_cast<VulkanTexture*>(resource)->setSubData(x, y, width, height, data, dataSize);
+	static_cast<VulkanTexture*>(resource)->setSubData(this, x, y, width, height, data, dataSize);
 }
 
 void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
@@ -1045,7 +1045,7 @@ void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int
 	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
 	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
-	static_cast<VulkanTexture*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
+	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
 }
 
 void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -1481,13 +1481,13 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
     m_currentFrame = 0;
 
 
-    m_inFlightCommandBuffers.resize(m_swapchainRenderTargets.size());
-    for (size_t i = 0; i < m_inFlightCommandBuffers.size(); i++) {
-        m_inFlightCommandBuffers[i] = makeRef<VulkanCommandBuffer>();
-        if (!m_inFlightCommandBuffers[i]->init(m_deviceContext)) {
-            return false;
-        }
-    }
+    //m_inFlightCommandBuffers.resize(m_swapchainRenderTargets.size());
+    //for (size_t i = 0; i < m_inFlightCommandBuffers.size(); i++) {
+    //    m_inFlightCommandBuffers[i] = makeRef<VulkanCommandBuffer>();
+    //    if (!m_inFlightCommandBuffers[i]->init(m_deviceContext)) {
+    //        return false;
+    //    }
+    //}
 
 	//m_colorBuffer = makeRef<VulkanRenderTarget>();
 	return true;
@@ -1499,12 +1499,12 @@ void VulkanSwapChain::dispose()
 
     cleanup();
 
-    for (auto c : m_inFlightCommandBuffers) {
-        if (c) {
-            c->dispose();
-        }
-    }
-    m_inFlightCommandBuffers.clear();
+    //for (auto c : m_inFlightCommandBuffers) {
+    //    if (c) {
+    //        c->dispose();
+    //    }
+    //}
+    //m_inFlightCommandBuffers.clear();
 
     for (auto& x : m_imageAvailableSemaphores) {
         vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
@@ -1598,7 +1598,6 @@ void VulkanSwapChain::present()
     presentInfo.pImageIndices = &m_imageIndex;
 
     VkResult result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
-    printf("present\n");
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         //framebufferResized = false;
@@ -1609,12 +1608,12 @@ void VulkanSwapChain::present()
         throw std::runtime_error("failed to present swap chain image!");
     }
 
-    // Swap command buffer
-    {
-        auto t = m_deviceContext->graphicsContext()->recodingCommandBuffer();
-        m_deviceContext->graphicsContext()->setRecodingCommandBuffer(m_inFlightCommandBuffers[m_currentFrame]);
-        m_inFlightCommandBuffers[m_currentFrame] = t;
-    }
+    //// Swap command buffer
+    //{
+    //    auto t = m_deviceContext->graphicsContext()->recodingCommandBuffer();
+    //    m_deviceContext->graphicsContext()->setRecodingCommandBuffer(m_inFlightCommandBuffers[m_currentFrame]);
+    //    m_inFlightCommandBuffers[m_currentFrame] = t;
+    //}
 
     m_currentFrame = (m_currentFrame + 1) % maxFrameCount();
 
@@ -2430,7 +2429,7 @@ void VulkanTexture2D::dispose()
     VulkanTexture::dispose();
 }
 
-void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+void VulkanTexture2D::setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     // TODO:
     assert(x == 0);
@@ -2442,7 +2441,7 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
     // vkCmdCopyBufferToImage() の dstImageLayout は VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR の
     // いずれかでなければならない。https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCmdCopyBufferToImage.html
     // 転送前にレイアウトを変更しておく。
-    if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
+    if (!m_deviceContext->transitionImageLayout(graphicsContext->recodingCommandBuffer()->vulkanCommandBuffer(),
         m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
         LN_ERROR();
         return;
@@ -2462,11 +2461,11 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
         static_cast<uint32_t>(height),
         1
     };
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
+    VulkanBuffer* buffer = graphicsContext->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
     buffer->setData(0, data, dataSize);
 
     // レイアウトを元に戻す
-    if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
+    if (!m_deviceContext->transitionImageLayout(graphicsContext->recodingCommandBuffer()->vulkanCommandBuffer(),
         m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
         LN_ERROR();
         return;

@@ -57,10 +57,10 @@ public:
     VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
     //VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
     VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
-	const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
+	//const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 
 protected:
-	virtual ICommandList* getGraphicsContext() const;
+    virtual ICommandList* getGraphicsContext() const { return nullptr; }
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<ICommandList> onCreateCommandList() override;
@@ -123,7 +123,7 @@ public: // TODO:
     //VulkanFramebufferCache m_framebufferCache;
     VulkanPipelineCache m_pipelineCache;
 
-	Ref<VulkanGraphicsContext> m_graphicsContext;
+	//Ref<VulkanGraphicsContext> m_graphicsContext;
 
 
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
@@ -371,8 +371,8 @@ class VulkanTexture
 {
 public:
     virtual const VulkanImage* image() const = 0;
-    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
-    virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+    virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
+    virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
 
 private:
 };
@@ -389,8 +389,8 @@ public:
     virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 	virtual void readData(void* outData) { LN_UNREACHABLE(); }
-    virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) override;
-	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
+    virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) override;
+	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) { LN_UNREACHABLE(); }
 
     virtual const VulkanImage* image() const override { return &m_image; }
 
@@ -419,8 +419,8 @@ public:
 	virtual TextureFormat getTextureFormat() const {return TextureFormat::RGBA8; }
 	virtual GraphicsResourceUsage usage() const override { return GraphicsResourceUsage::Static; }
     virtual void readData(void* outData) override;
-	virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) {}
-	virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
+	virtual void setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize) {}
+	virtual void setSubData3D(VulkanGraphicsContext* graphicsContext, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) {}
 
 	virtual const VulkanImage* image() const override { return m_image.get(); }
 
