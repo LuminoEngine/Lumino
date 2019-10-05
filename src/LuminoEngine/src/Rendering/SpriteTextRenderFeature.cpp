@@ -109,6 +109,9 @@ void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::Rend
 
 	m_batchData.spriteOffset = m_batchData.spriteOffset + m_batchData.spriteCount;
 	m_batchData.spriteCount = 0;
+
+    // 次の draw で Submit 発生しないようにする
+    m_cacheTexture = nullptr;
 }
 
 void SpriteTextRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
@@ -211,7 +214,6 @@ RequestBatchResult SpriteTextRenderFeature::resolveCache(detail::RenderFeatureBa
 	m_currentFont->getFontGlyphTextureCache(&m_cacheRequest);
 	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
 		submitBatch(context, batchList);
-        m_cacheTexture = m_cacheRequest.texture;
 		return RequestBatchResult::Submitted;
 	}
 	else {
