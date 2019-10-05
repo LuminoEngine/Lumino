@@ -609,55 +609,55 @@ private:
     IDepthBuffer* m_depthBuffer = nullptr;
 };
 
-// 関連付けられている RenderTarget と DepthBuffer がひとつでも解放されたら
-// 登録してある VkRenderPass も削除する。
-// もっと厳密に参照カウントで管理することもできるけど大変なので、まずはこの方式で。
-class VulkanFramebufferCache
-    : public HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>
-{
-public:
-    struct FetchKey
-    {
-        const DeviceFramebufferState& state;
-        VulkanRenderPass* renderPass;
-    };
-
-    VulkanFramebufferCache();
-    Result init(VulkanDevice* deviceContext);
-    void dispose();
-    VulkanFramebuffer* findOrCreate(const FetchKey& key);
-
-    static uint64_t computeHash(const FetchKey& key)
-    {
-        MixHash hash;
-        for (size_t i = 0; i < key.state.renderTargets.size(); i++) {
-            hash.add(key.state.renderTargets[i]);
-        }
-        hash.add(key.state.depthBuffer);
-        hash.add(key.renderPass);
-        return hash.value();
-    }
-
-    void invalidateRenderTarget(ITexture* value)
-    {
-		HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>::invalidateAllIf(
-			[&](Ref<VulkanFramebuffer>& x) { return x->containsRenderTarget(value); });
-    }
-
-    void invalidateDepthBuffer(IDepthBuffer* value)
-    {
-		HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>::invalidateAllIf(
-			[&](Ref<VulkanFramebuffer>& x) { return x->containsDepthBuffer(value); });
-    }
-
-    void onInvalidate(const Ref<VulkanFramebuffer>& value)
-    {
-        value->dispose();
-    }
-
-private:
-    VulkanDevice* m_deviceContext;
-};
+//// 関連付けられている RenderTarget と DepthBuffer がひとつでも解放されたら
+//// 登録してある VkRenderPass も削除する。
+//// もっと厳密に参照カウントで管理することもできるけど大変なので、まずはこの方式で。
+//class VulkanFramebufferCache
+//    : public HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>
+//{
+//public:
+//    struct FetchKey
+//    {
+//        const DeviceFramebufferState& state;
+//        VulkanRenderPass* renderPass;
+//    };
+//
+//    VulkanFramebufferCache();
+//    Result init(VulkanDevice* deviceContext);
+//    void dispose();
+//    VulkanFramebuffer* findOrCreate(const FetchKey& key);
+//
+//    static uint64_t computeHash(const FetchKey& key)
+//    {
+//        MixHash hash;
+//        for (size_t i = 0; i < key.state.renderTargets.size(); i++) {
+//            hash.add(key.state.renderTargets[i]);
+//        }
+//        hash.add(key.state.depthBuffer);
+//        hash.add(key.renderPass);
+//        return hash.value();
+//    }
+//
+//    void invalidateRenderTarget(ITexture* value)
+//    {
+//		HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>::invalidateAllIf(
+//			[&](Ref<VulkanFramebuffer>& x) { return x->containsRenderTarget(value); });
+//    }
+//
+//    void invalidateDepthBuffer(IDepthBuffer* value)
+//    {
+//		HashedObjectCache<Ref<VulkanFramebuffer>, VulkanFramebufferCache>::invalidateAllIf(
+//			[&](Ref<VulkanFramebuffer>& x) { return x->containsDepthBuffer(value); });
+//    }
+//
+//    void onInvalidate(const Ref<VulkanFramebuffer>& value)
+//    {
+//        value->dispose();
+//    }
+//
+//private:
+//    VulkanDevice* m_deviceContext;
+//};
 
 // Framebuffer は RenderPass の子オブジェクトな位置づけとなる。
 // Dynamic としてマークしている state は次の通り。

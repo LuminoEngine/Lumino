@@ -54,7 +54,7 @@ public:
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
 
     VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
-    VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
+    //VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
     VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
 	const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 
@@ -119,7 +119,7 @@ public: // TODO:
     //VulkanAllocator m_allocator;
 
     VulkanRenderPassCache m_renderPassCache;
-    VulkanFramebufferCache m_framebufferCache;
+    //VulkanFramebufferCache m_framebufferCache;
     VulkanPipelineCache m_pipelineCache;
 
 	Ref<VulkanGraphicsContext> m_graphicsContext;

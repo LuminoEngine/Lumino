@@ -20,7 +20,6 @@ public:
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 {
-
 	// # 時計回り (左ねじ) で描画できること
 	{
 		m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));

@@ -77,9 +77,9 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	if (!m_renderPassCache.init(this)) {
 		return false;
 	}
-	if (!m_framebufferCache.init(this)) {
-		return false;
-	}
+	//if (!m_framebufferCache.init(this)) {
+	//	return false;
+	//}
 	if (!m_pipelineCache.init(this)) {
 		return false;
 	}
@@ -108,7 +108,7 @@ void VulkanDevice::dispose()
 
 
     m_pipelineCache.dispose();
-    m_framebufferCache.dispose();
+    //m_framebufferCache.dispose();
     m_renderPassCache.dispose();
 
     if (m_commandPool) {
@@ -793,13 +793,13 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     }
-    //else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
-    //    barrier.srcAccessMask = 0;
-    //    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-    //    sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    //    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    //}
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    }
     else {
         LN_LOG_ERROR << "unsupported layout transition!";
         return false;
@@ -1444,13 +1444,13 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
         m_swapchainExtent = extent;
     }
 
-    //// 初期状態ではバックバッファのレイアウトは VK_IMAGE_LAYOUT_UNDEFINED となっている。
-    //// Vulkan-Tutorial では、初回の VkAttachmentDescription::initialLayout
-    //for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-    //    if (!m_deviceContext->transitionImageLayoutImmediately(swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) {
-    //        return false;
-    //    }
-    //}
+    // 初期状態ではバックバッファのレイアウトは VK_IMAGE_LAYOUT_UNDEFINED となっている。
+    // Vulkan-Tutorial では、初回の VkAttachmentDescription::initialLayout
+    for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(swapChainImages[i], m_swapchainImageFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) {
+            return false;
+        }
+    }
 
     {
         m_swapChainImageViews.resize(swapChainImages.size());
@@ -2672,7 +2672,7 @@ void VulkanRenderTarget::dispose()
     }
 
     if (m_deviceContext) {
-        m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
+        //m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
 
         //if (m_imageAvailableSemaphore) {
         //    vkDestroySemaphore(m_deviceContext->vulkanDevice(), m_imageAvailableSemaphore, m_deviceContext->vulkanAllocator());
@@ -2917,7 +2917,7 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
 void VulkanDepthBuffer::dispose()
 {
     if (m_deviceContext) {
-        m_deviceContext->framebufferCache()->invalidateDepthBuffer(this);
+        //m_deviceContext->framebufferCache()->invalidateDepthBuffer(this);
         m_deviceContext = nullptr;
     }
 

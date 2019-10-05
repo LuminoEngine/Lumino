@@ -1885,42 +1885,42 @@ bool VulkanFramebuffer::containsDepthBuffer(IDepthBuffer* depthBuffer) const
 }
 
 
-//=============================================================================
-// VulkanFramebufferCache
-
-VulkanFramebufferCache::VulkanFramebufferCache()
-{
-}
-
-Result VulkanFramebufferCache::init(VulkanDevice* deviceContext)
-{
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
-    return true;
-}
-
-void VulkanFramebufferCache::dispose()
-{
-    clear();
-}
-
-VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const FetchKey& key)
-{
-    uint64_t hash = computeHash(key);
-    Ref<VulkanFramebuffer> framebuffer;
-    if (find(hash, &framebuffer)) {
-        return framebuffer;
-    }
-    else {
-        framebuffer = makeRef<VulkanFramebuffer>();
-        if (!framebuffer->init(m_deviceContext, key.renderPass, key.state, hash)) {
-            return nullptr;
-        }
-        add(hash, framebuffer);
-        return framebuffer;
-    }
-}
-
+////=============================================================================
+//// VulkanFramebufferCache
+//
+//VulkanFramebufferCache::VulkanFramebufferCache()
+//{
+//}
+//
+//Result VulkanFramebufferCache::init(VulkanDevice* deviceContext)
+//{
+//    LN_DCHECK(deviceContext);
+//    m_deviceContext = deviceContext;
+//    return true;
+//}
+//
+//void VulkanFramebufferCache::dispose()
+//{
+//    clear();
+//}
+//
+//VulkanFramebuffer* VulkanFramebufferCache::findOrCreate(const FetchKey& key)
+//{
+//    uint64_t hash = computeHash(key);
+//    Ref<VulkanFramebuffer> framebuffer;
+//    if (find(hash, &framebuffer)) {
+//        return framebuffer;
+//    }
+//    else {
+//        framebuffer = makeRef<VulkanFramebuffer>();
+//        if (!framebuffer->init(m_deviceContext, key.renderPass, key.state, hash)) {
+//            return nullptr;
+//        }
+//        add(hash, framebuffer);
+//        return framebuffer;
+//    }
+//}
+//
 //==============================================================================
 // VulkanPipeline
 
