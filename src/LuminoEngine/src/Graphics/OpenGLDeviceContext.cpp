@@ -1087,7 +1087,13 @@ void GLSwapChain::present()
 		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO()));
 	}
 
+    //GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    //GL_CHECK(glClearColor(0, 0, 1, 1));
+    //glClear(GL_COLOR_BUFFER_BIT);
 	m_device->glContext()->swap(this);
+
+
+    //m_device->glContext()->swap(this);
 }
 
 //=============================================================================

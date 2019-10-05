@@ -44,6 +44,7 @@ Ref<GLSwapChain> GLFWContext::createSwapChain(PlatformWindow* window, const Size
 
 	auto ptr = makeRef<GLFWSwapChain>(m_device, glfwWindow);
 	ptr->genBackbuffer(backbufferSize.width, backbufferSize.height);
+
 	return ptr;
 }
 

@@ -220,7 +220,6 @@ void UIFrameWindow::init()
 {
 	UIContainerElement::init();
     m_manager = detail::EngineDomain::uiManager();
-	//m_renderPass = makeObject<RenderPass>();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
@@ -236,7 +235,6 @@ void UIFrameWindow::setupPlatformWindow(detail::PlatformWindow* platformMainWind
     m_platformWindow = platformMainWindow;
 	m_autoDisposePlatformWindow = false;
 	m_swapChain = makeObject<SwapChain>(platformMainWindow, backbufferSize);
-	//m_graphicsContext = makeObject<GraphicsContext>(detail::EngineDomain::graphicsManager()->renderingType());
 
     m_platformWindow->attachEventListener(this);
 
@@ -290,17 +288,6 @@ void UIFrameWindow::renderContents()
 	}
 
 	m_renderingGraphicsContext = m_swapChain->beginFrame2();
-
-	//RenderTargetTexture* backbuffer = m_swapChain->currentBackbuffer();
-	//m_depthBuffer = DepthBuffer::getTemporary(backbuffer->width(), backbuffer->height());
-
-	//m_renderPass->setRenderTarget(0, backbuffer);
-	//m_renderPass->setDepthBuffer(m_depthBuffer);
-	//m_renderingGraphicsContext->setRenderPass(m_renderPass);
-
-	////m_renderingGraphicsContext->setRenderTarget(0, backbuffer);
-	////m_renderingGraphicsContext->setDepthBuffer(m_depthBuffer);
-	////m_renderingGraphicsContext->clear(ClearFlags::All, Color(0.4, 0.4, 0.4), 1.0f, 0x00);
 }
 
 void UIFrameWindow::present()
@@ -310,12 +297,6 @@ void UIFrameWindow::present()
 		m_renderView->setRootElement(this);
 		m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
-
-	//if (m_depthBuffer) {
-	//	DepthBuffer::releaseTemporary(m_depthBuffer);
-	//	m_depthBuffer = nullptr;
-	//}
-
 
     detail::EngineDomain::effectManager()->testDraw();
 
@@ -334,45 +315,25 @@ void UIFrameWindow::present()
 
 		m_onImGuiLayer.raise(nullptr);
 
-		//ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		//ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-
-		//if (ImGui::Button("Button"))
-		//	printf("click\n");
-		//ImGui::SameLine();
-
-		//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		//ImGui::End();
-
 		ImGui::EndFrame();
 
 
 		m_imguiContext.render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
+ //   auto r = makeObject<RenderPass>(m_swapChain->currentBackbuffer(), nullptr);
+ //   m_renderingGraphicsContext->beginRenderPass(r);
+ //   m_renderingGraphicsContext->clear(ClearFlags::All, Color::Aqua);
+ //   m_renderingGraphicsContext->endRenderPass();
 	m_swapChain->endFrame();
 
 	detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
-
+    //detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
 }
 
 SwapChain* UIFrameWindow::swapChain() const
 {
 	return m_swapChain;
 }
-//
-//UIElement* UIFrameWindow::getVisualChild(int index) const
-//{
-//	return m_viewport;
-//}
-
-//void UIFrameWindow::updateLayout()
-//{
-//    SizeI size;
-//    m_platformWindow->getSize(&size);
-//    UIElement::updateLayoutHierarchical(size.toFloatSize());
-//}
 
 void UIFrameWindow::updateLayoutTree()
 {
