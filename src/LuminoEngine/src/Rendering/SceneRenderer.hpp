@@ -93,7 +93,7 @@ protected:
 
 
 private:
-	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, const ClearInfo& clearInfo);
+	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer/*, const ClearInfo& clearInfo*/);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 	detail::RenderingManager* m_manager;

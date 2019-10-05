@@ -7,7 +7,6 @@ class Test_Graphics_Texture : public ::testing::Test {};
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, clear)
 {
-    auto font = Font::create();
     auto texture = Texture2D::create(100, 100);
 
     //* [ ] クリア
@@ -25,6 +24,9 @@ TEST_F(Test_Graphics_Texture, clear)
 
     //* [ ] 別色クリア
     {
+#ifdef LN_NEW_GRAPHICS_MIGRATION
+        // TODO: GraphicsContext への map 実装が必要
+#else
         texture->clear(Color::Green);
 
         auto sprite = UISprite::create(texture);
@@ -34,6 +36,7 @@ TEST_F(Test_Graphics_Texture, clear)
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-clear-2.png"));
         LN_TEST_CLEAN_SCENE;
+#endif
     }
 }
 
@@ -118,6 +121,9 @@ TEST_F(Test_Graphics_Texture, Issues)
     //* [ ] <Issue> Clear の後に Drawtext すると、Clear されていない問題の修正。
     //* [ ] <Issue> Drawtext 連続で描画すると、1フレーム前の内容がクリアされる問題の修正。
     {
+#ifdef LN_NEW_GRAPHICS_MIGRATION
+        // TODO: GraphicsContext への map 実装が必要
+#else
         auto font = Font::create();
         auto texture = Texture2D::create(160, 120);
         texture->drawText(_LT("Clear0"), Rect(60, 0, 160, 120), font, Color::White, TextAlignment::Left);
@@ -139,6 +145,7 @@ TEST_F(Test_Graphics_Texture, Issues)
 
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-Issues-1.png"));
         LN_TEST_CLEAN_SCENE;
+#endif
     }
 }
 

@@ -157,9 +157,30 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
 		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
 		m_rhiObject = device->renderPassCache()->findOrCreate(key);
 
+        key.clearFlags = ClearFlags::None;
+        key.clearColor = Color(0, 0, 0, 0);
+        key.clearDepth = 1.0f;
+        key.clearStencil = 0x00;
+        m_rhiObjectNoClear = device->renderPassCache()->findOrCreate(key);
+
 		m_dirty = false;
 	}
 	return m_rhiObject;
+}
+
+// [2019/10/5]
+// GraphicsContext はデータ転送を遅延実行するため、各種 resolve (vkCmdCopyBuffer()) が呼ばれるタイミングが RenderPass の内側に入ってしまう。
+//
+// 多分グラフィックスAPIとして正しいであろう対策は、GraphicsContext に map, unmap, setData 等を実装して、resolve の遅延実行をやめること。
+// ただ、dynamic なリソース更新するところすべてで GraphicsContext が必要になるので、描画に制限が多くなるし、GraphicsContext の取り回しを考えないとならない。
+// 制限として厄介なのは DebugRendering. 各 onUpdate() の時点で何か描きたいときは GraphicsContext が確定していないのでいろいろ制約を考える必要がある。
+// 特に、onUpdate 1度に対して複数 SwapChain から world を覗きたいときとか。
+//
+// もうひとつ、泥臭いけど今のところあまり時間掛けないで回避できるのが、この方法。
+detail::IRenderPass* RenderPass::resolveRHIObjectNoClear(GraphicsContext* context, bool* outModified)
+{
+    resolveRHIObject(context, outModified);
+    return m_rhiObjectNoClear;
 }
 
 void RenderPass::releaseRHI()

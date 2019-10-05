@@ -138,6 +138,9 @@ public:
      */
     void drawPrimitiveIndexed(int startIndex, int primitiveCount);
 
+
+    void interruptCurrentRenderPassFromResolveRHI();
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
 

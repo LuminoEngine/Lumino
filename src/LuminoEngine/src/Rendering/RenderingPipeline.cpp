@@ -58,14 +58,14 @@ void SceneRenderingPipeline::init()
 void SceneRenderingPipeline::render(
     GraphicsContext* graphicsContext,
 	RenderTargetTexture* renderTarget,
-    const ClearInfo& clearInfo,
+    //const ClearInfo& clearInfo,
     const detail::CameraInfo* mainCameraInfo,
     const List<detail::DrawElementListCollector*>* elementListManagers)
 {
     m_elementListManagers = elementListManagers;
     m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
-    clear(graphicsContext, renderTarget, clearInfo);
+    //clear(graphicsContext, renderTarget, clearInfo);
 
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
     m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);
@@ -109,14 +109,14 @@ void FlatRenderingPipeline::init()
 void FlatRenderingPipeline::render(
 	GraphicsContext* graphicsContext,
 	RenderTargetTexture* renderTarget,
-    const ClearInfo& clearInfo,
+    //const ClearInfo& clearInfo,
 	const detail::CameraInfo* mainCameraInfo,
 	const List<detail::DrawElementListCollector*>* elementListManagers)
 {
 	m_elementListManagers = elementListManagers;
 	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
-    clear(graphicsContext, renderTarget, clearInfo);
+    //clear(graphicsContext, renderTarget, clearInfo);
 
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
 	m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);

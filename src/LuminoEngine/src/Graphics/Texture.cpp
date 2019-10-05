@@ -234,6 +234,7 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
             if (!m_rhiObject || m_usage != m_rhiObject->usage() || mipmap() != m_rhiObject->mipmap()) {
                 m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), m_bitmap->data());
             } else {
+                context->interruptCurrentRenderPassFromResolveRHI();
                 detail::ITexture* rhiObject = m_rhiObject;
 				auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
                 LN_ENQUEUE_RENDER_COMMAND_4(

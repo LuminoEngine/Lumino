@@ -209,6 +209,7 @@ detail::IIndexBuffer* IndexBuffer::resolveRHIObject(GraphicsContext* context, bo
             if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage) {
                 m_rhiObject = device->createIndexBuffer(m_usage, m_format, size(), m_buffer.data());
             } else {
+                context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IIndexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(

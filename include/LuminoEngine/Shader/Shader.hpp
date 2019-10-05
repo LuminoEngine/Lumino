@@ -292,9 +292,8 @@ private:
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     void setupParameters();
-    void commit(GraphicsContext* graphicsContext);
-    void commitContantBuffers(GraphicsContext* graphicsContext);
-    detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext);
+    void commitContantBuffers(GraphicsContext* graphicsContext, bool* outModified);
+    detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;

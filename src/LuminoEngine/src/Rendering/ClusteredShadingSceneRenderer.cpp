@@ -125,7 +125,7 @@ void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context
 {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+	m_renderPass->setClearValues(ClearFlags::None, Color::Transparency, 1.0f, 0);
 }
 
 //void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)

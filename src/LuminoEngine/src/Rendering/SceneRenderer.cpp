@@ -244,7 +244,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 
 			if (submitRequested) {
-				currentRenderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer, clearInfo);
+				currentRenderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
                 clearInfo.flags = ClearFlags::None; // first only
 			}
 
@@ -549,7 +549,7 @@ void SceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
 }
 
-RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, const ClearInfo& clearInfo)
+RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer/*, const ClearInfo& clearInfo*/)
 {
 	assert(currentRenderPass);
 	FrameBuffer fb;
@@ -560,6 +560,8 @@ RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, 
 			fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i];
 	}
 	fb.depthBuffer = (stage->frameBufferStageParameters->m_depthBuffer) ? stage->frameBufferStageParameters->m_depthBuffer : defaultDepthBuffer;
+
+    //bool equalsClearInfo = 
 
 	if (equalsFramebuffer(currentRenderPass, fb)) {
 		return currentRenderPass;
@@ -577,8 +579,8 @@ RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, 
 	m_renderPassPoolUsed++;
 
 	// reset
-	//renderPass->setClearValues(ClearFlags::Depth, Color::Transparency, 1.0f, 0x00);
-    renderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
+	renderPass->setClearValues(ClearFlags::Depth, Color::Transparency, 1.0f, 0x00);
+    //renderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
 
 	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
 		renderPass->setRenderTarget(i, fb.renderTarget[i]);

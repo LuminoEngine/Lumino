@@ -59,9 +59,11 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     detail::IRenderPass* resolveRHIObject(GraphicsContext* context, bool* outModified);
+    detail::IRenderPass* resolveRHIObjectNoClear(GraphicsContext* context, bool* outModified);
 	void releaseRHI();
 
     Ref<detail::IRenderPass> m_rhiObject;
+    Ref<detail::IRenderPass> m_rhiObjectNoClear;
 	std::array<Ref<RenderTargetTexture>, GraphicsContext::MaxMultiRenderTargets> m_renderTargets;
 	Ref<DepthBuffer> m_depthBuffer;
 	ClearFlags m_clearFlags;

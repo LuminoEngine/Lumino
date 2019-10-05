@@ -44,7 +44,7 @@ public:
     void render(
         GraphicsContext* graphicsContext,
 		RenderTargetTexture* renderTarget,
-        const ClearInfo& clearInfo,
+        //const ClearInfo& clearInfo,
         const detail::CameraInfo* mainCameraInfo,
         const List<detail::DrawElementListCollector*>* elementListManagers);
 
@@ -64,7 +64,7 @@ public:
     void render(
         GraphicsContext* graphicsContext,
         RenderTargetTexture* renderTarget,
-        const ClearInfo& clearInfo,
+        //const ClearInfo& clearInfo,
 		const detail::CameraInfo* mainCameraInfo,
 		const List<detail::DrawElementListCollector*>* elementListManagers);
 

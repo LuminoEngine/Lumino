@@ -140,16 +140,16 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         }
 
 
-        ClearInfo clearInfo;
-        clearInfo.color = backgroundColor();
-        clearInfo.depth = 1.0f;
-        clearInfo.stencil = 0x00;
-        if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-            clearInfo.flags = ClearFlags::All;
-        }
-        else {
-            clearInfo.flags = ClearFlags::Depth;
-        }
+        //ClearInfo clearInfo;
+        //clearInfo.color = backgroundColor();
+        //clearInfo.depth = 1.0f;
+        //clearInfo.stencil = 0x00;
+        //if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+        //    clearInfo.flags = ClearFlags::All;
+        //}
+        //else {
+        //    clearInfo.flags = ClearFlags::Depth;
+        //}
 
 
         // DrawList 構築
@@ -160,7 +160,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
 			if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-				//renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
@@ -323,7 +323,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 
 
-		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, &elementListManagers());
+		m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, &elementListManagers());
 	}
 }
 

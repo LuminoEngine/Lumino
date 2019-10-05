@@ -103,16 +103,16 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
         }
 
 
-        ClearInfo clearInfo;
-        clearInfo.color = backgroundColor();
-        clearInfo.depth = 1.0f;
-        clearInfo.stencil = 0x00;
-        if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-            clearInfo.flags = ClearFlags::All;
-        }
-        else {
-            clearInfo.flags = ClearFlags::Depth;
-        }
+        //ClearInfo clearInfo;
+        //clearInfo.color = backgroundColor();
+        //clearInfo.depth = 1.0f;
+        //clearInfo.stencil = 0x00;
+        //if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+        //    clearInfo.flags = ClearFlags::All;
+        //}
+        //else {
+        //    clearInfo.flags = ClearFlags::Depth;
+        //}
 
         // build draw elements
         {
@@ -121,6 +121,13 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
             //m_renderingContext->setDepthBuffer(fb.depthBuffer);
             m_renderingContext->setViewPoint(m_viewPoint);
             m_renderingContext->m_frameWindowRenderingGraphicsContext = graphicsContext;
+
+            if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+                m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+            }
+            else {
+                m_renderingContext->clear(ClearFlags::Depth, backgroundColor(), 1.0f, 0x00);
+            }
 
             m_rootElement->render(m_renderingContext);
 
@@ -134,7 +141,7 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
 
 
 
-        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, &elementListManagers());
+        m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, &elementListManagers());
     }
 }
 

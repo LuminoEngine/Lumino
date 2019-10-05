@@ -398,6 +398,20 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
         });
 }
 
+void GraphicsContext::interruptCurrentRenderPassFromResolveRHI()
+{
+    if (m_renderPassStep == RenderPassStep::Active && m_currentRHIRenderPass) {
+        LN_ENQUEUE_RENDER_COMMAND_2(
+            GraphicsContext_closeRenderPass, this,
+            detail::ICommandList*, m_context,
+            detail::IRenderPass*, m_currentRHIRenderPass,
+            {
+                m_context->endRenderPass(m_currentRHIRenderPass);
+            });
+        m_currentRHIRenderPass = nullptr;
+    }
+}
+
 void GraphicsContext::beginCommandRecodingIfNeeded()
 {
     if (!m_recordingBegan) {
@@ -463,10 +477,40 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
 // GraphicsContext は変更中のステートをキャッシュするが、それを確実に IGraphicsDevice へ送信した状態にする。
 detail::ICommandList* GraphicsContext::commitState()
 {
+    using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
+
     // ポインタとしては変わっていなくても、resolve は毎回呼び出す。
     // こうしておかないと、
     // 頂点バッファset > 描画 > 頂点バッファ更新 > 描画
     // といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
+
+
+
+
+    bool resourceModified = false;
+    detail::IShaderPass* shaderPassRHI = (m_staging.shaderPass) ? m_staging.shaderPass->resolveRHIObject(this, &resourceModified) : nullptr;
+
+    bool vertexLayoutModified = false;
+    detail::IVertexDeclaration* vertexLayoutRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &vertexLayoutModified);
+    resourceModified |= vertexLayoutModified;
+
+    bool primitiveBufferModified = false;
+    VertexBufferArray vertexBuffersRHI;
+    detail::IIndexBuffer* indexBufferRHI;
+    {
+        bool modified = false;
+        for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
+            auto& value = m_staging.vertexBuffers[i];
+            vertexBuffersRHI[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(this, value, &modified);
+            primitiveBufferModified |= modified;
+        }
+
+        indexBufferRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
+        primitiveBufferModified |= modified;
+        resourceModified |= primitiveBufferModified;
+    }
+
+
 
 
     // BlendState
@@ -573,19 +617,19 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // VertexLayout, Topology
     {
-        bool modified = false;
-        detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &modified);
+        //bool modified = false;
+        //detail::IVertexDeclaration* vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &modified);
         PrimitiveTopology topology = m_staging.topology;
 
-        if ((m_dirtyFlags & DirtyFlags_PipelinePrimitiveState) != 0 || modified) {
+        if ((m_dirtyFlags & DirtyFlags_PipelinePrimitiveState) != 0 || vertexLayoutModified) {
             LN_ENQUEUE_RENDER_COMMAND_3(
                 GraphicsContext_setPrimitiveBuffers, this,
                 detail::ICommandList*, m_context,
                 PrimitiveTopology, topology,
-                detail::IVertexDeclaration*, vertexDeclaration,
+                detail::IVertexDeclaration*, vertexLayoutRHI,
                 {
                     m_context->setPrimitiveTopology(topology);
-                    m_context->setVertexDeclaration(vertexDeclaration);
+                    m_context->setVertexDeclaration(vertexLayoutRHI);
                 });
 
             m_lastCommit.VertexLayout = m_staging.VertexLayout;
@@ -595,31 +639,31 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // VertexBuffer, IndexBuffer
     {
-        bool anyModified = false;
-        bool modified = false;
+        //bool anyModified = false;
+        //bool modified = false;
 
-        using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
-        VertexBufferArray vertexBuffers;
-        for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
-            auto& value = m_staging.vertexBuffers[i];
-            vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(this, value, &modified);
-            anyModified |= modified;
-        }
+        //using VertexBufferArray = std::array<detail::IVertexBuffer*, detail::MaxVertexStreams>;
+        //VertexBufferArray vertexBuffers;
+        //for (int i = 0; i < m_staging.vertexBuffers.size(); i++) {
+        //    auto& value = m_staging.vertexBuffers[i];
+        //    vertexBuffers[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexBuffer>(this, value, &modified);
+        //    anyModified |= modified;
+        //}
 
-        detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
-        anyModified |= modified;
+        //detail::IIndexBuffer* indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(this, m_staging.indexBuffer, &modified);
+        //anyModified |= modified;
 
-        if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || anyModified) {
+        if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || primitiveBufferModified) {
             LN_ENQUEUE_RENDER_COMMAND_3(
                 GraphicsContext_setPrimitiveBuffers, this,
                 detail::ICommandList*, m_context,
-                VertexBufferArray, vertexBuffers,
-                detail::IIndexBuffer*, indexBuffer,
+                VertexBufferArray, vertexBuffersRHI,
+                detail::IIndexBuffer*, indexBufferRHI,
                 {
                     for (int i = 0; i < detail::MaxVertexStreams; i++) {
-                        m_context->setVertexBuffer(i, vertexBuffers[i]);
+                        m_context->setVertexBuffer(i, vertexBuffersRHI[i]);
                     }
-                    m_context->setIndexBuffer(indexBuffer);
+                    m_context->setIndexBuffer(indexBufferRHI);
                 });
 
             m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
@@ -629,16 +673,14 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // ShaderPass
     {
-        auto& value = m_staging.shaderPass;
-        detail::IShaderPass* rhiObject = (value) ? value->resolveRHIObject(this) : nullptr;
 
         if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0) {
             LN_ENQUEUE_RENDER_COMMAND_2(
                 GraphicsContext_setShaderPass, this,
                 detail::ICommandList*, m_context,
-                detail::IShaderPass*, rhiObject,
+                detail::IShaderPass*, shaderPassRHI,
                 {
-                    m_context->setShaderPass(rhiObject);
+                    m_context->setShaderPass(shaderPassRHI);
                 });
 
             m_lastCommit.shader = m_staging.shader;
@@ -650,14 +692,15 @@ detail::ICommandList* GraphicsContext::commitState()
 
 
     // RenderPass
-    if (m_renderPassStep == RenderPassStep::BeginRequired)
+    if (m_renderPassStep == RenderPassStep::BeginRequired ||                    // 普通に beginRenderPass した直後
+        (m_renderPassStep == RenderPassStep::Active && !m_currentRHIRenderPass))// resolve でリソース更新したのでRenderPass中断した直後
     {
         detail::IRenderPass* newRenderPass = nullptr;
         bool modified = false;
-        newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_currentRenderPass, &modified);
-
-        //if (m_currentRHIRenderPass != newRenderPass || modified) {
-        //	closeRenderPass();
+        if (m_renderPassStep == RenderPassStep::BeginRequired)
+            newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_currentRenderPass, &modified);
+        else
+            newRenderPass = m_currentRenderPass->resolveRHIObjectNoClear(this, &modified);
 
         if (newRenderPass) {
             m_currentRHIRenderPass = newRenderPass;
@@ -672,6 +715,25 @@ detail::ICommandList* GraphicsContext::commitState()
         //}
         m_renderPassStep = RenderPassStep::Active;
     }
+    //else if (m_renderPassStep == RenderPassStep::Active && resourceModified) {
+    //    
+
+
+    //    detail::IRenderPass* newRenderPass = nullptr;
+    //    bool modified = false;
+    //    
+    //    if (newRenderPass) {
+    //        m_currentRHIRenderPass = newRenderPass;
+    //        LN_ENQUEUE_RENDER_COMMAND_2(
+    //            GraphicsContext_closeRenderPass, this,
+    //            detail::ICommandList*, m_context,
+    //            detail::IRenderPass*, m_currentRHIRenderPass,
+    //            {
+    //                m_context->beginRenderPass(m_currentRHIRenderPass);
+    //            });
+    //    }
+
+    //}
 
     return m_context;
 }
