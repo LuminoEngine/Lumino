@@ -280,12 +280,8 @@ void OpenGLDevice::init(const Settings& settings)
 
 void OpenGLDevice::dispose()
 {
-	//if (m_graphicsContext) {
-	//	m_graphicsContext->dispose();
-	//	m_graphicsContext = nullptr;
-	//}
 	if (m_graphicsQueue) {
-		m_graphicsQueue->dispose();
+        releaseObject(m_graphicsQueue);
 		m_graphicsQueue = nullptr;
 	}
 
@@ -2045,7 +2041,6 @@ void GLShaderPass::dispose()
 	m_uniforms.clear();
 
 	if (m_samplerBuffer) {
-		m_samplerBuffer->dispose();
 		m_samplerBuffer = nullptr;
 	}
 

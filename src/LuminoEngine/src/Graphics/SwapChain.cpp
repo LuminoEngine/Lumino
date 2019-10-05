@@ -123,7 +123,6 @@ void SwapChain::present(GraphicsContext* context)
 		detail::ISwapChain*, rhi,
 		{
 			rhi->present();
-			device->collectGarbageObjects();
 		});
 	
     m_rhiObject->acquireNextImage(&m_imageIndex);

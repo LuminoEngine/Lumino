@@ -21,10 +21,18 @@ IGraphicsDeviceObject::~IGraphicsDeviceObject()
     }
 }
 
-//void IGraphicsDeviceObject::finalize()
-//{
-//    dispose();
-//}
+void IGraphicsDeviceObject::finalize()
+{
+#ifdef LN_DEBUG
+    bool d = m_disposed;
+    dispose();
+    if (!d) {
+        LN_CHECK(m_disposed);
+    }
+#else
+    dispose();
+#endif
+}
 
 void IGraphicsDeviceObject::dispose()
 {
@@ -56,9 +64,9 @@ void IGraphicsDevice::dispose()
 	m_pipelineCache->clear();
 	m_renderPassCache->clear();
 
-	for (auto& obj : m_aliveObjects) {
-		obj->dispose();
-	}
+	//for (auto& obj : m_aliveObjects) {
+	//	obj->dispose();
+	//}
 	m_aliveObjects.clear();
 }
 
@@ -265,16 +273,16 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
     return pass;
 }
 
-void IGraphicsDevice::collectGarbageObjects()
-{
-	for (int i = m_aliveObjects.size() - 1; i >= 0; i--)
-	{
-		if (RefObjectHelper::getReferenceCount(m_aliveObjects[i]) <= 1) {
-			m_aliveObjects[i]->dispose();
-			m_aliveObjects.erase(m_aliveObjects.begin() + i);
-		}
-	}
-}
+//void IGraphicsDevice::collectGarbageObjects()
+//{
+//	for (int i = m_aliveObjects.size() - 1; i >= 0; i--)
+//	{
+//		if (RefObjectHelper::getReferenceCount(m_aliveObjects[i]) <= 1) {
+//			m_aliveObjects[i]->dispose();
+//			m_aliveObjects.erase(m_aliveObjects.begin() + i);
+//		}
+//	}
+//}
 
 //=============================================================================
 // ICommandList

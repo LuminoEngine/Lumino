@@ -136,12 +136,11 @@ struct ShaderPassCreateInfo
 class IGraphicsDeviceObject
     : public RefObject
 {
-public:
-    virtual void dispose();	// Prepare for multiple calls
-
 protected:
     IGraphicsDeviceObject();
     virtual ~IGraphicsDeviceObject();
+    virtual void finalize();
+    virtual void dispose();	// Prepare for multiple calls
 
 private:
     bool m_disposed;
@@ -183,6 +182,7 @@ public:
 	Ref<IDepthBuffer> createDepthBuffer(uint32_t width, uint32_t height);
 	Ref<ISamplerState> createSamplerState(const SamplerStateData& desc);
 	Ref<IShaderPass> createShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
+    void releaseObject(IGraphicsDeviceObject* obj) {}
 
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
@@ -241,7 +241,7 @@ protected:
 /////////
 
 public:	// TODO:
-	void collectGarbageObjects();
+	//void collectGarbageObjects();
 
 	GraphicsDeviceCaps m_caps;
 	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;

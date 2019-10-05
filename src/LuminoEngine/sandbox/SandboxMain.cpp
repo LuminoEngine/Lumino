@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 #endif
 	GlobalLogger::addStdErrAdapter();
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-    EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
+    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 

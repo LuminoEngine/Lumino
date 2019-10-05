@@ -2,27 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
-
-//#define GLFW_INCLUDE_VULKAN
-//#include <GLFW/glfw3.h>
-//#include "../Platform/GLFWPlatformWindowManager.hpp"
-
 #include "VulkanDeviceContext.hpp"
-
-//#define STB_IMAGE_IMPLEMENTATION
-//#include "../../../../build/ExternalSource/stb/stb_image.h"
-
-//#include <iostream>
-//#include <fstream>
-//#include <stdexcept>
-//#include <algorithm>
-//#include <chrono>
-//#include <vector>
-//#include <cstring>
-//#include <cstdlib>
-//#include <array>
-//#include <optional>
-//#include <set>
 
 namespace ln {
 namespace detail {

@@ -32,14 +32,22 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 		};
 		auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
+        // RenderPass は Swap の数だけ作ってもいいし、1つを使いまわしても良い。
+        // たくさんの RT に描画するときでも 1つだけ RenderPass を作れば良い。
+        // ただし、その場合は RenderPass 切り替えのたびにキャッシュを検索する処理が入るのでパフォーマンスが悪くなる。
+        // 常に RT,Depth,RenderPass をセットにして、RenderPass は生成後変更しないようにするとパフォーマンスがよくなる。
+        auto renderPass = makeObject<RenderPass>();
+
         for (int i = 0; i < 5; i++)
         {
+            renderPass->setRenderTarget(0, TestEnv::mainWindowSwapChain()->currentBackbuffer());
+            renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+			ctx->beginRenderPass(renderPass);
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer);
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-            ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
             ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
