@@ -28,6 +28,8 @@ void UIRenderView::init()
 	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
 
+    //m_clearRenderPass = makeObject<RenderPass>();
+
     m_adornerLayer = makeObject<UIAdornerLayer>();
 
 	m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
@@ -101,6 +103,17 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
         }
 
 
+        ClearInfo clearInfo;
+        clearInfo.color = backgroundColor();
+        clearInfo.depth = 1.0f;
+        clearInfo.stencil = 0x00;
+        if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+            clearInfo.flags = ClearFlags::All;
+        }
+        else {
+            clearInfo.flags = ClearFlags::Depth;
+        }
+
         // build draw elements
         {
             m_renderingContext->resetForBeginRendering();
@@ -108,14 +121,6 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
             //m_renderingContext->setDepthBuffer(fb.depthBuffer);
             m_renderingContext->setViewPoint(m_viewPoint);
             m_renderingContext->m_frameWindowRenderingGraphicsContext = graphicsContext;
-            if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-                m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
-            }
-            else {
-                // TODO: 今のところ必ずこのあたりで Depth クリアしておかないと、バックバッファに対応する Depth をクリアするタイミングが無くなる。
-                // SceneRenderer にデフォルトの描画先として RenderTarget を渡しているが、それと合わせてクリア情報を渡してしまってもいいかもしれない。
-                m_renderingContext->clear(ClearFlags::Depth, backgroundColor(), 1.0f, 0x00);
-            }
 
             m_rootElement->render(m_renderingContext);
 
@@ -129,7 +134,7 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
 
 
 
-        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, &camera, &elementListManagers());
+        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, &elementListManagers());
     }
 }
 

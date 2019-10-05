@@ -330,6 +330,10 @@ void GraphicsContext::endRenderPass()
 	if (LN_REQUIRE(m_currentRenderPass)) return;
     assert(m_renderPassStep != RenderPassStep::None);
 
+    if (m_renderPassStep == RenderPassStep::BeginRequired) {
+        commitState();
+    }
+    
     if (m_renderPassStep == RenderPassStep::Active) {
         if (m_currentRHIRenderPass) {
             LN_ENQUEUE_RENDER_COMMAND_2(

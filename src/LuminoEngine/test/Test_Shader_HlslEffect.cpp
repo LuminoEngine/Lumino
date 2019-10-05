@@ -31,17 +31,18 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		auto shader1 = makeObject<Shader>(LN_ASSETFILE("Basic.fx"));
 		shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vd1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"), cbb);
 	}
 	
 	//* [ ] Nested struct
@@ -49,17 +50,18 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("NestedStruct.fx"));
 		shader2->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
 
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vd1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-3.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-3.png"), cbb);
 	}
 }
 
@@ -89,17 +91,18 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		props->addDefinition(u"GREEN=1");
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-4.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-4.png"), cbb);
 	}
 
 	//* [ ] #ifdef
@@ -108,17 +111,18 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		props->addDefinition(u"BLUE");
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-5.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-5.png"), cbb);
 	}
 
 	//* [ ] #include
@@ -128,17 +132,18 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest.fx"), props);
 		shader2->findConstantBuffer("ConstBuff2")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"));	// 1 と同じ結果でよい
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Shader/Result/Test_Graphics_HlslEffect-Basic-1.png"), cbb);	// 1 と同じ結果でよい
 	}
 }
 

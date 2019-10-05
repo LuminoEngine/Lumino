@@ -78,7 +78,7 @@ void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
 	RenderTargetTexture* renderTarget,
-	//const FrameBuffer& defaultFrameBuffer,
+    const ClearInfo& clearInfo,
     const CameraInfo& mainCameraInfo,
     RendringPhase targetPhase)
 {
@@ -88,6 +88,7 @@ void SceneRenderer::render(
 	//m_defaultFrameBuffer = &defaultFrameBuffer;
     m_mainCameraInfo = mainCameraInfo;
     m_targetPhase = targetPhase;
+    m_firstClearInfo = clearInfo;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();
@@ -199,7 +200,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
 	pass->onBeginPass(graphicsContext, renderTarget, depthBuffer);
 
-
+    ClearInfo clearInfo = m_firstClearInfo;
 	const detail::CameraInfo& cameraInfo = mainCameraInfo();
 
 	//pass->overrideCameraInfo(&cameraInfo);
@@ -243,7 +244,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 
 			if (submitRequested) {
-				currentRenderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer);
+				currentRenderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer, clearInfo);
+                clearInfo.flags = ClearFlags::None; // first only
 			}
 
 			// ShaderDescripter
@@ -423,6 +425,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	for (auto& renderFeature : m_manager->renderFeatures()) {
 		renderFeature->endRendering();
 	}
+
+    m_renderPassPoolUsed = 0;
 }
 
 void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)
@@ -545,7 +549,7 @@ void SceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
 }
 
-RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, const ClearInfo& clearInfo)
 {
 	assert(currentRenderPass);
 	FrameBuffer fb;
@@ -573,7 +577,8 @@ RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, 
 	m_renderPassPoolUsed++;
 
 	// reset
-	renderPass->setClearValues(ClearFlags::Depth, Color::Transparency, 1.0f, 0x00);
+	//renderPass->setClearValues(ClearFlags::Depth, Color::Transparency, 1.0f, 0x00);
+    renderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
 
 	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
 		renderPass->setRenderTarget(i, fb.renderTarget[i]);

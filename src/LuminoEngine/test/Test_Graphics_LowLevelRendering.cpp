@@ -134,6 +134,18 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t1, nullptr), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-3.png"), 100));
 		ASSERT_EQ(true, TestEnv::equalsBitmapFile(detail::TextureInternal::readData(t2, nullptr), LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-4.png"), 100));
 	}
+
+
+    //* [ ] RenderPass の begin/end だけでクリアできること
+    {
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::Blue, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+        auto ctx = TestEnv::beginFrame();
+        ctx->beginRenderPass(TestEnv::renderPass());
+        ctx->endRenderPass();
+        TestEnv::endFrame();
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"), cbb);
+    }
 }
 
 //------------------------------------------------------------------------------

@@ -62,7 +62,7 @@ public:
 		GraphicsContext* graphicsContext,
         RenderingPipeline* renderingPipeline,
 		RenderTargetTexture* renderTarget,
-		//const FrameBuffer& defaultFrameBuffer,
+        const ClearInfo& clearInfo,
         const detail::CameraInfo& mainCameraInfo,
         RendringPhase targetPhase);
 
@@ -93,7 +93,7 @@ protected:
 
 
 private:
-	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer);
+	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer, const ClearInfo& clearInfo);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 	detail::RenderingManager* m_manager;
@@ -107,6 +107,8 @@ private:
 	//Ref<RenderPass> m_renderPass;
 	List<Ref<RenderPass>> m_renderPassPool;
 	int m_renderPassPoolUsed;
+
+    ClearInfo m_firstClearInfo;
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 

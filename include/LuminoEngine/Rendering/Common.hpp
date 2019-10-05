@@ -129,6 +129,14 @@ enum class RequestBatchResult
 				// なお、State が変わったため新しい Batch を作りたいとき、Batch の中身が 0 であるときは作ってはならない。
 };
 
+struct ClearInfo
+{
+    ClearFlags flags;
+    Color color;
+    float depth;
+    uint8_t stencil;
+};
+
 namespace detail {
 
 

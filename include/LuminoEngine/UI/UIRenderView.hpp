@@ -40,6 +40,7 @@ private:
 	Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
 	Ref<detail::DrawElementListCollector> m_drawElementListCollector;
     Ref<RenderViewPoint> m_viewPoint;
+    //Ref<RenderPass> m_clearRenderPass;
     Ref<UIElement> m_rootElement;
     Ref<UIAdornerLayer> m_adornerLayer;
 };
