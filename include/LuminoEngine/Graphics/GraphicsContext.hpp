@@ -194,6 +194,13 @@ private:
         void reset();
     };
 
+    enum class RenderPassStep
+    {
+        None,
+        BeginRequired,
+        Active,
+    };
+
     detail::GraphicsManager* m_manager;
     Ref<detail::ICommandList> m_context;
     Ref<detail::RenderingCommandList> m_recordingCommandList;
@@ -204,6 +211,7 @@ private:
 	Ref<RenderPass> m_currentRenderPass;
 	Ref<detail::IRenderPass> m_currentRHIRenderPass;
     uint32_t m_dirtyFlags;
+    RenderPassStep m_renderPassStep;
     bool m_recordingBegan;
 
     friend class detail::GraphicsContextInternal;

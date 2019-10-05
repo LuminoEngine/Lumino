@@ -211,7 +211,6 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitive(0, 1);
-
 			ctx->endRenderPass();
 			TestEnv::endFrame();
             ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-VertexBuffer-3.png"), cbb);
@@ -310,6 +309,8 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	vd1->addElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
 	vd1->addElement(2, VertexElementType::Float4, VertexElementUsage::TexCoord, 1);
 
+    TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 	auto ctx = TestEnv::beginFrame();
 	ctx->beginRenderPass(TestEnv::renderPass());
 	ctx->setVertexBuffer(0, vb1);
@@ -318,13 +319,12 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	ctx->setVertexLayout(vd1);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
-	ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	ctx->drawPrimitive(0, 1);
 
 	ctx->endRenderPass();
 	TestEnv::endFrame();
-	ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"));
+    ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-MultiStreamVertexBuffer-1.png"), cbb);
 }
 
 //------------------------------------------------------------------------------
@@ -365,44 +365,44 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、更新できること
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
-			ctx->setVertexLayout(m_vertexDecl1);
-			ctx->setVertexBuffer(0, vb1);
-			ctx->setIndexBuffer(ib1);
-			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 
 			uint16_t indices[] = { 0, 2, 4 };
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-			ctx->drawPrimitiveIndexed(0, 1);
-
-			ctx->endRenderPass();
-			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"));
-		}
-
-		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
-		{
-			auto ctx = TestEnv::beginFrame();
 			ctx->beginRenderPass(TestEnv::renderPass());
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setIndexBuffer(ib1);
 			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
+			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+			ctx->drawPrimitiveIndexed(0, 1);
+			ctx->endRenderPass();
+			TestEnv::endFrame();
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-1.png"), cbb);
+		}
+
+		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
+		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto ctx = TestEnv::beginFrame();
 
 			uint16_t indices[] = { 1, 2, 4 };
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(TestEnv::renderPass());
+			ctx->setVertexLayout(m_vertexDecl1);
+			ctx->setVertexBuffer(0, vb1);
+			ctx->setIndexBuffer(ib1);
+			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 			ctx->drawPrimitiveIndexed(0, 1);
-
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"), cbb);
 		}
 
 		// * [ ] フォーマット変更 16 -> 32
@@ -412,22 +412,21 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			}
 			else
 			{
+                TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+                auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 				auto ctx = TestEnv::beginFrame();
+				ib1->setFormat(IndexBufferFormat::UInt32);
+
 				ctx->beginRenderPass(TestEnv::renderPass());
 				ctx->setVertexLayout(m_vertexDecl1);
 				ctx->setVertexBuffer(0, vb1);
 				ctx->setIndexBuffer(ib1);
 				ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-
-				ib1->setFormat(IndexBufferFormat::UInt32);
-
-				ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 				ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 				ctx->drawPrimitiveIndexed(0, 1);
-
 				ctx->endRenderPass();
 				TestEnv::endFrame();
-				ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"));	// ↑と同じ結果
+                ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-IndexBuffer-2.png"), cbb);	// ↑と同じ結果
 			}
 		}
 	}
@@ -447,13 +446,13 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 	//* [ ] Viewport
 	{
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 
 		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -465,20 +464,20 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-1.png"), cbb);
 
 		ctx->setViewportRect(Rect::Empty);		// reset
 	}
 
 	//* [ ] Scissor
 	{
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 
 		ctx->setScissorRect(Rect(0, 0, 80, 60));		// 左上
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -490,20 +489,20 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-2.png"), cbb);
 
 		ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
 	}
 
 	//* [ ] Viewport+Scissor (Experimental) ... OpenGL では Viewport が優先だった。
 	{
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 
 		ctx->setViewportRect(Rect(0, 0, 80, 60));		// 左上
 		ctx->setScissorRect(Rect(40, 30, 80, 60));		// 中央
@@ -512,10 +511,7 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"));
-
-		//ctx->setViewportRect(Rect(0, 0, 160, 120));		// reset
-		//ctx->setScissorRect(Rect(0, 0, 160, 120));		// reset
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-ViewportAndScissor-3.png"), cbb);
 	}
 }
 
@@ -535,17 +531,18 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 
 
 	auto renderAndCapture = [&]() {
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		ctx->drawPrimitive(0, 1);
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		return TestEnv::capture()->getPixel32(0, 0);
+		return TestEnv::capture(cbb)->getPixel32(0, 0);
 	};
 
 	// * [ ] float
@@ -797,6 +794,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 
 	// * [ ] default
 	{
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
@@ -804,13 +803,12 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 		ctx->setIndexBuffer(nullptr);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		ctx->drawPrimitive(0, 2);
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-TextureTest-1.png"), cbb);
 	}
 }
 
@@ -897,6 +895,8 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 	// * [ ] default (Point, Reprat)
 	{
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
@@ -904,17 +904,18 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		ctx->setIndexBuffer(nullptr);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		ctx->drawPrimitive(0, 2);
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-1.png"), cbb);
 	}
 
 	// * [ ] Linear, Clamp
 	{
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
@@ -926,13 +927,12 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 		sampler->setFilterMode(TextureFilterMode::Linear);
 		sampler->setAddressMode(TextureAddressMode::Clamp);
 		tex1->setSamplerState(sampler);
-		ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		ctx->drawPrimitive(0, 2);
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-SamplerState-2.png"), cbb);
 	}
 }
 
@@ -977,6 +977,8 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 	// * [ ] check BlendState (RGB Add blend)
 	{
+        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::Gray, 1.0f, 0);
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setVertexLayout(vertexDecl1);
@@ -987,8 +989,6 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		state1.renderTargets[0].sourceBlend = BlendFactor::One;
 		state1.renderTargets[0].destinationBlend = BlendFactor::One;
 		state1.renderTargets[0].blendOp = BlendOp::Add;
-
-		ctx->clear(ClearFlags::All, Color::Gray, 1.0f, 0);
 
 		ctx->setBlendState(BlendStateDesc());
 		ctx->setVertexBuffer(0, vb1);
@@ -1002,7 +1002,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 		ctx->endRenderPass();
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-1.png"), cbb);
 
 		//ctx->setBlendState(BlendStateDesc());	// 戻しておく
 	}
@@ -1021,12 +1021,13 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		state4.fillMode = FillMode::Wireframe;
 
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
 			ctx->beginRenderPass(TestEnv::renderPass());
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setRasterizerState(state1);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);	// 赤は描かれない
@@ -1035,16 +1036,17 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 緑は描かれる
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-1.png"), cbb);
 		}
 
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
 			ctx->beginRenderPass(TestEnv::renderPass());
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setRasterizerState(state2);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);	// 赤は描かれる
@@ -1053,16 +1055,17 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 緑は描かれない
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-2.png"), cbb);
 		}
 
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
 			ctx->beginRenderPass(TestEnv::renderPass());
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setRasterizerState(state3);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);	// 赤は描かれる
@@ -1071,22 +1074,23 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 緑は描かれる
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-3.png"), cbb);
 		}
 
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
 			ctx->beginRenderPass(TestEnv::renderPass());
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setRasterizerState(state4);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-2-4.png"), cbb);
 		}
 
 		//ctx->setRasterizerState(RasterizerStateDesc());	// 戻しておく
@@ -1095,11 +1099,12 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	// * [ ] check DepthStencilState
 	{
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
 			ctx->beginRenderPass(TestEnv::renderPass());
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);	// 青 (z=0)
@@ -1108,10 +1113,12 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-1.png"), cbb);
 		}
 
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			DepthStencilStateDesc state1;
 			state1.depthTestFunc = ComparisonFunc::Always;
 
@@ -1120,7 +1127,6 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setDepthStencilState(state1);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);	// 青 (z=0)
@@ -1129,10 +1135,12 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-2.png"), cbb);
 		}
 
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			DepthStencilStateDesc state2;
 			state2.depthWriteEnabled = false;
 
@@ -1141,7 +1149,6 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setDepthStencilState(state2);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb2);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);	// 青 (z=0)
@@ -1150,7 +1157,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 			ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-3-3.png"), cbb);
 		}
 
 		//ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
@@ -1165,12 +1172,13 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		state1.frontFace.stencilFunc = ComparisonFunc::Always;	// 常に成功（常に上書き）
 
 		{
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
 			ctx->beginRenderPass(TestEnv::renderPass());
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setDepthStencilState(state1);
-			ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 			ctx->drawPrimitive(0, 2);	// 赤 (z=0.5)
@@ -1186,7 +1194,7 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"));
+            ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderStateTest-4-1.png"), cbb);
 		}
 
 		//ctx->setDepthStencilState(DepthStencilStateDesc());	// 戻しておく
@@ -1228,9 +1236,10 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 
         auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
 
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
 		auto renderPass = makeObject<RenderPass>();
-
+        renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
         // まず renderTarget1 へ緑色の三角形を描く
         {
@@ -1240,7 +1249,6 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
             ctx->setVertexLayout(m_vertexDecl1);
             ctx->setVertexBuffer(0, vertexBuffer1);
             ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
-            ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
@@ -1249,18 +1257,18 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         // 次に renderTarget1 からバックバッファへ全体を描く
         {
             shader2->findParameter("g_texture1")->setTexture(renderTarget1);
+            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->beginRenderPass(TestEnv::renderPass());
             ctx->setVertexLayout(vertexDecl2);
             ctx->setVertexBuffer(0, vertexBuffer2);
             ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
-            ctx->clear(ClearFlags::All, Color::White, 1.0f, 0);
 			ctx->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
             ctx->drawPrimitive(0, 2);
 			ctx->endRenderPass();
         }
 
 		TestEnv::endFrame();
-		ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderTarget-1.png"));
+        ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-RenderTarget-1.png"), cbb);
     }
 }
 

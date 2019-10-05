@@ -721,9 +721,11 @@ uint64_t NativeRenderPassCache::computeHash(const FindKey& key)
 		// TODO: Format だけでもいいかも。Vulkan はそうだった。
 		hash.add(key.renderTargets[i]);
 	}
-	// TODO: Format だけでもいいかも。Vulkan はそうだった。
-	hash.add(key.depthBuffer);
-	hash.add(key.clearFlags);
+	hash.add(key.depthBuffer);  // TODO: Format だけでもいいかも。Vulkan はそうだった。
+	hash.add(key.clearFlags);   // TODO: 以下、一つの構造体にまとめれば少し高速化できそう
+    hash.add(key.clearColor);
+    hash.add(key.clearDepth);
+    hash.add(key.clearStencil);
 	return hash.value();
 }
 

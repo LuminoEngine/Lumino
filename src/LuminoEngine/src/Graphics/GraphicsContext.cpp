@@ -25,6 +25,7 @@ GraphicsContext::GraphicsContext()
     , m_staging()
     , m_lastCommit()
     , m_dirtyFlags(DirtyFlags_All)
+    , m_renderPassStep(RenderPassStep::None)
     , m_recordingBegan(false)
 {
 }
@@ -293,6 +294,13 @@ void GraphicsContext::beginRenderPass(RenderPass* value)
 	m_currentRenderPass = value;
 	m_currentRenderPass->m_active = true;
 
+    assert(m_renderPassStep == RenderPassStep::None);
+    m_renderPassStep = RenderPassStep::BeginRequired;
+
+    // 次の commitState() で実際に開始する。
+    // 各リソースの実際の copy は commitState() まで遅延されるので、
+    // RenderPass の being も遅延しておかないと、Vulkan の「RenderPass inside では copy できない」仕様に引っかかる。
+#if 0
 	// RenderPass
 	{
 		detail::IRenderPass* newRenderPass = nullptr;
@@ -314,25 +322,30 @@ void GraphicsContext::beginRenderPass(RenderPass* value)
 			}
 		//}
 	}
+#endif
 }
 
 void GraphicsContext::endRenderPass()
 {
 	if (LN_REQUIRE(m_currentRenderPass)) return;
+    assert(m_renderPassStep != RenderPassStep::None);
 
-	if (m_currentRHIRenderPass) {
-		LN_ENQUEUE_RENDER_COMMAND_2(
-			GraphicsContext_closeRenderPass, this,
-			detail::ICommandList*, m_context,
-			detail::IRenderPass*, m_currentRHIRenderPass,
-			{
-				m_context->endRenderPass(m_currentRHIRenderPass);
-			});
-		m_currentRHIRenderPass = nullptr;
-	}
+    if (m_renderPassStep == RenderPassStep::Active) {
+        if (m_currentRHIRenderPass) {
+            LN_ENQUEUE_RENDER_COMMAND_2(
+                GraphicsContext_closeRenderPass, this,
+                detail::ICommandList*, m_context,
+                detail::IRenderPass*, m_currentRHIRenderPass,
+                {
+                    m_context->endRenderPass(m_currentRHIRenderPass);
+                });
+            m_currentRHIRenderPass = nullptr;
+        }
+    }
 
 	m_currentRenderPass->m_active = false;
 	m_currentRenderPass = nullptr;
+    m_renderPassStep = RenderPassStep::None;
 }
 
 void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -630,6 +643,31 @@ detail::ICommandList* GraphicsContext::commitState()
     }
 
     m_dirtyFlags = DirtyFlags_None;
+
+
+    // RenderPass
+    if (m_renderPassStep == RenderPassStep::BeginRequired)
+    {
+        detail::IRenderPass* newRenderPass = nullptr;
+        bool modified = false;
+        newRenderPass = detail::GraphicsResourceInternal::resolveRHIObject<detail::IRenderPass>(this, m_currentRenderPass, &modified);
+
+        //if (m_currentRHIRenderPass != newRenderPass || modified) {
+        //	closeRenderPass();
+
+        if (newRenderPass) {
+            m_currentRHIRenderPass = newRenderPass;
+            LN_ENQUEUE_RENDER_COMMAND_2(
+                GraphicsContext_closeRenderPass, this,
+                detail::ICommandList*, m_context,
+                detail::IRenderPass*, m_currentRHIRenderPass,
+                {
+                    m_context->beginRenderPass(m_currentRHIRenderPass);
+                });
+        }
+        //}
+        m_renderPassStep = RenderPassStep::Active;
+    }
 
     return m_context;
 }

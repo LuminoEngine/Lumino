@@ -542,6 +542,7 @@ Result VulkanDevice::createLogicalDevice()
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
+    deviceFeatures.fillModeNonSolid = VK_TRUE;  // ワイヤーフレームの描画をできるようにする (VK_POLYGON_MODE_LINE を使えるようにする)
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
