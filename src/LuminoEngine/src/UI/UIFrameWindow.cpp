@@ -292,6 +292,9 @@ void UIFrameWindow::renderContents()
 
 void UIFrameWindow::present()
 {
+    //ElapsedTimer t;
+    //t.start();
+
 	if (m_renderView)
 	{
 		m_renderView->setRootElement(this);
@@ -328,6 +331,8 @@ void UIFrameWindow::present()
 
 	//detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
     //detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
+
+    //std::cout << t.elapsedMilliseconds() << std::endl;
 }
 
 SwapChain* UIFrameWindow::swapChain() const

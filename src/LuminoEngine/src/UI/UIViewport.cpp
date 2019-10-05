@@ -121,6 +121,7 @@ void UIViewport::onUpdateLayout(const Rect& finalGlobalRect)
 
 void UIViewport::onRender(UIRenderingContext* context)
 {
+
     GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
     //auto* renderTarget = graphicsContext->renderTarget(0);
 	//Ref<RenderPass> oldRenderPass = graphicsContext->renderPass();
@@ -152,7 +153,6 @@ void UIViewport::onRender(UIRenderingContext* context)
     //detail::TextureInternal::readData(m_primaryTarget, graphicsContext)->save(u"test.png");
 
     m_blitMaterial->setMainTexture(m_primaryTarget);
-	//context->setDepthTestEnabled(false);
     context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
 
     //RenderTargetTexture::releaseTemporary(primaryTarget);
@@ -161,6 +161,8 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//graphicsContext->endRenderPass();
 
     // TODO: ViewBoxTransform
+
+    //graphicsContext->resetState();
 }
 
 void UIViewport::onRoutedEvent(UIEventArgs* e)

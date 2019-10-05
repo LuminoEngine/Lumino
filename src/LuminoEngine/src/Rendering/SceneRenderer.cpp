@@ -84,6 +84,8 @@ void SceneRenderer::render(
 {
 	//if (LN_REQUIRE(m_defaultMaterial)) return;
 
+    graphicsContext->resetState();
+
 	m_renderingPipeline = renderingPipeline;
 	//m_defaultFrameBuffer = &defaultFrameBuffer;
     m_mainCameraInfo = mainCameraInfo;
@@ -144,6 +146,7 @@ void SceneRenderer::render(
 	//	}
 	//}
 	//m_renderingActualPassList.addRange(m_renderingPassList);
+
 
 	auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
 
