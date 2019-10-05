@@ -92,6 +92,12 @@ void VertexBuffer::resize(int size)
 {
     m_primarySize = size;
     m_buffer.resize(size);
+
+    // map 中ならバッファポインタ再取り出し
+    if (m_mappedBuffer) {
+        assert(m_usage == GraphicsResourceUsage::Dynamic);
+        m_mappedBuffer = m_buffer.data();
+    }
 }
 
 void* VertexBuffer::map(MapMode mode)

@@ -224,6 +224,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 		const Matrix* currentWorldMatrix = nullptr;
 		AbstractMaterial* currentFinalMaterial = nullptr;
 		SubsetInfo currentSubsetInfo;
+        //int count = 0;
 		for (RenderDrawElement* element : m_renderingElementList)
 		{
 			bool submitRequested = false;
@@ -316,6 +317,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				currentStage = stage;
 				m_renderFeatureBatchList.setCurrentStage(currentStage);
 			}
+
+            //if (count == 14) break;
+            //count++;
 		}
 
 		if (currentStage) {

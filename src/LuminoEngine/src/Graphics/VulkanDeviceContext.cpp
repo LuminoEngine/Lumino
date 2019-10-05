@@ -11,12 +11,6 @@ const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-#ifdef NDEBUG
-const bool enableValidationLayers = false;
-#else
-const bool enableValidationLayers = true;
-#endif
-
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr) {
@@ -33,10 +27,6 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-
-
-
-
 //==============================================================================
 // VulkanDevice
 
@@ -44,6 +34,7 @@ VulkanDevice::VulkanDevice()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
 	, m_graphicsContext(nullptr)
+    , m_enableValidationLayers(false)
 {
 }
 
@@ -51,6 +42,7 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 {
 	if (LN_REQUIRE(outIsDriverSupported)) return false;
 	*outIsDriverSupported = true;
+    m_enableValidationLayers = settings.debugMode;
 
 	if (!VulkanHelper::initVulkanFunctions()) {
 		LN_LOG_WARNING << "Valid vulkan library not found.";
@@ -303,26 +295,9 @@ Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
     return false;
 }
 
-//static std::vector<const char*> getRequiredExtensions()
-//{
-//    return instanceExtension;
-//
-//    uint32_t glfwExtensionCount = 0;
-//    const char** glfwExtensions;
-//    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-//
-//    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-//
-//    if (enableValidationLayers) {
-//        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-//    }
-//
-//    return extensions;
-//}
-//
 Result VulkanDevice::createInstance()
 {
-    if (enableValidationLayers && !VulkanHelper::checkValidationLayerSupport()) {
+    if (m_enableValidationLayers && !VulkanHelper::checkValidationLayerSupport()) {
         LN_LOG_ERROR << "validation layers requested, but not available!";
         return false;
     }
@@ -361,7 +336,7 @@ Result VulkanDevice::createInstance()
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
-    if (enableValidationLayers) {
+    if (m_enableValidationLayers) {
         createInfo.enabledLayerCount = static_cast<uint32_t>(VulkanHelper::validationLayers.size());
         createInfo.ppEnabledLayerNames = VulkanHelper::validationLayers.data();
     }
@@ -382,7 +357,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 
 Result VulkanDevice::setupDebugMessenger()
 {
-    if (enableValidationLayers)
+    if (m_enableValidationLayers)
     {
         VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -555,7 +530,7 @@ Result VulkanDevice::createLogicalDevice()
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
 	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-	if (enableValidationLayers) {
+	if (m_enableValidationLayers) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(VulkanHelper::validationLayers.size());
 		createInfo.ppEnabledLayerNames = VulkanHelper::validationLayers.data();
 	}
@@ -1623,6 +1598,7 @@ void VulkanSwapChain::present()
     presentInfo.pImageIndices = &m_imageIndex;
 
     VkResult result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
+    printf("present\n");
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         //framebufferResized = false;

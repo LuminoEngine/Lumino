@@ -246,7 +246,8 @@ RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsContext* 
 				m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
 			}
 			else if (m_vertexBuffer->size() < vertexBufferRequestSize) {
-				m_vertexBuffer->resize(vertexBufferRequestSize);
+                auto newSize = std::max(m_vertexBuffer->size() * 2, vertexBufferRequestSize);
+				m_vertexBuffer->resize(newSize);
 			}
 
 			// IndexBuffer
@@ -255,10 +256,10 @@ RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsContext* 
 				m_indexBuffer = makeObject<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
 			}
 			else if (m_indexBuffer->size() < indexBufferRequestCount) {
-				m_indexBuffer->resize(indexBufferRequestCount);
+                auto newSize = std::max(m_indexBuffer->size() * 2, indexBufferRequestCount);
+				m_indexBuffer->resize(newSize);
 			}
         }
-
 
 		// 面方向を反転
 		for (int i = 0; i < m_indexCache.getCount(); i += 3)
@@ -272,6 +273,9 @@ RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsContext* 
 
 
 
+#if 0
+
+#endif
 			auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
 			//memcpy(ib + m_indexUsedCount, m_indexCache.getBuffer(), m_indexCache.getCount() * sizeof(uint16_t));
 			auto head = ib + m_indexUsedCount;
@@ -279,7 +283,6 @@ RequestBatchResult ShapesRenderFeature::requestDrawCommandList(GraphicsContext* 
 				head[i] = m_vertexUsedCount + ((uint16_t*)m_indexCache.getBuffer())[i];
 			}
 			m_indexUsedCount += m_indexCache.getCount();
-
 
 
 			auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));

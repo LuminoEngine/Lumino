@@ -81,6 +81,12 @@ void IndexBuffer::resize(int indexCount)
 {
     m_primaryIndexCount = indexCount;
     m_buffer.resize(static_cast<size_t>(indexCount * getIndexStride()));
+
+    // map 中ならバッファポインタ再取り出し
+    if (m_mappedBuffer) {
+        assert(m_usage == GraphicsResourceUsage::Dynamic);
+        m_mappedBuffer = m_buffer.data();
+    }
 }
 
 void* IndexBuffer::map(MapMode mode)

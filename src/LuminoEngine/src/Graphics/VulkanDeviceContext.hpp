@@ -36,6 +36,7 @@ public:
 	struct Settings
 	{
 		PlatformWindow* mainWindow = nullptr;
+        bool debugMode = false;
 	};
 
 	VulkanDevice();
@@ -126,6 +127,7 @@ public: // TODO:
 
 
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
+    bool m_enableValidationLayers;
 };
 
 class VulkanGraphicsContext
