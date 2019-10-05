@@ -76,6 +76,8 @@ void SwapChain::endFrame()
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
 	//auto nativeContext = detail::GraphicsContextInternal::commitState(m_graphicsContext);
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
+
+    present(m_graphicsContext);
 }
 
 void SwapChain::resetRHIBackbuffers()

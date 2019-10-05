@@ -1289,7 +1289,7 @@ Result VulkanCommandBuffer::submit(VkSemaphore waitSemaphore, VkSemaphore signal
     // 実行を完了したときに通知されるセマフォ
     VkSemaphore signalSemaphores[] = { signalSemaphore };// renderFinishedSemaphores[currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
+    submitInfo.pSignalSemaphores = signalSemaphores;    // validation layer: Queue 0xd51c110 is signaling semaphore 0x52 that was previously signaled by queue 0xd51c110 but has not since been waited on by any queue.
 
     // unsignaled にしておく。vkQueueSubmit で発行した実行が完了したときに signaled になる。
     LN_VK_CHECK(vkResetFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence));

@@ -24,7 +24,7 @@ RenderingManager::RenderingManager()
 	: m_graphicsManager(nullptr)
 	, m_fontManager(nullptr)
     , m_standardVertexDeclaration(nullptr)
-	, m_spriteRenderFeature(nullptr)
+	//, m_spriteRenderFeature(nullptr)
 	, m_meshRenderFeature(nullptr)
     , m_meshGeneraterRenderFeature(nullptr)
 	, m_stageDataPageManager(nullptr)
@@ -56,8 +56,8 @@ void RenderingManager::init(const Settings& settings)
     m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
 	m_renderFeatures.add(m_blitRenderFeature);
 
-    m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
-	m_renderFeatures.add(m_spriteRenderFeature);
+ //   m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
+	//m_renderFeatures.add(m_spriteRenderFeature);
 
 	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
 	m_renderFeatures.add(m_spriteRenderFeature2);
@@ -169,10 +169,11 @@ void RenderingManager::dispose()
     m_spriteTextRenderFeature = nullptr;
     m_meshGeneraterRenderFeature = nullptr;
 	m_meshRenderFeature = nullptr;
-	m_spriteRenderFeature = nullptr;
+	m_spriteRenderFeature2 = nullptr;
     m_blitRenderFeature = nullptr;
 	//m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
+    m_renderFeatures.clear();
 }
 
 } // namespace detail

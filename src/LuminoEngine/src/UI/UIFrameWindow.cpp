@@ -326,7 +326,7 @@ void UIFrameWindow::present()
  //   m_renderingGraphicsContext->endRenderPass();
 	m_swapChain->endFrame();
 
-	detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
+	//detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
     //detail::SwapChainInternal::present(m_swapChain, m_renderingGraphicsContext);
 }
 

@@ -22,6 +22,12 @@ class SwapChainInternal;
 }
 
 /** スワップチェーンのクラスです。 */
+// Note: present は公開しないで行ってみる。
+// Metal の present は CommandBuffer の一部だったりする。
+// また Vulkan は Swap ごとに Semaphore が必要になるが、Test_Graphics_LowLevelRendering でやってたみたいに
+// present せずにオフスクリーン的にレンダリングしてしまうと、直前の CommandBuffer の submit 時の通知先セマフォと同じものを使ってしまうので、検証レイヤーが怒る。
+// 実際のところ Swapchaing の backbuffer をオフスクリーン的に使うべきではないし、
+// 普通に使う場合は endFrame() の直後に present() するだけなので、endFrame() で一緒にやってしまう。これで簡潔さと誤用防止、移植性upを狙ってみる。
 class LN_API SwapChain
     : public GraphicsResource
 {
@@ -72,7 +78,7 @@ public:
     static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
     static const Ref<detail::ICommandList>& currentCommandList(SwapChain* swapChain) { return swapChain->currentCommandList(); }
     static void resizeBackbuffer(SwapChain* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
-    static void present(SwapChain* swapChain, GraphicsContext* context) { swapChain->present(context); }
+    //static void present(SwapChain* swapChain, GraphicsContext* context) { swapChain->present(context); }
     static int imageIndex(SwapChain* swapChain) { return swapChain->imageIndex(); }
 };
 

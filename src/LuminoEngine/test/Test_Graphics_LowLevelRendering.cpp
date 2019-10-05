@@ -39,7 +39,9 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 
         for (int i = 0; i < 5; i++)
         {
-            renderPass->setRenderTarget(0, TestEnv::mainWindowSwapChain()->currentBackbuffer());
+            auto target = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+
+            renderPass->setRenderTarget(0, target);
             renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			auto ctx = TestEnv::beginFrame();
@@ -51,7 +53,7 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
             ctx->drawPrimitive(0, 1);
 			ctx->endRenderPass();
 			TestEnv::endFrame();
-			ASSERT_CURRENT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"));
+			ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-BasicTriangle.png"), target);
         }
 	}
 }
