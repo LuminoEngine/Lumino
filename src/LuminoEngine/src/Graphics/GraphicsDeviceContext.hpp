@@ -293,6 +293,7 @@ public:
     /////////
 
     IGraphicsDevice* device() const { return m_device; }
+    IRenderPass* currentRenderPass() const { return m_currentRenderPass; }
 
 public:	// TODO:
 	ICommandList();

@@ -1074,19 +1074,21 @@ void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int
 
 void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	bool skipClear;
-	submitStatusInternal(GraphicsContextSubmitSource_Clear, flags, color, z, stencil, &skipClear);
-	if (skipClear) return;
+	submitStatusInternal(GraphicsContextSubmitSource_Clear, flags, color, z, stencil);
 
-	const GraphicsContextState& state = stagingState();
+    auto* renderPass = static_cast<VulkanRenderPass2*>(currentRenderPass());
+    auto& framebuffer = renderPass->framebuffer();
+    auto viewSize = framebuffer->renderTargets()[0]->realSize();
 
-	SizeI size = state.framebufferState.renderTargets[0]->realSize();
+	//const GraphicsContextState& state = stagingState();
+
+	//SizeI size = state.framebufferState.renderTargets[0]->realSize();
 	{
 		VkClearRect rect[1];
 		rect[0].rect.offset.x = 0;
 		rect[0].rect.offset.y = 0;
-		rect[0].rect.extent.width = size.width;
-		rect[0].rect.extent.height = size.height;
+		rect[0].rect.extent.width = viewSize.width;
+		rect[0].rect.extent.height = viewSize.height;
 		rect[0].baseArrayLayer = 0;
 		rect[0].layerCount = 1;
 
@@ -1102,7 +1104,7 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 			//for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
             for (uint32_t ii = 0; ii < 1; ++ii)
 			{
-				if (state.framebufferState.renderTargets[ii])
+				if (framebuffer->renderTargets()[ii])
 				{
 					attachments[count].colorAttachment = count;
 					attachments[count].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -1116,7 +1118,7 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 		}
 
 		if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
-			state.framebufferState.depthBuffer != nullptr)
+            framebuffer->depthBuffer() != nullptr)
 		{
 			attachments[count].colorAttachment = count;
 			attachments[count].aspectMask = 0;
@@ -1140,17 +1142,17 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 
 void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
 {
-	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
+	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0);
 	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
 }
 
 void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
 {
-	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
+	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0);
 	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
 }
 
-Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
+Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 #if 1
 #else
@@ -2097,6 +2099,7 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
 		depthStencilStateInfo.maxDepthBounds = 0.0f;
 	}
 
+    auto& framebuffer = m_ownerRenderPass->framebuffer();
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = VK_FALSE;
@@ -2106,23 +2109,24 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
 		const BlendStateDesc& desc = state.blendState;
 		int attachmentsCount = 0;
 		for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++) {
-			colorBlendAttachments[i].blendEnable = (desc.renderTargets[i].blendEnable) ? VK_TRUE : VK_FALSE;
+            if (framebuffer->renderTargets()[i]) {
+                const RenderTargetBlendDesc* atdesc = (desc.independentBlendEnable) ? &desc.renderTargets[i] : &desc.renderTargets[0];
 
-			colorBlendAttachments[i].srcColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(desc.renderTargets[i].sourceBlend);
-			colorBlendAttachments[i].dstColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(desc.renderTargets[i].destinationBlend);
-			colorBlendAttachments[i].colorBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(desc.renderTargets[i].blendOp);
 
-			colorBlendAttachments[i].srcAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(desc.renderTargets[i].sourceBlendAlpha);
-			colorBlendAttachments[i].dstAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(desc.renderTargets[i].destinationBlendAlpha);
-			colorBlendAttachments[i].alphaBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(desc.renderTargets[i].blendOpAlpha);
+                colorBlendAttachments[i].blendEnable = (atdesc->blendEnable) ? VK_TRUE : VK_FALSE;
 
-			colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+                colorBlendAttachments[i].srcColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(atdesc->sourceBlend);
+                colorBlendAttachments[i].dstColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(atdesc->destinationBlend);
+                colorBlendAttachments[i].colorBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(atdesc->blendOp);
 
-			attachmentsCount++;
+                colorBlendAttachments[i].srcAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(atdesc->sourceBlendAlpha);
+                colorBlendAttachments[i].dstAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(atdesc->destinationBlendAlpha);
+                colorBlendAttachments[i].alphaBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(atdesc->blendOpAlpha);
 
-			if (!desc.independentBlendEnable) {
-				break;
-			}
+                colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+                attachmentsCount++;
+            }
 		}
 
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -2610,8 +2614,13 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
         VkFormat nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
         VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
 
+        VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        if (1) {    // readData 可能にする
+            usageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+        }
+
         m_image = std::make_unique<VulkanImage>();
-        if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
+        if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
             return false;
         }
 
@@ -2716,6 +2725,14 @@ void VulkanRenderTarget::readData(void* outData)
 
     vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
 
+    VkImageLayout originalLayout;
+    if (isSwapchainBackbuffer()) {
+        originalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    }
+    else {
+        originalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    }
+
 	uint32_t width = m_size.width;
     uint32_t height = m_size.height;
     VkDeviceSize size = width * height * 4; // TODO
@@ -2730,14 +2747,14 @@ void VulkanRenderTarget::readData(void* outData)
     {
         VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();
 
-        // Swapchain の Backbuffer (VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) から、転送ソース (VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) へレイアウト変換
+        // Swapchain の Backbuffer (originalLayout) から、転送ソース (VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) へレイアウト変換
         {
             VkImageMemoryBarrier imageMemoryBarrier = {};
             imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
             imageMemoryBarrier.pNext = nullptr;
             imageMemoryBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-            imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            imageMemoryBarrier.oldLayout = originalLayout;
             imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
             imageMemoryBarrier.image = m_image->vulkanImage();
             imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -2779,7 +2796,7 @@ void VulkanRenderTarget::readData(void* outData)
             imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
             imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-            imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            imageMemoryBarrier.newLayout = originalLayout;
             imageMemoryBarrier.image = m_image->vulkanImage();
             imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
             vkCmdPipelineBarrier(

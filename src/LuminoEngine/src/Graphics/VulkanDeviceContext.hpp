@@ -158,7 +158,7 @@ protected:
 
 private:
 	//Result submitStatus(const State& state);
-	Result submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear);
+	Result submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil);
 
 	VulkanDevice* m_device;
 	Ref<VulkanCommandBuffer> m_recodingCommandBuffer;
