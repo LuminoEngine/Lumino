@@ -192,11 +192,19 @@ void EditorApplication::closeProject()
 {
 }
 
+Ref<ln::UIDialog> m_dialog;
+
 void EditorApplication::onNewProject(ln::UICommandEventArgs* e)
 {
-    auto dlg = ln::PlatformSelectFolderDialog::create();
-    if (dlg->showDialog(mainWindow()->platformWindow())) {
-    }
+    m_dialog = ln::makeObject<ln::UIDialog>();
+    m_dialog->setWidth(100);
+    m_dialog->setHeight(200);
+    m_dialog->setBackgroundColor(ln::Color::Green);
+    mainWindow()->m_renderView->setDialog(m_dialog);
+
+    //auto dlg = ln::PlatformSelectFolderDialog::create();
+    //if (dlg->showDialog(mainWindow()->platformWindow())) {
+    //}
 }
 
 void EditorApplication::onOpenProject(ln::UICommandEventArgs* e)

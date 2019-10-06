@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
+#include <LuminoEngine/UI/UIDialog.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
@@ -41,6 +42,12 @@ UIAdornerLayer* UIRenderView::adornerLayer() const
     return m_adornerLayer;
 }
 
+void UIRenderView::setDialog(UIDialog* dialog)
+{
+    m_dialog = dialog;
+    m_rootElement->invalidateStyle();  // TODO: 仮。とりあえずの動作テスト用
+}
+
 void UIRenderView::setRootElement(UIElement* element)
 {
     if (m_rootElement) {
@@ -57,11 +64,17 @@ void UIRenderView::setRootElement(UIElement* element)
 void UIRenderView::onUpdateFrame(float elapsedSeconds)
 {
 	m_rootElement->updateFrame(elapsedSeconds);
+    if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
+        m_dialog->updateFrame(elapsedSeconds);
+    }
 }
 
 void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
 	m_rootElement->updateStyleHierarchical(styleContext, finalStyle);
+    if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
+        m_dialog->updateStyleHierarchical(styleContext, finalStyle);
+    }
 }
 
 void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
@@ -70,11 +83,21 @@ void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
     m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
     m_adornerLayer->measureLayout(finalGlobalRect.getSize());
     m_adornerLayer->arrangeLayout(finalGlobalRect);
+
+    if (m_dialog) {
+        m_dialog->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
+        m_dialog->updateFinalLayoutHierarchical(finalGlobalRect);
+    }
 }
 
 UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
 {
-    return m_rootElement->lookupMouseHoverElement(frameClientPosition);
+    if (m_dialog) {
+        return m_dialog->lookupMouseHoverElement(frameClientPosition);
+    }
+    else {
+        return m_rootElement->lookupMouseHoverElement(frameClientPosition);
+    }
 }
 
 void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
@@ -135,6 +158,10 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
             m_renderingContext->m_frameWindowRenderingGraphicsContext = nullptr;
 
             m_adornerLayer->render(m_renderingContext);
+
+            if (m_dialog) {
+                m_dialog->render(m_renderingContext);
+            }
         }
 
 

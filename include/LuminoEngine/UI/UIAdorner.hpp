@@ -3,7 +3,7 @@
 
 namespace ln {
 
-
+// Adorner-Layer 上に配置される UIElement をホストするための要素
 class UIAdorner
     : public UIElement
 {

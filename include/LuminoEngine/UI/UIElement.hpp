@@ -317,6 +317,7 @@ public:
 
     void addAction(UIAction* action);
 
+    void invalidateStyle() { invalidate(detail::UIElementDirtyFlags::Style, true); }
 	void invalidateLayout() { invalidate(detail::UIElementDirtyFlags::Layout, true); }
 	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
 

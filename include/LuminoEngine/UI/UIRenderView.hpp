@@ -5,6 +5,7 @@ namespace ln {
 class UIRenderingContext;
 class UIElement;
 class UIAdornerLayer;
+class UIDialog;
 namespace detail {
 class FlatRenderingPipeline;
 } // namespace detail
@@ -29,6 +30,10 @@ public:
 
     UIAdornerLayer* adornerLayer() const;
 
+    // TODO: internal
+    // TODO: 複数表示のため push/pop の方がいいかもしれない
+    void setDialog(UIDialog* dialog);
+
 protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -43,6 +48,8 @@ private:
     //Ref<RenderPass> m_clearRenderPass;
     Ref<UIElement> m_rootElement;
     Ref<UIAdornerLayer> m_adornerLayer;
+    Ref<UIDialog> m_dialog;
+
 };
 
 } // namespace ln
