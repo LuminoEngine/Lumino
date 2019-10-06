@@ -30,6 +30,7 @@
 #include <LuminoEngine/UI/UITextField.hpp>
 #include <LuminoEngine/UI/UIPopup.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
+#include <LuminoEngine/UI/UIListBox.hpp>
 
 #include "CLI.hpp"
 

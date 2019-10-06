@@ -6,90 +6,129 @@
 
 namespace ln {
 
-class Win32PlatformFileOpenDialog
-	: public PlatformFileOpenDialog
+class Win32PlatformFileSystemDialog
 {
 public:
-	enum class Type
-	{
-		Open,
-		Save,
-	};
+    enum class Type
+    {
+        OpenFile,
+        SaveFile,
+        SelectFolder,
+    };
 
-	Win32PlatformFileOpenDialog()
-		: m_fileDialog(NULL)
-	{
-	}
+    Win32PlatformFileSystemDialog()
+        : m_fileDialog(NULL)
+    {
+    }
 
-	virtual ~Win32PlatformFileOpenDialog()
-	{
-		dispose();
-	}
+    ~Win32PlatformFileSystemDialog()
+    {
+        dispose();
+    }
 
     // http://eternalwindows.jp/installer/originalinstall/originalinstall02.html
-	void init(Type type)
-	{
-		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))	// multi-threaded is not supported
-		{
-			HRESULT hr;
-			if (type == Type::Open)
-			{
-				hr = CoCreateInstance(
-					CLSID_FileOpenDialog,
-					NULL,
-					CLSCTX_INPROC_SERVER,
-					IID_PPV_ARGS(&m_fileDialog));
-			}
-			else
-			{
-				hr = CoCreateInstance(
-					CLSID_FileSaveDialog,
-					NULL,
-					CLSCTX_INPROC_SERVER,
-					IID_PPV_ARGS(&m_fileDialog));
+    void init(Type type)
+    {
+        if (SUCCEEDED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))	// multi-threaded is not supported
+        {
+            HRESULT hr;
+            if (type == Type::OpenFile)
+            {
+                hr = CoCreateInstance(
+                    CLSID_FileOpenDialog,
+                    NULL,
+                    CLSCTX_INPROC_SERVER,
+                    IID_PPV_ARGS(&m_fileDialog));
+            }
+            else if (type == Type::SaveFile)
+            {
+                hr = CoCreateInstance(
+                    CLSID_FileSaveDialog,
+                    NULL,
+                    CLSCTX_INPROC_SERVER,
+                    IID_PPV_ARGS(&m_fileDialog));
+            }
+            else if (type == Type::SelectFolder)
+            {
+                hr = CoCreateInstance(
+                    CLSID_FileOpenDialog,
+                    NULL,
+                    CLSCTX_INPROC_SERVER,
+                    IID_PPV_ARGS(&m_fileDialog));
+                DWORD dwOptions = 0;
+                m_fileDialog->GetOptions(&dwOptions);
+                m_fileDialog->SetOptions(dwOptions | FOS_PICKFOLDERS);
+            }
 
-			}
-			
-			if (LN_ENSURE(SUCCEEDED(hr))) return;
-		}
-	}
+            if (LN_ENSURE(SUCCEEDED(hr))) return;
+        }
+    }
 
-	void dispose()
-	{
-		if (m_fileDialog != NULL) m_fileDialog->Release();
-		CoUninitialize();
-	}
+    void dispose()
+    {
+        if (m_fileDialog) {
+            m_fileDialog->Release();
+            m_fileDialog = NULL;
+        }
+        CoUninitialize();
+    }
 
-	virtual bool showDialog(detail::PlatformWindow* parent) override
-	{
-		if (LN_REQUIRE(parent != nullptr)) return false;
-		HWND hParent = (HWND)PlatformSupport::getWin32WindowHandle(parent);
-		HRESULT hr = m_fileDialog->Show(hParent);
-		if (SUCCEEDED(hr))
-		{
+    bool showDialog(detail::PlatformWindow* parent)
+    {
+        if (LN_REQUIRE(parent != nullptr)) return false;
+        HWND hParent = (HWND)PlatformSupport::getWin32WindowHandle(parent);
+        HRESULT hr = m_fileDialog->Show(hParent);
+        if (SUCCEEDED(hr))
+        {
             IShellItem *psi;
             hr = m_fileDialog->GetResult(&psi);
             if (SUCCEEDED(hr)) {
                 LPWSTR lpszPath;
                 psi->GetDisplayName(SIGDN_FILESYSPATH, &lpszPath);
-                m_filePath = String::fromCString(lpszPath);
+                m_path = String::fromCString(lpszPath);
                 CoTaskMemFree(lpszPath);
                 psi->Release();
             }
 
-			return true;
-		}
-		return false;
-	}
+            return true;
+        }
+        return false;
+    }
 
-	virtual Path getFilePath() override
-	{
-		return m_filePath;
-	}
+    Path getPath() const
+    {
+        return m_path;
+    }
 
 private:
-	IFileDialog*	m_fileDialog;
-    Path m_filePath;
+    IFileDialog* m_fileDialog;
+    Path m_path;
+};
+
+class Win32PlatformOpenFileDialog
+	: public PlatformOpenFileDialog
+{
+public:
+    void init() { m_dialog.init(Win32PlatformFileSystemDialog::Type::OpenFile); }
+    virtual void onDispose(bool explicitDisposing) override { m_dialog.dispose(); }
+    virtual bool showDialog(detail::PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
+    virtual Path getPath() override { return m_dialog.getPath(); }
+
+private:
+    Win32PlatformFileSystemDialog m_dialog;
+};
+
+class Win32PlatformSelectFolderDialog
+    : public PlatformSelectFolderDialog
+{
+public:
+    void init() { m_dialog.init(Win32PlatformFileSystemDialog::Type::SelectFolder); }
+    virtual void onDispose(bool explicitDisposing) override { m_dialog.dispose(); }
+    virtual bool showDialog(detail::PlatformWindow* parent) override { return m_dialog.showDialog(parent); }
+    virtual Path getPath() override { return m_dialog.getPath(); }
+
+private:
+    Win32PlatformFileSystemDialog m_dialog;
 };
 
 } // namespace ln

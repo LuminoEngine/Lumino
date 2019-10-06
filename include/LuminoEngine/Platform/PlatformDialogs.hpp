@@ -5,20 +5,30 @@ namespace ln {
 namespace detail { class PlatformWindow; }
 
 
-class PlatformFileOpenDialog
+class PlatformOpenFileDialog
 	: public Object
 {
 public:
-	static Ref<PlatformFileOpenDialog> create();
+	static Ref<PlatformOpenFileDialog> create();
 
-public:
 	virtual bool showDialog(detail::PlatformWindow* parent) = 0;
-
-	virtual Path getFilePath() = 0;
+	virtual Path getPath() = 0;
 
 protected:
-	PlatformFileOpenDialog();
-	virtual ~PlatformFileOpenDialog();
+	virtual ~PlatformOpenFileDialog();
+};
+
+class PlatformSelectFolderDialog
+    : public Object
+{
+public:
+    static Ref<PlatformSelectFolderDialog> create();
+
+    virtual bool showDialog(detail::PlatformWindow* parent) = 0;
+    virtual Path getPath() = 0;
+
+protected:
+    virtual ~PlatformSelectFolderDialog();
 };
 
 } // namespace ln

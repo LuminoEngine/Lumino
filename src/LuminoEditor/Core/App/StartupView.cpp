@@ -3,6 +3,20 @@
 #include "StartupView.hpp"
 #include "../Controls/AssetPicker.hpp"  // TODO: Test
 
+//==============================================================================
+// RecentProjectListView
+
+void RecentProjectListView::init()
+{
+    UIListBox::init();
+    ////ln::u"test"
+    //auto t = ln::UITextBlock::create(u"test");
+    //addElement(t);
+}
+
+//==============================================================================
+// UIListBoxItem
+
 StartupView::StartupView()
 {
 }
@@ -32,6 +46,15 @@ ln::Result StartupView::init()
     m_openProjectButton->setHorizontalContentAlignment(ln::HAlignment::Center);
     m_openProjectButton->setVerticalContentAlignment(ln::VAlignment::Center);
     layout->addChild(m_openProjectButton);
+
+    m_recentProjectListView = ln::makeObject<RecentProjectListView>();
+    m_recentProjectListView->setWidth(200);
+    layout->addChild(m_openProjectButton);
+
+
+
+
+
 
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(u"file");

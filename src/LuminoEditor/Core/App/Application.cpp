@@ -194,13 +194,16 @@ void EditorApplication::closeProject()
 
 void EditorApplication::onNewProject(ln::UICommandEventArgs* e)
 {
+    auto dlg = ln::PlatformSelectFolderDialog::create();
+    if (dlg->showDialog(mainWindow()->platformWindow())) {
+    }
 }
 
 void EditorApplication::onOpenProject(ln::UICommandEventArgs* e)
 {
-    auto dlg = ln::PlatformFileOpenDialog::create();
+    auto dlg = ln::PlatformOpenFileDialog::create();
     if (dlg->showDialog(mainWindow()->platformWindow())) {
-        auto filePath = dlg->getFilePath();
+        auto filePath = dlg->getPath();
         if (!filePath.isEmpty()) {
             openProject(filePath);
         }

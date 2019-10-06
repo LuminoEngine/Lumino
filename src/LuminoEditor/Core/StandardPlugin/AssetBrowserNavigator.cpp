@@ -165,9 +165,9 @@ ln::UIElement* AssetBrowserNavigatorExtension::getNavigationPane()
 
 void AssetBrowserNavigatorExtension::onImport(ln::UIEventArgs* e)
 {
-    auto dlg = ln::PlatformFileOpenDialog::create();
+    auto dlg = ln::PlatformOpenFileDialog::create();
     if (dlg->showDialog(EditorApplication::instance()->mainWindow()->platformWindow())) {
-        auto src = dlg->getFilePath();
+        auto src = dlg->getPath();
         auto dst = ln::Path(m_listView->path(), src.fileName());
         EditorApplication::instance()->mainProject()->assetDatabase()->importAsset(src, dst);
         m_listView->model()->refresh();
