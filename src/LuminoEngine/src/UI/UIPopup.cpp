@@ -47,7 +47,7 @@ void UIPopup::open()
             m_adorner = makeObject<UIPopupAdorner>(m_placementTarget, this);
         }
 
-        UIRenderView* renderView = getRenderView();
+        UIFrameRenderView* renderView = getRenderView();
         if (renderView) {
             renderView->adornerLayer()->add(m_adorner);
         }
@@ -61,7 +61,7 @@ void UIPopup::close()
     {
         if (m_adorner)
         {
-            UIRenderView* renderView = getRenderView();
+            UIFrameRenderView* renderView = getRenderView();
             if (renderView) {
                 renderView->adornerLayer()->remove(m_adorner);
             }

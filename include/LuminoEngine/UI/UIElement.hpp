@@ -7,7 +7,7 @@
 namespace ln {
 class UILayoutContext;
 class UIRenderingContext;
-class UIRenderView;
+class UIFrameRenderView;
 class UIContext;
 class UIEventArgs;
 class UIStyle;
@@ -333,7 +333,7 @@ public: // TODO: internal
     virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
-    UIRenderView* getRenderView();
+    UIFrameRenderView* getRenderView();
 
 public:	// TODO: internal protected
     void focus();
@@ -439,8 +439,9 @@ public: // TODO: internal
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
     
     // TODO: ↓ UIRenderView にまとめてしまっていいかも
+    // TODO: ↓ UILayoutContext や UIStyleContxt 経由でもらう
     UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
-    UIRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
+    UIFrameRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
     
     UIElement* m_visualParent;
     UIControl* m_logicalParent;    // TODO: Layout も親となりえる。
@@ -459,7 +460,7 @@ public: // TODO: internal
     bool m_isHitTestVisible;
 
     friend class UIContext;
-    friend class UIRenderView;
+    friend class UIFrameRenderView;
     friend class UIFrameWindow;
     friend class UIViewModel;
 

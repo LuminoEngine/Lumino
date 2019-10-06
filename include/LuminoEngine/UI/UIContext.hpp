@@ -7,6 +7,12 @@ class UIStyle;
 class UIStyleContext;
 class UIFrameWindow;
 
+// [2019/10/6] アプリ内でどのような文脈でUIシステムを使うか、その単位。
+// 例えば、ゲーム全体で共通のメニュー (プレイヤーのステータスなど) と、ゲーム内オブジェクトの UI (シーンの中に PC のようなオブジェクトがあり、のぞき込むとレトロなUIだしたり) の区別。
+// 内部的によく使うのは、Editor の UI と、Game プレビュー内の UI.
+// 
+// 考え中だけど、特徴的な動作としては、Bubble な RoutedEvent は、UIContext の外側には出ない。
+// 1つの UIContext を複数の UIシーン (VisualTree) が共有するのは多分やめたほうがいい。
 class UIContext
 	: public Object
 {

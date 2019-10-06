@@ -225,7 +225,9 @@ void UIFrameWindow::init()
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
 
 	if (detail::EngineDomain::renderingManager()) {
-		m_renderView = makeObject<UIRenderView>();
+        m_renderView = Ref<UIFrameRenderView>(LN_NEW UIFrameRenderView(), false);
+        m_renderView->init();
+		//m_renderView = makeObject<UIFrameRenderView>();
 		//m_renderView->setClearMode(RenderViewClearMode::ColorAndDepth);
 	}
 }

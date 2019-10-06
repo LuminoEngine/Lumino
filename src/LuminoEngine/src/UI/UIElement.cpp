@@ -486,7 +486,7 @@ UIElement* UIElement::getFrameWindow()
 	return nullptr;
 }
 
-UIRenderView* UIElement::getRenderView()
+UIFrameRenderView* UIElement::getRenderView()
 {
     if (m_renderView) {
         return m_renderView;

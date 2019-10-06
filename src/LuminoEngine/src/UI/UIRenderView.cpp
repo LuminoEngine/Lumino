@@ -12,43 +12,30 @@
 
 namespace ln {
 
-//==============================================================================
-// UIRenderView
-
-UIRenderView::UIRenderView()
+UIFrameRenderView::UIFrameRenderView()
     : m_rootElement(nullptr)
 {
 }
 
-void UIRenderView::init()
+void UIFrameRenderView::init()
 {
-	RenderView::init();
-	m_renderingContext = makeRef<UIRenderingContext>();
-	m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
-	m_sceneRenderingPipeline->init();
-	m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
+    RenderView::init();
+
+    m_renderingContext = makeRef<UIRenderingContext>();
+    m_sceneRenderingPipeline = makeRef<detail::FlatRenderingPipeline>();
+    m_sceneRenderingPipeline->init();
+    m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
     m_viewPoint = makeObject<RenderViewPoint>();
 
     //m_clearRenderPass = makeObject<RenderPass>();
 
     m_adornerLayer = makeObject<UIAdornerLayer>();
 
-	m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
-	addDrawElementListManager(m_drawElementListCollector);
+    m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
+    addDrawElementListManager(m_drawElementListCollector);
 }
 
-UIAdornerLayer* UIRenderView::adornerLayer() const
-{
-    return m_adornerLayer;
-}
-
-void UIRenderView::setDialog(UIDialog* dialog)
-{
-    m_dialog = dialog;
-    m_rootElement->invalidateStyle();  // TODO: 仮。とりあえずの動作テスト用
-}
-
-void UIRenderView::setRootElement(UIElement* element)
+void UIFrameRenderView::setRootElement(UIElement* element)
 {
     if (m_rootElement) {
         m_rootElement->m_renderView = nullptr;
@@ -61,46 +48,17 @@ void UIRenderView::setRootElement(UIElement* element)
     }
 }
 
-void UIRenderView::onUpdateFrame(float elapsedSeconds)
+UIElement* UIFrameRenderView::rootElement() const
 {
-	m_rootElement->updateFrame(elapsedSeconds);
-    if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
-        m_dialog->updateFrame(elapsedSeconds);
-    }
+    return m_rootElement;
 }
 
-void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+UIAdornerLayer* UIFrameRenderView::adornerLayer() const
 {
-	m_rootElement->updateStyleHierarchical(styleContext, finalStyle);
-    if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
-        m_dialog->updateStyleHierarchical(styleContext, finalStyle);
-    }
+    return m_adornerLayer;
 }
 
-void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
-{
-	m_rootElement->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
-    m_rootElement->updateFinalLayoutHierarchical(finalGlobalRect);
-    m_adornerLayer->measureLayout(finalGlobalRect.getSize());
-    m_adornerLayer->arrangeLayout(finalGlobalRect);
-
-    if (m_dialog) {
-        m_dialog->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
-        m_dialog->updateFinalLayoutHierarchical(finalGlobalRect);
-    }
-}
-
-UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
-{
-    if (m_dialog) {
-        return m_dialog->lookupMouseHoverElement(frameClientPosition);
-    }
-    else {
-        return m_rootElement->lookupMouseHoverElement(frameClientPosition);
-    }
-}
-
-void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
+void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
 {
     if (m_rootElement)
     {
@@ -159,9 +117,9 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
 
             m_adornerLayer->render(m_renderingContext);
 
-            if (m_dialog) {
-                m_dialog->render(m_renderingContext);
-            }
+            //if (m_dialog) {
+            //    m_dialog->render(m_renderingContext);
+            //}
         }
 
 
@@ -171,6 +129,64 @@ void UIRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture*
         m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, &elementListManagers());
     }
 }
+
+//==============================================================================
+// UIRenderView
+
+UIRenderView::UIRenderView()
+{
+}
+
+void UIRenderView::init()
+{
+    UIFrameRenderView::init();
+}
+
+//void UIRenderView::setDialog(UIDialog* dialog)
+//{
+//    m_dialog = dialog;
+//    m_rootElement->invalidateStyle();  // TODO: 仮。とりあえずの動作テスト用
+//}
+
+void UIRenderView::onUpdateFrame(float elapsedSeconds)
+{
+    rootElement()->updateFrame(elapsedSeconds);
+    //if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
+    //    m_dialog->updateFrame(elapsedSeconds);
+    //}
+}
+
+void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+{
+    rootElement()->updateStyleHierarchical(styleContext, finalStyle);
+    //if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
+    //    m_dialog->updateStyleHierarchical(styleContext, finalStyle);
+    //}
+}
+
+void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+{
+    rootElement()->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
+    rootElement()->updateFinalLayoutHierarchical(finalGlobalRect);
+    adornerLayer()->measureLayout(finalGlobalRect.getSize());
+    adornerLayer()->arrangeLayout(finalGlobalRect);
+
+    //if (m_dialog) {
+    //    m_dialog->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
+    //    m_dialog->updateFinalLayoutHierarchical(finalGlobalRect);
+    //}
+}
+
+UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
+{
+    //if (m_dialog) {
+    //    return m_dialog->lookupMouseHoverElement(frameClientPosition);
+    //}
+    //else {
+        return rootElement()->lookupMouseHoverElement(frameClientPosition);
+    //}
+}
+
 
 } // namespace ln
 
