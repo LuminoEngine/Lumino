@@ -219,6 +219,9 @@ int main(int argc, char** argv)
 	auto sprite2 = UISprite::create(Assets::loadTexture(u"Sprite1"));
 	Engine::mainUIRoot()->addElement(sprite2);
 
+    auto message1 = UIMessageTextArea::create();
+    Engine::mainUIRoot()->addElement(message1);
+
 #if 0
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));

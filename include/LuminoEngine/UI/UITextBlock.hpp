@@ -32,18 +32,20 @@ private:
 };
 
 
-class UITypographyArea
+// - typing
+// - transform/animation par glyph
+class UIMessageTextArea
 	: public UIElement
 {
 public:
-	static Ref<UITypographyArea> create();
+	static Ref<UIMessageTextArea> create();
 
 	//void setText(const StringRef& value) { m_text = value; }
 
 	void setTypingSpeed(float value) { m_typingSpeed = value; }
 
 LN_CONSTRUCT_ACCESS:
-	UITypographyArea();
+    UIMessageTextArea();
 	void init();
 
 protected:

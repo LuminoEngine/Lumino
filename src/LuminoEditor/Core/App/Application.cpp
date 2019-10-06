@@ -3,6 +3,7 @@
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Platform/PlatformManager.hpp"
 #include "../../LuminoEngine/src/UI/UIManager.hpp"
+#include <AppData.hpp>
 #include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>
 #include <Project.hpp>
@@ -43,6 +44,8 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
+    lna::AppData::instance()->load();
+
 	ln::EngineSettings::setMainWindowSize(1600, 800);
 	ln::EngineSettings::setMainBackBufferSize(1600, 800);
     ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
@@ -69,6 +72,7 @@ ln::Result EditorApplication::init()
 void EditorApplication::dispose()
 {
     ln::detail::EngineDomain::release();
+    lna::AppData::instance()->save();
 }
 
 void EditorApplication::run()
@@ -161,6 +165,8 @@ void EditorApplication::onInit()
 void EditorApplication::openProject(const ln::Path& filePath)
 {
     closeProject();
+
+    lna::AppData::instance()->addRecentProjectFile(filePath);
 
     m_workspace->openProject2(filePath);
 

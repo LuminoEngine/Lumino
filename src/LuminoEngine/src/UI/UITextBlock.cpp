@@ -587,19 +587,19 @@ void RTDocumentBuilder::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Siz
 
 
 //==============================================================================
-// UITypographyArea
+// UIMessageTextArea
 
-Ref<UITypographyArea> UITypographyArea::create()
+Ref<UIMessageTextArea> UIMessageTextArea::create()
 {
-	return makeObject<UITypographyArea>();
+	return makeObject<UIMessageTextArea>();
 }
 
-UITypographyArea::UITypographyArea()
+UIMessageTextArea::UIMessageTextArea()
 	: m_typingSpeed(0.05f)
 {
 }
 
-void UITypographyArea::init()
+void UIMessageTextArea::init()
 {
 	UIElement::init();
 	m_document = makeObject<RTDocument>();
@@ -613,7 +613,7 @@ void UITypographyArea::init()
 	//p->addInline(r);
 }
 
-Size UITypographyArea::measureOverride(const Size& constraint)
+Size UIMessageTextArea::measureOverride(const Size& constraint)
 {
 	float dpiScale = 1.0f;
 	if (UIFrameWindow* w = static_cast<UIFrameWindow*>(getFrameWindow())) {
@@ -640,18 +640,18 @@ Size UITypographyArea::measureOverride(const Size& constraint)
 	//return UIElement::measureOverride(constraint);
 }
 
-Size UITypographyArea::arrangeOverride(const Size& finalSize)
+Size UIMessageTextArea::arrangeOverride(const Size& finalSize)
 {
 	return Size::min(m_document->arrangeLayout(finalSize), UIElement::arrangeOverride(finalSize));
 	//return UIElement::arrangeOverride(finalSize);
 }
 
-void UITypographyArea::onUpdateFrame(float elapsedSeconds)
+void UIMessageTextArea::onUpdateFrame(float elapsedSeconds)
 {
 	m_document->updateFrame(elapsedSeconds * (1.0f / m_typingSpeed));
 }
 
-void UITypographyArea::onRender(UIRenderingContext* context)
+void UIMessageTextArea::onRender(UIRenderingContext* context)
 {
 	m_document->render(context);
 }

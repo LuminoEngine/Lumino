@@ -16,13 +16,14 @@ namespace detail { class SceneManager; }
 /**
  * シーンのベースクラスです。
  */
+// Note: Scene はひとつの World に属し、World からの通知により onUpdate() や m_rootWorldObjectList の Object へさらに通知したりする。
 LN_CLASS()
 class Scene
 	: public Object
 {
 	LN_OBJECT;
 public:
-	World* world() const { return m_world; }
+	World* world() const { return m_ownerWorld; }
 
 protected:
 	/** 開始処理 */
@@ -77,7 +78,7 @@ public: // TODO: internal
     void removeRootObject(WorldObject* obj);
     void removeAllObjects();
 
-	World* m_world;
+	World* m_ownerWorld;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
     List<WorldObject*> m_destroyList;
 
