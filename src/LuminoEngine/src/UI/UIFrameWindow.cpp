@@ -43,7 +43,7 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
         return args->handled;
     }
 
-    updateMouseHover(clientX, clientY);
+    updateMouseHover(m_mousePosition);
 
     sender = mouseHoveredElement();
     if (sender)
@@ -84,6 +84,9 @@ bool UIInputInjector::injectMouseButtonDown(MouseButtons button)
         return args->handled;
     }
 
+	// イベント中に UIElement が削除されることに備え、毎回検索する
+	updateMouseHover(m_mousePosition);
+
     sender = mouseHoveredElement();
     if (sender)
     {
@@ -109,6 +112,10 @@ bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
         sender->raiseEvent(args);
         return args->handled;
     }
+
+	// イベント中に UIElement が削除されることに備え、毎回検索する
+	updateMouseHover(m_mousePosition);
+
     // マウス位置にUI要素があればそちらに送る
     sender = mouseHoveredElement();
     if (sender)
@@ -130,6 +137,10 @@ bool UIInputInjector::injectMouseWheel(int delta)
         sender->raiseEvent(args);
         return args->handled;
     }
+
+	// イベント中に UIElement が削除されることに備え、毎回検索する
+	updateMouseHover(m_mousePosition);
+
     // マウス位置にUI要素があればそちらに送る
     sender = mouseHoveredElement();
     if (sender)
@@ -180,9 +191,9 @@ bool UIInputInjector::injectTextInput(Char ch)
     return false;
 }
 
-void UIInputInjector::updateMouseHover(float clientX, float clientY)
+void UIInputInjector::updateMouseHover(const Point& clientPt)
 {
-    m_owner->m_manager->updateMouseHover(m_owner, Point(clientX, clientY));
+    m_owner->m_manager->updateMouseHover(m_owner->renderView(), clientPt);
 }
 
 UIElement* UIInputInjector::capturedElement()

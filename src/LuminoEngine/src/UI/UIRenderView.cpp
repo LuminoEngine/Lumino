@@ -180,6 +180,11 @@ void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
 
 UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
 {
+	UIElement* element = adornerLayer()->lookupMouseHoverElement(frameClientPosition);
+	if (element) {
+		return element;
+	}
+
     //if (m_dialog) {
     //    return m_dialog->lookupMouseHoverElement(frameClientPosition);
     //}

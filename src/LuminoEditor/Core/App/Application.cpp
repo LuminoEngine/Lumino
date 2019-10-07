@@ -192,14 +192,20 @@ void EditorApplication::closeProject()
 {
 }
 
-//Ref<ln::UIDialog> m_dialog;
+Ref<ln::UIDialog> m_dialog;
 
 void EditorApplication::onNewProject(ln::UICommandEventArgs* e)
 {
-    //m_dialog = ln::makeObject<ln::UIDialog>();
+	auto popupContent = ln::makeObject<ln::UITextBlock>();
+	popupContent->setText(u"POP");
+
+    m_dialog = ln::makeObject<ln::UIDialog>();
+	m_dialog->addElement(popupContent);
     //m_dialog->setWidth(100);
     //m_dialog->setHeight(200);
     //m_dialog->setBackgroundColor(ln::Color::Green);
+	mainWindow()->addElement(m_dialog);
+	m_dialog->open();
     //mainWindow()->m_renderView->setDialog(m_dialog);
 
     //auto dlg = ln::PlatformSelectFolderDialog::create();

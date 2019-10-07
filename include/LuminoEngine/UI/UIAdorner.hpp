@@ -29,6 +29,7 @@ public:
     void measureLayout(const Size& availableSize);
     void arrangeLayout(const Rect& localSlotRect);
     void render(UIRenderingContext* context);
+	UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 
 LN_CONSTRUCT_ACCESS:
     UIAdornerLayer();

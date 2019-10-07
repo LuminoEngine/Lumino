@@ -499,6 +499,8 @@ UIFrameRenderView* UIElement::getRenderView()
 
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
+	//printf("UIElement::lookupMouseHoverElement %p\n", this);
+
 	// this は not hit test でも、Visibility なら Child は test したい
     if (isRenderVisible())
     {

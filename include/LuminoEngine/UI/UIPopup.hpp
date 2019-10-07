@@ -8,6 +8,7 @@ class UIPopupAdorner;
 enum class PlacementMode
 {
     Bottom,
+	Overray,	// 中央に重ねる
 };
 
 
@@ -18,6 +19,7 @@ class UIPopup
 public:
     void setPlacementTarget(UIElement* target);
     void setPlacementMode(PlacementMode mode);
+	PlacementMode placementMode() const { return m_placementMode; }
 
     bool isOpend() const { return m_opend; }
 
@@ -40,6 +42,8 @@ private:
     friend class UIPopupAdorner;
 };
 
+// UIAdorner は target にぴったり重なるように layout されるが、
+// UIPopupAdorner は PlacementMode をもとに、その finalRect からの相対位置を使って UIPopup を layout する。
 class UIPopupAdorner
     : public UIAdorner
 {
@@ -55,7 +59,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<UIElement> m_adornedElement;
-    Ref<UIElement> m_popup;
+    Ref<UIPopup> m_popup;
 };
 
 } // namespace ln

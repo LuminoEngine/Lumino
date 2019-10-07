@@ -41,7 +41,7 @@ public:
     bool injectTextInput(Char ch);
 
 private:
-    void updateMouseHover(float clientX, float clientY);
+    void updateMouseHover(const Point& clientPt);
     UIElement* capturedElement();
     UIElement* forcusedElement();
     UIElement* mouseHoveredElement();
