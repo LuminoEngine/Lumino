@@ -43,7 +43,7 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
         return args->handled;
     }
 
-    updateMouseHover(clientX, clientY);
+    updateMouseHover(m_mousePosition);
 
     sender = mouseHoveredElement();
     if (sender)
@@ -84,6 +84,9 @@ bool UIInputInjector::injectMouseButtonDown(MouseButtons button)
         return args->handled;
     }
 
+	// イベント中に UIElement が削除されることに備え、毎回検索する
+	updateMouseHover(m_mousePosition);
+
     sender = mouseHoveredElement();
     if (sender)
     {
@@ -109,6 +112,10 @@ bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
         sender->raiseEvent(args);
         return args->handled;
     }
+
+	// イベント中に UIElement が削除されることに備え、毎回検索する
+	updateMouseHover(m_mousePosition);
+
     // マウス位置にUI要素があればそちらに送る
     sender = mouseHoveredElement();
     if (sender)
@@ -130,6 +137,10 @@ bool UIInputInjector::injectMouseWheel(int delta)
         sender->raiseEvent(args);
         return args->handled;
     }
+
+	// イベント中に UIElement が削除されることに備え、毎回検索する
+	updateMouseHover(m_mousePosition);
+
     // マウス位置にUI要素があればそちらに送る
     sender = mouseHoveredElement();
     if (sender)
@@ -180,9 +191,9 @@ bool UIInputInjector::injectTextInput(Char ch)
     return false;
 }
 
-void UIInputInjector::updateMouseHover(float clientX, float clientY)
+void UIInputInjector::updateMouseHover(const Point& clientPt)
 {
-    m_owner->m_manager->updateMouseHover(m_owner, Point(clientX, clientY));
+    m_owner->m_manager->updateMouseHover(m_owner->renderView(), clientPt);
 }
 
 UIElement* UIInputInjector::capturedElement()
@@ -225,8 +236,9 @@ void UIFrameWindow::init()
     invalidate(detail::UIElementDirtyFlags::Style | detail::UIElementDirtyFlags::Layout, false);
 
 	if (detail::EngineDomain::renderingManager()) {
-        m_renderView = Ref<UIFrameRenderView>(LN_NEW UIFrameRenderView(), false);
+        m_renderView = Ref<UIRenderView>(LN_NEW UIRenderView(), false);
         m_renderView->init();
+		m_renderView->setRootElement(this);
 		//m_renderView = makeObject<UIFrameRenderView>();
 		//m_renderView->setClearMode(RenderViewClearMode::ColorAndDepth);
 	}
@@ -299,7 +311,6 @@ void UIFrameWindow::present()
 
 	if (m_renderView)
 	{
-		m_renderView->setRootElement(this);
 		m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
 
@@ -344,14 +355,18 @@ SwapChain* UIFrameWindow::swapChain() const
 
 void UIFrameWindow::updateLayoutTree()
 {
-    Rect clientRect(0, 0, m_clientSize);
-	updateLayout(clientRect);
-    updateFinalLayoutHierarchical(clientRect);
-    // TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
-    if (m_renderView) {
-        m_renderView->adornerLayer()->measureLayout(m_clientSize);
-        m_renderView->adornerLayer()->arrangeLayout(clientRect);
-    }
+	if (m_renderView) {
+		Rect clientRect(0, 0, m_clientSize);
+		m_renderView->setActualSize(m_clientSize);
+		m_renderView->updateUILayout(clientRect);
+	}
+	//updateLayout(clientRect);
+ //   updateFinalLayoutHierarchical(clientRect);
+ //   // TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
+ //   if (m_renderView) {
+ //       m_renderView->adornerLayer()->measureLayout(m_clientSize);
+ //       m_renderView->adornerLayer()->arrangeLayout(clientRect);
+ //   }
 }
 
 // 強制的にウィンドウサイズとする
@@ -386,15 +401,15 @@ Size UIFrameWindow::arrangeOverride(const Size& finalSize)
 	//return UIElement::arrangeOverride(desiredSize());
 }
 
-void UIFrameWindow::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
-{
-	UIContainerElement::onUpdateStyle(styleContext, finalStyle);
-}
-
-void UIFrameWindow::onUpdateLayout(const Rect& finalGlobalRect)
-{
-	UIContainerElement::onUpdateLayout(finalGlobalRect);
-}
+//void UIFrameWindow::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+//{
+//	UIContainerElement::onUpdateStyle(styleContext, finalStyle);
+//}
+//
+//void UIFrameWindow::onUpdateLayout(const Rect& finalGlobalRect)
+//{
+//	UIContainerElement::onUpdateLayout(finalGlobalRect);
+//}
 
 bool UIFrameWindow::onPlatformEvent(const detail::PlatformEventArgs& e)
 {
@@ -481,11 +496,14 @@ void UIFrameWindow::onRoutedEvent(UIEventArgs* e)
     if (e->type() == UIEvents::RequestVisualUpdateEvent) {
         if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
             UIContext* context = getContext();
-            updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
-            // TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
-            if (m_renderView) {
-                m_renderView->adornerLayer()->updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
-            }
+            //updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());		// TODO: 直接呼ぶのではなく、RenderView 経由で読んでもらう
+            //// TODO: ↑のものは↓のm_renderViewのonUpdateUILayout()でおなじことやってる。まとめたいなぁ…
+            //if (m_renderView) {
+            //    m_renderView->adornerLayer()->updateStyleHierarchical(context->styleContext(), context->finalDefaultStyle());
+            //}
+			if (m_renderView) {
+				m_renderView->updateUIStyle(context->styleContext(), context->finalDefaultStyle());
+			}
         }
         if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Layout)) {
             updateLayoutTree();

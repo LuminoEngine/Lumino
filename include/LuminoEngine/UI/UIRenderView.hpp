@@ -61,7 +61,7 @@ public:
     // TODO: 複数表示のため push/pop の方がいいかもしれない
     //void setDialog(UIDialog* dialog);
 
-protected:
+public:	// TODO: protected
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect) override;

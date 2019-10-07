@@ -6,6 +6,7 @@ class UIContext;
 class UIContainerElement;
 class UIFrameLayout;
 class UIActiveTimer;
+class UIRenderView;
 
 namespace detail {
 class PlatformManager;
@@ -41,7 +42,7 @@ public:
     void setMainContext(UIContext* context);
     const Ref<UIContext>& mainContext() const { return m_mainContext; }
 
-    bool updateMouseHover(UIFrameWindow* mouseEventSource, const Point& frameClientPosition);
+    bool updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition);
     UIElement* mouseHoverElement() const { return m_mouseHoverElement; }
 
 	void retainCapture(UIElement* element);

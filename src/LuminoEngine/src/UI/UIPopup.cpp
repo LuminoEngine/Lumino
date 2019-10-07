@@ -39,8 +39,6 @@ void UIPopup::setPlacementMode(PlacementMode mode)
 
 void UIPopup::open()
 {
-    if (!m_placementTarget) return;
-
     if (!m_opend)
     {
         if (!m_adorner) {
@@ -82,7 +80,7 @@ void UIPopupAdorner::init(UIElement* adornedElement, UIPopup* popup)
 {
     UIAdorner::init(adornedElement);
     m_popup = popup;
-    addVisualChild(m_popup);
+    //addVisualChild(m_popup);
 }
 
 Size UIPopupAdorner::measureOverride(const Size& constraint)
@@ -95,8 +93,26 @@ Size UIPopupAdorner::arrangeOverride(const Size& finalSize)
 {
     UIElement::arrangeOverride(finalSize);
 
-    // TODO: 簡易 bottom
-    m_popup->arrangeLayout(Rect(0, finalSize.height, finalSize));
+	switch (m_popup->placementMode())
+	{
+		case PlacementMode::Bottom:
+			// TODO: 簡易 bottom
+			m_popup->arrangeLayout(Rect(0, finalSize.height, finalSize));
+			break;
+
+		default:	// overray
+		{
+			auto desiredSize = m_popup->desiredSize();
+			Rect rect;
+			rect.x = (finalSize.width - desiredSize.width) / 2;
+			rect.y = (finalSize.height - desiredSize.height) / 2;
+			rect.width = desiredSize.width;
+			rect.height = desiredSize.height;
+			m_popup->arrangeLayout(rect);
+			break;
+		}
+	}
+
     return finalSize;
 }
 

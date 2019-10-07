@@ -7,6 +7,7 @@
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
+#include <LuminoEngine/UI/UIRenderView.hpp>
 #include "UIEventArgsPool.hpp"
 #include "UIManager.hpp"
 
@@ -63,7 +64,7 @@ UIContainerElement* UIManager::primaryElement() const
     return m_primaryElement;
 }
 
-bool UIManager::updateMouseHover(UIFrameWindow* mouseEventSource, const Point& frameClientPosition)
+bool UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition)
 {
     if (LN_REQUIRE(mouseEventSource)) return false;
 
@@ -97,7 +98,7 @@ bool UIManager::updateMouseHover(UIFrameWindow* mouseEventSource, const Point& f
     // 通常のウィンドウのイベントを処理する
     //if (m_rootElement != NULL)
     {
-        m_mouseHoverElement = mouseEventSource->lookupMouseHoverElement(frameClientPosition);
+        m_mouseHoverElement = mouseEventSource->onLookupMouseHoverElement(frameClientPosition);
         if (m_mouseHoverElement != nullptr) {
             goto EXIT;
         }

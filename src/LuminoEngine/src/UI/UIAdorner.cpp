@@ -63,7 +63,14 @@ void UIAdornerLayer::measureLayout(const Size& availableSize)
 void UIAdornerLayer::arrangeLayout(const Rect& localSlotRect)
 {
     for (auto& adorner : m_adorners) {
-        auto adornedRect = adorner->adornedElement()->m_finalGlobalRect;
+		Rect adornedRect = localSlotRect;
+		if (adorner->adornedElement()) {
+			adornedRect = adorner->adornedElement()->m_finalGlobalRect;
+		}
+
+		//adornedRect = Rect(0, 0, 100, 100);
+
+        //auto adornedRect = adorner->adornedElement()->m_finalGlobalRect;
 
         adorner->arrangeLayout(Rect(0, 0, adornedRect.width, adornedRect.height));
         // TODO: 以下、adorner の中にまとめたほうがいい気がする。というか、measure->arrange->updateFinal 一連をひとつのメソッドでまとめていいと思う。adornder 同士は相互作用しないし
@@ -80,6 +87,19 @@ void UIAdornerLayer::render(UIRenderingContext* context)
         adorner->render(context);
     }
     context->m_adornerRendering = false;
+}
+
+UIElement* UIAdornerLayer::lookupMouseHoverElement(const Point& frameClientPosition)
+{
+	//printf("---- UIAdornerLayer::lookupMouseHoverElement\n");
+	for (auto& adorner : m_adorners) {
+		UIElement* element = adorner->lookupMouseHoverElement(frameClientPosition);
+		if (element) {
+			return element;
+		}
+	}
+	//printf("----\n");
+	return nullptr;
 }
 
 } // namespace ln

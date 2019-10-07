@@ -68,9 +68,10 @@ ln::Result StartupView::init()
 
     auto popupContent = ln::makeObject<ln::UITextBlock>();
     popupContent->setText(u"POP");
-    auto popup = ln::makeObject<ln::UIPopup>();
+    auto popup = ln::makeObject<ln::UIDialog>();
     popup->addElement(popupContent);
-    popup->setPlacementTarget(m_openProjectButton);
+    //popup->setPlacementTarget(m_openProjectButton);
+	popup->setBackgroundColor(ln::Color::Green);
     layout->addChild(popup);
 
 

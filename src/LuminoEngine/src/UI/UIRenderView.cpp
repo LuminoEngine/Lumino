@@ -159,6 +159,7 @@ void UIRenderView::onUpdateFrame(float elapsedSeconds)
 void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
     rootElement()->updateStyleHierarchical(styleContext, finalStyle);
+	adornerLayer()->updateStyleHierarchical(styleContext, finalStyle);
     //if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
     //    m_dialog->updateStyleHierarchical(styleContext, finalStyle);
     //}
@@ -179,6 +180,11 @@ void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
 
 UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
 {
+	UIElement* element = adornerLayer()->lookupMouseHoverElement(frameClientPosition);
+	if (element) {
+		return element;
+	}
+
     //if (m_dialog) {
     //    return m_dialog->lookupMouseHoverElement(frameClientPosition);
     //}
