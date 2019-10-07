@@ -63,6 +63,10 @@ public:
 	void unregisterActiveTimer(UIActiveTimer* timer);
 	void tickGlobal(float elapsedSeconds);
 
+    void clearMouseHover();
+    void clearFocus();
+    void handleDetachFromUITree(UIElement* element);
+
 private:
     struct EventQueueItem
     {

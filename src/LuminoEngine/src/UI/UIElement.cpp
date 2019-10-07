@@ -883,6 +883,17 @@ bool UIElement::isRenderVisible() const
     return m_finalStyle->visible == UIVisibility::Visible && m_internalVisibility == UIVisibility::Visible;
 }
 
+void UIElement::handleDetachFromUITree()
+{
+    m_manager->handleDetachFromUITree(this);
+
+    // call children
+    int count = getVisualChildrenCount();
+    for (int i = 0; i < count; i++) {
+        getVisualChild(i)->handleDetachFromUITree();
+    }
+}
+
 UIVisualStateManager* UIElement::getVisualStateManager()
 {
     if (!m_visualStateManager) {

@@ -68,6 +68,22 @@ bool UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
 {
     if (LN_REQUIRE(mouseEventSource)) return false;
 
+
+#if 1
+    UIElement* hoverdElement = mouseEventSource->onLookupMouseHoverElement(frameClientPosition);
+    if (m_mouseHoverElement != hoverdElement) {
+        clearMouseHover();
+    }
+
+    if (hoverdElement)
+    {
+        m_mouseHoverElement = hoverdElement;
+        auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
+        m_mouseHoverElement->raiseEvent(args);
+    }
+
+
+#else
     UIElement* old = m_mouseHoverElement;
 
     // TODO:IME側のイベントを処理する
@@ -124,6 +140,7 @@ EXIT:
     }
 
     return false;
+#endif
 }
 
 void UIManager::retainCapture(UIElement* element)
@@ -181,6 +198,32 @@ void UIManager::tickGlobal(float elapsedSeconds)
 	for (auto& timer : m_activeTimers) {
 		timer->tick(elapsedSeconds);
 	}
+}
+
+void UIManager::clearMouseHover()
+{
+    if (m_mouseHoverElement)
+    {
+        auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseLeaveEvent, MouseButtons::None, 0, 0, 0, true);
+        m_mouseHoverElement->raiseEvent(args);
+        m_mouseHoverElement = nullptr;
+    }
+}
+
+void UIManager::clearFocus()
+{
+    m_forcusedElement = nullptr;
+}
+
+void UIManager::handleDetachFromUITree(UIElement* element)
+{
+    if (m_mouseHoverElement == element) {
+        clearMouseHover();
+    }
+
+    if (m_forcusedElement == element) {
+        clearFocus();
+    }
 }
 
 } // namespace detail

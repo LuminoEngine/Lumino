@@ -43,7 +43,9 @@ void UIAdornerLayer::add(UIAdorner* adorner)
 
 void UIAdornerLayer::remove(UIAdorner* adorner)
 {
-	m_adorners.remove(adorner);
+    if (LN_REQUIRE(adorner)) return;
+    m_adorners.remove(adorner);
+    adorner->handleDetachFromUITree();
 }
 
 void UIAdornerLayer::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)

@@ -433,6 +433,7 @@ public: // TODO: internal
     detail::GridLayoutInfo* getGridLayoutInfo();
     bool isRenderVisible() const;
     bool isHitTestVisibleCore() const { return m_isHitTestVisible && isRenderVisible(); }
+    void handleDetachFromUITree();
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
