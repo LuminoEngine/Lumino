@@ -28,6 +28,8 @@ public:
     //void renderTree(GraphicsContext* graphicsContext, UIElement* element);
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 
+    void invalidate(detail::UIElementDirtyFlags flags);
+
 protected:
     UIFrameRenderView();
     void init();
@@ -66,6 +68,7 @@ public:	// TODO: protected
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	virtual void onUpdateUILayout(const Rect& finalGlobalRect) override;
     virtual UIElement* onLookupMouseHoverElement(const Point& frameClientPosition) override;
+
 
 private:
     //Ref<RenderPass> m_clearRenderPass;

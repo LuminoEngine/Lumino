@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
 
 namespace ln {
@@ -30,15 +31,17 @@ UIAdornerLayer::UIAdornerLayer()
 {
 }
 
-void UIAdornerLayer::init()
+void UIAdornerLayer::init(UIFrameRenderView* owner)
 {
     Object::init();
+    m_owner = owner;
 }
 
 void UIAdornerLayer::add(UIAdorner* adorner)
 {
     if (LN_REQUIRE(adorner)) return;
 	m_adorners.add(adorner);
+    m_owner->invalidate(detail::UIElementDirtyFlags::Layout);
 }
 
 void UIAdornerLayer::remove(UIAdorner* adorner)
@@ -46,6 +49,7 @@ void UIAdornerLayer::remove(UIAdorner* adorner)
     if (LN_REQUIRE(adorner)) return;
     m_adorners.remove(adorner);
     adorner->handleDetachFromUITree();
+    m_owner->invalidate(detail::UIElementDirtyFlags::Layout);
 }
 
 void UIAdornerLayer::updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)

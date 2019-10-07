@@ -66,6 +66,16 @@ enum class UISpecialElementFlags
     //LayoutInvisible = 1 << 3,
 };
 
-}
+enum class UIElementDirtyFlags
+{
+    None = 0,
+    InitialLoading = 1 << 0,    // インスタンス作成後、最初の Loaded イベントまで
+    Style = 1 << 1,
+    Layout = 1 << 2,
+    Render = 1 << 3,
+};
+LN_FLAGS_OPERATORS(UIElementDirtyFlags);
+
+} // namespace detail
 
 } // namespace ln

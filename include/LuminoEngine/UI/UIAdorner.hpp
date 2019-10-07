@@ -2,6 +2,7 @@
 #include "UIElement.hpp"
 
 namespace ln {
+class UIFrameRenderView;
 
 // Adorner-Layer 上に配置される UIElement をホストするための要素
 class UIAdorner
@@ -33,10 +34,11 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     UIAdornerLayer();
-    void init();
+    void init(UIFrameRenderView* owner);
 
 private:
     List<Ref<UIAdorner>> m_adorners;
+    UIFrameRenderView* m_owner;
 };
 
 } // namespace ln

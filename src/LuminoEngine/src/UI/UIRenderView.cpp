@@ -29,7 +29,7 @@ void UIFrameRenderView::init()
 
     //m_clearRenderPass = makeObject<RenderPass>();
 
-    m_adornerLayer = makeObject<UIAdornerLayer>();
+    m_adornerLayer = makeObject<UIAdornerLayer>(this);
 
     m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
     addDrawElementListManager(m_drawElementListCollector);
@@ -130,6 +130,12 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
     }
 }
 
+void UIFrameRenderView::invalidate(detail::UIElementDirtyFlags flags)
+{
+    // TODO: 今は AdonerLayer のを FrameWindow に伝えるために使用しているが、RenderView をルートとするべきかもしれない
+    rootElement()->invalidate(flags, false);
+}
+
 //==============================================================================
 // UIRenderView
 
@@ -192,7 +198,6 @@ UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosit
         return rootElement()->lookupMouseHoverElement(frameClientPosition);
     //}
 }
-
 
 } // namespace ln
 
