@@ -85,7 +85,7 @@ public:
     //void updateLayout();
 	void updateLayoutTree();
 	const Ref<detail::PlatformWindow>& platformWindow() const { return m_platformWindow; }
-    const Ref<UIFrameRenderView>& renderView() const { return m_renderView; }
+    const Ref<UIRenderView>& renderView() const { return m_renderView; }
     //const Ref<GraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     const Ref<detail::UIInputInjector>& inputInjector() const{ return m_inputInjector; }
 	void setupPlatformWindow(detail::PlatformWindow* platformMainWindow, const SizeI& backbufferSize);
@@ -95,8 +95,8 @@ public:
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
-	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
-	virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
+	//virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
+	//virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
 
     // TODO: internal
     void resetSize(const Size& size);
@@ -118,7 +118,7 @@ public:  // TODO: internal
 	Ref<SwapChain>	m_swapChain;
 	Ref<DepthBuffer> m_depthBuffer;
 	//Ref<RenderPass> m_renderPass;
-	Ref<UIFrameRenderView> m_renderView;
+	Ref<UIRenderView> m_renderView;
     Size m_clientSize;
 	UIFrameWindowUpdateMode m_updateMode;
 	detail::ImGuiContext m_imguiContext;

@@ -159,6 +159,7 @@ void UIRenderView::onUpdateFrame(float elapsedSeconds)
 void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
     rootElement()->updateStyleHierarchical(styleContext, finalStyle);
+	adornerLayer()->updateStyleHierarchical(styleContext, finalStyle);
     //if (m_dialog) { // TODO: このあたりは VisualTree に任せたい
     //    m_dialog->updateStyleHierarchical(styleContext, finalStyle);
     //}
