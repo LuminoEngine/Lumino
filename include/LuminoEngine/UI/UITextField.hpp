@@ -11,6 +11,7 @@ class UITextField
 {
 public:
 	void setText(const StringRef& value);
+	const String& text() const;
 
 LN_CONSTRUCT_ACCESS:
 	UITextField();

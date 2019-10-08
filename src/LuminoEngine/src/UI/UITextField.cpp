@@ -25,6 +25,11 @@ void UITextField::setText(const StringRef& value)
 	m_textArea->setText(value);
 }
 
+const String& UITextField::text() const
+{
+	return m_textArea->text();
+}
+
 Size UITextField::measureOverride(const Size& constraint)
 {
 	m_textArea->measureLayout(constraint);
