@@ -2,6 +2,7 @@
 #include <LuminoEngine/UI/UIElement.hpp>
 
 namespace ln {
+class UIActiveTimer;
 namespace detail {
 class UITextLayout;
 class UILogicalLine;
@@ -110,11 +111,11 @@ struct UITextRange
     bool inclusiveContains(int index) const { return index >= beginIndex && index <= endIndex; }
     UITextRange intersect(const UITextRange& other) const
     {
-        UITextRange Intersected(std::max(beginIndex, other.beginIndex), std::min(endIndex, other.endIndex));
-        if (Intersected.endIndex <= Intersected.beginIndex) {
+        UITextRange intersected(std::max(beginIndex, other.beginIndex), std::min(endIndex, other.endIndex));
+        if (intersected.endIndex <= intersected.beginIndex) {
             return UITextRange(0, 0);
         }
-        return Intersected;
+        return intersected;
     }
 
 	bool operator==(const UITextRange& other) const
@@ -196,6 +197,7 @@ public:
     Vector2 measure(const UITextRange& range) const;
 
     int length() const { return m_range.length(); }
+	StringRef str() const;
     StringRef substr(const UITextRange& range) const;
 
 public:	// TODO: private
@@ -212,7 +214,7 @@ public:
 
 public:	// TODO: private
     UITextLayout* m_ownerLayout;
-	String m_text;
+	String m_text;	// 改行文字を "含む". テキストエディタ作るわけじゃないけど、NewLineCode 表示したりするのに必要となる
 	List<Ref<UILogicalRun>> m_runs;
     List<UITextLineHighlight> highlights;
 
@@ -271,7 +273,11 @@ public:
 	UITextLayout();
 	void setBaseTextStyle(Font* font, const Color& textColor);	// PhysicalLine再構築
 	void setText(const StringRef& value);	// すべて再構築
-    void insertAt(const UITextLocation& loc, const StringRef& text);
+	const String& boundText() const { return m_boundText; }
+	void clearText();
+	// カーソル移動はしない
+	void insertAt(const UITextLocation& loc, const StringRef& text);
+
 
 	Size measure();
 	void arrange(const Size& area);
@@ -287,12 +293,15 @@ public:
 	void removeCursorHighlight();
 
 public:	// TODO: private
+	void updateBoundText();
     void updatePreferredCursorScreenOffsetInLine();
     Vector2 getLocalOffsetFromLogicalLocation(const UITextLocation& loc) const;
     int getPhysicalLineIndexFromLogicalLocation(const UITextLocation& loc) const;
     void moveCursor(UICursorMoveMethod method, UICursorMoveGranularity granularity, const Vector2& dirOrPos, UICursorAction action);
     UITextLocation translateLocationToCharDirection(const UITextLocation& loc, int dir);
-    static int moveToCandidate(const StringRef& text, int begin, int offset);
+    
+	// サロゲート文字などを考慮し、begin から offset 文字グリフ分だけ前後に移動したいときの Char 数を計算する。
+	static int moveToCandidate(const StringRef& text, int begin, int offset);
 
 
 	Ref<Font> m_baseFont;
@@ -306,6 +315,11 @@ public:	// TODO: private
 	// scrolloffset
 	bool m_dirtyPhysicalLines = true;
 	bool m_dirtyHighlights = true;
+
+	// 編集されたテキスト。getText() や、onTextChanged イベントに流すため、
+	// 編集が発生するたびに m_logicalLines を結合して保持しておく。
+	String m_boundText;
+	String m_lineTerminator;
 };
 
 
@@ -325,6 +339,7 @@ class UITextArea
 {
 public:
 	void setText(const StringRef& value);
+	const String& text() const;
 
 LN_CONSTRUCT_ACCESS:
 	UITextArea();
@@ -337,7 +352,10 @@ protected:
 	virtual void onRender(UIRenderingContext* context) override;
 
 private:
+	void handleCursorTimerTickEvent(ln::UITimerEventArgs* e);
+
 	Ref<detail::UITextLayout> m_textLayout;
+	Ref<UIActiveTimer> m_cursorTimer;
 };
 
 // 編集可能なテキスト領域。undo管理もしたりする。

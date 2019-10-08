@@ -127,6 +127,7 @@ public:
 
 	const List<Ref<UIElement>>& logicalChildren() const { return m_logicalChildren; }
 
+	// TODO: UIElement に持たせたい気持ち。TextArea でも使いたい
 	void registerActiveTimer(UIActiveTimer* timer);
 	void unregisterActiveTimer(UIActiveTimer* timer);
 

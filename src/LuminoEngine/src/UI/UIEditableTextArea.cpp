@@ -22,6 +22,7 @@ void UITextRange::splitLineRanges(const String& str, List<UITextRange>* outLines
 {
 	int lineBeginIndex = 0;
 
+	// TODO: 改行文字も含むようにする
 	const Char* begin = str.c_str();
 	for (const Char* ch = begin; ch && *ch; ++ch)
 	{
@@ -74,6 +75,12 @@ Vector2 UILogicalRun::measure(const UITextRange& range) const
     // TODO: シングルラインであることを前提に計測を高速化する
     Font* font = (m_font) ? m_font : m_ownerLine->m_ownerLayout->m_baseFont;
     return font->measureRenderSize(substr(range), 1.0f);  // TODO: dpi
+}
+
+StringRef UILogicalRun::str() const
+{
+	return m_ownerLine->m_text.substr(m_range.beginIndex, length());
+
 }
 
 StringRef UILogicalRun::substr(const UITextRange& range) const
@@ -130,15 +137,22 @@ UIScreenRange UIPhysicalLine::getLocalScreenRange(const UITextRange& range) cons
 	screenRange.offset = FLT_MAX;
 	screenRange.length = 0;
 
-	for (auto& block : m_runBlocks) {
-		auto rangeInBlock = block->m_rangeInPhysicalLine.intersect(range);
-		if (rangeInBlock.isEmpty()) {
-			continue;
-		}
+	if (logicalRange.endIndex == range.beginIndex) {
+		// EOF を指すとき
+		screenRange.offset = size.x;
+		screenRange.length = 0;
+	}
+	else {
+		for (auto& block : m_runBlocks) {
+			auto rangeInBlock = block->m_rangeInPhysicalLine.intersect(range);
+			if (rangeInBlock.isEmpty()) {
+				continue;
+			}
 
-		auto screenRangeInBlock = block->getLocalScreenRange(rangeInBlock);
-		screenRange.offset = std::min(screenRange.offset, screenRangeInBlock.offset);
-		screenRange.length = std::max(screenRange.length, screenRangeInBlock.length);
+			auto screenRangeInBlock = block->getLocalScreenRange(rangeInBlock);
+			screenRange.offset = std::min(screenRange.offset, screenRangeInBlock.offset);
+			screenRange.length = std::max(screenRange.length, screenRangeInBlock.length);
+		}
 	}
 
 	if (screenRange.offset == FLT_MAX)
@@ -150,8 +164,10 @@ UIScreenRange UIPhysicalLine::getLocalScreenRange(const UITextRange& range) cons
 // UITextLayout
 
 UITextLayout::UITextLayout()
+	: m_lineTerminator(u"\n")
 {
 	m_cursorCaretHighlighter = makeRef<UICursorCaretHighlighter>();
+	setText(u"");
 }
 
 void UITextLayout::setBaseTextStyle(Font* font, const Color& textColor)
@@ -164,14 +180,15 @@ void UITextLayout::setBaseTextStyle(Font* font, const Color& textColor)
 
 void UITextLayout::setText(const StringRef& value)
 {
-    String text = value;
+    m_boundText = value;
 
     List<UITextRange> lines;
-    UITextRange::splitLineRanges(text, &lines);
+    UITextRange::splitLineRanges(m_boundText, &lines);
 
+	// TODO: もーちょっとフォーマルにやるなら、Parse と get は Marshaller の役目 (RichTextLayoutMarshaller)
     m_logicalLines.clear();
     for (auto& line : lines) {
-        auto logicalLine = makeRef<UILogicalLine>(this, text.substr(line.beginIndex, line.endIndex));
+        auto logicalLine = makeRef<UILogicalLine>(this, m_boundText.substr(line.beginIndex, line.endIndex));
         auto logicalRun = makeRef<UILogicalRun>(logicalLine, UITextRange(0, logicalLine->m_text.length()));
         logicalLine->m_runs.add(logicalRun);
         m_logicalLines.add(logicalLine);
@@ -181,9 +198,19 @@ void UITextLayout::setText(const StringRef& value)
 	m_dirtyPhysicalLines = true;
 }
 
+void UITextLayout::clearText()
+{
+	m_logicalLines.clear();
+
+	//auto logicalLine = makeRef<UILogicalLine>(this, m_boundText.substr(line.beginIndex, line.endIndex));
+	//m_logicalLines.add(logicalLine);
+
+	m_dirtyPhysicalLines = true;
+}
+
 void UITextLayout::insertAt(const UITextLocation& loc, const StringRef& text)
 {
-    if (m_logicalLines.isOutOfRange(loc.lineIndex)) return;
+    if (LN_REQUIRE(!m_logicalLines.isOutOfRange(loc.lineIndex))) return;
     UILogicalLine* logicalLine = m_logicalLines[loc.lineIndex];
     
     logicalLine->m_text = logicalLine->m_text.insert(loc.offset, text);
@@ -218,6 +245,8 @@ void UITextLayout::insertAt(const UITextLocation& loc, const StringRef& text)
             run->m_range = newRange;
         }
     }
+
+	updateBoundText();
 
     m_dirtyPhysicalLines = true;    // TODO: Layout
 }
@@ -288,8 +317,13 @@ void UITextLayout::layoutHighlights()
 		auto& logicalLine = m_logicalLines[physicalLine->logicalIndex];
 		for (auto& highlight : logicalLine->highlights) {
 
+			auto logicalRange = physicalLine->logicalRange;
+			if (physicalLine->logicalRange.endIndex == logicalLine->m_text.length()) {
+				logicalRange.endIndex++;
+			}
+
 			// logicalLine が持っている highlight したい範囲が、この physicalLine 内に含まれているかチェックする
-			auto physicalHighlightRange =  physicalLine->logicalRange.intersect(highlight.range);
+			auto physicalHighlightRange = logicalRange.intersect(highlight.range);
 			if (physicalHighlightRange != highlight.range && physicalHighlightRange.isEmpty()) {
 				continue;
 			}
@@ -358,7 +392,8 @@ bool UITextLayout::handleTypeChar(Char ch)
         insertAt(m_cursorInfo.position, StringRef(&ch, 1));
 
         m_cursorInfo.position = translateLocationToCharDirection(m_cursorInfo.position, 1);
-        updatePreferredCursorScreenOffsetInLine();
+		updateCursorHighlight();
+        //updatePreferredCursorScreenOffsetInLine();
 
         return true;
     }
@@ -383,6 +418,23 @@ void UITextLayout::removeCursorHighlight()
 		bool removed = line->highlights.removeIf([this](auto& x) { return x.lineHighlighter == m_cursorCaretHighlighter; });
 		if (removed) {
 			m_dirtyHighlights = true;
+		}
+	}
+}
+
+void UITextLayout::updateBoundText()
+{
+	m_boundText.clear();
+
+	for (int iLine = 0; iLine < m_logicalLines.size(); iLine++) {
+		auto& logicalLine = m_logicalLines[iLine];
+
+		if (iLine > 0) {
+			m_boundText += m_lineTerminator;
+		}
+
+		for (auto& logicalRun : logicalLine->m_runs) {
+			m_boundText += logicalRun->str();
 		}
 	}
 }
@@ -491,7 +543,7 @@ UITextLocation UITextLayout::translateLocationToCharDirection(const UITextLocati
 int UITextLayout::moveToCandidate(const StringRef& text, int begin, int offset)
 {
     if (begin + offset < 0) return -1;
-    if (text.length() <= begin + offset) return -1;
+    if (text.length() + 1 <= begin + offset) return -1;	// 仮想的な EOF への移動を許可する
 
     UTF16 ch = static_cast<UTF16>(*(text.data() + begin + offset));
     if (offset > 0) {
@@ -525,11 +577,20 @@ void UITextArea::init()
 	UIElement::init();
 	m_textLayout = makeObject<detail::UITextLayout>();
     focus();    // TODO: test
+
+	//m_cursorTimer = ln::makeObject<ln::UIActiveTimer>();
+	//m_cursorTimer->connectOnTick(ln::bind(this, &UITextArea::handleCursorTimerTickEvent));
+	//registerActiveTimer(m_cursorTimer);
 }
 
 void UITextArea::setText(const StringRef& value)
 {
 	m_textLayout->setText(value);
+}
+
+const String& UITextArea::text() const
+{
+	return m_textLayout->boundText();
 }
 
 void UITextArea::onRoutedEvent(UIEventArgs* e)
@@ -573,6 +634,10 @@ void UITextArea::onRender(UIRenderingContext* context)
 {
 	m_textLayout->render(context);
 	UIElement::onRender(context);
+}
+
+void UITextArea::handleCursorTimerTickEvent(ln::UITimerEventArgs* e)
+{
 }
 
 //==============================================================================
