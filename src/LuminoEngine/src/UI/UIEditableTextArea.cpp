@@ -45,6 +45,15 @@ void UITextRange::splitLineRanges(const String& str, List<UITextRange>* outLines
 }
 
 //==============================================================================
+// UICursorCaretHighlighter
+
+void UICursorCaretHighlighter::onDraw(UIRenderingContext* context, const UIPhysicalLine* line, float physicalOffset, float physicalLength) const
+{
+	context->setTransfrom(Matrix::Identity);
+	context->drawBoxBackground(Rect(physicalOffset, line->offset.y, 2, 20), CornerRadius(), BrushImageDrawMode::Image, Rect(0, 0, 1, 1), Color::Black);
+}
+
+//==============================================================================
 // UILogicalRun
 
 UILogicalRun::UILogicalRun(UILogicalLine* owner, const UITextRange& range)
@@ -84,11 +93,13 @@ UILogicalLine::UILogicalLine(UITextLayout* owner, const String& text)
 //==============================================================================
 // UIPhysicalBlock
 
-UIPhysicalBlock::UIPhysicalBlock(UILogicalRun* run, const UITextRange& range, const Vector2& offset, const Vector2& size)
+UIPhysicalBlock::UIPhysicalBlock(
+	UILogicalRun* run, const UITextRange& range, const Vector2& offset, const Vector2& size, const UITextRange& rangeInPhysicalLine)
     : m_run(run)
     , m_range(range)
     , m_offset(offset)
     , m_size(size)
+	, m_rangeInPhysicalLine(rangeInPhysicalLine)
 {
 }
 
@@ -98,8 +109,50 @@ float UIPhysicalBlock::getLocalOffsetAt(int charIndex) const
     return (m_run->m_ownerLine->m_ownerLayout->isHorizontalFlow()) ? size.x : size.y;
 }
 
+UIScreenRange UIPhysicalBlock::getLocalScreenRange(const UITextRange& range) const
+{
+	// TODO: 2回呼ばないとならいのはちょっと冗長かな・・・
+	auto size1 = m_run->measure(UITextRange(m_range.beginIndex, range.beginIndex));
+	auto size2 = m_run->measure(UITextRange(m_range.beginIndex, range.beginIndex + range.length()));
+
+	UIScreenRange screenRange;
+	screenRange.offset = (m_run->m_ownerLine->m_ownerLayout->isHorizontalFlow()) ? (size1.x) : (size1.y);
+	screenRange.length = ((m_run->m_ownerLine->m_ownerLayout->isHorizontalFlow()) ? (size2.x) : (size2.y)) - screenRange.offset;
+	return screenRange;
+}
+
+//==============================================================================
+// UIPhysicalLine
+
+UIScreenRange UIPhysicalLine::getLocalScreenRange(const UITextRange& range) const
+{
+	UIScreenRange screenRange;
+	screenRange.offset = FLT_MAX;
+	screenRange.length = 0;
+
+	for (auto& block : m_runBlocks) {
+		auto rangeInBlock = block->m_rangeInPhysicalLine.intersect(range);
+		if (rangeInBlock.isEmpty()) {
+			continue;
+		}
+
+		auto screenRangeInBlock = block->getLocalScreenRange(rangeInBlock);
+		screenRange.offset = std::min(screenRange.offset, screenRangeInBlock.offset);
+		screenRange.length = std::max(screenRange.length, screenRangeInBlock.length);
+	}
+
+	if (screenRange.offset == FLT_MAX)
+		screenRange.offset = 0;
+	return screenRange;
+}
+
 //==============================================================================
 // UITextLayout
+
+UITextLayout::UITextLayout()
+{
+	m_cursorCaretHighlighter = makeRef<UICursorCaretHighlighter>();
+}
 
 void UITextLayout::setBaseTextStyle(Font* font, const Color& textColor)
 {
@@ -124,6 +177,7 @@ void UITextLayout::setText(const StringRef& value)
         m_logicalLines.add(logicalLine);
     }
 
+	updateCursorHighlight();
 	m_dirtyPhysicalLines = true;
 }
 
@@ -191,13 +245,14 @@ void UITextLayout::arrange(const Size& area)
         float lineOffset = 0.0f;
         for (int iLogicalLine = 0; iLogicalLine < m_logicalLines.size(); iLogicalLine++) {
             auto& logicalLine = m_logicalLines[iLogicalLine];
-            auto physicalLine = makeRef<UIPhysicalLine>();
+            auto physicalLine = makeRef<UIPhysicalLine>();	// TODO: pool
             physicalLine->offset = Vector2(0, lineOffset);
 
+			int offsetInPhysicalLine = 0;
             Size lineSize;
             for (auto& run : logicalLine->m_runs) {
                 auto size = run->measure(m_baseFont);
-                auto block = makeRef<UIPhysicalBlock>(run, UITextRange(0, run->length()), physicalLine->offset, size);
+                auto block = makeRef<UIPhysicalBlock>(run, UITextRange(0, run->length()), physicalLine->offset, size, UITextRange(offsetInPhysicalLine, run->length()));
                 physicalLine->m_runBlocks.add(block);
                 lineSize.width += size.x;
                 lineSize.height = std::max(lineSize.height, size.y);
@@ -214,8 +269,45 @@ void UITextLayout::arrange(const Size& area)
 
         updatePreferredCursorScreenOffsetInLine();
 
+
         m_dirtyPhysicalLines = false;
+		m_dirtyHighlights = true;
     }
+
+	if (m_dirtyHighlights) {
+		layoutHighlights();
+		m_dirtyHighlights = false;
+	}
+}
+
+void UITextLayout::layoutHighlights()
+{
+	for (auto& physicalLine : m_physicalLines) {
+		physicalLine->m_underlayHighlights.clear();
+		physicalLine->m_overlayHighlights.clear();
+		auto& logicalLine = m_logicalLines[physicalLine->logicalIndex];
+		for (auto& highlight : logicalLine->highlights) {
+
+			// logicalLine が持っている highlight したい範囲が、この physicalLine 内に含まれているかチェックする
+			auto physicalHighlightRange =  physicalLine->logicalRange.intersect(highlight.range);
+			if (physicalHighlightRange != highlight.range && physicalHighlightRange.isEmpty()) {
+				continue;
+			}
+
+			UIPhysicalLineHighlight physicalLineHighlight;
+			physicalLineHighlight.offset = 0;
+			physicalLineHighlight.length = 0;
+			physicalLineHighlight.lineHighlighter = highlight.lineHighlighter;
+
+			auto r = physicalLine->getLocalScreenRange(physicalHighlightRange);
+			physicalLineHighlight.offset = r.offset;
+			physicalLineHighlight.length = r.length;
+
+			// TODO: とりあえず、caret で使いたいので全面。
+			physicalLine->m_overlayHighlights.add(physicalLineHighlight);
+		}
+	}
+
 }
 
 void UITextLayout::render(UIRenderingContext* context)
@@ -226,10 +318,11 @@ void UITextLayout::render(UIRenderingContext* context)
             context->setTransfrom(transform);
             context->drawText(block->str(), m_baseTextColor, m_baseFont);
         }
-    }
 
-    context->setTransfrom(Matrix::Identity);
-    context->drawBoxBackground(Rect(m_cursorInfo.preferredCursorScreenOffsetInLine, 0, 2, 20), CornerRadius(), BrushImageDrawMode::Image, Rect(0, 0, 1, 1), Color::Black);
+		for (auto& highlight : physicalLine->m_overlayHighlights) {
+			highlight.lineHighlighter->onDraw(context, physicalLine, highlight.offset, highlight.length);
+		}
+    }
 }
 
 bool UITextLayout::handleKeyDown(UIKeyEventArgs* e)
@@ -270,6 +363,28 @@ bool UITextLayout::handleTypeChar(Char ch)
         return true;
     }
     return false;
+}
+
+void UITextLayout::updateCursorHighlight()
+{
+	removeCursorHighlight();
+
+	if (!m_logicalLines.isOutOfRange(m_cursorInfo.position.lineIndex)) {
+		auto& line = m_logicalLines[m_cursorInfo.position.lineIndex];
+		line->highlights.add(UITextLineHighlight{ UITextRange(m_cursorInfo.position.offset, m_cursorInfo.position.offset + 1), m_cursorCaretHighlighter });
+
+		m_dirtyHighlights = true;
+	}
+}
+
+void UITextLayout::removeCursorHighlight()
+{
+	for (auto& line : m_logicalLines) {
+		bool removed = line->highlights.removeIf([this](auto& x) { return x.lineHighlighter == m_cursorCaretHighlighter; });
+		if (removed) {
+			m_dirtyHighlights = true;
+		}
+	}
 }
 
 void UITextLayout::updatePreferredCursorScreenOffsetInLine()
@@ -344,6 +459,8 @@ void UITextLayout::moveCursor(UICursorMoveMethod method, UICursorMoveGranularity
     m_cursorInfo.position = newCursorPosition;
 
     updatePreferredCursorScreenOffsetInLine();
+
+	updateCursorHighlight();
 }
 
 // 文字方向の移動 (行方向ではなく)
@@ -392,7 +509,6 @@ int UITextLayout::moveToCandidate(const StringRef& text, int begin, int offset)
     return begin + offset;
 }
 
-
 } // namespace detail
 
 
@@ -420,7 +536,7 @@ void UITextArea::onRoutedEvent(UIEventArgs* e)
 {
     if (e->type() == UIEvents::KeyDownEvent) {
         if (m_textLayout->handleKeyDown(static_cast<UIKeyEventArgs*>(e))) {
-            invalidateVisual();
+			invalidateLayout();
 
             auto hwnd = PlatformSupport::getWin32WindowHandle(static_cast<UIFrameWindow*>(getFrameWindow())->platformWindow());
             detail::TextInputMethodSystem::SetInputScreenPos((intptr_t)hwnd, m_textLayout->m_cursorInfo.preferredCursorScreenOffsetInLine, 100);
