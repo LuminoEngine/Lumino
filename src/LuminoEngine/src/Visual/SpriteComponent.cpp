@@ -31,6 +31,12 @@ void SpriteFrame::init()
 	m_anchorPoint = Vector2(Math::NaN, Math::NaN);
 }
 
+void SpriteFrame::serialize(Archive& ar)
+{
+    ar & makeNVP(u"SourceRect", m_sourceRect);
+    ar & makeNVP(u"AnchorPoint", m_anchorPoint);
+}
+
 //=============================================================================
 // SpriteFrameSet
 /*
@@ -67,22 +73,12 @@ void SpriteFrameSet::init(Texture* texture, int frameWidth, int frameHeight, con
 	if (LN_REQUIRE(frameWidth > 0)) return;
 	if (LN_REQUIRE(frameHeight > 0)) return;
 	m_texture = texture;
+    m_frameWidth = frameWidth;
+    m_frameHeight = frameHeight;
+    m_anchorPoint = anchorPoint;
 	m_frames = makeList<Ref<SpriteFrame>>();
 
-	int cols = m_texture->width() / frameWidth;
-	int rows = m_texture->height() / frameHeight;
-
-	for (int y = 0; y < rows; y++)
-	{
-		for (int x = 0; x < cols; x++)
-		{
-			// TODO: モノによっては大量の小オブジェクトができるので、できればまとめて alloc したりキャッシュしたい
-			auto frame = makeObject<SpriteFrame>();
-			frame->setSourceRect(Rect(x * frameWidth, y * frameHeight, frameWidth, frameHeight));
-			frame->setAnchorPoint(anchorPoint);
-            m_frames->add(frame);
-		}
-	}
+    splitFrames();
 }
 
 Texture* SpriteFrameSet::texture() const
@@ -98,6 +94,61 @@ SpriteFrame* SpriteFrameSet::frame(int index) const
 	else {
 		return nullptr;
 	}
+}
+
+void SpriteFrameSet::clear()
+{
+    m_frameWidth = 0;
+    m_frameHeight = 0;
+    m_anchorPoint = Vector2::NaN;
+    m_texture = nullptr;
+    m_frames->clear();
+}
+
+void SpriteFrameSet::splitFrames()
+{
+    int cols = m_texture->width() / m_frameWidth;
+    int rows = m_texture->height() / m_frameHeight;
+
+    for (int y = 0; y < rows; y++)
+    {
+        for (int x = 0; x < cols; x++)
+        {
+            // TODO: モノによっては大量の小オブジェクトができるので、できればまとめて alloc したりキャッシュしたい
+            auto frame = makeObject<SpriteFrame>();
+            frame->setSourceRect(Rect(x * m_frameWidth, y * m_frameHeight, m_frameWidth, m_frameHeight));
+            frame->setAnchorPoint(m_anchorPoint);
+            m_frames->add(frame);
+        }
+    }
+}
+
+void SpriteFrameSet::serialize(Archive& ar)
+{
+    if (ar.isSaving()) {
+        if (m_frameWidth != 0 && m_frameHeight != 0) {
+            ar & makeNVP(u"FrameWidth", m_frameWidth);
+            ar & makeNVP(u"FrameHeight", m_frameHeight);
+            ar & makeNVP(u"AnchorPoint", m_anchorPoint);
+        }
+        else {
+            ar & makeNVP(u"Frames", m_frames);
+        }
+    }
+    else {
+        clear();
+        ar & makeNVP(u"FrameWidth", m_frameWidth);
+        ar & makeNVP(u"FrameHeight", m_frameHeight);
+        ar & makeNVP(u"AnchorPoint", m_anchorPoint);
+        if (m_frameWidth != 0 && m_frameHeight != 0) {
+            splitFrames();
+        }
+        else {
+            ar & makeNVP(u"Frames", m_frames);
+        }
+    }
+
+    ar & makeNVP(u"Texture", m_texture);
 }
 
 //=============================================================================

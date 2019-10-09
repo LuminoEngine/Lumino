@@ -28,6 +28,10 @@ public:
 	/** フレームにアンカーポイントが定義されているかどうかを確認します。 */
 	bool hasAnchorPoint() const { return Math::isNaN(m_anchorPoint.x) || Math::isNaN(m_anchorPoint.y); }
 
+protected:
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
+
 LN_CONSTRUCT_ACCESS:
 	SpriteFrame();
 	virtual ~SpriteFrame() = default;
@@ -59,6 +63,10 @@ public: // TODO: internal
 	int frameCount() const { return m_frames->size(); }
 	SpriteFrame* frame(int index) const;
 
+protected:
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
+
 LN_CONSTRUCT_ACCESS:
 	SpriteFrameSet();
 	virtual ~SpriteFrameSet() = default;
@@ -66,6 +74,12 @@ LN_CONSTRUCT_ACCESS:
 	void init(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint = Vector2::NaN);
 
 private:
+    void clear();
+    void splitFrames();
+
+    int m_frameWidth;
+    int m_frameHeight;
+    Vector2 m_anchorPoint;
 	Ref<Texture> m_texture;
 	Ref<List<Ref<SpriteFrame>>> m_frames;
 };
