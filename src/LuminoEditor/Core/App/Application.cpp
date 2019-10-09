@@ -34,8 +34,8 @@ EditorApplication::EditorApplication()
     NewCommand = ln::makeObject<ln::UICommand>();
     OpenCommand = ln::makeObject<ln::UICommand>();
 
-    addAction(ln::makeObject<ln::UIAction>(NewCommand, [this](ln::UICommandEventArgs* x){ onNewProject(x); }));
-    addAction(ln::makeObject<ln::UIAction>(OpenCommand, [this](ln::UICommandEventArgs* x) { onOpenProject(x); }));
+    addAction(ln::makeObject<ln::UIAction>(NewCommand, [this](ln::UICommandEventArgs* x){ handleNewProject(x); }));
+    addAction(ln::makeObject<ln::UIAction>(OpenCommand, [this](ln::UICommandEventArgs* x) { handleOpenProject(x); }));
 }
 
 EditorApplication::~EditorApplication()
@@ -165,11 +165,11 @@ void EditorApplication::onInit()
 
 void EditorApplication::openProject(const ln::Path& filePath)
 {
-    closeProject();
+    //closeProject();
 
     lna::AppData::instance()->addRecentProjectFile(filePath);
 
-    m_workspace->openProject2(filePath);
+    m_workspace->openMainProject(filePath);
 
     mainWindow()->navigatorManager()->resetNavigators();
 
@@ -195,12 +195,12 @@ void EditorApplication::closeProject()
 
 //Ref<ln::UIDialog> m_dialog;
 
-void EditorApplication::onNewProject(ln::UICommandEventArgs* e)
+void EditorApplication::handleNewProject(ln::UICommandEventArgs* e)
 {
-	auto dlg = ln::makeObject<NewProjectDialog>();
-	mainWindow()->addElement(dlg);
-	dlg->open();
-
+	//auto dlg = ln::makeObject<NewProjectDialog>();
+	//mainWindow()->addElement(dlg);
+	//dlg->open();
+	closeProject();
 
 #if 0
 	auto popupContent = ln::makeObject<ln::UITextBlock>();
@@ -221,7 +221,7 @@ void EditorApplication::onNewProject(ln::UICommandEventArgs* e)
 #endif
 }
 
-void EditorApplication::onOpenProject(ln::UICommandEventArgs* e)
+void EditorApplication::handleOpenProject(ln::UICommandEventArgs* e)
 {
     auto dlg = ln::PlatformOpenFileDialog::create();
     if (dlg->showDialog(mainWindow()->platformWindow())) {

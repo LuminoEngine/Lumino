@@ -33,8 +33,11 @@ Workspace::Workspace()
 {
     assert(!s_instance);
     s_instance = this;
-
+#ifdef LN_DEBUG
+	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
+#else
 	m_buildEnvironment->setupPathes();
+#endif
 }
 
 Workspace::~Workspace()
@@ -42,10 +45,17 @@ Workspace::~Workspace()
     s_instance = nullptr;
 }
 
-ln::Result Workspace::openProject2(const ln::Path& filePath)
+ln::Result Workspace::openMainProject(const ln::Path& filePath)
 {
+	if (LN_REQUIRE(!m_project)) return false;
 	m_project = ln::makeRef<Project>(this);
 	return m_project->openProject2(filePath);
+}
+
+ln::Result Workspace::closeMainProject()
+{
+	m_project = nullptr;
+	return true;
 }
 
 ln::Result Workspace::runProject(const ln::String& target)

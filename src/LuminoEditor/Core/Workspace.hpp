@@ -13,7 +13,8 @@ public:
 	Workspace();
 	virtual ~Workspace();
 
-	ln::Result openProject2(const ln::Path& filePath);
+	ln::Result openMainProject(const ln::Path& filePath);
+	ln::Result closeMainProject();
     ln::Result runProject(const ln::String& target);
     ln::Result restoreProject();
 

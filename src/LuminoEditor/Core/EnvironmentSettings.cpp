@@ -22,64 +22,72 @@ BuildEnvironment::BuildEnvironment()
 #endif
 }
 
-void BuildEnvironment::setupPathes()
+void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
 {
     // Find package root
     {
         m_luminoPackageRootDir.clear();
 
-        // 実行ファイルを少しさかのぼってパッケージのルートらしいフォルダがあればそこを採用
-        ln::Path packageRootDir = ln::Path(ln::Environment::executablePath()).parent().parent();
-        ln::Path engineDir = ln::Path(packageRootDir, u"Engine");
-        ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
-        if (ln::FileSystem::existsDirectory(engineDir) && ln::FileSystem::existsDirectory(toolsDir))
-        {
-            m_luminoPackageRootDir = packageRootDir;
-        }
-        
+		switch (pathBase)
+		{
+			case EnvironmentPathBase::EnvironmentVariable:
+			{
+				auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
+				if (path) {
+					m_luminoPackageRootDir = *path;
+					setupPathesFromPackageRoot(m_luminoPackageRootDir);
+				}
+				break;
+			}
+			case EnvironmentPathBase::LocalPackage:
+			{
+				// 実行ファイルを少しさかのぼってパッケージのルートらしいフォルダがあればそこを採用
+				ln::Path packageRootDir = ln::Path(ln::Environment::executablePath()).parent().parent();
+				ln::Path engineDir = ln::Path(packageRootDir, u"Engine");
+				ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
+				if (ln::FileSystem::existsDirectory(engineDir) && ln::FileSystem::existsDirectory(toolsDir))
+				{
+					m_luminoPackageRootDir = packageRootDir;
+				}
+
 #ifdef  LN_DEBUG
-		if (m_luminoPackageRootDir.isEmpty()) {
-			m_luminoPackageRootDir = findLocalPackageForTesting();
-		}
+				if (m_luminoPackageRootDir.isEmpty()) {
+					m_luminoPackageRootDir = findLocalPackageForTesting();
+				}
 #endif
-        // まだ見つからなければ環境変数を探してみる
-        if (m_luminoPackageRootDir.isEmpty())
-        {
-            auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
-            if (path) {
-                m_luminoPackageRootDir = *path;
-            }
-        }
+				setupPathesFromPackageRoot(m_luminoPackageRootDir);
+				break;
+			}
+			case EnvironmentPathBase::Repository:
+			{
+				m_luminoPackageRootDir = findRepositoryRootForTesting();
+				setupPathesFromRepositoryRoot(m_luminoPackageRootDir);
+				break;
+			}
+			default:
+				LN_UNREACHABLE();
+				break;
+		}
 
         // ここまでで見つからなかったらエラー
         if (m_luminoPackageRootDir.isEmpty())
         {
             CLI::fatal(u"Not found lumino package root directory.");
+			return;
         }
+
+		// Validation
+		{
+			if (!ln::FileSystem::existsDirectory(m_projectTemplatesDirPath)) {
+				CLI::fatal(u"Not found 'projectTemplatesDirPath' directory.");
+				return;
+			}
+		}
     }
 
-    // Setup Basic paths
-    {
-        m_luminoPackageToolsDir = ln::Path(m_luminoPackageRootDir, u"Tools");
-        m_projectTemplatesDirPath = ln::Path(m_luminoPackageToolsDir, u"Templates");
 
-        CLI::info(u"luminoPackageRootDir: " + m_luminoPackageRootDir);
-        CLI::info(u"luminoPackageToolsDir: " + m_luminoPackageToolsDir);
-        CLI::info(u"projectTemplatesDirPath: " + m_projectTemplatesDirPath);
-    }
 
-	// LUMINO_PATH
-	{
-		auto v = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
-		if (v.hasValue()) {
-			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", v.value()));
-		}
-		else {
-			CLI::warning(ln::String::format(u"LUMINO_PATH is unset. Use local package instead."));
-			ln::Environment::setEnvironmentVariable(u"LUMINO_PATH", m_luminoPackageRootDir);
-			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", m_luminoPackageRootDir));
-		}
-	}
+
 
     // Emscripten
     {
@@ -201,6 +209,37 @@ ln::Path BuildEnvironment::findRepositoryRootForTesting()
 		path = path.parent();
 	}
 	return luminoRepoRoot;
+}
+
+void BuildEnvironment::setupPathesFromPackageRoot(const ln::Path& packageRoot)
+{
+	// Setup Basic paths
+	{
+		m_luminoPackageToolsDir = ln::Path(m_luminoPackageRootDir, u"Tools");
+		m_projectTemplatesDirPath = ln::Path(m_luminoPackageToolsDir, u"Templates");
+
+		CLI::info(u"luminoPackageRootDir: " + m_luminoPackageRootDir);
+		CLI::info(u"luminoPackageToolsDir: " + m_luminoPackageToolsDir);
+		CLI::info(u"projectTemplatesDirPath: " + m_projectTemplatesDirPath);
+	}
+
+	// LUMINO_PATH
+	{
+		auto v = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH");
+		if (v.hasValue()) {
+			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", v.value()));
+		}
+		else {
+			CLI::warning(ln::String::format(u"LUMINO_PATH is unset. Use local package instead."));
+			ln::Environment::setEnvironmentVariable(u"LUMINO_PATH", m_luminoPackageRootDir);
+			CLI::info(ln::String::format(u"LUMINO_PATH: {0}", m_luminoPackageRootDir));
+		}
+	}
+}
+
+void BuildEnvironment::setupPathesFromRepositoryRoot(const ln::Path& repoRoot)
+{
+	m_projectTemplatesDirPath = ln::Path::combine(repoRoot, u"tools", u"ProjectTemplates");
 }
 
 ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir)

@@ -56,9 +56,9 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
 	if (!m_context->applyTemplates(templateName)) {
 		return false;
 	}
-    if (!m_context->applyEngine()) {
-        return false;
-    }
+    //if (!m_context->applyEngine()) {
+    //    return false;
+    //}
 	
     ln::Result result = saveProject();
 	CLI::info(u"\nSuccess! Created " + m_projectName + u" at " + m_rootDir + u"\n");

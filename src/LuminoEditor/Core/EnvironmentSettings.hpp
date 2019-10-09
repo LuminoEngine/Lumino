@@ -2,13 +2,25 @@
 
 namespace lna {
 
+// プロジェクトテンプレートなどの検索パスの基準
+enum class EnvironmentPathBase
+{
+	// 環境変数 LUMINO_PATH を基準とする
+	EnvironmentVariable,
+
+	// 実行ファイルからフォルダをさかのぼり、パッケージのルートを検索する (インストールせずに使用する)
+	LocalPackage,
+
+	// 実行ファイルからフォルダをさかのぼり、リポジトリのルートを検索する (主にツールのデバッグで使用する)
+	Repository,
+};
 
 class BuildEnvironment
 	: public ln::RefObject
 {
 public:
 	BuildEnvironment();
-	void setupPathes();
+	void setupPathes(EnvironmentPathBase pathBase);
 	ln::Result prepareEmscriptenSdk();
 
 	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
@@ -41,6 +53,8 @@ public:
 	static ln::Path findRepositoryRootForTesting();
 
 private:
+	void setupPathesFromPackageRoot(const ln::Path& packageRoot);
+	void setupPathesFromRepositoryRoot(const ln::Path& repoRoot);
 	static ln::Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
 
 	ln::String m_defaultTargetName;

@@ -36,8 +36,8 @@ private:
     void openProject(const ln::Path& filePath);
     void closeProject();
 
-    void onNewProject(ln::UICommandEventArgs* e);
-    void onOpenProject(ln::UICommandEventArgs* e);
+    void handleNewProject(ln::UICommandEventArgs* e);
+    void handleOpenProject(ln::UICommandEventArgs* e);
 
     Ref<lna::Workspace> m_workspace;
     Ref<lna::EditorContext> m_editorContext;
