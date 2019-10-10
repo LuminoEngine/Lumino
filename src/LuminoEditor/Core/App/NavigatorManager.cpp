@@ -75,31 +75,18 @@ void NavigationBar::addNavigator(Navigator* navigator)
     item->setHeight(ItemSize);
     
     UIItemsControl::addItem(item);
+
+	m_navigatorContainers.add(item);
 }
 
-//void NavigationBar::addItem(ln::IAssetNavigatorExtension* ext)
-//{
-//    // TODO: ContentAlignment でカバーしたい
-//	ln::UIElement* element = ext->getNavigationMenuItem();
-//    element->setHorizontalAlignment(ln::HAlignment::Center);
-//    element->setVerticalAlignment(ln::VAlignment::Center);
-//    element->setFontSize(24);
-//
-//	auto item = ln::makeObject<NavigationBarItem>(m_navigatorManager, ext);
-//	item->addElement(element);
-//    item->setWidth(ItemSize);
-//    item->setHeight(ItemSize);
-//
-//	UIItemsControl::addItem(item);
-//}
+void NavigationBar::removeNavigator(Navigator* navigator)
+{
+	auto item = m_navigatorContainers.findIf([&](auto& x) { return x->navigator() == navigator; });
+	if (item) {
+		UIItemsControl::removeItem(*item);
+	}
+}
 
-////==============================================================================
-//// Navigator
-//
-//Navigator::Navigator()
-//{
-//}
-//
 //==============================================================================
 // NavigatorManager
 
@@ -158,6 +145,13 @@ void NavigatorManager::addNavigator(Navigator* navigator)
     m_navigationBar->addNavigator(navigator);
     m_switchLayout->addChild(navigator->getNavigationPane());
     m_navigators.add(navigator);
+}
+
+void NavigatorManager::unloadAdditionalNavigators()
+{
+	for (auto& nav : m_navigators) {
+		m_navigationBar->removeNavigator(nav);
+	}
 }
 
 void NavigatorManager::setCurrent(Navigator* navigator)

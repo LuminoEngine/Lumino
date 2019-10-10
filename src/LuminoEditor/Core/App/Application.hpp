@@ -26,6 +26,9 @@ public:
     lna::Project* mainProject() const;
 	const ln::Ref<lna::EditorContext>& editorContext() const { return m_editorContext; }
 
+	void newProject(const ln::Path& dirPath, const ln::String& projectName);
+    void openProject(const ln::Path& filePath);
+    bool closeProject();
     void importFile(const ln::Path& filePath);
     void openAssetFile(const ln::Path& filePath);
 
@@ -33,8 +36,6 @@ protected:
     virtual void onInit() override;
 
 private:
-    void openProject(const ln::Path& filePath);
-    void closeProject();
 
     void handleNewProject(ln::UICommandEventArgs* e);
     void handleOpenProject(ln::UICommandEventArgs* e);

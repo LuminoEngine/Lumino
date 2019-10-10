@@ -19,6 +19,17 @@ ln::Result Document::init()
     return true;
 }
 
+//bool Document::close()
+//{
+//	return onClosing();
+//}
+
+bool Document::onClosing()
+{
+	return true;
+}
+
+
 //==============================================================================
 // DocumentManager
 
@@ -34,13 +45,13 @@ ln::Result DocumentManager::init()
     m_mainLayout = ln::makeObject<ln::UIBoxLayout3>();
     //addElement(m_mainLayout);
 
-    m_documentTabs = ln::makeObject<ln::UITabBar>();
-    m_documentTabs->setVerticalAlignment(ln::VAlignment::Top);
-    m_documentTabs->connectOnSelectionChanged(ln::bind(this, &DocumentManager::documentTabs_SelectionChanged));
-    //documentTabs->setBackgroundColor(ln::Color::Azure);
-    //documentTabs->setHeight(30);
-    //documentTabs->setVisibility(ln::UIVisibility::Collapsed);
-    m_mainLayout->addChild(m_documentTabs);
+    m_documentTabBar = ln::makeObject<ln::UITabBar>();
+    m_documentTabBar->setVerticalAlignment(ln::VAlignment::Top);
+    m_documentTabBar->connectOnSelectionChanged(ln::bind(this, &DocumentManager::documentTabBar_SelectionChanged));
+    //m_documentTabBar->setBackgroundColor(ln::Color::Azure);
+    //m_documentTabBar->setHeight(30);
+    //m_documentTabBar->setVisibility(ln::UIVisibility::Collapsed);
+    m_mainLayout->addChild(m_documentTabBar);
 
     m_switchLayout = ln::makeObject<ln::UISwitchLayout>();
     m_switchLayout->setActiveIndex(-1);
@@ -69,13 +80,23 @@ void DocumentManager::addDocument(Document* doc)
     m_documents.add(doc);
     m_switchLayout->addChild(doc->mainFrame());
 
-    auto tab = ln::makeObject<ln::UITabItem>();
-    auto text = ln::makeObject<ln::UITextBlock>();
-    text->setText(u"Tab");  // TODO: AssetEditor から、Document 経由で設定したい。プロパティ変更を scribe する必要があるかも。
-    tab->addElement(text);
-    tab->setData(ln::makeVariant(doc));
-    m_documentTabs->addTab(tab);
-    m_documentTabs->setSelectedTab(tab);
+	auto tab = ln::makeObject2<DocumentTab>(doc);
+	m_documentTabs.add(tab);
+
+    m_documentTabBar->addTab(tab);
+    m_documentTabBar->setSelectedTab(tab);
+}
+
+void DocumentManager::removeDocument(Document* doc)
+{
+	for (auto& tab : m_documentTabs) {
+		if (tab->document() == doc) {
+			m_documentTabs.remove(tab);
+			m_switchLayout->removeChild(doc->mainFrame());
+			m_documentTabBar->removeTab(tab);
+			break;
+		}
+	}
 }
 
 void DocumentManager::setActiveDocument(Document* doc)
@@ -110,9 +131,23 @@ void DocumentManager::setActiveDocument(Document* doc)
     }
 }
 
-void DocumentManager::documentTabs_SelectionChanged(ln::UISelectionChangedEventArgs* e)
+bool DocumentManager::closeAllTabs()
 {
-    auto tab = m_documentTabs->selectedTab();
+	auto closeList = m_documentTabs;
+	for (auto& tab : closeList) {
+		if (tab->document()->onClosing()) {
+			removeDocument(tab->document());
+		}
+		else {
+			return false;
+		}
+	}
+	return true;
+}
+
+void DocumentManager::documentTabBar_SelectionChanged(ln::UISelectionChangedEventArgs* e)
+{
+    auto tab = m_documentTabBar->selectedTab();
     auto doc = tab->data()->getObject<Document>();
     setActiveDocument(doc);
 }
@@ -133,4 +168,17 @@ ln::Result AssetEditorDocument::init(ln::AssetModel* asset, ln::AssetEditor* edi
 
     m_editor->onOpened(m_asset, mainFrame());
     return true;
+}
+
+//==============================================================================
+// DocumentTab
+
+DocumentTab::DocumentTab(Document* document)
+	: m_document(document)
+{
+	auto tab = ln::makeObject<ln::UITabItem>();
+	auto text = ln::makeObject<ln::UITextBlock>();
+	text->setText(u"Tab");  // TODO: AssetEditor から、Document 経由で設定したい。プロパティ変更を scribe する必要があるかも。
+	tab->addElement(text);
+	//tab->setData(ln::makeVariant(doc));
 }

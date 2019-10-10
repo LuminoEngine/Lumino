@@ -19,6 +19,7 @@ class UITabBar
 {
 public:
 	void addTab(UITabItem* item);
+	void removeTab(UITabItem* item);
     void setSelectedTab(UITabItem* tab);
     UITabItem* selectedTab() const;
 

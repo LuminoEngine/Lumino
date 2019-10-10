@@ -51,6 +51,6 @@ void NewProjectDialog::handleSelectFolder(ln::UIEventArgs* e)
 
 void NewProjectDialog::handleCreate(ln::UIEventArgs* e)
 {
-	auto text = m_projectFolder->text();
-	std::cout << text;
+	close();
+	EditorApplication::instance()->newProject(m_projectFolder->text(), m_projectName->text());
 }

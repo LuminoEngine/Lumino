@@ -163,6 +163,13 @@ void EditorApplication::onInit()
     ln::Engine::mainUIContext()->styleContext()->addStyleSheet(sheet);
 }
 
+void EditorApplication::newProject(const ln::Path& dirPath, const ln::String& projectName)
+{
+	if (!closeProject()) {
+		return;
+	}
+}
+
 void EditorApplication::openProject(const ln::Path& filePath)
 {
     //closeProject();
@@ -189,18 +196,24 @@ void EditorApplication::openProject(const ln::Path& filePath)
     //    LnToQt(ln::Path(m_workspace->project()->assetsDir(), u"Audio")));
 }
 
-void EditorApplication::closeProject()
+bool EditorApplication::closeProject()
 {
+	bool result = mainWindow()->documentManager()->closeAllTabs();
+	if (!result) {
+		return false;
+	}
+
+	mainWindow()->navigatorManager()->unloadAdditionalNavigators();
+	mainProject()->pluginManager()->deactivateAllExtensions(m_editorContext);
 }
 
 //Ref<ln::UIDialog> m_dialog;
 
 void EditorApplication::handleNewProject(ln::UICommandEventArgs* e)
 {
-	//auto dlg = ln::makeObject<NewProjectDialog>();
-	//mainWindow()->addElement(dlg);
-	//dlg->open();
-	closeProject();
+	auto dlg = ln::makeObject<NewProjectDialog>();
+	mainWindow()->addElement(dlg);
+	dlg->open();
 
 #if 0
 	auto popupContent = ln::makeObject<ln::UITextBlock>();

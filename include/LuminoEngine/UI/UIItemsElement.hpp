@@ -64,6 +64,7 @@ protected:
     void setItemsLayoutPanel(UILayoutPanel2* layout);
 
 	void addItem(UICollectionItem* item);
+	void removeItem(UICollectionItem* item);
     void removeAllItems();
 
     virtual void onItemClick(UICollectionItem* item, UIClickEventArgs* e);

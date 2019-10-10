@@ -35,6 +35,7 @@ class EngineDomain;
 #ifndef LN_CONSTRUCT_ACCESS
 #define LN_CONSTRUCT_ACCESS \
 		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
+		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject2(TArgs&&... args); \
 		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
@@ -44,6 +45,14 @@ Ref<T> makeObject(TArgs&&... args)
 {
 	auto ptr = Ref<T>(new T(), false);
 	ptr->init(std::forward<TArgs>(args)...);
+	return ptr;
+}
+
+template<class T, typename... TArgs>
+Ref<T> makeObject2(TArgs&&... args)
+{
+	auto ptr = Ref<T>(new T(std::forward<TArgs>(args)...), false);
+	ptr->init();
 	return ptr;
 }
 

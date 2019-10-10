@@ -52,6 +52,11 @@ void UITabBar::addTab(UITabItem* item)
 	addItem(item);
 }
 
+void UITabBar::removeTab(UITabItem* item)
+{
+	removeItem(item);
+}
+
 void UITabBar::setSelectedTab(UITabItem* tab)
 {
     selectItemExclusive(tab);

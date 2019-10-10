@@ -141,6 +141,7 @@ void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
 void UIItemsControl::addItem(UICollectionItem* item)
 {
 	if (LN_REQUIRE(item)) return;
+
 	m_selectionTargets.add(item);
 	item->m_ownerCollectionControl = this;
 
@@ -148,6 +149,20 @@ void UIItemsControl::addItem(UICollectionItem* item)
     item->setLogicalParent(this);
 
     m_itemssHostLayout->addVisualChild(item);
+}
+
+void UIItemsControl::removeItem(UICollectionItem* item)
+{
+	if (LN_REQUIRE(item)) return;
+	if (LN_REQUIRE(item->m_ownerCollectionControl == this)) return;
+
+	m_selectionTargets.remove(item);
+	item->m_ownerCollectionControl = nullptr;
+
+	m_logicalChildren.remove(item);
+	item->setLogicalParent(nullptr);
+
+	m_itemssHostLayout->removeVisualChild(item);
 }
 
 void UIItemsControl::removeAllItems()

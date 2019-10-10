@@ -3,6 +3,7 @@
 namespace ln { class AssetEditor; }
 class StartupView;
 class ToolPanesArea;
+class DocumentManager;
 
 // Tab-Document だけではなく、Inspector や AssetBrowerToolPane など、複数の View から参照・編集されるデータを扱うクラス。
 // 様々な View の中央に位置して各 View とメッセージをやり取りしたりする。
@@ -19,10 +20,27 @@ public:
 
     const Ref<ln::UIContainerElement>& mainFrame() const { return m_mainFrame; }
 
+	/** Doucment を Close しようとする。reject された場合は false を返す */
+	//bool close();
+
 protected:
+	virtual bool onClosing();
 
 private:
     Ref<ln::UIContainerElement> m_mainFrame;
+
+	friend class DocumentManager;
+};
+
+class DocumentTab
+	: public ln::UITabItem
+{
+public:
+	DocumentTab(Document* document);
+	const Ref<Document>& document() const { return m_document; }
+
+private:
+	Ref<Document> m_document;
 };
 
 class DocumentManager
@@ -36,17 +54,26 @@ public:
     const Ref<ToolPanesArea>& toolPanesArea() const { return m_toolPanesArea; }
     const Ref<ToolPanesArea>& inspectorPanesArea() const { return m_inspectorPanesArea; }
 
+	// Model controls
     void addDocument(Document* doc);
+	void removeDocument(Document* doc);
     void setActiveDocument(Document* doc);
+
+
+
+	/** 各 Tab に Close メッセージ送信後、Reject されることなくすべて Close できたら true を返す。 */
+	bool closeAllTabs();
 
 protected:
 
 private:
-    void documentTabs_SelectionChanged(ln::UISelectionChangedEventArgs* e);
+    void documentTabBar_SelectionChanged(ln::UISelectionChangedEventArgs* e);
 
     Ref<ln::UIBoxLayout3> m_mainLayout;
     Ref<ln::UISwitchLayout> m_switchLayout;
-    Ref<ln::UITabBar> m_documentTabs;
+    Ref<ln::UITabBar> m_documentTabBar;
+	ln::List<Ref<DocumentTab>> m_documentTabs;
+
     Ref<StartupView> m_startupView;
     ln::List<Ref<Document>> m_documents;
     Document* m_activeDocument;
@@ -72,3 +99,5 @@ private:
     Ref<ln::AssetModel> m_asset;
     Ref<ln::AssetEditor> m_editor;
 };
+
+

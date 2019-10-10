@@ -27,6 +27,7 @@ class NavigationBarItem : public ln::UICollectionItem
 public:
 	void init(NavigatorManager* manager, Navigator* navigator);
     void addIcon(const ln::StringRef& iconName);
+	Navigator* navigator() const { return m_navigator; }
 
 protected:
     virtual const ln::String& elementName() const  override { static ln::String name = u"NavigationBarItem"; return name; }
@@ -45,14 +46,13 @@ public:
 
     void init(NavigatorManager* manager);
     void addNavigator(Navigator* navigator);
-	//void addItem(ln::IAssetNavigatorExtension* ext);
+	void removeNavigator(Navigator* navigator);
 
 protected:
-	//virtual UIControl* generateItem(UIElement* content) override;
 
 private:
 	NavigatorManager* m_navigatorManager;
-    //Ref<ln::UIVBoxLayout2> m_layout;
+	ln::List<Ref<NavigationBarItem>> m_navigatorContainers;
 };
 
 
@@ -67,6 +67,7 @@ public:
     void init();
     void resetNavigators();
     void addNavigator(Navigator* navigator);
+	void unloadAdditionalNavigators();
 	void setCurrent(Navigator* navigator);
 
     const Ref<NavigationBar>& navigationBar() const { return m_navigationBar; }
