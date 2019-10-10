@@ -134,6 +134,8 @@ public:
     /** 表示するテクスチャを垂直に反転するかどうかを確認します。 */
     bool isFlippedY() const { return m_flipFlags.hasFlag(detail::SpriteFlipFlags::FlipY); }
 
+    void setPixelsParUnit(float value) { m_pixelsParUnit = value; }
+
 	// TODO: internal
 	static void registerType(EngineContext* context);
 
@@ -155,6 +157,7 @@ private:
 	Ref<SpriteFrameSet> m_frameSet;
 	int m_frameIndex;
     Flags<detail::SpriteFlipFlags> m_flipFlags;
+    float m_pixelsParUnit;
 };
 
 } // namespace ln

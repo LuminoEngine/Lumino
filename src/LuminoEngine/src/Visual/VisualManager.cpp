@@ -28,6 +28,7 @@ void VisualManager::init(const Settings& settings)
 
 	SpriteComponent::registerType(detail::EngineDomain::engineManager()->engineContext());
 	EngineDomain::registerType<SpriteFrame>();
+    EngineDomain::registerType<SpriteFrameSet>();
 
     LN_LOG_DEBUG << "VisualManager Initialization ended.";
 }

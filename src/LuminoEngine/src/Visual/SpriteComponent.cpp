@@ -49,7 +49,11 @@ void SpriteFrame::serialize(Archive& ar)
   - ピクセル指定は row を増やすことでのパターン追加に強い。
   SpriteFrameSet を使うのはドット絵がほとんど。どっちがよくある話かっていうと後者の方が圧倒的に多いだろう。
 */
-LN_OBJECT_IMPLEMENT(SpriteFrameSet, Object) {}
+LN_OBJECT_IMPLEMENT(SpriteFrameSet, Object)
+{
+    // TODO: これ忘れがちなので省略できるようにしたい。
+    context->registerType<SpriteFrameSet>({});
+}
 
 Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
@@ -57,6 +61,7 @@ Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int
 }
 
 SpriteFrameSet::SpriteFrameSet()
+    : m_frames(makeList<Ref<SpriteFrame>>())
 {
 }
 
@@ -76,7 +81,6 @@ void SpriteFrameSet::init(Texture* texture, int frameWidth, int frameHeight, con
     m_frameWidth = frameWidth;
     m_frameHeight = frameHeight;
     m_anchorPoint = anchorPoint;
-	m_frames = makeList<Ref<SpriteFrame>>();
 
     splitFrames();
 }
@@ -125,7 +129,9 @@ void SpriteFrameSet::splitFrames()
 
 void SpriteFrameSet::serialize(Archive& ar)
 {
+
     if (ar.isSaving()) {
+        ar & makeNVP(u"Texture", m_texture);
         if (m_frameWidth != 0 && m_frameHeight != 0) {
             ar & makeNVP(u"FrameWidth", m_frameWidth);
             ar & makeNVP(u"FrameHeight", m_frameHeight);
@@ -137,6 +143,7 @@ void SpriteFrameSet::serialize(Archive& ar)
     }
     else {
         clear();
+        ar & makeNVP(u"Texture", m_texture);
         ar & makeNVP(u"FrameWidth", m_frameWidth);
         ar & makeNVP(u"FrameHeight", m_frameHeight);
         ar & makeNVP(u"AnchorPoint", m_anchorPoint);
@@ -147,8 +154,6 @@ void SpriteFrameSet::serialize(Archive& ar)
             ar & makeNVP(u"Frames", m_frames);
         }
     }
-
-    ar & makeNVP(u"Texture", m_texture);
 }
 
 //=============================================================================
@@ -175,8 +180,9 @@ SpriteComponent::SpriteComponent()
     : m_material(nullptr)
     , m_size()
     , m_anchorPoint(0.5, 0.5)
-	, m_frameIndex(-1)
+	, m_frameIndex(0)
     , m_flipFlags(detail::SpriteFlipFlags::None)
+    , m_pixelsParUnit(1.0f)
 {
 }
 
@@ -244,10 +250,16 @@ void SpriteComponent::onRender(RenderingContext* context)
 		}
 	}
 
+    Size size = m_size;
+    if (m_size.width < 0 && m_size.height < 0) {
+        size.width = sourceRect.width / m_pixelsParUnit;
+        size.height = sourceRect.height / m_pixelsParUnit;
+    }
+
     Size renderSize;
     Rect renderSourceRect;
     detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
-        tex, m_size, sourceRect, &renderSize, &renderSourceRect);
+        tex, size, sourceRect, &renderSize, &renderSourceRect);
 
     context->drawSprite(
         Matrix(), renderSize, anchorPoint, renderSourceRect, Color::White,
