@@ -9,6 +9,7 @@ public:
 protected:
 
 private:
+	void updateDefaultProjectName();
 	void handleSelectFolder(ln::UIEventArgs* e);
 	void handleCreate(ln::UIEventArgs* e);
 

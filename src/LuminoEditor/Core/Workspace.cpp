@@ -45,6 +45,13 @@ Workspace::~Workspace()
     s_instance = nullptr;
 }
 
+ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::String& projectName)
+{
+	if (LN_REQUIRE(!m_project)) return false;
+	m_project = ln::makeRef<Project>(this);
+	return m_project->newProject(projectDir, projectName, u"", u"NativeProject");
+}
+
 ln::Result Workspace::openMainProject(const ln::Path& filePath)
 {
 	if (LN_REQUIRE(!m_project)) return false;

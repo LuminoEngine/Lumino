@@ -152,6 +152,7 @@ void NavigatorManager::unloadAdditionalNavigators()
 	for (auto& nav : m_navigators) {
 		m_navigationBar->removeNavigator(nav);
 	}
+	m_navigators.clear();
 }
 
 void NavigatorManager::setCurrent(Navigator* navigator)

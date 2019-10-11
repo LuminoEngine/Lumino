@@ -36,7 +36,7 @@ protected:
     virtual void onInit() override;
 
 private:
-
+	void postProjectLoaded();
     void handleNewProject(ln::UICommandEventArgs* e);
     void handleOpenProject(ln::UICommandEventArgs* e);
 

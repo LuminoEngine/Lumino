@@ -168,6 +168,9 @@ void EditorApplication::newProject(const ln::Path& dirPath, const ln::String& pr
 	if (!closeProject()) {
 		return;
 	}
+
+	m_workspace->newMainProject(ln::Path(dirPath, projectName), projectName);
+	postProjectLoaded();
 }
 
 void EditorApplication::openProject(const ln::Path& filePath)
@@ -177,11 +180,7 @@ void EditorApplication::openProject(const ln::Path& filePath)
     lna::AppData::instance()->addRecentProjectFile(filePath);
 
     m_workspace->openMainProject(filePath);
-
-    mainWindow()->navigatorManager()->resetNavigators();
-
-    mainProject()->pluginManager()->activateAllExtensions(m_editorContext);
-
+	postProjectLoaded();
     //mainWindow()->mainHSplitter()->resetCellSize(0);
 
     //m_contentsViewManager->setup(m_workspace->project(), "ARPG-HC0");
@@ -205,9 +204,17 @@ bool EditorApplication::closeProject()
 
 	mainWindow()->navigatorManager()->unloadAdditionalNavigators();
 	mainProject()->pluginManager()->deactivateAllExtensions(m_editorContext);
+	m_workspace->closeMainProject();
+	return true;
 }
 
-//Ref<ln::UIDialog> m_dialog;
+void EditorApplication::postProjectLoaded()
+{
+
+	mainWindow()->navigatorManager()->resetNavigators();
+
+	mainProject()->pluginManager()->activateAllExtensions(m_editorContext);
+}
 
 void EditorApplication::handleNewProject(ln::UICommandEventArgs* e)
 {

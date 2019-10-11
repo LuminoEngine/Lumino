@@ -13,6 +13,7 @@ public:
 	Workspace();
 	virtual ~Workspace();
 
+	ln::Result newMainProject(const ln::Path& projectDir, const ln::String& projectName);
 	ln::Result openMainProject(const ln::Path& filePath);
 	ln::Result closeMainProject();
     ln::Result runProject(const ln::String& target);
