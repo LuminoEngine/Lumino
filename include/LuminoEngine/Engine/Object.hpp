@@ -297,7 +297,7 @@ private:
     List<Ref<PropertyInfo>> m_properties;
 	int64_t m_managedTypeInfoId;
 
-	friend class detail::TypeInfoInternal;
+	friend struct detail::TypeInfoInternal;
 };
 
 namespace detail {

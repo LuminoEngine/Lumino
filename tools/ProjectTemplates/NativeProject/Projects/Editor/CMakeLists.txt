@@ -11,7 +11,7 @@ source_group("Sources" FILES ${LOCAL_SOURCES})
 # Projects
 
 add_library(${PROJECT_NAME} SHARED ${LOCAL_SOURCES} "PCH.h" "PCH.cpp")
-target_link_libraries(${PROJECT_NAME} LuminoEditor)
+target_link_libraries(${PROJECT_NAME} LuminoEngine LuminoEditor)
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/.ln/Plugins"

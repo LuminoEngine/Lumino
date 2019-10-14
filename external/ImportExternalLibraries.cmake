@@ -27,6 +27,9 @@ elseif(WIN32 OR APPLE OR UNIX)
 endif()
 
 
+if (NOT DEFINED LN_BUILD_DIRECTORY)
+    set(LN_BUILD_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
 
 #-------------------------------------------------------------------------------
@@ -41,7 +44,7 @@ endif()
 macro(ln_make_external_find_path varName projectDirName)
     if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
-            set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
+            set(${varName} ${LN_BUILD_DIRECTORY}/ExternalInstall/${projectDirName})
         elseif (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "config")
             set(${varName} ${CMAKE_CURRENT_LIST_DIR}/lib})
         endif()
