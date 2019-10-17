@@ -28,14 +28,20 @@ private:
 	ln::String makeRubyMethodName(MethodSymbol* method) const;
 	ln::String makeWrapStructName(TypeSymbol* type) const { return u"Wrap_" + type->shortName(); }
 	ln::String makeWrapFuncName(MethodSymbol* method) const { return u"Wrap_" + makeFuncName(method, FlatCharset::Unicode); }
-	ln::String makeWrapFuncImplement(MethodOverloadInfo* overloadInfo) const;
-	ln::String makeWrapFuncCallBlock(MethodSymbol* method) const;
+	ln::String makeWrapFuncName_CallOverrideBase(MethodSymbol* method) const { return u"Wrap_" + makeFuncName(method, FlatCharset::Unicode) + u"_CallOverrideBase"; }
+
+	ln::String makeWrapFuncName_OverrideCallback(const TypeSymbol* classSymbol, const MethodSymbol* method) const { return u"Wrap_" + makeFuncName(classSymbol, method, FlatCharset::Unicode) + u"_OverrideCallback"; }
+	ln::String makeWrapFuncName_SetOverrideCallback(const TypeSymbol* classSymbol, const MethodSymbol* method) const { return u"Wrap_" + makeFuncName(classSymbol, method, FlatCharset::Unicode) + u"_SetOverrideCallback"; }
+
+	ln::String makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const;
+	ln::String makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
 	ln::String makeVALUEReturnExpr(TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeTypeCheckExpr(const TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const;
 	ln::String makeConstandValue(const ConstantSymbol* constant) const;
 
-	ln::String makeTypeInfoRegisters() const;
+	ln::String makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classInfo) const;
+
 
 	ln::String makeEnumTypeVALUEName(TypeSymbol* type) const { return u"g_enum_" + type->shortName(); }
 	ln::String makeEnumTypeVALUEVariableDecls() const;

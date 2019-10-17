@@ -133,7 +133,7 @@ int main(int argc, char** argv)
 					target = burildTargetArg->value();
 				}
 
-				if (!workspace->openProject2(projectFile)) {
+				if (!workspace->openMainProject(projectFile)) {
 					return 1;
 				}
 
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 					target = runCommand_targetArg->value();
 				}
 
-				if (!workspace->openProject2(projectFile)) {
+				if (!workspace->openMainProject(projectFile)) {
 					return 1;
 				}
 
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 			// restore command
 			else if (parser.has(restoreCommand))
 			{
-				if (!workspace->openProject2(projectFile)) {
+				if (!workspace->openMainProject(projectFile)) {
 					return 1;
 				}
 				if (!workspace->restoreProject()) {
@@ -204,7 +204,7 @@ int main(int argc, char** argv)
 			}
 			else if (parser.has(dev_openide))
 			{
-				if (!workspace->openProject2(projectFile)) {
+				if (!workspace->openMainProject(projectFile)) {
 					return 1;
 				}
 				workspace->dev_openIde(dev_openide_targetArg->value());

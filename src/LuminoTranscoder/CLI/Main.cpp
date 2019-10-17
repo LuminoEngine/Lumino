@@ -4,7 +4,7 @@
 #include "../Core/Generators/FlatCGenerator.hpp"
 #include "../Core/Generators/RubyExtGenerator.hpp"
 
-#define TEST_ROOT u"C:/Proj/LN/Lumino/"
+#define TEST_ROOT u"D:/Proj/LN/Lumino/"
 
 int main(int argc, char** argv)
 {
@@ -12,7 +12,8 @@ int main(int argc, char** argv)
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	auto pidb = ln::makeRef<PIDatabase>();
 
-	if (0)
+	if (!ln::FileSystem::existsFile(u"pidb.json"))
+	//if (1)
 	{
 		ln::List<ln::Path> files_LuminoCore =
 		{
@@ -67,7 +68,7 @@ int main(int argc, char** argv)
 
 	auto config = ln::makeRef<GeneratorConfiguration>();
 	config->moduleName = u"Lumino";
-	config->outputDir = LN_LOCALFILE("../../Bindings");
+	config->outputDir = LN_LOCALFILE("../../../tools/Bindings");
 	config->templateDir = LN_LOCALFILE("../Core/Generators/Templates");
 	config->targetNamespace = u"ln";
 	config->flatCOutputModuleName = u"Ln";
@@ -84,8 +85,6 @@ int main(int argc, char** argv)
 		g.setup(db, config);
 		g.generate();
 	}
-
-
 	{
 		RubyExtGenerator g;
 		g.setup(db, config);

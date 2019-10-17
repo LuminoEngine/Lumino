@@ -1,11 +1,11 @@
 #pragma once
-#if 1
 #include <ruby.h>
 #include <string>
 #include <vector>
 #include <stack>
 #include <LuminoEngine/Runtime/FlatCommon.h>
 
+#if 1
 /*
 extern "C" int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
 typedef intptr_t LnHandle;

@@ -415,32 +415,28 @@ static VALUE Wrap_LnWorldObject_SetPosition(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE worldobject;
+    if (1 <= argc && argc <= 1) {
         VALUE pos;
-        rb_scan_args(argc, argv, "2", &worldobject, &pos);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_OBJECT(pos))
+        rb_scan_args(argc, argv, "1", &pos);
+        if (LNRB_VALUE_IS_OBJECT(pos))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnVector3* tmp__pos; Data_Get_Struct(pos, LnVector3, tmp__pos);LnVector3& _pos = *tmp__pos;
-            LnResult errorCode = LnWorldObject_SetPosition(_worldobject, &_pos);
+            LnResult errorCode = LnWorldObject_SetPosition(selfObj->handle, &_pos);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    if (3 <= argc && argc <= 4) {
-        VALUE worldobject;
+    if (2 <= argc && argc <= 3) {
         VALUE x;
         VALUE y;
         VALUE z;
-        rb_scan_args(argc, argv, "31", &worldobject, &x, &y, &z);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        rb_scan_args(argc, argv, "21", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             float _x = LNRB_VALUE_TO_FLOAT(x);
             float _y = LNRB_VALUE_TO_FLOAT(y);
             float _z = (z != Qnil) ? LNRB_VALUE_TO_FLOAT(z) : 0.000000;
-            LnResult errorCode = LnWorldObject_SetPositionXYZ(_worldobject, _x, _y, _z);
+            LnResult errorCode = LnWorldObject_SetPositionXYZ(selfObj->handle, _x, _y, _z);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -453,14 +449,11 @@ static VALUE Wrap_LnWorldObject_Position(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE worldobject;
-        rb_scan_args(argc, argv, "1", &worldobject);
-        if (LNRB_VALUE_IS_OBJECT(worldobject))
+    if (0 <= argc && argc <= 0) {
+
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnVector3 _outReturn;
-            LnResult errorCode = LnWorldObject_Position(_worldobject, &_outReturn);
+            LnResult errorCode = LnWorldObject_Position(selfObj->handle, &_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             VALUE retObj = LnVector3_allocate(g_class_Vector3);
             *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
@@ -475,15 +468,13 @@ static VALUE Wrap_LnWorldObject_SetRotation(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE worldobject;
+    if (1 <= argc && argc <= 1) {
         VALUE rot;
-        rb_scan_args(argc, argv, "2", &worldobject, &rot);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_OBJECT(rot))
+        rb_scan_args(argc, argv, "1", &rot);
+        if (LNRB_VALUE_IS_OBJECT(rot))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnQuaternion* tmp__rot; Data_Get_Struct(rot, LnQuaternion, tmp__rot);LnQuaternion& _rot = *tmp__rot;
-            LnResult errorCode = LnWorldObject_SetRotation(_worldobject, &_rot);
+            LnResult errorCode = LnWorldObject_SetRotation(selfObj->handle, &_rot);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -496,19 +487,17 @@ static VALUE Wrap_LnWorldObject_SetEulerAngles(int argc, VALUE* argv, VALUE self
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (4 <= argc && argc <= 4) {
-        VALUE worldobject;
+    if (3 <= argc && argc <= 3) {
         VALUE x;
         VALUE y;
         VALUE z;
-        rb_scan_args(argc, argv, "4", &worldobject, &x, &y, &z);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        rb_scan_args(argc, argv, "3", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             float _x = LNRB_VALUE_TO_FLOAT(x);
             float _y = LNRB_VALUE_TO_FLOAT(y);
             float _z = LNRB_VALUE_TO_FLOAT(z);
-            LnResult errorCode = LnWorldObject_SetEulerAngles(_worldobject, _x, _y, _z);
+            LnResult errorCode = LnWorldObject_SetEulerAngles(selfObj->handle, _x, _y, _z);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -521,14 +510,11 @@ static VALUE Wrap_LnWorldObject_Rotation(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE worldobject;
-        rb_scan_args(argc, argv, "1", &worldobject);
-        if (LNRB_VALUE_IS_OBJECT(worldobject))
+    if (0 <= argc && argc <= 0) {
+
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnQuaternion _outReturn;
-            LnResult errorCode = LnWorldObject_Rotation(_worldobject, &_outReturn);
+            LnResult errorCode = LnWorldObject_Rotation(selfObj->handle, &_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             VALUE retObj = LnQuaternion_allocate(g_class_Quaternion);
             *((LnQuaternion*)DATA_PTR(retObj)) = _outReturn;
@@ -543,45 +529,39 @@ static VALUE Wrap_LnWorldObject_SetScale(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE worldobject;
+    if (1 <= argc && argc <= 1) {
         VALUE scale;
-        rb_scan_args(argc, argv, "2", &worldobject, &scale);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_OBJECT(scale))
+        rb_scan_args(argc, argv, "1", &scale);
+        if (LNRB_VALUE_IS_OBJECT(scale))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnVector3* tmp__scale; Data_Get_Struct(scale, LnVector3, tmp__scale);LnVector3& _scale = *tmp__scale;
-            LnResult errorCode = LnWorldObject_SetScale(_worldobject, &_scale);
+            LnResult errorCode = LnWorldObject_SetScale(selfObj->handle, &_scale);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    if (2 <= argc && argc <= 2) {
-        VALUE worldobject;
+    if (1 <= argc && argc <= 1) {
         VALUE xyz;
-        rb_scan_args(argc, argv, "2", &worldobject, &xyz);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_FLOAT(xyz))
+        rb_scan_args(argc, argv, "1", &xyz);
+        if (LNRB_VALUE_IS_FLOAT(xyz))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             float _xyz = LNRB_VALUE_TO_FLOAT(xyz);
-            LnResult errorCode = LnWorldObject_SetScaleS(_worldobject, _xyz);
+            LnResult errorCode = LnWorldObject_SetScaleS(selfObj->handle, _xyz);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    if (3 <= argc && argc <= 4) {
-        VALUE worldobject;
+    if (2 <= argc && argc <= 3) {
         VALUE x;
         VALUE y;
         VALUE z;
-        rb_scan_args(argc, argv, "31", &worldobject, &x, &y, &z);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        rb_scan_args(argc, argv, "21", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             float _x = LNRB_VALUE_TO_FLOAT(x);
             float _y = LNRB_VALUE_TO_FLOAT(y);
             float _z = (z != Qnil) ? LNRB_VALUE_TO_FLOAT(z) : 1.000000;
-            LnResult errorCode = LnWorldObject_SetScaleXYZ(_worldobject, _x, _y, _z);
+            LnResult errorCode = LnWorldObject_SetScaleXYZ(selfObj->handle, _x, _y, _z);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -594,14 +574,11 @@ static VALUE Wrap_LnWorldObject_Scale(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE worldobject;
-        rb_scan_args(argc, argv, "1", &worldobject);
-        if (LNRB_VALUE_IS_OBJECT(worldobject))
+    if (0 <= argc && argc <= 0) {
+
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnVector3 _outReturn;
-            LnResult errorCode = LnWorldObject_Scale(_worldobject, &_outReturn);
+            LnResult errorCode = LnWorldObject_Scale(selfObj->handle, &_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             VALUE retObj = LnVector3_allocate(g_class_Vector3);
             *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
@@ -616,32 +593,28 @@ static VALUE Wrap_LnWorldObject_SetCenterPoint(int argc, VALUE* argv, VALUE self
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE worldobject;
+    if (1 <= argc && argc <= 1) {
         VALUE value;
-        rb_scan_args(argc, argv, "2", &worldobject, &value);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_OBJECT(value))
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnVector3* tmp__value; Data_Get_Struct(value, LnVector3, tmp__value);LnVector3& _value = *tmp__value;
-            LnResult errorCode = LnWorldObject_SetCenterPoint(_worldobject, &_value);
+            LnResult errorCode = LnWorldObject_SetCenterPoint(selfObj->handle, &_value);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    if (3 <= argc && argc <= 4) {
-        VALUE worldobject;
+    if (2 <= argc && argc <= 3) {
         VALUE x;
         VALUE y;
         VALUE z;
-        rb_scan_args(argc, argv, "31", &worldobject, &x, &y, &z);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        rb_scan_args(argc, argv, "21", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             float _x = LNRB_VALUE_TO_FLOAT(x);
             float _y = LNRB_VALUE_TO_FLOAT(y);
             float _z = (z != Qnil) ? LNRB_VALUE_TO_FLOAT(z) : 0.000000;
-            LnResult errorCode = LnWorldObject_SetCenterPointXYZ(_worldobject, _x, _y, _z);
+            LnResult errorCode = LnWorldObject_SetCenterPointXYZ(selfObj->handle, _x, _y, _z);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -654,14 +627,11 @@ static VALUE Wrap_LnWorldObject_CenterPoint(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE worldobject;
-        rb_scan_args(argc, argv, "1", &worldobject);
-        if (LNRB_VALUE_IS_OBJECT(worldobject))
+    if (0 <= argc && argc <= 0) {
+
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             LnVector3 _outReturn;
-            LnResult errorCode = LnWorldObject_CenterPoint(_worldobject, &_outReturn);
+            LnResult errorCode = LnWorldObject_CenterPoint(selfObj->handle, &_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             VALUE retObj = LnVector3_allocate(g_class_Vector3);
             *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
@@ -676,15 +646,13 @@ static VALUE Wrap_LnWorldObject_OnUpdate(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE worldobject;
+    if (1 <= argc && argc <= 1) {
         VALUE elapsedSeconds;
-        rb_scan_args(argc, argv, "2", &worldobject, &elapsedSeconds);
-        if (LNRB_VALUE_IS_OBJECT(worldobject) && LNRB_VALUE_IS_FLOAT(elapsedSeconds))
+        rb_scan_args(argc, argv, "1", &elapsedSeconds);
+        if (LNRB_VALUE_IS_FLOAT(elapsedSeconds))
         {
-            LnHandle _worldobject = LuminoRubyRuntimeManager::instance->getHandle(worldobject);
             float _elapsedSeconds = LNRB_VALUE_TO_FLOAT(elapsedSeconds);
-            LnResult errorCode = LnWorldObject_OnUpdate(_worldobject, _elapsedSeconds);
+            LnResult errorCode = LnWorldObject_OnUpdate_CallOverrideBase(selfObj->handle, _elapsedSeconds);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -693,6 +661,12 @@ static VALUE Wrap_LnWorldObject_OnUpdate(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnWorldObject_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::VisualObject
 
@@ -742,15 +716,13 @@ static VALUE Wrap_LnVisualObject_SetVisible(int argc, VALUE* argv, VALUE self)
 {
     Wrap_VisualObject* selfObj;
     Data_Get_Struct(self, Wrap_VisualObject, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE visualobject;
+    if (1 <= argc && argc <= 1) {
         VALUE value;
-        rb_scan_args(argc, argv, "2", &visualobject, &value);
-        if (LNRB_VALUE_IS_OBJECT(visualobject) && LNRB_VALUE_IS_BOOL(value))
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_BOOL(value))
         {
-            LnHandle _visualobject = LuminoRubyRuntimeManager::instance->getHandle(visualobject);
             LnBool _value = LNRB_VALUE_TO_BOOL(value);
-            LnResult errorCode = LnVisualObject_SetVisible(_visualobject, _value);
+            LnResult errorCode = LnVisualObject_SetVisible(selfObj->handle, _value);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -763,14 +735,11 @@ static VALUE Wrap_LnVisualObject_IsVisible(int argc, VALUE* argv, VALUE self)
 {
     Wrap_VisualObject* selfObj;
     Data_Get_Struct(self, Wrap_VisualObject, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE visualobject;
-        rb_scan_args(argc, argv, "1", &visualobject);
-        if (LNRB_VALUE_IS_OBJECT(visualobject))
+    if (0 <= argc && argc <= 0) {
+
         {
-            LnHandle _visualobject = LuminoRubyRuntimeManager::instance->getHandle(visualobject);
             LnBool _outReturn;
-            LnResult errorCode = LnVisualObject_IsVisible(_visualobject, &_outReturn);
+            LnResult errorCode = LnVisualObject_IsVisible(selfObj->handle, &_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return LNI_TO_RUBY_VALUE(_outReturn);
         }
@@ -779,6 +748,12 @@ static VALUE Wrap_LnVisualObject_IsVisible(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnVisualObject_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::Sprite
 
@@ -828,15 +803,13 @@ static VALUE Wrap_LnSprite_SetTexture(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Sprite* selfObj;
     Data_Get_Struct(self, Wrap_Sprite, selfObj);
-    if (2 <= argc && argc <= 2) {
-        VALUE sprite;
+    if (1 <= argc && argc <= 1) {
         VALUE texture;
-        rb_scan_args(argc, argv, "2", &sprite, &texture);
-        if (LNRB_VALUE_IS_OBJECT(sprite) && LNRB_VALUE_IS_OBJECT(texture))
+        rb_scan_args(argc, argv, "1", &texture);
+        if (LNRB_VALUE_IS_OBJECT(texture))
         {
-            LnHandle _sprite = LuminoRubyRuntimeManager::instance->getHandle(sprite);
             LnHandle _texture = LuminoRubyRuntimeManager::instance->getHandle(texture);
-            LnResult errorCode = LnSprite_SetTexture(_sprite, _texture);
+            LnResult errorCode = LnSprite_SetTexture(selfObj->handle, _texture);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -849,21 +822,19 @@ static VALUE Wrap_LnSprite_SetSourceRectXYWH(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Sprite* selfObj;
     Data_Get_Struct(self, Wrap_Sprite, selfObj);
-    if (5 <= argc && argc <= 5) {
-        VALUE sprite;
+    if (4 <= argc && argc <= 4) {
         VALUE x;
         VALUE y;
         VALUE width;
         VALUE height;
-        rb_scan_args(argc, argv, "5", &sprite, &x, &y, &width, &height);
-        if (LNRB_VALUE_IS_OBJECT(sprite) && LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(width) && LNRB_VALUE_IS_FLOAT(height))
+        rb_scan_args(argc, argv, "4", &x, &y, &width, &height);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(width) && LNRB_VALUE_IS_FLOAT(height))
         {
-            LnHandle _sprite = LuminoRubyRuntimeManager::instance->getHandle(sprite);
             float _x = LNRB_VALUE_TO_FLOAT(x);
             float _y = LNRB_VALUE_TO_FLOAT(y);
             float _width = LNRB_VALUE_TO_FLOAT(width);
             float _height = LNRB_VALUE_TO_FLOAT(height);
-            LnResult errorCode = LnSprite_SetSourceRectXYWH(_sprite, _x, _y, _width, _height);
+            LnResult errorCode = LnSprite_SetSourceRectXYWH(selfObj->handle, _x, _y, _width, _height);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -896,6 +867,12 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnSprite_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
 
 
 extern "C" void Init_Lumino()
@@ -938,11 +915,11 @@ extern "C" void Init_Lumino()
     rb_define_alloc_func(g_class_GraphicsResource, LnGraphicsResource_allocate);
     LnGraphicsResource_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_GraphicsResource, LnGraphicsResource_allocateForGetObject));
 
-    g_class_Texture = rb_define_class_under(g_rootModule, "Texture", rb_cObject);
+    g_class_Texture = rb_define_class_under(g_rootModule, "Texture", g_class_GraphicsResource);
     rb_define_alloc_func(g_class_Texture, LnTexture_allocate);
     LnTexture_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture, LnTexture_allocateForGetObject));
 
-    g_class_Texture2D = rb_define_class_under(g_rootModule, "Texture2D", rb_cObject);
+    g_class_Texture2D = rb_define_class_under(g_rootModule, "Texture2D", g_class_Texture);
     rb_define_alloc_func(g_class_Texture2D, LnTexture2D_allocate);
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Create), -1);
     LnTexture2D_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture2D, LnTexture2D_allocateForGetObject));
@@ -960,19 +937,22 @@ extern "C" void Init_Lumino()
     rb_define_method(g_class_WorldObject, "center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_CenterPoint), -1);
     rb_define_method(g_class_WorldObject, "on_update", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_OnUpdate), -1);
     LnWorldObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_WorldObject, LnWorldObject_allocateForGetObject));
+    LnWorldObject_OnUpdate_SetOverrideCallback(Wrap_LnWorldObject_OnUpdate_OverrideCallback);
 
-    g_class_VisualObject = rb_define_class_under(g_rootModule, "VisualObject", rb_cObject);
+    g_class_VisualObject = rb_define_class_under(g_rootModule, "VisualObject", g_class_WorldObject);
     rb_define_alloc_func(g_class_VisualObject, LnVisualObject_allocate);
     rb_define_method(g_class_VisualObject, "set_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_SetVisible), -1);
     rb_define_method(g_class_VisualObject, "is_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_IsVisible), -1);
     LnVisualObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualObject, LnVisualObject_allocateForGetObject));
+    LnVisualObject_OnUpdate_SetOverrideCallback(Wrap_LnVisualObject_OnUpdate_OverrideCallback);
 
-    g_class_Sprite = rb_define_class_under(g_rootModule, "Sprite", rb_cObject);
+    g_class_Sprite = rb_define_class_under(g_rootModule, "Sprite", g_class_VisualObject);
     rb_define_alloc_func(g_class_Sprite, LnSprite_allocate);
     rb_define_method(g_class_Sprite, "set_texture", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetTexture), -1);
     rb_define_method(g_class_Sprite, "set_source_rect", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSourceRectXYWH), -1);
     rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSprite_Create), -1);
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
+    LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);
 
 }
 

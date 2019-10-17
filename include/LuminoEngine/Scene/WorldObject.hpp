@@ -18,35 +18,27 @@ public:
     WorldObjectTransform(WorldObject* parent);
 
     /** 位置を設定します。 */
-    LN_METHOD(Property)
     void setPosition(const Vector3& pos);
     
 	/** 位置を取得します。 */
-	LN_METHOD(Property)
 	const Vector3& position() const { return m_position; }
     
 	/** このオブジェクトの回転を設定します。 */
-	LN_METHOD(Property)
 	void setRotation(const Quaternion& rot);
     
 	/** このオブジェクトの回転を取得します。 */
-	LN_METHOD(Property)
 	const Quaternion& rotation() const { return m_rotation; }
 
 	/** このオブジェクトの拡大率を設定します。 */
-	LN_METHOD(Property)
 	void setScale(const Vector3& scale);
     
 	/** このオブジェクトの拡大率を取得します。 */
-	LN_METHOD(Property)
 	const Vector3& scale() const { return m_scale; }
     
 	/** このオブジェクトのローカルの中心位置を設定します。 */
-	LN_METHOD(Property)
 	void setCenterPoint(const Vector3& value);
     
 	/** このオブジェクトのローカルの中心位置を取得します。 */
-	LN_METHOD(Property)
 	const Vector3& centerPoint() const { return m_center; }
 
     // TODO:Forward?

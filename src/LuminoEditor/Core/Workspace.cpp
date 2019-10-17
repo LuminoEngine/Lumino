@@ -36,7 +36,7 @@ Workspace::Workspace()
 #ifdef LN_DEBUG
 	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
 #else
-	m_buildEnvironment->setupPathes();
+	m_buildEnvironment->setupPathes(EnvironmentPathBase::EnvironmentVariable);
 #endif
 }
 

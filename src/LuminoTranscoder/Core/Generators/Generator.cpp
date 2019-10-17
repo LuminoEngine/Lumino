@@ -114,7 +114,12 @@ ln::String Generator::makeFlatShortFuncName(const MethodSymbol* method, FlatChar
 
 ln::String Generator::makeFuncName(const MethodSymbol* method, FlatCharset charset) const
 {
-	return ln::String::format(_T("{0}{1}_{2}"), m_config->flatCOutputModuleName, method->ownerType()->shortName(), makeFlatShortFuncName(method, charset));
+	return makeFuncName(method->ownerType(), method, charset);
+}
+
+ln::String Generator::makeFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const
+{
+	return ln::String::format(_T("{0}{1}_{2}"), m_config->flatCOutputModuleName, classSymbol->shortName(), makeFlatShortFuncName(method, charset));
 }
 
 // 宣言文の作成。ドキュメンテーションコメントは含まない。

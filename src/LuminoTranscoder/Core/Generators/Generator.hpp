@@ -75,6 +75,7 @@ public:
 	ln::String makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatShortFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "SetTexture"
 	ln::String makeFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "LnSprite_SetTexture"
+	ln::String makeFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const;		// トップレベルの Visual 関数の名前を作るの使用する
 	ln::String makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset charset) const;	// e.g) -> "LN_FLAT_API LnResult LnWorldObject_Seteulerangles(LnHandle worldobject, float x, float y, float z)"
 	ln::String makeFlatCParamQualTypeName(const MethodSymbol* methodInfo, const MethodParameterSymbol* paramInfo, FlatCharset charset) const;
 	ln::String makeFlatCharTypeName(FlatCharset charset) const;

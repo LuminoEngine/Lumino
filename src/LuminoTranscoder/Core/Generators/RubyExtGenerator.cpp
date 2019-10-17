@@ -81,8 +81,10 @@ void RubyExtGenerator::generate()
 		}
 
 		for (auto& overload : classSymbol->overloads()) {
-			code.append(makeWrapFuncImplement(overload));
+			code.append(makeWrapFuncImplement(classSymbol, overload));
 		}
+
+		code.append(makeWrapFuncImplement_SetOverrideCallback(classSymbol));
 
 		for (auto& method : classSymbol->publicMethods()) {
 			allFlatCApiDecls.AppendLine(u"extern \"C\" " + makeFuncHeader(method, FlatCharset::Unicode) + u";");
@@ -131,7 +133,8 @@ void RubyExtGenerator::generate()
 			typeVALUEDecls.AppendLine(u"VALUE {0};", classInfoVar);
 
 			// define class
-			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", rb_cObject);", classInfoVar, classSymbol->shortName());
+			auto baseClass = (!classSymbol->baseClass() || classSymbol->baseClass() == PredefinedTypes::objectType) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
+			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", {2});", classInfoVar, classSymbol->shortName(), baseClass);
 			if (!classSymbol->isStatic()) {
 				moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(classSymbol));
 			}
@@ -141,27 +144,25 @@ void RubyExtGenerator::generate()
 				if (overload->representative()->isConstructor()) {
 					moduleInitializer.AppendLine(u"rb_define_private_method({0}, \"initialize\", LN_TO_RUBY_FUNC({1}), -1);", classInfoVar, makeWrapFuncName(overload->representative()));
 				}
-				else
-				if (overload->representative()->isStatic()) {
+				else if (overload->representative()->isStatic()) {
 					moduleInitializer.AppendLine(u"rb_define_singleton_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+				}
+				else if (overload->representative()->isVirtual()) {
+					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
 				}
 				else {
 					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
 				}
-
-
-				//string def;
-				//if (baseMethod.IsRefObjectConstructor)
-				//	def = string.Format(@"rb_define_private_method({0}, ""initialize"", LN_TO_RUBY_FUNC({ 1 }), -1); ", typeValName, funcName);
-				//else if (baseMethod.IsInstanceMethod)
-				//	def = string.Format(@"rb_define_method({0}, ""{1}"", LN_TO_RUBY_FUNC({ 2 }), -1); ", typeValName, rubyMethodName, funcName);
-				//else
-				//	def = string.Format(@"rb_define_singleton_method({0}, ""{1}"", LN_TO_RUBY_FUNC({ 2 }), -1); ", typeValName, rubyMethodName, funcName);
-				//output.AppendLine(def);
 			}
 
+			// register typeinfo
 			if (!classSymbol->isStatic()) {
 				moduleInitializer.AppendLine(u"{0}(LuminoRubyRuntimeManager::instance->registerTypeInfo({1}, {2}_allocateForGetObject));", makeFlatAPIName_SetManagedTypeInfoId(classSymbol), classInfoVar, makeFlatClassName(classSymbol));
+			}
+
+			// override callbacks
+			for (auto& method : classSymbol->virtualMethods()) {
+				moduleInitializer.AppendLine(u"{0}({1});", makeFlatAPIName_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode), makeWrapFuncName_OverrideCallback(classSymbol, method));
 			}
 
 			moduleInitializer.NewLine();
@@ -304,7 +305,7 @@ ln::String RubyExtGenerator::makeRubyMethodName(MethodSymbol* method) const
 #endif
 }
 
-ln::String RubyExtGenerator::makeWrapFuncImplement(MethodOverloadInfo* overloadInfo) const
+ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const
 {
 	OutputBuffer code;
 
@@ -323,7 +324,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(MethodOverloadInfo* overloadI
 
 	// Body 作成。if () { ～ } までのオーバーロード呼び出し1つ分
 	for (auto& method : overloadInfo->methods()) {
-		code.AppendLine(makeWrapFuncCallBlock(method));
+		code.AppendLine(makeWrapFuncCallBlock(classSymbol, method));
 	}
 
 	// 関数終端まで到達してしまったら例外
@@ -337,7 +338,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(MethodOverloadInfo* overloadI
 	return code.toString();
 }
 
-ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
+ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const
 {
 	/* 出力例：
 	if (1 <= argc && argc <= 4) {
@@ -374,10 +375,14 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 	{
 		for (auto& param : method->flatParameters())
 		{
-			// return として選択されている out 属性の引数である場合
-			if (param->isReturn())
+			if (param->isThis()) {
+				callerArgList.AppendCommad("selfObj->handle");
+			}
+			else if (param->isReturn())
 			{
-				// コンストラクタの最後の引数は、WrapStruct::Handle への格納になる
+				// return として選択されている out 属性の引数である場合
+
+				// コンストラクタの最後の引数 (LNTexture_Create(x, y, &tex) の tex) は、WrapStruct::Handle へ格納する
 				if (method->isConstructor()) {
 					callerArgList.AppendCommad("&selfObj->handle");
 
@@ -397,7 +402,6 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 			}
 			else
 			{
-
 				if (param->defaultValue())
 					optionalArgsCount++;
 				else
@@ -424,9 +428,6 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 		}
 	}
 
-
-
-
 	OutputBuffer code;
 	code.append(u"if ({0} <= argc && argc <= {1}) {{", requiredArgsCount, requiredArgsCount + optionalArgsCount).NewLine();
 	code.IncreaseIndent();
@@ -444,12 +445,13 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(MethodSymbol* method) const
 		}
 	}
 	
+	ln::String funcName = (method->isVirtual()) ? makeFlatAPIName_CallOverrideBase(classSymbol, method, FlatCharset::Ascii) : makeFuncName(method, FlatCharset::Ascii);
 
 	code.AppendLine(u"{");
 	code.IncreaseIndent();
 
 	code.AppendLine(callerArgDecls.toString().trim());
-	code.AppendLine("LnResult errorCode = {0}({1});", makeFuncName(method, FlatCharset::Ascii), callerArgList.toString());
+	code.AppendLine("LnResult errorCode = {0}({1});", funcName, callerArgList.toString());
 	code.AppendLine(u"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LnRuntime_GetLastErrorMessage());");
 	code.AppendLine((callerReturnStmt.isEmpty()) ? u"return Qnil;" : callerReturnStmt.toString().trim());
 	code.DecreaseIndent();
@@ -786,12 +788,48 @@ ln::String RubyExtGenerator::makeConstandValue(const ConstantSymbol* constant) c
 	}
 }
 
-ln::String RubyExtGenerator::makeTypeInfoRegisters() const
+// LnWorldObject_OnUpdate_SetOverrideCallback() などに登録するコールバック関数の生成
+ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classSymbol) const
 {
 	OutputBuffer code;
-	for (auto& symbol : db()->classes()) {
-		code.AppendLine(u"{0}(LuminoRubyRuntimeManager::instance->registerTypeInfo());", makeFlatAPIName_SetManagedTypeInfoId(symbol));
+
+	for (auto& method : classSymbol->virtualMethods()) {
+		if (method->isVirtual()) {
+			// Func header
+			{
+				// make params
+				OutputBuffer params;
+				for (auto& param : method->flatParameters()) {
+					params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(method, param, FlatCharset::Unicode), param->name());
+				}
+				code.AppendLine(u"LnResult {0}({1})", makeWrapFuncName_OverrideCallback(classSymbol, method), params.toString());
+			}
+
+			// begin body
+			code.AppendLine("{");
+			code.IncreaseIndent();
+
+			// make args
+			OutputBuffer args;
+			for (int i = 1; i < method->flatParameters().size(); i++) {
+				args.AppendCommad(u"LNI_TO_RUBY_VALUE({0})", method->flatParameters()[i]->name());
+			}
+
+			code.AppendLine(u"VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject({0});", method->flatParameters().front()->name());
+			code.AppendLine(u"VALUE retval = rb_funcall(obj, rb_intern(\"{0}\"), {1}, {2});", makeRubyMethodName(method), method->flatParameters().size() - 1, args.toString());
+
+			if (method->returnType() != PredefinedTypes::voidType) {
+				code.AppendLine(u"Return-type is not impelemnted.");
+			}
+
+			code.AppendLine("return LN_SUCCESS;");
+
+			// end body
+			code.DecreaseIndent();
+			code.AppendLine("}");
+		}
 	}
+
 	return code.toString();
 }
 

@@ -242,6 +242,11 @@ public:
 				auto info = ln::makeRef<PITypeInfo>();
 				info->rawFullName = getRawTypeFullName(QualType(decl->getTypeForDecl(), 0));
 
+				if (info->rawFullName.contains(u"IWorldObjectVisitor")) {
+					printf("");
+				}
+				
+
 				// documentation
 				info->document = parseDocument(decl);
 
