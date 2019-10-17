@@ -67,6 +67,8 @@ public:
     static PhysicsWorld* mainPhysicsWorld();
     static PhysicsWorld2D* mainPhysicsWorld2D();
 
+    // TODO: internal
+    static void setActiveWorld(World* world);
 };
 
 } // namespace ln

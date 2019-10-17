@@ -15,6 +15,7 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Scene/SceneManager.hpp"
 
 namespace ln {
 
@@ -237,6 +238,13 @@ PhysicsWorld* Engine::mainPhysicsWorld()
 PhysicsWorld2D* Engine::mainPhysicsWorld2D()
 {
     return detail::EngineDomain::engineManager()->mainPhysicsWorld2D();
+}
+
+
+
+void Engine::setActiveWorld(World* world)
+{
+    detail::EngineDomain::engineManager()->sceneManager()->setActiveWorld(world);
 }
 
 
