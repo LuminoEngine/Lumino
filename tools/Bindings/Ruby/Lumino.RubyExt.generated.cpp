@@ -76,7 +76,6 @@ VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
 VALUE g_class_Sprite;
 
-
 //==============================================================================
 // ln::Vector3
 
@@ -879,6 +878,24 @@ extern "C" void Init_Lumino()
 {
     InitLuminoRubyRuntimeManager();
     g_rootModule = rb_define_module("Lumino");
+
+    int state = 0;
+    rb_eval_string_protect(
+        "class Event_Void\n"
+        "  def initialize\n"
+        "    @handlers = []\n"
+        "  end\n"
+        "  def add(handler)\n"
+        "    @handlers.push(handler)\n"
+        "  end\n"
+        "  def raise(*args)\n"
+        "    @handlers.each do |h|\n"
+        "      h.call(*args)\n"
+        "    end\n"
+        "  end\n"
+        "end\n",
+        &state
+    );
 
     g_enum_PixelFormat = rb_define_module_under(g_rootModule, "PixelFormat");
     rb_define_const(g_enum_PixelFormat, "UNKNOWN", INT2FIX(0)); 

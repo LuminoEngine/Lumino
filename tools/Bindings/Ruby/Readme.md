@@ -20,6 +20,25 @@ Debug 版でリンクされているライブラリが、Ruby からは参照で
 ※/MT でビルドすれば大丈夫かも。
 
 
+```
+int state = 0;
+rb_eval_string_protect(
+      "class Event_Void\n"
+      "  def initialize\n"
+      "    @handlers = []\n"
+      "  end\n"
+      "  def add(handler)\n"
+      "    @handlers.push(handler)\n"
+      "  end\n"
+      "  def raise(*args)\n"
+      "    @handlers.each do |h|\n"
+      "      h.call(*args)\n"
+      "    end\n"
+      "  end\n"
+      "end\n",
+      &state
+);
+```
 
 -----------------------------------------
 
