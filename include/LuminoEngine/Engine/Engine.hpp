@@ -53,9 +53,12 @@ public:
     /** メインウィンドウのタイトルバーに、秒間の平均 FPS を表示します。簡易的なパフォーマンス測定に利用できます。(default: false) */
     //static void setShowDebugFpsEnabled(bool enabled);
 
+
+
 	static GraphicsContext* graphicsContext();
     static UIContext* mainUIContext();
 	static UIFrameWindow* mainWindow();
+    /** デフォルトで作成される UIViewport は、MainWindow の直接の子要素となっています。 */
     static UIViewport* mainViewport();
 	static UIContainerElement* mainUIRoot();
     static Size mainViewSize();

@@ -74,6 +74,7 @@ public: // TODO: internal
     Ref<PhysicsWorld> m_physicsWorld;
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
     Ref<EffectContext> m_effectContext;
+    Ref<Scene> m_masterScene;
 
     Ref<List<Ref<Scene>>> m_sceneList;
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;

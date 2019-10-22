@@ -13,6 +13,10 @@ namespace detail {
 class SceneRenderingPipeline;
 }
 
+/**
+ *
+ * ClearMode のデフォルトは ColorAndDepth です。
+ */
 class WorldRenderView
 	: public RenderView
 {

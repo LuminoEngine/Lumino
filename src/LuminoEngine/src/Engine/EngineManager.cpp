@@ -160,9 +160,7 @@ void EngineManager::init()
             m_mainWorld = makeObject<World>();
             m_sceneManager->setActiveWorld(m_mainWorld);
 
-
-            m_mainScene = makeObject<Scene>();
-            m_mainWorld->addScene(m_mainScene);
+            m_mainScene = m_mainWorld->masterScene();
 
             //m_mainAmbientLight = makeObject<AmbientLight>();
             //m_mainDirectionalLight = makeObject<DirectionalLight>();

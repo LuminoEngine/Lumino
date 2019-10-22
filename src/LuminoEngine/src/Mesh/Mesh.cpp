@@ -331,8 +331,7 @@ bool MeshResource::isInitialEmpty() const
 // MeshContainer
 
 MeshContainer::MeshContainer()
-	: m_meshModel(nullptr)
-	, m_name()
+	: m_name()
 	, m_lodResources()
 {
 }
@@ -429,9 +428,7 @@ StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 {
 	if (LN_REQUIRE(meshContainer)) return;
-	if (LN_REQUIRE(!meshContainer->m_meshModel)) return;
 	m_meshContainers.add(meshContainer);
-	meshContainer->m_meshModel = this;
 }
 
 void StaticMeshModel::addMaterial(AbstractMaterial* material)

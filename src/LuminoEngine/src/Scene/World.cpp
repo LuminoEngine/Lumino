@@ -22,9 +22,12 @@ LN_OBJECT_IMPLEMENT(World, Object)
 }
 
 World::World()
-	: m_sceneList(makeList<Ref<Scene>>())
+	: m_masterScene(makeObject<Scene>())
+    , m_sceneList(makeList<Ref<Scene>>())
     , m_timeScale(1.0f)
 {
+    m_masterScene->m_ownerWorld = this;
+    m_masterScene->m_initialUpdate = true;
 }
 
 World::~World()
@@ -87,8 +90,7 @@ WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
 
 Scene* World::masterScene() const
 {
-    if (m_sceneList->isEmpty()) return nullptr;
-    return m_sceneList->front();
+    return m_masterScene;
 }
 
 void World::addScene(Scene* scene)
@@ -102,6 +104,7 @@ void World::addScene(Scene* scene)
 
 void World::updateObjectsWorldMatrix()
 {
+    m_masterScene->updateObjectsWorldMatrix();
     for (auto& scene : m_sceneList) {
         scene->updateObjectsWorldMatrix();
     }
@@ -121,6 +124,7 @@ void World::onPreUpdate(float elapsedSeconds)
 {
     m_effectContext->update(elapsedSeconds);
 
+    m_masterScene->onPreUpdate(elapsedSeconds);
     for (auto& scene : m_sceneList) {
         scene->onPreUpdate(elapsedSeconds);
     }
@@ -142,6 +146,7 @@ void World::onInternalPhysicsUpdate(float elapsedSeconds)
 
 void World::onUpdate(float elapsedSeconds)
 {
+    m_masterScene->update(elapsedSeconds);
     for (auto& scene : m_sceneList) {
         scene->update(elapsedSeconds);
     }
@@ -153,6 +158,7 @@ void World::onInternalAnimationUpdate(float elapsedSeconds)
 
 void World::onPostUpdate(float elapsedSeconds)
 {
+    m_masterScene->onPostUpdate(elapsedSeconds);
     for (auto& scene : m_sceneList) {
         scene->onPostUpdate(elapsedSeconds);
     }
@@ -180,6 +186,7 @@ detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* v
 
 void World::renderObjects()
 {
+    m_masterScene->renderObjects(m_renderingContext);
     for (auto& scene : m_sceneList) {
         scene->renderObjects(m_renderingContext);
     }

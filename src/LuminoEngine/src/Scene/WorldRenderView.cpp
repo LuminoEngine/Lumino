@@ -35,6 +35,8 @@ WorldRenderView::~WorldRenderView()
 void WorldRenderView::init()
 {
     RenderView::init();
+    setClearMode(RenderViewClearMode::ColorAndDepth);
+
     m_sceneRenderingPipeline = makeRef<detail::SceneRenderingPipeline>();
     m_sceneRenderingPipeline->init();
     m_drawElementListCollector = makeRef<detail::DrawElementListCollector>();
