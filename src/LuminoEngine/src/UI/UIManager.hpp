@@ -42,7 +42,7 @@ public:
     void setMainContext(UIContext* context);
     const Ref<UIContext>& mainContext() const { return m_mainContext; }
 
-    bool updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition);
+    void updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition);
     UIElement* mouseHoverElement() const { return m_mouseHoverElement; }
 
 	void retainCapture(UIElement* element);

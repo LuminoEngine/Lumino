@@ -64,9 +64,9 @@ UIContainerElement* UIManager::primaryElement() const
     return m_primaryElement;
 }
 
-bool UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition)
+void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition)
 {
-    if (LN_REQUIRE(mouseEventSource)) return false;
+    if (LN_REQUIRE(mouseEventSource)) return;
 
 
 #if 1

@@ -49,6 +49,7 @@ UIElement::UIElement()
 	, m_internalVisibility(UIVisibility::Visible)
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
+	, m_focusable(false)
     , m_dirtyFlags(detail::UIElementDirtyFlags::None)
 {
     m_localStyle = makeObject<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う

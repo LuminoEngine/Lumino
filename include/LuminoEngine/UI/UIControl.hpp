@@ -84,6 +84,11 @@ Leaf がベースでいいかな。これは普通の UIControl。
     JavaFX では、TextField を枠無しにして、ボタンと並べるみたい。
     https://lawrencepremkumar.wordpress.com/2012/09/15/custom-textfield-in-javafx-2-2/
 */
+/**
+ * 視覚情報の表示やユーザー入力の処理を行う要素の基本クラスです。
+ *
+ * UIControl は直接の子要素を、UIFrameLayout2 のレイアウト仕様に従ってレイアウトします。
+ */
 class UIControl
 	: public UIElement
 {
