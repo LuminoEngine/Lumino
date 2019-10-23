@@ -222,6 +222,22 @@ int main(int argc, char** argv)
     auto message1 = UIMessageTextArea::create();
     Engine::mainUIRoot()->addElement(message1);
 
+
+
+	auto window1 = UIWindow::create();
+	window1->setPosition(10, 10);
+	window1->setWidth(50);
+	window1->setHeight(30);
+	window1->setBackgroundColor(Color::Red);
+	Engine::mainUIRoot()->addElement(window1);
+
+	auto window2 = UIWindow::create();
+	window2->setPosition(20, 20);
+	window2->setWidth(50);
+	window2->setHeight(30);
+	window2->setBackgroundColor(Color::Blue);
+	Engine::mainUIRoot()->addElement(window2);
+
 #if 0
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));

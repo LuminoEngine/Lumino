@@ -450,7 +450,8 @@ public: // TODO: internal
 	Ref<detail::UIStyleInstance> m_finalStyle;
 	UIVisibility m_internalVisibility;
     int m_renderPriority;
-    bool m_isHitTestVisible;
+    bool m_isHitTestVisible;	// TODO: flags
+	bool m_focusable;			// TODO: flags
 
     friend class UIContext;
     friend class UIFrameRenderView;
