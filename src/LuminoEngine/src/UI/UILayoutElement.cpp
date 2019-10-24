@@ -164,11 +164,6 @@ void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
 
 	setLayoutFinalGlobalRect(finalGlobalRect);
 
-    m_combinedFinalTransform = Matrix::makeTranslation(
-        parentFinalGlobalRect.x + m_localPosition.x,
-        parentFinalGlobalRect.y + m_localPosition.y,
-        0.0f);
-
     onUpdateLayout(finalGlobalRect);
 
 	// update children

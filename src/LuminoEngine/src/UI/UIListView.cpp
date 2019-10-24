@@ -77,14 +77,14 @@ void UIListView::refresh()
             //child->setContent(text);
             //child->setViewModel(childModel);
             //child->setData(makeVariant(childModel));
-            auto child = onRenderItem(childModel);
+            auto child = onGenerateItem(childModel);
 
             addItemInternal(child);
         }
     }
 }
 
-Ref<UIListViewItem> UIListView::onRenderItem(UICollectionItemModel* viewModel)
+Ref<UIListViewItem> UIListView::onGenerateItem(UICollectionItemModel* viewModel)
 {
     auto item = makeObject<UIListViewItem>();
     item->setViewModel(viewModel);

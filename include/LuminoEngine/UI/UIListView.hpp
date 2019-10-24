@@ -34,7 +34,7 @@ public:
     void refresh();
 
 protected:
-    virtual Ref<UIListViewItem> onRenderItem(UICollectionItemModel* viewModel);
+    virtual Ref<UIListViewItem> onGenerateItem(UICollectionItemModel* viewModel);
 
     // base interface
     virtual const String& elementName() const  override { static String name = u"UIListView"; return name; }

@@ -450,6 +450,13 @@ void UIElement::addAction(UIAction* action)
     m_actions->add(action);
 }
 
+void UIElement::activate()
+{
+	if (m_focusable) {
+		activateInternal();
+	}
+}
+
 void UIElement::setRenderPriority(int value)
 {
     m_renderPriority = value;
@@ -505,6 +512,16 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 	// this は not hit test でも、Visibility なら Child は test したい
     if (isRenderVisible())
     {
+#if 1
+		if (m_orderdVisualChildren) {
+			for (int i = m_orderdVisualChildren->size() - 1; i >= 0; i--) {
+				auto* e = static_cast<UIElement*>(m_orderdVisualChildren[i])->lookupMouseHoverElement(frameClientPosition);
+				if (e) {
+					return e;
+				}
+			}
+		}
+#else
         // 後ろからループする。後のモノが上に描画されるので、この方が自然。
         // TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
         int count = getVisualChildrenCount();
@@ -513,6 +530,7 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
             UIElement* e = static_cast<UIElement*>(getVisualChild(i))->lookupMouseHoverElement(frameClientPosition);
             if (e != nullptr) return e;
         }
+#endif
 
 		if (m_isHitTestVisible) {
 			if (onHitTest(frameClientPosition)) {
@@ -561,9 +579,11 @@ void UIElement::addVisualChild(UIElement* element)
 	// リストが作成されていなければ、ここで始めて作る (メモリ消費量対策)
 	if (!m_visualChildren) {
 		m_visualChildren = makeList<Ref<UIElement>>();
+		m_orderdVisualChildren = ln::makeList<UIElement*>();
 	}
 
 	m_visualChildren->add(element);
+	m_orderdVisualChildren->add(element);
 	element->m_visualParent = this;
 
 	// TODO: ZOrder
@@ -587,6 +607,7 @@ void UIElement::removeVisualChild(UIElement* element)
 	if (m_visualChildren == nullptr) return;
 
 	m_visualChildren->remove(element);
+	m_orderdVisualChildren->remove(element);
 	element->m_visualParent = nullptr;
     invalidateLayout();
 }
@@ -646,16 +667,6 @@ Size UIElement::arrangeOverride(const Size& finalSize)
 {
 	return UILayoutElement::arrangeOverride(finalSize);
 }
-
-//int UIElement::getVisualChildrenCount() const
-//{
-//	return 0;
-//}
-//
-//UIElement* UIElement::getVisualChild(int index) const
-//{
-//	return nullptr;
-//}
 
 void UIElement::onRender(UIRenderingContext* context)
 {
@@ -757,12 +768,12 @@ void UIElement::render(UIRenderingContext* context)
 
 
         {
-            Matrix m = Matrix::makeTranslation(-centerPoint());
-            m.scale(scale());
-            m.rotateQuaternion(rotation());
-            m.translate(position());
-            m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
-            context->setBaseTransfrom(m);
+            //Matrix m = Matrix::makeTranslation(-centerPoint());
+            //m.scale(scale());
+            //m.rotateQuaternion(rotation());
+            //m.translate(position());
+            //m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
+            context->setBaseTransfrom(m_combinedFinalRenderTransform);
         }
         detail::BuiltinEffectData data;
         data.opacity = opacity();
@@ -807,10 +818,11 @@ void UIElement::render(UIRenderingContext* context)
         context->popState();	// TODO: scoped
 
         // child elements
-        int count = getVisualChildrenCount();
-        for (int i = 0; i < count; i++) {
-            getVisualChild(i)->render(context);
-        }
+		if (m_orderdVisualChildren) {
+			for (auto& e : m_orderdVisualChildren) {
+				e->render(context);
+			}
+		}
     }
 
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Render);
@@ -818,6 +830,10 @@ void UIElement::render(UIRenderingContext* context)
 
 void UIElement::onRoutedEvent(UIEventArgs* e)
 {
+	if (e->type() == UIEvents::MouseDownEvent) {
+		activate();
+	}
+
     if (detail::UICommandInternal::handleCommandRoutedEvent(e, m_actions)) {
         return;
     }
@@ -825,7 +841,7 @@ void UIElement::onRoutedEvent(UIEventArgs* e)
 
 bool UIElement::onHitTest(const Point& frameClientPosition)
 {
-    auto inv = Matrix::makeInverse(m_combinedFinalTransform);
+    auto inv = Matrix::makeInverse(m_combinedFinalRenderTransform);
     auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
 
     if (0 <= pos.x && pos.x < m_actualSize.width &&
@@ -836,6 +852,21 @@ bool UIElement::onHitTest(const Point& frameClientPosition)
         return false;
     }
 }
+
+void UIElement::updateFinalRects(const Rect& parentFinalGlobalRect)
+{
+	UILayoutElement::updateFinalRects(parentFinalGlobalRect);
+
+	{
+		m_combinedFinalRenderTransform = Matrix::makeTranslation(-centerPoint());
+		m_combinedFinalRenderTransform.scale(scale());
+		m_combinedFinalRenderTransform.rotateQuaternion(rotation());
+		m_combinedFinalRenderTransform.translate(position());
+		m_combinedFinalRenderTransform.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
+	}
+
+}
+
 
 bool UIElement::isMouseHover() const
 {
@@ -882,6 +913,29 @@ detail::GridLayoutInfo* UIElement::getGridLayoutInfo()
 bool UIElement::isRenderVisible() const
 {
     return m_finalStyle->visible == UIVisibility::Visible && m_internalVisibility == UIVisibility::Visible;
+}
+
+void UIElement::activateInternal()
+{
+	if (m_visualParent) {
+		m_visualParent->moveVisualChildToForeground(this);
+		m_visualParent->activateInternal();
+	}
+}
+
+void UIElement::deactivateInternal()
+{
+	if (m_visualParent) {
+		m_visualParent->deactivateInternal();
+	}
+}
+
+void UIElement::moveVisualChildToForeground(UIElement* child)
+{
+	if (LN_REQUIRE(m_orderdVisualChildren)) return;
+	if (m_orderdVisualChildren->remove(child)) {
+		m_orderdVisualChildren->add(child);
+	}
 }
 
 void UIElement::handleDetachFromUITree()

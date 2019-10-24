@@ -313,6 +313,12 @@ public:
 	void invalidateLayout() { invalidate(detail::UIElementDirtyFlags::Layout, true); }
 	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
 
+	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
+	void setFocusable(bool value) { m_focusable = true; }
+
+	/** ウィンドウを前面にしてアクティブ化することを試みます。 */
+	void activate();
+
     UIElement();
     virtual ~UIElement();
 	void init();
@@ -403,6 +409,8 @@ public:	// TODO: internal protected
 
     virtual bool onHitTest(const Point& frameClientPosition);
 
+	virtual void updateFinalRects(const Rect& parentFinalGlobalRect);
+
     bool isMouseHover() const;
 
     // TODO: internal
@@ -425,6 +433,11 @@ public: // TODO: internal
     detail::GridLayoutInfo* getGridLayoutInfo();
     bool isRenderVisible() const;
     bool isHitTestVisibleCore() const { return m_isHitTestVisible && isRenderVisible(); }
+
+	void activateInternal();
+	void deactivateInternal();
+	void moveVisualChildToForeground(UIElement* child);
+
     void handleDetachFromUITree();
 
     detail::UIManager* m_manager;
@@ -439,6 +452,7 @@ public: // TODO: internal
     UIElement* m_visualParent;
     UIControl* m_logicalParent;    // TODO: Layout も親となりえる。
 	Ref<List<Ref<UIElement>>> m_visualChildren;
+	Ref<List<UIElement*>> m_orderdVisualChildren;
     Ref<List<String>> m_classList;
     Ref<List<Ref<UIAction>>> m_actions;
 	Ref<UIViewModel> m_viewModel;
@@ -448,6 +462,7 @@ public: // TODO: internal
     Ref<UIStyleClass> m_localStyle;
 	Ref<UIStyle> m_combinedStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;
+	Matrix m_combinedFinalRenderTransform;
 	UIVisibility m_internalVisibility;
     int m_renderPriority;
     bool m_isHitTestVisible;	// TODO: flags
