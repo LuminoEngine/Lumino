@@ -117,9 +117,171 @@ public:
 //#pragma comment(lib, "D:/Tech/Cpp/curl/_build/lib/Debug/libcurl-d.lib")
 //#pragma comment(lib, "ws2_32.lib")
 
+
+class ObservablePropertyBase;
+
+// ObservableProperty 自体は new しなくても使えるようにしたいが、
+// そうすると他で Ref で参照を持つことはできなくなるので、弱参照の仕組みを使う。
+class ObservablePropertyRef
+{
+public:
+	ObservablePropertyRef()
+		: m_prop()
+	{}
+
+	ObservablePropertyRef(ObservablePropertyBase* prop)
+		: m_prop(prop)
+	{}
+
+	bool isAlive() const
+	{
+		return m_prop.isAlive();
+	}
+
+	Ref<ObservablePropertyBase> resolve() const
+	{
+		auto ptr = m_prop.resolve();
+		if (ptr != nullptr) {
+			return ptr;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
+private:
+	WeakRefPtr<ObservablePropertyBase> m_prop;
+};
+
+class ObservablePropertyBase : public Object
+{
+public:
+	ObservablePropertyBase()
+		: m_bindingSource()
+		, m_syncing(false)
+	{}
+
+	~ObservablePropertyBase() {
+		if (auto s = m_bindingSource.resolve()) {
+			s->m_changed = nullptr;
+		}
+	}
+
+	virtual const Variant* getValue() const = 0;
+	virtual void setValue(const Variant* value) = 0;
+	
+	void bind(ObservablePropertyBase* bindingSource)
+	{
+		m_bindingSource = bindingSource;
+		bindingSource->m_changed = ln::bind(this, &ObservablePropertyBase::handleSourceChanged);
+	}
+
+protected:
+	void notifyChanged(const Variant* value)
+	{
+		if (m_syncing) return;	// TODO: setValue で封印した方がいいかも
+		m_syncing = true;
+		if (m_changed) {
+			m_changed(value);
+		}
+		syncToSource(value);
+		m_syncing = false;
+	}
+
+	void syncToSource(const Variant* value)
+	{
+		if (auto s = m_bindingSource.resolve()) {
+			if (!s->m_syncing) {
+				s->setValue(value);
+			}
+		}
+	}
+
+	void handleSourceChanged(const Variant* value)
+	{
+		setValue(value);
+	}
+
+private:
+	ObservablePropertyRef m_bindingSource;
+	std::function<void(const Variant*)> m_changed;	// TODO: event の方がいいか
+	bool m_syncing;
+};
+
+
+template<class TValue>
+class ObservableProperty : public ObservablePropertyBase
+{
+public:
+	ObservableProperty()
+		: m_value()
+	{}
+
+	ObservableProperty(const TValue& value)
+		: m_value(makeVariant(value))
+	{}
+
+	TValue get() const
+	{
+		return m_value->get<TValue>();
+	}
+
+	void set(const TValue& value)
+	{
+		m_value = makeVariant(value);	// TODO: assign でやりたい
+		notifyChanged(m_value);
+	}
+
+	virtual const Variant* getValue() const override
+	{
+		return m_value;
+	}
+
+	virtual void setValue(const Variant* value) override
+	{
+		m_value = makeVariant(*value);	// TODO: convert
+		notifyChanged(m_value);
+	}
+
+protected:
+
+private:
+	Ref<Variant> m_value;
+};
+
+
+
+
+
+
+
+
+
+
+
+
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
+
+	{
+		ObservableProperty<int> v1(100);
+
+
+		ObservableProperty<int> v2(100);
+		v2.bind(&v1);
+		v2.set(200);
+
+
+		int a = v1.get();
+		// 200
+
+		v1.set(300);
+		int b = v2.get();
+
+
+		printf("");
+	}
 
 
 	//UriUriA uri;
