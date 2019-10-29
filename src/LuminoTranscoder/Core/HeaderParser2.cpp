@@ -33,6 +33,7 @@
 #include "clang/Tooling/Tooling.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/Casting.h"
 #include "clang/AST/Comment.h"
 #include "clang/AST/CommentVisitor.h"
 
@@ -480,7 +481,7 @@ public:
 	}
 
 	// typedef
-	bool VisitTypedefDecl(TypedefDecl *aTypedefDecl)
+	bool VisitTypedefDecl(TypedefDecl* decl)
 	{
 		return true;
 	}
@@ -493,8 +494,81 @@ public:
 	}
 
 	// using
-	bool VisitUsingDirectiveDecl(UsingDirectiveDecl *aUsingDirectiveDecl)
+	bool VisitUsingDirectiveDecl(UsingDirectiveDecl* decl)
 	{
+		return true;
+	}
+
+	bool VisitTypeAliasDecl(TypeAliasDecl* decl)
+	{
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))	// 入力ファイルの内側で定義されているか？
+		{
+
+			auto n = decl->getNameAsString();
+
+			TypeSourceInfo* tsi = decl->getTypeSourceInfo();	// std::function<void(UIEventArgs* e)>
+			QualType tt = tsi->getType();
+
+			SplitQualType st = tt.split();
+			auto type = st.Ty;
+			auto quals = st.Quals;
+
+
+
+			if (type->getTypeClass() == clang::Type::TypeClass::Elaborated) {
+				const ElaboratedType* eaboratedType = llvm::cast<clang::ElaboratedType, clang::Type const>(type);
+				NestedNameSpecifier* qualifier = eaboratedType->getQualifier();	// "std::"
+				QualType qualType = eaboratedType->getNamedType();				// "function<void(UIEventArgs* e)>"
+				SplitQualType split = qualType.split();
+
+
+				auto s = qualType.getAsString();
+
+				auto aa = split.Ty->getTypeClass();
+				if (split.Ty->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
+					const TemplateSpecializationType* templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(split.Ty);
+					TemplateName templateName = templateSpecializationType->getTemplateName();
+
+					SmallString<256> Buf;
+					llvm::raw_svector_ostream StrOS(Buf);
+					templateName.print(StrOS, LangOptions());
+					std::string templateNameStr = StrOS.str();	// "function"
+
+					
+					templateSpecializationType->getArg(0);
+
+					auto args = templateSpecializationType->template_arguments();
+					if (args.size() == 1) {
+						const TemplateArgument& templateArg = args[0];	// "void(UIEventArgs* e)"
+						if (templateArg.getKind() == TemplateArgument::Type) {
+							QualType argType = templateArg.getAsType();
+							SplitQualType argTypeSplit = argType.split();
+							if (argTypeSplit.Ty->getTypeClass() == clang::Type::TypeClass::FunctionProto) {
+								const FunctionProtoType* functionProtoType = llvm::cast<clang::FunctionProtoType, clang::Type const>(argTypeSplit.Ty);
+								functionProtoType->getReturnType();	// "void"
+
+								for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
+									QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs* e"
+									auto aaa = paramType.getAsString();
+									printf("");
+
+								}
+							}
+						}
+
+						templateArg.print(LangOptions(), StrOS);
+					}
+
+				}
+
+			}
+
+			auto c = tt.getAsString();
+
+			decl->print(llvm::outs());
+
+		}
+
 		return true;
 	}
 
@@ -599,7 +673,8 @@ public:
 				name == "LN_STRUCT" ||
 				name == "LN_FIELD" ||
 				name == "LN_METHOD" ||
-				name == "LN_ENUM")
+				name == "LN_ENUM" ||
+				name == "LN_DELEGATE")
 			{
 				::HeaderParser2::AttrMacro attrMacro;
 				attrMacro.name = name;
@@ -609,24 +684,6 @@ public:
 				args = args.substr(0, args.find(')'));
 				attrMacro.args = args;
 
-				//
-				//for (int iArg = 0; iArg < args->getNumArguments(); iArg++)
-				//{
-				//	auto a = args->getPreExpArgument(iArg, macroInfo, m_pp);
-				//	//const Token* tok = args->getPreExpArgument(iArg);
-				//	//if (tok->is(tok::eof))
-				//	//{
-				//	//	break;
-				//	//}
-
-				//	attrMacro.args.push_back(Lexer::getSourceText(CharSourceRange::getTokenRange(tok->getLocation()), sm, opts));
-				//}
-
-				//int a2 = args->getArgLength();
-
-				//for (int iArg = 0; i < )
-
-				//std::string tokens = 
 
 				//for (int iArg = 0U; iArg < macroInfo->getNumArgs(); iArg++)
 				//{

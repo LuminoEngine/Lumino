@@ -12,8 +12,8 @@ int main(int argc, char** argv)
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	auto pidb = ln::makeRef<PIDatabase>();
 
-	if (!ln::FileSystem::existsFile(u"pidb.json"))
-	//if (1)
+	//if (!ln::FileSystem::existsFile(u"pidb.json"))
+	if (1)
 	{
 		ln::List<ln::Path> files_LuminoCore =
 		{
@@ -33,6 +33,7 @@ int main(int argc, char** argv)
 
 		ln::List<ln::Path> files_LuminoEngine =
 		{
+			TEST_ROOT "include/LuminoEngine/UI/UIEvents.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
