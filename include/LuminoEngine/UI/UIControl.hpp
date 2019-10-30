@@ -89,9 +89,11 @@ Leaf がベースでいいかな。これは普通の UIControl。
  *
  * UIControl は直接の子要素を、UIFrameLayout2 のレイアウト仕様に従ってレイアウトします。
  */
+LN_CLASS()
 class UIControl
 	: public UIElement
 {
+	LN_OBJECT;
 public:
     UIControl();
 	void init();

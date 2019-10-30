@@ -91,6 +91,13 @@ ln::String Generator::makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafC
 	return ln::String::format(u"{0}_{1}_OverrideCallback", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));
 }
 
+ln::String Generator::makeDelegateCallbackFuncPtrName(const DelegateSymbol* delegateSymbol, FlatCharset charset) const
+{
+	auto funcName = delegateSymbol->shortName();
+	funcName[0] = toupper(funcName[0]);
+	return ln::String::format(u"{0}{1}Callback", config()->flatCOutputModuleName, funcName);
+}
+
 ln::String Generator::makeFlatShortFuncName(const MethodSymbol* method, FlatCharset charset) const
 {
 	ln::String funcName;
@@ -144,12 +151,13 @@ ln::String Generator::makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset
 
 ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo, const MethodParameterSymbol* paramInfo, FlatCharset charset) const
 {
+	bool methodIsConst = (methodInfo && methodInfo->isConst());
 	auto typeInfo = paramInfo->type();
 
 	if (typeInfo->kind() == TypeKind::Struct)
 	{
 		ln::String modifer;
-		if (paramInfo->isThis() && methodInfo->isConst())
+		if (paramInfo->isThis() && methodIsConst)
 			modifer = "const ";
 		if (!paramInfo->isThis() && !paramInfo->isOut())
 			modifer = "const ";

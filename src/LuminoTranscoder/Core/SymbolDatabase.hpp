@@ -383,6 +383,25 @@ private:
 //	ln::String m_shortName;
 };
 
+class DelegateSymbol : public Symbol
+{
+public:
+	DelegateSymbol(SymbolDatabase* db);
+	ln::Result init(PIDelegate* piDelegate);
+	ln::Result link();
+
+	const ln::String& shortName() const { return m_shortName; }
+	TypeSymbol* returnType() const { return m_returnType; }
+	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
+	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
+
+private:
+	Ref<PIDelegate> m_pi;
+	TypeSymbol* m_returnType = nullptr;
+	ln::String m_shortName;
+	ln::List<Ref<MethodParameterSymbol>> m_parameters;
+	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;
+};
 
 class SymbolDatabase : public ln::RefObject
 {
@@ -408,6 +427,7 @@ public:
 	stream::Stream<Ref<TypeSymbol>> enums() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Enum; }); }
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
 	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class; }); }
+	const ln::List<Ref<DelegateSymbol>>& delegates() const { return m_delegates; }
 
 	const Ref<PIDatabase>& pidb() const { return m_pidb; }
 	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
@@ -423,6 +443,7 @@ public:
 private:
 	Ref<PIDatabase> m_pidb;
 	ln::List<Ref<TypeSymbol>> m_allTypes;
+	ln::List<Ref<DelegateSymbol>> m_delegates;
 	ln::DiagnosticsManager* m_diag;
 };
 

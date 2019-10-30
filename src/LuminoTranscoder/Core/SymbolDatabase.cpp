@@ -800,6 +800,50 @@ void TypeSymbol::ResolveCopyDoc()
 //	}
 //}
 
+
+//==============================================================================
+// DelegateSymbol
+
+DelegateSymbol::DelegateSymbol(SymbolDatabase* db)
+	: Symbol(db)
+{
+}
+
+ln::Result DelegateSymbol::init(PIDelegate* piDelegate)
+{
+	if (!Symbol::init(piDelegate->document, nullptr)) {
+		return false;
+	}
+
+	m_pi = piDelegate;
+
+	m_shortName = m_pi->name;
+
+	for (auto& i : m_pi->parameters) {
+		auto s = ln::makeRef<MethodParameterSymbol>(db());
+		if (!s->init(i)) return false;
+		m_parameters.add(s);
+	}
+
+	return true;
+}
+
+ln::Result DelegateSymbol::link()
+{
+	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
+	if (!m_returnType) return false;
+
+	for (auto& p : m_parameters) {
+		if (!p->link()) return false;
+	}
+
+	for (auto& paramInfo : m_parameters) {
+		m_flatParameters.add(paramInfo);
+	}
+
+	return true;
+}
+
 //==============================================================================
 // SymbolDatabase
 
@@ -815,11 +859,19 @@ ln::Result SymbolDatabase::initTypes(PIDatabase* pidb)
 	initPredefineds();
 
 	for (auto& t : m_pidb->types) {
-		auto type = ln::makeRef<TypeSymbol>(this);
-		if (!type->init(t)) {
+		auto symbol = ln::makeRef<TypeSymbol>(this);
+		if (!symbol->init(t)) {
 			return false;
 		}
-		m_allTypes.add(type);
+		m_allTypes.add(symbol);
+	}
+
+	for (auto& d : m_pidb->delegates) {
+		auto symbol = ln::makeRef<DelegateSymbol>(this);
+		if (!symbol->init(d)) {
+			return false;
+		}
+		m_delegates.add(symbol);
 	}
 
 	return true;
@@ -828,6 +880,9 @@ ln::Result SymbolDatabase::initTypes(PIDatabase* pidb)
 ln::Result SymbolDatabase::linkTypes()
 {
 	for (auto& t : m_allTypes) {
+		if (!t->link()) return false;
+	}
+	for (auto& t : m_delegates) {
 		if (!t->link()) return false;
 	}
 

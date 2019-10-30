@@ -4,7 +4,6 @@
 
 extern "C"
 {
-
 %%Structs%%
 
 %%Enums%%

@@ -21,13 +21,6 @@ enum class ScrollEventType
     LargeIncrement,		/** スクロールバーの PageDown 領域がクリックされた */
 };
 
-/**
-	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
-	@param[in]	e		: イベントのデータ
-*/
-LN_DELEGATE()
-using UIEventHandler = std::function<void(UIEventArgs* e)>;
-
 using UIEventType = int32_t;
 
 
@@ -120,6 +113,7 @@ public:
 /**
 	@brief		
 */
+LN_CLASS()
 class UIEventArgs
 	: public Object
 {

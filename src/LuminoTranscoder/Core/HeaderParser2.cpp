@@ -41,6 +41,7 @@
 #pragma warning(pop)
 #endif
 
+#include "ParserUtils.hpp"
 
 class SymbolDatabase;
 
@@ -241,12 +242,7 @@ public:
 				attr->linked = true;
 
 				auto info = ln::makeRef<PITypeInfo>();
-				info->rawFullName = getRawTypeFullName(QualType(decl->getTypeForDecl(), 0));
-
-				if (info->rawFullName.contains(u"IWorldObjectVisitor")) {
-					printf("");
-				}
-				
+				info->rawFullName = getRawTypeFullName(QualType(decl->getTypeForDecl(), 0));				
 
 				// documentation
 				info->document = parseDocument(decl);
@@ -350,22 +346,8 @@ public:
 					auto paramInfo = ln::makeRef<PIMethodParameter>();
 					paramInfo->name = ln::String::fromStdString(paramDecl->getNameAsString());
 					paramInfo->typeRawName = getRawTypeFullName(type);
-
-					bool hasConst = type.getQualifiers().hasConst();
-					if (hasConst) {
-						paramInfo->isConst = true;
-					}
-
-					if (sp.Ty->isPointerType()) {
-						paramInfo->isPointer = true;
-						//paramInfo->isIn = hasConst;
-						//paramInfo->isOut = !hasConst;
-					}
-					else {
-						//paramInfo->isIn = true;
-						//paramInfo->isOut = false;
-					}
-
+					paramInfo->isConst = type.getQualifiers().hasConst();
+					paramInfo->isPointer = sp.Ty->isPointerType();
 					info->parameters.add(paramInfo);
 
 					// check sema error
@@ -501,41 +483,20 @@ public:
 
 	bool VisitTypeAliasDecl(TypeAliasDecl* decl)
 	{
-		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))	// 入力ファイルの内側で定義されているか？
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))	// Is defined inside the input file?
 		{
-
-			auto n = decl->getNameAsString();
-
-			TypeSourceInfo* tsi = decl->getTypeSourceInfo();	// std::function<void(UIEventArgs* e)>
-			QualType tt = tsi->getType();
-
-			SplitQualType st = tt.split();
+			TypeSourceInfo* typeSourceInfo = decl->getTypeSourceInfo();	// "std::function<void(UIEventArgs* e)>"
+			SplitQualType st = typeSourceInfo->getType().split();
 			auto type = st.Ty;
-			auto quals = st.Quals;
-
-
-
 			if (type->getTypeClass() == clang::Type::TypeClass::Elaborated) {
-				const ElaboratedType* eaboratedType = llvm::cast<clang::ElaboratedType, clang::Type const>(type);
-				NestedNameSpecifier* qualifier = eaboratedType->getQualifier();	// "std::"
-				QualType qualType = eaboratedType->getNamedType();				// "function<void(UIEventArgs* e)>"
+				const ElaboratedType* elaboratedType = llvm::cast<clang::ElaboratedType, clang::Type const>(type);
+				NestedNameSpecifier* eaboratedTypeQualifier = elaboratedType->getQualifier();	// "std::"
+				QualType qualType = elaboratedType->getNamedType();								// "function<void(UIEventArgs* e)>"
 				SplitQualType split = qualType.split();
 
-
-				auto s = qualType.getAsString();
-
-				auto aa = split.Ty->getTypeClass();
 				if (split.Ty->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
 					const TemplateSpecializationType* templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(split.Ty);
-					TemplateName templateName = templateSpecializationType->getTemplateName();
-
-					SmallString<256> Buf;
-					llvm::raw_svector_ostream StrOS(Buf);
-					templateName.print(StrOS, LangOptions());
-					std::string templateNameStr = StrOS.str();	// "function"
-
-					
-					templateSpecializationType->getArg(0);
+					TemplateName templateName = templateSpecializationType->getTemplateName();	// "function"
 
 					auto args = templateSpecializationType->template_arguments();
 					if (args.size() == 1) {
@@ -543,30 +504,32 @@ public:
 						if (templateArg.getKind() == TemplateArgument::Type) {
 							QualType argType = templateArg.getAsType();
 							SplitQualType argTypeSplit = argType.split();
+
 							if (argTypeSplit.Ty->getTypeClass() == clang::Type::TypeClass::FunctionProto) {
 								const FunctionProtoType* functionProtoType = llvm::cast<clang::FunctionProtoType, clang::Type const>(argTypeSplit.Ty);
-								functionProtoType->getReturnType();	// "void"
+
+								// ここまで来たら delegate として抽出する
+								auto del = ln::makeRef<PIDelegate>();
+								del->document = parseDocument(decl);
+								del->name = ln::String::fromStdString(decl->getNameAsString());
+								del->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
+								m_parser->getDB()->delegates.add(del);
 
 								for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
-									QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs* e"
-									auto aaa = paramType.getAsString();
-									printf("");
+									QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
+									SplitQualType paramTypeSplit = paramType.split();
 
+									auto paramInfo = ln::makeRef<PIMethodParameter>();
+									paramInfo->typeRawName = getRawTypeFullName(paramType);
+									paramInfo->isConst = paramType.getQualifiers().hasConst();
+									paramInfo->isPointer = paramTypeSplit.Ty->isPointerType();
+									del->parameters.add(paramInfo);
 								}
 							}
 						}
-
-						templateArg.print(LangOptions(), StrOS);
 					}
-
 				}
-
 			}
-
-			auto c = tt.getAsString();
-
-			decl->print(llvm::outs());
-
 		}
 
 		return true;

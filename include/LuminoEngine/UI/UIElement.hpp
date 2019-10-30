@@ -80,6 +80,7 @@ private:
 
 
 
+LN_CLASS()
 class UIElement
 	: public UILayoutElement
 {
@@ -258,11 +259,11 @@ public:
 
     
 	/** 可視状態を設定します。(default: UIVisibility::Visible) */
-    LN_METHOD(Property)
+    //LN_METHOD(Property)
     void setVisibility(UIVisibility value);
 
 	/** 可視状態を取得します。*/
-    LN_METHOD(Property)
+    //LN_METHOD(Property)
     UIVisibility isVisibility() const;
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */

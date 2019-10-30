@@ -50,6 +50,17 @@ ln::String FlatCCommon::makeInstanceParamName(TypeSymbol* type)
 
 void FlatCHeaderGenerator::generate()
 {
+	// delegates
+	OutputBuffer delegatesText;
+	for (auto& delegateSymbol : db()->delegates()) {
+		// make params
+		OutputBuffer params;
+		for (auto& param : delegateSymbol->flatParameters()) {
+			params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode), param->name());
+		}
+		delegatesText.AppendLine(u"typedef void(*{0})({1});", makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode), params.toString());
+	}
+
 	// structs
 	OutputBuffer structsText;
 	OutputBuffer structMemberFuncDeclsText;
@@ -131,30 +142,30 @@ void FlatCHeaderGenerator::generate()
 		//}
 	}
 
-	// delegates
-	OutputBuffer delegatesText;
-#if 0
-	{
-		for (auto& delegateInfo : db()->delegates)
-		{
-			auto& involeMethod = delegateInfo->declaredMethods[0];
-
-			// make params
-			OutputBuffer params;
-			for (auto& paramInfo : involeMethod->capiParameters)
-			{
-				params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(involeMethod, paramInfo), paramInfo->name);
-			}
-
-			//enumsText.AppendLine("/** {0} */", MakeDocumentComment(delegateInfo->document));
-			delegatesText.AppendLine("typedef void (*LN{0})({1});", delegateInfo->shortName(), params.toString());
-		}
-	}
-#endif
+//	// delegates
+//	OutputBuffer delegatesText;
+//#if 0
+//	{
+//		for (auto& delegateInfo : db()->delegates)
+//		{
+//			auto& involeMethod = delegateInfo->declaredMethods[0];
+//
+//			// make params
+//			OutputBuffer params;
+//			for (auto& paramInfo : involeMethod->capiParameters)
+//			{
+//				params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(involeMethod, paramInfo), paramInfo->name);
+//			}
+//
+//			//enumsText.AppendLine("/** {0} */", MakeDocumentComment(delegateInfo->document));
+//			delegatesText.AppendLine("typedef void (*LN{0})({1});", delegateInfo->shortName(), params.toString());
+//		}
+//	}
+//#endif
 
 	// save C API Header
 	{
-		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("LuminoC.h.template")));
+		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("LuminoC.template.h")));
 		src = src.replace("%%Structs%%", structsText.toString());
 		src = src.replace("%%Enums%%", makeEnumDecls());
 		src = src.replace("%%Delegates%%", delegatesText.toString());

@@ -113,10 +113,6 @@ public:
 	bool isConst = false;
 	bool isPointer = false;
 	Ref<ln::Variant> defaultValue;
-	//bool isIn = false;
-	//bool isOut = false;
-	//bool isThis = false;
-	//bool isReturn = false;
 
 protected:
 	LN_SERIALIZE_CLASS_VERSION(1);
@@ -127,10 +123,6 @@ protected:
 		ar & LN_NVP(isConst);
 		ar & LN_NVP(isPointer);
 		ar & LN_NVP(defaultValue);
-		//ar & LN_NVP(isIn);
-		//ar & LN_NVP(isOut);
-		//ar & LN_NVP(isThis);
-		//ar & LN_NVP(isReturn);
 	}
 };
 
@@ -200,6 +192,26 @@ protected:
 	}
 };
 
+// Type-alias で定義された関数オブジェクト
+class PIDelegate : public ln::RefObject
+{
+public:
+	Ref<PIDocument> document;
+	ln::String name;
+	ln::String returnTypeRawName;
+	ln::List<Ref<PIMethodParameter>> parameters;
+
+private:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(document);
+		ar & LN_NVP(name);
+		ar & LN_NVP(returnTypeRawName);
+		ar & LN_NVP(parameters);
+	}
+};
+
 //class PIRelativeDocument : public ln::RefObject
 //{
 //public:
@@ -212,6 +224,7 @@ class PIDatabase : public ln::RefObject
 {
 public:
 	ln::List<Ref<PITypeInfo>> types;
+	ln::List<Ref<PIDelegate>> delegates;
 	ln::List<Ref<PIDocument>> relativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
 	//ln::List<Ref<PIRelativeDocument>> releativeDocuments;	// マクロ修飾されていないが、Doxygen comment を持っている関数の情報。copydoc で使う。
 
@@ -228,6 +241,7 @@ protected:
 	void serialize(ln::Archive& ar)
 	{
 		ar & LN_NVP(types);
+		ar & LN_NVP(delegates);
 		ar & LN_NVP(relativeDocuments);
 	}
 };

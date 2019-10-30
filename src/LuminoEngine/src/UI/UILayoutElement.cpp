@@ -14,7 +14,10 @@ namespace ln {
 
 //==============================================================================
 // UILayoutElement
-LN_OBJECT_IMPLEMENT(UILayoutElement, Object) {}
+
+LN_OBJECT_IMPLEMENT(UILayoutElement, Object) {
+	context->registerType<UILayoutElement>({});
+}
 
 UILayoutElement::UILayoutElement()
 	//: m_layoutSize(Math::NaN, Math::NaN)

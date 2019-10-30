@@ -36,7 +36,10 @@ void UIViewModel::notify(UINotifyPropertyChangedEventArgs* e)
 
 //==============================================================================
 // UIElement
-LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {}
+
+LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {
+	context->registerType<UIElement>({});
+}
 
 UIElement::UIElement()
     : m_manager(nullptr)

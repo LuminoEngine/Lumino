@@ -102,11 +102,16 @@ class UIStyleInstance;
 //};
 }
 
+LN_CLASS()
 class UILayoutElement
 	: public Object
 {
     LN_OBJECT;
 public:	// TODO: internal
+	UILayoutElement();
+	void init() { LN_UNREACHABLE(); }	// dummy
+	void init(const detail::UIStyleInstance* finalStyle);
+
 	// 基本的にルート要素のみ呼び出すべき
 	void updateLayout(const Rect& parentFinalGlobalRect);
 
@@ -124,9 +129,7 @@ public:	// TODO: internal
 	const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
 
 protected:
-	UILayoutElement();
 	virtual ~UILayoutElement();
-	void init(const detail::UIStyleInstance* finalStyle);
 
 	virtual Size measureOverride(const Size& constraint);
 	virtual Size arrangeOverride(const Size& finalSize);

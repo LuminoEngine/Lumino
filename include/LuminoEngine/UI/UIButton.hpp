@@ -11,9 +11,11 @@ enum class UICheckState
 	Checked,
 };
 
+LN_CLASS()
 class UIButtonBase
-	: public UIContainerElement
+	: public UIControl
 {
+	LN_OBJECT;
 public:
 	UIButtonBase();
 	void init();
@@ -33,9 +35,11 @@ private:
     bool m_isPressed;
 };
 
+LN_CLASS()
 class UIButton
 	: public UIButtonBase
 {
+	LN_OBJECT;
 public:
     static Ref<UIButton> create();
     static Ref<UIButton> create(const StringRef& text);

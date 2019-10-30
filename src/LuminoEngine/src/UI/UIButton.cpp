@@ -11,6 +11,10 @@ namespace ln {
 //==============================================================================
 // UIButtonBase
 
+LN_OBJECT_IMPLEMENT(UIButtonBase, UIControl) {
+	context->registerType<UIButtonBase>({});
+}
+
 UIButtonBase::UIButtonBase()
     : m_isPressed(false)
 {
@@ -18,7 +22,7 @@ UIButtonBase::UIButtonBase()
 
 void UIButtonBase::init()
 {
-    UIContainerElement::init();
+	UIControl::init();
     auto vsm = getVisualStateManager();
 	vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
@@ -89,6 +93,10 @@ void UIButtonBase::onRoutedEvent(UIEventArgs* e)
 
 //==============================================================================
 // UIButton
+
+LN_OBJECT_IMPLEMENT(UIButton, UIButtonBase) {
+	context->registerType<UIButton>({});
+}
 
 Ref<UIButton> UIButton::create()
 {
