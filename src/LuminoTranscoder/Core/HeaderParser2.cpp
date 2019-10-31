@@ -428,8 +428,8 @@ public:
 				attr->linked = true;
 
 				auto symbol = ln::makeRef<PITypeInfo>();
-				symbol->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
 				symbol->kind = u"Enum";
+				symbol->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
 
 				// documentation
 				symbol->document = parseDocument(decl);
@@ -485,45 +485,58 @@ public:
 	{
 		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))	// Is defined inside the input file?
 		{
-			TypeSourceInfo* typeSourceInfo = decl->getTypeSourceInfo();	// "std::function<void(UIEventArgs* e)>"
-			SplitQualType st = typeSourceInfo->getType().split();
-			auto type = st.Ty;
-			if (type->getTypeClass() == clang::Type::TypeClass::Elaborated) {
-				const ElaboratedType* elaboratedType = llvm::cast<clang::ElaboratedType, clang::Type const>(type);
-				NestedNameSpecifier* eaboratedTypeQualifier = elaboratedType->getQualifier();	// "std::"
-				QualType qualType = elaboratedType->getNamedType();								// "function<void(UIEventArgs* e)>"
-				SplitQualType split = qualType.split();
+			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
+			if (attr)
+			{
+				attr->linked = true;
+				TypeSourceInfo* typeSourceInfo = decl->getTypeSourceInfo();	// "std::function<void(UIEventArgs* e)>"
+				SplitQualType st = typeSourceInfo->getType().split();
+				auto type = st.Ty;
+				if (type->getTypeClass() == clang::Type::TypeClass::Elaborated) {
+					const ElaboratedType* elaboratedType = llvm::cast<clang::ElaboratedType, clang::Type const>(type);
+					NestedNameSpecifier* eaboratedTypeQualifier = elaboratedType->getQualifier();	// "std::"
+					QualType qualType = elaboratedType->getNamedType();								// "function<void(UIEventArgs* e)>"
+					SplitQualType split = qualType.split();
 
-				if (split.Ty->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
-					const TemplateSpecializationType* templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(split.Ty);
-					TemplateName templateName = templateSpecializationType->getTemplateName();	// "function"
+					if (split.Ty->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
+						const TemplateSpecializationType* templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(split.Ty);
+						TemplateName templateName = templateSpecializationType->getTemplateName();	// "function"
 
-					auto args = templateSpecializationType->template_arguments();
-					if (args.size() == 1) {
-						const TemplateArgument& templateArg = args[0];	// "void(UIEventArgs* e)"
-						if (templateArg.getKind() == TemplateArgument::Type) {
-							QualType argType = templateArg.getAsType();
-							SplitQualType argTypeSplit = argType.split();
+						auto args = templateSpecializationType->template_arguments();
+						if (args.size() == 1) {
+							const TemplateArgument& templateArg = args[0];	// "void(UIEventArgs* e)"
+							if (templateArg.getKind() == TemplateArgument::Type) {
+								QualType argType = templateArg.getAsType();
+								SplitQualType argTypeSplit = argType.split();
 
-							if (argTypeSplit.Ty->getTypeClass() == clang::Type::TypeClass::FunctionProto) {
-								const FunctionProtoType* functionProtoType = llvm::cast<clang::FunctionProtoType, clang::Type const>(argTypeSplit.Ty);
+								if (argTypeSplit.Ty->getTypeClass() == clang::Type::TypeClass::FunctionProto) {
+									const FunctionProtoType* functionProtoType = llvm::cast<clang::FunctionProtoType, clang::Type const>(argTypeSplit.Ty);
 
-								// ここまで来たら delegate として抽出する
-								auto del = ln::makeRef<PIDelegate>();
-								del->document = parseDocument(decl);
-								del->name = ln::String::fromStdString(decl->getNameAsString());
-								del->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
-								m_parser->getDB()->delegates.add(del);
+									// ここまで来たら delegate として抽出する
+									auto typeInfo = ln::makeRef<PITypeInfo>();
+									typeInfo->kind = u"Delegate";
+									typeInfo->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
+									typeInfo->document = parseDocument(decl);
+									m_parser->getDB()->types.add(typeInfo);
 
-								for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
-									QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
-									SplitQualType paramTypeSplit = paramType.split();
+									auto methodInfo = ln::makeRef<PIMethod>();
+									methodInfo->document = parseDocument(decl);
+									methodInfo->name = ln::String::fromStdString(decl->getNameAsString());
+									methodInfo->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
+									methodInfo->accessLevel = u"Public";
+									methodInfo->isStatic = true;
+									typeInfo->methods.add(methodInfo);
 
-									auto paramInfo = ln::makeRef<PIMethodParameter>();
-									paramInfo->typeRawName = getRawTypeFullName(paramType);
-									paramInfo->isConst = paramType.getQualifiers().hasConst();
-									paramInfo->isPointer = paramTypeSplit.Ty->isPointerType();
-									del->parameters.add(paramInfo);
+									for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
+										QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
+										SplitQualType paramTypeSplit = paramType.split();
+
+										auto paramInfo = ln::makeRef<PIMethodParameter>();
+										paramInfo->typeRawName = getRawTypeFullName(paramType);
+										paramInfo->isConst = paramType.getQualifiers().hasConst();
+										paramInfo->isPointer = paramTypeSplit.Ty->isPointerType();
+										methodInfo->parameters.add(paramInfo);
+									}
 								}
 							}
 						}

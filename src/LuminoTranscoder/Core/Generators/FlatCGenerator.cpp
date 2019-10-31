@@ -55,7 +55,7 @@ void FlatCHeaderGenerator::generate()
 	for (auto& delegateSymbol : db()->delegates()) {
 		// make params
 		OutputBuffer params;
-		for (auto& param : delegateSymbol->flatParameters()) {
+		for (auto& param : delegateSymbol->delegateDeclaration()->flatParameters()) {
 			params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode), param->name());
 		}
 		delegatesText.AppendLine(u"typedef void(*{0})({1});", makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode), params.toString());
@@ -134,34 +134,7 @@ void FlatCHeaderGenerator::generate()
 			}
 			classMemberFuncDeclsText.NewLine();
 		}
-
-		//// function impls
-		//for (auto& methodInfo : classInfo->declaredMethods)
-		//{
-		//	classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
-		//}
 	}
-
-//	// delegates
-//	OutputBuffer delegatesText;
-//#if 0
-//	{
-//		for (auto& delegateInfo : db()->delegates)
-//		{
-//			auto& involeMethod = delegateInfo->declaredMethods[0];
-//
-//			// make params
-//			OutputBuffer params;
-//			for (auto& paramInfo : involeMethod->capiParameters)
-//			{
-//				params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(involeMethod, paramInfo), paramInfo->name);
-//			}
-//
-//			//enumsText.AppendLine("/** {0} */", MakeDocumentComment(delegateInfo->document));
-//			delegatesText.AppendLine("typedef void (*LN{0})({1});", delegateInfo->shortName(), params.toString());
-//		}
-//	}
-//#endif
 
 	// save C API Header
 	{
@@ -298,9 +271,14 @@ void FlatCSourceGenerator::generate()
 	OutputBuffer classMemberFuncImplsText;
 	for (auto& classInfo : db()->classes()) {
 		for (auto& methodInfo : classInfo->publicMethods()) {
-			classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
-			if (methodInfo->hasStringDecl()) {
-				classMemberFuncImplsText.AppendLines(makeCharsetWrapperFuncBody(classInfo, methodInfo, FlatCharset::Ascii)).NewLine();
+			if (methodInfo->isEventConnector()) {
+				classMemberFuncImplsText.AppendLines(makeEventConnectorFuncBody(classInfo, methodInfo)).NewLine();
+			}
+			else {
+				classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
+				if (methodInfo->hasStringDecl()) {
+					classMemberFuncImplsText.AppendLines(makeCharsetWrapperFuncBody(classInfo, methodInfo, FlatCharset::Ascii)).NewLine();
+				}
 			}
 		}
 
@@ -315,8 +293,8 @@ void FlatCSourceGenerator::generate()
 			classMemberFuncImplsText.NewLine();
 		}
 
+		// virtual
 		for (auto& method : classInfo->virtualMethods()) {
-
 			OutputBuffer args;
 			for (auto& param : method->parameters()) {
 				args.AppendCommad(param->name());
@@ -604,4 +582,37 @@ ln::String FlatCSourceGenerator::makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> 
 	code.DecreaseIndent();
 	code.AppendLine(u"}");
 	return code.toString();
+}
+
+ln::String FlatCSourceGenerator::makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const
+{
+	auto delegateType = methodInfo->parameters().front()->type();
+	auto delegateDeclaration = delegateType->delegateDeclaration();
+
+	// wrap callback
+	// Note: 今のところ引数ひとつしか想定しないので、引数名は e だけ.
+	OutputBuffer params;
+	OutputBuffer args;
+	for (auto& param : delegateDeclaration->parameters()) {
+		params.AppendCommad(u"{0} e", param->getFullQualTypeName(), param->name());
+
+		if (param->type()->isClass()) {
+			args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(e)");
+		}
+		else {
+			args.AppendCommad(u"e");
+		}
+	}
+	auto callbackLambda = ln::String::format(u"[=]({0}) {{ handler({1}); }}", params.toString(), args.toString());
+
+	OutputBuffer funcImpl;
+	funcImpl.AppendLine(makeFuncHeader(methodInfo, FlatCharset::Unicode));
+	funcImpl.AppendLine(u"{");
+	funcImpl.IncreaseIndent();
+	funcImpl.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
+	funcImpl.AppendLine(u"(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", makeWrapSubclassName(classInfo), methodInfo->flatParameters()[0]->name(), methodInfo->shortName(), callbackLambda);
+	funcImpl.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+	funcImpl.DecreaseIndent();
+	funcImpl.AppendLine(u"}");
+	return funcImpl.toString();
 }

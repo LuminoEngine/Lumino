@@ -68,6 +68,7 @@ class MetadataInfo : public ln::RefObject
 {
 public:
 	static const ln::String OverloadPostfixAttr;
+	static const ln::String EventAttr;
 
 	ln::Result init(PIMetadata* pi);
 
@@ -197,6 +198,8 @@ public:
 	bool isThis() const { return m_isThis; }		// for flat parameters
 	bool isReturn() const { return m_isReturn; }	// for flat parameters
 
+	ln::String getFullQualTypeName() const;
+
 private:
 	PIMethodParameter* m_pi = nullptr;
 	TypeSymbol* m_type = nullptr;
@@ -233,7 +236,6 @@ public:
 
 	//bool IsOverloadChild() const { return overloadParent != nullptr; }
 	//bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
-	//bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
 
 	//void LinkParameters(SymbolDatabase* db);
 	//ln::String GetCAPIFuncName();
@@ -264,6 +266,7 @@ public:
 	bool isVirtual() const { return m_pi->isVirtual; }
 	bool isConstructor() const { return m_isConstructor; }	// 名前が init であるインスタンスメソッド
 	bool isInstance() const { return !isStatic(); }			// instance method
+	bool isEventConnector() const { return metadata()->hasKey(MetadataInfo::EventAttr); }
 
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
@@ -315,12 +318,15 @@ public:
 	const ln::List<Ref<MethodSymbol>>& publicMethods() const { return m_publicMethods; }	// クラス外から普通にコールできる public メソッド。virutal は含むが、protected virtual は含まない。
 	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
 	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
+	const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
+	MethodSymbol* delegateDeclaration() const { return m_declaredMethods[0]; }
 
 	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
 	bool isClass() const { return kind() == TypeKind::Class; }
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
+	bool isDelegate() const { return kind() == TypeKind::Delegate; }
 	bool isStatic() const { return metadata()->hasKey(u"Static"); }	// static-class ?
 	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
 
@@ -338,6 +344,7 @@ private:
 	ln::List<Ref<MethodSymbol>> m_declaredMethods;	// このクラス内で宣言されたすべてメソッド。ベースクラスは含まない。
 	ln::List<Ref<MethodOverloadInfo>> m_overloads;
 	ln::List<Ref<MethodSymbol>> m_virtualMethods;
+	ln::List<Ref<MethodSymbol>> m_eventMethods;
 	TypeSymbol* m_baseClass = nullptr;
 
 //	struct SoueceData
@@ -383,25 +390,25 @@ private:
 //	ln::String m_shortName;
 };
 
-class DelegateSymbol : public Symbol
-{
-public:
-	DelegateSymbol(SymbolDatabase* db);
-	ln::Result init(PIDelegate* piDelegate);
-	ln::Result link();
-
-	const ln::String& shortName() const { return m_shortName; }
-	TypeSymbol* returnType() const { return m_returnType; }
-	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
-	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
-
-private:
-	Ref<PIDelegate> m_pi;
-	TypeSymbol* m_returnType = nullptr;
-	ln::String m_shortName;
-	ln::List<Ref<MethodParameterSymbol>> m_parameters;
-	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;
-};
+//class DelegateSymbol : public Symbol
+//{
+//public:
+//	DelegateSymbol(SymbolDatabase* db);
+//	ln::Result init(PIDelegate* piDelegate);
+//	ln::Result link();
+//
+//	const ln::String& shortName() const { return m_shortName; }
+//	TypeSymbol* returnType() const { return m_returnType; }
+//	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
+//	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
+//
+//private:
+//	Ref<PIDelegate> m_pi;
+//	TypeSymbol* m_returnType = nullptr;
+//	ln::String m_shortName;
+//	ln::List<Ref<MethodParameterSymbol>> m_parameters;
+//	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;
+//};
 
 class SymbolDatabase : public ln::RefObject
 {
@@ -427,7 +434,7 @@ public:
 	stream::Stream<Ref<TypeSymbol>> enums() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Enum; }); }
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
 	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class; }); }
-	const ln::List<Ref<DelegateSymbol>>& delegates() const { return m_delegates; }
+	stream::Stream<Ref<TypeSymbol>> delegates() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Delegate; }); }
 
 	const Ref<PIDatabase>& pidb() const { return m_pidb; }
 	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
@@ -443,7 +450,7 @@ public:
 private:
 	Ref<PIDatabase> m_pidb;
 	ln::List<Ref<TypeSymbol>> m_allTypes;
-	ln::List<Ref<DelegateSymbol>> m_delegates;
+	//ln::List<Ref<DelegateSymbol>> m_delegates;
 	ln::DiagnosticsManager* m_diag;
 };
 

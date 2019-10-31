@@ -92,6 +92,54 @@ public:
 LnSprite_OnUpdate_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = nullptr;
 
 
+class LNWS_ln_UIEventArgs : public ln::UIEventArgs
+{
+public:
+
+
+};
+
+
+class LNWS_ln_UILayoutElement : public ln::UILayoutElement
+{
+public:
+
+
+};
+
+
+class LNWS_ln_UIElement : public ln::UIElement
+{
+public:
+
+
+};
+
+
+class LNWS_ln_UIControl : public ln::UIControl
+{
+public:
+
+
+};
+
+
+class LNWS_ln_UIButtonBase : public ln::UIButtonBase
+{
+public:
+
+
+};
+
+
+class LNWS_ln_UIButton : public ln::UIButton
+{
+public:
+
+
+};
+
+
 
 
 extern "C"
@@ -365,6 +413,134 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_Ove
 {
     LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = callback;
     return LN_SUCCESS;
+}
+
+LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
+}
+
+LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UILayoutElement>(), id);
+}
+
+LN_FLAT_API LnResult LnUIElement_SetPosition(LnHandle uielement, const LnVector3* pos)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setPosition(*reinterpret_cast<const ln::Vector3*>(pos)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, float y, float z)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setPosition(x, y, z));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_Position(LnHandle uielement, LnVector3* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->position());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetRotation(LnHandle uielement, const LnQuaternion* rot)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setRotation(*reinterpret_cast<const ln::Quaternion*>(rot)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, float y, float z)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setEulerAngles(x, y, z));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_Rotation(LnHandle uielement, LnQuaternion* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->rotation());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetScale(LnHandle uielement, const LnVector3* scale)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setScale(*reinterpret_cast<const ln::Vector3*>(scale)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetScaleS(LnHandle uielement, float xyz)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setScale(xyz));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setScale(x, y));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_Scale(LnHandle uielement, LnVector3* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->scale());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetCenterPoint(LnHandle uielement, const LnVector3* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setCenterPoint(*reinterpret_cast<const ln::Vector3*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, float y, float z)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->setCenterPoint(x, y, z));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(ln::UIElement, uielement)->centerPoint());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIElement>(), id);
+}
+
+LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIControl>(), id);
+}
+
+LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButtonBase>(), id);
+}
+
+LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked([=](ln::UIEventArgs* e) { handler(LNI_OBJECT_TO_HANDLE(e)); }));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), id);
 }
 
 

@@ -61,6 +61,26 @@ extern "C" LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle te
 extern "C" LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float y, float width, float height);
 extern "C" LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite);
 extern "C" LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetPosition(LnHandle uielement, const LnVector3* pos);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, float y, float z);
+extern "C" LN_FLAT_API LnResult LnUIElement_Position(LnHandle uielement, LnVector3* outReturn);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetRotation(LnHandle uielement, const LnQuaternion* rot);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, float y, float z);
+extern "C" LN_FLAT_API LnResult LnUIElement_Rotation(LnHandle uielement, LnQuaternion* outReturn);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetScale(LnHandle uielement, const LnVector3* scale);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetScaleS(LnHandle uielement, float xyz);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y);
+extern "C" LN_FLAT_API LnResult LnUIElement_Scale(LnHandle uielement, LnVector3* outReturn);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetCenterPoint(LnHandle uielement, const LnVector3* value);
+extern "C" LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, float y, float z);
+extern "C" LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outReturn);
+extern "C" LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler);
+extern "C" LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id);
 
 
 VALUE g_enum_PixelFormat;
@@ -75,6 +95,13 @@ VALUE g_class_Texture2D;
 VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
 VALUE g_class_Sprite;
+VALUE g_class_UIEventArgs;
+VALUE g_class_UILayoutElement;
+VALUE g_class_UIElement;
+VALUE g_class_UIControl;
+VALUE g_class_UIButtonBase;
+VALUE g_class_UIButton;
+
 
 //==============================================================================
 // ln::Vector3
@@ -872,30 +899,520 @@ LnResult Wrap_LnSprite_OnUpdate_OverrideCallback(LnHandle worldobject, float ela
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
     return LN_SUCCESS;
 }
+//==============================================================================
+// ln::UIEventArgs
+
+struct Wrap_UIEventArgs
+    : public Wrap_Object
+{
+    Wrap_UIEventArgs()
+    {}
+};
+
+static void LnUIEventArgs_delete(Wrap_UIEventArgs* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnUIEventArgs_mark(Wrap_UIEventArgs* obj)
+{
+}
+
+static VALUE LnUIEventArgs_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UIEventArgs* internalObj;
+
+    internalObj = new Wrap_UIEventArgs();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIEventArgs_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIEventArgs_mark, LnUIEventArgs_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUIEventArgs_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UIEventArgs* internalObj;
+
+    internalObj = new Wrap_UIEventArgs();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIEventArgs_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIEventArgs_mark, LnUIEventArgs_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+//==============================================================================
+// ln::UILayoutElement
+
+struct Wrap_UILayoutElement
+    : public Wrap_Object
+{
+    Wrap_UILayoutElement()
+    {}
+};
+
+static void LnUILayoutElement_delete(Wrap_UILayoutElement* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnUILayoutElement_mark(Wrap_UILayoutElement* obj)
+{
+}
+
+static VALUE LnUILayoutElement_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UILayoutElement* internalObj;
+
+    internalObj = new Wrap_UILayoutElement();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUILayoutElement_allocate");
+    obj = Data_Wrap_Struct(klass, LnUILayoutElement_mark, LnUILayoutElement_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUILayoutElement_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UILayoutElement* internalObj;
+
+    internalObj = new Wrap_UILayoutElement();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUILayoutElement_allocate");
+    obj = Data_Wrap_Struct(klass, LnUILayoutElement_mark, LnUILayoutElement_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+//==============================================================================
+// ln::UIElement
+
+struct Wrap_UIElement
+    : public Wrap_UILayoutElement
+{
+    Wrap_UIElement()
+    {}
+};
+
+static void LnUIElement_delete(Wrap_UIElement* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnUIElement_mark(Wrap_UIElement* obj)
+{
+}
+
+static VALUE LnUIElement_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UIElement* internalObj;
+
+    internalObj = new Wrap_UIElement();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIElement_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIElement_mark, LnUIElement_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUIElement_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UIElement* internalObj;
+
+    internalObj = new Wrap_UIElement();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIElement_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIElement_mark, LnUIElement_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnUIElement_SetPosition(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE pos;
+        rb_scan_args(argc, argv, "1", &pos);
+        if (LNRB_VALUE_IS_OBJECT(pos))
+        {
+            LnVector3* tmp__pos; Data_Get_Struct(pos, LnVector3, tmp__pos);LnVector3& _pos = *tmp__pos;
+            LnResult errorCode = LnUIElement_SetPosition(selfObj->handle, &_pos);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 3) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        rb_scan_args(argc, argv, "21", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _z = (z != Qnil) ? LNRB_VALUE_TO_FLOAT(z) : 0.000000;
+            LnResult errorCode = LnUIElement_SetPositionXYZ(selfObj->handle, _x, _y, _z);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setPosition - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_Position(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnVector3 _outReturn;
+            LnResult errorCode = LnUIElement_Position(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnVector3_allocate(g_class_Vector3);
+            *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::position - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetRotation(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE rot;
+        rb_scan_args(argc, argv, "1", &rot);
+        if (LNRB_VALUE_IS_OBJECT(rot))
+        {
+            LnQuaternion* tmp__rot; Data_Get_Struct(rot, LnQuaternion, tmp__rot);LnQuaternion& _rot = *tmp__rot;
+            LnResult errorCode = LnUIElement_SetRotation(selfObj->handle, &_rot);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setRotation - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetEulerAngles(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (3 <= argc && argc <= 3) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        rb_scan_args(argc, argv, "3", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _z = LNRB_VALUE_TO_FLOAT(z);
+            LnResult errorCode = LnUIElement_SetEulerAngles(selfObj->handle, _x, _y, _z);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setEulerAngles - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_Rotation(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnQuaternion _outReturn;
+            LnResult errorCode = LnUIElement_Rotation(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnQuaternion_allocate(g_class_Quaternion);
+            *((LnQuaternion*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::rotation - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetScale(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE scale;
+        rb_scan_args(argc, argv, "1", &scale);
+        if (LNRB_VALUE_IS_OBJECT(scale))
+        {
+            LnVector3* tmp__scale; Data_Get_Struct(scale, LnVector3, tmp__scale);LnVector3& _scale = *tmp__scale;
+            LnResult errorCode = LnUIElement_SetScale(selfObj->handle, &_scale);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (1 <= argc && argc <= 1) {
+        VALUE xyz;
+        rb_scan_args(argc, argv, "1", &xyz);
+        if (LNRB_VALUE_IS_FLOAT(xyz))
+        {
+            float _xyz = LNRB_VALUE_TO_FLOAT(xyz);
+            LnResult errorCode = LnUIElement_SetScaleS(selfObj->handle, _xyz);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 2) {
+        VALUE x;
+        VALUE y;
+        rb_scan_args(argc, argv, "2", &x, &y);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            LnResult errorCode = LnUIElement_SetScaleXY(selfObj->handle, _x, _y);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setScale - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_Scale(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnVector3 _outReturn;
+            LnResult errorCode = LnUIElement_Scale(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnVector3_allocate(g_class_Vector3);
+            *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::scale - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetCenterPoint(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value))
+        {
+            LnVector3* tmp__value; Data_Get_Struct(value, LnVector3, tmp__value);LnVector3& _value = *tmp__value;
+            LnResult errorCode = LnUIElement_SetCenterPoint(selfObj->handle, &_value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 3) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        rb_scan_args(argc, argv, "21", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _z = (z != Qnil) ? LNRB_VALUE_TO_FLOAT(z) : 0.000000;
+            LnResult errorCode = LnUIElement_SetCenterPointXYZ(selfObj->handle, _x, _y, _z);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setCenterPoint - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_CenterPoint(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnVector3 _outReturn;
+            LnResult errorCode = LnUIElement_CenterPoint(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnVector3_allocate(g_class_Vector3);
+            *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::centerPoint - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::UIControl
+
+struct Wrap_UIControl
+    : public Wrap_UIElement
+{
+    Wrap_UIControl()
+    {}
+};
+
+static void LnUIControl_delete(Wrap_UIControl* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnUIControl_mark(Wrap_UIControl* obj)
+{
+}
+
+static VALUE LnUIControl_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UIControl* internalObj;
+
+    internalObj = new Wrap_UIControl();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIControl_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIControl_mark, LnUIControl_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUIControl_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UIControl* internalObj;
+
+    internalObj = new Wrap_UIControl();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIControl_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIControl_mark, LnUIControl_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+//==============================================================================
+// ln::UIButtonBase
+
+struct Wrap_UIButtonBase
+    : public Wrap_UIControl
+{
+    Wrap_UIButtonBase()
+    {}
+};
+
+static void LnUIButtonBase_delete(Wrap_UIButtonBase* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnUIButtonBase_mark(Wrap_UIButtonBase* obj)
+{
+}
+
+static VALUE LnUIButtonBase_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UIButtonBase* internalObj;
+
+    internalObj = new Wrap_UIButtonBase();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButtonBase_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIButtonBase_mark, LnUIButtonBase_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUIButtonBase_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UIButtonBase* internalObj;
+
+    internalObj = new Wrap_UIButtonBase();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButtonBase_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIButtonBase_mark, LnUIButtonBase_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+//==============================================================================
+// ln::UIButton
+
+struct Wrap_UIButton
+    : public Wrap_UIButtonBase
+{
+    Wrap_UIButton()
+    {}
+};
+
+static void LnUIButton_delete(Wrap_UIButton* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnUIButton_mark(Wrap_UIButton* obj)
+{
+}
+
+static VALUE LnUIButton_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UIButton* internalObj;
+
+    internalObj = new Wrap_UIButton();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButton_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIButton_mark, LnUIButton_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUIButton_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UIButton* internalObj;
+
+    internalObj = new Wrap_UIButton();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButton_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIButton_mark, LnUIButton_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIButton* selfObj;
+    Data_Get_Struct(self, Wrap_UIButton, selfObj);
+    test
+    rb_raise(rb_eArgError, "ln::UIButton::connectOnClicked - wrong argument type.");
+    return Qnil;
+}
+
 
 
 extern "C" void Init_Lumino()
 {
     InitLuminoRubyRuntimeManager();
     g_rootModule = rb_define_module("Lumino");
-
-    int state = 0;
-    rb_eval_string_protect(
-        "class Event_Void\n"
-        "  def initialize\n"
-        "    @handlers = []\n"
-        "  end\n"
-        "  def add(handler)\n"
-        "    @handlers.push(handler)\n"
-        "  end\n"
-        "  def raise(*args)\n"
-        "    @handlers.each do |h|\n"
-        "      h.call(*args)\n"
-        "    end\n"
-        "  end\n"
-        "end\n",
-        &state
-    );
 
     g_enum_PixelFormat = rb_define_module_under(g_rootModule, "PixelFormat");
     rb_define_const(g_enum_PixelFormat, "UNKNOWN", INT2FIX(0)); 
@@ -970,6 +1487,40 @@ extern "C" void Init_Lumino()
     rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSprite_Create), -1);
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
     LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);
+
+    g_class_UIEventArgs = rb_define_class_under(g_rootModule, "UIEventArgs", rb_cObject);
+    rb_define_alloc_func(g_class_UIEventArgs, LnUIEventArgs_allocate);
+    LnUIEventArgs_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIEventArgs, LnUIEventArgs_allocateForGetObject));
+
+    g_class_UILayoutElement = rb_define_class_under(g_rootModule, "UILayoutElement", rb_cObject);
+    rb_define_alloc_func(g_class_UILayoutElement, LnUILayoutElement_allocate);
+    LnUILayoutElement_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UILayoutElement, LnUILayoutElement_allocateForGetObject));
+
+    g_class_UIElement = rb_define_class_under(g_rootModule, "UIElement", g_class_UILayoutElement);
+    rb_define_alloc_func(g_class_UIElement, LnUIElement_allocate);
+    rb_define_method(g_class_UIElement, "set_position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPosition), -1);
+    rb_define_method(g_class_UIElement, "position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_Position), -1);
+    rb_define_method(g_class_UIElement, "set_rotation", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetRotation), -1);
+    rb_define_method(g_class_UIElement, "set_euler_angles", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetEulerAngles), -1);
+    rb_define_method(g_class_UIElement, "rotation", LN_TO_RUBY_FUNC(Wrap_LnUIElement_Rotation), -1);
+    rb_define_method(g_class_UIElement, "set_scale", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetScale), -1);
+    rb_define_method(g_class_UIElement, "scale", LN_TO_RUBY_FUNC(Wrap_LnUIElement_Scale), -1);
+    rb_define_method(g_class_UIElement, "set_center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetCenterPoint), -1);
+    rb_define_method(g_class_UIElement, "center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_CenterPoint), -1);
+    LnUIElement_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIElement, LnUIElement_allocateForGetObject));
+
+    g_class_UIControl = rb_define_class_under(g_rootModule, "UIControl", g_class_UIElement);
+    rb_define_alloc_func(g_class_UIControl, LnUIControl_allocate);
+    LnUIControl_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIControl, LnUIControl_allocateForGetObject));
+
+    g_class_UIButtonBase = rb_define_class_under(g_rootModule, "UIButtonBase", g_class_UIControl);
+    rb_define_alloc_func(g_class_UIButtonBase, LnUIButtonBase_allocate);
+    LnUIButtonBase_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIButtonBase, LnUIButtonBase_allocateForGetObject));
+
+    g_class_UIButton = rb_define_class_under(g_rootModule, "UIButton", g_class_UIButtonBase);
+    rb_define_alloc_func(g_class_UIButton, LnUIButton_allocate);
+    rb_define_method(g_class_UIButton, "connect_on_clicked", LN_TO_RUBY_FUNC(Wrap_LnUIButton_ConnectOnClicked), -1);
+    LnUIButton_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIButton, LnUIButton_allocateForGetObject));
 
 }
 

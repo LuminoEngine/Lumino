@@ -61,6 +61,8 @@ TypeKind PITypeInfo::kindAsEnum() const
 		return TypeKind::Struct;
 	if (ln::String::compare(kind, u"Class", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return TypeKind::Class;
+	if (ln::String::compare(kind, u"Delegate", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeKind::Delegate;
 
 	LN_UNREACHABLE();
 	return TypeKind::Primitive;

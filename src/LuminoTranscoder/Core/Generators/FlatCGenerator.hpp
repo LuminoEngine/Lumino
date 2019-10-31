@@ -52,13 +52,14 @@ public:
 	void generate();
 
 private:
-	ln::String makeFlatFullName(TypeSymbol* type) const { return type->fullName().replace(u"::", u"_"); }	// ln::Texture -> ln_Texture
+	ln::String makeFlatFullName(const TypeSymbol* type) const { return type->fullName().replace(u"::", u"_"); }	// ln::Texture -> ln_Texture
 
 	ln::String makeWrapSubclassDecls() const;
-	ln::String makeWrapSubclassName(TypeSymbol* type) const { return u"LNWS_" + makeFlatFullName(type); }
+	ln::String makeWrapSubclassName(const TypeSymbol* type) const { return u"LNWS_" + makeFlatFullName(type); }
 
 	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo);
 	ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
+	ln::String makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const;
 };
 
 

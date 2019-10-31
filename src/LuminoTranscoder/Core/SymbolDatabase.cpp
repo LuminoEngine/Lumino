@@ -44,6 +44,7 @@ ln::Result DocumentInfo::init(const PIDocument* pi)
 // MetadataInfo
 
 const ln::String MetadataInfo::OverloadPostfixAttr = u"OverloadPostfix";
+const ln::String MetadataInfo::EventAttr = u"Event";
 
 ln::Result MetadataInfo::init(PIMetadata* pi)
 {
@@ -235,6 +236,15 @@ ln::Result MethodParameterSymbol::link()
 		if (LN_REQUIRE(m_type)) return false;
 	}
 	return true;
+}
+
+ln::String MethodParameterSymbol::getFullQualTypeName() const
+{
+	ln::String name = m_type->fullName();
+	if (m_type->isClass()) {
+		name += u"*";
+	}
+	return name;
 }
 
 //==============================================================================
@@ -530,6 +540,12 @@ ln::Result TypeSymbol::link()
 
 	collectVirtualMethods(&m_virtualMethods);
 
+	for (auto& method : m_declaredMethods) {
+		if (method->isEventConnector()) {
+			m_eventMethods.add(method);
+		}
+	}
+
 	return true;
 }
 
@@ -546,6 +562,9 @@ void TypeSymbol::setFullName(const ln::String& value)
 
 ln::Result TypeSymbol::linkOverload()
 {
+	// Not required for delegates
+	if (isDelegate()) return true;
+
 	for (auto& method1 : m_declaredMethods)
 	{
 		auto info = m_overloads.findIf([&method1](auto& x) { return x->m_methods[0]->shortName() == method1->shortName(); });
@@ -804,45 +823,45 @@ void TypeSymbol::ResolveCopyDoc()
 //==============================================================================
 // DelegateSymbol
 
-DelegateSymbol::DelegateSymbol(SymbolDatabase* db)
-	: Symbol(db)
-{
-}
-
-ln::Result DelegateSymbol::init(PIDelegate* piDelegate)
-{
-	if (!Symbol::init(piDelegate->document, nullptr)) {
-		return false;
-	}
-
-	m_pi = piDelegate;
-
-	m_shortName = m_pi->name;
-
-	for (auto& i : m_pi->parameters) {
-		auto s = ln::makeRef<MethodParameterSymbol>(db());
-		if (!s->init(i)) return false;
-		m_parameters.add(s);
-	}
-
-	return true;
-}
-
-ln::Result DelegateSymbol::link()
-{
-	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
-	if (!m_returnType) return false;
-
-	for (auto& p : m_parameters) {
-		if (!p->link()) return false;
-	}
-
-	for (auto& paramInfo : m_parameters) {
-		m_flatParameters.add(paramInfo);
-	}
-
-	return true;
-}
+//DelegateSymbol::DelegateSymbol(SymbolDatabase* db)
+//	: Symbol(db)
+//{
+//}
+//
+//ln::Result DelegateSymbol::init(PIDelegate* piDelegate)
+//{
+//	if (!Symbol::init(piDelegate->document, nullptr)) {
+//		return false;
+//	}
+//
+//	m_pi = piDelegate;
+//
+//	m_shortName = m_pi->name;
+//
+//	for (auto& i : m_pi->parameters) {
+//		auto s = ln::makeRef<MethodParameterSymbol>(db());
+//		if (!s->init(i)) return false;
+//		m_parameters.add(s);
+//	}
+//
+//	return true;
+//}
+//
+//ln::Result DelegateSymbol::link()
+//{
+//	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
+//	if (!m_returnType) return false;
+//
+//	for (auto& p : m_parameters) {
+//		if (!p->link()) return false;
+//	}
+//
+//	for (auto& paramInfo : m_parameters) {
+//		m_flatParameters.add(paramInfo);
+//	}
+//
+//	return true;
+//}
 
 //==============================================================================
 // SymbolDatabase
@@ -866,13 +885,13 @@ ln::Result SymbolDatabase::initTypes(PIDatabase* pidb)
 		m_allTypes.add(symbol);
 	}
 
-	for (auto& d : m_pidb->delegates) {
-		auto symbol = ln::makeRef<DelegateSymbol>(this);
-		if (!symbol->init(d)) {
-			return false;
-		}
-		m_delegates.add(symbol);
-	}
+	//for (auto& d : m_pidb->delegates) {
+	//	auto symbol = ln::makeRef<DelegateSymbol>(this);
+	//	if (!symbol->init(d)) {
+	//		return false;
+	//	}
+	//	m_delegates.add(symbol);
+	//}
 
 	return true;
 }
@@ -882,9 +901,9 @@ ln::Result SymbolDatabase::linkTypes()
 	for (auto& t : m_allTypes) {
 		if (!t->link()) return false;
 	}
-	for (auto& t : m_delegates) {
-		if (!t->link()) return false;
-	}
+	//for (auto& t : m_delegates) {
+	//	if (!t->link()) return false;
+	//}
 
 	return true;
 #if 0
@@ -1054,8 +1073,7 @@ void SymbolDatabase::initPredefineds()
 
 	PredefinedTypes::objectType = addPredefined(u"ln::Object");
 
-	//m_allTypes.add(ln::makeRef<TypeSymbol>(_T("ln::EventConnection")));
-	//PredefinedTypes::EventConnectionType = m_allTypes.back();
+	PredefinedTypes::EventConnectionType = addPredefined(u"ln::EventConnection");
 }
 
 TypeSymbol* SymbolDatabase::findTypeSymbol(const ln::String& typeFullName)

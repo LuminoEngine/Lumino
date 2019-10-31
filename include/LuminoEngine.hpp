@@ -81,6 +81,7 @@
 #include "LuminoEngine/Scene/Scene.hpp"
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 
+#include "LuminoEngine/UI/UIEvents.hpp"
 #include "LuminoEngine/UI/UIRenderView.hpp"
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"
@@ -88,6 +89,7 @@
 #include "LuminoEngine/UI/UITextBlock.hpp"
 #include "LuminoEngine/UI/UILayoutPanel.hpp"
 #include "LuminoEngine/UI/UIWindow.hpp"
+#include "LuminoEngine/UI/UIButton.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 

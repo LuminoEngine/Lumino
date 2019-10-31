@@ -16,4 +16,5 @@ enum class TypeKind
 	Struct,
 	Class,
 	Enum,
+	Delegate,
 };

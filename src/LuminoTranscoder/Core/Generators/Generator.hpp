@@ -73,7 +73,7 @@ public:
 	ln::String makeFlatAPIName_CallOverrideBase(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatAPIDecl_CallOverrideBase(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
-	ln::String makeDelegateCallbackFuncPtrName(const DelegateSymbol* delegateSymbol, FlatCharset charset) const;
+	ln::String makeDelegateCallbackFuncPtrName(const TypeSymbol* delegateSymbol, FlatCharset charset) const;
 	ln::String makeFlatShortFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "SetTexture"
 	ln::String makeFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "LnSprite_SetTexture"
 	ln::String makeFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const;		// トップレベルの Visual 関数の名前を作るの使用する

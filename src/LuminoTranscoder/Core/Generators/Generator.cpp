@@ -91,7 +91,7 @@ ln::String Generator::makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafC
 	return ln::String::format(u"{0}_{1}_OverrideCallback", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));
 }
 
-ln::String Generator::makeDelegateCallbackFuncPtrName(const DelegateSymbol* delegateSymbol, FlatCharset charset) const
+ln::String Generator::makeDelegateCallbackFuncPtrName(const TypeSymbol* delegateSymbol, FlatCharset charset) const
 {
 	auto funcName = delegateSymbol->shortName();
 	funcName[0] = toupper(funcName[0]);
@@ -173,6 +173,10 @@ ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo,
 			return ln::String::format(u"const {0}**", makeFlatCharTypeName(charset));
 		else
 			return ln::String::format(u"const {0}*", makeFlatCharTypeName(charset));
+	}
+	else if (typeInfo->isDelegate())
+	{
+		return makeDelegateCallbackFuncPtrName(typeInfo, FlatCharset::Unicode);
 	}
 	else
 	{

@@ -4,7 +4,6 @@
 
 extern "C"
 {
-
 /**
     @brief 3次元のベクトルを定義します。
 */
@@ -119,6 +118,7 @@ typedef enum tagLnDepthBufferFormat
 
 } LnDepthBufferFormat;
 
+typedef void(*LnUIEventHandlerCallback)(LnHandle );
 
 
 /**
@@ -340,6 +340,108 @@ LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height
 typedef LnResult(*LnSprite_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
 LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_OverrideCallback callback);
 LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
+
+//==============================================================================
+// ln::UIEventArgs
+
+//==============================================================================
+// ln::UILayoutElement
+
+//==============================================================================
+// ln::UIElement
+
+/**
+    @brief このオブジェクトの位置を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetPosition(LnHandle uielement, const LnVector3* pos);
+
+
+/**
+    @brief このオブジェクトの位置を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, float y, float z);
+
+
+/**
+    @brief このオブジェクトの位置を位置を取得します。
+*/
+LN_FLAT_API LnResult LnUIElement_Position(LnHandle uielement, LnVector3* outReturn);
+
+
+/**
+    @brief このオブジェクトの回転を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetRotation(LnHandle uielement, const LnQuaternion* rot);
+
+
+/**
+    @brief このオブジェクトの回転をオイラー角から設定します。(radian)
+*/
+LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, float y, float z);
+
+
+/**
+    @brief このオブジェクトの回転を取得します。
+*/
+LN_FLAT_API LnResult LnUIElement_Rotation(LnHandle uielement, LnQuaternion* outReturn);
+
+
+/**
+    @brief このオブジェクトの拡大率を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetScale(LnHandle uielement, const LnVector3* scale);
+
+
+/**
+    @brief このオブジェクトの拡大率を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetScaleS(LnHandle uielement, float xyz);
+
+
+/**
+    @brief このオブジェクトの拡大率を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y);
+
+
+/**
+    @brief このオブジェクトの拡大率を取得します。
+*/
+LN_FLAT_API LnResult LnUIElement_Scale(LnHandle uielement, LnVector3* outReturn);
+
+
+/**
+    @brief このオブジェクトのローカルの中心位置を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetCenterPoint(LnHandle uielement, const LnVector3* value);
+
+
+/**
+    @brief このオブジェクトのローカルの中心位置を設定します。
+*/
+LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, float y, float z);
+
+
+/**
+    @brief このオブジェクトのローカルの中心位置を取得します。
+*/
+LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outReturn);
+
+
+//==============================================================================
+// ln::UIControl
+
+//==============================================================================
+// ln::UIButtonBase
+
+//==============================================================================
+// ln::UIButton
+
+/**
+    @brief Clicked イベントの通知を受け取るコールバックを登録します。
+*/
+LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler);
+
 
 
 

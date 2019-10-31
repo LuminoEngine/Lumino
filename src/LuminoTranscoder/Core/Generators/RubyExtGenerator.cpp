@@ -340,6 +340,10 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol
 
 ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const
 {
+	if (method->isEventConnector()) {
+		return u"test";
+	}
+
 	/* 出力例：
 	if (1 <= argc && argc <= 4) {
         VALUE filePath;

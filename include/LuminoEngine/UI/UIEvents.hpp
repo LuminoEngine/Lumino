@@ -428,14 +428,12 @@ using UIEventHandler = std::function<void(UIEventArgs* e)>;
 	@brief		マウス操作が関係する UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
 */
-LN_DELEGATE()
 using UIMouseEventHandler = std::function<void(UIMouseEventArgs* e)>;
 
 /**
 	@brief		ドラッグアンドドロップ操作が関係する UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
 */
-LN_DELEGATE()
 using UIDragDropEventHandler = std::function<void(UIDragDropEventArgs* e)>;
 
 using UIClickEventHandler = std::function<void(UIClickEventArgs* e)>;
