@@ -31,6 +31,8 @@ void RubyExtGenerator::generate()
 	// classes
 	for (auto& classSymbol : db()->classes()) {
 
+		OutputBuffer markExprs;
+
 		code.AppendLine("//==============================================================================");
 		code.AppendLine("// {0}", classSymbol->fullName());
 		code.NewLine();
@@ -54,10 +56,19 @@ void RubyExtGenerator::generate()
 				wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
 			}
 			wrapStruct.AppendLine("{");
+			wrapStruct.IncreaseIndent();
+
 			// プロパティフィールド
 			//wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMember.ToString());
-			// コンストラクタと初期化子
-			wrapStruct.IncreaseIndent();
+
+			// Signal and Connection
+			for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
+				wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
+				wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
+				markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
+			}
+
+			// Constructor
 			wrapStruct.AppendLine("{0}()", makeWrapStructName(classSymbol));
 			//if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
 			//{
@@ -77,7 +88,8 @@ void RubyExtGenerator::generate()
 		if (!classSymbol->isStatic()) {
 			code.AppendLine(m_RubyRequiredClassMethodsTemplate
 				.replace(u"%%FlatClassName%%", makeFlatClassName(classSymbol))
-				.replace(u"%%WrapStructName%%", makeWrapStructName(classSymbol)));
+				.replace(u"%%WrapStructName%%", makeWrapStructName(classSymbol))
+				.replace(u"%%MarkExprs%%", markExprs.toString()));
 		}
 
 		for (auto& overload : classSymbol->overloads()) {
@@ -167,6 +179,9 @@ void RubyExtGenerator::generate()
 
 			moduleInitializer.NewLine();
 		}
+
+		// EventSignal
+		//moduleInitializer.AppendLine(makeEventSignalDefinition());
 
 		moduleInitializer.DecreaseIndent();
 		moduleInitializer.AppendLine(u"}");
@@ -304,6 +319,13 @@ ln::String RubyExtGenerator::makeRubyMethodName(MethodSymbol* method) const
 	}
 #endif
 }
+
+//ln::String RubyExtGenerator::makeEventSignalClassName(const TypeSymbol* delegateType) const
+//{
+//	for (auto& param : delegateType->delegateDeclaration()->parameters()) {
+//
+//	}
+//}
 
 ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const
 {
@@ -867,4 +889,23 @@ ln::String RubyExtGenerator::makeEnumTypeRegisterCode() const
 	}
 
 	return code.toString().trim();
+}
+
+ln::String RubyExtGenerator::makeEventSignalDefinition() const
+{
+	OutputBuffer code;
+	code.AppendLine(u"int state = 0;");
+	code.AppendLine(u"rb_eval_string_protect(");
+	code.IncreaseIndent();
+
+	ln::StreamReader r(makeTemplateFilePath(u"RubyEventSignalClass.template.rb"));
+	ln::String line;
+	while (r.readLine(&line)) {
+		code.AppendLine(u"\"{0}\\n\"", line);
+	}
+	code.AppendLine(u",");
+	code.AppendLine(u"&state);");
+
+	code.DecreaseIndent();
+	return code.toString();
 }

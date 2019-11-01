@@ -38,6 +38,12 @@ public:
         }
     }
 
+	/** イベントハンドラとイベントが接続されているかを確認します。*/
+	bool connected() const
+	{
+		return m_internalData != nullptr;
+	}
+
 private:
     EventConnection(const std::shared_ptr<detail::EventInternalDataBase>& internalData, detail::EventConnectionDataBase* connectionData)
         : m_internalData(internalData)

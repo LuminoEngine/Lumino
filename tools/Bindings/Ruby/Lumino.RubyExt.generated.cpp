@@ -223,6 +223,7 @@ static void LnGraphicsResource_delete(Wrap_GraphicsResource* obj)
 
 static void LnGraphicsResource_mark(Wrap_GraphicsResource* obj)
 {
+	
 }
 
 static VALUE LnGraphicsResource_allocate(VALUE klass)
@@ -268,6 +269,7 @@ static void LnTexture_delete(Wrap_Texture* obj)
 
 static void LnTexture_mark(Wrap_Texture* obj)
 {
+	
 }
 
 static VALUE LnTexture_allocate(VALUE klass)
@@ -313,6 +315,7 @@ static void LnTexture2D_delete(Wrap_Texture2D* obj)
 
 static void LnTexture2D_mark(Wrap_Texture2D* obj)
 {
+	
 }
 
 static VALUE LnTexture2D_allocate(VALUE klass)
@@ -410,6 +413,7 @@ static void LnWorldObject_delete(Wrap_WorldObject* obj)
 
 static void LnWorldObject_mark(Wrap_WorldObject* obj)
 {
+	
 }
 
 static VALUE LnWorldObject_allocate(VALUE klass)
@@ -711,6 +715,7 @@ static void LnVisualObject_delete(Wrap_VisualObject* obj)
 
 static void LnVisualObject_mark(Wrap_VisualObject* obj)
 {
+	
 }
 
 static VALUE LnVisualObject_allocate(VALUE klass)
@@ -798,6 +803,7 @@ static void LnSprite_delete(Wrap_Sprite* obj)
 
 static void LnSprite_mark(Wrap_Sprite* obj)
 {
+	
 }
 
 static VALUE LnSprite_allocate(VALUE klass)
@@ -917,6 +923,7 @@ static void LnUIEventArgs_delete(Wrap_UIEventArgs* obj)
 
 static void LnUIEventArgs_mark(Wrap_UIEventArgs* obj)
 {
+	
 }
 
 static VALUE LnUIEventArgs_allocate(VALUE klass)
@@ -962,6 +969,7 @@ static void LnUILayoutElement_delete(Wrap_UILayoutElement* obj)
 
 static void LnUILayoutElement_mark(Wrap_UILayoutElement* obj)
 {
+	
 }
 
 static VALUE LnUILayoutElement_allocate(VALUE klass)
@@ -1007,6 +1015,7 @@ static void LnUIElement_delete(Wrap_UIElement* obj)
 
 static void LnUIElement_mark(Wrap_UIElement* obj)
 {
+	
 }
 
 static VALUE LnUIElement_allocate(VALUE klass)
@@ -1281,6 +1290,7 @@ static void LnUIControl_delete(Wrap_UIControl* obj)
 
 static void LnUIControl_mark(Wrap_UIControl* obj)
 {
+	
 }
 
 static VALUE LnUIControl_allocate(VALUE klass)
@@ -1326,6 +1336,7 @@ static void LnUIButtonBase_delete(Wrap_UIButtonBase* obj)
 
 static void LnUIButtonBase_mark(Wrap_UIButtonBase* obj)
 {
+	
 }
 
 static VALUE LnUIButtonBase_allocate(VALUE klass)
@@ -1359,6 +1370,8 @@ static VALUE LnUIButtonBase_allocateForGetObject(VALUE klass, LnHandle handle)
 struct Wrap_UIButton
     : public Wrap_UIButtonBase
 {
+    VALUE connectOnClicked_Signal;
+    bool connectOnClicked_EventConnect = false;
     Wrap_UIButton()
     {}
 };
@@ -1371,6 +1384,8 @@ static void LnUIButton_delete(Wrap_UIButton* obj)
 
 static void LnUIButton_mark(Wrap_UIButton* obj)
 {
+	rb_gc_mark(obj->connectOnClicked_Signal);
+
 }
 
 static VALUE LnUIButton_allocate(VALUE klass)

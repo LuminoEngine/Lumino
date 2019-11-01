@@ -29,6 +29,9 @@ private:
 	ln::String makeWrapStructName(TypeSymbol* type) const { return u"Wrap_" + type->shortName(); }
 	ln::String makeWrapFuncName(MethodSymbol* method) const { return u"Wrap_" + makeFuncName(method, FlatCharset::Unicode); }
 	ln::String makeWrapFuncName_CallOverrideBase(MethodSymbol* method) const { return u"Wrap_" + makeFuncName(method, FlatCharset::Unicode) + u"_CallOverrideBase"; }
+	ln::String makeSignalValueName(const MethodSymbol* eventConnectorMethod) const { return eventConnectorMethod->shortName() + u"_Signal"; }
+	ln::String makeEventConnectValueName(const MethodSymbol* eventConnectorMethod) const { return eventConnectorMethod->shortName() + u"_EventConnect"; }
+	//ln::String makeEventSignalClassName(const TypeSymbol* delegateType) const;
 
 	ln::String makeWrapFuncName_OverrideCallback(const TypeSymbol* classSymbol, const MethodSymbol* method) const { return u"Wrap_" + makeFuncName(classSymbol, method, FlatCharset::Unicode) + u"_OverrideCallback"; }
 	ln::String makeWrapFuncName_SetOverrideCallback(const TypeSymbol* classSymbol, const MethodSymbol* method) const { return u"Wrap_" + makeFuncName(classSymbol, method, FlatCharset::Unicode) + u"_SetOverrideCallback"; }
@@ -46,4 +49,6 @@ private:
 	ln::String makeEnumTypeVALUEName(TypeSymbol* type) const { return u"g_enum_" + type->shortName(); }
 	ln::String makeEnumTypeVALUEVariableDecls() const;
 	ln::String makeEnumTypeRegisterCode() const;
+
+	ln::String makeEventSignalDefinition() const;
 };

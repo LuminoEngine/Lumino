@@ -40,6 +40,36 @@ rb_eval_string_protect(
 );
 ```
 
+```
+static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIButton* selfObj;
+    Data_Get_Struct(self, Wrap_UIButton, selfObj);
+
+    if (!selfObj->connectOnClicked_EventConnect) {  // differed initialization.
+        selfObj->handle->connectOnClicked_Signal = rb_funcall(g_class_Event_Void, rb_intern("new"), 0);
+        LnUIButton_ConnectOnClicked(selfObj->handle, );
+        selfObj->connectOnClicked_EventConnect = true;
+    }
+    
+    VALUE handler;
+    rb_scan_args(argc, argv, "1", &handler);
+    VALUE retval = rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("add"), 1, handler);
+
+    test
+    rb_raise(rb_eArgError, "ln::UIButton::connectOnClicked - wrong argument type.");
+    return Qnil;
+}
+
+
+
+VALUE a = rb_intern("Lumino::UIButton");
+VALUE b = rb_eval_string("Lumino::UIButton");
+printf("%d\n", a);
+printf("%d\n", b);
+printf("%d\n", g_class_UIButton);
+```
+
 -----------------------------------------
 
 

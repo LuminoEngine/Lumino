@@ -27,7 +27,34 @@ LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::instance = nullptr;
 void LuminoRubyRuntimeManager::init()
 {
     instance = this;
-    m_luminoModule = rb_define_module("Lumino");
+
+    {
+        m_luminoModule = rb_define_module("Lumino");
+        
+        int state = 0;
+        rb_eval_string_protect(
+            "module Lumino\n"
+            "  class EventSignal\n"
+            "    def initialize\n"
+            "      @handlers = []\n"
+            "    end\n"
+            "    def add(handler)\n"
+            "      @handlers.push(handler)\n"
+            "    end\n"
+            "    def raise(*args)\n"
+            "      @handlers.each do |h|\n"
+            "        h.call(*args)\n"
+            "      end\n"
+            "    end\n"
+            "  end\n"
+            "end\n"
+            ,
+            &state);
+        m_eventSignalClass = rb_eval_string("Lumino::EventSignal");
+    }
+
+
+
     m_typeInfoList.push_back({});   // [0] is dummy
 
     for (int i = 0; i < InitialListSize; i++) {

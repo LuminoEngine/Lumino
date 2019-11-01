@@ -40,6 +40,7 @@ public:
     static LuminoRubyRuntimeManager* instance;
     void init();
     VALUE luminoModule() const { return m_luminoModule; }
+    VALUE eventSignalClass() const { return m_eventSignalClass; }
     VALUE wrapObject(LnHandle handle);
     LnHandle getHandle(VALUE value) const;
     int registerTypeInfo(VALUE klass, ObjectFactoryFunc factory);
@@ -53,6 +54,7 @@ public:
 
 private:
     VALUE m_luminoModule;
+    VALUE m_eventSignalClass;
     std::vector<TypeInfo> m_typeInfoList;
     std::vector<VALUE> m_objectList;
     std::stack<int> m_objectListIndexStack;

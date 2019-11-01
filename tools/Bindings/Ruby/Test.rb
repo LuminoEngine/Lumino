@@ -10,12 +10,13 @@ require './Lumino'
 include Lumino
 
 
-ev = Event_Void.new
-def on_call
-    p "call on....."
-end
-ev.add(method(:on_call))
-ev.raise
+
+#ev = Event_Void.new
+#def on_call
+#    p "call on....."
+#end
+#ev.add(method(:on_call))
+#ev.raise
 
 Engine.initialize
 

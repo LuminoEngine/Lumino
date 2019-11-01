@@ -6,6 +6,7 @@ static void %%FlatClassName%%_delete(%%WrapStructName%%* obj)
 
 static void %%FlatClassName%%_mark(%%WrapStructName%%* obj)
 {
+	%%MarkExprs%%
 }
 
 static VALUE %%FlatClassName%%_allocate(VALUE klass)
