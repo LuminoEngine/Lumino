@@ -34,8 +34,8 @@ public:
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     Application* application() const { return m_application; }
 
-    void setPrimaryElement(UIContainerElement* element);
-    UIContainerElement* primaryElement() const;
+    void setPrimaryElement(UIControl* element);
+	UIControl* primaryElement() const;
 
     const Ref<EventArgsPool>& eventArgsPool() const { return m_eventArgsPool; }
 
@@ -77,7 +77,7 @@ private:
 	GraphicsManager* m_graphicsManager;
     Application* m_application;
 	//PlatformManager* platformManager;
-    Ref<UIContainerElement> m_primaryElement;
+    Ref<UIControl> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;
     Ref<UIContext> m_mainContext;
     UIElement* m_mouseHoverElement;

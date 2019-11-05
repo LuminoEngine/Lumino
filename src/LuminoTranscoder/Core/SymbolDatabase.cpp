@@ -311,14 +311,6 @@ ln::Result MethodSymbol::makeFlatParameters()
 		{
 			// none
 		}
-		//else if (owner->isDelegate)
-		//{
-		//	auto info = ln::makeRef<ParameterSymbol>();
-		//	info->name = _T("sender");
-		//	info->type = PredefinedTypes::objectType;
-		//	info->isThis = true;
-		//	capiParameters.add(info);
-		//}
 		else if (m_ownerType->kind() == TypeKind::Class)
 		{
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
@@ -331,6 +323,13 @@ ln::Result MethodSymbol::makeFlatParameters()
 			LN_UNREACHABLE();
 			return false;
 		}
+	}
+	
+	if (m_ownerType->kind() == TypeKind::Delegate)
+	{
+		auto s = ln::makeRef<MethodParameterSymbol>(db());
+		if (!s->init(PredefinedTypes::objectType, u"__eventOwner")) return false;
+		m_flatParameters.add(s);
 	}
 
 	// params
@@ -472,6 +471,7 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 
 	LN_CHECK(piType);
 	m_piType = piType;
+	m_kind = m_piType->kindAsEnum();
 	setFullName(m_piType->rawFullName);
 
 	for (auto& i : m_piType->fields) {
@@ -501,8 +501,9 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 	return true;
 }
 
-ln::Result TypeSymbol::init(const ln::String& primitveRawFullName)
+ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind typeKind)
 {
+	m_kind = typeKind;
 	setFullName(primitveRawFullName);
 	return true;
 }
@@ -528,12 +529,17 @@ ln::Result TypeSymbol::link()
 		}
 	}
 
-	if (isClass() && !isStatic()) {
-		m_baseClass = db()->getTypeSymbol(m_piType->baseClassRawName);
-		if (!m_baseClass) {
-			LN_NOTIMPLEMENTED();
-			return false;
+	if (m_piType) {
+		if (isClass() && !isStatic()) {
+			m_baseClass = db()->getTypeSymbol(m_piType->baseClassRawName);
+			if (!m_baseClass) {
+				LN_NOTIMPLEMENTED();
+				return false;
+			}
 		}
+	}
+	else {
+		// predefined type.
 	}
 
 	if (!linkOverload()) return false;
@@ -885,14 +891,6 @@ ln::Result SymbolDatabase::initTypes(PIDatabase* pidb)
 		m_allTypes.add(symbol);
 	}
 
-	//for (auto& d : m_pidb->delegates) {
-	//	auto symbol = ln::makeRef<DelegateSymbol>(this);
-	//	if (!symbol->init(d)) {
-	//		return false;
-	//	}
-	//	m_delegates.add(symbol);
-	//}
-
 	return true;
 }
 
@@ -901,9 +899,6 @@ ln::Result SymbolDatabase::linkTypes()
 	for (auto& t : m_allTypes) {
 		if (!t->link()) return false;
 	}
-	//for (auto& t : m_delegates) {
-	//	if (!t->link()) return false;
-	//}
 
 	return true;
 #if 0
@@ -1046,9 +1041,9 @@ const PIDocument* SymbolDatabase::resolveCopyDoc(const PIDocument* pi) const
 
 void SymbolDatabase::initPredefineds()
 {
-	auto addPredefined = [this](const ln::String& name) {
+	auto addPredefined = [this](const ln::String& name, TypeKind kind = TypeKind::Primitive) {
 		auto t = ln::makeRef<TypeSymbol>(this);
-		t->init(name);
+		t->init(name, kind);
 		m_allTypes.add(t);
 		return t;
 	};
@@ -1071,7 +1066,7 @@ void SymbolDatabase::initPredefineds()
 
 	PredefinedTypes::stringType = addPredefined(u"ln::StringRef");
 
-	PredefinedTypes::objectType = addPredefined(u"ln::Object");
+	PredefinedTypes::objectType = addPredefined(u"ln::Object", TypeKind::Class);
 
 	PredefinedTypes::EventConnectionType = addPredefined(u"ln::EventConnection");
 }

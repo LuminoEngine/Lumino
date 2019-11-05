@@ -49,19 +49,19 @@ void UIManager::dispose()
     m_mainContext = nullptr;
 }
 
-void UIManager::setPrimaryElement(UIContainerElement* element)
+void UIManager::setPrimaryElement(UIControl* element)
 {
     m_primaryElement = element;
+}
+
+UIControl* UIManager::primaryElement() const
+{
+	return m_primaryElement;
 }
 
 void UIManager::setMainContext(UIContext* context)
 {
     m_mainContext = context;
-}
-
-UIContainerElement* UIManager::primaryElement() const
-{
-    return m_primaryElement;
 }
 
 void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition)

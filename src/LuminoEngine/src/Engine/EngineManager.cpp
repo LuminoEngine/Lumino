@@ -176,7 +176,7 @@ void EngineManager::init()
             m_mainUIRenderView = makeObject<UIRenderView>();
             m_mainViewport->addRenderView(m_mainUIRenderView);
 
-            m_mainUIRoot = makeObject<UIContainerElement>();
+            m_mainUIRoot = makeObject<UIControl>();
             m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
             m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
 			m_mainUIRoot->m_isHitTestVisible = false;

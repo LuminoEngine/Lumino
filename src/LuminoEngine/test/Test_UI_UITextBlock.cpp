@@ -11,13 +11,13 @@ TEST_F(Test_UI_UITextBlock, Basic)
 	auto text1 = UITextBlock::create();
 	text1->setText(u"ABCHIJabchij");
 	text1->setTextColor(Color::White);
-	Engine::mainUIRoot()->addElement(text1);
+	Engine::mainUIView()->addElement(text1);
 
     auto text2 = UITextBlock::create();
     text2->setText(u"ABCHIJabchij");
     text2->setTextColor(Color::White);
     text2->setPosition(0, 60, 0);
-    Engine::mainUIRoot()->addElement(text2);
+    Engine::mainUIView()->addElement(text2);
 
 	TestEnv::updateFrame();
 	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UITextBlock-Basic-1.png"));

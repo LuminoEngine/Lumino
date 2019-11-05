@@ -20,6 +20,8 @@ public:
 	UIButtonBase();
 	void init();
 
+	/** set text. */
+	LN_METHOD()
     void setText(const StringRef& text);
 
     void setCommand(UICommand* command);
@@ -45,7 +47,11 @@ public:
     static Ref<UIButton> create(const StringRef& text);
 
 	UIButton();
+
+	/** init. */
+	LN_METHOD()
 	void init();
+
     void init(const StringRef& text);
 
     /** Clicked イベントの通知を受け取るコールバックを登録します。*/

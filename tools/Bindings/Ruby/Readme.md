@@ -70,6 +70,46 @@ printf("%d\n", b);
 printf("%d\n", g_class_UIButton);
 ```
 
+```cpp
+static void LnUIEventHandlerCallback_Tmp(LnHandle e)
+{
+    printf("Clicked!!! self:%d\n", self);
+    
+    
+    Wrap_UIButton* selfObj;
+    Data_Get_Struct(LuminoRubyRuntimeManager::instance->wrapObject(self), Wrap_UIButton, selfObj);
+    printf("rb_funcall\n");
+    printf("selfObj:%p\n", selfObj);
+    printf("connectOnClicked_Signal:%d\n", selfObj->connectOnClicked_Signal);
+    VALUE retval = rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("raise"), 0);
+
+    printf("Clicked!!! e\n");
+}
+
+static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIButton* selfObj;
+    Data_Get_Struct(self, Wrap_UIButton, selfObj);
+    printf("selfObj:%p\n", selfObj);
+    
+    if (!selfObj->connectOnClicked_EventConnect) {  // differed initialization.
+        printf("con i.\n");
+        selfObj->connectOnClicked_Signal = rb_funcall(LuminoRubyRuntimeManager::instance->eventSignalClass(), rb_intern("new"), 0);
+        printf("con %d\n", selfObj->connectOnClicked_Signal);
+        LnUIButton_ConnectOnClicked(selfObj->handle, LnUIEventHandlerCallback_Tmp);
+        selfObj->connectOnClicked_EventConnect = true;
+        printf("con e.\n");
+    }
+    
+    VALUE handler;
+    rb_scan_args(argc, argv, "1", &handler);
+    VALUE retval = rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("add"), 1, handler);
+
+    return retval;
+}
+```
+
+
 -----------------------------------------
 
 

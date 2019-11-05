@@ -307,10 +307,10 @@ class TypeSymbol : public Symbol
 public:
 	TypeSymbol(SymbolDatabase* db);
 	ln::Result init(PITypeInfo* piType);
-	ln::Result init(const ln::String& primitveRawFullName);
+	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind);
 	ln::Result link();
 
-	TypeKind kind() const { return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
+	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
 	const ln::String& fullName() const { return m_fullName; }
 	const ln::String& shortName() const { return m_shortName; }
 	const ln::List<Ref<FieldSymbol>>& fields() const { return m_fields; }
@@ -327,7 +327,7 @@ public:
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
 	bool isDelegate() const { return kind() == TypeKind::Delegate; }
-	bool isStatic() const { return metadata()->hasKey(u"Static"); }	// static-class ?
+	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class ?
 	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
 
 private:
@@ -336,6 +336,7 @@ private:
 	void collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods);
 
 	Ref<PITypeInfo> m_piType;
+	TypeKind m_kind = TypeKind::Primitive;
 	ln::String m_fullName;
 	ln::String m_shortName;
 	ln::List<Ref<FieldSymbol>> m_fields;

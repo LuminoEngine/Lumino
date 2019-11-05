@@ -56,6 +56,7 @@ private:
 
 	ln::String makeWrapSubclassDecls() const;
 	ln::String makeWrapSubclassName(const TypeSymbol* type) const { return u"LNWS_" + makeFlatFullName(type); }
+	ln::String makeNativeArgList(const MethodSymbol* method) const;
 
 	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo);
 	ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);

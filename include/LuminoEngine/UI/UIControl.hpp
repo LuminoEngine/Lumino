@@ -99,6 +99,9 @@ public:
 	void init();
     virtual void onDispose(bool explicitDisposing) override;
 
+	/** Add element to container. */
+	LN_METHOD()
+	virtual void addChild(UIElement* child);
 
 
     /** コンテンツの横方向の配置方法を設定します。 */

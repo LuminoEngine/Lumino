@@ -23,7 +23,7 @@ TEST_F(Test_UI_UIStyle, Background)
 	element1->setVerticalAlignment(VAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
-	Engine::mainUIRoot()->addElement(element1);
+	Engine::mainUIView()->addElement(element1);
 
 	element1->setBackgroundColor(Color::Red);
 
@@ -41,7 +41,7 @@ TEST_F(Test_UI_UIStyle, Border)
 	element1->setVerticalAlignment(VAlignment::Center);
 	element1->setWidth(80);
 	element1->setHeight(60);
-	Engine::mainUIRoot()->addElement(element1);
+	Engine::mainUIView()->addElement(element1);
 
 	//* [ ] Basic border
 	{
@@ -94,7 +94,7 @@ TEST_F(Test_UI_UIStyle, BoxShadow)
 	//element1->setVerticalAlignment(VAlignment::Center);
 	//element1->setWidth(80);
 	//element1->setHeight(60);
-	//Engine::mainUIRoot()->addElement(element1);
+	//Engine::mainUIView()->addElement(element1);
 
 	//element1->setBackgroundColor(Color::Red);
 

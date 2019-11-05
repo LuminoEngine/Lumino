@@ -12,13 +12,23 @@ include Lumino
 
 
 #ev = Event_Void.new
-#def on_call
-#    p "call on....."
-#end
+def on_call
+    p "call on....."
+end
 #ev.add(method(:on_call))
 #ev.raise
 
 Engine.initialize
+
+mainView = Engine.main_ui_view
+p mainView
+
+button1 = UIButton.new
+button1.set_text("Hello, Ruby!")
+button1.connect_on_clicked(method(:on_call))
+mainView.add_child(button1)
+
+
 
 texture1 = Texture2D.new("D:/tmp/lnpoi.png")
 sprite1 = Sprite.new(texture1, 2, 2)

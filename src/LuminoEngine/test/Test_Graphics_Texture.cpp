@@ -15,7 +15,7 @@ TEST_F(Test_Graphics_Texture, clear)
 
         auto sprite = UISprite::create(texture);
         sprite->setBlendMode(BlendMode::Alpha);
-		Engine::mainUIRoot()->addElement(sprite);
+		Engine::mainUIView()->addElement(sprite);
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-clear-1.png"));
@@ -31,7 +31,7 @@ TEST_F(Test_Graphics_Texture, clear)
 
         auto sprite = UISprite::create(texture);
         sprite->setBlendMode(BlendMode::Alpha);
-		Engine::mainUIRoot()->addElement(sprite);
+		Engine::mainUIView()->addElement(sprite);
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-clear-2.png"));
@@ -54,7 +54,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		texture->drawText(u"Justify", Rect(10, 50, 140, 100), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
 		sprite->setBlendMode(BlendMode::Alpha);
-		Engine::mainUIRoot()->addElement(sprite);
+		Engine::mainUIView()->addElement(sprite);
 
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-2.png"));
@@ -70,7 +70,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		texture->drawText(u"Justify", Rect(0, 30, 160, 160), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
 		sprite->setBlendMode(BlendMode::Alpha);
-		Engine::mainUIRoot()->addElement(sprite);
+		Engine::mainUIView()->addElement(sprite);
 
 		TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-1.png"));
@@ -89,7 +89,7 @@ TEST_F(Test_Graphics_Texture, setPixel)
 
 	auto sprite = UISprite::create(tex1);
     sprite->setScale(20);
-	Engine::mainUIRoot()->addElement(sprite);
+	Engine::mainUIView()->addElement(sprite);
 
     TestEnv::updateFrame();
     ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-setPixel-1.png"));
@@ -109,7 +109,7 @@ TEST_F(Test_Graphics_Texture, blit)
     auto sprite = UISprite::create(tex2);
 	sprite->setBlendMode(BlendMode::Alpha);
     TestEnv::updateFrame();
-	Engine::mainUIRoot()->addElement(sprite);
+	Engine::mainUIView()->addElement(sprite);
 
     ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-blit-1.png"));
     LN_TEST_CLEAN_SCENE;
@@ -129,7 +129,7 @@ TEST_F(Test_Graphics_Texture, Issues)
         texture->drawText(_LT("Clear0"), Rect(60, 0, 160, 120), font, Color::White, TextAlignment::Left);
         auto sprite = UISprite::create(texture);
         sprite->setBlendMode(BlendMode::Alpha);
-		Engine::mainUIRoot()->addElement(sprite);
+		Engine::mainUIView()->addElement(sprite);
 
         TestEnv::updateFrame();
         // ^ "Clear0" disappears

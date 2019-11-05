@@ -35,6 +35,11 @@ void UIControl::onDispose(bool explicitDisposing)
 	UIElement::onDispose(explicitDisposing);
 }
 
+void UIControl::addChild(UIElement* child)
+{
+	addElement(child);
+}
+
 void UIControl::setHorizontalContentAlignment(HAlignment value)
 {
     m_localStyle->mainStyle()->horizontalContentAlignment = value;

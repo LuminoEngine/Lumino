@@ -380,15 +380,15 @@ int main(int argc, char** argv)
 	//Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
 	auto sprite2 = UISprite::create(Assets::loadTexture(u"Sprite1"));
-	Engine::mainUIRoot()->addElement(sprite2);
+	Engine::mainUIView()->addElement(sprite2);
 
     auto message1 = UIMessageTextArea::create();
-    Engine::mainUIRoot()->addElement(message1);
+    Engine::mainUIView()->addElement(message1);
 
 
 
 	auto navi1 = makeObject<UIFocusNavigator>();
-	Engine::mainUIRoot()->addElement(navi1);
+	Engine::mainUIView()->addElement(navi1);
 
 	auto window1 = UIWindow::create();
 	window1->setPosition(10, 10);

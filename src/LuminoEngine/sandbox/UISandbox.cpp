@@ -38,7 +38,7 @@ public:
 		//	button1->setHeight(32);
 		//	button1->setText(u"Push button");
 		//	button1->setHorizontalAlignment(HAlignment::Right);
-		//	Engine::mainUIRoot()->addElement(button1);
+		//	Engine::mainUIView()->addElement(button1);
 		//}
 
 		{
@@ -48,7 +48,7 @@ public:
 			button1->setText(u"Toggle button");
 			button1->setHorizontalAlignment(HAlignment::Right);
 			button1->setVerticalAlignment(VAlignment::Center);
-			Engine::mainUIRoot()->addElement(button1);
+			Engine::mainUIView()->addElement(button1);
 		}
 
 
@@ -62,7 +62,7 @@ public:
 		//track->setHeight(100);
 		//track->setMaximum(50);
 		//track->setViewportSize(10);
-		//Engine::mainUIRoot()->addElement(track);
+		//Engine::mainUIView()->addElement(track);
 
         //auto scrollbar = makeObject<UIScrollBar>();
         //scrollbar->setOrientation(Orientation::Vertical);
@@ -70,12 +70,12 @@ public:
         //scrollbar->setHeight(100);
         //scrollbar->setMaximum(50);
         //scrollbar->setViewportSize(10);
-        //Engine::mainUIRoot()->addElement(scrollbar);
+        //Engine::mainUIView()->addElement(scrollbar);
 
         //auto scrollview = makeObject<UIScrollViewer>();
         //scrollview->setWidth(200);
         //scrollview->setHeight(300);
-        //Engine::mainUIRoot()->addElement(scrollview);
+        //Engine::mainUIView()->addElement(scrollview);
 
 
         //m_button1 = makeObject<UIButton>();

@@ -6,7 +6,7 @@ class GraphicsContext;
 class UIContext;
 class UIFrameWindow;
 class UIViewport;
-class UIContainerElement;
+class UIControl;
 class WorldRenderView;
 class PhysicsWorld;
 class PhysicsWorld2D;
@@ -60,7 +60,9 @@ public:
 	static UIFrameWindow* mainWindow();
     /** デフォルトで作成される UIViewport は、MainWindow の直接の子要素となっています。 */
     static UIViewport* mainViewport();
-	static UIContainerElement* mainUIRoot();
+	/** 。 */
+	LN_METHOD()
+	static UIControl* mainUIView();
     static Size mainViewSize();
     static World* mainWorld();
     static Camera* mainCamera();

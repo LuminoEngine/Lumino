@@ -118,7 +118,7 @@ typedef enum tagLnDepthBufferFormat
 
 } LnDepthBufferFormat;
 
-typedef void(*LnUIEventHandlerCallback)(LnHandle );
+typedef void(*LnUIEventHandlerCallback)(LnHandle, LnHandle);
 
 
 /**
@@ -154,6 +154,9 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 
 
 //==============================================================================
+// ln::Object
+
+//==============================================================================
 // ln::Engine
 
 /**
@@ -173,6 +176,12 @@ LN_FLAT_API LnResult LnEngine_Finalize();
     @return アプリケーションの終了が要求されている場合は false を返します。
 */
 LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
+
+
+/**
+    @brief 。
+*/
+LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
 
 
 //==============================================================================
@@ -344,6 +353,12 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, fl
 //==============================================================================
 // ln::UIEventArgs
 
+/**
+    @brief イベントの発生元となった要素を取得します。
+*/
+LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn);
+
+
 //==============================================================================
 // ln::UILayoutElement
 
@@ -428,20 +443,61 @@ LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, 
 LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outReturn);
 
 
+/**
+    @brief Add element to container.
+*/
+LN_FLAT_API LnResult LnUIElement_AddChild(LnHandle uielement, LnHandle child);
+
+
+typedef LnResult(*LnUIElement_AddChild_OverrideCallback)(LnHandle uielement, LnHandle child);
+LN_FLAT_API LnResult LnUIElement_AddChild_SetOverrideCallback(LnUIElement_AddChild_OverrideCallback callback);
+LN_FLAT_API LnResult LnUIElement_AddChild_CallOverrideBase(LnHandle uielement, LnHandle child);
+
 //==============================================================================
 // ln::UIControl
+
+/**
+    @brief Add element to container.
+*/
+LN_FLAT_API LnResult LnUIControl_AddChild(LnHandle uicontrol, LnHandle child);
+
+
+typedef LnResult(*LnUIControl_AddChild_OverrideCallback)(LnHandle uicontrol, LnHandle child);
+LN_FLAT_API LnResult LnUIControl_AddChild_SetOverrideCallback(LnUIControl_AddChild_OverrideCallback callback);
+LN_FLAT_API LnResult LnUIControl_AddChild_CallOverrideBase(LnHandle uicontrol, LnHandle child);
 
 //==============================================================================
 // ln::UIButtonBase
 
+/**
+    @brief set text.
+*/
+LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar* text);
+LN_FLAT_API LnResult LnUIButtonBase_SetTextA(LnHandle uibuttonbase, const char* text);
+
+
+typedef LnResult(*LnUIButtonBase_AddChild_OverrideCallback)(LnHandle uicontrol, LnHandle child);
+LN_FLAT_API LnResult LnUIButtonBase_AddChild_SetOverrideCallback(LnUIButtonBase_AddChild_OverrideCallback callback);
+LN_FLAT_API LnResult LnUIButtonBase_AddChild_CallOverrideBase(LnHandle uicontrol, LnHandle child);
+
 //==============================================================================
 // ln::UIButton
+
+/**
+    @brief init.
+*/
+LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton);
+
 
 /**
     @brief Clicked イベントの通知を受け取るコールバックを登録します。
 */
 LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler);
 
+
+typedef LnResult(*LnUIButton_AddChild_OverrideCallback)(LnHandle uicontrol, LnHandle child);
+LN_FLAT_API LnResult LnUIButton_AddChild_SetOverrideCallback(LnUIButton_AddChild_OverrideCallback callback);
+LN_FLAT_API LnResult LnUIButton_AddChild_CallOverrideBase(LnHandle uicontrol, LnHandle child);
 
 
 

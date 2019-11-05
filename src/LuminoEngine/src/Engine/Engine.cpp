@@ -195,9 +195,9 @@ UIViewport* Engine::mainViewport()
     return detail::EngineDomain::engineManager()->mainViewport();
 }
 
-UIContainerElement* Engine::mainUIRoot()
+UIControl* Engine::mainUIView()
 {
-	return detail::EngineDomain::engineManager()->mainUIRoot();
+	return detail::EngineDomain::engineManager()->mainUIView();
 }
 
 Size Engine::mainViewSize()

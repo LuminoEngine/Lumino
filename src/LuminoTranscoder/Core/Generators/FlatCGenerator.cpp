@@ -56,7 +56,7 @@ void FlatCHeaderGenerator::generate()
 		// make params
 		OutputBuffer params;
 		for (auto& param : delegateSymbol->delegateDeclaration()->flatParameters()) {
-			params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode), param->name());
+			params.AppendCommad("{0}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode));
 		}
 		delegatesText.AppendLine(u"typedef void(*{0})({1});", makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode), params.toString());
 	}
@@ -306,7 +306,7 @@ void FlatCSourceGenerator::generate()
 			funcImpl.AppendLine(u"{");
 			funcImpl.IncreaseIndent();
 			funcImpl.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
-			funcImpl.AppendLine(u"(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}_CallBase({3}));", makeWrapSubclassName(classInfo), method->flatParameters()[0]->name(), method->shortName(), args.toString());
+			funcImpl.AppendLine(u"(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}_CallBase({3}));", makeWrapSubclassName(classInfo), method->flatParameters()[0]->name(), method->shortName(), makeNativeArgList(method));
 			funcImpl.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
 			funcImpl.DecreaseIndent();
 			funcImpl.AppendLine(u"}");
@@ -353,10 +353,10 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 			// field impl
 			overrideCallbackImpl.AppendLine(u"{0} {1}::s_{0} = nullptr;", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), makeWrapSubclassName(classSymbol));
 
-
+			// override method parameter list
 			OutputBuffer paramList;
 			for (auto& param : method->parameters()) {
-				paramList.AppendCommad(u"{0} {1}", param->type()->fullName(), param->name());
+				paramList.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
 			}
 
 			// override
@@ -367,7 +367,10 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 				OutputBuffer argList;
 				argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
 				for (auto& param : method->parameters()) {
-					argList.AppendCommad(param->name());
+					if (param->type()->isClass())
+						argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE({0})", param->name());
+					else
+						argList.AppendCommad(param->name());
 				}
 				overrideMethod.AppendLine(u"if (s_{0}) s_{0}({1});", makeFlatVirutalCallbackFuncPtrName(classSymbol, method, FlatCharset::Unicode), argList.toString());
 				overrideMethod.DecreaseIndent();
@@ -402,6 +405,20 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 		code.NewLine();
 	}
 	return code.toString();
+}
+
+// FlatC(Handleなど) -> Native(UIElement*など) への呼び出し実引数リストを作成する。
+ln::String FlatCSourceGenerator::makeNativeArgList(const MethodSymbol* method) const
+{
+	OutputBuffer argList;
+	//argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
+	for (auto& param : method->parameters()) {
+		if (param->type()->isClass())
+			argList.AppendCommad(u"LNI_HANDLE_TO_OBJECT({0}, {1})", param->type()->fullName(), param->name());
+		else
+			argList.AppendCommad(param->name());
+	}
+	return argList.toString();
 }
 
 ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo)
@@ -490,7 +507,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			if (methodInfo->returnType()->isStruct())
 				body.append("*outReturn = reinterpret_cast<const {0}&>", makeFlatClassName(methodInfo->returnType()));
 			else if (methodInfo->returnType()->isClass())
-				body.append("*outReturn = LNI_TO_HANDLE");
+				body.append("*outReturn = LNI_OBJECT_TO_HANDLE");
 			else if (methodInfo->returnType() == PredefinedTypes::boolType)
 				body.append("*outReturn = LNI_BOOL_TO_LNBOOL");
 			else if (methodInfo->returnType()->isString())
@@ -537,8 +554,8 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			{
 				auto name = methodInfo->shortName();
 				if (methodInfo->isVirtual())
-					name = ("LN" + typeInfo->shortName() + "::" + name + "_CallBase");
-				callExp = ln::String::format("(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", typeInfo->fullName(), FlatCCommon::makeInstanceParamName(typeInfo), name, args.toString());
+					name = (makeWrapSubclassName(typeInfo) + "::" + name + "_CallBase");
+				callExp = ln::String::format("(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", makeWrapSubclassName(typeInfo), FlatCCommon::makeInstanceParamName(typeInfo), name, args.toString());
 			}
 		}
 
@@ -593,9 +610,9 @@ ln::String FlatCSourceGenerator::makeEventConnectorFuncBody(const TypeSymbol* cl
 	// Note: 今のところ引数ひとつしか想定しないので、引数名は e だけ.
 	OutputBuffer params;
 	OutputBuffer args;
+	args.AppendCommad(methodInfo->flatParameters().front()->name());
 	for (auto& param : delegateDeclaration->parameters()) {
 		params.AppendCommad(u"{0} e", param->getFullQualTypeName(), param->name());
-
 		if (param->type()->isClass()) {
 			args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(e)");
 		}

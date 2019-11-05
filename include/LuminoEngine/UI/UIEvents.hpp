@@ -121,7 +121,10 @@ class UIEventArgs
 public:
 	static Ref<UIEventArgs> create(UIElement* sender, UIEventType type, bool caching = true);
 
+	/** イベントの発生元となった要素を取得します。 */
+	LN_METHOD()
     UIElement* sender() const { return m_sender; }
+
 	UIEventType type() const { return m_type; }
 
 LN_CONSTRUCT_ACCESS:

@@ -14,7 +14,7 @@ class UIContext;
 class UIMainWindow;
 class UIViewport;
 class UIRenderView;
-class UIContainerElement;
+class UIControl;
 class PhysicsWorld;
 class PhysicsWorld2D;
 class World;
@@ -146,7 +146,7 @@ public:
     const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
 	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
-	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
+	const Ref<UIControl>& mainUIView() const { return m_mainUIRoot; }
     const Ref<World>& mainWorld() const { return m_mainWorld; }
     const Ref<Camera>& mainCamera() const { return m_mainCamera; }
     const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
@@ -204,7 +204,7 @@ private:
 	Ref<UIMainWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
-    Ref<UIContainerElement> m_mainUIRoot;   // m_mainUIRenderView の RootElement
+    Ref<UIControl> m_mainUIRoot;   // m_mainUIRenderView の RootElement
     Ref<World> m_mainWorld;
     Ref<Scene> m_mainScene;
     Ref<Camera> m_mainCamera;
