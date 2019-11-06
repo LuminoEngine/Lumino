@@ -12,8 +12,9 @@ include Lumino
 
 
 #ev = Event_Void.new
-def on_call
+def on_call(e)
     p "call on....."
+    p e
 end
 #ev.add(method(:on_call))
 #ev.raise
@@ -26,6 +27,11 @@ p mainView
 button1 = UIButton.new
 button1.set_text("Hello, Ruby!")
 button1.connect_on_clicked(method(:on_call))
+button1.connect_on_clicked do |e|
+    p "call on block."
+    p e
+end
+
 mainView.add_child(button1)
 
 

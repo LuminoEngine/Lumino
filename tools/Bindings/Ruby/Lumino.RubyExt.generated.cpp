@@ -31,7 +31,6 @@ inline LnBool LNRB_VALUE_TO_BOOL(VALUE v) { return (TYPE(v) == T_TRUE) ? LN_TRUE
 
 extern "C" void InitLuminoRubyRuntimeManager();
 
-extern "C" LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnEngine_Initialize();
 extern "C" LN_FLAT_API LnResult LnEngine_Finalize();
 extern "C" LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
@@ -95,7 +94,6 @@ VALUE g_enum_TextureFormat;
 VALUE g_enum_DepthBufferFormat;
 
 VALUE g_rootModule;
-VALUE g_class_Object;
 VALUE g_class_Engine;
 VALUE g_class_GraphicsResource;
 VALUE g_class_Texture;
@@ -156,51 +154,6 @@ VALUE LnQuaternion_allocate( VALUE klass )
     
     memset(internalObj, 0, sizeof(LnQuaternion));
 
-    return obj;
-}
-
-//==============================================================================
-// ln::Object
-
-struct Wrap_Object
-{
-    Wrap_Object()
-    {}
-};
-
-static void LnObject_delete(Wrap_Object* obj)
-{
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
-    delete obj;
-}
-
-static void LnObject_mark(Wrap_Object* obj)
-{
-	
-}
-
-static VALUE LnObject_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_Object* internalObj;
-
-    internalObj = new Wrap_Object();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnObject_allocate");
-    obj = Data_Wrap_Struct(klass, LnObject_mark, LnObject_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LnObject_allocateForGetObject(VALUE klass, LnHandle handle)
-{
-    VALUE obj;
-    Wrap_Object* internalObj;
-
-    internalObj = new Wrap_Object();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnObject_allocate");
-    obj = Data_Wrap_Struct(klass, LnObject_mark, LnObject_delete, internalObj);
-    
-    internalObj->handle = handle;
     return obj;
 }
 
@@ -1591,12 +1544,27 @@ static VALUE Wrap_LnUIButton_Create(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+static void Wrap_LnUIButton_ConnectOnClicked_SignalCaller(LnHandle self, LnHandle e)
+{
+    Wrap_UIButton* selfObj;
+    Data_Get_Struct(LuminoRubyRuntimeManager::instance->wrapObject(self), Wrap_UIButton, selfObj);
+    rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("raise"), 1, LuminoRubyRuntimeManager::instance->wrapObject(e));
+}
+
 static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
 {
     Wrap_UIButton* selfObj;
     Data_Get_Struct(self, Wrap_UIButton, selfObj);
-    test
-    rb_raise(rb_eArgError, "ln::UIButton::connectOnClicked - wrong argument type.");
+    if (!selfObj->connectOnClicked_EventConnect) {  // differed initialization.
+        selfObj->connectOnClicked_Signal = rb_funcall(LuminoRubyRuntimeManager::instance->eventSignalClass(), rb_intern("new"), 0);
+        LnUIButton_ConnectOnClicked(selfObj->handle, Wrap_LnUIButton_ConnectOnClicked_SignalCaller);
+        selfObj->connectOnClicked_EventConnect = true;
+    }
+
+    VALUE handler, block;
+    rb_scan_args(argc, argv, "01&", &handler, &block);	// def add(handler=nil, &block)
+    if (handler != Qnil) rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("add"), 1, handler);
+    if (block != Qnil) rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("add"), 1, block);
     return Qnil;
 }
 
@@ -1638,10 +1606,6 @@ extern "C" void Init_Lumino()
 
     g_class_Quaternion = rb_define_class_under(g_rootModule, "Quaternion", rb_cObject);
     rb_define_alloc_func(g_class_Quaternion, LnQuaternion_allocate);
-
-    g_class_Object = rb_define_class_under(g_rootModule, "Object", rb_cObject);
-    rb_define_alloc_func(g_class_Object, LnObject_allocate);
-    LnObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Object, LnObject_allocateForGetObject));
 
     g_class_Engine = rb_define_class_under(g_rootModule, "Engine", rb_cObject);
     rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Initialize), -1);

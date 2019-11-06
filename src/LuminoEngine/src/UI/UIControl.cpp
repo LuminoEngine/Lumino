@@ -17,6 +17,7 @@ LN_OBJECT_IMPLEMENT(UIControl, UIElement) {
 
 UIControl::UIControl()
     : m_enabledDirectChildrenContentAlignment(true)
+	, m_logicalChildren(makeObjectCollection<UIElement>())
 {
 }
 
@@ -70,7 +71,7 @@ void UIControl::addElement(UIElement* element)
         element->removeFromLogicalParent();
     }
 	
-    m_logicalChildren.add(element);
+    m_logicalChildren->add(element);
     element->setLogicalParent(this);
 	addVisualChild(element);
 
@@ -88,18 +89,18 @@ void UIControl::removeElement(UIElement* element)
     //    m_logicalChildrenHost->removeLayoutOwnerLogicalChild(element);
     //}
 
-    m_logicalChildren.remove(element);
+    m_logicalChildren->remove(element);
     element->setLogicalParent(nullptr);
 	removeVisualChild(element);
 }
 
 void UIControl::removeAllChildren()
 {
-	for (auto& e : m_logicalChildren) {
+	for (auto& e : *m_logicalChildren) {
 		removeVisualChild(e);
 	}
 
-	m_logicalChildren.clear();
+	m_logicalChildren->clear();
 	//if (m_logicalChildrenHost) {
 	//	m_logicalChildrenHost->clearLayoutOwnerLogicalChildren();
 	//}
@@ -193,7 +194,7 @@ Size UIControl::measureOverride(const Size& constraint)
 {
     if (m_aligned3x3GridLayoutArea) {
         // 論理子要素の領域 (content area)
-        Size childrenAreaSize = UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
+		Size childrenAreaSize = detail::LayoutHelper::UIFrameLayout_staticMeasureChildrenAreaSize(m_logicalChildren, constraint);//UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
         // Inline 要素も含めた領域 (client area)
         Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(m_inlineElements, constraint, childrenAreaSize);
         // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
@@ -236,7 +237,8 @@ Size UIControl::arrangeOverride(const Size& finalSize)
         Rect contentArea;
         m_aligned3x3GridLayoutArea->arrange(m_inlineElements, clientArea, &contentArea);
         // 論理子要素を arrange
-        UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
+		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
+        //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
         return finalSize;
     }

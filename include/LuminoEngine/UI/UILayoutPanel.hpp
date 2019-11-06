@@ -207,7 +207,7 @@ public:
     static Ref<UIFrameLayout2> create();
 
     // TODO: internal
-    static Size staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint);
+    //static Size staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint);
     static Size staticMeasureChildrenAreaSize(UIElement* ownerElement, const Size& constraint);
     static Size staticMeasureOverride(UIElement* ownerElement, const Size& constraint);
     static Size staticArrangeChildrenArea(UIElement* ownerElement, const List<Ref<UIElement>>& elements, const Rect& finalArea);

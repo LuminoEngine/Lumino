@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Base/Collection.hpp"
 #include "UIElement.hpp"
 
 namespace ln {
@@ -135,7 +136,7 @@ public:
 
 	//UILayoutPanel* layoutPanel() const;
 
-	const List<Ref<UIElement>>& logicalChildren() const { return m_logicalChildren; }
+	const Ref<ObjectCollection<UIElement>>& logicalChildren() const { return m_logicalChildren; }
 
 	// TODO: UIElement に持たせたい気持ち。TextArea でも使いたい
 	void registerActiveTimer(UIActiveTimer* timer);
@@ -155,7 +156,8 @@ protected:
 
     bool m_enabledDirectChildrenContentAlignment;
 
-    List<Ref<UIElement>> m_logicalChildren;
+    //List<Ref<UIElement>> m_logicalChildren;
+	Ref<ObjectCollection<UIElement>> m_logicalChildren;
 
     Ref<detail::UIAligned3x3GridLayoutArea> m_aligned3x3GridLayoutArea;
     List<Ref<UIElement>> m_inlineElements;

@@ -30,79 +30,89 @@ void RubyExtGenerator::generate()
 
 	// classes
 	for (auto& classSymbol : db()->classes()) {
+		if (classSymbol == PredefinedTypes::objectType) {
+			// Object class is defined directly, so automatic generation is not required
+		}
+		else {
+			OutputBuffer markExprs;
 
-		OutputBuffer markExprs;
+			code.AppendLine("//==============================================================================");
+			code.AppendLine("// {0}", classSymbol->fullName());
+			code.NewLine();
 
-		code.AppendLine("//==============================================================================");
-		code.AppendLine("// {0}", classSymbol->fullName());
-		code.NewLine();
-
-		{
-			OutputBuffer wrapStruct;
-			// クラスをラップする構造体
-			/* 例:
-			struct Wrap_MyClass
-				: public Wrap_BaseClass
 			{
-				VALUE Prop1;		// 特に get を公開する場合、Ruby オブジェクトが GC されないように保持しておく必要がある。
-									// また、別途 mark コールバックにて rb_gc_mark() する必要がある。
-				Wrap_MyClass()
-					: Prop1(Qnil), Layers(Qnil)
-				{}
-			};
-			*/
-			wrapStruct.AppendLine(u"struct {0}", makeWrapStructName(classSymbol));
-			if (classSymbol->baseClass()) {  // 継承
-				wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
+				OutputBuffer wrapStruct;
+				// クラスをラップする構造体
+				/* 例:
+				struct Wrap_MyClass
+					: public Wrap_BaseClass
+				{
+					VALUE Prop1;		// 特に get を公開する場合、Ruby オブジェクトが GC されないように保持しておく必要がある。
+										// また、別途 mark コールバックにて rb_gc_mark() する必要がある。
+					Wrap_MyClass()
+						: Prop1(Qnil), Layers(Qnil)
+					{}
+				};
+				*/
+				wrapStruct.AppendLine(u"struct {0}", makeWrapStructName(classSymbol));
+				if (classSymbol->baseClass()) {  // 継承
+					wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
+				}
+				wrapStruct.AppendLine("{");
+				wrapStruct.IncreaseIndent();
+
+				// プロパティフィールド
+				//wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMember.ToString());
+
+				// Signal and Connection
+				for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
+					wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
+					wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
+					markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
+				}
+
+				// Constructor
+				wrapStruct.AppendLine("{0}()", makeWrapStructName(classSymbol));
+				//if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
+				//{
+				//	wrapStruct.Append("    : ");
+				//	wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMemberInit.ToString());
+				//}
+				wrapStruct.AppendLine("{}");
+				wrapStruct.DecreaseIndent();
+				wrapStruct.AppendLine("};").NewLine();
+				//wrapStruct.AppendLine(_currentClassInfo.AdditionalClassStaticVariables.ToString());
+
+
+				code.append(wrapStruct);
 			}
-			wrapStruct.AppendLine("{");
-			wrapStruct.IncreaseIndent();
 
-			// プロパティフィールド
-			//wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMember.ToString());
-
-			// Signal and Connection
-			for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
-				wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
-				wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
-				markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
+			// Ruby requierd methods (allocate, free, mark)
+			if (!classSymbol->isStatic()) {
+				code.AppendLine(m_RubyRequiredClassMethodsTemplate
+					.replace(u"%%FlatClassName%%", makeFlatClassName(classSymbol))
+					.replace(u"%%WrapStructName%%", makeWrapStructName(classSymbol))
+					.replace(u"%%MarkExprs%%", markExprs.toString()));
 			}
 
-			// Constructor
-			wrapStruct.AppendLine("{0}()", makeWrapStructName(classSymbol));
-			//if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
-			//{
-			//	wrapStruct.Append("    : ");
-			//	wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMemberInit.ToString());
-			//}
-			wrapStruct.AppendLine("{}");
-			wrapStruct.DecreaseIndent();
-			wrapStruct.AppendLine("};").NewLine();
-			//wrapStruct.AppendLine(_currentClassInfo.AdditionalClassStaticVariables.ToString());
+			for (auto& overload : classSymbol->overloads()) {
+				if (overload->representative()->isEventConnector()) {
+					code.append(makeWrapFuncImplement_SignalCaller(overload->representative()));
+					code.append(makeWrapFuncImplement_EventConnector(overload->representative()));
+				}
+				else {
+					code.append(makeWrapFuncImplement(classSymbol, overload));
+				}
+			}
 
+			code.append(makeWrapFuncImplement_SetOverrideCallback(classSymbol));
 
-			code.append(wrapStruct);
-		}
-
-		// requierd methods
-		if (!classSymbol->isStatic()) {
-			code.AppendLine(m_RubyRequiredClassMethodsTemplate
-				.replace(u"%%FlatClassName%%", makeFlatClassName(classSymbol))
-				.replace(u"%%WrapStructName%%", makeWrapStructName(classSymbol))
-				.replace(u"%%MarkExprs%%", markExprs.toString()));
-		}
-
-		for (auto& overload : classSymbol->overloads()) {
-			code.append(makeWrapFuncImplement(classSymbol, overload));
-		}
-
-		code.append(makeWrapFuncImplement_SetOverrideCallback(classSymbol));
-
-		for (auto& method : classSymbol->publicMethods()) {
-			allFlatCApiDecls.AppendLine(u"extern \"C\" " + makeFuncHeader(method, FlatCharset::Unicode) + u";");
-		}
-		if (!classSymbol->isStatic()) {
-			allFlatCApiDecls.AppendLine(u"extern \"C\" " + makeFlatAPIDecl_SetManagedTypeInfoId(classSymbol) + u";");
+			for (auto& method : classSymbol->publicMethods()) {
+				allFlatCApiDecls.AppendLine(u"extern \"C\" " + makeFuncHeader(method, FlatCharset::Unicode) + u";");
+			}
+			if (!classSymbol->isStatic()) {
+				allFlatCApiDecls.AppendLine(u"extern \"C\" " + makeFlatAPIDecl_SetManagedTypeInfoId(classSymbol) + u";");
+			}
 		}
 	}
 
@@ -139,45 +149,51 @@ void RubyExtGenerator::generate()
 		
 		// classes
 		for (auto& classSymbol : db()->classes()) {
-			auto classInfoVar = makeRubyClassInfoVariableName(classSymbol);
-
-			// class (decl)
-			typeVALUEDecls.AppendLine(u"VALUE {0};", classInfoVar);
-
-			// define class
-			auto baseClass = (!classSymbol->baseClass() || classSymbol->baseClass() == PredefinedTypes::objectType) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
-			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", {2});", classInfoVar, classSymbol->shortName(), baseClass);
-			if (!classSymbol->isStatic()) {
-				moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(classSymbol));
+			if (classSymbol == PredefinedTypes::objectType) {
+				// Object class is defined directly, so automatic generation is not required
 			}
+			else {
 
-			// define methods
-			for (auto& overload : classSymbol->overloads()) {
-				if (overload->representative()->isConstructor()) {
-					moduleInitializer.AppendLine(u"rb_define_private_method({0}, \"initialize\", LN_TO_RUBY_FUNC({1}), -1);", classInfoVar, makeWrapFuncName(overload->representative()));
+				auto classInfoVar = makeRubyClassInfoVariableName(classSymbol);
+
+				// class (decl)
+				typeVALUEDecls.AppendLine(u"VALUE {0};", classInfoVar);
+
+				// define class
+				auto baseClass = (!classSymbol->baseClass() || classSymbol->baseClass() == PredefinedTypes::objectType) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
+				moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", {2});", classInfoVar, classSymbol->shortName(), baseClass);
+				if (!classSymbol->isStatic()) {
+					moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(classSymbol));
 				}
-				else if (overload->representative()->isStatic()) {
-					moduleInitializer.AppendLine(u"rb_define_singleton_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+
+				// define methods
+				for (auto& overload : classSymbol->overloads()) {
+					if (overload->representative()->isConstructor()) {
+						moduleInitializer.AppendLine(u"rb_define_private_method({0}, \"initialize\", LN_TO_RUBY_FUNC({1}), -1);", classInfoVar, makeWrapFuncName(overload->representative()));
+					}
+					else if (overload->representative()->isStatic()) {
+						moduleInitializer.AppendLine(u"rb_define_singleton_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+					}
+					else if (overload->representative()->isVirtual()) {
+						moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+					}
+					else {
+						moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+					}
 				}
-				else if (overload->representative()->isVirtual()) {
-					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+
+				// register typeinfo
+				if (!classSymbol->isStatic()) {
+					moduleInitializer.AppendLine(u"{0}(LuminoRubyRuntimeManager::instance->registerTypeInfo({1}, {2}_allocateForGetObject));", makeFlatAPIName_SetManagedTypeInfoId(classSymbol), classInfoVar, makeFlatClassName(classSymbol));
 				}
-				else {
-					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+
+				// override callbacks
+				for (auto& method : classSymbol->virtualMethods()) {
+					moduleInitializer.AppendLine(u"{0}({1});", makeFlatAPIName_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode), makeWrapFuncName_OverrideCallback(classSymbol, method));
 				}
+
+				moduleInitializer.NewLine();
 			}
-
-			// register typeinfo
-			if (!classSymbol->isStatic()) {
-				moduleInitializer.AppendLine(u"{0}(LuminoRubyRuntimeManager::instance->registerTypeInfo({1}, {2}_allocateForGetObject));", makeFlatAPIName_SetManagedTypeInfoId(classSymbol), classInfoVar, makeFlatClassName(classSymbol));
-			}
-
-			// override callbacks
-			for (auto& method : classSymbol->virtualMethods()) {
-				moduleInitializer.AppendLine(u"{0}({1});", makeFlatAPIName_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode), makeWrapFuncName_OverrideCallback(classSymbol, method));
-			}
-
-			moduleInitializer.NewLine();
 		}
 
 		// EventSignal
@@ -362,10 +378,6 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol
 
 ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const
 {
-	if (method->isEventConnector()) {
-		return u"test";
-	}
-
 	/* 出力例：
 	if (1 <= argc && argc <= 4) {
         VALUE filePath;
@@ -856,6 +868,66 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 		}
 	}
 
+	return code.toString();
+}
+
+ln::String RubyExtGenerator::makeWrapFuncImplement_SignalCaller(const MethodSymbol* method) const
+{
+	auto wrapStructName = makeWrapStructName(method->ownerType());
+	auto signalCallerName = makeWrapFuncName_SignalCaller(method->ownerType(), method);
+	auto signalValueName = makeSignalValueName(method);
+
+	OutputBuffer code;
+	code.AppendLine(u"static void {0}(LnHandle self, LnHandle e)", signalCallerName);
+	code.AppendLine("{");
+	code.IncreaseIndent();
+	{
+		code.AppendLine("{0}* selfObj;", wrapStructName);
+		code.AppendLine("Data_Get_Struct(LuminoRubyRuntimeManager::instance->wrapObject(self), {0}, selfObj);", wrapStructName);
+		code.AppendLine("rb_funcall(selfObj->{0}, rb_intern(\"raise\"), 1, LuminoRubyRuntimeManager::instance->wrapObject(e));", signalValueName);
+	}
+	code.DecreaseIndent();
+	code.AppendLine("}");
+	code.NewLine();
+	return code.toString();
+}
+
+ln::String RubyExtGenerator::makeWrapFuncImplement_EventConnector(const MethodSymbol* method) const
+{
+	auto wrapStructName = makeWrapStructName(method->ownerType());
+	auto signalCallerName = makeWrapFuncName_SignalCaller(method->ownerType(), method);
+	auto connectorName = makeFlatShortFuncName(method, FlatCharset::Ascii);	// e.g) ConnectOnClicked
+	auto signalValueName = makeSignalValueName(method);
+	auto eventConnectValueName = makeEventConnectValueName(method);
+	
+	OutputBuffer code;
+	code.AppendLine(u"static VALUE Wrap_LnUIButton_{0}(int argc, VALUE* argv, VALUE self)", connectorName);
+	code.AppendLine(u"{");
+	code.IncreaseIndent();
+	{
+		code.AppendLine(u"{0}* selfObj;", wrapStructName);
+		code.AppendLine(u"Data_Get_Struct(self, {0}, selfObj);", wrapStructName);
+
+		code.AppendLine(u"if (!selfObj->{0}) {{  // differed initialization.", eventConnectValueName);
+		code.IncreaseIndent();
+		{
+			code.AppendLine(u"selfObj->{0} = rb_funcall(LuminoRubyRuntimeManager::instance->eventSignalClass(), rb_intern(\"new\"), 0);", signalValueName);
+			code.AppendLine(u"{0}(selfObj->handle, {1});", makeFuncName(method, FlatCharset::Ascii), signalCallerName);
+			code.AppendLine(u"selfObj->{0} = true;", eventConnectValueName);
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"}");
+		code.NewLine();
+
+		code.AppendLine(u"VALUE handler, block;");
+		code.AppendLine(u"rb_scan_args(argc, argv, \"01&\", &handler, &block);	// (handler=nil, &block)");
+		code.AppendLine(u"if (handler != Qnil) rb_funcall(selfObj->{0}, rb_intern(\"add\"), 1, handler);", signalValueName);
+		code.AppendLine(u"if (block != Qnil) rb_funcall(selfObj->{0}, rb_intern(\"add\"), 1, block);", signalValueName);
+		code.AppendLine(u"return Qnil;");
+	}
+	code.DecreaseIndent();
+	code.AppendLine(u"}");
+	code.NewLine();
 	return code.toString();
 }
 

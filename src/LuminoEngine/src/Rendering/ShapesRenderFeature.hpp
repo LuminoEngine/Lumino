@@ -317,9 +317,6 @@ public:
 
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 	{
-		//m_srcTextureSize.width = subsetInfo->materialTexture->width();
-		//m_srcTextureSize.height = subsetInfo->materialTexture->height();
-
 		return static_cast<detail::ShapesRenderFeature*>(renderFeature)->requestDrawCommandList(context, &commandList);
     }
 

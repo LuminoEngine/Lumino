@@ -20,6 +20,7 @@ namespace detail {
 
 SpriteTextRenderFeature::SpriteTextRenderFeature()
 	: m_mappedVertices(nullptr)
+	, m_buffersReservedSpriteCount(0)
 {
 }
 

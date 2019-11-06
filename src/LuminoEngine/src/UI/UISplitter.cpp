@@ -57,7 +57,7 @@ void UISplitter::resetCellSizes()
 
 void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
-    int thumbCount = logicalChildren().size() - 1;
+    int thumbCount = logicalChildren()->size() - 1;
     int diff = thumbCount - m_thumbs.size();
     for (int i = 0; i < diff; i++) {
         auto thumb = makeObject<UIThumb>();
@@ -86,14 +86,14 @@ Size UISplitter::measureOverride(const Size& constraint)
 {
 	// Create missing cells.
 	auto& children = logicalChildren();
-	if (m_cellDefinitions.size() < children.size()) {
-		m_cellDefinitions.resize(children.size());
+	if (m_cellDefinitions.size() < children->size()) {
+		m_cellDefinitions.resize(children->size());
 	}
 
     // first, measure. and total size.
     Size childrenSize;
-    for (int iChild = 0; iChild < children.size(); iChild++) {
-        auto& child = children[iChild];
+    for (int iChild = 0; iChild < children->size(); iChild++) {
+        auto& child = children->at(iChild);
         child->measureLayout(constraint);
         const Size& childDesiredSize = child->desiredSize();
 
@@ -204,8 +204,8 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
     // 子要素の最終位置・サイズを確定させる
     auto& children = logicalChildren();
     if (isHorizontal()) {
-        for (int iChild = 0; iChild < children.size(); iChild++) {
-            auto& child = children[iChild];
+        for (int iChild = 0; iChild < children->size(); iChild++) {
+            auto& child = children->at(iChild);
             int cellIndex = child->getGridLayoutInfo()->layoutRow;
             if (cellIndex < 0) cellIndex = iChild;
             auto& cell = m_cellDefinitions[cellIndex];
@@ -214,8 +214,8 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
         }
     }
     else {
-        for (int iChild = 0; iChild < children.size(); iChild++) {
-            auto& child = children[iChild];
+        for (int iChild = 0; iChild < children->size(); iChild++) {
+			auto& child = children->at(iChild);
             int cellIndex = child->getGridLayoutInfo()->layoutRow;
             if (cellIndex < 0) cellIndex = iChild;
             auto& cell = m_cellDefinitions[cellIndex];

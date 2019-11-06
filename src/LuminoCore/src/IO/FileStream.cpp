@@ -120,7 +120,6 @@ void FileStream::seek(int64_t offset, SeekOrigin origin)
 
 #ifdef LN_OS_WIN32
     int r = _fseeki64(m_stream, offset, static_cast<int>(origin));
-	printf("");
 #else
     // TODO:
     // http://stackoverflow.com/questions/1035657/seeking-and-reading-large-files-in-a-linux-c-application

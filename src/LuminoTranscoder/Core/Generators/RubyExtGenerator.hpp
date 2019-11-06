@@ -35,6 +35,7 @@ private:
 
 	ln::String makeWrapFuncName_OverrideCallback(const TypeSymbol* classSymbol, const MethodSymbol* method) const { return u"Wrap_" + makeFuncName(classSymbol, method, FlatCharset::Unicode) + u"_OverrideCallback"; }
 	ln::String makeWrapFuncName_SetOverrideCallback(const TypeSymbol* classSymbol, const MethodSymbol* method) const { return u"Wrap_" + makeFuncName(classSymbol, method, FlatCharset::Unicode) + u"_SetOverrideCallback"; }
+	ln::String makeWrapFuncName_SignalCaller(const TypeSymbol* classSymbol, const MethodSymbol* method) const { return u"Wrap_" + makeFuncName(classSymbol, method, FlatCharset::Unicode) + u"_SignalCaller"; }
 
 	ln::String makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const;
 	ln::String makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
@@ -44,6 +45,8 @@ private:
 	ln::String makeConstandValue(const ConstantSymbol* constant) const;
 
 	ln::String makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classInfo) const;
+	ln::String makeWrapFuncImplement_SignalCaller(const MethodSymbol* method) const;
+	ln::String makeWrapFuncImplement_EventConnector(const MethodSymbol* method) const;
 
 
 	ln::String makeEnumTypeVALUEName(TypeSymbol* type) const { return u"g_enum_" + type->shortName(); }

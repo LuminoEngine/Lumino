@@ -117,27 +117,6 @@ void FpsController::process()
     // 待つべき時間だけ待つ
     if (m_term > 0.0)
     {
-
-
-        //if ( ii > 120 && m_term < 0.016 )
-        {
-            /*
-            ii = 120;
-
-            double bb = 0;
-            for ( int i = 0; i < 60; ++i )
-            {
-            _p( m_frameTimes[ i ] );
-            bb += m_frameTimes[ i ];
-            }
-            _p((double)ii / 60.0);
-
-            printf( "a\n" );
-            */
-        }
-
-        //::sleep( 16 );
-
         Thread::sleep(static_cast< uint32_t >(m_term * 1000));
     }
 

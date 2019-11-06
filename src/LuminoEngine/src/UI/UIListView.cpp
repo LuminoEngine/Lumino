@@ -57,7 +57,7 @@ void UIListView::init()
 
 void UIListView::refresh()
 {
-    for (auto& child : m_logicalChildren) {
+    for (auto& child : *m_logicalChildren) {
         m_itemssHostLayout->removeVisualChild(child);
     }
     removeAllChildren();

@@ -124,7 +124,7 @@ void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
     if (LN_REQUIRE(layout)) return;
 
     if (m_itemssHostLayout) {
-        for (auto& item : m_logicalChildren) {
+        for (auto& item : *m_logicalChildren) {
             m_itemssHostLayout->removeVisualChild(item);
         }
     }
@@ -133,7 +133,7 @@ void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
     m_itemssHostLayout->m_ownerItemsControl = this;
     addVisualChild(m_itemssHostLayout);
 
-    for (auto& item : m_logicalChildren) {
+    for (auto& item : *m_logicalChildren) {
         m_itemssHostLayout->addVisualChild(item);
     }
 }
@@ -145,7 +145,7 @@ void UIItemsControl::addItem(UICollectionItem* item)
 	m_selectionTargets.add(item);
 	item->m_ownerCollectionControl = this;
 
-    m_logicalChildren.add(item);
+    m_logicalChildren->add(item);
     item->setLogicalParent(this);
 
     m_itemssHostLayout->addVisualChild(item);
@@ -159,7 +159,7 @@ void UIItemsControl::removeItem(UICollectionItem* item)
 	m_selectionTargets.remove(item);
 	item->m_ownerCollectionControl = nullptr;
 
-	m_logicalChildren.remove(item);
+	m_logicalChildren->remove(item);
 	item->setLogicalParent(nullptr);
 
 	m_itemssHostLayout->removeVisualChild(item);
@@ -172,11 +172,11 @@ void UIItemsControl::removeAllItems()
     }
     m_selectionTargets.clear();
 
-    for (auto& item : m_logicalChildren) {
+    for (auto& item : *m_logicalChildren) {
         item->setLogicalParent(nullptr);
         m_itemssHostLayout->removeVisualChild(item);
     }
-    m_logicalChildren.clear();
+    m_logicalChildren->clear();
 }
 
 EventConnection UIItemsControl::connectOnItemClick(UIClickEventHandler handler)

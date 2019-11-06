@@ -334,6 +334,38 @@ public:
 	//	Size size = padding.size();
 	//	*outRect = area.makeDeflate(padding);
 	//}
+
+	template<class TUIElementList>
+	//Size UIFrameLayout_staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint)
+	static Size UIFrameLayout_staticMeasureChildrenAreaSize(const TUIElementList& elements, const Size& constraint)
+	{
+		Size childMaxSize(0, 0);
+		for (int i = 0; i < elements->size(); i++)
+		{
+			auto& child = elements->at(i);
+			child->measureLayout(constraint);
+			const Size& desiredSize = child->desiredSize();
+			childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+			childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+		}
+		return childMaxSize;
+	}
+
+	template<class TElement, class TUIElementList>
+	static Size UIFrameLayout_staticArrangeChildrenArea(TElement* ownerElement, const TUIElementList& elements, const Rect& finalArea)
+	{
+		for (int i = 0; i < elements->size(); i++)
+		{
+			auto& child = elements->at(i);
+
+			Rect slotRect;
+			detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+
+			child->arrangeLayout(slotRect);
+		}
+		return finalArea.getSize();
+	}
+
 };
 
 } // namespace detail
