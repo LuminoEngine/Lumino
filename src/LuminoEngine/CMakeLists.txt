@@ -594,7 +594,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore pcre PNG ZLIB FreeType vorbisfile vorbis ogg Box2D BulletSoftBody BulletDynamics BulletCollision LinearMath tmxlite VulkanHeaders ${LN_PLATFORM_LIBS})
-#target_link_libraries(${PROJECT_NAME} PRIVATE Effekseer EffekseerRendererDX12 LLGI)
+target_link_libraries(${PROJECT_NAME} PRIVATE Effekseer EffekseerRendererDX12 LLGI)
 
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

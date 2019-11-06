@@ -556,7 +556,11 @@ Result VulkanDevice::createCommandPool()
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.queueFamilyIndex = m_graphicsQueueFamilyIndex;
 
-    // 1つのコマンドバッファを繰り返し使うようにマークする
+    // 1つのコマンドバッファを繰り返し使えるようにマークする。
+    // 内部的には、
+    // - フラグONの場合 : CommandBuffer ごとにひとつの Allocator を持つ。→ 少し無駄にメモリを消費するが、CommandBuffer ごとにリセットできる。
+    // - フラグOFFの場合 : Pool にひとつの Allocator を持つ。→ CommandBuffer ごとにメモリをリセットしたりできない。1度構築したら変化しない static な CommandBuffer を使いたいときに使用する。
+    // https://www.reddit.com/r/vulkan/comments/5zwfot/whats_your_command_buffer_allocation_strategy/
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     LN_VK_CHECK(vkCreateCommandPool(m_device, &poolInfo, vulkanAllocator(), &m_commandPool));
