@@ -421,7 +421,7 @@ list(APPEND LN_EXTERNAL_LIBS VulkanHeaders)
 
 set(TEST_Effekseer_IncludeDirs
     #"${Effekseer_ROOT}/include"
-    "D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/Effekseer;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererDX12;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererLLGI;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/3rdParty/LLGI/src"
+    "D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/Effekseer;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererVulkan;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererLLGI;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/3rdParty/LLGI/src"
     #"D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererDX12"
     #"D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererLLGI"
     #"D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/3rdParty/LLGI/src"
@@ -432,6 +432,8 @@ find_library(Effekseer_LIBRARY_RELEASE NAMES Effekseer PATHS ${Effekseer_ROOT} P
 find_library(Effekseer_LIBRARY_DEBUG NAMES Effekseer PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(EffekseerRendererDX12_LIBRARY_RELEASE NAMES EffekseerRendererDX12 PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(EffekseerRendererDX12_LIBRARY_DEBUG NAMES EffekseerRendererDX12 PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererVulkan_LIBRARY_RELEASE NAMES EffekseerRendererVulkan PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererVulkan_LIBRARY_DEBUG NAMES EffekseerRendererVulkan PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(LLGI_LIBRARY_RELEASE NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(LLGI_LIBRARY_DEBUG NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
@@ -443,6 +445,10 @@ set_target_properties(Effekseer PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${TEST
 add_library(EffekseerRendererDX12 STATIC IMPORTED)
 set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_RELEASE ${EffekseerRendererDX12_LIBRARY_RELEASE})
 set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_DEBUG ${EffekseerRendererDX12_LIBRARY_DEBUG})
+
+add_library(EffekseerRendererVulkan STATIC IMPORTED)
+set_target_properties(EffekseerRendererVulkan PROPERTIES IMPORTED_LOCATION_RELEASE ${EffekseerRendererVulkan_LIBRARY_RELEASE})
+set_target_properties(EffekseerRendererVulkan PROPERTIES IMPORTED_LOCATION_DEBUG ${EffekseerRendererVulkan_LIBRARY_DEBUG})
 
 add_library(LLGI STATIC IMPORTED)
 set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_RELEASE ${LLGI_LIBRARY_RELEASE})

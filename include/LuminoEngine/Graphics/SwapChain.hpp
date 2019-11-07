@@ -80,6 +80,7 @@ public:
     static void resizeBackbuffer(SwapChain* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
     //static void present(SwapChain* swapChain, GraphicsContext* context) { swapChain->present(context); }
     static int imageIndex(SwapChain* swapChain) { return swapChain->imageIndex(); }
+    static int swapBufferCount(SwapChain* swapChain) { return swapChain->m_backbuffers.size(); }
 };
 
 } // namespace detail

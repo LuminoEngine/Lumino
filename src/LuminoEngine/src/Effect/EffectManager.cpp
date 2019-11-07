@@ -1,14 +1,16 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
+#include "../Graphics/GraphicsManager.hpp"
 #include "EffectManager.hpp"
 
-//#define EFK_TEST
+#define EFK_TEST
 
 #ifdef EFK_TEST
 #include <Effekseer.h>
 //#include <EffekseerRendererGL.h>
-#include <EffekseerRenderer/EffekseerRendererDX12.Renderer.h>
+#include <EffekseerRenderer/EffekseerRendererVulkan.Renderer.h>
 #include <EffekseerRendererLLGI.Renderer.h>
 //#include <EffekseerSoundAL.h>
 #include <LLGI.Platform.h>
@@ -29,8 +31,8 @@ static ::EffekseerRenderer::Renderer*	g_renderer = NULL;
 static ::Effekseer::Effect*				g_effect = NULL;
 static ::Effekseer::Handle				g_handle = -1;
 static ::Effekseer::Vector3D			g_position;
-static LLGI::Platform* g_platform = nullptr;
-static LLGI::Graphics* g_graphics = nullptr;
+//static LLGI::Platform* g_platform = nullptr;
+//static LLGI::Graphics* g_graphics = nullptr;
 
 class LLGINativeGraphicsExtension : public INativeGraphicsExtension
 {
@@ -43,10 +45,36 @@ public:
 
 	virtual void onLoaded(INativeGraphicsInterface* nativeInterface) override
 	{
+        m_nativeInterface = static_cast<IVulkanNativeGraphicsInterface*>(nativeInterface);
+
+        VkCommandPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.queueFamilyIndex = m_nativeInterface->getGraphicsQueueFamilyIndex();
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        if (LN_ENSURE(vkCreateCommandPool(m_nativeInterface->getDevice(), &poolInfo, nullptr, &m_commandPool) == VK_SUCCESS)) {
+            return;
+        }
+
+        g_renderer = ::EffekseerRendererVulkan::Create(
+            m_nativeInterface->getPhysicalDevice(),
+            m_nativeInterface->getDevice(),
+            m_nativeInterface->getGraphicsQueue(),
+            m_commandPool,
+            3,//SwapChainInternal::swapBufferCount(),
+            1000);
 	}
 
 	virtual void onUnloaded(INativeGraphicsInterface* nativeInterface) override
 	{
+        if (g_renderer) {
+            g_renderer->Destroy();
+            g_renderer = nullptr;
+        }
+
+        if (m_commandPool) {
+            vkDestroyCommandPool(m_nativeInterface->getDevice(), m_commandPool, nullptr);
+            m_commandPool = VK_NULL_HANDLE;
+        }
 	}
 
 	virtual void onRender(INativeGraphicsInterface* nativeInterface) override
@@ -55,6 +83,10 @@ public:
 		m_manager->Draw();
 		m_renderer->EndRendering();
 	}
+
+private:
+    IVulkanNativeGraphicsInterface* m_nativeInterface = nullptr;
+    VkCommandPool m_commandPool = VK_NULL_HANDLE;
 };
 
 #endif
@@ -69,19 +101,18 @@ EffectManager::EffectManager()
 void EffectManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "EffectManager Initialization started.";
+    m_graphicsManager = settings.graphicsManager;
 
 #ifdef EFK_TEST
 	//return;
-    g_platform = LLGI::CreatePlatform(LLGI::DeviceType::Vulkan);
-    g_graphics = g_platform->CreateGraphics();
+    //g_platform = LLGI::CreatePlatform(LLGI::DeviceType::Vulkan);
+    //g_graphics = g_platform->CreateGraphics();
 
+    m_nativeGraphicsExtension = std::make_unique<LLGINativeGraphicsExtension>();
+    m_graphicsManager->registerExtension(m_nativeGraphicsExtension.get());
 
-    ::EffekseerRendererLLGI::FixedShader fixedShaders;
-	::EffekseerRendererLLGI::Renderer::CreateFixedShaderForVulkan(&fixedShaders);
-
-    // 描画用インスタンスの生成
-    //g_renderer = ::EffekseerRendererGL::Renderer::Create(2000);
-    g_renderer = ::EffekseerRendererLLGI::Renderer::Create(g_graphics, &fixedShaders, false, 1000);
+ //   ::EffekseerRendererLLGI::FixedShader fixedShaders;
+	//::EffekseerRendererLLGI::Renderer::CreateFixedShaderForVulkan(&fixedShaders);
 
     // エフェクト管理用インスタンスの生成
     g_manager = ::Effekseer::Manager::Create(2000);
@@ -145,8 +176,10 @@ void EffectManager::dispose()
     //g_sound->Destroy();
 
     // 次に描画用インスタンスを破棄
-    g_renderer->Destroy();
+    //g_renderer->Destroy();
 #endif
+
+    m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
 }
 
 void EffectManager::testDraw()
@@ -154,14 +187,14 @@ void EffectManager::testDraw()
 #ifdef EFK_TEST
 	//return;
 
-    if (1) {
+    //if (1) {
 
-        if (!g_platform->NewFrame())
-            return;
+    //    if (!g_platform->NewFrame())
+    //        return;
 
-        g_graphics->NewFrame();
+    //    g_graphics->NewFrame();
 
-    }
+    //}
 
 
     // エフェクトの移動処理を行う
@@ -182,9 +215,9 @@ void EffectManager::testDraw()
     g_renderer->EndRendering();
 
 
-    if (1) {
-        g_platform->Present();
-    }
+    //if (1) {
+    //    g_platform->Present();
+    //}
 #endif
 }
 

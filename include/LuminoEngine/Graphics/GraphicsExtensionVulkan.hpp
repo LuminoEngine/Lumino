@@ -12,7 +12,7 @@ public:
 	virtual VkPhysicalDevice getPhysicalDevice() const = 0;
 	virtual VkDevice getDevice() const = 0;
 	virtual VkQueue getGraphicsQueue() const = 0;	// レンダリングに使用している GraphicsQueue
-	virtual uint32_t getQueueFamilyIndex() const = 0;
+	virtual uint32_t getGraphicsQueueFamilyIndex() const = 0;
 };
 
 } // namespace ln

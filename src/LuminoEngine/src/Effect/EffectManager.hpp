@@ -4,12 +4,16 @@
 namespace ln {
 namespace detail {
 
+class GraphicsManager;
+class LLGINativeGraphicsExtension;
+
 class EffectManager
 	: public RefObject
 {
 public:
 	struct Settings
 	{
+        GraphicsManager* graphicsManager = nullptr;
 	};
 
     EffectManager();
@@ -21,6 +25,8 @@ public:
     void testDraw();
 
 private:
+    GraphicsManager* m_graphicsManager;
+    std::unique_ptr<LLGINativeGraphicsExtension> m_nativeGraphicsExtension;
 };
 
 } // namespace detail

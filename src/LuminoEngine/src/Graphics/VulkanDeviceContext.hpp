@@ -659,7 +659,7 @@ public:
 	virtual VkPhysicalDevice getPhysicalDevice() const override { return m_device->vulkanPhysicalDevice(); }
 	virtual VkDevice getDevice() const override { return m_device->vulkanDevice(); }
 	virtual VkQueue getGraphicsQueue() const override { return m_device->m_graphicsQueue; }
-	virtual uint32_t getQueueFamilyIndex() const override { return m_device->m_graphicsQueueFamilyIndex; }
+	virtual uint32_t getGraphicsQueueFamilyIndex() const override { return m_device->m_graphicsQueueFamilyIndex; }
 
 private:
 	VulkanDevice* m_device;

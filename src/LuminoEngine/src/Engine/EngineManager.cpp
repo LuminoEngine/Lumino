@@ -477,7 +477,10 @@ void EngineManager::initializeEffectManager()
 {
     if (!m_effectManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
+        initializeGraphicsManager();
+
         EffectManager::Settings settings;
+        settings.graphicsManager = m_graphicsManager;
 
         m_effectManager = ln::makeRef<EffectManager>();
         m_effectManager->init(settings);
