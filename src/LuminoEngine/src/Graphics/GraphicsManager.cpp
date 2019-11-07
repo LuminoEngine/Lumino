@@ -177,6 +177,8 @@ void GraphicsManager::init(const Settings& settings)
 	m_depthBufferCacheManager = makeRef<DepthBufferCacheManager>();
 	m_frameBufferCache = makeRef<detail::FrameBufferCache>(m_renderTargetTextureCacheManager, m_depthBufferCacheManager);
 
+	m_extensions.add(nullptr);	// [0] is dummy
+
 	// default objects
 	{
         m_blackTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
@@ -253,6 +255,21 @@ void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
 void GraphicsManager::removeGraphicsResource(GraphicsResource* resource)
 {
 	m_graphicsResources.remove(resource);
+}
+
+int GraphicsManager::registerExtension(INativeGraphicsExtension* extension)
+{
+	if (LN_REQUIRE(extension)) return 0;
+	m_extensions.add(extension);
+	extension->onLoaded(m_deviceContext->getNativeInterface());
+	return m_extensions.size() - 1;
+}
+
+void GraphicsManager::unregisterExtension(INativeGraphicsExtension* extension)
+{
+	if (LN_REQUIRE(extension)) return;
+	m_extensions.remove(extension);
+	extension->onUnloaded(m_deviceContext->getNativeInterface());
 }
 
 void GraphicsManager::createOpenGLContext(const Settings& settings)

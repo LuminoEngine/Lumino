@@ -406,7 +406,6 @@ public:
     VulkanRenderPass* m_currentRenderPass = nullptr;
     VulkanFramebuffer* m_lastFoundFramebuffer = nullptr;
     //bool m_insideRendarPass = false;
-    bool m_priorToAnyDrawCmds = true;
 
 private:
     void cleanInFlightResources();

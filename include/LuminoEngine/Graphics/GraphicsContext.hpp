@@ -138,6 +138,7 @@ public:
      */
     void drawPrimitiveIndexed(int startIndex, int primitiveCount);
 
+	void drawExtension(INativeGraphicsExtension* extension);
 
     void interruptCurrentRenderPassFromResolveRHI();
 

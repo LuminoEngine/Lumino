@@ -135,6 +135,7 @@ public:
 
 
 protected:
+	virtual INativeGraphicsInterface* getNativeInterface() const { return nullptr; }
 	//virtual ICommandList* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
@@ -192,6 +193,7 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
+	virtual void onDrawExtension(INativeGraphicsExtension* extension) override { LN_NOTIMPLEMENTED(); }
 
 private:
 	static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);

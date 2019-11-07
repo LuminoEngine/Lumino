@@ -1236,7 +1236,6 @@ Result VulkanCommandBuffer::beginRecording()
     LN_VK_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer(), &beginInfo));
 
     m_lastFoundFramebuffer = nullptr;
-    m_priorToAnyDrawCmds = true;
 
     return true;
 }

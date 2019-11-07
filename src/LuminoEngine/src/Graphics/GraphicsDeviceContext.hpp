@@ -8,6 +8,7 @@
 namespace ln {
 struct SizeI;
 struct Color;
+class INativeGraphicsInterface;
 
 namespace detail {
 class PlatformWindow;
@@ -111,6 +112,7 @@ enum GraphicsContextSubmitSource
 {
     GraphicsContextSubmitSource_Clear,
     GraphicsContextSubmitSource_Draw,
+	GraphicsContextSubmitSource_Extension,
 };
 
 struct ShaderVertexInputAttribute
@@ -186,6 +188,7 @@ public:
 
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
+	virtual INativeGraphicsInterface* getNativeInterface() const = 0;
 	//virtual ICommandList* getGraphicsContext() const = 0;
 	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
 	virtual ICommandQueue* getComputeCommandQueue() = 0;
@@ -289,6 +292,7 @@ public:
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
     void drawPrimitiveIndexed(int startIndex, int primitiveCount);
+	void drawExtension(INativeGraphicsExtension* extension);
 
     /////////
 
@@ -317,6 +321,7 @@ public:	// TODO:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
+	virtual void onDrawExtension(INativeGraphicsExtension* extension) = 0;
 
 	uint32_t stagingStateDirtyFlags() const { return m_stateDirtyFlags; }
 	const GraphicsContextState& stagingState() const { return m_staging; }
@@ -324,7 +329,7 @@ public:	// TODO:
 
 private:
     void commitStatus(GraphicsContextSubmitSource submitSource);
-    void endCommit();
+    void endCommit(GraphicsContextSubmitSource submitSource);
 
 	IGraphicsDevice* m_device;
     uint32_t m_stateDirtyFlags;

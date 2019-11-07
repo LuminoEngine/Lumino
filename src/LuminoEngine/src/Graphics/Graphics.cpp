@@ -19,4 +19,14 @@ CommandQueue* Graphics::computeQueue()
 	return detail::EngineDomain::graphicsManager()->computeQueue();
 }
 
+int Graphics::registerExtension(INativeGraphicsExtension* extension)
+{
+	return detail::EngineDomain::graphicsManager()->registerExtension(extension);
+}
+
+void Graphics::unregisterExtension(INativeGraphicsExtension* extension)
+{
+	return detail::EngineDomain::graphicsManager()->unregisterExtension(extension);
+}
+
 } // namespace ln

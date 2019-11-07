@@ -14,8 +14,9 @@
 #include <LLGI.Platform.h>
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "C:/VulkanSDK/1.1.101.0/Lib32/vulkan-1.lib")
+#include <LuminoEngine/Graphics/GraphicsExtension.hpp>
+#include <LuminoEngine/Graphics/GraphicsExtensionVulkan.hpp>
 #endif
-
 namespace ln {
 namespace detail {
 
@@ -30,6 +31,32 @@ static ::Effekseer::Handle				g_handle = -1;
 static ::Effekseer::Vector3D			g_position;
 static LLGI::Platform* g_platform = nullptr;
 static LLGI::Graphics* g_graphics = nullptr;
+
+class LLGINativeGraphicsExtension : public INativeGraphicsExtension
+{
+public:
+	::Effekseer::Manager* m_manager = nullptr;
+	::EffekseerRenderer::Renderer* m_renderer = nullptr;
+
+	// 歪み描画のため、onRender() までの RenderPass は一度 end して、カレントの RenderTarget 使って描画できるようにしたいので Outside
+	virtual NativeGraphicsExtensionRenderPassPreCondition getRenderPassPreCondition() const override { return NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside; }
+
+	virtual void onLoaded(INativeGraphicsInterface* nativeInterface) override
+	{
+	}
+
+	virtual void onUnloaded(INativeGraphicsInterface* nativeInterface) override
+	{
+	}
+
+	virtual void onRender(INativeGraphicsInterface* nativeInterface) override
+	{
+		m_renderer->BeginRendering();
+		m_manager->Draw();
+		m_renderer->EndRendering();
+	}
+};
+
 #endif
 
 //==============================================================================

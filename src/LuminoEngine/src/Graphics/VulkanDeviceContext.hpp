@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "VulkanHelper.hpp"
+#include <LuminoEngine/Graphics/GraphicsExtensionVulkan.hpp>
 
 struct GLFWwindow;
 
@@ -28,6 +29,7 @@ class VulkanDepthBuffer;
 class VulkanShaderUniformBuffer;
 class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
+class VulkanNativeGraphicsInterface;
 
 class VulkanDevice
 	: public IGraphicsDevice
@@ -60,7 +62,8 @@ public:
 	//const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
 
 protected:
-    virtual ICommandList* getGraphicsContext() const { return nullptr; }
+	virtual INativeGraphicsInterface* getNativeInterface() const;
+    //virtual ICommandList* getGraphicsContext() const { return nullptr; }
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
 	virtual Ref<ICommandList> onCreateCommandList() override;
@@ -124,6 +127,7 @@ public: // TODO:
     VulkanPipelineCache m_pipelineCache;
 
 	//Ref<VulkanGraphicsContext> m_graphicsContext;
+	std::unique_ptr<VulkanNativeGraphicsInterface> m_nativeInterface;
 
 
     std::vector<PhysicalDeviceInfo> m_physicalDeviceInfos;
@@ -157,11 +161,9 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
+	virtual void onDrawExtension(INativeGraphicsExtension* extension) override;
 
 private:
-	//Result submitStatus(const State& state);
-	Result submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil);
-
 	VulkanDevice* m_device;
 	Ref<VulkanCommandBuffer> m_recodingCommandBuffer;
 };
@@ -643,6 +645,24 @@ private:
     };
 
     std::vector<Entry> m_table;
+};
+
+class VulkanNativeGraphicsInterface : public IVulkanNativeGraphicsInterface
+{
+public:
+	VulkanNativeGraphicsInterface(VulkanDevice* device)
+		: m_device(device)
+	{}
+
+	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::Vulkan; }
+	virtual VkInstance getInstance() const override { return m_device->vulkanInstance(); }
+	virtual VkPhysicalDevice getPhysicalDevice() const override { return m_device->vulkanPhysicalDevice(); }
+	virtual VkDevice getDevice() const override { return m_device->vulkanDevice(); }
+	virtual VkQueue getGraphicsQueue() const override { return m_device->m_graphicsQueue; }
+	virtual uint32_t getQueueFamilyIndex() const override { return m_device->m_graphicsQueueFamilyIndex; }
+
+private:
+	VulkanDevice* m_device;
 };
 
 } // namespace detail

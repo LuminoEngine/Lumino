@@ -398,6 +398,20 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
         });
 }
 
+void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
+{
+	if (LN_REQUIRE(m_recordingBegan)) return;
+	if (LN_REQUIRE(m_currentRenderPass)) return;
+	commitState();
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		GraphicsContext_setIndexBuffer, this,
+		detail::ICommandList*, m_context,
+		INativeGraphicsExtension*, extension,
+		{
+			m_context->drawExtension(extension);
+		});
+}
+
 void GraphicsContext::interruptCurrentRenderPassFromResolveRHI()
 {
     if (m_renderPassStep == RenderPassStep::Active && m_currentRHIRenderPass) {

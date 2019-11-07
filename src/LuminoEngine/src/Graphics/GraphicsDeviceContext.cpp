@@ -458,21 +458,28 @@ void ICommandList::clearBuffers(ClearFlags flags, const Color& color, float z, u
 {
     commitStatus(GraphicsContextSubmitSource_Clear);
     onClearBuffers(flags, color, z, stencil);
-    endCommit();
+    endCommit(GraphicsContextSubmitSource_Clear);
 }
 
 void ICommandList::drawPrimitive(int startVertex, int primitiveCount)
 {
     commitStatus(GraphicsContextSubmitSource_Draw);
     onDrawPrimitive(m_staging.pipelineState.topology, startVertex, primitiveCount);
-    endCommit();
+    endCommit(GraphicsContextSubmitSource_Draw);
 }
 
 void ICommandList::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 {
     commitStatus(GraphicsContextSubmitSource_Draw);
     onDrawPrimitiveIndexed(m_staging.pipelineState.topology, startIndex, primitiveCount);
-    endCommit();
+    endCommit(GraphicsContextSubmitSource_Draw);
+}
+
+void ICommandList::drawExtension(INativeGraphicsExtension* extension)
+{
+	commitStatus(GraphicsContextSubmitSource_Extension);
+	onDrawExtension(extension);
+	endCommit(GraphicsContextSubmitSource_Extension);
 }
 
 void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
@@ -502,10 +509,16 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 	}
 }
 
-void ICommandList::endCommit()
+void ICommandList::endCommit(GraphicsContextSubmitSource submitSource)
 {
-    m_committed = m_staging;
-    m_stateDirtyFlags = GraphicsContextStateDirtyFlags_None;
+	if (submitSource == GraphicsContextSubmitSource_Extension) {
+		// 次回の描画時にすべて設定しなおす
+		m_stateDirtyFlags = GraphicsContextStateDirtyFlags_All;
+	}
+	else {
+		m_committed = m_staging;
+		m_stateDirtyFlags = GraphicsContextStateDirtyFlags_None;
+	}
 }
 
 

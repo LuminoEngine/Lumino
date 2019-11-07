@@ -12,7 +12,10 @@ class LN_API Graphics
 public:
 	static CommandQueue* graphicsQueue();
 	static CommandQueue* computeQueue();
-	 
+
+	// return: extensionId
+	int registerExtension(INativeGraphicsExtension* extension);
+	void unregisterExtension(INativeGraphicsExtension* extension);
 };
 
 } // namespace ln

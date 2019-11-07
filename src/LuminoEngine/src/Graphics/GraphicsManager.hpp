@@ -57,12 +57,22 @@ public:
 	const Ref<DepthBufferCacheManager>& depthBufferCacheManager() const { return m_depthBufferCacheManager; }
 	const Ref<FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
 
+
+	int registerExtension(INativeGraphicsExtension* extension);
+	void unregisterExtension(INativeGraphicsExtension* extension);
+
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
 
 
 private:
+	//struct ExtensionInfo
+	//{
+
+	//	INativeGraphicsExtension* extension;
+	//};
+
 	void createOpenGLContext(const Settings& settings);
 	void createVulkanContext(const Settings& settings);
 
@@ -77,6 +87,7 @@ private:
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;
 	List<GraphicsResource*> m_graphicsResources;
+	List<INativeGraphicsExtension*> m_extensions;
 
     Ref<Texture2D> m_blackTexture;
     Ref<Texture2D> m_whiteTexture;
