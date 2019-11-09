@@ -4,6 +4,7 @@
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
 #include "VulkanHelper.hpp"
 #include "VulkanDeviceContext.hpp"
+#include <LuminoEngine/Graphics/GraphicsExtensionVulkan.hpp>
 
 PFN_vkCreateInstance vkCreateInstance;
 PFN_vkDestroyInstance vkDestroyInstance;
@@ -2226,4 +2227,33 @@ uint64_t VulkanPipelineCache::computeHash(const FetchKey& key)
 }
 
 } // namespace detail
+} // namespace ln
+
+
+
+
+#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/DepthBuffer.hpp>
+
+namespace ln {
+
+void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTargetTexture* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat)
+{
+    auto vulkanTexture = static_cast<detail::VulkanRenderTarget*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, nullptr));
+    auto image = vulkanTexture->image();
+    *outImage = image->vulkanImage();
+    *outImageView = image->vulkanImageView();
+    *outFormat = image->vulkanFormat();
+}
+
+void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, DepthBuffer* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat)
+{
+    auto vulkanTexture = static_cast<detail::VulkanDepthBuffer*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(graphicsContext, texture, nullptr));
+    auto image = vulkanTexture->image();
+    *outImage = image->vulkanImage();
+    *outImageView = image->vulkanImageView();
+    *outFormat = image->vulkanFormat();
+}
+
+
 } // namespace ln

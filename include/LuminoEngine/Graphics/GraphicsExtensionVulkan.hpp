@@ -18,4 +18,11 @@ public:
     virtual VkCommandBuffer getRecordingCommandBuffer() const = 0;
 };
 
+class VulkanIntegration
+{
+public:
+    static void getImageInfo(GraphicsContext* graphicsContext, RenderTargetTexture* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat);
+    static void getImageInfo(GraphicsContext* graphicsContext, DepthBuffer* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat);
+};
+
 } // namespace ln

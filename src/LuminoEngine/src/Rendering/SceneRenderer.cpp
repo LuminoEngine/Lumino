@@ -218,6 +218,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 	m_renderFeatureBatchList.clear();
 
+    // TODO: とりいそぎ
+    m_renderFeatureBatchList.renderTarget = renderTarget;
+    m_renderFeatureBatchList.depthBuffer = depthBuffer;
+
+
 	// Create batch list.
 	{
 		RenderPass* currentRenderPass = pass->renderPass();

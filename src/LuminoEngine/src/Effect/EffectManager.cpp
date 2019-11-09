@@ -14,10 +14,12 @@
 //#include <EffekseerRendererGL.h>
 #include <EffekseerRenderer/EffekseerRendererVulkan.Renderer.h>
 #include <EffekseerRendererLLGI.Renderer.h>
+#include <EffekseerRendererLLGI.RendererImplemented.h>
 //#include <EffekseerSoundAL.h>
 #include <Utils/LLGI.CommandListPool.h>
 #include <Vulkan/LLGI.GraphicsVulkan.h>
 #include <Vulkan/LLGI.CommandListVulkan.h>
+#include <Vulkan/LLGI.TextureVulkan.h>
 #include <LLGI.Platform.h>
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "C:/VulkanSDK/1.1.101.0/Lib32/vulkan-1.lib")
@@ -44,7 +46,7 @@ class LLGINativeGraphicsExtension : public INativeGraphicsExtension
 public:
 	::Effekseer::Manager* m_manager = nullptr;
 	//::EffekseerRenderer::Renderer* m_renderer = nullptr;
-    ::EffekseerRendererLLGI::Renderer* m_renderer = nullptr;
+    ::EffekseerRendererLLGI::RendererImplemented* m_renderer = nullptr;
     ::LLGI::SingleFrameMemoryPool* m_singleFrameMemoryPool = nullptr;
     //std::shared_ptr<LLGI::CommandListPool> m_commandListPool = nullptr;
     LLGI::GraphicsVulkan* m_llgiGraphics = nullptr;
@@ -56,6 +58,8 @@ public:
 
 	virtual void onLoaded(INativeGraphicsInterface* nativeInterface) override
 	{
+        // FIXME: RenderTarget,Depthbuffer の VkImage 参照は RenderPassVulkan が Framebuffer として持っている。
+
         int swapBufferCount = 3;
         int maxDrawcall = 128;
         m_nativeInterface = static_cast<IVulkanNativeGraphicsInterface*>(nativeInterface);
@@ -75,7 +79,7 @@ public:
             m_commandPool,
             swapBufferCount,
             1000);
-        m_renderer = dynamic_cast<::EffekseerRendererLLGI::Renderer*>(renderer);
+        m_renderer = dynamic_cast<::EffekseerRendererLLGI::RendererImplemented*>(renderer);
         m_llgiGraphics = dynamic_cast<LLGI::GraphicsVulkan*>(m_renderer->GetGraphics());
 
         m_singleFrameMemoryPool = m_llgiGraphics->CreateSingleFrameMemoryPool(1024 * 1024, maxDrawcall);
@@ -124,8 +128,33 @@ public:
 
 	virtual void onRender(INativeGraphicsInterface* nativeInterface) override
 	{
-        //m_llgiGraphics->CreateRenderPassPipelineState();
-        //m_llgiGraphics->CreateRenderPass();
+        // FIXME: renderPassPipelineState の管理は EffekseerRendererVulkan の中で握られていて、
+        // これが RendererImplemented::Initialize でセットされる唯一オブジェクト。
+        // なので現状、RenderTarget が変わったら 全部作り直さなければならないし、遅延初期化せざるを得ない。
+        // もう少しスマートにするには、RendererImplemented::SetRenderPassPipelineState とか用意して、後からセットできるようにすること。
+        //if (!m_renderer) {
+
+
+        //}
+
+
+        VkImage renderTargetImage, depthBufferImage;
+        VkImageView renderTargetImageView, depthBufferImageView;
+        VkFormat renderTargetFormat, depthBufferFormat;
+        VulkanIntegration::getImageInfo(this->graphicsContext, this->renderTarget, &renderTargetImage, &renderTargetImageView, &renderTargetFormat);
+        VulkanIntegration::getImageInfo(this->graphicsContext, this->depthBuffer, &depthBufferImage, &depthBufferImageView, &depthBufferFormat);
+
+        auto llgiRenderTarget = new LLGI::TextureVulkan();
+        llgiRenderTarget->InitializeFromExternal(LLGI::TextureType::Render, renderTargetImage, renderTargetImageView, renderTargetFormat);
+        auto llgiDepthBuffer = new LLGI::TextureVulkan();
+        llgiDepthBuffer->InitializeFromExternal(LLGI::TextureType::Depth, depthBufferImage, depthBufferImageView, depthBufferFormat);
+
+        LLGI::Texture* llgiRenderTargets[] = { llgiRenderTarget };
+        LLGI::RenderPass* llgiRenderPass = m_llgiGraphics->CreateRenderPass((const LLGI::Texture**)llgiRenderTargets, 1, llgiDepthBuffer);
+        LLGI::RenderPassPipelineState* llgtRenderPassPipelineState = m_llgiGraphics->CreateRenderPassPipelineState(llgiRenderPass);
+
+
+        m_renderer->SetRenderPassPipelineState(llgtRenderPassPipelineState);
 
 
         m_singleFrameMemoryPool->NewFrame();
@@ -133,8 +162,10 @@ public:
         //m_commandListPool->Get();
         m_renderer->SetCommandList(m_efkCommandList);
 		m_renderer->BeginRendering();
+        m_llgiCommandList->BeginRenderPass(llgiRenderPass);
 		m_manager->Draw();
 		m_renderer->EndRendering();
+        m_llgiCommandList->EndRenderPass();
         m_llgiCommandList->EndExternal();
 	}
 

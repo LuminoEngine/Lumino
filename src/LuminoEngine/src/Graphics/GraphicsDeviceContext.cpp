@@ -488,7 +488,9 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
 
-	if (m_staging.shaderPass && m_staging.pipelineState.vertexDeclaration) {
+	if (m_staging.shaderPass
+        && m_staging.pipelineState.vertexDeclaration && m_currentRenderPass // extention 描画時
+        ) {
 
 		// TODO: modified check
 

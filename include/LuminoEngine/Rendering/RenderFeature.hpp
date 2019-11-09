@@ -103,6 +103,10 @@ public:
 	//
 	//void render(GraphicsContext* graphicsContext, SceneRendererPass* pass, const FrameBuffer& defaultFrameBuffer, const CameraInfo& cameraInfo);
 
+    // TODO: とりいそぎ
+    RenderTargetTexture* renderTarget = nullptr;
+    DepthBuffer* depthBuffer = nullptr;
+
 private:
 	void add(RenderFeatureBatch* batch, RenderFeature* owner);
 

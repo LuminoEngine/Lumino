@@ -26,6 +26,11 @@ RequestBatchResult ExtensionRenderFeature::invoke(GraphicsContext* context, deta
     m_extensions.push_back(extension);
     m_batchData.count++;
 
+    // TODO: とりいそぎ
+    extension->graphicsContext = context;
+    extension->renderTarget = batchList->renderTarget;
+    extension->depthBuffer = batchList->depthBuffer;
+
     if (first) {
         m_precondition = extension->getRenderPassPreCondition();
         return RequestBatchResult::Staging;

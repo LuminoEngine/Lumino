@@ -19,12 +19,19 @@ public:
 
 	//virtual void configureExtension(NativeGraphicsExtensionRenderPassPreCondition renderPassPreCondition) = 0;	// onLoaded で実行する
 
+
 private:
 };
 
 class INativeGraphicsExtension
 {
 public:
+    // カレントの Scene rendering のデフォルトターゲット
+    // TODO: INativeGraphicsInterface に移動したい
+    GraphicsContext* graphicsContext = nullptr;
+    RenderTargetTexture* renderTarget = nullptr;
+    DepthBuffer* depthBuffer = nullptr;
+
 	virtual NativeGraphicsExtensionRenderPassPreCondition getRenderPassPreCondition() const = 0;
 
 	// 初回ロード時やDeviceReset時に呼び出される。
