@@ -24,6 +24,7 @@ public:
 	void dispose();
 
     void testDraw(RenderingContext* renderingContext);
+    void testDraw2(GraphicsContext* graphicsContext);
 
 private:
     GraphicsManager* m_graphicsManager;

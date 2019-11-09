@@ -124,6 +124,10 @@ public:
 
 	virtual void onRender(INativeGraphicsInterface* nativeInterface) override
 	{
+        //m_llgiGraphics->CreateRenderPassPipelineState();
+        //m_llgiGraphics->CreateRenderPass();
+
+
         m_singleFrameMemoryPool->NewFrame();
         m_llgiCommandList->BeginExternal(m_nativeInterface->getRecordingCommandBuffer());
         //m_commandListPool->Get();
@@ -271,6 +275,13 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
     //    g_platform->Present();
     //}
 #endif
+}
+
+void EffectManager::testDraw2(GraphicsContext* graphicsContext)
+{
+    m_nativeGraphicsExtension->m_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
+    m_nativeGraphicsExtension->m_manager->Update();
+    graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
 }
 
 } // namespace detail

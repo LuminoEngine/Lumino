@@ -119,6 +119,8 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_adornerLayer->render(m_renderingContext);
 
             detail::EngineDomain::effectManager()->testDraw(m_renderingContext);
+            //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
+
 
             //if (m_dialog) {
             //    m_dialog->render(m_renderingContext);

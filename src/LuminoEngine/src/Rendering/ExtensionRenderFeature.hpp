@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Graphics/GraphicsDeviceContext.hpp"
+#include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "RenderStage.hpp"
 
@@ -39,7 +40,7 @@ public:
     ExtensionRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult invoke(INativeGraphicsExtension* extension);
+	RequestBatchResult invoke(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, INativeGraphicsExtension* extension);
 
 protected:
 	virtual void beginRendering() override;
@@ -61,6 +62,7 @@ private:
     };
 
     std::vector<INativeGraphicsExtension*> m_extensions;
+    NativeGraphicsExtensionRenderPassPreCondition m_precondition;
     BatchData m_batchData;
 };
 

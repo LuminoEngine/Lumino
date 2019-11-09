@@ -310,7 +310,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				submittedBatch->setWorldTransformPtr(currentWorldMatrix);
 				submittedBatch->setFinalMaterial(currentFinalMaterial);
 				submittedBatch->setSubsetInfo(currentSubsetInfo);
-				submittedBatch->setRenderPass(currentRenderPass);
+				submittedBatch->setRenderPass(submittedBatch->ensureRenderPassOutside ? nullptr : currentRenderPass);
 			}
 
 			if (submitRequested) {
@@ -330,7 +330,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			m_renderFeatureBatchList.lastBatch()->setWorldTransformPtr(currentWorldMatrix);
 			m_renderFeatureBatchList.lastBatch()->setFinalMaterial(currentFinalMaterial);
 			m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
-			m_renderFeatureBatchList.lastBatch()->setRenderPass(currentRenderPass);
+			m_renderFeatureBatchList.lastBatch()->setRenderPass(m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
 		}
 
 	}
@@ -347,7 +347,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					graphicsContext->endRenderPass();
 				}
 				currentRenderPass = batch->renderPass();
-				graphicsContext->beginRenderPass(currentRenderPass);
+                if (currentRenderPass) {
+                    graphicsContext->beginRenderPass(currentRenderPass);
+                }
 			}
 
 

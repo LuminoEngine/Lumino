@@ -11,6 +11,7 @@ namespace detail {
 // ExtensionRenderFeature
 
 ExtensionRenderFeature::ExtensionRenderFeature()
+    : m_precondition(NativeGraphicsExtensionRenderPassPreCondition::EnsureInside)
 {
 }
 
@@ -19,11 +20,23 @@ void ExtensionRenderFeature::init(RenderingManager* manager)
 	RenderFeature::init();
 }
 
-RequestBatchResult ExtensionRenderFeature::invoke(INativeGraphicsExtension* extension)
+RequestBatchResult ExtensionRenderFeature::invoke(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, INativeGraphicsExtension* extension)
 {
+    bool first = (m_batchData.count == 0);
     m_extensions.push_back(extension);
     m_batchData.count++;
-	return RequestBatchResult::Staging;
+
+    if (first) {
+        m_precondition = extension->getRenderPassPreCondition();
+        return RequestBatchResult::Staging;
+    }
+    else if (m_precondition != extension->getRenderPassPreCondition()) {
+        submitBatch(context, batchList);
+        return RequestBatchResult::Submitted;
+    }
+    else {
+        return RequestBatchResult::Staging;
+    }
 }
 
 void ExtensionRenderFeature::beginRendering()
@@ -36,6 +49,7 @@ void ExtensionRenderFeature::beginRendering()
 void ExtensionRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
     auto batch = batchList->addNewBatch<Batch>(this);
+    batch->ensureRenderPassOutside = (m_precondition == NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside);
     batch->data = m_batchData;
 
     m_batchData.offset = m_batchData.offset + m_batchData.count;

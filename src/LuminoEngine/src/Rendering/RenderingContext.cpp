@@ -577,7 +577,7 @@ void RenderingContext::invokeExtensionRendering(INativeGraphicsExtension* extens
 
         virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
         {
-            return static_cast<detail::ExtensionRenderFeature*>(renderFeature)->invoke(extension);
+            return static_cast<detail::ExtensionRenderFeature*>(renderFeature)->invoke(context, batchList, extension);
             //context->drawExtension(extension);
         }
     };

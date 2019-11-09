@@ -50,6 +50,9 @@ public:
 	// SpriteText で使っている。 TODO: これは MaskTexture みたいな位置づけにしてもいいかも。
 	Texture* overrideTexture = nullptr;
 
+    // Extension 用。RenderPass を開始しない。
+    bool ensureRenderPassOutside = false;
+
 	void render(GraphicsContext* context);
 
 private:
