@@ -97,6 +97,7 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 	//virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	//virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
+    virtual void onRender(UIRenderingContext* context) override;
 
     // TODO: internal
     void resetSize(const Size& size);

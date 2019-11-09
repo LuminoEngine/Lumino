@@ -568,6 +568,28 @@ void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
 	//ptr->setLocalBoundingSphere(sphere);
 }
 
+void RenderingContext::invokeExtensionRendering(INativeGraphicsExtension* extension)
+{
+    class InvokeExtensionRendering : public detail::RenderDrawElement
+    {
+    public:
+        INativeGraphicsExtension* extension;
+
+        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+        {
+            return static_cast<detail::ExtensionRenderFeature*>(renderFeature)->invoke(extension);
+            //context->drawExtension(extension);
+        }
+    };
+
+    auto* element = m_builder->addNewDrawElement<InvokeExtensionRendering>(
+        m_manager->extensionRenderFeature(),
+        m_builder->extensionRenderFeatureStageParameters());
+    element->extension = extension;
+
+    // TODO: bounding
+}
+
 void RenderingContext::addAmbientLight(const Color& color, float intensity)
 {
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeAmbientLightInfo(color, intensity));

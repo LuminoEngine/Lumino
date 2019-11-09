@@ -314,7 +314,7 @@ void UIFrameWindow::present()
 		m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
 
-    detail::EngineDomain::effectManager()->testDraw(m_renderingGraphicsContext);
+    //detail::EngineDomain::effectManager()->testDraw(m_renderingGraphicsContext);
 
 	if (m_ImGuiLayerEnabled)
 	{
@@ -399,6 +399,13 @@ Size UIFrameWindow::arrangeOverride(const Size& finalSize)
 	//}
 
 	//return UIElement::arrangeOverride(desiredSize());
+}
+
+void UIFrameWindow::onRender(UIRenderingContext* context)
+{
+    UIContainerElement::onRender(context);
+
+    //detail::EngineDomain::effectManager()->testDraw(m_renderingGraphicsContext);
 }
 
 //void UIFrameWindow::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)

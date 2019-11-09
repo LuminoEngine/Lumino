@@ -7,6 +7,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/UIDialog.hpp>
+#include "../Effect/EffectManager.hpp"  // TODO: test
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
@@ -116,6 +117,8 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_renderingContext->m_frameWindowRenderingGraphicsContext = nullptr;
 
             m_adornerLayer->render(m_renderingContext);
+
+            detail::EngineDomain::effectManager()->testDraw(m_renderingContext);
 
             //if (m_dialog) {
             //    m_dialog->render(m_renderingContext);

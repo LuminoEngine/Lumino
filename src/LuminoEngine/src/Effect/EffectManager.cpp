@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "EffectManager.hpp"
@@ -231,7 +232,7 @@ void EffectManager::dispose()
     m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
 }
 
-void EffectManager::testDraw(GraphicsContext* graphicsContext)
+void EffectManager::testDraw(RenderingContext* renderingContext)
 {
 #ifdef EFK_TEST
 	//return;
@@ -253,7 +254,8 @@ void EffectManager::testDraw(GraphicsContext* graphicsContext)
     m_nativeGraphicsExtension->m_manager->Update();
 
 
-    graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
+   // graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
+    renderingContext->invokeExtensionRendering(m_nativeGraphicsExtension.get());
 
     //// エフェクトの描画開始処理を行う。
     //g_renderer->BeginRendering();

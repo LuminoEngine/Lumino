@@ -147,6 +147,8 @@ public:
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
 
+    void invokeExtensionRendering(INativeGraphicsExtension* extension);
+
 	/** @} */
 
 

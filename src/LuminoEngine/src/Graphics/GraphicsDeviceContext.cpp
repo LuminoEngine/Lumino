@@ -488,7 +488,7 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
     //if (LN_REQUIRE(m_staging.pipelineState.vertexDeclaration)) return;
 
 
-	if (m_staging.shaderPass) {
+	if (m_staging.shaderPass && m_staging.pipelineState.vertexDeclaration) {
 
 		// TODO: modified check
 
@@ -505,6 +505,7 @@ void ICommandList::commitStatus(GraphicsContextSubmitSource submitSource)
 		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, pipeline);
 	}
 	else {
+        // clear や、extension 呼び出し。pipelineState を独自で作らない。
 		onSubmitStatus(m_staging, m_stateDirtyFlags, submitSource, nullptr);
 	}
 }

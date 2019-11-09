@@ -2,6 +2,7 @@
 #include <LuminoEngine/Effect/Common.hpp>
 
 namespace ln {
+class RenderingContext;
 namespace detail {
 
 class GraphicsManager;
@@ -22,7 +23,7 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
-    void testDraw(GraphicsContext* graphicsContext);
+    void testDraw(RenderingContext* renderingContext);
 
 private:
     GraphicsManager* m_graphicsManager;

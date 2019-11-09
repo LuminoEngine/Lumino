@@ -287,7 +287,7 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 
 	VulkanDevice::Settings dcSettings;
     dcSettings.mainWindow = settings.mainWindow;
-	dcSettings.debugMode = false;
+	dcSettings.debugMode = true;
 	auto ctx = makeRef<VulkanDevice>();
 	bool driverSupported = false;
 	if (!ctx->init(dcSettings, &driverSupported)) {

@@ -8,6 +8,7 @@
 #include "BlitRenderFeature.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
+#include "ExtensionRenderFeature.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {
@@ -79,6 +80,9 @@ void RenderingManager::init(const Settings& settings)
 
 	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
 	m_renderFeatures.add(m_shapesRenderFeature);
+
+    m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);
+    m_renderFeatures.add(m_extensionRenderFeature);
 
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
