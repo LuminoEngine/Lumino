@@ -60,6 +60,7 @@ public:
     //VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
     VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
 	//const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
+    VulkanNativeGraphicsInterface* vulkanNativeGraphicsInterface() const { return m_nativeInterface.get(); }
 
 protected:
 	virtual INativeGraphicsInterface* getNativeInterface() const;
@@ -652,7 +653,10 @@ class VulkanNativeGraphicsInterface : public IVulkanNativeGraphicsInterface
 public:
 	VulkanNativeGraphicsInterface(VulkanDevice* device)
 		: m_device(device)
+        , m_context(nullptr)
 	{}
+
+    void setContext(VulkanGraphicsContext* context) { m_context = context; }
 
 	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::Vulkan; }
 	virtual VkInstance getInstance() const override { return m_device->vulkanInstance(); }
@@ -660,9 +664,11 @@ public:
 	virtual VkDevice getDevice() const override { return m_device->vulkanDevice(); }
 	virtual VkQueue getGraphicsQueue() const override { return m_device->m_graphicsQueue; }
 	virtual uint32_t getGraphicsQueueFamilyIndex() const override { return m_device->m_graphicsQueueFamilyIndex; }
+    virtual VkCommandBuffer getRecordingCommandBuffer() const { return m_context->recodingCommandBuffer()->vulkanCommandBuffer(); }
 
 private:
 	VulkanDevice* m_device;
+    VulkanGraphicsContext* m_context;
 };
 
 } // namespace detail

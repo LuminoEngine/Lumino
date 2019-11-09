@@ -314,7 +314,7 @@ void UIFrameWindow::present()
 		m_renderView->render(m_renderingGraphicsContext, m_swapChain->currentBackbuffer());
 	}
 
-    detail::EngineDomain::effectManager()->testDraw();
+    detail::EngineDomain::effectManager()->testDraw(m_renderingGraphicsContext);
 
 	if (m_ImGuiLayerEnabled)
 	{

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/SwapChain.hpp>
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "EffectManager.hpp"
@@ -13,6 +14,9 @@
 #include <EffekseerRenderer/EffekseerRendererVulkan.Renderer.h>
 #include <EffekseerRendererLLGI.Renderer.h>
 //#include <EffekseerSoundAL.h>
+#include <Utils/LLGI.CommandListPool.h>
+#include <Vulkan/LLGI.GraphicsVulkan.h>
+#include <Vulkan/LLGI.CommandListVulkan.h>
 #include <LLGI.Platform.h>
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "C:/VulkanSDK/1.1.101.0/Lib32/vulkan-1.lib")
@@ -25,8 +29,8 @@ namespace detail {
 #ifdef EFK_TEST
 static int g_window_width = 800;
 static int g_window_height = 600;
-static ::Effekseer::Manager*			g_manager = NULL;
-static ::EffekseerRenderer::Renderer*	g_renderer = NULL;
+//static ::Effekseer::Manager*			g_manager = NULL;
+//static ::EffekseerRenderer::Renderer*	g_renderer = NULL;
 //static ::EffekseerSound::Sound*			g_sound = NULL;
 static ::Effekseer::Effect*				g_effect = NULL;
 static ::Effekseer::Handle				g_handle = -1;
@@ -38,13 +42,21 @@ class LLGINativeGraphicsExtension : public INativeGraphicsExtension
 {
 public:
 	::Effekseer::Manager* m_manager = nullptr;
-	::EffekseerRenderer::Renderer* m_renderer = nullptr;
+	//::EffekseerRenderer::Renderer* m_renderer = nullptr;
+    ::EffekseerRendererLLGI::Renderer* m_renderer = nullptr;
+    ::LLGI::SingleFrameMemoryPool* m_singleFrameMemoryPool = nullptr;
+    //std::shared_ptr<LLGI::CommandListPool> m_commandListPool = nullptr;
+    LLGI::GraphicsVulkan* m_llgiGraphics = nullptr;
+    LLGI::CommandListVulkan* m_llgiCommandList = nullptr;
+    EffekseerRendererLLGI::CommandList* m_efkCommandList = nullptr;
 
 	// 歪み描画のため、onRender() までの RenderPass は一度 end して、カレントの RenderTarget 使って描画できるようにしたいので Outside
 	virtual NativeGraphicsExtensionRenderPassPreCondition getRenderPassPreCondition() const override { return NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside; }
 
 	virtual void onLoaded(INativeGraphicsInterface* nativeInterface) override
 	{
+        int swapBufferCount = 3;
+        int maxDrawcall = 128;
         m_nativeInterface = static_cast<IVulkanNativeGraphicsInterface*>(nativeInterface);
 
         VkCommandPoolCreateInfo poolInfo = {};
@@ -55,20 +67,52 @@ public:
             return;
         }
 
-        g_renderer = ::EffekseerRendererVulkan::Create(
+        auto renderer = ::EffekseerRendererVulkan::Create(
             m_nativeInterface->getPhysicalDevice(),
             m_nativeInterface->getDevice(),
             m_nativeInterface->getGraphicsQueue(),
             m_commandPool,
-            3,//SwapChainInternal::swapBufferCount(),
+            swapBufferCount,
             1000);
+        m_renderer = dynamic_cast<::EffekseerRendererLLGI::Renderer*>(renderer);
+        m_llgiGraphics = dynamic_cast<LLGI::GraphicsVulkan*>(m_renderer->GetGraphics());
+
+        m_singleFrameMemoryPool = m_llgiGraphics->CreateSingleFrameMemoryPool(1024 * 1024, maxDrawcall);
+        //m_commandListPool = std::make_shared<LLGI::CommandListPool>(m_renderer->GetGraphics(), m_singleFrameMemoryPool, swapBufferCount);
+
+        m_llgiCommandList = new LLGI::CommandListVulkan();
+        if (!m_llgiCommandList->Initialize(m_llgiGraphics, maxDrawcall, LLGI::CommandListPreCondition::Standalone)) {
+            return;
+        }
+
+        m_efkCommandList = new EffekseerRendererLLGI::CommandList(m_llgiGraphics, m_llgiCommandList, m_singleFrameMemoryPool);
+
 	}
 
 	virtual void onUnloaded(INativeGraphicsInterface* nativeInterface) override
 	{
-        if (g_renderer) {
-            g_renderer->Destroy();
-            g_renderer = nullptr;
+        if (m_efkCommandList) {
+            m_efkCommandList->Release();
+            m_efkCommandList = nullptr;
+        }
+
+        if (m_llgiCommandList) {
+            m_llgiCommandList->Release();
+            m_llgiCommandList = nullptr;
+        }
+
+        //if (m_commandListPool) {
+        //    m_commandListPool = nullptr;
+        //}
+
+        if (m_singleFrameMemoryPool) {
+            m_singleFrameMemoryPool->Release();
+            m_singleFrameMemoryPool = nullptr;
+        }
+
+        if (m_renderer) {
+            m_renderer->Destroy();
+            m_renderer = nullptr;
         }
 
         if (m_commandPool) {
@@ -79,9 +123,14 @@ public:
 
 	virtual void onRender(INativeGraphicsInterface* nativeInterface) override
 	{
+        m_singleFrameMemoryPool->NewFrame();
+        m_llgiCommandList->BeginExternal(m_nativeInterface->getRecordingCommandBuffer());
+        //m_commandListPool->Get();
+        m_renderer->SetCommandList(m_efkCommandList);
 		m_renderer->BeginRendering();
 		m_manager->Draw();
 		m_renderer->EndRendering();
+        m_llgiCommandList->EndExternal();
 	}
 
 private:
@@ -115,18 +164,18 @@ void EffectManager::init(const Settings& settings)
 	//::EffekseerRendererLLGI::Renderer::CreateFixedShaderForVulkan(&fixedShaders);
 
     // エフェクト管理用インスタンスの生成
-    g_manager = ::Effekseer::Manager::Create(2000);
+    m_nativeGraphicsExtension->m_manager = ::Effekseer::Manager::Create(2000);
 
     // 描画用インスタンスから描画機能を設定
-    g_manager->SetSpriteRenderer(g_renderer->CreateSpriteRenderer());
-    g_manager->SetRibbonRenderer(g_renderer->CreateRibbonRenderer());
-    g_manager->SetRingRenderer(g_renderer->CreateRingRenderer());
-    g_manager->SetModelRenderer(g_renderer->CreateModelRenderer());
+    m_nativeGraphicsExtension->m_manager->SetSpriteRenderer(m_nativeGraphicsExtension->m_renderer->CreateSpriteRenderer());
+    m_nativeGraphicsExtension->m_manager->SetRibbonRenderer(m_nativeGraphicsExtension->m_renderer->CreateRibbonRenderer());
+    m_nativeGraphicsExtension->m_manager->SetRingRenderer(m_nativeGraphicsExtension->m_renderer->CreateRingRenderer());
+    m_nativeGraphicsExtension->m_manager->SetModelRenderer(m_nativeGraphicsExtension->m_renderer->CreateModelRenderer());
 
     // 描画用インスタンスからテクスチャの読込機能を設定
     // 独自拡張可能、現在はファイルから読み込んでいる。
-    g_manager->SetTextureLoader(g_renderer->CreateTextureLoader());
-    g_manager->SetModelLoader(g_renderer->CreateModelLoader());
+    m_nativeGraphicsExtension->m_manager->SetTextureLoader(m_nativeGraphicsExtension->m_renderer->CreateTextureLoader());
+    m_nativeGraphicsExtension->m_manager->SetModelLoader(m_nativeGraphicsExtension->m_renderer->CreateModelLoader());
 
     // 音再生用インスタンスの生成
     //g_sound = EffekseerSound::Sound::Create(32);
@@ -142,18 +191,18 @@ void EffectManager::init(const Settings& settings)
     g_position = ::Effekseer::Vector3D(10.0f, 5.0f, 20.0f);
 
     // 投影行列を設定
-    g_renderer->SetProjectionMatrix(
+    m_nativeGraphicsExtension->m_renderer->SetProjectionMatrix(
         ::Effekseer::Matrix44().PerspectiveFovRH_OpenGL(90.0f / 180.0f * 3.14f, (float)g_window_width / (float)g_window_height, 1.0f, 50.0f));
 
     // カメラ行列を設定
-    g_renderer->SetCameraMatrix(
+    m_nativeGraphicsExtension->m_renderer->SetCameraMatrix(
         ::Effekseer::Matrix44().LookAtRH(g_position, ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
 
     // エフェクトの読込
-    g_effect = Effekseer::Effect::Create(g_manager, (const EFK_CHAR*)L"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk");
+    g_effect = Effekseer::Effect::Create(m_nativeGraphicsExtension->m_manager, (const EFK_CHAR*)L"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk");
 
     // エフェクトの再生
-    g_handle = g_manager->Play(g_effect, 0, 0, 0);
+    g_handle = m_nativeGraphicsExtension->m_manager->Play(g_effect, 0, 0, 0);
 #endif
 
     LN_LOG_DEBUG << "EffectManager Initialization ended.";
@@ -164,13 +213,13 @@ void EffectManager::dispose()
 #ifdef EFK_TEST
 	//return;
     // エフェクトの停止
-    g_manager->StopEffect(g_handle);
+    m_nativeGraphicsExtension->m_manager->StopEffect(g_handle);
 
     // エフェクトの破棄
     ES_SAFE_RELEASE(g_effect);
 
     // 先にエフェクト管理用インスタンスを破棄
-    g_manager->Destroy();
+    m_nativeGraphicsExtension->m_manager->Destroy();
 
     // 次に音再生用インスタンスを破棄
     //g_sound->Destroy();
@@ -182,7 +231,7 @@ void EffectManager::dispose()
     m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
 }
 
-void EffectManager::testDraw()
+void EffectManager::testDraw(GraphicsContext* graphicsContext)
 {
 #ifdef EFK_TEST
 	//return;
@@ -198,21 +247,22 @@ void EffectManager::testDraw()
 
 
     // エフェクトの移動処理を行う
-    g_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
+    m_nativeGraphicsExtension->m_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
 
     // エフェクトの更新処理を行う
-    g_manager->Update();
+    m_nativeGraphicsExtension->m_manager->Update();
 
 
+    graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
 
-    // エフェクトの描画開始処理を行う。
-    g_renderer->BeginRendering();
+    //// エフェクトの描画開始処理を行う。
+    //g_renderer->BeginRendering();
 
-    // エフェクトの描画を行う。
-    g_manager->Draw();
+    //// エフェクトの描画を行う。
+    //g_manager->Draw();
 
-    // エフェクトの描画終了処理を行う。
-    g_renderer->EndRendering();
+    //// エフェクトの描画終了処理を行う。
+    //g_renderer->EndRendering();
 
 
     //if (1) {

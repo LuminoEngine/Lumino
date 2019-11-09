@@ -1125,7 +1125,10 @@ void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, 
 
 void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
 {
-	extension->onRender(nullptr);
+    auto i = m_device->vulkanNativeGraphicsInterface();
+    i->setContext(this);
+	extension->onRender(i);
+    i->setContext(nullptr);
 }
 
 //==============================================================================

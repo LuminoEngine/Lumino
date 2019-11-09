@@ -13,6 +13,9 @@ public:
 	virtual VkDevice getDevice() const = 0;
 	virtual VkQueue getGraphicsQueue() const = 0;	// レンダリングに使用している GraphicsQueue
 	virtual uint32_t getGraphicsQueueFamilyIndex() const = 0;
+
+    // RecordingState
+    virtual VkCommandBuffer getRecordingCommandBuffer() const = 0;
 };
 
 } // namespace ln

@@ -401,7 +401,6 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
 void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
 {
 	if (LN_REQUIRE(m_recordingBegan)) return;
-	if (LN_REQUIRE(m_currentRenderPass)) return;
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		GraphicsContext_setIndexBuffer, this,
@@ -602,17 +601,21 @@ detail::ICommandList* GraphicsContext::commitState()
 
     // Viewport, Scissor
     if ((m_dirtyFlags & DirtyFlags_RegionRects) != 0) {
-		SizeI size(m_currentRenderPass->renderTarget(0)->width(), m_currentRenderPass->renderTarget(0)->height());
+        SizeI viewSize = SizeI(0, 0);
+        if (m_currentRenderPass) {
+            viewSize.width = m_currentRenderPass->renderTarget(0)->width();
+            viewSize.width = m_currentRenderPass->renderTarget(0)->height();
+        }
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
 
 		if (viewportRect.width < 0 || viewportRect.height < 0) {
-			viewportRect.width = size.width;
-			viewportRect.height = size.height;
+			viewportRect.width = viewSize.width;
+			viewportRect.height = viewSize.height;
 		}
 		if (scissorRect.width < 0 || scissorRect.height < 0) {
-			scissorRect.width = size.width;
-			scissorRect.height = size.height;
+			scissorRect.width = viewSize.width;
+			scissorRect.height = viewSize.height;
 		}
 
         LN_ENQUEUE_RENDER_COMMAND_3(

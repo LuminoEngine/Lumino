@@ -22,7 +22,7 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
-    void testDraw();
+    void testDraw(GraphicsContext* graphicsContext);
 
 private:
     GraphicsManager* m_graphicsManager;
