@@ -17,17 +17,21 @@ namespace detail {
 // FrameRectRenderFeature
 
 FrameRectRenderFeature::FrameRectRenderFeature()
+    : m_buffersReservedSpriteCount(0)
+    , m_worldTransform(nullptr)
 {
 }
 
 void FrameRectRenderFeature::init(RenderingManager* manager)
 {
 	RenderFeature::init();
+    m_vertexLayout = manager->standardVertexDeclaration();
 }
 
 RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize)
 {
 	if (rect.isEmpty()) return RequestBatchResult::Staging;
+    m_worldTransform = &worldTransform;
 
 	// 枠
 	{
@@ -62,6 +66,12 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context,
 	return RequestBatchResult::Staging;
 }
 
+void FrameRectRenderFeature::beginRendering()
+{
+    m_batchData.spriteOffset = 0;
+    m_batchData.spriteCount = 0;
+}
+
 // TODO: SpriteRenderer 共通
 void FrameRectRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
@@ -84,10 +94,6 @@ void FrameRectRenderFeature::renderBatch(GraphicsContext* context, RenderFeature
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
-
-	// TODO: ここじゃなくて begin か end で
-	m_batchData.spriteOffset = 0;
-	m_batchData.spriteCount = 0;
 }
 
 void FrameRectRenderFeature::prepareBuffers(GraphicsContext* context, int spriteCount)
@@ -160,6 +166,12 @@ void FrameRectRenderFeature::addSprite(GraphicsContext* context, const Vector3& 
 	vertices[3].uv = uv3;
 	vertices[3].normal = Vector3::UnitZ;
 	vertices[3].color = Color::White;
+
+    // transform
+    vertices[0].position.transformCoord(*m_worldTransform);
+    vertices[1].position.transformCoord(*m_worldTransform);
+    vertices[2].position.transformCoord(*m_worldTransform);
+    vertices[3].position.transformCoord(*m_worldTransform);
 
 	m_batchData.spriteCount++;
 }

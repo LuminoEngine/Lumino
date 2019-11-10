@@ -14,7 +14,13 @@ class UIRenderingContext
 public:
     UIRenderingContext();
 
-    void drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color);
+    // 単色塗りつぶし
+    void drawSolidRectangle(const Rect& rect, const Color& color);
+
+    void drawImageBox(const Rect& rect, BrushImageDrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color);
+
+
+    //void drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color);
 
     void drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
 	void drawBoxBorderLine(const Rect& rect, float thickness, const Color& color, bool borderInset);

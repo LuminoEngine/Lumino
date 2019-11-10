@@ -46,6 +46,7 @@ public:
 	RequestBatchResult drawRequest(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
 
 protected:
+    virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 	virtual bool drawElementTransformNegate() const override { return true; }
@@ -70,13 +71,14 @@ private:
 	void putRectangle(GraphicsContext* context, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, BrushWrapMode wrapMode);
 	void putFrameRectangle(GraphicsContext* context, const Rect& rect, const Thickness& borderThickness, Rect srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize);
 
-	// sprite-batching
 	Ref<VertexLayout> m_vertexLayout;
 	Ref<VertexBuffer> m_vertexBuffer;
 	Ref<IndexBuffer> m_indexBuffer;
 	int m_buffersReservedSpriteCount;
 	BatchData m_batchData;
 	Vertex* m_mappedVertices;
+
+    const Matrix* m_worldTransform;
 };
 
 #else

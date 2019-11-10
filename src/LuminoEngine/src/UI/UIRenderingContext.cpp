@@ -19,38 +19,66 @@ UIRenderingContext::UIRenderingContext()
 	setDrawElementList(m_elementList);
 }
 
-void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)
+void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color)
 {
-    //m_builder->setMaterial(material);
+    auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+        m_manager->shapesRenderFeature(),
+        m_builder->shapesRenderFeatureStageParameters());
 
-    if (m_builder->material() && !m_builder->material()->mainTexture()) {
-        mode = BrushImageDrawMode::Image;
-    }
-
-	if (mode == BrushImageDrawMode::Image)
-	{
-        auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
-            m_manager->shapesRenderFeature(),
-            m_builder->shapesRenderFeatureStageParameters());
-		
-        element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
-	}
-	else
-	{
-		auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
-			m_manager->frameRectRenderFeature(),
-			m_builder->frameRectRenderFeatureStageParameters());
-
-		element->rect = rect;
-		element->transform = element->combinedWorldMatrix();
-		element->imageDrawMode = mode;
-		element->borderThickness = Thickness();	// TODO: //borderThickness;
-		element->srcRect = textureSourceRect;
-		element->wrapMode = BrushWrapMode::Stretch;
-	}
-
-    // TODO: bounding box
+    element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
 }
+
+void UIRenderingContext::drawImageBox(const Rect& rect, BrushImageDrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
+{
+    if (mode == BrushImageDrawMode::Image) {
+        drawSolidRectangle(rect, color);
+    }
+    else {
+        auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
+            m_manager->frameRectRenderFeature(),
+            m_builder->frameRectRenderFeatureStageParameters());
+
+        element->rect = rect;
+        element->transform = element->combinedWorldMatrix();
+        element->imageDrawMode = mode;
+        element->borderThickness = borderThickness;
+        element->srcRect = textureSourceRect;
+        element->wrapMode = BrushWrapMode::Stretch;
+    }
+}
+
+//void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)
+//{
+//    //m_builder->setMaterial(material);
+//
+//    if (m_builder->material() && !m_builder->material()->mainTexture()) {
+//        mode = BrushImageDrawMode::Image;
+//    }
+//
+//	if (mode == BrushImageDrawMode::Image)
+//	{
+//        auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+//            m_manager->shapesRenderFeature(),
+//            m_builder->shapesRenderFeatureStageParameters());
+//		
+//        element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, color);
+//	}
+//	else
+//	{
+//		auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
+//			m_manager->frameRectRenderFeature(),
+//			m_builder->frameRectRenderFeatureStageParameters());
+//
+//		element->rect = rect;
+//		element->transform = element->combinedWorldMatrix();
+//		element->imageDrawMode = mode;
+//		element->borderThickness = Thickness();	// TODO: //borderThickness;
+//		element->srcRect = textureSourceRect;
+//		element->wrapMode = BrushWrapMode::Stretch;
+//	}
+//
+//    // TODO: bounding box
+//}
 
 void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {

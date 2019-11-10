@@ -51,7 +51,7 @@ void UITextRange::splitLineRanges(const String& str, List<UITextRange>* outLines
 void UICursorCaretHighlighter::onDraw(UIRenderingContext* context, const UIPhysicalLine* line, float physicalOffset, float physicalLength) const
 {
 	context->setTransfrom(Matrix::Identity);
-	context->drawBoxBackground(Rect(physicalOffset, line->offset.y, 2, 20), CornerRadius(), BrushImageDrawMode::Image, Rect(0, 0, 1, 1), Color::Black);
+	context->drawSolidRectangle(Rect(physicalOffset, line->offset.y, 2, 20), Color::Black);
 }
 
 //==============================================================================

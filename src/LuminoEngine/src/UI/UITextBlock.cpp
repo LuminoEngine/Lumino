@@ -595,7 +595,7 @@ Ref<UIMessageTextArea> UIMessageTextArea::create()
 }
 
 UIMessageTextArea::UIMessageTextArea()
-	: m_typingSpeed(0.05f)
+	: m_typingSpeed(0.005f)
 {
 }
 
@@ -624,7 +624,7 @@ Size UIMessageTextArea::measureOverride(const Size& constraint)
 	static bool init = false;
 	if (!init) {
 		RTDocumentBuilder builder(m_document);
-		builder.parse(finalStyle()->font, dpiScale, u"Hello Text!", constraint);
+		builder.parse(finalStyle()->font, dpiScale, u"Hello, Effekseer!", constraint);
 		init = true;
 	}
 

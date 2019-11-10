@@ -12,9 +12,22 @@ class App_Example_MessageWindow : public Application
 {
     Ref<UIButton> m_button1;
 
-    virtual void onCreate()
+    virtual void onInit() override
     {
         Engine::mainCamera()->setBackgroundColor(Color::Gray);
+
+        auto windowSkin = Assets::loadTexture(u"Window1");
+
+        auto window1 = UIWindow::create();
+        window1->setPosition(10, 10);
+        window1->setWidth(200);
+        window1->setHeight(100);
+        //window1->setBackgroundColor(Color::Red);
+        window1->setBackgroundImage(windowSkin);
+        window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
+        window1->setBackgroundImageBorder(Thickness(8));
+        window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+        Engine::mainUIView()->addElement(window1);
     }
 };
 

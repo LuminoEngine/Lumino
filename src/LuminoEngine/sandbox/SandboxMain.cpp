@@ -265,8 +265,16 @@ int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
-    //Example_MessageWindow();
-    //return 0;
+    if (1) {
+        GlobalLogger::addStdErrAdapter();
+        EngineSettings::setEngineFeatures(EngineFeature::Experimental);
+        EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
+        EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
+        detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+
+        Example_MessageWindow();
+        return 0;
+    }
 
 
 	{
