@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 using namespace ln;
 
 class App_Example_MessageWindow : public Application
@@ -22,12 +23,15 @@ class App_Example_MessageWindow : public Application
         window1->setPosition(10, 10);
         window1->setWidth(200);
         window1->setHeight(100);
-        //window1->setBackgroundColor(Color::Red);
         window1->setBackgroundImage(windowSkin);
         window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window1->setBackgroundImageBorder(Thickness(8));
         window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
         Engine::mainUIView()->addElement(window1);
+
+        auto message1 = UIMessageTextArea::create();
+        window1->addElement(message1);
+
     }
 };
 

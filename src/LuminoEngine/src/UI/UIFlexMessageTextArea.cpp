@@ -553,7 +553,7 @@ Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Si
 	static bool init = false;
 	if (!init) {
 		RTDocumentBuilder builder(m_document);
-		builder.parse(finalStyle()->font, layoutContext->dpiScale(), u"Hello, Effekseer!", constraint);
+		builder.parse(finalStyle()->font, layoutContext->dpiScale(), u"Hello, Lumino!", constraint);
 		init = true;
 	}
 
