@@ -604,7 +604,7 @@ detail::ICommandList* GraphicsContext::commitState()
         SizeI viewSize = SizeI(0, 0);
         if (m_currentRenderPass) {
             viewSize.width = m_currentRenderPass->renderTarget(0)->width();
-            viewSize.width = m_currentRenderPass->renderTarget(0)->height();
+            viewSize.height = m_currentRenderPass->renderTarget(0)->height();
         }
         RectI viewportRect = RectI::fromFloatRect(m_staging.viewportRect);
         RectI scissorRect = RectI::fromFloatRect(m_staging.scissorRect);
