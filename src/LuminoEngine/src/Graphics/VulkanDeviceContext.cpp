@@ -2708,6 +2708,8 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
     if (LN_REQUIRE(width > 0)) return false;
     if (LN_REQUIRE(height > 0)) return false;
     m_deviceContext = deviceContext;
+    m_size.width = width;
+    m_size.height = height;
 
     VkFormat depthFormat = m_deviceContext->findDepthFormat();
 

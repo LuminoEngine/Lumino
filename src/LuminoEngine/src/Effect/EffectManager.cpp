@@ -7,7 +7,7 @@
 #include "../Graphics/GraphicsManager.hpp"
 #include "EffectManager.hpp"
 
-#define EFK_TEST
+//#define EFK_TEST
 
 #ifdef EFK_TEST
 #include <Effekseer.h>
@@ -137,20 +137,25 @@ public:
 
         //}
 
+        printf("==========\n");
+
 
         VkImage renderTargetImage, depthBufferImage;
         VkImageView renderTargetImageView, depthBufferImageView;
         VkFormat renderTargetFormat, depthBufferFormat;
-        VulkanIntegration::getImageInfo(this->graphicsContext, this->renderTarget, &renderTargetImage, &renderTargetImageView, &renderTargetFormat);
-        VulkanIntegration::getImageInfo(this->graphicsContext, this->depthBuffer, &depthBufferImage, &depthBufferImageView, &depthBufferFormat);
+        int renderTargetWidth, renderTargetHeight, depthBufferWidth, depthBufferHeight;
+        VulkanIntegration::getImageInfo(this->graphicsContext, this->renderTarget, &renderTargetImage, &renderTargetImageView, &renderTargetFormat, &renderTargetWidth, &renderTargetHeight);
+        VulkanIntegration::getImageInfo(this->graphicsContext, this->depthBuffer, &depthBufferImage, &depthBufferImageView, &depthBufferFormat, &depthBufferWidth, &depthBufferHeight);
 
         auto llgiRenderTarget = new LLGI::TextureVulkan();
-        llgiRenderTarget->InitializeFromExternal(LLGI::TextureType::Render, renderTargetImage, renderTargetImageView, renderTargetFormat);
+        llgiRenderTarget->InitializeFromExternal(LLGI::TextureType::Render, renderTargetImage, renderTargetImageView, renderTargetFormat, LLGI::Vec2I(renderTargetWidth, renderTargetHeight));
         auto llgiDepthBuffer = new LLGI::TextureVulkan();
-        llgiDepthBuffer->InitializeFromExternal(LLGI::TextureType::Depth, depthBufferImage, depthBufferImageView, depthBufferFormat);
+        llgiDepthBuffer->InitializeFromExternal(LLGI::TextureType::Depth, depthBufferImage, depthBufferImageView, depthBufferFormat, LLGI::Vec2I(depthBufferWidth, depthBufferHeight));
 
         LLGI::Texture* llgiRenderTargets[] = { llgiRenderTarget };
         LLGI::RenderPass* llgiRenderPass = m_llgiGraphics->CreateRenderPass((const LLGI::Texture**)llgiRenderTargets, 1, llgiDepthBuffer);
+        llgiRenderPass->SetIsColorCleared(false);
+        llgiRenderPass->SetIsDepthCleared(false);
         LLGI::RenderPassPipelineState* llgtRenderPassPipelineState = m_llgiGraphics->CreateRenderPassPipelineState(llgiRenderPass);
 
 
@@ -167,13 +172,16 @@ public:
 		m_renderer->EndRendering();
         m_llgiCommandList->EndRenderPass();
         m_llgiCommandList->EndExternal();
+
+        printf("-----\n");
 	}
 
 private:
     IVulkanNativeGraphicsInterface* m_nativeInterface = nullptr;
     VkCommandPool m_commandPool = VK_NULL_HANDLE;
 };
-
+#else
+class LLGINativeGraphicsExtension {};
 #endif
 
 //==============================================================================
@@ -262,9 +270,9 @@ void EffectManager::dispose()
 
     // 次に描画用インスタンスを破棄
     //g_renderer->Destroy();
-#endif
 
     m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
+#endif
 }
 
 void EffectManager::testDraw(RenderingContext* renderingContext)
@@ -310,9 +318,11 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
 
 void EffectManager::testDraw2(GraphicsContext* graphicsContext)
 {
+#ifdef EFK_TEST
     m_nativeGraphicsExtension->m_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
     m_nativeGraphicsExtension->m_manager->Update();
     graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
+#endif
 }
 
 } // namespace detail

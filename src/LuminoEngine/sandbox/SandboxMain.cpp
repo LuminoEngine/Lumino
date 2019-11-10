@@ -259,10 +259,15 @@ private:
 
 
 
+void Example_MessageWindow();
 
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
+
+    //Example_MessageWindow();
+    //return 0;
+
 
 	{
 		ObservableProperty<int> v1(100);

@@ -2237,22 +2237,26 @@ uint64_t VulkanPipelineCache::computeHash(const FetchKey& key)
 
 namespace ln {
 
-void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTargetTexture* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat)
+void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, RenderTargetTexture* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight)
 {
     auto vulkanTexture = static_cast<detail::VulkanRenderTarget*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, nullptr));
     auto image = vulkanTexture->image();
     *outImage = image->vulkanImage();
     *outImageView = image->vulkanImageView();
     *outFormat = image->vulkanFormat();
+    *outWidth = vulkanTexture->realSize().width;
+    *outHeight = vulkanTexture->realSize().height;
 }
 
-void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, DepthBuffer* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat)
+void VulkanIntegration::getImageInfo(GraphicsContext* graphicsContext, DepthBuffer* texture, VkImage* outImage, VkImageView* outImageView, VkFormat* outFormat, int* outWidth, int* outHeight)
 {
     auto vulkanTexture = static_cast<detail::VulkanDepthBuffer*>(detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(graphicsContext, texture, nullptr));
     auto image = vulkanTexture->image();
     *outImage = image->vulkanImage();
     *outImageView = image->vulkanImageView();
     *outFormat = image->vulkanFormat();
+    *outWidth = vulkanTexture->size().width;
+    *outHeight = vulkanTexture->size().height;
 }
 
 

@@ -497,11 +497,13 @@ public:
     VulkanDepthBuffer();
     Result init(VulkanDevice* deviceContext, uint32_t width, uint32_t height);
     void dispose();
+    const SizeI& size() const { return m_size; }
     const VulkanImage* image() const { return &m_image; }
 	VkFormat nativeFormat() const { return m_deviceContext->findDepthFormat(); }
 
 private:
     VulkanDevice* m_deviceContext;
+    SizeI m_size;
     VulkanImage m_image;
 };
 
