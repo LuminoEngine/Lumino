@@ -71,10 +71,10 @@ void RenderView::updateUIStyle(const UIStyleContext* styleContext, const detail:
 	onUpdateUIStyle(styleContext, parentFinalStyle);
 }
 
-void RenderView::updateUILayout(const Rect& parentFinalGlobalRect)
+void RenderView::updateUILayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
 {
 	// TODO: こんなのでいいのか要チェック
-	onUpdateUILayout(Rect(parentFinalGlobalRect.x, parentFinalGlobalRect.y, m_actualSize.width, m_actualSize.height));
+	onUpdateUILayout(layoutContext, Rect(parentFinalGlobalRect.x, parentFinalGlobalRect.y, m_actualSize.width, m_actualSize.height));
 }
 
 void RenderView::onUpdateFrame(float elapsedSeconds)
@@ -85,7 +85,7 @@ void RenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detai
 {
 }
 
-void RenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+void RenderView::onUpdateUILayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
 {
 }
 

@@ -27,8 +27,8 @@ public:
     void remove(UIAdorner* adorner);
 
     void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
-    void measureLayout(const Size& availableSize);
-    void arrangeLayout(const Rect& localSlotRect);
+    void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
+    void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
     void render(UIRenderingContext* context);
 	UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 

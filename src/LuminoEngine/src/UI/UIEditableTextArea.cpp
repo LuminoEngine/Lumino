@@ -618,16 +618,16 @@ void UITextArea::onRoutedEvent(UIEventArgs* e)
     UIElement::onRoutedEvent(e);
 }
 
-Size UITextArea::measureOverride(const Size& constraint)
+Size UITextArea::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	m_textLayout->setBaseTextStyle(finalStyle()->font, finalStyle()->textColor);
-	return Size::max(m_textLayout->measure(), UIElement::measureOverride(constraint));
+	return Size::max(m_textLayout->measure(), UIElement::measureOverride(layoutContext, constraint));
 }
 
-Size UITextArea::arrangeOverride(const Size& finalSize)
+Size UITextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 	m_textLayout->arrange(finalSize);
-	return UIElement::arrangeOverride(finalSize);
+	return UIElement::arrangeOverride(layoutContext, finalSize);
 }
 
 void UITextArea::onRender(UIRenderingContext* context)
@@ -652,14 +652,14 @@ void UIEditableTextArea::init()
 	UITextArea::init();
 }
 
-Size UIEditableTextArea::measureOverride(const Size& constraint)
+Size UIEditableTextArea::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	return UITextArea::measureOverride(constraint);
+	return UITextArea::measureOverride(layoutContext, constraint);
 }
 
-Size UIEditableTextArea::arrangeOverride(const Size& finalSize)
+Size UIEditableTextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-	return UITextArea::arrangeOverride(finalSize);
+	return UITextArea::arrangeOverride(layoutContext, finalSize);
 }
 
 void UIEditableTextArea::onRender(UIRenderingContext* context)

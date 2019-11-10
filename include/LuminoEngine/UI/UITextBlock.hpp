@@ -24,40 +24,11 @@ LN_CONSTRUCT_ACCESS:
     void init(const StringRef& text);
 
 protected:
-	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual void onRender(UIRenderingContext* context) override;
 
 private:
     String m_text;
-};
-
-
-// - typing
-// - transform/animation par glyph
-class UIMessageTextArea
-	: public UIElement
-{
-public:
-	static Ref<UIMessageTextArea> create();
-
-	//void setText(const StringRef& value) { m_text = value; }
-
-	void setTypingSpeed(float value) { m_typingSpeed = value; }
-
-LN_CONSTRUCT_ACCESS:
-    UIMessageTextArea();
-	void init();
-
-protected:
-	virtual Size measureOverride(const Size& constraint) override;
-	virtual Size arrangeOverride(const Size& finalSize) override;
-	virtual void onUpdateFrame(float elapsedSeconds) override;
-	virtual void onRender(UIRenderingContext* context) override;
-
-private:
-	Ref<RTDocument> m_document;
-	//Ref<detail::FlexText> m_flexText;
-	float m_typingSpeed;
 };
 
 } // namespace ln

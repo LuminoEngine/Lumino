@@ -95,21 +95,21 @@ void UIViewport::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 	}
 }
 
-Size UIViewport::arrangeOverride(const Size& finalSize)
+Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     // TODO: tmp
     for (auto& rv : m_renderViews) {
         rv->setActualSize(finalSize);
     }
     m_actualViewboxSize = finalSize;
-    return UIContainerElement::arrangeOverride(finalSize);
+    return UIContainerElement::arrangeOverride(layoutContext, finalSize);
 }
 
 
-void UIViewport::onUpdateLayout(const Rect& finalGlobalRect)
+void UIViewport::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
 {
 	for (auto& view : m_renderViews) {
-		view->updateUILayout(finalGlobalRect);
+		view->updateUILayout(layoutContext, finalGlobalRect);
 		// TODO: view box
 		view->setActualScreenOffset(Point(finalGlobalRect.x, finalGlobalRect.y));
 	}

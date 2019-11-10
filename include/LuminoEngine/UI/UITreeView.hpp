@@ -23,8 +23,8 @@ protected:
     // UIElement interface
     virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
-	virtual Size measureOverride(const Size& constraint) override;
-	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -60,7 +60,7 @@ protected:
     // base interface
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
     UITreeView();

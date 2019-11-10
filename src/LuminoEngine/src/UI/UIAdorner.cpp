@@ -59,14 +59,14 @@ void UIAdornerLayer::updateStyleHierarchical(const UIStyleContext* styleContext,
     }
 }
 
-void UIAdornerLayer::measureLayout(const Size& availableSize)
+void UIAdornerLayer::measureLayout(UILayoutContext* layoutContext, const Size& availableSize)
 {
     for (auto& adorner : m_adorners) {
-        adorner->measureLayout(availableSize);
+        adorner->measureLayout(layoutContext, availableSize);
     }
 }
 
-void UIAdornerLayer::arrangeLayout(const Rect& localSlotRect)
+void UIAdornerLayer::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)
 {
     for (auto& adorner : m_adorners) {
 		Rect adornedRect = localSlotRect;
@@ -78,11 +78,11 @@ void UIAdornerLayer::arrangeLayout(const Rect& localSlotRect)
 
         //auto adornedRect = adorner->adornedElement()->m_finalGlobalRect;
 
-        adorner->arrangeLayout(Rect(0, 0, adornedRect.width, adornedRect.height));
+        adorner->arrangeLayout(layoutContext, Rect(0, 0, adornedRect.width, adornedRect.height));
         // TODO: 以下、adorner の中にまとめたほうがいい気がする。というか、measure->arrange->updateFinal 一連をひとつのメソッドでまとめていいと思う。adornder 同士は相互作用しないし
         //adorner->updateFinalRects(adorner->adornedElement()->m_finalGlobalRect);
         //adorner->content()->updateFinalLayoutHierarchical(adorner->adornedElement()->m_finalGlobalRect);
-        adorner->updateFinalLayoutHierarchical(adornedRect);
+        adorner->updateFinalLayoutHierarchical(layoutContext, adornedRect);
     }
 }
 

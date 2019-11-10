@@ -190,13 +190,13 @@ void UIControl::unregisterActiveTimer(UIActiveTimer* timer)
 	detail::EngineDomain::uiManager()->unregisterActiveTimer(timer);
 }
 
-Size UIControl::measureOverride(const Size& constraint)
+Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     if (m_aligned3x3GridLayoutArea) {
         // 論理子要素の領域 (content area)
-		Size childrenAreaSize = detail::LayoutHelper::UIFrameLayout_staticMeasureChildrenAreaSize(m_logicalChildren, constraint);//UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
+		Size childrenAreaSize = detail::LayoutHelper::UIFrameLayout_staticMeasureChildrenAreaSize(layoutContext, m_logicalChildren, constraint);//UIFrameLayout2::staticMeasureChildrenAreaSize(m_logicalChildren, constraint);
         // Inline 要素も含めた領域 (client area)
-        Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(m_inlineElements, constraint, childrenAreaSize);
+        Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(layoutContext, m_inlineElements, constraint, childrenAreaSize);
         // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
         return detail::LayoutHelper::measureElement(this, constraint, clientAreaSize);
     }
@@ -221,23 +221,23 @@ Size UIControl::measureOverride(const Size& constraint)
         //       return Size::max(layoutSize, localSize);
            //}
            //else {
-        return UIFrameLayout2::staticMeasureOverride(this, constraint);
+        return UIFrameLayout2::staticMeasureOverride(layoutContext, this, constraint);
 
         //}
     }
 
 }
 
-Size UIControl::arrangeOverride(const Size& finalSize)
+Size UIControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     if (m_aligned3x3GridLayoutArea) {
         // padding, border を考慮した領域を計算
         Rect clientArea = detail::LayoutHelper::arrangeClientArea(this, finalSize);
         // Inline 要素を arrange & 論理子要素の領域 (content area) を計算
         Rect contentArea;
-        m_aligned3x3GridLayoutArea->arrange(m_inlineElements, clientArea, &contentArea);
+        m_aligned3x3GridLayoutArea->arrange(layoutContext, m_inlineElements, clientArea, &contentArea);
         // 論理子要素を arrange
-		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
+		detail::LayoutHelper::UIFrameLayout_staticArrangeChildrenArea(layoutContext, this, m_logicalChildren, contentArea);
         //UIFrameLayout2::staticArrangeChildrenArea(this, m_logicalChildren, contentArea);
 
         return finalSize;
@@ -276,7 +276,7 @@ Size UIControl::arrangeOverride(const Size& finalSize)
         ////else {
         //	return UIFrameLayout2::staticArrangeOverride(this, contentSlotRect.getSize());
         ////}
-        return UIFrameLayout2::staticArrangeOverride(this, finalSize);
+        return UIFrameLayout2::staticArrangeOverride(layoutContext, this, finalSize);
     }
 }
 
@@ -299,12 +299,12 @@ void  UIAligned3x3GridLayoutArea::init()
     Object::init();
 }
 
-Size UIAligned3x3GridLayoutArea::measure(const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize)
+Size UIAligned3x3GridLayoutArea::measure(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize)
 {
     for (int i = 0; i < inlineElements.size(); i++)
     {
         UIElement* child = inlineElements[i];
-        child->measureLayout(constraint);
+        child->measureLayout(layoutContext, constraint);
         const Size& childDesiredSize = child->getLayoutDesiredSize();
 
         int row, column, rowSpan, columnSpan;
@@ -342,7 +342,7 @@ Size UIAligned3x3GridLayoutArea::measure(const List<Ref<UIElement>>& inlineEleme
     return Size(m_columns[2].desiredLastOffset, m_rows[2].desiredLastOffset);
 }
 
-void UIAligned3x3GridLayoutArea::arrange(const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect)
+void UIAligned3x3GridLayoutArea::arrange(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect)
 {
     LN_CHECK(outActualContentRect);
 
@@ -381,7 +381,7 @@ void UIAligned3x3GridLayoutArea::arrange(const List<Ref<UIElement>>& inlineEleme
             rect.width += m_columns[column + i].actualSize;
         }
 
-        child->arrangeLayout(rect);
+        child->arrangeLayout(layoutContext, rect);
     }
 
     // content area (呼び出し側でレイアウトするのに使う)

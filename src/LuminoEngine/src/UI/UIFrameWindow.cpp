@@ -220,6 +220,7 @@ UIFrameWindow::UIFrameWindow()
 	: m_autoDisposePlatformWindow(true)
 	, m_updateMode(UIFrameWindowUpdateMode::Polling)
 	, m_ImGuiLayerEnabled(false)
+    , m_layoutContext(makeObject<UILayoutContext>())
 {
 }
 
@@ -356,9 +357,11 @@ SwapChain* UIFrameWindow::swapChain() const
 void UIFrameWindow::updateLayoutTree()
 {
 	if (m_renderView) {
+        m_layoutContext->m_dpiScale = platformWindow()->dpiFactor();
+
 		Rect clientRect(0, 0, m_clientSize);
 		m_renderView->setActualSize(m_clientSize);
-		m_renderView->updateUILayout(clientRect);
+		m_renderView->updateUILayout(m_layoutContext, clientRect);
 	}
 	//updateLayout(clientRect);
  //   updateFinalLayoutHierarchical(clientRect);
@@ -370,9 +373,9 @@ void UIFrameWindow::updateLayoutTree()
 }
 
 // 強制的にウィンドウサイズとする
-Size UIFrameWindow::measureOverride(const Size& constraint)
+Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	UIContainerElement::measureOverride(constraint);
+	UIContainerElement::measureOverride(layoutContext, constraint);
 
 	// TODO: DPI チェック
 	return m_clientSize;
@@ -388,9 +391,9 @@ Size UIFrameWindow::measureOverride(const Size& constraint)
 }
 
 // 強制的にウィンドウサイズとする
-Size UIFrameWindow::arrangeOverride(const Size& finalSize)
+Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-	return UIContainerElement::arrangeOverride(desiredSize());
+	return UIContainerElement::arrangeOverride(layoutContext, desiredSize());
 	//int childCount = logicalChildren().size();
 	//for (int i = 0; i < childCount; i++)
 	//{

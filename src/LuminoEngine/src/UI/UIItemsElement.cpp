@@ -47,14 +47,14 @@ void UICollectionItem::onUnselected(UIEventArgs* e)
 {
 }
 
-Size UICollectionItem::measureOverride(const Size& constraint)
+Size UICollectionItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    return UIControl::measureOverride(constraint);
+    return UIControl::measureOverride(layoutContext, constraint);
 }
 
-Size UICollectionItem::arrangeOverride(const Size& finalSize)
+Size UICollectionItem::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    return UIControl::arrangeOverride(finalSize);
+    return UIControl::arrangeOverride(layoutContext, finalSize);
 }
 
 void UICollectionItem::onRoutedEvent(UIEventArgs* e)
@@ -217,30 +217,30 @@ void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const det
 	//}
 }
 
-Size UIItemsControl::measureOverride(const Size& constraint)
+Size UIItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     if (m_itemssHostLayout) {
-        m_itemssHostLayout->measureLayout(constraint);
+        m_itemssHostLayout->measureLayout(layoutContext, constraint);
         Size layoutSize = m_itemssHostLayout->desiredSize();
-        Size localSize = UIElement::measureOverride(constraint);
+        Size localSize = UIElement::measureOverride(layoutContext, constraint);
         return Size::max(layoutSize, localSize);
     }
     else {
-        return UIControl::measureOverride(constraint);
+        return UIControl::measureOverride(layoutContext, constraint);
     }
 }
 
-Size UIItemsControl::arrangeOverride(const Size& finalSize)
+Size UIItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     Rect contentSlotRect(0, 0, finalSize);
     contentSlotRect = contentSlotRect.makeDeflate(finalStyle()->padding);
 
     if (m_itemssHostLayout) {
-        m_itemssHostLayout->arrangeLayout(contentSlotRect);
+        m_itemssHostLayout->arrangeLayout(layoutContext, contentSlotRect);
     	return finalSize;
     }
     else {
-        return UIControl::arrangeOverride(finalSize);
+        return UIControl::arrangeOverride(layoutContext, finalSize);
     }
 }
 

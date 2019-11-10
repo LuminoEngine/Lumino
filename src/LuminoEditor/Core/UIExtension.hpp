@@ -6,8 +6,8 @@ class NavigationMenuItem
 	: public UIIcon
 {
 protected:
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
     NavigationMenuItem();

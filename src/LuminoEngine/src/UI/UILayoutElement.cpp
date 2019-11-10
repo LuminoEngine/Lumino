@@ -35,7 +35,7 @@ void UILayoutElement::init(const detail::UIStyleInstance* finalStyle)
 	m_finalStyle = finalStyle;
 }
 
-void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
+void UILayoutElement::updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
 {
     Size itemSize(m_finalStyle->width, m_finalStyle->height);// = //getLayoutSize();
 	Size size(
@@ -46,16 +46,16 @@ void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
 	// TODO: 例外の方が良いかも？
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
-	measureLayout(size);
-	arrangeLayout(parentFinalGlobalRect);
+	measureLayout(layoutContext, size);
+	arrangeLayout(layoutContext, parentFinalGlobalRect);
 }
 
-void UILayoutElement::measureLayout(const Size& availableSize)
+void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& availableSize)
 {
 	Size outerSpace = m_finalStyle->actualOuterSpace();
 	Size localAvailableSize(std::max(availableSize.width - outerSpace.width, 0.0f), std::max(availableSize.height - outerSpace.height, 0.0f));
 	
-	Size desiredSize = measureOverride(localAvailableSize);
+	Size desiredSize = measureOverride(layoutContext, localAvailableSize);
 
 	desiredSize.width += outerSpace.width;
 	desiredSize.height += outerSpace.height;
@@ -63,7 +63,7 @@ void UILayoutElement::measureLayout(const Size& availableSize)
 	setLayoutDesiredSize(desiredSize);
 }
 
-void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
+void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)
 {
 	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
 	// 要素に直接設定されているサイズよりも大きいこともある。
@@ -124,7 +124,7 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	//Size contentAreaSize(
 	//	std::max(arrangeRect.width - padding.getWidth(), 0.0f),
 	//	std::max(arrangeRect.height - padding.getHeight(), 0.0f));
-	Size finalContentAreaSize = arrangeOverride(contentAreaSize);
+	Size finalContentAreaSize = arrangeOverride(layoutContext, contentAreaSize);
 
     
 
@@ -145,7 +145,7 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 
 }
 
-void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
+void UILayoutElement::updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
 {
 	//Rect localRenderRect = getLayoutFinalLocalRect();
 
@@ -167,7 +167,7 @@ void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
 
 	setLayoutFinalGlobalRect(finalGlobalRect);
 
-    onUpdateLayout(finalGlobalRect);
+    onUpdateLayout(layoutContext, finalGlobalRect);
 
 	// update children
 	//Rect finalGlobalContentRect(
@@ -193,7 +193,7 @@ void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
 
 }
 
-Size UILayoutElement::measureOverride(const Size& constraint)
+Size UILayoutElement::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
 	// ユーザー指定のサイズがある場合はそれを返す。
@@ -202,12 +202,12 @@ Size UILayoutElement::measureOverride(const Size& constraint)
 	return detail::LayoutHelper::measureElement(this, constraint, Size::Zero);
 }
 
-Size UILayoutElement::arrangeOverride(const Size& finalSize)
+Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 	return finalSize;
 }
 
-void UILayoutElement::onUpdateLayout(const Rect& finalGlobalRect)
+void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
 {
 }
 

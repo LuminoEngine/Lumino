@@ -26,8 +26,8 @@ protected:
 	virtual void onUnselected(UIEventArgs* e);
 
     // base interface
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -72,8 +72,8 @@ protected:
 
 	// base interfaces
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIItemsControl();

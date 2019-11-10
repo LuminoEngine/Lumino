@@ -78,6 +78,21 @@ private:
 };
 
 
+class UILayoutContext
+    : public Object
+{
+public:
+    float dpiScale() const { return m_dpiScale; }
+    
+LN_CONSTRUCT_ACCESS:
+    UILayoutContext();
+    void init();
+
+private:
+    float m_dpiScale;
+    friend class UIFrameWindow;
+};
+
 
 
 LN_CLASS()
@@ -375,7 +390,7 @@ public:	// TODO: internal protected
 
         Note: レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は NaN や Inf が含まれることがある。
     */
-    virtual Size measureOverride(const Size& constraint);
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 
     /**
         @brief		Visual 子要素の配置を確定し、この要素の最終サイズを返します。
@@ -388,7 +403,7 @@ public:	// TODO: internal protected
                     親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
                     そうでない場合、子要素はレンダリングされません。(UIElement::arrangeOverride() は、子要素の配置は行いません)
     */
-    virtual Size arrangeOverride(const Size& finalSize);
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 
 	/** この要素内の子ビジュアル要素の数を取得します。 */
@@ -412,13 +427,13 @@ public:	// TODO: internal protected
 
     virtual bool onHitTest(const Point& frameClientPosition);
 
-	virtual void updateFinalRects(const Rect& parentFinalGlobalRect);
+	virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
     bool isMouseHover() const;
 
     // TODO: internal
 	void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
-    void updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect);
+    void updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
     virtual void render(UIRenderingContext* context);
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }

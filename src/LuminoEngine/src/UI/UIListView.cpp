@@ -111,14 +111,14 @@ void UIListView::onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e)
     }
 }
 
-Size UIListView::measureOverride(const Size& constraint)
+Size UIListView::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    return UIItemsControl::measureOverride(constraint);
+    return UIItemsControl::measureOverride(layoutContext, constraint);
 }
 
-Size UIListView::arrangeOverride(const Size& finalSize)
+Size UIListView::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    return UIItemsControl::arrangeOverride(finalSize);
+    return UIItemsControl::arrangeOverride(layoutContext, finalSize);
 }
 
 void UIListView::addItemInternal(UIListViewItem* item)

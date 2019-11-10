@@ -10,6 +10,7 @@ class Texture;
 class Shader;
 class AbstractMaterial;
 class UIStyle;
+class UILayoutContext;
 namespace detail { class LayoutHelper; }
 
 
@@ -113,7 +114,7 @@ public:	// TODO: internal
 	void init(const detail::UIStyleInstance* finalStyle);
 
 	// 基本的にルート要素のみ呼び出すべき
-	void updateLayout(const Rect& parentFinalGlobalRect);
+	void updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
 
 
@@ -131,19 +132,19 @@ public:	// TODO: internal
 protected:
 	virtual ~UILayoutElement();
 
-	virtual Size measureOverride(const Size& constraint);
-	virtual Size arrangeOverride(const Size& finalSize);
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint);
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize);
 
 	//virtual int getChildLayoutItemCount() const = 0;
 	//virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
 
 
-	virtual void onUpdateLayout(const Rect& finalGlobalRect);
+	virtual void onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect);
 
 public:	//TODO: internal
-	void measureLayout(const Size& availableSize);
-	void arrangeLayout(const Rect& localSlotRect);
-	virtual void updateFinalRects(const Rect& parentFinalGlobalRect);
+	void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
+	void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
+	virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
 	//const Size& getLayoutSize() const { return m_layoutSize; }
 	void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
@@ -337,13 +338,13 @@ public:
 
 	template<class TUIElementList>
 	//Size UIFrameLayout_staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint)
-	static Size UIFrameLayout_staticMeasureChildrenAreaSize(const TUIElementList& elements, const Size& constraint)
+	static Size UIFrameLayout_staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, const TUIElementList& elements, const Size& constraint)
 	{
 		Size childMaxSize(0, 0);
 		for (int i = 0; i < elements->size(); i++)
 		{
 			auto& child = elements->at(i);
-			child->measureLayout(constraint);
+			child->measureLayout(layoutContext, constraint);
 			const Size& desiredSize = child->desiredSize();
 			childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
 			childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
@@ -352,7 +353,7 @@ public:
 	}
 
 	template<class TElement, class TUIElementList>
-	static Size UIFrameLayout_staticArrangeChildrenArea(TElement* ownerElement, const TUIElementList& elements, const Rect& finalArea)
+	static Size UIFrameLayout_staticArrangeChildrenArea(UILayoutContext* layoutContext, TElement* ownerElement, const TUIElementList& elements, const Rect& finalArea)
 	{
 		for (int i = 0; i < elements->size(); i++)
 		{
@@ -361,7 +362,7 @@ public:
 			Rect slotRect;
 			detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
 
-			child->arrangeLayout(slotRect);
+			child->arrangeLayout(layoutContext, slotRect);
 		}
 		return finalArea.getSize();
 	}

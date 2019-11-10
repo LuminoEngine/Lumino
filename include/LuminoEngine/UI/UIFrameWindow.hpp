@@ -93,8 +93,8 @@ public:
 	void setImGuiLayerEnabled(bool value) { m_ImGuiLayerEnabled = value; }
 
 protected:
-	virtual Size measureOverride(const Size& constraint) override;
-	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 	//virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	//virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
     virtual void onRender(UIRenderingContext* context) override;
@@ -114,6 +114,7 @@ public:  // TODO: internal
 	//detail::UIManager* m_manager;
 	Ref<detail::PlatformWindow>	m_platformWindow;
     Ref<detail::UIInputInjector> m_inputInjector;
+    Ref<UILayoutContext> m_layoutContext;
     //Ref<GraphicsContext> m_graphicsContext;
 	GraphicsContext* m_renderingGraphicsContext;
 	Ref<SwapChain>	m_swapChain;

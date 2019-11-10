@@ -82,7 +82,7 @@ void UISplitter::onUpdateStyle(const UIStyleContext* styleContext, const detail:
     return UIControl::onUpdateStyle(styleContext, finalStyle);
 }
 
-Size UISplitter::measureOverride(const Size& constraint)
+Size UISplitter::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	// Create missing cells.
 	auto& children = logicalChildren();
@@ -94,7 +94,7 @@ Size UISplitter::measureOverride(const Size& constraint)
     Size childrenSize;
     for (int iChild = 0; iChild < children->size(); iChild++) {
         auto& child = children->at(iChild);
-        child->measureLayout(constraint);
+        child->measureLayout(layoutContext, constraint);
         const Size& childDesiredSize = child->desiredSize();
 
         int cellIndex = getGridLayoutInfo()->layoutRow;
@@ -124,15 +124,15 @@ Size UISplitter::measureOverride(const Size& constraint)
     else
         childrenSize.height += m_thumbs.size() * ThumbWidth;
 	for (auto& thumb : m_thumbs) {
-		thumb->measureLayout(constraint);
+		thumb->measureLayout(layoutContext, constraint);
 	}
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::measureOverride(constraint);
+    Size selfSize = UIElement::measureOverride(layoutContext, constraint);
     return Size::max(selfSize, childrenSize);
 }
 
-Size UISplitter::arrangeOverride(const Size& finalSize)
+Size UISplitter::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     float boundSize = 0.0f;
     if (isHorizontal())
@@ -210,7 +210,7 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             if (cellIndex < 0) cellIndex = iChild;
             auto& cell = m_cellDefinitions[cellIndex];
             Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
-            child->arrangeLayout(childRect);
+            child->arrangeLayout(layoutContext, childRect);
         }
     }
     else {
@@ -220,7 +220,7 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
             if (cellIndex < 0) cellIndex = iChild;
             auto& cell = m_cellDefinitions[cellIndex];
             Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
-            child->arrangeLayout(childRect);
+            child->arrangeLayout(layoutContext, childRect);
         }
     }
 
@@ -234,11 +234,11 @@ Size UISplitter::arrangeOverride(const Size& finalSize)
 		else {
 			rect = Rect(0, cell.actualOffset + cell.actualSize, finalSize.width, thumb->desiredSize().height);
 		}
-		thumb->arrangeLayout(rect);
+		thumb->arrangeLayout(layoutContext, rect);
 	}
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::arrangeOverride(finalSize);
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
     return selfSize;
 }
 

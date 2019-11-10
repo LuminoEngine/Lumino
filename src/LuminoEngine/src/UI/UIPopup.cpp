@@ -83,21 +83,21 @@ void UIPopupAdorner::init(UIElement* adornedElement, UIPopup* popup)
     //addVisualChild(m_popup);
 }
 
-Size UIPopupAdorner::measureOverride(const Size& constraint)
+Size UIPopupAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    m_popup->measureLayout(constraint);
-    return Size::max(m_popup->desiredSize(), UIElement::measureOverride(constraint));
+    m_popup->measureLayout(layoutContext, constraint);
+    return Size::max(m_popup->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
 }
 
-Size UIPopupAdorner::arrangeOverride(const Size& finalSize)
+Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    UIElement::arrangeOverride(finalSize);
+    UIElement::arrangeOverride(layoutContext, finalSize);
 
 	switch (m_popup->placementMode())
 	{
 		case PlacementMode::Bottom:
 			// TODO: 簡易 bottom
-			m_popup->arrangeLayout(Rect(0, finalSize.height, finalSize));
+			m_popup->arrangeLayout(layoutContext, Rect(0, finalSize.height, finalSize));
 			break;
 
 		default:	// overray
@@ -108,7 +108,7 @@ Size UIPopupAdorner::arrangeOverride(const Size& finalSize)
 			rect.y = (finalSize.height - desiredSize.height) / 2;
 			rect.width = desiredSize.width;
 			rect.height = desiredSize.height;
-			m_popup->arrangeLayout(rect);
+			m_popup->arrangeLayout(layoutContext, rect);
 			break;
 		}
 	}
@@ -116,9 +116,9 @@ Size UIPopupAdorner::arrangeOverride(const Size& finalSize)
     return finalSize;
 }
 
-void UIPopupAdorner::onUpdateLayout(const Rect& finalGlobalRect)
+void UIPopupAdorner::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
 {
-    m_popup->updateFinalLayoutHierarchical(finalGlobalRect);
+    m_popup->updateFinalLayoutHierarchical(layoutContext, finalGlobalRect);
 }
 
 void UIPopupAdorner::render(UIRenderingContext* context)

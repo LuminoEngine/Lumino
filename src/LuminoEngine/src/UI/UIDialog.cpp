@@ -83,15 +83,15 @@ void UIDialogAdorner::onRoutedEvent(UIEventArgs* e)
 	return UIAdorner::onRoutedEvent(e);
 }
 
-Size UIDialogAdorner::measureOverride(const Size& constraint)
+Size UIDialogAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    m_popup->measureLayout(constraint);
-    return Size::max(m_popup->desiredSize(), UIElement::measureOverride(constraint));
+    m_popup->measureLayout(layoutContext, constraint);
+    return Size::max(m_popup->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
 }
 
-Size UIDialogAdorner::arrangeOverride(const Size& finalSize)
+Size UIDialogAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    UIElement::arrangeOverride(finalSize);
+    UIElement::arrangeOverride(layoutContext, finalSize);
 
 	auto desiredSize = m_popup->desiredSize();
 	Rect rect;
@@ -99,14 +99,14 @@ Size UIDialogAdorner::arrangeOverride(const Size& finalSize)
 	rect.y = (finalSize.height - desiredSize.height) / 2;
 	rect.width = desiredSize.width;
 	rect.height = desiredSize.height;
-	m_popup->arrangeLayout(rect);
+	m_popup->arrangeLayout(layoutContext, rect);
 
     return finalSize;
 }
 
-void UIDialogAdorner::onUpdateLayout(const Rect& finalGlobalRect)
+void UIDialogAdorner::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
 {
-    m_popup->updateFinalLayoutHierarchical(finalGlobalRect);
+    m_popup->updateFinalLayoutHierarchical(layoutContext, finalGlobalRect);
 }
 
 UIElement* UIDialogAdorner::lookupMouseHoverElement(const Point& frameClientPosition)
@@ -119,7 +119,7 @@ UIElement* UIDialogAdorner::lookupMouseHoverElement(const Point& frameClientPosi
 		}
 	}
 
-	UIAdorner::lookupMouseHoverElement(frameClientPosition);
+	return UIAdorner::lookupMouseHoverElement(frameClientPosition);
 }
 
 void UIDialogAdorner::render(UIRenderingContext* context)

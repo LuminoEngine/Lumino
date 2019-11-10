@@ -11,7 +11,7 @@ public:
 	void setIconName(const StringRef& value);
 
 protected:
-	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual void onRender(UIRenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:

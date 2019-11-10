@@ -158,8 +158,8 @@ protected:
 	virtual const String& elementName() const  override { static String name = u"UITrack"; return name; }
 
 	// UIElement interface
-	virtual Size measureOverride(const Size& constraint) override;
-	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 private:
 	void coerceLength(float& componentLength, float trackLength);
@@ -246,8 +246,8 @@ LN_CONSTRUCT_ACCESS:
 protected:
     // UIElement interface
     virtual void onRoutedEvent(UIEventArgs* e) override;
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 private:
     void updateValue(float horizontalDragDelta, float verticalDragDelta);
@@ -278,8 +278,8 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
     // UIElement interface
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
     // UIControl interface

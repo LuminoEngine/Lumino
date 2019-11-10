@@ -28,6 +28,7 @@
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
+#include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode

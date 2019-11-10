@@ -19,6 +19,19 @@
 namespace ln {
 
 //==============================================================================
+// UILayoutContext
+
+UILayoutContext::UILayoutContext()
+    : m_dpiScale(1.0f)
+{
+}
+
+void UILayoutContext::init()
+{
+    Object::init();
+}
+
+//==============================================================================
 // UIViewModel
 
 void UIViewModel::notify(const StringRef& propertyName)
@@ -648,13 +661,13 @@ void UIElement::onUpdateStyle(const UIStyleContext* styleContext, const detail::
 //{
 //}
 
-Size UIElement::measureOverride(const Size& constraint)
+Size UIElement::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	// Note: Web は padding が大きくなると、要素のサイズ自体も大きくなる。というより、
 	// Web: width,height はコンテンツエリアのサイズ。
 	// WPF: width,height は margin の内側のエリアのサイズ。
 
-	auto size = UILayoutElement::measureOverride(constraint);
+	auto size = UILayoutElement::measureOverride(layoutContext, constraint);
     //size.width += m_finalStyle->borderThickness.width();
     //size.height += m_finalStyle->borderThickness.height();
 
@@ -666,9 +679,9 @@ Size UIElement::measureOverride(const Size& constraint)
     return size;
 }
 
-Size UIElement::arrangeOverride(const Size& finalSize)
+Size UIElement::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-	return UILayoutElement::arrangeOverride(finalSize);
+	return UILayoutElement::arrangeOverride(layoutContext, finalSize);
 }
 
 void UIElement::onRender(UIRenderingContext* context)
@@ -720,14 +733,14 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	invalidate(detail::UIElementDirtyFlags::Layout, true);
 }
 
-void UIElement::updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect)
+void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
 {
-    updateFinalRects(parentFinalGlobalRect);
+    updateFinalRects(layoutContext, parentFinalGlobalRect);
 
     // child elements
     int count = getVisualChildrenCount();
     for (int i = 0; i < count; i++) {
-        getVisualChild(i)->updateFinalLayoutHierarchical(m_finalGlobalRect);
+        getVisualChild(i)->updateFinalLayoutHierarchical(layoutContext, m_finalGlobalRect);
     }
 
 	m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
@@ -862,9 +875,9 @@ bool UIElement::onHitTest(const Point& frameClientPosition)
     }
 }
 
-void UIElement::updateFinalRects(const Rect& parentFinalGlobalRect)
+void UIElement::updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
 {
-	UILayoutElement::updateFinalRects(parentFinalGlobalRect);
+	UILayoutElement::updateFinalRects(layoutContext, parentFinalGlobalRect);
 
 	{
 		m_combinedFinalRenderTransform = Matrix::makeTranslation(-centerPoint());

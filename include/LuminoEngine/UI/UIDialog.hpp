@@ -34,9 +34,9 @@ class UIDialogAdorner
 {
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
-    virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual void onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect) override;
 	virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
     virtual void render(UIRenderingContext* context) override;
 

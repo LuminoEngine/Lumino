@@ -149,8 +149,8 @@ protected:
 	///** 子ビジュアル要素を取得します。奥にある要素が先、手前にある要素が後になります。(Zオーダーやアクティブ状態の考慮は実装側で行うこと) */
 	//virtual UIElement* getVisualChild(int index) const;
 
-	virtual Size measureOverride(const Size& constraint) override;
-	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
     virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
 
@@ -176,8 +176,8 @@ class UIAligned3x3GridLayoutArea
     : public Object
 {
 public:
-    Size measure(const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize);
-    void arrange(const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect);
+    Size measure(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Size& constraint, const Size& contentDesiredSize);
+    void arrange(UILayoutContext* layoutContext, const List<Ref<UIElement>>& inlineElements, const Rect& finalArea, Rect* outActualContentRect);
 
 LN_CONSTRUCT_ACCESS:
     UIAligned3x3GridLayoutArea();

@@ -176,12 +176,12 @@ void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const det
     //}
 }
 
-void UIRenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+void UIRenderView::onUpdateUILayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
 {
-    rootElement()->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));
-    rootElement()->updateFinalLayoutHierarchical(finalGlobalRect);
-    adornerLayer()->measureLayout(finalGlobalRect.getSize());
-    adornerLayer()->arrangeLayout(finalGlobalRect);
+    rootElement()->updateLayout(layoutContext, Rect(0, 0, finalGlobalRect.getSize()));
+    rootElement()->updateFinalLayoutHierarchical(layoutContext, finalGlobalRect);
+    adornerLayer()->measureLayout(layoutContext, finalGlobalRect.getSize());
+    adornerLayer()->arrangeLayout(layoutContext, finalGlobalRect);
 
     //if (m_dialog) {
     //    m_dialog->updateLayout(Rect(0, 0, finalGlobalRect.getSize()));

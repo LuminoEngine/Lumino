@@ -291,15 +291,15 @@ UIThumb* UITrack::getThumb() const
 	return m_thumb;
 }
 
-Size UITrack::measureOverride(const Size& constraint)
+Size UITrack::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	m_decreaseButton->measureLayout(constraint);
-	m_thumb->measureLayout(constraint);
-	m_increaseButton->measureLayout(constraint);
-	return UIElement::measureOverride(constraint);
+	m_decreaseButton->measureLayout(layoutContext, constraint);
+	m_thumb->measureLayout(layoutContext, constraint);
+	m_increaseButton->measureLayout(layoutContext, constraint);
+	return UIElement::measureOverride(layoutContext, constraint);
 }
 
-Size UITrack::arrangeOverride(const Size& finalSize)
+Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 	float decreaseButtonLength;
 	float thumbLength;
@@ -325,21 +325,21 @@ Size UITrack::arrangeOverride(const Size& finalSize)
 		{
 			rect.x = 0.0f;
 			rect.width = decreaseButtonLength;
-			m_decreaseButton->arrangeLayout(rect);
+			m_decreaseButton->arrangeLayout(layoutContext, rect);
 		}
 		// Thumb
 		if (m_thumb != nullptr)
 		{
 			rect.x = decreaseButtonLength;
 			rect.width = thumbLength;
-			m_thumb->arrangeLayout(rect);
+			m_thumb->arrangeLayout(layoutContext, rect);
 		}
 		// PageDown Button
 		if (m_increaseButton != nullptr)
 		{
 			rect.x = decreaseButtonLength + thumbLength;
 			rect.width = increaseButtonLength;
-			m_increaseButton->arrangeLayout(rect);
+			m_increaseButton->arrangeLayout(layoutContext, rect);
 		}
 	}
 	else
@@ -351,21 +351,21 @@ Size UITrack::arrangeOverride(const Size& finalSize)
 		{
 			rect.y = 0.0f;
 			rect.height = decreaseButtonLength;
-			m_decreaseButton->arrangeLayout(rect);
+			m_decreaseButton->arrangeLayout(layoutContext, rect);
 		}
 		// Thumb
 		if (m_thumb != nullptr)
 		{
 			rect.y = decreaseButtonLength;
 			rect.height = thumbLength;
-			m_thumb->arrangeLayout(rect);
+			m_thumb->arrangeLayout(layoutContext, rect);
 		}
 		// PageDown Button
 		if (m_increaseButton != nullptr)
 		{
 			rect.y = decreaseButtonLength + thumbLength;
 			rect.height = increaseButtonLength;
-			m_increaseButton->arrangeLayout(rect);
+			m_increaseButton->arrangeLayout(layoutContext, rect);
 		}
 	}
 
@@ -611,24 +611,24 @@ void UIScrollBar::onRoutedEvent(UIEventArgs* e)
     UIElement::onRoutedEvent(e);
 }
 
-Size UIScrollBar::measureOverride(const Size& constraint)
+Size UIScrollBar::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     if (m_track) {
-        m_track->measureLayout(constraint);
+        m_track->measureLayout(layoutContext, constraint);
     }
 
     if (m_lineUpButton) {
-        m_lineUpButton->measureLayout(constraint);
+        m_lineUpButton->measureLayout(layoutContext, constraint);
     }
 
     if (m_lineDownButton) {
-        m_lineDownButton->measureLayout(constraint);
+        m_lineDownButton->measureLayout(layoutContext, constraint);
     }
 
-    return UIElement::measureOverride(constraint);
+    return UIElement::measureOverride(layoutContext, constraint);
 }
 
-Size UIScrollBar::arrangeOverride(const Size& finalSize)
+Size UIScrollBar::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     Size upSize;
     Size downSize;
@@ -640,24 +640,24 @@ Size UIScrollBar::arrangeOverride(const Size& finalSize)
         if (m_lineUpButton) {
             upSize = m_lineUpButton->desiredSize();
             downSize = m_lineUpButton->desiredSize();
-            m_lineUpButton->arrangeLayout(Rect(0, 0, upSize.width, finalSize.height));
+            m_lineUpButton->arrangeLayout(layoutContext, Rect(0, 0, upSize.width, finalSize.height));
         }
         if (m_lineDownButton) {
-            m_lineDownButton->arrangeLayout(Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
+            m_lineDownButton->arrangeLayout(layoutContext, Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
         }
         if (m_track) {
-            m_track->arrangeLayout(Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
+            m_track->arrangeLayout(layoutContext, Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
         }
         break;
     case Orientation::Vertical:
         if (m_track) {
-            m_track->arrangeLayout(Rect(0, 0, finalSize));
+            m_track->arrangeLayout(layoutContext, Rect(0, 0, finalSize));
         }
         if (m_lineUpButton) {
-            m_lineUpButton->arrangeLayout(Rect(0, 0, finalSize.width, m_lineUpButton->desiredSize().height));
+            m_lineUpButton->arrangeLayout(layoutContext, Rect(0, 0, finalSize.width, m_lineUpButton->desiredSize().height));
         }
         if (m_lineDownButton) {
-            m_lineDownButton->arrangeLayout(Rect(0, finalSize.height - m_lineDownButton->desiredSize().height, finalSize.width, m_lineDownButton->desiredSize().height));
+            m_lineDownButton->arrangeLayout(layoutContext, Rect(0, finalSize.height - m_lineDownButton->desiredSize().height, finalSize.width, m_lineDownButton->desiredSize().height));
         }
         break;
     default:
@@ -665,7 +665,7 @@ Size UIScrollBar::arrangeOverride(const Size& finalSize)
         break;
     }
 
-    return UIElement::arrangeOverride(finalSize);
+    return UIElement::arrangeOverride(layoutContext, finalSize);
 }
 
 void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta)
@@ -750,23 +750,23 @@ void UIScrollViewer::init()
     //m_verticalScrollBar->setVerticalAlignment(VAlignment::Stretch);
 }
 
-Size UIScrollViewer::measureOverride(const Size& constraint)
+Size UIScrollViewer::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    Size desiredSize = UIControl::measureOverride(constraint);
+    Size desiredSize = UIControl::measureOverride(layoutContext, constraint);
 
     if (m_verticalScrollBar) {
-        m_verticalScrollBar->measureLayout(constraint);
+        m_verticalScrollBar->measureLayout(layoutContext, constraint);
         desiredSize.width += m_verticalScrollBar->desiredSize().width;
     }
     if (m_horizontalScrollBar) {
-        m_horizontalScrollBar->measureLayout(constraint);
+        m_horizontalScrollBar->measureLayout(layoutContext, constraint);
         desiredSize.height += m_horizontalScrollBar->desiredSize().height;
     }
 
     return desiredSize;
 }
 
-Size UIScrollViewer::arrangeOverride(const Size& finalSize)
+Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 	Rect rc;
 	float barWidth = 0;
@@ -777,7 +777,7 @@ Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 		rc.height = barHeight;
 		rc.x = 0;
 		rc.y = finalSize.height - barHeight;
-		m_horizontalScrollBar->arrangeLayout(rc);
+		m_horizontalScrollBar->arrangeLayout(layoutContext, rc);
 		barWidth = m_horizontalScrollBar->m_actualSize.width;
 	}
 
@@ -786,7 +786,7 @@ Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 		rc.height = finalSize.height - barHeight;
 		rc.x = finalSize.width - barWidth;
 		rc.y = 0;
-		m_verticalScrollBar->arrangeLayout(rc);
+		m_verticalScrollBar->arrangeLayout(layoutContext, rc);
 		barHeight = m_verticalScrollBar->m_actualSize.height;
 	}
 
@@ -794,7 +794,7 @@ Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 
 
     Size childArea(finalSize.width - barWidth, finalSize.height - barHeight);
-    Size actualSize = UIControl::arrangeOverride(childArea);
+    Size actualSize = UIControl::arrangeOverride(layoutContext, childArea);
 
 
 

@@ -17,20 +17,6 @@ enum class UILayoutLengthType
     Ratio,				/**< レイアウト後、残りの領域を使う */
 };
 
-class UILayoutContext
-    : public Object
-{
-public:
-    
-LN_CONSTRUCT_ACCESS:
-    UILayoutContext();
-    void init();
-
-public: // TODO: internal
-
-};
-
-
 namespace detail {
 struct GridDefinitionData
 {
@@ -208,19 +194,19 @@ public:
 
     // TODO: internal
     //static Size staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint);
-    static Size staticMeasureChildrenAreaSize(UIElement* ownerElement, const Size& constraint);
-    static Size staticMeasureOverride(UIElement* ownerElement, const Size& constraint);
-    static Size staticArrangeChildrenArea(UIElement* ownerElement, const List<Ref<UIElement>>& elements, const Rect& finalArea);
-    static Size staticArrangeChildrenArea(UIElement* ownerElement, const Rect& finalArea);
-    static Size staticArrangeOverride(UIElement* ownerElement, const Size& finalSize);
+    static Size staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint);
+    static Size staticMeasureOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint);
+    static Size staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const List<Ref<UIElement>>& elements, const Rect& finalArea);
+    static Size staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea);
+    static Size staticArrangeOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& finalSize);
 
 LN_PROTECTED_INTERNAL_ACCESS:
     UIFrameLayout2();
     void init();
 
     // UIElement interface
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 private:
 };
@@ -245,8 +231,8 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
     // UIElement interface
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 private:
     bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
@@ -303,8 +289,8 @@ LN_CONSTRUCT_ACCESS:
     void init();
 
     // UIElement interface
-    virtual Size measureOverride(const Size& constraint) override;
-    virtual Size arrangeOverride(const Size& finalSize) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 private:
     bool isHorizontal() const { return m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal; }
@@ -342,7 +328,7 @@ public:
 
 protected:
 	// base interface
-	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 
 LN_CONSTRUCT_ACCESS:
 	UISwitchLayout();
@@ -370,11 +356,11 @@ public:
 
 
     // TODO: internal
-    void measureLayout(const IUIElementList* childElements, const Size& availableSize);
-    void arrangeLayout(const IUIElementList* childElements, const Rect& finalSlotRect);
+    void measureLayout(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& availableSize);
+    void arrangeLayout(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect);
 
-    virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) = 0;
-    virtual Size arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect) = 0;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint) = 0;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect) = 0;
 
 protected:
     // IScrollInfo interface
@@ -406,8 +392,8 @@ LN_CONSTRUCT_ACCESS:
     virtual ~UIFrameLayout();
     void init();
 
-    virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) override;
-    virtual Size arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect) override;
 
 private:
 };
@@ -430,8 +416,8 @@ LN_CONSTRUCT_ACCESS:
     virtual ~UIStackLayout();
     void init();
 
-    virtual Size measureOverride(const IUIElementList* childElements, const Size& constraint) override;
-    virtual Size arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect) override;
 
 private:
     Orientation m_orientation;

@@ -3,14 +3,14 @@
 
 namespace ln {
     
-Size NavigationMenuItem::measureOverride(const Size& constraint)
+Size NavigationMenuItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    return UIIcon::measureOverride(constraint);
+    return UIIcon::measureOverride(layoutContext, constraint);
 }
 
-Size NavigationMenuItem::arrangeOverride(const Size& finalSize)
+Size NavigationMenuItem::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    return UIIcon::arrangeOverride(finalSize);
+    return UIIcon::arrangeOverride(layoutContext, finalSize);
 }
 
 NavigationMenuItem::NavigationMenuItem()

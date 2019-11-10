@@ -29,7 +29,7 @@ void UIIcon::setIconName(const StringRef& value)
 	m_codePoint = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
 }
 
-Size UIIcon::measureOverride(const Size& constraint)
+Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     // TODO:
 	return Size(27, 27);

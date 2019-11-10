@@ -90,7 +90,7 @@ void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
     UIElement::setContent(m_model->getData(u""));
 }
 
-Size UITreeItem::measureOverride(const Size& constraint)
+Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     //bool expanderVisible = false;
     //if (m_model) {
@@ -108,28 +108,28 @@ Size UITreeItem::measureOverride(const Size& constraint)
     Size size;
 
     // expander
-    m_expanderButton->measureLayout(constraint);
+    m_expanderButton->measureLayout(layoutContext, constraint);
     size.width += m_expanderButton->desiredSize().width;
     size.height = std::max(size.height, m_expanderButton->desiredSize().height);
 
     // header
     if (m_headerContent) {
-        m_headerContent->measureLayout(constraint);
+        m_headerContent->measureLayout(layoutContext, constraint);
         size.width += m_headerContent->desiredSize().width;
         size.height = std::max(size.height, m_headerContent->desiredSize().height);
     }
 
     // children
-    m_itemsLayout->measureLayout(&list, constraint);
+    m_itemsLayout->measureLayout(layoutContext, &list, constraint);
     size.width = std::max(size.width, m_itemsLayout->desiredSize().width);
     size.height += m_itemsLayout->desiredSize().height;
 
-    Size desiredSize = UICollectionItem::measureOverride(constraint);
+    Size desiredSize = UICollectionItem::measureOverride(layoutContext, constraint);
 
     return Size::max(size, desiredSize);
 }
 
-Size UITreeItem::arrangeOverride(const Size& finalSize)
+Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     struct ElementList : public IUIElementList {
         List<Ref<UITreeItem>>* list;
@@ -142,7 +142,7 @@ Size UITreeItem::arrangeOverride(const Size& finalSize)
     // expander
     float headerHeight = m_finalStyle->minHeight;
     Rect expanderSlot(0, 0, headerHeight, headerHeight);
-    m_expanderButton->arrangeLayout(expanderSlot); // TODO: actualsize 返すようにしていいかも
+    m_expanderButton->arrangeLayout(layoutContext, expanderSlot); // TODO: actualsize 返すようにしていいかも
 
     Rect area = Rect(expanderSlot.width, 0, finalSize.width - expanderSlot.width, expanderSlot.height);
 
@@ -158,13 +158,13 @@ Size UITreeItem::arrangeOverride(const Size& finalSize)
             m_ownerTreeView->m_finalStyle->horizontalContentAlignment, m_ownerTreeView->m_finalStyle->verticalContentAlignment, &contentSlotRect);
 
 
-        m_headerContent->arrangeLayout(contentSlotRect);
+        m_headerContent->arrangeLayout(layoutContext, contentSlotRect);
 		headerContentHeight = m_headerContent->m_actualSize.height;
     }
 
     // children
     area.y = std::max(m_expanderButton->m_actualSize.height, headerContentHeight);
-    m_itemsLayout->arrangeLayout(&list, area);
+    m_itemsLayout->arrangeLayout(layoutContext, &list, area);
 
     return finalSize;
 }
@@ -270,9 +270,9 @@ void UITreeView::onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e)
     }
 }
 
-Size UITreeView::arrangeOverride(const Size& finalSize)
+Size UITreeView::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    return UIItemsControl::arrangeOverride(finalSize);
+    return UIItemsControl::arrangeOverride(layoutContext, finalSize);
 }
 
 void UITreeView::addItemInternal(UITreeItem* item)

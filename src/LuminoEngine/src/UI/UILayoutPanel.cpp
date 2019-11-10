@@ -4,18 +4,6 @@
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 
 namespace ln {
-    
-//==============================================================================
-// UILayoutContext
-
-UILayoutContext::UILayoutContext()
-{
-}
-
-void UILayoutContext::init()
-{
-    Object::init();
-}
 
 //==============================================================================
 // UILayoutPanel2
@@ -81,7 +69,7 @@ void UIFrameLayout2::init()
     UILayoutPanel2::init();
 }
 
-Size UIFrameLayout2::measureOverride(const Size& constraint)
+Size UIFrameLayout2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     //Size size = element->TElementBaseClass::measureOverride(constraint);
 
@@ -98,10 +86,10 @@ Size UIFrameLayout2::measureOverride(const Size& constraint)
 
     //return Size::min(constraint, Size::max(size, childMaxSize));
     //return UIElement::measureOverride(constraint);
-	return UIFrameLayout2::staticMeasureOverride(this, constraint);
+	return UIFrameLayout2::staticMeasureOverride(layoutContext, this, constraint);
 }
 
-Size UIFrameLayout2::arrangeOverride(const Size& finalSize)
+Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 #if 0
     //Thickness canvas;
@@ -222,18 +210,18 @@ Size UIFrameLayout2::arrangeOverride(const Size& finalSize)
     }
 #endif
 
-	return UIFrameLayout2::staticArrangeOverride(this, finalSize);
+	return UIFrameLayout2::staticArrangeOverride(layoutContext, this, finalSize);
     //return finalSize;
 }
 
-Size UIFrameLayout2::staticMeasureChildrenAreaSize(UIElement* ownerElement, const Size& constraint)
+Size UIFrameLayout2::staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
 {
     int childrenCount = ownerElement->getVisualChildrenCount();
     Size childMaxSize(0, 0);
     for (int i = 0; i < childrenCount; i++)
     {
         UIElement* child = ownerElement->getVisualChild(i);
-        child->measureLayout(constraint);
+        child->measureLayout(layoutContext, constraint);
         const Size& desiredSize = child->desiredSize();
         childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
         childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
@@ -241,9 +229,9 @@ Size UIFrameLayout2::staticMeasureChildrenAreaSize(UIElement* ownerElement, cons
     return childMaxSize;
 }
 
-Size UIFrameLayout2::staticMeasureOverride(UIElement* ownerElement, const Size& constraint)
+Size UIFrameLayout2::staticMeasureOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
 {
-    Size childMaxSize = staticMeasureChildrenAreaSize(ownerElement, constraint);
+    Size childMaxSize = staticMeasureChildrenAreaSize(layoutContext, ownerElement, constraint);
 
     return detail::LayoutHelper::measureElement(ownerElement, constraint, childMaxSize);
 
@@ -256,7 +244,7 @@ Size UIFrameLayout2::staticMeasureOverride(UIElement* ownerElement, const Size& 
     //return Size::min(constraint, Size::max(size, childMaxSize));
 }
 
-Size UIFrameLayout2::staticArrangeChildrenArea(UIElement* ownerElement, const Rect& finalArea)
+Size UIFrameLayout2::staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea)
 {
     int childrenCount = ownerElement->getVisualChildrenCount();
     for (int i = 0; i < childrenCount; i++)
@@ -266,12 +254,12 @@ Size UIFrameLayout2::staticArrangeChildrenArea(UIElement* ownerElement, const Re
         Rect slotRect;
         detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
 
-        child->arrangeLayout(slotRect);
+        child->arrangeLayout(layoutContext, slotRect);
     }
     return finalArea.getSize();
 }
 
-Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& finalSize)
+Size UIFrameLayout2::staticArrangeOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& finalSize)
 {
     //const Thickness& padding = ownerElement->finalStyle()->padding;
     //Point childrenOffset(padding.left, padding.top);
@@ -280,7 +268,7 @@ Size UIFrameLayout2::staticArrangeOverride(UIElement* ownerElement, const Size& 
     //Rect bounds(childrenOffset, childrenBoundSize);
 	Rect contentArea = detail::LayoutHelper::arrangeClientArea(ownerElement, finalSize);
 
-    staticArrangeChildrenArea(ownerElement, contentArea);
+    staticArrangeChildrenArea(layoutContext, ownerElement, contentArea);
 
     return finalSize;
 }
@@ -311,7 +299,7 @@ void UIStackLayout2::addChild(UIElement* element, UILayoutLengthType type)
     m_cellDefinitions.add(cell);
 }
 
-Size UIStackLayout2::measureOverride(const Size& constraint)
+Size UIStackLayout2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     int childCount = getVisualChildrenCount();
 
@@ -339,7 +327,7 @@ Size UIStackLayout2::measureOverride(const Size& constraint)
             m_cellDefinitions[i].desiredSize = 0;
             continue;
         }
-        child->measureLayout(size);
+        child->measureLayout(layoutContext, size);
 
         const Size& childDesiredSize = child->getLayoutDesiredSize();
         if (isHorizontal()) {
@@ -357,7 +345,7 @@ Size UIStackLayout2::measureOverride(const Size& constraint)
     return desiredSize;
 }
 
-Size UIStackLayout2::arrangeOverride(const Size& finalSize)
+Size UIStackLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -421,7 +409,7 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
             if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) continue; // TODO: layoutcontext のメソッドで判定
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
-            child->arrangeLayout(childRect);
+            child->arrangeLayout(layoutContext, childRect);
         }
     }
     else {
@@ -430,12 +418,12 @@ Size UIStackLayout2::arrangeOverride(const Size& finalSize)
             if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) continue; // TODO: layoutcontext のメソッドで判定
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
-            child->arrangeLayout(childRect);
+            child->arrangeLayout(layoutContext, childRect);
         }
     }
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::arrangeOverride(finalSize);
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
     return selfSize;
 
 #if 0
@@ -519,7 +507,7 @@ void UIBoxLayout3::init()
     UILayoutPanel2::init();
 }
 
-Size UIBoxLayout3::measureOverride(const Size& constraint)
+Size UIBoxLayout3::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     int childCount = getVisualChildrenCount();
 
@@ -543,7 +531,7 @@ Size UIBoxLayout3::measureOverride(const Size& constraint)
     for (int i = 0; i < childCount; i++)
     {
         UIElement* child = getVisualChild(i);
-        child->measureLayout(size);
+        child->measureLayout(layoutContext, size);
 
         const Size& childDesiredSize = child->getLayoutDesiredSize();
         if (isHorizontal()) {
@@ -561,7 +549,7 @@ Size UIBoxLayout3::measureOverride(const Size& constraint)
     return desiredSize;
 }
 
-Size UIBoxLayout3::arrangeOverride(const Size& finalSize)
+Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -621,7 +609,7 @@ Size UIBoxLayout3::arrangeOverride(const Size& finalSize)
             auto* child = getVisualChild(iChild);
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
-            child->arrangeLayout(childRect);
+            child->arrangeLayout(layoutContext, childRect);
         }
     }
     else {
@@ -629,12 +617,12 @@ Size UIBoxLayout3::arrangeOverride(const Size& finalSize)
             auto* child = getVisualChild(iChild);
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
-            child->arrangeLayout(childRect);
+            child->arrangeLayout(layoutContext, childRect);
         }
     }
 
     // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
-    Size selfSize = UIElement::arrangeOverride(finalSize);
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
     return selfSize;
 }
 
@@ -732,7 +720,7 @@ void UISwitchLayout::init()
 	UIFrameLayout2::init();
 }
 
-Size UISwitchLayout::measureOverride(const Size& constraint)
+Size UISwitchLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	for (int i = 0; i < m_logicalChildren.size(); i++) {
 		if (i == m_activeIndex)
@@ -741,7 +729,7 @@ Size UISwitchLayout::measureOverride(const Size& constraint)
 			m_logicalChildren[i]->m_internalVisibility = UIVisibility::Collapsed;
 	}
 
-	return UIFrameLayout2::measureOverride(constraint);
+	return UIFrameLayout2::measureOverride(layoutContext, constraint);
 }
 
 
@@ -758,17 +746,17 @@ void UILayoutPanel::init()
     Object::init();
 }
 
-void UILayoutPanel::measureLayout(const IUIElementList* childElements, const Size& availableSize)
+void UILayoutPanel::measureLayout(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& availableSize)
 {
-    m_desiredSize = measureOverride(childElements, availableSize);
+    m_desiredSize = measureOverride(layoutContext, childElements, availableSize);
 }
 
-void UILayoutPanel::arrangeLayout(const IUIElementList* childElements, const Rect& finalSlotRect)
+void UILayoutPanel::arrangeLayout(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Rect rect = finalSlotRect;
     rect.x -= m_scrollOffset.x;
     rect.y -= m_scrollOffset.y;
-    m_actualSize = arrangeOverride(childElements, rect);
+    m_actualSize = arrangeOverride(layoutContext, childElements, rect);
 }
 
 float UILayoutPanel::getExtentWidth() const { return m_desiredSize.width; }
@@ -801,14 +789,14 @@ void UIFrameLayout::init()
     UILayoutPanel::init();
 }
 
-Size UIFrameLayout::measureOverride(const IUIElementList* childElements, const Size& constraint)
+Size UIFrameLayout::measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint)
 {
     int childrenCount = childElements->getElementCount();
     Size childMaxSize(0, 0);
     for (int i = 0; i < childrenCount; i++)
     {
         UIElement* child = childElements->getElement(i);
-        child->measureLayout(constraint);
+        child->measureLayout(layoutContext, constraint);
         const Size& desiredSize = child->desiredSize();
         childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
         childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
@@ -816,7 +804,7 @@ Size UIFrameLayout::measureOverride(const IUIElementList* childElements, const S
     return childMaxSize;
 }
 
-Size UIFrameLayout::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
+Size UIFrameLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Rect bounds(finalSlotRect);
 
@@ -824,7 +812,7 @@ Size UIFrameLayout::arrangeOverride(const IUIElementList* childElements, const R
     for (int i = 0; i < childrenCount; i++)
     {
         UIElement* child = childElements->getElement(i);
-        child->arrangeLayout(bounds);
+        child->arrangeLayout(layoutContext, bounds);
     }
 
     return finalSlotRect.getSize();
@@ -853,7 +841,7 @@ void UIStackLayout::init()
     UILayoutPanel::init();
 }
 
-Size UIStackLayout::measureOverride(const IUIElementList* childElements, const Size& constraint)
+Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint)
 {
     Size size = constraint;
 
@@ -871,7 +859,7 @@ Size UIStackLayout::measureOverride(const IUIElementList* childElements, const S
     for (int i = 0; i < childCount; i++)
     {
         UIElement* child = childElements->getElement(i);
-        child->measureLayout(size);
+        child->measureLayout(layoutContext, size);
 
         const Size& childDesiredSize = child->getLayoutDesiredSize();
         if (m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal) {
@@ -887,7 +875,7 @@ Size UIStackLayout::measureOverride(const IUIElementList* childElements, const S
     return desiredSize;
 }
 
-Size UIStackLayout::arrangeOverride(const IUIElementList* childElements, const Rect& finalSlotRect)
+Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
     //Size selfBounds(FLT_MAX, FLT_MAX);
@@ -943,7 +931,7 @@ Size UIStackLayout::arrangeOverride(const IUIElementList* childElements, const R
             actual.height = finalSlotRect.height - actual.y;
         }
 
-        child->arrangeLayout(actual);
+        child->arrangeLayout(layoutContext, actual);
     }
 
     return finalSlotRect.getSize();
