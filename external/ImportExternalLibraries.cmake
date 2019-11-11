@@ -437,6 +437,10 @@ find_library(EffekseerRendererVulkan_LIBRARY_DEBUG NAMES EffekseerRendererVulkan
 find_library(LLGI_LIBRARY_RELEASE NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(LLGI_LIBRARY_DEBUG NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
+# TODO: test
+set(EffekseerRendererVulkan_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/EffekseerRendererVulkan/Debug/EffekseerRendererVulkan.lib")
+set(LLGI_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/3rdParty/LLGI/src/Debug/LLGI.lib")
+
 add_library(Effekseer STATIC IMPORTED)
 set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_RELEASE ${Effekseer_LIBRARY_RELEASE})
 set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_DEBUG ${Effekseer_LIBRARY_DEBUG})

@@ -253,54 +253,7 @@ set(LN_SOURCES_Mesh
     src/Mesh/SkinnedMeshModel.cpp
 )
 
-set(LN_SOURCES_Rendering
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandList.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Drawing.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Material.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderingContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderView.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Vertex.hpp
-    src/Rendering/Internal.hpp
-    src/Rendering/BlitRenderFeature.cpp
-    src/Rendering/BlitRenderFeature.hpp
-    src/Rendering/ClusteredShadingSceneRenderer.cpp
-    src/Rendering/ClusteredShadingSceneRenderer.hpp
-    src/Rendering/CommandList.cpp
-    src/Rendering/DrawElementListBuilder.cpp
-    src/Rendering/DrawElementListBuilder.hpp
-    src/Rendering/Drawing.cpp
-    src/Rendering/FrameRectRenderFeature.cpp
-    src/Rendering/FrameRectRenderFeature.hpp
-    src/Rendering/LightClusters.cpp
-    src/Rendering/LightClusters.hpp
-    src/Rendering/Material.cpp
-    src/Rendering/MeshRenderFeature.cpp
-    src/Rendering/MeshRenderFeature.hpp
-    src/Rendering/PrimitiveRenderFeature.cpp
-    src/Rendering/PrimitiveRenderFeature.hpp
-    src/Rendering/Readme.md
-    src/Rendering/RenderFeature.cpp
-    src/Rendering/RenderingContext.cpp
-    src/Rendering/RenderingManager.cpp
-    src/Rendering/RenderingManager.hpp
-    src/Rendering/RenderingPipeline.cpp
-    src/Rendering/RenderingPipeline.hpp
-    src/Rendering/RenderStage.cpp
-    src/Rendering/RenderStage.hpp
-    src/Rendering/RenderView.cpp
-    src/Rendering/ShapesRenderFeature.cpp
-    src/Rendering/ShapesRenderFeature.hpp
-    src/Rendering/SceneRenderer.cpp
-    src/Rendering/SceneRenderer.hpp
-    src/Rendering/SpriteRenderFeature.cpp
-    src/Rendering/SpriteRenderFeature.hpp
-    src/Rendering/SpriteTextRenderFeature.cpp
-    src/Rendering/SpriteTextRenderFeature.hpp
-    src/Rendering/UnLigitingSceneRenderer.cpp
-    src/Rendering/UnLigitingSceneRenderer.hpp
-)
+file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp)
 
 set(LN_SOURCES_ImageEffect
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/ImageEffect.hpp
