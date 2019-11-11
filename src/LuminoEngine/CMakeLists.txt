@@ -9,17 +9,7 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 #------------------------------------------------------------------------------
 # Files
 
-set(LN_SOURCES_Base
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Regex.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Task.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Variant.hpp
-    src/Base/Internal.hpp
-    src/Base/RefObjectCache.hpp
-    src/Base/Regex.cpp
-    src/Base/Task.cpp
-    src/Base/Variant.cpp
-)
+file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 
 set(LN_SOURCES_Engine
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Common.hpp

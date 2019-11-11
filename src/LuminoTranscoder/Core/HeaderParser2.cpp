@@ -277,6 +277,20 @@ public:
 		return true;
 	}
 
+	bool VisitTemplateDecl(TemplateDecl* decl)
+	{
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
+			if (attr)
+			{
+				std::cout << decl->getNameAsString() << std::endl;
+			}
+		}
+
+		return true;
+	}
+
 	// メンバ関数
 	bool VisitCXXMethodDecl(CXXMethodDecl* decl)
 	{

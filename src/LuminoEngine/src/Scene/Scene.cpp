@@ -156,7 +156,7 @@ WorldObject* Scene::findObjectByComponentType(const TypeInfo* type) const
         WorldObject* result = nullptr;
         virtual bool visit(WorldObject* obj)
         {
-            for (auto& component : obj->m_components) {
+            for (auto& component : *(obj->m_components)) {
                 if (TypeInfo::getTypeInfo(component) == type) {
                     result = obj;
                     return false;
@@ -206,7 +206,7 @@ void Scene::renderObjects(RenderingContext* context)
     {
         obj->render();
 
-        for (auto& c : obj->m_components)
+        for (auto& c : *(obj->m_components))
         {
             c->onPrepareRender(context); // TODO: 全体の前にした方がいいかも
             c->render(context);

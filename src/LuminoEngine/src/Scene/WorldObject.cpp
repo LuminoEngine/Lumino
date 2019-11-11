@@ -117,7 +117,7 @@ WorldObject::WorldObject()
     , m_parent(nullptr)
     , m_transform(makeRef<detail::WorldObjectTransform>(this))
     , m_tags(makeList<String>())
-    , m_components(makeList<Ref<Component>>())
+    , m_components(makeObject<ComponentList>())
     , m_children(makeList<Ref<WorldObject>>())
     , m_isSpecialObject(false)
 	, m_destroyed(false)
@@ -237,7 +237,7 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
     // あと、WPF でいうところの Logical, Visual ツリーの仕組みが必要かもしれない。
     // まぁ、Unity は持っているし。(ある 3DModel のボーンを示す子ノードの寿命は、親Nodeに完全に依存する)
     // このプロパティの検索は、ある Logical ノードの管理下にある Visual ツリーをたどることになる。
-	for (auto& c : m_components) {
+	for (auto& c : *m_components) {
 		if (TypeInfo* typeInfo = TypeInfo::getTypeInfo(c)) {
 			for (auto& prop : typeInfo->properties()) {
 				if (visitor->visitProperty(c, prop)) {
@@ -256,7 +256,7 @@ void WorldObject::serialize(Archive& ar)
 	ar & ln::makeNVP(u"Children", *m_children);
 
     if (ar.isLoading()) {
-        for (auto& c : m_components) {
+        for (auto& c : *m_components) {
             c->m_object = this;
             c->onAttached(this);
         }
@@ -268,7 +268,7 @@ void WorldObject::attachScene(Scene* scene)
 	if (LN_REQUIRE(scene)) return;
 	if (LN_REQUIRE(!m_scene)) return;
 	m_scene = scene;
-	for (auto& c : m_components) {
+	for (auto& c : *m_components) {
 		c->onAttachedScene(scene);
 	}
 }
@@ -279,7 +279,7 @@ void WorldObject::detachScene()
 		Scene* old = m_scene;
 		m_scene = nullptr;
 
-		for (auto& c : m_components) {
+		for (auto& c : *m_components) {
 			c->onDetachedScene(old);
 		}
 	}
@@ -287,7 +287,7 @@ void WorldObject::detachScene()
 
 void WorldObject::start()
 {
-	for (auto& c : m_components) {
+	for (auto& c : *m_components) {
 		c->onStart();
 	}
 }
@@ -295,7 +295,7 @@ void WorldObject::start()
 void WorldObject::updateFrame(float elapsedSeconds)
 {
     onUpdate(elapsedSeconds);
-    for (auto& c : m_components) {
+    for (auto& c : *m_components) {
         c->onUpdate(elapsedSeconds);
     }
 }

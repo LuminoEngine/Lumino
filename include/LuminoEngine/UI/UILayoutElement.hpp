@@ -265,7 +265,7 @@ public:
 			else
 			{
 				outRect->y = (areaSize.height - desiredSize.height) / 2;
-				outRect->height = desiredSize.height;
+				outRect->height = fixedSizeOrNaN;
 			}
 
 			break;

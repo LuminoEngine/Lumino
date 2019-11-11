@@ -2,12 +2,20 @@
 #pragma once
 #include "Common.hpp"
 #include "../Asset/AssetObject.hpp"
+#include "../Base/Collection.hpp"
 
 namespace ln {
 class World;
 class Scene;
 class WorldObject;
 class Component;
+
+LN_CLASS(List)
+class ComponentList : public ListCollection<Ref<Component>>
+{
+
+};
+
 namespace detail {
 
 class WorldObjectTransform
@@ -167,6 +175,9 @@ public:
 
     bool traverse(detail::IWorldObjectVisitor* visitor);
 
+	LN_METHOD()
+	ComponentList* components() const { return m_components; }
+
 protected:
     // 物理演算・衝突判定の前
     virtual void onPreUpdate();
@@ -213,7 +224,8 @@ public: // TODO:
     WorldObject* m_parent;
     Ref<detail::WorldObjectTransform> m_transform;
     Ref<List<String>> m_tags;
-    Ref<List<Ref<Component>>> m_components;
+    //Ref<List<Ref<Component>>> m_components;
+	Ref<ComponentList> m_components;
     Ref<List<Ref<WorldObject>>> m_children;
     Flags<DirtyFlags> m_dirtyFlags;
     Matrix m_worldMatrix;
