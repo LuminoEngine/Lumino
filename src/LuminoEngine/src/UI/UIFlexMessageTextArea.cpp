@@ -86,7 +86,7 @@ public:
 //protected:
 //	virtual void onFontDataChanged(const ln::detail::FontData& newData);
 
-	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale);
+	virtual void updateFontDescHierarchical(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale);
 	//const detail::FontDesc& finalFontDesc() const { return m_finalFontDesc; }
 	const Ref<Font>& finalFont() const { return m_finalFont; }
 
@@ -130,7 +130,7 @@ private:
 
 // https://docs.microsoft.com/ja-jp/dotnet/framework/wpf/advanced/flow-document-overview
 class RTBlock
-	: public RTTextElement
+	: public Object
 {
 public:
 	RTBlock() {}
@@ -142,7 +142,7 @@ public:
 
 	void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset);
 
-	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale) override;
+	void updateFontDesc(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale);
 
 protected:
 
@@ -195,9 +195,9 @@ public:
 
 	void setText(const StringRef& text) { m_text = text; }
 
-	virtual void updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale) override
+	virtual void updateFontDescHierarchical(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale) override
 	{
-		RTInline::updateFontDescHierarchical(parent, defaultFont, dpiScale);
+		RTInline::updateFontDescHierarchical(parentFinalFont, defaultFont, dpiScale);
 
 		//m_rawFont = detail::EngineDomain::fontManager()->lookupFontCore(finalFontDesc(), dpiScale);
 	}
@@ -288,17 +288,17 @@ private:
 //==============================================================================
 // RTTextElement
 
-void RTTextElement::updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale)
+void RTTextElement::updateFontDescHierarchical(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale)
 {
 	if (!m_finalFont) {
 		m_finalFont = makeObject<Font>();
 	}
 
-	if (parent) {
-		m_finalFont->setFamily((m_fontFamily) ? m_fontFamily.value() : parent->m_finalFont->family());
-		m_finalFont->setSize((m_fontSize) ? m_fontSize.value() : parent->m_finalFont->size());
-		m_finalFont->setBold((m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parent->m_finalFont->isBold());
-		m_finalFont->setItalic((m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : parent->m_finalFont->isItalic());
+	if (parentFinalFont) {
+		m_finalFont->setFamily((m_fontFamily) ? m_fontFamily.value() : parentFinalFont->family());
+		m_finalFont->setSize((m_fontSize) ? m_fontSize.value() : parentFinalFont->size());
+		m_finalFont->setBold((m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parentFinalFont->isBold());
+		m_finalFont->setItalic((m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : parentFinalFont->isItalic());
 		//m_finalFontDesc.Family = (m_fontFamily) ? m_fontFamily.value() : parent->m_finalFontDesc.Family;
 		//m_finalFontDesc.Size = (m_fontSize) ? m_fontSize.value() : parent->m_finalFontDesc.Size;
 		//m_finalFontDesc.isBold = (m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parent->m_finalFontDesc.isBold;
@@ -337,11 +337,11 @@ void RTBlock::updateVisualData(RTDocument* document, const Size& areaSize, const
 	}
 }
 
-void RTBlock::updateFontDescHierarchical(const RTTextElement* parent, const detail::FontDesc& defaultFont, float dpiScale)
+void RTBlock::updateFontDesc(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale)
 {
-	RTTextElement::updateFontDescHierarchical(parent, defaultFont, dpiScale);
+	//RTTextElement::updateFontDesc(parent, defaultFont, dpiScale);
 	for (auto& inl : m_inlines) {
-		inl->updateFontDescHierarchical(this, defaultFont, dpiScale);
+		inl->updateFontDescHierarchical(parentFinalFont, defaultFont, dpiScale);
 	}
 }
 
@@ -433,7 +433,7 @@ void RTDocument::addBlock(RTBlock* block)
 void RTDocument::updateFontDesc(const detail::FontDesc& defaultFont, float dpiScale)
 {
 	for (auto& block : m_blockList) {
-		block->updateFontDescHierarchical(nullptr, defaultFont, dpiScale);
+		block->updateFontDesc(nullptr, defaultFont, dpiScale);
 	}
 }
 
