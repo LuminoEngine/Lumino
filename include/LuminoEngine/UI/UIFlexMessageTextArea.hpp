@@ -6,6 +6,10 @@ class RTDocument;
 
 // - typing
 // - transform/animation par glyph
+// - textlog
+// - line feed
+// - page feed
+// - line centering
 class UIMessageTextArea
 	: public UIElement
 {

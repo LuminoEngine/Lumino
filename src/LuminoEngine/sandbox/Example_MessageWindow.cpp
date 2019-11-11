@@ -21,7 +21,7 @@ class App_Example_MessageWindow : public Application
 
         auto window1 = UIWindow::create();
         window1->setPosition(10, 10);
-        window1->setWidth(200);
+        //window1->setWidth(200);
         window1->setHeight(100);
         window1->setBackgroundImage(windowSkin);
         window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
@@ -30,6 +30,7 @@ class App_Example_MessageWindow : public Application
         Engine::mainUIView()->addElement(window1);
 
         auto message1 = UIMessageTextArea::create();
+        message1->setMargin(8);
         message1->setText(u"Hello, Lumino!");
         window1->addElement(message1);
 

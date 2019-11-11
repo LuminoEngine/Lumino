@@ -128,7 +128,7 @@ private:
 };
 
 
-
+// https://docs.microsoft.com/ja-jp/dotnet/framework/wpf/advanced/flow-document-overview
 class RTBlock
 	: public RTTextElement
 {
@@ -154,7 +154,9 @@ private:
 	List<Ref<RTInline>> m_inlines;
 };
 
-/** コンテンツをグループ化して段落にするために使用される。 */
+// コンテンツを段落としてグループ化するために使用される。
+// HTML では <br/> で改行を含めることができるが、
+// ひとまずここでは論理行を表す。
 class RTParagraph
 	: public RTBlock
 {
@@ -166,7 +168,10 @@ public:
 private:
 };
 
-
+// インラインコンテンツのベース。
+// Run や Link, IconImage, ルビ付きRun など。
+// テキストの装飾範囲も兼ねる。
+// WPF のフロードキュメントでは Inline(Span) のネストも可能であるが、ここではサポートしない。
 class RTInline
 	: public RTTextElement
 {
@@ -227,32 +232,32 @@ private:
 	bool m_dirty;
 };
 
-// 装飾範囲
-class RTSpan
-	: public RTInline
-{
-public:
-	RTSpan();
-	virtual ~RTSpan();
-	void initialize();
-
-private:
-	// Inline List
-};
-
-
-class RTLineBreak
-	: public RTInline
-{
-public:
-	RTLineBreak();
-	virtual ~RTLineBreak();
-	void initialize();
-
-private:
-	//virtual InternalTextElementType getInternalTextElementType() const;
-};
-
+//// 装飾範囲
+//class RTSpan
+//	: public RTInline
+//{
+//public:
+//	RTSpan();
+//	virtual ~RTSpan();
+//	void initialize();
+//
+//private:
+//	// Inline List
+//};
+//
+//
+//class RTLineBreak
+//	: public RTInline
+//{
+//public:
+//	RTLineBreak();
+//	virtual ~RTLineBreak();
+//	void initialize();
+//
+//private:
+//	//virtual InternalTextElementType getInternalTextElementType() const;
+//};
+//
 
 class RTDocument
 	: public Object
