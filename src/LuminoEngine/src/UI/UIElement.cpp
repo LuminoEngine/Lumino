@@ -733,14 +733,14 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	invalidate(detail::UIElementDirtyFlags::Layout, true);
 }
 
-void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
+void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
-    updateFinalRects(layoutContext, parentFinalGlobalRect);
+    updateFinalRects(layoutContext, parentCombinedRenderTransform);
 
     // child elements
     int count = getVisualChildrenCount();
     for (int i = 0; i < count; i++) {
-        getVisualChild(i)->updateFinalLayoutHierarchical(layoutContext, m_finalGlobalRect);
+        getVisualChild(i)->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
     }
 
 	m_dirtyFlags.unset(detail::UIElementDirtyFlags::Layout);
@@ -806,10 +806,10 @@ void UIElement::render(UIRenderingContext* context)
 
 			if (m_finalStyle->shadowBlurRadius > 0.0f)
 			{
-				context->drawBoxShadow(Rect(0, 0, m_finalGlobalRect.getSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
+				context->drawBoxShadow(Rect(0, 0, actualSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
 
 			}
-			Rect rect(0, 0, m_finalGlobalRect.getSize());
+			Rect rect(0, 0, actualSize());
 			rect = rect.makeDeflate(m_finalStyle->borderThickness);
 			
 			if (m_finalStyle->backgroundColor.a > 0.0f) {
@@ -834,7 +834,7 @@ void UIElement::render(UIRenderingContext* context)
         onRender(context);
 
 		for (auto& d : m_finalStyle->decorators) {
-			d->render(context, m_actualSize);
+			d->render(context, actualSize());
 		}
 
         context->popState();	// TODO: scoped
@@ -866,29 +866,14 @@ bool UIElement::onHitTest(const Point& frameClientPosition)
     auto inv = Matrix::makeInverse(m_combinedFinalRenderTransform);
     auto pos = Vector3::transformCoord(Vector3(frameClientPosition.x, frameClientPosition.y, .0f), inv);
 
-    if (0 <= pos.x && pos.x < m_actualSize.width &&
-        0 <= pos.y && pos.y < m_actualSize.height) {
+    if (0 <= pos.x && pos.x < actualSize().width &&
+        0 <= pos.y && pos.y < actualSize().height) {
         return true;
     }
     else {
         return false;
     }
 }
-
-void UIElement::updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
-{
-	UILayoutElement::updateFinalRects(layoutContext, parentFinalGlobalRect);
-
-	{
-		m_combinedFinalRenderTransform = Matrix::makeTranslation(-centerPoint());
-		m_combinedFinalRenderTransform.scale(scale());
-		m_combinedFinalRenderTransform.rotateQuaternion(rotation());
-		m_combinedFinalRenderTransform.translate(position());
-		m_combinedFinalRenderTransform.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
-	}
-
-}
-
 
 bool UIElement::isMouseHover() const
 {

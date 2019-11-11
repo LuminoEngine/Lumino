@@ -778,7 +778,7 @@ Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Size&
 		rc.x = 0;
 		rc.y = finalSize.height - barHeight;
 		m_horizontalScrollBar->arrangeLayout(layoutContext, rc);
-		barWidth = m_horizontalScrollBar->m_actualSize.width;
+		barWidth = m_horizontalScrollBar->actualSize().width;
 	}
 
 	if (m_verticalScrollBar) {
@@ -787,7 +787,7 @@ Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Size&
 		rc.x = finalSize.width - barWidth;
 		rc.y = 0;
 		m_verticalScrollBar->arrangeLayout(layoutContext, rc);
-		barHeight = m_verticalScrollBar->m_actualSize.height;
+		barHeight = m_verticalScrollBar->actualSize().height;
 	}
 
 

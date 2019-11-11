@@ -12,7 +12,7 @@ class UIMessageTextArea
 public:
 	static Ref<UIMessageTextArea> create();
 
-	//void setText(const StringRef& value) { m_text = value; }
+    void setText(const StringRef& value);
 
 	void setTypingSpeed(float value) { m_typingSpeed = value; }
 
@@ -30,6 +30,8 @@ private:
 	Ref<RTDocument> m_document;
 	//Ref<detail::FlexText> m_flexText;
 	float m_typingSpeed;
+    String m_text;
+    bool m_textDirty;
 };
 
 } // namespace ln

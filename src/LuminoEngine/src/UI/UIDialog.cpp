@@ -104,9 +104,9 @@ Size UIDialogAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size
     return finalSize;
 }
 
-void UIDialogAdorner::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
+void UIDialogAdorner::onUpdateLayout(UILayoutContext* layoutContext)
 {
-    m_popup->updateFinalLayoutHierarchical(layoutContext, finalGlobalRect);
+    m_popup->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
 }
 
 UIElement* UIDialogAdorner::lookupMouseHoverElement(const Point& frameClientPosition)

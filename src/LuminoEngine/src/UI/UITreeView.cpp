@@ -159,11 +159,11 @@ Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Size& fin
 
 
         m_headerContent->arrangeLayout(layoutContext, contentSlotRect);
-		headerContentHeight = m_headerContent->m_actualSize.height;
+		headerContentHeight = m_headerContent->actualSize().height;
     }
 
     // children
-    area.y = std::max(m_expanderButton->m_actualSize.height, headerContentHeight);
+    area.y = std::max(m_expanderButton->actualSize().height, headerContentHeight);
     m_itemsLayout->arrangeLayout(layoutContext, &list, area);
 
     return finalSize;

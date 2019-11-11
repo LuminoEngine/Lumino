@@ -116,9 +116,9 @@ Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size&
     return finalSize;
 }
 
-void UIPopupAdorner::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
+void UIPopupAdorner::onUpdateLayout(UILayoutContext* layoutContext)
 {
-    m_popup->updateFinalLayoutHierarchical(layoutContext, finalGlobalRect);
+    m_popup->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
 }
 
 void UIPopupAdorner::render(UIRenderingContext* context)

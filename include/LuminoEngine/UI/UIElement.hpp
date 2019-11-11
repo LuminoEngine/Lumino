@@ -427,13 +427,13 @@ public:	// TODO: internal protected
 
     virtual bool onHitTest(const Point& frameClientPosition);
 
-	virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+	//virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 
     bool isMouseHover() const;
 
     // TODO: internal
 	void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
-    void updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+    void updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
     virtual void render(UIRenderingContext* context);
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }
@@ -480,7 +480,6 @@ public: // TODO: internal
     Ref<UIStyleClass> m_localStyle;
 	Ref<UIStyle> m_combinedStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;
-	Matrix m_combinedFinalRenderTransform;
 	UIVisibility m_internalVisibility;
     int m_renderPriority;
     bool m_isHitTestVisible;	// TODO: flags

@@ -127,7 +127,12 @@ public:	// TODO: internal
 	 */
 	const Size& desiredSize() const { return m_desiredSize; }
 
-	const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
+    const Size& actualSize() const { return m_actualSize; }
+
+	//const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
+
+    // TODO: internal
+    const Point localPosition() const { return m_localPosition; }
 
 protected:
 	virtual ~UILayoutElement();
@@ -139,12 +144,14 @@ protected:
 	//virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
 
 
-	virtual void onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect);
+	virtual void onUpdateLayout(UILayoutContext* layoutContext);
+
 
 public:	//TODO: internal
 	void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
 	void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
-	virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+	///*virtual*/ void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+    void updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
 
 	//const Size& getLayoutSize() const { return m_layoutSize; }
 	void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
@@ -157,17 +164,20 @@ public:	//TODO: internal
 
 	//void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
 	//const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
-	void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
+	//void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 	//Size m_layoutSize;
 	const detail::UIStyleInstance* m_finalStyle;
 	Size m_desiredSize; // includes, margin, border
 
+    
+
+    Matrix m_combinedFinalRenderTransform;
+
+private:
     Point m_localPosition;  // 親コンテナ内の相対座標
     Size m_actualSize;
-
-	//Rect m_finalLocalRect;
-	Rect m_finalGlobalRect; // TODO: obsolete
+    //Rect m_finalGlobalRect; // TODO: obsolete
 
 
 

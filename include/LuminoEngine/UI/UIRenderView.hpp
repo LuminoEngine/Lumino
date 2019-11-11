@@ -66,7 +66,7 @@ public:
 public:	// TODO: protected
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
-	virtual void onUpdateUILayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect) override;
+	virtual void onUpdateUILayout(UILayoutContext* layoutContext) override;
     virtual UIElement* onLookupMouseHoverElement(const Point& frameClientPosition) override;
 
 

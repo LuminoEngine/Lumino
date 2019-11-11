@@ -47,7 +47,7 @@ public:
 	void setBackgroundColor(const Color& value) { m_backgroundColor = value; }
 
     // フレーム開始時に決定 (unit:dp)
-	const Point& actualScreenOffset() const { return m_actualScreenOffset; }
+	//const Point& actualScreenOffset() const { return m_actualScreenOffset; }
     const Size& actualSize() const { return m_actualSize; }
 
     LN_METHOD(Event)
@@ -56,16 +56,16 @@ public:
 public: // TODO: protected
 	void updateFrame(float elapsedSeconds);
 	void updateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
-	void updateUILayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+	void updateUILayout(UILayoutContext* layoutContext);
 	virtual void onUpdateFrame(float elapsedSeconds);
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
-	virtual void onUpdateUILayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect);
+	virtual void onUpdateUILayout(UILayoutContext* layoutContext);
     virtual UIElement* onLookupMouseHoverElement(const Point& framewindowClientPoint);
     virtual void onRoutedEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
 	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
-	void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
+	//void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
     void setActualSize(const Size& size) { m_actualSize = size; }
 
 private:

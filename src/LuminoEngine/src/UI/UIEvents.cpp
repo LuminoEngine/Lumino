@@ -128,15 +128,18 @@ void UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons bu
 
 Point UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 {
-    const Rect& rc = relativeTo->finalGlobalRect();
-    return Point(m_position.x - rc.x, m_position.y - rc.y);
+    auto inv = Matrix::makeInverse(relativeTo->m_combinedFinalRenderTransform);
+    auto pos = Vector3::transformCoord(Vector3(m_position.x, m_position.y, .0f), inv);
+    return Point(pos.x, pos.y);
+    //const Rect& rc = relativeTo->finalGlobalRect();
+    //return Point(m_position.x - rc.x, m_position.y - rc.y);
 }
 
-Point UIMouseEventArgs::getPosition(RenderView* relativeTo) const
-{
-	auto pt = relativeTo->actualScreenOffset();
-	return Point(m_position.x - pt.x, m_position.y - pt.y);
-}
+//Point UIMouseEventArgs::getPosition(RenderView* relativeTo) const
+//{
+//	auto pt = relativeTo->actualScreenOffset();
+//	return Point(m_position.x - pt.x, m_position.y - pt.y);
+//}
 
 //==============================================================================
 // UIKeyEventArgs

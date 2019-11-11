@@ -145,29 +145,37 @@ void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& 
 
 }
 
-void UILayoutElement::updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
+void UILayoutElement::updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
+    Matrix localMatrix;
+    localMatrix = Matrix::makeTranslation(-m_finalStyle->centerPoint);
+    localMatrix.scale(m_finalStyle->scale);
+    localMatrix.rotateQuaternion(m_finalStyle->rotation);
+    localMatrix.translate(m_finalStyle->position);
+    localMatrix.translate(Vector3(m_localPosition.x, m_localPosition.y, 0));
+    m_combinedFinalRenderTransform = parentCombinedRenderTransform * localMatrix;
+
 	//Rect localRenderRect = getLayoutFinalLocalRect();
 
-	Rect finalGlobalRect;
+	//Rect finalGlobalRect;
 	//if (m_parent != nullptr)
-	//{
-	finalGlobalRect.x = parentFinalGlobalRect.x + m_localPosition.x;
-	finalGlobalRect.y = parentFinalGlobalRect.y + m_localPosition.y;
-	//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
-//}
-//else
-//{
-//	m_finalGlobalRect.x = m_finalLocalRect.x;
-//	m_finalGlobalRect.y = m_finalLocalRect.y;
-//	m_combinedOpacity = m_opacity;
-//}
-	finalGlobalRect.width = m_actualSize.width;
-	finalGlobalRect.height = m_actualSize.height;
+//	//{
+//	finalGlobalRect.x = parentFinalGlobalRect.x + m_localPosition.x;
+//	finalGlobalRect.y = parentFinalGlobalRect.y + m_localPosition.y;
+//	//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
+////}
+////else
+////{
+////	m_finalGlobalRect.x = m_finalLocalRect.x;
+////	m_finalGlobalRect.y = m_finalLocalRect.y;
+////	m_combinedOpacity = m_opacity;
+////}
+//	finalGlobalRect.width = m_actualSize.width;
+//	finalGlobalRect.height = m_actualSize.height;
+//
+	//setLayoutFinalGlobalRect(finalGlobalRect);
 
-	setLayoutFinalGlobalRect(finalGlobalRect);
-
-    onUpdateLayout(layoutContext, finalGlobalRect);
+    onUpdateLayout(layoutContext);
 
 	// update children
 	//Rect finalGlobalContentRect(
@@ -207,7 +215,7 @@ Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Size
 	return finalSize;
 }
 
-void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
+void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext)
 {
 }
 

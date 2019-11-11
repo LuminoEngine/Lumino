@@ -176,10 +176,11 @@ void UIRenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const det
     //}
 }
 
-void UIRenderView::onUpdateUILayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
+void UIRenderView::onUpdateUILayout(UILayoutContext* layoutContext)
 {
-    rootElement()->updateLayout(layoutContext, Rect(0, 0, finalGlobalRect.getSize()));
-    rootElement()->updateFinalLayoutHierarchical(layoutContext, finalGlobalRect);
+    Rect finalGlobalRect(0, 0, actualSize());
+    rootElement()->updateLayout(layoutContext, finalGlobalRect);
+    rootElement()->updateFinalLayoutHierarchical(layoutContext, Matrix());
     adornerLayer()->measureLayout(layoutContext, finalGlobalRect.getSize());
     adornerLayer()->arrangeLayout(layoutContext, finalGlobalRect);
 

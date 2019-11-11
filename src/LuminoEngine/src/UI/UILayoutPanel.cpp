@@ -49,8 +49,8 @@ void UILayoutPanel2::onDispose(bool explicitDisposing)
 
 float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }
 float UILayoutPanel2::getExtentHeight() const { return m_desiredSize.height; }
-float UILayoutPanel2::getViewportWidth() const { return m_actualSize.width; }
-float UILayoutPanel2::getViewportHeight() const { return m_actualSize.height; }
+float UILayoutPanel2::getViewportWidth() const { return actualSize().width; }
+float UILayoutPanel2::getViewportHeight() const { return actualSize().height; }
 void UILayoutPanel2::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
 float UILayoutPanel2::getHorizontalOffset() const { return m_scrollOffset.x; }
 void UILayoutPanel2::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }

@@ -71,7 +71,8 @@ void UIAdornerLayer::arrangeLayout(UILayoutContext* layoutContext, const Rect& l
     for (auto& adorner : m_adorners) {
 		Rect adornedRect = localSlotRect;
 		if (adorner->adornedElement()) {
-			adornedRect = adorner->adornedElement()->m_finalGlobalRect;
+            adornedRect = Rect(adorner->adornedElement()->localPosition(), adorner->adornedElement()->actualSize());
+            // = adorner->adornedElement()->m_finalGlobalRect;
 		}
 
 		//adornedRect = Rect(0, 0, 100, 100);
@@ -82,7 +83,9 @@ void UIAdornerLayer::arrangeLayout(UILayoutContext* layoutContext, const Rect& l
         // TODO: 以下、adorner の中にまとめたほうがいい気がする。というか、measure->arrange->updateFinal 一連をひとつのメソッドでまとめていいと思う。adornder 同士は相互作用しないし
         //adorner->updateFinalRects(adorner->adornedElement()->m_finalGlobalRect);
         //adorner->content()->updateFinalLayoutHierarchical(adorner->adornedElement()->m_finalGlobalRect);
-        adorner->updateFinalLayoutHierarchical(layoutContext, adornedRect);
+
+        auto transform = Matrix::makeTranslation(adornedRect.x, adornedRect.y, 0);
+        adorner->updateFinalLayoutHierarchical(layoutContext, transform);
     }
 }
 

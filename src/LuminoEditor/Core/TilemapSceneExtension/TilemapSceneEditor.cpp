@@ -182,6 +182,7 @@ Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(ln::Editor
 
 void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
 {
+#if 0   // TODO: ui layout リファクタリング中
     if (e->type() == ln::UIEvents::MouseDownEvent ||
         e->type() == ln::UIEvents::MouseUpEvent ||
         e->type() == ln::UIEvents::MouseMoveEvent) {
@@ -205,6 +206,7 @@ void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
 
 
     }
+#endif
 	//else if (e->type() == ln::UIEvents::MouseMoveEvent) {
 	//	auto me = static_cast<ln::UIMouseEventArgs*>(e);
  //       if (me->getMouseButtons() == ln::MouseButtons::Left) {

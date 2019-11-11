@@ -531,6 +531,7 @@ Ref<UIMessageTextArea> UIMessageTextArea::create()
 
 UIMessageTextArea::UIMessageTextArea()
 	: m_typingSpeed(0.05f)
+    , m_textDirty(false)
 {
 }
 
@@ -548,18 +549,22 @@ void UIMessageTextArea::init()
 	//p->addInline(r);
 }
 
+void UIMessageTextArea::setText(const StringRef& value)
+{
+    m_text = value;
+    m_textDirty = true;
+}
+
 Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	static bool init = false;
-	if (!init) {
-		RTDocumentBuilder builder(m_document);
-		builder.parse(finalStyle()->font, layoutContext->dpiScale(), u"Hello, Lumino!", constraint);
-		init = true;
-	}
+    if (m_textDirty) {
+        RTDocumentBuilder builder(m_document);
+        builder.parse(finalStyle()->font, layoutContext->dpiScale(), m_text, constraint);
+        m_textDirty = false;
+    }
 
-	// TODO: 構築後、最初の１回だけでよい
-	m_document->updateFontDesc(detail::FontHelper::getFontDesc(finalStyle()->font), layoutContext->dpiScale());
 
+    m_document->updateFontDesc(detail::FontHelper::getFontDesc(finalStyle()->font), layoutContext->dpiScale());
 
 	Size baseArea = Size::max(constraint, UIElement::measureOverride(layoutContext, constraint));
 

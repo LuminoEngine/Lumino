@@ -106,12 +106,12 @@ Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Size& fin
 }
 
 
-void UIViewport::onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect)
+void UIViewport::onUpdateLayout(UILayoutContext* layoutContext)
 {
 	for (auto& view : m_renderViews) {
-		view->updateUILayout(layoutContext, finalGlobalRect);
+		view->updateUILayout(layoutContext);
 		// TODO: view box
-		view->setActualScreenOffset(Point(finalGlobalRect.x, finalGlobalRect.y));
+		//view->setActualScreenOffset(Point(finalGlobalRect.x, finalGlobalRect.y));
 	}
 }
 
@@ -127,7 +127,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//Ref<RenderPass> oldRenderPass = graphicsContext->renderPass();
 
     // TODO: dp -> px 変換
-    Size viewSize = m_finalGlobalRect.getSize();
+    Size viewSize = actualSize();
 
 	// このスコープ終端で RenderTargetTexture::releaseTemporary() するわけにはいかない。
 	// この RenderTarget は context->drawImage() に乗ってこのスコープの外側でも使われるため、次回の描画までは再利用されないようにしたい。

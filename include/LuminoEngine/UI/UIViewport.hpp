@@ -33,7 +33,7 @@ protected:
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
-	virtual void onUpdateLayout(UILayoutContext* layoutContext, const Rect& finalGlobalRect) override;
+	virtual void onUpdateLayout(UILayoutContext* layoutContext) override;
     //virtual void render(UIRenderingContext* context);
 	virtual void onRender(UIRenderingContext* context) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;

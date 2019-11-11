@@ -30,6 +30,7 @@ class App_Example_MessageWindow : public Application
         Engine::mainUIView()->addElement(window1);
 
         auto message1 = UIMessageTextArea::create();
+        message1->setText(u"Hello, Lumino!");
         window1->addElement(message1);
 
     }
