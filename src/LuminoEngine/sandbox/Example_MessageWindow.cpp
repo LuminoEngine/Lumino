@@ -12,6 +12,8 @@ using namespace ln;
 class App_Example_MessageWindow : public Application
 {
     Ref<UIButton> m_button1;
+    Ref<UIMessageTextArea> m_message1;
+    int m_step = 0;
 
     virtual void onInit() override
     {
@@ -21,8 +23,7 @@ class App_Example_MessageWindow : public Application
 
         auto window1 = UIWindow::create();
         window1->setPosition(10, 10);
-        window1->setHorizontalAlignment(HAlignment::Center);
-        //window1->setWidth(200);
+        window1->setWidth(200);
         window1->setHeight(100);
         window1->setBackgroundImage(windowSkin);
         window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
@@ -30,11 +31,42 @@ class App_Example_MessageWindow : public Application
         window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
         Engine::mainUIView()->addElement(window1);
 
-        auto message1 = UIMessageTextArea::create();
-        message1->setMargin(16);
-        message1->setText(u"Hello, Lumino!");
-        window1->addElement(message1);
+        m_message1 = UIMessageTextArea::create();
+        m_message1->setMargin(16);
+        m_message1->setText(u"Hello, Lumino!");
+        window1->addElement(m_message1);
+    }
 
+    virtual void onUpdate() override
+    {
+        if (Input::isTriggered(InputButtons::Submit)) {
+
+            switch (m_step)
+            {
+            case 0:
+                m_message1->setText(u"All in the golden afternoon");
+                break;
+            case 1:
+                m_message1->setText(u"Full leisurely we glide;");
+                break;
+            case 2:
+                m_message1->setText(u"For both our oars, with little skill,");
+                break;
+            case 3:
+                m_message1->setText(u"By little arms are plied,");
+                break;
+            case 4:
+                m_message1->setText(u"While little hands make vain pretence");
+                break;
+            case 5:
+                m_message1->setText(u"Our wanderings to guide.");
+                break;
+            default:
+                break;
+            }
+
+            m_step++;
+        }
     }
 };
 

@@ -185,6 +185,7 @@ private:
     float m_typingSpeed;
     float m_localTime;
     RTLayoutContext m_layoutContext;
+    Size m_extentSize;  // 未タイプ部分も含めた全体サイズ
 };
 
 } // namespace detail

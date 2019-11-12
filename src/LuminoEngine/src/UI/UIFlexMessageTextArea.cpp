@@ -162,7 +162,7 @@ void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
     RTGlyph glyph;
     glyph.codePoint = ch;
     glyph.localPos = pos;
-    glyph.timeOffset = m_layoutingContext->timeOffset;
+    glyph.timeOffset = m_layoutingContext->document->localTime() + m_layoutingContext->timeOffset;
     glyph.transform = Matrix::Identity;
     glyph.color = Color::White;
     m_glyphs.add(glyph);
@@ -260,6 +260,8 @@ Size RTDocument::measureLayout(UILayoutContext* context, const Size& constraint)
         size.width += block->desiredSize().width;
         size.height = std::max(size.height, block->desiredSize().height);
     }
+    m_extentSize = size;
+
 	return size;
 }
 
