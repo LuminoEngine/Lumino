@@ -288,4 +288,68 @@ inline Ref<ListCollection<TItem>> makeListCollection()
 	return makeObject<ListCollection<TItem>>();
 }
 
+
+
+
+class NotifyCollectionChangedBase;
+
+/** This enum describes the action that caused a CollectionChanged event. */
+enum class NotifyCollectionChangedAction
+{
+	/** The contents of the collection changed dramatically. */
+	Reset,
+
+	/** Item were added to the collection. */
+	Add,
+
+	/** Item were removed from the collection. */
+	Remove,
+
+	/** Item were replaced in the collection. */
+	Replace,
+
+	/** Item were moved within the collection. */
+	Move,
+};
+
+struct NotifyCollectionChangedEventArgs
+{
+	NotifyCollectionChangedAction m_action = NotifyCollectionChangedAction::Reset;
+	Ref<Variant> m_newItem;
+	Ref<Variant> m_oldItem;
+	int m_newStartingIndex = -1;
+	int m_oldStartingIndex = -1;
+};
+
+class INotifyCollectionChangedHandler
+{
+protected:
+	virtual void onNotifyCollectionChanged(const NotifyCollectionChangedEventArgs* args) = 0;
+
+	friend class NotifyCollectionChangedBase;
+};
+
+// ListBox などにバインドしたりする ObservableCollection のベース。
+// I/F は Variant. 
+// NotifyCollectionChanged は、Model 側に持たせたいコレクションのI/F.
+// Owner は、View 側に持たせたいコレクションのI/F.
+// ListBoxItem や WorldObject などのリスト.
+// Owner(ListBox) に変更通知を出すために使用する.
+class Collection : public Object
+{
+public:
+	// TODO: internal
+	//virtual int getItemCount() const = 0;
+	//virtual const Variant* getItemAsVariant(int index) = 0;	// この Variant は共有インスタンスでかまわない
+
+	void addNotifyCollectionChangedHandler(INotifyCollectionChangedHandler* handler);
+	void removeNotifyCollectionChangedHandler(INotifyCollectionChangedHandler* handler);
+
+protected:
+	void raiseCollectionChanged(const NotifyCollectionChangedEventArgs* args);
+
+private:
+	List<INotifyCollectionChangedHandler*> m_handlers;
+};
+
 } // namespace ln

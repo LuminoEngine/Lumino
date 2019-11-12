@@ -27,7 +27,7 @@ enum class UIVisibility : uint8_t
     Collapsed,
 };
 
-
+// TODO: obsolete
 enum class UICollectionChangedAction
 {
     Add,
