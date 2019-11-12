@@ -16,6 +16,7 @@
 
 
 namespace ln {
+namespace detail {
 
 //==============================================================================
 // 表示用 (編集非対応) の Document
@@ -30,265 +31,64 @@ namespace ln {
 class RTDocument;
 class RTInline;
 
-// 単一文字。最小単位。
-//struct RTGlyph
-//{
-//	Vector2 pos;
-//	uint32_t codePoint;
-//};
-//class RTGlyph
-//	: public Object
-//{
-//public:
-//	RTGlyph() {}
-//	void init() { Object::init(); }
-//
-//private:
-//};
 
-class RTTextElement
-	: public Object
-{
-public:
-
-	/** フォントファミリ名を設定します。*/
-	void setFontFamily(const Optional<String>& value) { m_fontFamily = value; }
-
-	/** フォントファミリ名を取得します。*/
-	const Optional<String>& getFontFamily() const { return m_fontFamily; }
-
-	/** フォントサイズを設定します。*/
-	void setFontSize(const Optional<float>& value) { m_fontSize = value; }
-
-	/** フォントサイズを取得します。*/
-	const Optional<float>& getFontSize() const { return m_fontSize; }
-
-	/** フォントの太字有無を設定します。*/
-	void setFontBold(const Optional<UIFontWeight>& value) { m_fontWeight = value; }
-
-	/** フォントの太字有無を取得します。*/
-	const Optional<UIFontWeight>& fontWeight() const { return m_fontWeight; }
-
-	/** フォントのイタリック体有無を設定します。*/
-	void setFontItalic(const Optional<UIFontStyle>& value) { m_fontStyle = value; }
-
-	/** フォントのイタリック体有無を取得します。*/
-	const Optional<UIFontStyle>& isFontItalic() const { return m_fontStyle; }
-
-	///** フォントのアンチエイリアス有無を設定します。*/
-	//void setFontAntiAlias(bool value) { m_fontData.isAntiAlias = value; m_fontDataModified = true; }
-
-	///** フォントのアンチエイリアス有無を取得します。*/
-	//bool isFontAntiAlias() const { return m_fontData.isAntiAlias; }
-
-//	Brush* getForeground() const;
-//
-//protected:
-//	virtual void onFontDataChanged(const ln::detail::FontData& newData);
-
-	virtual void updateFontDescHierarchical(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale);
-	//const detail::FontDesc& finalFontDesc() const { return m_finalFontDesc; }
-	const Ref<Font>& finalFont() const { return m_finalFont; }
-
-	virtual Size measureLayout(const Size& constraint) { return Size::Zero; }
-	virtual Size arrangeLayout(const Size& areaSize) { return Size::Zero; }
-
-LN_CONSTRUCT_ACCESS:
-	RTTextElement() {}
-	virtual ~RTTextElement() {}
-	void init() { Object::init(); }
-
-LN_INTERNAL_ACCESS:
-	//ln::detail::DocumentsManager* getManager() const { return m_manager; }
-	//virtual InternalTextElementType getInternalTextElementType() const;
-	//void setParent(TextElement* parent) { m_parent = parent; }
-	//TextElement* GetParent() const { return m_parent; }
-	//int getThisRevision() const { return m_thisRevision; }
-	//int getChildrenRevision() const { return m_childrenRevision; }
-	//bool isDeleted() const { return m_deleted; }
-
-private:
-	Optional<String> m_fontFamily;
-	Optional<float> m_fontSize;
-	Optional<UIFontWeight> m_fontWeight;
-	Optional<UIFontStyle> m_fontStyle;
-	Ref<Font> m_finalFont;	// TODO: これと、updateFontDescHierarchical での作成処理は Run にだけあればいいので、派生側に移動した方がメモリ消費少なくて済む
-
-	//ln::detail::DocumentsManager*		m_manager;
-	//TextElement*						m_parent;
-	//ln::detail::FontData				m_fontData;
-	//Ref<Brush>			m_foreground;
-	//bool					m_fontDataModified;
-
-
-	//int								m_thisRevision;
-	//int								m_childrenRevision;
-
-	//bool					m_deleted;
-};
-
-
-// https://docs.microsoft.com/ja-jp/dotnet/framework/wpf/advanced/flow-document-overview
-class RTBlock
-	: public Object
-{
-public:
-	RTBlock() {}
-	virtual ~RTBlock() = default;
-	void init() {}
-
-	void addInline(RTInline* inl);
-	void clearInlines();
-
-	void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset);
-
-	void updateFontDesc(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale);
-
-protected:
-
-LN_INTERNAL_ACCESS:
-	//void insertInlines(int index, const List<Ref<RTInline>>& inlines);
-	const List<Ref<RTInline>>& getInlines() const { return m_inlines; }
-
-private:
-	List<Ref<RTInline>> m_inlines;
-};
-
-// コンテンツを段落としてグループ化するために使用される。
-// HTML では <br/> で改行を含めることができるが、
-// ひとまずここでは論理行を表す。
-class RTParagraph
-	: public RTBlock
-{
-public:
-	RTParagraph() {}
-	void init() { RTBlock::init(); }
-
-
-private:
-};
-
-// インラインコンテンツのベース。
-// Run や Link, IconImage, ルビ付きRun など。
-// テキストの装飾範囲も兼ねる。
-// WPF のフロードキュメントでは Inline(Span) のネストも可能であるが、ここではサポートしない。
-class RTInline
-	: public RTTextElement
-{
-public:
-	RTInline() {}
-	virtual ~RTInline() = default;
-	void init() {}
-
-	virtual void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset) {}
-
-private:
-};
 
 class RTRun
-	: public RTInline
-	, public detail::MeasureTextLayoutEngine
+    : public RTInline
+    , public MeasureTextLayoutEngine
 {
 public:
-	RTRun();
-	void init() { RTInline::init(); }
+    RTRun();
+    void init() { RTInline::init(); }
 
-	void setText(const StringRef& text) { m_text = text; }
+    void setText(const String& text);
 
-	virtual void updateFontDescHierarchical(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale) override
-	{
-		RTInline::updateFontDescHierarchical(parentFinalFont, defaultFont, dpiScale);
-
-		//m_rawFont = detail::EngineDomain::fontManager()->lookupFontCore(finalFontDesc(), dpiScale);
-	}
-
-	virtual void updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset) override;
-
-	void addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset);
-
-	virtual Size measureLayout(const Size& constraint) override;
-	virtual Size arrangeLayout(const Size& areaSize) override;
+    virtual void layout(RTLayoutContext* context, const Point& globalOffset) override;
+    virtual void render(UIRenderingContext* context, RTDocument* document) override;
 
 protected:
-	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
+    virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
 
-	// TextElement interface
-	//virtual void onFontDataChanged(const ln::detail::FontData& newData) override;
-	//virtual InternalTextElementType getInternalTextElementType() const override;
+    // TextElement interface
+    //virtual void onFontDataChanged(const ln::detail::FontData& newData) override;
+    //virtual InternalTextElementType getInternalTextElementType() const override;
 
 //LN_INTERNAL_ACCESS:
 //	const UTF32* getText() const { return m_text.c_str(); }
 //	int getLength() const { return m_text.getLength(); }
 
 private:
-	//ln::detail::SimpleStringBuilder<UTF32>	m_text;
-	//Ref<GlyphRun>				m_glyphRun;
-	String m_text;
-	//Ref<detail::FontCore> m_rawFont;
-	//List<RTGlyph> m_glyphs;
-	std::vector<detail::FlexGlyph> m_glyphs;
-	//Ref<detail::FlexGlyphRun> m_flexGlyphRun;
-	RTDocument* m_layoutingDocument;
-	bool m_dirty;
+    //ln::detail::SimpleStringBuilder<UTF32>	m_text;
+    //Ref<GlyphRun>				m_glyphRun;
+    String m_text;
+    //Ref<detail::FontCore> m_rawFont;
+    //List<RTGlyph> m_glyphs;
+    //std::vector<detail::FlexGlyph> m_glyphs;
+    //Ref<detail::FlexGlyphRun> m_flexGlyphRun;
+    //RTDocument* m_layoutingDocument;
+    Size m_layoutingSize;
+    RTLayoutContext* m_layoutingContext;
+
+    bool m_textDirty;
+
+    List<RTGlyph> m_glyphs;
 };
 
-//// 装飾範囲
-//class RTSpan
-//	: public RTInline
+//class RTPhysicalLine
+//    : public Object
 //{
 //public:
-//	RTSpan();
-//	virtual ~RTSpan();
-//	void initialize();
+//    RTPhysicalLine(RTLineBlock* block);
 //
 //private:
-//	// Inline List
+//    RTLineBlock* m_block;
+//    List<RTGlyph> m_glyphs;
 //};
-//
-//
-//class RTLineBreak
-//	: public RTInline
-//{
-//public:
-//	RTLineBreak();
-//	virtual ~RTLineBreak();
-//	void initialize();
-//
-//private:
-//	//virtual InternalTextElementType getInternalTextElementType() const;
-//};
-//
-
-class RTDocument
-	: public Object
-{
-public:
-	RTDocument();
-	void clear();
-	void addBlock(RTBlock* block);
-	void updateFontDesc(const detail::FontDesc& defaultFont, float dpiScale);
-	void updateFrame(float elapsedSeconds);
-	Size measureLayout(const Size& constraint);
-	Size arrangeLayout(const Size& areaSize);
-	//void updateGlyphs();
-	void render(UIRenderingContext* context);
-
-	//void addGlyph(const RTGlyph& value) { m_glyphs.add(value); }
-	const Ref<detail::FlexText>& flexText() const { return m_flexText; }
-
-private:
-	List<Ref<RTBlock>> m_blockList;
-	//List<RTGlyph> m_glyphs;
-	Ref<detail::FlexText> m_flexText;
-	float m_localTime;
-};
-
-
 
 //==============================================================================
 // RTTextElement
 
-void RTTextElement::updateFontDescHierarchical(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale)
+void RTTextElement::updateFont(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale)
 {
 	if (!m_finalFont) {
 		m_finalFont = makeObject<Font>();
@@ -299,232 +99,225 @@ void RTTextElement::updateFontDescHierarchical(const Font* parentFinalFont, cons
 		m_finalFont->setSize((m_fontSize) ? m_fontSize.value() : parentFinalFont->size());
 		m_finalFont->setBold((m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parentFinalFont->isBold());
 		m_finalFont->setItalic((m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : parentFinalFont->isItalic());
-		//m_finalFontDesc.Family = (m_fontFamily) ? m_fontFamily.value() : parent->m_finalFontDesc.Family;
-		//m_finalFontDesc.Size = (m_fontSize) ? m_fontSize.value() : parent->m_finalFontDesc.Size;
-		//m_finalFontDesc.isBold = (m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : parent->m_finalFontDesc.isBold;
-		//m_finalFontDesc.isItalic = (m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : parent->m_finalFontDesc.isItalic;
 	}
 	else {
 		m_finalFont->setFamily((m_fontFamily) ? m_fontFamily.value() : defaultFont.Family);
 		m_finalFont->setSize((m_fontSize) ? m_fontSize.value() : defaultFont.Size);
 		m_finalFont->setBold((m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : defaultFont.isBold);
 		m_finalFont->setItalic((m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : defaultFont.isItalic);
-		//m_finalFontDesc.Family = (m_fontFamily) ? m_fontFamily.value() : defaultFont.Family;
-		//m_finalFontDesc.Size = (m_fontSize) ? m_fontSize.value() : defaultFont.Size;
-		//m_finalFontDesc.isBold = (m_fontWeight) ? (m_fontWeight.value() == UIFontWeight::Bold) : defaultFont.isBold;
-		//m_finalFontDesc.isItalic = (m_fontStyle) ? (m_fontStyle.value() == UIFontStyle::Italic) : defaultFont.isItalic;
-	}
+    }
 }
 
 //==============================================================================
-// RTBlock
+// RTInline
 
-void RTBlock::addInline(RTInline* inl)
+RTInline::RTInline()
 {
-	if (LN_REQUIRE(inl)) return;
-	m_inlines.add(inl);
-}
-
-void RTBlock::clearInlines()
-{
-	m_inlines.clear();
-}
-
-void RTBlock::updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset)
-{
-	for (auto& inl : m_inlines) {
-		inl->updateVisualData(document, areaSize, offset);
-	}
-}
-
-void RTBlock::updateFontDesc(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale)
-{
-	//RTTextElement::updateFontDesc(parent, defaultFont, dpiScale);
-	for (auto& inl : m_inlines) {
-		inl->updateFontDescHierarchical(parentFinalFont, defaultFont, dpiScale);
-	}
 }
 
 //==============================================================================
 // RTRun
 
 RTRun::RTRun()
-	: m_dirty(true)
-	//: m_flexGlyphRun(makeRef<detail::FlexGlyphRun>())
+    : m_textDirty(true)
 {
 }
 
-void RTRun::updateVisualData(RTDocument* document, const Size& areaSize, const Vector2& offset)
+void RTRun::setText(const String& text)
 {
-#if 0
-	m_glyphs.clear();
-	m_layoutingDocument = document;
-
-	layout(m_rawFont, m_text.c_str(), m_text.length(), Rect(0, 0, areaSize), 0, TextAlignment::Left);
-	m_layoutingDocument->flexText()->addGlyphRun(m_glyphs.data(), m_glyphs.size(), m_rawFont, Color::White);
-
-	m_layoutingDocument = nullptr;
-	//void layout(FontCore* font, const Char* text, size_t length, const Rect& targetArea, float strokeSize, TextAlignment alignment);
-	// layout;
-
-#endif
-
-	//LN_NOTIMPLEMENTED();	// TODO: m_rawFontの部分をかえた
-	document->flexText()->addGlyphRun(m_glyphs.data(), m_glyphs.size(), finalFont(), Color::White);
+    m_text = text;
+    m_textDirty = true;
 }
 
-void RTRun::addGlyph(uint32_t codePoint, const Vector3& pos, float timeOffset)
+void RTRun::layout(RTLayoutContext* context, const Point& globalOffset)
 {
-	detail::FlexGlyph g;
-	g.codePoint = codePoint;
-	g.pos = pos;
-	g.timeOffset = timeOffset;
-	m_glyphs.push_back(g);
-	//m_layoutingDocument->flexText()->addGlyphRun(g, );
-	m_dirty = true;
+    RTInline::layout(context, globalOffset);
+
+    if (m_textDirty) {
+        m_glyphs.clear();
+        m_layoutingSize = Size::Zero;
+        m_layoutingContext = context;
+
+        detail::FontCore* fontCore = detail::FontHelper::resolveFontCore(finalFont(), context->layoutContext->dpiScale());
+        TextLayoutEngine::layout(fontCore, m_text.c_str(), m_text.length(), Rect(0, 0, FLT_MAX, FLT_MAX), 0, TextAlignment::Left);
+
+        m_textDirty = false;
+    }
+}
+
+void RTRun::render(UIRenderingContext* context, RTDocument* document)
+{
+    RTInline::render(context, document);
+    for (auto& glyph : m_glyphs) {
+        if (glyph.timeOffset <= document->localTime()) {
+            auto transform = Matrix::makeTranslation(Vector3(glyph.localPos, 0.0f));
+            context->drawChar(glyph.codePoint, glyph.color, finalFont(), transform);
+        }
+    }
 }
 
 void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
 {
-	//RTGlyph g;
-	//g.pos = pos;
-	//g.codePoint = ch;
-	//m_layoutingDocument->addGlyph(g);
-	detail::FlexGlyph g;
-	g.codePoint = ch;
-	g.pos = Vector3(pos, 0);
-	g.timeOffset = 0;
-	m_glyphs.push_back(g);
-	//m_layoutingDocument->flexText()->addGlyphRun(g,)
+    RTGlyph glyph;
+    glyph.codePoint = ch;
+    glyph.localPos = pos;
+    glyph.timeOffset = m_layoutingContext->timeOffset;
+    glyph.transform = Matrix::Identity;
+    glyph.color = Color::White;
+    m_glyphs.add(glyph);
+
+    m_layoutingSize.width += size.width;
+    m_layoutingSize.height = std::max(m_layoutingSize.height, size.height);
+
+    m_layoutingContext->timeOffset += m_layoutingContext->document->typingSpeed();
 }
 
-Size RTRun::measureLayout(const Size& constraint)
+//==============================================================================
+// RTLineBlock
+
+void RTLineBlock::clearInlines()
 {
-	return constraint;
+	m_inlines.clear();
 }
 
-Size RTRun::arrangeLayout(const Size& areaSize)
+void RTLineBlock::addInline(RTInline* inl)
 {
-	return areaSize;
+	if (LN_REQUIRE(inl)) return;
+	m_inlines.add(inl);
+}
+
+void RTLineBlock::updateFont(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale)
+{
+    RTTextElement::updateFont(parentFinalFont, defaultFont, dpiScale);
+	for (auto& inl : m_inlines) {
+		inl->updateFont(parentFinalFont, defaultFont, dpiScale);
+	}
+}
+
+void RTLineBlock::layout(RTLayoutContext* context, const Point& globalOffset)
+{
+    Point offset = globalOffset;
+    Size size;
+    for (auto& inl : m_inlines) {
+        offset.x = size.width;
+        inl->layout(context, offset);
+        size.width += inl->desiredSize().width;
+        size.height = std::max(size.height, inl->desiredSize().height);
+    }
+    setDesiredSize(size);
+}
+
+void RTLineBlock::render(UIRenderingContext* context, RTDocument* document)
+{
+    for (auto& inl : m_inlines) {
+        inl->render(context, document);
+    }
 }
 
 //==============================================================================
 //
 
 RTDocument::RTDocument()
-	: m_flexText(makeRef<detail::FlexText>())
-	, m_localTime(0.0f)
+	: m_typingSpeed(0.5f)
+    , m_localTime(0.0f)
 {
 }
 
 void RTDocument::clear()
 {
 	m_blockList.clear();
-	m_flexText->clear();
 	m_localTime = 0.0f;
 }
 
-void RTDocument::addBlock(RTBlock* block)
+void RTDocument::addBlock(RTLineBlock* block)
 {
 	if (LN_REQUIRE(block)) return;
 	m_blockList.add(block);
 }
 
-void RTDocument::updateFontDesc(const detail::FontDesc& defaultFont, float dpiScale)
+void RTDocument::updateFont(const detail::FontDesc& defaultFont, float dpiScale)
 {
 	for (auto& block : m_blockList) {
-		block->updateFontDesc(nullptr, defaultFont, dpiScale);
+		block->updateFont(nullptr, defaultFont, dpiScale);
 	}
 }
 
 void RTDocument::updateFrame(float elapsedSeconds)
 {
 	m_localTime += elapsedSeconds;
-	m_flexText->setTime(m_localTime);
 }
 
-// TODO: 折り返しする場合は constraint の幅で折り返し、下方向に改行した分で全体サイズを返す。
-Size RTDocument::measureLayout(const Size& constraint)
+Size RTDocument::measureLayout(UILayoutContext* context, const Size& constraint)
 {
-	return constraint;
+    m_layoutContext.document = this;
+    m_layoutContext.layoutContext = context;
+    m_layoutContext.timeOffset = 0.0f;
+
+    Size size;
+    for (auto& block : m_blockList) {
+        block->layout(&m_layoutContext, Point::Zero);
+        size.width += block->desiredSize().width;
+        size.height = std::max(size.height, block->desiredSize().height);
+    }
+	return size;
 }
 
-Size RTDocument::arrangeLayout(const Size& areaSize)
+Size RTDocument::arrangeLayout(UILayoutContext* context, const Size& areaSize)
 {
-	//m_glyphs.clear();
-	m_flexText->clear();
-	for (auto& block : m_blockList) {
-		block->updateVisualData(this, areaSize, Vector2::Zero);
-	}
-
 	return areaSize;
 }
 
-//void RTDocument::updateGlyphs()
-//{
-//	m_glyphs.clear();
-//}
-
 void RTDocument::render(UIRenderingContext* context)
 {
-	//context->setBlendMode(BlendMode::Normal);
-	for (auto& run : m_flexText->glyphRuns()) {
-		context->drawFlexGlyphRun(&run);
-	}
-	//for (auto& glyph : m_glyphs) {
-	//	Char ch = glyph.codePoint;
-	//	context->setBaseTransfrom(Matrix::makeTranslation(Vector3(glyph.pos, 0)));
-	//	context->drawText(StringRef(&ch, 1), Color::White);
-	//}
+    for (auto& block : m_blockList) {
+        block->render(context, this);
+    }
 }
 
+//==============================================================================
+// RTPhysicalLine
+
+//RTPhysicalLine::RTPhysicalLine(RTLineBlock* block)
+//{
+//}
 
 //==============================================================================
 // RTDocumentBuilder
 
 class RTDocumentBuilder
-	: public detail::TextLayoutEngine
 {
 public:
 	RTDocumentBuilder(RTDocument* doc);
 	void parse(Font* font, float dpiScale, const ln::String& text, const Size& areaSize);
 
 private:
-	virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
 
 	RTDocument* m_document;
-	RTRun* m_currentRun;
-	float m_timeOffset;
+	//RTRun* m_currentRun;
+	//float m_timeOffset;
 };
 
 
 RTDocumentBuilder::RTDocumentBuilder(RTDocument* doc)
 	: m_document(doc)
-	, m_currentRun(nullptr)
+	//, m_currentRun(nullptr)
 {
 }
 
 void RTDocumentBuilder::parse(Font* font, float dpiScale, const ln::String& text, const Size& areaSize)
 {
 	m_document->clear();
-	m_timeOffset = 0.0f;
+	//m_timeOffset = 0.0f;
 
-	auto p = makeObject<RTParagraph>();
+	auto p = makeObject<RTLineBlock>();
 	m_document->addBlock(p);
 	auto r = makeObject<RTRun>();
+    r->setText(text);
 	p->addInline(r);
-	m_currentRun = r;
-
-	detail::FontCore* fontCore = detail::FontHelper::resolveFontCore(font, dpiScale);
-	layout(fontCore, text.c_str(), text.length(), Rect(0, 0, areaSize), 0, TextAlignment::Left);
+	//m_currentRun = r;
 }
 
-void RTDocumentBuilder::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
-{
-	m_currentRun->addGlyph(ch, Vector3(pos, 0), m_timeOffset);
-	m_timeOffset += 1.0f;
-}
-
+} // namespace detail
 
 //==============================================================================
 // UIMessageTextArea
@@ -543,7 +336,7 @@ UIMessageTextArea::UIMessageTextArea()
 void UIMessageTextArea::init()
 {
 	UIElement::init();
-	m_document = makeObject<RTDocument>();
+	m_document = makeObject<detail::RTDocument>();
 
 
 	//auto p = makeObject<RTParagraph>();
@@ -563,25 +356,24 @@ void UIMessageTextArea::setText(const StringRef& value)
 Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     if (m_textDirty) {
-        RTDocumentBuilder builder(m_document);
+        detail::RTDocumentBuilder builder(m_document);
         builder.parse(finalStyle()->font, layoutContext->dpiScale(), m_text, constraint);
         m_textDirty = false;
     }
 
-
-    m_document->updateFontDesc(detail::FontHelper::getFontDesc(finalStyle()->font), layoutContext->dpiScale());
+    m_document->updateFont(detail::FontHelper::getFontDesc(finalStyle()->font), layoutContext->dpiScale());
 
 	Size baseArea = Size::max(constraint, UIElement::measureOverride(layoutContext, constraint));
 
 
 	//return m_document->measureLayout(constraint);
-	return Size::min(m_document->measureLayout(constraint), baseArea);
+	return Size::min(m_document->measureLayout(layoutContext, constraint), baseArea);
 	//return UIElement::measureOverride(constraint);
 }
 
 Size UIMessageTextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-	return Size::min(m_document->arrangeLayout(finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
+	return Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
 	//return UIElement::arrangeOverride(finalSize);
 }
 

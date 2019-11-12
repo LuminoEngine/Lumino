@@ -143,7 +143,7 @@ public:
 
     // font が nullptr の場合は defaultFont
     void drawText(const StringRef& text, const Color& color, Font* font = nullptr);
-	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr);
+	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr, const Matrix& transform = Matrix::Identity);
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
 

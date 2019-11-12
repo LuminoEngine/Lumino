@@ -528,7 +528,7 @@ void RenderingContext::drawText(const StringRef& text, const Color& color, Font*
     //ptr->setLocalBoundingSphere(sphere);
 }
 
-void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* font)
+void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* font, const Matrix& transform)
 {
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	auto* element = m_builder->addNewDrawElement<detail::DrawCharElement>(
@@ -536,6 +536,7 @@ void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* fo
 		m_builder->spriteTextRenderFeatureStageParameters());
 	element->codePoint = codePoint;
 	element->color = color;
+    element->transform = transform;
 
 	if (font)
 		element->font = font;

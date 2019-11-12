@@ -159,6 +159,7 @@ public:
 	uint32_t codePoint;
 	Ref<Font> font;
 	Color color;
+    Matrix transform;
 
 	//virtual FontCore* getFontCore(float dpiScale) override
 	//{
@@ -167,7 +168,7 @@ public:
 
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 	{
-		return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawChar(batchList, context, font, codePoint, color, combinedWorldMatrix());
+		return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawChar(batchList, context, font, codePoint, color, combinedWorldMatrix() * transform);
 	}
 };
 
