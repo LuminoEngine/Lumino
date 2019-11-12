@@ -140,6 +140,7 @@ void RTRun::layout(RTLayoutContext* context, const Point& globalOffset)
 
         detail::FontCore* fontCore = detail::FontHelper::resolveFontCore(finalFont(), context->layoutContext->dpiScale());
         TextLayoutEngine::layout(fontCore, m_text.c_str(), m_text.length(), Rect(0, 0, FLT_MAX, FLT_MAX), 0, TextAlignment::Left);
+        setDesiredSize(m_layoutingSize);
 
         m_textDirty = false;
     }
