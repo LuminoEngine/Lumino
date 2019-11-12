@@ -167,8 +167,8 @@ void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
     glyph.color = Color::White;
     m_glyphs.add(glyph);
 
-    m_layoutingSize.width += size.width;
-    m_layoutingSize.height = std::max(m_layoutingSize.height, size.height);
+    m_layoutingSize.width = std::max(m_layoutingSize.width, pos.x + size.width);
+    m_layoutingSize.height = std::max(m_layoutingSize.height, pos.y + size.height);
 
     m_layoutingContext->timeOffset += m_layoutingContext->document->typingSpeed();
 }
