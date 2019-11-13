@@ -13,6 +13,7 @@ class App_Example_MessageWindow : public Application
 {
     Ref<UIButton> m_button1;
     Ref<UIMessageTextArea> m_message1;
+    Ref<UIMessageTextArea> m_message2;
     int m_step = 0;
 
     virtual void onInit() override
@@ -35,6 +36,26 @@ class App_Example_MessageWindow : public Application
         m_message1->setMargin(16);
         m_message1->setText(u"Hello, Lumino!");
         window1->addElement(m_message1);
+
+        auto window2 = UIWindow::create();
+        window2->setPosition(10, 10);
+        window2->setHorizontalAlignment(HAlignment::Left);
+        window2->setVerticalAlignment(VAlignment::Top);
+        window2->setWidth(200);
+        window2->setHeight(100);
+        window2->setBackgroundImage(windowSkin);
+        window2->setBackgroundImageRect(Rect(0, 0, 48, 48));
+        window2->setBackgroundImageBorder(Thickness(8));
+        window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+        Engine::mainUIView()->addElement(window2);
+
+        m_message2 = UIMessageTextArea::create();
+        m_message2->setMargin(16);
+        m_message2->setText(
+            u"window2->setPosition(10, 10);\n"
+            u"window2->setHorizontalAlignment(HAlignment::Left);\n"
+            u"window2->setVerticalAlignment(VAlignment::Top);");
+        window2->addElement(m_message2);
     }
 
     virtual void onUpdate() override

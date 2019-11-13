@@ -49,6 +49,7 @@ struct RTGlyph
 {
     uint32_t codePoint = 0;
     Vector2 localPos;   // 矩形の左上
+    Size size;
     //Vector2 basePoint;  // グリフの中央
     //Vector2 baseOffset;
     float timeOffset = 0.0f;
@@ -102,10 +103,10 @@ public:
     const Ref<Font>& finalFont() const { return m_finalFont; }
 
     virtual void layout(RTLayoutContext* context, const Point& globalOffset) { }
-
-    const Size& desiredSize() const { return m_desiredSize; }
-
     virtual void render(UIRenderingContext* context, RTDocument* document) {}
+
+    const Size& extentSize() const { return m_extentSize; }
+    const Size& actualSize() const { return m_actualSize; }
 
 LN_CONSTRUCT_ACCESS:
     RTTextElement() {}
@@ -113,7 +114,8 @@ LN_CONSTRUCT_ACCESS:
     void init() { Object::init(); }
 
 protected:
-    void setDesiredSize(const Size& size) { m_desiredSize = size; }
+    void setExtentSize(const Size& size) { m_extentSize = size; }
+    void setActualSize(const Size& size) { m_actualSize = size; }
 
 private:
     Optional<String> m_fontFamily;
@@ -121,7 +123,8 @@ private:
     Optional<UIFontWeight> m_fontWeight;
     Optional<UIFontStyle> m_fontStyle;
     Ref<Font> m_finalFont;	// TODO: これと、updateFontDescHierarchical での作成処理は Run にだけあればいいので、派生側に移動した方がメモリ消費少なくて済む
-    Size m_desiredSize;
+    Size m_extentSize;
+    Size m_actualSize;
 };
 
 // インラインコンテンツのベース。
@@ -179,6 +182,10 @@ public:
 
     float typingSpeed() const { return m_typingSpeed; }
     float localTime() const { return m_localTime; }
+    const Size& extentSize() const { return m_extentSize; }
+    const Size& actualSize() const { return m_actualSize; }
+    void setRenderOffset(const Point& value) { m_renderOffset = value; }
+    const Point& renderOffset() const { return m_renderOffset; }
 
 private:
     List<Ref<RTLineBlock>> m_blockList;
@@ -186,6 +193,8 @@ private:
     float m_localTime;
     RTLayoutContext m_layoutContext;
     Size m_extentSize;  // 未タイプ部分も含めた全体サイズ
+    Size m_actualSize;  // タイプされた部分のみのサイズ
+    Point m_renderOffset;
 };
 
 } // namespace detail

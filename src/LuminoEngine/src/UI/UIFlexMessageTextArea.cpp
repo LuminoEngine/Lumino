@@ -5,6 +5,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 //#include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include "UIEditableTextArea.hpp"
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 
 #include "../Font/TextLayoutEngine.hpp"
@@ -140,18 +141,29 @@ void RTRun::layout(RTLayoutContext* context, const Point& globalOffset)
 
         detail::FontCore* fontCore = detail::FontHelper::resolveFontCore(finalFont(), context->layoutContext->dpiScale());
         TextLayoutEngine::layout(fontCore, m_text.c_str(), m_text.length(), Rect(0, 0, FLT_MAX, FLT_MAX), 0, TextAlignment::Left);
-        setDesiredSize(m_layoutingSize);
+        setExtentSize(m_layoutingSize);
 
         m_textDirty = false;
     }
+
+    auto actualSize = Size::Zero;
+    for (auto& glyph : m_glyphs) {
+        if (glyph.timeOffset <= context->document->localTime()) {
+            actualSize.width = std::max(actualSize.width, glyph.localPos.x + glyph.size.width);
+            actualSize.height = std::max(actualSize.height, glyph.localPos.y + glyph.size.height);
+        }
+    }
+    setActualSize(actualSize);
 }
 
 void RTRun::render(UIRenderingContext* context, RTDocument* document)
 {
     RTInline::render(context, document);
+
+    auto renderOffset = document->renderOffset();
     for (auto& glyph : m_glyphs) {
         if (glyph.timeOffset <= document->localTime()) {
-            auto transform = Matrix::makeTranslation(Vector3(glyph.localPos, 0.0f));
+            auto transform = Matrix::makeTranslation(Vector3(renderOffset.x + glyph.localPos, renderOffset.y));
             context->drawChar(glyph.codePoint, glyph.color, finalFont(), transform);
         }
     }
@@ -162,6 +174,7 @@ void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
     RTGlyph glyph;
     glyph.codePoint = ch;
     glyph.localPos = pos;
+    glyph.size = size;
     glyph.timeOffset = m_layoutingContext->document->localTime() + m_layoutingContext->timeOffset;
     glyph.transform = Matrix::Identity;
     glyph.color = Color::White;
@@ -198,14 +211,19 @@ void RTLineBlock::updateFont(const Font* parentFinalFont, const detail::FontDesc
 void RTLineBlock::layout(RTLayoutContext* context, const Point& globalOffset)
 {
     Point offset = globalOffset;
-    Size size;
+    auto extentSize = Size::Zero;
+    auto actualSize = Size::Zero;
     for (auto& inl : m_inlines) {
-        offset.x = size.width;
+        offset.x = extentSize.width;
+        offset.y = extentSize.height;
         inl->layout(context, offset);
-        size.width += inl->desiredSize().width;
-        size.height = std::max(size.height, inl->desiredSize().height);
+        extentSize.width += inl->extentSize().width;
+        extentSize.height = std::max(extentSize.height, inl->extentSize().height);
+        actualSize.width += inl->actualSize().width;
+        actualSize.height = std::max(actualSize.height, inl->actualSize().height);
     }
-    setDesiredSize(size);
+    setExtentSize(extentSize);
+    setActualSize(actualSize);
 }
 
 void RTLineBlock::render(UIRenderingContext* context, RTDocument* document)
@@ -254,15 +272,19 @@ Size RTDocument::measureLayout(UILayoutContext* context, const Size& constraint)
     m_layoutContext.layoutContext = context;
     m_layoutContext.timeOffset = 0.0f;
 
-    Size size;
+    auto extentSize = Size::Zero;
+    auto actualSize = Size::Zero;
     for (auto& block : m_blockList) {
         block->layout(&m_layoutContext, Point::Zero);
-        size.width += block->desiredSize().width;
-        size.height = std::max(size.height, block->desiredSize().height);
+        extentSize.width += block->extentSize().width;
+        extentSize.height = std::max(extentSize.height, block->extentSize().height);
+        actualSize.width += block->actualSize().width;
+        actualSize.height = std::max(actualSize.height, block->actualSize().height);
     }
-    m_extentSize = size;
+    m_extentSize = extentSize;
+    m_actualSize = actualSize;
 
-	return size;
+	return m_extentSize;
 }
 
 Size RTDocument::arrangeLayout(UILayoutContext* context, const Size& areaSize)
@@ -312,11 +334,16 @@ void RTDocumentBuilder::parse(Font* font, float dpiScale, const ln::String& text
 	m_document->clear();
 	//m_timeOffset = 0.0f;
 
-	auto p = makeObject<RTLineBlock>();
-	m_document->addBlock(p);
-	auto r = makeObject<RTRun>();
-    r->setText(text);
-	p->addInline(r);
+    List<UITextRange> lines;
+    UITextRange::splitLineRanges(text, &lines);
+    for (auto& line : lines) {
+        auto p = makeObject<RTLineBlock>();
+        m_document->addBlock(p);
+        auto r = makeObject<RTRun>();
+        r->setText(text.substr(line.beginIndex, line.length()));
+        p->addInline(r);
+    }
+
 	//m_currentRun = r;
 }
 
@@ -369,20 +396,20 @@ Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Si
 	Size baseArea = Size::max(constraint, UIElement::measureOverride(layoutContext, constraint));
 
 
-	//return m_document->measureLayout(constraint);
 	return Size::min(m_document->measureLayout(layoutContext, constraint), baseArea);
-	//return UIElement::measureOverride(constraint);
 }
 
 Size UIMessageTextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 	return Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
-	//return UIElement::arrangeOverride(finalSize);
 }
 
 void UIMessageTextArea::onUpdateFrame(float elapsedSeconds)
 {
 	m_document->updateFrame(elapsedSeconds * (1.0f / m_typingSpeed));
+
+    //float diffY = m_document->extentSize().height - m_document->actualSize().height;
+    //m_document->setRenderOffset(Point(0, -diffY));
 }
 
 void UIMessageTextArea::onRender(UIRenderingContext* context)
