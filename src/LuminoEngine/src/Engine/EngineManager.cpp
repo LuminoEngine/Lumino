@@ -599,15 +599,6 @@ void EngineManager::updateFrame()
 		m_uiManager->dispatchPostedEvents();
 	}
 
-	if (m_mainUIContext) {
-		// onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
-		// 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
-		// ユーザー処理の前に正しい ViewPixelSize を計算しておく。
-		m_mainUIContext->updateStyleTree();
-		//m_mainUIContext->updateLayoutTree();
-		m_mainWindow->updateLayoutTree();
-	}
-
     //------------------------------------------------
     // Main update phase
 
@@ -637,6 +628,15 @@ void EngineManager::updateFrame()
     //------------------------------------------------
     // Post update phase
 
+    // 大体他の updateFrame で要素位置の調整が入るので、その後にレイアウトする。
+    if (m_mainUIContext) {
+        // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
+        // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
+        // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
+        m_mainUIContext->updateStyleTree();
+        //m_mainUIContext->updateLayoutTree();
+        m_mainWindow->updateLayoutTree();
+    }
 
 }
 

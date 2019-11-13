@@ -30,7 +30,7 @@ class App_Example_MessageWindow : public Application
         window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window1->setBackgroundImageBorder(Thickness(8));
         window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
-        Engine::mainUIView()->addElement(window1);
+        //Engine::mainUIView()->addElement(window1);
 
         m_message1 = UIMessageTextArea::create();
         m_message1->setMargin(16);
@@ -54,7 +54,14 @@ class App_Example_MessageWindow : public Application
         m_message2->setText(
             u"window2->setPosition(10, 10);\n"
             u"window2->setHorizontalAlignment(HAlignment::Left);\n"
-            u"window2->setVerticalAlignment(VAlignment::Top);");
+            u"window2->setVerticalAlignment(VAlignment::Top);\n"
+            u"window2->setWidth(200);\n"
+            u"window2->setHeight(100);\n"
+            u"window2->setBackgroundImage(windowSkin);\n"
+            u"window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n"
+            u"window2->setBackgroundImageBorder(Thickness(8));\n"
+            u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
+        m_message2->setViewportLineCount(2);
         window2->addElement(m_message2);
     }
 

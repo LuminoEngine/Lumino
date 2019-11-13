@@ -44,8 +44,8 @@ public:
 
     void setText(const String& text);
 
-    virtual void layout(RTLayoutContext* context, const Point& globalOffset) override;
-    virtual void render(UIRenderingContext* context, RTDocument* document) override;
+    virtual void layout(RTLayoutContext* context) override;
+    virtual void render(UIRenderingContext* context, RTDocument* document, const Point& globalOffset) override;
 
 protected:
     virtual void onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size) override;
@@ -67,7 +67,7 @@ private:
     //std::vector<detail::FlexGlyph> m_glyphs;
     //Ref<detail::FlexGlyphRun> m_flexGlyphRun;
     //RTDocument* m_layoutingDocument;
-    Size m_layoutingSize;
+    //Size m_layoutingSize;
     RTLayoutContext* m_layoutingContext;
 
     bool m_textDirty;
@@ -130,40 +130,43 @@ void RTRun::setText(const String& text)
     m_textDirty = true;
 }
 
-void RTRun::layout(RTLayoutContext* context, const Point& globalOffset)
+void RTRun::layout(RTLayoutContext* context)
 {
-    RTInline::layout(context, globalOffset);
+    RTInline::layout(context);
 
     if (m_textDirty) {
         m_glyphs.clear();
-        m_layoutingSize = Size::Zero;
+        //m_layoutingSize = Size::Zero;
         m_layoutingContext = context;
 
         detail::FontCore* fontCore = detail::FontHelper::resolveFontCore(finalFont(), context->layoutContext->dpiScale());
         TextLayoutEngine::layout(fontCore, m_text.c_str(), m_text.length(), Rect(0, 0, FLT_MAX, FLT_MAX), 0, TextAlignment::Left);
-        setExtentSize(m_layoutingSize);
+        //setExtentSize(m_layoutingSize);
 
         m_textDirty = false;
     }
 
+    auto extentSize = Size::Zero;
     auto actualSize = Size::Zero;
     for (auto& glyph : m_glyphs) {
+        extentSize.width = std::max(extentSize.width, glyph.localPos.x + glyph.size.width);
+        extentSize.height = context->document->lineSpacing();
+
         if (glyph.timeOffset <= context->document->localTime()) {
             actualSize.width = std::max(actualSize.width, glyph.localPos.x + glyph.size.width);
-            actualSize.height = std::max(actualSize.height, glyph.localPos.y + glyph.size.height);
+            actualSize.height = context->document->lineSpacing();
         }
     }
     setActualSize(actualSize);
 }
 
-void RTRun::render(UIRenderingContext* context, RTDocument* document)
+void RTRun::render(UIRenderingContext* context, RTDocument* document, const Point& globalOffset)
 {
-    RTInline::render(context, document);
+    RTInline::render(context, document, globalOffset);
 
-    auto renderOffset = document->renderOffset();
     for (auto& glyph : m_glyphs) {
         if (glyph.timeOffset <= document->localTime()) {
-            auto transform = Matrix::makeTranslation(Vector3(renderOffset.x + glyph.localPos, renderOffset.y));
+            auto transform = Matrix::makeTranslation(Vector3(globalOffset.x + glyph.localPos.x, globalOffset.y + glyph.localPos.y, 0));
             context->drawChar(glyph.codePoint, glyph.color, finalFont(), transform);
         }
     }
@@ -180,8 +183,8 @@ void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
     glyph.color = Color::White;
     m_glyphs.add(glyph);
 
-    m_layoutingSize.width = std::max(m_layoutingSize.width, pos.x + size.width);
-    m_layoutingSize.height = std::max(m_layoutingSize.height, pos.y + size.height);
+    //m_layoutingSize.width = std::max(m_layoutingSize.width, pos.x + size.width);
+    //m_layoutingSize.height = std::max(m_layoutingSize.height, pos.y + size.height);
 
     m_layoutingContext->timeOffset += m_layoutingContext->document->typingSpeed();
 }
@@ -208,15 +211,12 @@ void RTLineBlock::updateFont(const Font* parentFinalFont, const detail::FontDesc
 	}
 }
 
-void RTLineBlock::layout(RTLayoutContext* context, const Point& globalOffset)
+void RTLineBlock::layout(RTLayoutContext* context)
 {
-    Point offset = globalOffset;
     auto extentSize = Size::Zero;
     auto actualSize = Size::Zero;
     for (auto& inl : m_inlines) {
-        offset.x = extentSize.width;
-        offset.y = extentSize.height;
-        inl->layout(context, offset);
+        inl->layout(context);
         extentSize.width += inl->extentSize().width;
         extentSize.height = std::max(extentSize.height, inl->extentSize().height);
         actualSize.width += inl->actualSize().width;
@@ -226,10 +226,12 @@ void RTLineBlock::layout(RTLayoutContext* context, const Point& globalOffset)
     setActualSize(actualSize);
 }
 
-void RTLineBlock::render(UIRenderingContext* context, RTDocument* document)
+void RTLineBlock::render(UIRenderingContext* context, RTDocument* document, const Point& globalOffset)
 {
+    auto offset = globalOffset;
     for (auto& inl : m_inlines) {
-        inl->render(context, document);
+        inl->render(context, document, offset);
+        offset.x = inl->extentSize().width;
     }
 }
 
@@ -275,11 +277,11 @@ Size RTDocument::measureLayout(UILayoutContext* context, const Size& constraint)
     auto extentSize = Size::Zero;
     auto actualSize = Size::Zero;
     for (auto& block : m_blockList) {
-        block->layout(&m_layoutContext, Point::Zero);
-        extentSize.width += block->extentSize().width;
-        extentSize.height = std::max(extentSize.height, block->extentSize().height);
-        actualSize.width += block->actualSize().width;
-        actualSize.height = std::max(actualSize.height, block->actualSize().height);
+        block->layout(&m_layoutContext);
+        extentSize.width = std::max(extentSize.width, block->extentSize().width);
+        extentSize.height += block->extentSize().height;
+        actualSize.width = std::max(actualSize.width, block->actualSize().width);
+        actualSize.height += block->actualSize().height;
     }
     m_extentSize = extentSize;
     m_actualSize = actualSize;
@@ -294,8 +296,10 @@ Size RTDocument::arrangeLayout(UILayoutContext* context, const Size& areaSize)
 
 void RTDocument::render(UIRenderingContext* context)
 {
+    auto offset = m_renderOffset;
     for (auto& block : m_blockList) {
-        block->render(context, this);
+        block->render(context, this, offset);
+        offset.y += block->actualSize().height;
     }
 }
 
@@ -360,6 +364,7 @@ Ref<UIMessageTextArea> UIMessageTextArea::create()
 UIMessageTextArea::UIMessageTextArea()
 	: m_typingSpeed(0.05f)
     , m_textDirty(false)
+    , m_viewportLineCount(0)
 {
 }
 
@@ -396,24 +401,50 @@ Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Si
 	Size baseArea = Size::max(constraint, UIElement::measureOverride(layoutContext, constraint));
 
 
+    if (m_viewportLineCount > 0) {
+        auto core = detail::FontHelper::resolveFontCore(finalStyle()->font, layoutContext->dpiScale());
+        detail::FontGlobalMetrics metrics;
+        core->getGlobalMetrics(&metrics);
+
+        m_document->setLineSpacing(metrics.lineSpace);
+        m_viewportFitSize = metrics.lineSpace * m_viewportLineCount;
+        // TODO: ルビの分の高さ（使わなくても常にその分のサイズをとっておき、すべての行のサイズは同じになるような仕様としたい）
+   
+        baseArea.height = m_viewportFitSize;
+    }
+
+
 	return Size::min(m_document->measureLayout(layoutContext, constraint), baseArea);
 }
 
 Size UIMessageTextArea::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-	return Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
+
+	auto size = Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
+    if (m_viewportLineCount > 0) {
+        size.height = m_viewportFitSize;
+    }
+
+
+    return size;
 }
 
 void UIMessageTextArea::onUpdateFrame(float elapsedSeconds)
 {
 	m_document->updateFrame(elapsedSeconds * (1.0f / m_typingSpeed));
 
+
     //float diffY = m_document->extentSize().height - m_document->actualSize().height;
-    //m_document->setRenderOffset(Point(0, -diffY));
+    //std::cout << actualSize().height << std::endl;
+    //std::cout << diffY << std::endl;
+    //m_document->setRenderOffset(Point(0, actualSize().height - (actualSize().height - diffY)));
+
 }
 
 void UIMessageTextArea::onRender(UIRenderingContext* context)
 {
+    m_document->setRenderOffset(Point(0, actualSize().height - m_document->actualSize().height));
+
 	m_document->render(context);
 }
 

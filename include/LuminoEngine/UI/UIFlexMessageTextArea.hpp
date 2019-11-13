@@ -22,6 +22,8 @@ public:
 
 	void setTypingSpeed(float value) { m_typingSpeed = value; }
 
+    void setViewportLineCount(int value) { m_viewportLineCount = value; }
+
 LN_CONSTRUCT_ACCESS:
     UIMessageTextArea();
 	void init();
@@ -38,6 +40,8 @@ private:
 	float m_typingSpeed;
     String m_text;
     bool m_textDirty;
+    int m_viewportLineCount;
+    float m_viewportFitSize;
 };
 
 namespace detail {
@@ -102,8 +106,8 @@ public:
     virtual void updateFont(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale);
     const Ref<Font>& finalFont() const { return m_finalFont; }
 
-    virtual void layout(RTLayoutContext* context, const Point& globalOffset) { }
-    virtual void render(UIRenderingContext* context, RTDocument* document) {}
+    virtual void layout(RTLayoutContext* context) { }
+    virtual void render(UIRenderingContext* context, RTDocument* document, const Point& globalOffset) {}
 
     const Size& extentSize() const { return m_extentSize; }
     const Size& actualSize() const { return m_actualSize; }
@@ -158,8 +162,8 @@ public:
     const List<Ref<RTInline>>& inlines() const { return m_inlines; }
 
     virtual void updateFont(const Font* parentFinalFont, const detail::FontDesc& defaultFont, float dpiScale) override;
-    virtual void layout(RTLayoutContext* context, const Point& globalOffset) override;
-    virtual void render(UIRenderingContext* context, RTDocument* document) override;
+    virtual void layout(RTLayoutContext* context) override;
+    virtual void render(UIRenderingContext* context, RTDocument* document, const Point& globalOffset) override;
 
 private:
     List<Ref<RTInline>> m_inlines;
@@ -186,6 +190,8 @@ public:
     const Size& actualSize() const { return m_actualSize; }
     void setRenderOffset(const Point& value) { m_renderOffset = value; }
     const Point& renderOffset() const { return m_renderOffset; }
+    void setLineSpacing(float value) { m_lineSpacing = value; }
+    float lineSpacing() const { return m_lineSpacing; }
 
 private:
     List<Ref<RTLineBlock>> m_blockList;
@@ -195,6 +201,7 @@ private:
     Size m_extentSize;  // 未タイプ部分も含めた全体サイズ
     Size m_actualSize;  // タイプされた部分のみのサイズ
     Point m_renderOffset;
+    float m_lineSpacing;
 };
 
 } // namespace detail
