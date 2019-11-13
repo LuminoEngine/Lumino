@@ -10,8 +10,8 @@ class Scene;
 class WorldObject;
 class Component;
 
-LN_CLASS(List)
-class ComponentList : public ListCollection<Ref<Component>>
+LN_CLASS()
+class ComponentList : public Collection<Ref<Component>>
 {
 
 };

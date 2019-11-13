@@ -43,6 +43,38 @@ public:
 };
 
 
+class LNWS_ln_VisualComponent : public ln::VisualComponent
+{
+public:
+
+
+};
+
+
+class LNWS_ln_SpriteComponent : public ln::SpriteComponent
+{
+public:
+
+
+};
+
+
+class LNWS_ln_Component : public ln::Component
+{
+public:
+
+
+};
+
+
+class LNWS_ln_ComponentList : public ln::ComponentList
+{
+public:
+
+
+};
+
+
 class LNWS_ln_WorldObject : public ln::WorldObject
 {
 public:
@@ -302,6 +334,63 @@ LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2D>(), id);
 }
 
+LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->setVisible(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->isVisible());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualComponent>(), id);
+}
+
+LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpriteComponent, spritecomponent)->setTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, texture)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SpriteComponent>(), id);
+}
+
+LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Component>(), id);
+}
+
+LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getLength());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+	auto item = LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index);
+	printf("LNI_HANDLE_TO_OBJECT ok. %p ===========================\n", item.get());
+    *outReturn = LNI_OBJECT_TO_HANDLE(item);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ComponentList>(), id);
+}
+
 LN_FLAT_API LnResult LnWorldObject_SetPosition(LnHandle worldobject, const LnVector3* pos)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -390,6 +479,13 @@ LN_FLAT_API LnResult LnWorldObject_CenterPoint(LnHandle worldobject, LnVector3* 
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnWorldObject_Components(LnHandle worldobject, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
     LNI_FUNC_TRY_END_RETURN;
 }
 

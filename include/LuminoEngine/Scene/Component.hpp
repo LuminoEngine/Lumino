@@ -11,6 +11,7 @@ namespace detail {
     class WorldObjectTransform;
 }
 
+LN_CLASS()
 class Component
 	: public Object
 {

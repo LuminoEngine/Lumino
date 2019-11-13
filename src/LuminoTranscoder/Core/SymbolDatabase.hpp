@@ -32,9 +32,9 @@ class DocumentInfo : public ln::RefObject
 public:
 	ln::Result init(const PIDocument* pi);
 
-	const ln::String& summary() const { return m_pi->summary; }
-	const ln::String& returns() const { return m_pi->returns; }
-	const ln::String& details() const { return m_pi->details; }
+	const ln::String& summary() const { return m_summary; }
+	const ln::String& returns() const { return m_returns; }
+	const ln::String& details() const { return m_details; }
 	const ln::List<Ref<ParameterDocumentInfo>>& params() const { return m_params; }
 
 	//ln::String copydocMethodName;
@@ -44,6 +44,9 @@ public:
 
 private:
 	const PIDocument* m_pi = nullptr;
+	ln::String m_summary;
+	ln::String m_returns;
+	ln::String m_details;
 	ln::List<Ref<ParameterDocumentInfo>> m_params;
 };
 
@@ -105,6 +108,7 @@ public:
 
 protected:
 	Symbol(SymbolDatabase* db);
+	ln::Result init();
 	ln::Result init(const PIDocument* document, PIMetadata* metadata);
 
 private:
@@ -247,6 +251,7 @@ public:
 public:
 	MethodSymbol(SymbolDatabase* db);
 	ln::Result init(PIMethod* pi, TypeSymbol* ownerType);
+	ln::Result init(TypeSymbol* ownerType, const ln::String& shortName, TypeSymbol* returnType, const ln::List<Ref<MethodParameterSymbol>>& params);
 	ln::Result link();
 
 	AccessLevel accessLevel() const { return m_accessLevel; }
@@ -261,9 +266,9 @@ public:
 	//MethodSymbol* overloadParent() const { return m_overloadParent; }
 	//const ln::List<MethodSymbol*>& overloadChildren() const { return m_overloadChildren; }
 
-	bool isConst() const { return m_pi->isConst; }
-	bool isStatic() const { return m_pi->isStatic; }
-	bool isVirtual() const { return m_pi->isVirtual; }
+	bool isConst() const { return m_isConst; }
+	bool isStatic() const { return m_isStatic; }
+	bool isVirtual() const { return m_isVirtual; }
 	bool isConstructor() const { return m_isConstructor; }	// 名前が init であるインスタンスメソッド
 	bool isInstance() const { return !isStatic(); }			// instance method
 	bool isEventConnector() const { return metadata()->hasKey(MetadataInfo::EventAttr); }
@@ -282,6 +287,10 @@ private:
 	ln::List<Ref<MethodParameterSymbol>> m_parameters;
 	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;	// FlatC-API としてのパラメータリスト。先頭が this だったり、末尾が return だったりする。
 	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
+
+	bool m_isConst = false;
+	bool m_isStatic = false;
+	bool m_isVirtual = false;
 	bool m_isConstructor = false;
 	bool m_hasStringDecl = false;
 
@@ -390,26 +399,6 @@ private:
 //
 //	ln::String m_shortName;
 };
-
-//class DelegateSymbol : public Symbol
-//{
-//public:
-//	DelegateSymbol(SymbolDatabase* db);
-//	ln::Result init(PIDelegate* piDelegate);
-//	ln::Result link();
-//
-//	const ln::String& shortName() const { return m_shortName; }
-//	TypeSymbol* returnType() const { return m_returnType; }
-//	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
-//	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
-//
-//private:
-//	Ref<PIDelegate> m_pi;
-//	TypeSymbol* m_returnType = nullptr;
-//	ln::String m_shortName;
-//	ln::List<Ref<MethodParameterSymbol>> m_parameters;
-//	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;
-//};
 
 class SymbolDatabase : public ln::RefObject
 {

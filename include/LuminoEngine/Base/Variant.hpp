@@ -292,7 +292,6 @@ public:
 		}
 	}
 
-private:
 	void assign(bool value);
 	void assign(Char value);
 	void assign(int8_t value);
@@ -313,7 +312,10 @@ private:
 	void assign(const Rect& value);
     void assign(const Ref<RefObject>& value);
 	void assign(RefObject* value) { assign(Ref<RefObject>(value)); }
+	template<class TValue> void assign(const Ref<TValue>& value) { assign(value.get()); }
 	void assign(const Ref<List<Ref<Variant>>>& value);
+
+private:
 	void changeType(VariantType newType);
 	void copy(const Variant& value);
 

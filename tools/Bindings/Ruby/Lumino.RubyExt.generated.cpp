@@ -41,6 +41,15 @@ extern "C" LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHand
 extern "C" LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D);
 extern "C" LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextureFormat format, LnHandle* outTexture2D);
 extern "C" LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value);
+extern "C" LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBool* outReturn);
+extern "C" LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture);
+extern "C" LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn);
+extern "C" LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn);
+extern "C" LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnWorldObject_SetPosition(LnHandle worldobject, const LnVector3* pos);
 extern "C" LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x, float y, float z);
 extern "C" LN_FLAT_API LnResult LnWorldObject_Position(LnHandle worldobject, LnVector3* outReturn);
@@ -54,6 +63,7 @@ extern "C" LN_FLAT_API LnResult LnWorldObject_Scale(LnHandle worldobject, LnVect
 extern "C" LN_FLAT_API LnResult LnWorldObject_SetCenterPoint(LnHandle worldobject, const LnVector3* value);
 extern "C" LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float x, float y, float z);
 extern "C" LN_FLAT_API LnResult LnWorldObject_CenterPoint(LnHandle worldobject, LnVector3* outReturn);
+extern "C" LN_FLAT_API LnResult LnWorldObject_Components(LnHandle worldobject, LnHandle* outReturn);
 extern "C" LN_FLAT_API void LnWorldObject_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool value);
 extern "C" LN_FLAT_API LnResult LnVisualObject_IsVisible(LnHandle visualobject, LnBool* outReturn);
@@ -98,6 +108,10 @@ VALUE g_class_Engine;
 VALUE g_class_GraphicsResource;
 VALUE g_class_Texture;
 VALUE g_class_Texture2D;
+VALUE g_class_VisualComponent;
+VALUE g_class_SpriteComponent;
+VALUE g_class_Component;
+VALUE g_class_ComponentList;
 VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
 VALUE g_class_Sprite;
@@ -417,6 +431,283 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
 }
 
 //==============================================================================
+// ln::VisualComponent
+
+struct Wrap_Component
+    : public Wrap_Object
+{
+    Wrap_Component()
+    {}
+};
+
+struct Wrap_VisualComponent
+    : public Wrap_Component
+{
+    Wrap_VisualComponent()
+    {}
+};
+
+static void LnVisualComponent_delete(Wrap_VisualComponent* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnVisualComponent_mark(Wrap_VisualComponent* obj)
+{
+	
+}
+
+static VALUE LnVisualComponent_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_VisualComponent* internalObj;
+
+    internalObj = new Wrap_VisualComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVisualComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnVisualComponent_mark, LnVisualComponent_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnVisualComponent_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_VisualComponent* internalObj;
+
+    internalObj = new Wrap_VisualComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVisualComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnVisualComponent_mark, LnVisualComponent_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnVisualComponent_SetVisible(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_VisualComponent* selfObj;
+    Data_Get_Struct(self, Wrap_VisualComponent, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_BOOL(value))
+        {
+            LnBool _value = LNRB_VALUE_TO_BOOL(value);
+            LnResult errorCode = LnVisualComponent_SetVisible(selfObj->handle, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::VisualComponent::setVisible - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVisualComponent_IsVisible(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_VisualComponent* selfObj;
+    Data_Get_Struct(self, Wrap_VisualComponent, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnBool _outReturn;
+            LnResult errorCode = LnVisualComponent_IsVisible(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::VisualComponent::isVisible - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::SpriteComponent
+
+struct Wrap_SpriteComponent
+    : public Wrap_VisualComponent
+{
+    Wrap_SpriteComponent()
+    {}
+};
+
+static void LnSpriteComponent_delete(Wrap_SpriteComponent* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnSpriteComponent_mark(Wrap_SpriteComponent* obj)
+{
+	
+}
+
+static VALUE LnSpriteComponent_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_SpriteComponent* internalObj;
+
+    internalObj = new Wrap_SpriteComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSpriteComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnSpriteComponent_mark, LnSpriteComponent_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnSpriteComponent_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_SpriteComponent* internalObj;
+
+    internalObj = new Wrap_SpriteComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSpriteComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnSpriteComponent_mark, LnSpriteComponent_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnSpriteComponent_SetTexture(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpriteComponent* selfObj;
+    Data_Get_Struct(self, Wrap_SpriteComponent, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE texture;
+        rb_scan_args(argc, argv, "1", &texture);
+        if (LNRB_VALUE_IS_OBJECT(texture))
+        {
+            LnHandle _texture = LuminoRubyRuntimeManager::instance->getHandle(texture);
+            LnResult errorCode = LnSpriteComponent_SetTexture(selfObj->handle, _texture);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpriteComponent::setTexture - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::Component
+
+
+static void LnComponent_delete(Wrap_Component* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnComponent_mark(Wrap_Component* obj)
+{
+	
+}
+
+static VALUE LnComponent_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Component* internalObj;
+
+    internalObj = new Wrap_Component();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Component* internalObj;
+
+    internalObj = new Wrap_Component();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+//==============================================================================
+// ln::ComponentList
+
+struct Wrap_ComponentList
+    : public Wrap_Object
+{
+    Wrap_ComponentList()
+    {}
+};
+
+static void LnComponentList_delete(Wrap_ComponentList* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnComponentList_mark(Wrap_ComponentList* obj)
+{
+	
+}
+
+static VALUE LnComponentList_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_ComponentList* internalObj;
+
+    internalObj = new Wrap_ComponentList();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponentList_allocate");
+    obj = Data_Wrap_Struct(klass, LnComponentList_mark, LnComponentList_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnComponentList_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_ComponentList* internalObj;
+
+    internalObj = new Wrap_ComponentList();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponentList_allocate");
+    obj = Data_Wrap_Struct(klass, LnComponentList_mark, LnComponentList_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnComponentList_GetLength(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ComponentList* selfObj;
+    Data_Get_Struct(self, Wrap_ComponentList, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            int _outReturn;
+            LnResult errorCode = LnComponentList_GetLength(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ComponentList::getLength - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnComponentList_GetItem(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ComponentList* selfObj;
+    Data_Get_Struct(self, Wrap_ComponentList, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE index;
+        rb_scan_args(argc, argv, "1", &index);
+        if (LNRB_VALUE_IS_NUMBER(index))
+        {
+            int _index = LNRB_VALUE_TO_NUMBER(index);
+            LnHandle _outReturn;
+            LnResult errorCode = LnComponentList_GetItem(selfObj->handle, _index, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LuminoRubyRuntimeManager::instance->wrapObject(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ComponentList::getItem - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
 // ln::WorldObject
 
 struct Wrap_WorldObject
@@ -690,6 +981,23 @@ static VALUE Wrap_LnWorldObject_CenterPoint(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::WorldObject::centerPoint - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnWorldObject_Components(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_WorldObject* selfObj;
+    Data_Get_Struct(self, Wrap_WorldObject, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnWorldObject_Components(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LuminoRubyRuntimeManager::instance->wrapObject(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::WorldObject::components - wrong argument type.");
     return Qnil;
 }
 
@@ -1562,7 +1870,7 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
     }
 
     VALUE handler, block;
-    rb_scan_args(argc, argv, "01&", &handler, &block);	// def add(handler=nil, &block)
+    rb_scan_args(argc, argv, "01&", &handler, &block);	// (handler=nil, &block)
     if (handler != Qnil) rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("add"), 1, handler);
     if (block != Qnil) rb_funcall(selfObj->connectOnClicked_Signal, rb_intern("add"), 1, block);
     return Qnil;
@@ -1626,6 +1934,27 @@ extern "C" void Init_Lumino()
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Create), -1);
     LnTexture2D_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture2D, LnTexture2D_allocateForGetObject));
 
+    g_class_Component = rb_define_class_under(g_rootModule, "Component", rb_cObject);
+    rb_define_alloc_func(g_class_Component, LnComponent_allocate);
+    LnComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Component, LnComponent_allocateForGetObject));
+
+    g_class_VisualComponent = rb_define_class_under(g_rootModule, "VisualComponent", g_class_Component);
+    rb_define_alloc_func(g_class_VisualComponent, LnVisualComponent_allocate);
+    rb_define_method(g_class_VisualComponent, "set_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_SetVisible), -1);
+    rb_define_method(g_class_VisualComponent, "is_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_IsVisible), -1);
+    LnVisualComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualComponent, LnVisualComponent_allocateForGetObject));
+
+    g_class_SpriteComponent = rb_define_class_under(g_rootModule, "SpriteComponent", g_class_VisualComponent);
+    rb_define_alloc_func(g_class_SpriteComponent, LnSpriteComponent_allocate);
+    rb_define_method(g_class_SpriteComponent, "set_texture", LN_TO_RUBY_FUNC(Wrap_LnSpriteComponent_SetTexture), -1);
+    LnSpriteComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_SpriteComponent, LnSpriteComponent_allocateForGetObject));
+
+    g_class_ComponentList = rb_define_class_under(g_rootModule, "ComponentList", rb_cObject);
+    rb_define_alloc_func(g_class_ComponentList, LnComponentList_allocate);
+    rb_define_method(g_class_ComponentList, "get_length", LN_TO_RUBY_FUNC(Wrap_LnComponentList_GetLength), -1);
+    rb_define_method(g_class_ComponentList, "get_item", LN_TO_RUBY_FUNC(Wrap_LnComponentList_GetItem), -1);
+    LnComponentList_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ComponentList, LnComponentList_allocateForGetObject));
+
     g_class_WorldObject = rb_define_class_under(g_rootModule, "WorldObject", rb_cObject);
     rb_define_alloc_func(g_class_WorldObject, LnWorldObject_allocate);
     rb_define_method(g_class_WorldObject, "set_position", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetPosition), -1);
@@ -1637,6 +1966,7 @@ extern "C" void Init_Lumino()
     rb_define_method(g_class_WorldObject, "scale", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_Scale), -1);
     rb_define_method(g_class_WorldObject, "set_center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetCenterPoint), -1);
     rb_define_method(g_class_WorldObject, "center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_CenterPoint), -1);
+    rb_define_method(g_class_WorldObject, "components", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_Components), -1);
     rb_define_method(g_class_WorldObject, "on_update", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_OnUpdate), -1);
     LnWorldObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_WorldObject, LnWorldObject_allocateForGetObject));
     LnWorldObject_OnUpdate_SetOverrideCallback(Wrap_LnWorldObject_OnUpdate_OverrideCallback);

@@ -85,6 +85,7 @@ private:
 };
 
 
+LN_CLASS()
 class SpriteComponent
 	: public VisualComponent
 {

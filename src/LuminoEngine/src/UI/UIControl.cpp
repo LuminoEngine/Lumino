@@ -17,7 +17,7 @@ LN_OBJECT_IMPLEMENT(UIControl, UIElement) {
 
 UIControl::UIControl()
     : m_enabledDirectChildrenContentAlignment(true)
-	, m_logicalChildren(makeObjectCollection<UIElement>())
+	, m_logicalChildren(makeCollection<Ref<UIElement>>())
 {
 }
 

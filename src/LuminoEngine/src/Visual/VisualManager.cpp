@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "VisualManager.hpp"
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
+#include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Engine/Property.hpp>	// TODO:
 #include "../Engine/EngineManager.hpp"	// TODO:
 
@@ -29,6 +30,8 @@ void VisualManager::init(const Settings& settings)
 	SpriteComponent::registerType(detail::EngineDomain::engineManager()->engineContext());
 	EngineDomain::registerType<SpriteFrame>();
     EngineDomain::registerType<SpriteFrameSet>();
+	EngineDomain::registerType<VisualComponent>();
+	EngineDomain::registerType<SpriteComponent>();
 
     LN_LOG_DEBUG << "VisualManager Initialization ended.";
 }

@@ -222,6 +222,48 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTexture
 
 
 //==============================================================================
+// ln::VisualComponent
+
+/**
+    @brief 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
+*/
+LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value);
+
+
+/**
+    @brief 可視状態を取得します。
+*/
+LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBool* outReturn);
+
+
+//==============================================================================
+// ln::SpriteComponent
+
+/**
+    @brief スプライトが表示するテクスチャを設定します。
+*/
+LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture);
+
+
+//==============================================================================
+// ln::Component
+
+//==============================================================================
+// ln::ComponentList
+
+/**
+    @brief 
+*/
+LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn);
+
+
+/**
+    @brief 
+*/
+LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn);
+
+
+//==============================================================================
 // ln::WorldObject
 
 /**
@@ -300,6 +342,12 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
     @brief このオブジェクトのローカルの中心位置を取得します。
 */
 LN_FLAT_API LnResult LnWorldObject_CenterPoint(LnHandle worldobject, LnVector3* outReturn);
+
+
+/**
+    @brief 
+*/
+LN_FLAT_API LnResult LnWorldObject_Components(LnHandle worldobject, LnHandle* outReturn);
 
 
 typedef LnResult(*LnWorldObject_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);

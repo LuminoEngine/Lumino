@@ -30,6 +30,9 @@ ln::Result DocumentInfo::init(const PIDocument* pi)
 {
 	LN_CHECK(pi);
 	m_pi = pi;
+	m_summary = m_pi->summary;
+	m_returns = m_pi->returns;
+	m_details = m_pi->details;
 
 	for (auto& i : m_pi->params) {
 		auto& s = ln::makeRef<ParameterDocumentInfo>();
@@ -87,6 +90,13 @@ ln::String MetadataInfo::getValue(const ln::StringRef& key, const ln::String& de
 Symbol::Symbol(SymbolDatabase* db)
 	: m_db(db)
 {
+	m_document = ln::makeRef<DocumentInfo>();
+	m_metadata = ln::makeRef<MetadataInfo>();
+}
+
+ln::Result Symbol::init()
+{
+	return true;
 }
 
 ln::Result Symbol::init(const PIDocument* document, PIMetadata* metadata)
@@ -260,9 +270,9 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 	if (!Symbol::init(db()->resolveCopyDoc(pi->document), pi->metadata)) return false;
 	LN_CHECK(pi);
 	LN_CHECK(ownerType);
+	m_ownerType = ownerType;
 	m_pi = pi;
 	m_accessLevel = m_pi->accessLevelAsEnum();
-	m_ownerType = ownerType;
 	m_shortName = m_pi->name;
 	m_fullName = m_ownerType->fullName() + u"::" + m_shortName;
 
@@ -277,16 +287,33 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 		m_accessLevel = AccessLevel::Public;
 	}
 
+	m_isConst = m_pi->isConst;
+	m_isStatic = m_pi->isStatic;
+	m_isVirtual = m_pi->isVirtual;
+	return true;
+}
+
+ln::Result MethodSymbol::init(TypeSymbol* ownerType, const ln::String& shortName, TypeSymbol* returnType, const ln::List<Ref<MethodParameterSymbol>>& params)
+{
+	if (!Symbol::init()) return false;
+	m_ownerType = ownerType;
+	m_accessLevel = AccessLevel::Public;
+	m_shortName = shortName;
+	m_fullName = m_ownerType->fullName() + u"::" + m_shortName;
+	m_returnType = returnType;
+	m_parameters = params;
 	return true;
 }
 
 ln::Result MethodSymbol::link()
 {
-	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
-	if (!m_returnType) return false;
+	if (m_pi) {
+		m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
+		if (!m_returnType) return false;
 
-	for (auto& p : m_parameters) {
-		if (!p->link()) return false;
+		for (auto& p : m_parameters) {
+			if (!p->link()) return false;
+		}
 	}
 
 	if (!makeFlatParameters()) return false;
@@ -510,6 +537,28 @@ ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind type
 
 ln::Result TypeSymbol::link()
 {
+	if (metadata()->hasKey(u"Collection")) {
+		auto typeName = metadata()->getValue(u"Collection");
+		auto type = db()->getTypeSymbol(typeName);
+		if (!type) {
+			db()->diag()->reportError(u"undefined symbol: " + typeName);
+			return false;
+		}
+
+		{
+			auto s = ln::makeRef<MethodSymbol>(db());
+			if (!s->init(this, u"getLength", PredefinedTypes::intType, {})) return false;
+			m_declaredMethods.add(s);
+		}
+		{
+			auto p = ln::makeRef<MethodParameterSymbol>(db());
+			if (!p->init(PredefinedTypes::intType, u"index")) return false;
+			auto s = ln::makeRef<MethodSymbol>(db());
+			if (!s->init(this, u"getItem", type, { p })) return false;
+			m_declaredMethods.add(s);
+		}
+	}
+
 	for (auto& i : m_fields) {
 		if (!i->link()) {
 			return false;
@@ -825,50 +874,6 @@ void TypeSymbol::ResolveCopyDoc()
 //	}
 //}
 
-
-//==============================================================================
-// DelegateSymbol
-
-//DelegateSymbol::DelegateSymbol(SymbolDatabase* db)
-//	: Symbol(db)
-//{
-//}
-//
-//ln::Result DelegateSymbol::init(PIDelegate* piDelegate)
-//{
-//	if (!Symbol::init(piDelegate->document, nullptr)) {
-//		return false;
-//	}
-//
-//	m_pi = piDelegate;
-//
-//	m_shortName = m_pi->name;
-//
-//	for (auto& i : m_pi->parameters) {
-//		auto s = ln::makeRef<MethodParameterSymbol>(db());
-//		if (!s->init(i)) return false;
-//		m_parameters.add(s);
-//	}
-//
-//	return true;
-//}
-//
-//ln::Result DelegateSymbol::link()
-//{
-//	m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
-//	if (!m_returnType) return false;
-//
-//	for (auto& p : m_parameters) {
-//		if (!p->link()) return false;
-//	}
-//
-//	for (auto& paramInfo : m_parameters) {
-//		m_flatParameters.add(paramInfo);
-//	}
-//
-//	return true;
-//}
-
 //==============================================================================
 // SymbolDatabase
 
@@ -901,64 +906,6 @@ ln::Result SymbolDatabase::linkTypes()
 	}
 
 	return true;
-#if 0
-	// structs
-	for (auto structInfo : structs)
-	{
-		for (auto fieldInfo : structInfo->declaredFields)
-		{
-			fieldInfo->type = findSymbol(fieldInfo->typeRawName);
-		}
-		for (auto methodInfo : structInfo->declaredMethods)
-		{
-			methodInfo->returnType = findSymbol(methodInfo->returnTypeRawName);
-
-			methodInfo->LinkParameters(this);
-		}
-
-		structInfo->Link(this);
-	}
-
-	// classes
-	for (auto classInfo : classes)
-	{
-		for (auto methodInfo : classInfo->declaredMethods)
-		{
-			methodInfo->returnType = findSymbol(methodInfo->returnTypeRawName);
-
-			methodInfo->LinkParameters(this);
-		}
-
-		classInfo->Link(this);
-
-		// ドキュメントとしてみるときのために、コンストラクタを先頭に出すようにする
-		std::stable_sort(classInfo->declaredMethods.begin(), classInfo->declaredMethods.end(), [](MethodSymbol* lhs, MethodSymbol* rhs)
-		{
-			int lv = lhs->isConstructor ? 0 : 1;
-			int rv = rhs->isConstructor ? 0 : 1;
-			return lv < rv;
-		});
-	}
-
-	// enums
-	for (auto enumInfo : enums)
-	{
-		enumInfo->isEnum = true;
-	}
-
-	// delegates
-	for (auto classInfo : delegates)
-	{
-		for (auto methodInfo : classInfo->declaredMethods)
-		{
-			methodInfo->returnType = findSymbol(methodInfo->returnTypeRawName);
-
-			methodInfo->LinkParameters(this);
-		}
-
-		classInfo->Link(this);
-	}
-#endif
 }
 
 //tr::Enumerator<ln::Ref<MethodSymbol>> SymbolDatabase::GetAllMethods()
@@ -1087,39 +1034,3 @@ TypeSymbol* SymbolDatabase::getTypeSymbol(const ln::String& typeFullName)
 		m_diag->reportError(u"Undefined type : " + typeFullName);
 	return type;
 }
-
-// typeFullName : const や &, * は除かれていること
-//ln::Ref<TypeSymbol> SymbolDatabase::findSymbol(ln::StringRef typeFullName)
-//{
-//	ln::Optional<ln::Ref<TypeSymbol>> type;
-//	
-//	type = predefineds.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-//	if (type != nullptr) return *type;
-//
-//	type = structs.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-//	if (type != nullptr) return *type;
-//
-//	type = classes.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-//	if (type != nullptr) return *type;
-//
-//	type = enums.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-//	if (type != nullptr) return *type;
-//
-//	type = delegates.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
-//	if (type)
-//		return *type;
-//
-//	// aliases
-//	if (typeFullName == _T("short")) return PredefinedTypes::int16Type;
-//	if (typeFullName == _T("ln::ln::StringRef")) return PredefinedTypes::stringType;
-//	if (typeFullName == _T("ln::EventConnection")) return PredefinedTypes::EventConnectionType;
-//
-//	LN_ENSURE(0, "Undefined type: %s", ln::String(typeFullName).c_str());
-//	return nullptr;
-//}
-
-//void SymbolDatabase::verify(DiagManager* diag)
-//{
-//}
-
-

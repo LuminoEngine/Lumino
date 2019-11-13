@@ -36,8 +36,17 @@ mainView.add_child(button1)
 
 
 
+
+
 texture1 = Texture2D.new("D:/tmp/lnpoi.png")
 sprite1 = Sprite.new(texture1, 2, 2)
+
+
+list = sprite1.components
+p list
+p list.get_length
+p list.get_item(0)
+
 
 while Engine.update do
 end

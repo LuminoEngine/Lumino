@@ -17,4 +17,5 @@ enum class TypeKind
 	Class,
 	Enum,
 	Delegate,
+	Collection,
 };

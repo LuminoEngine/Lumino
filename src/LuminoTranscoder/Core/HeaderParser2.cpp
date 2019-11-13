@@ -254,12 +254,45 @@ public:
 
 				// base classes
 				auto bases = decl->getDefinition()->bases();
+				QualType primaryBaseType;
 				for (auto& base : bases)
 				{
 					info->baseClassRawName = getRawTypeFullName(base.getType());
+					primaryBaseType = base.getType();
 					break;	// first only
 				}
 
+				if (info->baseClassRawName.contains(u"Collection")) {
+					SplitQualType primaryBaseTypeSplit = primaryBaseType.split();
+					if (primaryBaseTypeSplit.Ty->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
+						auto templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(primaryBaseTypeSplit.Ty);
+						auto args = templateSpecializationType->template_arguments();
+						if (args.size() == 1) {
+							const TemplateArgument& templateArg = args[0];	// "int", "Ref<Component>", etc
+							if (templateArg.getKind() == TemplateArgument::Type) {
+								QualType argType = templateArg.getAsType();
+								SplitQualType argTypeSplit = argType.split();
+								if (argTypeSplit.Ty->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {	// "Ref<Component>"
+									auto templateSpecializationType2 = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(argTypeSplit.Ty);
+									auto templateName2 = templateSpecializationType2->getTemplateName();
+									if (templateName2.getAsTemplateDecl()->getNameAsString() == "Ref") {	// "Ref"
+										auto args2 = templateSpecializationType2->template_arguments();		// <Component>
+										if (args2.size() == 1) {
+											const TemplateArgument& templateArg2 = args2[0];
+											QualType argType2 = templateArg2.getAsType();
+											SplitQualType argTypeSplit2 = argType2.split();
+											auto decl2 = argTypeSplit2.Ty->getAsCXXRecordDecl();
+
+											info->baseClassRawName = u"ln::Object";
+											info->metadata->values.insert({ u"Collection", getRawTypeFullName(argType2)/*decl2->getNameAsString()*/ });
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				
 				if (decl->getDefinition()->isStruct()) {
 					info->kind = u"Struct";
 				}
@@ -277,19 +310,19 @@ public:
 		return true;
 	}
 
-	bool VisitTemplateDecl(TemplateDecl* decl)
-	{
-		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
-		{
-			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
-			if (attr)
-			{
-				std::cout << decl->getNameAsString() << std::endl;
-			}
-		}
+	//bool VisitTemplateDecl(TemplateDecl* decl)
+	//{
+	//	if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+	//	{
+	//		auto* attr = m_parser->findUnlinkedAttrMacro(offset);
+	//		if (attr)
+	//		{
+	//			std::cout << decl->getNameAsString() << std::endl;
+	//		}
+	//	}
 
-		return true;
-	}
+	//	return true;
+	//}
 
 	// メンバ関数
 	bool VisitCXXMethodDecl(CXXMethodDecl* decl)
@@ -314,16 +347,8 @@ public:
 				attr->linked = true;
 
 				auto info = ln::makeRef<PIMethod>();
-				//info->owner = m_currentRecord;
 				info->name = ln::String::fromStdString(decl->getNameAsString());
 				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
-
-				//auto declText3 = getSourceText(SourceRange(decl->getInnerLocStart(), decl->getSourceRange().getEnd()));
-				//auto declText2 = getSourceText(SourceRange(decl->getQualifierLoc().getBeginLoc(), decl->getSourceRange().getEnd()));
-				//auto declText1 = getSourceText(SourceRange(decl->getSourceRange().getBegin(), decl->getSourceRange().getEnd()));
-				//auto declText4 = getSourceText(SourceRange(, decl->getSourceRange().getEnd()));
-				//auto declText = getSourceText(SourceRange(decl->getReturnTypeSourceRange().getEnd(), decl->getSourceRange().getEnd()));
-				//info->localSignature = PIDatabase::parseLocalSigneture(ln::String::fromStdString(declText), info->name);
 
 				// documentation
 				info->document = parseDocument(decl);
