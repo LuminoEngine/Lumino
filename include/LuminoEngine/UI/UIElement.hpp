@@ -332,7 +332,10 @@ public:
 	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
 
 	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
-	void setFocusable(bool value) { m_focusable = true; }
+	void setFocusable(bool value) { m_focusable = value; }
+
+    void setClipToBounds(bool value) { m_clipToBounds = value; }
+    bool clipToBounds() const { return m_clipToBounds; }
 
 	/** ウィンドウを前面にしてアクティブ化することを試みます。 */
 	void activate();
@@ -484,6 +487,7 @@ public: // TODO: internal
     int m_renderPriority;
     bool m_isHitTestVisible;	// TODO: flags
 	bool m_focusable;			// TODO: flags
+    bool m_clipToBounds;			// TODO: flags
 
     friend class UIContext;
     friend class UIFrameRenderView;

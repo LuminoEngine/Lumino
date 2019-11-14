@@ -66,6 +66,7 @@ UIElement::UIElement()
     , m_renderPriority(0)
     , m_isHitTestVisible(true)
 	, m_focusable(false)
+    , m_clipToBounds(false)
     , m_dirtyFlags(detail::UIElementDirtyFlags::None)
 {
     m_localStyle = makeObject<UIStyleClass>(String::Empty); // TODO: ふつうは static なオブジェクトのほうが多くなるので、必要なやつだけ遅延作成でいいと思う
@@ -782,6 +783,21 @@ void UIElement::render(UIRenderingContext* context)
 
         context->pushState();
 
+        if (m_clipToBounds) {
+            Vector2 points[] = {
+                Vector3::transformCoord({ 0, 0, 0 }, m_combinedFinalRenderTransform).xy(),
+                Vector3::transformCoord({ actualSize().width, 0, 0 }, m_combinedFinalRenderTransform).xy(),
+                Vector3::transformCoord({ 0, actualSize().height, 0 }, m_combinedFinalRenderTransform).xy(),
+                Vector3::transformCoord({ actualSize().width, actualSize().height, 0 }, m_combinedFinalRenderTransform).xy(),
+            };
+            Vector2 minPos = points[0];
+            Vector2 maxPos = points[0];
+            for (int i = 1; i < 4; i++) {
+                minPos = Vector2::min(minPos, points[i]);
+                maxPos = Vector2::max(maxPos, points[i]);
+            }
+            context->setScissorRect(RectI(minPos.x, minPos.y, maxPos.x - minPos.x, maxPos.y - minPos.y));
+        }
 
         {
             //Matrix m = Matrix::makeTranslation(-centerPoint());

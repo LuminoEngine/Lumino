@@ -62,6 +62,7 @@ class App_Example_MessageWindow : public Application
             u"window2->setBackgroundImageBorder(Thickness(8));\n"
             u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
         m_message2->setViewportLineCount(2);
+        m_message2->setClipToBounds(true);
         window2->addElement(m_message2);
     }
 

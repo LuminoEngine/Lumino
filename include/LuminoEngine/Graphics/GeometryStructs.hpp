@@ -503,6 +503,7 @@ public:
     void clip(const RectI& rect) { detail::GeometryStructsHelper::clip(this, rect); }
 
     static RectI fromFloatRect(const Rect& rect) { return RectI((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height); }
+    Rect toFloatRect() const { return Rect((float)x, (float)y, (float)width, (float)height); }
 
     bool operator==(const RectI& right) const { return (x == right.x && y == right.y && width == right.width && height == right.height); }
     bool operator!=(const RectI& right) const { return !operator==(right); }
