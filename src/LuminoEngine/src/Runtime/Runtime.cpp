@@ -53,12 +53,20 @@ int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle)
 //	*dst = ln::String::fromCString(src, -1, ln::TextEncoding::utf8Encoding()).c_str();
 //}
 //
-LnResult LnObject_Release(LnHandle obj)
+LN_FLAT_API LnResult LnObject_Release(LnHandle obj)
 {
 	if (obj) {
 		ln::detail::EngineDomain::runtimeManager()->releaseObject(obj);
 	}
 	return LN_SUCCESS;
+}
+
+LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj)
+{
+	if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj))
+		return ln::RefObjectHelper::getReferenceCount(t);
+	else
+		return 0;
 }
 
 } // extern "C"

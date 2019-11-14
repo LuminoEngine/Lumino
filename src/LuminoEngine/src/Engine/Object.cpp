@@ -12,6 +12,7 @@ namespace ln {
 Object::Object()
     : m_weakRefInfo(nullptr)
     , m_weakRefInfoMutex()
+	, m_runtimeData(0)
 {
 }
 

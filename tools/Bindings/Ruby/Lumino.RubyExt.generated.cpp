@@ -41,12 +41,12 @@ extern "C" LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHand
 extern "C" LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D);
 extern "C" LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextureFormat format, LnHandle* outTexture2D);
 extern "C" LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value);
 extern "C" LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBool* outReturn);
 extern "C" LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture);
 extern "C" LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id);
-extern "C" LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn);
 extern "C" LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn);
 extern "C" LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id);
@@ -108,9 +108,9 @@ VALUE g_class_Engine;
 VALUE g_class_GraphicsResource;
 VALUE g_class_Texture;
 VALUE g_class_Texture2D;
+VALUE g_class_Component;
 VALUE g_class_VisualComponent;
 VALUE g_class_SpriteComponent;
-VALUE g_class_Component;
 VALUE g_class_ComponentList;
 VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
@@ -431,7 +431,7 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
 }
 
 //==============================================================================
-// ln::VisualComponent
+// ln::Component
 
 struct Wrap_Component
     : public Wrap_Object
@@ -439,6 +439,45 @@ struct Wrap_Component
     Wrap_Component()
     {}
 };
+
+static void LnComponent_delete(Wrap_Component* obj)
+{
+    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    delete obj;
+}
+
+static void LnComponent_mark(Wrap_Component* obj)
+{
+	
+}
+
+static VALUE LnComponent_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Component* internalObj;
+
+    internalObj = new Wrap_Component();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Component* internalObj;
+
+    internalObj = new Wrap_Component();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+//==============================================================================
+// ln::VisualComponent
 
 struct Wrap_VisualComponent
     : public Wrap_Component
@@ -582,46 +621,6 @@ static VALUE Wrap_LnSpriteComponent_SetTexture(int argc, VALUE* argv, VALUE self
     }
     rb_raise(rb_eArgError, "ln::SpriteComponent::setTexture - wrong argument type.");
     return Qnil;
-}
-
-//==============================================================================
-// ln::Component
-
-
-static void LnComponent_delete(Wrap_Component* obj)
-{
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
-    delete obj;
-}
-
-static void LnComponent_mark(Wrap_Component* obj)
-{
-	
-}
-
-static VALUE LnComponent_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_Component* internalObj;
-
-    internalObj = new Wrap_Component();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
-    obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
-{
-    VALUE obj;
-    Wrap_Component* internalObj;
-
-    internalObj = new Wrap_Component();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
-    obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
 }
 
 //==============================================================================
@@ -1791,7 +1790,7 @@ LnResult Wrap_LnUIButtonBase_AddChild_OverrideCallback(LnHandle uicontrol, LnHan
 struct Wrap_UIButton
     : public Wrap_UIButtonBase
 {
-    VALUE connectOnClicked_Signal;
+    VALUE connectOnClicked_Signal = Qnil;
     bool connectOnClicked_EventConnect = false;
     Wrap_UIButton()
     {}
@@ -1799,18 +1798,22 @@ struct Wrap_UIButton
 
 static void LnUIButton_delete(Wrap_UIButton* obj)
 {
+    printf("LnUIButton_delete\n");
     LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
     delete obj;
 }
 
 static void LnUIButton_mark(Wrap_UIButton* obj)
 {
+    printf("LnUIButton_mark s %p\n", obj);
 	rb_gc_mark(obj->connectOnClicked_Signal);
+    printf("LnUIButton_mark e\n");
 
 }
 
 static VALUE LnUIButton_allocate(VALUE klass)
 {
+    printf("LnUIButton_allocate\n");
     VALUE obj;
     Wrap_UIButton* internalObj;
 
@@ -1845,6 +1848,7 @@ static VALUE Wrap_LnUIButton_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnUIButton_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self);
+	        //    LnRuntime_SetManagedObjectId(getHandle(obj), 100);
             return Qnil;
         }
     }

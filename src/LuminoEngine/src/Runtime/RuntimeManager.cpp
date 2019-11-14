@@ -14,6 +14,8 @@ RuntimeManager::~RuntimeManager()
 
 void RuntimeManager::init(const Settings& settings)
 {
+	LN_LOG_DEBUG << "UIManager Initialization started.";
+
 	// オブジェクト管理配列
 	for (int i = 511; i >= 0; --i)
 	{
@@ -28,11 +30,17 @@ void RuntimeManager::init(const Settings& settings)
 	}
 
 	m_systemAliving = true;
+
+	LN_LOG_DEBUG << "UIManager Initialization finished.";
 }
 
 void RuntimeManager::dispose()
 {
+	LN_LOG_DEBUG << "UIManager Initialization started.";
+
 	m_systemAliving = false;
+
+	LN_LOG_DEBUG << "UIManager Initialization finished.";
 }
 
 LnHandle RuntimeManager::makeObjectWrap(Object* obj)

@@ -222,6 +222,9 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTexture
 
 
 //==============================================================================
+// ln::Component
+
+//==============================================================================
 // ln::VisualComponent
 
 /**
@@ -244,9 +247,6 @@ LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBoo
 */
 LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture);
 
-
-//==============================================================================
-// ln::Component
 
 //==============================================================================
 // ln::ComponentList

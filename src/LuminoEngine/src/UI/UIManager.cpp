@@ -40,7 +40,7 @@ void UIManager::init(const Settings& settings)
 
 	//m_defaultLayout = makeObject<UIFrameLayout>();
 
-    LN_LOG_DEBUG << "UIManager Initialization ended.";
+    LN_LOG_DEBUG << "UIManager Initialization finished.";
 }
 
 void UIManager::dispose()

@@ -43,6 +43,14 @@ public:
 };
 
 
+class LNWS_ln_Component : public ln::Component
+{
+public:
+
+
+};
+
+
 class LNWS_ln_VisualComponent : public ln::VisualComponent
 {
 public:
@@ -52,14 +60,6 @@ public:
 
 
 class LNWS_ln_SpriteComponent : public ln::SpriteComponent
-{
-public:
-
-
-};
-
-
-class LNWS_ln_Component : public ln::Component
 {
 public:
 
@@ -334,6 +334,11 @@ LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2D>(), id);
 }
 
+LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Component>(), id);
+}
+
 LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -365,11 +370,6 @@ LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SpriteComponent>(), id);
 }
 
-LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Component>(), id);
-}
-
 LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -380,9 +380,7 @@ LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outR
 LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-	auto item = LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index);
-	printf("LNI_HANDLE_TO_OBJECT ok. %p ===========================\n", item.get());
-    *outReturn = LNI_OBJECT_TO_HANDLE(item);
+    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index));
     LNI_FUNC_TRY_END_RETURN;
 }
 

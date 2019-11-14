@@ -82,6 +82,8 @@ extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
 */
 LN_FLAT_API LnResult LnObject_Release(LnHandle obj);
 
+LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj);
+
 
 #ifdef __cplusplus
 } // extern "C"
