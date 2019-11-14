@@ -105,6 +105,8 @@ int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc fa
 
 void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj)
 {
+    stepIncrementalGC();
+
     // grow
 	if (m_objectListIndexStack.size() == 0)
 	{
@@ -126,8 +128,36 @@ void LuminoRubyRuntimeManager::unregisterWrapperObject(LnHandle handle)
 {
     LnObject_Release(handle);
 	int index = (int)LnRuntime_GetManagedObjectId(handle);
-	m_objectList[index] = Qnil;
+
+    printf("dump type ----\n");
+    for (VALUE v : m_objectList) {
+        printf("type:0x%x\n", TYPE(v));
+    }
+	//m_objectList[index] = Qnil;
 	m_objectListIndexStack.push(index);
+}
+
+void LuminoRubyRuntimeManager::stepIncrementalGC()
+{
+    if (m_objectList.empty()) return;
+
+    printf("stepIncrementalGC s\n");
+
+    if (m_incrementalGCIndex >= m_objectList.size()) {
+        m_incrementalGCIndex = 0;
+    }
+
+    auto handle = getHandle(m_objectList[m_incrementalGCIndex]);
+    if (handle != LN_NULL_HANDLE) {
+        auto refcount = LnObject_GetReferenceCount(handle);
+        printf("%d:%d\n", m_incrementalGCIndex, refcount);
+        if (refcount == 1) {    // referenced only from list
+            unregisterWrapperObject(handle);
+        }
+    }
+    m_incrementalGCIndex++;
+
+    printf("stepIncrementalGC e\n");
 }
 
 static VALUE g_LuminoRubyRuntimeManagerClass;

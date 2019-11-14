@@ -35,7 +35,7 @@ struct Wrap_Object
 class LuminoRubyRuntimeManager
 {
 public:
-    static const int InitialListSize = 1024;
+    static const int InitialListSize = 8;
 
     static LuminoRubyRuntimeManager* instance;
     void init();
@@ -46,6 +46,7 @@ public:
     int registerTypeInfo(VALUE klass, ObjectFactoryFunc factory);
     void registerWrapperObject(VALUE obj);
     void unregisterWrapperObject(LnHandle handle);
+    void stepIncrementalGC();
 
     // for generator interface
     static LuminoRubyRuntimeManager* getInstance(VALUE managerInstance);
@@ -58,6 +59,7 @@ private:
     std::vector<TypeInfo> m_typeInfoList;
     std::vector<VALUE> m_objectList;
     std::stack<int> m_objectListIndexStack;
+    uint32_t m_incrementalGCIndex = 0;
 };
 
 #endif
