@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include <LuminoEngine/Asset/Common.hpp>
 
@@ -12,6 +12,9 @@ class AssetManager
 	: public RefObject
 {
 public:
+    static const String AssetPathPrefix;
+    static const String LocalhostPrefix;
+
 	struct Settings
 	{
 	};
@@ -24,6 +27,16 @@ public:
 	void addAssetDirectory(const StringRef& path);
     void addAssetArchive(const StringRef& filePath, const StringRef& password);
 	void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
+
+    // ファイルパスを入力として、そのファイルが存在する場合は内部表現のパス（セパレータ /）を返す。
+    // この値は各種キャッシュのキーとして使用できる。また、findAssetPath() で使用する。
+    // "asset://local/C:/dir/file.txt" => Windows 形式の絶対パス。 ファイルシステム上のファイルを指す。
+    // "asset://local/dir/file.txt"    => Unix 形式の絶対パス。 ファイルシステム上のファイルを指す。
+    // "asset:///dir/file.txt"         => ローカルファイルパス。登録されているいずれかの AssetArchive 内のファイルを指す。
+    // TODO: "asset://ArchiveName/" とかで AssetArchive を明示できるようにしてもいい気がする
+    Optional<String> findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const;
+    Ref<Stream> openStreamFromAssetPath(const String& assetPath) const;
+
 
 	bool existsFile(const StringRef& filePath) const;
     Ref<Stream> openFileStream(const StringRef& filePath);
@@ -42,6 +55,7 @@ private:
     const Path& findFilePathInternal(const StringRef& filePath, const Char** exts, int extsCount);
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
+    bool tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outPath) const;
 
     List<Ref<AssetArchive>> m_requestedArchives;
 	List<AssetArchive*> m_actualArchives;

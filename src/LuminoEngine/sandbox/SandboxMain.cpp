@@ -266,7 +266,7 @@ int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
-    if (1) {
+    if (0) {
         GlobalLogger::addStdErrAdapter();
         EngineSettings::setEngineFeatures(EngineFeature::Experimental);
         EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);

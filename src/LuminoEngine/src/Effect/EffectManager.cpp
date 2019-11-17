@@ -5,12 +5,17 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Asset/AssetManager.hpp"
+#include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 
-//#define EFK_TEST
+#define EFK_TEST
+
+#if LN_EFFEKSEER_ENABLED
+#include <Effekseer.h>
+#endif
 
 #ifdef EFK_TEST
-#include <Effekseer.h>
 //#include <EffekseerRendererGL.h>
 #include <EffekseerRenderer/EffekseerRendererVulkan.Renderer.h>
 #include <EffekseerRendererLLGI.Renderer.h>
@@ -195,6 +200,7 @@ void EffectManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "EffectManager Initialization started.";
     m_graphicsManager = settings.graphicsManager;
+    m_assetManager = settings.assetManager;
 
 #ifdef EFK_TEST
 	//return;
@@ -316,14 +322,51 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
 #endif
 }
 
-void EffectManager::testDraw2(GraphicsContext* graphicsContext)
+//void EffectManager::testDraw2(GraphicsContext* graphicsContext)
+//{
+//#ifdef EFK_TEST
+//    m_nativeGraphicsExtension->m_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
+//    m_nativeGraphicsExtension->m_manager->Update();
+//    graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
+//#endif
+//}
+
+Ref<EffectEmitter> EffectManager::createEmitterFromFile(const Path& filePath)
 {
-#ifdef EFK_TEST
-    m_nativeGraphicsExtension->m_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
-    m_nativeGraphicsExtension->m_manager->Update();
-    graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
+#if LN_EFFEKSEER_ENABLED
+    auto efkEffect = getOrCreateEffekseerEffect(filePath);
+    auto emitter = ln::makeObject<EffekseerEffectEmitter>(this, efkEffect);
+    return emitter;
 #endif
+    return nullptr;
 }
+
+#if LN_EFFEKSEER_ENABLED
+::Effekseer::Manager* EffectManager::effekseerManager() const
+{
+    //return m_nativeGraphicsExtension->m_manager;
+    return nullptr;
+}
+
+::Effekseer::Effect* EffectManager::getOrCreateEffekseerEffect(const Path& filePath)
+{
+    const Char* exts[] = { u".efk" };
+    auto assetPath = m_assetManager->findAssetPath(filePath, exts, LN_ARRAY_SIZE_OF(exts));
+    if (assetPath) {
+        // TODO: cache
+        auto stream = m_assetManager->openStreamFromAssetPath(*assetPath);
+        auto data = stream->readToEnd();
+        auto efkEffect = ::Effekseer::Effect::Create(effekseerManager(), data.data(), data.size(), 1.0f, nullptr);
+
+        return efkEffect;
+    }
+    else {
+        LN_ERROR(u"File not found: " + (*assetPath));
+        return nullptr;
+    }
+}
+
+#endif
 
 } // namespace detail
 } // namespace ln

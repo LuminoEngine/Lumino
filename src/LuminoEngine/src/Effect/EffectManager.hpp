@@ -1,7 +1,16 @@
 ﻿#pragma once
 #include <LuminoEngine/Effect/Common.hpp>
 
+#if LN_EFFEKSEER_ENABLED
+namespace Effekseer {
+class Manager;
+class Effect;
+}
+#endif
+
 namespace ln {
+class EffectEmitter;
+class GraphicsContext;
 class RenderingContext;
 namespace detail {
 
@@ -15,6 +24,7 @@ public:
 	struct Settings
 	{
         GraphicsManager* graphicsManager = nullptr;
+        AssetManager* assetManager = nullptr;
 	};
 
     EffectManager();
@@ -24,10 +34,18 @@ public:
 	void dispose();
 
     void testDraw(RenderingContext* renderingContext);
-    void testDraw2(GraphicsContext* graphicsContext);
+    //void testDraw2(GraphicsContext* graphicsContext);
+
+    Ref<EffectEmitter> createEmitterFromFile(const Path& filePath);
+
+#if LN_EFFEKSEER_ENABLED
+    ::Effekseer::Manager* effekseerManager() const;
+    ::Effekseer::Effect* getOrCreateEffekseerEffect(const Path& filePath);  // The reference count is incremented.
+#endif
 
 private:
     GraphicsManager* m_graphicsManager;
+    AssetManager* m_assetManager;
     std::unique_ptr<LLGINativeGraphicsExtension> m_nativeGraphicsExtension;
 };
 

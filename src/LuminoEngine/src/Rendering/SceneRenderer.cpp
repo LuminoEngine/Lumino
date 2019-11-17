@@ -369,7 +369,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				//RenderStage::applyFrameBufferStatus(m_renderPass, currentStage, defaultFrameBuffer);
 		        const RectI& rect = stage->getScissorRectFinal();
 		        if (rect.width < 0) {
-                    auto renderTarget = currentRenderPass->renderTarget(0);
+                    RenderPass* renderPass = (currentRenderPass) ? currentRenderPass : pass->renderPass();
+                    auto renderTarget = renderPass->renderTarget(0);
                     graphicsContext->setScissorRect(Rect(0, 0, renderTarget->width(), renderTarget->height()));
 		        }
                 else {

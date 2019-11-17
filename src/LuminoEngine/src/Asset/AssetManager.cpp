@@ -13,6 +13,9 @@ namespace detail {
 //==============================================================================
 // AssetManager
 
+const String AssetManager::AssetPathPrefix = u"asset://";
+const String AssetManager::LocalhostPrefix = u"local";
+
 AssetManager::AssetManager()
 	: m_storageAccessPriority(AssetStorageAccessPriority::DirectoryFirst)
 {
@@ -58,6 +61,60 @@ void AssetManager::setAssetStorageAccessPriority(AssetStorageAccessPriority valu
 {
 	m_storageAccessPriority = value;
 	refreshActualArchives();
+}
+
+Optional<String> AssetManager::findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const
+{
+    List<Path> paths;
+    paths.reserve(extsCount);
+    makeFindPaths(filePath, exts, extsCount, &paths);
+
+    String result;
+    for (auto& path : paths) {
+        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+            auto localPath = path.canonicalize();
+            if (FileSystem::existsFile(localPath)) {
+                result = String::concat(LocalhostPrefix, u"/", localPath.unify().str());
+            }
+        }
+        else {
+            for (auto& archive : m_actualArchives) {
+                if (archive->existsFile(path)) {
+                    result = path;
+                    break;
+                }
+            }
+        }
+        if (!result.isEmpty()) break;
+    }
+
+    if (!result.isEmpty())
+        return AssetPathPrefix + result;
+    else
+        return nullptr;
+}
+
+Ref<Stream> AssetManager::openStreamFromAssetPath(const String& assetPath) const
+{
+    String archiveName;
+    Path path;
+    if (tryParseAssetPath(assetPath, &archiveName, &path)) {
+        if (String::compare(archiveName, LocalhostPrefix, CaseSensitivity::CaseInsensitive) == 0) {
+            if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+                return FileStream::create(path, FileOpenMode::Read);
+            }
+        }
+        else {
+            for (auto& archive : m_actualArchives) {
+                auto stream = archive->openFileStream(path);
+                if (stream) {
+                    return stream;
+                }
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 bool AssetManager::existsFile(const StringRef& filePath) const
@@ -278,14 +335,24 @@ void AssetManager::makeFindPaths(const StringRef& filePath, const Char** exts, i
 	const Char* end = filePath.data() + filePath.length();
 	if (detail::PathTraits::getExtensionBegin(begin, end, false) != end) {
         // has extension
-		paths->add(filePath);
+		paths->add(Path(filePath).unify());
 	}
 	else {
 		for (int i = 0; i < extsCount; i++) {
-			auto unifiedFilePath = Path(String(filePath) + exts[i]).unify();	// TODO: StringRef + Char*
-			paths->add(unifiedFilePath);
+			paths->add(Path(String(filePath) + exts[i]).unify());   // TODO: operator StringRef + Char*
 		}
 	}
+}
+
+bool AssetManager::tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outPath) const
+{
+    if (assetPath.indexOf(AssetPathPrefix) != 0) return false;
+    int separate1 = assetPath.indexOf('/', AssetPathPrefix.length(), CaseSensitivity::CaseInsensitive);
+    if (separate1 < 0) return false;
+
+    *outArchiveName = assetPath.substr(AssetPathPrefix.length(), separate1);
+    *outPath = Path(assetPath.substr(AssetPathPrefix.length() + separate1));
+    return true;
 }
 
 } // namespace detail

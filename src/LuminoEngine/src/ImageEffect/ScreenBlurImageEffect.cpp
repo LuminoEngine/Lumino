@@ -64,7 +64,7 @@ void ScreenBlurImageEffect::onRender(RenderingContext* context, RenderTargetText
 {
 	m_materialForCopySourceTo->setMainTexture(source);
 
-    float amount = m_amountValue.getValue();
+    float amount = m_amountValue.value();
     if (amount <= 0.0f) {
         context->blit(m_materialForCopySourceTo, destination);
         return;

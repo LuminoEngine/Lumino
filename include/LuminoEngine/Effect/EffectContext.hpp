@@ -15,6 +15,9 @@ public:
     // mainWorld の指定位置にエフェクトを発生させる。
     // 戻り値はコントロールしたい場合に保持すればよい。自動解放される。
     static EffectEmitter* emit(EffectResource* effect, const Vector3& position);
+
+    // for Effekseer
+    static EffectEmitter* emit(const Path& filePath, const Vector3& position);
 };
 
 class EffectContext
@@ -26,6 +29,7 @@ protected:
 
 public: // TODO: internal
     EffectEmitter* createEmitter(EffectResource* model);
+    void addEmitter(EffectEmitter* emitter);
     void update(float elapsedSeconds);
     void render(RenderingContext* renderingContext);
 

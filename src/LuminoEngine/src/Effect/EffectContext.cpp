@@ -7,6 +7,7 @@
 #include "../Engine/EngineManager.hpp"  // TODO:
 #include <LuminoEngine/Scene/World.hpp>  // TODO:
 #include <LuminoEngine/Effect/ParticleEffectModel.hpp>  // TODO:
+#include "EffectManager.hpp"
 
 namespace ln {
 
@@ -17,6 +18,15 @@ namespace ln {
 EffectEmitter* Effect::emit(EffectResource* effect, const Vector3& position)
 {
     EffectEmitter* emitter = detail::EngineDomain::engineManager()->mainWorld()->effectContext()->createEmitter(effect);
+    emitter->setPosition(position);
+    return emitter;
+}
+
+EffectEmitter* Effect::emit(const Path& filePath, const Vector3& position)
+{
+    auto emitter = detail::EngineDomain::effectManager()->createEmitterFromFile(filePath);
+    if (!emitter) return nullptr;
+    detail::EngineDomain::engineManager()->mainWorld()->effectContext()->addEmitter(emitter);
     emitter->setPosition(position);
     return emitter;
 }
@@ -57,6 +67,11 @@ EffectEmitter* EffectContext::createEmitter(EffectResource* model)
     }
 
     return nullptr;
+}
+
+void EffectContext::addEmitter(EffectEmitter* emitter)
+{
+    m_emitters.add(emitter);
 }
 
 void EffectContext::update(float elapsedSeconds)

@@ -212,7 +212,7 @@ void Sound::process(float elapsedSeconds)
     if (m_fading)
     {
         m_fadeValue.advanceTime(elapsedSeconds);
-        setVolumeInternal(m_fadeValue.getValue());
+        setVolumeInternal(m_fadeValue.value());
 
         // フェード完了
         if (m_fadeValue.isFinished())
@@ -240,7 +240,7 @@ void Sound::process(float elapsedSeconds)
             // 音量を元に戻す
             if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
             {
-                setVolumeInternal(m_fadeValue.getStartValue());
+                setVolumeInternal(m_fadeValue.startValue());
             }
         }
     }
