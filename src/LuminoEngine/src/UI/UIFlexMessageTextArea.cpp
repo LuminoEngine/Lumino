@@ -73,6 +73,7 @@ private:
     bool m_textDirty;
 
     List<RTGlyph> m_glyphs;
+    //Size m_actualSize;
 };
 
 //class RTPhysicalLine
@@ -146,15 +147,13 @@ void RTRun::layout(RTLayoutContext* context)
         m_textDirty = false;
     }
 
-    auto extentSize = Size::Zero;
+    //auto extentSize = Size::Zero;
     auto actualSize = Size::Zero;
     for (auto& glyph : m_glyphs) {
-        extentSize.width = std::max(extentSize.width, glyph.localPos.x + glyph.size.width);
-        extentSize.height = context->document->lineSpacing();
 
         if (glyph.timeOffset <= context->document->localTime()) {
             actualSize.width = std::max(actualSize.width, glyph.localPos.x + glyph.size.width);
-            actualSize.height = context->document->lineSpacing();
+            actualSize.height = extentSize().height;//context->document->lineSpacing();
         }
     }
     setActualSize(actualSize);
@@ -183,6 +182,10 @@ void RTRun::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
     glyph.color = Color::White;
     m_glyphs.add(glyph);
 
+    Size es = extentSize();
+    es.width = std::max(es.width, glyph.localPos.x + glyph.size.width);
+    es.height = std::max(es.height, glyph.localPos.y + glyph.size.height);
+    setExtentSize(es);
     //m_layoutingSize.width = std::max(m_layoutingSize.width, pos.x + size.width);
     //m_layoutingSize.height = std::max(m_layoutingSize.height, pos.y + size.height);
 
@@ -232,6 +235,7 @@ void RTLineBlock::render(UIRenderingContext* context, RTDocument* document, cons
     for (auto& inl : m_inlines) {
         inl->render(context, document, offset);
         offset.x = inl->extentSize().width;
+        offset.y = inl->extentSize().height;
     }
 }
 
@@ -364,7 +368,7 @@ Ref<UIMessageTextArea> UIMessageTextArea::create()
 UIMessageTextArea::UIMessageTextArea()
 	: m_typingSpeed(0.05f)
     , m_textDirty(false)
-    , m_viewportLineCount(0)
+    //, m_viewportLineCount(0)
 {
 }
 
@@ -388,6 +392,18 @@ void UIMessageTextArea::setText(const StringRef& value)
     m_textDirty = true;
 }
 
+void UIMessageTextArea::onUpdateFrame(float elapsedSeconds)
+{
+    m_document->updateFrame(elapsedSeconds * (1.0f / m_typingSpeed));
+
+
+    //float diffY = m_document->extentSize().height - m_document->actualSize().height;
+    //std::cout << actualSize().height << std::endl;
+    //std::cout << diffY << std::endl;
+    //m_document->setRenderOffset(Point(0, actualSize().height - (actualSize().height - diffY)));
+
+}
+
 Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     if (m_textDirty) {
@@ -401,17 +417,17 @@ Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Si
 	Size baseArea = Size::max(constraint, UIElement::measureOverride(layoutContext, constraint));
 
 
-    if (m_viewportLineCount > 0) {
-        auto core = detail::FontHelper::resolveFontCore(finalStyle()->font, layoutContext->dpiScale());
-        detail::FontGlobalMetrics metrics;
-        core->getGlobalMetrics(&metrics);
+    //if (m_viewportLineCount > 0) {
+    //    auto core = detail::FontHelper::resolveFontCore(finalStyle()->font, layoutContext->dpiScale());
+    //    detail::FontGlobalMetrics metrics;
+    //    core->getGlobalMetrics(&metrics);
 
-        m_document->setLineSpacing(metrics.lineSpace);
-        m_viewportFitSize = metrics.lineSpace * m_viewportLineCount;
-        // TODO: ルビの分の高さ（使わなくても常にその分のサイズをとっておき、すべての行のサイズは同じになるような仕様としたい）
+    //    m_document->setLineSpacing(metrics.lineSpace);
+    //    m_viewportFitSize = metrics.lineSpace * m_viewportLineCount;
+    //    // TODO: ルビの分の高さ（使わなくても常にその分のサイズをとっておき、すべての行のサイズは同じになるような仕様としたい）
    
-        baseArea.height = m_viewportFitSize;
-    }
+    //    baseArea.height = m_viewportFitSize;
+    //}
 
 
 	return Size::min(m_document->measureLayout(layoutContext, constraint), baseArea);
@@ -421,29 +437,17 @@ Size UIMessageTextArea::arrangeOverride(UILayoutContext* layoutContext, const Si
 {
 
 	auto size = Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
-    if (m_viewportLineCount > 0) {
-        size.height = m_viewportFitSize;
-    }
+    //if (m_viewportLineCount > 0) {
+    //    size.height = m_viewportFitSize;
+    //}
 
 
     return size;
 }
 
-void UIMessageTextArea::onUpdateFrame(float elapsedSeconds)
-{
-	m_document->updateFrame(elapsedSeconds * (1.0f / m_typingSpeed));
-
-
-    //float diffY = m_document->extentSize().height - m_document->actualSize().height;
-    //std::cout << actualSize().height << std::endl;
-    //std::cout << diffY << std::endl;
-    //m_document->setRenderOffset(Point(0, actualSize().height - (actualSize().height - diffY)));
-
-}
-
 void UIMessageTextArea::onRender(UIRenderingContext* context)
 {
-    m_document->setRenderOffset(Point(0, actualSize().height - m_document->actualSize().height));
+    //m_document->setRenderOffset(Point(0, actualSize().height - m_document->actualSize().height));
 
 	m_document->render(context);
 }

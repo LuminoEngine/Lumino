@@ -22,16 +22,16 @@ public:
 
 	void setTypingSpeed(float value) { m_typingSpeed = value; }
 
-    void setViewportLineCount(int value) { m_viewportLineCount = value; }
+    //void setViewportLineCount(int value) { m_viewportLineCount = value; }
 
 LN_CONSTRUCT_ACCESS:
     UIMessageTextArea();
 	void init();
 
 protected:
+    virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
-	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onRender(UIRenderingContext* context) override;
 
 private:
@@ -40,8 +40,8 @@ private:
 	float m_typingSpeed;
     String m_text;
     bool m_textDirty;
-    int m_viewportLineCount;
-    float m_viewportFitSize;
+    //int m_viewportLineCount;
+    //float m_viewportFitSize;
 };
 
 namespace detail {
@@ -190,8 +190,8 @@ public:
     const Size& actualSize() const { return m_actualSize; }
     void setRenderOffset(const Point& value) { m_renderOffset = value; }
     const Point& renderOffset() const { return m_renderOffset; }
-    void setLineSpacing(float value) { m_lineSpacing = value; }
-    float lineSpacing() const { return m_lineSpacing; }
+    //void setLineSpacing(float value) { m_lineSpacing = value; }
+    //float lineSpacing() const { return m_lineSpacing; }
 
 private:
     List<Ref<RTLineBlock>> m_blockList;
@@ -201,7 +201,7 @@ private:
     Size m_extentSize;  // 未タイプ部分も含めた全体サイズ
     Size m_actualSize;  // タイプされた部分のみのサイズ
     Point m_renderOffset;
-    float m_lineSpacing;
+    //float m_lineSpacing;
 };
 
 } // namespace detail

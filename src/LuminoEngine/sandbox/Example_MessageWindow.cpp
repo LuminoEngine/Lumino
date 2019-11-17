@@ -41,7 +41,7 @@ class App_Example_MessageWindow : public Application
         window2->setPosition(10, 10);
         window2->setHorizontalAlignment(HAlignment::Left);
         window2->setVerticalAlignment(VAlignment::Top);
-        window2->setWidth(200);
+        window2->setWidth(400);
         window2->setHeight(100);
         window2->setBackgroundImage(windowSkin);
         window2->setBackgroundImageRect(Rect(0, 0, 48, 48));
@@ -51,6 +51,8 @@ class App_Example_MessageWindow : public Application
 
         m_message2 = UIMessageTextArea::create();
         m_message2->setMargin(16);
+        m_message2->setHeight(50);
+        m_message2->setBackgroundColor(Color::DarkCyan);
         m_message2->setText(
             u"window2->setPosition(10, 10);\n"
             u"window2->setHorizontalAlignment(HAlignment::Left);\n"
@@ -61,8 +63,8 @@ class App_Example_MessageWindow : public Application
             u"window2->setBackgroundImageRect(Rect(0, 0, 48, 48));\n"
             u"window2->setBackgroundImageBorder(Thickness(8));\n"
             u"window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);");
-        m_message2->setViewportLineCount(2);
-        m_message2->setClipToBounds(true);
+        //m_message2->setViewportLineCount(2);
+        //m_message2->setClipToBounds(true);
         window2->addElement(m_message2);
     }
 
