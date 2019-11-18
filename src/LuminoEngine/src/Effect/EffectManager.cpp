@@ -9,7 +9,7 @@
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 
-//#define EFK_TEST
+#define EFK_TEST
 
 #if LN_EFFEKSEER_ENABLED
 #include <Effekseer.h>
@@ -49,7 +49,8 @@ static ::Effekseer::Vector3D			g_position;
 class LLGINativeGraphicsExtension : public INativeGraphicsExtension
 {
 public:
-	::Effekseer::Manager* m_manager = nullptr;
+    EffectManager* m_manager = nullptr;
+	
 	//::EffekseerRenderer::Renderer* m_renderer = nullptr;
     ::EffekseerRendererLLGI::RendererImplemented* m_renderer = nullptr;
     ::LLGI::SingleFrameMemoryPool* m_singleFrameMemoryPool = nullptr;
@@ -173,7 +174,7 @@ public:
         m_renderer->SetCommandList(m_efkCommandList);
 		m_renderer->BeginRendering();
         m_llgiCommandList->BeginRenderPass(llgiRenderPass);
-		m_manager->Draw();
+		m_manager->effekseerManager()->Draw();
 		m_renderer->EndRendering();
         m_llgiCommandList->EndRenderPass();
         m_llgiCommandList->EndExternal();
@@ -193,6 +194,7 @@ class LLGINativeGraphicsExtension {};
 // EffectManager
 
 EffectManager::EffectManager()
+    : m_efkManager(nullptr)
 {
 }
 
@@ -208,24 +210,24 @@ void EffectManager::init(const Settings& settings)
     //g_graphics = g_platform->CreateGraphics();
 
     m_nativeGraphicsExtension = std::make_unique<LLGINativeGraphicsExtension>();
+    m_nativeGraphicsExtension->m_manager = this;
     m_graphicsManager->registerExtension(m_nativeGraphicsExtension.get());
 
  //   ::EffekseerRendererLLGI::FixedShader fixedShaders;
 	//::EffekseerRendererLLGI::Renderer::CreateFixedShaderForVulkan(&fixedShaders);
 
-    // エフェクト管理用インスタンスの生成
-    m_nativeGraphicsExtension->m_manager = ::Effekseer::Manager::Create(2000);
+    m_efkManager = ::Effekseer::Manager::Create(2000);
 
     // 描画用インスタンスから描画機能を設定
-    m_nativeGraphicsExtension->m_manager->SetSpriteRenderer(m_nativeGraphicsExtension->m_renderer->CreateSpriteRenderer());
-    m_nativeGraphicsExtension->m_manager->SetRibbonRenderer(m_nativeGraphicsExtension->m_renderer->CreateRibbonRenderer());
-    m_nativeGraphicsExtension->m_manager->SetRingRenderer(m_nativeGraphicsExtension->m_renderer->CreateRingRenderer());
-    m_nativeGraphicsExtension->m_manager->SetModelRenderer(m_nativeGraphicsExtension->m_renderer->CreateModelRenderer());
+    m_efkManager->SetSpriteRenderer(m_nativeGraphicsExtension->m_renderer->CreateSpriteRenderer());
+    m_efkManager->SetRibbonRenderer(m_nativeGraphicsExtension->m_renderer->CreateRibbonRenderer());
+    m_efkManager->SetRingRenderer(m_nativeGraphicsExtension->m_renderer->CreateRingRenderer());
+    m_efkManager->SetModelRenderer(m_nativeGraphicsExtension->m_renderer->CreateModelRenderer());
 
     // 描画用インスタンスからテクスチャの読込機能を設定
     // 独自拡張可能、現在はファイルから読み込んでいる。
-    m_nativeGraphicsExtension->m_manager->SetTextureLoader(m_nativeGraphicsExtension->m_renderer->CreateTextureLoader());
-    m_nativeGraphicsExtension->m_manager->SetModelLoader(m_nativeGraphicsExtension->m_renderer->CreateModelLoader());
+    m_efkManager->SetTextureLoader(m_nativeGraphicsExtension->m_renderer->CreateTextureLoader());
+    m_efkManager->SetModelLoader(m_nativeGraphicsExtension->m_renderer->CreateModelLoader());
 
     // 音再生用インスタンスの生成
     //g_sound = EffekseerSound::Sound::Create(32);
@@ -249,10 +251,10 @@ void EffectManager::init(const Settings& settings)
         ::Effekseer::Matrix44().LookAtRH(g_position, ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
 
     // エフェクトの読込
-    g_effect = Effekseer::Effect::Create(m_nativeGraphicsExtension->m_manager, (const EFK_CHAR*)L"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk");
+    g_effect = Effekseer::Effect::Create(m_efkManager, (const EFK_CHAR*)L"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk");
 
     // エフェクトの再生
-    g_handle = m_nativeGraphicsExtension->m_manager->Play(g_effect, 0, 0, 0);
+    g_handle = m_efkManager->Play(g_effect, 0, 0, 0);
 #endif
 
     LN_LOG_DEBUG << "EffectManager Initialization ended.";
@@ -263,13 +265,13 @@ void EffectManager::dispose()
 #ifdef EFK_TEST
 	//return;
     // エフェクトの停止
-    m_nativeGraphicsExtension->m_manager->StopEffect(g_handle);
+    m_efkManager->StopEffect(g_handle);
 
     // エフェクトの破棄
     ES_SAFE_RELEASE(g_effect);
 
     // 先にエフェクト管理用インスタンスを破棄
-    m_nativeGraphicsExtension->m_manager->Destroy();
+    m_efkManager->Destroy();
 
     // 次に音再生用インスタンスを破棄
     //g_sound->Destroy();
@@ -278,6 +280,8 @@ void EffectManager::dispose()
     //g_renderer->Destroy();
 
     m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
+
+    ES_SAFE_RELEASE(m_efkManager);
 #endif
 }
 
@@ -297,10 +301,10 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
 
 
     // エフェクトの移動処理を行う
-    m_nativeGraphicsExtension->m_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
+    m_efkManager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
 
     // エフェクトの更新処理を行う
-    m_nativeGraphicsExtension->m_manager->Update();
+    m_efkManager->Update();
 
 
    // graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
@@ -325,8 +329,8 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
 //void EffectManager::testDraw2(GraphicsContext* graphicsContext)
 //{
 //#ifdef EFK_TEST
-//    m_nativeGraphicsExtension->m_manager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
-//    m_nativeGraphicsExtension->m_manager->Update();
+//    m_efkManager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
+//    m_efkManager->Update();
 //    graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
 //#endif
 //}
@@ -344,8 +348,7 @@ Ref<EffectEmitter> EffectManager::createEmitterFromFile(const Path& filePath)
 #if LN_EFFEKSEER_ENABLED
 ::Effekseer::Manager* EffectManager::effekseerManager() const
 {
-    //return m_nativeGraphicsExtension->m_manager;
-    return nullptr;
+    return m_efkManager;
 }
 
 ::Effekseer::Effect* EffectManager::getOrCreateEffekseerEffect(const Path& filePath)

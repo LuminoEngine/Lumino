@@ -47,6 +47,7 @@ private:
     GraphicsManager* m_graphicsManager;
     AssetManager* m_assetManager;
     std::unique_ptr<LLGINativeGraphicsExtension> m_nativeGraphicsExtension;
+    ::Effekseer::Manager* m_efkManager;
 };
 
 } // namespace detail
