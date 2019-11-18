@@ -179,6 +179,8 @@ public:
     /** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
     static void releaseTemporary(RenderTargetTexture* renderTarget);
 
+    bool isBackbuffer() const { return m_ownerSwapchain != nullptr; }
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;

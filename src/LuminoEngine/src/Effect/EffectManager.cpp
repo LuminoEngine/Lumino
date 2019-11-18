@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
@@ -109,8 +110,6 @@ private:
 #ifdef EFK_TEST
 static int g_window_width = 800;
 static int g_window_height = 600;
-//static ::Effekseer::Manager*			g_manager = NULL;
-//static ::EffekseerRenderer::Renderer*	g_renderer = NULL;
 //static ::EffekseerSound::Sound*			g_sound = NULL;
 static ::Effekseer::Effect*				g_effect = NULL;
 static ::Effekseer::Handle				g_handle = -1;
@@ -135,13 +134,14 @@ public:
     // そのため、しばらくの間全く利用されない場合に削除するようにする。
     LifeCountedObjectCache<LLGI::RenderPass> m_llgiRenderPassCache;
 
-	// 歪み描画のため、onRender() までの RenderPass は一度 end して、カレントの RenderTarget 使って描画できるようにしたいので Outside
-	virtual NativeGraphicsExtensionRenderPassPreCondition getRenderPassPreCondition() const override { return NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside; }
+	virtual NativeGraphicsExtensionRenderPassPreCondition getRenderPassPreCondition() const override
+    {
+        // 歪み描画のため、onRender() までの RenderPass は一度 end して、カレントの RenderTarget 使って描画できるようにしたいので Outside
+        return NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside;
+    }
 
 	virtual void onLoaded(INativeGraphicsInterface* nativeInterface) override
 	{
-        // FIXME: RenderTarget,Depthbuffer の VkImage 参照は RenderPassVulkan が Framebuffer として持っている。
-
         int swapBufferCount = 3;
         int maxDrawcall = 128;
         m_nativeInterface = static_cast<IVulkanNativeGraphicsInterface*>(nativeInterface);
@@ -165,7 +165,6 @@ public:
         m_llgiGraphics = dynamic_cast<LLGI::GraphicsVulkan*>(m_renderer->GetGraphics());
 
         m_singleFrameMemoryPool = m_llgiGraphics->CreateSingleFrameMemoryPool(1024 * 1024, maxDrawcall);
-        //m_commandListPool = std::make_shared<LLGI::CommandListPool>(m_renderer->GetGraphics(), m_singleFrameMemoryPool, swapBufferCount);
 
         m_llgiCommandList = new LLGI::CommandListVulkan();
         if (!m_llgiCommandList->Initialize(m_llgiGraphics, maxDrawcall, LLGI::CommandListPreCondition::Standalone)) {
@@ -189,10 +188,6 @@ public:
             m_llgiCommandList->Release();
             m_llgiCommandList = nullptr;
         }
-
-        //if (m_commandListPool) {
-        //    m_commandListPool = nullptr;
-        //}
 
         if (m_renderer) {
             m_renderer->Destroy();
@@ -229,12 +224,13 @@ public:
         VulkanIntegration::getImageInfo(this->graphicsContext, this->depthBuffer, &depthBufferImage, &depthBufferImageView, &depthBufferFormat, &depthBufferWidth, &depthBufferHeight);
 
         // find or create LLGI::RenderPass
-        auto key = std::hash<VkImage>()(renderTargetImage) + std::hash<VkImage>()(depthBufferImage);
-        auto renderPass = m_llgiRenderPassCache.find(key);
+        auto renderPassKey = std::hash<VkImage>()(renderTargetImage) + std::hash<VkImage>()(depthBufferImage);
+        auto renderPass = m_llgiRenderPassCache.find(renderPassKey);
         if (!renderPass) {
+            auto textureType = (this->renderTarget->isBackbuffer()) ? LLGI::TextureType::Screen : LLGI::TextureType::Render;
 
             auto llgiRenderTarget = new LLGI::TextureVulkan();
-            llgiRenderTarget->InitializeFromExternal(LLGI::TextureType::Render, renderTargetImage, renderTargetImageView, renderTargetFormat, LLGI::Vec2I(renderTargetWidth, renderTargetHeight));
+            llgiRenderTarget->InitializeFromExternal(textureType, renderTargetImage, renderTargetImageView, renderTargetFormat, LLGI::Vec2I(renderTargetWidth, renderTargetHeight));
             auto llgiDepthBuffer = new LLGI::TextureVulkan();
             llgiDepthBuffer->InitializeFromExternal(LLGI::TextureType::Depth, depthBufferImage, depthBufferImageView, depthBufferFormat, LLGI::Vec2I(depthBufferWidth, depthBufferHeight));
 
@@ -244,7 +240,7 @@ public:
             llgiRenderPass->SetIsDepthCleared(false);
 
             renderPass = std::shared_ptr<LLGI::RenderPass>(llgiRenderPass, [](LLGI::RenderPass* ptr) { ptr->Release(); });
-            m_llgiRenderPassCache.insert(key, renderPass);
+            m_llgiRenderPassCache.insert(renderPassKey, renderPass);
 
             llgiRenderTarget->Release();
             llgiDepthBuffer->Release();
@@ -257,10 +253,8 @@ public:
 
         m_renderer->SetRenderPassPipelineState(llgtRenderPassPipelineState);
 
-
         m_singleFrameMemoryPool->NewFrame();
         m_llgiCommandList->BeginExternal(m_nativeInterface->getRecordingCommandBuffer());
-        //m_commandListPool->Get();
         m_renderer->SetCommandList(m_efkCommandList);
 		m_renderer->BeginRendering();
         m_llgiCommandList->BeginRenderPass(renderPass.get());
