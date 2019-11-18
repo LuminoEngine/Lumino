@@ -9,7 +9,7 @@
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 
-#define EFK_TEST
+//#define EFK_TEST
 
 #if LN_EFFEKSEER_ENABLED
 #include <Effekseer.h>

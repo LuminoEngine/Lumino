@@ -48,6 +48,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
 
 private:
+    List<UIElement*> m_history;
 };
 
 } // namespace ln

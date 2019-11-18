@@ -261,19 +261,21 @@ private:
 
 
 void Example_MessageWindow();
+void Example_Navigator();
 
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
-    if (0) {
+    if (1) {
         GlobalLogger::addStdErrAdapter();
         EngineSettings::setEngineFeatures(EngineFeature::Experimental);
         EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
         EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
         detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
-        Example_MessageWindow();
+        //Example_MessageWindow();
+        Example_Navigator();
         return 0;
     }
 

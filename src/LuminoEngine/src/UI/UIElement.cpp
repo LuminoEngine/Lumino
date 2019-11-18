@@ -561,7 +561,10 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
 void UIElement::focus()
 {
-    m_manager->focus(this);
+    if (m_focusable) {
+        m_manager->focus(this);
+        activate();
+    }
 }
 
 void UIElement::retainCapture()
