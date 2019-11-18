@@ -34,6 +34,78 @@
 namespace ln {
 namespace detail {
 
+template<class T, class TKey = uint64_t>
+class LifeCountedObjectCache
+{
+public:
+    LifeCountedObjectCache()
+        : m_entryMap()
+        , m_holdLifeCount(60)
+    {}
+
+    void clear()
+    {
+        m_entryMap.clear();
+    }
+
+    std::shared_ptr<T> find(const TKey& key)
+    {
+        std::shared_ptr<T> result = nullptr;
+
+        auto itr = m_entryMap.find(key);
+        if (itr != m_entryMap.end())
+        {
+            itr->second.lifeCount = 0;
+            result = itr->second.obj;
+        }
+
+        gcObjects();
+        return result;
+    }
+
+    void insert(const TKey& key, const std::shared_ptr<T>& obj)
+    {
+        m_entryMap.insert({ key, { 0, obj } });
+    }
+
+    void release(const TKey& key)
+    {
+        auto itr = m_entryMap.find(key);
+        if (itr != m_entryMap.end())
+        {
+            itr->second.lifeCount = m_holdLifeCount;
+            return;
+        }
+
+        LN_UNREACHABLE();
+    }
+
+private:
+    void gcObjects()
+    {
+        for (auto itr = m_entryMap.begin(); itr != m_entryMap.end();) {
+            if (itr->second.lifeCount > 0) {
+                itr->second.lifeCount--;
+                if (itr->second.lifeCount <= 0) {
+                    itr = m_entryMap.erase(itr);
+                }
+            }
+            else {
+                ++itr;
+            }
+        }
+    }
+
+    struct Entry
+    {
+        int lifeCount;  // 0 is alive.
+        std::shared_ptr<T> obj;
+    };
+
+    std::unordered_map<TKey, Entry>	m_entryMap;
+    int m_holdLifeCount;
+};
+
 #ifdef EFK_TEST
 static int g_window_width = 800;
 static int g_window_height = 600;
@@ -43,21 +115,25 @@ static int g_window_height = 600;
 static ::Effekseer::Effect*				g_effect = NULL;
 static ::Effekseer::Handle				g_handle = -1;
 static ::Effekseer::Vector3D			g_position;
-//static LLGI::Platform* g_platform = nullptr;
-//static LLGI::Graphics* g_graphics = nullptr;
 
 class LLGINativeGraphicsExtension : public INativeGraphicsExtension
 {
 public:
     EffectManager* m_manager = nullptr;
 	
-	//::EffekseerRenderer::Renderer* m_renderer = nullptr;
     ::EffekseerRendererLLGI::RendererImplemented* m_renderer = nullptr;
     ::LLGI::SingleFrameMemoryPool* m_singleFrameMemoryPool = nullptr;
-    //std::shared_ptr<LLGI::CommandListPool> m_commandListPool = nullptr;
     LLGI::GraphicsVulkan* m_llgiGraphics = nullptr;
     LLGI::CommandListVulkan* m_llgiCommandList = nullptr;
     EffekseerRendererLLGI::CommandList* m_efkCommandList = nullptr;
+
+    // LLGI::RenderPass はネイティブの RenderTarget と DepthBuffer をキーに作成する。
+    // RenderTarget と DepthBuffer は常に一定というわけではなく、
+    // Swapchain は通常複数のバックバッファを持つため、少なくとも毎フレーム違う RenderPass が必要になる。
+    // また、ポストエフェクトなどで1フレーム中に異なる RenderPass が必要になることもある。
+    // 一方で、RenderTarget と DepthBuffer をトリガーすることは現状できないので、LLGI::RenderPass は適切な削除のタイミングを知ることができない。
+    // そのため、しばらくの間全く利用されない場合に削除するようにする。
+    LifeCountedObjectCache<LLGI::RenderPass> m_llgiRenderPassCache;
 
 	// 歪み描画のため、onRender() までの RenderPass は一度 end して、カレントの RenderTarget 使って描画できるようにしたいので Outside
 	virtual NativeGraphicsExtensionRenderPassPreCondition getRenderPassPreCondition() const override { return NativeGraphicsExtensionRenderPassPreCondition::EnsureOutside; }
@@ -102,6 +178,8 @@ public:
 
 	virtual void onUnloaded(INativeGraphicsInterface* nativeInterface) override
 	{
+        m_llgiRenderPassCache.clear();
+
         if (m_efkCommandList) {
             m_efkCommandList->Release();
             m_efkCommandList = nullptr;
@@ -116,14 +194,14 @@ public:
         //    m_commandListPool = nullptr;
         //}
 
-        if (m_singleFrameMemoryPool) {
-            m_singleFrameMemoryPool->Release();
-            m_singleFrameMemoryPool = nullptr;
-        }
-
         if (m_renderer) {
             m_renderer->Destroy();
             m_renderer = nullptr;
+        }
+
+        if (m_singleFrameMemoryPool) {
+            m_singleFrameMemoryPool->Release();
+            m_singleFrameMemoryPool = nullptr;
         }
 
         if (m_commandPool) {
@@ -143,9 +221,6 @@ public:
 
         //}
 
-        printf("==========\n");
-
-
         VkImage renderTargetImage, depthBufferImage;
         VkImageView renderTargetImageView, depthBufferImageView;
         VkFormat renderTargetFormat, depthBufferFormat;
@@ -153,16 +228,31 @@ public:
         VulkanIntegration::getImageInfo(this->graphicsContext, this->renderTarget, &renderTargetImage, &renderTargetImageView, &renderTargetFormat, &renderTargetWidth, &renderTargetHeight);
         VulkanIntegration::getImageInfo(this->graphicsContext, this->depthBuffer, &depthBufferImage, &depthBufferImageView, &depthBufferFormat, &depthBufferWidth, &depthBufferHeight);
 
-        auto llgiRenderTarget = new LLGI::TextureVulkan();
-        llgiRenderTarget->InitializeFromExternal(LLGI::TextureType::Render, renderTargetImage, renderTargetImageView, renderTargetFormat, LLGI::Vec2I(renderTargetWidth, renderTargetHeight));
-        auto llgiDepthBuffer = new LLGI::TextureVulkan();
-        llgiDepthBuffer->InitializeFromExternal(LLGI::TextureType::Depth, depthBufferImage, depthBufferImageView, depthBufferFormat, LLGI::Vec2I(depthBufferWidth, depthBufferHeight));
+        // find or create LLGI::RenderPass
+        auto key = std::hash<VkImage>()(renderTargetImage) + std::hash<VkImage>()(depthBufferImage);
+        auto renderPass = m_llgiRenderPassCache.find(key);
+        if (!renderPass) {
 
-        LLGI::Texture* llgiRenderTargets[] = { llgiRenderTarget };
-        LLGI::RenderPass* llgiRenderPass = m_llgiGraphics->CreateRenderPass((const LLGI::Texture**)llgiRenderTargets, 1, llgiDepthBuffer);
-        llgiRenderPass->SetIsColorCleared(false);
-        llgiRenderPass->SetIsDepthCleared(false);
-        LLGI::RenderPassPipelineState* llgtRenderPassPipelineState = m_llgiGraphics->CreateRenderPassPipelineState(llgiRenderPass);
+            auto llgiRenderTarget = new LLGI::TextureVulkan();
+            llgiRenderTarget->InitializeFromExternal(LLGI::TextureType::Render, renderTargetImage, renderTargetImageView, renderTargetFormat, LLGI::Vec2I(renderTargetWidth, renderTargetHeight));
+            auto llgiDepthBuffer = new LLGI::TextureVulkan();
+            llgiDepthBuffer->InitializeFromExternal(LLGI::TextureType::Depth, depthBufferImage, depthBufferImageView, depthBufferFormat, LLGI::Vec2I(depthBufferWidth, depthBufferHeight));
+
+            LLGI::Texture* llgiRenderTargets[] = { llgiRenderTarget };
+            LLGI::RenderPass* llgiRenderPass = m_llgiGraphics->CreateRenderPass((const LLGI::Texture**)llgiRenderTargets, 1, llgiDepthBuffer);
+            llgiRenderPass->SetIsColorCleared(false);
+            llgiRenderPass->SetIsDepthCleared(false);
+
+            renderPass = std::shared_ptr<LLGI::RenderPass>(llgiRenderPass, [](LLGI::RenderPass* ptr) { ptr->Release(); });
+            m_llgiRenderPassCache.insert(key, renderPass);
+
+            llgiRenderTarget->Release();
+            llgiDepthBuffer->Release();
+        }
+
+
+        LLGI::RenderPassPipelineState* llgtRenderPassPipelineState = m_llgiGraphics->CreateRenderPassPipelineState(renderPass.get());
+
 
 
         m_renderer->SetRenderPassPipelineState(llgtRenderPassPipelineState);
@@ -173,13 +263,11 @@ public:
         //m_commandListPool->Get();
         m_renderer->SetCommandList(m_efkCommandList);
 		m_renderer->BeginRendering();
-        m_llgiCommandList->BeginRenderPass(llgiRenderPass);
+        m_llgiCommandList->BeginRenderPass(renderPass.get());
 		m_manager->effekseerManager()->Draw();
 		m_renderer->EndRendering();
         m_llgiCommandList->EndRenderPass();
         m_llgiCommandList->EndExternal();
-
-        printf("-----\n");
 	}
 
 private:

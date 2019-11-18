@@ -62,6 +62,8 @@ GraphicsResource* TemporaryGraphicsResourceObjectCacheBase::findBase(uint64_t ke
 		{
 			if (e.refCount == 0)
 			{
+                // TODO: ここで lifeFrames=0にしなくていいんだっけ？
+
 				e.refCount++;
 				return e.resourceObject;
 			}
