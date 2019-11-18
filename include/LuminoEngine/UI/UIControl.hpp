@@ -89,6 +89,18 @@ Leaf がベースでいいかな。これは普通の UIControl。
  * 視覚情報の表示やユーザー入力の処理を行う要素の基本クラスです。
  *
  * UIControl は直接の子要素を、UIFrameLayout2 のレイアウト仕様に従ってレイアウトします。
+ *
+ * Visual States
+ * ----------
+ *
+ * | Name           | Group          | Description    |
+ * |----------------|----------------|----------------|
+ * | Normal         | CommonGroup    | Default state. |
+ * | MouseOver      | CommonGroup    | Mouse pointer is positioned over the control. |
+ * | Disabled       | CommonGroup    | Control is disabled. |
+ * | Focused        | FocusGroup     | Control has focus. |
+ * | Unfocused      | FocusGroup     | Control does not have focus. |
+ *
  */
 LN_CLASS()
 class UIControl
@@ -146,6 +158,7 @@ protected:
 	//virtual UIElement* getVisualChild(int index) const;
 
     virtual void onAddChild(UIElement* child) override;
+    virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 

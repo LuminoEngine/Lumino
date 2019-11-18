@@ -24,6 +24,11 @@ UIControl::UIControl()
 void UIControl::init()
 {
     UIElement::init();
+    auto vsm = getVisualStateManager();
+    vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
+    vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
+    vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Disabled);
+
 	//setHorizontalAlignment(HAlignment::Stretch);
 	//setVerticalAlignment(VAlignment::Stretch);
 
@@ -188,6 +193,18 @@ void UIControl::unregisterActiveTimer(UIActiveTimer* timer)
 void UIControl::onAddChild(UIElement* child)
 {
     addElement(child);
+}
+
+void UIControl::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::MouseEnterEvent) {
+        getVisualStateManager()->gotoState(UIVisualStates::MouseOver);
+    }
+    else if (e->type() == UIEvents::MouseLeaveEvent) {
+        getVisualStateManager()->gotoState(UIVisualStates::Normal);
+    }
+
+    UIElement::onRoutedEvent(e);
 }
 
 Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
