@@ -7,6 +7,7 @@ class UIListBoxItem
     : public UICollectionItem
 {
 public:
+    virtual const String& elementName() const  override { static String name = u"UIListBoxItem"; return name; }
     // TODO: group
 
 LN_CONSTRUCT_ACCESS:

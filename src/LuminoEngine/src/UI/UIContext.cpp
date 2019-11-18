@@ -211,6 +211,19 @@ void UIContext::setupDefaultStyle()
             }
         }
         //--------------------------------
+        // UIListBoxItem
+        {
+            if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
+                //s->backgroundColor = Color::Green;
+            }
+            if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
+                s->backgroundColor = Color::Red;
+            }
+            if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
+                s->backgroundColor = theme->get(u"collection.selectedBackground");
+            }
+        }
+        //--------------------------------
         // UITreeItem
         {
             if (auto s = sheet->obtainStyle(u"UITreeItem")) {
