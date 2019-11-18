@@ -10,7 +10,7 @@
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 
-//#define EFK_TEST
+#define EFK_TEST
 
 #if LN_EFFEKSEER_ENABLED
 #include <Effekseer.h>
@@ -223,6 +223,7 @@ public:
         VulkanIntegration::getImageInfo(this->graphicsContext, this->renderTarget, &renderTargetImage, &renderTargetImageView, &renderTargetFormat, &renderTargetWidth, &renderTargetHeight);
         VulkanIntegration::getImageInfo(this->graphicsContext, this->depthBuffer, &depthBufferImage, &depthBufferImageView, &depthBufferFormat, &depthBufferWidth, &depthBufferHeight);
 
+
         // find or create LLGI::RenderPass
         auto renderPassKey = std::hash<VkImage>()(renderTargetImage) + std::hash<VkImage>()(depthBufferImage);
         auto renderPass = m_llgiRenderPassCache.find(renderPassKey);
@@ -246,11 +247,7 @@ public:
             llgiDepthBuffer->Release();
         }
 
-
         LLGI::RenderPassPipelineState* llgtRenderPassPipelineState = m_llgiGraphics->CreateRenderPassPipelineState(renderPass.get());
-
-
-
         m_renderer->SetRenderPassPipelineState(llgtRenderPassPipelineState);
 
         m_singleFrameMemoryPool->NewFrame();
@@ -258,10 +255,12 @@ public:
         m_renderer->SetCommandList(m_efkCommandList);
 		m_renderer->BeginRendering();
         m_llgiCommandList->BeginRenderPass(renderPass.get());
-		//m_manager->effekseerManager()->Draw();
+		m_manager->effekseerManager()->Draw();
 		m_renderer->EndRendering();
         m_llgiCommandList->EndRenderPass();
         m_llgiCommandList->EndExternal();
+
+        llgtRenderPassPipelineState->Release();
 	}
 
 private:
@@ -345,7 +344,7 @@ void EffectManager::init(const Settings& settings)
 void EffectManager::dispose()
 {
 #ifdef EFK_TEST
-	//return;
+	////return;
     // エフェクトの停止
     m_efkManager->StopEffect(g_handle);
 
@@ -371,7 +370,6 @@ void EffectManager::dispose()
 void EffectManager::testDraw(RenderingContext* renderingContext)
 {
 #ifdef EFK_TEST
-	//return;
 
     //if (1) {
 
@@ -389,6 +387,7 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
     // エフェクトの更新処理を行う
     m_efkManager->Update();
 
+	//return;
 
    // graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
     renderingContext->invokeExtensionRendering(m_nativeGraphicsExtension.get());
