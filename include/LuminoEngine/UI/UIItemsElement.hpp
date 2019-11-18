@@ -124,16 +124,16 @@ public: // TODO:
 // Item を ItemElement でラップして扱う。
 // ただ単に子要素を並べるだけであれば、ScrollView に addChild するだけでよいが、
 // こちらは ItemElement を介して選択中であるとか、枠線を付けたりとかする。
-class UIItemContainerElement
-	: public UIScrollViewer
-{
-public:
-	UIItemContainerElement();
-	void init();
-
-private:
-};
-
+//class UIItemContainerElement
+//	: public UIScrollViewer
+//{
+//public:
+//	UIItemContainerElement();
+//	void init();
+//
+//private:
+//};
+//
 
 class UIMenuItem
     : public UIControl  // TODO: HeaderdItemsControl

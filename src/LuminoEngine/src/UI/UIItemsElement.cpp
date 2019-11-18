@@ -320,14 +320,14 @@ void UIItemsControl::notifyItemClicked(UICollectionItem* item)
 //==============================================================================
 // UIItemContainerElement
 
-UIItemContainerElement::UIItemContainerElement()
-{
-}
-
-void UIItemContainerElement::init()
-{
-	UIScrollViewer::init();
-}
+//UIItemContainerElement::UIItemContainerElement()
+//{
+//}
+//
+//void UIItemContainerElement::init()
+//{
+//	UIScrollViewer::init();
+//}
 
 //==============================================================================
 // UIMenuItem

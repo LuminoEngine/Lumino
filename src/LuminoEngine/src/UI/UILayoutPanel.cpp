@@ -19,13 +19,6 @@ void UILayoutPanel2::init()
     UIElement::init();
 }
 
-void UILayoutPanel2::addChild(UIElement* child)
-{
-    if (LN_REQUIRE(child)) return;
-    m_logicalChildren.add(child);
-    addVisualChild(child);
-}
-
 void UILayoutPanel2::removeChild(UIElement* child)
 {
     if (LN_REQUIRE(child)) return;
@@ -45,6 +38,13 @@ void UILayoutPanel2::onDispose(bool explicitDisposing)
 {
     removeAllChildren();
     UIElement::onDispose(explicitDisposing);
+}
+
+void UILayoutPanel2::onAddChild(UIElement* child)
+{
+    if (LN_REQUIRE(child)) return;
+    m_logicalChildren.add(child);
+    addVisualChild(child);
 }
 
 float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }

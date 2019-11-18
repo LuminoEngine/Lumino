@@ -2,17 +2,15 @@
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
-#include <LuminoEngine/UI/UIScrollView.hpp>
-#include <LuminoEngine/UI/UIItemsModel.hpp>
-#include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
+#include <LuminoEngine/UI/UIListBox.hpp>
 using namespace ln;
 
 class App_Example_Navigator : public Application
 {
     Ref<UIFocusNavigator> m_navigator;
+    Ref<UIListBox> m_listbox1;
     Ref<UIWindow> m_window1;
     Ref<UIWindow> m_window2;
 
@@ -23,7 +21,20 @@ class App_Example_Navigator : public Application
         auto windowSkin = Assets::loadTexture(u"Window1");
 
         m_navigator = makeObject<UIFocusNavigator>();
+        m_navigator->setBackgroundColor(Color(1., 1., 1., 0.5));    //Color::Green);
         Engine::mainUIView()->addElement(m_navigator);
+
+        m_listbox1 = UIListBox::create();
+        m_listbox1->setHorizontalAlignment(HAlignment::Left);
+        m_listbox1->setVerticalAlignment(VAlignment::Top);
+        m_listbox1->setWidth(100);
+        m_listbox1->setHeight(300);
+        m_listbox1->addChild(u"item1");
+        m_listbox1->addChild(u"item2");
+        m_listbox1->addChild(u"item3");
+        m_listbox1->addChild(u"item4");
+        m_navigator->addElement(m_listbox1);
+
 
         m_window1 = UIWindow::create();
         m_window1->setPosition(10, 10);

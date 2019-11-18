@@ -36,11 +36,6 @@ void UIControl::onDispose(bool explicitDisposing)
 	UIElement::onDispose(explicitDisposing);
 }
 
-void UIControl::addChild(UIElement* child)
-{
-	addElement(child);
-}
-
 void UIControl::setHorizontalContentAlignment(HAlignment value)
 {
     m_localStyle->mainStyle()->horizontalContentAlignment = value;
@@ -188,6 +183,11 @@ void UIControl::unregisterActiveTimer(UIActiveTimer* timer)
 	m_activeTimers.remove(timer);
 	timer->m_owner = nullptr;
 	detail::EngineDomain::uiManager()->unregisterActiveTimer(timer);
+}
+
+void UIControl::onAddChild(UIElement* child)
+{
+    addElement(child);
 }
 
 Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)

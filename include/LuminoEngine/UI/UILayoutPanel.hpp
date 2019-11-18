@@ -161,12 +161,12 @@ public:
     UILayoutPanel2();
     void init();
 
-    virtual void addChild(UIElement* child) override;
     void removeChild(UIElement* child);
     void removeAllChildren();
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
+    virtual void onAddChild(UIElement* child) override;
 
     // IScrollInfo interface
     virtual float getExtentWidth() const;

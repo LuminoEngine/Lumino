@@ -449,7 +449,7 @@ void UIElement::setContent(const String& content)
 
 void UIElement::addChild(UIElement* child)
 {
-    LN_UNREACHABLE();
+    onAddChild(child);
 }
 
 void UIElement::addChild(const String& child)
@@ -892,6 +892,11 @@ bool UIElement::onHitTest(const Point& frameClientPosition)
     else {
         return false;
     }
+}
+
+void UIElement::onAddChild(UIElement* child)
+{
+    LN_UNREACHABLE();
 }
 
 bool UIElement::isMouseHover() const

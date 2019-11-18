@@ -322,8 +322,8 @@ public:
     virtual void setContent(const String& content);
 	/** Add element to container. */
 	LN_METHOD()
-    virtual void addChild(UIElement* child);
-    virtual void addChild(const String& child);
+    void addChild(UIElement* child);
+    void addChild(const String& child);
 
     void addAction(UIAction* action);
 
@@ -429,6 +429,8 @@ public:	// TODO: internal protected
     virtual void onRoutedEvent(UIEventArgs* e);
 
     virtual bool onHitTest(const Point& frameClientPosition);
+
+    virtual void onAddChild(UIElement* child);
 
 	//virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
 

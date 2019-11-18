@@ -21,8 +21,14 @@ private:
 // サイズがばらばらでもいいので、仮想化は非対応。少量のフレキシブルなリストに使う。
 // 固定サイズで仮想化対応するのは UIListView
 class UIListBox
-	: public UIItemContainerElement
+	: public UIItemsControl
 {
+public:
+    static Ref<UIListBox> create();
+
+protected:
+    virtual void onAddChild(UIElement* child) override;
+
 LN_CONSTRUCT_ACCESS:
 	UIListBox();
 	void init();

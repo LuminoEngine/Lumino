@@ -100,10 +100,6 @@ public:
 	void init();
     virtual void onDispose(bool explicitDisposing) override;
 
-	/** Add element to container. */
-	LN_METHOD()
-	virtual void addChild(UIElement* child);
-
 
     /** コンテンツの横方向の配置方法を設定します。 */
     void setHorizontalContentAlignment(HAlignment value);
@@ -149,6 +145,7 @@ protected:
 	///** 子ビジュアル要素を取得します。奥にある要素が先、手前にある要素が後になります。(Zオーダーやアクティブ状態の考慮は実装側で行うこと) */
 	//virtual UIElement* getVisualChild(int index) const;
 
+    virtual void onAddChild(UIElement* child) override;
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
