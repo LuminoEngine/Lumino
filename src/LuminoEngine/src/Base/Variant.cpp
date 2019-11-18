@@ -211,21 +211,28 @@ void Variant::assign(const Rect& value)
 
 void Variant::assign(const Ref<RefObject>& value)
 {
-	changeType(VariantType::RefObject);
+    if (!changeType(VariantType::RefObject)) {
+        v_RefObject.~Ref();
+    }
+
     new(&v_RefObject) Ref<RefObject>(value);
 }
 
 void Variant::assign(const Ref<List<Ref<Variant>>>& value)
 {
-	changeType(VariantType::List);
-	new(&v_List) Ref<List<Ref<Variant>>>(value);
+    if (!changeType(VariantType::List)) {
+        v_List.~Ref();
+    }
+
+    new(&v_List) Ref<List<Ref<Variant>>>(value);
 }
 
-void Variant::changeType(VariantType newType)
+bool Variant::changeType(VariantType newType)
 {
-	if (m_type == newType) return;
+	if (m_type == newType) return false;
 	clear();
 	m_type = newType;
+    return true;
 }
 
 void Variant::copy(const Variant& value)

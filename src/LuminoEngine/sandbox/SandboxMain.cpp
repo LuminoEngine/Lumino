@@ -347,9 +347,6 @@ int main(int argc, char** argv)
 
 
 	Engine::initialize();
-
-
-
 	//{
 	//	auto ss = makeObject<ed::SceneAsset>();
 	//	ss->setup("SceneTest1.json");
@@ -357,12 +354,11 @@ int main(int argc, char** argv)
 	//	ss->save();
 	//}
 
-
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 	//Engine::mainCamera()->setPosition(0, 0, 0);
-	
+
 
     auto ft = Texture2D::create(512, 256);
     //Font::registerFontFromFile(u"meiryo.ttc");
@@ -575,6 +571,8 @@ int main(int argc, char** argv)
     obj2->addComponent(particle2);
     //obj2->setPosition(0, 12, 0);
 #endif
+
+
 
 	{
 		int x = 0;

@@ -316,7 +316,7 @@ public:
 	void assign(const Ref<List<Ref<Variant>>>& value);
 
 private:
-	void changeType(VariantType newType);
+	bool changeType(VariantType newType);
 	void copy(const Variant& value);
 
 	VariantType	m_type;

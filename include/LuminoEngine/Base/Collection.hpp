@@ -333,7 +333,12 @@ LN_CONSTRUCT_ACCESS:
 	Collection()
 		: m_newItemCache(makeVariant())
 		, m_oldItemCache(makeVariant())
-	{}
+	{
+    }
+
+    virtual ~Collection()
+    {
+    }
 
 protected:
 	/** 指定したインデックスの位置に要素を挿入します。*/

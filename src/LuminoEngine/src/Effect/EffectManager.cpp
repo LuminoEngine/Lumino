@@ -10,7 +10,7 @@
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 
-#define EFK_TEST
+//#define EFK_TEST
 
 #if LN_EFFEKSEER_ENABLED
 #include <Effekseer.h>
@@ -258,7 +258,7 @@ public:
         m_renderer->SetCommandList(m_efkCommandList);
 		m_renderer->BeginRendering();
         m_llgiCommandList->BeginRenderPass(renderPass.get());
-		m_manager->effekseerManager()->Draw();
+		//m_manager->effekseerManager()->Draw();
 		m_renderer->EndRendering();
         m_llgiCommandList->EndRenderPass();
         m_llgiCommandList->EndExternal();
@@ -352,18 +352,19 @@ void EffectManager::dispose()
     // エフェクトの破棄
     ES_SAFE_RELEASE(g_effect);
 
+
+    m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
+
+
     // 先にエフェクト管理用インスタンスを破棄
     m_efkManager->Destroy();
+    m_efkManager = nullptr;
 
     // 次に音再生用インスタンスを破棄
     //g_sound->Destroy();
 
     // 次に描画用インスタンスを破棄
     //g_renderer->Destroy();
-
-    m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
-
-    ES_SAFE_RELEASE(m_efkManager);
 #endif
 }
 
