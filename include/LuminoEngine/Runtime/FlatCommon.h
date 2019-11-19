@@ -82,6 +82,11 @@ extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
 */
 LN_FLAT_API LnResult LnObject_Release(LnHandle obj);
 
+
+/**
+ *  @brief      ネイティブオブジェクトの参照カウントを取得します。これは内部的に使用される関数です。
+ *  @param[in]  obj	: オブジェクトハンドル
+ */
 LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj);
 
 
