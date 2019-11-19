@@ -5,6 +5,8 @@
 #include <stack>
 #include <LuminoEngine/Runtime/FlatCommon.h>
 
+#define LNRB_TRACE(...) printf(__VA_ARGS__)
+
 #if 1
 /*
 extern "C" int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
@@ -35,7 +37,7 @@ struct Wrap_Object
 class LuminoRubyRuntimeManager
 {
 public:
-    static const int InitialListSize = 1024;
+    static const int InitialListSize = 8;
 
     static LuminoRubyRuntimeManager* instance;
     void init();
@@ -50,15 +52,16 @@ public:
     // for generator interface
     static LuminoRubyRuntimeManager* getInstance(VALUE managerInstance);
     static void gc_mark(LuminoRubyRuntimeManager* obj);
-    //static std::u16string toNativeString(VALUE value);
 
 private:
     VALUE m_luminoModule;
     VALUE m_eventSignalClass;
     std::vector<TypeInfo> m_typeInfoList;
-    std::vector<VALUE> m_objectList;
+    std::vector<VALUE> m_objectList;        // weak reference list.
     std::stack<int> m_objectListIndexStack;
 };
+
+inline VALUE LNRB_WRAP_OBJECT(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObject(handle); }
 
 #endif
 

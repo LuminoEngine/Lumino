@@ -343,6 +343,11 @@ ln::String RubyExtGenerator::makeRubyMethodName(MethodSymbol* method) const
 //	}
 //}
 
+ln::String RubyExtGenerator::makeAccessorCacheDecls(const TypeSymbol* classSymbol) const
+{
+	return u"";
+}
+
 ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const
 {
 	OutputBuffer code;

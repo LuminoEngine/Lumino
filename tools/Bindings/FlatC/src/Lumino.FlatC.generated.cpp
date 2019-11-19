@@ -151,77 +151,33 @@ public:
 class LNWS_ln_UIElement : public ln::UIElement
 {
 public:
-    static LnUIElement_AddChild_OverrideCallback s_LnUIElement_AddChild_OverrideCallback;
 
-    virtual void addChild(ln::UIElement* child) override
-    {
-        if (s_LnUIElement_AddChild_OverrideCallback) s_LnUIElement_AddChild_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(child));
-    }
-
-    void addChild_CallBase(ln::UIElement* child)
-    {
-        ln::UIElement::addChild(child);
-    }
 
 };
-LnUIElement_AddChild_OverrideCallback LNWS_ln_UIElement::s_LnUIElement_AddChild_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIControl : public ln::UIControl
 {
 public:
-    static LnUIControl_AddChild_OverrideCallback s_LnUIControl_AddChild_OverrideCallback;
 
-    virtual void addChild(ln::UIElement* child) override
-    {
-        if (s_LnUIControl_AddChild_OverrideCallback) s_LnUIControl_AddChild_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(child));
-    }
-
-    void addChild_CallBase(ln::UIElement* child)
-    {
-        ln::UIControl::addChild(child);
-    }
 
 };
-LnUIControl_AddChild_OverrideCallback LNWS_ln_UIControl::s_LnUIControl_AddChild_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIButtonBase : public ln::UIButtonBase
 {
 public:
-    static LnUIButtonBase_AddChild_OverrideCallback s_LnUIButtonBase_AddChild_OverrideCallback;
 
-    virtual void addChild(ln::UIElement* child) override
-    {
-        if (s_LnUIButtonBase_AddChild_OverrideCallback) s_LnUIButtonBase_AddChild_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(child));
-    }
-
-    void addChild_CallBase(ln::UIElement* child)
-    {
-        ln::UIButtonBase::addChild(child);
-    }
 
 };
-LnUIButtonBase_AddChild_OverrideCallback LNWS_ln_UIButtonBase::s_LnUIButtonBase_AddChild_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIButton : public ln::UIButton
 {
 public:
-    static LnUIButton_AddChild_OverrideCallback s_LnUIButton_AddChild_OverrideCallback;
 
-    virtual void addChild(ln::UIElement* child) override
-    {
-        if (s_LnUIButton_AddChild_OverrideCallback) s_LnUIButton_AddChild_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(child));
-    }
-
-    void addChild_CallBase(ln::UIElement* child)
-    {
-        ln::UIButton::addChild(child);
-    }
 
 };
-LnUIButton_AddChild_OverrideCallback LNWS_ln_UIButton::s_LnUIButton_AddChild_OverrideCallback = nullptr;
 
 
 
@@ -684,7 +640,7 @@ LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outR
 LN_FLAT_API LnResult LnUIElement_AddChild(LnHandle uielement, LnHandle child)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->LNWS_ln_UIElement::addChild_CallBase(LNI_HANDLE_TO_OBJECT(ln::UIElement, child)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->addChild(LNI_HANDLE_TO_OBJECT(ln::UIElement, child)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -693,40 +649,9 @@ LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIElement>(), id);
 }
 
-LN_FLAT_API LnResult LnUIElement_AddChild_CallOverrideBase(LnHandle uielement, LnHandle child)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->addChild_CallBase(LNI_HANDLE_TO_OBJECT(ln::UIElement, child)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnUIElement_AddChild_SetOverrideCallback(LnUIElement_AddChild_OverrideCallback callback)
-{
-    LNWS_ln_UIElement::s_LnUIElement_AddChild_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
-LN_FLAT_API LnResult LnUIControl_AddChild(LnHandle uicontrol, LnHandle child)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, uicontrol)->LNWS_ln_UIControl::addChild_CallBase(LNI_HANDLE_TO_OBJECT(ln::UIElement, child)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
 LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIControl>(), id);
-}
-
-LN_FLAT_API LnResult LnUIControl_AddChild_CallOverrideBase(LnHandle uicontrol, LnHandle child)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, uicontrol)->addChild_CallBase(LNI_HANDLE_TO_OBJECT(ln::UIElement, child)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnUIControl_AddChild_SetOverrideCallback(LnUIControl_AddChild_OverrideCallback callback)
-{
-    LNWS_ln_UIControl::s_LnUIControl_AddChild_OverrideCallback = callback;
-    return LN_SUCCESS;
 }
 
 LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar* text)
@@ -747,18 +672,6 @@ LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButtonBase>(), id);
 }
 
-LN_FLAT_API LnResult LnUIButtonBase_AddChild_CallOverrideBase(LnHandle uicontrol, LnHandle child)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uicontrol)->addChild_CallBase(LNI_HANDLE_TO_OBJECT(ln::UIElement, child)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnUIButtonBase_AddChild_SetOverrideCallback(LnUIButtonBase_AddChild_OverrideCallback callback)
-{
-    LNWS_ln_UIButtonBase::s_LnUIButtonBase_AddChild_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
 LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -776,18 +689,6 @@ LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHan
 LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), id);
-}
-
-LN_FLAT_API LnResult LnUIButton_AddChild_CallOverrideBase(LnHandle uicontrol, LnHandle child)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uicontrol)->addChild_CallBase(LNI_HANDLE_TO_OBJECT(ln::UIElement, child)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnUIButton_AddChild_SetOverrideCallback(LnUIButton_AddChild_OverrideCallback callback)
-{
-    LNWS_ln_UIButton::s_LnUIButton_AddChild_OverrideCallback = callback;
-    return LN_SUCCESS;
 }
 
 

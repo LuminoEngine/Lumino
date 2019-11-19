@@ -8,11 +8,6 @@ LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::getInstance(VALUE managerIns
     return instance;
 }
 
-void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
-{
-    rb_gc_mark(obj->m_luminoModule);
-}
-
 /*
 std::u16string LuminoRubyRuntimeManager::toNativeString(VALUE value)
 {
@@ -71,17 +66,20 @@ void LuminoRubyRuntimeManager::init()
 VALUE LuminoRubyRuntimeManager::wrapObject(LnHandle handle)
 {
     int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
+    int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
     if (objectIndex <= 0) {
-        int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
-
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
         registerWrapperObject(obj);
         return obj;
     }
+    else if (TYPE(m_objectList[objectIndex]) == T_NIL) {
+        //LNRB_TRACE("T_NIL: %u\n", m_objectList[objectIndex]);
+        m_objectList[objectIndex] = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
+        return m_objectList[objectIndex];
+    }
     else {
         return m_objectList[objectIndex];
     }
-    return Qnil;    // TODO:
 }
 
 LnHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const
@@ -124,6 +122,7 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj)
 
 void LuminoRubyRuntimeManager::unregisterWrapperObject(LnHandle handle)
 {
+    LNRB_TRACE("LuminoRubyRuntimeManager::unregisterWrapperObject: LnHandle=%u\n", handle);
     LnObject_Release(handle);
 	int index = (int)LnRuntime_GetManagedObjectId(handle);
 	m_objectList[index] = Qnil;
@@ -148,6 +147,17 @@ static VALUE LuminoRubyRuntimeManager_allocate(VALUE klass)
     internalObj->init();
     obj = Data_Wrap_Struct(klass, LuminoRubyRuntimeManager::gc_mark, LuminoRubyRuntimeManager_delete, internalObj);
     return obj;
+}
+
+void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
+{
+    LNRB_TRACE("LuminoRubyRuntimeManager::gc_mark\n");
+    rb_gc_mark(obj->m_luminoModule);
+    rb_gc_mark(obj->m_eventSignalClass);
+
+    //for (VALUE& v : obj->m_objectList) {
+    //    printf("  type:%u (T_NIL=%d, T_ZOMBIE=%d)\n", TYPE(v), T_NIL, T_ZOMBIE);
+    //}
 }
 
 extern "C" void InitLuminoRubyRuntimeManager()

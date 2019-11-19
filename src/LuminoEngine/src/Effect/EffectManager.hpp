@@ -1,12 +1,10 @@
 ﻿#pragma once
 #include <LuminoEngine/Effect/Common.hpp>
 
-#if LN_EFFEKSEER_ENABLED
 namespace Effekseer {
 class Manager;
 class Effect;
 }
-#endif
 
 namespace ln {
 class EffectEmitter;

@@ -90,7 +90,6 @@ extern "C" LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement
 extern "C" LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outReturn);
 extern "C" LN_FLAT_API LnResult LnUIElement_AddChild(LnHandle uielement, LnHandle child);
 extern "C" LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id);
-extern "C" LN_FLAT_API LnResult LnUIControl_AddChild(LnHandle uicontrol, LnHandle child);
 extern "C" LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar* text);
 extern "C" LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id);
@@ -1619,15 +1618,21 @@ static VALUE Wrap_LnUIElement_CenterPoint(int argc, VALUE* argv, VALUE self)
 
 static VALUE Wrap_LnUIElement_AddChild(int argc, VALUE* argv, VALUE self)
 {
+    printf("Wrap_LnUIElement_AddChild 1\n");
     Wrap_UIElement* selfObj;
     Data_Get_Struct(self, Wrap_UIElement, selfObj);
     if (1 <= argc && argc <= 1) {
+    printf("Wrap_LnUIElement_AddChild 2\n");
         VALUE child;
         rb_scan_args(argc, argv, "1", &child);
         if (LNRB_VALUE_IS_OBJECT(child))
         {
+            printf("Wrap_LnUIElement_AddChild 3\n");
             LnHandle _child = LuminoRubyRuntimeManager::instance->getHandle(child);
-            LnResult errorCode = LnUIElement_AddChild_CallOverrideBase(selfObj->handle, _child);
+            printf("Wrap_LnUIElement_AddChild 4 %d %d\n", selfObj->handle, _child);
+            printf("%d %d\n", LnObject_GetReferenceCount(selfObj->handle), LnObject_GetReferenceCount(_child));
+            LnResult errorCode = LnUIElement_AddChild(selfObj->handle, _child);
+            printf("Wrap_LnUIElement_AddChild 5\n");
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -1636,12 +1641,6 @@ static VALUE Wrap_LnUIElement_AddChild(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
-LnResult Wrap_LnUIElement_AddChild_OverrideCallback(LnHandle uielement, LnHandle child)
-{
-    VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject(uielement);
-    VALUE retval = rb_funcall(obj, rb_intern("add_child"), 1, LNI_TO_RUBY_VALUE(child));
-    return LN_SUCCESS;
-}
 //==============================================================================
 // ln::UIControl
 
@@ -1688,31 +1687,6 @@ static VALUE LnUIControl_allocateForGetObject(VALUE klass, LnHandle handle)
     return obj;
 }
 
-static VALUE Wrap_LnUIControl_AddChild(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_UIControl* selfObj;
-    Data_Get_Struct(self, Wrap_UIControl, selfObj);
-    if (1 <= argc && argc <= 1) {
-        VALUE child;
-        rb_scan_args(argc, argv, "1", &child);
-        if (LNRB_VALUE_IS_OBJECT(child))
-        {
-            LnHandle _child = LuminoRubyRuntimeManager::instance->getHandle(child);
-            LnResult errorCode = LnUIControl_AddChild_CallOverrideBase(selfObj->handle, _child);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::UIControl::addChild - wrong argument type.");
-    return Qnil;
-}
-
-LnResult Wrap_LnUIControl_AddChild_OverrideCallback(LnHandle uicontrol, LnHandle child)
-{
-    VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject(uicontrol);
-    VALUE retval = rb_funcall(obj, rb_intern("add_child"), 1, LNI_TO_RUBY_VALUE(child));
-    return LN_SUCCESS;
-}
 //==============================================================================
 // ln::UIButtonBase
 
@@ -1778,19 +1752,13 @@ static VALUE Wrap_LnUIButtonBase_SetText(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
-LnResult Wrap_LnUIButtonBase_AddChild_OverrideCallback(LnHandle uicontrol, LnHandle child)
-{
-    VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject(uicontrol);
-    VALUE retval = rb_funcall(obj, rb_intern("add_child"), 1, LNI_TO_RUBY_VALUE(child));
-    return LN_SUCCESS;
-}
 //==============================================================================
 // ln::UIButton
 
 struct Wrap_UIButton
     : public Wrap_UIButtonBase
 {
-    VALUE connectOnClicked_Signal = Qnil;
+    VALUE connectOnClicked_Signal;
     bool connectOnClicked_EventConnect = false;
     Wrap_UIButton()
     {}
@@ -1798,22 +1766,18 @@ struct Wrap_UIButton
 
 static void LnUIButton_delete(Wrap_UIButton* obj)
 {
-    printf("LnUIButton_delete\n");
     LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
     delete obj;
 }
 
 static void LnUIButton_mark(Wrap_UIButton* obj)
 {
-    printf("LnUIButton_mark s %p\n", obj);
 	rb_gc_mark(obj->connectOnClicked_Signal);
-    printf("LnUIButton_mark e\n");
 
 }
 
 static VALUE LnUIButton_allocate(VALUE klass)
 {
-    printf("LnUIButton_allocate\n");
     VALUE obj;
     Wrap_UIButton* internalObj;
 
@@ -1848,7 +1812,6 @@ static VALUE Wrap_LnUIButton_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnUIButton_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self);
-	        //    LnRuntime_SetManagedObjectId(getHandle(obj), 100);
             return Qnil;
         }
     }
@@ -1880,12 +1843,6 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
-LnResult Wrap_LnUIButton_AddChild_OverrideCallback(LnHandle uicontrol, LnHandle child)
-{
-    VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject(uicontrol);
-    VALUE retval = rb_funcall(obj, rb_intern("add_child"), 1, LNI_TO_RUBY_VALUE(child));
-    return LN_SUCCESS;
-}
 
 
 extern "C" void Init_Lumino()
@@ -2012,26 +1969,21 @@ extern "C" void Init_Lumino()
     rb_define_method(g_class_UIElement, "center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_CenterPoint), -1);
     rb_define_method(g_class_UIElement, "add_child", LN_TO_RUBY_FUNC(Wrap_LnUIElement_AddChild), -1);
     LnUIElement_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIElement, LnUIElement_allocateForGetObject));
-    LnUIElement_AddChild_SetOverrideCallback(Wrap_LnUIElement_AddChild_OverrideCallback);
 
     g_class_UIControl = rb_define_class_under(g_rootModule, "UIControl", g_class_UIElement);
     rb_define_alloc_func(g_class_UIControl, LnUIControl_allocate);
-    rb_define_method(g_class_UIControl, "add_child", LN_TO_RUBY_FUNC(Wrap_LnUIControl_AddChild), -1);
     LnUIControl_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIControl, LnUIControl_allocateForGetObject));
-    LnUIControl_AddChild_SetOverrideCallback(Wrap_LnUIControl_AddChild_OverrideCallback);
 
     g_class_UIButtonBase = rb_define_class_under(g_rootModule, "UIButtonBase", g_class_UIControl);
     rb_define_alloc_func(g_class_UIButtonBase, LnUIButtonBase_allocate);
     rb_define_method(g_class_UIButtonBase, "set_text", LN_TO_RUBY_FUNC(Wrap_LnUIButtonBase_SetText), -1);
     LnUIButtonBase_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIButtonBase, LnUIButtonBase_allocateForGetObject));
-    LnUIButtonBase_AddChild_SetOverrideCallback(Wrap_LnUIButtonBase_AddChild_OverrideCallback);
 
     g_class_UIButton = rb_define_class_under(g_rootModule, "UIButton", g_class_UIButtonBase);
     rb_define_alloc_func(g_class_UIButton, LnUIButton_allocate);
     rb_define_private_method(g_class_UIButton, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUIButton_Create), -1);
     rb_define_method(g_class_UIButton, "connect_on_clicked", LN_TO_RUBY_FUNC(Wrap_LnUIButton_ConnectOnClicked), -1);
     LnUIButton_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIButton, LnUIButton_allocateForGetObject));
-    LnUIButton_AddChild_SetOverrideCallback(Wrap_LnUIButton_AddChild_OverrideCallback);
 
 }
 
