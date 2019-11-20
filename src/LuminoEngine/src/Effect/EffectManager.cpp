@@ -4,19 +4,16 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Effect/EffectContext.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 
-//#define EFK_TEST
-
 #if LN_EFFEKSEER_ENABLED
 #include <Effekseer.h>
 #endif
 
-#ifdef EFK_TEST
+#if LN_EFFEKSEER_ENABLED
 //#include <EffekseerRendererGL.h>
 #include <EffekseerRenderer/EffekseerRendererVulkan.Renderer.h>
 #include <EffekseerRendererLLGI.Renderer.h>
@@ -107,7 +104,7 @@ private:
     int m_holdLifeCount;
 };
 
-#ifdef EFK_TEST
+#if LN_EFFEKSEER_ENABLED
 static int g_window_width = 800;
 static int g_window_height = 600;
 //static ::EffekseerSound::Sound*			g_sound = NULL;
@@ -277,6 +274,7 @@ class LLGINativeGraphicsExtension {};
 EffectManager::EffectManager()
     : m_efkManager(nullptr)
 {
+    m_efkEffectCache.init(64);
 }
 
 void EffectManager::init(const Settings& settings)
@@ -285,7 +283,7 @@ void EffectManager::init(const Settings& settings)
     m_graphicsManager = settings.graphicsManager;
     m_assetManager = settings.assetManager;
 
-#ifdef EFK_TEST
+#if LN_EFFEKSEER_ENABLED
 	//return;
     //g_platform = LLGI::CreatePlatform(LLGI::DeviceType::Vulkan);
     //g_graphics = g_platform->CreateGraphics();
@@ -331,11 +329,11 @@ void EffectManager::init(const Settings& settings)
     m_nativeGraphicsExtension->m_renderer->SetCameraMatrix(
         ::Effekseer::Matrix44().LookAtRH(g_position, ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
 
-    // エフェクトの読込
-    g_effect = Effekseer::Effect::Create(m_efkManager, (const EFK_CHAR*)L"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk");
+    //// エフェクトの読込
+    //g_effect = Effekseer::Effect::Create(m_efkManager, (const EFK_CHAR*)L"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk");
 
-    // エフェクトの再生
-    g_handle = m_efkManager->Play(g_effect, 0, 0, 0);
+    //// エフェクトの再生
+    //g_handle = m_efkManager->Play(g_effect, 0, 0, 0);
 #endif
 
     LN_LOG_DEBUG << "EffectManager Initialization ended.";
@@ -343,14 +341,15 @@ void EffectManager::init(const Settings& settings)
 
 void EffectManager::dispose()
 {
-#ifdef EFK_TEST
+#if LN_EFFEKSEER_ENABLED
 	////return;
     // エフェクトの停止
-    m_efkManager->StopEffect(g_handle);
+    //m_efkManager->StopEffect(g_handle);
 
     // エフェクトの破棄
-    ES_SAFE_RELEASE(g_effect);
+    //ES_SAFE_RELEASE(g_effect);
 
+    m_efkEffectCache.dispose();
 
     m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
 
@@ -369,7 +368,7 @@ void EffectManager::dispose()
 
 void EffectManager::testDraw(RenderingContext* renderingContext)
 {
-#ifdef EFK_TEST
+#if LN_EFFEKSEER_ENABLED
 
     //if (1) {
 
@@ -382,7 +381,7 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
 
 
     // エフェクトの移動処理を行う
-    m_efkManager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
+    //m_efkManager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
 
     // エフェクトの更新処理を行う
     m_efkManager->Update();
@@ -408,15 +407,6 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
 #endif
 }
 
-//void EffectManager::testDraw2(GraphicsContext* graphicsContext)
-//{
-//#ifdef EFK_TEST
-//    m_efkManager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
-//    m_efkManager->Update();
-//    graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
-//#endif
-//}
-
 Ref<EffectEmitter> EffectManager::createEmitterFromFile(const Path& filePath)
 {
 #if LN_EFFEKSEER_ENABLED
@@ -433,22 +423,35 @@ Ref<EffectEmitter> EffectManager::createEmitterFromFile(const Path& filePath)
     return m_efkManager;
 }
 
-::Effekseer::Effect* EffectManager::getOrCreateEffekseerEffect(const Path& filePath)
+Ref<EffekseerEffect> EffectManager::getOrCreateEffekseerEffect(const Path& filePath)
 {
     const Char* exts[] = { u".efk" };
     auto assetPath = m_assetManager->findAssetPath(filePath, exts, LN_ARRAY_SIZE_OF(exts));
     if (assetPath) {
-        // TODO: cache
-        auto stream = m_assetManager->openStreamFromAssetPath(*assetPath);
-        auto data = stream->readToEnd();
-        auto efkEffect = ::Effekseer::Effect::Create(effekseerManager(), data.data(), data.size(), 1.0f, nullptr);
+        auto effect = m_efkEffectCache.findObject(*assetPath);
+        if (effect) {
+            return effect;
+        }
+        else {
+            auto stream = m_assetManager->openStreamFromAssetPath(*assetPath);
+            auto data = stream->readToEnd();
+            auto efkEffect = ::Effekseer::Effect::Create(effekseerManager(), data.data(), data.size(), 1.0f, nullptr);
 
-        return efkEffect;
+            effect = ln::makeRef<EffekseerEffect>(efkEffect);
+            m_efkEffectCache.registerObject(*assetPath, effect);
+
+            return effect;
+        }
     }
     else {
         LN_ERROR(u"File not found: " + (*assetPath));
         return nullptr;
     }
+}
+
+void EffectManager::releaseEffekseerEffect(EffekseerEffect* effect)
+{
+    m_efkEffectCache.releaseObject(effect);
 }
 
 #endif

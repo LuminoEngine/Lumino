@@ -7,24 +7,32 @@
 namespace ln {
 namespace detail {
 
+EffekseerEffect::EffekseerEffect(::Effekseer::Effect* effect)
+    : m_efkEffect(effect)
+{}
+
+EffekseerEffect::~EffekseerEffect()
+{
+    ES_SAFE_RELEASE(m_efkEffect);
+}
+
 //==============================================================================
 // EffekseerEffectEmitter
 
 EffekseerEffectEmitter::EffekseerEffectEmitter()
     : m_manager(nullptr)
-    , m_efkEffect(nullptr)
+    , m_effect(nullptr)
     , m_efkHandle(-1)
 {
 }
 
-void EffekseerEffectEmitter::init(EffectManager* manager, ::Effekseer::Effect* efkEffect)
+void EffekseerEffectEmitter::init(EffectManager* manager, EffekseerEffect* effect)
 {
     EffectEmitter::init(nullptr);
     m_manager = manager;
-    m_efkEffect = efkEffect;
-    ES_SAFE_ADDREF(m_efkEffect);
+    m_effect = effect;
 
-    m_efkHandle = m_manager->effekseerManager()->Play(m_efkEffect, 0, 0, 0);
+    m_efkHandle = m_manager->effekseerManager()->Play(m_effect->effect(), 0, 0, 0);
 }
 
 void EffekseerEffectEmitter::onDispose(bool explicitDisposing)
@@ -34,7 +42,10 @@ void EffekseerEffectEmitter::onDispose(bool explicitDisposing)
         m_efkHandle = -1;
     }
 
-    ES_SAFE_RELEASE(m_efkEffect);
+    if (m_effect) {
+        m_manager->releaseEffekseerEffect(m_effect);
+        m_effect = nullptr;
+    }
 
     EffectEmitter::onDispose(explicitDisposing);
 }

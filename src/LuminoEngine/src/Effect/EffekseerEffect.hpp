@@ -8,6 +8,19 @@
 namespace ln {
 namespace detail {
 
+// Wrap Effekseer::Effect for cache management
+class EffekseerEffect
+    : public RefObject
+{
+public:
+    EffekseerEffect(::Effekseer::Effect* effect);
+    ~EffekseerEffect();
+    ::Effekseer::Effect* effect() const { return m_efkEffect; }
+
+private:
+    ::Effekseer::Effect* m_efkEffect;
+};
+
 class EffekseerEffectEmitter
     : public EffectEmitter
 {
@@ -18,11 +31,11 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
     EffekseerEffectEmitter();
-    void init(EffectManager* manager, ::Effekseer::Effect* efkEffect);
+    void init(EffectManager* manager, EffekseerEffect* effect);
 
 private:
     EffectManager* m_manager;   // TODO: EffectEmitter に持って行った方がいいかも
-    ::Effekseer::Effect* m_efkEffect;
+    Ref<EffekseerEffect> m_effect;
     ::Effekseer::Handle m_efkHandle;
 };
 

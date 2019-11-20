@@ -416,6 +416,9 @@ int main(int argc, char** argv)
 	window2->setBackgroundColor(Color::Blue);
 	navi1->addElement(window2);
 
+
+    Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Vector3(1, 0, 0));
+
 #if 0
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));

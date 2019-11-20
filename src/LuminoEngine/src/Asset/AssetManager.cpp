@@ -71,7 +71,7 @@ Optional<String> AssetManager::findAssetPath(const StringRef& filePath, const Ch
 
     String result;
     for (auto& path : paths) {
-        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+        if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
             auto localPath = path.canonicalize();
             if (FileSystem::existsFile(localPath)) {
                 result = String::concat(LocalhostPrefix, u"/", localPath.unify().str());
@@ -100,7 +100,7 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const String& assetPath) const
     Path path;
     if (tryParseAssetPath(assetPath, &archiveName, &path)) {
         if (String::compare(archiveName, LocalhostPrefix, CaseSensitivity::CaseInsensitive) == 0) {
-            if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+            if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
                 return FileStream::create(path, FileOpenMode::Read);
             }
         }
@@ -350,8 +350,8 @@ bool AssetManager::tryParseAssetPath(const String& assetPath, String* outArchive
     int separate1 = assetPath.indexOf('/', AssetPathPrefix.length(), CaseSensitivity::CaseInsensitive);
     if (separate1 < 0) return false;
 
-    *outArchiveName = assetPath.substr(AssetPathPrefix.length(), separate1);
-    *outPath = Path(assetPath.substr(AssetPathPrefix.length() + separate1));
+    *outArchiveName = assetPath.substr(AssetPathPrefix.length(), separate1 - AssetPathPrefix.length());
+    *outPath = Path(assetPath.substr(separate1 + 1));
     return true;
 }
 

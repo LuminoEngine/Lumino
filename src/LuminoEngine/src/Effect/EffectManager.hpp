@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Effect/Common.hpp>
+#include "../src/Base/RefObjectCache.hpp"
 
 namespace Effekseer {
 class Manager;
@@ -11,9 +12,9 @@ class EffectEmitter;
 class GraphicsContext;
 class RenderingContext;
 namespace detail {
-
 class GraphicsManager;
 class LLGINativeGraphicsExtension;
+class EffekseerEffect;
 
 class EffectManager
 	: public RefObject
@@ -38,7 +39,8 @@ public:
 
 #if LN_EFFEKSEER_ENABLED
     ::Effekseer::Manager* effekseerManager() const;
-    ::Effekseer::Effect* getOrCreateEffekseerEffect(const Path& filePath);  // The reference count is incremented.
+    Ref<EffekseerEffect> getOrCreateEffekseerEffect(const Path& filePath);  // The reference count is incremented.
+    void releaseEffekseerEffect(EffekseerEffect* effect);
 #endif
 
 private:
@@ -46,6 +48,7 @@ private:
     AssetManager* m_assetManager;
     std::unique_ptr<LLGINativeGraphicsExtension> m_nativeGraphicsExtension;
     ::Effekseer::Manager* m_efkManager;
+    detail::ObjectCache<String, EffekseerEffect> m_efkEffectCache;
 };
 
 } // namespace detail
