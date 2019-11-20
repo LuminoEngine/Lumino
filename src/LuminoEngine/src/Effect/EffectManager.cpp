@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
 #include "EffekseerEffect.hpp"
@@ -323,9 +324,6 @@ void EffectManager::init(const Settings& settings)
     m_assetManager = settings.assetManager;
 
 #if LN_EFFEKSEER_ENABLED
-	//return;
-    //g_platform = LLGI::CreatePlatform(LLGI::DeviceType::Vulkan);
-    //g_graphics = g_platform->CreateGraphics();
 
     m_nativeGraphicsExtension = std::make_unique<LLGINativeGraphicsExtension>();
     m_nativeGraphicsExtension->m_manager = this;
@@ -333,9 +331,6 @@ void EffectManager::init(const Settings& settings)
 
     m_fileInterface = std::make_unique<FileInterface>();
     m_fileInterface->m_manager = this;
-
- //   ::EffekseerRendererLLGI::FixedShader fixedShaders;
-	//::EffekseerRendererLLGI::Renderer::CreateFixedShaderForVulkan(&fixedShaders);
 
     m_efkManager = ::Effekseer::Manager::Create(2000);
 
@@ -359,23 +354,6 @@ void EffectManager::init(const Settings& settings)
     // 音再生用インスタンスからサウンドデータの読込機能を設定
     // 独自拡張可能、現在はファイルから読み込んでいる。
     //g_manager->SetSoundLoader(g_sound->CreateSoundLoader());
-
-    // 視点位置を確定
-    g_position = ::Effekseer::Vector3D(10.0f, 5.0f, 20.0f);
-
-    // 投影行列を設定
-    m_nativeGraphicsExtension->m_renderer->SetProjectionMatrix(
-        ::Effekseer::Matrix44().PerspectiveFovRH_OpenGL(90.0f / 180.0f * 3.14f, (float)g_window_width / (float)g_window_height, 1.0f, 50.0f));
-
-    // カメラ行列を設定
-    m_nativeGraphicsExtension->m_renderer->SetCameraMatrix(
-        ::Effekseer::Matrix44().LookAtRH(g_position, ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
-
-    //// エフェクトの読込
-    //g_effect = Effekseer::Effect::Create(m_efkManager, (const EFK_CHAR*)L"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk");
-
-    //// エフェクトの再生
-    //g_handle = m_efkManager->Play(g_effect, 0, 0, 0);
 #endif
 
     LN_LOG_DEBUG << "EffectManager Initialization ended.";
@@ -384,27 +362,14 @@ void EffectManager::init(const Settings& settings)
 void EffectManager::dispose()
 {
 #if LN_EFFEKSEER_ENABLED
-	////return;
-    // エフェクトの停止
-    //m_efkManager->StopEffect(g_handle);
-
-    // エフェクトの破棄
-    //ES_SAFE_RELEASE(g_effect);
 
     m_efkEffectCache.dispose();
 
     m_graphicsManager->unregisterExtension(m_nativeGraphicsExtension.get());
 
-
-    // 先にエフェクト管理用インスタンスを破棄
     m_efkManager->Destroy();
     m_efkManager = nullptr;
 
-    // 次に音再生用インスタンスを破棄
-    //g_sound->Destroy();
-
-    // 次に描画用インスタンスを破棄
-    //g_renderer->Destroy();
 #endif
 }
 
@@ -412,40 +377,28 @@ void EffectManager::testDraw(RenderingContext* renderingContext)
 {
 #if LN_EFFEKSEER_ENABLED
 
-    //if (1) {
+    // 視点位置を確定
+    //g_position = ::Effekseer::Vector3D(10.0f, 5.0f, 20.0f);
 
-    //    if (!g_platform->NewFrame())
-    //        return;
+    auto viewPoint = renderingContext->viewPoint();
 
-    //    g_graphics->NewFrame();
+    // 投影行列を設定
+    //Matrix t = viewPoint->projMatrix;
+    //t.transpose();
+    m_nativeGraphicsExtension->m_renderer->SetProjectionMatrix(
+        //(::Effekseer::Matrix44&)t);
+        //::Effekseer::Matrix44().PerspectiveFovRH_OpenGL(90.0f / 180.0f * 3.14f, (float)g_window_width / (float)g_window_height, 1.0f, 50.0f));
+        ::Effekseer::Matrix44().PerspectiveFovLH(viewPoint->fovY, (float)viewPoint->viewPixelSize.width / (float)viewPoint->viewPixelSize.height, viewPoint->nearClip, viewPoint->farClip));
 
-    //}
-
-
-    // エフェクトの移動処理を行う
-    //m_efkManager->AddLocation(g_handle, ::Effekseer::Vector3D(0.2f, 0.0f, 0.0f));
-
-    // エフェクトの更新処理を行う
+    // カメラ行列を設定
+    m_nativeGraphicsExtension->m_renderer->SetCameraMatrix(
+        //(::Effekseer::Matrix44&)viewPoint->viewMatrix);
+        //::Effekseer::Matrix44().LookAtRH(g_position, ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
+        ::Effekseer::Matrix44().LookAtLH((::Effekseer::Vector3D&)viewPoint->viewPosition, (::Effekseer::Vector3D&)(viewPoint->viewPosition + viewPoint->viewDirection), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
     m_efkManager->Update();
 
-	//return;
-
-   // graphicsContext->drawExtension(m_nativeGraphicsExtension.get());
     renderingContext->invokeExtensionRendering(m_nativeGraphicsExtension.get());
 
-    //// エフェクトの描画開始処理を行う。
-    //g_renderer->BeginRendering();
-
-    //// エフェクトの描画を行う。
-    //g_manager->Draw();
-
-    //// エフェクトの描画終了処理を行う。
-    //g_renderer->EndRendering();
-
-
-    //if (1) {
-    //    g_platform->Present();
-    //}
 #endif
 }
 

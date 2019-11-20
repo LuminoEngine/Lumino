@@ -7,7 +7,6 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/UIDialog.hpp>
-#include "../Effect/EffectManager.hpp"  // TODO: test
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
@@ -80,6 +79,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_viewPoint->projMatrix = camera.projMatrix = Matrix::makePerspective2DLH(camera.viewPixelSize.width, camera.viewPixelSize.height, 0, 1000);
             m_viewPoint->viewProjMatrix = camera.viewProjMatrix = camera.viewMatrix * camera.projMatrix;
             m_viewPoint->viewFrustum = camera.viewFrustum = ViewFrustum(camera.viewProjMatrix);
+            m_viewPoint->fovY = 1.0f;
             m_viewPoint->nearClip = camera.nearClip = 0;
             m_viewPoint->farClip = camera.farClip = 1000;
         }
@@ -118,8 +118,6 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
             m_adornerLayer->render(m_renderingContext);
 
-            detail::EngineDomain::effectManager()->testDraw(m_renderingContext);
-            //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
 
 
             //if (m_dialog) {

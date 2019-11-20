@@ -16,6 +16,7 @@
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "SceneManager.hpp"
+#include "../Effect/EffectManager.hpp"  // TODO: test
 
 namespace ln {
 
@@ -132,6 +133,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             m_viewPoint->viewProjMatrix = camera.viewProjMatrix = cc->getViewProjectionMatrix();
             m_viewPoint->viewFrustum = camera.viewFrustum = cc->getViewFrustum();
 
+            m_viewPoint->fovY = m_camera->fov();
             m_viewPoint->nearClip = camera.nearClip = cc->getNearClip();
             m_viewPoint->farClip = camera.farClip = cc->getFarClip();
 
@@ -321,6 +323,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             adjustGridPlane(m_viewPoint->viewFrustum, this);
             renderGridPlane(renderingContext, this);
 
+            detail::EngineDomain::effectManager()->testDraw(renderingContext);
+            //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
         }
 
 

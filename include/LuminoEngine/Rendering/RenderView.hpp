@@ -99,6 +99,7 @@ public:
     Matrix		viewProjMatrix;
     ViewFrustum	viewFrustum;
 
+    float fovY = 1.0f;
     float		nearClip = 0;
     float		farClip = 0;
 	float		dpiScale = 1.0;
