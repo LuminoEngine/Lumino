@@ -175,6 +175,7 @@ VALUE LnQuaternion_allocate( VALUE klass )
 
 struct Wrap_Engine
 {
+
     Wrap_Engine()
     {}
 };
@@ -245,6 +246,7 @@ static VALUE Wrap_LnEngine_MainUIView(int argc, VALUE* argv, VALUE self)
 struct Wrap_GraphicsResource
     : public Wrap_Object
 {
+
     Wrap_GraphicsResource()
     {}
 };
@@ -291,6 +293,7 @@ static VALUE LnGraphicsResource_allocateForGetObject(VALUE klass, LnHandle handl
 struct Wrap_Texture
     : public Wrap_GraphicsResource
 {
+
     Wrap_Texture()
     {}
 };
@@ -337,6 +340,7 @@ static VALUE LnTexture_allocateForGetObject(VALUE klass, LnHandle handle)
 struct Wrap_Texture2D
     : public Wrap_Texture
 {
+
     Wrap_Texture2D()
     {}
 };
@@ -435,6 +439,7 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
 struct Wrap_Component
     : public Wrap_Object
 {
+
     Wrap_Component()
     {}
 };
@@ -481,6 +486,7 @@ static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
 struct Wrap_VisualComponent
     : public Wrap_Component
 {
+
     Wrap_VisualComponent()
     {}
 };
@@ -563,6 +569,7 @@ static VALUE Wrap_LnVisualComponent_IsVisible(int argc, VALUE* argv, VALUE self)
 struct Wrap_SpriteComponent
     : public Wrap_VisualComponent
 {
+
     Wrap_SpriteComponent()
     {}
 };
@@ -628,6 +635,8 @@ static VALUE Wrap_LnSpriteComponent_SetTexture(int argc, VALUE* argv, VALUE self
 struct Wrap_ComponentList
     : public Wrap_Object
 {
+    std::vector<VALUE> Items_AccessorCache;
+
     Wrap_ComponentList()
     {}
 };
@@ -711,6 +720,8 @@ static VALUE Wrap_LnComponentList_GetItem(int argc, VALUE* argv, VALUE self)
 struct Wrap_WorldObject
     : public Wrap_Object
 {
+    VALUE LnWorldObject_Components_AccessorCache = Qnil;
+
     Wrap_WorldObject()
     {}
 };
@@ -1030,6 +1041,7 @@ LnResult Wrap_LnWorldObject_OnUpdate_OverrideCallback(LnHandle worldobject, floa
 struct Wrap_VisualObject
     : public Wrap_WorldObject
 {
+
     Wrap_VisualObject()
     {}
 };
@@ -1118,6 +1130,7 @@ LnResult Wrap_LnVisualObject_OnUpdate_OverrideCallback(LnHandle worldobject, flo
 struct Wrap_Sprite
     : public Wrap_VisualObject
 {
+
     Wrap_Sprite()
     {}
 };
@@ -1238,6 +1251,7 @@ LnResult Wrap_LnSprite_OnUpdate_OverrideCallback(LnHandle worldobject, float ela
 struct Wrap_UIEventArgs
     : public Wrap_Object
 {
+
     Wrap_UIEventArgs()
     {}
 };
@@ -1301,6 +1315,7 @@ static VALUE Wrap_LnUIEventArgs_Sender(int argc, VALUE* argv, VALUE self)
 struct Wrap_UILayoutElement
     : public Wrap_Object
 {
+
     Wrap_UILayoutElement()
     {}
 };
@@ -1347,6 +1362,7 @@ static VALUE LnUILayoutElement_allocateForGetObject(VALUE klass, LnHandle handle
 struct Wrap_UIElement
     : public Wrap_UILayoutElement
 {
+
     Wrap_UIElement()
     {}
 };
@@ -1618,21 +1634,15 @@ static VALUE Wrap_LnUIElement_CenterPoint(int argc, VALUE* argv, VALUE self)
 
 static VALUE Wrap_LnUIElement_AddChild(int argc, VALUE* argv, VALUE self)
 {
-    printf("Wrap_LnUIElement_AddChild 1\n");
     Wrap_UIElement* selfObj;
     Data_Get_Struct(self, Wrap_UIElement, selfObj);
     if (1 <= argc && argc <= 1) {
-    printf("Wrap_LnUIElement_AddChild 2\n");
         VALUE child;
         rb_scan_args(argc, argv, "1", &child);
         if (LNRB_VALUE_IS_OBJECT(child))
         {
-            printf("Wrap_LnUIElement_AddChild 3\n");
             LnHandle _child = LuminoRubyRuntimeManager::instance->getHandle(child);
-            printf("Wrap_LnUIElement_AddChild 4 %d %d\n", selfObj->handle, _child);
-            printf("%d %d\n", LnObject_GetReferenceCount(selfObj->handle), LnObject_GetReferenceCount(_child));
             LnResult errorCode = LnUIElement_AddChild(selfObj->handle, _child);
-            printf("Wrap_LnUIElement_AddChild 5\n");
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -1647,6 +1657,7 @@ static VALUE Wrap_LnUIElement_AddChild(int argc, VALUE* argv, VALUE self)
 struct Wrap_UIControl
     : public Wrap_UIElement
 {
+
     Wrap_UIControl()
     {}
 };
@@ -1693,6 +1704,7 @@ static VALUE LnUIControl_allocateForGetObject(VALUE klass, LnHandle handle)
 struct Wrap_UIButtonBase
     : public Wrap_UIControl
 {
+
     Wrap_UIButtonBase()
     {}
 };
@@ -1758,6 +1770,7 @@ static VALUE Wrap_LnUIButtonBase_SetText(int argc, VALUE* argv, VALUE self)
 struct Wrap_UIButton
     : public Wrap_UIButtonBase
 {
+
     VALUE connectOnClicked_Signal;
     bool connectOnClicked_EventConnect = false;
     Wrap_UIButton()

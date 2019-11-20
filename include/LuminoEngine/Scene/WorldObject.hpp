@@ -175,7 +175,7 @@ public:
 
     bool traverse(detail::IWorldObjectVisitor* visitor);
 
-	LN_METHOD()
+	LN_METHOD(Property)
 	ComponentList* components() const { return m_components; }
 
 protected:

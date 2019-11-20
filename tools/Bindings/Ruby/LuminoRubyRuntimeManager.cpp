@@ -70,6 +70,7 @@ VALUE LuminoRubyRuntimeManager::wrapObject(LnHandle handle)
     if (objectIndex <= 0) {
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
         registerWrapperObject(obj);
+        LnObject_Retain(handle);
         return obj;
     }
     else if (TYPE(m_objectList[objectIndex]) == T_NIL) {

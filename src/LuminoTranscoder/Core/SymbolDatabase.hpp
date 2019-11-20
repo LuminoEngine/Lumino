@@ -42,6 +42,9 @@ public:
 
 	//bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
 
+	void setSummary(const ln::String& value) { m_summary = value; }
+	void setDetails(const ln::String& value) { m_details = value; }
+
 private:
 	const PIDocument* m_pi = nullptr;
 	ln::String m_summary;
@@ -297,18 +300,37 @@ private:
 	friend class TypeSymbol;
 };
 
-class PropertySymbol : public ln::RefObject
+class PropertySymbol : public Symbol
 {
+//public:
+//	ln::Ref<TypeSymbol>			owner;
+//	//ln::Ref<DocumentSymbol>		document;
+//	ln::String				name;
+//	ln::String				namePrefix;	// Is
+//	ln::Ref<TypeSymbol>			type;
+//	ln::Ref<MethodSymbol>		getter;
+//	ln::Ref<MethodSymbol>		setter;
+//
+//	void MakeDocument();
 public:
-	ln::Ref<TypeSymbol>			owner;
-	//ln::Ref<DocumentSymbol>		document;
-	ln::String				name;
-	ln::String				namePrefix;	// Is
-	ln::Ref<TypeSymbol>			type;
-	ln::Ref<MethodSymbol>		getter;
-	ln::Ref<MethodSymbol>		setter;
+	PropertySymbol(SymbolDatabase* db);
+	ln::Result init(const ln::String& shortName);
 
-	void MakeDocument();
+	const ln::String& shortName() const { return m_shortName; }
+	const ln::Ref<TypeSymbol>& type() const { return m_type; }
+	const ln::Ref<MethodSymbol>& getter() const { return m_getter; }
+	const ln::Ref<MethodSymbol>& setter() const { return m_setter; }
+
+private:
+	void buildDocument();
+
+	ln::String m_shortName;
+	ln::String m_namePrefix;	// Is
+	ln::Ref<TypeSymbol> m_type;
+	ln::Ref<MethodSymbol> m_getter;
+	ln::Ref<MethodSymbol> m_setter;
+
+	friend class TypeSymbol;
 };
 
 class TypeSymbol : public Symbol
@@ -326,9 +348,11 @@ public:
 	const ln::List<Ref<ConstantSymbol>>& constants() const { return m_constants; }
 	const ln::List<Ref<MethodSymbol>>& publicMethods() const { return m_publicMethods; }	// クラス外から普通にコールできる public メソッド。virutal は含むが、protected virtual は含まない。
 	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
+	const ln::List<Ref<PropertySymbol>>& properties() const { return m_properties; }
 	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
 	const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
+	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
 	MethodSymbol* delegateDeclaration() const { return m_declaredMethods[0]; }
 
 	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
@@ -338,10 +362,12 @@ public:
 	bool isDelegate() const { return kind() == TypeKind::Delegate; }
 	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class ?
 	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
+	bool isCollection() const { return metadata()->hasKey(u"Collection"); }
 
 private:
 	void setFullName(const ln::String& value);
 	ln::Result linkOverload();
+	ln::Result linkProperties();
 	void collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods);
 
 	Ref<PITypeInfo> m_piType;
@@ -353,9 +379,11 @@ private:
 	ln::List<Ref<MethodSymbol>> m_publicMethods;
 	ln::List<Ref<MethodSymbol>> m_declaredMethods;	// このクラス内で宣言されたすべてメソッド。ベースクラスは含まない。
 	ln::List<Ref<MethodOverloadInfo>> m_overloads;
+	ln::List<Ref<PropertySymbol>> m_properties;
 	ln::List<Ref<MethodSymbol>> m_virtualMethods;
 	ln::List<Ref<MethodSymbol>> m_eventMethods;
 	TypeSymbol* m_baseClass = nullptr;
+	TypeSymbol* m_collectionItemType = nullptr;
 
 //	struct SoueceData
 //	{

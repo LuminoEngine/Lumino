@@ -8,7 +8,7 @@ class Object;
 class Runtime
 {
 public:
-	static LnHandle makeObjectWrap(Object* obj);
+	static LnHandle makeObjectWrap(Object* obj, bool fromCreate);
 	static Object* getObject(LnHandle handle);
 	static void setManagedObjectId(LnHandle handle, int64_t id);
 	static int64_t getManagedObjectId(LnHandle handle);

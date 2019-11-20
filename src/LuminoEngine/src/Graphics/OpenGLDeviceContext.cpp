@@ -461,6 +461,8 @@ void GLGraphicsContext::dispose()
 		GL_CHECK(glDeleteFramebuffers(1, &m_fbo));
 		m_fbo = 0;
 	}
+
+	ICommandList::dispose();
 }
 
 void GLGraphicsContext::setActiveShaderPass(GLShaderPass* pass)
@@ -1154,6 +1156,7 @@ Result GLRenderPass::init(OpenGLDevice* device, const DeviceFramebufferState& bu
 
 void GLRenderPass::dispose()
 {
+	IRenderPass::dispose();
 }
 
 SizeI GLRenderPass::viewSize() const

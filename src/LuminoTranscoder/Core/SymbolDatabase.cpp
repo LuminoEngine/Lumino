@@ -485,6 +485,41 @@ void MethodSymbol::link(SymbolDatabase* db)
 #endif
 
 //==============================================================================
+// PropertySymbol
+
+PropertySymbol::PropertySymbol(SymbolDatabase* db)
+	: Symbol(db)
+{
+}
+
+ln::Result PropertySymbol::init(const ln::String& shortName)
+{
+	Symbol::init();
+	m_shortName = shortName;
+	return true;
+}
+
+void PropertySymbol::buildDocument()
+{
+	ln::String summary;
+	ln::String details;
+	if (m_getter) {
+		summary += m_getter->document()->summary();
+		details += m_getter->document()->details();
+	}
+	if (m_setter) {
+		if (!summary.isEmpty()) summary += u"\n";
+		if (!details.isEmpty()) details += u"\n\n";
+
+		summary += m_setter->document()->summary();
+		details += m_setter->document()->details();
+	}
+
+	document()->setSummary(summary);
+	document()->setDetails(details);
+}
+
+//==============================================================================
 // TypeSymbol
 
 TypeSymbol::TypeSymbol(SymbolDatabase* db)
@@ -537,10 +572,10 @@ ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind type
 
 ln::Result TypeSymbol::link()
 {
-	if (metadata()->hasKey(u"Collection")) {
+	if (isCollection()) {
 		auto typeName = metadata()->getValue(u"Collection");
-		auto type = db()->getTypeSymbol(typeName);
-		if (!type) {
+		m_collectionItemType = db()->getTypeSymbol(typeName);
+		if (!m_collectionItemType) {
 			db()->diag()->reportError(u"undefined symbol: " + typeName);
 			return false;
 		}
@@ -554,7 +589,7 @@ ln::Result TypeSymbol::link()
 			auto p = ln::makeRef<MethodParameterSymbol>(db());
 			if (!p->init(PredefinedTypes::intType, u"index")) return false;
 			auto s = ln::makeRef<MethodSymbol>(db());
-			if (!s->init(this, u"getItem", type, { p })) return false;
+			if (!s->init(this, u"getItem", m_collectionItemType, { p })) return false;
 			m_declaredMethods.add(s);
 		}
 	}
@@ -592,6 +627,8 @@ ln::Result TypeSymbol::link()
 	}
 
 	if (!linkOverload()) return false;
+
+	if (!linkProperties()) return false;
 
 	collectVirtualMethods(&m_virtualMethods);
 
@@ -715,6 +752,76 @@ ln::Result TypeSymbol::linkOverload()
 	return true;
 }
 
+ln::Result TypeSymbol::linkProperties()
+{
+	for (auto& methodInfo : m_declaredMethods)
+	{
+		if (methodInfo->metadata()->hasKey(u"Property"))
+		{
+			// プロパティの名前を推測する
+			ln::String name;
+			ln::String namePrefix;
+			bool isGetter = false;
+			if (methodInfo->shortName().indexOf(u"get", 0, ln::CaseSensitivity::CaseInsensitive) == 0) {
+				name = methodInfo->shortName().substr(3);
+				isGetter = true;
+			}
+			else if (methodInfo->shortName().indexOf(u"is", 0, ln::CaseSensitivity::CaseInsensitive) == 0) {
+				name = methodInfo->shortName().substr(2);
+				namePrefix = u"is";
+				isGetter = true;
+			}
+			else if (methodInfo->shortName().indexOf(u"set", 0, ln::CaseSensitivity::CaseInsensitive) == 0) {
+				name = methodInfo->shortName().substr(3);
+				isGetter = false;
+			}
+			else {
+				// 上記以外 (longName() など名詞系) は getter とする
+				name = methodInfo->shortName();
+				isGetter = true;
+			}
+
+			// 推測した名前で既存プロパティを検索する。なければ新しく作る
+			ln::Ref<PropertySymbol> prop;
+			{
+				auto ptr = m_properties.findIf([name](auto& x) { return x->shortName() == name; });
+				if (!ptr) {
+					prop = ln::makeRef<PropertySymbol>(db());
+					if (!prop->init(name)) return false;
+					m_properties.add(prop);
+				}
+				else {
+					prop = *ptr;
+				}
+
+				prop->m_namePrefix = namePrefix;
+			}
+
+			if (isGetter) {
+				LN_DCHECK(!prop->m_getter);
+				prop->m_getter = methodInfo;
+				if (!prop->m_type)	// return 型をプロパティの型とする
+					prop->m_type = methodInfo->returnType();
+			}
+			else {
+				LN_DCHECK(!prop->m_setter);
+				prop->m_setter = methodInfo;
+				if (!prop->m_type)	// 第1引数の型をプロパティの型とする
+					prop->m_type = methodInfo->parameters()[0]->type();
+			}
+
+			methodInfo->ownerProperty = prop;
+		}
+	}
+
+	// create document
+	for (auto& prop : m_properties) {
+		prop->buildDocument();
+	}
+
+	return true;
+}
+
 void TypeSymbol::collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods)
 {
 	if (m_baseClass) {
@@ -757,76 +864,6 @@ void TypeSymbol::Link(SymbolDatabase* db)
 
 void TypeSymbol::MakeProperties()
 {
-	for (auto& methodInfo : declaredMethods)
-	{
-		if (methodInfo->metadata->HasKey(_T("Property")))
-		{
-			ln::String name;
-			ln::String namePrefix;
-			bool isGetter = false;
-			if (methodInfo->name.indexOf(_T("get"), 0, ln::CaseSensitivity::CaseInsensitive) == 0)
-			{
-				name = methodInfo->name.substr(3);
-				isGetter = true;
-			}
-			else if (methodInfo->name.indexOf(_T("is"), 0, ln::CaseSensitivity::CaseInsensitive) == 0)
-			{
-				name = methodInfo->name.substr(2);
-				namePrefix = _T("is");
-				isGetter = true;
-			}
-			else if (methodInfo->name.indexOf(_T("set"), 0, ln::CaseSensitivity::CaseInsensitive) == 0)
-			{
-				name = methodInfo->name.substr(3);
-				isGetter = false;
-			}
-			else
-			{
-				// 上記以外 (longName() など名詞系) は getter とする
-				name = methodInfo->name;
-				isGetter = true;
-			}
-
-			ln::Ref<PropertySymbol> propInfo;
-			{
-				auto ptr = declaredProperties.findIf([name](auto info) { return info->name == name; });
-				if (ptr)
-				{
-					propInfo = ln::makeRef<PropertySymbol>();
-					propInfo->name = name;
-					declaredProperties.add(propInfo);
-				}
-				else
-				{
-					propInfo = *ptr;
-				}
-				propInfo->namePrefix = namePrefix;
-			}
-
-			if (isGetter)
-			{
-				LN_DCHECK(propInfo->getter == nullptr);
-				propInfo->getter = methodInfo;
-				if (propInfo->type == nullptr)	// return 型をプロパティの型とする
-					propInfo->type = methodInfo->returnType;
-			}
-			else
-			{
-				LN_DCHECK(propInfo->setter == nullptr);
-				propInfo->setter = methodInfo;
-				if (propInfo->type == nullptr)	// 第1引数の型をプロパティの型とする
-					propInfo->type = methodInfo->parameters[0]->type;
-			}
-
-			methodInfo->ownerProperty = propInfo;
-		}
-	}
-
-	// create document
-	for (auto& propInfo : declaredProperties)
-	{
-		propInfo->MakeDocument();
-	}
 }
 
 
@@ -853,26 +890,6 @@ void TypeSymbol::ResolveCopyDoc()
 }
 #endif
 
-//==============================================================================
-// PropertySymbol
-//void PropertySymbol::MakeDocument()
-//{
-//	document = ln::makeRef<DocumentSymbol>();
-//
-//	if (getter != nullptr)
-//	{
-//		document->summary += getter->document->summary;
-//		document->details += getter->document->details;
-//	}
-//	if (setter != nullptr)
-//	{
-//		if (!document->summary.isEmpty()) document->summary += _T("\n");
-//		if (!document->details.isEmpty()) document->details += _T("\n\n");
-//
-//		document->summary += setter->document->summary;
-//		document->details += setter->document->details;
-//	}
-//}
 
 //==============================================================================
 // SymbolDatabase

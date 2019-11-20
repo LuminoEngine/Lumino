@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Object.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
+#include "../Runtime/RuntimeManager.hpp"
 
 namespace ln {
 
@@ -12,19 +13,23 @@ namespace ln {
 Object::Object()
     : m_weakRefInfo(nullptr)
     , m_weakRefInfoMutex()
-	, m_runtimeData(0)
+	, m_runtimeData(nullptr)
 {
 }
 
 Object::~Object()
 {
-    std::lock_guard<std::mutex> lock(m_weakRefInfoMutex);
-    if (m_weakRefInfo)
-    {
-        m_weakRefInfo->owner = nullptr;
-        m_weakRefInfo->release();
-        m_weakRefInfo = nullptr;
-    }
+	std::lock_guard<std::mutex> lock(m_weakRefInfoMutex);
+	if (m_weakRefInfo)
+	{
+		m_weakRefInfo->owner = nullptr;
+		m_weakRefInfo->release();
+		m_weakRefInfo = nullptr;
+	}
+
+	if (m_runtimeData) {
+		detail::EngineDomain::runtimeManager()->onDestructObject(this);
+	}
 }
 
 void Object::init()

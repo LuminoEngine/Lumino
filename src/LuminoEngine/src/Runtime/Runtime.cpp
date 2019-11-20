@@ -4,9 +4,9 @@
 
 namespace ln {
 
-LnHandle Runtime::makeObjectWrap(Object* obj)
+LnHandle Runtime::makeObjectWrap(Object* obj, bool fromCreate)
 {
-	return detail::EngineDomain::runtimeManager()->makeObjectWrap(obj);
+	return detail::EngineDomain::runtimeManager()->makeObjectWrap(obj, fromCreate);
 }
 
 Object* Runtime::getObject(LnHandle handle)
@@ -55,9 +55,13 @@ int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle)
 //
 LN_FLAT_API LnResult LnObject_Release(LnHandle obj)
 {
-	if (obj) {
-		ln::detail::EngineDomain::runtimeManager()->releaseObject(obj);
-	}
+	ln::detail::EngineDomain::runtimeManager()->releaseObjectExplicitly(obj);
+	return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnObject_Retain(LnHandle obj)
+{
+	ln::detail::EngineDomain::runtimeManager()->retainObjectExplicitly(obj);
 	return LN_SUCCESS;
 }
 

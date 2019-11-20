@@ -61,8 +61,8 @@ void RubyExtGenerator::generate()
 				wrapStruct.AppendLine("{");
 				wrapStruct.IncreaseIndent();
 
-				// プロパティフィールド
-				//wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMember.ToString());
+				// Accessor Cache
+				wrapStruct.AppendLine(makeAccessorCacheFieldDecls(classSymbol));
 
 				// Signal and Connection
 				for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
@@ -343,9 +343,23 @@ ln::String RubyExtGenerator::makeRubyMethodName(MethodSymbol* method) const
 //	}
 //}
 
-ln::String RubyExtGenerator::makeAccessorCacheDecls(const TypeSymbol* classSymbol) const
+ln::String RubyExtGenerator::makeAccessorCacheFieldDecls(const TypeSymbol* classSymbol) const
 {
-	return u"";
+	OutputBuffer code;
+
+	for (auto& prop : classSymbol->properties()) {
+		if (prop->type()->isClass()) {
+			if (prop->getter()) {
+				code.AppendLine(u"VALUE {0} = Qnil;", makeAccessorCacheName(prop->getter()));
+			}
+		}
+	}
+
+	if (classSymbol->isCollection() && classSymbol->collectionItemType()->isClass()) {
+		code.AppendLine(u"std::vector<VALUE> Items_AccessorCache;");
+	}
+
+	return code.toString();
 }
 
 ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const

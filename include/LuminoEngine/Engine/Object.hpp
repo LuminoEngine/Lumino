@@ -9,6 +9,7 @@ class ReflectionObjectVisitor;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
+class ObjectRuntimeData;
 class EngineDomain;
 }
 
@@ -105,7 +106,7 @@ private:
 
     detail::WeakRefInfo* m_weakRefInfo;
     std::mutex m_weakRefInfoMutex;
-	intptr_t m_runtimeData;
+	detail::ObjectRuntimeData* m_runtimeData;
     Uuid m_assetId;
 
     friend class TypeInfo;
@@ -130,8 +131,8 @@ public:
     template<class T>
     static detail::WeakRefInfo* requestWeakRefInfo(T* obj) { return obj->requestWeakRefInfo(); }
     static void destructObject(Object* obj) { obj->~Object(); }
-	static void setRuntimeData(Object* obj, intptr_t data) { obj->m_runtimeData = data; }
-	static intptr_t getRuntimeData(Object* obj) { return obj->m_runtimeData; }
+	static void setRuntimeData(Object* obj, ObjectRuntimeData* data) { obj->m_runtimeData = data; }
+	static ObjectRuntimeData* getRuntimeData(Object* obj) { return obj->m_runtimeData; }
 };
 
 class WeakRefInfo final

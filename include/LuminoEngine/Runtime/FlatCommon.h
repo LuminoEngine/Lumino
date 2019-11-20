@@ -26,9 +26,9 @@
 #define LNI_BOOL_TO_LNBOOL(x)    (x) ? LN_TRUE : LN_FALSE
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
 
-#define LNI_CREATE_OBJECT(out, type, initFunc, ...) { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); *out = ::ln::Runtime::makeObjectWrap(ptr); }
+#define LNI_CREATE_OBJECT(out, type, initFunc, ...) { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); ::ln::RefObjectHelper::retain(ptr); *out = ::ln::Runtime::makeObjectWrap(ptr, true); }
 #define LNI_HANDLE_TO_OBJECT(type, h)               static_cast<type*>((h) ? ::ln::Runtime::getObject(h) : nullptr)
-#define LNI_OBJECT_TO_HANDLE(obj)					::ln::Runtime::makeObjectWrap(obj)
+#define LNI_OBJECT_TO_HANDLE(obj)					::ln::Runtime::makeObjectWrap(obj, false)
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,6 +82,12 @@ extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
 */
 LN_FLAT_API LnResult LnObject_Release(LnHandle obj);
 
+/**
+ *  @brief      オブジェクトの参照を取得します。
+ *  @param[in]  obj	: オブジェクトハンドル
+ *  @details    指定されたオブジェクトの参照カウントをインクリメントします。
+ */
+LN_FLAT_API LnResult LnObject_Retain(LnHandle obj);
 
 /**
  *  @brief      ネイティブオブジェクトの参照カウントを取得します。これは内部的に使用される関数です。
