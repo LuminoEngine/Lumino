@@ -71,7 +71,7 @@ Optional<String> AssetManager::findAssetPath(const StringRef& filePath, const Ch
 
     String result;
     for (auto& path : paths) {
-        if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
+        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
             auto localPath = path.canonicalize();
             if (FileSystem::existsFile(localPath)) {
                 result = String::concat(LocalhostPrefix, u"/", localPath.unify().str());
@@ -80,7 +80,7 @@ Optional<String> AssetManager::findAssetPath(const StringRef& filePath, const Ch
         else {
             for (auto& archive : m_actualArchives) {
                 if (archive->existsFile(path)) {
-                    result = path;
+                    result = u"/" + path;
                     break;
                 }
             }
@@ -100,7 +100,7 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const String& assetPath) const
     Path path;
     if (tryParseAssetPath(assetPath, &archiveName, &path)) {
         if (String::compare(archiveName, LocalhostPrefix, CaseSensitivity::CaseInsensitive) == 0) {
-            if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
+            if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
                 return FileStream::create(path, FileOpenMode::Read);
             }
         }

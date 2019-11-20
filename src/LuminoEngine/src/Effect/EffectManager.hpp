@@ -14,6 +14,7 @@ class RenderingContext;
 namespace detail {
 class GraphicsManager;
 class LLGINativeGraphicsExtension;
+class FileInterface;
 class EffekseerEffect;
 
 class EffectManager
@@ -43,10 +44,13 @@ public:
     void releaseEffekseerEffect(EffekseerEffect* effect);
 #endif
 
+    AssetManager* assetManager() const { return m_assetManager; }
+
 private:
     GraphicsManager* m_graphicsManager;
     AssetManager* m_assetManager;
     std::unique_ptr<LLGINativeGraphicsExtension> m_nativeGraphicsExtension;
+    std::unique_ptr<FileInterface> m_fileInterface;
     ::Effekseer::Manager* m_efkManager;
     detail::ObjectCache<String, EffekseerEffect> m_efkEffectCache;
 };

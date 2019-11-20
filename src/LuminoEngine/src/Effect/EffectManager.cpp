@@ -264,6 +264,45 @@ private:
     IVulkanNativeGraphicsInterface* m_nativeInterface = nullptr;
     VkCommandPool m_commandPool = VK_NULL_HANDLE;
 };
+
+class FileInterface : public ::Effekseer::FileInterface
+{
+public:
+    EffectManager* m_manager = nullptr;
+    ln::Path m_effectDir;
+
+    class FileReader : public ::Effekseer::FileReader
+    {
+        Ref<Stream> m_stream;
+    public:
+        FileReader(Ref<Stream> stream)
+            : m_stream(stream)
+        {}
+
+        virtual size_t Read(void* buffer, size_t size) override { return m_stream->read(buffer, size); }
+        virtual void Seek(int position) override { m_stream->seek(position, SeekOrigin::Begin); }
+        virtual int GetPosition() override { return m_stream->position(); }
+        virtual size_t GetLength() override { return m_stream->length(); }
+    };
+
+    virtual ::Effekseer::FileReader* OpenRead(const EFK_CHAR* path) override
+    {
+        auto stream = m_manager->assetManager()->openFileStream(ln::Path(m_effectDir, path));
+        if (stream) {
+            return new FileReader(stream);
+        }
+        else {
+            return nullptr;
+        }
+    }
+
+    virtual ::Effekseer::FileWriter* OpenWrite(const EFK_CHAR* path) override
+    {
+        LN_NOTIMPLEMENTED();
+        return nullptr;
+    }
+};
+
 #else
 class LLGINativeGraphicsExtension {};
 #endif
@@ -292,6 +331,9 @@ void EffectManager::init(const Settings& settings)
     m_nativeGraphicsExtension->m_manager = this;
     m_graphicsManager->registerExtension(m_nativeGraphicsExtension.get());
 
+    m_fileInterface = std::make_unique<FileInterface>();
+    m_fileInterface->m_manager = this;
+
  //   ::EffekseerRendererLLGI::FixedShader fixedShaders;
 	//::EffekseerRendererLLGI::Renderer::CreateFixedShaderForVulkan(&fixedShaders);
 
@@ -305,8 +347,8 @@ void EffectManager::init(const Settings& settings)
 
     // 描画用インスタンスからテクスチャの読込機能を設定
     // 独自拡張可能、現在はファイルから読み込んでいる。
-    m_efkManager->SetTextureLoader(m_nativeGraphicsExtension->m_renderer->CreateTextureLoader());
-    m_efkManager->SetModelLoader(m_nativeGraphicsExtension->m_renderer->CreateModelLoader());
+    m_efkManager->SetTextureLoader(m_nativeGraphicsExtension->m_renderer->CreateTextureLoader(m_fileInterface.get()));
+    m_efkManager->SetModelLoader(m_nativeGraphicsExtension->m_renderer->CreateModelLoader(m_fileInterface.get()));
 
     // 音再生用インスタンスの生成
     //g_sound = EffekseerSound::Sound::Create(32);
@@ -433,6 +475,8 @@ Ref<EffekseerEffect> EffectManager::getOrCreateEffekseerEffect(const Path& fileP
             return effect;
         }
         else {
+            m_fileInterface->m_effectDir = filePath.parent();
+
             auto stream = m_assetManager->openStreamFromAssetPath(*assetPath);
             auto data = stream->readToEnd();
             auto efkEffect = ::Effekseer::Effect::Create(effekseerManager(), data.data(), data.size(), 1.0f, nullptr);
