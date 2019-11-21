@@ -353,6 +353,8 @@ int main(int argc, char** argv)
 	//	ss->addNewWorldObject();
 	//	ss->save();
 	//}
+    
+    GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);

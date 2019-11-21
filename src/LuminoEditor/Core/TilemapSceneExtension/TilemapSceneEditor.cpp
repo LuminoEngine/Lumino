@@ -134,7 +134,8 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
         m_mainWorldRenderView = ln::makeObject<ln::WorldRenderView>();
         m_mainWorldRenderView->setTargetWorld(m_mainWorld);
         m_mainWorldRenderView->setCamera(m_mainCamera);
-        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::Sky);
+        //m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::Sky);
+        m_mainWorldRenderView->setClearMode(ln::RenderViewClearMode::ColorAndDepth);
         m_mainWorldRenderView->setBackgroundColor(ln::Color::Gray);
         m_mainWorldRenderView->connectOnUIEvent(ln::bind(this, &TilemapSceneEditor::WorldRenderView_OnUIEvent));
 		m_mainWorldRenderView->setPhysicsDebugDrawEnabled(true);

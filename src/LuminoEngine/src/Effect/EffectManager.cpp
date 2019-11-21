@@ -306,6 +306,7 @@ public:
 
 #else
 class LLGINativeGraphicsExtension {};
+class FileInterface {};
 #endif
 
 //==============================================================================
