@@ -186,10 +186,6 @@ void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
     LNRB_TRACE("LuminoRubyRuntimeManager::gc_mark\n");
     rb_gc_mark(obj->m_luminoModule);
     rb_gc_mark(obj->m_eventSignalClass);
-
-    //for (VALUE& v : obj->m_objectList) {
-    //    printf("  type:%u (T_NIL=%d, T_ZOMBIE=%d)\n", TYPE(v), T_NIL, T_ZOMBIE);
-    //}
 }
 
 extern "C" void InitLuminoRubyRuntimeManager()

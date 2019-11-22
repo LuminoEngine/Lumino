@@ -5,7 +5,8 @@
 #include <stack>
 #include <LuminoEngine/Runtime/FlatCommon.h>
 
-#define LNRB_TRACE(...) printf(__VA_ARGS__)
+//#define LNRB_TRACE(...) printf(__VA_ARGS__)
+#define LNRB_TRACE(...)
 
 #if 1
 /*
