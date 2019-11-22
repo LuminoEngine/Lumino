@@ -281,7 +281,7 @@ LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x,
 /**
     @brief このオブジェクトの位置を位置を取得します。
 */
-LN_FLAT_API LnResult LnWorldObject_Position(LnHandle worldobject, LnVector3* outReturn);
+LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* outReturn);
 
 
 /**
@@ -299,7 +299,7 @@ LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x,
 /**
     @brief このオブジェクトの回転を取得します。
 */
-LN_FLAT_API LnResult LnWorldObject_Rotation(LnHandle worldobject, LnQuaternion* outReturn);
+LN_FLAT_API LnResult LnWorldObject_GetRotation(LnHandle worldobject, LnQuaternion* outReturn);
 
 
 /**
@@ -323,7 +323,7 @@ LN_FLAT_API LnResult LnWorldObject_SetScaleXYZ(LnHandle worldobject, float x, fl
 /**
     @brief このオブジェクトの拡大率を取得します。
 */
-LN_FLAT_API LnResult LnWorldObject_Scale(LnHandle worldobject, LnVector3* outReturn);
+LN_FLAT_API LnResult LnWorldObject_GetScale(LnHandle worldobject, LnVector3* outReturn);
 
 
 /**
@@ -341,13 +341,13 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
 /**
     @brief このオブジェクトのローカルの中心位置を取得します。
 */
-LN_FLAT_API LnResult LnWorldObject_CenterPoint(LnHandle worldobject, LnVector3* outReturn);
+LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector3* outReturn);
 
 
 /**
     @brief 
 */
-LN_FLAT_API LnResult LnWorldObject_Components(LnHandle worldobject, LnHandle* outReturn);
+LN_FLAT_API LnResult LnWorldObject_GetComponents(LnHandle worldobject, LnHandle* outReturn);
 
 
 typedef LnResult(*LnWorldObject_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
@@ -428,7 +428,7 @@ LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, flo
 /**
     @brief このオブジェクトの位置を位置を取得します。
 */
-LN_FLAT_API LnResult LnUIElement_Position(LnHandle uielement, LnVector3* outReturn);
+LN_FLAT_API LnResult LnUIElement_GetPosition(LnHandle uielement, LnVector3* outReturn);
 
 
 /**
@@ -446,7 +446,7 @@ LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, flo
 /**
     @brief このオブジェクトの回転を取得します。
 */
-LN_FLAT_API LnResult LnUIElement_Rotation(LnHandle uielement, LnQuaternion* outReturn);
+LN_FLAT_API LnResult LnUIElement_GetRotation(LnHandle uielement, LnQuaternion* outReturn);
 
 
 /**
@@ -470,7 +470,7 @@ LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y
 /**
     @brief このオブジェクトの拡大率を取得します。
 */
-LN_FLAT_API LnResult LnUIElement_Scale(LnHandle uielement, LnVector3* outReturn);
+LN_FLAT_API LnResult LnUIElement_GetScale(LnHandle uielement, LnVector3* outReturn);
 
 
 /**
@@ -488,7 +488,7 @@ LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, 
 /**
     @brief このオブジェクトのローカルの中心位置を取得します。
 */
-LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outReturn);
+LN_FLAT_API LnResult LnUIElement_GetCenterPoint(LnHandle uielement, LnVector3* outReturn);
 
 
 /**

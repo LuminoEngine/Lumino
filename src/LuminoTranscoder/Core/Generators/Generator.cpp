@@ -30,6 +30,13 @@ ln::String Generator::makeUpperSnakeName(const ln::String& name)
 	return output.toUpper();
 }
 
+ln::String Generator::camelToPascal(const ln::String& name)
+{
+	ln::String n = name;
+	n[0] = toupper(n[0]);
+	return n;
+}
+
 ln::String Generator::makeFlatClassName(const TypeSymbol* type) const
 {
 	return config()->flatCOutputModuleName + type->shortName();
@@ -104,9 +111,19 @@ ln::String Generator::makeFlatShortFuncName(const MethodSymbol* method, FlatChar
 	if (method->isConstructor()) {
 		funcName = u"Create";
 	}
+	else if (method->isPropertyGetter()) {
+		// prefix を整える.
+		//		components -> GetComponents
+		//		isVisible -> isVisible
+		auto prop = method->ownerProperty();
+		auto prefix = prop->namePrefix().isEmpty() ? u"Get" : prop->namePrefix();
+		if (method->shortName().indexOf(prefix, 0, ln::CaseSensitivity::CaseInsensitive) == 0)
+			funcName = camelToPascal(method->shortName());
+		else
+			funcName = prefix + camelToPascal(method->shortName());
+	}
 	else {
-		funcName = method->shortName();
-		funcName[0] = toupper(funcName[0]);
+		funcName = camelToPascal(method->shortName());
 	}
 
 	funcName += method->overloadPostfix();
@@ -119,12 +136,12 @@ ln::String Generator::makeFlatShortFuncName(const MethodSymbol* method, FlatChar
 	return funcName;
 }
 
-ln::String Generator::makeFuncName(const MethodSymbol* method, FlatCharset charset) const
+ln::String Generator::makeFlatFullFuncName(const MethodSymbol* method, FlatCharset charset) const
 {
-	return makeFuncName(method->ownerType(), method, charset);
+	return makeFlatFullFuncName(method->ownerType(), method, charset);
 }
 
-ln::String Generator::makeFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const
+ln::String Generator::makeFlatFullFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const
 {
 	return ln::String::format(_T("{0}{1}_{2}"), m_config->flatCOutputModuleName, classSymbol->shortName(), makeFlatShortFuncName(method, charset));
 }
@@ -145,7 +162,7 @@ ln::String Generator::makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset
 	//ln::String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
 
 	return funcHeaderTemplate
-		.replace("%%FuncName%%", makeFuncName(methodInfo, charset))// + suffix)
+		.replace("%%FuncName%%", makeFlatFullFuncName(methodInfo, charset))// + suffix)
 		.replace("%%ParamList%%", params.toString());
 }
 

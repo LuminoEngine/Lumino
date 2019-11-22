@@ -588,7 +588,7 @@ ln::String FlatCSourceGenerator::makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> 
 		}
 	}
 
-	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", makeFuncName(methodInfo, FlatCharset::Unicode), args.toString());
+	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", makeFlatFullFuncName(methodInfo, FlatCharset::Unicode), args.toString());
 
 	OutputBuffer code;
 	code.AppendLine(makeFuncHeader(methodInfo, charset));

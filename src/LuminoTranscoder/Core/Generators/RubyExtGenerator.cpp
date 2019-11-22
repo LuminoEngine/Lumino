@@ -63,6 +63,7 @@ void RubyExtGenerator::generate()
 
 				// Accessor Cache
 				wrapStruct.AppendLine(makeAccessorCacheFieldDecls(classSymbol));
+				markExprs.AppendLine(makeAccessorCacheFieldMarks(classSymbol));
 
 				// Signal and Connection
 				for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
@@ -362,6 +363,25 @@ ln::String RubyExtGenerator::makeAccessorCacheFieldDecls(const TypeSymbol* class
 	return code.toString();
 }
 
+ln::String RubyExtGenerator::makeAccessorCacheFieldMarks(const TypeSymbol* classSymbol) const
+{
+	OutputBuffer code;
+
+	for (auto& prop : classSymbol->properties()) {
+		if (prop->type()->isClass()) {
+			if (prop->getter()) {
+				code.AppendLine(u"rb_gc_mark(obj->{0});", makeAccessorCacheName(prop->getter()));
+			}
+		}
+	}
+
+	if (classSymbol->isCollection() && classSymbol->collectionItemType()->isClass()) {
+		code.AppendLine(u"for(VALUE& v : obj->Items_AccessorCache) rb_gc_mark(v);");
+	}
+
+	return code.toString();
+}
+
 ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const
 {
 	OutputBuffer code;
@@ -454,7 +474,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 					// arg
 					callerArgList.AppendCommad(u"&" + localVarName);
 					// return
-					callerReturnStmt.AppendLine(makeVALUEReturnExpr(param->type(), localVarName));
+					callerReturnStmt.AppendLine(makeVALUEReturnExpr(param->type(), method, localVarName));
 				}
 			}
 			else
@@ -502,7 +522,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 		}
 	}
 	
-	ln::String funcName = (method->isVirtual()) ? makeFlatAPIName_CallOverrideBase(classSymbol, method, FlatCharset::Ascii) : makeFuncName(method, FlatCharset::Ascii);
+	ln::String funcName = (method->isVirtual()) ? makeFlatAPIName_CallOverrideBase(classSymbol, method, FlatCharset::Ascii) : makeFlatFullFuncName(method, FlatCharset::Ascii);
 
 	code.AppendLine(u"{");
 	code.IncreaseIndent();
@@ -710,7 +730,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 }
 
 // C言語変数 → VALUE 変換式の作成 (return 用)
-ln::String RubyExtGenerator::makeVALUEReturnExpr(TypeSymbol* type, const ln::String& varName) const
+ln::String RubyExtGenerator::makeVALUEReturnExpr(TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const
 {
 	// primitive type
 	if (type->isPrimitive()) {
@@ -733,7 +753,15 @@ ln::String RubyExtGenerator::makeVALUEReturnExpr(TypeSymbol* type, const ln::Str
 	}
 	// class type
 	else if (type->isClass()) {
-		return ln::String::format(u"return LuminoRubyRuntimeManager::instance->wrapObject({0});", varName);
+		if (method->isPropertyGetter()) {
+			return ln::String::format(u"return LNRB_HANDLE_WRAP_TO_VALUE({0}, selfObj->{1});", varName, makeAccessorCacheName(method));
+		}
+		else if (method->isCollectionGetItem()) {
+			return ln::String::format(u"return LNRB_HANDLE_WRAP_TO_VALUE({0}, selfObj->Items_AccessorCache, _index);", varName);
+		}
+		else {
+			return ln::String::format(u"return LNRB_HANDLE_WRAP_TO_VALUE({0});", varName);
+		}
 	}
 
 	LN_UNREACHABLE();
@@ -872,7 +900,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 				args.AppendCommad(u"LNI_TO_RUBY_VALUE({0})", method->flatParameters()[i]->name());
 			}
 
-			code.AppendLine(u"VALUE obj = LuminoRubyRuntimeManager::instance->wrapObject({0});", method->flatParameters().front()->name());
+			code.AppendLine(u"VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE({0});", method->flatParameters().front()->name());
 			code.AppendLine(u"VALUE retval = rb_funcall(obj, rb_intern(\"{0}\"), {1}, {2});", makeRubyMethodName(method), method->flatParameters().size() - 1, args.toString());
 
 			if (method->returnType() != PredefinedTypes::voidType) {
@@ -902,8 +930,8 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SignalCaller(const MethodSymb
 	code.IncreaseIndent();
 	{
 		code.AppendLine("{0}* selfObj;", wrapStructName);
-		code.AppendLine("Data_Get_Struct(LuminoRubyRuntimeManager::instance->wrapObject(self), {0}, selfObj);", wrapStructName);
-		code.AppendLine("rb_funcall(selfObj->{0}, rb_intern(\"raise\"), 1, LuminoRubyRuntimeManager::instance->wrapObject(e));", signalValueName);
+		code.AppendLine("Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(self), {0}, selfObj);", wrapStructName);
+		code.AppendLine("rb_funcall(selfObj->{0}, rb_intern(\"raise\"), 1, LNRB_HANDLE_WRAP_TO_VALUE(e));", signalValueName);
 	}
 	code.DecreaseIndent();
 	code.AppendLine("}");
@@ -931,7 +959,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_EventConnector(const MethodSy
 		code.IncreaseIndent();
 		{
 			code.AppendLine(u"selfObj->{0} = rb_funcall(LuminoRubyRuntimeManager::instance->eventSignalClass(), rb_intern(\"new\"), 0);", signalValueName);
-			code.AppendLine(u"{0}(selfObj->handle, {1});", makeFuncName(method, FlatCharset::Ascii), signalCallerName);
+			code.AppendLine(u"{0}(selfObj->handle, {1});", makeFlatFullFuncName(method, FlatCharset::Ascii), signalCallerName);
 			code.AppendLine(u"selfObj->{0} = true;", eventConnectValueName);
 		}
 		code.DecreaseIndent();
@@ -1000,3 +1028,30 @@ ln::String RubyExtGenerator::makeEventSignalDefinition() const
 	code.DecreaseIndent();
 	return code.toString();
 }
+
+void RubyYARDOCSourceGenerator::generate()
+{
+	OutputBuffer code;
+
+	// VALUE global variables
+	for (auto& enumSymbol : db()->enums()) {
+
+		code.AppendLine(u"# " + enumSymbol->shortName());
+		code.AppendLine(u"module Lumino::" + enumSymbol->shortName());
+		code.IncreaseIndent();
+		for(auto& member : enumSymbol->constants())
+		{
+			code.AppendLine(u"# " + member->document()->summary());
+			code.AppendLine(u"{0} = {1}", makeUpperSnakeName(member->name()), member->value()->get<int>());
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"end").NewLine();
+	}
+
+
+
+	ln::String fileName = ln::String::format("{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
+	ln::String src = code.toString();
+	ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
+}
+

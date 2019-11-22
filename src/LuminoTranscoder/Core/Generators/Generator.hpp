@@ -64,6 +64,7 @@ public:
 
 	// Utilities
 	static ln::String makeUpperSnakeName(const ln::String& name);	// PixelFormatA8 -> PIXEL_FORMAT_A8
+	static ln::String camelToPascal(const ln::String& name);		// worldObject -> WorldObject
 	ln::String makeFlatClassName(const TypeSymbol* type) const;						// e.g) -> "LnTexture2D"
 	ln::String makeFlatTypeName2(const TypeSymbol* type) const;						// e.g) -> "LnHandle", "LnBool", "int"...
 	ln::String makeFlatAPIName_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LnTexture2D_SetManagedTypeInfoId"
@@ -75,8 +76,8 @@ public:
 	ln::String makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeDelegateCallbackFuncPtrName(const TypeSymbol* delegateSymbol, FlatCharset charset) const;
 	ln::String makeFlatShortFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "SetTexture"
-	ln::String makeFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "LnSprite_SetTexture"
-	ln::String makeFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const;		// トップレベルの Visual 関数の名前を作るの使用する
+	ln::String makeFlatFullFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "LnSprite_SetTexture"
+	ln::String makeFlatFullFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const;		// トップレベルの Visual 関数の名前を作るの使用する
 	ln::String makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset charset) const;	// e.g) -> "LN_FLAT_API LnResult LnWorldObject_Seteulerangles(LnHandle worldobject, float x, float y, float z)"
 	ln::String makeFlatCParamQualTypeName(const MethodSymbol* methodInfo, const MethodParameterSymbol* paramInfo, FlatCharset charset) const;
 	ln::String makeFlatCharTypeName(FlatCharset charset) const;

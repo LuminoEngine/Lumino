@@ -43,7 +43,9 @@ public:
     void init();
     VALUE luminoModule() const { return m_luminoModule; }
     VALUE eventSignalClass() const { return m_eventSignalClass; }
-    VALUE wrapObject(LnHandle handle);
+    VALUE wrapObjectForGetting(LnHandle handle);
+    VALUE wrapObjectForGetting(LnHandle handle, VALUE& accessorCache);
+    VALUE wrapObjectForGetting(LnHandle handle, std::vector<VALUE>& accessorCache, int index);//, int size);
     LnHandle getHandle(VALUE value) const;
     int registerTypeInfo(VALUE klass, ObjectFactoryFunc factory);
     void registerWrapperObject(VALUE obj);
@@ -54,6 +56,7 @@ public:
     static void gc_mark(LuminoRubyRuntimeManager* obj);
 
 private:
+    VALUE wrapObjectCore(LnHandle handle);
     VALUE m_luminoModule;
     VALUE m_eventSignalClass;
     std::vector<TypeInfo> m_typeInfoList;
@@ -61,7 +64,9 @@ private:
     std::stack<int> m_objectListIndexStack;
 };
 
-inline VALUE LNRB_WRAP_OBJECT(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObject(handle); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, VALUE& accessorCache) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, accessorCache); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, std::vector<VALUE>& accessorCache, int index) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, accessorCache, index); }
 
 #endif
 

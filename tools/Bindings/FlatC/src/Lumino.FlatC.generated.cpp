@@ -359,7 +359,7 @@ LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x,
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnWorldObject_Position(LnHandle worldobject, LnVector3* outReturn)
+LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
@@ -380,7 +380,7 @@ LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x,
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnWorldObject_Rotation(LnHandle worldobject, LnQuaternion* outReturn)
+LN_FLAT_API LnResult LnWorldObject_GetRotation(LnHandle worldobject, LnQuaternion* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
@@ -408,7 +408,7 @@ LN_FLAT_API LnResult LnWorldObject_SetScaleXYZ(LnHandle worldobject, float x, fl
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnWorldObject_Scale(LnHandle worldobject, LnVector3* outReturn)
+LN_FLAT_API LnResult LnWorldObject_GetScale(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
@@ -429,14 +429,14 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnWorldObject_CenterPoint(LnHandle worldobject, LnVector3* outReturn)
+LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnWorldObject_Components(LnHandle worldobject, LnHandle* outReturn)
+LN_FLAT_API LnResult LnWorldObject_GetComponents(LnHandle worldobject, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
@@ -560,7 +560,7 @@ LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, flo
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnUIElement_Position(LnHandle uielement, LnVector3* outReturn)
+LN_FLAT_API LnResult LnUIElement_GetPosition(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
@@ -581,7 +581,7 @@ LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, flo
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnUIElement_Rotation(LnHandle uielement, LnQuaternion* outReturn)
+LN_FLAT_API LnResult LnUIElement_GetRotation(LnHandle uielement, LnQuaternion* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
@@ -609,7 +609,7 @@ LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnUIElement_Scale(LnHandle uielement, LnVector3* outReturn)
+LN_FLAT_API LnResult LnUIElement_GetScale(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
@@ -630,7 +630,7 @@ LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, 
     LNI_FUNC_TRY_END_RETURN;
 }
 
-LN_FLAT_API LnResult LnUIElement_CenterPoint(LnHandle uielement, LnVector3* outReturn)
+LN_FLAT_API LnResult LnUIElement_GetCenterPoint(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());

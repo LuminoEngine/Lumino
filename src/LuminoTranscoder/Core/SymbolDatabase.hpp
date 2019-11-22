@@ -81,6 +81,7 @@ public:
 	bool hasKey(const ln::StringRef& key) const;
 	const ln::String* findValue(const ln::StringRef& key) const;
 	ln::String getValue(const ln::StringRef& key, const ln::String& defaultValue = ln::String()) const;
+	void setValue(const ln::StringRef& key, const ln::String& value = ln::String());
 
 private:
 	PIMetadata* m_pi = nullptr;
@@ -224,15 +225,6 @@ private:
 class MethodSymbol : public Symbol
 {
 public:
-	// 
-	//ln::Ref<MetadataSymbol> metadata;
-	//ln::Ref<DocumentSymbol> document;
-	//ln::String name;
-	//IsConstructor
-	//IsStatic
-	//IsVirtual
-	//bool isConstructor = false;
-	ln::Ref<PropertySymbol> ownerProperty;		// このメソッドがプロパティに含まれていればそのプロパティを指す
 
 	// 
 	//ln::List<ln::Ref<MethodParameterSymbol>> capiParameters;
@@ -265,6 +257,7 @@ public:
 	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
 	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
 	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
+	PropertySymbol* ownerProperty() const { return m_ownerProperty; }
 	ln::String overloadPostfix() const { return metadata()->getValue(MetadataInfo::OverloadPostfixAttr, ln::String::Empty); }
 	//MethodSymbol* overloadParent() const { return m_overloadParent; }
 	//const ln::List<MethodSymbol*>& overloadChildren() const { return m_overloadChildren; }
@@ -275,6 +268,9 @@ public:
 	bool isConstructor() const { return m_isConstructor; }	// 名前が init であるインスタンスメソッド
 	bool isInstance() const { return !isStatic(); }			// instance method
 	bool isEventConnector() const { return metadata()->hasKey(MetadataInfo::EventAttr); }
+	bool isPropertyGetter() const { return m_ownerProperty && m_parameters.isEmpty(); }
+	bool isPropertySetter() const { return m_ownerProperty && !m_parameters.isEmpty(); }
+	bool isCollectionGetItem() const { return metadata()->hasKey(u"Collection_GetItem"); }	// AccessorCache を使うときにインデックス指定するものであるかどうか
 
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
@@ -290,6 +286,7 @@ private:
 	ln::List<Ref<MethodParameterSymbol>> m_parameters;
 	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;	// FlatC-API としてのパラメータリスト。先頭が this だったり、末尾が return だったりする。
 	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
+	PropertySymbol* m_ownerProperty = nullptr;
 
 	bool m_isConst = false;
 	bool m_isStatic = false;
@@ -320,15 +317,16 @@ public:
 	const ln::Ref<TypeSymbol>& type() const { return m_type; }
 	const ln::Ref<MethodSymbol>& getter() const { return m_getter; }
 	const ln::Ref<MethodSymbol>& setter() const { return m_setter; }
+	const ln::String namePrefix() const { return m_namePrefix; }
 
 private:
 	void buildDocument();
 
 	ln::String m_shortName;
-	ln::String m_namePrefix;	// Is
 	ln::Ref<TypeSymbol> m_type;
 	ln::Ref<MethodSymbol> m_getter;
 	ln::Ref<MethodSymbol> m_setter;
+	ln::String m_namePrefix;	// Is
 
 	friend class TypeSymbol;
 };

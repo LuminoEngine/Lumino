@@ -63,7 +63,38 @@ void LuminoRubyRuntimeManager::init()
     }
 }
 
-VALUE LuminoRubyRuntimeManager::wrapObject(LnHandle handle)
+VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle)
+{
+    return wrapObjectCore(handle);
+}
+
+VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, VALUE& accessorCache)
+{
+    if (accessorCache != Qnil && getHandle(accessorCache) == handle) {
+        return accessorCache;
+    }
+    else {
+        accessorCache = wrapObjectCore(handle);
+        return accessorCache;
+    }
+}
+
+VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, std::vector<VALUE>& accessorCache, int index)//, int size)
+{
+    //if (accessorCache.size() != size) {
+    //    accessorCache.resize();
+    //}
+
+    if (accessorCache[index] != Qnil && getHandle(accessorCache[index]) == handle) {
+        return accessorCache[index];
+    }
+    else {
+        accessorCache[index] = wrapObjectCore(handle);
+        return accessorCache[index];
+    }
+}
+
+VALUE LuminoRubyRuntimeManager::wrapObjectCore(LnHandle handle)
 {
     int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
     int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);

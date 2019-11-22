@@ -83,6 +83,10 @@ ln::String MetadataInfo::getValue(const ln::StringRef& key, const ln::String& de
 		return defaultValue;
 }
 
+void MetadataInfo::setValue(const ln::StringRef& key, const ln::String& value)
+{
+	m_values[key] = value;
+}
 
 //==============================================================================
 // Symbol
@@ -590,6 +594,7 @@ ln::Result TypeSymbol::link()
 			if (!p->init(PredefinedTypes::intType, u"index")) return false;
 			auto s = ln::makeRef<MethodSymbol>(db());
 			if (!s->init(this, u"getItem", m_collectionItemType, { p })) return false;
+			s->metadata()->setValue(u"Collection_GetItem");
 			m_declaredMethods.add(s);
 		}
 	}
@@ -810,7 +815,7 @@ ln::Result TypeSymbol::linkProperties()
 					prop->m_type = methodInfo->parameters()[0]->type();
 			}
 
-			methodInfo->ownerProperty = prop;
+			methodInfo->m_ownerProperty = prop;
 		}
 	}
 

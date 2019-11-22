@@ -69,7 +69,7 @@ int main()
 	// Collection のテスト.
 	{
 		LnHandle components1;
-		LnWorldObject_Components(sprite1, &components1);
+		LnWorldObject_GetComponents(sprite1, &components1);
 
 		int length;
 		LnComponentList_GetLength(components1, &length);

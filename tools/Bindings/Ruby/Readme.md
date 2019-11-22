@@ -11,6 +11,19 @@ ruby Test.rb
 https://docs.ruby-lang.org/en/2.4.0/extension_ja_rdoc.html#label-E5-A4-A7-E5-9F-9F-E5-A4-89-E6-95-B0-E5-AE-9A-E7-BE-A9
 
 
+Documentation
+----------
+yard を使用します。
+
+```
+gem install yard
+```
+
+```
+yardoc Lumino.RubyYARDOCSource.generated.rb
+```
+
+./doc フォルダに生成される。
 
 
 Important
