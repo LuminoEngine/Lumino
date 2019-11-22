@@ -14,18 +14,24 @@
 		- wrapStruct の VALUE 型を mark
 */
 
+class RubyGeneratorBase
+	: public Generator
+{
+protected:
+	ln::String makeSnakeStyleName(const ln::String& name) const;
+	ln::String makeRubyMethodName(MethodSymbol* method) const;
+};
+
 class RubyExtGenerator
-    : public Generator
+    : public RubyGeneratorBase
 {
 public:
     void generate();
 
 private:
-	ln::String makeSnakeStyleName(const ln::String& name) const;
 
 
 	ln::String makeRubyClassInfoVariableName(TypeSymbol* type) const { return u"g_class_" + type->shortName(); }
-	ln::String makeRubyMethodName(MethodSymbol* method) const;
 	ln::String makeWrapStructName(TypeSymbol* type) const { return u"Wrap_" + type->shortName(); }
 	ln::String makeWrapFuncName(MethodSymbol* method) const { return u"Wrap_" + makeFlatFullFuncName(method, FlatCharset::Unicode); }
 	ln::String makeWrapFuncName_CallOverrideBase(MethodSymbol* method) const { return u"Wrap_" + makeFlatFullFuncName(method, FlatCharset::Unicode) + u"_CallOverrideBase"; }
@@ -61,8 +67,14 @@ private:
 };
 
 class RubyYARDOCSourceGenerator
-	: public Generator
+	: public RubyGeneratorBase
 {
 public:
 	void generate();
+
+private:
+	ln::String makeMethodDoc(const MethodOverloadInfo* overloadInfo) const;
+	ln::String makeRubyTypeFullName(const TypeSymbol* type) const;
+	ln::String translateText(const ln::String& text) const;
+	ln::String convertTypeNameToRuby(const TypeSymbol* type) const;
 };

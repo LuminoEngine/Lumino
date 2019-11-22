@@ -2,6 +2,110 @@
 #include "RubyExtGenerator.hpp"
 
 //==============================================================================
+// RubyGeneratorBase
+
+ln::String RubyGeneratorBase::makeSnakeStyleName(const ln::String& name) const
+{
+	ln::String output = "";
+
+	// 後ろから
+	bool isLastLow = islower(name[name.length() - 1]);
+	int upperCount = 0;
+	int lastIndex = name.length();
+	int i;
+	for (i = name.length() - 2; i >= 0; i--)
+	{
+		// 小文字の連続を探している状態
+		if (isLastLow)
+		{
+			if (isupper(name[i]) || isdigit(name[i]))
+			{
+				if (lastIndex - i > 0)
+				{
+					if (output.length() != 0) output = u"_" + output;
+					output = ln::String(name.substr(i, lastIndex - i)).toLower() + output;	// TODO: StringRef に toLower 実装
+				}
+				lastIndex = i;
+				isLastLow = false;
+			}
+			else
+			{
+				// 小文字が続いている
+			}
+		}
+		// 大文字の連続を探している状態
+		else
+		{
+			upperCount++;
+			if (islower(name[i]))
+			{
+				upperCount = 0;
+				if (upperCount == 1)
+					isLastLow = true;
+				else
+				{
+					if (lastIndex - i - 1 > 0)
+					{
+						if (output.length() != 0) output = "_" + output;
+						output = ln::String(name.substr(i + 1, lastIndex - i - 1)).toLower() + output;
+					}
+					lastIndex = i + 1;
+					isLastLow = true;
+				}
+			}
+			else
+			{
+				// 大文字が続いている
+			}
+		}
+	}
+
+	if (lastIndex != 0)
+	{
+		if (lastIndex - i > 0)
+		{
+			if (output.length() != 0) output = "_" + output;
+			output = ln::String(name.substr(0, lastIndex)).toLower() + output;
+		}
+	}
+
+	return output;
+}
+
+ln::String RubyGeneratorBase::makeRubyMethodName(MethodSymbol* method) const
+{
+	ln::String name;
+
+	if (method->isConstructor()) {
+		name = u"initialize";
+	}
+	else if (method->ownerProperty()) {
+		auto prop = method->ownerProperty();
+		name = makeSnakeStyleName(prop->shortName());
+
+		// bool 型の getter である場合、is を外して ? を付ける
+		if (method->isPropertyGetter() && method->returnType() == PredefinedTypes::boolType) {
+			if (name.indexOf(u"is_") == 0) {
+				if (!isdigit(name[3])) {    // 変換した結果数値が識別子の先頭にならないこと
+					name = name.substr(3);
+				}
+			}
+			name += u"?";
+		}
+		// setter の場合は = 代入形式にする
+		else if (method->isPropertySetter()) {
+			name += u"=";
+		}
+	}
+	else {
+		name = makeSnakeStyleName(method->shortName());
+	}
+
+	return name;
+}
+
+
+//==============================================================================
 // RubyExtGenerator
 
 void RubyExtGenerator::generate()
@@ -150,51 +254,47 @@ void RubyExtGenerator::generate()
 		
 		// classes
 		for (auto& classSymbol : db()->classes()) {
-			if (classSymbol == PredefinedTypes::objectType) {
-				// Object class is defined directly, so automatic generation is not required
+
+			auto classInfoVar = makeRubyClassInfoVariableName(classSymbol);
+
+			// class (decl)
+			typeVALUEDecls.AppendLine(u"VALUE {0};", classInfoVar);
+
+			// define class
+			auto baseClass = (!classSymbol->baseClass() || classSymbol->baseClass() == PredefinedTypes::objectType) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
+			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", {2});", classInfoVar, classSymbol->shortName(), baseClass);
+			if (!classSymbol->isStatic()) {
+				moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(classSymbol));
 			}
-			else {
 
-				auto classInfoVar = makeRubyClassInfoVariableName(classSymbol);
-
-				// class (decl)
-				typeVALUEDecls.AppendLine(u"VALUE {0};", classInfoVar);
-
-				// define class
-				auto baseClass = (!classSymbol->baseClass() || classSymbol->baseClass() == PredefinedTypes::objectType) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
-				moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", {2});", classInfoVar, classSymbol->shortName(), baseClass);
-				if (!classSymbol->isStatic()) {
-					moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(classSymbol));
+			// define methods
+			for (auto& overload : classSymbol->overloads()) {
+				if (overload->representative()->isConstructor()) {
+					moduleInitializer.AppendLine(u"rb_define_private_method({0}, \"initialize\", LN_TO_RUBY_FUNC({1}), -1);", classInfoVar, makeWrapFuncName(overload->representative()));
 				}
-
-				// define methods
-				for (auto& overload : classSymbol->overloads()) {
-					if (overload->representative()->isConstructor()) {
-						moduleInitializer.AppendLine(u"rb_define_private_method({0}, \"initialize\", LN_TO_RUBY_FUNC({1}), -1);", classInfoVar, makeWrapFuncName(overload->representative()));
-					}
-					else if (overload->representative()->isStatic()) {
-						moduleInitializer.AppendLine(u"rb_define_singleton_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
-					}
-					else if (overload->representative()->isVirtual()) {
-						moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
-					}
-					else {
-						moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
-					}
+				else if (overload->representative()->isStatic()) {
+					moduleInitializer.AppendLine(u"rb_define_singleton_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
 				}
-
-				// register typeinfo
-				if (!classSymbol->isStatic()) {
-					moduleInitializer.AppendLine(u"{0}(LuminoRubyRuntimeManager::instance->registerTypeInfo({1}, {2}_allocateForGetObject));", makeFlatAPIName_SetManagedTypeInfoId(classSymbol), classInfoVar, makeFlatClassName(classSymbol));
+				else if (overload->representative()->isVirtual()) {
+					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
 				}
-
-				// override callbacks
-				for (auto& method : classSymbol->virtualMethods()) {
-					moduleInitializer.AppendLine(u"{0}({1});", makeFlatAPIName_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode), makeWrapFuncName_OverrideCallback(classSymbol, method));
+				else {
+					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
 				}
-
-				moduleInitializer.NewLine();
 			}
+
+			// register typeinfo
+			if (!classSymbol->isStatic()) {
+				moduleInitializer.AppendLine(u"{0}(LuminoRubyRuntimeManager::instance->registerTypeInfo({1}, {2}_allocateForGetObject));", makeFlatAPIName_SetManagedTypeInfoId(classSymbol), classInfoVar, makeFlatClassName(classSymbol));
+			}
+
+			// override callbacks
+			for (auto& method : classSymbol->virtualMethods()) {
+				moduleInitializer.AppendLine(u"{0}({1});", makeFlatAPIName_SetOverrideCallback(classSymbol, method, FlatCharset::Unicode), makeWrapFuncName_OverrideCallback(classSymbol, method));
+			}
+
+			moduleInitializer.NewLine();
+			
 		}
 
 		// EventSignal
@@ -218,123 +318,6 @@ void RubyExtGenerator::generate()
 
 		ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
 	}
-}
-
-ln::String RubyExtGenerator::makeSnakeStyleName(const ln::String& name) const
-{
-	ln::String output = "";
-
-	// 後ろから
-	bool isLastLow = islower(name[name.length() - 1]);
-	int upperCount = 0;
-	int lastIndex = name.length();
-	int i;
-	for (i = name.length() - 2; i >= 0; i--)
-	{
-		// 小文字の連続を探している状態
-		if (isLastLow)
-		{
-			if (isupper(name[i]) || isdigit(name[i]))
-			{
-				if (lastIndex - i > 0)
-				{
-					if (output.length() != 0) output = u"_" + output;
-					output = ln::String(name.substr(i, lastIndex - i)).toLower() + output;	// TODO: StringRef に toLower 実装
-				}
-				lastIndex = i;
-				isLastLow = false;
-			}
-			else
-			{
-				// 小文字が続いている
-			}
-		}
-		// 大文字の連続を探している状態
-		else
-		{
-			upperCount++;
-			if (islower(name[i]))
-			{
-				upperCount = 0;
-				if (upperCount == 1)
-					isLastLow = true;
-				else
-				{
-					if (lastIndex - i - 1 > 0)
-					{
-						if (output.length() != 0) output = "_" + output;
-						output = ln::String(name.substr(i + 1, lastIndex - i - 1)).toLower() + output;
-					}
-					lastIndex = i + 1;
-					isLastLow = true;
-				}
-			}
-			else
-			{
-				// 大文字が続いている
-			}
-		}
-	}
-
-	if (lastIndex != 0)
-	{
-		if (lastIndex - i > 0)
-		{
-			if (output.length() != 0) output = "_" + output;
-			output = ln::String(name.substr(0, lastIndex)).toLower() + output;
-		}
-	}
-
-	return output;
-}
-
-ln::String RubyExtGenerator::makeRubyMethodName(MethodSymbol* method) const
-{
-	return makeSnakeStyleName(method->shortName());
-#if 0
-	ln::String name;
-	if (method.OwnerProperty != null) {
-		name = GetSnakeStyleName(method.OwnerProperty.Name);
-	}
-	else {
-		name = GetSnakeStyleName(method.Name);
-	}
-
-	// is プロパティの場合は is_ を取り除く
-	if (name.IndexOf("is_") == 0)
-	{
-		if (!char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
-			name = name.Substring(3)/* + "?"*/;
-		//else
-		//    name += "?";                // ? はつけてあげる
-		if (!method.IsSetterProperty)
-		{
-			name += "?";
-		}
-		// ? はつけてあげる
-	}
-
-	// まずはスネークスタイルに変換
-	//var name = GetSnakeStyleName(method.Name);
-
-	//// 先頭が is の場合は 末尾 ? に変換
-	//if (name.IndexOf("is_") == 0)
-	//{
-	//    if (char.IsNumber(name, 3))    // 変換した結果数値が識別子の先頭にならないこと
-	//        name += "?";                // ? はつけてあげる
-	//    else
-	//        name = name.Substring(3) + "?";
-	//}
-
-	// プロパティの場合は = 等に変更
-	if (method.PropertyNameType != PropertyNameType.NotProperty)
-	{
-		/*if (method.PropertyNameType == PropertyNameType.Get)
-			name = name.Substring(4);   // 先頭の get_ を取り除く
-		else*/ if (method.PropertyNameType == PropertyNameType.Set)
-	name += /*name.Substring(4) + */"=";   // 先頭の set_ を取り除き、後ろに =
-	}
-#endif
 }
 
 //ln::String RubyExtGenerator::makeEventSignalClassName(const TypeSymbol* delegateType) const
@@ -1029,15 +1012,16 @@ ln::String RubyExtGenerator::makeEventSignalDefinition() const
 	return code.toString();
 }
 
+//==============================================================================
+// RubyYARDOCSourceGenerator
+
 void RubyYARDOCSourceGenerator::generate()
 {
 	OutputBuffer code;
 
-	// VALUE global variables
 	for (auto& enumSymbol : db()->enums()) {
-
 		code.AppendLine(u"# " + enumSymbol->shortName());
-		code.AppendLine(u"module Lumino::" + enumSymbol->shortName());
+		code.AppendLine(u"module " + makeRubyTypeFullName(enumSymbol));
 		code.IncreaseIndent();
 		for(auto& member : enumSymbol->constants())
 		{
@@ -1045,8 +1029,29 @@ void RubyYARDOCSourceGenerator::generate()
 			code.AppendLine(u"{0} = {1}", makeUpperSnakeName(member->name()), member->value()->get<int>());
 		}
 		code.DecreaseIndent();
-		code.AppendLine(u"end").NewLine();
+		code.AppendLine(u"end");
+		code.NewLine();
 	}
+
+	for (auto& classSymbol : db()->classes()) {
+		code.AppendLine(u"# " + classSymbol->document()->summary());
+		code.AppendLine(u"# ");
+		code.append(u"class " + makeRubyTypeFullName(classSymbol));
+		if (classSymbol->baseClass() && classSymbol->baseClass() != PredefinedTypes::objectType) {
+			code.append(u" < " + classSymbol->baseClass()->shortName());
+		}
+		code.NewLine();
+		code.IncreaseIndent();
+
+		for (auto& overload : classSymbol->overloads()) {
+			code.AppendLines(makeMethodDoc(overload));
+		}
+
+		code.DecreaseIndent();
+		code.AppendLine(u"end");
+		code.NewLine();
+	}
+
 
 
 
@@ -1055,3 +1060,55 @@ void RubyYARDOCSourceGenerator::generate()
 	ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
 }
 
+ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* overloadInfo) const
+{
+	OutputBuffer code;
+
+	auto representative = overloadInfo->representative();
+	auto rubyMethodName = makeRubyMethodName(representative);
+
+
+
+	code.AppendLine(u"# " + translateText(overloadInfo->representative()->document()->summary()));
+
+
+	//code.AppendLine("# @overload {0}({1})", rubyMethodName, argsText.ToString()).NewLine();
+
+	for (auto& method : overloadInfo->methods()) {
+		auto paramNames = OutputBuffer();
+		auto params = OutputBuffer();
+
+		for (auto& param : method->parameters()) {
+			paramNames.AppendCommad(param->name());
+
+			params.AppendLine("#   @param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
+		}
+
+		code.AppendLine("# @overload {0}({1})", rubyMethodName, paramNames.toString());
+	}
+
+
+	code.AppendLine("def " + rubyMethodName);
+	code.AppendLine("end");
+	code.NewLine();
+
+
+	return code.toString();
+}
+
+ln::String RubyYARDOCSourceGenerator::makeRubyTypeFullName(const TypeSymbol* type) const
+{
+	if (type->isPrimitive()) {
+		LN_NOTIMPLEMENTED();
+		return ln::String::Empty;
+	}
+	else {
+		return ln::String::format(u"{0}::{1}", config()->moduleName, type->shortName());
+	}
+}
+
+ln::String RubyYARDOCSourceGenerator::translateText(const ln::String& text) const
+{
+	// TODO:
+	return text;
+}

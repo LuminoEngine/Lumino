@@ -3,14 +3,6 @@
 
 #include <LuminoEngine.hpp>
 
-class LNWS_ln_Object : public ln::Object
-{
-public:
-
-
-};
-
-
 class LNWS_ln_Engine : public ln::Engine
 {
 public:
@@ -214,11 +206,6 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 }
 
 
-
-LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Object>(), id);
-}
 
 LN_FLAT_API LnResult LnEngine_Initialize()
 {

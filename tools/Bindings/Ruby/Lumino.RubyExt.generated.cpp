@@ -1932,13 +1932,13 @@ extern "C" void Init_Lumino()
 
     g_class_VisualComponent = rb_define_class_under(g_rootModule, "VisualComponent", g_class_Component);
     rb_define_alloc_func(g_class_VisualComponent, LnVisualComponent_allocate);
-    rb_define_method(g_class_VisualComponent, "set_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_SetVisible), -1);
-    rb_define_method(g_class_VisualComponent, "is_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_IsVisible), -1);
+    rb_define_method(g_class_VisualComponent, "visible=", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_SetVisible), -1);
+    rb_define_method(g_class_VisualComponent, "visible?", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_IsVisible), -1);
     LnVisualComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualComponent, LnVisualComponent_allocateForGetObject));
 
     g_class_SpriteComponent = rb_define_class_under(g_rootModule, "SpriteComponent", g_class_VisualComponent);
     rb_define_alloc_func(g_class_SpriteComponent, LnSpriteComponent_allocate);
-    rb_define_method(g_class_SpriteComponent, "set_texture", LN_TO_RUBY_FUNC(Wrap_LnSpriteComponent_SetTexture), -1);
+    rb_define_method(g_class_SpriteComponent, "texture=", LN_TO_RUBY_FUNC(Wrap_LnSpriteComponent_SetTexture), -1);
     LnSpriteComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_SpriteComponent, LnSpriteComponent_allocateForGetObject));
 
     g_class_ComponentList = rb_define_class_under(g_rootModule, "ComponentList", rb_cObject);
@@ -1949,14 +1949,14 @@ extern "C" void Init_Lumino()
 
     g_class_WorldObject = rb_define_class_under(g_rootModule, "WorldObject", rb_cObject);
     rb_define_alloc_func(g_class_WorldObject, LnWorldObject_allocate);
-    rb_define_method(g_class_WorldObject, "set_position", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetPosition), -1);
+    rb_define_method(g_class_WorldObject, "position=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetPosition), -1);
     rb_define_method(g_class_WorldObject, "position", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetPosition), -1);
-    rb_define_method(g_class_WorldObject, "set_rotation", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetRotation), -1);
+    rb_define_method(g_class_WorldObject, "rotation=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetRotation), -1);
     rb_define_method(g_class_WorldObject, "set_euler_angles", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetEulerAngles), -1);
     rb_define_method(g_class_WorldObject, "rotation", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetRotation), -1);
-    rb_define_method(g_class_WorldObject, "set_scale", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetScale), -1);
+    rb_define_method(g_class_WorldObject, "scale=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetScale), -1);
     rb_define_method(g_class_WorldObject, "scale", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetScale), -1);
-    rb_define_method(g_class_WorldObject, "set_center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetCenterPoint), -1);
+    rb_define_method(g_class_WorldObject, "center_point=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetCenterPoint), -1);
     rb_define_method(g_class_WorldObject, "center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetCenterPoint), -1);
     rb_define_method(g_class_WorldObject, "components", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetComponents), -1);
     rb_define_method(g_class_WorldObject, "on_update", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_OnUpdate), -1);
@@ -1965,14 +1965,14 @@ extern "C" void Init_Lumino()
 
     g_class_VisualObject = rb_define_class_under(g_rootModule, "VisualObject", g_class_WorldObject);
     rb_define_alloc_func(g_class_VisualObject, LnVisualObject_allocate);
-    rb_define_method(g_class_VisualObject, "set_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_SetVisible), -1);
-    rb_define_method(g_class_VisualObject, "is_visible", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_IsVisible), -1);
+    rb_define_method(g_class_VisualObject, "visible=", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_SetVisible), -1);
+    rb_define_method(g_class_VisualObject, "visible?", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_IsVisible), -1);
     LnVisualObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualObject, LnVisualObject_allocateForGetObject));
     LnVisualObject_OnUpdate_SetOverrideCallback(Wrap_LnVisualObject_OnUpdate_OverrideCallback);
 
     g_class_Sprite = rb_define_class_under(g_rootModule, "Sprite", g_class_VisualObject);
     rb_define_alloc_func(g_class_Sprite, LnSprite_allocate);
-    rb_define_method(g_class_Sprite, "set_texture", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetTexture), -1);
+    rb_define_method(g_class_Sprite, "texture=", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetTexture), -1);
     rb_define_method(g_class_Sprite, "set_source_rect", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSourceRectXYWH), -1);
     rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSprite_Create), -1);
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
@@ -1989,14 +1989,14 @@ extern "C" void Init_Lumino()
 
     g_class_UIElement = rb_define_class_under(g_rootModule, "UIElement", g_class_UILayoutElement);
     rb_define_alloc_func(g_class_UIElement, LnUIElement_allocate);
-    rb_define_method(g_class_UIElement, "set_position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPosition), -1);
+    rb_define_method(g_class_UIElement, "position=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPosition), -1);
     rb_define_method(g_class_UIElement, "position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetPosition), -1);
-    rb_define_method(g_class_UIElement, "set_rotation", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetRotation), -1);
+    rb_define_method(g_class_UIElement, "rotation=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetRotation), -1);
     rb_define_method(g_class_UIElement, "set_euler_angles", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetEulerAngles), -1);
     rb_define_method(g_class_UIElement, "rotation", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetRotation), -1);
-    rb_define_method(g_class_UIElement, "set_scale", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetScale), -1);
+    rb_define_method(g_class_UIElement, "scale=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetScale), -1);
     rb_define_method(g_class_UIElement, "scale", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetScale), -1);
-    rb_define_method(g_class_UIElement, "set_center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetCenterPoint), -1);
+    rb_define_method(g_class_UIElement, "center_point=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetCenterPoint), -1);
     rb_define_method(g_class_UIElement, "center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetCenterPoint), -1);
     rb_define_method(g_class_UIElement, "add_child", LN_TO_RUBY_FUNC(Wrap_LnUIElement_AddChild), -1);
     LnUIElement_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIElement, LnUIElement_allocateForGetObject));
