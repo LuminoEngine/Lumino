@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-2016 # for VS2017
 
     steps:
     - uses: actions/checkout@v1
@@ -18,4 +18,4 @@ jobs:
       run: |
         ruby --version
         where ruby
-        
+
