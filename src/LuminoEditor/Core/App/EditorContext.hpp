@@ -16,6 +16,7 @@ public:
     EditorApplication* application() const { return m_application; }
     MainWindow* mainWindow() const { return m_mainWindow; }
     Project* mainProject() const;
+    PluginManager* pluginManager() const;
 	AssetDatabase* assetDatabase() const;
 
     //void activateAllExtensions();

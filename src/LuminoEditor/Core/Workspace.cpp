@@ -1,6 +1,8 @@
 ﻿
 #include "EnvironmentSettings.hpp"
 #include "Project.hpp"
+#include "AssetDatabase.hpp"
+#include "PluginManager.hpp"
 #include "Workspace.hpp"
 
 namespace lna {
@@ -47,21 +49,21 @@ Workspace::~Workspace()
 
 ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::String& projectName)
 {
-	if (LN_REQUIRE(!m_project)) return false;
-	m_project = ln::makeRef<Project>(this);
-	return m_project->newProject(projectDir, projectName, u"", u"NativeProject");
+	if (LN_REQUIRE(!m_mainProject)) return false;
+    m_mainProject = ln::makeRef<Project>(this);
+	return m_mainProject->newProject(projectDir, projectName, u"", u"NativeProject");
 }
 
 ln::Result Workspace::openMainProject(const ln::Path& filePath)
 {
-	if (LN_REQUIRE(!m_project)) return false;
-	m_project = ln::makeRef<Project>(this);
-	return m_project->openProject2(filePath);
+	if (LN_REQUIRE(!m_mainProject)) return false;
+    m_mainProject = ln::makeRef<Project>(this);
+	return m_mainProject->openProject2(filePath);
 }
 
 ln::Result Workspace::closeMainProject()
 {
-	m_project = nullptr;
+    m_mainProject = nullptr;
 	return true;
 }
 
@@ -70,13 +72,13 @@ ln::Result Workspace::runProject(const ln::String& target)
 	// Windows
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto exe = ln::FileSystem::getFile(ln::Path(m_project->windowsProjectDir(), u"bin/Debug"), u"*.exe");
+		auto exe = ln::FileSystem::getFile(ln::Path(m_mainProject->windowsProjectDir(), u"bin/Debug"), u"*.exe");
 		ln::Process::execute(exe);
 	}
 	// Web
 	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
+		auto buildDir = ln::Path::combine(m_mainProject->buildDir(), u"Web").canonicalize();
 
 		ln::Process proc;
 		proc.setProgram(m_buildEnvironment->python2());
@@ -111,7 +113,7 @@ ln::Result Workspace::runProject(const ln::String& target)
 
 ln::Result Workspace::restoreProject()
 {
-	m_project->restore();
+    m_mainProject->restore();
     return true;
 }
 
@@ -145,7 +147,7 @@ void Workspace::dev_openIde(const ln::String& target) const
 
 		ln::Process proc;
 		proc.setProgram(ln::Path::combine(ln::String::fromCString(path), u"bin", u"studio"));
-		proc.setArguments({ m_project->androidProjectDir() });
+		proc.setArguments({ m_mainProject->androidProjectDir() });
 		proc.start();
 	}
 	else
@@ -181,6 +183,21 @@ ln::Path Workspace::findProejctFile(const ln::Path& dir)
     else {
         return ln::Path();
     }
+}
+
+void Workspace::postMainProjectLoaded()
+{
+    m_mainAssetDatabase = ln::makeRef<AssetDatabase>();
+    if (!m_mainAssetDatabase->init(m_mainProject)) {
+        return;
+    }
+
+    m_mainPluginManager = ln::makeRef<PluginManager>();
+    if (!m_mainPluginManager->init(m_mainProject)) {
+        return;
+    }
+
+    m_mainPluginManager->reloadPlugins();
 }
 
 } // namespace lna

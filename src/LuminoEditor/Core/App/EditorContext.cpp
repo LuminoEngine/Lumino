@@ -17,9 +17,14 @@ Project* EditorContext::mainProject() const
     return application()->mainProject();
 }
 
+PluginManager* EditorContext::pluginManager() const
+{
+    return EditorApplication::instance()->workspace()->mainPluginManager();
+}
+
 AssetDatabase* EditorContext::assetDatabase() const
 {
-	return mainProject()->assetDatabase();
+	return EditorApplication::instance()->workspace()->mainAssetDatabase();
 }
 
 //void EditorContext::deactivateAllExtensions()

@@ -3,6 +3,7 @@
 class InitCommand
 {
 public:
+    ln::String projectDirectory;
     ln::String engineSource;
     ln::String templateName;
 
