@@ -20,8 +20,7 @@ jobs:
     - name: Build with dotnet
       run: dotnet run -- BuildExternalProjects Windows
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: Lumino-artifact
-        path: ./build/MSVC2017-x86-MT/ExternalInstall
-        
+    #- uses: actions/upload-artifact@v1
+    #  with:
+    #    name: Lumino-artifact
+    #    path: ./build/MSVC2017-x86-MT/ExternalInstall

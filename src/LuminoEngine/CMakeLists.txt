@@ -524,7 +524,26 @@ endif()
 
 #add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 
-
+set(
+    _LN_ENGINE_LINK_LIBS
+    LuminoCore
+    pcre
+    PNG
+    ZLIB
+    FreeType
+    vorbisfile
+    vorbis
+    ogg
+    Box2D
+    BulletSoftBody
+    BulletDynamics
+    BulletCollision
+    LinearMath
+    tmxlite
+    VulkanHeaders
+    ${LN_PLATFORM_LIBS}
+    Effekseer EffekseerRendererVulkan LLGI
+)
 
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
@@ -533,11 +552,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
-#target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
-#target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore pcre PNG ZLIB FreeType vorbisfile vorbis ogg Box2D BulletSoftBody BulletDynamics BulletCollision LinearMath tmxlite VulkanHeaders ${LN_PLATFORM_LIBS})
-target_link_libraries(${PROJECT_NAME} PRIVATE Effekseer EffekseerRendererVulkan LLGI)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${_LN_ENGINE_LINK_LIBS})
 
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
