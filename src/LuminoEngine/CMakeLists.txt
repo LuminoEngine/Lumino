@@ -580,18 +580,18 @@ endif()
 
 
 # Shared library
-add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
-target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
-#target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
-target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
-ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+#add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
+#target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+#target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
+##target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
+#target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+#set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
+#ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 #------------------------------------------------------------------------------
 # Install
 
-install(TARGETS LuminoEngine
+install(TARGETS LuminoEngine-static
     EXPORT LuminoEngineTargets
     ARCHIVE     DESTINATION lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
