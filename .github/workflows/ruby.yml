@@ -1,0 +1,27 @@
+name: Ruby
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-2016 # for VS2017
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+        architecture: 'x64'
+    - name: Build and test with Rake
+      run: |
+        ruby --version
+        gcm ruby | fl
+        $Env:Path = "C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/mingw32/bin;" + $Env:Path
+        $Env:Path = "C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/usr/bin;" + $Env:Path
+        echo $Env:Path
+        gcm make | fl
+
+
+
