@@ -62,6 +62,6 @@ target_link_libraries( # Specifies the target library.
                        GLESv3
                        m
                        z
-                       LuminoEngine
+                       LuminoEngine-static
                        #${ZLIB_LIBRARY_RELEASE}
                        )

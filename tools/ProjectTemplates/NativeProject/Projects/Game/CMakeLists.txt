@@ -11,6 +11,6 @@ set(
 
 add_library(${PROJECT_NAME} ${LOCAL_SOURCES} "PCH.h" "PCH.cpp")
 target_include_directories(${PROJECT_NAME} PRIVATE .)
-target_link_libraries(${PROJECT_NAME} LuminoEngine)
+target_link_libraries(${PROJECT_NAME} LuminoEngine-static)
 ln_add_pch(${PROJECT_NAME} "PCH.h" "PCH.cpp")
 

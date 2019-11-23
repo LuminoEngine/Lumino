@@ -15,7 +15,7 @@ source_group("Generators" FILES ${LOCAL_SOURCES_Generators})
 
 add_library(${PROJECT_NAME} STATIC ${LOCAL_SOURCES} ${LOCAL_SOURCES_Generators})
 target_include_directories(${PROJECT_NAME} PRIVATE . ${LN_ENGINE_INCLUDE_DIR} ${LUMINO_INCLUDE_DIRECTORIES} ${LWIG_LLVM_PACKAGE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} LuminoEngine)
+target_link_libraries(${PROJECT_NAME} LuminoEngine-static)
 target_link_libraries(${PROJECT_NAME} clangToolingCore clangAnalysis clangARCMigrate clangAST clangASTMatchers clangBasic clangCodeGen clangDriver clangDynamicASTMatchers clangEdit clangFormat clangFrontend clangFrontendTool clangIndex clangLex clangParse clangRewrite clangRewriteFrontend clangSema clangSerialization clangTooling LLVMSupport LLVMCore LLVMOption LLVMProfileData LLVMBitReader LLVMMC LLVMMCParser LLVMBinaryFormat Version)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
 ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")

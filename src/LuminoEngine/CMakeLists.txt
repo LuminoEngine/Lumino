@@ -456,7 +456,7 @@ set(LN_SOURCES
 )
 
 set(LN_SOURCES_SharedLib
-    src/SharedLib/DllMain.cpp
+    src/SharedLibraryMain.cpp
 )
 
 
@@ -516,14 +516,6 @@ endif()
 #------------------------------------------------------------------------------
 # Targets
 
-#add_library(${PROJECT_NAME}-static STATIC ${LN_SOURCES})
-#target_include_directories(${PROJECT_NAME}-static PUBLIC "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
-#target_link_libraries(${PROJECT_NAME}-static LuminoCore ${LN_PLATFORM_LIBS} ${OPENGL_LIBRARY})
-#set_target_properties(${PROJECT_NAME}-static PROPERTIES FOLDER "Lumino")
-#ln_add_pch(${PROJECT_NAME}-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
-
-#add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
@@ -545,27 +537,27 @@ set(
     Effekseer EffekseerRendererVulkan LLGI
 )
 
-add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC  
+add_library(LuminoEngine-static STATIC ${LN_SOURCES})
+target_include_directories(LuminoEngine-static PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
 )
-target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-#target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
-target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${_LN_ENGINE_LINK_LIBS})
+target_include_directories(LuminoEngine-static PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+#target_compile_definitions(LuminoEngine-static PUBLIC LUMINO_BUILD_DLL=1)
+target_compile_definitions(LuminoEngine-static PRIVATE ${LN_PLATFORM_DEFINITIONS})
+target_link_libraries(LuminoEngine-static INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
 
-#target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
-ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+#target_link_libraries(LuminoEngine-static PRIVATE glslang)
+set_target_properties(LuminoEngine-static PROPERTIES FOLDER "Lumino")
+ln_add_pch(LuminoEngine-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
 endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.
-    set_target_properties(${PROJECT_NAME} PROPERTIES
+    set_target_properties(LuminoEngine-static PROPERTIES
         FRAMEWORK TRUE
         #VERSION 1.0.0
         #SOVERSION 1.0.0
@@ -586,13 +578,24 @@ if (LN_BUILD_TESTS)
     add_subdirectory(sandbox)
 endif()
 
+
+# Shared library
+add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
+target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
+#target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
+target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
+ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+
 #------------------------------------------------------------------------------
 # Install
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS LuminoEngine
     EXPORT LuminoEngineTargets
-    ARCHIVE     DESTINATION lib         # Library installation location (Copied at "INSTALL" build time)
+    ARCHIVE     DESTINATION lib         # Static-library or MSVC-Link-library installation location (Copied at "INSTALL" build time)
     INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
+    RUNTIME     DESTINATION bin
     FRAMEWORK   DESTINATION .)
     
 install(DIRECTORY ../../include/LuminoEngine DESTINATION ./include)
@@ -609,5 +612,5 @@ install(
     FILES LuminoEngineConfig.cmake
     DESTINATION lib/cmake/LuminoEngine)
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})
+#add_custom_command(TARGET LuminoEngine-static POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LuminoEngine-static> ../../../../lib/${LN_TARGET_ARCH})

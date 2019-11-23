@@ -22,8 +22,8 @@ set_target_properties(LuminoCore PROPERTIES IMPORTED_LOCATION_DEBUG "${LuminoCor
 set_target_properties(LuminoCore PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${_LN_INCLUDE_DIR})
 
 # LuminoEngine
-find_library(LuminoEngine_LIBRARY_RELEASE NAMES LuminoEngine libLuminoEngine PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEngine/Release" NO_CMAKE_SYSTEM_PATH)
-find_library(LuminoEngine_LIBRARY_DEBUG NAMES LuminoEngined libLuminoEngined PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEngine/Debug" NO_CMAKE_SYSTEM_PATH)
+find_library(LuminoEngine_LIBRARY_RELEASE NAMES LuminoEngine-static libLuminoEngine-static PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEngine/Release" NO_CMAKE_SYSTEM_PATH)
+find_library(LuminoEngine_LIBRARY_DEBUG NAMES LuminoEngine-staticd libLuminoEngine-staticd PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEngine/Debug" NO_CMAKE_SYSTEM_PATH)
 add_library(LuminoEngine STATIC IMPORTED)
 set_target_properties(LuminoEngine PROPERTIES IMPORTED_LOCATION_RELEASE "${LuminoEngine_LIBRARY_RELEASE}")
 set_target_properties(LuminoEngine PROPERTIES IMPORTED_LOCATION_DEBUG "${LuminoEngine_LIBRARY_DEBUG}")
