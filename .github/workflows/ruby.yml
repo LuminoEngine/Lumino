@@ -13,11 +13,15 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
-        architecture: 'x64'
+        architecture: 'x86'
     - name: Build and test with Rake
       run: |
         ruby --version
         gcm ruby | fl
+        ls C:/hostedtoolcache/windows/Ruby
         ls C:/hostedtoolcache/windows/Ruby/2.6.3
+        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64
+        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x86
+        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x86/bin
 
 
