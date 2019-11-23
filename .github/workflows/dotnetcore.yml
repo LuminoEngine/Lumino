@@ -8,7 +8,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: windows-2016 # for VS2017
 
     steps:
     - uses: actions/checkout@v1
@@ -17,4 +17,4 @@ jobs:
       with:
         dotnet-version: 2.2.108
     - name: Build with dotnet
-      run: dotnet run -- BuildExternalProjects
+      run: dotnet run -- BuildExternalProjects Windows

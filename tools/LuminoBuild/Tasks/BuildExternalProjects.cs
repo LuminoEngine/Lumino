@@ -326,7 +326,7 @@ namespace LuminoBuild.Tasks
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "ogg"));
                         var bulletRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (target.MSVCStaticRuntime == "ON" ? "OFF" : "ON");
 
-                        BuildProjectMSVC(builder, "Effekseer", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime}");
+                        //BuildProjectMSVC(builder, "Effekseer", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime}");
 
 
                         BuildProjectMSVC(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
