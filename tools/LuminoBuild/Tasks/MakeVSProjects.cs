@@ -20,10 +20,10 @@ namespace LuminoBuild.Tasks
     {
         public static CMakeTargetInfo[] Targets = new CMakeTargetInfo[]
         {
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
-            new CMakeTargetInfo { DirName = "MSVC2017-x86-MT", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "ON", AdditionalOptions = "" },
-            //new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
-            //new CMakeTargetInfo { DirName = "MSVC2017-x64-MT", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "ON", AdditionalOptions = "" },
+            //new CMakeTargetInfo { DirName = "MSVC2017-x86-MD", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
+            //new CMakeTargetInfo { DirName = "MSVC2017-x86-MT", VSTarget = "Visual Studio 15", Platform="Win32", MSVCStaticRuntime = "ON", AdditionalOptions = "" },
+            new CMakeTargetInfo { DirName = "MSVC2017-x64-MD", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "OFF", AdditionalOptions = "" },
+            new CMakeTargetInfo { DirName = "MSVC2017-x64-MT", VSTarget = "Visual Studio 15 Win64", Platform="x64", MSVCStaticRuntime = "ON", AdditionalOptions = "" },
         };
 
         public override string CommandName { get { return "MakeVSProjects"; } }
@@ -55,7 +55,7 @@ namespace LuminoBuild.Tasks
                     {
                         $"-G\"{t.VSTarget}\"",
                         $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",
-                        $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
+                        $"-DCMAKE_DEBUG_POSTFIX=d",
                         $"-DLN_MSVC_STATIC_RUNTIME={t.MSVCStaticRuntime}",
                         $"-DLN_BUILD_TESTS=ON",
                         $"-DLN_BUILD_TOOLS=ON",

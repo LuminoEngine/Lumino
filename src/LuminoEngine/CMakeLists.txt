@@ -256,18 +256,7 @@ set(LN_SOURCES_ImageEffect
     src/ImageEffect/ToneImageEffect.cpp
 )
 
-set(LN_SOURCES_Effect
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectModel.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/ParticleEffectModel.hpp
-    src/Effect/Internal.hpp
-    src/Effect/EffectContext.cpp
-    src/Effect/EffectManager.cpp
-    src/Effect/EffectManager.hpp
-    src/Effect/EffectModel.cpp
-    src/Effect/ParticleEffectModel.cpp
-)
+file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp)
 
 set(LN_SOURCES_Physics
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
@@ -516,6 +505,8 @@ endif()
 #------------------------------------------------------------------------------
 # Targets
 
+find_package(Vulkan REQUIRED)
+
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
@@ -535,6 +526,7 @@ set(
     VulkanHeaders
     ${LN_PLATFORM_LIBS}
     Effekseer EffekseerRendererVulkan LLGI
+	${Vulkan_LIBRARIES}		# for LLGI
 )
 
 add_library(LuminoEngine-static STATIC ${LN_SOURCES})

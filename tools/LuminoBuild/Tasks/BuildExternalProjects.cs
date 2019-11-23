@@ -325,10 +325,7 @@ namespace LuminoBuild.Tasks
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "zlib"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "ogg"));
                         var bulletRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (target.MSVCStaticRuntime == "ON" ? "OFF" : "ON");
-
-                        //BuildProjectMSVC(builder, "Effekseer", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime}");
-
-
+                        
                         BuildProjectMSVC(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
                         BuildProjectMSVC(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                         BuildProjectMSVC(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
@@ -345,6 +342,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DTMXLITE_STATIC_LIB=ON");
                         BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                         BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
+                        BuildProjectMSVC(builder, "Effekseer", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime} -DBUILD_VULKAN=ON");
                     }
                 }
 
