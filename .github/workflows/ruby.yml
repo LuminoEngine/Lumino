@@ -17,5 +17,5 @@ jobs:
     - name: Build and test with Rake
       run: |
         ruby --version
-        where ruby
+        gcm ruby
 
