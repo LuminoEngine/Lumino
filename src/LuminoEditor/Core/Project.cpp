@@ -146,8 +146,13 @@ void Project::restore()
 
 bool Project::existsProjectFile(const ln::Path& dir)
 {
-	auto files = ln::FileSystem::getFiles(dir, u"*" + ProjectFileExt);
-	return !files.isEmpty();
+    if (ln::FileSystem::existsDirectory(dir)) {
+        auto files = ln::FileSystem::getFiles(dir, u"*" + ProjectFileExt);
+        return !files.isEmpty();
+    }
+    else {
+        return false;
+    }
 }
 
 void Project::setupPathes()

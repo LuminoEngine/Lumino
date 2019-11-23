@@ -4,13 +4,18 @@
 
 int InitCommand::execute(lna::Workspace* workspace, const ln::String& projectName)
 {
-    if (lna::Project::existsProjectFile(ln::Environment::currentDirectory())) {
+    auto projectDir = ln::Path(projectDirectory);
+    if (projectDir.isEmpty()) {
+        projectDir = ln::Path(ln::Environment::currentDirectory(), projectName);
+    }
+
+    if (lna::Project::existsProjectFile(projectDir)) {
         CLI::error("Project file already exists.");
         return 1;
     }
     else {
         auto m_project = ln::makeRef<lna::Project>(workspace);
-        if (!m_project->newProject(ln::Path(ln::Environment::currentDirectory(), projectName), projectName, engineSource, templateName)) {
+        if (!m_project->newProject(projectDir, projectName, engineSource, templateName)) {
             return 1;
         }
     }

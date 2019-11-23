@@ -6,6 +6,10 @@
 #include "FxcCommand.hpp"
 #include "BuildCommand.hpp"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 static int commnad_localInitialSetup(const char* packageDir_);
 
 int main(int argc, char** argv)
@@ -14,15 +18,15 @@ int main(int argc, char** argv)
 	if (argc == 1)
 	{
         //::SetCurrentDirectoryW(L"D:/LocalProj/LN");
-		::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test");
+		::SetCurrentDirectoryW(L"D:/LocalProj/LN");
         ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>",
-			//"init", "Test",
+			"init", "Test",
 			//"init", "TH-10", "--engine=repo:0.10.0"
             //"init", "RinoTutorial", "-t", "SimpleDesktop",
-			"build", "-p", "Windows"
+			//"build", "-p", "Windows"
 
 			//"<program>", "dev-install-tools",
 
@@ -67,8 +71,9 @@ int main(int argc, char** argv)
 
 		//--------------------------------------------------------------------------------
 		// init command
-		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project in the current directory.");
+		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project.");
 		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"Project name.");
+        auto initCommand_projectDirectoryArg = initCommand->addPositionalArgument(u"project-directory", u"Project directory.", ln::CommandLinePositionalArgumentFlags::Optional);
         auto initCommand_templateArg = initCommand->addValueOption(u"t", u"template", u"Project template.");
         auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"Engine source.");
 
@@ -116,6 +121,9 @@ int main(int argc, char** argv)
 			if (parser.has(initCommand))
 			{
                 InitCommand cmd;
+                if (initCommand_projectDirectoryArg->hasValue()) {
+                    cmd.projectDirectory = initCommand_projectDirectoryArg->value();
+                }
                 if (initCommand_engineArg->hasValue()) {
                     cmd.engineSource = initCommand_engineArg->value();
                 }
