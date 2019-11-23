@@ -110,8 +110,13 @@ namespace LuminoBuild
             try
             {
                 Logger.WriteLine("[{0}] Rule started.", rule.Name);
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+
                 rule.Build(this);
-                Logger.WriteLine("[{0}] Rule succeeded.", rule.Name);
+
+                sw.Stop();
+                Logger.WriteLine("[{0}] Rule succeeded. ({1})", rule.Name, sw.Elapsed.ToString());
             }
             catch (Exception e)
             {
@@ -157,6 +162,9 @@ namespace LuminoBuild
                 if (task.Buildable)
                 {
                     Logger.WriteLine("[{0}] Task started.", task.CommandName);
+                    var sw = new System.Diagnostics.Stopwatch();
+                    sw.Start();
+
                     string oldCD = Directory.GetCurrentDirectory();
                     try
                     {
@@ -166,7 +174,9 @@ namespace LuminoBuild
                     {
                         Directory.SetCurrentDirectory(oldCD);
                     }
-                    Logger.WriteLine("[{0}] Task succeeded.", task.CommandName);
+
+                    sw.Stop();
+                    Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.ToString());
                 }
             }
         }

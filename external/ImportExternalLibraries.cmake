@@ -429,19 +429,19 @@ set(TEST_Effekseer_IncludeDirs
 
 ln_make_external_find_path(Effekseer_ROOT "Effekseer")
 find_library(Effekseer_LIBRARY_RELEASE NAMES Effekseer PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(Effekseer_LIBRARY_DEBUG NAMES Effekseer PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(Effekseer_LIBRARY_DEBUG NAMES Effekseerd PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(EffekseerRendererDX12_LIBRARY_RELEASE NAMES EffekseerRendererDX12 PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(EffekseerRendererDX12_LIBRARY_DEBUG NAMES EffekseerRendererDX12 PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererDX12_LIBRARY_DEBUG NAMES EffekseerRendererDX12d PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(EffekseerRendererVulkan_LIBRARY_RELEASE NAMES EffekseerRendererVulkan PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(EffekseerRendererVulkan_LIBRARY_DEBUG NAMES EffekseerRendererVulkan PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererVulkan_LIBRARY_DEBUG NAMES EffekseerRendererVulkand PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 find_library(LLGI_LIBRARY_RELEASE NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(LLGI_LIBRARY_DEBUG NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(LLGI_LIBRARY_DEBUG NAMES LLGId PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 # TODO: test
-set(EffekseerRendererVulkan_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/EffekseerRendererVulkan/Debug/EffekseerRendererVulkan.lib")
-set(EffekseerRendererVulkan_LIBRARY_RELEASE "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/EffekseerRendererVulkan/Release/EffekseerRendererVulkan.lib")
-set(LLGI_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/3rdParty/LLGI/src/Debug/LLGI.lib")
-set(LLGI_LIBRARY_RELEASE "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/3rdParty/LLGI/src/Release/LLGI.lib")
+#set(EffekseerRendererVulkan_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/EffekseerRendererVulkan/Debug/EffekseerRendererVulkan.lib")
+#set(EffekseerRendererVulkan_LIBRARY_RELEASE "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/EffekseerRendererVulkan/Release/EffekseerRendererVulkan.lib")
+#set(LLGI_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/3rdParty/LLGI/src/Debug/LLGI.lib")
+#set(LLGI_LIBRARY_RELEASE "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/3rdParty/LLGI/src/Release/LLGI.lib")
 
 add_library(Effekseer STATIC IMPORTED)
 set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_RELEASE ${Effekseer_LIBRARY_RELEASE})

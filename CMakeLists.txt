@@ -36,7 +36,7 @@ option(LN_BUILD_TOOLS "build tool projects." ON)
 option(LN_BUILD_BINDINGS "build language bindings." OFF)
 
 # build editor projects
-option(LN_BUILD_EDITOR "build editor projects." OFF)
+option(LN_BUILD_EDITOR "build editor projects." ON)
 
 # build only LuminoCore.
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
