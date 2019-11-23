@@ -13,7 +13,7 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
-        architecture: 'x86'
+        architecture: 'x64'
     - name: Build and test with Rake
       run: |
         ruby --version
@@ -21,7 +21,13 @@ jobs:
         ls C:/hostedtoolcache/windows/Ruby
         ls C:/hostedtoolcache/windows/Ruby/2.6.3
         ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64
-        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x86
-        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x86/bin
+        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64
+        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/mingw32
+        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/usr
+        gcm make | fl
+        $Env:Path += C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/mingw32/bin
+        $Env:Path += C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/usr/bin
+        gcm make | fl
+
 
 
