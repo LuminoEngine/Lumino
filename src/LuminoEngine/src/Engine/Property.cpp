@@ -1,25 +1,28 @@
-﻿
+﻿/*
+	[2019/10/24] Property の必要性について
+	----------
+	UI モジュールを retaind で作っていることから要求が出てきている。
+
+	まずゲームという毎フレーム画面が更新されるようなものは、常に Model が持っているフィールドを読み取らざるを得ないから、
+	変更通知なんて不要なのでは？という考えがあるが、それは immediate で描画する場合。
+	自分で drawText() とかする場合はこれでよい。
+
+	なら retaind やめれば？なのであるが、エンドユーザー向けのUIのような「見た目」が重要な UI システムは imm だと厳しい。
+	- imm ではアニメーションの実装が困難。
+	- TextBox や TextBlock など、マルチラインなテキストレイアウトの仕組みを持つ表示は imm だと非常に難しいかパフォーマンスが大きく落ちる。
+
+	で、retaind で行くなら毎フレーム setText() とかやるの？という話になるが、
+	Lumino としては "別にやってもいい". それで特にパフォーマンスが落ちることはない。
+	ただ、書くのが面倒。
+	単純な TextBlock とかならまだしも、ListItem の中の Text を変更したりを考えるとすごく面倒。
+
+	プロパティバインディングはパフォーマンス的にちょっとオーバーヘッド乗るけど、解決策としてはベターかなと。
+*/
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Property.hpp>
 #include "EngineManager.hpp"
 
 namespace ln {
-
-//==============================================================================
-// PropertyRef
-
-void PropertyRef_old::clearValue()
-{
-    auto ptr = m_propOwner.resolve();
-    if (ptr != nullptr) {
-        return m_prop->clearValue();
-    }
-}
-
-Ref<Object> PropertyRef_old::owenr()
-{
-    return m_propOwner.resolve();
-}
 
 //==============================================================================
 // TypeInfo
@@ -29,6 +32,23 @@ void TypeInfo::registerProperty(PropertyInfo* prop)
     if (LN_REQUIRE(!prop->m_registerd)) return;
     m_properties.add(prop);
     prop->m_registerd = true;
+}
+
+Ref<Object> TypeInfo::createInstance() const
+{
+	return m_factory();
+}
+
+Ref<Object> TypeInfo::createInstance(const String& typeName)
+{
+	if (TypeInfo* info = EngineContext::current()->findTypeInfo(typeName)) {
+		return info->createInstance();
+	}
+	else {
+        // TODO: Objcet.hpp の serialize の TODO にもあるが、切り替えできるようにしたい
+        LN_LOG_WARNING << " Not found type.　(" << typeName << ")";
+		return nullptr;
+	}
 }
 
 void TypeInfo::initializeObjectProperties(Object* obj)
@@ -52,11 +72,6 @@ void TypeInfo::initializeObjectProperties(Object* obj)
 
 //==============================================================================
 // PropertyInfo
-
-PropertyRef_old PropertyInfo::getPropertyRef_old(Object* obj, PropertyInfo* propertyInfo)
-{
-    return PropertyRef_old(obj, propertyInfo->m_getPropertyCallback(obj));
-}
 
 PropertyRef PropertyInfo::getPropertyRef(Object* obj, PropertyInfo* propertyInfo)
 {
@@ -95,7 +110,7 @@ PropertyRef PropertyPath::findProperty(Object* root, const PropertyPath* path)
 				ref = PropertyRef(obj, prop->accessor());
 				return true;
 			}
-			return true;
+			return false;
 		}
 	};
 

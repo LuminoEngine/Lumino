@@ -16,6 +16,12 @@ struct WindowCreationSettings
     uint32_t    win32IconResourceId = 0;
 };
 
+enum class EventProcessingMode
+{
+    Polling,
+    Wait,       // イベントが発生するまで待つ。 新しい入力を受け取ったときにだけレンダリングの更新が必要な場合につかう。Editor 用。
+};
+
 class PlatformWindowManager
 	: public RefObject
 {
@@ -26,7 +32,7 @@ public:
 	virtual void dispose() = 0;
 	virtual Ref<PlatformWindow> createWindow(const WindowCreationSettings& settings) = 0;
 	virtual void destroyWindow(PlatformWindow* window) = 0;
-	virtual void processSystemEventQueue() = 0;
+	virtual void processSystemEventQueue(EventProcessingMode mode) = 0;
 };
 
 } // namespace detail

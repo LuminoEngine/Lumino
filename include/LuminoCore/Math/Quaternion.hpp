@@ -15,19 +15,24 @@ struct Matrix;
  * 
  * この乗算順序は数学的な四元数の定義からは逆行している点に注意してください。
  */
+LN_STRUCT()
 struct LN_API Quaternion
 {
 public:
     /** X 要素 */
+	LN_FIELD()
     float x;
 
     /** Y 要素 */
+	LN_FIELD()
     float y;
 
     /** Z要素 */
+	LN_FIELD()
     float z;
 
     /** W 要素 */
+	LN_FIELD()
     float w;
 
     /** 単位クォータニオン (0, 0, 0, 1) */

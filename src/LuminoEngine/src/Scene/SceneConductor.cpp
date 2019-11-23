@@ -8,6 +8,17 @@ namespace ln {
 //==============================================================================
 // SceneConductor
 
+Scene* SceneConductor::loadScene(const StringRef& sceneAssetFilePath)
+{
+    return detail::EngineDomain::sceneManager()->loadScene(sceneAssetFilePath);
+}
+
+void SceneConductor::unloadScene(Scene* scene)
+{
+    detail::EngineDomain::sceneManager()->unloadScene(scene);
+}
+
+#if 0
 void SceneConductor::gotoScene(Scene* scene)
 {
     detail::EngineDomain::sceneManager()->gotoScene(scene);
@@ -27,5 +38,6 @@ Scene* SceneConductor::activeScene()
 {
     return detail::EngineDomain::sceneManager()->activeScene();
 }
+#endif
 
 } // namespace ln

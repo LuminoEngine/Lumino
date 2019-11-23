@@ -16,81 +16,81 @@ namespace detail {
 // MeshRenderFeature
 
 MeshRenderFeature::MeshRenderFeature()
-	: m_manager(nullptr)
-{
-}
-
-MeshRenderFeature::~MeshRenderFeature()
 {
 }
 
 void MeshRenderFeature::init(RenderingManager* manager)
 {
-	if (LN_REQUIRE(manager != nullptr)) return;
-	m_manager = manager;
+	RenderFeature::init();
 }
 
-//void MeshRenderFeature::drawMesh(MeshResource* mesh, int sectionIndex)
-//{
-//	mesh->sec
-//}
-
-//void MeshRenderFeature::drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
-void MeshRenderFeature::drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex)
 {
-	if (LN_REQUIRE(mesh != nullptr)) return;
+	if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 	auto* _this = this;
 
 	MeshSection section;
-	VertexLayout* decls;
+	VertexLayout* layout;
 	VertexBuffer* vb[MaxVertexStreams] = {};
 	int vbCount;
 	IndexBuffer* ib;
-	mesh->commitRenderData(sectionIndex, &section, &decls, vb, &vbCount, &ib);
+	mesh->commitRenderData(sectionIndex, &section, &layout, vb, &vbCount, &ib);
 
-	DrawMeshCommandData data;
-	data.vertexDeclaration = GraphicsResourceInternal::resolveRHIObject<IVertexDeclaration>(decls, nullptr);
-	for (int i = 0; i < vbCount; ++i)
-	{
-		data.vertexBuffers[i] = GraphicsResourceInternal::resolveRHIObject<IVertexBuffer>(vb[i], nullptr);
+	DrawMeshData data;
+	data.vertexLayout = layout;
+	for (int i = 0; i < vbCount; ++i) {
+		data.vertexBuffers[i] = vb[i];
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IIndexBuffer>(ib, nullptr);
+	data.indexBuffer = ib;
 	data.startIndex = section.startIndex;
 	data.primitiveCount = section.primitiveCount;
 	data.primitiveType = PrimitiveTopology::TriangleList;
 
-	if (LN_REQUIRE(data.vertexBuffers[0])) return;
+	if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
+	if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
 
-	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
-	LN_ENQUEUE_RENDER_COMMAND_3(
-		MeshRenderFeature_drawMesh, m_manager->graphicsManager(),
-		MeshRenderFeature*, _this,
-        IGraphicsContext*, c,
-		DrawMeshCommandData, data,
-		{
-			_this->drawMeshImplOnRenderThread(c, data);
-		});
+	m_meshes.push_back(std::move(data));
+	m_batchData.count++;
+	return RequestBatchResult::Staging;
 }
 
-void MeshRenderFeature::flush(GraphicsContext* context)
+void MeshRenderFeature::beginRendering()
 {
+	m_meshes.clear();
+	m_batchData.offset = 0;
+	m_batchData.count = 0;
 }
 
-void MeshRenderFeature::drawMeshImplOnRenderThread(IGraphicsContext* context, const DrawMeshCommandData& data)
+void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
-	context->setVertexDeclaration(data.vertexDeclaration);
-	for (int i = 0; i < data.vertexBuffersCount; ++i) {
-		context->setVertexBuffer(i, data.vertexBuffers[i]);
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+
+	m_batchData.offset = m_batchData.offset + m_batchData.count;
+	m_batchData.count = 0;
+}
+
+void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	auto localBatch = static_cast<Batch*>(batch);
+
+	for (int i = 0; i < localBatch->data.count; i++) {
+		auto& data = m_meshes[localBatch->data.offset + i];
+
+		context->setVertexLayout(data.vertexLayout);
+		for (int i = 0; i < data.vertexBuffersCount; ++i) {
+			context->setVertexBuffer(i, data.vertexBuffers[i]);
+		}
+		context->setPrimitiveTopology(data.primitiveType);
+		if (data.indexBuffer) {
+			context->setIndexBuffer(data.indexBuffer);
+			context->drawPrimitiveIndexed(data.startIndex, data.primitiveCount);
+		}
+		else {
+			context->drawPrimitive(data.startIndex, data.primitiveCount);
+		}
 	}
-	context->setPrimitiveTopology(data.primitiveType);
-    if (data.indexBuffer) {
-        context->setIndexBuffer(data.indexBuffer);
-        context->drawPrimitiveIndexed(data.startIndex, data.primitiveCount);
-    }
-    else {
-        context->drawPrimitive(data.startIndex, data.primitiveCount);
-    }
 }
 
 } // namespace detail

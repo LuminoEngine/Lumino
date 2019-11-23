@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include "LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 
 namespace ln {
 namespace detail {

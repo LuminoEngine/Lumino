@@ -18,22 +18,22 @@ const detail::SamplerStateData detail::SamplerStateData::defaultState =
 
 Ref<SamplerState> SamplerState::create()
 {
-    return newObject<SamplerState>();
+    return makeObject<SamplerState>();
 }
 
 Ref<SamplerState> SamplerState::create(TextureFilterMode filter)
 {
-    return newObject<SamplerState>(filter);
+    return makeObject<SamplerState>(filter);
 }
 
 Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address)
 {
-    return newObject<SamplerState>(filter, address);
+    return makeObject<SamplerState>(filter, address);
 }
 
 Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
 {
-    return newObject<SamplerState>(filter, address, anisotropyEnabled);
+    return makeObject<SamplerState>(filter, address, anisotropyEnabled);
 }
 
 SamplerState::SamplerState()
@@ -107,7 +107,7 @@ void SamplerState::setAnisotropyEnabled(bool value)
     }
 }
 
-detail::ISamplerState* SamplerState::resolveRHIObject(bool* outModified)
+detail::ISamplerState* SamplerState::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
     *outModified = m_modified;
 

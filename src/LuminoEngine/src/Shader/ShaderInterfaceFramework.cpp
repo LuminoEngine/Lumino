@@ -305,7 +305,10 @@ void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo
 #endif
 
             case BuiltinSemantics::BoneTextureReciprocalSize:
-                varInfo.variable->setVector(Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0));
+				if (info.boneTexture)
+					varInfo.variable->setVector(Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0));
+				else
+					varInfo.variable->setVector(Vector4::Zero);
                 break;
             case BuiltinSemantics::BoneTexture:
                 varInfo.variable->setTexture(info.boneTexture);

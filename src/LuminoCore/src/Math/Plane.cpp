@@ -1,6 +1,7 @@
 ﻿
 #include <math.h>
 #include <cmath>
+#include <LuminoCore/Math/Math.hpp>
 #include <LuminoCore/Math/Vector3.hpp>
 #include <LuminoCore/Math/Vector4.hpp>
 #include <LuminoCore/Math/Matrix.hpp>
@@ -91,16 +92,21 @@ bool Plane::intersects(const Vector3& start, const Vector3& end, Vector3* point)
 
 bool Plane::intersects(const Ray& ray, Vector3* point) const
 {
-    float dot = Vector3::dot(normal, ray.direction);
-    if (std::abs(dot) > 0.0001f) {
-        if (point != nullptr) {
-            float t = (distance + Vector3::dot(normal, ray.origin)) / dot;
-            //if (t >= 0) return true;	// 表面側なら +、裏面なら -
-            (*point) = ray.origin - (t * ray.direction);
-        }
-        return true;
-    }
-    return false;
+	if (Math::isInf(ray.distance)) {
+		float dot = Vector3::dot(normal, ray.direction);
+		if (std::abs(dot) > 0.0001f) {
+			if (point != nullptr) {
+				float t = (distance + Vector3::dot(normal, ray.origin)) / dot;
+				//if (t >= 0) return true;	// 表面側なら +、裏面なら -
+				(*point) = ray.origin - (t * ray.direction);
+			}
+			return true;
+		}
+		return false;
+	}
+	else {
+		return intersects(ray.origin, ray.endPoint(), point);
+	}
 }
 
 void Plane::transform(const Matrix& mat)

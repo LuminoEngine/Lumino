@@ -16,9 +16,14 @@ namespace ln {
 class Font;
 namespace detail {
 class FontCore;
+class GlyphIconFontManager;
 
+// フォントファイルデータ。
+// メモリ上のデータからFaceを作る場合、FT_Done_Face() するまでメモリを開放してはならないため、全データを持っておく。
 struct FontFaceSource
 {
+	String familyName;
+	String styleName;
 	Ref<ByteBuffer> buffer;
 	int faceIndex;
 };
@@ -51,6 +56,7 @@ public:
     void setDefaultFont(Font* font);
     FontDesc defaultFontDesc() const;
     Font* defaultFont() const;
+	const Ref<GlyphIconFontManager>& glyphIconFontManager() const { return m_glyphIconFontManager; }
 
 	const FontFaceSource* lookupFontFaceSourceFromFamilyName(const String& name);
 
@@ -91,8 +97,31 @@ private:
 
     //FontDesc m_defaultFontDesc;
     Ref<Font> m_defaultFont;
+	Ref<GlyphIconFontManager> m_glyphIconFontManager;
 
-	std::unordered_map<String, FontFaceSource> m_famlyNameToFontFaceSourceMap;
+	List<FontFaceSource> m_famlyNameToFontFaceSourceMap;
+};
+
+// Font Awesome や Emoji アイコンのフォント管理を行う。
+// GlyphIcon オブジェクトでシーングラフのノードの1つとして描画すると、Font インスタンスが大量に作られる可能性がある。
+// これらは基本的にサイズが異なるだけで多くのプロパティが同一であるため、できるだけ一元管理する。
+class GlyphIconFontManager
+	: public RefObject
+{
+public:
+	GlyphIconFontManager();
+	virtual ~GlyphIconFontManager();
+	Result init(FontManager* fontManager);
+	void dispose();
+
+	Font* getFontAwesomeFont(const StringRef& style, int size);
+	uint32_t getFontAwesomeCodePoint(const StringRef& glyphName);
+
+private:
+	FontManager* m_fontManager;
+	std::unordered_map<String, uint32_t> m_fontAwesomeVariablesMap;
+	std::unordered_map<int, Ref<Font>> m_fontAwesomeFontMap_Regular;
+	std::unordered_map<int, Ref<Font>> m_fontAwesomeFontMap_Solid;
 };
 
 } // namespace detail

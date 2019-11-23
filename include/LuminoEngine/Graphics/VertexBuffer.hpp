@@ -64,7 +64,7 @@ LN_CONSTRUCT_ACCESS:
     void init(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage);
 
 private:
-    detail::IVertexBuffer* resolveRHIObject(bool* outModified);
+    detail::IVertexBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
     Ref<detail::IVertexBuffer> m_rhiObject;

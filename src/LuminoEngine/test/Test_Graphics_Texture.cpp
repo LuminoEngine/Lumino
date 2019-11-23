@@ -7,7 +7,6 @@ class Test_Graphics_Texture : public ::testing::Test {};
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, clear)
 {
-    auto font = Font::create();
     auto texture = Texture2D::create(100, 100);
 
     //* [ ] クリア
@@ -16,6 +15,7 @@ TEST_F(Test_Graphics_Texture, clear)
 
         auto sprite = UISprite::create(texture);
         sprite->setBlendMode(BlendMode::Alpha);
+		Engine::mainUIView()->addElement(sprite);
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-clear-1.png"));
@@ -24,14 +24,19 @@ TEST_F(Test_Graphics_Texture, clear)
 
     //* [ ] 別色クリア
     {
+#ifdef LN_NEW_GRAPHICS_MIGRATION
+        // TODO: GraphicsContext への map 実装が必要
+#else
         texture->clear(Color::Green);
 
         auto sprite = UISprite::create(texture);
         sprite->setBlendMode(BlendMode::Alpha);
+		Engine::mainUIView()->addElement(sprite);
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-clear-2.png"));
         LN_TEST_CLEAN_SCENE;
+#endif
     }
 }
 
@@ -49,6 +54,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		texture->drawText(u"Justify", Rect(10, 50, 140, 100), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
 		sprite->setBlendMode(BlendMode::Alpha);
+		Engine::mainUIView()->addElement(sprite);
 
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-2.png"));
@@ -64,6 +70,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		texture->drawText(u"Justify", Rect(0, 30, 160, 160), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
 		sprite->setBlendMode(BlendMode::Alpha);
+		Engine::mainUIView()->addElement(sprite);
 
 		TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-drawText-1.png"));
@@ -82,6 +89,7 @@ TEST_F(Test_Graphics_Texture, setPixel)
 
 	auto sprite = UISprite::create(tex1);
     sprite->setScale(20);
+	Engine::mainUIView()->addElement(sprite);
 
     TestEnv::updateFrame();
     ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-setPixel-1.png"));
@@ -101,6 +109,7 @@ TEST_F(Test_Graphics_Texture, blit)
     auto sprite = UISprite::create(tex2);
 	sprite->setBlendMode(BlendMode::Alpha);
     TestEnv::updateFrame();
+	Engine::mainUIView()->addElement(sprite);
 
     ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-blit-1.png"));
     LN_TEST_CLEAN_SCENE;
@@ -112,11 +121,16 @@ TEST_F(Test_Graphics_Texture, Issues)
     //* [ ] <Issue> Clear の後に Drawtext すると、Clear されていない問題の修正。
     //* [ ] <Issue> Drawtext 連続で描画すると、1フレーム前の内容がクリアされる問題の修正。
     {
+#ifdef LN_NEW_GRAPHICS_MIGRATION
+        // TODO: GraphicsContext への map 実装が必要
+#else
         auto font = Font::create();
         auto texture = Texture2D::create(160, 120);
         texture->drawText(_LT("Clear0"), Rect(60, 0, 160, 120), font, Color::White, TextAlignment::Left);
         auto sprite = UISprite::create(texture);
         sprite->setBlendMode(BlendMode::Alpha);
+		Engine::mainUIView()->addElement(sprite);
+
         TestEnv::updateFrame();
         // ^ "Clear0" disappears
 
@@ -131,6 +145,7 @@ TEST_F(Test_Graphics_Texture, Issues)
 
         ASSERT_SCREEN(LN_ASSETFILE("Graphics/Result/Test_Graphics_Texture-Issues-1.png"));
         LN_TEST_CLEAN_SCENE;
+#endif
     }
 }
 

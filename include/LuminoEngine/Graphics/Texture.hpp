@@ -14,6 +14,7 @@ LN_CLASS()
 class Texture
     : public GraphicsResource
 {
+    LN_OBJECT;
 public:
     /** テクスチャの幅を取得します。(ピクセル単位) */
     int width() const { return m_width; }
@@ -37,7 +38,7 @@ protected:
     Texture();
     virtual ~Texture();
     void init();
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) = 0;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
     void setDesc(int width, int height, TextureFormat format);
@@ -57,21 +58,34 @@ LN_CLASS()
 class Texture2D
     : public Texture
 {
+    LN_OBJECT;
 public:
     /**
      * テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
-     * @param[in]   width   : 幅 (px 単位)
-     * @param[in]   height  : 高さ (px 単位)
+     *
+     * @param[in] width   : 幅 (px 単位)
+     * @param[in] height  : 高さ (px 単位)
+     * @return 作成されたテクスチャ
      */
     static Ref<Texture2D> create(int width, int height);
 
     /**
      * テクスチャを作成します。
-     * @param[in]   width   : 幅 (px 単位)
-     * @param[in]   height  : 高さ (px 単位)
-     * @param[in]   format  : ピクセルフォーマット
+     * @param[in] width   : 幅 (px 単位)
+     * @param[in] height  : 高さ (px 単位)
+     * @param[in] format  : ピクセルフォーマット
      */
     static Ref<Texture2D> create(int width, int height, TextureFormat format);
+
+    /**
+     * ローカルのファイルを読み込み、テクスチャを作成します。
+	 *
+     * @param[in] filePath : 読み込むファイルのパス
+     * @param[in] format   : ピクセルフォーマット
+	 *
+	 * このメソッドは TextureImporter のユーティリティです。
+     */
+    static Ref<Texture2D> create(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
 
 public:
     /** Mipmap の有無を設定します。(default: false) */
@@ -97,22 +111,32 @@ public:
 
     void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
 
+    // TODO: internal
+    void setAssetSource(const Path& path) { m_assetSourcePath = path; }
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
+    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();
     virtual ~Texture2D();
+    void init();
 
     /** @copydoc create(int, int) */
+    LN_METHOD()
     void init(int width, int height);
 
     /** @copydoc create(int, int, TextureFormat) */
+    LN_METHOD(OverloadPostfix = "WithFormat")
     void init(int width, int height, TextureFormat format);
 
+	/** @copydoc create(const StringRef&, TextureFormat) */
+	LN_METHOD(OverloadPostfix = "FromFile")
     void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
+
     void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
 
@@ -121,6 +145,7 @@ private:
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
+    Path m_assetSourcePath;
     void* m_rhiLockedBuffer;
     bool m_initialUpdate;
     bool m_modified;
@@ -154,10 +179,12 @@ public:
     /** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
     static void releaseTemporary(RenderTargetTexture* renderTarget);
 
+    bool isBackbuffer() const { return m_ownerSwapchain != nullptr; }
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 LN_CONSTRUCT_ACCESS:
     RenderTargetTexture();
@@ -171,15 +198,19 @@ LN_CONSTRUCT_ACCESS:
 
     void init(int width, int height, TextureFormat format, bool mipmap);
     void init(SwapChain* owner);
+    void init(intptr_t nativeObject, TextureFormat format);
+    void resetNativeObject(intptr_t nativeObject);
+    void resetSize(int width, int height);
 
 private:
-    Ref<Bitmap2D> readData();
-    void resetSwapchainFrameIfNeeded(bool force);
+	void resetRHIObject(detail::ITexture* rhiObject);
+    Ref<Bitmap2D> readData(GraphicsContext* context);
 
     Ref<detail::ITexture> m_rhiObject;
     SwapChain* m_ownerSwapchain;
-    int m_swapchainImageIndex;
+    intptr_t m_nativeObject;
     bool m_modified;
+    bool m_hasNativeObject;
 
     friend class detail::TextureInternal;
     friend class detail::GraphicsResourceInternal;
@@ -193,8 +224,11 @@ public:
     static void setMappedData(Texture2D* texture, const void* data);
     static void setDesc(Texture* texture, int width, int height, TextureFormat format) { texture->setDesc(width, height, format); }
     static void setMipmapEnabled(Texture* texture, bool value) { texture->m_mipmap = value; }
-    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget) { return renderTarget->readData(); }
-    static void resetSwapchainFrameIfNeeded(RenderTargetTexture* renderTarget, bool force) { renderTarget->resetSwapchainFrameIfNeeded(force); }
+    static Ref<Bitmap2D> readData(RenderTargetTexture* renderTarget, GraphicsContext* context) { return renderTarget->readData(context); }
+	static void resetRHIObject(RenderTargetTexture* renderTarget, detail::ITexture* rhiObject) { renderTarget->resetRHIObject(rhiObject); }
+    static void resetNativeObject(RenderTargetTexture* renderTarget, intptr_t value) { renderTarget->resetNativeObject(value); }
+    static void resetSize(RenderTargetTexture* renderTarget, int width, int height) { renderTarget->resetSize(width, height); }
+    static void resetOpenGLTextureIdFromCurrentFramebuffer(RenderTargetTexture* renderTarget);
 };
 
 class Texture3D
@@ -213,7 +247,7 @@ LN_CONSTRUCT_ACCESS:
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(bool* outModified) override;
+    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
 
 private:
     Ref<detail::ITexture> m_rhiObject;

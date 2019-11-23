@@ -31,7 +31,7 @@ namespace ln {
  */
 
 RenderView::RenderView()
-	: m_clearMode(RenderViewClearMode::ColorAndDepth)
+	: m_clearMode(RenderViewClearMode::None)
 	, m_backgroundColor(Color::White)
 {
 }
@@ -61,23 +61,37 @@ EventConnection RenderView::connectOnUIEvent(UIEventHandler handler)
     return m_onUIEvent.connect(handler);
 }
 
-void RenderView::updateUIStyle(const detail::UIStyleInstance* parentFinalStyle)
+void RenderView::updateFrame(float elapsedSeconds)
 {
-	onUpdateUIStyle(parentFinalStyle);
+	onUpdateFrame(elapsedSeconds);
 }
 
-void RenderView::updateUILayout(const Rect& parentFinalGlobalRect)
+void RenderView::updateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle)
+{
+	onUpdateUIStyle(styleContext, parentFinalStyle);
+}
+
+void RenderView::updateUILayout(UILayoutContext* layoutContext)
 {
 	// TODO: こんなのでいいのか要チェック
-	onUpdateUILayout(Rect(parentFinalGlobalRect.x, parentFinalGlobalRect.y, m_actualPixelSize.width, m_actualPixelSize.height));
+	onUpdateUILayout(layoutContext);
 }
 
-void RenderView::onUpdateUIStyle(const detail::UIStyleInstance* finalStyle)
+void RenderView::onUpdateFrame(float elapsedSeconds)
 {
 }
 
-void RenderView::onUpdateUILayout(const Rect& finalGlobalRect)
+void RenderView::onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
+}
+
+void RenderView::onUpdateUILayout(UILayoutContext* layoutContext)
+{
+}
+
+UIElement* RenderView::onLookupMouseHoverElement(const Point& framewindowClientPoint)
+{
+    return nullptr;
 }
 
 void RenderView::onRoutedEvent(UIEventArgs* e)

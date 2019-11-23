@@ -77,8 +77,8 @@ protected:
 	void init();
 
 public: // TODO: internal
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) = 0;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) = 0;
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const = 0;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const = 0;
 
 //LN_INTERNAL_ACCESS:
 //	void reset();
@@ -142,9 +142,9 @@ public:	// TODO:
 	//static const float DefaultPower;	// (50.0f)
 
     // TODO: internal
-    void updateShaderVariables(Shader* target);
+    void updateShaderVariables(Shader* target) const;
 
-private:
+protected:  // TODO:
 	//void LinkVariables();
 	//ShaderValue* FindShaderValue(const StringRef& name);
 	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
@@ -201,7 +201,7 @@ LN_INTERNAL_ACCESS:
 class Material
 	: public AbstractMaterial
 {
-	//LN_OBJECT;
+	LN_OBJECT;
 public:
 	static Ref<Material> create();
     static Ref<Material> create(Texture* mainTexture);
@@ -215,8 +215,11 @@ public:
     void setEmissive(const Color& value);
 
 protected:
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const override;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const override;
+
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	Material();
@@ -232,43 +235,43 @@ private:
 
 
 /** 非物理ベースレンダリングで使用される Phong シェーディング用のマテリアルです。 */
-class PhongMaterial
-	: public AbstractMaterial
-{
-	//LN_OBJECT;
-public:
-	static const String DiffuseParameterName;
-	static const String AmbientParameterName;
-	static const String EmissiveParameterName;
-	static const String SpecularParameterName;
-	static const String SpecularPowerParameterName;
-
-	static const Color DefaultDiffuse;
-	static const Color DefaultAmbient;
-	static const Color DefaultSpecular;
-	static const Color DefaultEmissive;
-	static const float DefaultPower;
-
-	static Ref<PhongMaterial> create();
-
-	void setDiffuse(const Color& value);
-	void setAmbient(const Color& value);
-	void setEmissive(const Color& value);
-	void setSpecular(const Color& value);
-	void setSpecularPower(float value);
-
-protected:
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
-
-LN_CONSTRUCT_ACCESS:
-	PhongMaterial();
-	virtual ~PhongMaterial();
-	void init();
-
-private:
-	detail::PhongMaterialData m_data;
-};
+//class PhongMaterial
+//	: public AbstractMaterial
+//{
+//	//LN_OBJECT;
+//public:
+//	static const String DiffuseParameterName;
+//	static const String AmbientParameterName;
+//	static const String EmissiveParameterName;
+//	static const String SpecularParameterName;
+//	static const String SpecularPowerParameterName;
+//
+//	static const Color DefaultDiffuse;
+//	static const Color DefaultAmbient;
+//	static const Color DefaultSpecular;
+//	static const Color DefaultEmissive;
+//	static const float DefaultPower;
+//
+//	static Ref<PhongMaterial> create();
+//
+//	void setDiffuse(const Color& value);
+//	void setAmbient(const Color& value);
+//	void setEmissive(const Color& value);
+//	void setSpecular(const Color& value);
+//	void setSpecularPower(float value);
+//
+//protected:
+//	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
+//	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+//
+//LN_CONSTRUCT_ACCESS:
+//	PhongMaterial();
+//	virtual ~PhongMaterial();
+//	void init();
+//
+//private:
+//	detail::PhongMaterialData m_data;
+//};
 
 } // namespace ln
 

@@ -31,6 +31,8 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+	Ref<Material> m_materialForCopySourceTo;
+	Ref<Material> m_materialForCopyAccumTo;
     Ref<Material> m_material;
     //float m_amount;
     EasingValue<float> m_amountValue;

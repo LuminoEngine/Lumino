@@ -8,9 +8,11 @@ class GraphicsResourceInternal;
 }
 
 /** Graphics 機能に関係するリソースのベースクラスです。*/
+LN_CLASS()
 class LN_API GraphicsResource
     : public Object
 {
+    LN_OBJECT;
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;
@@ -36,12 +38,12 @@ public:
     static detail::GraphicsManager* manager(GraphicsResource* obj) { return obj->m_manager; }
 
     template<class TReturn, class TObject>
-    static TReturn* resolveRHIObject(const TObject& obj, bool* outModified)
+    static TReturn* resolveRHIObject(GraphicsContext* context, const TObject& obj, bool* outModified)
     {
         bool modified = false;
         TReturn* rhi = nullptr;
         if (obj) {
-            rhi = obj->resolveRHIObject(&modified);
+            rhi = obj->resolveRHIObject(context, &modified);
         }
         if (outModified) {
             *outModified = modified;

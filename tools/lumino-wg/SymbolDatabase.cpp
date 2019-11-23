@@ -545,27 +545,27 @@ ln::Ref<ConstantSymbol> SymbolDatabase::CreateConstantFromLiteralString(const ln
 	if (valueStr == "true")
 	{
 		info->type = PredefinedTypes::boolType;
-		info->value = true;
+		info->value = ln::makeVariant(true);
 	}
 	else if (valueStr == "false")
 	{
 		info->type = PredefinedTypes::boolType;
-		info->value = false;
+		info->value = ln::makeVariant(false);
 	}
 	else if (valueStr == "nullptr")
 	{
 		info->type = PredefinedTypes::nullptrType;
-		info->value = nullptr;
+		info->value = ln::makeVariant(nullptr);
 	}
 	else if (valueStr.contains('.'))
 	{
 		info->type = PredefinedTypes::floatType;
-		info->value = ln::StringHelper::toFloat(valueStr.c_str());
+		info->value = ln::makeVariant(ln::StringHelper::toFloat(valueStr.c_str()));
 	}
 	else
 	{
 		info->type = PredefinedTypes::intType;
-		info->value = ln::StringHelper::toInt32(valueStr.c_str());
+		info->value = ln::makeVariant(ln::StringHelper::toInt32(valueStr.c_str()));
 	}
 
 	return info;

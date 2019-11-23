@@ -5,66 +5,139 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
-#include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include "../Font/FontCore.hpp"
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "../Rendering/RenderingManager.hpp"
 #include "SpriteTextRenderFeature.hpp"
 
 namespace ln {
 namespace detail {
-
+	
 //==============================================================================
-// InternalSpriteTextRender
+// SpriteTextRenderFeature
 
-InternalSpriteTextRender::InternalSpriteTextRender()
-	: m_manager(nullptr)
-	, m_vertexDeclaration(nullptr)
-	, m_vertexBuffer(nullptr)
-	, m_indexBuffer(nullptr)
-	, m_spriteCount(0)
+SpriteTextRenderFeature::SpriteTextRenderFeature()
+	: m_mappedVertices(nullptr)
 	, m_buffersReservedSpriteCount(0)
 {
 }
 
-void InternalSpriteTextRender::init(RenderingManager* manager)
+void SpriteTextRenderFeature::init(RenderingManager* manager)
 {
-    m_manager = manager;
-	m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
-
-    prepareBuffers(512);
+    RenderFeature::init();
+	m_manager = manager;
+	m_currentFont = nullptr;
+	m_vertexLayout = manager->standardVertexDeclaration();
+	prepareBuffers(nullptr, 2048);
+	m_batchData.spriteOffset = 0;
+	m_batchData.spriteCount = 0;
 }
 
-void InternalSpriteTextRender::render(IGraphicsContext* context, const GlyphData* dataList, int dataCount, ITexture* glyphsTexture, const BrushData& brushData)
+RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Matrix& transform)
 {
-	m_spriteCount = 0;
-	prepareBuffers(dataCount);
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font);
 
-	Vertex* buffer = reinterpret_cast<Vertex*>(context->map(m_vertexBuffer));
-	ITexture* srcTexture = glyphsTexture;
-	Size texSizeInv(1.0f / srcTexture->realSize().width, 1.0f / srcTexture->realSize().height);
-	for (int i = 0; i < dataCount; ++i)
-	{
-		const GlyphData& data = dataList[i];
-		Rect uvSrcRect((float)data.srcRect.x, (float)data.srcRect.y, (float)data.srcRect.width, (float)data.srcRect.height);
-		uvSrcRect.x *= texSizeInv.width;
-		uvSrcRect.width *= texSizeInv.width;
-		uvSrcRect.y *= texSizeInv.height;
-		uvSrcRect.height *= texSizeInv.height;
+	m_drawingFormattedText = text;
+	m_drawingTransform = transform;
+	beginLayout();
+	TextLayoutEngine::layout(m_currentFont, text->text.c_str(), text->text.length(), Rect(0, 0, text->area), 0, text->textAlignment);
+	auto result2 = resolveCache(batchList, context);
+	endLayout(context);
 
-		Rect dstRect(data.position, (float)data.srcRect.width, (float)data.srcRect.height);
-		internalDrawRectangle(buffer + (i * 4), data.transform, dstRect, uvSrcRect, data.color);
+	assert(!(result == RequestBatchResult::Submitted && result2 == RequestBatchResult::Submitted));
+	return (result == RequestBatchResult::Submitted || result2 == RequestBatchResult::Submitted) ? RequestBatchResult::Submitted : RequestBatchResult::Staging;
+}
+
+RequestBatchResult SpriteTextRenderFeature::drawChar(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform)
+{
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
+
+	beginLayout();
+	addLayoutedGlyphItem(codePoint, Vector2::Zero, color, transform);
+	auto result2 = resolveCache(batchList, context);
+	endLayout(context);
+
+	assert(!(result == RequestBatchResult::Submitted && result2 == RequestBatchResult::Submitted));
+	return (result == RequestBatchResult::Submitted || result2 == RequestBatchResult::Submitted) ? RequestBatchResult::Submitted : RequestBatchResult::Staging;
+}
+
+RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Matrix& transform)
+{
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
+
+	beginLayout();
+	for (int i = 0; i < glyphRun->glyphCount; i++) {
+		auto& glyph = glyphRun->owner->glyphs()[glyphRun->startIndex + i];
+		Color color = glyphRun->color;
+		color.a *= glyph.opacity;
+		if (glyph.timeOffset <= glyphRun->owner->time() && color.a > 0.0f) {
+			addLayoutedGlyphItem(glyph.codePoint, glyph.pos.xy(), color, transform);
+		}
 	}
-    context->unmap(m_vertexBuffer);
-	flush(context, glyphsTexture);
+	auto result2 = resolveCache(batchList, context);
+	endLayout(context);
+
+	assert(!(result == RequestBatchResult::Submitted && result2 == RequestBatchResult::Submitted));
+	return (result == RequestBatchResult::Submitted || result2 == RequestBatchResult::Submitted) ? RequestBatchResult::Submitted : RequestBatchResult::Staging;
 }
 
-void InternalSpriteTextRender::prepareBuffers(int spriteCount)
+void SpriteTextRenderFeature::beginRendering()
 {
-	IGraphicsDevice* context = m_manager->graphicsManager()->deviceContext();
+	m_cacheTexture = nullptr;
+}
+
+void SpriteTextRenderFeature::endRendering()
+{
+    for (auto& font : m_renderingFonts) {
+        font->endCacheUsing();
+    }
+    m_renderingFonts.clear();
+}
+
+void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+{
+	if (m_mappedVertices) {
+		// TODO: unmap (今は自動だけど、明示した方が安心かも)
+	}
+
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+	batch->overrideTexture = m_cacheTexture;
+
+    //static_cast<Texture2D*>(m_cacheTexture)->clear(Color::Red);
+
+	m_batchData.spriteOffset = m_batchData.spriteOffset + m_batchData.spriteCount;
+	m_batchData.spriteCount = 0;
+
+    // 次の draw で Submit 発生しないようにする
+    m_cacheTexture = nullptr;
+}
+
+void SpriteTextRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	auto localBatch = static_cast<Batch*>(batch);
+	context->setVertexLayout(m_vertexLayout);
+	context->setVertexBuffer(0, m_vertexBuffer);
+	context->setIndexBuffer(m_indexBuffer);
+	context->drawPrimitiveIndexed(localBatch->data.spriteOffset * 6, localBatch->data.spriteCount * 2);
+
+	m_batchData.spriteOffset = 0;
+	m_batchData.spriteCount = 0;
+}
+
+void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
+{
+	addLayoutedGlyphItem(ch, pos, m_drawingFormattedText->color, m_drawingTransform);
+}
+
+void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int spriteCount)
+{
+		// TODO: 実行中の map は context->map 用意した方がいいかも
+	//if (context) {
+	//	LN_NOTIMPLEMENTED();
+	//}
 
 	if (m_buffersReservedSpriteCount < spriteCount)
 	{
@@ -73,12 +146,20 @@ void InternalSpriteTextRender::prepareBuffers(int spriteCount)
 			return;
 		}
 
+		// VertexBuffer
 		size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
-		m_vertexBuffer = context->createVertexBuffer(GraphicsResourceUsage::Dynamic, vertexBufferSize, nullptr);
+		if (!m_vertexBuffer)
+			m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
+		else
+			m_vertexBuffer->resize(vertexBufferSize);
 
+		// IndexBuffer
 		size_t indexBufferSize = spriteCount * 6;
-		std::vector<size_t> indexBuf(sizeof(uint16_t) * indexBufferSize, false);
-		uint16_t* ib = (uint16_t*)indexBuf.data();
+		if (!m_indexBuffer)
+			m_indexBuffer = makeObject<IndexBuffer>(indexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+		else
+			m_indexBuffer->resize(indexBufferSize);
+		auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));	// TODO: 部分 map
 		int idx = 0;
 		int i2 = 0;
 		for (int i = 0; i < spriteCount; ++i)
@@ -92,15 +173,88 @@ void InternalSpriteTextRender::prepareBuffers(int spriteCount)
 			ib[i2 + 4] = idx + 1;
 			ib[i2 + 5] = idx + 3;
 		}
-		m_indexBuffer = context->createIndexBuffer(
-			GraphicsResourceUsage::Dynamic, IndexBufferFormat::UInt16,
-			spriteCount * 6, ib);
 
 		m_buffersReservedSpriteCount = spriteCount;
 	}
 }
 
-void InternalSpriteTextRender::internalDrawRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
+RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont)
+{
+	auto result = RequestBatchResult::Staging;
+	auto font = FontHelper::resolveFontCore(newFont, 1.0f);	// TODO: DPI
+	if (font != m_currentFont && m_batchData.spriteCount > 0) {
+		submitBatch(context, batchList);
+		result = RequestBatchResult::Submitted;
+        m_renderingFonts.push_back(font);
+	}
+	m_currentFont = font;
+	return result;
+}
+
+void SpriteTextRenderFeature::beginLayout()
+{
+	m_cacheRequest.glyphs.clear();
+	m_glyphLayoutDataList.clear();
+}
+
+void SpriteTextRenderFeature::addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform)
+{
+	//// TODO: Outline
+
+	m_cacheRequest.glyphs.push_back({ codePoint });
+
+	GlyphData data;
+	data.transform = transform;
+	data.position = pos;
+	data.color = color;
+	m_glyphLayoutDataList.push_back(data);
+}
+
+RequestBatchResult SpriteTextRenderFeature::resolveCache(detail::RenderFeatureBatchList* batchList, GraphicsContext* context)
+{
+	m_currentFont->getFontGlyphTextureCache(&m_cacheRequest);
+	if (m_cacheTexture && m_cacheTexture != m_cacheRequest.texture) {
+		submitBatch(context, batchList);
+		return RequestBatchResult::Submitted;
+	}
+	else {
+        m_cacheTexture = m_cacheRequest.texture;
+		return RequestBatchResult::Staging;
+	}
+}
+
+void SpriteTextRenderFeature::endLayout(GraphicsContext* context)
+{
+
+	size_t spriteCount = m_batchData.spriteOffset + m_batchData.spriteCount;
+	size_t dataCount = m_glyphLayoutDataList.size();
+	prepareBuffers(context, spriteCount + dataCount);
+
+	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+
+	auto srcTexture = m_cacheRequest.texture;
+	Size texSizeInv(1.0f / srcTexture->width(), 1.0f / srcTexture->height());
+	for (auto i = 0; i < dataCount; i++)
+	{
+		auto* vertices = m_mappedVertices + ((m_batchData.spriteOffset + m_batchData.spriteCount) * 4);
+
+		auto& data = m_glyphLayoutDataList[i];
+
+		auto srcRect = m_cacheRequest.glyphs[i].info.srcRect;
+		Rect uvSrcRect((float)srcRect.x, (float)srcRect.y, (float)srcRect.width, (float)srcRect.height);
+		uvSrcRect.x *= texSizeInv.width;
+		uvSrcRect.width *= texSizeInv.width;
+		uvSrcRect.y *= texSizeInv.height;
+		uvSrcRect.height *= texSizeInv.height;
+
+		Rect dstRect(data.position, (float)srcRect.width, (float)srcRect.height);
+		putRectangle(vertices, data.transform, dstRect, uvSrcRect, data.color);
+
+		m_batchData.spriteCount++;
+	}
+}
+
+void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
 {
 	if (rect.isEmpty()) return;		// 矩形がつぶれているので書く必要はない
 
@@ -113,156 +267,33 @@ void InternalSpriteTextRender::internalDrawRectangle(Vertex* buffer, const Matri
 	buffer[0].position.set(rect.getLeft(), rect.getTop(), 0);
 	buffer[0].position.transformCoord(transform);
 	buffer[0].uv.set(lu, tv);	// 左上
-    buffer[0].normal = Vector3::UnitZ;
+	buffer[0].normal = Vector3::UnitZ;
 
 	buffer[1].color = color;
 	buffer[1].position.set(rect.getRight(), rect.getTop(), 0);
 	buffer[1].position.transformCoord(transform);
 	buffer[1].uv.set(ru, tv);	// 右上
-    buffer[1].normal = Vector3::UnitZ;
+	buffer[1].normal = Vector3::UnitZ;
 
 	buffer[2].color = color;
 	buffer[2].position.set(rect.getLeft(), rect.getBottom(), 0);
 	buffer[2].position.transformCoord(transform);
 	buffer[2].uv.set(lu, bv);	// 左下
-    buffer[2].normal = Vector3::UnitZ;
+	buffer[2].normal = Vector3::UnitZ;
 
 	buffer[3].color = color;
 	buffer[3].position.set(rect.getRight(), rect.getBottom(), 0);
 	buffer[3].position.transformCoord(transform);
 	buffer[3].uv.set(ru, bv);	// 右下
-    buffer[3].normal = Vector3::UnitZ;
+	buffer[3].normal = Vector3::UnitZ;
 
-	m_spriteCount++;
-}
-
-void InternalSpriteTextRender::flush(IGraphicsContext* context, ITexture* glyphsTexture)
-{
-	context->setVertexDeclaration(m_vertexDeclaration);
-	context->setVertexBuffer(0, m_vertexBuffer);
-	context->setIndexBuffer(m_indexBuffer);
-	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	context->drawPrimitiveIndexed(0, m_spriteCount * 2);
-
-    m_spriteCount = 0;
-}
-
-//==============================================================================
-// SpriteTextRenderFeature
-
-SpriteTextRenderFeature::SpriteTextRenderFeature()
-	: m_internal(nullptr)
-	, m_drawingFont(nullptr)
-{
-}
-
-void SpriteTextRenderFeature::init(RenderingManager* manager)
-{
-    RenderFeature::init();
-    m_internal = makeRef<InternalSpriteTextRender>();
-    m_internal->init(manager);
-}
-
-void SpriteTextRenderFeature::drawText(GraphicsContext* context, const FormattedText* text, const Matrix& transform)
-{
-	// validation. 先に updateRenderParameters によってセットされているはず
-	if (LN_ENSURE(m_drawingFont)) return;
-
-	m_drawingGraphicsContext = context;
-	m_drawingFormattedText = text;
-	m_drawingFontGlyphCache = m_drawingFont->getFontGlyphTextureCache();
-    m_drawingTransform = transform;
-
-	TextLayoutEngine::layout(m_drawingFont, text->text.c_str(), text->text.length(), Rect(0, 0, text->area), 0, text->textAlignment);
-
-	m_drawingFormattedText = nullptr;
-}
-
-void SpriteTextRenderFeature::flush(GraphicsContext* context)
-{
-	flushInternal(context, m_drawingFontGlyphCache);
-}
-
-void SpriteTextRenderFeature::updateRenderParameters(detail::RenderDrawElement* element, ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
-{
-    auto* e = static_cast<DrawTextElement*>(element);
-    FontCore* fontCore = FontHelper::resolveFontCore(e->formattedText->font, cameraInfo.dpiScale);
-
-	// validation. 一連の draw ~ flush までは同じフォントが使い続けられなければならない
-	if (m_drawingFont) {
-		if (LN_ENSURE(m_drawingFont == fontCore)) {
-			return;
+	// pixel snap
+	if (1) {
+		for (int i = 0; i < 4; i++) {
+			buffer[i].position.x = std::round(buffer[i].position.x);
+			buffer[i].position.y = std::round(buffer[i].position.y);
 		}
 	}
-
-	m_drawingFont = fontCore;
-
-    // グリフのマスクテクスチャを MainTexture として使う
-    detail::SubsetInfo localSubsetInfo = subsetInfo;
-    localSubsetInfo.materialTexture = fontCore->getFontGlyphTextureCache()->glyphsFillTexture();
-
-    RenderFeature::updateRenderParameters(element, tech, cameraInfo, elementInfo, localSubsetInfo);
-}
-
-void SpriteTextRenderFeature::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Size& size)
-{
-	// 必要なグリフを探す。lookupGlyphInfo() の中で、テクスチャにグリフビットマップが blt される。
-	CacheGlyphInfo info;
-	bool flush;
-	m_drawingFontGlyphCache->lookupGlyphInfo(ch, &info, &flush);
-	if (flush) {
-		flushInternal(m_drawingGraphicsContext, m_drawingFontGlyphCache);
-	}
-
-	// TODO: Outline
-
-	InternalSpriteTextRender::GlyphData data;
-    data.transform = m_drawingTransform;
-	data.position = pos;
-	data.color = m_drawingFormattedText->color;
-	data.srcRect = info.srcRect;
-	data.outlineOffset = info.outlineOffset;
-	m_glyphLayoutDataList.push_back(data);
-}
-
-void SpriteTextRenderFeature::flushInternal(GraphicsContext* context, FontGlyphTextureCache* cache)
-{
-	if (LN_REQUIRE(context)) return;
-	if (!cache) return;
-	if (m_glyphLayoutDataList.empty()) return;
-
-	size_t dataCount = m_glyphLayoutDataList.size();
-	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(InternalSpriteTextRender::GlyphData) * dataCount);
-
-	// Texture::blit で転送されるものを Flush する
-	ITexture* glyphsTexture = GraphicsResourceInternal::resolveRHIObject<ITexture>(cache->glyphsFillTexture(), nullptr);
-
-	InternalSpriteTextRender::BrushData brushData;
-	//brushData.color = Color::Blue;
-
-	GraphicsManager* manager = m_internal->manager()->graphicsManager();
-    IGraphicsContext* c = GraphicsContextInternal::commitState(context);
-	LN_ENQUEUE_RENDER_COMMAND_6(
-		SpriteTextRenderFeature_flushInternal, manager,
-		InternalSpriteTextRender*, m_internal,
-        IGraphicsContext*, c,
-		RenderBulkData, dataListData,
-		int, dataCount,
-		Ref<ITexture>, glyphsTexture,
-		InternalSpriteTextRender::BrushData, brushData,
-		{
-			m_internal->render(
-				c,
-				(InternalSpriteTextRender::GlyphData*)dataListData.data(),
-				dataCount,
-				glyphsTexture,
-				brushData);
-		});
-
-    m_drawingFontGlyphCache->onFlush();
-	m_glyphLayoutDataList.clear();
-	m_drawingFont = nullptr;
-	m_drawingFontGlyphCache = nullptr;
 }
 
 } // namespace detail

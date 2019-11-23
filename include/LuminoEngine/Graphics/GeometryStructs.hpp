@@ -130,8 +130,10 @@ public:
     }
 
 public:
+    Size& operator+=(const Size& v) noexcept { width += v.width; height += v.height; return *this; }
     bool operator==(const Size& obj) const { return (width == obj.width && height == obj.height); }
     bool operator!=(const Size& obj) const { return !operator==(obj); }
+    operator const Vector2&() const { return *reinterpret_cast<const Vector2*>(this); }
 };
 
 /** 2次元の矩形を表すクラスです。*/
@@ -290,6 +292,8 @@ public:
     /** 指定した厚さだけ、この矩形から縮小した矩形を作成します。 */
     Rect makeDeflate(const Thickness& thickness) const;
 
+    void serialize(Archive& ar);
+
 public:
     bool operator==(const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
     bool operator!=(const Rect& obj) const { return !operator==(obj); }
@@ -351,6 +355,7 @@ public:
 
     float width() const { return left + right; }
     float height() const { return top + bottom; }
+	Size size() const { return Size(width(), height()); }
 
 public:
     bool operator==(const Thickness& rhs) const { return (left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom); }
@@ -498,6 +503,7 @@ public:
     void clip(const RectI& rect) { detail::GeometryStructsHelper::clip(this, rect); }
 
     static RectI fromFloatRect(const Rect& rect) { return RectI((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height); }
+    Rect toFloatRect() const { return Rect((float)x, (float)y, (float)width, (float)height); }
 
     bool operator==(const RectI& right) const { return (x == right.x && y == right.y && width == right.width && height == right.height); }
     bool operator!=(const RectI& right) const { return !operator==(right); }

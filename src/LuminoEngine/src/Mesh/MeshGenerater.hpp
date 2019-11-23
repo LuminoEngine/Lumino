@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../../../LuminoCore/src/Base/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 
 namespace ln {
@@ -151,6 +151,119 @@ public:
         size = other->size;
     }
     LN_MESHGENERATOR_CLONE_IMPLEMENT(PlaneMeshGenerater);
+};
+
+enum class PlaneMeshDirection
+{
+	XPlus,			/**< X+ 方向 (右向き) */
+	YPlus,			/**< Y+ 方向 (上向き) */
+	ZPlus,			/**< Z+ 方向 (奥向き) */
+	XMinus,			/**< X- 方向 (左向き) */
+	YMinus,			/**< Y- 方向 (下向き) */
+	ZMinus,			/**< Z- 方向 (手前向き) */
+};
+
+class PlaneMeshGenerater2
+	: public MeshGenerater
+{
+public:
+	Vector2	size;
+	int sliceH;
+	int sliceV;
+	PlaneMeshDirection direction = PlaneMeshDirection::YPlus;
+
+	virtual int vertexCount() const override { return (sliceH + 1) * (sliceV + 1); }
+	virtual int indexCount() const override { return (sliceH * sliceV * 2) * 3; }
+	virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
+	virtual void onGenerate(MeshGeneraterBuffer* buf) override
+	{
+		Vector2 minPos = -size / 2;
+		Vector2 maxPos = size / 2;
+
+		float minX = -size.x / 2;
+		float maxX = size.x / 2;
+		float minZ = -size.y / 2;
+		float maxZ = size.y / 2;
+		float stepX = (maxPos.x - minPos.x) / sliceH;
+		float stepZ = (maxPos.y - minPos.y) / sliceV;
+		float StepU = 1.0f / sliceH;
+		float StepV = 1.0f / sliceV;
+
+		// vertices
+		Vector3 pos;
+		int iV = 0;
+		for (int iZ = 0; iZ < sliceV + 1; ++iZ)
+		{
+			for (int iX = 0; iX < sliceH + 1; ++iX)
+			{
+				float h, v;
+				if (iX == sliceH)
+					h = maxX;	// Set directly to floating point error
+				else
+					h = minX + stepX * iX;
+
+				if (iZ == sliceV)
+					v = minZ;	// Set directly to floating point error
+				else
+					v = maxZ - stepZ * iZ;
+
+				switch (direction)
+				{
+				case ln::detail::PlaneMeshDirection::XPlus:
+					LN_NOTIMPLEMENTED();
+					break;
+				case ln::detail::PlaneMeshDirection::YPlus:
+					pos.set(h, 0.0f, v);
+					break;
+				case ln::detail::PlaneMeshDirection::ZPlus:
+					LN_NOTIMPLEMENTED();
+					break;
+				case ln::detail::PlaneMeshDirection::XMinus:
+					LN_NOTIMPLEMENTED();
+					break;
+				case ln::detail::PlaneMeshDirection::YMinus:
+					LN_NOTIMPLEMENTED();
+					break;
+				case ln::detail::PlaneMeshDirection::ZMinus:
+					pos.set(h, v, 0);
+					break;
+				default:
+					break;
+				}
+
+				buf->setV(iV, pos, Vector2(StepU * iX, 1.0f - StepV * iZ), Vector3(0.0f, 1.0f, 0.0f));
+				iV++;
+			}
+		}
+
+		// indices
+		int iI = 0;
+		for (int iV = 0; iV < sliceV; ++iV)
+		{
+			for (int iH = 0; iH < sliceH; ++iH)
+			{
+				int p1 = (iH + 0) + (iV + 0) * (sliceH + 1);	// ┏
+				int p2 = (iH + 1) + (iV + 0) * (sliceH + 1);	// ┓
+				int p3 = (iH + 0) + (iV + 1) * (sliceH + 1);	// ┗
+				int p4 = (iH + 1) + (iV + 1) * (sliceH + 1);	// ┛
+				buf->setI(iI + 0, p1);
+				buf->setI(iI + 1, p2);
+				buf->setI(iI + 2, p3);
+				buf->setI(iI + 3, p3);
+				buf->setI(iI + 4, p2);
+				buf->setI(iI + 5, p4);
+				iI += 6;
+			}
+		}
+	}
+	void copyFrom(const PlaneMeshGenerater2* other)
+	{
+		MeshGenerater::copyFrom(other);
+		size = other->size;
+		sliceH = other->sliceH;
+		sliceV = other->sliceV;
+	}
+	LN_MESHGENERATOR_CLONE_IMPLEMENT(PlaneMeshGenerater2);
 };
 
 class RegularSphereMeshFactory

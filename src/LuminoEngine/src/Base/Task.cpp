@@ -48,6 +48,7 @@ Task::~Task()
 
 void Task::start()
 {
+	assert(0);	// TODO: ConditionEvent::lock の意味を逆にした。動作チェック
 	LN_SAFE_DELETE(m_exception);
 	m_waiting.lock();
 	TaskScheduler::getDefault()->queueTask(this);
@@ -58,14 +59,24 @@ void Task::wait()
 	m_waiting.wait();
 }
 
-Task* Task::awaitThen(const std::function<void()>& action, Dispatcher* dispatcher)
-{
-    NextTask n;
-    n.task = create(action);
-    n.scheduler = nullptr;
-    n.dispatcher = (dispatcher) ? dispatcher : Dispatcher::mainThread();
-    return n.task;
-}
+//Task* Task::then(const std::function<void()>& action, Dispatcher* dispatcher)
+//{
+//    NextTask n;
+//    n.task = create(action);
+//    n.scheduler = nullptr;
+//    n.dispatcher = (dispatcher) ? dispatcher : Dispatcher::mainThread();
+//	m_nextTasks.push_back(n);
+//    return n.task;
+//}
+
+//Task* Task::awaitThen(const std::function<void()>& action, Dispatcher* dispatcher)
+//{
+//    NextTask n;
+//    n.task = create(action);
+//    n.scheduler = nullptr;
+//    n.dispatcher = (dispatcher) ? dispatcher : Dispatcher::mainThread();
+//    return n.task;
+//}
 
 TaskStatus Task::status() const
 {

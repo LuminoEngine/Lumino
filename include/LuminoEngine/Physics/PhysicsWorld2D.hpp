@@ -12,9 +12,11 @@
 class b2Shape;
 class b2PolygonShape;
 class b2ChainShape;
+class b2EdgeShape;
 class b2Body;
 class b2Fixture;
 class b2World;
+class b2FixtureDef;
 
 namespace ln {
 class RenderingContext;
@@ -46,7 +48,8 @@ public:
 	float rotation() const { return m_rotation; }
 
 public:	// TODO: internal
-	virtual b2Shape* resolveBox2DShape() = 0;
+	//virtual b2Shape* resolveBox2DShape() = 0;
+	virtual void resolveBox2DShape(b2Body* targetBody, const b2FixtureDef& baseFixtureDef, float mass) = 0;
 
 LN_CONSTRUCT_ACCESS:
 	CollisionShape2D();
@@ -85,7 +88,7 @@ public:
 	const Size& size() const { return m_size; }
 
 protected:
-	virtual b2Shape* resolveBox2DShape() override;
+	virtual void resolveBox2DShape(b2Body* targetBody, const b2FixtureDef& baseFixtureDef, float mass) override;
 
 LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape2D();
@@ -119,7 +122,7 @@ public:
     bool setLoopEnabled(bool value);
 
 protected:
-    virtual b2Shape* resolveBox2DShape() override;
+	virtual void resolveBox2DShape(b2Body* targetBody, const b2FixtureDef& baseFixtureDef, float mass) override;
 
 LN_CONSTRUCT_ACCESS:
     EdgeCollisionShape2D();
@@ -130,6 +133,26 @@ private:
     std::unique_ptr<b2ChainShape> m_shape;
     std::vector<Vector2> m_points;
     bool m_loopEnabled;
+};
+
+// 独立した Line のリスト。Strip ではない。主にメモリ効率のための使用する
+class EdgeListCollisionShape2D
+	: public CollisionShape2D
+{
+public:
+	void addLine(const Vector2& p1, const Vector2& p2);
+
+protected:
+	virtual void resolveBox2DShape(b2Body* targetBody, const b2FixtureDef& baseFixtureDef, float mass) override;
+
+LN_CONSTRUCT_ACCESS:
+	EdgeListCollisionShape2D();
+	virtual ~EdgeListCollisionShape2D() = default;
+	void init();
+
+private:
+	std::vector<std::unique_ptr<b2EdgeShape>> m_shapes;
+	std::vector<std::pair<Vector2, Vector2>> m_points;
 };
 
 
@@ -272,7 +295,7 @@ private:
     };
 
     b2Body* m_body;
-    std::vector<b2Fixture*> m_fixtures;
+    //std::vector<b2Fixture*> m_fixtures;
     std::vector<Ref<CollisionShape2D>> m_shapes;
     uint32_t m_group;
 	uint32_t m_groupMask;
@@ -394,7 +417,7 @@ private:
     };
 
 	b2Body* m_body;
-	std::vector<b2Fixture*> m_fixtures;
+	//std::vector<b2Fixture*> m_fixtures;
 	std::vector<Ref<CollisionShape2D>> m_shapes;
 	Vector2 m_position;
 	float m_rotation;
@@ -407,6 +430,8 @@ private:
 	bool m_kinematic;
     bool m_fixedRotation;
     std::vector<ApplyCommand> m_applyCommands;  // TODO: linerallocator にしたい
+
+    bool m_modifyVelocityInSim = false; // TODO: test
 };
 
 struct RaycastResult2D

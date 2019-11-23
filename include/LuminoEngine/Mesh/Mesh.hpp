@@ -69,6 +69,9 @@ public:
 
     MeshContainer* ownerContainer() const { return m_ownerContainer; }
 
+    // TODO: タイミング
+    void setGraphicsResourceUsage(GraphicsResourceUsage value) { m_usage = value; }
+
 	// TODO: internal
 	void commitRenderData(int sectionIndex, MeshSection* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
 	const List<MeshSection>& sections() const { return m_sections; }
@@ -91,7 +94,7 @@ LN_CONSTRUCT_ACCESS:
 	/** MeshResource を作成します。 */
 	void init();
 
-private:
+public: // TODO: 
 	enum VertexBufferGroup
 	{
 		VBG_Basic = 0,
@@ -120,7 +123,6 @@ private:
 	std::array<Ref<VertexBuffer>, VBG_Count> m_vertexBuffers;
 	Ref<IndexBuffer> m_indexBuffer;
 	List<MeshSection> m_sections;
-	//List<Ref<AbstractMaterial>> m_materials;
 
 	friend class MeshContainer;
 };
@@ -154,8 +156,6 @@ public:
 
 	void calculateBounds();
 
-	StaticMeshModel* meshModel() const { return m_meshModel; }
-
 LN_CONSTRUCT_ACCESS:
 	MeshContainer();
 	virtual ~MeshContainer();
@@ -164,7 +164,6 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-	StaticMeshModel* m_meshModel;
 	ln::String m_name;
 	Box m_boundingBox;
 	List<Ref<MeshResource>> m_lodResources;

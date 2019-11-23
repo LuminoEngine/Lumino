@@ -12,6 +12,9 @@ public:
 
 	void init(RenderingManager* manager);
 
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual RenderPass* renderPass() const;
+
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
 		Shader* requestedShader,
@@ -19,6 +22,7 @@ public:
 
 private:
 	Ref<Shader> m_defaultShader;
+	Ref<RenderPass> m_renderPass;
 };
 
 class UnLigitingSceneRenderer

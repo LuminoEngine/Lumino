@@ -10,6 +10,7 @@ namespace ln
 //class SceneGraph3D;
 //class World2D;
 //class World3D;
+class EngineContext;
 
 namespace detail
 {
@@ -23,11 +24,13 @@ class GraphicsManager;
 class FontManager;
 class MeshManager;
 class RenderingManager;
+class EffectManager;
 class PhysicsManager;
 class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
+class RuntimeManager;
 
 class EngineDomain
 {
@@ -43,11 +46,19 @@ public:
 	static FontManager* fontManager();
 	static MeshManager* meshManager();
 	static RenderingManager* renderingManager();
+    static EffectManager* effectManager();
     static PhysicsManager* physicsManager();
     static AssetManager* assetManager();
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
+	static RuntimeManager* runtimeManager();
+    static EngineContext* engineContext();
+	
+	template<class T>
+	static void registerType() {
+		T::_lnref_registerTypeInfo(engineContext());
+	}
 };
 
 } // namespace detail

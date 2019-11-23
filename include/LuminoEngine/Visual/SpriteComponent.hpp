@@ -11,6 +11,7 @@ class Component;
 class SpriteFrame
 	: public Object
 {
+	LN_OBJECT;
 public:
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) */
 	void setSourceRect(const Rect& value) { m_sourceRect = value; }
@@ -27,6 +28,10 @@ public:
 	/** フレームにアンカーポイントが定義されているかどうかを確認します。 */
 	bool hasAnchorPoint() const { return Math::isNaN(m_anchorPoint.x) || Math::isNaN(m_anchorPoint.y); }
 
+protected:
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
+
 LN_CONSTRUCT_ACCESS:
 	SpriteFrame();
 	virtual ~SpriteFrame() = default;
@@ -38,13 +43,14 @@ private:
 	//Ref<Texture> m_texture;	// TODO
 };
 
-
+// TODO: Effect でも使う。Material はこっちに持たせた方がいいかも
 class SpriteFrameSet
 	: public Object
 {
 	// テクスチャの優先順位は SpriteComponent > SpriteFrameSet > SpriteFrame
 	// 例えば SpriteFrameSet はメモリ削減のため共有しつつ、テクスチャだけ変えたい場合、
 	// 複数の SpriteComponent には同じ SpriteFrameSet をセットし、SpriteComponent::setTexture で異なるテクスチャをセットする。
+	LN_OBJECT;
 public:
 	// frames, animation
 
@@ -57,6 +63,10 @@ public: // TODO: internal
 	int frameCount() const { return m_frames->size(); }
 	SpriteFrame* frame(int index) const;
 
+protected:
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
+
 LN_CONSTRUCT_ACCESS:
 	SpriteFrameSet();
 	virtual ~SpriteFrameSet() = default;
@@ -64,11 +74,18 @@ LN_CONSTRUCT_ACCESS:
 	void init(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint = Vector2::NaN);
 
 private:
+    void clear();
+    void splitFrames();
+
+    int m_frameWidth;
+    int m_frameHeight;
+    Vector2 m_anchorPoint;
 	Ref<Texture> m_texture;
 	Ref<List<Ref<SpriteFrame>>> m_frames;
 };
 
 
+LN_CLASS()
 class SpriteComponent
 	: public VisualComponent
 {
@@ -118,6 +135,8 @@ public:
     /** 表示するテクスチャを垂直に反転するかどうかを確認します。 */
     bool isFlippedY() const { return m_flipFlags.hasFlag(detail::SpriteFlipFlags::FlipY); }
 
+    void setPixelsParUnit(float value) { m_pixelsParUnit = value; }
+
 	// TODO: internal
 	static void registerType(EngineContext* context);
 
@@ -139,6 +158,7 @@ private:
 	Ref<SpriteFrameSet> m_frameSet;
 	int m_frameIndex;
     Flags<detail::SpriteFlipFlags> m_flipFlags;
+    float m_pixelsParUnit;
 };
 
 } // namespace ln

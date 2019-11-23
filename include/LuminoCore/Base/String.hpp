@@ -233,6 +233,15 @@ public:
     String replace(const StringRef& from, const StringRef& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
     /**
+     * 指定したインデックス位置に文字列を挿入します。
+     *
+     * @param[in]   startIndex : インデックス位置
+     * @param[in]   value      : 挿入する文字列
+     * @return     挿入結果の文字列
+     */
+    String insert(int startIndex, const StringRef& value) const;
+
+    /**
      * 文字列をデリミタで分割します。
      * 
      * @param[in]   delim   : デリミタ文字列
@@ -951,6 +960,6 @@ struct hash<ln::String>
 {
     std::size_t operator()(const ln::String& key) const;
 };
-}
+} // namespace std
 
 #include "StringFormat.inl"

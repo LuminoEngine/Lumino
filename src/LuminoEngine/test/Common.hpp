@@ -19,3 +19,5 @@ class LuminoSceneTest : public ::testing::Test
         //Engine:()->removeAllObjects();
     }
 };
+
+#define LN_NEW_GRAPHICS_MIGRATION

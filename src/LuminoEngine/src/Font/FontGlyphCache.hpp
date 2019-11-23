@@ -12,6 +12,19 @@ struct CacheGlyphInfo
 	RectI	srcRect;
 };
 
+struct FontGlyphTextureCacheRequestItem
+{
+	uint32_t codePoint;	// input
+	CacheGlyphInfo info;
+};
+
+struct FontGlyphTextureCacheRequest
+{
+	std::vector<FontGlyphTextureCacheRequestItem> glyphs;
+	Texture2D* texture;
+};
+
+
 // このクラスは、1つのテクスチャにできる限りグリフを詰め込むために使用する。
 // たくさん文字を書くときでも、テクスチャの切り替えが無ければ1度のドローコールで全て書くことができる。
 class FontGlyphTextureCache
@@ -20,6 +33,9 @@ class FontGlyphTextureCache
 public:
 	FontGlyphTextureCache();
 	bool init(FontCore* font);
+
+	void clearIndex();
+	bool requestGlyphs(FontGlyphTextureCacheRequest* request);
 
 	// まずメインスレッドでこの関数でキャッシュを検索する。
 	// GlyphsFillTexture にビットマップ転送を行い、その結果の領域を返す。

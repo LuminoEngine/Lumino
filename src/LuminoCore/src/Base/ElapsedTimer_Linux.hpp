@@ -34,6 +34,7 @@ static void _getTime(uint64_t* sec, uint64_t* nsec)
 ElapsedTimer::ElapsedTimer() LN_NOEXCEPT
 	: m_value1(0)
 	, m_value2(0)
+	, m_tag(nullptr)
 {
 	start();
 }

@@ -7,6 +7,7 @@
 #include "SpriteTextRenderFeature.hpp"
 #include "FrameRectRenderFeature.hpp"
 #include "ShapesRenderFeature.hpp"
+#include "ExtensionRenderFeature.hpp"
 
 namespace ln {
 class RenderViewPoint;
@@ -44,6 +45,7 @@ public:
 	void setCullingMode(const Optional<CullMode>& value);
 	void setDepthTestEnabled(const Optional<bool>& value);
 	void setDepthWriteEnabled(const Optional<bool>& value);
+	void setPrimitiveTopology(PrimitiveTopology value);
 
 	void setShadingModel(const Optional<ShadingModel>& value);
 	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
@@ -68,11 +70,13 @@ public:
 
     BlitRenderFeatureStageParameters* blitRenderFeatureStageParameters() { return &m_blitRenderFeatureStageParameters; }
 	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
+	SpriteRenderFeatureStageParameters2* spriteRenderFeatureStageParameters2() { return &m_spriteRenderFeatureStageParameters2; }
 	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
-    PrimitiveRenderFeatureStageParameters* primitiveRenderFeatureStageParameters() { return &m_primitiveRenderFeatureStageParameters; }
+	MeshGeneraterRenderFeatureStageParameters* meshGeneraterRenderFeatureStageParameters() { return &m_meshGeneraterRenderFeatureStageParameters; }
 	SpriteTextRenderFeatureStageParameters* spriteTextRenderFeatureStageParameters() { return &m_spriteTextRenderFeatureStageParameters; }
 	FrameRectRenderFeatureStageParameters* frameRectRenderFeatureStageParameters() { return &m_frameRectRenderFeatureStageParameters; }
 	ShapesRenderFeatureStageParameters* shapesRenderFeatureStageParameters() { return &m_shapesRenderFeatureStageParameters; }
+    ExtensionRenderFeatureStageParameters* extensionRenderFeatureStageParameters() { return &m_extensionRenderFeatureStageParameters; }
 
 	template<class TElement>
 	TElement* addNewDrawElement(
@@ -139,11 +143,13 @@ private:
 	// (もしフレームワークに沿った流れでなくても大丈夫ならグローバル変数とかで受け取ったりしても大丈夫)
     BlitRenderFeatureStageParameters m_blitRenderFeatureStageParameters;
 	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
+	SpriteRenderFeatureStageParameters2 m_spriteRenderFeatureStageParameters2;
 	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
-    PrimitiveRenderFeatureStageParameters m_primitiveRenderFeatureStageParameters;
+	MeshGeneraterRenderFeatureStageParameters m_meshGeneraterRenderFeatureStageParameters;
 	SpriteTextRenderFeatureStageParameters m_spriteTextRenderFeatureStageParameters;
 	FrameRectRenderFeatureStageParameters m_frameRectRenderFeatureStageParameters;
 	ShapesRenderFeatureStageParameters m_shapesRenderFeatureStageParameters;
+    ExtensionRenderFeatureStageParameters m_extensionRenderFeatureStageParameters;
 
     Ref<AbstractMaterial> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;

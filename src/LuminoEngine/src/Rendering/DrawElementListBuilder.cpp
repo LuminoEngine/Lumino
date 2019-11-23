@@ -12,7 +12,7 @@ namespace detail {
 DrawElementListBuilder::DrawElementListBuilder()
     : m_currentCommandFence(0)
 {
-    m_defaultMaterial = newObject<Material>();
+    m_defaultMaterial = makeObject<Material>();
 }
 
 DrawElementListBuilder::~DrawElementListBuilder()
@@ -120,6 +120,14 @@ void DrawElementListBuilder::setDepthWriteEnabled(const Optional<bool>& value)
 	if (primaryGeometryStageParameters().m_depthWriteEnabled != value) {
 		primaryGeometryStageParameters().m_depthWriteEnabled = value;
 		m_modified = true;
+	}
+}
+
+void DrawElementListBuilder::setPrimitiveTopology(PrimitiveTopology value)
+{
+	if (primaryGeometryStageParameters().primitiveTopology != value) {
+		primaryGeometryStageParameters().primitiveTopology = value;
+		m_modified = true;	// TODO: 最後に確定したもの (m_targetList->lastState() ) との差で付けたい
 	}
 }
 

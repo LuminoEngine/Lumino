@@ -74,8 +74,8 @@ private:
     int32_t retain();
     int32_t release();
 
-    std::atomic<int32_t> m_referenceCount;
-    std::atomic<int32_t> m_internalReferenceCount;
+    mutable std::atomic<int32_t> m_referenceCount;
+	mutable std::atomic<int32_t> m_internalReferenceCount;
     uint32_t m_ojectFlags;
 
     friend bool valid(const RefObject* obj);

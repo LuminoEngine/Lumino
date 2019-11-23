@@ -4,6 +4,7 @@
 #include "../Rendering/RenderView.hpp"
 
 namespace ln {
+class Material;
 class World;
 class Camera;
 class RenderingContext;
@@ -12,6 +13,10 @@ namespace detail {
 class SceneRenderingPipeline;
 }
 
+/**
+ *
+ * ClearMode のデフォルトは ColorAndDepth です。
+ */
 class WorldRenderView
 	: public RenderView
 {
@@ -19,10 +24,14 @@ public:
     void setTargetWorld(World* world);
 	void setCamera(Camera* camera);
 
+	void setDebugGridEnabled(bool value) { m_visibleGridPlane = value; }
+	bool debugGridEnabled() const { return m_visibleGridPlane; }
+
     void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
+	bool physicsDebugDrawEnabled() const { return m_physicsDebugDrawEnabled; }
 
     // TODO: internal
-    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) override;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 
 protected:
     //virtual void onRoutedEvent(UIEventArgs* e) override;
@@ -42,6 +51,8 @@ private:
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
     Ref<RenderViewPoint> m_viewPoint;
+    Ref<Material> m_clearMaterial;
+	Ref<StaticMeshModel> m_skyProjectionPlane;
 
     Ref<StaticMeshModel> m_gridPlane;
     bool m_visibleGridPlane;

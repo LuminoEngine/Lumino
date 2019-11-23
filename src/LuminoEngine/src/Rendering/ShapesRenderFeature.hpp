@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "RenderStage.hpp"
 #include "RenderingManager.hpp"
@@ -77,7 +78,7 @@ public:
 	enum CommandType
 	{
 		Cmd_DrawBoxBackground,
-		Cmd_DrawBoxBorder,
+		//Cmd_DrawBoxBorder,
 		Cmd_DrawBoxBorderLine,
 		Cmd_DrawBoxShadow,
 	};
@@ -96,21 +97,21 @@ public:
 		Color color;
 	};
 
-	struct DrawBoxBorderCommand : public ListNode
-	{
-		Rect rect;
-		Thickness thickness;
-		CornerRadius cornerRadius;
-		Color leftColor;
-		Color topColor;
-		Color rightColor;
-		Color bottomColor;
-		Color shadowColor;
-		float shadowBlur;
-		float shadowWidth;
-		bool shadowInset;
-		bool borderInset;
-	};
+	//struct DrawBoxBorderCommand : public ListNode
+	//{
+	//	Rect rect;
+	//	Thickness thickness;
+	//	CornerRadius cornerRadius;
+	//	Color leftColor;
+	//	Color topColor;
+	//	Color rightColor;
+	//	Color bottomColor;
+	//	Color shadowColor;
+	//	float shadowBlur;
+	//	float shadowWidth;
+	//	bool shadowInset;
+	//	bool borderInset;
+	//};
 	
 	struct DrawBoxBorderLineCommand : public ListNode
 	{
@@ -126,34 +127,57 @@ public:
 
 	struct DrawBoxShadowCommand : public ListNode
 	{
-		const Rect& rect;
-		const CornerRadius& cornerRadius;
-		const Color& color;
-		float blur;
-		float width;
+		Rect rect;
+		CornerRadius cornerRadius;
+		Vector2 offset;
+		Color color;
+		float blur;		// ↓の次に、太らせた外周から、外側と内側へこの値の分だけぼかしをかける
+		float width;	// まずはこの値まで Shape を太らせる
 		bool inset;
 	};
 
 	void addDrawBoxBackground(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Color& color);
-	//void addDrawBoxBorder(LinearAllocator* allocator, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
-	//void drawBoxBorderLine(LinearAllocator* allocator, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
-	//void addDrawBoxShadow(LinearAllocator* allocator, const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
+	//void addDrawBoxBorder(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
+	void drawBoxBorderLine(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
+	void addDrawBoxShadow(LinearAllocator* allocator, const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset);
 
 	ListNode* head = nullptr;
 	ListNode* tail = nullptr;
+
+private:
+	void addCommandNode(ListNode* cmd, CommandType type, const Matrix& transform);
 };
 
-class InternalShapesRenderer
-    : public RefObject
+
+class ShapesRenderFeature
+	: public RenderFeature
 {
 public:
-	InternalShapesRenderer();
+	ShapesRenderFeature();
     void init(RenderingManager* manager);
 	RenderingManager* manager() const { return m_manager; }
 
-	void renderCommandList(IGraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
+	RequestBatchResult requestDrawCommandList(GraphicsContext* context, ShapesRendererCommandList* commandList/*, detail::BrushRawData* fillBrush*/);
+
+protected:
+	virtual void beginRendering() override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
+	struct BatchData
+	{
+		int indexOffset;
+		int indexCount;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
 	enum class PathType
 	{
 		Convex,
@@ -184,6 +208,9 @@ private:
 		const Matrix*	transform;	// 実行中のコマンド構造体に乗っている transform への参照
 	};
 
+
+	// ベースラインの上下左右、計4つセットの基本要素。
+	// Border は上下左右で個別に Color を設定できるが、その単位となる。
 	struct BorderComponent
 	{
 		int	firstPoint;
@@ -205,8 +232,7 @@ private:
 		float	alpha;
 	};
 
-	//void releaseCommandList(ShapesRendererCommandList* commandList);
-	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	//void prepareBuffers(GraphicsContext* context, int triangleCount);
 	Path* addPath(PathType type, const Matrix* transform, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void endPath(Path* path);
 	void extractBasePoints(ShapesRendererCommandList* commandList);
@@ -223,8 +249,16 @@ private:
 	Vector2 getAAExtDir(const BasePoint& pt) const { return (pt.enabledAA) ? pt.exDir : Vector2::Zero; }
 
 	RenderingManager* m_manager;
-	Ref<IVertexBuffer>		m_vertexBuffer;
-	Ref<IIndexBuffer>		m_indexBuffer;
+
+	Ref<VertexLayout> m_vertexLayout;
+	Ref<VertexBuffer> m_vertexBuffer;
+	Ref<IndexBuffer> m_indexBuffer;
+	size_t m_vertexUsedCount = 0;
+	size_t m_indexUsedCount = 0;
+	//int m_buffersReservedTriangleCount = 0;
+	BatchData m_batchData;
+
+
 	CacheBuffer<BasePoint>		m_basePoints;
 	CacheBuffer<OutlinePoint>	m_outlinePoints;
 	List<Path>					m_pathes;
@@ -258,41 +292,36 @@ public:
 private:
 };
 
-class ShapesRenderFeature
-	: public RenderFeature
-{
-public:
-	ShapesRenderFeature();
-	void init(RenderingManager* manager);
-
-    void renderCommandList(GraphicsContext* context, const ShapesRendererCommandList& commandList);
-
-protected:
-	virtual void flush(GraphicsContext* context) override;
-    virtual bool drawElementTransformNegate() const override { return true; }
-
-private:
-	Ref<InternalShapesRenderer> m_internal;
-};
+//class ShapesRenderFeature
+//	: public RenderFeature
+//{
+//public:
+//	ShapesRenderFeature();
+//	void init(RenderingManager* manager);
+//
+//    void renderCommandList(GraphicsContext* context, const ShapesRendererCommandList& commandList);
+//
+//protected:
+//	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+//	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+//    virtual bool drawElementTransformNegate() const override { return true; }
+//
+//private:
+//	Ref<InternalShapesRenderer> m_internal;
+//};
 
 class DrawShapesElement : public RenderDrawElement
 {
 public:
 	ShapesRendererCommandList commandList;
 
-    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo) override
-    {
-		m_srcTextureSize.width = subsetInfo->materialTexture->width();
-		m_srcTextureSize.height = subsetInfo->materialTexture->height();
-    }
-
-    virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-    {
-		static_cast<detail::ShapesRenderFeature*>(renderFeatures)->renderCommandList(context, commandList);
+	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+	{
+		return static_cast<detail::ShapesRenderFeature*>(renderFeature)->requestDrawCommandList(context, &commandList);
     }
 
 private:
-    SizeI m_srcTextureSize;
+    //SizeI m_srcTextureSize;
 };
 
 } // namespace detail

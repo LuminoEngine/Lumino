@@ -617,6 +617,15 @@ TEST_F(Test_Base_String, replace)
 	}
 }
 
+TEST_F(Test_Base_String, insert)
+{
+    ASSERT_EQ(u"123abc", String(u"abc").insert(0, u"123"));
+    ASSERT_EQ(u"a123bc", String(u"abc").insert(1, u"123"));
+    ASSERT_EQ(u"ab123c", String(u"abc").insert(2, u"123"));
+    ASSERT_EQ(u"abc123", String(u"abc").insert(3, u"123"));
+    ASSERT_EQ(u"123", String(u"").insert(0, u"123"));
+}
+
 TEST_F(Test_Base_String, compare)
 {
 	int a1 = strcmp("abc", "abcd");

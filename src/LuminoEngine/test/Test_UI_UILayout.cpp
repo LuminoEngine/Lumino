@@ -8,36 +8,49 @@ class Test_UI_UILayout : public LuminoSceneTest {};
 //## Basic
 TEST_F(Test_UI_UILayout, Basic)
 {
-	//- [ ] Default
-	{
-		auto e1 = newObject<UIElement>();
-		e1->setBackgroundColor(Color::Red);
-		e1->setWidth(80);
-		e1->setHeight(60);
+	////- [ ] Default
+	//{
+	//	auto e1 = makeObject<UIElement>();
+	//	e1->setHorizontalAlignment(HAlignment::Left);
+	//	e1->setVerticalAlignment(VAlignment::Top);
+	//	e1->setBackgroundColor(Color::Red);
+	//	e1->setWidth(80);
+	//	e1->setHeight(60);
+	//	Engine::mainUIView()->addElement(e1);
 
-		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-1.png"));
-		LN_TEST_CLEAN_SCENE;
-	}
+	//	TestEnv::updateFrame();
+	//	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-1.png"));
+	//	LN_TEST_CLEAN_SCENE;
+	//}
 
 	{
-        auto parent1 = newObject<UIContainerElement>();
+        auto parent1 = makeObject<UIContainerElement>();
         parent1->setBackgroundColor(Color::Red);
         parent1->setWidth(80);
         parent1->setHeight(60);
-        parent1->setLayoutPanel(UIStackLayout::create());
+		parent1->setHorizontalAlignment(HAlignment::Left);
+		parent1->setVerticalAlignment(VAlignment::Top);
+        //parent1->setLayoutPanel(UIStackLayout::create());
+		Engine::mainUIView()->addElement(parent1);
+
+        auto layout1 = makeObject<UIStackLayout2>();
+        parent1->addElement(layout1);
         
-        auto child1 = newObject<UIElement>();
+        auto child1 = makeObject<UIElement>();
         child1->setWidth(32);
         child1->setHeight(16);
+		child1->setHorizontalAlignment(HAlignment::Left);
         child1->setBackgroundColor(Color::Green);
-        parent1->addElement(child1);
+		//Engine::mainUIView()->addElement(child1);
+        layout1->addChild(child1);
 
-        auto child2 = newObject<UIElement>();
+        auto child2 = makeObject<UIElement>();
         child2->setWidth(32);
         child2->setHeight(16);
+        child2->setHorizontalAlignment(HAlignment::Left);
         child2->setBackgroundColor(Color::Blue);
-        parent1->addElement(child2);
+		//Engine::mainUIView()->addElement(child2);
+        layout1->addChild(child2);
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-2.png"));
@@ -51,11 +64,14 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 {
 	//- [ ] position
 	{
-		auto e1 = newObject<UIElement>();
+		auto e1 = makeObject<UIElement>();
+		e1->setHorizontalAlignment(HAlignment::Left);
+		e1->setVerticalAlignment(VAlignment::Top);
 		e1->setBackgroundColor(Color::Red);
 		e1->setWidth(80);
 		e1->setHeight(60);
 		e1->setPosition(10, 20);
+		Engine::mainUIView()->addElement(e1);
 
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-RenderTransform-1.png"));
@@ -67,70 +83,79 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 //## BorderLayout
 TEST_F(Test_UI_UILayout, BorderLayout)
 {
-    auto owner1 = Engine::mainUIRoot();
+    auto owner1 = Engine::mainUIView();
 
-    auto e11 = newObject<UIElement>();
+    auto e11 = makeObject<UIElement>();
     e11->setBackgroundColor(Color::Red);
     e11->setWidth(20);
     e11->setHeight(20);
     e11->setHorizontalAlignment(HAlignment::Left);
     e11->setVerticalAlignment(VAlignment::Top);
+	Engine::mainUIView()->addElement(e11);
 
-    auto e12 = newObject<UIElement>();
+    auto e12 = makeObject<UIElement>();
     e12->setBackgroundColor(Color::Green);
     e12->setWidth(20);
     e12->setHeight(20);
     e12->setHorizontalAlignment(HAlignment::Center);
     e12->setVerticalAlignment(VAlignment::Top);
+	Engine::mainUIView()->addElement(e12);
 
-    auto e13 = newObject<UIElement>();
+    auto e13 = makeObject<UIElement>();
     e13->setBackgroundColor(Color::Blue);
     e13->setWidth(20);
     e13->setHeight(20);
     e13->setHorizontalAlignment(HAlignment::Right);
     e13->setVerticalAlignment(VAlignment::Top);
+	Engine::mainUIView()->addElement(e13);
 
-    auto e21 = newObject<UIElement>();
+    auto e21 = makeObject<UIElement>();
     e21->setBackgroundColor(Color::Red);
     e21->setWidth(20);
     e21->setHeight(20);
     e21->setHorizontalAlignment(HAlignment::Left);
     e21->setVerticalAlignment(VAlignment::Center);
+	Engine::mainUIView()->addElement(e21);
 
-    auto e22 = newObject<UIElement>();
+    auto e22 = makeObject<UIElement>();
     e22->setBackgroundColor(Color::Green);
     e22->setWidth(20);
     e22->setHeight(20);
     e22->setHorizontalAlignment(HAlignment::Center);
     e22->setVerticalAlignment(VAlignment::Center);
+	Engine::mainUIView()->addElement(e22);
 
-    auto e23 = newObject<UIElement>();
+    auto e23 = makeObject<UIElement>();
     e23->setBackgroundColor(Color::Blue);
     e23->setWidth(20);
     e23->setHeight(20);
     e23->setHorizontalAlignment(HAlignment::Right);
     e23->setVerticalAlignment(VAlignment::Center);
+	Engine::mainUIView()->addElement(e23);
 
-    auto e31 = newObject<UIElement>();
+    auto e31 = makeObject<UIElement>();
     e31->setBackgroundColor(Color::Red);
     e31->setWidth(20);
     e31->setHeight(20);
     e31->setHorizontalAlignment(HAlignment::Left);
     e31->setVerticalAlignment(VAlignment::Bottom);
+	Engine::mainUIView()->addElement(e31);
 
-    auto e32 = newObject<UIElement>();
+    auto e32 = makeObject<UIElement>();
     e32->setBackgroundColor(Color::Green);
     e32->setWidth(20);
     e32->setHeight(20);
     e32->setHorizontalAlignment(HAlignment::Center);
     e32->setVerticalAlignment(VAlignment::Bottom);
+	Engine::mainUIView()->addElement(e32);
 
-    auto e33 = newObject<UIElement>();
+    auto e33 = makeObject<UIElement>();
     e33->setBackgroundColor(Color::Blue);
     e33->setWidth(20);
     e33->setHeight(20);
     e33->setHorizontalAlignment(HAlignment::Right);
     e33->setVerticalAlignment(VAlignment::Bottom);
+	Engine::mainUIView()->addElement(e33);
 
 	//- [ ] 8 方向境界と中央への配置
 	{
@@ -155,41 +180,51 @@ TEST_F(Test_UI_UILayout, BorderLayout)
 //## StackLayout
 TEST_F(Test_UI_UILayout, StackLayout)
 {
-	UIContainerElement* uiRoot = Engine::mainUIRoot();
+	UIControl* uiRoot = Engine::mainUIView();
 
-	auto l1 = UIStackLayout::create();
-	uiRoot->setLayoutPanel(l1);
+	auto l1 = UIStackLayout2::create();
+	//uiRoot->setLayoutPanel(l1);
+    Engine::mainUIView()->addElement(l1);
 
-	auto e1 = newObject<UIElement>();
+	auto e1 = makeObject<UIElement>();
 	e1->setBackgroundColor(Color::Red);
 	e1->setWidth(20);
 	e1->setHeight(20);
 	e1->setHorizontalAlignment(HAlignment::Left);
 	e1->setVerticalAlignment(VAlignment::Top);
+	//Engine::mainUIView()->addElement(e1);
+    l1->addChild(e1);
 
-	auto e2 = newObject<UIElement>();
+	auto e2 = makeObject<UIElement>();
 	e2->setBackgroundColor(Color::Green);
 	e2->setWidth(20);
 	e2->setHeight(20);
 	e2->setHorizontalAlignment(HAlignment::Center);
 	e2->setVerticalAlignment(VAlignment::Center);
+	//Engine::mainUIView()->addElement(e2);
+    l1->addChild(e2);
 
-	auto e3 = newObject<UIElement>();
+	auto e3 = makeObject<UIElement>();
 	e3->setBackgroundColor(Color::Blue);
 	e3->setWidth(20);
 	e3->setHeight(20);
 	e3->setHorizontalAlignment(HAlignment::Right);
 	e3->setVerticalAlignment(VAlignment::Bottom);
+	//Engine::mainUIView()->addElement(e3);
+    l1->addChild(e3);
 
 	//- [ ] default (Vertical)
 	{
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-1.png"));
+        Engine::mainUIView()->removeElement(l1);
 	}
 
+#if 0 // TODO:
 	//- [ ] Horizontal
 	{
-		auto layout = UIStackLayout::create();
+
+		auto layout = UIStackLayout2::create();
 		layout->setOrientation(Orientation::Horizontal);
 		uiRoot->setLayoutPanel(layout);
 
@@ -199,17 +234,18 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	//- [ ] ReverseVertical
 	{
-		auto layout = UIStackLayout::create();
+		auto layout = UIStackLayout2::create();
 		layout->setOrientation(Orientation::ReverseVertical);
 		uiRoot->setLayoutPanel(layout);
 
 		TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-3.png"));
+        Engine::mainUIView()->removeElement(layout);
 	}
 
 	//- [ ] ReverseHorizontal
 	{
-		auto layout = UIStackLayout::create();
+		auto layout = UIStackLayout2::create();
 		layout->setOrientation(Orientation::ReverseHorizontal);
 		uiRoot->setLayoutPanel(layout);
 
@@ -218,5 +254,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 	}
 
     uiRoot->setLayoutPanel(nullptr);
+#endif
+
 	LN_TEST_CLEAN_SCENE;
 }

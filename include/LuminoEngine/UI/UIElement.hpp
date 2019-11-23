@@ -2,15 +2,23 @@
 #include "../Graphics/ColorStructs.hpp"
 #include "../Rendering/Drawing.hpp"
 #include "UILayoutElement.hpp"
+#include "UIEvents.hpp"
 
 namespace ln {
+class UILayoutContext;
 class UIRenderingContext;
-class UIRenderView;
+class UIFrameRenderView;
 class UIContext;
 class UIEventArgs;
 class UIStyle;
+class UIStyleClass;
+class UIStyleContext;
+class UIVisualStateManager;
+class UIAction;
 class UIContainerElement;
+class UIControl;
 class UIFrameWindow;
+class UIAdornerLayer;
 enum class BlendMode : uint8_t;
 struct Color;
 struct ColorTone;
@@ -25,19 +33,81 @@ class UIStyleInstance;
 //	float fontSize;
 //	UIFontStyle fontStyle;
 //};
+
+
+
+struct GridLayoutInfo
+{
+    int		layoutRow = -1; // -1 は自動割り当て
+    int		layoutColumn = -1;
+    int		layoutRowSpan = 1;
+    int		layoutColumnSpan = 1;
+
+    float   layoutWeight = 0;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
+};
+
 }
 
-class UILayoutContext
+//class UILayoutContext
+//	: public Object
+//{
+//public:
+//	float m_dpiScaleFactor;
+//};
+
+
+class UIViewModel
 	: public Object
 {
 public:
-	float m_dpiScaleFactor;
+    virtual void notify(const StringRef& propertyName = StringRef());
+    virtual void notify(UINotifyPropertyChangedEventArgs* e);
+
+	void subscribe(UIElement* observer)	// TODO: connection 返すようにした方がいいかも？
+	{
+		m_observers.add(observer);
+	}
+
+    void unsubscribe(UIElement* observer)
+    {
+        m_observers.remove(observer);
+    }
+
+private:
+	List<UIElement*> m_observers;
 };
 
+
+class UILayoutContext
+    : public Object
+{
+public:
+    float dpiScale() const { return m_dpiScale; }
+    
+LN_CONSTRUCT_ACCESS:
+    UILayoutContext();
+    void init();
+
+private:
+    float m_dpiScale;
+    friend class UIFrameWindow;
+};
+
+
+
+LN_CLASS()
 class UIElement
 	: public UILayoutElement
 {
+    LN_OBJECT;
 public:
+    void setWidth(float value);
+    float width() const;
+
+    void setHeight(float value);
+    float height() const;
+
+
     /** 要素の margin 値 (外側の余白) を設定します。 */
     void setMargin(const Thickness& margin);
 
@@ -156,6 +226,18 @@ public:
 
 
 
+	/** 枠線の太さを設定します。 */
+	void setBorderThickness(const Thickness& value);
+
+	/** 枠線の太さを取得します。 */
+	const Thickness& borderThickness() const;
+
+	/** 枠線の色を設定します。 */
+	void setBorderColor(const Color& value);
+
+	/** 枠線の色を取得します。 */
+	const Color& borderColor() const;
+
 
 
 	/** テキストの色を設定します。*/
@@ -191,13 +273,13 @@ public:
 
 
     
-	/** 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true) */
-    LN_METHOD(Property)
-    void setVisible(bool value);
+	/** 可視状態を設定します。(default: UIVisibility::Visible) */
+    //LN_METHOD(Property)
+    void setVisibility(UIVisibility value);
 
 	/** 可視状態を取得します。*/
-    LN_METHOD(Property)
-    bool isVisible() const;
+    //LN_METHOD(Property)
+    UIVisibility isVisibility() const;
 
     /** 合成方法を設定します。(default: BlendMode::Normal) */
     void setBlendMode(const Optional<BlendMode>& value);
@@ -232,7 +314,31 @@ public:
     // TODO: ↑の WorldObject 的なものは、派生クラスの UIVisual 的なクラスにユーティリティとして持っていく。
     // UIElement としては RenderTransform, Style 扱いにしたい。
 
-    UIContext* context() const { return m_context; }
+    UIContext* getContext() const;
+
+    void addClass(const StringRef& className);
+	void setViewModel(UIViewModel* value);
+    virtual void setContent(UIElement* content);
+    virtual void setContent(const String& content);
+	/** Add element to container. */
+	LN_METHOD()
+    void addChild(UIElement* child);
+    void addChild(const String& child);
+
+    void addAction(UIAction* action);
+
+    void invalidateStyle() { invalidate(detail::UIElementDirtyFlags::Style, true); }
+	void invalidateLayout() { invalidate(detail::UIElementDirtyFlags::Layout, true); }
+	void invalidateVisual() { invalidate(detail::UIElementDirtyFlags::Render, true); }
+
+	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
+	void setFocusable(bool value) { m_focusable = value; }
+
+    void setClipToBounds(bool value) { m_clipToBounds = value; }
+    bool clipToBounds() const { return m_clipToBounds; }
+
+	/** ウィンドウを前面にしてアクティブ化することを試みます。 */
+	void activate();
 
     UIElement();
     virtual ~UIElement();
@@ -242,13 +348,29 @@ public: // TODO: internal
     void setRenderPriority(int value);
     void updateFrame(float elapsedSeconds);
     void raiseEvent(UIEventArgs* e);
-    virtual UIElement* lookupMouseHoverElement(const Point& globalPt);
+    void postEvent(UIEventArgs* e);
+    virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 	const Ref<detail::UIStyleInstance>& finalStyle() const { return m_finalStyle; }
 	UIElement* getFrameWindow();
+    UIFrameRenderView* getRenderView();
 
-public:	// TODO: internal
+public:	// TODO: internal protected
+    void focus();
+	void retainCapture();
+	void releaseCapture();
+	void addVisualChild(UIElement* element);
+	void removeVisualChild(UIElement* element);
+
+    virtual const String& elementName() const { return String::Empty; }
+	
+    //virtual void onSetup(); // インスタンス構築直後。VisualTree や Style, Layout は構築されているとは限らない。初回 update 前に this のプロパティを設定するために使う。
+	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel);
+    virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e);
+    virtual void onLoaded();    // インスタンス作成後、UIツリーに追加されていない場合は呼ばれない
     virtual void onUpdateFrame(float elapsedSeconds);
-	virtual void onUpdateStyle(const detail::UIStyleInstance* finalStyle);
+
+    // この中で addVisualChild することができる。関数を抜けた後に、それらのスタイルは更新される。
+	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
 
     /**
         @brief		この要素を表示するために必要なサイズを計測します。
@@ -259,68 +381,126 @@ public:	// TODO: internal
 
 		このメソッドはフレームワークから呼び出されます。直接呼び出しても正しい結果は得られません。
 		このメソッドの実装から子要素の measure を行う場合は measureLayout() を呼び出します。
+
+        複数の子要素を並べてレイアウトしたい場合、サイズの合計を返します。
+        例えば 2 つの UITextBlock を縦に並べる場合は、2つの measureLayout() の結果について、
+        - width は 大きい方を返す
+        - height は 2 つの合計を返す
+
+		constraint に padding と border は含まれていません。
+		通常、padding と border を加算したサイズを返すように実装します。
+		border については、inset または outset の場合分けが必要です。
+
+        Note: レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は NaN や Inf が含まれることがある。
     */
-    virtual Size measureOverride(const Size& constraint);
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 
     /**
         @brief		Visual 子要素の配置を確定し、この要素の最終サイズを返します。
         @param[in]	finalSize	: 親要素がこの要素に対して割り当てた領域のサイズ。
         @return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
         @details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
-                    また、finalSize には padding プロパティの余白は考慮されません。
-                    余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
+                    また、finalSize には padding および border プロパティの余白は考慮されません。
+                    余白を正しく反映するためには派生クラスで padding および border プロパティを参照し、子要素の位置を計算します。
 
                     親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
                     そうでない場合、子要素はレンダリングされません。(UIElement::arrangeOverride() は、子要素の配置は行いません)
     */
-    virtual Size arrangeOverride(const Size& finalSize);
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 
 	/** この要素内の子ビジュアル要素の数を取得します。 */
-	virtual int getVisualChildrenCount() const;
+	//virtual int getVisualChildrenCount() const;
+	// マウスのヒットテスト (Hierarchical)
+	// スタイル更新 (Hierarchical)
+	// フレーム更新 (Hierarchical)
+	// 描画 (Hierarchical)
+	// ※レイアウトは対象外
 
 	/**
 	 * 子ビジュアル要素を取得します。
 	 *
-	 * このメソッドが返した UIElement はレイアウトの対象となります。
 	 * 装側は、奥にある要素が先、手前にある要素が後になるようにZオーダーやアクティブ状態を考慮する必要があります。
 	 */
-	virtual UIElement* getVisualChild(int index) const;
+	//virtual UIElement* getVisualChild(int index) const;
 
 	virtual void onRender(UIRenderingContext* context);
 
     virtual void onRoutedEvent(UIEventArgs* e);
 
-    virtual bool onHitTest(const Point& localPoint);
+    virtual bool onHitTest(const Point& frameClientPosition);
+
+    virtual void onAddChild(UIElement* child);
+
+	//virtual void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+
+    bool isMouseHover() const;
 
     // TODO: internal
-	void updateStyleHierarchical(const detail::UIStyleInstance* parentFinalStyle);
-    void updateFinalLayoutHierarchical(const Rect& parentFinalGlobalRect);
+	void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
+    void updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
     virtual void render(UIRenderingContext* context);
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }
 	Flags<detail::UISpecialElementFlags>& specialElementFlags() { return m_specialElementFlags; }
-    void setLogicalParent(UIContainerElement* parent) { m_logicalParent = parent; }
-    UIContainerElement* logicalParent() const { return m_logicalParent; }
+    void setLogicalParent(UIControl* parent) { m_logicalParent = parent; }
+    UIControl* logicalParent() const { return m_logicalParent; }
     void removeFromLogicalParent();
 
-private:
+
+    UIVisualStateManager* getVisualStateManager();
+
+public: // TODO: internal
     void raiseEventInternal(UIEventArgs* e);
+    virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
+    detail::GridLayoutInfo* getGridLayoutInfo();
+    bool isRenderVisible() const;
+    bool isHitTestVisibleCore() const { return m_isHitTestVisible && isRenderVisible(); }
+
+	void activateInternal();
+	void deactivateInternal();
+	void moveVisualChildToForeground(UIElement* child);
+
+    void handleDetachFromUITree();
 
     detail::UIManager* m_manager;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
-    UIContext* m_context;
+    
+    // TODO: ↓ UIRenderView にまとめてしまっていいかも
+    // TODO: ↓ UILayoutContext や UIStyleContxt 経由でもらう
+    UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
+    UIFrameRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
+    
     UIElement* m_visualParent;
-    UIContainerElement* m_logicalParent;
+    UIControl* m_logicalParent;    // TODO: Layout も親となりえる。
+	Ref<List<Ref<UIElement>>> m_visualChildren;
+	Ref<List<UIElement*>> m_orderdVisualChildren;
+    Ref<List<String>> m_classList;
+    Ref<List<Ref<UIAction>>> m_actions;
+	Ref<UIViewModel> m_viewModel;
+    std::unique_ptr<detail::GridLayoutInfo> m_gridLayoutInfo;
 
-    Ref<UIStyle> m_localStyle;
+    Ref<UIVisualStateManager> m_visualStateManager;
+    Ref<UIStyleClass> m_localStyle;
+	Ref<UIStyle> m_combinedStyle;
 	Ref<detail::UIStyleInstance> m_finalStyle;
+	UIVisibility m_internalVisibility;
     int m_renderPriority;
-    bool m_isHitTestVisible;
+    bool m_isHitTestVisible;	// TODO: flags
+	bool m_focusable;			// TODO: flags
+    bool m_clipToBounds;			// TODO: flags
 
     friend class UIContext;
-    friend class UIRenderView;
+    friend class UIFrameRenderView;
+    friend class UIFrameWindow;
+    friend class UIViewModel;
+
+	int getVisualChildrenCount() const { return (m_visualChildren) ? m_visualChildren->size() : 0; }
+	UIElement* getVisualChild(int index) const { return (m_visualChildren) ? m_visualChildren->at(index) : nullptr; }
+private:
+
+    Flags<detail::UIElementDirtyFlags> m_dirtyFlags;
 };
 
 } // namespace ln

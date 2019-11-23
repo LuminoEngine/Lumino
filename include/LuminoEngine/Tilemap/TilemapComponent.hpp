@@ -5,15 +5,27 @@
 namespace ln {
 class Material;
 class TilemapModel;
+class RigidBody2D;
 
 class TilemapComponent
 	: public VisualComponent
 {
+    LN_OBJECT;
 public:
+    TilemapModel* tilemapModel() const;
     void setTilemapModel(TilemapModel* tilemapModel);
 
+    const Ref<RigidBody2D>& rigidBody() const { return m_rigidBody; }
+
+	bool intersectTile(const Ray& rayOnWorld, PointI* tilePoint);
+
 protected:
+	virtual void onStart() override;
+	virtual void onDetachedScene(Scene* oldOwner) override;
     void onRender(RenderingContext* context);
+
+	LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     TilemapComponent();
@@ -21,7 +33,8 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-    Ref<TilemapModel> m_tilemap;
+    Ref<TilemapModel> m_tilemapModel;
+	Ref<RigidBody2D> m_rigidBody;
 };
 
 } // namespace ln

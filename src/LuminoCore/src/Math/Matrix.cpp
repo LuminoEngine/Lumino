@@ -1482,7 +1482,13 @@ Matrix Matrix::makeLookAtLH(const Vector3& position, const Vector3& lookAt, cons
     yaxis = Vector3::cross(zaxis, xaxis);
 
     return Matrix(
-        xaxis.x, yaxis.x, zaxis.x, 0.0f, xaxis.y, yaxis.y, zaxis.y, 0.0f, xaxis.z, yaxis.z, zaxis.z, 0.0f, -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z), -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z), -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z), 1.0f);
+        xaxis.x, yaxis.x, zaxis.x, 0.0f,
+        xaxis.y, yaxis.y, zaxis.y, 0.0f,
+        xaxis.z, yaxis.z, zaxis.z, 0.0f,
+        -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z),
+        -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z),
+        -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
+        1.0f);
 }
 
 // static
@@ -1500,7 +1506,13 @@ Matrix Matrix::makeLookAtRH(const Vector3& position, const Vector3& lookAt, cons
     yaxis = Vector3::cross(zaxis, xaxis);
 
     return Matrix(
-        xaxis.x, yaxis.x, zaxis.x, 0.0f, xaxis.y, yaxis.y, zaxis.y, 0.0f, xaxis.z, yaxis.z, zaxis.z, 0.0f, -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z), -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z), -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z), 1.0f);
+        xaxis.x, yaxis.x, zaxis.x, 0.0f, 
+        xaxis.y, yaxis.y, zaxis.y, 0.0f,
+        xaxis.z, yaxis.z, zaxis.z, 0.0f,
+        -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z),
+        -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z),
+        -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
+        1.0f);
 }
 
 // static

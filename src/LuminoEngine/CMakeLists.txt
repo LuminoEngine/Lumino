@@ -9,17 +9,7 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 #------------------------------------------------------------------------------
 # Files
 
-set(LN_SOURCES_Base
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Regex.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Task.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/Variant.hpp
-    src/Base/Internal.hpp
-    src/Base/RefObjectCache.hpp
-    src/Base/Regex.cpp
-    src/Base/Task.cpp
-    src/Base/Variant.cpp
-)
+file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 
 set(LN_SOURCES_Engine
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Common.hpp
@@ -29,6 +19,7 @@ set(LN_SOURCES_Engine
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/EngineSettings.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Object.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Property.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/RenderingCommandList.hpp
     src/Engine/Internal.hpp
     src/Engine/Application.cpp
     src/Engine/Diagnostics.cpp
@@ -40,7 +31,6 @@ set(LN_SOURCES_Engine
     src/Engine/FpsController.hpp
     src/Engine/LinearAllocator.hpp
     src/Engine/RenderingCommandList.cpp
-    src/Engine/RenderingCommandList.hpp
     src/Engine/Object.cpp
     src/Engine/Property.cpp
 )
@@ -48,6 +38,7 @@ set(LN_SOURCES_Engine
 set(LN_SOURCES_Platform
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/AndroidPlatformInterface.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/CocoaPlatformInterface.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformDialogs.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
@@ -59,6 +50,7 @@ set(LN_SOURCES_Platform
     src/Platform/EmscriptenPlatformInterface.cpp
     src/Platform/GLFWPlatformWindowManager.cpp
     src/Platform/GLFWPlatformWindowManager.hpp
+    src/Platform/PlatformDialogs.cpp
     src/Platform/PlatformEvent.cpp
     src/Platform/PlatformManager.cpp
     src/Platform/PlatformManager.hpp
@@ -66,6 +58,9 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformWindow.cpp
     src/Platform/PlatformWindowManager.cpp
     src/Platform/PlatformWindowManager.hpp
+    src/Platform/TextInputMethodSystem.cpp
+    src/Platform/TextInputMethodSystem.hpp
+	src/Platform/Win32PlatformDialogs.hpp
     src/Platform/Win32PlatformInterface.cpp
     src/Platform/Win32PlatformWindowManager.cpp
     src/Platform/Win32PlatformWindowManager.hpp
@@ -185,49 +180,7 @@ set(LN_SOURCES_Audio_Device
     src/Audio/SDLAudioDevice.hpp
 )
 
-set(LN_SOURCES_Graphics
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Bitmap.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/ColorStructs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/DepthBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GeometryStructs.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GraphicsContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/GraphicsResource.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/IndexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/RenderState.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SamplerState.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/SwapChain.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/Texture.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/VertexLayout.hpp
-    src/Graphics/Internal.hpp
-    src/Graphics/Bitmap.cpp
-    src/Graphics/BitmapEncoding.cpp
-    src/Graphics/BitmapEncoding.hpp
-    src/Graphics/ColorStructs.cpp
-    src/Graphics/DepthBuffer.cpp
-    src/Graphics/GeometryStructs.cpp
-    src/Graphics/GLFWContext.cpp
-    src/Graphics/GLFWContext.hpp
-    src/Graphics/GraphicsContext.cpp
-    src/Graphics/GraphicsDeviceContext.cpp
-    src/Graphics/GraphicsDeviceContext.hpp
-    src/Graphics/GraphicsManager.cpp
-    src/Graphics/GraphicsManager.hpp
-    src/Graphics/GraphicsResource.cpp
-    src/Graphics/IndexBuffer.cpp
-    src/Graphics/RenderState.cpp
-    src/Graphics/SamplerState.cpp
-    src/Graphics/SwapChain.cpp
-    src/Graphics/MixHash.hpp
-    src/Graphics/OpenGLDeviceContext.cpp
-    src/Graphics/OpenGLDeviceContext.hpp
-    src/Graphics/RenderTargetTextureCache.cpp
-    src/Graphics/RenderTargetTextureCache.hpp
-    src/Graphics/Texture.cpp
-    src/Graphics/VertexBuffer.cpp
-    src/Graphics/VertexLayout.cpp
-)
+file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 
 set(LN_SOURCES_Shader
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Common.hpp
@@ -290,53 +243,7 @@ set(LN_SOURCES_Mesh
     src/Mesh/SkinnedMeshModel.cpp
 )
 
-set(LN_SOURCES_Rendering
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/CommandBuffer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Drawing.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Material.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderingContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderView.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/Vertex.hpp
-    src/Rendering/Internal.hpp
-    src/Rendering/BlitRenderFeature.cpp
-    src/Rendering/BlitRenderFeature.hpp
-    src/Rendering/ClusteredShadingSceneRenderer.cpp
-    src/Rendering/ClusteredShadingSceneRenderer.hpp
-    src/Rendering/CommandBuffer.cpp
-    src/Rendering/DrawElementListBuilder.cpp
-    src/Rendering/DrawElementListBuilder.hpp
-    src/Rendering/Drawing.cpp
-    src/Rendering/FrameRectRenderFeature.cpp
-    src/Rendering/FrameRectRenderFeature.hpp
-    src/Rendering/LightClusters.cpp
-    src/Rendering/LightClusters.hpp
-    src/Rendering/Material.cpp
-    src/Rendering/MeshRenderFeature.cpp
-    src/Rendering/MeshRenderFeature.hpp
-    src/Rendering/PrimitiveRenderFeature.cpp
-    src/Rendering/PrimitiveRenderFeature.hpp
-    src/Rendering/RenderFeature.cpp
-    src/Rendering/RenderingContext.cpp
-    src/Rendering/RenderingManager.cpp
-    src/Rendering/RenderingManager.hpp
-    src/Rendering/RenderingPipeline.cpp
-    src/Rendering/RenderingPipeline.hpp
-    src/Rendering/RenderStage.cpp
-    src/Rendering/RenderStage.hpp
-    src/Rendering/RenderView.cpp
-    src/Rendering/ShapesRenderFeature.cpp
-    src/Rendering/ShapesRenderFeature.hpp
-    src/Rendering/SceneRenderer.cpp
-    src/Rendering/SceneRenderer.hpp
-    src/Rendering/SpriteRenderFeature.cpp
-    src/Rendering/SpriteRenderFeature.hpp
-    src/Rendering/SpriteTextRenderFeature.cpp
-    src/Rendering/SpriteTextRenderFeature.hpp
-    src/Rendering/UnLigitingSceneRenderer.cpp
-    src/Rendering/UnLigitingSceneRenderer.hpp
-)
+file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp)
 
 set(LN_SOURCES_ImageEffect
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/ImageEffect.hpp
@@ -347,6 +254,19 @@ set(LN_SOURCES_ImageEffect
     src/ImageEffect/ImageEffectRenderer.hpp
     src/ImageEffect/ScreenBlurImageEffect.cpp
     src/ImageEffect/ToneImageEffect.cpp
+)
+
+set(LN_SOURCES_Effect
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/Common.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectContext.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/EffectModel.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/ParticleEffectModel.hpp
+    src/Effect/Internal.hpp
+    src/Effect/EffectContext.cpp
+    src/Effect/EffectManager.cpp
+    src/Effect/EffectManager.hpp
+    src/Effect/EffectModel.cpp
+    src/Effect/ParticleEffectModel.cpp
 )
 
 set(LN_SOURCES_Physics
@@ -369,22 +289,14 @@ set(LN_SOURCES_Physics
     src/Physics/SoftBody.cpp
 )
 
-set(LN_SOURCES_Asset
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/Assets.hpp
-    src/Asset/Internal.hpp
-    src/Asset/Assets.cpp
-    src/Asset/AssetManager.cpp
-    src/Asset/AssetManager.hpp
-    src/Asset/AssetArchive.cpp
-    src/Asset/AssetArchive.hpp
-)
+file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp)
 
 set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/MeshPrimitiveComponent.hpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/ParticleEmitterComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SkinnedMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/StaticMeshComponent.hpp
@@ -393,6 +305,7 @@ set(LN_SOURCES_Visual
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
     src/Visual/MeshPrimitiveComponent.cpp
+    src/Visual/ParticleEmitterComponent.cpp
     src/Visual/SkinnedMeshComponent.cpp
     src/Visual/SpriteComponent.cpp
     src/Visual/StaticMeshComponent.cpp
@@ -438,56 +351,28 @@ set(LN_SOURCES_Scene
     src/Scene/WorldRenderView.cpp
 )
 
-set(LN_SOURCES_UI
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContainerElement.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIControl.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIElement.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIEvents.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIFrameWindow.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutElement.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UILayoutPanel.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderingContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIRenderView.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UISprite.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIStyle.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UITextBlock.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIViewport.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/UIWindow.hpp
-    src/UI/UIContainerElement.cpp
-    src/UI/UIContext.cpp
-    src/UI/UIControl.cpp
-    src/UI/UIElement.cpp
-    src/UI/UIEventArgsPool.hpp
-    src/UI/UIEvents.cpp
-    src/UI/UIFrameWindow.cpp
-    src/UI/UILayoutElement.cpp
-    src/UI/UILayoutPanel.cpp
-    src/UI/UIManager.cpp
-    src/UI/UIManager.hpp
-    src/UI/UIRenderingContext.cpp
-    src/UI/UIRenderView.cpp
-    src/UI/UISprite.cpp
-    src/UI/UIStyle.cpp
-    src/UI/UITextBlock.cpp
-    src/UI/UIViewport.cpp
-    src/UI/UIWindow.cpp
-)
+file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 
-set(LN_SOURCES_Tilemap
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Tilemap.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapLayer.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/TilemapModel.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/Tileset.hpp
-    src/Tilemap/Internal.hpp
-    src/Tilemap/Tilemap.cpp
-    src/Tilemap/TilemapComponent.cpp
-    src/Tilemap/TilemapLayer.cpp
-    src/Tilemap/TilemapModel.cpp
-    src/Tilemap/Tileset.cpp
+set(LN_SOURCES_UI
+    ${LN_SOURCES_UI}
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imconfig.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.cpp
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_draw.cpp
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_internal.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_widgets.cpp
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_rectpack.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_textedit.h
+    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_truetype.h
+)
+set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui)
+file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
+
+file(GLOB LN_SOURCES_Runtime
+	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
+	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
+	src/Runtime/*.cpp
+	src/Runtime/*.hpp
 )
 
 if (LN_USE_VULKAN)
@@ -531,13 +416,14 @@ source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("ImageEffect" FILES ${LN_SOURCES_ImageEffect})
+source_group("Effect"    FILES ${LN_SOURCES_Effect})
 source_group("Physics"	 FILES ${LN_SOURCES_Physics})
 source_group("Asset"	 FILES ${LN_SOURCES_Asset})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
-
+source_group("Runtime"   FILES ${LN_SOURCES_Runtime})
 
 set(LN_SOURCES
     src/LuminoEngine.PCH.cpp
@@ -559,13 +445,14 @@ set(LN_SOURCES
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
     ${LN_SOURCES_ImageEffect}
+    ${LN_SOURCES_Effect}
     ${LN_SOURCES_Physics}
     ${LN_SOURCES_Asset}
     ${LN_SOURCES_Visual}
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
-    #${LN_SOURCES_LuminoCore}
+    ${LN_SOURCES_Runtime}
 )
 
 set(LN_SOURCES_SharedLib
@@ -642,15 +529,16 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC  
     $<BUILD_INTERFACE:${LN_ENGINE_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:../../include>  # <prefix>/include
 )
-target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
 #target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_BUILD_DLL=1)
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LN_PLATFORM_DEFINITIONS})
 #target_link_libraries(${PROJECT_NAME} -Wl,--whole-archive ${PROJECT_NAME}-static -Wl,--no-whole-archive)
 #target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-static)
 target_link_libraries(${PROJECT_NAME} INTERFACE LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore pcre PNG ZLIB FreeType vorbisfile vorbis ogg Box2D BulletSoftBody BulletDynamics BulletCollision LinearMath tmxlite VulkanHeaders ${LN_PLATFORM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE Effekseer EffekseerRendererVulkan LLGI)
+
 #target_link_libraries(${PROJECT_NAME} PRIVATE glslang)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
@@ -687,21 +575,23 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT LuminoEngineTargets
-    ARCHIVE     DESTINATION lib            # Library installation location (Copied at "INSTALL" build time)
-    #INCLUDES    DESTINATION ../../include        # include directory (File is not copied)
-    FRAMEWORK DESTINATION .)
+    ARCHIVE     DESTINATION lib         # Library installation location (Copied at "INSTALL" build time)
+    INCLUDES    DESTINATION ./include   # Include directory (File is not copied)
+    FRAMEWORK   DESTINATION .)
     
-#install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION .)
+install(DIRECTORY ../../include/LuminoEngine DESTINATION ./include)
+install(FILES ../../include/Lumino.hpp DESTINATION include)
+install(FILES ../../include/LuminoEngine.hpp DESTINATION include)
 
 install(
     EXPORT LuminoEngineTargets
     FILE LuminoEngineTargets.cmake
-    EXPORT_LINK_INTERFACE_LIBRARIES
-    DESTINATION lib/cmake)
+    DESTINATION lib/cmake/LuminoEngine
+    EXPORT_LINK_INTERFACE_LIBRARIES)
 
 install(
     FILES LuminoEngineConfig.cmake
-    DESTINATION lib/cmake)
+    DESTINATION lib/cmake/LuminoEngine)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ../../../../lib/${LN_TARGET_ARCH})

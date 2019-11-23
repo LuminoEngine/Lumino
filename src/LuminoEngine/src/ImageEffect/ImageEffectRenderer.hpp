@@ -20,6 +20,7 @@ public:
 private:
     RenderingManager* m_manager;
     List<Ref<ImageEffect>> m_imageEffects;
+	Ref<Material> m_copyMaterial;
 };
 
 } // namespace detail

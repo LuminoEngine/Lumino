@@ -39,40 +39,46 @@ public:
 private:
 };
 
-// MeshSection 単位で描画する
-class MeshRenderFeature
+class MeshRenderFeature	// TODO: MeshSectionRenderFeature
 	: public RenderFeature
 {
 public:
 	MeshRenderFeature();
-	~MeshRenderFeature();
 	void init(RenderingManager* manager);
 
-	void drawMesh(GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-	//void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
+	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
 
-	virtual void flush(GraphicsContext* context) override;
+	virtual void beginRendering() override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
 
 private:
-	struct DrawMeshCommandData
+	struct DrawMeshData
 	{
-		Ref<IVertexDeclaration>	vertexDeclaration;
-		Ref<IVertexBuffer>		vertexBuffers[MaxVertexStreams];
-		int									vertexBuffersCount;
-		Ref<IIndexBuffer>		indexBuffer;
-		int									startIndex;
-		int									primitiveCount;
-		PrimitiveTopology						primitiveType;
+		Ref<VertexLayout> vertexLayout;
+		Ref<VertexBuffer> vertexBuffers[MaxVertexStreams];
+		int vertexBuffersCount;
+		Ref<IndexBuffer> indexBuffer;
+		int startIndex;
+		int primitiveCount;
+		PrimitiveTopology primitiveType;
 	};
 
-	void drawMeshImplOnRenderThread(IGraphicsContext* context, const DrawMeshCommandData& data);
+	struct BatchData
+	{
+		int offset;
+		int count;
+	};
 
-	RenderingManager* m_manager;
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
 
-	//GraphicsManager*		m_manager;
-	//Driver::IRenderer*		m_renderer;
+	std::vector<DrawMeshData> m_meshes;
+	BatchData m_batchData;
 };
-
 
 } // namespace detail
 } // namespace ln

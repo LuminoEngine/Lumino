@@ -28,7 +28,7 @@ int FxcCommand::execute(const ln::Path& inputFile)
     m_manager = ln::makeRef<ln::detail::ShaderManager>();
     m_manager->init(settings);
 
-	m_diag = ln::newObject<ln::DiagnosticsManager>();
+	m_diag = ln::makeObject<ln::DiagnosticsManager>();
 
 	bool result = generate(inputFile);
 

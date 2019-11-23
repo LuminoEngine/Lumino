@@ -1,0 +1,15 @@
+#include <LuminoEngine/Runtime/Runtime.hpp>
+#include "%%HeaderName%%"
+
+%%HeaderString%%
+
+%%WrapSubclassDecls%%
+
+extern "C"
+{
+
+%%StructMemberFuncImpls%%
+
+%%ClassMemberFuncImpls%%
+	
+} // extern "C"

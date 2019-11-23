@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderingPipeline.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
@@ -17,6 +18,17 @@ void RenderingPipeline::init()
     //RenderingManager* manager = detail::EngineDomain::renderingManager();
     //m_frameBufferCache = makeRef<detail::FrameBufferCache>(
     //    manager->renderTargetTextureCacheManager(), manager->depthBufferCacheManager());
+    m_clearRenderPass = makeObject<RenderPass>();
+}
+
+void RenderingPipeline::clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo)
+{
+    if (clearInfo.flags != ClearFlags::None) {
+        m_clearRenderPass->setRenderTarget(0, renderTarget);
+        m_clearRenderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
+        graphicsContext->beginRenderPass(m_clearRenderPass);
+        graphicsContext->endRenderPass();
+    }
 }
 
 //==============================================================================
@@ -45,23 +57,27 @@ void SceneRenderingPipeline::init()
 
 void SceneRenderingPipeline::render(
     GraphicsContext* graphicsContext,
-    const FrameBuffer& frameBuffer,
+	RenderTargetTexture* renderTarget,
+    //const ClearInfo& clearInfo,
     const detail::CameraInfo* mainCameraInfo,
     const List<detail::DrawElementListCollector*>* elementListManagers)
 {
     m_elementListManagers = elementListManagers;
-    m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
+    m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
-    m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
+    //clear(graphicsContext, renderTarget, clearInfo);
+
+    ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
-    m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::BeforeTransparencies);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BeforeTransparencies);
 
     {
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RendringPhase::ImageEffect);
     }
 
     // 誤用防止
@@ -92,19 +108,24 @@ void FlatRenderingPipeline::init()
 
 void FlatRenderingPipeline::render(
 	GraphicsContext* graphicsContext,
-	const FrameBuffer& frameBuffer,
+	RenderTargetTexture* renderTarget,
+    //const ClearInfo& clearInfo,
 	const detail::CameraInfo* mainCameraInfo,
 	const List<detail::DrawElementListCollector*>* elementListManagers)
 {
 	m_elementListManagers = elementListManagers;
-	m_renderingFrameBufferSize = SizeI(frameBuffer.renderTarget[0]->width(), frameBuffer.renderTarget[0]->height());
+	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
-	m_sceneRenderer->render(graphicsContext, this, frameBuffer, *mainCameraInfo, RendringPhase::Default);
+    //clear(graphicsContext, renderTarget, clearInfo);
+
+    ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
+	m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);
 
     {
+        ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, frameBuffer, camera, RendringPhase::ImageEffect);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RendringPhase::ImageEffect);
     }
 
 	// 誤用防止

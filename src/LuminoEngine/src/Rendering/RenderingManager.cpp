@@ -8,6 +8,7 @@
 #include "BlitRenderFeature.hpp"
 #include "SpriteRenderFeature.hpp"
 #include "MeshRenderFeature.hpp"
+#include "ExtensionRenderFeature.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {
@@ -24,9 +25,9 @@ RenderingManager::RenderingManager()
 	: m_graphicsManager(nullptr)
 	, m_fontManager(nullptr)
     , m_standardVertexDeclaration(nullptr)
-	, m_spriteRenderFeature(nullptr)
+	//, m_spriteRenderFeature(nullptr)
 	, m_meshRenderFeature(nullptr)
-    , m_primitiveRenderFeature(nullptr)
+    , m_meshGeneraterRenderFeature(nullptr)
 	, m_stageDataPageManager(nullptr)
 {
 }
@@ -34,6 +35,7 @@ RenderingManager::RenderingManager()
 void RenderingManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "RenderingManager Initialization started.";
+    EngineDomain::registerType<Material>();
 
     m_graphicsManager = settings.graphicsManager;
     m_fontManager = settings.fontManager;
@@ -45,16 +47,43 @@ void RenderingManager::init(const Settings& settings)
         { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
     };
-    m_standardVertexDeclaration = newObject<VertexLayout>(elements, 4);
+    m_standardVertexDeclaration = makeObject<VertexLayout>(elements, 4);
+    m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 
-    m_blitRenderFeature = newObject<BlitRenderFeature>(this);
-    m_spriteRenderFeature = newObject<SpriteRenderFeature>(this);
-    m_meshRenderFeature = newObject<MeshRenderFeature>(this);
-    m_primitiveRenderFeature = newObject<PrimitiveRenderFeature>(this);
-    m_spriteTextRenderFeature = newObject<SpriteTextRenderFeature>(this);
-	m_frameRectRenderFeature = newObject<FrameRectRenderFeature>(this);
-	m_shapesRenderFeature = newObject<ShapesRenderFeature>(this);
+	m_clearRenderFeature = makeObject<ClearRenderFeature>();
+	m_renderFeatures.add(m_clearRenderFeature);
+
+    m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
+	m_renderFeatures.add(m_blitRenderFeature);
+
+ //   m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
+	//m_renderFeatures.add(m_spriteRenderFeature);
+
+	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
+	m_renderFeatures.add(m_spriteRenderFeature2);
+
+    m_meshRenderFeature = makeObject<MeshRenderFeature>(this);
+	m_renderFeatures.add(m_meshRenderFeature);
+
+    m_meshGeneraterRenderFeature = makeObject<MeshGeneraterRenderFeature>(this);
+	m_renderFeatures.add(m_meshGeneraterRenderFeature);
+
+	m_primitiveRenderFeature = makeObject<PrimitiveRenderFeature>();
+	m_renderFeatures.add(m_primitiveRenderFeature);
+
+    m_spriteTextRenderFeature = makeObject<SpriteTextRenderFeature>(this);
+	m_renderFeatures.add(m_spriteTextRenderFeature);
+
+	m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
+	m_renderFeatures.add(m_frameRectRenderFeature);
+
+	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
+	m_renderFeatures.add(m_shapesRenderFeature);
+
+    m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);
+    m_renderFeatures.add(m_extensionRenderFeature);
+
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
@@ -67,7 +96,7 @@ void RenderingManager::init(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = newObject<Shader>(u"ClusteredShadingDefault", &stream);
+        m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = makeObject<Shader>(u"ClusteredShadingDefault", &stream);
     }
     // DepthPrepass.lcfx.h
     {
@@ -77,7 +106,7 @@ void RenderingManager::init(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = newObject<Shader>(u"DepthPrepass", &stream);
+        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = makeObject<Shader>(u"DepthPrepass", &stream);
     }
     // Sprite.lcfx.h
     {
@@ -87,7 +116,7 @@ void RenderingManager::init(const Settings& settings)
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::Sprite] = newObject<Shader>(u"Sprite", &stream);
+        m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(u"Sprite", &stream);
     }
 #endif
 
@@ -130,7 +159,6 @@ void RenderingManager::init(const Settings& settings)
         m_builtinMaterials[(int)BuiltinMaterial::UnLighting] = material;
     }
 
-
     LN_LOG_DEBUG << "RenderingManager Initialization ended.";
 }
 
@@ -143,12 +171,13 @@ void RenderingManager::dispose()
 	m_shapesRenderFeature = nullptr;
 	m_frameRectRenderFeature = nullptr;
     m_spriteTextRenderFeature = nullptr;
-    m_primitiveRenderFeature = nullptr;
+    m_meshGeneraterRenderFeature = nullptr;
 	m_meshRenderFeature = nullptr;
-	m_spriteRenderFeature = nullptr;
+	m_spriteRenderFeature2 = nullptr;
     m_blitRenderFeature = nullptr;
 	//m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
+    m_renderFeatures.clear();
 }
 
 } // namespace detail

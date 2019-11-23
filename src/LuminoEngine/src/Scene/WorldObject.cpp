@@ -3,6 +3,7 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include "SceneManager.hpp"
 
@@ -109,14 +110,14 @@ Matrix WorldObjectTransform::getLocalMatrix() const
 //  Component にしてしまうと、m_components リストを操作するときに混ざりこんでしまって危険かもしれない。
 //  特に必要性が出てくるまではこのスタイルにしておく。
 
-LN_OBJECT_IMPLEMENT(WorldObject, Object);
+LN_OBJECT_IMPLEMENT(WorldObject, Object) {}
 
 WorldObject::WorldObject()
-    : m_world(nullptr)
+    : m_scene(nullptr)
     , m_parent(nullptr)
     , m_transform(makeRef<detail::WorldObjectTransform>(this))
     , m_tags(makeList<String>())
-    , m_components(makeList<Ref<Component>>())
+    , m_components(makeObject<ComponentList>())
     , m_children(makeList<Ref<WorldObject>>())
     , m_isSpecialObject(false)
 	, m_destroyed(false)
@@ -164,19 +165,19 @@ void WorldObject::addComponent(Component* component)
 void WorldObject::destroy()
 {
 	m_destroyed = true;
-	if (m_world) {
-		m_world->m_destroyList.add(this);
+	if (m_scene) {
+        m_scene->m_destroyList.add(this);
 	}
 }
 
-void WorldObject::removeFromWorld()
+void WorldObject::removeFromScene()
 {
-	if (m_world) {
+	if (m_scene) {
 		if (m_parent) {
 			LN_NOTIMPLEMENTED();
 		}
 		else {
-			m_world->removeRootObject(this);
+            m_scene->removeRootObject(this);
 		}
 	}
 }
@@ -185,6 +186,24 @@ const Matrix& WorldObject::worldMatrix()
 {
     resolveWorldMatrix();
     return m_worldMatrix;
+}
+
+Component* WorldObject::findComponentByType(const TypeInfo* type) const
+{
+    return m_components->findIf([&](auto& x) { return TypeInfo::getTypeInfo(x) == type; }).valueOr(nullptr);
+}
+
+bool WorldObject::traverse(detail::IWorldObjectVisitor* visitor)
+{
+    if (!visitor->visit(this)) {
+        return false;
+    }
+    for (auto& child : m_children) {
+        if (!child->traverse(visitor)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void WorldObject::onPreUpdate()
@@ -218,7 +237,7 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
     // あと、WPF でいうところの Logical, Visual ツリーの仕組みが必要かもしれない。
     // まぁ、Unity は持っているし。(ある 3DModel のボーンを示す子ノードの寿命は、親Nodeに完全に依存する)
     // このプロパティの検索は、ある Logical ノードの管理下にある Visual ツリーをたどることになる。
-	for (auto& c : m_components) {
+	for (auto& c : *m_components) {
 		if (TypeInfo* typeInfo = TypeInfo::getTypeInfo(c)) {
 			for (auto& prop : typeInfo->properties()) {
 				if (visitor->visitProperty(c, prop)) {
@@ -230,32 +249,53 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
-void WorldObject::attachWorld(World* world)
+void WorldObject::serialize(Archive& ar)
 {
-	if (LN_REQUIRE(world)) return;
-	if (LN_REQUIRE(!m_world)) return;
-	m_world = world;
-	for (auto& c : m_components) {
-		c->onAttachedWorld(world);
+	Object::serialize(ar);
+	ar & ln::makeNVP(u"Components", *m_components);
+	ar & ln::makeNVP(u"Children", *m_children);
+
+    if (ar.isLoading()) {
+        for (auto& c : *m_components) {
+            c->m_object = this;
+            c->onAttached(this);
+        }
+    }
+}
+
+void WorldObject::attachScene(Scene* scene)
+{
+	if (LN_REQUIRE(scene)) return;
+	if (LN_REQUIRE(!m_scene)) return;
+	m_scene = scene;
+	for (auto& c : *m_components) {
+		c->onAttachedScene(scene);
 	}
 }
 
-void WorldObject::detachWorld()
+void WorldObject::detachScene()
 {
-	if (m_world) {
-		World* old = m_world;
-		m_world = nullptr;
+	if (m_scene) {
+		Scene* old = m_scene;
+		m_scene = nullptr;
 
-		for (auto& c : m_components) {
-			c->onDetachedWorld(old);
+		for (auto& c : *m_components) {
+			c->onDetachedScene(old);
 		}
+	}
+}
+
+void WorldObject::start()
+{
+	for (auto& c : *m_components) {
+		c->onStart();
 	}
 }
 
 void WorldObject::updateFrame(float elapsedSeconds)
 {
     onUpdate(elapsedSeconds);
-    for (auto& c : m_components) {
+    for (auto& c : *m_components) {
         c->onUpdate(elapsedSeconds);
     }
 }
@@ -301,5 +341,30 @@ void WorldObject::updateWorldMatrixHierarchical()
     }
 }
 
+
+//==============================================================================
+// WorldObjectAsset
+
+namespace ed {
+
+LN_OBJECT_IMPLEMENT(WorldObjectAsset, AssetModel) {}
+
+WorldObjectAsset::WorldObjectAsset()
+{
+}
+
+void WorldObjectAsset::init()
+{
+    AssetModel::init();
+}
+
+void WorldObjectAsset::serialize(Archive& ar)
+{
+	//ar & makeNVP(u"position", m_position);
+	//ar & makeNVP(u"angles", m_angles);
+	//ar & makeNVP(u"scale", m_scale);
+}
+
+} // namespace ed
 } // namespace ln
 

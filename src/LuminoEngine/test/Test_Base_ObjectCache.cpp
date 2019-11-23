@@ -248,7 +248,7 @@ TEST_F(Test_Base_ObjectCache, GCObjects)
 		ASSERT_EQ(obj2, cache1.findObject(u"obj2"));
 	}
 
-	// obj1 の参照を切って GC
+	// obj1 の参照を切って GC. obj1 は freeList に入っている
 	{
 		obj1 = nullptr;
 		cache1.collectUnreferenceObjects();

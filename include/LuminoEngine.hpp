@@ -38,9 +38,11 @@
 #include "LuminoEngine/Graphics/VertexBuffer.hpp"
 #include "LuminoEngine/Graphics/IndexBuffer.hpp"
 #include "LuminoEngine/Graphics/Texture.hpp"
+#include "LuminoEngine/Graphics/RenderPass.hpp"
 #include "LuminoEngine/Graphics/SwapChain.hpp"
 #include "LuminoEngine/Graphics/GraphicsContext.hpp"
 #include "LuminoEngine/Graphics/Bitmap.hpp"
+#include "LuminoEngine/Graphics/Graphics.hpp"
 
 #include "LuminoEngine/Font/Font.hpp"
 
@@ -79,19 +81,26 @@
 #include "LuminoEngine/Scene/Scene.hpp"
 #include "LuminoEngine/Scene/SceneConductor.hpp"
 
+#include "LuminoEngine/UI/UIEvents.hpp"
+#include "LuminoEngine/UI/UIRenderView.hpp"
 #include "LuminoEngine/UI/UIFrameWindow.hpp"
 #include "LuminoEngine/UI/UIViewport.hpp"
 #include "LuminoEngine/UI/UISprite.hpp"
 #include "LuminoEngine/UI/UITextBlock.hpp"
 #include "LuminoEngine/UI/UILayoutPanel.hpp"
 #include "LuminoEngine/UI/UIWindow.hpp"
+#include "LuminoEngine/UI/UIButton.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 
 #include "LuminoEngine/Tilemap/Tileset.hpp"
 #include "LuminoEngine/Tilemap/TilemapLayer.hpp"
 #include "LuminoEngine/Tilemap/TilemapModel.hpp"
+#include "LuminoEngine/Tilemap/TilemapComponent.hpp"
 #include "LuminoEngine/Tilemap/Tilemap.hpp"
+
+#include "LuminoEngine/Effect/EffectContext.hpp"
+
 
 
 #ifdef _DEBUG
@@ -127,10 +136,10 @@
 #pragma comment(lib, "BulletDynamics" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "BulletSoftBody" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "Box2D" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
-#endif
 
 #ifdef _DEBUG
 #pragma comment(lib, "tmxlite-s-d.lib")
 #else
 #pragma comment(lib, "tmxlite-s.lib")
+#endif
 #endif

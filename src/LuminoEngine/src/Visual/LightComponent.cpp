@@ -92,7 +92,7 @@ void LightComponent::onPreRender(DrawList* context)
 //==============================================================================
 // AmbientLightComponent
 
-LN_OBJECT_IMPLEMENT(AmbientLightComponent, VisualComponent);
+LN_OBJECT_IMPLEMENT(AmbientLightComponent, VisualComponent) {}
 
 AmbientLightComponent::AmbientLightComponent()
 	: m_color(Color::White)
@@ -121,7 +121,7 @@ void AmbientLightComponent::onPrepareRender(RenderingContext* context)
 //==============================================================================
 // HemisphereLightComponent
 
-LN_OBJECT_IMPLEMENT(HemisphereLightComponent, VisualComponent);
+LN_OBJECT_IMPLEMENT(HemisphereLightComponent, VisualComponent) {}
 
 HemisphereLightComponent::HemisphereLightComponent()
 	: m_skyColor(Color::White)
@@ -151,7 +151,7 @@ void HemisphereLightComponent::onPrepareRender(RenderingContext* context)
 //==============================================================================
 // DirectionalLightComponent
 
-LN_OBJECT_IMPLEMENT(DirectionalLightComponent, VisualComponent);
+LN_OBJECT_IMPLEMENT(DirectionalLightComponent, VisualComponent) {}
 
 DirectionalLightComponent::DirectionalLightComponent()
 	: m_color(Color::White)
@@ -174,7 +174,7 @@ void DirectionalLightComponent::setShadowCast(bool enabled)
     LN_NOTIMPLEMENTED();
 	//if (enabled)
 	//{
-	//	m_shadowCasterPass = newObject<detail::ShadowCasterPass>();
+	//	m_shadowCasterPass = makeObject<detail::ShadowCasterPass>();
 	//}
 	//else
 	//{
@@ -211,7 +211,7 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 //==============================================================================
 // PointLightComponent
 
-LN_OBJECT_IMPLEMENT(PointLightComponent, VisualComponent);
+LN_OBJECT_IMPLEMENT(PointLightComponent, VisualComponent) {}
 
 PointLightComponent::PointLightComponent()
 	: m_color(Color::White)
@@ -243,7 +243,7 @@ void PointLightComponent::onPrepareRender(RenderingContext* context)
 //==============================================================================
 // SpotLightComponent
 
-LN_OBJECT_IMPLEMENT(SpotLightComponent, VisualComponent);
+LN_OBJECT_IMPLEMENT(SpotLightComponent, VisualComponent) {}
 
 SpotLightComponent::SpotLightComponent()
 	: m_color(Color::White)

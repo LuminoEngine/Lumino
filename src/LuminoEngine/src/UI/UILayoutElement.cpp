@@ -1,4 +1,11 @@
 ﻿
+/*
+    Layout は UIElement の派生とするべきか？
+    一番困るのは、レイアウトをネストするとき、デザイナ上で他の UIElement と同じような処理で操作できなくなること。
+    意外と Element と Layout が独立してるのって Qt Widgets くらいなんだよな…。
+*/
+
+
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutElement.hpp>
@@ -8,8 +15,12 @@ namespace ln {
 //==============================================================================
 // UILayoutElement
 
+LN_OBJECT_IMPLEMENT(UILayoutElement, Object) {
+	context->registerType<UILayoutElement>({});
+}
+
 UILayoutElement::UILayoutElement()
-	: m_layoutSize(Math::NaN, Math::NaN)
+	//: m_layoutSize(Math::NaN, Math::NaN)
 {
 }
 
@@ -24,9 +35,9 @@ void UILayoutElement::init(const detail::UIStyleInstance* finalStyle)
 	m_finalStyle = finalStyle;
 }
 
-void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
+void UILayoutElement::updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect)
 {
-	Size itemSize = getLayoutSize();
+    Size itemSize(m_finalStyle->width, m_finalStyle->height);// = //getLayoutSize();
 	Size size(
 		Math::isNaNOrInf(itemSize.width) ? parentFinalGlobalRect.width : itemSize.width,
 		Math::isNaNOrInf(itemSize.height) ? parentFinalGlobalRect.height : itemSize.height);
@@ -35,31 +46,24 @@ void UILayoutElement::updateLayout(const Rect& parentFinalGlobalRect)
 	// TODO: 例外の方が良いかも？
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
-	measureLayout(size);
-	arrangeLayout(parentFinalGlobalRect);
+	measureLayout(layoutContext, size);
+	arrangeLayout(layoutContext, parentFinalGlobalRect);
 }
 
-void UILayoutElement::measureLayout(const Size& availableSize)
+void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& availableSize)
 {
-	// Margin と Padding を考慮する
-	const Thickness& margin = getLayoutMargin();
-	const Thickness& padding = getLayoutPadding();
-	float spaceWidth = (margin.left + margin.right) + (padding.left + padding.right);
-	float spaceHeight = (margin.top + margin.bottom) + (padding.top + padding.bottom);
-	Size localAvailableSize(
-		std::max(availableSize.width - spaceWidth, 0.0f),
-		std::max(availableSize.height - spaceHeight, 0.0f));
+	Size outerSpace = m_finalStyle->actualOuterSpace();
+	Size localAvailableSize(std::max(availableSize.width - outerSpace.width, 0.0f), std::max(availableSize.height - outerSpace.height, 0.0f));
+	
+	Size desiredSize = measureOverride(layoutContext, localAvailableSize);
 
-	Size desiredSize = measureOverride(localAvailableSize);
-
-	// Margin を考慮する
-	desiredSize.width += spaceWidth;
-	desiredSize.height += spaceHeight;
+	desiredSize.width += outerSpace.width;
+	desiredSize.height += outerSpace.height;
 
 	setLayoutDesiredSize(desiredSize);
 }
 
-void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
+void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect)
 {
 	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
 	// 要素に直接設定されているサイズよりも大きいこともある。
@@ -91,19 +95,27 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	// DesiredSize は Margin 考慮済み
 
 	// Alignment で調整する領域は、margin 領域も含む
-	const Thickness& margin = getLayoutMargin();
-	float marginWidth = margin.left + margin.right;
-	float marginHeight = margin.top + margin.bottom;
+	//float marginWidth = margin.left + margin.right + m_finalStyle->borderThickness.width();
+	//float marginHeight = margin.top + margin.bottom + m_finalStyle->borderThickness.height();
+	Size outerSpace = m_finalStyle->actualOuterSpace();
+    Size layoutSize(m_finalStyle->width + outerSpace.width, m_finalStyle->height + outerSpace.height);
+	if (!m_finalStyle->borderInset) {
+		layoutSize.width += m_finalStyle->borderThickness.width();
+		layoutSize.height += m_finalStyle->borderThickness.height();
+	}
 
-	Size layoutSize = getLayoutSize();
 	Rect arrangeRect;
-	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, Math::isNaN(layoutSize.width), hAlign, &arrangeRect);
-	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, Math::isNaN(layoutSize.height), vAlign, &arrangeRect);
+	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, layoutSize.width, hAlign, &arrangeRect);
+	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, layoutSize.height, vAlign, &arrangeRect);
 
 
 	// Margin を考慮する (0 以下には出来ない)
-	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
-	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
+	arrangeRect.width = std::max(arrangeRect.width - outerSpace.width, 0.0f);
+	arrangeRect.height = std::max(arrangeRect.height - outerSpace.height, 0.0f);
+
+    // apply border size
+    //arrangeRect.width -= m_finalStyle->borderThickness.width();
+    //arrangeRect.height -= m_finalStyle->borderThickness.height();
 
 	// Padding を考慮する
 	//const Thickness& padding = getLayoutPadding();
@@ -112,48 +124,58 @@ void UILayoutElement::arrangeLayout(const Rect& localSlotRect)
 	//Size contentAreaSize(
 	//	std::max(arrangeRect.width - padding.getWidth(), 0.0f),
 	//	std::max(arrangeRect.height - padding.getHeight(), 0.0f));
-	Size finalContentAreaSize = arrangeOverride(contentAreaSize);
+	Size finalContentAreaSize = arrangeOverride(layoutContext, contentAreaSize);
 
+    
 
-	Rect finalLocalRect;
+	//Rect finalLocalRect;
 	//Rect finalContentRect;
-	finalLocalRect.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x;
-	finalLocalRect.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y;
-    finalLocalRect.width = finalContentAreaSize.width;// +padding.getWidth();
-	finalLocalRect.height = finalContentAreaSize.height;// + padding.getHeight();
+	const Thickness& margin = getLayoutMargin();
+	m_localPosition.x = localSlotRect.x + /*finalLocalRect.x + */margin.left + arrangeRect.x;// +m_finalStyle->borderThickness.left;
+	m_localPosition.y = localSlotRect.y + /*finalLocalRect.y + */margin.top + arrangeRect.y;// +m_finalStyle->borderThickness.top;
+    m_actualSize.width = finalContentAreaSize.width;// +padding.getWidth();
+    m_actualSize.height = finalContentAreaSize.height;// + padding.getHeight();
 	//finalContentRect.x = finalRenderRect.x + padding.left;
 	//finalContentRect.y = finalRenderRect.y + padding.top;
 	//finalContentRect.width = finalRenderRect.width - padding.getWidth();
 	//finalContentRect.height = finalRenderRect.height - padding.getHeight();
-	setLayoutFinalLocalRect(finalLocalRect/*, finalContentRect*/);
+	//setLayoutFinalLocalRect(finalLocalRect/*, finalContentRect*/);
 
 	//updateFinalRects(localSlotRect);
 
 }
 
-void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
+void UILayoutElement::updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
-	Rect localRenderRect = getLayoutFinalLocalRect();
+    Matrix localMatrix;
+    localMatrix = Matrix::makeTranslation(-m_finalStyle->centerPoint);
+    localMatrix.scale(m_finalStyle->scale);
+    localMatrix.rotateQuaternion(m_finalStyle->rotation);
+    localMatrix.translate(m_finalStyle->position);
+    localMatrix.translate(Vector3(m_localPosition.x, m_localPosition.y, 0));
+    m_combinedFinalRenderTransform = parentCombinedRenderTransform * localMatrix;
 
-	Rect finalGlobalRect;
+	//Rect localRenderRect = getLayoutFinalLocalRect();
+
+	//Rect finalGlobalRect;
 	//if (m_parent != nullptr)
-	//{
-	finalGlobalRect.x = parentFinalGlobalRect.x + localRenderRect.x;
-	finalGlobalRect.y = parentFinalGlobalRect.y + localRenderRect.y;
-	//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
-//}
-//else
-//{
-//	m_finalGlobalRect.x = m_finalLocalRect.x;
-//	m_finalGlobalRect.y = m_finalLocalRect.y;
-//	m_combinedOpacity = m_opacity;
-//}
-	finalGlobalRect.width = localRenderRect.width;
-	finalGlobalRect.height = localRenderRect.height;
+//	//{
+//	finalGlobalRect.x = parentFinalGlobalRect.x + m_localPosition.x;
+//	finalGlobalRect.y = parentFinalGlobalRect.y + m_localPosition.y;
+//	//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
+////}
+////else
+////{
+////	m_finalGlobalRect.x = m_finalLocalRect.x;
+////	m_finalGlobalRect.y = m_finalLocalRect.y;
+////	m_combinedOpacity = m_opacity;
+////}
+//	finalGlobalRect.width = m_actualSize.width;
+//	finalGlobalRect.height = m_actualSize.height;
+//
+	//setLayoutFinalGlobalRect(finalGlobalRect);
 
-	setLayoutFinalGlobalRect(finalGlobalRect);
-
-    onUpdateLayout(finalGlobalRect);
+    onUpdateLayout(layoutContext);
 
 	// update children
 	//Rect finalGlobalContentRect(
@@ -179,21 +201,21 @@ void UILayoutElement::updateFinalRects(const Rect& parentFinalGlobalRect)
 
 }
 
-Size UILayoutElement::measureOverride(const Size& constraint)
+Size UILayoutElement::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
 	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
 	// ユーザー指定のサイズがある場合はそれを返す。
 	// ただし、constraint を超えることはできない。
 
-	return detail::LayoutHelper::measureElement(this, constraint);
+	return detail::LayoutHelper::measureElement(this, constraint, Size::Zero);
 }
 
-Size UILayoutElement::arrangeOverride(const Size& finalSize)
+Size UILayoutElement::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 	return finalSize;
 }
 
-void UILayoutElement::onUpdateLayout(const Rect& finalGlobalRect)
+void UILayoutElement::onUpdateLayout(UILayoutContext* layoutContext)
 {
 }
 
@@ -236,24 +258,74 @@ ILayoutPanel::ILayoutPanel()
 
 namespace detail {
 
-Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint)
+Size LayoutHelper::measureElementSpacing(UILayoutElement* element)
 {
-	Size size = element->getLayoutSize();
-	Size desiredSize;
-	// NaN の場合、この要素として必要な最小サイズは 0 となる。
-	desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
-	desiredSize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
-	desiredSize.width = std::min(desiredSize.width, constraint.width);
-	desiredSize.height = std::min(desiredSize.height, constraint.height);
+    Size spacing;
 
-	Size minSize, maxSize;
-	element->getLayoutMinMaxInfo(&minSize, &maxSize);
-	if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
-	if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
-	if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
-	if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+    spacing.width = element->m_finalStyle->padding.width();
+    spacing.height = element->m_finalStyle->padding.height();
 
-	return desiredSize;
+    if (!element->m_finalStyle->borderInset) {
+        spacing.width += element->m_finalStyle->borderThickness.width();
+        spacing.height += element->m_finalStyle->borderThickness.height();
+    }
+
+    return spacing;
+}
+
+Size LayoutHelper::measureElementClientSize(UILayoutElement* element)
+{
+    Size size(element->m_finalStyle->width, element->m_finalStyle->height);
+    Size bodySize;
+    bodySize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
+    bodySize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
+
+    Size minSize, maxSize;
+    element->getLayoutMinMaxInfo(&minSize, &maxSize);
+    if (!Math::isNaNOrInf(minSize.width)) bodySize.width = std::max(bodySize.width, minSize.width);
+    if (!Math::isNaNOrInf(minSize.height)) bodySize.height = std::max(bodySize.height, minSize.height);
+    if (!Math::isNaNOrInf(maxSize.width)) bodySize.width = std::min(bodySize.width, maxSize.width);
+    if (!Math::isNaNOrInf(maxSize.height)) bodySize.height = std::min(bodySize.height, maxSize.height);
+
+    return bodySize;
+}
+
+Size LayoutHelper::measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize)
+{
+    //Size size(element->m_finalStyle->width, element->m_finalStyle->height);
+	Size desiredSize = Size::max(measureElementClientSize(element), childrenDesiredSize);
+
+	//// NaN の場合、この要素として必要な最小サイズは 0 となる。
+	//desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
+	//desiredSize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
+	//desiredSize.width = std::min(desiredSize.width, constraint.width);
+	//desiredSize.height = std::min(desiredSize.height, constraint.height);
+
+	//Size minSize, maxSize;
+	//element->getLayoutMinMaxInfo(&minSize, &maxSize);
+	//if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
+	//if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
+	//if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
+	//if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+
+    desiredSize += measureElementSpacing(element);
+
+	return Size::min(desiredSize, constraint);
+}
+
+Rect LayoutHelper::arrangeClientArea(UILayoutElement* element, const Size& finalSize)
+{
+	Rect area;
+
+	area.x = element->m_finalStyle->padding.left;
+	area.y = element->m_finalStyle->padding.top;
+	area.width = finalSize.width - element->m_finalStyle->padding.width();
+	area.height = finalSize.height - element->m_finalStyle->padding.height();
+
+	// arrange では inset に関わらず border が影響する (inset=true のとき、最終サイズが width,height 直接指定と矛盾すると見切れたりするが、それでよい (WPF))
+	area = area.makeDeflate(element->m_finalStyle->borderThickness);
+
+	return area;
 }
 
 } // namespace detail

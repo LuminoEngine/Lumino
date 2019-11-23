@@ -192,7 +192,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 {
 	// prepare vertex buffers
 	if (!m_vertexBuffers[group]) {
-		m_vertexBuffers[group] = ln::newObject<VertexBuffer>(m_vertexCount * VertexStrideTable[group], m_usage);
+		m_vertexBuffers[group] = ln::makeObject<VertexBuffer>(m_vertexCount * VertexStrideTable[group], m_usage);
 	}
 
 	// sync vertex buffers size
@@ -210,7 +210,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 	if (outIndexBuffer) {
         // prepare index buffer
         if (!m_indexBuffer) {
-            m_indexBuffer = ln::newObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount), m_usage);
+            m_indexBuffer = ln::makeObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount), m_usage);
         }
         else if (realIndexCount() != m_indexCount) {
             m_indexBuffer->resize(m_indexCount);
@@ -331,8 +331,7 @@ bool MeshResource::isInitialEmpty() const
 // MeshContainer
 
 MeshContainer::MeshContainer()
-	: m_meshModel(nullptr)
-	, m_name()
+	: m_name()
 	, m_lodResources()
 {
 }
@@ -429,9 +428,7 @@ StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 {
 	if (LN_REQUIRE(meshContainer)) return;
-	if (LN_REQUIRE(!meshContainer->m_meshModel)) return;
 	m_meshContainers.add(meshContainer);
-	meshContainer->m_meshModel = this;
 }
 
 void StaticMeshModel::addMaterial(AbstractMaterial* material)

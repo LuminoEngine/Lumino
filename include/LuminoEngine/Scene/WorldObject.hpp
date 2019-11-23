@@ -1,11 +1,21 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "../Asset/AssetObject.hpp"
+#include "../Base/Collection.hpp"
 
 namespace ln {
 class World;
+class Scene;
 class WorldObject;
 class Component;
+
+LN_CLASS()
+class ComponentList : public Collection<Ref<Component>>
+{
+
+};
+
 namespace detail {
 
 class WorldObjectTransform
@@ -16,35 +26,27 @@ public:
     WorldObjectTransform(WorldObject* parent);
 
     /** 位置を設定します。 */
-    LN_METHOD(Property)
     void setPosition(const Vector3& pos);
     
 	/** 位置を取得します。 */
-	LN_METHOD(Property)
 	const Vector3& position() const { return m_position; }
     
 	/** このオブジェクトの回転を設定します。 */
-	LN_METHOD(Property)
 	void setRotation(const Quaternion& rot);
     
 	/** このオブジェクトの回転を取得します。 */
-	LN_METHOD(Property)
 	const Quaternion& rotation() const { return m_rotation; }
 
 	/** このオブジェクトの拡大率を設定します。 */
-	LN_METHOD(Property)
 	void setScale(const Vector3& scale);
     
 	/** このオブジェクトの拡大率を取得します。 */
-	LN_METHOD(Property)
 	const Vector3& scale() const { return m_scale; }
     
 	/** このオブジェクトのローカルの中心位置を設定します。 */
-	LN_METHOD(Property)
 	void setCenterPoint(const Vector3& value);
     
 	/** このオブジェクトのローカルの中心位置を取得します。 */
-	LN_METHOD(Property)
 	const Vector3& centerPoint() const { return m_center; }
 
     // TODO:Forward?
@@ -76,8 +78,18 @@ private:
     Vector3 m_center;
 };
 
-}
+class IWorldObjectVisitor
+{
+public:
+    // 継続する場合は true, やめる場合は false
+    virtual bool visit(WorldObject* obj) = 0;
+};
 
+} // namespace detail
+
+
+/** World 内の全エンティティのベースクラスです。 */
+LN_CLASS()
 class WorldObject
 	: public Object
 {
@@ -151,21 +163,37 @@ public:
 	bool destroyed() const { return m_destroyed; }
 
 	/** このオブジェクトを直ちに World から除外します。このメソッドは World のアップデートシーケンス中に呼び出してはなりません。 */
-	void removeFromWorld();
+	void removeFromScene();
 
     const Matrix& worldMatrix();
+
+	Scene* scene() const { return m_scene; }
+
+
+    /** この WorldObject に含まれている Component のうち、指定した型である最初の Component を返します。 */
+    Component* findComponentByType(const TypeInfo* type) const;
+
+    bool traverse(detail::IWorldObjectVisitor* visitor);
+
+	LN_METHOD(Property)
+	ComponentList* components() const { return m_components; }
 
 protected:
     // 物理演算・衝突判定の前
     virtual void onPreUpdate();
 
-    // フレーム更新
+	/** フレーム更新 */
+	LN_METHOD()
     virtual void onUpdate(float elapsedSeconds);
 
     virtual void onRender();
 
 
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
+
+
+	LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
@@ -182,8 +210,9 @@ public: // TODO:
     void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
     bool isSpecialObject() const { return m_isSpecialObject; }
     detail::WorldObjectTransform* transform() const { return m_transform; }
-	void attachWorld(World* world);
-	void detachWorld();
+	void attachScene(Scene* scene);
+	void detachScene();
+	void start();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
     void render();
@@ -191,11 +220,12 @@ public: // TODO:
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();
 
-    World* m_world;
+    Scene* m_scene;
     WorldObject* m_parent;
     Ref<detail::WorldObjectTransform> m_transform;
     Ref<List<String>> m_tags;
-    Ref<List<Ref<Component>>> m_components;
+    //Ref<List<Ref<Component>>> m_components;
+	Ref<ComponentList> m_components;
     Ref<List<Ref<WorldObject>>> m_children;
     Flags<DirtyFlags> m_dirtyFlags;
     Matrix m_worldMatrix;
@@ -203,6 +233,30 @@ public: // TODO:
 	bool m_destroyed;
 
     friend class World;
+    friend class Scene;
 };
 
+namespace ed {
+
+class WorldObjectAsset
+	: public AssetModel
+{
+	LN_OBJECT;
+public:
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(Archive& ar);
+
+LN_CONSTRUCT_ACCESS:
+	WorldObjectAsset();
+	void init();
+
+private:
+	Vector3 m_position;
+	Vector3 m_angles;
+	Vector3 m_scale;
+};
+
+} // namespace ed
 } // namespace ln

@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/DepthBuffer.hpp>
 #include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
 #include <LuminoEngine/Rendering/Common.hpp>
-#include "../Engine/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 
 namespace ln {
 class Shader;
@@ -16,6 +16,7 @@ namespace detail {
 class RenderStage;
 class DrawElementList;
 class DrawElementListBuilder;
+class RenderFeatureBatchList;
 struct ElementInfo;
 struct SubsetInfo;
 
@@ -152,6 +153,7 @@ public:
 	Optional<bool>				m_depthTestEnabled;
 	Optional<bool>				m_depthWriteEnabled;
 	Optional<ShadingModel>		shadingModel;
+	PrimitiveTopology primitiveTopology;
 
 	GeometryStageParameters()
 	{
@@ -166,6 +168,7 @@ public:
 		m_depthTestEnabled = nullptr;
 		m_depthWriteEnabled = nullptr;
 		shadingModel = nullptr;
+		primitiveTopology = PrimitiveTopology::TriangleList;
 		//builtinEffectData.reset();
 	}
 
@@ -177,7 +180,8 @@ public:
             m_cullingMode == other->m_cullingMode &&
             m_depthTestEnabled == other->m_depthTestEnabled &&
             m_depthWriteEnabled == other->m_depthWriteEnabled &&
-            shadingModel == other->shadingModel;// &&
+            shadingModel == other->shadingModel &&
+			primitiveTopology == other->primitiveTopology;// &&
 			//builtinEffectData.equals(&other->builtinEffectData);
 	}
 
@@ -210,12 +214,6 @@ private:
 	size_t m_typeId;
 };
 
-enum class RenderDrawElementType
-{
-	Geometry,	// Material を用いてポリゴンを描画する
-	Clear,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
-};
-
 // インスタンスは DrawElementList の LinearAllocator に配置される。
 // clear や draw 系のメソッド呼び出しをおこなう。
 // ステートは変更するべきではない。
@@ -228,19 +226,19 @@ public:
 
     // SkinnedMesh の BoneMatrix を書き込むために用意してある。
     // それ以外の要素の変更は想定していない。
-    virtual void onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess);
+    //virtual void onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess);
 
     // 必要に応じて SubsetInfo の調整を行う。
     // 特に不透明度の操作など、Phase との整合性に注意すること。
     // 現在は blit のような特殊な用途に置いて、Material 確保などのメモリ節約のために使用している。
-    virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo);
+    //virtual void onSubsetInfoOverride(SubsetInfo* subsetInfo);
 
 	// 描画実行。
 	// 純粋に描画のみを行うこと。
 	// ステートは RenderFeature::onStateChanged に通知済み。
 	// もしどうしてもステートを変更したい場合、描画した後は必ず元に戻さなければならない。
 	// この中で使えるのは GraphicsContext のみ。RenderingContext や Device 側の機能を呼び出してはならない。
-	virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeature) = 0;
+	virtual RequestBatchResult onRequestBatch(RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const SubsetInfo* subsetInfo) = 0;
 
     // DrawElementListBuilder で DrawElement が作られたときに確定する。
 	const Matrix& combinedWorldMatrix() const { return m_combinedWorldMatrix; }
@@ -290,7 +288,7 @@ private:
  * State と Command(DrawElement) を固めて持っておくイメージ。
  * 基本的にどんなタイミングでも、「RenderStage を描画」すれば同じジオメトリが表示される。
  * 
- * 
+ * ↑× なんやかんややっているうちに、単なる state の塊になってきた。
  * 
  * 
  */
@@ -335,11 +333,11 @@ public:
 
 
 	AbstractMaterial* getMaterialFinal(AbstractMaterial* priorityValue, AbstractMaterial* sceneDefaultMaterial) const;
-	ShadingModel getShadingModelFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
-	BlendMode getBlendModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	CullMode getCullingModeFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-    ComparisonFunc getDepthTestFuncFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	bool isDepthWriteEnabledFinal(AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	ShadingModel getShadingModelFinal(const AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
+	BlendMode getBlendModeFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	CullMode getCullingModeFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+    ComparisonFunc getDepthTestFuncFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	bool isDepthWriteEnabledFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	//const Matrix& getTransformFinal() const { return geometryStageParameters->; }
 	//Brush* getBrushFinal() const { return renderingContextParameters.getBrush(); }
 	//Pen* getPenFinal() const { return nullptr; }	// TODO:
@@ -352,6 +350,9 @@ public:
     const Color& getBlendColorFinal(RenderDrawElement* element) const;
     const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
+	//static void applyFrameBufferStatus(RenderPass* renderPass, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
+	static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const AbstractMaterial* priorityMaterial);
+	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 private:
 

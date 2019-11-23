@@ -6,49 +6,70 @@
 namespace ln {
 
 //==============================================================================
-// UILayoutPanel
+// UILayoutPanel2
 
-UILayoutPanel::UILayoutPanel()
+UILayoutPanel2::UILayoutPanel2()
+    : m_ownerItemsControl(nullptr)
 {
+    //m_isHitTestVisible = false;
 }
 
-void UILayoutPanel::init()
+void UILayoutPanel2::init()
 {
-	objectManagementFlags().set(detail::ObjectManagementFlags::AutoAddToActiveScene, false);
     UIElement::init();
-	setHorizontalAlignment(HAlignment::Stretch);
-	setVerticalAlignment(VAlignment::Stretch);
 }
 
-int UILayoutPanel::getVisualChildrenCount() const
+void UILayoutPanel2::removeChild(UIElement* child)
 {
-	return m_layoutOwnerLogicalChildren.size();
+    if (LN_REQUIRE(child)) return;
+    m_logicalChildren.remove(child);
+    removeVisualChild(child);
 }
 
-UIElement* UILayoutPanel::getVisualChild(int index) const
+void UILayoutPanel2::removeAllChildren()
 {
-	return m_layoutOwnerLogicalChildren[index];
+    for (auto& child : m_logicalChildren) {
+        removeVisualChild(child);
+    }
+    m_logicalChildren.clear();
 }
 
-void UILayoutPanel::addLayoutOwnerLogicalChild(UIElement* element)
+void UILayoutPanel2::onDispose(bool explicitDisposing)
 {
-	m_layoutOwnerLogicalChildren.add(element);
+    removeAllChildren();
+    UIElement::onDispose(explicitDisposing);
 }
 
-void UILayoutPanel::removeLayoutOwnerLogicalChild(UIElement* element)
+void UILayoutPanel2::onAddChild(UIElement* child)
 {
-    m_layoutOwnerLogicalChildren.remove(element);
+    if (LN_REQUIRE(child)) return;
+    m_logicalChildren.add(child);
+    addVisualChild(child);
 }
 
-void UILayoutPanel::clearLayoutOwnerLogicalChildren()
-{
-	m_layoutOwnerLogicalChildren.clear();
-}
+float UILayoutPanel2::getExtentWidth() const { return m_desiredSize.width; }
+float UILayoutPanel2::getExtentHeight() const { return m_desiredSize.height; }
+float UILayoutPanel2::getViewportWidth() const { return actualSize().width; }
+float UILayoutPanel2::getViewportHeight() const { return actualSize().height; }
+void UILayoutPanel2::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
+float UILayoutPanel2::getHorizontalOffset() const { return m_scrollOffset.x; }
+void UILayoutPanel2::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }
+float UILayoutPanel2::getVerticalOffset() const { return m_scrollOffset.y; }
+
 
 //==============================================================================
-// UIFrameLayout
+// UIFrameLayout2
 
-Size UIFrameLayout::measureOverride(const Size& constraint)
+UIFrameLayout2::UIFrameLayout2()
+{
+}
+
+void UIFrameLayout2::init()
+{
+    UILayoutPanel2::init();
+}
+
+Size UIFrameLayout2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     //Size size = element->TElementBaseClass::measureOverride(constraint);
 
@@ -64,10 +85,11 @@ Size UIFrameLayout::measureOverride(const Size& constraint)
     //}
 
     //return Size::min(constraint, Size::max(size, childMaxSize));
-    return UIElement::measureOverride(constraint);
+    //return UIElement::measureOverride(constraint);
+	return UIFrameLayout2::staticMeasureOverride(layoutContext, this, constraint);
 }
 
-Size UIFrameLayout::arrangeOverride(const Size& finalSize)
+Size UIFrameLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
 #if 0
     //Thickness canvas;
@@ -188,56 +210,625 @@ Size UIFrameLayout::arrangeOverride(const Size& finalSize)
     }
 #endif
 
+	return UIFrameLayout2::staticArrangeOverride(layoutContext, this, finalSize);
+    //return finalSize;
+}
+
+Size UIFrameLayout2::staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
+{
+    int childrenCount = ownerElement->getVisualChildrenCount();
+    Size childMaxSize(0, 0);
+    for (int i = 0; i < childrenCount; i++)
+    {
+        UIElement* child = ownerElement->getVisualChild(i);
+        child->measureLayout(layoutContext, constraint);
+        const Size& desiredSize = child->desiredSize();
+        childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+        childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+    }
+    return childMaxSize;
+}
+
+Size UIFrameLayout2::staticMeasureOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& constraint)
+{
+    Size childMaxSize = staticMeasureChildrenAreaSize(layoutContext, ownerElement, constraint);
+
+    return detail::LayoutHelper::measureElement(ownerElement, constraint, childMaxSize);
+
+    //auto selfSize = ownerElement->UIElement::measureOverride(constraint);
+    //return Size::max(selfSize, childMaxSize);
+
+    //Size size = Size(ownerElement->width(), ownerElement->height());
+    //size.width = Math::isNaN(size.width) ? 0.0 : size.width;
+    //size.height = Math::isNaN(size.height) ? 0.0 : size.height;
+    //return Size::min(constraint, Size::max(size, childMaxSize));
+}
+
+Size UIFrameLayout2::staticArrangeChildrenArea(UILayoutContext* layoutContext, UIElement* ownerElement, const Rect& finalArea)
+{
+    int childrenCount = ownerElement->getVisualChildrenCount();
+    for (int i = 0; i < childrenCount; i++)
+    {
+        UIElement* child = ownerElement->getVisualChild(i);
+
+        Rect slotRect;
+        detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+
+        child->arrangeLayout(layoutContext, slotRect);
+    }
+    return finalArea.getSize();
+}
+
+Size UIFrameLayout2::staticArrangeOverride(UILayoutContext* layoutContext, UIElement* ownerElement, const Size& finalSize)
+{
+    //const Thickness& padding = ownerElement->finalStyle()->padding;
+    //Point childrenOffset(padding.left, padding.top);
+    ////Size childrenBoundSize = finalSize;//(finalSize.width - padding.right, finalSize.height - padding.bottom);
+    //Size childrenBoundSize(finalSize.width - padding.width(), finalSize.height - padding.height());
+    //Rect bounds(childrenOffset, childrenBoundSize);
+	Rect contentArea = detail::LayoutHelper::arrangeClientArea(ownerElement, finalSize);
+
+    staticArrangeChildrenArea(layoutContext, ownerElement, contentArea);
+
     return finalSize;
 }
 
-Size UIFrameLayout::staticMeasureOverride(UIElement* ownerElement, const Size& constraint)
-{
-	int childrenCount = ownerElement->getVisualChildrenCount();
-	Size childMaxSize(0, 0);
-	for (int i = 0; i < childrenCount; i++)
-	{
-		UIElement* child = ownerElement->getVisualChild(i);
-		child->measureLayout(constraint);
-		const Size& desiredSize = child->desiredSize();
-		childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
-		childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
-	}
+//==============================================================================
+// UIStackLayout2
 
-	Size size = ownerElement->getLayoutSize();
-	size.width = Math::isNaN(size.width) ? 0.0 : size.width;
-	size.height = Math::isNaN(size.height) ? 0.0 : size.height;
-	return Size::min(constraint, Size::max(size, childMaxSize));
+Ref<UIStackLayout2> UIStackLayout2::create()
+{
+    return makeObject<UIStackLayout2>();
 }
 
-Size UIFrameLayout::staticArrangeOverride(UIElement* ownerElement, const Size& finalSize)
+UIStackLayout2::UIStackLayout2()
+    : m_orientation(Orientation::Vertical)
 {
-	const Thickness& padding = ownerElement->finalStyle()->padding;
-	Point childrenOffset(padding.left, padding.top);
-    //Size childrenBoundSize = finalSize;//(finalSize.width - padding.right, finalSize.height - padding.bottom);
-    Size childrenBoundSize(finalSize.width - padding.width(), finalSize.height - padding.height());
-	Rect bounds(childrenOffset, childrenBoundSize);
+}
 
-	int childrenCount = ownerElement->getVisualChildrenCount();
-	for (int i = 0; i < childrenCount; i++)
-	{
-		UIElement* child = ownerElement->getVisualChild(i);
-		child->arrangeLayout(bounds);
+void UIStackLayout2::init()
+{
+    UILayoutPanel2::init();
+}
+
+void UIStackLayout2::addChild(UIElement* element, UILayoutLengthType type)
+{
+    UILayoutPanel2::addChild(element);
+    CellDefinition cell;
+    cell.type = type;
+    m_cellDefinitions.add(cell);
+}
+
+Size UIStackLayout2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    int childCount = getVisualChildrenCount();
+
+    // Create missing cells.
+    if (m_cellDefinitions.size() < childCount) {
+        m_cellDefinitions.resize(childCount);
+    }
+
+    Size size = constraint;
+
+    if (m_orientation == Orientation::Horizontal) {
+        // 横に並べる場合、幅の制限を設けない
+        size.width = std::numeric_limits<float>::infinity();
+    }
+    else {
+        // 縦に並べる場合、高さの制限を設けない
+        size.height = std::numeric_limits<float>::infinity();
+    }
+
+    Size desiredSize;
+    for (int i = 0; i < childCount; i++)
+    {
+        UIElement* child = getVisualChild(i);
+        if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) {   // TODO: layoutcontext のメソッドで判定
+            m_cellDefinitions[i].desiredSize = 0;
+            continue;
+        }
+        child->measureLayout(layoutContext, size);
+
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
+        if (isHorizontal()) {
+            desiredSize.width += childDesiredSize.width;
+            desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+            m_cellDefinitions[i].desiredSize = childDesiredSize.width;
+        }
+        else {
+            desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+            desiredSize.height += childDesiredSize.height;
+            m_cellDefinitions[i].desiredSize = childDesiredSize.height;
+        }
+    }
+
+    return desiredSize;
+}
+
+Size UIStackLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+    const Thickness& padding = finalStyle()->padding;
+    Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
+
+
+
+    float boundSize = 0.0f;
+    if (isHorizontal())
+        boundSize = childrenBoundSize.width;
+    else
+        boundSize = childrenBoundSize.height;
+
+    // Fix size of 'Auto' and 'Direct', and count 'Ratio'
+    float totalActualSize = 0.0f;
+    float ratioCellCount = 0.0f;
+    for (auto& cell : m_cellDefinitions) {
+        if (cell.type == UILayoutLengthType::Ratio) {
+            ratioCellCount += cell.size;
+        }
+        else {
+            if (cell.type == UILayoutLengthType::Auto) {
+                // measure で計算した desiredSize をそのまま使う
+            }
+            else if (cell.type == UILayoutLengthType::Direct) {
+                cell.desiredSize = cell.size;
+            }
+            totalActualSize += cell.desiredSize;
+        }
+    }
+
+    // "1*" 分のセルの領域を計算する
+    float ratioUnit = (ratioCellCount != 0.0f) ? (boundSize - totalActualSize) / ratioCellCount : 0.0f;
+    ratioUnit = std::max(0.0f, ratioUnit);	// 負値はダメ
+
+    // "*" 指定である Row/Column の最終サイズを確定させ、
+    // 全セルのオフセット (位置) も確定させる
+    float totalOffset = 0.0f;
+    for (int i = 0; i < m_cellDefinitions.size(); i++) {
+        auto& cell = m_cellDefinitions[i];
+        if (cell.type == UILayoutLengthType::Ratio) {
+            cell.desiredSize = ratioUnit * cell.size;
+        }
+
+        cell.actualOffset = totalOffset;
+
+        //if (i == m_cellDefinitions.size() - 1 && cell.type == UILayoutLengthType::Auto) {
+        //    cell.actualSize = Math::clamp(boundSize - cell.actualOffset, cell.minSize, cell.maxSize);
+        //}
+        //else {
+            cell.actualSize = Math::clamp(cell.desiredSize, cell.minSize, cell.maxSize);
+        //}
+
+        totalOffset += cell.actualSize;
+    }
+
+    // 子要素の最終位置・サイズを確定させる
+    int childCount = getVisualChildrenCount();
+    if (isHorizontal()) {
+        for (int iChild = 0; iChild < childCount; iChild++) {
+            auto* child = getVisualChild(iChild);
+            if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) continue; // TODO: layoutcontext のメソッドで判定
+            auto& cell = m_cellDefinitions[iChild];
+            Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
+            child->arrangeLayout(layoutContext, childRect);
+        }
+    }
+    else {
+        for (int iChild = 0; iChild < childCount; iChild++) {
+            auto* child = getVisualChild(iChild);
+            if (child->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup)) continue; // TODO: layoutcontext のメソッドで判定
+            auto& cell = m_cellDefinitions[iChild];
+            Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
+            child->arrangeLayout(layoutContext, childRect);
+        }
+    }
+
+    // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
+    return selfSize;
+
+#if 0
+    float prevChildSize = 0;
+    float rPos = 0;
+    Rect childRect(padding.left, padding.top, 0, 0);
+    int childCount = getVisualChildrenCount();
+    for (int i = 0; i < childCount; i++)
+    {
+        UIElement* child = getVisualChild(i);
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
+
+        switch (m_orientation)
+        {
+        case Orientation::Horizontal:
+            childRect.x += prevChildSize;
+            prevChildSize = childDesiredSize.width;
+            childRect.width = prevChildSize;
+            childRect.height = childrenBoundSize.height;
+            break;
+        case Orientation::Vertical:
+            childRect.y += prevChildSize;
+            prevChildSize = childDesiredSize.height;
+            childRect.width = childrenBoundSize.width;
+            childRect.height = prevChildSize;
+            break;
+        case Orientation::ReverseHorizontal:
+            prevChildSize = childDesiredSize.width;
+            rPos -= prevChildSize;
+            childRect.x = childrenBoundSize.width + rPos;
+            childRect.width = prevChildSize;
+            childRect.height = childrenBoundSize.height;
+            break;
+        case Orientation::ReverseVertical:
+            prevChildSize = childDesiredSize.height;
+            rPos -= prevChildSize;
+            childRect.y = childrenBoundSize.height + rPos;
+            childRect.width = childrenBoundSize.width;
+            childRect.height = prevChildSize;
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+
+        child->arrangeLayout(childRect);
+    }
+
+    return finalSize;
+#endif
+}
+
+//==============================================================================
+// UIHBoxLayout2
+
+void UIHBoxLayout2::init()
+{
+    UIStackLayout2::init();
+    setOrientation(Orientation::Horizontal);
+}
+
+//==============================================================================
+// UIVBoxLayout2
+
+void UIVBoxLayout2::init()
+{
+    UIStackLayout2::init();
+    setOrientation(Orientation::Vertical);
+}
+
+//==============================================================================
+// UIBoxLayout3
+
+UIBoxLayout3::UIBoxLayout3()
+    : m_orientation(Orientation::Vertical)
+{
+}
+
+void UIBoxLayout3::init()
+{
+    UILayoutPanel2::init();
+}
+
+Size UIBoxLayout3::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    int childCount = getVisualChildrenCount();
+
+    // Create missing cells.
+    if (m_cellDefinitions.size() < childCount) {
+        m_cellDefinitions.resize(childCount);
+    }
+
+    Size size = constraint;
+
+    if (m_orientation == Orientation::Horizontal) {
+        // 横に並べる場合、幅の制限を設けない
+        size.width = std::numeric_limits<float>::infinity();
+    }
+    else {
+        // 縦に並べる場合、高さの制限を設けない
+        size.height = std::numeric_limits<float>::infinity();
+    }
+
+    Size desiredSize;
+    for (int i = 0; i < childCount; i++)
+    {
+        UIElement* child = getVisualChild(i);
+        child->measureLayout(layoutContext, size);
+
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
+        if (isHorizontal()) {
+            desiredSize.width += childDesiredSize.width;
+            desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+            m_cellDefinitions[i].desiredSize = childDesiredSize.width;
+        }
+        else {
+            desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+            desiredSize.height += childDesiredSize.height;
+            m_cellDefinitions[i].desiredSize = childDesiredSize.height;
+        }
+    }
+
+    return desiredSize;
+}
+
+Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+    const Thickness& padding = finalStyle()->padding;
+    Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
+    int actualCellCount = m_logicalChildren.size();
+
+
+    float boundSize = 0.0f;
+    if (isHorizontal())
+        boundSize = childrenBoundSize.width;
+    else
+        boundSize = childrenBoundSize.height;
+
+    // Fix size of 'Auto' and 'Direct', and count 'Ratio'
+    float totalActualSize = 0.0f;
+    float ratioCellCount = 0.0f;
+    for (int iCell = 0; iCell < actualCellCount; iCell++) {
+        auto type = layoutType(iCell);
+        if (type == UILayoutLengthType::Ratio) {
+            ratioCellCount += layoutWeight(iCell);
+        }
+        else {
+            if (type == UILayoutLengthType::Auto) {
+                // measure で計算した desiredSize をそのまま使う
+            }
+            else if (type == UILayoutLengthType::Direct) {
+                m_cellDefinitions[iCell].desiredSize = layoutDirectSize(iCell);
+            }
+            totalActualSize += m_cellDefinitions[iCell].desiredSize;
+        }
+    }
+
+    // "1*" 分のセルの領域を計算する
+    float ratioUnit = (ratioCellCount != 0.0f) ? (boundSize - totalActualSize) / ratioCellCount : 0.0f;
+    ratioUnit = std::max(0.0f, ratioUnit);	// 負値はダメ
+
+    // "*" 指定である Row/Column の最終サイズを確定させ、
+    // 全セルのオフセット (位置) も確定させる
+    float totalOffset = 0.0f;
+    for (int iCell = 0; iCell < actualCellCount; iCell++) {
+        auto& cell = m_cellDefinitions[iCell];
+        if (layoutType(iCell) == UILayoutLengthType::Ratio) {
+            cell.desiredSize = ratioUnit * layoutWeight(iCell);
+        }
+
+        float minSize, maxSize;
+        getLayoutMinMaxSize(iCell, &minSize, &maxSize);
+
+        cell.actualOffset = totalOffset;
+        cell.actualSize = Math::clamp(cell.desiredSize, minSize, maxSize);
+        totalOffset += cell.actualSize;
+    }
+
+    // 子要素の最終位置・サイズを確定させる
+    int childCount = getVisualChildrenCount();
+    if (isHorizontal()) {
+        for (int iChild = 0; iChild < childCount; iChild++) {
+            auto* child = getVisualChild(iChild);
+            auto& cell = m_cellDefinitions[iChild];
+            Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
+            child->arrangeLayout(layoutContext, childRect);
+        }
+    }
+    else {
+        for (int iChild = 0; iChild < childCount; iChild++) {
+            auto* child = getVisualChild(iChild);
+            auto& cell = m_cellDefinitions[iChild];
+            Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
+            child->arrangeLayout(layoutContext, childRect);
+        }
+    }
+
+    // 子要素のレイアウトは UIControl に任せず自分でやるので不要。そのベースを呼ぶ。
+    Size selfSize = UIElement::arrangeOverride(layoutContext, finalSize);
+    return selfSize;
+}
+
+UILayoutLengthType UIBoxLayout3::layoutType(int index) const
+{
+    auto& child = m_logicalChildren[index];
+
+    if (isHorizontal()) {
+        if (!Math::isNaN(child->m_finalStyle->width)) {
+            return UILayoutLengthType::Direct;
+        }
+    }
+    else {
+        if (!Math::isNaN(child->m_finalStyle->height)) {
+            return UILayoutLengthType::Direct;
+        }
+    }
+
+    auto& info = child->m_gridLayoutInfo;
+    if (!info)
+        return UILayoutLengthType::Auto;
+    if (info->layoutWeight <= 0.0)
+        return UILayoutLengthType::Auto;
+    else
+        return UILayoutLengthType::Ratio;
+}
+
+float UIBoxLayout3::layoutWeight(int index) const
+{
+    auto& child = m_logicalChildren[index];
+    if (child->m_gridLayoutInfo)
+        return child->m_gridLayoutInfo->layoutWeight;
+    else
+        return 0.0f;
+}
+
+float UIBoxLayout3::layoutDirectSize(int index) const
+{
+    auto& child = m_logicalChildren[index];
+    if (isHorizontal()) {
+        if (!Math::isNaN(child->m_finalStyle->width)) {
+            return child->m_finalStyle->width;
+        }
+    }
+    else {
+        if (!Math::isNaN(child->m_finalStyle->height)) {
+            return child->m_finalStyle->height;
+        }
+    }
+    return 0.0f;
+}
+
+void UIBoxLayout3::getLayoutMinMaxSize(int index, float* minSize, float* maxSize) const
+{
+    *minSize = 0.0f;
+    *maxSize = FLT_MAX;
+
+    auto& child = m_logicalChildren[index];
+    if (isHorizontal()) {
+        if (!Math::isNaN(child->m_finalStyle->minWidth))
+            *minSize = child->m_finalStyle->minWidth;
+        if (!Math::isNaN(child->m_finalStyle->width))
+            *maxSize = child->m_finalStyle->maxWidth;
+    }
+    else {
+        if (!Math::isNaN(child->m_finalStyle->minHeight))
+            *minSize = child->m_finalStyle->minHeight;
+        if (!Math::isNaN(child->m_finalStyle->maxHeight))
+            *maxSize = child->m_finalStyle->maxHeight;
+    }
+}
+
+//==============================================================================
+// UISwitchLayout
+
+UISwitchLayout::UISwitchLayout()
+	: m_activeIndex(0)
+{
+}
+
+void UISwitchLayout::setActiveIndex(int index)
+{
+	m_activeIndex = index;
+	invalidateLayout();
+}
+
+void UISwitchLayout::setActive(UIElement* child)
+{
+    m_activeIndex = m_logicalChildren.indexOf(child);
+    invalidateLayout();
+}
+
+void UISwitchLayout::init()
+{
+	UIFrameLayout2::init();
+}
+
+Size UISwitchLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+	for (int i = 0; i < m_logicalChildren.size(); i++) {
+		if (i == m_activeIndex)
+			m_logicalChildren[i]->m_internalVisibility = UIVisibility::Visible;
+		else
+			m_logicalChildren[i]->m_internalVisibility = UIVisibility::Collapsed;
 	}
 
-	return finalSize;
+	return UIFrameLayout2::measureOverride(layoutContext, constraint);
 }
+
+
+
+//==============================================================================
+// UILayoutPanel
+
+UILayoutPanel::UILayoutPanel()
+{
+}
+
+void UILayoutPanel::init()
+{
+    Object::init();
+}
+
+void UILayoutPanel::measureLayout(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& availableSize)
+{
+    m_desiredSize = measureOverride(layoutContext, childElements, availableSize);
+}
+
+void UILayoutPanel::arrangeLayout(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
+{
+    Rect rect = finalSlotRect;
+    rect.x -= m_scrollOffset.x;
+    rect.y -= m_scrollOffset.y;
+    m_actualSize = arrangeOverride(layoutContext, childElements, rect);
+}
+
+float UILayoutPanel::getExtentWidth() const { return m_desiredSize.width; }
+float UILayoutPanel::getExtentHeight() const { return m_desiredSize.height; }
+float UILayoutPanel::getViewportWidth() const { return m_actualSize.width; }
+float UILayoutPanel::getViewportHeight() const { return m_actualSize.height; }
+void UILayoutPanel::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
+float UILayoutPanel::getHorizontalOffset() const { return m_scrollOffset.x; }
+void UILayoutPanel::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }
+float UILayoutPanel::getVerticalOffset() const { return m_scrollOffset.y; }
 
 //==============================================================================
 // UIFrameLayout
 
+Ref<UIFrameLayout> UIFrameLayout::create()
+{
+    return makeObject<UIFrameLayout>();
+}
+
+UIFrameLayout::UIFrameLayout()
+{
+}
+
+UIFrameLayout::~UIFrameLayout()
+{
+}
+
+void UIFrameLayout::init()
+{
+    UILayoutPanel::init();
+}
+
+Size UIFrameLayout::measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint)
+{
+    int childrenCount = childElements->getElementCount();
+    Size childMaxSize(0, 0);
+    for (int i = 0; i < childrenCount; i++)
+    {
+        UIElement* child = childElements->getElement(i);
+        child->measureLayout(layoutContext, constraint);
+        const Size& desiredSize = child->desiredSize();
+        childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+        childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+    }
+    return childMaxSize;
+}
+
+Size UIFrameLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
+{
+    Rect bounds(finalSlotRect);
+
+    int childrenCount = childElements->getElementCount();
+    for (int i = 0; i < childrenCount; i++)
+    {
+        UIElement* child = childElements->getElement(i);
+        child->arrangeLayout(layoutContext, bounds);
+    }
+
+    return finalSlotRect.getSize();
+}
+
+
+//==============================================================================
+// UIStackLayout
+
 Ref<UIStackLayout> UIStackLayout::create()
 {
-	return newObject<UIStackLayout>();
+    return makeObject<UIStackLayout>();
 }
 
 UIStackLayout::UIStackLayout()
-	: m_orientation(Orientation::Vertical)
+    : m_orientation(Orientation::Vertical)
 {
 }
 
@@ -247,98 +838,112 @@ UIStackLayout::~UIStackLayout()
 
 void UIStackLayout::init()
 {
-	UILayoutPanel::init();
+    UILayoutPanel::init();
 }
 
-Size UIStackLayout::measureOverride(const Size& constraint)
+Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint)
 {
-	Size size = constraint;
+    Size size = constraint;
 
-	if (m_orientation == Orientation::Horizontal) {
-		// 横に並べる場合、幅の制限を設けない
-		size.width = std::numeric_limits<float>::infinity();
-	}
-	else {
-		// 縦に並べる場合、高さの制限を設けない
-		size.height = std::numeric_limits<float>::infinity();
-	}
+    if (m_orientation == Orientation::Horizontal) {
+        // 横に並べる場合、幅の制限を設けない
+        size.width = std::numeric_limits<float>::infinity();
+    }
+    else {
+        // 縦に並べる場合、高さの制限を設けない
+        size.height = std::numeric_limits<float>::infinity();
+    }
 
-	Size desiredSize;
-	int childCount = getVisualChildrenCount();
-	for (int i = 0; i < childCount; i++)
-	{
-		UIElement* child = getVisualChild(i);
-		child->measureLayout(size);
+    Size desiredSize;
+    int childCount = childElements->getElementCount();
+    for (int i = 0; i < childCount; i++)
+    {
+        UIElement* child = childElements->getElement(i);
+        child->measureLayout(layoutContext, size);
 
-		const Size& childDesiredSize = child->getLayoutDesiredSize();
-		if (m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal) {
-			desiredSize.width += childDesiredSize.width;
-			desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
-		}
-		else {
-			desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-			desiredSize.height += child->getLayoutDesiredSize().height;
-		}
-	}
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
+        if (m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal) {
+            desiredSize.width += childDesiredSize.width;
+            desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+        }
+        else {
+            desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+            desiredSize.height += child->getLayoutDesiredSize().height;
+        }
+    }
 
-	return desiredSize;
+    return desiredSize;
 }
 
-Size UIStackLayout::arrangeOverride(const Size& finalSize)
+Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
 {
-	const Thickness& padding = finalStyle()->padding; //  static_cast<ILayoutElement*>(panel)->getLayoutPadding();
+    Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
+    //Size selfBounds(FLT_MAX, FLT_MAX);
+    //if (stretch) {
+    //    selfBounds = finalSlotRect.getSize();
+    //}
 
+    float prevChildSize = 0;
+    float rPos = 0;
+    Rect childRect(0, 0, 0, 0);
+    int childCount = childElements->getElementCount();
+    for (int i = 0; i < childCount; i++)
+    {
+        UIElement* child = childElements->getElement(i);
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
 
-	//ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-	//Size childrenBoundSize(finalSize.width, finalSize.height);	
-	Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
+        switch (m_orientation)
+        {
+        case Orientation::Horizontal:
+            childRect.x += prevChildSize;
+            prevChildSize = childDesiredSize.width;
+            childRect.width = prevChildSize;
+            childRect.height = childrenBoundSize.height;
+            break;
+        case Orientation::Vertical:
+            childRect.y += prevChildSize;
+            prevChildSize = childDesiredSize.height;
+            childRect.width = childrenBoundSize.width;
+            childRect.height = prevChildSize;
+            break;
+        case Orientation::ReverseHorizontal:
+            prevChildSize = childDesiredSize.width;
+            rPos -= prevChildSize;
+            childRect.x = childrenBoundSize.width + rPos;
+            childRect.width = prevChildSize;
+            childRect.height = childrenBoundSize.height;
+            break;
+        case Orientation::ReverseVertical:
+            prevChildSize = childDesiredSize.height;
+            rPos -= prevChildSize;
+            childRect.y = childrenBoundSize.height + rPos;
+            childRect.width = childrenBoundSize.width;
+            childRect.height = prevChildSize;
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
 
-	float prevChildSize = 0;
-	float rPos = 0;
-	Rect childRect(padding.left, padding.top, 0, 0);
-	int childCount = getVisualChildrenCount();
-	for (int i = 0; i < childCount; i++)
-	{
-		UIElement* child = getVisualChild(i);
-		const Size& childDesiredSize = child->getLayoutDesiredSize();
+        Rect actual(finalSlotRect.x + childRect.x, finalSlotRect.y + childRect.y, childRect.width, childRect.height);
+        if (lastStretch && i == childCount - 1) {
+            actual.width = finalSlotRect.width - actual.x;
+            actual.height = finalSlotRect.height - actual.y;
+        }
 
-		switch (m_orientation)
-		{
-		case Orientation::Horizontal:
-			childRect.x += prevChildSize;
-			prevChildSize = childDesiredSize.width;
-			childRect.width = prevChildSize;
-			childRect.height = childrenBoundSize.height;
-			break;
-		case Orientation::Vertical:
-			childRect.y += prevChildSize;
-			prevChildSize = childDesiredSize.height;
-			childRect.width = childrenBoundSize.width;
-			childRect.height = prevChildSize;
-			break;
-		case Orientation::ReverseHorizontal:
-			prevChildSize = childDesiredSize.width;
-			rPos -= prevChildSize;
-			childRect.x = childrenBoundSize.width + rPos;
-			childRect.width = prevChildSize;
-			childRect.height = childrenBoundSize.height;
-			break;
-		case Orientation::ReverseVertical:
-			prevChildSize = childDesiredSize.height;
-			rPos -= prevChildSize;
-			childRect.y = childrenBoundSize.height + rPos;
-			childRect.width = childrenBoundSize.width;
-			childRect.height = prevChildSize;
-			break;
-		default:
-			LN_UNREACHABLE();
-			break;
-		}
+        child->arrangeLayout(layoutContext, actual);
+    }
 
-		child->arrangeLayout(childRect);
-	}
+    return finalSlotRect.getSize();
+}
 
-	return finalSize;
+//==============================================================================
+// UIVBoxLayout
+
+void UIVBoxLayout::init()
+{
+    UIStackLayout::init();
+    setOrientation(Orientation::Vertical);
 }
 
 } // namespace ln

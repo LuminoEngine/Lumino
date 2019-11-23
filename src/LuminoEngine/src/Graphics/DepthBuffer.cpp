@@ -12,7 +12,7 @@ namespace ln {
 
 Ref<DepthBuffer> DepthBuffer::create(int width, int height)
 {
-    return newObject<DepthBuffer>(width, height);
+    return makeObject<DepthBuffer>(width, height);
 }
 
 Ref<DepthBuffer> DepthBuffer::getTemporary(int width, int height)
@@ -58,7 +58,7 @@ void DepthBuffer::onChangeDevice(detail::IGraphicsDevice* device)
     }
 }
 
-detail::IDepthBuffer* DepthBuffer::resolveRHIObject(bool* outModified)
+detail::IDepthBuffer* DepthBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = false;
     return m_rhiObject;

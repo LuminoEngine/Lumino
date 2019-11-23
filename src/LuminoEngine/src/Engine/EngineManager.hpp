@@ -7,19 +7,23 @@
 #include "FpsController.hpp"
 
 namespace ln {
+class DiagnosticsManager;
 class EngineContext;
+class Application;
 class UIContext;
-class UIFrameWindow;
+class UIMainWindow;
 class UIViewport;
 class UIRenderView;
-class UIContainerElement;
+class UIControl;
 class PhysicsWorld;
 class PhysicsWorld2D;
 class World;
+class Scene;
 class WorldRenderView;
 class Camera;
 class AmbientLight;
 class DirectionalLight;
+class UIEventArgs;
 
 namespace detail {
 class PlatformManager;
@@ -37,6 +41,7 @@ class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
+class RuntimeManager;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -46,7 +51,8 @@ struct EngineSettingsAssetArchiveEntry
 
 struct EngineSettings
 {
-    Flags<EngineFeature> features = EngineFeature::Public;
+    Application* application = nullptr;
+    Flags<EngineFeature> features = EngineFeature::Experimental;
 	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
 	SizeI mainBackBufferSize = SizeI(640, 480);
@@ -55,8 +61,20 @@ struct EngineSettings
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+    intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
+#ifdef LN_DEBUG
+	bool debugToolEnabled = true;
+#else
+	bool debugToolEnabled = false;
+#endif
+
+    bool defaultObjectsCreation = true;
+    bool useGLFWWindowSystem = true;
+    bool graphicsContextManagement = true;
+    bool externalMainLoop = true;
+    bool externalRenderingManagement = false;
     bool autoCoInitialize = true;
 };
 
@@ -82,12 +100,13 @@ public:
 	void initializeFontManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
-	//void initializeEffectManager();
+	void initializeEffectManager();
     void initializePhysicsManager();
 	void initializeAssetManager();
     void initializeVisualManager();
     void initializeSceneManager();
 	void initializeUIManager();
+	void initializeRuntimeManager();
 
 	bool updateUnitily();
 	void updateFrame();
@@ -108,21 +127,26 @@ public:
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
+    const Ref<EffectManager>& effectManager() const { return m_effectManager; }
     const Ref<PhysicsManager>& physicsManager() const { return m_physicsManager; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
+	const Ref<RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
 
     const FpsController& fpsController() const { return m_fpsController; }
+	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
-    void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
+    //void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
+	void setMainWindow(ln::UIMainWindow* window);
 
-	const Ref<UIFrameWindow>& mainWindow() const { return m_mainWindow; }
+    const Ref<UIContext>& mainUIContext() const { return m_mainUIContext; }
+	const Ref<UIMainWindow>& mainWindow() const { return m_mainWindow; }
     const Ref<UIViewport>& mainViewport() const { return m_mainViewport; }
-	const Ref<UIContainerElement>& mainUIRoot() const { return m_mainUIRoot; }
+	const Ref<UIControl>& mainUIView() const { return m_mainUIRoot; }
     const Ref<World>& mainWorld() const { return m_mainWorld; }
     const Ref<Camera>& mainCamera() const { return m_mainCamera; }
     const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
@@ -132,7 +156,23 @@ public:
     const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 
 private:
+	enum class DebugToolMode
+	{
+		Disable,
+		Hidden,
+		Minimalized,
+		Activated,
+	};
+
+	//struct DebugToolState
+	//{
+	//	bool 
+	//};
+
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
+	void handleImGuiDebugLayer(UIEventArgs* e);
+	bool toggleDebugToolMode();
+	void setDebugToolMode(DebugToolMode mode);
 
 	EngineSettings m_settings;
 
@@ -146,23 +186,27 @@ private:
 	Ref<FontManager> m_fontManager;
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
-	//Ref<EffectManager>				m_effectManager;
-	//Ref<ModelManager>				m_modelManager;
+	Ref<EffectManager>				m_effectManager;
 	Ref<PhysicsManager>		m_physicsManager;
 	Ref<AssetManager>						m_assetManager;
     Ref<VisualManager>					m_visualManager;
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
+	Ref<RuntimeManager> m_runtimeManager;
 	FpsController m_fpsController;
 
+	Ref<DiagnosticsManager> m_activeDiagnostics;
+
+    //Application* m_application;
 	Path m_persistentDataPath;
 
     Ref<UIContext> m_mainUIContext;
-	Ref<UIFrameWindow> m_mainWindow;
+	Ref<UIMainWindow> m_mainWindow;
 	Ref<UIViewport> m_mainViewport;
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
-    Ref<UIContainerElement> m_mainUIRoot;   // m_mainUIRenderView の RootElement
+    Ref<UIControl> m_mainUIRoot;   // m_mainUIRenderView の RootElement
     Ref<World> m_mainWorld;
+    Ref<Scene> m_mainScene;
     Ref<Camera> m_mainCamera;
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;
@@ -172,7 +216,9 @@ private:
 
     float m_timeScale;
 	bool m_exitRequested;
-    bool m_showDebugFpsEnabled;
+ //   bool m_showDebugFpsEnabled;
+	//bool m_debugToolEnabled;
+	DebugToolMode m_debugToolMode;
 
 
 #if defined(LN_OS_WIN32)

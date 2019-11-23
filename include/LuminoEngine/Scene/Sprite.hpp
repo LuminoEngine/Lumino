@@ -13,9 +13,11 @@ class SpriteComponent;
  * デフォルトの BlendMode は Alpha です。
  * デフォルトの CullMode は None です。（両面表示となります）
  */
+LN_CLASS()
 class Sprite
 	: public VisualObject
 {
+	LN_OBJECT;
 public:
     static Ref<Sprite> create(Texture* texture, float width, float height);
 	static Ref<Sprite> create(SpriteFrameSet* frameSet);
@@ -28,7 +30,7 @@ public:
     void setSize(const Size& size);
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
-	LN_METHOD(Property)
+	//LN_METHOD(Property)
 	void setSourceRect(const Rect& rect);
 
 	/** @overload setSourceRect */
@@ -36,7 +38,7 @@ public:
 	void setSourceRect(float x, float y, float width, float height);
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
-	LN_METHOD(Property)
+	//LN_METHOD(Property)
 	const Rect& sourceRect() const;
 
 	/** SpriteFrameSet を設定します。 */
@@ -78,8 +80,13 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Sprite();
 	virtual ~Sprite();
+
 	void init();
+
+	/** init */
+	LN_METHOD()
     void init(Texture* texture, float width, float height);
+
 	void init(SpriteFrameSet* frameSet);
 
 private:

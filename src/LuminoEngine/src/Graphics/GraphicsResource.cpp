@@ -9,6 +9,8 @@ namespace ln {
 //==============================================================================
 // GraphicsResource
 
+LN_OBJECT_IMPLEMENT(GraphicsResource, Object) {}
+
 GraphicsResource::GraphicsResource()
 	: m_manager(nullptr)
 {

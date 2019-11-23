@@ -216,7 +216,7 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 		glfwWindowHint(GLFW_RESIZABLE, (settings.resizable) ? GL_TRUE : GL_FALSE);
 		glfwWindowHint(GLFW_DECORATED, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// for NSGL(macOS)
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		m_glfwWindow = glfwCreateWindow(settings.clientSize.width, settings.clientSize.height, settings.title.toStdString().c_str(), NULL, NULL);
 		if (LN_ENSURE(m_glfwWindow)) return false;
 
@@ -230,6 +230,7 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 	glfwSetWindowFocusCallback(m_glfwWindow, window_focus_callback);
 	glfwSetFramebufferSizeCallback(m_glfwWindow, window_framebuffer_size_callback);
 	glfwSetKeyCallback(m_glfwWindow, window_key_callback);
+    glfwSetCharCallback(m_glfwWindow, window_char_callback);
 	glfwSetMouseButtonCallback(m_glfwWindow, window_mouseButton_callback);
 	glfwSetCursorPosCallback(m_glfwWindow, window_mousePos_callback);
     glfwSetScrollCallback(m_glfwWindow, window_scroll_callback);
@@ -246,12 +247,30 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 	// 1インチ (= 25.4 mm) 
 
 
-	//glfwMakeContextCurrent(m_glfwWindow);
+	glfwMakeContextCurrent(m_glfwWindow);
+    //glfwSwapInterval(1);
 	//glewInit();
 	////GLuint mProgram = glCreateProgram();// LN_CHECK_GLERROR();
 	//// 初回クリア (しておかないと、背景が透明なままになる)
 	//glClear(GL_COLOR_BUFFER_BIT);
 	//glfwSwapBuffers(m_glfwWindow);
+
+    //int count = 0;
+    //while (!glfwWindowShouldClose(m_glfwWindow))
+    //{
+    //    if (count == 0)
+    //    {
+    //        glClearColor(0.0, 0.0, 1.0, 1.0);
+    //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //         Swap buffers
+    //        glfwSwapBuffers(m_glfwWindow);
+
+    //    }
+    //    count++;
+
+    //    glfwPollEvents();
+    //}
 
     return true;
 }
@@ -359,6 +378,13 @@ void GLFWPlatformWindow::window_key_callback(GLFWwindow* window, int key, int sc
 	}
 
 	thisWindow->sendEventToAllListener(PlatformEventArgs::makeKeyEvent(thisWindow, eventType, keyCode, glfwKeyModToLNKeyMod(mods), key));
+}
+
+void GLFWPlatformWindow::window_char_callback(GLFWwindow* window, unsigned int ch)
+{
+    GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
+    thisWindow->sendEventToAllListener(PlatformEventArgs::makeKeyEvent(thisWindow, PlatformEventType::KeyChar, Keys::Unknown, ModifierKeys::None, ch));
+
 }
 
 void GLFWPlatformWindow::window_mouseButton_callback(GLFWwindow* window, int button, int action, int mods)
@@ -489,9 +515,14 @@ void GLFWPlatformWindowManager::destroyWindow(PlatformWindow* window)
 	static_cast<GLFWPlatformWindow*>(window)->dispose();
 }
 
-void GLFWPlatformWindowManager::processSystemEventQueue()
+void GLFWPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode)
 {
-	glfwPollEvents();
+    if (mode == EventProcessingMode::Wait) {
+        glfwWaitEvents();
+    }
+    else {
+        glfwPollEvents();
+    }
 }
 
 //=============================================================================

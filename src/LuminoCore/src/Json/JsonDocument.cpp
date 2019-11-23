@@ -10,7 +10,7 @@
 #include <LuminoCore/Json/JsonReader.hpp>
 #include <LuminoCore/Json/JsonWriter.hpp>
 #include <LuminoCore/Json/JsonDocument.hpp>
-#include "../Base/LinearAllocator.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 
 namespace ln {
 

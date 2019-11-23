@@ -16,6 +16,9 @@ public:
     /** レイの方向 */
     Vector3 direction;
 
+	/** レイの長さ (default: Inf) */
+	float distance;
+
 public:
     /** 各要素に 0.0 を設定してインスタンスを初期化します。 */
     Ray();
@@ -26,6 +29,10 @@ public:
         @param[in]  direction   : レイの方向
     */
     Ray(const Vector3& origin, const Vector3& direction);
+
+	Ray(const Vector3& origin, const Vector3& direction, float distance);
+
+	Vector3 endPoint() const { return origin + (direction * distance); }
 };
 
 /** 直方体を定義します。(axis-aligned bounding box) */

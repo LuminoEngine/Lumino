@@ -146,31 +146,31 @@ void MqoParser::loadMaterials(StreamReader* reader)
 		Color c;
 		c.a = color.a;
 
-		auto material = newObject<PhongMaterial>();
+        detail::PhongMaterialData materialData;
 
 		c.r = diffuse * color.r;
 		c.g = diffuse * color.g;
 		c.b = diffuse * color.b;
-		material->setDiffuse(c);
+        materialData.diffuse = c;
 
 		c.r = ambient * color.r;
 		c.g = ambient * color.g;
 		c.b = ambient * color.b;
-		material->setAmbient(c);
+        materialData.ambient = c;
 
 		c.r = emissive * color.r;
 		c.g = emissive * color.g;
 		c.b = emissive * color.b;
-		material->setEmissive(c);
+        materialData.emissive = c;
 
 		c.r = specular * color.r;
 		c.g = specular * color.g;
 		c.b = specular * color.b;
-		material->setSpecular(c);
+        materialData.specular = c;
 
-		material->setSpecularPower(power);
-		material->setMainTexture(texture);
+        materialData.power = power;
 
+        auto material = makeObject<Material>(texture, materialData);
 		visitMaterial(material);
 	}
 }
@@ -337,7 +337,7 @@ MqoImporter::MqoImporter()
 
 Ref<StaticMeshModel> MqoImporter::import(MeshManager* manager, const Path& filePath, DiagnosticsManager* diag)
 {
-	m_model = newObject<StaticMeshModel>();
+	m_model = makeObject<StaticMeshModel>();
 	parse(manager, filePath, diag);
 
 	// TODO: on end ほしい
@@ -359,8 +359,8 @@ void MqoImporter::visitMaterial(AbstractMaterial* material)
 
 void MqoImporter::visitObjectChunk(const StringRef& name)
 {
-	//auto mesh = newObject<MeshResource>();
-	auto container = newObject<MeshContainer>();
+	//auto mesh = makeObject<MeshResource>();
+	auto container = makeObject<MeshContainer>();
 	container->setName(name);
 	m_model->addMeshContainer(container);
 	m_meshContainer = container;

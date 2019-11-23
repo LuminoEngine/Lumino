@@ -2,13 +2,19 @@
 #include "Object.hpp"
 
 namespace ln {
-namespace detail { class ApplicationHelper; }
+namespace detail {
+class ApplicationHelper;
+}
+class UIAction;
+class UIEventArgs;
+
+
 
 class LN_API Application
 	: public Object
 {
 public:
-	virtual void onCreate();
+	virtual void onInit();
 
 	virtual void onStart();
 
@@ -18,15 +24,20 @@ public:
 
 	virtual void onDestroy();
 
+    void addAction(UIAction* action);
+
 protected:
 	Application();
 	virtual ~Application();
+    virtual void onRoutedEvent(UIEventArgs* e);
 
 private:
 	void initInternal();
 	bool updateInertnal();
 	void finalizeInternal();
 	void run();
+
+    Ref<List<Ref<UIAction>>> m_actions;
 
 	friend class detail::ApplicationHelper;
 };
@@ -42,6 +53,8 @@ public:
 
 	// for internal main loop (win32, macOS...)
 	static void run(Application* app);
+
+    static void callOnRoutedEvent(Application* app, UIEventArgs* e) { app->onRoutedEvent(e); }
 };
 } // namespace detail
 } // namespace ln

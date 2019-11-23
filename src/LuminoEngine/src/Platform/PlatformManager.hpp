@@ -11,6 +11,7 @@ class PlatformManager
 public:
 	struct Settings
 	{
+        bool useGLFWWindowSystem = true;
 		WindowCreationSettings	mainWindowSettings;
 	};
 

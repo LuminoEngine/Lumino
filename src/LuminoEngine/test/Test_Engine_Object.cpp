@@ -23,7 +23,7 @@ private:
     Property<int> m_prop1;
 };
 
-LN_OBJECT_IMPLEMENT(TestObjectA, Object);
+LN_OBJECT_IMPLEMENT(TestObjectA, Object) {}
 LN_PROPERTY_IMPLEMENT(TestObjectA, Prop1, m_prop1, PropertyMetadata(TestObjectA::onProp1Changed));
 
 void TestObjectA::init()
@@ -44,7 +44,7 @@ class TestObjectB
 public:
 };
 
-LN_OBJECT_IMPLEMENT(TestObjectB, Object);
+LN_OBJECT_IMPLEMENT(TestObjectB, Object) {}
 
 class TestObjectC
     : public Object
@@ -81,7 +81,7 @@ public:
     static void onV4Changed(Object* obj) { static_cast<TestObjectC*>(obj)->m_lastChangedProp = V4PropertyId; }
 };
 
-LN_OBJECT_IMPLEMENT(TestObjectC, Object);
+LN_OBJECT_IMPLEMENT(TestObjectC, Object) {}
 LN_PROPERTY_IMPLEMENT(TestObjectC, V1, m_V1, PropertyMetadata(onV1Changed));
 LN_PROPERTY_IMPLEMENT(TestObjectC, V2, m_V2, PropertyMetadata(onV2Changed));
 //LN_PROPERTY_IMPLEMENT(TestObjectC, V3, m_V3, PropertyMetadata(onV3Changed));
@@ -90,8 +90,8 @@ LN_PROPERTY_IMPLEMENT(TestObjectC, V4, m_V4, PropertyMetadata(onV4Changed));
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, TypeInfo)
 {
-    auto obj1 = newObject<TestObjectA>();
-    auto obj2 = newObject<TestObjectB>();
+    auto obj1 = makeObject<TestObjectA>();
+    auto obj2 = makeObject<TestObjectB>();
 
     //* [ ] can get by object pointer
     TypeInfo* type1 = TypeInfo::getTypeInfo(obj1);
@@ -118,9 +118,59 @@ TEST_F(Test_Engine_Object, TypeInfo)
 }
 
 //------------------------------------------------------------------------------
+
+class CreateFromTypeInfo_ClassA
+	: public Object
+{
+	LN_OBJECT;
+public:
+	int value1;
+	
+	virtual void serialize(Archive& ar) override
+	{
+		ar & LN_NVP(value1);
+	}
+};
+
+LN_OBJECT_IMPLEMENT(CreateFromTypeInfo_ClassA, Object) {}
+
+TEST_F(Test_Engine_Object, CreateFromTypeInfo)
+{
+	struct Test1
+	{
+		Ref<Object> obj;
+
+		void serialize(Archive& ar)
+		{
+			ar & LN_NVP(obj);
+		}
+	};
+
+	auto obj1 = makeObject<CreateFromTypeInfo_ClassA>();
+	obj1->value1 = 100;
+
+	Test1 t1;
+	t1.obj = obj1;
+	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
+    ASSERT_EQ(u"{\"obj\":{\"_type\":\"CreateFromTypeInfo_ClassA\",\"value1\":100}}", json);
+
+	EngineContext::current()->registerType<CreateFromTypeInfo_ClassA>({});
+
+
+	Test1 t2;
+	JsonSerializer::deserialize(json, t2);
+
+	auto obj2 = dynamic_pointer_cast<CreateFromTypeInfo_ClassA>(t2.obj);
+	ASSERT_EQ(true, obj1 != obj2);					// インスタンスは別物
+	ASSERT_EQ(true, obj1->value1 == obj2->value1);	// 値は同じ
+	ASSERT_EQ(100, obj2->value1);
+
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Property)
 {
-    auto objA = newObject<TestObjectA>();
+    auto objA = makeObject<TestObjectA>();
     objA->setProp1(5);
     ASSERT_EQ(5, objA->prop1());
 
@@ -131,7 +181,7 @@ TEST_F(Test_Engine_Object, Property)
     ASSERT_EQ(true, TestObjectA::Prop1PropertyId != nullptr);
 
 
-    auto objC = newObject<TestObjectC>();
+    auto objC = makeObject<TestObjectC>();
 
     //* [ ] int type
     ASSERT_EQ(1, objC->m_V1);
@@ -156,31 +206,9 @@ TEST_F(Test_Engine_Object, Property)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Engine_Object, PropertyRef_old)
-{
-    auto obj = newObject<TestObjectC>();
-
-    //* [ ] set, get
-    PropertyRef_old ref = PropertyInfo::getPropertyRef_old(obj, TestObjectC::V1PropertyId);
-    auto pair = ref.resolve();
-    if (pair.first) {
-        pair.second->setValue(7);
-        Variant v = pair.second->getValue();
-        ASSERT_EQ(7, v.get<int>());
-    }
-
-    ref.setTypedValue<int>(5);
-    ASSERT_EQ(5, ref.getTypedValue<int>());
-
-    //* [ ] clearValue
-    ref.clearValue();
-    ASSERT_EQ(1, ref.getTypedValue<int>());
-}
-
-//------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, Notification)
 {
-    auto obj = newObject<TestObjectC>();
+    auto obj = makeObject<TestObjectC>();
 
     //* [ ] OwnerObject の確認
     {
@@ -343,7 +371,7 @@ TEST_F(Test_Engine_Object, GetSetHelper)
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_Object, NonMetadataProperty)
 {
-    auto obj = newObject<TestObjectC>();
+    auto obj = makeObject<TestObjectC>();
 
     // get set
     ASSERT_EQ(5, obj->m_V5);
@@ -382,7 +410,7 @@ TEST_F(Test_Base_WeakRefPtr, Basic)
 {
     WeakRefPtr<WeakRefTest1> weak;
     {
-        auto ptr = newObject<WeakRefTest1>();
+        auto ptr = makeObject<WeakRefTest1>();
         weak = WeakRefPtr<WeakRefTest1>(ptr);
         ASSERT_EQ(true, weak.isAlive());
         ASSERT_EQ(100, weak.resolve()->m);

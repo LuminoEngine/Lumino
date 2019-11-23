@@ -8,6 +8,30 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
+
+
+
+
+
+
+
+if (DEFINED EMSCRIPTEN)
+
+elseif (LN_ANDROID)
+
+elseif (APPLE AND DEFINED PLATFORM) # PLATFORM is ios-cmake variable.
+
+elseif(WIN32 OR APPLE OR UNIX)
+    set(LN_OS_DESKTOP ON)
+
+endif()
+
+
+if (NOT DEFINED LN_BUILD_DIRECTORY)
+    set(LN_BUILD_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+
 #-------------------------------------------------------------------------------
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -20,7 +44,9 @@ endif()
 macro(ln_make_external_find_path varName projectDirName)
     if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
-            set(${varName} ${CMAKE_CURRENT_BINARY_DIR}/ExternalInstall/${projectDirName})
+            set(${varName} ${LN_BUILD_DIRECTORY}/ExternalInstall/${projectDirName})
+        elseif (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "config")
+            set(${varName} ${CMAKE_CURRENT_LIST_DIR}/lib})
         endif()
     elseif(DEFINED CMAKE_BUILD_TYPE)
         set(${varName} ${LUMINO_ENGINE_ROOT}/lib/${LN_TARGET_ARCH}-${CMAKE_BUILD_TYPE})
@@ -70,7 +96,19 @@ if (ANDROID_ABI)
     set_target_properties(ZLIB PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
     list(APPEND LN_EXTERNAL_LIBS ZLIB)
     
-elseif (LN_OS_DESKTOP OR DEFINED EMSCRIPTEN OR LN_IOS)
+elseif (DEFINED EMSCRIPTEN OR LN_IOS)
+    ln_make_external_find_path(ZLIB_ROOT zlib)
+    find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
+    find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
+
+    set(LIB_NAME ZLIB)
+    add_library(${LIB_NAME} STATIC IMPORTED)
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_ROOT}/include)
+    list(APPEND LN_EXTERNAL_LIBS ZLIB)
+    
+elseif (LN_OS_DESKTOP)
     ln_make_external_find_path(ZLIB_ROOT zlib)
     find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
     find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
@@ -375,3 +413,49 @@ list(APPEND LN_EXTERNAL_LIBS VulkanHeaders)
 #list(APPEND LN_EXTERNAL_LIBS VulkanImported)
 #    endif()
 #endif()
+
+
+
+#--------------------------------------
+# Effekseer
+
+set(TEST_Effekseer_IncludeDirs
+    #"${Effekseer_ROOT}/include"
+    "D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/Effekseer;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererVulkan;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererLLGI;D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/3rdParty/LLGI/src"
+    #"D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererDX12"
+    #"D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/EffekseerRendererLLGI"
+    #"D:/Proj/LN/Lumino/build/ExternalSource/Effekseer/Dev/Cpp/3rdParty/LLGI/src"
+    )
+
+ln_make_external_find_path(Effekseer_ROOT "Effekseer")
+find_library(Effekseer_LIBRARY_RELEASE NAMES Effekseer PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(Effekseer_LIBRARY_DEBUG NAMES Effekseer PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererDX12_LIBRARY_RELEASE NAMES EffekseerRendererDX12 PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererDX12_LIBRARY_DEBUG NAMES EffekseerRendererDX12 PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererVulkan_LIBRARY_RELEASE NAMES EffekseerRendererVulkan PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(EffekseerRendererVulkan_LIBRARY_DEBUG NAMES EffekseerRendererVulkan PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(LLGI_LIBRARY_RELEASE NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(LLGI_LIBRARY_DEBUG NAMES LLGI PATHS ${Effekseer_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+# TODO: test
+set(EffekseerRendererVulkan_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/EffekseerRendererVulkan/Debug/EffekseerRendererVulkan.lib")
+set(EffekseerRendererVulkan_LIBRARY_RELEASE "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/EffekseerRendererVulkan/Release/EffekseerRendererVulkan.lib")
+set(LLGI_LIBRARY_DEBUG "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/3rdParty/LLGI/src/Debug/LLGI.lib")
+set(LLGI_LIBRARY_RELEASE "D:/Proj/LN/Lumino/build/MSVC2017-x86-MD/ExternalBuild/Effekseer/Dev/Cpp/3rdParty/LLGI/src/Release/LLGI.lib")
+
+add_library(Effekseer STATIC IMPORTED)
+set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_RELEASE ${Effekseer_LIBRARY_RELEASE})
+set_target_properties(Effekseer PROPERTIES IMPORTED_LOCATION_DEBUG ${Effekseer_LIBRARY_DEBUG})
+set_target_properties(Effekseer PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${TEST_Effekseer_IncludeDirs}")
+
+add_library(EffekseerRendererDX12 STATIC IMPORTED)
+set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_RELEASE ${EffekseerRendererDX12_LIBRARY_RELEASE})
+set_target_properties(EffekseerRendererDX12 PROPERTIES IMPORTED_LOCATION_DEBUG ${EffekseerRendererDX12_LIBRARY_DEBUG})
+
+add_library(EffekseerRendererVulkan STATIC IMPORTED)
+set_target_properties(EffekseerRendererVulkan PROPERTIES IMPORTED_LOCATION_RELEASE ${EffekseerRendererVulkan_LIBRARY_RELEASE})
+set_target_properties(EffekseerRendererVulkan PROPERTIES IMPORTED_LOCATION_DEBUG ${EffekseerRendererVulkan_LIBRARY_DEBUG})
+
+add_library(LLGI STATIC IMPORTED)
+set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_RELEASE ${LLGI_LIBRARY_RELEASE})
+set_target_properties(LLGI PROPERTIES IMPORTED_LOCATION_DEBUG ${LLGI_LIBRARY_DEBUG})

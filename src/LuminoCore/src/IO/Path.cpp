@@ -25,6 +25,8 @@ namespace ln {
 //const Char Path::AltSeparator = (Char)PathTraits::AltDirectorySeparatorChar;
 //const Char Path::VolumeSeparator = (Char)PathTraits::VolumeSeparatorChar;
 
+const Path Path::Empty;
+
 Path::Path()
 {
 }
@@ -105,6 +107,11 @@ bool Path::isRelative() const
 bool Path::isRoot() const
 {
     return detail::PathTraits::isRootPath(m_path.c_str(), m_path.length());
+}
+
+bool Path::isUnified() const
+{
+    return !m_path.contains(u'\\');
 }
 
 bool Path::hasExtension(const StringRef& ext) const
@@ -250,6 +257,15 @@ Path Path::replaceExtension(const StringRef& newExt) const
     }
 }
 
+Path Path::withEndSeparator() const
+{
+    String newStr = m_path;
+    if (!newStr.isEmpty() && !detail::PathTraits::endWithSeparator(newStr.c_str(), newStr.length())) {
+        newStr += detail::PathTraits::DirectorySeparatorChar;
+    }
+    return newStr;
+}
+
 void Path::append(const StringRef& path)
 {
     if (detail::PathTraits::isAbsolutePath(path.data(), path.length())) {
@@ -298,6 +314,68 @@ Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& re
 		LN_UNREACHABLE();
 		return Path();
 	}
+}
+
+Path Path::getUniqueFilePathInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
+{
+#if 1
+    String dirPath = directory.withEndSeparator();
+
+    // 同番号のファイルがあればインクリメントしつつ空き番号を調べる
+    int number = 1;
+    String filePath;
+    String work;
+    do
+    {
+        // TODO: filePrefix とかは この do ループの前で String にしておき、結合は cat でやれば効率的。
+        if (filePrefix != NULL && extName != NULL) {
+            filePath = String::format(_LT("{0}{1}{2}{3}"), dirPath.c_str(), filePrefix, number, extName);
+        }
+        else if (filePrefix == NULL && extName != NULL) {
+            filePath = String::format(_LT("{0}{1}{2}"), dirPath.c_str(), number, extName);
+        }
+        else if (filePrefix != NULL && extName == NULL) {
+            filePath = String::format(_LT("{0}{1}{2}"), dirPath.c_str(), filePrefix, number);
+        }
+        else {
+            filePath = String::format(_LT("{0}{1}"), dirPath.c_str(), number);
+        }
+
+        number++;
+
+    } while (detail::FileSystemInternal::existsFile(filePath.c_str(), filePath.length()));
+
+    return String(filePath.c_str());
+#endif
+#if 0   // ランダムキーを付加するパターン (TODO: どこかで必要なら public にする)
+    String dirPath = directory.withEndSeparator();
+    uint64_t key = static_cast<uint64_t>(::time(NULL));
+
+    // 同番号のファイルがあればインクリメントしつつ空き番号を調べる
+    int number = 1;
+    String filePath;
+    String work;
+    do
+    {
+        // TODO: filePrefix とかは この do ループの前で String にしておき、結合は cat でやれば効率的。
+        if (filePrefix != NULL && extName != NULL) {
+            filePath = String::format(_LT("{0}{1}{2}{3}{4}"), dirPath.c_str(), filePrefix, key, number, extName);
+        }
+        else if (filePrefix == NULL && extName != NULL) {
+            filePath = String::format(_LT("{0}{1}{2}{3}"), dirPath.c_str(), key, number, extName);
+        }
+        else if (filePrefix != NULL && extName == NULL) {
+            filePath = String::format(_LT("{0}{1}{2}{3}"), dirPath.c_str(), filePrefix, key, number);
+        }
+        else {
+            filePath = String::format(_LT("{0}{1}{2}"), dirPath.c_str(), key, number);
+        }
+
+        number++;
+    } while (detail::FileSystemInternal::existsFile(filePath.c_str(), filePath.length()));
+
+    return String(filePath.c_str());
+#endif
 }
 
 #if 0
@@ -365,14 +443,6 @@ int Path::compare(const Char* path) const { return PathTraits::comparePathString
 int Path::compare(const Path& path) const { return PathTraits::comparePathString(m_path.c_str(), m_path.getLength(), path.c_str(), path.getLength()); }
 int Path::compare(const String& path) const { return PathTraits::comparePathString(m_path.c_str(), m_path.getLength(), path.c_str(), path.getLength()); }
 
-const String Path::getStrEndSeparator() const
-{
-    String newStr = m_path;
-    if (!newStr.isEmpty() && !PathTraits::endWithSeparator(newStr.c_str(), newStr.getLength())/*(*newStr.rbegin()) != Separator*/) {    // 末尾セパレータ
-        newStr += Separator;
-    }
-    return newStr;
-}
 
 Path Path::currentDirectory()
 {
@@ -410,37 +480,6 @@ Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDi
         }
         return path2;
     }
-}
-
-Path Path::getUniqueFilePathInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
-{
-    String dirPath = directory.getStrEndSeparator();
-    uint64_t key = static_cast<uint64_t>(::time(NULL));
-
-    // 同番号のファイルがあればインクリメントしつつ空き番号を調べる
-    int number = 1;
-    String filePath;
-    String work;
-    do
-    {
-        // TODO: filePrefix とかは この do ループの前で String にしておき、結合は cat でやれば効率的。
-        if (filePrefix != NULL && extName != NULL) {
-            filePath = String::format(_LT("{0}{1}{2}{3}{4}"), dirPath.c_str(), filePrefix, key, number, extName);
-        }
-        else if (filePrefix == NULL && extName != NULL) {
-            filePath = String::format(_LT("{0}{1}{2}{3}"), dirPath.c_str(), key, number, extName);
-        }
-        else if (filePrefix != NULL && extName == NULL) {
-            filePath = String::format(_LT("{0}{1}{2}{3}"), dirPath.c_str(), filePrefix, key, number);
-        }
-        else {
-            filePath = String::format(_LT("{0}{1}{2}"), dirPath.c_str(), key, number);
-        }
-
-        number++;
-    } while (detail::FileSystemInternal::existsFile(filePath.c_str(), filePath.getLength()));
-
-    return String(filePath.c_str());
 }
 
 String Path::getUniqueFileNameInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)

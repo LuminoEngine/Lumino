@@ -8,14 +8,18 @@ namespace ln {
 //==============================================================================
 // Sprite
 
+LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {
+    context->registerType<Sprite>({});   // TODO: これ必須なのはちょっと忘れやすい・・
+}
+
 Ref<Sprite> Sprite::create(Texture* texture, float width, float height)
 {
-    return newObject<Sprite>(texture, width, height);
+    return makeObject<Sprite>(texture, width, height);
 }
 
 Ref<Sprite> Sprite::create(SpriteFrameSet* frameSet)
 {
-	return newObject<Sprite>(frameSet);
+	return makeObject<Sprite>(frameSet);
 }
 
 Sprite::Sprite()
@@ -29,7 +33,7 @@ Sprite::~Sprite()
 void Sprite::init()
 {
     VisualObject::init();
-    m_component = newObject<SpriteComponent>();
+    m_component = makeObject<SpriteComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }

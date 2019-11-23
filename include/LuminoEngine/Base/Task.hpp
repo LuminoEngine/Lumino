@@ -23,6 +23,10 @@ class Task
     : public RefObject
 {
 public:
+	//static Promise invoke(const std::function<void()>& action);
+	//// ↓以下、いろいろあるけど UI では↑をメインに使う。
+
+
 
     static Ref<Task> create(const std::function<void()>& action);
 
@@ -32,12 +36,16 @@ public:
 
     void wait();
 
-    /*
-     * @return 新しい継続タスク
-     */
-    //Task* then(const std::function<void()>& action, TaskScheduler* scheduler = nullptr);
 
-    Task* awaitThen(const std::function<void()>& action, Dispatcher* dispatcher = nullptr);
+
+
+	// 正常終了した場合の後続の処理を追加する。
+ //   Task* then(const std::function<void()>& action, Dispatcher* dispatcher = nullptr);
+
+	//Task* rejected(const std::function<void()>& action, Dispatcher* dispatcher = nullptr);
+
+
+    //Task* awaitThen(const std::function<void()>& action, Dispatcher* dispatcher = nullptr);
 
     /** この Task の現在の状態を取得します。*/
     TaskStatus status() const;
@@ -79,6 +87,7 @@ class GenericTask
 {
 
 };
+
 
 namespace detail {
 
@@ -124,6 +133,7 @@ public:
     void post(Task* task);
     void post(const std::function<void()>& action);
 
+	// これを、Task を実行したいスレッドで呼び出す。
     void executeTasks(uint32_t maxCount = UINT32_MAX);
 
 private:

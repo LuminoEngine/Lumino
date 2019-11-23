@@ -16,6 +16,7 @@ namespace detail {
 
 BlitRenderFeature::BlitRenderFeature()
 	: m_manager(nullptr)
+	, m_requestedCount(0)
 {
 }
 
@@ -24,39 +25,39 @@ void BlitRenderFeature::init(RenderingManager* manager)
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 
-    Vertex vertices[4] =
-    {
-        { Vector3(-1,  1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White },
-        { Vector3(1,  1, 0), Vector3::UnitZ, Vector2(1, 0), Color::White },
-        { Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White },
-        { Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White },
-    };
-    m_vertexBuffer = m_manager->graphicsManager()->deviceContext()->createVertexBuffer(GraphicsResourceUsage::Static, sizeof(vertices), vertices);
-    m_vertexDeclaration = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(manager->standardVertexDeclaration(), nullptr);
+	m_vertexLayout = m_manager->standardVertexDeclaration();
+
+	Vertex vertices[4] =
+	{
+		{ Vector3(-1,  1, 0), Vector3::UnitZ, Vector2(0, 0), Color::White },
+		{ Vector3(1,  1, 0), Vector3::UnitZ, Vector2(1, 0), Color::White },
+		{ Vector3(-1, -1, 0), Vector3::UnitZ, Vector2(0, 1), Color::White },
+		{ Vector3(1, -1, 0), Vector3::UnitZ, Vector2(1, 1), Color::White },
+	};
+	m_vertexBuffer = makeObject<VertexBuffer>(sizeof(vertices), vertices, GraphicsResourceUsage::Static);
 }
 
-void BlitRenderFeature::blit(GraphicsContext* context)
+RequestBatchResult BlitRenderFeature::blit(detail::RenderFeatureBatchList* batchList, GraphicsContext* context)
 {
-    auto* _this = this;
-	IGraphicsContext* c = GraphicsContextInternal::commitState(context);
-    LN_ENQUEUE_RENDER_COMMAND_2(
-        BlitRenderFeature_blit, m_manager->graphicsManager(),
-        BlitRenderFeature*, _this,
-        IGraphicsContext*, c,
-        {
-            _this->blitImplOnRenderThread(c);
-        });
+	// blit は基本的にステート変更ごとに単発である。
+	// 複数回呼ばれるのは全く同じ描画を複数回呼び出して、例えば加算合成を重ねるようなときに使う。
+	m_requestedCount++;
+	return RequestBatchResult::Staging;
 }
 
-void BlitRenderFeature::flush(GraphicsContext* context)
+void BlitRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
+	if (m_requestedCount > 0) {
+		auto batch = batchList->addNewBatch<Batch>(this);
+		batch->requestedCount = m_requestedCount;
+		m_requestedCount = 0;
+	}
 }
 
-void BlitRenderFeature::blitImplOnRenderThread(IGraphicsContext* context)
+void BlitRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
 {
-	context->setVertexDeclaration(m_vertexDeclaration);
+	context->setVertexLayout(m_vertexLayout);
 	context->setVertexBuffer(0, m_vertexBuffer);
-	context->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 	context->drawPrimitive(0, 2);
 }
 

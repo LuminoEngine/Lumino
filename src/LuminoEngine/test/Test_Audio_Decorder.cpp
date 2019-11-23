@@ -1,9 +1,19 @@
 ﻿#include "Common.hpp"
 #include "../src/Audio/AudioDecoder.hpp"
 
+#ifdef LN_UNIT_TEST_EXPERIMENTAL
+
 //==============================================================================
 //# AudioDecorder のテスト
 class Test_Audio_Decorder : public LuminoSceneTest {};
+
+static void saveSamples(const String& filePath, const std::vector<float>& samples)
+{
+	StreamWriter sw(filePath);
+	for (auto& v : samples) {
+		sw.writeLine(v);
+	}
+}
 
 //------------------------------------------------------------------------------
 //## 
@@ -62,7 +72,7 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
         -0.111423,
     };
 
-    auto diag = newObject<DiagnosticsManager>();
+    auto diag = makeObject<DiagnosticsManager>();
     auto decorder = makeRef<detail::WaveDecoder>();
     auto stream = FileStream::create(LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_2ch.wav"));
     decorder->init(stream, diag);
@@ -76,6 +86,7 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
 
         baseSamples[i] = samples[0];
     }
+	//saveSamples(u"tmp1.txt", baseSamples);
 
     // 何となく先頭 50 サンプルくらいがちゃんと sin となっていることを確認
     for (int i = 0; i < LN_ARRAY_SIZE_OF(sinTable); i++) {
@@ -111,12 +122,17 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
                 allSamples[iCh].push_back(samples[iCh]);
             }
         }
+		//saveSamples(u"tmp2.txt", allSamples[0]);
 
         for (int i = 0; i < count; i++) {
             for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
+				float a = baseSamples[i];
+				float b = allSamples[iCh][i];
+				float diff = abs(a - b);
                 ASSERT_EQ(true, baseSamples[i] - thr < allSamples[iCh][i] && allSamples[iCh][i] < baseSamples[i] + thr);
             }
         }
     }
 }
 
+#endif

@@ -11,12 +11,12 @@ namespace ln {
 
 Ref<Font> Font::create()
 {
-    return newObject<Font>();
+    return makeObject<Font>();
 }
 
 Ref<Font> Font::create(const String& family, float size)
 {
-    return newObject<Font>(family, size);
+    return makeObject<Font>(family, size);
 }
 
 void Font::setDefaultFont(Font* font)
@@ -124,7 +124,7 @@ bool Font::isAntiAlias() const
 
 Ref<Font> Font::clone() const
 {
-    auto ptr = newObject<Font>();
+    auto ptr = makeObject<Font>();
     ptr->m_manager = m_manager;
     ptr->m_desc = m_desc;
     ptr->m_rawFont = m_rawFont;
@@ -138,6 +138,14 @@ Size Font::measureRenderSize(const StringRef& text, float dpiScale)
     detail::MeasureTextLayoutEngine measureLayout;
     measureLayout.layout(font, text.data(), text.length(), Rect(), 0, TextAlignment::Left);
     return measureLayout.areaSize;
+}
+
+Size Font::measureRenderSize(uint32_t codePoint, float dpiScale)
+{
+	auto core = resolveFontCore(dpiScale);
+	detail::FontGlyphMetrics metrics;
+	core->getGlyphMetrics(codePoint, &metrics);
+	return metrics.size;
 }
 
 detail::FontCore* Font::resolveFontCore(float dpiScale)

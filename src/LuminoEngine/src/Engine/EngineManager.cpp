@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -10,6 +11,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
@@ -24,13 +26,17 @@
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshManager.hpp"
 #include "../Rendering/RenderingManager.hpp"
+#include "../Effect/EffectManager.hpp"
 #include "../Physics/PhysicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
+#include "../Runtime/RuntimeManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
+
+#include <imgui.h>
 
 namespace ln {
 namespace detail {
@@ -68,9 +74,12 @@ EngineManager::EngineManager()
 	//, m_modelManager(nullptr)
 	//, m_uiManager(nullptr)
 	, m_assetManager(nullptr)
+    //, m_application(nullptr)
     , m_timeScale(1.0f)
 	, m_exitRequested(false)
-    , m_showDebugFpsEnabled(false)
+ //   , m_showDebugFpsEnabled(false)
+	//, m_debugToolEnabled(false)
+	, m_debugToolMode(DebugToolMode::Disable)
 #if defined(LN_OS_WIN32)
     , m_comInitialized(false)
     , m_oleInitialized(false)
@@ -109,52 +118,78 @@ void EngineManager::init()
 	m_engineContext = makeRef<EngineContext>();
 
 
+	{
+		m_activeDiagnostics = makeObject<DiagnosticsManager>();
+		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, u"RenderPass count");
+		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
+	}
+
 	initializeAllManagers();
+
+    //if (!m_settings.externalRenderingManagement) {
+    //    m_graphicsManager->enterRendering();
+    //}
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setEnableFpsTest(true);
 
+	if (m_settings.debugToolEnabled) {
+		setDebugToolMode(DebugToolMode::Minimalized);
+	}
+	else {
+		setDebugToolMode(DebugToolMode::Disable);
+	}
 
-    if (m_uiManager) {
-        m_mainUIContext = newObject<UIContext>();
-        m_uiManager->setMainContext(m_mainUIContext);
+	//m_debugToolEnabled = m_settings.debugToolEnabled;
+	//if (m_debugToolEnabled) {
+	//	m_showDebugFpsEnabled = true;
+	//}
 
-        m_mainWindow = newObject<UIFrameWindow>(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
-        m_mainViewport = newObject<UIViewport>();
-        m_mainWindow->addElement(m_mainViewport);
-
-        m_mainUIContext->setLayoutRootElement(m_mainWindow);
-    }
-
-    if (m_sceneManager)
+    if (m_settings.defaultObjectsCreation)
     {
-        m_mainWorld = newObject<World>();
-        m_sceneManager->setActiveWorld(m_mainWorld);
+        if (m_uiManager) {
 
-        //m_mainAmbientLight = newObject<AmbientLight>();
-        //m_mainDirectionalLight = newObject<DirectionalLight>();
+			setMainWindow(makeObject<UIMainWindow>());
 
-        m_mainCamera = newObject<Camera>();
-        m_mainWorldRenderView = newObject<WorldRenderView>();
-        m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-        m_mainWorldRenderView->setCamera(m_mainCamera);
-        m_mainViewport->addRenderView(m_mainWorldRenderView);
+            m_mainViewport = makeObject<UIViewport>();
+            m_mainWindow->addElement(m_mainViewport);
+        }
+
+        if (m_sceneManager)
+        {
+            m_mainWorld = makeObject<World>();
+            m_sceneManager->setActiveWorld(m_mainWorld);
+
+            m_mainScene = m_mainWorld->masterScene();
+
+            //m_mainAmbientLight = makeObject<AmbientLight>();
+            //m_mainDirectionalLight = makeObject<DirectionalLight>();
+
+            m_mainCamera = makeObject<Camera>();
+            m_mainWorldRenderView = makeObject<WorldRenderView>();
+            m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+            m_mainWorldRenderView->setCamera(m_mainCamera);
+            m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+            m_mainViewport->addRenderView(m_mainWorldRenderView);
 
 
-        m_mainUIRenderView = newObject<UIRenderView>();
-        m_mainViewport->addRenderView(m_mainUIRenderView);
+            m_mainUIRenderView = makeObject<UIRenderView>();
+            m_mainViewport->addRenderView(m_mainUIRenderView);
 
-        m_mainUIRoot = newObject<UIContainerElement>();
-        m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
-        m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
-        m_mainUIRenderView->setRootElement(m_mainUIRoot);
-        m_uiManager->setPrimaryElement(m_mainUIRoot);
+            m_mainUIRoot = makeObject<UIControl>();
+            m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
+            m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
+			m_mainUIRoot->m_isHitTestVisible = false;
+            m_mainUIRenderView->setRootElement(m_mainUIRoot);
+            m_uiManager->setPrimaryElement(m_mainUIRoot);
 
-        m_mainPhysicsWorld = m_mainWorld->physicsWorld();
-        m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
+            m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+            m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
 
-        m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+            m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+        }
     }
+
 
     LN_LOG_DEBUG << "EngineManager Initialization ended.";
 }
@@ -222,11 +257,19 @@ void EngineManager::dispose()
         }
     }
 
+    //if (!m_settings.externalRenderingManagement) {
+    //    if (m_graphicsManager) {
+    //        m_graphicsManager->leaveRendering();
+    //    }
+    //}
+
+	if (m_runtimeManager) m_runtimeManager->dispose();
     if (m_uiManager) m_uiManager->dispose();
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
 	if (m_assetManager) m_assetManager->dispose();
     if (m_physicsManager) m_physicsManager->dispose();
+    if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
 	if (m_fontManager) m_fontManager->dispose();
@@ -264,9 +307,11 @@ void EngineManager::initializeAllManagers()
     initializePhysicsManager();
 	initializeAssetManager();
 	initializeRenderingManager();
+    initializeEffectManager();
     initializeVisualManager();
     initializeSceneManager();
 	initializeUIManager();
+	initializeRuntimeManager();
 }
 
 void EngineManager::initializeCommon()
@@ -302,11 +347,12 @@ void EngineManager::initializePlatformManager()
 		initializeCommon();
 
 		PlatformManager::Settings settings;
+        settings.useGLFWWindowSystem = m_settings.useGLFWWindowSystem;
 		settings.mainWindowSettings.title = m_settings.mainWindowTitle;
 		settings.mainWindowSettings.clientSize = m_settings.mainWindowSize;
 		settings.mainWindowSettings.fullscreen = false;
 		settings.mainWindowSettings.resizable = true;
-		//settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
+		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
 		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->init(settings);
@@ -374,7 +420,7 @@ void EngineManager::initializeGraphicsManager()
 		initializePlatformManager();
 
 		GraphicsManager::Settings settings;
-		settings.mainWindow = m_platformManager->mainWindow();
+		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
 		settings.graphicsAPI = m_settings.graphicsAPI;
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
@@ -427,6 +473,22 @@ void EngineManager::initializeRenderingManager()
 	}
 }
 
+void EngineManager::initializeEffectManager()
+{
+    if (!m_effectManager && m_settings.features.hasFlag(EngineFeature::Rendering))
+    {
+        initializeGraphicsManager();
+        initializeAssetManager();
+
+        EffectManager::Settings settings;
+        settings.graphicsManager = m_graphicsManager;
+        settings.assetManager = m_assetManager;
+
+        m_effectManager = ln::makeRef<EffectManager>();
+        m_effectManager->init(settings);
+    }
+}
+
 void EngineManager::initializePhysicsManager()
 {
     if (!m_physicsManager && m_settings.features.hasFlag(EngineFeature::Rendering))
@@ -446,6 +508,7 @@ void EngineManager::initializeAssetManager()
 
         m_assetManager = ln::makeRef<AssetManager>();
         m_assetManager->init(settings);
+        m_assetManager->setAssetStorageAccessPriority(m_settings.assetStorageAccessPriority);
 
         for (auto& e : m_settings.assetArchives) {
             m_assetManager->addAssetArchive(e.filePath, e.password);
@@ -491,9 +554,24 @@ void EngineManager::initializeUIManager()
 
 		UIManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
+        settings.application = m_settings.application;
 		
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->init(settings);
+
+        m_mainUIContext = makeObject<UIContext>();
+        m_uiManager->setMainContext(m_mainUIContext);
+	}
+}
+
+void EngineManager::initializeRuntimeManager()
+{
+	if (!m_runtimeManager)
+	{
+		RuntimeManager::Settings settings;
+
+		m_runtimeManager = makeRef<RuntimeManager>();
+		m_runtimeManager->init(settings);
 	}
 }
 
@@ -517,16 +595,10 @@ void EngineManager::updateFrame()
 	}
 
 	if (m_platformManager) {
-		m_platformManager->windowManager()->processSystemEventQueue();
+		m_platformManager->windowManager()->processSystemEventQueue(EventProcessingMode::Polling);
 	}
-
-	if (m_mainUIContext) {
-		// onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
-		// 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
-		// ユーザー処理の前に正しい ViewPixelSize を計算しておく。
-		m_mainUIContext->updateStyleTree();
-		//m_mainUIContext->updateLayoutTree();
-		m_mainWindow->updateLayoutTree();
+	if (m_uiManager) {
+		m_uiManager->dispatchPostedEvents();
 	}
 
     //------------------------------------------------
@@ -558,6 +630,15 @@ void EngineManager::updateFrame()
     //------------------------------------------------
     // Post update phase
 
+    // 大体他の updateFrame で要素位置の調整が入るので、その後にレイアウトする。
+    if (m_mainUIContext) {
+        // onUpdate のユーザー処理として、2D <-> 3D 変換したいことがあるが、それには ViewPixelSize が必要になる。
+        // 初期化直後や、Platform からの SizeChanged イベントの直後に一度レイアウトを更新することで、
+        // ユーザー処理の前に正しい ViewPixelSize を計算しておく。
+        m_mainUIContext->updateStyleTree();
+        //m_mainUIContext->updateLayoutTree();
+        m_mainWindow->updateLayoutTree();
+    }
 
 }
 
@@ -584,6 +665,8 @@ void EngineManager::renderFrame()
 
 void EngineManager::presentFrame()
 {
+    //m_effectManager->testDraw();
+
 	if (m_mainWindow) {
 		m_mainWindow->present();
 	}
@@ -600,8 +683,8 @@ void EngineManager::presentFrame()
 		m_fpsController.processForMeasure();
 	}
 
-    if (m_showDebugFpsEnabled) {
-        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1})", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
+    if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
+        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
     }
 }
 
@@ -623,12 +706,31 @@ const Path& EngineManager::persistentDataPath() const
     return m_persistentDataPath;
 }
 
+void EngineManager::setMainWindow(ln::UIMainWindow* window)
+{
+	if (LN_REQUIRE(window)) return;
+	if (LN_REQUIRE(!m_mainWindow)) return;
+	m_mainWindow = window;
+	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+	m_mainUIContext->setLayoutRootElement(m_mainWindow);
+
+	// TODO: SwapChain だけでいいはず
+	//m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
+
+	m_mainWindow->m_onImGuiLayer.connect(ln::bind(this, &EngineManager::handleImGuiDebugLayer));
+}
+
 bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 {
 	switch (e.type)
 	{
 	case PlatformEventType::close:
 		quit();
+		break;
+	case PlatformEventType::KeyDown:
+		if (e.key.keyCode == Keys::F8) {
+			toggleDebugToolMode();
+		}
 		break;
 	default:
 		break;
@@ -641,6 +743,79 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 	}
 
 	return false;
+}
+
+void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
+{
+	ImGui::Begin("Statistics");
+	ImGui::Text("FPS: %.2f, Cap: %.2f", m_fpsController.getFps(), m_fpsController.getCapacityFps());
+	ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
+	ImGui::Separator();
+
+	if (ImGui::CollapsingHeader("RenderView debug"))
+	{
+		{
+			bool check = m_mainWorldRenderView->debugGridEnabled();
+			ImGui::Checkbox("Grid", &check);
+			m_mainWorldRenderView->setDebugGridEnabled(check);
+		}
+		{
+			bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();
+			ImGui::Checkbox("Physics", &check);
+			m_mainWorldRenderView->setPhysicsDebugDrawEnabled(check);
+		}
+	}
+
+	ImGui::End();
+}
+
+bool EngineManager::toggleDebugToolMode()
+{
+	switch (m_debugToolMode)
+	{
+	case DebugToolMode::Disable:
+		return false;
+	case DebugToolMode::Hidden:
+		setDebugToolMode(DebugToolMode::Minimalized);
+		return true;
+	case DebugToolMode::Minimalized:
+		setDebugToolMode(DebugToolMode::Activated);
+		return true;
+	case DebugToolMode::Activated:
+		setDebugToolMode(DebugToolMode::Hidden);
+		return true;
+	default:
+		LN_UNREACHABLE();
+		return false;
+	}
+}
+
+void EngineManager::setDebugToolMode(DebugToolMode mode)
+{
+	m_debugToolMode = mode;
+
+	if (m_mainWindow) {
+		switch (m_debugToolMode)
+		{
+		case DebugToolMode::Disable:
+			m_mainWindow->setImGuiLayerEnabled(false);
+			m_mainWindow->platformWindow()->setWindowTitle(m_settings.mainWindowTitle);
+			break;
+		case DebugToolMode::Hidden:
+			m_mainWindow->setImGuiLayerEnabled(false);
+			m_mainWindow->platformWindow()->setWindowTitle(m_settings.mainWindowTitle);
+			break;
+		case DebugToolMode::Minimalized:
+			m_mainWindow->setImGuiLayerEnabled(false);
+			break;
+		case DebugToolMode::Activated:
+			m_mainWindow->setImGuiLayerEnabled(true);
+			break;
+		default:
+			LN_UNREACHABLE();
+			break;
+		}
+	}
 }
 
 //==============================================================================
@@ -713,6 +888,11 @@ RenderingManager* EngineDomain::renderingManager()
 	return engineManager()->renderingManager();
 }
 
+EffectManager* EngineDomain::effectManager()
+{
+    return engineManager()->effectManager();
+}
+
 PhysicsManager* EngineDomain::physicsManager()
 {
     return engineManager()->physicsManager();
@@ -736,6 +916,16 @@ SceneManager* EngineDomain::sceneManager()
 UIManager* EngineDomain::uiManager()
 {
 	return engineManager()->uiManager();
+}
+
+RuntimeManager* EngineDomain::runtimeManager()
+{
+	return engineManager()->runtimeManager();
+}
+
+EngineContext* EngineDomain::engineContext()
+{
+    return engineManager()->engineContext();
 }
 
 } // namespace detail

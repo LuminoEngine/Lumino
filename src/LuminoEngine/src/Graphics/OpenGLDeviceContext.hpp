@@ -92,8 +92,12 @@ namespace detail {
 class GLGraphicsContext;
 class GLContext;
 class GLSwapChain;
+class GLRenderPass;
+class GLCommandQueue;
 class GLIndexBuffer;
+class GLTextureBase;
 class GLRenderTargetTexture;
+class GLDepthBuffer;
 class GLShaderPass;
 class GLShaderUniformBuffer;
 class GLShaderUniform;
@@ -105,7 +109,7 @@ class OpenGLDevice
 public:
 	struct Settings
 	{
-		PlatformWindow* mainWindow = nullptr;
+		PlatformWindow* mainWindow = nullptr;   // nullptr の場合、OpenGL Context の生成・管理を内部で行わない
         uint32_t defaultFramebuffer;
 	};
 	
@@ -129,61 +133,59 @@ public:
 	MemoryStream* uniformTempBuffer() { return &m_uniformTempBuffer; }
 	BinaryWriter* uniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
-	void setActiveShaderPass(GLShaderPass* pass);
 
 protected:
-	virtual IGraphicsContext* getGraphicsContext() const;
+	virtual INativeGraphicsInterface* getNativeInterface() const { return nullptr; }
+	//virtual ICommandList* getGraphicsContext() const;
 	virtual void onGetCaps(GraphicsDeviceCaps* outCaps) override;
-	virtual void onEnterMainThread() override;
-	virtual void onLeaveMainThread() override;
-	virtual void onSaveExternalRenderState() override;
-	virtual void onRestoreExternalRenderState() override;
 	virtual Ref<ISwapChain> onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize) override;
+	virtual Ref<ICommandList> onCreateCommandList() override;
+	virtual Ref<IRenderPass> onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil) override;
+	virtual Ref<IPipeline> onCreatePipeline(const DevicePipelineStateDesc& state) override;
 	virtual Ref<IVertexDeclaration> onCreateVertexDeclaration(const VertexElement* elements, int elementsCount) override;
 	virtual Ref<IVertexBuffer> onCreateVertexBuffer(GraphicsResourceUsage usage, size_t bufferSize, const void* initialData) override;
 	virtual Ref<IIndexBuffer> onCreateIndexBuffer(GraphicsResourceUsage usage, IndexBufferFormat format, int indexCount, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture2D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateTexture3D(GraphicsResourceUsage usage, uint32_t width, uint32_t height, uint32_t depth, TextureFormat requestFormat, bool mipmap, const void* initialData) override;
 	virtual Ref<ITexture> onCreateRenderTarget(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap) override;
-	virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
+    virtual Ref<ITexture> onCreateWrappedRenderTarget(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight) override;
+    virtual Ref<IDepthBuffer> onCreateDepthBuffer(uint32_t width, uint32_t height) override;
 	virtual Ref<ISamplerState> onCreateSamplerState(const SamplerStateData& desc) override;
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) override;
+	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) override {}
+	virtual ICommandQueue* getGraphicsCommandQueue() override;
+	virtual ICommandQueue* getComputeCommandQueue() override;
 
 private:
 	Ref<GLContext> m_glContext;
 	MemoryStream m_uniformTempBuffer;
 	BinaryWriter m_uniformTempBufferWriter;
-	GLShaderPass* m_activeShaderPass;
 	//int m_lastUsedAttribIndex;
-	Ref<GLGraphicsContext> m_graphicsContext;
-
-	struct
-	{
-		GLboolean state_GL_CULL_FACE;
-
-	} m_savedState;
-
+	Ref<GLCommandQueue> m_graphicsQueue;	// dummy
+	//Ref<GLGraphicsContext> m_graphicsContext;
 	Caps m_caps;
+	//bool m_commandListCreated;
 };
 
 class GLGraphicsContext
-	: public IGraphicsContext
+	: public ICommandList
 {
 public:
 	GLGraphicsContext();
 	Result init(OpenGLDevice* owner);
 	void dispose();
+	void setActiveShaderPass(GLShaderPass* pass);
+	GLuint fbo() const { return m_fbo; }
 
 protected:
+	virtual void onSaveExternalRenderState() override;
+	virtual void onRestoreExternalRenderState() override;
 	virtual void onBeginCommandRecoding() override {}
 	virtual void onEndCommandRecoding() override {}
-	virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) override;
-	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) override;
-	virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) override;
-	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) override;
-	virtual void onUpdateShaderPass(IShaderPass* newPass) override;
-	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) override {}
-	virtual void* onMapResource(IGraphicsResource* resource) override;
+	virtual void onBeginRenderPass(IRenderPass* renderPass) override;
+	virtual void onEndRenderPass(IRenderPass* renderPass) override;
+	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
+	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) override;
 	virtual void onUnmapResource(IGraphicsResource* resource) override;
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
@@ -191,8 +193,7 @@ protected:
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) override;
-	virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) override {}
-	virtual void onPresent(ISwapChain* swapChain) override;
+	virtual void onDrawExtension(INativeGraphicsExtension* extension) override { LN_NOTIMPLEMENTED(); }
 
 private:
 	static void getPrimitiveInfo(PrimitiveTopology primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
@@ -201,6 +202,14 @@ private:
 	GLuint m_vao;	// https://www.khronos.org/opengl/wiki/Vertex_Specification#Index_buffers
 	GLuint m_fbo;
 	GLIndexBuffer* m_currentIndexBuffer;
+	GLRenderPass* m_currentRenderPass = nullptr;
+	GLShaderPass* m_activeShaderPass;
+
+	struct
+	{
+		GLboolean state_GL_CULL_FACE;
+
+	} m_savedState;
 };
 
 class GLContext
@@ -220,12 +229,14 @@ class GLSwapChain
 	: public ISwapChain
 {
 public:
-	GLSwapChain();
+	GLSwapChain(OpenGLDevice* device);
 	virtual ~GLSwapChain() = default;
 	virtual void dispose() override;
+	virtual uint32_t getBackbufferCount() override { return 1; }
     virtual void acquireNextImage(int* outImageIndex) override { *outImageIndex = 0; }
     virtual ITexture* getRenderTarget(int imageIndex) const override;
 	virtual Result resizeBackbuffer(uint32_t width, uint32_t height) override;
+	virtual void present() override;
 
 	virtual void getBackendBufferSize(SizeI* outSize);
 
@@ -241,6 +252,7 @@ public:
 private:
 	void releaseBuffers();
 
+	OpenGLDevice* m_device;
 	Ref<GLRenderTargetTexture> m_backbuffer;
 	GLuint m_fbo;
 
@@ -252,6 +264,37 @@ private:
     GLuint m_defaultFBO;
     int m_backengBufferWidth;
     int m_backengBufferHeight;
+};
+
+// 他の Graphics API との処理を抽象化するためのダミー。
+class GLCommandQueue
+	: public ICommandQueue
+{
+public:
+	GLCommandQueue();
+	Result init();
+	virtual Result submit(ICommandList* commandList) override;
+};
+
+class GLRenderPass
+	: public IRenderPass
+{
+public:
+	GLRenderPass();
+	Result init(OpenGLDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil);
+	virtual void dispose() override;
+
+	SizeI viewSize() const;
+	void bind(GLGraphicsContext* context);
+
+private:
+	OpenGLDevice* m_device;
+	std::array<Ref<GLTextureBase>, MaxMultiRenderTargets> m_renderTargets;
+	Ref<GLDepthBuffer> m_depthBuffer;
+	ClearFlags m_clearFlags;
+	Color m_clearColor;
+	float m_clearDepth;
+	uint8_t m_clearStencil;
 };
 
 struct GLVertexElement
@@ -308,8 +351,9 @@ public:
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 
 	void setSubData(size_t offset, const void* data, size_t length);
-	void* map();
-	void unmap();
+	void* map(uint32_t offset, uint32_t size);
+	virtual void* map() override { return map(0, m_size); }
+	virtual void unmap() override;
 
 private:
 	GLuint m_glVertexBuffer;
@@ -334,8 +378,9 @@ public:
 	virtual GraphicsResourceUsage usage() const override { return m_usage; }
 
 	void setSubData(size_t offset, const void* data, size_t length);
-	void* map();
-	void unmap();
+	void* map(uint32_t offset, uint32_t size);
+	virtual void* map() override { return map(0, m_size); }
+	virtual void unmap() override;
 
 private:
 	GLuint m_indexBufferId;
@@ -425,6 +470,7 @@ public:
 	GLRenderTargetTexture();
 	virtual ~GLRenderTargetTexture();
 	void init(uint32_t width, uint32_t height, TextureFormat requestFormat, bool mipmap);
+    void init(intptr_t nativeObject, uint32_t hintWidth, uint32_t hintHeight);
 	virtual void dispose() override;
 
 
@@ -535,7 +581,7 @@ public:
 	virtual void dispose() override;
 
 	GLuint program() const { return m_program; }
-	void apply();
+	void apply() const;
 
 	//virtual int getUniformCount() const override;
 	//virtual IShaderUniform* getUniform(int index) const override;
@@ -651,6 +697,24 @@ private:
 	std::vector<ExternalUnifrom> m_externalUniforms;    // TODO: 名前、virtual のほうがいいかも
 };
 
+class GLPipeline
+	: public IPipeline
+{
+public:
+	GLPipeline();
+	Result init(OpenGLDevice* device, const DevicePipelineStateDesc& state);
+	virtual void dispose() override;
+	void bind(const std::array<IVertexBuffer*, MaxVertexStreams>& vertexBuffers, const IIndexBuffer* indexBuffer);
+	GLenum primitiveTopology() const { return m_primitiveTopology; }
+
+private:
+	OpenGLDevice* m_device;
+	BlendStateDesc m_blendState;
+	RasterizerStateDesc m_rasterizerState;
+	DepthStencilStateDesc m_depthStencilState;
+	GLenum m_primitiveTopology;
+};
+
 //=============================================================================
 // empty implementation
 
@@ -670,7 +734,7 @@ class EmptyGLSwapChain
 	: public GLSwapChain
 {
 public:
-	EmptyGLSwapChain() {}
+	EmptyGLSwapChain(OpenGLDevice* device) : GLSwapChain(device) {}
 	virtual ~EmptyGLSwapChain() = default;
 
 private:

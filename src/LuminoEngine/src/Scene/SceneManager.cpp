@@ -2,6 +2,17 @@
 #include "Internal.hpp"
 #include "SceneManager.hpp"
 
+// for registerType
+#include <LuminoEngine/Asset/Assets.hpp>
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Sprite.hpp>
+#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Tilemap/Tileset.hpp>
+#include <LuminoEngine/Tilemap/TilemapLayer.hpp>
+#include <LuminoEngine/Tilemap/TilemapModel.hpp>
+#include <LuminoEngine/Tilemap/TilemapComponent.hpp>
+#include <LuminoEngine/Tilemap/Tilemap.hpp>
+
 namespace ln {
 namespace detail {
 
@@ -9,6 +20,7 @@ namespace detail {
 // SceneManager
 
 SceneManager::SceneManager()
+    : m_activeWorld(nullptr)
 {
 }
 
@@ -20,6 +32,18 @@ void SceneManager::init()
 {
     LN_LOG_DEBUG << "SceneManager Initialization started.";
 
+    m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
+
+    EngineDomain::registerType<World>();
+    EngineDomain::registerType<Scene>();
+    EngineDomain::registerType<Sprite>();
+
+    EngineDomain::registerType<Tileset>();
+    EngineDomain::registerType<TilemapLayer>();
+    EngineDomain::registerType<TilemapModel>();
+    EngineDomain::registerType<TilemapComponent>();
+    EngineDomain::registerType<Tilemap>();
+
     LN_LOG_DEBUG << "SceneManager Initialization ended.";
 }
 
@@ -28,6 +52,19 @@ void SceneManager::dispose()
 	releaseAndTerminateAllRunningScenes();
 }
 
+Scene* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
+{
+    auto scene = dynamic_pointer_cast<Scene>(Assets::loadAsset(sceneAssetFilePath));
+    activeWorld()->addScene(scene);
+    return nullptr;
+}
+
+void SceneManager::unloadScene(Scene* scene)
+{
+    activeWorld()->m_sceneList->remove(scene);
+}
+
+#if 0
 void SceneManager::gotoScene(Scene* scene)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
@@ -54,14 +91,15 @@ void SceneManager::returnScene()
 	c.scene = nullptr;
 	m_eventQueue.push_back(c);
 }
+#endif
 
 void SceneManager::updateFrame()
 {
 	executeCommands();
-	if (m_activeScene != nullptr)
-	{
-		m_activeScene->update();
-	}
+	//if (m_activeScene != nullptr)
+	//{
+	//	m_activeScene->update();
+	//}
 }
 
 void SceneManager::executeCommands()

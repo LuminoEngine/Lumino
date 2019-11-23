@@ -1,13 +1,20 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/UI/UIStyle.hpp>
-#include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 
 namespace ln {
 
 //==============================================================================
 // UIContainerElement
+//	デフォルトで Focus と TabStop を持つものとしてみる。
+//	また、任意個数の論理子要素を追加できるようにしてみる。
+//	WPF だとこの役目は ContentControl と ItemsControl に分かれているが、
+//	UIContainerElement は複数要素追加可能 & ItemContainerGenerator の機能は持たない。
+//	WPF だと Slider や TextBox は Control の一部であるが、論理子要素は持つことができない。
+//	でも Lumino では持つことができる。この辺は Qt と似てるかも。
+//	Visual要素は原理的には正しいけど扱うのは面倒なので、
+//	ユーザーがちょっとカスタムコントロール作ったり装飾したりする用途で、複数要素追加可能としておく。
+//	（あと、あまりクラスを増やし過ぎたくない）
 
 UIContainerElement::UIContainerElement()
 {
@@ -15,143 +22,19 @@ UIContainerElement::UIContainerElement()
 
 void UIContainerElement::init()
 {
-    UIElement::init();
-	//setHorizontalAlignment(HAlignment::Stretch);
-	//setVerticalAlignment(VAlignment::Stretch);
+    UIControl::init();
 }
 
-void UIContainerElement::onDispose(bool explicitDisposing)
+//==============================================================================
+// UIFrame
+
+UIFrame::UIFrame()
 {
-    removeAllChildren();
-	UIElement::onDispose(explicitDisposing);
 }
 
-void UIContainerElement::addElement(UIElement* element)
+void UIFrame::init()
 {
-	if (LN_REQUIRE(element)) return;
-
-    // 通常は作成直後、デフォルトの Container に追加されている。
-    // WPF のように別の親に追加済みであれば例外するのもありだけど、いちいち removeFromParent するのは面倒。
-    if (element->logicalParent()) {
-        element->removeFromLogicalParent();
-    }
-	
-    m_logicalChildren.add(element);
-    element->setLogicalParent(this);
-
-	if (m_logicalChildrenHost) {
-		m_logicalChildrenHost->addLayoutOwnerLogicalChild(element);
-	}
-}
-
-void UIContainerElement::removeElement(UIElement* element)
-{
-    if (LN_REQUIRE(element)) return;
-    if (LN_REQUIRE(element->logicalParent() == this)) return;
-
-    if (m_logicalChildrenHost) {
-        m_logicalChildrenHost->removeLayoutOwnerLogicalChild(element);
-    }
-
-    m_logicalChildren.remove(element);
-    element->setLogicalParent(nullptr);
-}
-
-void UIContainerElement::removeAllChildren()
-{
-	m_logicalChildren.clear();
-	if (m_logicalChildrenHost) {
-		m_logicalChildrenHost->clearLayoutOwnerLogicalChildren();
-	}
-}
-
-void UIContainerElement::setLayoutPanel(UILayoutPanel* panel)
-{
-	setLogicalChildrenHost(panel);
-}
-
-UILayoutPanel* UIContainerElement::layoutPanel() const
-{
-	return m_logicalChildrenHost;
-}
-
-int UIContainerElement::getVisualChildrenCount() const
-{
-	if (m_logicalChildrenHost) {
-		return 1;
-	}
-	else {
-		return m_logicalChildren.size();
-	}
-}
-
-UIElement* UIContainerElement::getVisualChild(int index) const
-{
-	if (m_logicalChildrenHost) {
-		return m_logicalChildrenHost;
-	}
-	else {
-		return m_logicalChildren[index];
-	}
-}
-
-Size UIContainerElement::measureOverride(const Size& constraint)
-{
-	if (m_logicalChildrenHost) {
-        m_logicalChildrenHost->measureLayout(constraint);
-        Size layoutSize = m_logicalChildrenHost->desiredSize();
-        Size localSize = UIElement::measureOverride(constraint);
-        return Size::max(layoutSize, localSize);
-	}
-	else {
-		return UIFrameLayout::staticMeasureOverride(this, constraint);
-	}
-}
-
-Size UIContainerElement::arrangeOverride(const Size& finalSize)
-{
-	if (m_logicalChildrenHost) {
-        Rect rect(0, 0, finalSize);
-        m_logicalChildrenHost->arrangeLayout(rect.makeDeflate(finalStyle()->padding));
-		return finalSize;
-	}
-	else {
-		return UIFrameLayout::staticArrangeOverride(this, finalSize);
-	}
-}
-
-void UIContainerElement::setLogicalChildrenHost(UILayoutPanel* panel)
-{
-	if (panel != m_logicalChildrenHost)
-	{
-		// 既に持っていれば取り除いておく
-		if (m_logicalChildrenHost)
-		{
-			m_logicalChildrenHost->clearLayoutOwnerLogicalChildren();
-			//removeVisualChild(m_logicalChildrenPresenter);
-			m_logicalChildrenHost = nullptr;
-		}
-
-		// 新しく保持する
-		if (panel)
-		{
-			//if (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement))
-			//{
-			//	addVisualChild(presenter);
-			//}
-
-			m_logicalChildrenHost = panel;
-
-			for (auto& element : m_logicalChildren) {
-				m_logicalChildrenHost->addLayoutOwnerLogicalChild(element);
-			}
-		}
-
-		// 変更通知
-		//onLogicalChildrenPresenterChanged(m_logicalChildrenPresenter);
-
-		//m_invalidateItemsHostPanel = true;
-	}
+    UIContainerElement::init();
 }
 
 } // namespace ln

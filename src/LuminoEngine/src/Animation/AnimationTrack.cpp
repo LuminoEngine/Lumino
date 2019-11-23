@@ -71,7 +71,7 @@ void AnimationTrack::init()
 
 Ref<ScalarAnimationTrack> ScalarAnimationTrack::create()
 {
-    return newObject<ScalarAnimationTrack>();
+    return makeObject<ScalarAnimationTrack>();
 }
 
 ScalarAnimationTrack::ScalarAnimationTrack()

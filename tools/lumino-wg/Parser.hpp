@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "SymbolDatabase.hpp"
 
+// ひとつのヘッダファイルを解析して、SymbolDatabase に情報を追加する。
 class HeaderParser
 {
 public:

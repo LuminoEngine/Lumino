@@ -29,8 +29,13 @@ FpsController::FpsController()
     , m_capaFpsLastTime(0.0)
     , m_capaFrameTimes(NULL)
     , m_capaAverageTime(0.0)
+	, m_minTime(FLT_MAX)
+	, m_maxTime(FLT_MIN)
+	, m_minTimePerSeconds(0.0f)
+	, m_maxTimePerSeconds(0.0f)
     , m_enableFpsTest(false)
 {
+	m_capaFpsLastTime = m_startTime;
     setFrameRate(60);
 }
 
@@ -112,27 +117,6 @@ void FpsController::process()
     // 待つべき時間だけ待つ
     if (m_term > 0.0)
     {
-
-
-        //if ( ii > 120 && m_term < 0.016 )
-        {
-            /*
-            ii = 120;
-
-            double bb = 0;
-            for ( int i = 0; i < 60; ++i )
-            {
-            _p( m_frameTimes[ i ] );
-            bb += m_frameTimes[ i ];
-            }
-            _p((double)ii / 60.0);
-
-            printf( "a\n" );
-            */
-        }
-
-        //::sleep( 16 );
-
         Thread::sleep(static_cast< uint32_t >(m_term * 1000));
     }
 
@@ -168,36 +152,7 @@ void FpsController::process()
         m_averageTime /= m_frameRate;
     }
 
-    // FPS 余裕度を測定する
-    if (m_enableFpsTest)
-    {
-        // 今回の分の1周した時間を記録
-        m_capaFrameTimes[m_frameCount] = m_currentTime - m_capaFpsLastTime;
-
-        // m_frameRate の最後のフレーム ( 60 の場合は 59 フレーム目 ) に平均を計算
-        if (m_frameCount == m_frameRate - 1)
-        {
-            m_capaAverageTime = 0;
-            for (int i = 0; i < m_frameRate; ++i)
-            {
-                m_capaAverageTime += m_capaFrameTimes[i];
-            }
-
-            if (m_capaAverageTime == 0.0f)
-            {
-                m_capaAverageTime = 0.01f;
-            }
-            m_capaAverageTime /= m_frameRate;
-
-            m_capacityFps = 1.0f / m_capaAverageTime;
-            if (m_capacityFps > 100 * m_frameRate)
-            {
-                m_capacityFps = 100.0f * m_frameRate;
-            }
-        }
-
-        m_capaFpsLastTime = 0.001f * (Environment::getTickCount() - m_startTime);
-    }
+	measureTimes(false);
 
     // m_frameCount を frame で一周するようにする
     m_frameCount = (++m_frameCount) % m_frameRate;
@@ -240,16 +195,6 @@ void FpsController::processForMeasure()
         m_term = (m_baseTime + m_frameRateRec * m_frameCount) - m_currentTime;
     }
 
-    static int ii = 0;
-
-    ++ii;
-
-    // 待つべき時間だけ待つ
-    if (m_term > 0.0)
-    {
-        //sleep( static_cast< uint32_t >( m_term * 1000 ) );
-    }
-
     // 現在の時間
     float nt = m_currentTime;
 
@@ -283,35 +228,7 @@ void FpsController::processForMeasure()
         m_averageTime /= m_frameRate;
     }
 
-    if (m_enableFpsTest)
-    {
-        // 今回の分の1周した時間を記録
-        m_capaFrameTimes[m_frameCount] = m_currentTime - m_capaFpsLastTime;
-
-        // m_frameRate の最後のフレーム ( 60 の場合は 59 フレーム目 ) に平均を計算
-        if (m_frameCount == m_frameRate - 1)
-        {
-            m_capaAverageTime = 0;
-            for (int i = 0; i < m_frameRate; ++i)
-            {
-                m_capaAverageTime += m_capaFrameTimes[i];
-            }
-
-            if (m_capaAverageTime == 0.0f)
-            {
-                m_capaAverageTime = 0.01f;
-            }
-            m_capaAverageTime /= m_frameRate;
-
-            m_capacityFps = 1.0f / m_capaAverageTime;
-            if (m_capacityFps > 100 * m_frameRate)
-            {
-                m_capacityFps = 100.0f * m_frameRate;
-            }
-        }
-
-        m_capaFpsLastTime = m_currentTime;
-    }
+	measureTimes(true);
 
     // m_frameCount を frame で一周するようにする
     m_frameCount = (++m_frameCount) % m_frameRate;
@@ -323,6 +240,52 @@ void FpsController::addingToTotalTime()
 {
     m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
     m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);
+}
+
+void FpsController::measureTimes(bool fromProcessForMeasure)
+{
+	if (m_enableFpsTest)
+	{
+		// 今回の分の1周した時間を記録
+		float elapsedTime = m_currentTime - m_capaFpsLastTime;
+		m_capaFrameTimes[m_frameCount] = elapsedTime;
+
+		m_minTime = std::max(std::min(m_minTime, elapsedTime), 0.0f);
+		m_maxTime = std::max(m_maxTime, elapsedTime);
+
+		// m_frameRate の最後のフレーム ( 60 の場合は 59 フレーム目 ) に平均を計算
+		if (m_frameCount == m_frameRate - 1)
+		{
+			m_capaAverageTime = 0;
+			for (int i = 0; i < m_frameRate; ++i)
+			{
+				m_capaAverageTime += m_capaFrameTimes[i];
+			}
+
+			if (m_capaAverageTime == 0.0f)
+			{
+				m_capaAverageTime = 0.01f;
+			}
+			m_capaAverageTime /= m_frameRate;
+
+			m_capacityFps = 1.0f / m_capaAverageTime;
+			if (m_capacityFps > 100 * m_frameRate)
+			{
+				m_capacityFps = 100.0f * m_frameRate;
+			}
+
+			// get snapshot
+			m_minTimePerSeconds = m_minTime;
+			m_maxTimePerSeconds = m_maxTime;
+			m_minTime = FLT_MAX;
+			m_maxTime = FLT_MIN;
+		}
+
+		if (fromProcessForMeasure)
+			m_capaFpsLastTime = m_currentTime;
+		else
+			m_capaFpsLastTime = 0.001f * (Environment::getTickCount() - m_startTime);
+	}
 }
 
 } // namespace detail

@@ -29,7 +29,7 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	CameraOrbitControlComponent();
-	virtual ~CameraOrbitControlComponent() = default;
+    virtual ~CameraOrbitControlComponent();
 	void init();
 
 private:

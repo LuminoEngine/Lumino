@@ -9,12 +9,16 @@ class ReflectionObjectVisitor;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
+class ObjectRuntimeData;
+class EngineDomain;
 }
 
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
+    friend class ::ln::detail::EngineDomain; \
     static TypeInfo* _lnref_getTypeInfo(); \
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override;
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
+	static void _lnref_registerTypeInfo(EngineContext* context);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     TypeInfo* classType::_lnref_getTypeInfo() \
@@ -22,24 +26,34 @@ class ObjectHelper;
         static TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
         return &typeInfo; \
     } \
-    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
+    ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
+	void classType::_lnref_registerTypeInfo(EngineContext* context)
 
 #define LN_INTERNAL_NEW_OBJECT \
-    template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
+    template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
     template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); 
 
 #ifndef LN_CONSTRUCT_ACCESS
 #define LN_CONSTRUCT_ACCESS \
-		template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
+		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
+		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject2(TArgs&&... args); \
 		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
 
 template<class T, typename... TArgs>
-Ref<T> newObject(TArgs&&... args)
+Ref<T> makeObject(TArgs&&... args)
 {
 	auto ptr = Ref<T>(new T(), false);
 	ptr->init(std::forward<TArgs>(args)...);
+	return ptr;
+}
+
+template<class T, typename... TArgs>
+Ref<T> makeObject2(TArgs&&... args)
+{
+	auto ptr = Ref<T>(new T(std::forward<TArgs>(args)...), false);
+	ptr->init();
 	return ptr;
 }
 
@@ -62,6 +76,8 @@ protected:
 	virtual void finalize() override;
 	virtual void onDispose(bool explicitDisposing);
 
+	LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar);
 
 public:
 	/**
@@ -78,6 +94,10 @@ public:
 
 	// TODO: internal
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
+    virtual void onSetAssetFilePath(const Path& filePath);
+
+    void setAssetId(const Uuid& id) { m_assetId = id; }
+    const Uuid& assetId() const { return m_assetId; }
 
 private:
     detail::WeakRefInfo* requestWeakRefInfo();
@@ -86,6 +106,8 @@ private:
 
     detail::WeakRefInfo* m_weakRefInfo;
     std::mutex m_weakRefInfoMutex;
+	detail::ObjectRuntimeData* m_runtimeData;
+    Uuid m_assetId;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
@@ -107,15 +129,10 @@ class ObjectHelper
 {
 public:
     template<class T>
-    inline static detail::WeakRefInfo* requestWeakRefInfo(T* obj)
-    {
-        return obj->requestWeakRefInfo();
-    }
-
-    inline static void destructObject(Object* obj)
-    {
-        obj->~Object();
-    }
+    static detail::WeakRefInfo* requestWeakRefInfo(T* obj) { return obj->requestWeakRefInfo(); }
+    static void destructObject(Object* obj) { obj->~Object(); }
+	static void setRuntimeData(Object* obj, ObjectRuntimeData* data) { obj->m_runtimeData = data; }
+	static ObjectRuntimeData* getRuntimeData(Object* obj) { return obj->m_runtimeData; }
 };
 
 class WeakRefInfo final
@@ -233,6 +250,7 @@ private:
 
     detail::WeakRefInfo*	m_weakRefInfo;
 };
+namespace detail { struct TypeInfoInternal; }
 
 class TypeInfo
     : public RefObject
@@ -241,6 +259,7 @@ public:
     TypeInfo(const char* className, TypeInfo* baseType)
         : m_name(className)
         , m_baseType(baseType)
+		, m_managedTypeInfoId(-1)
     {}
 
     /** クラス名を取得します。 */
@@ -251,6 +270,10 @@ public:
 
     void registerProperty(PropertyInfo* prop);
     const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
+
+	Ref<Object> createInstance() const;
+	static Ref<Object> createInstance(const String& typeName);	// TODO: EngineContext へ
+
 
     /** 型引数に指定したクラス型の型情報を取得します。 */
     template<class T>
@@ -266,11 +289,148 @@ public:
 
     static void initializeObjectProperties(Object* obj);
 
+	// TODO: internal
+	std::function<Ref<Object>()> m_factory;
+
 private:
     String m_name;
     TypeInfo* m_baseType;
     List<Ref<PropertyInfo>> m_properties;
+	int64_t m_managedTypeInfoId;
+
+	friend struct detail::TypeInfoInternal;
 };
+
+namespace detail {
+struct TypeInfoInternal
+{
+	static void setManagedTypeInfoId(TypeInfo* typeInfo, int64_t id) { typeInfo->m_managedTypeInfoId = id; }
+	static int64_t getManagedTypeInfoId(const TypeInfo* typeInfo) { return typeInfo->m_managedTypeInfoId; }
+};
+} // namespace detail
+
+class Serializer
+{
+public:
+	template<class T>
+	static String serialize(const Ref<T>&& value)
+	{
+		JsonTextOutputArchive ar;
+		ar.save(*value);
+		return ar.toString(JsonFormatting::None);
+	}
+
+	template<class T>
+	static Ref<T> deserialize(const StringRef& jsonText)
+	{
+		Ref<T> value = makeObject<T>();
+		JsonTextInputArchive ar(jsonText);
+		ar.load(*value);
+		return value;
+	}
+};
+
+//template<
+//	typename TValue,
+//	typename std::enable_if<std::is_abstract<TValue>::value_type, std::nullptr_t>::type = nullptr>
+//	void serialize(Archive& ar, Ref<TValue>& value)
+//{
+//	bool isNull = (value == nullptr);
+//	ar.makeSmartPtrTag(&isNull);
+//
+//	ln::String typeName;
+//	if (ar.isSaving()) {
+//		typeName = TypeInfo::getTypeInfo(value)->name();
+//	}
+//	ar.makeTypeInfo(&typeName);
+//	//TODO: ここで makeTypeInfo すると、その中では setNextName しているため、現在の nextName をうわがいてしまう
+//
+//	if (ar.isSaving()) {
+//		if (!isNull) {
+//			ar.process(*value.get());
+//		}
+//	}
+//	else {
+//		if (!isNull) {
+//			if (!typeName.isEmpty()) {
+//				auto obj = TypeInfo::createInstance(typeName);
+//				value = dynamic_pointer_cast<TValue>(obj);
+//			}
+//
+//			//// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
+//			//if (!value) {
+//			//	value = makeObject<TValue>();
+//			//}
+//
+//			ar.process(*value.get());
+//		}
+//		else {
+//			value = nullptr;
+//		}
+//	}
+//}
+
+namespace detail {
+	
+template<
+	typename T,
+	typename std::enable_if<std::is_abstract<T>::value, std::nullptr_t>::type = nullptr>
+Ref<T> makeObjectHelper() {
+	return nullptr;
+}
+
+template<
+	typename T,
+	typename std::enable_if<!std::is_abstract<T>::value, std::nullptr_t>::type = nullptr>
+Ref<T> makeObjectHelper() {
+	return makeObject<T>();
+}
+
+} // namespace detail
+
+template<
+	typename TValue,
+	typename std::enable_if<detail::is_lumino_engine_object<TValue>::value, std::nullptr_t>::type = nullptr>
+void serialize(Archive& ar, Ref<TValue>& value)
+{
+	bool isNull = (value == nullptr);
+	ar.makeSmartPtrTag(&isNull);
+
+	ln::String typeName;
+	if (ar.isSaving()) {
+		typeName = TypeInfo::getTypeInfo(value)->name();
+	}
+	ar.makeTypeInfo(&typeName);
+	//TODO: ここで makeTypeInfo すると、その中では setNextName しているため、現在の nextName をうわがいてしまう
+
+	if (ar.isSaving()) {
+		if (!isNull) {
+			ar.process(*value.get());
+		}
+	}
+	else {
+		if (!isNull) {
+			if (!typeName.isEmpty()) {
+				auto obj = TypeInfo::createInstance(typeName);
+				if (obj) {
+					value = dynamic_pointer_cast<TValue>(obj);
+				}
+			}
+
+			// TODO: TypeName が登録されていない場合はベースのを作るか、エラーにするかオプションで決められるようにしたい。
+			// TODO: Abstract 対策のためいったん無効化。多分有効化する必要はない気がするけど…。
+			if (!value) {
+				value = detail::makeObjectHelper<TValue>();
+			}
+			if (value) {
+				ar.process(*value.get());
+			}
+		}
+		else {
+			value = nullptr;
+		}
+	}
+}
 
 } // namespace ln
 

@@ -162,6 +162,7 @@ public:
 	ln::String getRawTypeFullName(const QualType& type)
 	{
 		// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
+		// そこから各修飾を取り除いて、:: で区切られた型名を求める。
 		auto name = ln::String::fromStdString(type.getAsString());
 		name = name.replace(_T("struct"), "");
 		name = name.replace(_T("class"), "");
@@ -399,7 +400,7 @@ public:
 			auto symbol = ln::makeRef<ConstantSymbol>();
 			symbol->document = parseDocument(decl);
 			symbol->name = ln::String::fromStdString(decl->getNameAsString());
-			symbol->value = decl->getInitVal().getSExtValue();
+			symbol->value = ln::makeVariant(decl->getInitVal().getSExtValue());
 			symbol->type = m_currentRecord;
 			m_currentRecord->declaredConstants.add(symbol);
 		}

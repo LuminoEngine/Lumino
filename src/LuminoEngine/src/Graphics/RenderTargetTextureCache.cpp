@@ -62,6 +62,8 @@ GraphicsResource* TemporaryGraphicsResourceObjectCacheBase::findBase(uint64_t ke
 		{
 			if (e.refCount == 0)
 			{
+                // TODO: ここで lifeFrames=0にしなくていいんだっけ？
+
 				e.refCount++;
 				return e.resourceObject;
 			}
@@ -120,7 +122,7 @@ RenderTargetTexture* RenderTargetTextureCacheManager::requestObject(const SizeI&
 	GraphicsResource* obj = findBase(key);
 	if (obj) return static_cast<RenderTargetTexture*>(obj);
 
-	auto t = newObject<RenderTargetTexture>(size.width, size.height, format, mipmap);
+	auto t = makeObject<RenderTargetTexture>(size.width, size.height, format, mipmap);
 	insertBase(key, t);
 	return t;
 }
@@ -162,7 +164,7 @@ DepthBuffer* DepthBufferCacheManager::requestObject(const SizeI& size)
 
 	//auto t = makeRef<DepthBuffer>();
 	//t->createImpl(m_manager, size, format);
-	auto t = newObject<DepthBuffer>(size.width, size.height);
+	auto t = makeObject<DepthBuffer>(size.width, size.height);
 	insertBase(key, t);
 	return t;
 }

@@ -16,6 +16,7 @@ class MeshResource;
 class MeshContainer;
 class RenderViewPoint;
 namespace detail {
+class FlexGlyphRun;
 class RenderingManager;
 class DrawElementList;
 class DrawElementListBuilder;
@@ -54,6 +55,8 @@ public:
 	void setScissorRect(const RectI& value);
 
 	/** @} */
+
+	void setTransfrom(const Matrix& value);
 
 	//--------------------------------------------------------------------------
 	/** @name render status */
@@ -110,12 +113,16 @@ public:
     void drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform = Matrix());
 	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix());
 
+    /** 四辺の位置が -1.0~1.0 の矩形を描画します。座標変換行列に単位行列を使用することで、スクリーン全体を覆う矩形を描画することができます。 */
+    void drawScreenRectangle();
+
     // これは主に Post effect の実装で使用します。
     // 実際に処理が行われるのはレンダリングパイプラインの ImageEffect フェーズです。
     // 通常、drawMesh や drawSprite とは実行されるタイミングが異なるため、Post effect の実装のみを目的として使用してください。
     //void blit(AbstractMaterial* material);
-    void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
-    void blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material);
+    //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
+    //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material);
+	void blit(AbstractMaterial* source, RenderTargetTexture* destination);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -136,6 +143,11 @@ public:
 
     // font が nullptr の場合は defaultFont
     void drawText(const StringRef& text, const Color& color, Font* font = nullptr);
+	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr, const Matrix& transform = Matrix::Identity);
+
+	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);
+
+    void invokeExtensionRendering(INativeGraphicsExtension* extension);
 
 	/** @} */
 
@@ -156,6 +168,13 @@ public:
 
 	/** @} */
 
+
+
+	/** 指定した文字列を描画する際のサイズを計算します。(unit: dp) */
+	Size measureTextSize(Font* font, const StringRef& text) const;
+	Size measureTextSize(Font* font, uint32_t codePoint) const;
+
+
     RenderViewPoint* viewPoint() const;
 
 
@@ -164,6 +183,7 @@ public:
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
+    GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

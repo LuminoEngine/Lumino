@@ -1,4 +1,5 @@
 ﻿
+#include <LuminoCore/Math/Math.hpp>
 #include <LuminoCore/Math/Vector3.hpp>
 #include <LuminoCore/Math/Matrix.hpp>
 #include <LuminoCore/Math/Geometries.hpp>
@@ -11,12 +12,21 @@ namespace ln {
 Ray::Ray()
     : origin(0.0f, 0.0f, 0.0f)
     , direction(0.0f, 0.0f, 0.0f)
+	, distance(Math::Inf)
 {
 }
 
 Ray::Ray(const Vector3& origin_, const Vector3& direction_)
     : origin(origin_)
     , direction(direction_)
+	, distance(Math::Inf)
+{
+}
+
+Ray::Ray(const Vector3& origin_, const Vector3& direction_, float distance_)
+	: origin(origin_)
+	, direction(direction_)
+	, distance(distance_)
 {
 }
 

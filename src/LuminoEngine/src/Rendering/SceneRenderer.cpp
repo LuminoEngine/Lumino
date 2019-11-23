@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -37,7 +38,8 @@ void SceneRendererPass::onEndRender(SceneRenderer* sceneRenderer)
 {
 }
 
-void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+void SceneRendererPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 }
 
@@ -46,23 +48,27 @@ void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frame
 
 SceneRenderer::SceneRenderer()
 	: m_manager(detail::EngineDomain::renderingManager())
+	, m_renderFeatureBatchList(detail::EngineDomain::renderingManager())
 	, m_renderingPipeline(nullptr)
 	, m_zSortDistanceBase(ZSortDistanceBase::CameraScreenDistance)
+	, m_renderPassPoolUsed(0)
 {
 }
 
 void SceneRenderer::init()
 {
-	m_skinningMatricesTexture = newObject<Texture2D>(4, 1024, TextureFormat::RGBA32F);
+	//m_renderPass = makeObject<RenderPass>();
+
+	m_skinningMatricesTexture = makeObject<Texture2D>(4, 1024, TextureFormat::RGBA32F);
 	m_skinningMatricesTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
-	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(1, 1024, TextureFormat::RGBA32F);
+	m_skinningLocalQuaternionsTexture = makeObject<Texture2D>(1, 1024, TextureFormat::RGBA32F);
 	m_skinningLocalQuaternionsTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 	
 	// skinning texture は毎フレーム更新されるものなので、デバイスリセット時に復元する必要はない
 	m_skinningMatricesTexture->setResourcePool(GraphicsResourcePool::None);
 	m_skinningLocalQuaternionsTexture->setResourcePool(GraphicsResourcePool::None);
 
-    auto samperState = newObject<SamplerState>();
+    auto samperState = makeObject<SamplerState>();
     samperState->setFilterMode(TextureFilterMode::Point);
     m_skinningMatricesTexture->setSamplerState(samperState);
     m_skinningLocalQuaternionsTexture->setSamplerState(samperState);
@@ -71,31 +77,39 @@ void SceneRenderer::init()
 void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
-	const FrameBuffer& defaultFrameBuffer,
+	RenderTargetTexture* renderTarget,
+    const ClearInfo& clearInfo,
     const CameraInfo& mainCameraInfo,
     RendringPhase targetPhase)
 {
 	//if (LN_REQUIRE(m_defaultMaterial)) return;
 
+    graphicsContext->resetState();
+
 	m_renderingPipeline = renderingPipeline;
-	m_defaultFrameBuffer = &defaultFrameBuffer;
+	//m_defaultFrameBuffer = &defaultFrameBuffer;
     m_mainCameraInfo = mainCameraInfo;
     m_targetPhase = targetPhase;
+    m_firstClearInfo = clearInfo;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();
 
+	//m_renderPass->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
+	//m_renderPass->setDepthBuffer(defaultFrameBuffer.depthBuffer);
+	//graphicsContext->setRenderPass(m_renderPass);
 
 	//if (clearColorBuffer)
 	{
         // TODO: 暫定。
-        graphicsContext->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
-        graphicsContext->setDepthBuffer(defaultFrameBuffer.depthBuffer);
-        graphicsContext->clear(ClearFlags::Depth, Color::White);
+        //graphicsContext->setRenderTarget(0, defaultFrameBuffer.renderTarget[0]);
+        //graphicsContext->setDepthBuffer(defaultFrameBuffer.depthBuffer);
+        //graphicsContext->clear(ClearFlags::Depth, Color::White);
 		// TODO: 前回の最後のステートが残っていることがある。clear したいやつの弊害だけ、とりあえず暫定処置。シザーも必要になりそう。
 		//coreRenderer->setViewport(RectI(0, 0, defaultRenderTarget->getSize()));
 		//coreRenderer->clear(ClearFlags::All, clearColor);
 	}
+	
 
 
 
@@ -133,6 +147,9 @@ void SceneRenderer::render(
 	//}
 	//m_renderingActualPassList.addRange(m_renderingPassList);
 
+
+	auto depthBuffer = DepthBuffer::getTemporary(renderTarget->width(), renderTarget->height());
+
 	m_renderingActualPassList.clear();
 	for (SceneRendererPass* pass : m_renderingPassList)
 	{
@@ -147,13 +164,16 @@ void SceneRenderer::render(
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
-        renderPass(graphicsContext, pass);
+        renderPass(graphicsContext, renderTarget, depthBuffer, pass);
 	}
 
 	for (SceneRendererPass* pass : m_renderingActualPassList)
 	{
 		pass->onEndRender(this);
     }
+
+	// TODO: scoped
+	DepthBuffer::releaseTemporary(depthBuffer);
 
 	//// Flush
 	//{
@@ -176,14 +196,14 @@ void SceneRenderer::addPass(SceneRendererPass* pass)
 	m_renderingPassList.add(pass);
 }
 
-void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPass* pass)
+void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
 	m_renderingElementList.clear();
 
-	FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
-	pass->onBeginPass(graphicsContext, &defaultFrameBuffer);
+	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
+	pass->onBeginPass(graphicsContext, renderTarget, depthBuffer);
 
-
+    ClearInfo clearInfo = m_firstClearInfo;
 	const detail::CameraInfo& cameraInfo = mainCameraInfo();
 
 	//pass->overrideCameraInfo(&cameraInfo);
@@ -192,237 +212,244 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, SceneRendererPa
 
 	prepare();
 
-	RenderStage* currentStage = nullptr;
-	for (RenderDrawElement* element : m_renderingElementList)
+	for (auto& renderFeature : m_manager->renderFeatures()) {
+		renderFeature->beginRendering();
+	}
+
+	m_renderFeatureBatchList.clear();
+
+    // TODO: とりいそぎ
+    m_renderFeatureBatchList.renderTarget = renderTarget;
+    m_renderFeatureBatchList.depthBuffer = depthBuffer;
+
+
+	// Create batch list.
 	{
-		RenderStage* stage = element->stage();
-		// ステートの変わり目チェック
-		if (currentStage == nullptr || !currentStage->equals(stage))
+		RenderPass* currentRenderPass = pass->renderPass();
+		assert(currentRenderPass);
+
+		RenderStage* currentStage = nullptr;
+		const Matrix* currentWorldMatrix = nullptr;
+		AbstractMaterial* currentFinalMaterial = nullptr;
+		SubsetInfo currentSubsetInfo;
+        //int count = 0;
+		for (RenderDrawElement* element : m_renderingElementList)
 		{
-			if (currentStage) {
-				currentStage->flush(graphicsContext);
+			bool submitRequested = false;
+			RenderStage* stage = element->stage();
+			assert(stage->renderFeature);
+
+			if (!stage->renderFeature->drawElementTransformNegate()) {
+				// バッチ機能を持たない RenderFeature であるので、毎回 flush する。
+				// 実際のところ Mesh とかを無理やりバッチ(Descripterを変更しないで連続描画)しようとしても、
+				// ほとんどの場合は WorldMatrix の変更が必要なので頑張ってやってもあまり恩恵がない。
+				submitRequested = true;
 			}
-			currentStage = stage;
-			applyFrameBufferStatus(graphicsContext, currentStage, defaultFrameBuffer);
+			else {
+				// ステートの変わり目チェック
+				if (!currentStage || !currentStage->equals(stage)) {
+					submitRequested = true;
+				}
+			}
+
+			if (submitRequested) {
+				currentRenderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
+                clearInfo.flags = ClearFlags::None; // first only
+			}
+
+			// ShaderDescripter
+			SubsetInfo subsetInfo;
+			const Matrix* worldMatrix = nullptr;
+			AbstractMaterial* finalMaterial = nullptr;
+			if (element->elementType == RenderDrawElementType::Geometry) {
+				if (stage->renderFeature->drawElementTransformNegate()) {
+					worldMatrix = nullptr;
+				}
+				else {
+					worldMatrix = &element->combinedWorldMatrix();
+				}
+
+				finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
+
+				if (finalMaterial)
+					subsetInfo.materialTexture = finalMaterial->mainTexture();
+				else
+					subsetInfo.materialTexture = nullptr;
+				subsetInfo.opacity = stage->getOpacityFinal(element);
+				subsetInfo.colorScale = stage->getColorScaleFinal(element);
+				subsetInfo.blendColor = stage->getBlendColorFinal(element);
+				subsetInfo.tone = stage->getToneFinal(element);
+			}
+			else {
+				subsetInfo.clear();
+			}
+
+			// ShaderDescripter に関係するパラメータの変更チェック
+			if (!submitRequested && m_renderFeatureBatchList.lastBatch() && !SubsetInfo::equals(currentSubsetInfo, subsetInfo)) {
+				submitRequested = true;
+			}
+
+			// Batch 確定
+			RenderFeatureBatch* submittedBatch = nullptr;
+			if (submitRequested) {
+				if (!currentStage) {
+					// 初回. 1つも draw 仕様としていないので submit は不要.
+				}
+				else {
+					currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
+					submittedBatch = m_renderFeatureBatchList.lastBatch();
+				}
+			}
+
+			auto result = element->onRequestBatch(&m_renderFeatureBatchList, graphicsContext, stage->renderFeature, &subsetInfo);
+			if (result == RequestBatchResult::Submitted) {
+				if (submittedBatch) {
+					// もし↑の submitBatch() でも新しい Batch が作られたなら、onRequestBatch では新しい Batch を作ってはならない
+					// (実際空なので意味はなく、もし作ってしまうと↓でいろいろ set しているものが submitBatch の Batch に掛からなくなってしまう)
+					LN_CHECK(submittedBatch == m_renderFeatureBatchList.lastBatch());
+				}
+				submittedBatch = m_renderFeatureBatchList.lastBatch();
+			}
+
+			if (submittedBatch) {
+				submittedBatch->setWorldTransformPtr(currentWorldMatrix);
+				submittedBatch->setFinalMaterial(currentFinalMaterial);
+				submittedBatch->setSubsetInfo(currentSubsetInfo);
+				submittedBatch->setRenderPass(submittedBatch->ensureRenderPassOutside ? nullptr : currentRenderPass);
+			}
+
+			if (submitRequested) {
+				currentWorldMatrix = worldMatrix;
+				currentFinalMaterial = finalMaterial;
+				currentSubsetInfo = subsetInfo;
+				currentStage = stage;
+				m_renderFeatureBatchList.setCurrentStage(currentStage);
+			}
+
+            //if (count == 14) break;
+            //count++;
 		}
 
-		// DrawElement drawing.
+		if (currentStage) {
+			currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
+			m_renderFeatureBatchList.lastBatch()->setWorldTransformPtr(currentWorldMatrix);
+			m_renderFeatureBatchList.lastBatch()->setFinalMaterial(currentFinalMaterial);
+			m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
+			m_renderFeatureBatchList.lastBatch()->setRenderPass(m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
+		}
+
+	}
+
+	// Render batch-list.
+	{
+		RenderPass* currentRenderPass = nullptr;
+		const RenderStage* currentStage = nullptr;
+		RenderFeatureBatch* batch = m_renderFeatureBatchList.firstBatch();
+		while (batch)
 		{
+			if (currentRenderPass != batch->renderPass()) {
+				if (currentRenderPass) {
+					graphicsContext->endRenderPass();
+				}
+				currentRenderPass = batch->renderPass();
+                if (currentRenderPass) {
+                    graphicsContext->beginRenderPass(currentRenderPass);
+                }
+			}
 
-			if (element->elementType == RenderDrawElementType::Geometry)
+
+			const RenderStage* stage = batch->stage();
+			const AbstractMaterial* finalMaterial = batch->finalMaterial();
+			const SubsetInfo& subsetInfo = batch->subsetInfo();
+
+			// ステートの変わり目チェック
+			if (currentStage != stage)	// この時点ではポインタ比較だけでよい。中身が異なることは保証済み
 			{
-				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
-                applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
-
-                Texture* mainTexture = nullptr;
-                if (finalMaterial) {
-                    mainTexture = finalMaterial->mainTexture();
+				currentStage = stage;
+				//RenderStage::applyFrameBufferStatus(m_renderPass, currentStage, defaultFrameBuffer);
+		        const RectI& rect = stage->getScissorRectFinal();
+		        if (rect.width < 0) {
+                    RenderPass* renderPass = (currentRenderPass) ? currentRenderPass : pass->renderPass();
+                    auto renderTarget = renderPass->renderTarget(0);
+                    graphicsContext->setScissorRect(Rect(0, 0, renderTarget->width(), renderTarget->height()));
+		        }
+                else {
+                    graphicsContext->setScissorRect(rect.toFloatRect());
                 }
-                if (!mainTexture) {
-                    mainTexture = m_manager->graphicsManager()->whiteTexture();
-                }
+			}
 
-                ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
-
+			if (!finalMaterial) {
+				// Shader 使わない描画 (clear)
+				RenderStage::applyGeometryStatus(graphicsContext, currentStage, nullptr);
+				batch->render(graphicsContext);
+			}
+			else {
 				ElementInfo elementInfo;
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-				elementInfo.WorldMatrix = (currentStage->renderFeature && !currentStage->renderFeature->drawElementTransformNegate()) ? element->combinedWorldMatrix() : Matrix::Identity;
+				elementInfo.WorldMatrix = (batch->worldTransformPtr()) ? *batch->worldTransformPtr() : Matrix::Identity;
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
-				elementInfo.boneTexture = m_skinningMatricesTexture;
-				elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
-                element->onElementInfoOverride(&elementInfo, &meshProcess);
+				elementInfo.boneTexture = nullptr;	// TODO:
+				elementInfo.boneLocalQuaternionTexture = nullptr;	// TODO:
 
-				SubsetInfo subsetInfo;
-				subsetInfo.materialTexture = mainTexture;
-				subsetInfo.opacity = currentStage->getOpacityFinal(element);
-				subsetInfo.colorScale = currentStage->getColorScaleFinal(element);
-				subsetInfo.blendColor = currentStage->getBlendColorFinal(element);
-				subsetInfo.tone = currentStage->getToneFinal(element);
-				element->onSubsetInfoOverride(&subsetInfo);
-
+				ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;	// TODO:
 				ShaderTechnique* tech = pass->selectShaderTechnique(
-                    meshProcess,
+					meshProcess,
 					finalMaterial->shader(),
-					currentStage->getShadingModelFinal(finalMaterial));
+					stage->getShadingModelFinal(finalMaterial));
 
-                detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
+				SubsetInfo localSubsetInfo = subsetInfo;
+				if (batch->overrideTexture) {
+					localSubsetInfo.materialTexture = batch->overrideTexture;
+				}
+				if (!localSubsetInfo.materialTexture) {
+					localSubsetInfo.materialTexture = m_manager->graphicsManager()->whiteTexture();
+				}
+
+
+				detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
 				//semanticsManager->updateCameraVariables(cameraInfo);
 				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 				//semanticsManager->updateSubsetVariables(subsetInfo);
-                if (currentStage->renderFeature) {
-                    currentStage->renderFeature->updateRenderParameters(element, tech, cameraInfo, elementInfo, subsetInfo);
-                }
-                else {
-                    RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, subsetInfo);
-                }
+				//if (stage->renderFeature) {
+				//	stage->renderFeature->updateRenderParameters(element, tech, cameraInfo, elementInfo, subsetInfo);
+				//}
+				//else
+				// TODO: ↑SpriteTextRenderer が Font 取るのに使ってる。これは Batch に持っていくべきだろう。
+				{
+					RenderFeature::updateRenderParametersDefault(tech, cameraInfo, elementInfo, localSubsetInfo);
+				}
 
 				if (finalMaterial) {
 					PbrMaterialData pbrMaterialData;
 					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
 					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
 					finalMaterial->updateShaderVariables(tech->shader());
+					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 				}
 
 				onSetAdditionalShaderPassVariables(tech->shader());
 
-				for (ShaderPass* pass : tech->passes())
+				for (ShaderPass* pass2 : tech->passes())
 				{
-					graphicsContext->setShaderPass(pass);
-
-					element->onDraw(graphicsContext, currentStage->renderFeature);
+					graphicsContext->setShaderPass(pass2);
+					batch->render(graphicsContext);
 				}
 			}
-			else if (element->elementType == RenderDrawElementType::Clear)
-			{
-                applyGeometryStatus(graphicsContext, currentStage, nullptr);
-				element->onDraw(graphicsContext, currentStage->renderFeature);
-			}
-			else
-			{
-				LN_UNREACHABLE();
-			}
+
+
+			batch = batch->next();
+		}
+
+		if (currentRenderPass) {
+			graphicsContext->endRenderPass();
 		}
 	}
 
-	if (currentStage) {
-		currentStage->flush(graphicsContext);
+	for (auto& renderFeature : m_manager->renderFeatures()) {
+		renderFeature->endRendering();
 	}
 
-#if 0
-
-	//DefaultStatus defaultStatus;
-	//defaultStatus.defaultRenderTarget[0] = defaultRenderTarget;
-	//defaultStatus.defaultRenderTarget[1] = defaultStatus.defaultRenderTarget[2] = defaultStatus.defaultRenderTarget[3] = nullptr;
-	//defaultStatus.defaultDepthBuffer = defaultDepthBuffer;
-
-	//pass->onBeginPass(&defaultStatus, drawElementListSet);
-
-	// DrawElement 描画
-	//int currentBatchIndex = -1;
-	//DrawElementBatch* currentState = nullptr;
-	//Shader* currentShader = nullptr;
-	RenderStage* currentStage = nullptr;
-	for (RenderDrawElement* element : m_renderingElementList)
-	{
-		bool visible = true;
-		//drawArgs.oenerList = element->m_ownerDrawElementList;
-
-		//DrawElementBatch* batch = element->m_ownerDrawElementList->getBatch(element->batchIndex);
-		RenderStage* stage = element->stage();//element->m_ownerDrawElementList->getRenderStage(element->batchIndex);
-
-		// ステートの変わり目チェック
-		//if (element->batchIndex != currentBatchIndex)
-		if (currentStage == nullptr || !currentStage->equals(stage) /*currentState->getHashCode() != batch->getHashCode()*/)
-		{
-			if (currentStage) {
-				currentStage->flush();
-			}
-			//context->flush();
-			//currentBatchIndex = element->batchIndex;
-			currentStage = stage;
-			applyFrameBufferStatus(context, currentStage);
-			//context->applyStatus(currentStage, defaultStatus);
-			//context->switchActiveRenderer(currentState->getRenderFeature());
-			//if (diag != nullptr) diag->changeRenderStage();
-		}
-
-		//context->switchActiveRenderer(element->renderFeature);
-
-		// 固定の内部シェーダを使わない場合はいろいろ設定する
-		//if (currentStage->getRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
-		//	!currentStage->getRenderFeature()->isStandaloneShader())
-		//if (context->getCurrentRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
-		//	!context->getCurrentRenderFeature()->isStandaloneShader())
-		//{
-			if (visible)
-			{
-				ElementInfo elementInfo;
-				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
-				elementInfo.WorldMatrix = element->combinedWorldMatrix();
-				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
-				//elementInfo.boneTexture = m_skinningMatricesTexture;
-				//elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
-
-
-
-
-				//for (int i = 0; i < element->subsetCount; i++)
-				//{
-					//CombinedMaterial* material = currentState->getCombinedMaterial();
-					//RenderingPass2::RenderStageFinalData stageData;
-					//stageData.stage = currentStage;
-					//stageData.material = currentStage->getMaterialFinal(m_defaultMaterial, element->getPriorityMaterial(i));
-					//stageData.shader = currentStage->getShaderFinal(stageData.material);
-					//stageData.shadingModel = currentStage->getShadingModelFinal(stageData.material);
-
-					AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(m_defaultMaterial, nullptr);
-
-
-					applyGeometryStatus(context, currentStage, nullptr);
-
-
-
-					//ElementRenderingPolicy policy;
-					//pass->selectElementRenderingPolicy(element, stageData, &policy);
-					//visible = policy.visible;
-
-					ShaderTechnique* tech =  pass->selectShaderTechnique();
-
-					Shader* shader = policy.shader;
-
-
-					SubsetInfo subsetInfo;
-					subsetInfo.renderStage = currentStage;
-					subsetInfo.finalMaterial = stageData.material;
-					subsetInfo.materialTexture = (subsetInfo.finalMaterial != nullptr) ? subsetInfo.finalMaterial->getMaterialTexture(nullptr) : nullptr;
-					element->makeSubsetInfo(element->m_ownerDrawElementList, currentStage, &subsetInfo);
-
-					//currentState->IsStandaloneShaderRenderer
-
-					if (context->getCurrentRenderFeature() != nullptr)
-					{
-						context->getCurrentRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
-					}
-
-					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
-					shader->getSemanticsManager()->updateElementVariables(cameraInfo, elementInfo);
-					shader->getSemanticsManager()->updateSubsetVariables(subsetInfo);
-
-					//material->applyUserShaderValeues(shader);
-					stageData.material->applyUserShaderValeues(shader);
-
-
-					auto* stateManager = context->getRenderStateManager();
-
-					const List<ShaderPass*>& passes = policy.shaderTechnique->getPasses();
-					for (ShaderPass* pass : passes)
-					{
-						onShaderPassChainging(pass);
-						stateManager->setShaderPass(pass);
-
-						if (diag != nullptr) element->reportDiag(diag);
-						element->drawSubset(drawArgs, i);
-					}
-				//}
-			}
-		}
-		//else
-		//{
-		//	// 描画実行
-		//	if (visible)
-		//	{
-		//		if (diag != nullptr) element->reportDiag(diag);
-		//		for (int i = 0; i < element->subsetCount; i++)
-		//		{
-		//			element->drawSubset(drawArgs, i);
-		//		}
-		//	}
-		//}
-
-	}
-
-	//context->flush();
-#endif
+    m_renderPassPoolUsed = 0;
 }
 
 void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)
@@ -545,150 +572,206 @@ void SceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
 }
 
-void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)
+RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer/*, const ClearInfo& clearInfo*/)
 {
-	RenderTargetTexture* renderTarget0 = nullptr;
+	assert(currentRenderPass);
+	FrameBuffer fb;
+	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
+		if (i == 0)
+			fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i] ? stage->frameBufferStageParameters->m_renderTargets[i] : defaultRenderTarget;
+		else
+			fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i];
+	}
+	fb.depthBuffer = (stage->frameBufferStageParameters->m_depthBuffer) ? stage->frameBufferStageParameters->m_depthBuffer : defaultDepthBuffer;
 
-	// RenderTarget
-	{
-		for (int i = 0; i < MaxMultiRenderTargets; i++)
-		{
-			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
-			if (!target) {
-				target = defaultFrameBufferInPass.renderTarget[i];
-			}
+    //bool equalsClearInfo = 
 
-			context->setRenderTarget(i, target);
-
-			if (i == 0) {
-				renderTarget0 = target;
-			}
-		}
+	if (equalsFramebuffer(currentRenderPass, fb)) {
+		return currentRenderPass;
 	}
 
-	// DepthBuffer
-	{
-		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();
-		if (depthBuffer) {
-			context->setDepthBuffer(depthBuffer);
-		}
-		else {
-			context->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
-		}
+	RenderPass* renderPass;
+	if (m_renderPassPoolUsed < m_renderPassPool.size()) {
+		renderPass = m_renderPassPool[m_renderPassPoolUsed];
 	}
+	else {
+		auto r = makeObject<RenderPass>();
+		m_renderPassPool.add(r);
+		renderPass = r;
+	}
+	m_renderPassPoolUsed++;
 
-	// Viewport
-	{
-		//const RectI& rect = stage->getViewportRectFinal();//getViewportRect();
-		//if (rect.width < 0)
-		//{
-		//	stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
-		//}
-		//else
-		//{
-		//	stateManager->setViewport(rect);
-		//}
-		// TODO:Viewport
-		// TODO: m_scissorRect
+	// reset
+	renderPass->setClearValues(ClearFlags::Depth, Color::Transparency, 1.0f, 0x00);
+    //renderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
+
+	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
+		renderPass->setRenderTarget(i, fb.renderTarget[i]);
 	}
+	renderPass->setDepthBuffer(fb.depthBuffer);
+
+	// TODO: コマンド先読みして clear 値も考えたい。今は None (クリアしない)
+
+	return renderPass;
 }
 
-void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* stage, AbstractMaterial* priorityMaterial)
+bool SceneRenderer::equalsFramebuffer(RenderPass* renderPass, const FrameBuffer& fb)
 {
-	// BlendState
-	{
-        BlendMode mode = stage->getBlendModeFinal(priorityMaterial);
-		BlendStateDesc state;
-		state.independentBlendEnable = false;
-		makeBlendMode(mode, &state.renderTargets[0]);
-		context->setBlendState(state);
+	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
+		if (renderPass->renderTarget(i) != fb.renderTarget[i]) {
+			return false;
+		}
 	}
-	// RasterizerState
-	{
-		RasterizerStateDesc state;
-		state.fillMode = FillMode::Solid;
-		state.cullMode = stage->getCullingModeFinal(priorityMaterial);
-		context->setRasterizerState(state);
-	}
-	// DepthStencilState
-	{
-		DepthStencilStateDesc state;
-		state.depthTestFunc = stage->getDepthTestFuncFinal(priorityMaterial);
-		state.depthWriteEnabled = stage->isDepthWriteEnabledFinal(priorityMaterial);
-		context->setDepthStencilState(state);
-	}
+	return renderPass->depthBuffer() == fb.depthBuffer;
 }
 
-void SceneRenderer::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)
-{
-	// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
-	// TODO: アルファも一緒のブレンド方式にしているので、個別指定で改善できそう
-	switch (mode)
-	{
-	case BlendMode::Normal:
-		state->blendEnable = false;
-		state->sourceBlend = BlendFactor::One;
-		state->destinationBlend = BlendFactor::Zero;
-		state->blendOp = BlendOp::Add;
-		state->sourceBlendAlpha = BlendFactor::One;
-		state->destinationBlendAlpha = BlendFactor::Zero;
-		state->blendOpAlpha = BlendOp::Add;
-		break;
-	case BlendMode::Alpha:
-		state->blendEnable = true;
-		state->sourceBlend = BlendFactor::SourceAlpha;
-		state->destinationBlend = BlendFactor::InverseSourceAlpha;
-		state->blendOp = BlendOp::Add;
-		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-		state->destinationBlendAlpha = BlendFactor::InverseSourceAlpha;
-		state->blendOpAlpha = BlendOp::Add;
-		break;
-	case BlendMode::Add:
-		state->blendEnable = true;
-		state->sourceBlend = BlendFactor::SourceAlpha;
-		state->destinationBlend = BlendFactor::One;
-		state->blendOp = BlendOp::Add;
-		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-		state->destinationBlendAlpha = BlendFactor::One;
-		state->blendOpAlpha = BlendOp::Add;
-		break;
-	case BlendMode::Subtract:
-		state->blendEnable = true;
-		state->sourceBlend = BlendFactor::SourceAlpha;
-		state->destinationBlend = BlendFactor::One;
-		state->blendOp = BlendOp::ReverseSubtract;
-		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-		state->destinationBlendAlpha = BlendFactor::One;
-		state->blendOpAlpha = BlendOp::Add;
-		break;
-	case BlendMode::Multiply:
-		state->blendEnable = true;
-		state->sourceBlend = BlendFactor::Zero;	// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
-		state->destinationBlend = BlendFactor::SourceColor;
-		state->blendOp = BlendOp::Add;
-		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-		state->destinationBlendAlpha = BlendFactor::One;
-		state->blendOpAlpha = BlendOp::Add;
-		break;
-	//case BlendMode_Screen:
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
-	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
-	//	break;
-	//case BlendMode_Reverse:
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
-	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
-	//	break;
-	default:
-		assert(0);
-		break;
-	}
-}
+//void SceneRenderer::applyFrameBufferStatus(GraphicsContext* context, RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass)
+//{
+//	RenderTargetTexture* renderTarget0 = nullptr;
+//
+//	// RenderTarget
+//	{
+//		for (int i = 0; i < MaxMultiRenderTargets; i++)
+//		{
+//			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
+//			if (!target) {
+//				target = defaultFrameBufferInPass.renderTarget[i];
+//			}
+//
+//			//context->setRenderTarget(i, target);
+//			m_renderPass->setRenderTarget(i, target);
+//
+//			if (i == 0) {
+//				renderTarget0 = target;
+//			}
+//		}
+//	}
+//
+//	// DepthBuffer
+//	{
+//		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();
+//		if (depthBuffer) {
+//			//context->setDepthBuffer(depthBuffer);
+//			m_renderPass->setDepthBuffer(depthBuffer);
+//		}
+//		else {
+//			//context->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
+//			m_renderPass->setDepthBuffer(defaultFrameBufferInPass.depthBuffer);
+//		}
+//	}
+//
+//	// Viewport
+//	{
+//		//const RectI& rect = stage->getViewportRectFinal();//getViewportRect();
+//		//if (rect.width < 0)
+//		//{
+//		//	stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
+//		//}
+//		//else
+//		//{
+//		//	stateManager->setViewport(rect);
+//		//}
+//		// TODO:Viewport
+//		// TODO: m_scissorRect
+//	}
+//}
+
+//void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* stage, AbstractMaterial* priorityMaterial)
+//{
+//	// BlendState
+//	{
+//        BlendMode mode = stage->getBlendModeFinal(priorityMaterial);
+//		BlendStateDesc state;
+//		state.independentBlendEnable = false;
+//		makeBlendMode(mode, &state.renderTargets[0]);
+//		context->setBlendState(state);
+//	}
+//	// RasterizerState
+//	{
+//		RasterizerStateDesc state;
+//		state.fillMode = FillMode::Solid;
+//		state.cullMode = stage->getCullingModeFinal(priorityMaterial);
+//		context->setRasterizerState(state);
+//	}
+//	// DepthStencilState
+//	{
+//		DepthStencilStateDesc state;
+//		state.depthTestFunc = stage->getDepthTestFuncFinal(priorityMaterial);
+//		state.depthWriteEnabled = stage->isDepthWriteEnabledFinal(priorityMaterial);
+//		context->setDepthStencilState(state);
+//	}
+//}
+//
+//void SceneRenderer::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)
+//{
+//	// もっといろいろ http://d.hatena.ne.jp/Ko-Ta/20070618/p1
+//	// TODO: アルファも一緒のブレンド方式にしているので、個別指定で改善できそう
+//	switch (mode)
+//	{
+//	case BlendMode::Normal:
+//		state->blendEnable = false;
+//		state->sourceBlend = BlendFactor::One;
+//		state->destinationBlend = BlendFactor::Zero;
+//		state->blendOp = BlendOp::Add;
+//		state->sourceBlendAlpha = BlendFactor::One;
+//		state->destinationBlendAlpha = BlendFactor::Zero;
+//		state->blendOpAlpha = BlendOp::Add;
+//		break;
+//	case BlendMode::Alpha:
+//		state->blendEnable = true;
+//		state->sourceBlend = BlendFactor::SourceAlpha;
+//		state->destinationBlend = BlendFactor::InverseSourceAlpha;
+//		state->blendOp = BlendOp::Add;
+//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+//		state->destinationBlendAlpha = BlendFactor::InverseSourceAlpha;
+//		state->blendOpAlpha = BlendOp::Add;
+//		break;
+//	case BlendMode::Add:
+//		state->blendEnable = true;
+//		state->sourceBlend = BlendFactor::SourceAlpha;
+//		state->destinationBlend = BlendFactor::One;
+//		state->blendOp = BlendOp::Add;
+//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+//		state->destinationBlendAlpha = BlendFactor::One;
+//		state->blendOpAlpha = BlendOp::Add;
+//		break;
+//	case BlendMode::Subtract:
+//		state->blendEnable = true;
+//		state->sourceBlend = BlendFactor::SourceAlpha;
+//		state->destinationBlend = BlendFactor::One;
+//		state->blendOp = BlendOp::ReverseSubtract;
+//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+//		state->destinationBlendAlpha = BlendFactor::One;
+//		state->blendOpAlpha = BlendOp::Add;
+//		break;
+//	case BlendMode::Multiply:
+//		state->blendEnable = true;
+//		state->sourceBlend = BlendFactor::Zero;	// AlphaDisable (Alpha を別指定できない今の仕様では Alpha を考慮できない)
+//		state->destinationBlend = BlendFactor::SourceColor;
+//		state->blendOp = BlendOp::Add;
+//		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
+//		state->destinationBlendAlpha = BlendFactor::One;
+//		state->blendOpAlpha = BlendOp::Add;
+//		break;
+//	//case BlendMode_Screen:
+//	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+//	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+//	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_SRCALPHASAT);
+//	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+//	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+//	//	break;
+//	//case BlendMode_Reverse:
+//	//	m_dxDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+//	//	m_dxDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+//	//	m_dxDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+//	//	m_dxDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCCOLOR);
+//	//	m_dxDevice->SetRenderState(D3DRS_ALPHAREF, 1);
+//	//	break;
+//	default:
+//		assert(0);
+//		break;
+//	}
+//}
 
 } // namespace detail
 } // namespace ln

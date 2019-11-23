@@ -7,13 +7,10 @@ set(LLVM_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
 find_package(CLANG REQUIRED CONFIG)
 find_package(LLVM REQUIRED CONFIG)
 
-
 set(LN_SOURCES
     PCH.cpp
     PCH.hpp
     Common.hpp
-    Generator.cpp
-    Generator.hpp
     Main.cpp
     OutputBuffer.cpp
     OutputBuffer.hpp
@@ -21,6 +18,11 @@ set(LN_SOURCES
     Parser.hpp
     SymbolDatabase.cpp
     SymbolDatabase.hpp
+)
+
+set(LN_SOURCES_Generator
+    Generator.cpp
+    Generator.hpp
 	WrapperIF/FlatCCommon.cpp
 	WrapperIF/FlatCCommon.hpp
 	WrapperIF/WrapperIFClassesGenerator.cpp
@@ -34,6 +36,7 @@ set(LN_SOURCES
 )
 
 source_group("Sources" FILES ${LN_SOURCES})
+source_group("Generator" FILES ${LN_SOURCES_Generator})
 
 include_directories(
     .
@@ -41,7 +44,7 @@ include_directories(
 	${LWIG_LLVM_PACKAGE_DIR}/include
 )
 
-add_executable(${PROJECT_NAME} ${LN_SOURCES})
+add_executable(${PROJECT_NAME} ${LN_SOURCES} ${LN_SOURCES_Generator})
 target_link_libraries(${PROJECT_NAME} LuminoEngine)
 target_link_libraries(${PROJECT_NAME} clangToolingCore clangAnalysis clangARCMigrate clangAST clangASTMatchers clangBasic clangCodeGen clangDriver clangDynamicASTMatchers clangEdit clangFormat clangFrontend clangFrontendTool clangIndex clangLex clangParse clangRewrite clangRewriteFrontend clangSema clangSerialization clangTooling LLVMSupport LLVMCore LLVMOption LLVMProfileData LLVMBitReader LLVMMC LLVMMCParser LLVMBinaryFormat Version)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")

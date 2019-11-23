@@ -8,7 +8,8 @@ namespace detail {
 // RefObject のキャッシュ管理。
 // RefObject を作りたいときは、まず先に findObject を呼び出してキャッシュ探す。なければ呼び出し側で作って registerObject()。
 // RefObject は普通に makeRef で作ってよい。また、作った直後は registerObject() で登録しておく。
-// RefObject を release するとき、その直前で releaseObject() に渡しておく。
+// 定期的に collectUnreferenceObjects() を呼び出すことで、aliveList からしか参照されていない Object を freeList に移動する。
+// RefObject を release するとき、その直前で releaseObject() に指定して呼び出しておくと、明示的に freeList に入れることができる。
 // 最大オブジェクト数とメモリ量は free オブジェクトの条件。alive は影響しない。
 // 最大オブジェクト数とメモリ量は or 条件。どちらかが満たされたら古いオブジェクトを削除する。0 の場合は無視。
 template<class TKey, class TObject>
@@ -39,7 +40,7 @@ public:
 		m_freeObjectMemory = 0;
 	}
 
-	TObject* findObject(const TKey& key)
+	Ref<TObject> findObject(const TKey& key)
 	{
 		if (LN_REQUIRE(!isDisposed())) return nullptr;
 

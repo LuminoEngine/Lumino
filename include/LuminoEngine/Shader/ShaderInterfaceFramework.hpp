@@ -149,6 +149,7 @@ struct ElementInfo
 };
 
 // サブセット単位のデータに関する情報
+// TODO: descripterInfo (PipelineStateやRenderPass,Framebufferではなく、Descripterを差し替えれば済む系のパラメータ)
 struct SubsetInfo
 {
     // common material
@@ -159,6 +160,25 @@ struct SubsetInfo
     Color colorScale;
     Color blendColor;
 	ColorTone tone;
+
+	void clear()
+	{
+		materialTexture = nullptr;
+		opacity = 0.0f;
+		colorScale = Color();
+		blendColor = Color();
+		tone = ColorTone();
+	}
+
+	static bool equals(const SubsetInfo& lhs, const SubsetInfo& rhs)
+	{
+		return
+			lhs.materialTexture == rhs.materialTexture &&
+			Math::nearEqual(lhs.opacity, rhs.opacity) &&
+			Color::nearEqual(lhs.colorScale, rhs.colorScale) &&
+			Color::nearEqual(lhs.blendColor, rhs.blendColor) &&
+			ColorTone::nearEqual(lhs.tone, rhs.tone);
+	}
 };
 
 // セマンティクスが関係するシェーダ変数の管理

@@ -10,6 +10,7 @@ class Texture;
 class Shader;
 class AbstractMaterial;
 class UIStyle;
+class UILayoutContext;
 namespace detail { class LayoutHelper; }
 
 
@@ -102,45 +103,57 @@ class UIStyleInstance;
 //};
 }
 
+LN_CLASS()
 class UILayoutElement
 	: public Object
 {
+    LN_OBJECT;
 public:	// TODO: internal
-	// 基本的にルート要素のみ呼び出すべき
-	void updateLayout(const Rect& parentFinalGlobalRect);
-
-	void setWidth(float value) { m_layoutSize.width = value; }
-	float width() const { return m_layoutSize.width; }
-
-	void setHeight(float value) { m_layoutSize.height = value; }
-	float height() const { return m_layoutSize.height; }
-
-
-	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
-	const Size& desiredSize() const { return m_desiredSize; }
-
-	const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
-
-protected:
 	UILayoutElement();
-	virtual ~UILayoutElement();
+	void init() { LN_UNREACHABLE(); }	// dummy
 	void init(const detail::UIStyleInstance* finalStyle);
 
-	virtual Size measureOverride(const Size& constraint);
-	virtual Size arrangeOverride(const Size& finalSize);
+	// 基本的にルート要素のみ呼び出すべき
+	void updateLayout(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+
+
+
+	/**
+	 * レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。
+	 *
+	 * この値は子要素が親要素へ要求する、子要素自身の最低サイズです。
+	 * 必ずしも width,height プロパティや actual-size と一致するものではありません。
+	 * margin, padding, border を考慮した、要素を配置する領域の要求サイズです。
+	 */
+	const Size& desiredSize() const { return m_desiredSize; }
+
+    const Size& actualSize() const { return m_actualSize; }
+
+	//const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
+
+    // TODO: internal
+    const Point localPosition() const { return m_localPosition; }
+
+protected:
+	virtual ~UILayoutElement();
+
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint);
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize);
 
 	//virtual int getChildLayoutItemCount() const = 0;
 	//virtual ILayoutElement* getChildLayoutItem(int index) const = 0;
 
 
-	virtual void onUpdateLayout(const Rect& finalGlobalRect);
+	virtual void onUpdateLayout(UILayoutContext* layoutContext);
+
 
 public:	//TODO: internal
-	void measureLayout(const Size& availableSize);
-	void arrangeLayout(const Rect& localSlotRect);
-	void updateFinalRects(const Rect& parentFinalGlobalRect);
+	void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
+	void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
+	///*virtual*/ void updateFinalRects(UILayoutContext* layoutContext, const Rect& parentFinalGlobalRect);
+    void updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
 
-	const Size& getLayoutSize() const { return m_layoutSize; }
+	//const Size& getLayoutSize() const { return m_layoutSize; }
 	void setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 	const Size& getLayoutDesiredSize() const { return m_desiredSize; }
 	const Thickness& getLayoutMargin() const;
@@ -149,15 +162,24 @@ public:	//TODO: internal
 	VAlignment getLayoutVAlignment() const;
 	void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const;
 
-	void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
-	const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
-	void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
+	//void setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+	//const Rect& getLayoutFinalLocalRect() const { return m_finalLocalRect; }
+	//void setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
-	Size m_layoutSize;
+	//Size m_layoutSize;
 	const detail::UIStyleInstance* m_finalStyle;
-	Size m_desiredSize;
-	Rect m_finalLocalRect;
-	Rect m_finalGlobalRect;
+	Size m_desiredSize; // includes, margin, border
+
+    
+
+    Matrix m_combinedFinalRenderTransform;
+
+private:
+    Point m_localPosition;  // 親コンテナ内の相対座標
+    Size m_actualSize;
+    //Rect m_finalGlobalRect; // TODO: obsolete
+
+
 
 	friend class detail::LayoutHelper;
 };
@@ -176,8 +198,13 @@ class LayoutHelper
 {
 public:
 
+    static Size measureElementSpacing(UILayoutElement* element);    // border + padding
+    static Size measureElementClientSize(UILayoutElement* element);    // chrome デバッガの青い部分
 	// 単純に element のサイズによった measure を行う。measureOverride() の中で使用することを想定している。
-	static Size measureElement(UILayoutElement* element, const Size& constraint);
+	static Size measureElement(UILayoutElement* element, const Size& constraint, const Size& childrenDesiredSize);
+
+    // padding, border の分を減じた領域を計算する
+	static Rect arrangeClientArea(UILayoutElement* element, const Size& finalSize);
 
 	//static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{
@@ -189,7 +216,7 @@ public:
 	//}
 
 	// widthNan : ユーザーが希望するサイズを指定しているか
-	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, Rect* outRect)
+	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, HAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
@@ -206,7 +233,7 @@ public:
 			outRect->width = desiredSize.width;
 			break;
 		case HAlignment::Stretch:
-			if (widthNan)
+			if (Math::isNaN(fixedSizeOrNaN))
 			{
 				outRect->x = 0;
 				outRect->width = areaSize.width;
@@ -214,7 +241,7 @@ public:
 			else
 			{
 				outRect->x = (areaSize.width - desiredSize.width) / 2;
-				outRect->width = desiredSize.width;
+				outRect->width = fixedSizeOrNaN;
 			}
 
 			//outRect->x = 0;
@@ -223,7 +250,7 @@ public:
 		}
 	}
 
-	static void adjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, Rect* outRect)
+	static void adjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, float fixedSizeOrNaN, VAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
@@ -240,7 +267,7 @@ public:
 			outRect->height = desiredSize.height;
 			break;
 		case VAlignment::Stretch:
-			if (heightNan)
+            if (Math::isNaN(fixedSizeOrNaN))
 			{
 				outRect->y = 0;
 				outRect->height = areaSize.height;
@@ -248,12 +275,108 @@ public:
 			else
 			{
 				outRect->y = (areaSize.height - desiredSize.height) / 2;
-				outRect->height = desiredSize.height;
+				outRect->height = fixedSizeOrNaN;
 			}
 
 			break;
 		}
 	}
+
+    static void adjustAlignment(const Rect& area, const Size& desiredSize, HAlignment halign, VAlignment valign, Rect* outRect)
+    {
+        assert(!Math::isNaNOrInf(area.width));
+        assert(!Math::isNaNOrInf(area.height));
+        assert(!Math::isNaNOrInf(desiredSize.width));
+        assert(!Math::isNaNOrInf(desiredSize.height));
+        assert(outRect);
+
+        switch (halign)
+        {
+        case HAlignment::Left:
+            outRect->x = 0;
+            outRect->width = desiredSize.width;
+            break;
+        case HAlignment::Center:
+            outRect->x = (area.width - desiredSize.width) / 2;
+            outRect->width = desiredSize.width;
+            break;
+        case HAlignment::Right:
+            outRect->x = area.width - desiredSize.width;
+            outRect->width = desiredSize.width;
+            break;
+        case HAlignment::Stretch:
+            outRect->x = 0;
+            outRect->width = area.width;
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+
+        switch (valign)
+        {
+        case VAlignment::Top:
+            outRect->y = 0;
+            outRect->height = desiredSize.height;
+            break;
+        case VAlignment::Center:
+            outRect->y = (area.height - desiredSize.height) / 2;
+            outRect->height = desiredSize.height;
+            break;
+        case VAlignment::Bottom:
+            outRect->y = area.height - desiredSize.height;
+            outRect->height = desiredSize.height;
+            break;
+        case VAlignment::Stretch:
+            outRect->y = 0;
+            outRect->height = area.height;
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+
+        outRect->x += area.x;
+        outRect->y += area.y;
+    }
+
+	//static Size measureInnerSpace(const Thickness& padding, const Thickness& border, bool borderInset)
+	//{
+	//	Size size = padding.size();
+	//	*outRect = area.makeDeflate(padding);
+	//}
+
+	template<class TUIElementList>
+	//Size UIFrameLayout_staticMeasureChildrenAreaSize(const List<Ref<UIElement>>& elements, const Size& constraint)
+	static Size UIFrameLayout_staticMeasureChildrenAreaSize(UILayoutContext* layoutContext, const TUIElementList& elements, const Size& constraint)
+	{
+		Size childMaxSize(0, 0);
+		for (int i = 0; i < elements->size(); i++)
+		{
+			auto& child = elements->at(i);
+			child->measureLayout(layoutContext, constraint);
+			const Size& desiredSize = child->desiredSize();
+			childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+			childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+		}
+		return childMaxSize;
+	}
+
+	template<class TElement, class TUIElementList>
+	static Size UIFrameLayout_staticArrangeChildrenArea(UILayoutContext* layoutContext, TElement* ownerElement, const TUIElementList& elements, const Rect& finalArea)
+	{
+		for (int i = 0; i < elements->size(); i++)
+		{
+			auto& child = elements->at(i);
+
+			Rect slotRect;
+			detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+
+			child->arrangeLayout(layoutContext, slotRect);
+		}
+		return finalArea.getSize();
+	}
+
 };
 
 } // namespace detail

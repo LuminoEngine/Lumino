@@ -132,6 +132,14 @@ bool Uuid::operator!=(const Uuid& other) const
     return !((*this) == other);
 }
 
+bool Uuid::isEmpty() const
+{
+    for (auto i : m_data) {
+        if (i != 0) return false;
+    }
+    return true;
+}
+
 String Uuid::toString() const
 {
     //Char str[] = _LT("{00000000-0000-0000-0000-000000000000}");
@@ -164,3 +172,15 @@ String Uuid::toString() const
 }
 
 } // namespace ln
+
+//==============================================================================
+
+namespace std {
+
+// for unordered_map key
+std::size_t hash<ln::Uuid>::operator()(const ln::Uuid& key) const
+{
+    return ln::CRCHash::compute((const char*)key.data().data(), key.data().size());
+}
+
+} // namespace std

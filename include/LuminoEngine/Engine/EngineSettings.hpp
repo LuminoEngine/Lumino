@@ -58,8 +58,19 @@ public:
 //	static void setD3D9Device(void* device);
 //#endif
 
+
+	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/
+	static void setUserMainWindow(intptr_t value);
+
+
     static void setStandaloneFpsControl(bool enabled);
     static void setEngineFeatures(Flags<EngineFeature> features);
+
+    static void setDefaultObjectsCreation(bool value);
+    static void setUseGLFWWindowSystem(bool value);
+    static void setGraphicsContextManagement(bool value);
+    static void setExternalMainLoop(bool value);
+    static void setExternalRenderingManagement(bool value);
 };
 
 } // namespace ln

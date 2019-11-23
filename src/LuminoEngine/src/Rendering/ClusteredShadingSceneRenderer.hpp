@@ -26,7 +26,9 @@ public:
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
 
-	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -40,6 +42,7 @@ public:	// TODO:
 	Ref<Shader>					m_defaultShader;
 	Ref<RenderTargetTexture>	m_depthMap;
 	Ref<DepthBuffer>	m_depthBuffer;
+	Ref<RenderPass> m_renderPass;
 };
 
 class ClusteredShadingGeometryRenderingPass
@@ -49,6 +52,10 @@ public:
 	ClusteredShadingGeometryRenderingPass();
 	virtual ~ClusteredShadingGeometryRenderingPass();
 	void init(ClusteredShadingSceneRenderer* ownerRenderer);
+
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -66,6 +73,7 @@ private:
 	ShaderTechnique* m_defaultShaderTechnique;
 	//Ref<Shader>					m_unLightingShader;
 	//ShaderTechnique*			m_unLightingShaderTechnique;
+	Ref<RenderPass> m_renderPass;
 };
 
 class ShadowCasterPass
@@ -80,7 +88,9 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
+	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -97,6 +107,7 @@ public:	// TODO:
 	Ref<Shader>		m_defaultShader;
 	Ref<RenderTargetTexture>	m_shadowMap;
 	Ref<DepthBuffer>	m_depthBuffer;
+	Ref<RenderPass> m_renderPass;
 };
 
 class ClusteredShadingSceneRenderer

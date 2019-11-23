@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class Scene;
 class World;
 class WorldObject;
 class RenderingContext;
@@ -10,6 +11,7 @@ namespace detail {
     class WorldObjectTransform;
 }
 
+LN_CLASS()
 class Component
 	: public Object
 {
@@ -22,13 +24,14 @@ protected:
     // アタッチされた WorldObject の transform へのポインタ
     detail::WorldObjectTransform* transrom() const;
 
-
+	/** オブジェクトが World に追加された後、最初の onUpdate の前に呼び出されます。onStart() が呼び出された時点では、オブジェクトは必ず何らかの World に属しています。 */
+	virtual void onStart();
 
     // 以下、すべて空実装
     virtual void onAttached(WorldObject* owner);
     virtual void onDetaching(WorldObject* owner);
-	virtual void onAttachedWorld(World* newOwner);
-	virtual void onDetachedWorld(World* oldOwner);
+	virtual void onAttachedScene(Scene* newOwner);	// obsolete
+	virtual void onDetachedScene(Scene* oldOwner);	// obsolete
     virtual void onUpdate(float elapsedSeconds);
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);
@@ -44,6 +47,7 @@ public:
 private:
     virtual void render(RenderingContext* context);
 
+    friend class Scene;
     friend class World;
     friend class WorldObject;
 };

@@ -9,6 +9,8 @@
 namespace ln {
 class GraphicsContext;
 class UIEventArgs;
+class UIStyleContext;
+class UILayoutContext;
 namespace detail {
 class RenderingManager;
 class FrameBufferCache;
@@ -17,12 +19,6 @@ class DrawElementListCollector;
 class SceneRenderer;
 class UIStyleInstance;
 }
-
-struct FrameBuffer
-{
-	Ref<RenderTargetTexture> renderTarget[detail::MaxMultiRenderTargets];
-	Ref<DepthBuffer> depthBuffer;
-};
 
 // RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
 // そのため render の実装は RenderingContext や GraphicsContext の状態に依存しないようにしなければならない。
@@ -39,7 +35,7 @@ public:
 	void clearDrawElementListManagers();
 	void addDrawElementListManager(detail::DrawElementListCollector* elementListManager);
 
-    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthbuffer) = 0;
+    virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) = 0;
 
 	// TODO: internal
 	//detail::CameraInfo mainCameraInfo;
@@ -50,22 +46,27 @@ public:
 	const Color& backgroundColor() const { return m_backgroundColor; }
 	void setBackgroundColor(const Color& value) { m_backgroundColor = value; }
 
-    // フレーム開始時に決定
-    const Size& actualPixelSize() const { return m_actualPixelSize; }
+    // フレーム開始時に決定 (unit:dp)
+	//const Point& actualScreenOffset() const { return m_actualScreenOffset; }
+    const Size& actualSize() const { return m_actualSize; }
 
     LN_METHOD(Event)
     EventConnection connectOnUIEvent(UIEventHandler handler);
 
 public: // TODO: protected
-	void updateUIStyle(const detail::UIStyleInstance* parentFinalStyle);
-	void updateUILayout(const Rect& parentFinalGlobalRect);
-	virtual void onUpdateUIStyle(const detail::UIStyleInstance* finalStyle);
-	virtual void onUpdateUILayout(const Rect& finalGlobalRect);
+	void updateFrame(float elapsedSeconds);
+	void updateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
+	void updateUILayout(UILayoutContext* layoutContext);
+	virtual void onUpdateFrame(float elapsedSeconds);
+	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle);
+	virtual void onUpdateUILayout(UILayoutContext* layoutContext);
+    virtual UIElement* onLookupMouseHoverElement(const Point& framewindowClientPoint);
     virtual void onRoutedEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
 	const List<detail::DrawElementListCollector*>& elementListManagers() const { return m_elementListManagers; }
-    void setActualPixelSize(const Size& size) { m_actualPixelSize = size; }
+	//void setActualScreenOffset(const Point& offset) { m_actualScreenOffset = offset; }
+    void setActualSize(const Size& size) { m_actualSize = size; }
 
 private:
 	detail::RenderingManager* m_manager;
@@ -75,7 +76,8 @@ private:
 
 	RenderViewClearMode m_clearMode;
 	Color m_backgroundColor;
-    Size m_actualPixelSize;
+	Point m_actualScreenOffset;
+    Size m_actualSize;
 
     Event<UIEventHandler> m_onUIEvent;
 };
@@ -97,8 +99,10 @@ public:
     Matrix		viewProjMatrix;
     ViewFrustum	viewFrustum;
 
+    float fovY = 1.0f;
     float		nearClip = 0;
     float		farClip = 0;
+	float		dpiScale = 1.0;
 };
 
 } // namespace ln

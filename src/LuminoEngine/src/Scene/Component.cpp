@@ -8,7 +8,7 @@ namespace ln {
 //==============================================================================
 // Component
 
-LN_OBJECT_IMPLEMENT(Component, Object);
+LN_OBJECT_IMPLEMENT(Component, Object) {}
 
 Component::Component()
     : m_object(nullptr)
@@ -34,6 +34,10 @@ void Component::render(RenderingContext* context)
     onRender(context);
 }
 
+void Component::onStart()
+{
+}
+
 void Component::onAttached(WorldObject* owner)
 {
 }
@@ -42,11 +46,11 @@ void Component::onDetaching(WorldObject* owner)
 {
 }
 
-void Component::onAttachedWorld(World* newOwner)
+void Component::onAttachedScene(Scene* newOwner)
 {
 }
 
-void Component::onDetachedWorld(World* oldOwner)
+void Component::onDetachedScene(Scene* oldOwner)
 {
 }
 

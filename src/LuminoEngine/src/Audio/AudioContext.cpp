@@ -64,7 +64,7 @@ void AudioContext::init()
 	m_coreDestinationNode->init();
 	m_audioDevice->setRenderCallback(m_coreDestinationNode);
 
-	m_destinationNode = newObject<AudioDestinationNode>(m_coreDestinationNode);
+	m_destinationNode = makeObject<AudioDestinationNode>(m_coreDestinationNode);
 
     LN_LOG_DEBUG << "AudioContext Initialization ended.";
 }

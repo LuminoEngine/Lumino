@@ -36,7 +36,7 @@ namespace LuminoBuild.Tasks
 
             // C++ Engine (common)
             {
-                string nativeEngineCMakeDir = Path.Combine(nativeEngineRoot, "lib", "cmake");
+                string nativeEngineCMakeDir = Path.Combine(nativeEngineRoot, "lib", "cmake", "Lumino");
                 Directory.CreateDirectory(nativeEngineCMakeDir);
 
                 File.Copy(
@@ -123,10 +123,8 @@ namespace LuminoBuild.Tasks
             }
         }
 
-        public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)
+        public static string[] externalLibs = new string[]
         {
-            var externalLibs = new string[]
-            {
                 "Box2D",
                 "bullet3",
                 "freetype2",
@@ -142,7 +140,10 @@ namespace LuminoBuild.Tasks
                 "tmxlite",
                 "vorbis",
                 "zlib",
-            };
+        };
+
+        public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)
+        {
 
             foreach (var arch in BuildEnvironment.TargetArchs)
             {

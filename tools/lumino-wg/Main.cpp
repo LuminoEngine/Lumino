@@ -6,7 +6,7 @@
 #include "WrapperIF/WrapperIFGenerator.hpp"
 #include "DotNet/CSStructsGenerator.hpp"
 
-#define TEST_ROOT u"D:/Proj/LN/Lumino/"
+#define TEST_ROOT u"C:/Proj/LN/Lumino/"
 
 int main(int argc, char** argv)
 {
@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 	};
 
 
-	auto diag = ln::newObject<ln::DiagnosticsManager>();
+	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	SymbolDatabase db(diag);
 
 	HeaderParser parser;

@@ -3,10 +3,25 @@
 #include "../Shader/Common.hpp"
 
 namespace ln {
+class GraphicsContext;
 class SamplerState;
 class SwapChain;
+class RenderPass;
 class Bitmap2D;
 class Bitmap3D;
+class RenderTargetTexture;
+class DepthBuffer;
+class INativeGraphicsExtension;
+
+/** 描画方式 */
+enum class RenderingType
+{
+	/** 即時描画 */
+	Immediate,
+
+	/** 遅延描画 */
+	Threaded,
+};
 
 /** バックエンドグラフィックス API の種類 */
 enum class GraphicsAPI
@@ -234,7 +249,7 @@ enum class TextureAddressMode
 };
 
 /** 描画プリミティブの種類 */
-enum class PrimitiveTopology
+enum class PrimitiveTopology : uint8_t
 {
     /** 独立した三角形のリスト */
     TriangleList,
@@ -300,10 +315,11 @@ public:
 };
 
 namespace detail {
+class RenderingCommandList;
 class GraphicsManager;
 class GraphicsContextInternal;
 class IGraphicsDevice;
-class IGraphicsContext;
+class ICommandList;
 class ITexture;
 class ISamplerState;
 

@@ -4,6 +4,8 @@
 #include <typeinfo>
 #include <type_traits>
 #include "Common.hpp"
+#include "../Engine/Object.hpp"
+#include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
 namespace detail { class VariantHelper; }
@@ -22,9 +24,11 @@ enum class VariantType
 	String,
 
 	// struct
+	Vector2,
 	Vector3,
 	Quaternion,
 	Transform,
+	Rect,
 
 	// object
     RefObject,
@@ -40,12 +44,25 @@ enum class VariantType
 	Int32 = Int,
 };
 
-class Variant
+template<typename... TArgs>
+Ref<Variant> makeVariant(TArgs&&... args)
+{
+	auto ptr = Ref<Variant>(new Variant(std::forward<TArgs>(args)...), false);
+	ptr->init();
+	return ptr;
+}
+
+void serialize(Archive& ar, Variant& value);
+
+class Variant : public Object
 {
 public:
 	static const Variant Empty;
 
+LN_CONSTRUCT_ACCESS:
 	Variant();
+
+	// primitive
 	Variant(std::nullptr_t);
 	Variant(const Variant& value);
 	Variant(bool value) : Variant() { assign(value); }
@@ -62,25 +79,32 @@ public:
 	Variant(double value) : Variant() { assign(value); }
 	Variant(const Char* value) : Variant(String(value)) { }
 	Variant(const String& value) : Variant() { assign(value); }
+
+	// struct
+	Variant(const Vector2& value) : Variant() { assign(value); }
 	Variant(const Vector3& value) : Variant() { assign(value); }
 	Variant(const Quaternion& value) : Variant() { assign(value); }
 	Variant(const AttitudeTransform& value) : Variant() { assign(value); }
+	Variant(const Rect& value) : Variant() { assign(value); }
+
+	// object
     Variant(RefObject* value) : Variant() { assign(value); }
     template<class TValue>
     Variant(const Ref<TValue>& value) : Variant() { assign(value.get()); }
-	Variant(List<Variant>* value) : Variant() { assign(value); }
-	Variant(const List<Variant>& value);
-	Variant(const Ref<List<Variant>>& value) : Variant() { assign(value); }
-	~Variant();
+	Variant(List<Ref<Variant>>* value) : Variant() { assign(value); }
+	Variant(const List<Ref<Variant>>& value);
+	Variant(const Ref<List<Ref<Variant>>>& value) : Variant() { assign(value); }
+	virtual ~Variant();
 
 	template<class T>
 	Variant(const List<T>& list)
-		: Variant(makeRef<List<Variant>>())
+		: Variant(makeRef<List<Ref<Variant>>>())
 	{
 		auto& tl = Variant::list();
-		for (auto& item : list) tl.add(item);
+		for (auto& item : list) tl.add(makeVariant(item));
 	}
 
+public:
 	void clear() LN_NOEXCEPT;
 
 	bool hasValue() const { return m_type != VariantType::Null; }
@@ -100,12 +124,174 @@ public:
     }
 
 	/** utility *get<Ref<List<Variantl>>>() */
-	List<Variant>& list();
-	const List<Variant>& list() const;
+	List<Ref<Variant>>& list();
+	const List<Ref<Variant>>& list() const;
 
 	Variant& operator=(const Variant& rhs);
 
-private:
+
+	//LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serializeInternal(Archive& ar, ArchiveNodeType loadType)
+	{
+		Variant& value = *this;
+
+		//ArchiveNodeType type;
+		//ar.makeVariantTag(&type);
+
+		if (ar.isSaving())
+		{
+			switch (value.type())
+			{
+			case VariantType::Null:
+			{
+				LN_NOTIMPLEMENTED();
+				break;
+			}
+			case VariantType::Bool:
+			{
+				auto v = value.get<bool>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Char:
+			{
+				LN_NOTIMPLEMENTED();
+				break;
+			}
+			case VariantType::Int8:
+			{
+				auto v = value.get<int8_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Int16:
+			{
+				auto v = value.get<int16_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Int32:
+			{
+				auto v = value.get<int32_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Int64:
+			{
+				auto v = value.get<int64_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt8:
+			{
+				auto v = value.get<uint8_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt16:
+			{
+				auto v = value.get<uint16_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt32:
+			{
+				auto v = value.get<uint32_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::UInt64:
+			{
+				auto v = value.get<uint64_t>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Float:
+			{
+				auto v = value.get<float>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::Double:
+			{
+				auto v = value.get<double>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::String:
+			{
+				auto v = value.get<String>();
+				ar.process(v);
+				break;
+			}
+			case VariantType::List:
+			{
+				List<Ref<Variant>>& v = value.list();
+				ar.process(v);
+				break;
+			}
+			default:
+				LN_UNREACHABLE();
+				break;
+			}
+		}
+		else
+		{
+            auto type = loadType;
+			switch (type)
+			{
+			case ln::ArchiveNodeType::Null:
+			{
+				value.clear();
+				break;
+			}
+			case ln::ArchiveNodeType::Bool:
+			{
+				bool v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::Int64:
+			{
+				int64_t v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::Double:
+			{
+				double v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::String:
+			{
+				String v;
+				ar.process(v);
+				value = v;
+				break;
+			}
+			case ln::ArchiveNodeType::Object:
+			{
+				LN_NOTIMPLEMENTED();
+				break;
+			}
+			case ln::ArchiveNodeType::Array:
+			{
+				auto v = makeRef<List<Ref<Variant>>>();
+				ar.process(v);
+				value = v;
+				break;
+			}
+			default:
+				LN_UNREACHABLE();
+				break;
+			}
+		}
+	}
+
 	void assign(bool value);
 	void assign(Char value);
 	void assign(int8_t value);
@@ -119,13 +305,18 @@ private:
 	void assign(float value);
 	void assign(double value);
 	void assign(const String& value);
+	void assign(const Vector2& value);
 	void assign(const Vector3& value);
 	void assign(const Quaternion& value);
 	void assign(const AttitudeTransform& value);
+	void assign(const Rect& value);
     void assign(const Ref<RefObject>& value);
 	void assign(RefObject* value) { assign(Ref<RefObject>(value)); }
-	void assign(const Ref<List<Variant>>& value);
-	void changeType(VariantType newType);
+	template<class TValue> void assign(const Ref<TValue>& value) { assign(value.get()); }
+	void assign(const Ref<List<Ref<Variant>>>& value);
+
+private:
+	bool changeType(VariantType newType);
 	void copy(const Variant& value);
 
 	VariantType	m_type;
@@ -145,14 +336,19 @@ private:
 		float v_Float;
 		double v_Double;
 		String v_String;
+		Vector2 v_Vector2;
 		Vector3 v_Vector3;
 		Quaternion v_Quaternion;
 		AttitudeTransform* v_Transform;
+		Rect v_Rect;
         Ref<RefObject> v_RefObject;
-		Ref<List<Variant>> v_List;
+		Ref<List<Ref<Variant>>> v_List;
 	};
 
 	friend class detail::VariantHelper;
+	friend void serialize(Archive& ar, Variant& value);
+	template<class T, class... TArgs> friend Ref<T> makeRef(TArgs&&... args);
+	template<typename... TArgs> friend Ref<Variant> makeVariant(TArgs&&... args);
 };
 
 namespace detail
@@ -334,162 +530,193 @@ TValue Variant::get() const
 
 //==============================================================================
 
-inline void serialize(Archive& ar, Variant& value)
+//inline void serialize(Archive& ar, Variant& value)
+//{
+//	ArchiveNodeType type;
+//	ar.makeVariantTag(&type);
+//
+//	if (ar.isSaving())
+//	{
+//		switch (value.type())
+//		{
+//		case VariantType::Null:
+//		{
+//			LN_NOTIMPLEMENTED();
+//			break;
+//		}
+//		case VariantType::Bool:
+//		{
+//			auto v = value.get<bool>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::Char:
+//		{
+//			LN_NOTIMPLEMENTED();
+//			break;
+//		}
+//		case VariantType::Int8:
+//		{
+//			auto v = value.get<int8_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::Int16:
+//		{
+//			auto v = value.get<int16_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::Int32:
+//		{
+//			auto v = value.get<int32_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::Int64:
+//		{
+//			auto v = value.get<int64_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::UInt8:
+//		{
+//			auto v = value.get<uint8_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::UInt16:
+//		{
+//			auto v = value.get<uint16_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::UInt32:
+//		{
+//			auto v = value.get<uint32_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::UInt64:
+//		{
+//			auto v = value.get<uint64_t>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::Float:
+//		{
+//			auto v = value.get<float>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::Double:
+//		{
+//			auto v = value.get<double>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::String:
+//		{
+//			auto v = value.get<String>();
+//			ar.process(v);
+//			break;
+//		}
+//		case VariantType::List:
+//		{
+//			List<Ref<Variant>>& v = value.list();
+//			ar.process(v);
+//			break;
+//		}
+//		default:
+//			LN_UNREACHABLE();
+//			break;
+//		}
+//	}
+//	else
+//	{
+//		switch (type)
+//		{
+//		case ln::ArchiveNodeType::Null:
+//		{
+//			value.clear();
+//			break;
+//		}
+//		case ln::ArchiveNodeType::Bool:
+//		{
+//			bool v;
+//			ar.process(v);
+//			value = v;
+//			break;
+//		}
+//		case ln::ArchiveNodeType::Int64:
+//		{
+//			int64_t v;
+//			ar.process(v);
+//			value = v;
+//			break;
+//		}
+//		case ln::ArchiveNodeType::Double:
+//		{
+//			double v;
+//			ar.process(v);
+//			value = v;
+//			break;
+//		}
+//		case ln::ArchiveNodeType::String:
+//		{
+//			String v;
+//			ar.process(v);
+//			value = v;
+//			break;
+//		}
+//		case ln::ArchiveNodeType::Object:
+//		{
+//			LN_NOTIMPLEMENTED();
+//			break;
+//		}
+//		case ln::ArchiveNodeType::Array:
+//		{
+//			auto v = makeRef<List<Ref<Variant>>>();
+//			ar.process(v);
+//			value = v;
+//			break;
+//		}
+//		default:
+//			LN_UNREACHABLE();
+//			break;
+//		}
+//	}
+//}
+
+
+template<>
+inline void serialize(Archive& ar, Ref<Variant>& value)
 {
 	ArchiveNodeType type;
 	ar.makeVariantTag(&type);
 
-	if (ar.isSaving())
-	{
-		switch (value.type())
-		{
-		case VariantType::Null:
-		{
-			LN_NOTIMPLEMENTED();
-			break;
+	if (ar.isSaving()) {
+		if (!value) {
+			ar.processNull();
 		}
-		case VariantType::Bool:
-		{
-			auto v = value.get<bool>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::Char:
-		{
-			LN_NOTIMPLEMENTED();
-			break;
-		}
-		case VariantType::Int8:
-		{
-			auto v = value.get<int8_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::Int16:
-		{
-			auto v = value.get<int16_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::Int32:
-		{
-			auto v = value.get<int32_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::Int64:
-		{
-			auto v = value.get<int64_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::UInt8:
-		{
-			auto v = value.get<uint8_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::UInt16:
-		{
-			auto v = value.get<uint16_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::UInt32:
-		{
-			auto v = value.get<uint32_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::UInt64:
-		{
-			auto v = value.get<uint64_t>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::Float:
-		{
-			auto v = value.get<float>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::Double:
-		{
-			auto v = value.get<double>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::String:
-		{
-			auto v = value.get<String>();
-			ar.process(v);
-			break;
-		}
-		case VariantType::List:
-		{
-			List<Variant>& v = value.list();
-			ar.process(v);
-			break;
-		}
-		default:
-			LN_UNREACHABLE();
-			break;
+		else {
+			value->serializeInternal(ar, type);
 		}
 	}
-	else
-	{
-		switch (type)
-		{
-		case ln::ArchiveNodeType::Null:
-		{
-			value.clear();
-			break;
+	else {
+		if (type != ArchiveNodeType::Null) {
+
+			// TODO: いまのところ Variant 用
+			if (!value) {
+				value = makeObject<Variant>();
+			}
+			value->serializeInternal(ar, type);
 		}
-		case ln::ArchiveNodeType::Bool:
-		{
-			bool v;
-			ar.process(v);
-			value = v;
-			break;
-		}
-		case ln::ArchiveNodeType::Int64:
-		{
-			int64_t v;
-			ar.process(v);
-			value = v;
-			break;
-		}
-		case ln::ArchiveNodeType::Double:
-		{
-			double v;
-			ar.process(v);
-			value = v;
-			break;
-		}
-		case ln::ArchiveNodeType::String:
-		{
-			String v;
-			ar.process(v);
-			value = v;
-			break;
-		}
-		case ln::ArchiveNodeType::Object:
-		{
-			LN_NOTIMPLEMENTED();
-			break;
-		}
-		case ln::ArchiveNodeType::Array:
-		{
-			auto v = makeRef<List<Variant>>();
-			ar.process(v);
-			value = v;
-			break;
-		}
-		default:
-			LN_UNREACHABLE();
-			break;
+		else {
+			value = nullptr;
 		}
 	}
 }
+
 
 } // namespace ln

@@ -34,8 +34,8 @@ bool FontGlyphTextureCache::init(FontCore* font)
 	// すべてのグリフが収まるビットマップサイズ
 	FontGlobalMetrics metrix;
 	m_font->getGlobalMetrics(&metrix);
-	int mw = std::ceil(metrix.boundingMaxX - metrix.boundingMinX);
-	int mh = std::ceil(metrix.boundingMaxY - metrix.boundingMinY);
+	int mw = metrix.lineSpace;
+	int mh = metrix.lineSpace;
 
 	// 横方向に並べる数
 	// +1.0 は切り捨て対策。テクスチャサイズはmaxCharactersが収まる大きさであれば良い。(小さくなければOK)
@@ -45,7 +45,7 @@ bool FontGlyphTextureCache::init(FontCore* font)
     int w = std::max(mw, mh);
     m_glyphMaxBitmapSize = SizeI(w, w);
     SizeI textureSize(m_glyphWidthCount * w, m_glyphWidthCount * w);
-	m_fillGlyphsTexture = newObject<Texture2D>(textureSize.width, textureSize.height, TextureFormat::RGBA8);
+	m_fillGlyphsTexture = makeObject<Texture2D>(textureSize.width, textureSize.height, TextureFormat::RGBA8);
 	m_fillGlyphsTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
 	// TODO: 最大 DeviceSize チェック
 
@@ -57,6 +57,33 @@ bool FontGlyphTextureCache::init(FontCore* font)
 	resetUsedFlags();
 
 	return true;
+}
+
+void FontGlyphTextureCache::clearIndex()
+{
+	// TODO:
+}
+
+bool FontGlyphTextureCache::requestGlyphs(FontGlyphTextureCacheRequest* request)
+{
+	int missingCount = 0;
+	for (auto& item : request->glyphs) {
+		if (m_cachedGlyphInfoMap.find(item.codePoint) == m_cachedGlyphInfoMap.end()) {
+			missingCount++;
+		}
+	}
+	if (missingCount > m_indexStack.size()) {
+		// 新しい文字を作りたいが、このキャッシュには収まりきらない
+		return false;
+	}
+	else {
+		for (auto& item : request->glyphs) {
+			bool dummy;
+			lookupGlyphInfo(item.codePoint, &item.info, &dummy);
+		}
+		request->texture = m_fillGlyphsTexture;
+		return true;
+	}
 }
 
 void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush)
@@ -107,6 +134,9 @@ void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
 		Bitmap2D* dst = m_fillGlyphsTexture->map(MapMode::Write);
 		dst->blit(RectI(pt.x, pt.y, info.size), bitmapGlyphInfo.glyphBitmap, RectI(0, 0, info.size), ColorI::White, BitmapBlitOptions::None);
+
+		//dst->save(u"test.png");
+		//bitmapGlyphInfo.glyphBitmap->save(u"test2.png");
     }
 
 	// 今回、cacheIndex を使うことをマーク

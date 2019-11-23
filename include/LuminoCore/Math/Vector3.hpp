@@ -90,7 +90,6 @@ public:
      * 
      * ベクトルの長さが 0 の場合は正規化を行いません。
      */
-    LN_METHOD()
     void normalize();
 
     /**
@@ -98,7 +97,6 @@ public:
      * @param[in]   minVec  : 最小値
      * @param[in]   maxVec  : 最大値
      */
-    LN_METHOD()
     void clamp(const Vector3& minVec, const Vector3& maxVec);
 
     /**
@@ -131,7 +129,7 @@ public:
      * @param[in]   z       : 処理の基になるベクトルの Z 要素
      * @return      正規化されたベクトル
      */
-    LN_METHOD()
+    LN_METHOD(OverloadPostfix = "XYZ")
     static Vector3 normalize(float x, float y, float z);
 
     /**

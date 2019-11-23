@@ -173,6 +173,8 @@ public:
      */
     static String readAllText(const StringRef& filePath, TextEncoding* encoding = nullptr);
 
+    static String readAllText(Stream* stream, TextEncoding* encoding = nullptr);
+
     /** 
      * 指定されたバッファの内容をバイナリデータとしてすべてファイルに書き込みます。 
      * 

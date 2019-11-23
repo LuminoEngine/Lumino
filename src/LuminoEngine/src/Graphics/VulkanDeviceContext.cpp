@@ -2,27 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
-
-//#define GLFW_INCLUDE_VULKAN
-//#include <GLFW/glfw3.h>
-//#include "../Platform/GLFWPlatformWindowManager.hpp"
-
+#include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "VulkanDeviceContext.hpp"
-
-//#define STB_IMAGE_IMPLEMENTATION
-//#include "../../../../build/ExternalSource/stb/stb_image.h"
-
-//#include <iostream>
-//#include <fstream>
-//#include <stdexcept>
-//#include <algorithm>
-//#include <chrono>
-//#include <vector>
-//#include <cstring>
-//#include <cstdlib>
-//#include <array>
-//#include <optional>
-//#include <set>
 
 namespace ln {
 namespace detail {
@@ -30,12 +11,6 @@ namespace detail {
 const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
-
-#ifdef NDEBUG
-const bool enableValidationLayers = false;
-#else
-const bool enableValidationLayers = true;
-#endif
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -53,17 +28,14 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-
-
-
-
 //==============================================================================
 // VulkanDevice
 
 VulkanDevice::VulkanDevice()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
-	, m_graphicsContext(nullptr)
+	//, m_graphicsContext(nullptr)
+    , m_enableValidationLayers(false)
 {
 }
 
@@ -71,6 +43,7 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 {
 	if (LN_REQUIRE(outIsDriverSupported)) return false;
 	*outIsDriverSupported = true;
+    m_enableValidationLayers = settings.debugMode;
 
 	if (!VulkanHelper::initVulkanFunctions()) {
 		LN_LOG_WARNING << "Valid vulkan library not found.";
@@ -97,17 +70,11 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	if (!m_renderPassCache.init(this)) {
 		return false;
 	}
-	if (!m_framebufferCache.init(this)) {
-		return false;
-	}
 	if (!m_pipelineCache.init(this)) {
 		return false;
 	}
 
-	m_graphicsContext = makeRef<VulkanGraphicsContext>();
-	if (!m_graphicsContext->init(this)) {
-		return false;
-	}
+	m_nativeInterface = std::make_unique<VulkanNativeGraphicsInterface>(this);
 
 	return true;
 }
@@ -119,16 +86,16 @@ void VulkanDevice::dispose()
     // CommandBuffer は次回描画開始時や、解放のタイミング (今の時点) で、これらのリソース参照をはずす。
     // このとき、ShaderPass に対しては、VulkanDescriptorSetsPool を返却する。ShaderPass は dispose でこの VulkanDescriptorSetsPool を削除するので、
     // ShaderPass を dispose ずる前に CommandBuffer の dispose() を行う必要がある。
-	if (m_graphicsContext) {
-		m_graphicsContext->dispose();
-		m_graphicsContext = nullptr;
-	}
+	//if (m_graphicsContext) {
+	//	m_graphicsContext->dispose();
+	//	m_graphicsContext = nullptr;
+	//}
 
     IGraphicsDevice::dispose();
 
 
     m_pipelineCache.dispose();
-    m_framebufferCache.dispose();
+    //m_framebufferCache.dispose();
     m_renderPassCache.dispose();
 
     if (m_commandPool) {
@@ -151,9 +118,9 @@ void VulkanDevice::dispose()
     }
 }
 
-IGraphicsContext* VulkanDevice::getGraphicsContext() const
+INativeGraphicsInterface* VulkanDevice::getNativeInterface() const
 {
-	return m_graphicsContext;
+	return m_nativeInterface.get();
 }
 
 void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
@@ -163,39 +130,39 @@ void VulkanDevice::onGetCaps(GraphicsDeviceCaps * outCaps)
     outCaps->requestedShaderTriple.option = "";
 }
 
-void VulkanDevice::onEnterMainThread()
-{
-}
-
-void VulkanDevice::onLeaveMainThread() 
-{
-}
-
-void VulkanDevice::onSaveExternalRenderState()
-{
-}
-
-void VulkanDevice::onRestoreExternalRenderState()
-{
-}
-
 Ref<ISwapChain> VulkanDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
 {
 	auto ptr = makeRef<VulkanSwapChain>();
     if (!ptr->init(this, window, backbufferSize)) {
         return nullptr;
     }
+	return ptr;
+}
 
-    //if (!m_mainSwapchain) {
-    //    m_mainSwapchain = ptr;
+Ref<ICommandList> VulkanDevice::onCreateCommandList()
+{
+	auto ptr = makeRef<VulkanGraphicsContext>();
+	if (!ptr->init(this)) {
+		return nullptr;
+	}
+	return ptr;
+}
 
-    //    GLFWPlatformWindow* glfwWindow = dynamic_cast<GLFWPlatformWindow*>(window);
-    //    SizeI size;
-    //    glfwWindow->getSize(&size);
-    //    g_app.device = m_device;
-    //    g_app.initWindow(glfwWindow->glfwWindow(), size.width, size.height);
-    //    g_app.initVulkan();
-    //}
+Ref<IRenderPass> VulkanDevice::onCreateRenderPass(const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
+{
+	auto ptr = makeRef<VulkanRenderPass2>();
+	if (!ptr->init(this, buffers, clearFlags, clearColor, clearDepth, clearStencil)) {
+		return nullptr;
+	}
+	return ptr;
+}
+
+Ref<IPipeline> VulkanDevice::onCreatePipeline(const DevicePipelineStateDesc& state)
+{
+	auto ptr = makeRef<VulkanPipeline2>();
+	if (!ptr->init(this, state)) {
+		return nullptr;
+	}
 	return ptr;
 }
 
@@ -277,6 +244,36 @@ Ref<IShaderPass> VulkanDevice::onCreateShaderPass(const ShaderPassCreateInfo& cr
     return ptr;
 }
 
+// TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
+// CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
+void VulkanDevice::onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget)
+{
+	auto vulkanContext = static_cast<VulkanGraphicsContext*>(context);
+	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
+	vulkanContext->recodingCommandBuffer()->submit(
+		t->imageAvailableSemaphore(),
+		t->renderFinishedSemaphore());
+
+	// [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
+	// 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
+	// RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
+	// vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
+	// ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
+	t->setImageAvailableSemaphoreRef(nullptr);
+}
+
+ICommandQueue* VulkanDevice::getGraphicsCommandQueue()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
+ICommandQueue* VulkanDevice::getComputeCommandQueue()
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
@@ -293,26 +290,9 @@ Result VulkanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
     return false;
 }
 
-//static std::vector<const char*> getRequiredExtensions()
-//{
-//    return instanceExtension;
-//
-//    uint32_t glfwExtensionCount = 0;
-//    const char** glfwExtensions;
-//    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-//
-//    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-//
-//    if (enableValidationLayers) {
-//        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-//    }
-//
-//    return extensions;
-//}
-//
 Result VulkanDevice::createInstance()
 {
-    if (enableValidationLayers && !VulkanHelper::checkValidationLayerSupport()) {
+    if (m_enableValidationLayers && !VulkanHelper::checkValidationLayerSupport()) {
         LN_LOG_ERROR << "validation layers requested, but not available!";
         return false;
     }
@@ -351,7 +331,7 @@ Result VulkanDevice::createInstance()
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
-    if (enableValidationLayers) {
+    if (m_enableValidationLayers) {
         createInfo.enabledLayerCount = static_cast<uint32_t>(VulkanHelper::validationLayers.size());
         createInfo.ppEnabledLayerNames = VulkanHelper::validationLayers.data();
     }
@@ -372,7 +352,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 
 Result VulkanDevice::setupDebugMessenger()
 {
-    if (enableValidationLayers)
+    if (m_enableValidationLayers)
     {
         VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -532,6 +512,7 @@ Result VulkanDevice::createLogicalDevice()
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
+    deviceFeatures.fillModeNonSolid = VK_TRUE;  // ワイヤーフレームの描画をできるようにする (VK_POLYGON_MODE_LINE を使えるようにする)
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -544,7 +525,7 @@ Result VulkanDevice::createLogicalDevice()
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
 	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-	if (enableValidationLayers) {
+	if (m_enableValidationLayers) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(VulkanHelper::validationLayers.size());
 		createInfo.ppEnabledLayerNames = VulkanHelper::validationLayers.data();
 	}
@@ -570,7 +551,11 @@ Result VulkanDevice::createCommandPool()
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.queueFamilyIndex = m_graphicsQueueFamilyIndex;
 
-    // 1つのコマンドバッファを繰り返し使うようにマークする
+    // 1つのコマンドバッファを繰り返し使えるようにマークする。
+    // 内部的には、
+    // - フラグONの場合 : CommandBuffer ごとにひとつの Allocator を持つ。→ 少し無駄にメモリを消費するが、CommandBuffer ごとにリセットできる。
+    // - フラグOFFの場合 : Pool にひとつの Allocator を持つ。→ CommandBuffer ごとにメモリをリセットしたりできない。1度構築したら変化しない static な CommandBuffer を使いたいときに使用する。
+    // https://www.reddit.com/r/vulkan/comments/5zwfot/whats_your_command_buffer_allocation_strategy/
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     LN_VK_CHECK(vkCreateCommandPool(m_device, &poolInfo, vulkanAllocator(), &m_commandPool));
@@ -669,6 +654,7 @@ VkCommandBuffer VulkanDevice::beginSingleTimeCommands()
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	// https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#commandbuffers-lifecycle
 
     return commandBuffer;
 }
@@ -725,7 +711,7 @@ void VulkanDevice::copyBufferToImageImmediately(VkBuffer buffer, VkImage image, 
     endSingleTimeCommands(commandBuffer);
 }
 
-Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkImageMemoryBarrier barrier = {};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -747,7 +733,7 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     }
 
     barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.levelCount = mipLevel;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
 
@@ -782,13 +768,13 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     }
-    //else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
-    //    barrier.srcAccessMask = 0;
-    //    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-    //    sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    //    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    //}
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    }
     else {
         LN_LOG_ERROR << "unsupported layout transition!";
         return false;
@@ -808,10 +794,10 @@ Result VulkanDevice::transitionImageLayout(VkCommandBuffer commandBuffer, VkImag
     return true;
 }
 
-Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+Result VulkanDevice::transitionImageLayoutImmediately(VkImage image, VkFormat format, uint32_t mipLevel, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-    Result result = transitionImageLayout(commandBuffer, image, format, oldLayout, newLayout);
+    Result result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
     endSingleTimeCommands(commandBuffer);
     return result;
 }
@@ -830,7 +816,7 @@ VulkanGraphicsContext::VulkanGraphicsContext()
 Result VulkanGraphicsContext::init(VulkanDevice* owner)
 {
 	LN_CHECK(owner);
-	IGraphicsContext::init(owner);
+	ICommandList::init(owner);
 	m_device = owner;
 
 	m_recodingCommandBuffer = makeRef<VulkanCommandBuffer>();
@@ -847,6 +833,8 @@ void VulkanGraphicsContext::dispose()
 		m_recodingCommandBuffer->dispose();
 		m_recodingCommandBuffer = nullptr;
 	}
+
+    ICommandList::dispose();
 }
 
 void VulkanGraphicsContext::onBeginCommandRecoding()
@@ -859,281 +847,52 @@ void VulkanGraphicsContext::onEndCommandRecoding()
 	m_recodingCommandBuffer->endRecording();
 }
 
-void VulkanGraphicsContext::onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState)
+void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 {
-}
+	auto* renderPass = static_cast<VulkanRenderPass2*>(renderPass_);
+	auto& framebuffer = renderPass->framebuffer();
+	auto viewSize = renderPass->framebuffer()->renderTargets()[0]->realSize();
 
-void VulkanGraphicsContext::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer)
-{
-}
+	VkRenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = renderPass->nativeRenderPass();
+	renderPassInfo.framebuffer = renderPass->framebuffer()->nativeFramebuffer();
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent.width = viewSize.width;
+	renderPassInfo.renderArea.extent.height = viewSize.height;
 
-void VulkanGraphicsContext::onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize)
-{
-}
-
-void VulkanGraphicsContext::onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer)
-{
-}
-
-void VulkanGraphicsContext::onUpdateShaderPass(IShaderPass* newPass)
-{
-}
-
-void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource)
-{
-}
-
-void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource)
-{
-	// データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
-
-	switch (resource->resourceType())
+	VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
+	uint32_t count = 0;
+	if (testFlag(renderPass->clearFlags(), ClearFlags::Color))
 	{
-	case DeviceResourceType::VertexBuffer:
-	{
-		VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
-		vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
-		return vertexBuffer->m_mappedResource->map();
-	}
-	case DeviceResourceType::IndexBuffer:
-	{
-		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
-		indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
-		return indexBuffer->m_mappedResource->map();
-	}
-	default:
-		LN_NOTIMPLEMENTED();
-		return nullptr;
-	}
-}
-
-void VulkanGraphicsContext::onUnmapResource(IGraphicsResource* resource)
-{
-	switch (resource->resourceType())
-	{
-	case DeviceResourceType::VertexBuffer:
-		static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
-		break;
-	case DeviceResourceType::IndexBuffer:
-		static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource->unmap();
-		break;
-	default:
-		LN_NOTIMPLEMENTED();
-		break;
-	}
-}
-
-void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
-{
-	switch (resource->resourceType())
-	{
-	case DeviceResourceType::VertexBuffer:
-		static_cast<VulkanVertexBuffer*>(resource)->setSubData(offset, data, length);
-		break;
-	case DeviceResourceType::IndexBuffer:
-		static_cast<VulkanIndexBuffer*>(resource)->setSubData(offset, data, length);
-		break;
-	default:
-		LN_NOTIMPLEMENTED();
-		break;
-	}
-}
-
-void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
-{
-	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
-
-	static_cast<VulkanTexture*>(resource)->setSubData(x, y, width, height, data, dataSize);
-}
-
-void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
-{
-	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
-	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
-
-	static_cast<VulkanTexture*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
-}
-
-void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
-{
-	bool skipClear;
-	submitStatusInternal(GraphicsContextSubmitSource_Clear, flags, color, z, stencil, &skipClear);
-	if (skipClear) return;
-
-	const GraphicsContextState& state = stagingState();
-
-	SizeI size = state.framebufferState.renderTargets[0]->realSize();
-	{
-		VkClearRect rect[1];
-		rect[0].rect.offset.x = 0;
-		rect[0].rect.offset.y = 0;
-		rect[0].rect.extent.width = size.width;
-		rect[0].rect.extent.height = size.height;
-		rect[0].baseArrayLayer = 0;
-		rect[0].layerCount = 1;
-
-		VkClearAttachment attachments[MaxMultiRenderTargets + 1] = {};
-
-		uint32_t count = 0;
-		//uint32_t rtCount = 1;
-
-		if (testFlag(flags, ClearFlags::Color))
-		{
-			float frgba[4] = { color.r, color.g, color.b, color.a, };
-
-			//for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
-            for (uint32_t ii = 0; ii < 1; ++ii)
-			{
-				if (state.framebufferState.renderTargets[ii])
-				{
-					attachments[count].colorAttachment = count;
-					attachments[count].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-					attachments[count].clearValue.color.float32[0] = color.r;
-					attachments[count].clearValue.color.float32[1] = color.g;
-					attachments[count].clearValue.color.float32[2] = color.b;
-					attachments[count].clearValue.color.float32[3] = color.a;
-					++count;
-				}
+		auto& color = renderPass->clearColor();
+		for (uint32_t ii = 0; ii < framebuffer->renderTargets().size(); ii++) {
+			if (framebuffer->renderTargets()[ii]) {
+				clearValues[count].color = { color.r, color.g, color.b, color.a };
+				count++;
 			}
 		}
-
-		if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
-			state.framebufferState.depthBuffer != nullptr)
-		{
-			attachments[count].colorAttachment = count;
-			attachments[count].aspectMask = 0;
-			attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Depth)) ? VK_IMAGE_ASPECT_DEPTH_BIT : 0;
-			attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Stencil)) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
-			attachments[count].clearValue.depthStencil.stencil = stencil;
-			attachments[count].clearValue.depthStencil.depth = z;
-			++count;
-		}
-
-		vkCmdClearAttachments(
-			m_recodingCommandBuffer->vulkanCommandBuffer()
-			, count
-			, attachments
-			, LN_ARRAY_SIZE_OF(rect)
-			, rect
-		);
-
 	}
-}
-
-void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
-{
-	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
-	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
-	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
-}
-
-void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
-{
-	submitStatusInternal(GraphicsContextSubmitSource_Draw, ClearFlags::None, Color::White, 0, 0, nullptr);
-	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
-	m_recodingCommandBuffer->m_priorToAnyDrawCmds = false;
-}
-
-// TODO: もし複数 swapchain へのレンダリングを1つの CommandBuffer でやる場合、flush 時には描画するすべての swapchain の image 準備を待たなければならない。
-// CommandBuffer 単位で、setRenderTarget された SwapChain の RenderTarget をすべて覚えておく仕組みが必要だろう。
-void VulkanGraphicsContext::onFlushCommandBuffer(ITexture* affectRendreTarget)
-{
-	auto* t = static_cast<VulkanRenderTarget*>(affectRendreTarget);
-	recodingCommandBuffer()->submit(
-		t->imageAvailableSemaphore(),
-		t->renderFinishedSemaphore());
-
-	// [GeForce GTX 1060] 既にシグナル状態のセマフォを vkQueueSubmit で待つように指定すると、vkQueueSubmit が VK_ERROR_DEVICE_LOST を返す。
-	// 通常は vkAcquireNextImageKHR と vkQueueSubmit が交互に実行されるので問題ないが、
-	// RenderTarget の Read で一度 CommnadBuffer を vkQueueSubmit し、続けて CommnadBuffer の記録を再開 → vkQueueSubmit したときに問題になる。
-	// vkQueueSubmit で待ちたいのは vkAcquireNextImageKHR で準備開始された RenderTarget が本当に準備終わったかどうかなので、一度待てば十分。
-	// ということで、一度でも submit したら、↓ は null をセットして、次回の submit では何も待たないようにしておく。
-	t->setImageAvailableSemaphoreRef(nullptr);
-}
-
-void VulkanGraphicsContext::onPresent(ISwapChain* swapChain)
-{
-	static_cast<VulkanSwapChain*>(swapChain)->present();
-
-	// TODO: あったほうがいい？
-	//vkDeviceWaitIdle(m_device);
-	//g_app.mainLoop();
-}
-
-Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource submitSource, ClearFlags flags, const Color& color, float z, uint8_t stencil, bool* outSkipClear)
-{
-	const GraphicsContextState& state = stagingState();
-	uint32_t stateDirtyFlags = stagingStateDirtyFlags();
-
-	bool clearBuffersOnBeginRenderPass = false;//(submitSource == SubmitSource_Clear && m_recodingCommandBuffer->m_priorToAnyDrawCmds);
-	if (outSkipClear) *outSkipClear = clearBuffersOnBeginRenderPass;
-
-	//m_recodingCommandBuffer->beginRecording();
-
-	//if (!m_recodingCommandBuffer->m_lastFoundFramebuffer)
-	if (stateDirtyFlags & GraphicsContextStateDirtyFlags_FrameBuffers)
-	{
-		// 前回開始した RenderPass があればクローズしておく
-		m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
-
-		m_recodingCommandBuffer->m_lastFoundFramebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
-
-	}
-
-	// ↑の Framebuffer 変更や、mapResource などで RenderPass が End されていることがあるので、その場合はここで開始
-	if (!m_recodingCommandBuffer->m_insideRendarPass)
-	{
-		VulkanFramebuffer* framebuffer = m_device->framebufferCache()->findOrCreate(state.framebufferState);
-		m_recodingCommandBuffer->m_lastFoundFramebuffer = framebuffer;
-		{
-			VkRenderPassBeginInfo renderPassInfo = {};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = framebuffer->vulkanRenderPass();//renderPass;
-			renderPassInfo.framebuffer = framebuffer->vulkanFramebuffer();
-			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent.width = state.framebufferState.renderTargets[0]->realSize().width; //m_mainSwapchain->vulkanSwapchainExtent();
-			renderPassInfo.renderArea.extent.height = state.framebufferState.renderTargets[0]->realSize().height;
-
-			if (clearBuffersOnBeginRenderPass) {
-				VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
-				uint32_t count = 0;
-
-				if (testFlag(flags, ClearFlags::Color))
-				{
-					float frgba[4] = { color.r, color.g, color.b, color.a, };
-
-					for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ii++) {
-						if (state.framebufferState.renderTargets[ii]) {
-							clearValues[count].color = { color.r, color.g, color.b, color.a };
-							count++;
-						}
-					}
-				}
-
-				if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
-					state.framebufferState.depthBuffer != nullptr) {
-					clearValues[count].depthStencil = { z, stencil };
-					count++;
-				}
-
-				renderPassInfo.clearValueCount = count;
-				renderPassInfo.pClearValues = clearValues;
-
-				vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-			}
-			else {
-				renderPassInfo.clearValueCount = 0;
-				renderPassInfo.pClearValues = nullptr;
-
-				vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-			}
-
-			m_recodingCommandBuffer->m_insideRendarPass = true;
+	if ((testFlag(renderPass->clearFlags(), ClearFlags::Depth) || testFlag(renderPass->clearFlags(), ClearFlags::Stencil))) {
+		if (framebuffer->depthBuffer()) {
+			clearValues[count].depthStencil = { renderPass->clearDepth(), renderPass->clearStencil() };
+			count++;
 		}
 	}
 
+	renderPassInfo.clearValueCount = count;
+	renderPassInfo.pClearValues = clearValues;
+
+	vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void VulkanGraphicsContext::onEndRenderPass(IRenderPass* renderPass)
+{
+	vkCmdEndRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer());
+}
+
+void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline)
+{
 	// TODO: modify チェック (以下の CmdSet や Bind は inside RenderPass である必要はない)
 	{
 		VkViewport viewport;
@@ -1154,18 +913,10 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 	}
 
 	if (submitSource == GraphicsContextSubmitSource_Draw) {
-
-		//IGraphicsDevice::State state;
-		//state.pipelineState.shaderPass = m_shaderPass;
-		//state.pipelineState.vertexDeclaration = m_vertexDeclaration;
-		//state.framebufferState.renderTargets[0] = m_deviceContext->m_mainSwapchain->swapchainRenderTargets()[0];
-		//state.framebufferState.depthBuffer = m_depthImage;
-		//state.viewportRect.width = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().width;
-		//state.viewportRect.height = m_deviceContext->m_mainSwapchain->vulkanSwapchainExtent().height;
-		VulkanPipeline* graphicsPipeline = m_device->pipelineCache()->findOrCreate(state, m_recodingCommandBuffer->m_lastFoundFramebuffer->vulkanRenderPass());
-
-
-		vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->vulkanPipeline());//graphicsPipeline);
+		if (pipeline) {
+			auto vulkanPipeline = static_cast<VulkanPipeline2*>(pipeline);
+			vkCmdBindPipeline(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->nativePipeline());
+		}
 
 
 		{
@@ -1208,43 +959,177 @@ Result VulkanGraphicsContext::submitStatusInternal(GraphicsContextSubmitSource s
 			vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
 
 		}
-
-#if 0
-		//
-		// test
-		//vertices[0].pos.x = 0;
-		//vertices[0].pos.y = 0;
-		//VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(vertices[0]) * vertices.size(), m_vertexBuffer->buffer());
-		//buffer->setData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
-
-	//#if 1
-	//        m_uniformBuffers[imageIndex]->setData(0, &ubo, sizeof(ubo));
-	//#else
-	//        // CombindSamper ではなく、個別設定のレイアウトを使っていると、実行中キューと記録中キューの間で共有できないようだ。
-	//        // SubmitQueue が失敗する。
-	//        VulkanBuffer* buffer = commandBuffer->cmdCopyBuffer(sizeof(ubo), m_uniformBuffers[imageIndex].get());//&m_uniformBuffer);
-	//        buffer->setData(0, &ubo, sizeof(ubo));
-	//#endif
-
-		vkCmdDrawIndexed(commandBuffer->vulkanCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
-		// test
-		//vertices[0].pos.x = 0;
-		//vertices[0].pos.y = 0;
-		//m_vertexBuffer->setSubData(0, vertices.data(), sizeof(vertices[0]) * vertices.size());
-#endif
-
-
-	//
 	}
-
-	return true;
 }
 
-//Result VulkanDevice::submitStatus(const State& state)
-//{
-//
-//}
+void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size)
+{
+	if (offset != 0) {
+		LN_NOTIMPLEMENTED();
+		return 0;
+	}
+
+	// データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+	{
+		VulkanVertexBuffer* vertexBuffer = static_cast<VulkanVertexBuffer*>(resource);
+		vertexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(vertexBuffer->buffer()->size(), vertexBuffer->buffer());
+		return vertexBuffer->m_mappedResource->map();
+	}
+	case DeviceResourceType::IndexBuffer:
+	{
+		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(resource);
+		indexBuffer->m_mappedResource = recodingCommandBuffer()->cmdCopyBuffer(indexBuffer->buffer()->size(), indexBuffer->buffer());
+		return indexBuffer->m_mappedResource->map();
+	}
+	default:
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+}
+
+void VulkanGraphicsContext::onUnmapResource(IGraphicsResource* resource)
+{
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+		static_cast<VulkanVertexBuffer*>(resource)->m_mappedResource->unmap();
+		break;
+	case DeviceResourceType::IndexBuffer:
+		static_cast<VulkanIndexBuffer*>(resource)->m_mappedResource->unmap();
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
+}
+
+void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+{
+    // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+    m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+	VulkanBuffer* buffer = nullptr;
+	switch (resource->resourceType())
+	{
+	case DeviceResourceType::VertexBuffer:
+		buffer = static_cast<VulkanVertexBuffer*>(resource)->buffer();
+		break;
+	case DeviceResourceType::IndexBuffer:
+		buffer = static_cast<VulkanIndexBuffer*>(resource)->buffer();
+		break;
+	default:
+		LN_NOTIMPLEMENTED();
+		break;
+	}
+
+	VulkanBuffer* stagingBuffer = recodingCommandBuffer()->cmdCopyBuffer(length, buffer);
+	stagingBuffer->setData(offset, data, length);
+}
+
+void VulkanGraphicsContext::onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize)
+{
+	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+	static_cast<VulkanTexture*>(resource)->setSubData(this, x, y, width, height, data, dataSize);
+}
+
+void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize)
+{
+	// データ転送に使う vkCmdCopyBufferToImage() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
+	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
+
+	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
+}
+
+void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+{
+    auto* renderPass = static_cast<VulkanRenderPass2*>(currentRenderPass());
+    auto& framebuffer = renderPass->framebuffer();
+    auto viewSize = framebuffer->renderTargets()[0]->realSize();
+
+	//const GraphicsContextState& state = stagingState();
+
+	//SizeI size = state.framebufferState.renderTargets[0]->realSize();
+	{
+		VkClearRect rect[1];
+		rect[0].rect.offset.x = 0;
+		rect[0].rect.offset.y = 0;
+		rect[0].rect.extent.width = viewSize.width;
+		rect[0].rect.extent.height = viewSize.height;
+		rect[0].baseArrayLayer = 0;
+		rect[0].layerCount = 1;
+
+		VkClearAttachment attachments[MaxMultiRenderTargets + 1] = {};
+
+		uint32_t count = 0;
+		//uint32_t rtCount = 1;
+
+		if (testFlag(flags, ClearFlags::Color))
+		{
+			float frgba[4] = { color.r, color.g, color.b, color.a, };
+
+			//for (uint32_t ii = 0; ii < state.framebufferState.renderTargets.size(); ++ii)
+            for (uint32_t ii = 0; ii < 1; ++ii)
+			{
+				if (framebuffer->renderTargets()[ii])
+				{
+					attachments[count].colorAttachment = count;
+					attachments[count].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					attachments[count].clearValue.color.float32[0] = color.r;
+					attachments[count].clearValue.color.float32[1] = color.g;
+					attachments[count].clearValue.color.float32[2] = color.b;
+					attachments[count].clearValue.color.float32[3] = color.a;
+					++count;
+				}
+			}
+		}
+
+		if ((testFlag(flags, ClearFlags::Depth) || testFlag(flags, ClearFlags::Stencil)) &&
+            framebuffer->depthBuffer() != nullptr)
+		{
+			attachments[count].colorAttachment = count;
+			attachments[count].aspectMask = 0;
+			attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Depth)) ? VK_IMAGE_ASPECT_DEPTH_BIT : 0;
+			attachments[count].aspectMask |= (testFlag(flags, ClearFlags::Stencil)) ? VK_IMAGE_ASPECT_STENCIL_BIT : 0;
+			attachments[count].clearValue.depthStencil.stencil = stencil;
+			attachments[count].clearValue.depthStencil.depth = z;
+			++count;
+		}
+
+		vkCmdClearAttachments(
+			m_recodingCommandBuffer->vulkanCommandBuffer()
+			, count
+			, attachments
+			, LN_ARRAY_SIZE_OF(rect)
+			, rect
+		);
+
+	}
+}
+
+void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
+{
+	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
+}
+
+void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
+{
+	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
+}
+
+void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
+{
+    auto i = m_device->vulkanNativeGraphicsInterface();
+    i->setContext(this);
+	extension->onRender(i);
+    i->setContext(nullptr);
+}
 
 //==============================================================================
 // VulkanSwapChain
@@ -1347,19 +1232,19 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
         m_swapchainExtent = extent;
     }
 
-    //// 初期状態ではバックバッファのレイアウトは VK_IMAGE_LAYOUT_UNDEFINED となっている。
-    //// Vulkan-Tutorial では、初回の VkAttachmentDescription::initialLayout
-    //for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-    //    if (!m_deviceContext->transitionImageLayoutImmediately(swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) {
-    //        return false;
-    //    }
-    //}
+    // 初期状態ではバックバッファのレイアウトは VK_IMAGE_LAYOUT_UNDEFINED となっている。
+    // Vulkan-Tutorial では、初回の VkAttachmentDescription::initialLayout
+    for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(swapChainImages[i], m_swapchainImageFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) {
+            return false;
+        }
+    }
 
     {
         m_swapChainImageViews.resize(swapChainImages.size());
 
         for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, &m_swapChainImageViews[i])) {
+            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, &m_swapChainImageViews[i])) {
                 return false;
             }
         }
@@ -1404,13 +1289,13 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
     m_currentFrame = 0;
 
 
-    m_inFlightCommandBuffers.resize(m_swapchainRenderTargets.size());
-    for (size_t i = 0; i < m_inFlightCommandBuffers.size(); i++) {
-        m_inFlightCommandBuffers[i] = makeRef<VulkanCommandBuffer>();
-        if (!m_inFlightCommandBuffers[i]->init(m_deviceContext)) {
-            return false;
-        }
-    }
+    //m_inFlightCommandBuffers.resize(m_swapchainRenderTargets.size());
+    //for (size_t i = 0; i < m_inFlightCommandBuffers.size(); i++) {
+    //    m_inFlightCommandBuffers[i] = makeRef<VulkanCommandBuffer>();
+    //    if (!m_inFlightCommandBuffers[i]->init(m_deviceContext)) {
+    //        return false;
+    //    }
+    //}
 
 	//m_colorBuffer = makeRef<VulkanRenderTarget>();
 	return true;
@@ -1422,12 +1307,12 @@ void VulkanSwapChain::dispose()
 
     cleanup();
 
-    for (auto c : m_inFlightCommandBuffers) {
-        if (c) {
-            c->dispose();
-        }
-    }
-    m_inFlightCommandBuffers.clear();
+    //for (auto c : m_inFlightCommandBuffers) {
+    //    if (c) {
+    //        c->dispose();
+    //    }
+    //}
+    //m_inFlightCommandBuffers.clear();
 
     for (auto& x : m_imageAvailableSemaphores) {
         vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
@@ -1531,12 +1416,12 @@ void VulkanSwapChain::present()
         throw std::runtime_error("failed to present swap chain image!");
     }
 
-    // Swap command buffer
-    {
-        auto t = m_deviceContext->graphicsContext()->recodingCommandBuffer();
-        m_deviceContext->graphicsContext()->setRecodingCommandBuffer(m_inFlightCommandBuffers[m_currentFrame]);
-        m_inFlightCommandBuffers[m_currentFrame] = t;
-    }
+    //// Swap command buffer
+    //{
+    //    auto t = m_deviceContext->graphicsContext()->recodingCommandBuffer();
+    //    m_deviceContext->graphicsContext()->setRecodingCommandBuffer(m_inFlightCommandBuffers[m_currentFrame]);
+    //    m_inFlightCommandBuffers[m_currentFrame] = t;
+    //}
 
     m_currentFrame = (m_currentFrame + 1) % maxFrameCount();
 
@@ -1620,6 +1505,495 @@ SwapChainSupportDetails VulkanSwapChain::querySwapChainSupport(VkPhysicalDevice 
 }
 
 //==============================================================================
+// VulkanRenderPass2
+
+VulkanRenderPass2::VulkanRenderPass2()
+	: m_device(nullptr)
+	, m_nativeRenderPass(VK_NULL_HANDLE)
+	, m_framebuffer(nullptr)
+	, m_clearFlags(ClearFlags::None)
+	, m_clearColor()
+	, m_clearDepth(1.0f)
+	, m_clearStencil(0x00)
+{
+}
+
+Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferState& buffers, ClearFlags clearFlags, const Color& clearColor, float clearDepth, uint8_t clearStencil)
+{
+	LN_CHECK(device);
+	m_device = device;
+	m_clearFlags = clearFlags;
+	m_clearColor = clearColor;
+	m_clearDepth = clearDepth;
+	m_clearStencil = clearStencil;
+
+	auto colorLoadOp = testFlag(clearFlags, ClearFlags::Color) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+	auto depthLoadOp = testFlag(clearFlags, ClearFlags::Depth) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+	auto stencilLoadOp = testFlag(clearFlags, ClearFlags::Stencil) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+
+	// Note: LoadOp はパフォーマンを考えなければ常に VK_ATTACHMENT_LOAD_OP_LOAD でもかまわないように見えるが、
+	// RenderTarget 生成直後は必ず VK_ATTACHMENT_LOAD_OP_CLEAR を指定しないと GPU が落ちることがある。
+	// 一方 StoreOp は RenderPass end 後に、RenderTarget の内容が不要であるかを指定することで GPU がメモリを再利用できるようにするための仕組みだが、
+	// パフォーマンを考えなければ常に VK_ATTACHMENT_STORE_OP_STORE のままで構わない。
+
+	// MaxRenderTargets + depthbuffer
+	VkAttachmentDescription attachmentDescs[MaxMultiRenderTargets/* + 1*/] = {};
+	VkAttachmentReference attachmentRefs[MaxMultiRenderTargets/* + 1*/] = {};
+	VkAttachmentReference* depthAttachmentRef = nullptr;
+	int attachmentCount = 0;
+	int colorAttachmentCount = 0;
+	for (int i = 0; i < MaxMultiRenderTargets; i++) {
+		if (buffers.renderTargets[i]) {
+			VulkanRenderTarget* renderTarget = static_cast<VulkanRenderTarget*>(buffers.renderTargets[i]);
+
+			attachmentDescs[i].flags = 0;
+			attachmentDescs[i].format = renderTarget->image()->vulkanFormat();//VulkanHelper::LNFormatToVkFormat(state.renderTargets[i]->getTextureFormat());
+			attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+			//attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;//VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			attachmentDescs[i].loadOp = colorLoadOp;// (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;// サンプルでは画面全体 clear する前提なので、前回値を保持する必要はない。そのため CLEAR。というか、CLEAR 指定しないと clear しても背景真っ黒になった。
+			attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			attachmentDescs[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;// VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;    // TODO: stencil。今は未対応
+			attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;//VK_ATTACHMENT_STORE_OP_STORE; //VK_ATTACHMENT_STORE_OP_DONT_CARE;//    // TODO: stencil。今は未対応
+			if (renderTarget->isSwapchainBackbuffer()) {
+				// swapchain の場合
+				// TODO: initialLayout は、Swapchain 作成直後は VK_IMAGE_LAYOUT_UNDEFINED を指定しなければならない。
+				// なお、Barrier に乗せて遷移させることは許可されていない。ここで何とかする必要がある。
+				// https://stackoverflow.com/questions/37524032/how-to-deal-with-the-layouts-of-presentable-images
+				// validation layer: Submitted command buffer expects image 0x50 (subresource: aspectMask 0x1 array layer 0, mip level 0) to be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR--instead, image 0x50's current layout is VK_IMAGE_LAYOUT_UNDEFINED.
+				attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;// VK_IMAGE_LAYOUT_UNDEFINED;     // レンダリング前のレイアウト定義。UNDEFINED はレイアウトは何でもよいが、内容の保証はない。サンプルでは全体 clear するので問題ない。
+				attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			}
+			else {
+				attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;    // DONT_CARE と併用する場合は UNDEFINED にしておくとよい
+
+				// パス終了後はシェーダ入力(テクスチャ)として使用できるように VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL に遷移する。
+				// https://qiita.com/Pctg-x8/items/a1a39678e9ca95c59d19
+				attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
+
+			attachmentRefs[i].attachment = attachmentCount;
+			attachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+			attachmentCount++;
+			colorAttachmentCount++;
+		}
+		else {
+			break;
+		}
+	}
+
+	if (buffers.depthBuffer) {
+		VulkanDepthBuffer* depthBuffer = static_cast<VulkanDepthBuffer*>(buffers.depthBuffer);
+		int i = colorAttachmentCount;
+
+		attachmentDescs[i].flags = 0;
+		attachmentDescs[i].format = depthBuffer->nativeFormat();//m_device->findDepthFormat();//VK_FORMAT_D32_SFLOAT_S8_UINT; 
+		attachmentDescs[i].samples = VK_SAMPLE_COUNT_1_BIT;
+		attachmentDescs[i].loadOp = depthLoadOp;// (loadOpClear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		//attachmentDescs[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		attachmentDescs[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;//VK_ATTACHMENT_STORE_OP_DONT_CARE;// 
+		attachmentDescs[i].stencilLoadOp = stencilLoadOp;// VK_ATTACHMENT_LOAD_OP_LOAD;// VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		attachmentDescs[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;// VK_ATTACHMENT_STORE_OP_DONT_CARE;// VK_ATTACHMENT_STORE_OP_STORE;
+		attachmentDescs[i].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;// VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		attachmentDescs[i].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		attachmentRefs[i].attachment = attachmentCount;
+		attachmentRefs[i].layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		depthAttachmentRef = &attachmentRefs[i];
+		attachmentCount++;
+	}
+
+	VkSubpassDescription subpass;
+	subpass.flags = 0;
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.inputAttachmentCount = 0;
+	subpass.pInputAttachments = nullptr;
+	subpass.colorAttachmentCount = colorAttachmentCount;
+	subpass.pColorAttachments = attachmentRefs;
+	subpass.pResolveAttachments = nullptr;
+	subpass.pDepthStencilAttachment = depthAttachmentRef;
+	subpass.preserveAttachmentCount = 0;
+	subpass.pPreserveAttachments = nullptr;
+
+	VkSubpassDependency dependency = {};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+	VkRenderPassCreateInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.pNext = nullptr;
+	renderPassInfo.flags = 0;
+	renderPassInfo.attachmentCount = attachmentCount;
+	renderPassInfo.pAttachments = attachmentDescs;
+	renderPassInfo.subpassCount = 1;
+	renderPassInfo.pSubpasses = &subpass;
+	renderPassInfo.dependencyCount = 1;
+	renderPassInfo.pDependencies = &dependency;
+
+	LN_VK_CHECK(vkCreateRenderPass(m_device->vulkanDevice(), &renderPassInfo, m_device->vulkanAllocator(), &m_nativeRenderPass));
+
+	m_framebuffer = makeRef<VulkanFramebuffer2>();
+	if (!m_framebuffer->init(m_device, this, buffers)) {
+		return false;
+	}
+
+	return true;
+}
+
+void VulkanRenderPass2::dispose()
+{
+    if (m_framebuffer) {
+        m_framebuffer->dispose();
+        m_framebuffer = nullptr;
+    }
+
+	if (m_nativeRenderPass) {
+		vkDestroyRenderPass(m_device->vulkanDevice(), m_nativeRenderPass, m_device->vulkanAllocator());
+		m_nativeRenderPass = VK_NULL_HANDLE;
+	}
+
+	m_device = nullptr;
+
+	IRenderPass::dispose();
+}
+
+//==============================================================================
+// VulkanFramebuffer2
+
+VulkanFramebuffer2::VulkanFramebuffer2()
+	: m_device(nullptr)
+	, m_ownerRenderPass(nullptr)
+	, m_framebuffer(VK_NULL_HANDLE)
+	, m_renderTargets{}
+	, m_depthBuffer(nullptr)
+{
+}
+
+Result VulkanFramebuffer2::init(VulkanDevice* device, VulkanRenderPass2* ownerRenderPass, const DeviceFramebufferState& state)
+{
+	LN_CHECK(device);
+	LN_CHECK(ownerRenderPass);
+	m_device = device;
+	m_ownerRenderPass = ownerRenderPass;
+
+	for (size_t i = 0; i < state.renderTargets.size(); i++) {
+		m_renderTargets[i] = static_cast<VulkanRenderTarget*>(state.renderTargets[i]);
+	}
+	m_depthBuffer = static_cast<VulkanDepthBuffer*>(state.depthBuffer);
+
+	VkImageView attachments[MaxMultiRenderTargets + 1] = {};
+	int attachmentsCount = 0;
+	for (size_t i = 0; i < m_renderTargets.size(); i++) {
+		if (m_renderTargets[i]) {
+			attachments[attachmentsCount] = m_renderTargets[i]->image()->vulkanImageView();
+			attachmentsCount++;
+		}
+	}
+	if (m_depthBuffer) {
+		attachments[attachmentsCount] = m_depthBuffer->image()->vulkanImageView();
+		attachmentsCount++;
+	}
+
+	SizeI imageSize = m_renderTargets[0]->realSize();
+	VkFramebufferCreateInfo framebufferInfo = {};
+	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+	framebufferInfo.pNext = nullptr;
+	framebufferInfo.flags = 0;
+	framebufferInfo.renderPass = m_ownerRenderPass->nativeRenderPass();
+	framebufferInfo.attachmentCount = attachmentsCount;
+	framebufferInfo.pAttachments = attachments;
+	framebufferInfo.width = imageSize.width;
+	framebufferInfo.height = imageSize.height;
+	framebufferInfo.layers = 1;
+
+	LN_VK_CHECK(vkCreateFramebuffer(m_device->vulkanDevice(), &framebufferInfo, m_device->vulkanAllocator(), &m_framebuffer));
+
+	return true;
+}
+
+void VulkanFramebuffer2::dispose()
+{
+	if (m_framebuffer) {
+		vkDestroyFramebuffer(m_device->vulkanDevice(), m_framebuffer, m_device->vulkanAllocator());
+		m_framebuffer = VK_NULL_HANDLE;
+	}
+
+	m_renderTargets = {};
+	m_depthBuffer = nullptr;
+	m_ownerRenderPass = nullptr;
+	m_device = nullptr;
+}
+
+//==============================================================================
+// VulkanPipeline2
+
+VulkanPipeline2::VulkanPipeline2()
+	: m_device(nullptr)
+	, m_ownerRenderPass(nullptr)
+	, m_pipeline(VK_NULL_HANDLE)
+{
+}
+
+Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineStateDesc& state)
+{
+	LN_DCHECK(deviceContext);
+	LN_DCHECK(state.renderPass);
+	m_device = deviceContext;
+	m_ownerRenderPass = static_cast<VulkanRenderPass2*>(state.renderPass);
+
+	auto* vertexDeclaration = static_cast<VulkanVertexDeclaration*>(state.vertexDeclaration);
+	auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
+	//m_relatedFramebuffer = m_deviceContext->framebufferCache()->findOrCreate(state.framebufferState);
+
+	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	vertShaderStageInfo.module = shaderPass->vulkanVertShaderModule();
+	vertShaderStageInfo.pName = shaderPass->vertEntryPointName().c_str();//"vsMain";
+
+	VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	fragShaderStageInfo.module = shaderPass->vulkanFragShaderModule();
+	fragShaderStageInfo.pName = shaderPass->fragEntryPointName().c_str();//"psMain";
+
+	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+	auto bindingDescription = vertexDeclaration->vertexBindingDescriptions(); //Vertex::getBindingDescription();
+	//auto attributeDescriptions = Vertex::getAttributeDescriptions();
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+	{
+		auto& attrs = vertexDeclaration->vertexAttributeDescriptionSources();
+		for (int i = 0; i < attrs.size(); i++) {
+			VkVertexInputAttributeDescription desc;
+			desc.location = i;  // UnifiedShader からセマンティクス情報取れなければやむを得ないので連番
+			desc.binding = attrs[i].binding;
+			desc.format = attrs[i].format;
+			desc.offset = attrs[i].offset;
+			attributeDescriptions.push_back(desc);
+		}
+	}
+
+	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescription.size());
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.pVertexBindingDescriptions = bindingDescription.data();
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssembly.topology = VulkanHelper::LNPrimitiveTopologyToVkPrimitiveTopology(state.topology);
+	inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+	VkViewport viewport = {};
+	//viewport.x = 0.0f;
+	//viewport.y = 0.0f;
+	//viewport.width = state.regionRects.viewportRect.width; //(float)swapChainExtent.width;
+	//viewport.height = state.regionRects.viewportRect.height;//(float)swapChainExtent.height;
+	//viewport.minDepth = 0.0f;
+	//viewport.maxDepth = 1.0f;
+
+	VkRect2D scissor = {};
+	//scissor.offset = { 0, 0 };
+	//scissor.extent.width = state.regionRects.scissorRect.width;;
+	//scissor.extent.height = state.regionRects.scissorRect.height;;
+
+	VkPipelineViewportStateCreateInfo viewportState = {};
+	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportState.viewportCount = 1;
+	viewportState.pViewports = &viewport;
+	viewportState.scissorCount = 1;
+	viewportState.pScissors = &scissor;
+
+	VkPipelineRasterizationStateCreateInfo rasterizerInfo = {};
+	{
+		const RasterizerStateDesc& desc = state.rasterizerState;
+
+		rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizerInfo.depthClampEnable = VK_FALSE;
+		rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
+		rasterizerInfo.polygonMode = VulkanHelper::LNFillModeToVkPolygonMode(desc.fillMode);
+		rasterizerInfo.cullMode = VulkanHelper::LNCullModeToVkCullMode(desc.cullMode);
+		rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // Viewport height を反転しているので、時計回りを正面
+		rasterizerInfo.depthBiasEnable = VK_FALSE;
+		rasterizerInfo.depthBiasConstantFactor = 0.0f;
+		rasterizerInfo.depthBiasClamp = 0.0f;
+		rasterizerInfo.depthBiasSlopeFactor = 0.0f;
+		rasterizerInfo.lineWidth = 1.0f;
+	}
+	//VkPipelineRasterizationStateCreateInfo rasterizer = {};
+	//rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	//rasterizer.depthClampEnable = VK_FALSE;
+	//rasterizer.rasterizerDiscardEnable = VK_FALSE;
+	//rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+	//rasterizer.lineWidth = 1.0f;
+	//rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+	//rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE; // Viewport height を反転しているので、時計回りを正面 //VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	//rasterizer.depthBiasEnable = VK_FALSE;
+
+	VkPipelineMultisampleStateCreateInfo multisampling = {};
+	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling.sampleShadingEnable = VK_FALSE;
+	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+	//VkPipelineDepthStencilStateCreateInfo depthStencil = {};
+	//depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	//depthStencil.depthTestEnable = VK_TRUE;
+	//depthStencil.depthWriteEnable = VK_TRUE;
+	//depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+	//depthStencil.depthBoundsTestEnable = VK_FALSE;
+	//depthStencil.stencilTestEnable = VK_FALSE;
+	VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
+	{
+		const DepthStencilStateDesc& desc = state.depthStencilState;
+
+		depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencilStateInfo.pNext = nullptr;
+		depthStencilStateInfo.flags = 0;
+		depthStencilStateInfo.depthTestEnable = (desc.depthTestFunc == ComparisonFunc::Always ? VK_FALSE : VK_TRUE);
+		depthStencilStateInfo.depthWriteEnable = (desc.depthWriteEnabled ? VK_TRUE : VK_FALSE);
+		depthStencilStateInfo.depthCompareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(desc.depthTestFunc);
+		depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
+		depthStencilStateInfo.stencilTestEnable = (desc.stencilEnabled ? VK_TRUE : VK_FALSE);
+
+		depthStencilStateInfo.front.failOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.frontFace.stencilFailOp);
+		depthStencilStateInfo.front.passOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.frontFace.stencilPassOp);
+		depthStencilStateInfo.front.depthFailOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.frontFace.stencilDepthFailOp);
+		depthStencilStateInfo.front.compareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(desc.frontFace.stencilFunc);
+		depthStencilStateInfo.front.compareMask = 0xff;
+		depthStencilStateInfo.front.writeMask = 0xff;
+		depthStencilStateInfo.front.reference = desc.stencilReferenceValue;
+
+		depthStencilStateInfo.back.failOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.backFace.stencilFailOp);
+		depthStencilStateInfo.back.passOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.backFace.stencilPassOp);
+		depthStencilStateInfo.back.depthFailOp = VulkanHelper::LNStencilOpToVkStencilOp(desc.backFace.stencilDepthFailOp);
+		depthStencilStateInfo.back.compareOp = VulkanHelper::LNComparisonFuncToVkCompareOp(desc.backFace.stencilFunc);
+		depthStencilStateInfo.back.compareMask = 0xff;
+		depthStencilStateInfo.back.writeMask = 0xff;
+		depthStencilStateInfo.back.reference = desc.stencilReferenceValue;
+
+		depthStencilStateInfo.minDepthBounds = 0.0f;
+		depthStencilStateInfo.maxDepthBounds = 0.0f;
+	}
+
+    auto& framebuffer = m_ownerRenderPass->framebuffer();
+	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	colorBlendAttachment.blendEnable = VK_FALSE;
+	VkPipelineColorBlendStateCreateInfo colorBlending = {};
+	VkPipelineColorBlendAttachmentState colorBlendAttachments[BlendStateDesc::MaxRenderTargets] = {};
+	{
+		const BlendStateDesc& desc = state.blendState;
+		int attachmentsCount = 0;
+		for (int i = 0; i < BlendStateDesc::MaxRenderTargets; i++) {
+            if (framebuffer->renderTargets()[i]) {
+                const RenderTargetBlendDesc* atdesc = (desc.independentBlendEnable) ? &desc.renderTargets[i] : &desc.renderTargets[0];
+
+
+                colorBlendAttachments[i].blendEnable = (atdesc->blendEnable) ? VK_TRUE : VK_FALSE;
+
+                colorBlendAttachments[i].srcColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(atdesc->sourceBlend);
+                colorBlendAttachments[i].dstColorBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Color(atdesc->destinationBlend);
+                colorBlendAttachments[i].colorBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(atdesc->blendOp);
+
+                colorBlendAttachments[i].srcAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(atdesc->sourceBlendAlpha);
+                colorBlendAttachments[i].dstAlphaBlendFactor = VulkanHelper::LNBlendFactorToVkBlendFactor_Alpha(atdesc->destinationBlendAlpha);
+                colorBlendAttachments[i].alphaBlendOp = VulkanHelper::LNBlendOpToVkBlendOp(atdesc->blendOpAlpha);
+
+                colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+                attachmentsCount++;
+            }
+		}
+
+		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		colorBlending.logicOpEnable = VK_FALSE;
+		colorBlending.logicOp = VK_LOGIC_OP_COPY;
+		colorBlending.attachmentCount = attachmentsCount;
+		colorBlending.pAttachments = colorBlendAttachments;
+		colorBlending.blendConstants[0] = 1.0f;
+		colorBlending.blendConstants[1] = 1.0f;
+		colorBlending.blendConstants[2] = 1.0f;
+		colorBlending.blendConstants[3] = 1.0f;
+	}
+	//VkPipelineColorBlendStateCreateInfo colorBlending = {};
+	//colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	//colorBlending.logicOpEnable = VK_FALSE;
+	//colorBlending.logicOp = VK_LOGIC_OP_COPY;
+	//colorBlending.attachmentCount = 1;
+	//colorBlending.pAttachments = &colorBlendAttachment;
+	//colorBlending.blendConstants[0] = 0.0f;
+	//colorBlending.blendConstants[1] = 0.0f;
+	//colorBlending.blendConstants[2] = 0.0f;
+	//colorBlending.blendConstants[3] = 0.0f;
+
+	const VkDynamicState dynamicStates[] =
+	{
+		VK_DYNAMIC_STATE_VIEWPORT,
+		VK_DYNAMIC_STATE_SCISSOR,
+		//VK_DYNAMIC_STATE_BLEND_CONSTANTS,
+		//VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+	};
+	VkPipelineDynamicStateCreateInfo dynamicState;
+	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicState.pNext = nullptr;
+	dynamicState.flags = 0;
+	dynamicState.dynamicStateCount = LN_ARRAY_SIZE_OF(dynamicStates);
+	dynamicState.pDynamicStates = dynamicStates;
+
+	//VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+	//pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	//pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();
+	//pipelineLayoutInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();
+
+	//if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+	//    throw std::runtime_error("failed to create pipeline layout!");
+	//}
+
+	//renderPass = framebuffer->vulkanRenderPass();//
+
+	VkGraphicsPipelineCreateInfo pipelineInfo = {};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = 2;
+	pipelineInfo.pStages = shaderStages;
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizerInfo;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = &depthStencilStateInfo;
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.layout = shaderPass->vulkanPipelineLayout();	// 省略不可 https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkGraphicsPipelineCreateInfo.html
+	pipelineInfo.pDynamicState = &dynamicState;
+	pipelineInfo.renderPass = m_ownerRenderPass->nativeRenderPass();
+	pipelineInfo.subpass = 0;
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+	LN_VK_CHECK(vkCreateGraphicsPipelines(m_device->vulkanDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, m_device->vulkanAllocator(), &m_pipeline));
+
+	return true;
+}
+
+void VulkanPipeline2::dispose()
+{
+	if (m_pipeline) {
+		vkDestroyPipeline(m_device->vulkanDevice(), m_pipeline, m_device->vulkanAllocator());
+		m_pipeline = VK_NULL_HANDLE;
+	}
+
+	m_ownerRenderPass = nullptr;
+	m_device = nullptr;
+	IPipeline::dispose();
+}
+
+//==============================================================================
 // VulkanVertexDeclaration
 
 VulkanVertexDeclaration::VulkanVertexDeclaration()
@@ -1659,27 +2033,12 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
         m_bindings[element.StreamIndex].stride += GraphicsHelper::getVertexElementTypeSize(elements[i].Type);
     }
 
-    m_hash = computeHash(m_elements);
-
     return true;
 }
 
 void VulkanVertexDeclaration::dispose()
 {
     IVertexDeclaration::dispose();
-}
-
-uint64_t VulkanVertexDeclaration::computeHash(const std::vector<VertexElement>& elements)
-{
-    MixHash hash;
-    hash.add(elements.size());
-    for (auto& e : elements) {
-        hash.add(e.StreamIndex);
-        hash.add(e.Type);
-        hash.add(e.Usage);
-        hash.add(e.UsageIndex);
-    }
-    return hash.value();
 }
 
 //==============================================================================
@@ -1712,7 +2071,7 @@ Result VulkanVertexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsa
             return false;
         }
         stagingBuffer.setData(0, initialData, bufferSize);
-        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.nativeBuffer(), vulkanBuffer(), bufferSize);
         stagingBuffer.dispose();
     }
 #else
@@ -1754,14 +2113,6 @@ void VulkanVertexBuffer::dispose()
     IVertexBuffer::dispose();
 }
 
-// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-void VulkanVertexBuffer::setSubData(size_t offset, const void* data, size_t length)
-{
-    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-    buffer->setData(offset, data, length);
-}
-
 //==============================================================================
 // VulkanIndexBuffer
 
@@ -1799,7 +2150,7 @@ Result VulkanIndexBuffer::init(VulkanDevice* deviceContext, GraphicsResourceUsag
             return false;
         }
         stagingBuffer.setData(0, initialData, bufferSize);
-        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.vulkanBuffer(), vulkanBuffer(), bufferSize);
+        m_buffer.deviceContext()->copyBufferImmediately(stagingBuffer.nativeBuffer(), vulkanBuffer(), bufferSize);
         stagingBuffer.dispose();
     }
 
@@ -1812,18 +2163,11 @@ void VulkanIndexBuffer::dispose()
     IIndexBuffer::dispose();
 }
 
-// TODO: これは廃止して、CommandList 側に持って行った方がいいと思う。
-void VulkanIndexBuffer::setSubData(size_t offset, const void* data, size_t length)
-{
-    // static/dynamic にかかわらず、コマンド経由で転送しなければ整合性が取れなくなる
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBuffer(length, &m_buffer);
-    buffer->setData(offset, data, length);
-}
-
 //==============================================================================
 // VulkanTexture2D
 
 VulkanTexture2D::VulkanTexture2D()
+	: m_mipLevels(1)
 {
 }
 
@@ -1839,28 +2183,47 @@ Result VulkanTexture2D::init(VulkanDevice* deviceContext, GraphicsResourceUsage 
     m_nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
     VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
 
+	m_mipLevels = 1;
+	if (mipmap) {
+		m_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+	}
+
     if (!initialData) {
         LN_NOTIMPLEMENTED();
     }
     else {
+		VkBufferUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		if (mipmap) {
+			// レベル 0 以外を生成するために、レベル 0 を転送元として扱う必要がある
+			usageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+		}
+
         VulkanBuffer stagingBuffer;
         if (!stagingBuffer.init(m_deviceContext, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
             return false;
         }
         stagingBuffer.setData(0, initialData, imageSize);
 
-        // VK_FORMAT_R8G8B8A8_UNORM
-        m_image.init(m_deviceContext, width, height, m_nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+        m_image.init(m_deviceContext, width, height, m_nativeFormat, m_mipLevels, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, m_mipLevels, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
             return false;
         }
 
-        m_deviceContext->copyBufferToImageImmediately(stagingBuffer.vulkanBuffer(), m_image.vulkanImage(), width, height);
+        m_deviceContext->copyBufferToImageImmediately(stagingBuffer.nativeBuffer(), m_image.vulkanImage(), width, height);
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
-            return false;
-        }
+
+		if (mipmap) {
+			if (!generateMipmaps(m_image.vulkanImage(), m_nativeFormat, width, height, m_mipLevels)) {
+				return false;
+			}
+			// transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
+		}
+		else {
+			if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), m_nativeFormat, m_mipLevels, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+				return false;
+			}
+		}
 
         stagingBuffer.dispose();
     }
@@ -1874,18 +2237,20 @@ void VulkanTexture2D::dispose()
     VulkanTexture::dispose();
 }
 
-void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void* data, size_t dataSize)
+void VulkanTexture2D::setSubData(VulkanGraphicsContext* graphicsContext, int x, int y, int width, int height, const void* data, size_t dataSize)
 {
     // TODO:
     assert(x == 0);
     assert(y == 0);
 
+	assert(m_mipLevels == 1);	// TODO:
+
 
     // vkCmdCopyBufferToImage() の dstImageLayout は VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR の
     // いずれかでなければならない。https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkCmdCopyBufferToImage.html
     // 転送前にレイアウトを変更しておく。
-    if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
-        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayout(graphicsContext->recodingCommandBuffer()->vulkanCommandBuffer(),
+        m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)) {
         LN_ERROR();
         return;
     }
@@ -1904,15 +2269,108 @@ void VulkanTexture2D::setSubData(int x, int y, int width, int height, const void
         static_cast<uint32_t>(height),
         1
     };
-    VulkanBuffer* buffer = m_deviceContext->graphicsContext()->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
+    VulkanBuffer* buffer = graphicsContext->recodingCommandBuffer()->cmdCopyBufferToImage(dataSize, region, &m_image);
     buffer->setData(0, data, dataSize);
 
     // レイアウトを元に戻す
-    if (!m_deviceContext->transitionImageLayout(m_deviceContext->graphicsContext()->recodingCommandBuffer()->vulkanCommandBuffer(),
-        m_image.vulkanImage(), m_nativeFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayout(graphicsContext->recodingCommandBuffer()->vulkanCommandBuffer(),
+        m_image.vulkanImage(), m_nativeFormat, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
         LN_ERROR();
         return;
     }
+}
+
+Result VulkanTexture2D::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+{
+	VkPhysicalDevice physicalDevice = m_deviceContext->m_physicalDevice;
+
+	// Check if image format supports linear blitting
+	VkFormatProperties formatProperties;
+	vkGetPhysicalDeviceFormatProperties(physicalDevice, imageFormat, &formatProperties);
+
+	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
+		LN_ERROR("texture image format does not support linear blitting!");
+		return false;
+	}
+
+	VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();
+
+	VkImageMemoryBarrier barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.image = image;
+	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = 1;
+	barrier.subresourceRange.levelCount = 1;
+
+	int32_t mipWidth = texWidth;
+	int32_t mipHeight = texHeight;
+
+	for (uint32_t i = 1; i < mipLevels; i++) {
+		barrier.subresourceRange.baseMipLevel = i - 1;
+		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+		barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+		vkCmdPipelineBarrier(commandBuffer,
+			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
+			0, nullptr,
+			0, nullptr,
+			1, &barrier);
+
+		VkImageBlit blit = {};
+		blit.srcOffsets[0] = { 0, 0, 0 };
+		blit.srcOffsets[1] = { mipWidth, mipHeight, 1 };
+		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.srcSubresource.mipLevel = i - 1;
+		blit.srcSubresource.baseArrayLayer = 0;
+		blit.srcSubresource.layerCount = 1;
+		blit.dstOffsets[0] = { 0, 0, 0 };
+		blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
+		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.dstSubresource.mipLevel = i;
+		blit.dstSubresource.baseArrayLayer = 0;
+		blit.dstSubresource.layerCount = 1;
+
+		vkCmdBlitImage(commandBuffer,
+			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+			image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1, &blit,
+			VK_FILTER_LINEAR);
+
+		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		vkCmdPipelineBarrier(commandBuffer,
+			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+			0, nullptr,
+			0, nullptr,
+			1, &barrier);
+
+		if (mipWidth > 1) mipWidth /= 2;
+		if (mipHeight > 1) mipHeight /= 2;
+	}
+
+	barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+	barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+	vkCmdPipelineBarrier(commandBuffer,
+		VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+		0, nullptr,
+		0, nullptr,
+		1, &barrier);
+
+	m_deviceContext->endSingleTimeCommands(commandBuffer);
+
+	return true;
 }
 
 //==============================================================================
@@ -1940,12 +2398,17 @@ Result VulkanRenderTarget::init(VulkanDevice* deviceContext, uint32_t width, uin
         VkFormat nativeFormat = VulkanHelper::LNFormatToVkFormat(requestFormat);
         VkDeviceSize imageSize = width * height * GraphicsHelper::getPixelSize(requestFormat);
 
+        VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        if (1) {    // readData 可能にする
+            usageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+        }
+
         m_image = std::make_unique<VulkanImage>();
-        if (!m_image->init(m_deviceContext, width, height, nativeFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
+        if (!m_image->init(m_deviceContext, width, height, nativeFormat, 1, VK_IMAGE_TILING_OPTIMAL, usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT)) {
             return false;
         }
 
-        if (!m_deviceContext->transitionImageLayoutImmediately(m_image->vulkanImage(), nativeFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
+        if (!m_deviceContext->transitionImageLayoutImmediately(m_image->vulkanImage(), nativeFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)) {
             return false;
         }
 
@@ -2009,7 +2472,7 @@ void VulkanRenderTarget::dispose()
     }
 
     if (m_deviceContext) {
-        m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
+        //m_deviceContext->framebufferCache()->invalidateRenderTarget(this);
 
         //if (m_imageAvailableSemaphore) {
         //    vkDestroySemaphore(m_deviceContext->vulkanDevice(), m_imageAvailableSemaphore, m_deviceContext->vulkanAllocator());
@@ -2046,6 +2509,14 @@ void VulkanRenderTarget::readData(void* outData)
 
     vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
 
+    VkImageLayout originalLayout;
+    if (isSwapchainBackbuffer()) {
+        originalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    }
+    else {
+        originalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    }
+
 	uint32_t width = m_size.width;
     uint32_t height = m_size.height;
     VkDeviceSize size = width * height * 4; // TODO
@@ -2060,14 +2531,14 @@ void VulkanRenderTarget::readData(void* outData)
     {
         VkCommandBuffer commandBuffer = m_deviceContext->beginSingleTimeCommands();
 
-        // Swapchain の Backbuffer (VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) から、転送ソース (VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) へレイアウト変換
+        // Swapchain の Backbuffer (originalLayout) から、転送ソース (VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) へレイアウト変換
         {
             VkImageMemoryBarrier imageMemoryBarrier = {};
             imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
             imageMemoryBarrier.pNext = nullptr;
             imageMemoryBarrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-            imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            imageMemoryBarrier.oldLayout = originalLayout;
             imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
             imageMemoryBarrier.image = m_image->vulkanImage();
             imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
@@ -2097,7 +2568,7 @@ void VulkanRenderTarget::readData(void* outData)
                 commandBuffer,
                 m_image->vulkanImage(),
                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                destBuffer.vulkanBuffer(),
+                destBuffer.nativeBuffer(),
                 1, &region);
         }
 
@@ -2109,7 +2580,7 @@ void VulkanRenderTarget::readData(void* outData)
             imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
             imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
             imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-            imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            imageMemoryBarrier.newLayout = originalLayout;
             imageMemoryBarrier.image = m_image->vulkanImage();
             imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
             vkCmdPipelineBarrier(
@@ -2237,14 +2708,16 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
     if (LN_REQUIRE(width > 0)) return false;
     if (LN_REQUIRE(height > 0)) return false;
     m_deviceContext = deviceContext;
+    m_size.width = width;
+    m_size.height = height;
 
     VkFormat depthFormat = m_deviceContext->findDepthFormat();
 
-    if (!m_image.init(m_deviceContext, width, height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
+    if (!m_image.init(m_deviceContext, width, height, depthFormat, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT)) {
         return false;
     }
 
-    if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
+    if (!m_deviceContext->transitionImageLayoutImmediately(m_image.vulkanImage(), depthFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)) {
         return false;
     }
 
@@ -2254,7 +2727,7 @@ Result VulkanDepthBuffer::init(VulkanDevice* deviceContext, uint32_t width, uint
 void VulkanDepthBuffer::dispose()
 {
     if (m_deviceContext) {
-        m_deviceContext->framebufferCache()->invalidateDepthBuffer(this);
+        //m_deviceContext->framebufferCache()->invalidateDepthBuffer(this);
         m_deviceContext = nullptr;
     }
 
@@ -2286,13 +2759,20 @@ Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateD
 	samplerInfo.addressModeU = address;
 	samplerInfo.addressModeV = address;
 	samplerInfo.addressModeW = address;
-    samplerInfo.anisotropyEnable = VK_FALSE;//VK_TRUE;		// TODO:
-    samplerInfo.maxAnisotropy = 0;// 16;
+	samplerInfo.anisotropyEnable = VK_FALSE;
+    samplerInfo.maxAnisotropy = 0;
 	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 	samplerInfo.compareEnable = VK_FALSE;
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+
+	samplerInfo.maxLod = 8;
+
+	if (desc.anisotropy) {
+		samplerInfo.anisotropyEnable = VK_TRUE;
+		samplerInfo.maxAnisotropy = 16;
+	}
 
 	LN_VK_CHECK(vkCreateSampler(m_deviceContext->vulkanDevice(), &samplerInfo, m_deviceContext->vulkanAllocator(), &m_sampler));
 
@@ -2594,7 +3074,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-        info.buffer = info.buffer = buffer->vulkanBuffer();
+        info.buffer = buffer->nativeBuffer();
 
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];

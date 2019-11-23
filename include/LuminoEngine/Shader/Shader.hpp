@@ -214,7 +214,7 @@ private:
     Shader* owner() const { return m_owner; }
     const std::string& asciiName() const { return m_asciiName; }
     ByteBuffer& buffer() { return m_buffer; }
-    void commit(detail::IShaderUniformBuffer* rhiObject);
+    void commit(GraphicsContext* graphicsContext, detail::IShaderUniformBuffer* rhiObject);
 
     Shader* m_owner;
     String m_name;
@@ -292,9 +292,8 @@ private:
 
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
     void setupParameters();
-    void commit();
-    void commitContantBuffers();
-    detail::IShaderPass* resolveRHIObject();
+    void commitContantBuffers(GraphicsContext* graphicsContext, bool* outModified);
+    detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;

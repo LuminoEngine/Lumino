@@ -44,7 +44,7 @@ public:
 
 Ref<RigidBody> RigidBody::create(CollisionShape* shape)
 {
-    return newObject<RigidBody>(shape);
+    return makeObject<RigidBody>(shape);
 }
 
 RigidBody::RigidBody()

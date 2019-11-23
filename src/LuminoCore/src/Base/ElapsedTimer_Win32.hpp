@@ -19,6 +19,7 @@ static uint64_t getElapsedNS(uint64_t start, uint64_t freq)
 ElapsedTimer::ElapsedTimer() LN_NOEXCEPT
 	: m_value1(0)
 	, m_value2(1)
+	, m_tag(nullptr)
 {
 	LARGE_INTEGER freq;
 	::QueryPerformanceFrequency(&freq);

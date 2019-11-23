@@ -149,7 +149,7 @@ public:
 	ln::Ref<DocumentSymbol>		document;
 	ln::String				name;
 	ln::Ref<TypeSymbol>			type;
-	ln::Variant			value;
+	ln::Ref<ln::Variant>			value;
 
 	ln::String				typeRawName;
 };

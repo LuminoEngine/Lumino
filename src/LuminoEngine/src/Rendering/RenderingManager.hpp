@@ -4,17 +4,23 @@ namespace ln {
 class VertexLayout;
 class Shader;
 class Material;
+class RenderFeature;
 
 namespace detail {
+class IVertexDeclaration;
 class LinearAllocatorPageManager;
 class DrawElementListBuilder;
+class ClearRenderFeature;
 class BlitRenderFeature;
 class SpriteRenderFeature;
+class SpriteRenderFeature2;
 class MeshRenderFeature;
+class MeshGeneraterRenderFeature;
 class PrimitiveRenderFeature;
 class SpriteTextRenderFeature;
 class FrameRectRenderFeature;
 class ShapesRenderFeature;
+class ExtensionRenderFeature;
 
 enum class BuiltinShader
 {
@@ -141,14 +147,22 @@ public:
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     FontManager* fontManager() const { return m_fontManager; }
 	const Ref<VertexLayout>& standardVertexDeclaration() const { return m_standardVertexDeclaration; }
+    const Ref<detail::IVertexDeclaration>& standardVertexDeclarationRHI() const { return m_standardVertexDeclarationRHI; }
 	//const Ref<DrawElementListBuilder>& renderStageListBuilder() const { return m_renderStageListBuilder; }
+
+	const Ref<ClearRenderFeature>& clearRenderFeature() const { return m_clearRenderFeature; }
     const Ref<BlitRenderFeature>& blitRenderFeature() const { return m_blitRenderFeature; }
-	const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
+	//const Ref<SpriteRenderFeature>& spriteRenderFeature() const { return m_spriteRenderFeature; }
+	const Ref<SpriteRenderFeature2>& spriteRenderFeature2() const { return m_spriteRenderFeature2; }
 	const Ref<MeshRenderFeature>& meshRenderFeature() const { return m_meshRenderFeature; }
-    const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
+    const Ref<MeshGeneraterRenderFeature>& meshGeneraterRenderFeature() const { return m_meshGeneraterRenderFeature; }
+	const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
     const Ref<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
 	const Ref<FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
 	const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
+    const Ref<ExtensionRenderFeature>& extensionRenderFeature() const { return m_extensionRenderFeature; }
+	const List<Ref<RenderFeature>>& renderFeatures() const { return m_renderFeatures; }
+
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
     const Ref<Material>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
@@ -157,14 +171,20 @@ private:
 	GraphicsManager* m_graphicsManager;
     FontManager* m_fontManager;
 	Ref<VertexLayout> m_standardVertexDeclaration;
+    Ref<detail::IVertexDeclaration> m_standardVertexDeclarationRHI;
 	//Ref<DrawElementListBuilder> m_renderStageListBuilder;
+	Ref<ClearRenderFeature> m_clearRenderFeature;
     Ref<BlitRenderFeature> m_blitRenderFeature;
-	Ref<SpriteRenderFeature> m_spriteRenderFeature;
+	//Ref<SpriteRenderFeature> m_spriteRenderFeature;
+	Ref<SpriteRenderFeature2> m_spriteRenderFeature2;
 	Ref<MeshRenderFeature> m_meshRenderFeature;
-    Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
+    Ref<MeshGeneraterRenderFeature> m_meshGeneraterRenderFeature;
+	Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
     Ref<SpriteTextRenderFeature> m_spriteTextRenderFeature;
 	Ref<FrameRectRenderFeature> m_frameRectRenderFeature;
 	Ref<ShapesRenderFeature> m_shapesRenderFeature;
+    Ref<ExtensionRenderFeature> m_extensionRenderFeature;
+	List<Ref<RenderFeature>> m_renderFeatures;
 
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;

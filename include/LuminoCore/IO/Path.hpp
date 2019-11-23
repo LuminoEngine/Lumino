@@ -21,6 +21,8 @@ namespace ln {
 class Path
 {
 public:
+    static const Path Empty;
+
     Path();
     Path(const Path& path);
 
@@ -83,6 +85,9 @@ public:
 
     /** このパスがルートパスであるかを確認します。 */
     bool isRoot() const;
+
+    /** セパレータがすべて '/' であるかを確認します。 */
+    bool isUnified() const;
 
     /** このパスが指定された拡張子を持っているかを確認します。 (ext の . の有無は問わない) */
     bool hasExtension(const StringRef& ext = StringRef()) const;
@@ -172,6 +177,7 @@ public:
      * このパスと target はディレクトリの絶対パスである必要があります。
      */
     Path makeRelative(const Path& target) const;
+    static Path makeRelative(const Path& base, const Path& target) { return Path(base).makeRelative(target); }
 
     /**
      * このパスの拡張子を変更した新しいパスを返します。
@@ -184,6 +190,9 @@ public:
      * ~~~
      */
     Path replaceExtension(const StringRef& newExt) const;
+
+    /** 末尾にひとつのセパレータがあるようにした新しいパスを返します。 */
+    Path withEndSeparator() const;
 
     /** パス文字列をクリアします。 */
     void clear() { m_path.clear(); }
@@ -210,9 +219,8 @@ public:
     /** システムの特別なフォルダのパスを取得します。 */
     static Path getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath = StringRef(), SpecialFolderOption option = SpecialFolderOption::Create);
 
-#if 0
     /**    
-        @brief        あるフォルダ内でユニークなファイルパス(絶対パス)を生成して返す
+        @brief        フォルダ内でユニークなファイルパス(絶対パス)を生成して返す
         @param[in]    directory    : フォルダパス
         @param[in]    filePrefix    : ファイル名の接頭辞 または NULL
         @param[in]    extName        : ファイルの拡張子 (プレフィックス。.を含めること) または NULL
@@ -223,6 +231,7 @@ public:
     */
     static Path getUniqueFilePathInDirectory(const Path& directory, const Char* filePrefix, const Char* extName);
 
+#if 0
     /// (こちらはファイル名だけを返す)
     static String getUniqueFileNameInDirectory(const Path& directory, const Char* filePrefix, const Char* extName);
 #endif

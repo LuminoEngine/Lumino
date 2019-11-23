@@ -1,7 +1,10 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Tilemap/TilemapModel.hpp>
 #include <LuminoEngine/Tilemap/TilemapComponent.hpp>
+#include "TilemapPhysicsObject.hpp"
 
 #include <LuminoEngine/Scene/WorldObject.hpp>   // for WorldObjectTransform
 #include <LuminoEngine/Rendering/RenderView.hpp>    // for RenderViewPoint
@@ -17,6 +20,11 @@ namespace ln {
 //==============================================================================
 // TilemapComponent
 
+LN_OBJECT_IMPLEMENT(TilemapComponent, VisualComponent)
+{
+    context->registerType<TilemapComponent>({});
+}
+
 TilemapComponent::TilemapComponent()
 {
 }
@@ -28,27 +36,62 @@ TilemapComponent::~TilemapComponent()
 void TilemapComponent::init()
 {
     VisualComponent::init();
+}
 
-    auto tileset = newObject<Tileset>();
-    auto layer = newObject<TilemapLayer>();
-    layer->resize(5, 5);
-    layer->setTileSize(Size(1, 1));
-    layer->setOrientation(TilemapOrientation::UpFlow);
-    layer->setTileId(0, 0, 1);
-    layer->setTileId(1, 1, 1);
-    layer->setTileId(0, 4, 1);
-    layer->setTileId(1, 4, 1);
-    layer->setTileId(2, 4, 1);
-    layer->setTileId(3, 4, 1);
-    layer->setTileId(4, 4, 1);
-    m_tilemap = newObject<TilemapModel>();
-    m_tilemap->addTileset(tileset);
-    m_tilemap->addLayer(layer);
+TilemapModel* TilemapComponent::tilemapModel() const
+{
+    return m_tilemapModel;
 }
 
 void TilemapComponent::setTilemapModel(TilemapModel* tilemapModel)
 {
-    m_tilemap = tilemapModel;
+    m_tilemapModel = tilemapModel;
+
+
+
+}
+
+bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
+{
+	if (!m_tilemapModel) return false;
+
+	Matrix worldInverse = Matrix::makeInverse(worldObject()->worldMatrix());
+	Ray localRay(Vector3::transformCoord(rayOnWorld.origin, worldInverse), Vector3::transformCoord(rayOnWorld.direction, worldInverse), rayOnWorld.distance);
+
+	TilemapLayer* layer = m_tilemapModel->layer(0);
+
+	// TODO: ひとまず、 Z- を正面とする
+	Plane plane(Vector3::Zero, -Vector3::UnitZ);
+
+	Vector3 pt;
+	if (plane.intersects(localRay, &pt)) {
+        if (pt.x < 0.0 || pt.y < 0.0) return false;   // 小数切り捨てで、-0.99..~0.0 が 0 として扱われる問題の回避
+
+		// TODO: スケールを考慮したい
+		int x = static_cast<int>(pt.x);
+		int y = static_cast<int>(pt.y);
+		if (m_tilemapModel->isValidTile(x, y)) {
+			if (tilePoint) {
+				tilePoint->x = x;
+				tilePoint->y = (layer->getHeight() - y) - 1;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+void TilemapComponent::onStart()
+{
+	m_rigidBody = makeObject<RigidBody2D>();
+	m_rigidBody->addCollisionShape(detail::TilemapPhysicsObject::createTilemapCollisionShape(m_tilemapModel));
+	worldObject()->scene()->world()->physicsWorld2D()->addPhysicsObject(m_rigidBody);
+}
+
+void TilemapComponent::onDetachedScene(Scene* oldOwner)
+{
+	// TODO: onStop とか。
+	m_rigidBody->removeFromPhysicsWorld();
 }
 
 void TilemapComponent::onRender(RenderingContext* context)
@@ -59,7 +102,7 @@ void TilemapComponent::onRender(RenderingContext* context)
     Matrix viewMatrix = Matrix::makeLookAtLH(viewLocal.position(), viewLocal.position() + viewLocal.front(), viewLocal.up());
     ViewFrustum frustum(viewMatrix * context->viewPoint()->projMatrix);
 
-    // ひとまず、 Z- を正面とする
+    // TODO: ひとまず、 Z- を正面とする
     Plane plane(transrom()->position(), -transrom()->getFront());
 
     // TODO: 原点と正面方向
@@ -99,9 +142,13 @@ void TilemapComponent::onRender(RenderingContext* context)
     }
 
     
-    m_tilemap->render(context, worldObject()->worldMatrix(), bounds);
+    m_tilemapModel->render(context, worldObject()->worldMatrix(), bounds);
+}
 
-    //context->drawSprite(Matrix::Identity, Size(5, 5), Vector2::Zero, Rect(0, 0, 1, 1), Color::White, SpriteBaseDirection::ZMinus, BillboardType::None, m_material);
+void TilemapComponent::serialize(Archive& ar)
+{
+	VisualComponent::serialize(ar);
+	ar & makeNVP(u"Model", m_tilemapModel);
 }
 
 } // namespace ln

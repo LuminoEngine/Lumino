@@ -3,9 +3,10 @@
 
 namespace ln {
 class GraphicsContext;
+class UIContext;
 class UIFrameWindow;
 class UIViewport;
-class UIContainerElement;
+class UIControl;
 class WorldRenderView;
 class PhysicsWorld;
 class PhysicsWorld2D;
@@ -50,12 +51,18 @@ public:
 	static const Path& persistentDataPath();
 
     /** メインウィンドウのタイトルバーに、秒間の平均 FPS を表示します。簡易的なパフォーマンス測定に利用できます。(default: false) */
-    static void setShowDebugFpsEnabled(bool enabled);
+    //static void setShowDebugFpsEnabled(bool enabled);
+
+
 
 	static GraphicsContext* graphicsContext();
+    static UIContext* mainUIContext();
 	static UIFrameWindow* mainWindow();
+    /** デフォルトで作成される UIViewport は、MainWindow の直接の子要素となっています。 */
     static UIViewport* mainViewport();
-	static UIContainerElement* mainUIRoot();
+	/** 。 */
+	LN_METHOD()
+	static UIControl* mainUIView();
     static Size mainViewSize();
     static World* mainWorld();
     static Camera* mainCamera();
@@ -65,6 +72,8 @@ public:
     static PhysicsWorld* mainPhysicsWorld();
     static PhysicsWorld2D* mainPhysicsWorld2D();
 
+    // TODO: internal
+    static void setActiveWorld(World* world);
 };
 
 } // namespace ln

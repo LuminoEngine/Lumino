@@ -232,7 +232,7 @@ public:
         m_targetValue = targetValue;
         m_totalTime = time;
         m_currentTime = 0.0;
-        getTime(m_currentTime);
+        setTime(m_currentTime);
     }
 
     /**
@@ -246,7 +246,7 @@ public:
         m_targetValue = targetValue;
         m_totalTime = time;
         m_currentTime = 0.0;
-        getTime(m_currentTime);
+        setTime(m_currentTime);
     }
 
     /** アニメーションの繰り返し方法を設定します。 */
@@ -256,13 +256,13 @@ public:
     }
 
     /** イージング関数を設定します。 */
-    void eetEasingFunction(EasingFunction easing)
+    void setEasingFunction(EasingFunction easing)
     {
         m_easing = easing;
     }
 
     /** 経過時間を設定します。 */
-    void getTime(const TTime& time)
+    void setTime(const TTime& time)
     {
         m_currentTime = time;
         updateValue();
@@ -280,16 +280,16 @@ public:
 	 * 
 	 * 経過時間が 0 以前の場合は 開始時の値を、経過時間が 変更にかける時間以上 の場合は 終了時の値 を返します。
 	 */
-    const TValue& getValue() const { return m_value; }
+    const TValue& value() const { return m_value; }
 
     /** 開始値を取得します。 */
-    const TValue& getStartValue() const { return m_startValue; }
+    const TValue& startValue() const { return m_startValue; }
 
     /** 終了値を取得します。 */
-    const TValue& getTargetValue() const { return m_targetValue; }
+    const TValue& targetValue() const { return m_targetValue; }
 
     /** 現在の経過時間を取得します。 */
-    const TTime& getTime() const { return m_currentTime; }
+    const TTime& currentTime() const { return m_currentTime; }
 
     /** 値の遷移が完了しているかを確認します。 */
     bool isFinished() const { return (m_currentTime >= m_totalTime); }

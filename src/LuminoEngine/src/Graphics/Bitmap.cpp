@@ -269,10 +269,8 @@ void Bitmap2D::init()
 
 void Bitmap2D::init(int width, int height, PixelFormat format)
 {
-	m_size.width = width;
-	m_size.height = height;
 	m_format = format;
-	m_buffer->resize(getBitmapByteSize(m_size.width, m_size.height, 1, m_format));
+	resize(width, height);
 }
 
 ColorI Bitmap2D::getPixel32(int x, int y) const
@@ -350,6 +348,13 @@ void Bitmap2D::clear(const ColorI& color)
     }
 }
 
+void Bitmap2D::resize(int width, int height)
+{
+	m_size.width = width;
+	m_size.height = height;
+	m_buffer->resize(getBitmapByteSize(m_size.width, m_size.height, 1, m_format));
+}
+
 void Bitmap2D::flipVerticalFlow()
 {
 	if (LN_REQUIRE(m_format != PixelFormat::Unknown)) return;
@@ -403,7 +408,7 @@ void Bitmap2D::load(const StringRef& filePath)
 
 void Bitmap2D::load(Stream* stream)
 {
-    auto diag = newObject<DiagnosticsManager>();
+    auto diag = makeObject<DiagnosticsManager>();
 
     auto decoder = detail::IBitmapDecoder::load(stream, diag);
 
@@ -425,7 +430,7 @@ void Bitmap2D::save(const StringRef& filePath)
 
 Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const ColorI& color) const
 {
-	auto dstBitmap = newObject<Bitmap2D>(m_size.width, m_size.height, format);
+	auto dstBitmap = makeObject<Bitmap2D>(m_size.width, m_size.height, format);
 
 	RectI rect(0, 0, m_size.width, m_size.height);
     detail::ClColor c{ color.r, color.g, color.b, color.a };

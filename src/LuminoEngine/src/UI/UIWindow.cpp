@@ -10,7 +10,7 @@ namespace ln {
 
 Ref<UIWindow> UIWindow::create()
 {
-    return newObject<UIWindow>();
+    return makeObject<UIWindow>();
 }
 
 UIWindow::UIWindow()
@@ -20,6 +20,7 @@ UIWindow::UIWindow()
 void UIWindow::init()
 {
     UIContainerElement::init();
+	setFocusable(true);
 }
 
 } // namespace ln

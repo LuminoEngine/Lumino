@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
@@ -12,7 +11,7 @@ namespace ln {
 
 Ref<VertexLayout> VertexLayout::create()
 {
-    return newObject<VertexLayout>();
+    return makeObject<VertexLayout>();
 }
 
 VertexLayout::VertexLayout()
@@ -61,7 +60,7 @@ void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexEle
     m_vertexElements.add(e);
 }
 
-detail::IVertexDeclaration* VertexLayout::resolveRHIObject(bool* outModified)
+detail::IVertexDeclaration* VertexLayout::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
 

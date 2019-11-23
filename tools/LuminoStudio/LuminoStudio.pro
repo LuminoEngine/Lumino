@@ -32,3 +32,6 @@ HEADERS  += MainWindow.h \
 
 FORMS    += mainwindow.ui \
     SceneListDock.ui
+
+RESOURCES += \
+    style.qrc

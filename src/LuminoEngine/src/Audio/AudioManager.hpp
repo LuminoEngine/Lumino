@@ -4,7 +4,7 @@
 #include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Audio/InternalSharedMutex.inc>
 #include "../Base/RefObjectCache.hpp"
-#include "../Engine/RenderingCommandList.hpp"
+#include <LuminoEngine/Engine/RenderingCommandList.hpp>
 
 namespace ln {
 class AudioContext;

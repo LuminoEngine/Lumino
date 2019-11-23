@@ -13,7 +13,7 @@ namespace ln {
 
 Ref<ScreenBlurImageEffect> ScreenBlurImageEffect::create()
 {
-    return newObject<ScreenBlurImageEffect>();
+    return makeObject<ScreenBlurImageEffect>();
 }
 
 ScreenBlurImageEffect::ScreenBlurImageEffect()
@@ -32,11 +32,14 @@ ScreenBlurImageEffect::~ScreenBlurImageEffect()
 void ScreenBlurImageEffect::init()
 {
     ImageEffect::init();
-    m_material = newObject<Material>();
+    m_material = makeObject<Material>();
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
-    auto shader = newObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
+    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
     m_material->setShader(shader);
+
+	m_materialForCopySourceTo = makeObject<Material>();
+	m_materialForCopyAccumTo = makeObject<Material>();
 }
 
 void ScreenBlurImageEffect::play(float amount, const Vector2& center, float scale, float duration)
@@ -59,17 +62,19 @@ void ScreenBlurImageEffect::onUpdateFrame(float elapsedSeconds)
 
 void ScreenBlurImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    float amount = m_amountValue.getValue();
+	m_materialForCopySourceTo->setMainTexture(source);
+
+    float amount = m_amountValue.value();
     if (amount <= 0.0f) {
-        context->blit(source, destination);
+        context->blit(m_materialForCopySourceTo, destination);
         return;
     }
     else {
         // m_accumTexture と source のサイズが異なる場合は作り直す
         if (m_accumTexture == nullptr || (m_accumTexture->width() != source->width() || m_accumTexture->height() != source->height()))
         {
-            m_accumTexture = newObject<RenderTargetTexture>(source->width(), source->height(), source->format(), false);
-            context->blit(source, m_accumTexture);
+            m_accumTexture = makeObject<RenderTargetTexture>(source->width(), source->height(), source->format(), false);
+            context->blit(m_materialForCopySourceTo, m_accumTexture);
         }
 
         Matrix blurMatrix;
@@ -88,14 +93,16 @@ void ScreenBlurImageEffect::onRender(RenderingContext* context, RenderTargetText
 
         // m_accumTexture > source
         context->setBlendMode(BlendMode::Alpha);
-        context->blit(m_accumTexture, source, m_material);
+		m_material->setMainTexture(m_accumTexture);
+        context->blit(m_material, source);
 
         context->setBlendMode(BlendMode::Normal);
 
         // save
-        context->blit(source, m_accumTexture);
+        context->blit(m_materialForCopySourceTo, m_accumTexture);
 
-        context->blit(m_accumTexture, destination);
+		m_materialForCopyAccumTo->setMainTexture(m_accumTexture);
+        context->blit(m_materialForCopyAccumTo, destination);
         ////m_material->setMainTexture(source);
         ////context->blit(nullptr, destination, m_material);
         //context->blit(source, destination);

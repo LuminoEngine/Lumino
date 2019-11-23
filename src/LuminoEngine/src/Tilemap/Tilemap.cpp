@@ -8,9 +8,14 @@ namespace ln {
 //==============================================================================
 // Tilemap
 
+LN_OBJECT_IMPLEMENT(Tilemap, Object)
+{
+    context->registerType<Tilemap>({});
+}
+
 Ref<Tilemap> Tilemap::create()
 {
-    return newObject<Tilemap>();
+    return makeObject<Tilemap>();
 }
 
 Tilemap::Tilemap()
@@ -24,7 +29,7 @@ Tilemap::~Tilemap()
 void Tilemap::init()
 {
     VisualObject::init();
-    m_component = newObject<TilemapComponent>();
+    m_component = makeObject<TilemapComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
 }
@@ -32,6 +37,20 @@ void Tilemap::init()
 void Tilemap::setTilemapModel(TilemapModel* tilemapModel)
 {
     m_component->setTilemapModel(tilemapModel);
+}
+
+TilemapComponent* Tilemap::tilemapComponent() const
+{
+	return m_component;
+}
+
+void Tilemap::serialize(Archive& ar)
+{
+    VisualObject::serialize(ar);
+    if (ar.isLoading()) {
+        m_component = static_cast<TilemapComponent*>(findComponentByType(TypeInfo::getTypeInfo<TilemapComponent>()));
+        setMainVisualComponent(m_component);
+    }
 }
 
 } // namespace ln

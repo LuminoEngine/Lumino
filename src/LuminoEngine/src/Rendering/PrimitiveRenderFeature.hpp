@@ -19,7 +19,7 @@ public:
 
     void drawMeshGenerater(const MeshGenerater* generator);
 
-    void flush(IGraphicsContext* context);
+    void flush(ICommandList* context);
 
 private:
     void prepareBuffers(IGraphicsDevice* device, int vertexCount, int indexCount);
@@ -44,12 +44,12 @@ private:
 
 // 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
 // TODO: 後で消す。
-class PrimitiveRenderFeatureStageParameters
+class MeshGeneraterRenderFeatureStageParameters
 	: public RenderFeatureStageParameters
 {
 public:
-    PrimitiveRenderFeatureStageParameters()
-		: RenderFeatureStageParameters(CRCHash::compute("PrimitiveRenderFeatureStageParameters"))
+	MeshGeneraterRenderFeatureStageParameters()
+		: RenderFeatureStageParameters(CRCHash::compute("MeshGeneraterRenderFeatureStageParameters"))
 	{
 	}
 
@@ -72,33 +72,35 @@ private:
 // MeshRenderFeature が Mesh(VertexBuffer, IndexBuffer) を受け取って描画するのに対し、
 // こちらは形状の情報（球なら中心位置と半径）を受け取って描画する。そのためデータサイズを非常に小さく抑えることができる。
 // また、スプライトのようなバッファリングによるドローコール削減も狙う。
-class PrimitiveRenderFeature
+class MeshGeneraterRenderFeature
 	: public RenderFeature
 {
 public:
-    PrimitiveRenderFeature();
-	~PrimitiveRenderFeature();
+	MeshGeneraterRenderFeature();
+	~MeshGeneraterRenderFeature();
 	void init(RenderingManager* manager);
 
 
 
     //void drawMeshGenerater(const MeshGenerater* generator);
     template<class TFactory>
-    void drawMeshGenerater(const TFactory& generator)
+	RequestBatchResult drawMeshGenerater(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const TFactory& generator)
     {
-        if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
-            flush(m_manager->graphicsManager()->graphicsContext());
-        }
-        m_lastPrimitiveType = generator.primitiveType();
+		//// TODO: toporogy も RenderStage のパラメータに持っていく
+  //      if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
+		//	submitBatch(context, nullptr);
+  //      }
+  //      m_lastPrimitiveType = generator.primitiveType();
 
-        GraphicsManager* manager = m_manager->graphicsManager();
         LN_ENQUEUE_RENDER_COMMAND_2(
-            PrimitiveRenderFeature_drawMeshGenerater, manager,
+            PrimitiveRenderFeature_drawMeshGenerater, context,
             InternalPrimitiveRenderer*, m_internal,
             TFactory, generator,
             {
                 m_internal->drawMeshGenerater(&generator);
             });
+
+		return RequestBatchResult::Staging;
     }
 
 
@@ -106,13 +108,52 @@ public:
 
 
 
-	virtual void flush(GraphicsContext* context) override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
-    Optional<PrimitiveTopology> m_lastPrimitiveType;
+    //Optional<PrimitiveTopology> m_lastPrimitiveType;
 	RenderingManager* m_manager;
     Ref<InternalPrimitiveRenderer> m_internal;
+};
+
+class PrimitiveRenderFeature
+	: public RenderFeature
+{
+public:
+	PrimitiveRenderFeature();
+	void init();
+
+	RequestBatchResult drawPrimitive(detail::RenderFeatureBatchList* batchList, VertexLayout* vertexLayout, VertexBuffer* vertexBuffer, int startVertex, int primitiveCount);
+
+	virtual void beginRendering() override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+
+private:
+	struct PrimitveData
+	{
+		Ref<VertexLayout> vertexLayout;
+		Ref<VertexBuffer> vertexBuffer;
+		int startVertex;
+		int primitiveCount;
+	};
+
+	struct BatchData
+	{
+		int offset;
+		int count;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
+	List<PrimitveData> m_primitives;
+	BatchData m_batchData;
 };
 
 } // namespace detail

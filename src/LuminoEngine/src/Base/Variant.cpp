@@ -23,8 +23,8 @@ Variant::Variant(const Variant& value)
 	copy(value);
 }
 
-Variant::Variant(const List<Variant>& value)
-	: Variant(Ref<List<Variant>>(LN_NEW List<Variant>(value), false))
+Variant::Variant(const List<Ref<Variant>>& value)
+	: Variant(Ref<List<Ref<Variant>>>(LN_NEW List<Ref<Variant>>(value), false))
 {
 }
 
@@ -54,12 +54,16 @@ void Variant::clear() LN_NOEXCEPT
 	case VariantType::String:
 		v_String.~String();
 		break;
+	case VariantType::Vector2:
+		break;
 	case VariantType::Vector3:
 		break;
 	case VariantType::Quaternion:
 		break;
 	case VariantType::Transform:
 		LN_SAFE_DELETE(v_Transform);
+		break;
+	case VariantType::Rect:
 		break;
     case VariantType::RefObject:
         v_RefObject.~Ref();
@@ -85,13 +89,13 @@ Variant& Variant::operator=(const Variant& rhs)
 	return *this;
 }
 
-List<Variant>& Variant::list()
+List<Ref<Variant>>& Variant::list()
 {
 	assert(m_type == VariantType::List);
 	return *v_List;
 }
 
-const List<Variant>& Variant::list() const
+const List<Ref<Variant>>& Variant::list() const
 {
 	assert(m_type == VariantType::List);
 	return *v_List;
@@ -175,6 +179,12 @@ void Variant::assign(const String& value)
 	new(&v_String) String(value);
 }
 
+void Variant::assign(const Vector2& value)
+{
+	changeType(VariantType::Vector2);
+	v_Vector2 = value;
+}
+
 void Variant::assign(const Vector3& value)
 {
 	changeType(VariantType::Vector3);
@@ -193,23 +203,36 @@ void Variant::assign(const AttitudeTransform& value)
 	v_Transform = LN_NEW AttitudeTransform(value);
 }
 
+void Variant::assign(const Rect& value)
+{
+	changeType(VariantType::Rect);
+	v_Rect = value;
+}
+
 void Variant::assign(const Ref<RefObject>& value)
 {
-	changeType(VariantType::RefObject);
+    if (!changeType(VariantType::RefObject)) {
+        v_RefObject.~Ref();
+    }
+
     new(&v_RefObject) Ref<RefObject>(value);
 }
 
-void Variant::assign(const Ref<List<Variant>>& value)
+void Variant::assign(const Ref<List<Ref<Variant>>>& value)
 {
-	changeType(VariantType::List);
-	new(&v_List) Ref<List<Variant>>(value);
+    if (!changeType(VariantType::List)) {
+        v_List.~Ref();
+    }
+
+    new(&v_List) Ref<List<Ref<Variant>>>(value);
 }
 
-void Variant::changeType(VariantType newType)
+bool Variant::changeType(VariantType newType)
 {
-	if (m_type == newType) return;
+	if (m_type == newType) return false;
 	clear();
 	m_type = newType;
+    return true;
 }
 
 void Variant::copy(const Variant& value)

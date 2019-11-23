@@ -18,9 +18,13 @@ CameraOrbitControlComponent::CameraOrbitControlComponent()
 {
 }
 
+CameraOrbitControlComponent::~CameraOrbitControlComponent()
+{
+}
+
 void CameraOrbitControlComponent::init()
 {
-    Object::init();
+    Component::init();
 }
 
 void CameraOrbitControlComponent::onAttached(WorldObject* owner)
@@ -33,6 +37,8 @@ void CameraOrbitControlComponent::onAttached(WorldObject* owner)
 
 void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
 {
+    if (e->handled) return;
+
     if (e->type() == UIEvents::MouseDownEvent)
     {
         auto me = static_cast<UIMouseEventArgs*>(e);
@@ -103,7 +109,7 @@ void CameraOrbitControlComponent::startPan(const Vector2& mousePos)
 
 void CameraOrbitControlComponent::handleMouseMoveRotate(const Vector2& mousePos)
 {
-    float clientHeight = m_camera->renderView()->actualPixelSize().height;
+    float clientHeight = m_camera->renderView()->actualSize().height;
 
     m_rotateEnd = mousePos;
 
@@ -199,7 +205,7 @@ void CameraOrbitControlComponent::dollyOut(float dollyScale)
 
 void CameraOrbitControlComponent::pan(float deltaX, float deltaY)
 {
-    Size clientSize = m_camera->renderView()->actualPixelSize();
+    Size clientSize = m_camera->renderView()->actualSize();
     Matrix matrix = m_camera->worldMatrix();
 
     ProjectionMode mode = m_camera->cameraComponent()->projectionMode();
@@ -383,7 +389,6 @@ bool CameraOrbitControlComponent::update()
     //position = m_target + offset;
     m_camera->setPosition(m_target + offset);
     m_camera->lookAt(m_target);
-    (m_target + offset).print();
 
     if (m_enableDamping) {
         m_sphericalDelta.theta *= (1.0f - m_dampingFactor);

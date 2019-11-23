@@ -76,68 +76,6 @@ enum class PropertySetSource
 
 
 
-class PropertyRef_old
-{
-public:
-    PropertyRef_old(Object* propOwner, PropertyBase* prop)
-        : m_propOwner(propOwner)
-        , m_prop(prop)
-    {
-    }
-
-    std::pair<Ref<Object>, PropertyBase*> resolve()
-    {
-        auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) {
-            return { ptr, m_prop };
-        }
-        else {
-            return std::pair<Ref<Object>, PropertyBase*>();
-        }
-    }
-
-    template<typename TValue>
-    void setTypedValue(const TValue& value)
-    {
-        auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) {
-            static_cast<Property<TValue>*>(m_prop)->set(value);
-        }
-    }
-
-    template<typename TValue>
-    const TValue& getTypedValue() const
-    {
-        auto ptr = m_propOwner.resolve();
-        if (ptr != nullptr) {
-            return static_cast<Property<TValue>*>(m_prop)->get();
-        }
-        LN_ERROR();
-        return TValue();
-    }
-
-    void clearValue();
-
-    Ref<Object> owenr();
-
-    //const PropertyInfo* propertyInfo() const
-    //{
-    //    return m_prop.getPropertyInfo();
-    //}
-
-    template<typename TValue>
-    Property<TValue>* getTypedProperty()
-    {
-        return static_cast<Property<TValue>*>(m_prop);
-    }
-
-private:
-    WeakRefPtr<Object>	m_propOwner;
-    PropertyBase* m_prop;
-};
-
-
-
 
 
 class PropertyRef
@@ -229,12 +167,16 @@ public:
         static_cast<Property<TValue>*>(prop)->set(std::forward(value));
     }
     
-    static PropertyRef_old getPropertyRef_old(Object* obj, PropertyInfo* propertyInfo);
-
 	static PropertyRef getPropertyRef(Object* obj, PropertyInfo* propertyInfo);
 
     // TODO: Helper でいい
     static void notifyPropertyChanged(Object* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source);
+
+    //template<class TClass>
+    //bool verifyTypeInfo() const
+    //{
+    //    auto ptr = dynamic_cast<PropertyAccessorImpl<TClass>>
+    //}
 
 private:
     GetPropertyCallback m_getPropertyCallback;
@@ -263,8 +205,8 @@ private:
 class PropertyBase
 {
 public:
-    virtual void setValue(const Variant& value) = 0;
-    virtual Variant getValue() const = 0;
+    virtual void setValue(const Ref<Variant>& value) = 0;
+    virtual Ref<Variant> getValue() const = 0;
     virtual void clearValue() = 0;
 
 protected:
@@ -309,14 +251,14 @@ public:
     ~Property()
     {}
 
-    virtual void setValue(const Variant& value) override
+    virtual void setValue(const Ref<Variant>& value) override
     {
-        set(value.get<TValue>());
+        set(value->get<TValue>());
     }
 
-    virtual Variant getValue() const override
+    virtual Ref<Variant> getValue() const override
     {
-        return Variant(get());
+        return makeVariant(get());	// TODO: Variant Pool
     }
 
     /** プロパティのローカル値を設定します。*/
@@ -422,8 +364,9 @@ inline bool operator != (const TValue& lhs, const Property<TValue>& rhs)
 class PropertyAccessor : public RefObject
 {
 public:
-	virtual void getValue(const Object* obj, Variant* value) const = 0;
-	virtual void setValue(Object* obj, const Variant& value) = 0;
+	virtual void getValue(const Object* obj, Ref<Variant>* value) const = 0;
+	virtual void setValue(Object* obj, const Ref<Variant>& value) = 0;
+    virtual void serializeMember(Object* obj, Archive& ar, const ln::String& name) = 0;
 };
 
 // 呼び出し側が型を知っている場合、PropertyAccessor からキャストすることで Variant を介すことなく直接値を操作できるようにするための中間クラス
@@ -444,21 +387,21 @@ public:
 		, m_setFunction(setFunction)
 	{ }
 
-	void getValue(const Object* obj, Variant* value) const override
+	void getValue(const Object* obj, Ref<Variant>* value) const override
 	{
 		LN_DCHECK(obj);
 		LN_DCHECK(value);
 		const auto classPtr = static_cast<const TClassType*>(obj);
 		TValue t;
 		m_getFunction(classPtr, &t);
-		*value = t;
+		*value = makeVariant(t);	// DOTO: Variant Pool
 	}
 
-	void setValue(Object* obj, const Variant& value) override
+	void setValue(Object* obj, const Ref<Variant>& value) override
 	{
 		LN_DCHECK(obj);
 		auto classPtr = static_cast<TClassType*>(obj);
-		m_setFunction(classPtr, value.get<TValue>());
+		m_setFunction(classPtr, value->get<TValue>());
 	}
 
 	virtual void getValueDirect(const Object* obj, TValue* value) const override
@@ -471,9 +414,29 @@ public:
 	virtual void setValueDirect(Object* obj, const TValue& value) override
 	{
 		LN_DCHECK(obj);
-		auto classPtr = static_cast<TClassType*>(obj);
-		m_setFunction(classPtr, value);
+        if (auto classPtr = dynamic_cast<TClassType*>(obj)) {
+            m_setFunction(classPtr, value);
+        }
+		//auto classPtr = static_cast<TClassType*>(obj);
+		//m_setFunction(classPtr, value);
 	}
+
+    virtual void serializeMember(Object* obj, Archive& ar, const ln::String& name)
+    {
+        LN_CHECK(obj);
+        if (ar.isSaving()) {
+            TValue value;
+            const auto classPtr = static_cast<const TClassType*>(obj);
+            m_getFunction(classPtr, &value);
+            ar & ln::makeNVP(name, value);
+        }
+        else {
+            TValue value;
+            auto classPtr = static_cast<TClassType*>(obj);
+            ar & ln::makeNVP(name, value);
+            m_setFunction(classPtr, value);
+        }
+    }
 
 private:
 	TGetFunction m_getFunction;
@@ -497,9 +460,11 @@ public:
 	{
 		TypeInfo* typeInfo = TypeInfo::getTypeInfo<TClassType>();
 
-		if (m_typeInfoSet.find(typeInfo) == m_typeInfoSet.end())
+		if (m_typeInfoSet.find(typeInfo->name()) == m_typeInfoSet.end())
 		{
-			m_typeInfoSet.insert(typeInfo);
+			typeInfo->m_factory = []() { return detail::makeObjectHelper<TClassType>(); };
+
+			m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
 
 			for (auto& p : propInfos) {
 				typeInfo->registerProperty(p);
@@ -508,8 +473,20 @@ public:
 		}
 	}
 
+	TypeInfo* findTypeInfo(const StringRef& name) const
+	{
+		auto itr = m_typeInfoSet.find(name);
+		if (itr != m_typeInfoSet.end()) {
+			return itr->second;
+		}
+		else {
+			return nullptr;
+		}
+	}
+
 private:
-	std::unordered_set<TypeInfo*> m_typeInfoSet;
+	//std::unordered_set<TypeInfo*> m_typeInfoSet;
+	std::unordered_map<String, TypeInfo*> m_typeInfoSet;
 	//List<TypeInfo*> m_typeInfos;
 };
 
@@ -541,6 +518,7 @@ public:
 	makePropertyAccessor<className, typeName>( \
 		[](const className* self, typeName* value) { *value = self->getFunction(); }, \
 		[](className* self, const typeName& value) { self->setFunction(value); }) \
+// TOO: typeName と、OwnerClass を間違えてしまったときの対策。(setValueDirect とかで stack 破壊する)
 
 } // namespace ln
 

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2018+ lriki. Distributed under the MIT license..
 #pragma once
 
+#include <vector>
 #include "Common.hpp"
 #include "../Base/RefObject.hpp"
 
@@ -52,6 +53,8 @@ public:
 
     /** ストリームの内部バッファのデータを全てターゲット(ファイル等)に書き込み、内部バッファをクリアします。 */
     virtual void flush() = 0;
+
+    std::vector<uint8_t> readToEnd();
 
 protected:
     Stream();

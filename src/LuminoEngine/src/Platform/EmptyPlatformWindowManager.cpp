@@ -50,7 +50,7 @@ void EmptyPlatformWindowManager::destroyWindow(PlatformWindow* window)
 {
 }
 
-void EmptyPlatformWindowManager::processSystemEventQueue()
+void EmptyPlatformWindowManager::processSystemEventQueue(EventProcessingMode mode)
 {
 }
 

@@ -18,9 +18,9 @@ GraphicsResourcePool::None + GraphicsResourceUsage::Static 以外はどうして
 */
 
 #include "Internal.hpp"
-#include "../Engine/RenderingCommandList.hpp"
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
+#include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 
 namespace ln {
@@ -30,12 +30,12 @@ namespace ln {
 
 Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, GraphicsResourceUsage usage)
 {
-    return newObject<VertexBuffer>(bufferSize, usage);
+    return makeObject<VertexBuffer>(bufferSize, usage);
 }
 
 Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, const void* initialData, GraphicsResourceUsage usage)
 {
-    return newObject<VertexBuffer>(bufferSize, initialData, usage);
+    return makeObject<VertexBuffer>(bufferSize, initialData, usage);
 }
 
 VertexBuffer::VertexBuffer()
@@ -92,6 +92,12 @@ void VertexBuffer::resize(int size)
 {
     m_primarySize = size;
     m_buffer.resize(size);
+
+    // map 中ならバッファポインタ再取り出し
+    if (m_mappedBuffer) {
+        assert(m_usage == GraphicsResourceUsage::Dynamic);
+        m_mappedBuffer = m_buffer.data();
+    }
 }
 
 void* VertexBuffer::map(MapMode mode)
@@ -107,7 +113,7 @@ void* VertexBuffer::map(MapMode mode)
         }
 
         if (m_rhiMappedBuffer == nullptr) {
-            m_rhiMappedBuffer = detail::GraphicsResourceInternal::manager(this)->deviceContext()->getGraphicsContext()->map(m_rhiObject);
+            m_rhiMappedBuffer = m_rhiObject->map();
         }
 
         m_modified = true;
@@ -148,26 +154,28 @@ void VertexBuffer::setResourcePool(GraphicsResourcePool pool)
     m_pool = pool;
 }
 
-detail::IVertexBuffer* VertexBuffer::resolveRHIObject(bool* outModified)
+detail::IVertexBuffer* VertexBuffer::resolveRHIObject(GraphicsContext* context, bool* outModified)
 {
 	*outModified = m_modified;
     m_mappedBuffer = nullptr;
 
     if (m_modified) {
-        detail::IGraphicsDevice* device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
         if (m_rhiMappedBuffer) {
-            device->getGraphicsContext()->unmap(m_rhiObject);
+			m_rhiObject->unmap();
             m_rhiMappedBuffer = nullptr;
         } else {
+			auto commandList = detail::GraphicsContextInternal::getCommandListForTransfer(context);
             size_t requiredSize = size();
             if (!m_rhiObject || m_rhiObject->getBytesSize() != requiredSize || m_rhiObject->usage() != m_usage) {
                 m_rhiObject = device->createVertexBuffer(m_usage, m_buffer.size(), m_buffer.data());
             } else {
+                context->interruptCurrentRenderPassFromResolveRHI();
                 detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
                 detail::IVertexBuffer* rhiObject = m_rhiObject;
                 LN_ENQUEUE_RENDER_COMMAND_3(
-                    VertexBuffer_SetSubData, detail::GraphicsResourceInternal::manager(this), detail::IGraphicsDevice*, device, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
-                        device->getGraphicsContext()->setSubData(rhiObject, 0, data.data(), data.size());
+                    VertexBuffer_SetSubData, context, detail::ICommandList*, commandList, detail::RenderBulkData, data, Ref<detail::IVertexBuffer>, rhiObject, {
+						commandList->setSubData(rhiObject, 0, data.data(), data.size());
                     });
             }
         }

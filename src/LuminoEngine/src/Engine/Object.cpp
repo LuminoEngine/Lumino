@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Object.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
+#include "../Runtime/RuntimeManager.hpp"
 
 namespace ln {
 
@@ -12,18 +13,23 @@ namespace ln {
 Object::Object()
     : m_weakRefInfo(nullptr)
     , m_weakRefInfoMutex()
+	, m_runtimeData(nullptr)
 {
 }
 
 Object::~Object()
 {
-    std::lock_guard<std::mutex> lock(m_weakRefInfoMutex);
-    if (m_weakRefInfo)
-    {
-        m_weakRefInfo->owner = nullptr;
-        m_weakRefInfo->release();
-        m_weakRefInfo = nullptr;
-    }
+	std::lock_guard<std::mutex> lock(m_weakRefInfoMutex);
+	if (m_weakRefInfo)
+	{
+		m_weakRefInfo->owner = nullptr;
+		m_weakRefInfo->release();
+		m_weakRefInfo = nullptr;
+	}
+
+	if (m_runtimeData) {
+		detail::EngineDomain::runtimeManager()->onDestructObject(this);
+	}
 }
 
 void Object::init()
@@ -45,6 +51,14 @@ void Object::onDispose(bool explicitDisposing)
 {
 }
 
+void Object::serialize(Archive& ar)
+{
+    const List<Ref<PropertyInfo>>& props = TypeInfo::getTypeInfo(this)->properties();
+    for (auto& prop : props) {
+        prop->accessor()->serializeMember(this, ar, prop->name());
+    }
+}
+
 bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 {
 	const List<Ref<PropertyInfo>>& props = TypeInfo::getTypeInfo(this)->properties();
@@ -54,6 +68,10 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 		}
 	}
 	return false;
+}
+
+void Object::onSetAssetFilePath(const Path& filePath)
+{
 }
 
 detail::WeakRefInfo* Object::requestWeakRefInfo()

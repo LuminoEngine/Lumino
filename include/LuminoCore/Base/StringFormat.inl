@@ -132,8 +132,9 @@ void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, int leng
         writeSize = m_fixedBufferSize - m_bufferUsed;
     } else {
         // バッファが足りなければ拡張する
-        if (m_bufferUsed + byteCount > m_buffer.size()) {
-            size_t newSize = m_buffer.size() + LN_MAX(m_buffer.size(), byteCount); // 最低でも byteCount 分を拡張する
+		size_t bufferSize = static_cast<size_t>(m_buffer.size());
+        if (m_bufferUsed + byteCount > bufferSize) {
+            size_t newSize = m_buffer.size() + LN_MAX(bufferSize, byteCount); // 最低でも byteCount 分を拡張する
             m_buffer.resize(newSize);
         }
 

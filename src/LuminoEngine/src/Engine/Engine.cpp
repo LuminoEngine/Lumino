@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Engine.hpp>
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
@@ -14,6 +15,7 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include "../Graphics/GraphicsManager.hpp"
+#include "../Scene/SceneManager.hpp"
 
 namespace ln {
 
@@ -56,6 +58,11 @@ void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 	detail::EngineDomain::engineManager()->settings().graphicsAPI = value;
 }
 
+void EngineSettings::setUserMainWindow(intptr_t value)
+{
+    detail::EngineDomain::engineManager()->settings().userMainWindow = value;
+}
+
 void EngineSettings::setStandaloneFpsControl(bool enabled)
 {
     detail::EngineDomain::engineManager()->settings().standaloneFpsControl = enabled;
@@ -64,6 +71,31 @@ void EngineSettings::setStandaloneFpsControl(bool enabled)
 void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
 {
     detail::EngineDomain::engineManager()->settings().features = features;
+}
+
+void EngineSettings::setDefaultObjectsCreation(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = value;
+}
+
+void EngineSettings::setUseGLFWWindowSystem(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().useGLFWWindowSystem = value;
+}
+
+void EngineSettings::setGraphicsContextManagement(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().graphicsContextManagement = value;
+}
+
+void EngineSettings::setExternalMainLoop(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().externalMainLoop = value;
+}
+
+void EngineSettings::setExternalRenderingManagement(bool value)
+{
+    detail::EngineDomain::engineManager()->settings().externalRenderingManagement = value;
 }
 
 //==============================================================================
@@ -82,21 +114,34 @@ static void endFrame()
 
 void Engine::initialize()
 {
-	detail::EngineDomain::engineManager()->init();
-	beginFrame();
+    detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    manager->init();
+    if (manager->settings().externalMainLoop) {
+        beginFrame();
+    }
 }
 
 void Engine::finalize()
 {
-	endFrame();
+    detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    if (manager->settings().externalMainLoop) {
+        endFrame();
+    }
 	detail::EngineDomain::release();
 }
 
 bool Engine::update()
 {
-	endFrame();
-	beginFrame();
-	return !detail::EngineDomain::engineManager()->isExitRequested();
+    detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    if (manager->settings().externalMainLoop) {
+        endFrame();
+        beginFrame();
+    }
+    else {
+        beginFrame();
+        endFrame();
+    }
+	return !manager->isExitRequested();
 }
 
 void Engine::quit()
@@ -124,14 +169,20 @@ const Path& Engine::persistentDataPath()
 	return detail::EngineDomain::engineManager()->persistentDataPath();
 }
 
-void Engine::setShowDebugFpsEnabled(bool enabled)
-{
-    return detail::EngineDomain::engineManager()->setShowDebugFpsEnabled(enabled);
-}
+//void Engine::setShowDebugFpsEnabled(bool enabled)
+//{
+//    return detail::EngineDomain::engineManager()->setShowDebugFpsEnabled(enabled);
+//}
 
 GraphicsContext* Engine::graphicsContext()
 {
-	return detail::EngineDomain::graphicsManager()->graphicsContext();
+	return detail::EngineDomain::engineManager()->mainWindow()->m_renderingGraphicsContext;
+	//return detail::EngineDomain::graphicsManager()->mainWindowGraphicsContext();
+}
+
+UIContext* Engine::mainUIContext()
+{
+    return detail::EngineDomain::engineManager()->mainUIContext();
 }
 
 UIFrameWindow* Engine::mainWindow()
@@ -144,9 +195,9 @@ UIViewport* Engine::mainViewport()
     return detail::EngineDomain::engineManager()->mainViewport();
 }
 
-UIContainerElement* Engine::mainUIRoot()
+UIControl* Engine::mainUIView()
 {
-	return detail::EngineDomain::engineManager()->mainUIRoot();
+	return detail::EngineDomain::engineManager()->mainUIView();
 }
 
 Size Engine::mainViewSize()
@@ -187,6 +238,13 @@ PhysicsWorld* Engine::mainPhysicsWorld()
 PhysicsWorld2D* Engine::mainPhysicsWorld2D()
 {
     return detail::EngineDomain::engineManager()->mainPhysicsWorld2D();
+}
+
+
+
+void Engine::setActiveWorld(World* world)
+{
+    detail::EngineDomain::engineManager()->sceneManager()->setActiveWorld(world);
 }
 
 

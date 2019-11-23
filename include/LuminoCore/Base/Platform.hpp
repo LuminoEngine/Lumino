@@ -1,8 +1,10 @@
 ﻿#pragma once
-#ifdef LN_OS_WIN32
-#define NOMINMAX
-#include <Windows.h>
-#endif
+
+#ifdef _WINDOWS_
+//#ifdef LN_OS_WIN32
+//#define NOMINMAX
+//#include <Windows.h>
+//#endif
 #include "String.hpp"
 
 namespace ln {
@@ -27,3 +29,5 @@ public:
 
 } // namespace detail
 } // namespace ln
+
+#endif // #ifdef _WINDOWS_

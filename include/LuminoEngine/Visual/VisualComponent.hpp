@@ -10,6 +10,7 @@ class GeometryStageParameters;
 class BuiltinEffectData;
 }
 
+LN_CLASS()
 class VisualComponent
 	: public Component
 {

@@ -1,0 +1,716 @@
+﻿
+#pragma once
+#include <memory>
+#include <unordered_map>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
+#include "Common.hpp"
+#include "ParserIntermediates.hpp"
+
+class SymbolDatabase;
+class TypeSymbol;
+class ConstantSymbol;
+//class DocumentSymbol;
+class MethodSymbol;
+class PropertySymbol;
+
+
+class ParameterDocumentInfo : public ln::RefObject
+{
+public:
+	ln::Result init(PIParamDocument* pi);
+
+	const ln::String& name() const { return m_pi->name; }
+	const ln::String& io() const { return m_pi->io; }
+	const ln::String& description() const { return m_pi->description; }
+
+private:
+	PIParamDocument* m_pi;
+};
+
+class DocumentInfo : public ln::RefObject
+{
+public:
+	ln::Result init(const PIDocument* pi);
+
+	const ln::String& summary() const { return m_summary; }
+	const ln::String& returns() const { return m_returns; }
+	const ln::String& details() const { return m_details; }
+	const ln::List<Ref<ParameterDocumentInfo>>& params() const { return m_params; }
+
+	//ln::String copydocMethodName;
+	//ln::String copydocSignature;
+
+	//bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
+
+	void setSummary(const ln::String& value) { m_summary = value; }
+	void setDetails(const ln::String& value) { m_details = value; }
+
+private:
+	const PIDocument* m_pi = nullptr;
+	ln::String m_summary;
+	ln::String m_returns;
+	ln::String m_details;
+	ln::List<Ref<ParameterDocumentInfo>> m_params;
+};
+
+class PredefinedTypes
+{
+public:
+	static ln::Ref<TypeSymbol>	voidType;
+	static ln::Ref<TypeSymbol>	nullptrType;
+	static ln::Ref<TypeSymbol>	boolType;
+	static ln::Ref<TypeSymbol>	intType;
+	static ln::Ref<TypeSymbol>	int16Type;
+	static ln::Ref<TypeSymbol>	uint32Type;
+	static ln::Ref<TypeSymbol>	floatType;
+	static ln::Ref<TypeSymbol>	stringType;
+	static ln::Ref<TypeSymbol>	stringRefType;
+	static ln::Ref<TypeSymbol>	objectType;
+	static ln::Ref<TypeSymbol>	EventConnectionType;
+};
+
+// 属性マクロの ( ) 内に記述されたパラメータ
+class MetadataInfo : public ln::RefObject
+{
+public:
+	static const ln::String OverloadPostfixAttr;
+	static const ln::String EventAttr;
+
+	ln::Result init(PIMetadata* pi);
+
+	bool hasKey(const ln::StringRef& key) const;
+	const ln::String* findValue(const ln::StringRef& key) const;
+	ln::String getValue(const ln::StringRef& key, const ln::String& defaultValue = ln::String()) const;
+	void setValue(const ln::StringRef& key, const ln::String& value = ln::String());
+
+private:
+	PIMetadata* m_pi = nullptr;
+	ln::String m_name;
+	std::unordered_map<ln::String, ln::String> m_values;
+};
+
+// オーバーロードメソッドをまとめたもの
+class MethodOverloadInfo : public ln::RefObject
+{
+public:
+	MethodSymbol* representative() const { return m_methods[m_representativeIndex]; }
+	const ln::List<MethodSymbol*>& methods() const { return m_methods; }
+
+private:
+	int m_representativeIndex = -1;
+	ln::List<MethodSymbol*> m_methods;
+
+	friend class TypeSymbol;
+};
+
+class Symbol : public ln::RefObject
+{
+public:
+	SymbolDatabase* db() const { return m_db; }
+	const Ref<DocumentInfo>& document() const { return m_document; }
+	const Ref<MetadataInfo>& metadata() const { return m_metadata; }
+
+protected:
+	Symbol(SymbolDatabase* db);
+	ln::Result init();
+	ln::Result init(const PIDocument* document, PIMetadata* metadata);
+
+private:
+	SymbolDatabase* m_db;
+	Ref<DocumentInfo> m_document;
+	Ref<MetadataInfo> m_metadata;
+};
+
+//
+//class ParameterDocumentSymbol : public ln::RefObject
+//{
+//public:
+//	ln::String name;
+//	ln::String io;
+//	ln::String description;
+//};
+//
+
+
+
+class FieldSymbol : public Symbol
+{
+public:
+	//ln::Ref<DocumentSymbol> document;
+	//ln::String name;
+
+	//// parsing data (link source)
+	//ln::String	typeRawName;
+
+	TypeSymbol* type() const { return m_type; }
+	const ln::String& name() const { return m_pi->name; }
+
+public:
+	FieldSymbol(SymbolDatabase* db);
+	ln::Result init(PIField* pi);
+	ln::Result link();
+
+private:
+	PIField* m_pi = nullptr;
+	TypeSymbol* m_type = nullptr;
+};
+
+class ConstantSymbol : public Symbol
+{
+public:
+	//ln::Ref<DocumentSymbol>		document;
+
+	TypeSymbol* type() const { return m_type; }
+	const ln::String& name() const { return m_pi->name; }
+	const Ref<ln::Variant>& value() const { return m_value; }
+
+	//ln::Ref<TypeSymbol>			type;
+	//ln::Ref<ln::Variant>			value;
+
+	//ln::String				typeRawName;
+
+public:
+	ConstantSymbol(SymbolDatabase* db);
+	ln::Result init(TypeSymbol* type, PIConstant* pi);
+	ln::Result init(TypeSymbol* type, ln::Variant* value);
+	ln::Result link();
+
+private:
+	PIConstant* m_pi = nullptr;
+	TypeSymbol* m_type = nullptr;
+	Ref<ln::Variant> m_value;
+};
+
+class MethodParameterSymbol : public Symbol
+{
+//public:
+//	struct SoueceData
+//	{
+//		ln::String typeRawName;
+//		ln::Optional<ln::String> rawDefaultValue;
+//	} src;
+//
+//
+public:
+	MethodParameterSymbol(SymbolDatabase* db);
+	ln::Result init(PIMethodParameter* pi);
+	ln::Result init(TypeSymbol* type, const ln::String& name);
+	ln::Result link();
+
+	TypeSymbol* type() const { return m_type; }
+	const ln::String& name() const { return m_name; }
+	const ln::Ref<ConstantSymbol>& defaultValue() const { return m_defaultValue; }
+
+	bool isIn() const { return m_isIn; }
+	bool isOut() const { return m_isOut; }
+	bool isThis() const { return m_isThis; }		// for flat parameters
+	bool isReturn() const { return m_isReturn; }	// for flat parameters
+
+	ln::String getFullQualTypeName() const;
+
+private:
+	PIMethodParameter* m_pi = nullptr;
+	TypeSymbol* m_type = nullptr;
+	ln::String m_name;
+	ln::Ref<ConstantSymbol> m_defaultValue;
+
+	bool m_isIn = false;
+	bool m_isOut = false;
+	bool m_isThis = false;
+	bool m_isReturn = false;
+
+	friend class MethodSymbol;
+};
+
+class MethodSymbol : public Symbol
+{
+public:
+
+	// 
+	//ln::List<ln::Ref<MethodParameterSymbol>> capiParameters;
+
+	// parsing data
+	ln::String	returnTypeRawName;
+	ln::String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
+
+	//bool IsOverloadChild() const { return overloadParent != nullptr; }
+	//bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
+
+	//void LinkParameters(SymbolDatabase* db);
+	//ln::String GetCAPIFuncName();
+	//ln::String GetCApiSetOverrideCallbackFuncName();
+	//ln::String GetCApiSetOverrideCallbackTypeName();
+
+	//static ln::String GetAccessLevelName(AccessLevel accessLevel);
+
+public:
+	MethodSymbol(SymbolDatabase* db);
+	ln::Result init(PIMethod* pi, TypeSymbol* ownerType);
+	ln::Result init(TypeSymbol* ownerType, const ln::String& shortName, TypeSymbol* returnType, const ln::List<Ref<MethodParameterSymbol>>& params);
+	ln::Result link();
+
+	AccessLevel accessLevel() const { return m_accessLevel; }
+	TypeSymbol* ownerType() const { return m_ownerType; }
+	TypeSymbol* returnType() const { return m_returnType; }
+	const ln::String& shortName() const { return m_shortName; }
+	const ln::String& fullName() const { return m_fullName; }
+	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
+	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
+	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
+	PropertySymbol* ownerProperty() const { return m_ownerProperty; }
+	ln::String overloadPostfix() const { return metadata()->getValue(MetadataInfo::OverloadPostfixAttr, ln::String::Empty); }
+	//MethodSymbol* overloadParent() const { return m_overloadParent; }
+	//const ln::List<MethodSymbol*>& overloadChildren() const { return m_overloadChildren; }
+
+	bool isConst() const { return m_isConst; }
+	bool isStatic() const { return m_isStatic; }
+	bool isVirtual() const { return m_isVirtual; }
+	bool isConstructor() const { return m_isConstructor; }	// 名前が init であるインスタンスメソッド
+	bool isInstance() const { return !isStatic(); }			// instance method
+	bool isEventConnector() const { return metadata()->hasKey(MetadataInfo::EventAttr); }
+	bool isPropertyGetter() const { return m_ownerProperty && m_parameters.isEmpty(); }
+	bool isPropertySetter() const { return m_ownerProperty && !m_parameters.isEmpty(); }
+	bool isCollectionGetItem() const { return metadata()->hasKey(u"Collection_GetItem"); }	// AccessorCache を使うときにインデックス指定するものであるかどうか
+
+	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
+
+private:
+	ln::Result makeFlatParameters();
+
+	PIMethod* m_pi = nullptr;
+	AccessLevel m_accessLevel = AccessLevel::Public;
+	TypeSymbol* m_ownerType = nullptr;
+	TypeSymbol* m_returnType = nullptr;
+	ln::String m_shortName;
+	ln::String m_fullName;
+	ln::List<Ref<MethodParameterSymbol>> m_parameters;
+	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;	// FlatC-API としてのパラメータリスト。先頭が this だったり、末尾が return だったりする。
+	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
+	PropertySymbol* m_ownerProperty = nullptr;
+
+	bool m_isConst = false;
+	bool m_isStatic = false;
+	bool m_isVirtual = false;
+	bool m_isConstructor = false;
+	bool m_hasStringDecl = false;
+
+	friend class TypeSymbol;
+};
+
+class PropertySymbol : public Symbol
+{
+//public:
+//	ln::Ref<TypeSymbol>			owner;
+//	//ln::Ref<DocumentSymbol>		document;
+//	ln::String				name;
+//	ln::String				namePrefix;	// Is
+//	ln::Ref<TypeSymbol>			type;
+//	ln::Ref<MethodSymbol>		getter;
+//	ln::Ref<MethodSymbol>		setter;
+//
+//	void MakeDocument();
+public:
+	PropertySymbol(SymbolDatabase* db);
+	ln::Result init(const ln::String& shortName);
+
+	const ln::String& shortName() const { return m_shortName; }
+	const ln::Ref<TypeSymbol>& type() const { return m_type; }
+	const ln::Ref<MethodSymbol>& getter() const { return m_getter; }
+	const ln::Ref<MethodSymbol>& setter() const { return m_setter; }
+	const ln::String namePrefix() const { return m_namePrefix; }
+
+private:
+	void buildDocument();
+
+	ln::String m_shortName;
+	ln::Ref<TypeSymbol> m_type;
+	ln::Ref<MethodSymbol> m_getter;
+	ln::Ref<MethodSymbol> m_setter;
+	ln::String m_namePrefix;	// Is
+
+	friend class TypeSymbol;
+};
+
+class TypeSymbol : public Symbol
+{
+public:
+	TypeSymbol(SymbolDatabase* db);
+	ln::Result init(PITypeInfo* piType);
+	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind);
+	ln::Result link();
+
+	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
+	const ln::String& fullName() const { return m_fullName; }
+	const ln::String& shortName() const { return m_shortName; }
+	const ln::List<Ref<FieldSymbol>>& fields() const { return m_fields; }
+	const ln::List<Ref<ConstantSymbol>>& constants() const { return m_constants; }
+	const ln::List<Ref<MethodSymbol>>& publicMethods() const { return m_publicMethods; }	// クラス外から普通にコールできる public メソッド。virutal は含むが、protected virtual は含まない。
+	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
+	const ln::List<Ref<PropertySymbol>>& properties() const { return m_properties; }
+	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
+	const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
+	TypeSymbol* baseClass() const { return m_baseClass; }
+	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
+	MethodSymbol* delegateDeclaration() const { return m_declaredMethods[0]; }
+
+	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
+	bool isClass() const { return kind() == TypeKind::Class; }
+	bool isStruct() const { return kind() == TypeKind::Struct; }
+	bool isEnum() const { return kind() == TypeKind::Enum; }
+	bool isDelegate() const { return kind() == TypeKind::Delegate; }
+	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class ?
+	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
+	bool isCollection() const { return metadata()->hasKey(u"Collection"); }
+
+private:
+	void setFullName(const ln::String& value);
+	ln::Result linkOverload();
+	ln::Result linkProperties();
+	void collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods);
+
+	Ref<PITypeInfo> m_piType;
+	TypeKind m_kind = TypeKind::Primitive;
+	ln::String m_fullName;
+	ln::String m_shortName;
+	ln::List<Ref<FieldSymbol>> m_fields;
+	ln::List<Ref<ConstantSymbol>> m_constants;
+	ln::List<Ref<MethodSymbol>> m_publicMethods;
+	ln::List<Ref<MethodSymbol>> m_declaredMethods;	// このクラス内で宣言されたすべてメソッド。ベースクラスは含まない。
+	ln::List<Ref<MethodOverloadInfo>> m_overloads;
+	ln::List<Ref<PropertySymbol>> m_properties;
+	ln::List<Ref<MethodSymbol>> m_virtualMethods;
+	ln::List<Ref<MethodSymbol>> m_eventMethods;
+	TypeSymbol* m_baseClass = nullptr;
+	TypeSymbol* m_collectionItemType = nullptr;
+
+//	struct SoueceData
+//	{
+//		ln::String baseClassRawName;
+//		ln::String rawFullName;
+//	} src;
+//
+//	ln::Ref<MetadataSymbol>			metadata;
+//	ln::Ref<DocumentSymbol>			document;
+//	bool	isStruct = false;
+//	bool			isVoid = false;
+//	bool				isPrimitive = false;
+//	bool					isEnum = false;
+//	bool					isDelegate = false;
+//	ln::List<ln::Ref<FieldSymbol>>		declaredFields;
+//	ln::List<ln::Ref<MethodSymbol>>		declaredMethods;
+//	ln::List<ln::Ref<PropertySymbol>>	declaredProperties;
+//	ln::List<ln::Ref<ConstantSymbol>>	declaredConstants;		// enum メンバ
+//	ln::List<ln::Ref<MethodSymbol>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
+//	ln::Ref<TypeSymbol>				baseClass;
+//
+//
+//	TypeSymbol() {}
+//	TypeSymbol(ln::StringRef rawFullName_) { setRawFullName(rawFullName_); }
+//
+//	const ln::String& fullName() const { return src.rawFullName; }
+//	const ln::String& shortName() const { return m_shortName; }
+//
+//	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
+//	bool isStatic() const { return metadata->HasKey(_T("Static")); }
+//	bool IsClass() const { return !isValueType() && !isVoid; }
+//
+//	void Link(SymbolDatabase* db);
+//
+//	void setRawFullName(const ln::String& value);
+//
+//private:
+//	void MakeProperties();
+//	void LinkOverload(SymbolDatabase* db);
+//	void ResolveCopyDoc();
+//
+//	ln::String m_shortName;
+};
+
+class SymbolDatabase : public ln::RefObject
+{
+public:
+	//ln::List<ln::Ref<TypeSymbol>>	structs;
+	//ln::List<ln::Ref<TypeSymbol>>	classes;
+	//ln::List<ln::Ref<TypeSymbol>>	enums;
+	//ln::List<ln::Ref<TypeSymbol>>	delegates;
+
+	SymbolDatabase(ln::DiagnosticsManager* diag);
+	ln::DiagnosticsManager* diag() const { return m_diag; }
+	ln::Result initTypes(PIDatabase* pidb);
+	ln::Result linkTypes();
+
+	//tr::Enumerator<ln::Ref<MethodSymbol>> GetAllMethods();
+
+	//void FindEnumTypeAndValue(const ln::String& typeFullName, const ln::String& memberName, ln::Ref<TypeSymbol>* outEnum, ln::Ref<ConstantSymbol>* outMember);
+	static Ref<ConstantSymbol> createConstantFromLiteralString(const ln::String& valueStr);
+
+	//void verify(ln::DiagnosticsManager* diag);
+
+
+	stream::Stream<Ref<TypeSymbol>> enums() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Enum; }); }
+	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
+	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class && (x != PredefinedTypes::objectType); }); }
+	stream::Stream<Ref<TypeSymbol>> delegates() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Delegate; }); }
+
+	const Ref<PIDatabase>& pidb() const { return m_pidb; }
+	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
+
+public:
+	void initPredefineds();
+	TypeSymbol* findTypeSymbol(const ln::String& typeFullName);
+
+	// 型検索。見つからない場合はエラーをレポートして nullptr を返す。
+	TypeSymbol* getTypeSymbol(const ln::String& typeFullName);
+
+
+private:
+	Ref<PIDatabase> m_pidb;
+	ln::List<Ref<TypeSymbol>> m_allTypes;
+	//ln::List<Ref<DelegateSymbol>> m_delegates;
+	ln::DiagnosticsManager* m_diag;
+};
+
+
+#if 0
+
+//class Type
+//{
+//	Class		Generic
+//	Struct
+//	Enum
+//	Delegate
+//	Method
+//};
+//
+//class Literal
+//{
+//};
+//
+//Module
+
+
+
+class TypeSymbol;
+class DocumentSymbol;
+class ParameterDocumentSymbol;
+class MetadataSymbol;
+class MethodSymbol;
+class PropertySymbol;
+class ConstantSymbol;
+using ln::Ref<TypeSymbol> = std::shared_ptr<TypeSymbol>;
+using ln::Ref<DocumentSymbol> = std::shared_ptr<DocumentSymbol>;
+using ParameterDocumentInfoPtr = std::shared_ptr<ParameterDocumentSymbol>;
+using ln::Ref<MetadataSymbol> = std::shared_ptr<MetadataSymbol>;
+using ln::Ref<MethodSymbol> = std::shared_ptr<MethodSymbol>;
+using ln::Ref<PropertySymbol> = std::shared_ptr<PropertySymbol>;
+using ln::Ref<ConstantSymbol> = std::shared_ptr<ConstantSymbol>;
+
+enum class AccessLevel
+{
+	Public,
+	Protected,
+	Private,
+	Internal,
+};
+
+class ParameterDocumentSymbol
+{
+public:
+	ln::String	name;
+	ln::String	io;
+	ln::String	description;
+};
+
+class DocumentSymbol
+{
+public:
+	ln::String							summary;
+	ln::List<ParameterDocumentInfoPtr>	params;
+	ln::String							returns;
+	ln::String							details;
+	ln::String							copydocMethodName;
+	ln::String							copydocSignature;
+
+	bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
+};
+
+class MetadataSymbol
+{
+public:
+	ln::String								name;
+	std::unordered_map<ln::String, ln::String>	values;
+
+	void AddValue(const ln::String& key, const ln::String& value);
+	ln::String* FindValue(const ln::StringRef& key);
+	bool HasKey(const ln::StringRef& key);
+};
+
+
+class ParameterSymbol
+{
+public:
+	//DefaultValue
+	//ParameterType
+	ln::String	name;
+	ln::Ref<TypeSymbol>	type;
+	bool	isIn = false;
+	bool	isOut = false;
+	bool	isThis = false;
+	bool	isReturn = false;
+	ln::Ref<ConstantSymbol>		defaultValue;
+
+	ln::String				typeRawName;
+	Nullable<ln::String>	rawDefaultValue;
+};
+using ln::Ref<ParameterSymbol> = std::shared_ptr<ParameterSymbol>;
+
+class FieldSymbol
+{
+public:
+	ln::Ref<DocumentSymbol>	document;
+	ln::Ref<TypeSymbol>		type;
+	ln::String			name;
+
+	ln::String	typeRawName;
+};
+using ln::Ref<FieldSymbol> = std::shared_ptr<FieldSymbol>;
+
+class MethodSymbol
+{
+public:
+	// 
+	ln::Ref<TypeSymbol>		owner;
+	ln::Ref<MetadataSymbol>	metadata;
+	ln::Ref<DocumentSymbol>	document;
+	AccessLevel		accessLevel = AccessLevel::Public;
+	ln::String			name;
+	ln::Ref<TypeSymbol>		returnType;
+	//IsConstructor
+	//IsStatic
+	//IsVirtual
+	bool			isConst = false;		// const メンバ関数であるか
+	bool			isStatic = false;
+	bool			isVirtual = false;
+	bool			isConstructor = false;
+	ln::Ref<PropertySymbol>	ownerProperty;
+	ln::List<ln::Ref<ParameterSymbol>>	parameters;
+
+	ln::String					overloadSuffix;
+	ln::Ref<MethodSymbol>			overloadParent;
+	ln::List<ln::Ref<MethodSymbol>>		overloadChildren;
+	// 
+	ln::List<ln::Ref<ParameterSymbol>>	capiParameters;
+
+	ln::String	returnTypeRawName;
+	ln::String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
+
+	bool IsOverloadChild() const { return overloadParent != nullptr; }
+	bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
+	bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
+
+	void LinkParameters();
+	void ExpandCAPIParameters();
+	ln::String GetCAPIFuncName();
+	ln::String GetCApiSetOverrideCallbackFuncName();
+	ln::String GetCApiSetOverrideCallbackTypeName();
+
+	static ln::String GetAccessLevelName(AccessLevel accessLevel);
+};
+
+
+class PropertySymbol
+{
+public:
+	ln::Ref<TypeSymbol>			owner;
+	ln::Ref<DocumentSymbol>		document;
+	ln::String				name;
+	ln::String				namePrefix;	// Is
+	ln::Ref<TypeSymbol>			type;
+	ln::Ref<MethodSymbol>		getter;
+	ln::Ref<MethodSymbol>		setter;
+
+	void MakeDocument();
+};
+
+class ConstantSymbol
+{
+public:
+	ln::Ref<DocumentSymbol>		document;
+	ln::String				name;
+	ln::Ref<TypeSymbol>			type;
+	//Variant			value;
+
+	ln::String				typeRawName;
+};
+
+class TypeSymbol
+{
+public:
+	ln::Ref<MetadataSymbol>			metadata;
+	ln::Ref<DocumentSymbol>			document;
+	ln::String	name;
+	bool	isStruct = false;
+	bool			isVoid = false;
+	bool				isPrimitive = false;
+	bool					isEnum = false;
+	bool					isDelegate = false;
+	ln::List<ln::Ref<FieldSymbol>>		declaredFields;
+	ln::List<ln::Ref<MethodSymbol>>		declaredMethods;
+	ln::List<ln::Ref<PropertySymbol>>	declaredProperties;
+	ln::List<ln::Ref<ConstantSymbol>>	declaredConstants;		// enum メンバ
+	ln::List<ln::Ref<MethodSymbol>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
+	ln::Ref<TypeSymbol>				baseClass;
+
+	ln::String					baseClassRawName;
+
+	TypeSymbol() {}
+	TypeSymbol(ln::StringRef name_) : name(name_) {}
+
+	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
+	bool isStatic() const { return metadata->HasKey(_T("Static")); }
+	bool IsClass() const { return !isValueType() && !isVoid; }
+
+	void Link();
+
+private:
+	void MakeProperties();
+	void LinkOverload();
+	void ResolveCopyDoc();
+};
+
+class PredefinedTypes
+{
+public:
+	static ln::Ref<TypeSymbol>	voidType;
+	static ln::Ref<TypeSymbol>	nullptrType;
+	static ln::Ref<TypeSymbol>	boolType;
+	static ln::Ref<TypeSymbol>	intType;
+	static ln::Ref<TypeSymbol>	uint32Type;
+	static ln::Ref<TypeSymbol>	floatType;
+	static ln::Ref<TypeSymbol>	stringType;
+	static ln::Ref<TypeSymbol>	objectType;
+	static ln::Ref<TypeSymbol>	EventConnectionType;
+};
+
+class SymbolDatabase
+{
+public:
+	ln::List<ln::Ref<TypeSymbol>>	predefineds;
+	ln::List<ln::Ref<TypeSymbol>>	structs;
+	ln::List<ln::Ref<TypeSymbol>>	classes;
+	ln::List<ln::Ref<TypeSymbol>>	enums;
+	ln::List<ln::Ref<TypeSymbol>>	delegates;
+
+	void Link();
+
+	tr::Enumerator<ln::Ref<MethodSymbol>> GetAllMethods();
+
+	void FindEnumTypeAndValue(const ln::String& typeName, const ln::String& memberName, ln::Ref<TypeSymbol>* outEnum, ln::Ref<ConstantSymbol>* outMember);
+	ln::Ref<ConstantSymbol> CreateConstantFromLiteralString(const ln::String& valueStr);
+
+public:
+	void InitializePredefineds();
+	ln::Ref<TypeSymbol> findTypeInfo(ln::StringRef typeName);
+};
+
+#endif

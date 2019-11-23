@@ -52,7 +52,7 @@ PlatformEventArgs PlatformEventArgs::makeMouseMoveEvent(PlatformWindow* sender, 
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar)
+PlatformEventArgs PlatformEventArgs::makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, Char keyChar)
 {
 	PlatformEventArgs e;
 	e.type = type;

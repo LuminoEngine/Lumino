@@ -424,6 +424,30 @@ String String::replace(const StringRef& from, const StringRef& to, CaseSensitivi
     return result;
 }
 
+String String::insert(int startIndex, const StringRef& value) const
+{
+    if (value.isEmpty()) return *this;
+    if (startIndex < 0) startIndex = 0;
+    if (startIndex > length()) startIndex = length();
+
+    String result;
+    result.reserve(length() + value.length());
+
+    const Char* src = c_str();
+    int len = length();
+    if (0 < startIndex) {
+        result.append(src, startIndex);
+    }
+
+    result.append(value);
+
+    if (startIndex < len) {
+        result.append(src + startIndex, len - startIndex);
+    }
+
+    return result;
+}
+
 List<String> String::split(const StringRef& delim, StringSplitOptions option) const
 {
     List<String> result;
@@ -950,12 +974,14 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
         }
         unlockBuffer(len, &context);
     } else {
+        TextEncoding* actualEncoding = (encoding) ? encoding : TextEncoding::systemMultiByteEncoding();
+
         detail::StringLockContext context;
-        size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::systemMultiByteEncoding(), TextEncoding::tcharEncoding(), len) / sizeof(Char);
+        size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len) / sizeof(Char);
         Char* buf = lockBuffer(bufSize, &context);
 
         TextDecodeResult result;
-        TextEncoding::systemMultiByteEncoding()->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
+        actualEncoding->convertToUTF16Stateless((const byte_t*)str, len, (UTF16*)buf, bufSize, &result);
 
         unlockBuffer(result.outputByteCount / sizeof(Char), &context);
     }
@@ -985,12 +1011,14 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
         }
         unlockBuffer(len, &context);
     } else {
+        TextEncoding* actualEncoding = (encoding) ? encoding : TextEncoding::wideCharEncoding();
+
         detail::StringLockContext context;
-        size_t bufSize = TextEncoding::getConversionRequiredByteCount(TextEncoding::wideCharEncoding(), TextEncoding::tcharEncoding(), len * sizeof(wchar_t)) / sizeof(Char);
+        size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len * sizeof(wchar_t)) / sizeof(Char);
         Char* buf = lockBuffer(bufSize, &context);
 
         TextDecodeResult result;
-        TextEncoding::wideCharEncoding()->convertToUTF16Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
+        actualEncoding->convertToUTF16Stateless((const byte_t*)str, len * sizeof(wchar_t), (UTF16*)buf, bufSize, &result);
 
         unlockBuffer(result.outputByteCount / sizeof(Char), &context);
     }
@@ -1124,9 +1152,10 @@ int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t*
 {
     if (!dst || dstSize <= 0) return 0;
     if (src && srcLen >= 0) {
-        memcpy_s(dst, dstSize * sizeof(wchar_t), src, srcLen * sizeof(wchar_t));
-        dst[dstSize - 1] = '\0';
-        return dstSize - 1;
+        int len = LN_MIN(srcLen, dstSize - 1);
+        memcpy_s(dst, dstSize * sizeof(wchar_t), src, len * sizeof(wchar_t));
+        dst[len] = '\0';
+        return len;
     } else {
         dst[0] = '\0';
         return 0;

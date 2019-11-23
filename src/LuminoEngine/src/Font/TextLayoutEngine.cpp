@@ -103,13 +103,15 @@ bool TextLayoutEngine::layoutLineHorizontal(float baselineY, LayoutMode mode)
         if (prev)
         {
             Vector2 delta = m_font->getKerning(prev, ch);
-            pos.x -= delta.x;
+            pos.x += delta.x;
         }
 
         FontGlyphMetrics metrics;
         m_font->getGlyphMetrics(ch, &metrics);
 
         pos.y = /*m_renderAreaOffset.y + */(baselineY - metrics.bearingY);
+
+        pos.x += metrics.bearingX;
 
 		//if (mode == LayoutMode::Measure) {
 			m_renderAreaSize.width = std::max(m_renderAreaSize.width, (pos.x + m_strokeSize * 2) + metrics.size.width);
@@ -220,6 +222,7 @@ void BitmapTextRenderer::onPlacementGlyph(UTF32 ch, const Vector2& pos, const Si
     BitmapGlyphInfo info;
     info.glyphBitmap = nullptr; // 内部ビットマップをもらう
     m_font->lookupGlyphBitmap(ch, &info);
+
 
     m_bitmap->blit(
         RectI(m_rect.x + pos.x, m_rect.y + pos.y, info.size),

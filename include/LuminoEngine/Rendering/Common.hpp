@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
+#include <LuminoEngine/Graphics/Common.hpp>
 
 namespace ln {
 
@@ -64,6 +65,7 @@ enum class RenderViewClearMode
 {
 	None,
 	ColorAndDepth,
+	Sky,
 };
 
 // 
@@ -112,8 +114,37 @@ enum class ShadowDirection
     Outside,
 };
 
+
+struct FrameBuffer
+{
+	Ref<RenderTargetTexture> renderTarget[detail::MaxMultiRenderTargets];
+	Ref<DepthBuffer> depthBuffer;
+};
+
+
+enum class RequestBatchResult
+{
+	Staging,	// request はステージされ、まだ Batch 化されていない
+	Submitted,	// 直前までの request は submit され、List に新しい Batch が追加された。最新の request はステージされ、まだ Batch 化されていない。
+				// なお、State が変わったため新しい Batch を作りたいとき、Batch の中身が 0 であるときは作ってはならない。
+};
+
+struct ClearInfo
+{
+    ClearFlags flags;
+    Color color;
+    float depth;
+    uint8_t stencil;
+};
+
 namespace detail {
 
+
+enum class RenderDrawElementType
+{
+	Geometry,	// Material を用いてポリゴンを描画する
+	Clear,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+};
 
 
 enum class SpriteFlipFlags : uint8_t
