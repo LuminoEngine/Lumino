@@ -18,13 +18,6 @@ jobs:
       run: |
         ruby --version
         gcm ruby | fl
-        ls C:/hostedtoolcache/windows/Ruby
-        ls C:/hostedtoolcache/windows/Ruby/2.6.3
-        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64
-        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64
-        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/mingw32
-        ls C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/usr
-        gcm make | fl
         $Env:Path = "C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/mingw32/bin;" + $Env:Path
         $Env:Path = "C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/usr/bin;" + $Env:Path
         echo $Env:Path
