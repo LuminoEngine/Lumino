@@ -17,5 +17,7 @@ jobs:
     - name: Build and test with Rake
       run: |
         ruby --version
-        gcm ruby
+        gcm ruby | fl
+        ls C:/hostedtoolcache/windows/Ruby/2.6.3
+
 
