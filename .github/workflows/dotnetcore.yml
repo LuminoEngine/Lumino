@@ -17,8 +17,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
-    - name: Build with dotnet
-      run: dotnet run -- BuildExternalProjects Windows
+    #- name: Build with dotnet
+    #  run: dotnet run -- BuildExternalProjects Windows
 
     #- uses: actions/upload-artifact@v1
     #  with:
