@@ -105,16 +105,16 @@ void EditorApplication::setMainWindow(ln::UIMainWindow* window)
 
 lna::Project* EditorApplication::mainProject() const
 {
-    return m_workspace->project();
+    return m_workspace->mainProject();
 }
 
 // deprecated
 void EditorApplication::importFile(const ln::Path& filePath)
 {
     assert(0);
-    if (m_workspace->project())
+    if (m_workspace->mainProject())
     {
-        auto exts = m_workspace->project()->pluginManager()->getAssetImporterExtensions(filePath);
+        auto exts = m_workspace->mainPluginManager()->getAssetImporterExtensions(filePath);
         if (exts.size() != 1) {
             LN_NOTIMPLEMENTED();
             return;
@@ -126,10 +126,10 @@ void EditorApplication::importFile(const ln::Path& filePath)
 
 void EditorApplication::openAssetFile(const ln::Path& filePath)
 {
-    if (m_workspace->project())
+    if (m_workspace->mainProject())
     {
-        auto asset = m_workspace->project()->assetDatabase()->openAsset(filePath);
-        auto proxies = m_workspace->project()->pluginManager()->geAssetEditorPloxy(asset->assetType());
+        auto asset = m_workspace->mainAssetDatabase()->openAsset(filePath);
+        auto proxies = m_workspace->mainPluginManager()->geAssetEditorPloxy(asset->assetType());
         if (proxies.size() != 1) {
             LN_NOTIMPLEMENTED();
             return;
@@ -203,7 +203,7 @@ bool EditorApplication::closeProject()
 	}
 
 	mainWindow()->navigatorManager()->unloadAdditionalNavigators();
-	mainProject()->pluginManager()->deactivateAllExtensions(m_editorContext);
+    m_workspace->mainPluginManager()->deactivateAllExtensions(m_editorContext);
 	m_workspace->closeMainProject();
 	return true;
 }
@@ -213,7 +213,7 @@ void EditorApplication::postProjectLoaded()
 
 	mainWindow()->navigatorManager()->resetNavigators();
 
-	mainProject()->pluginManager()->activateAllExtensions(m_editorContext);
+    m_workspace->mainPluginManager()->activateAllExtensions(m_editorContext);
 }
 
 void EditorApplication::handleNewProject(ln::UICommandEventArgs* e)

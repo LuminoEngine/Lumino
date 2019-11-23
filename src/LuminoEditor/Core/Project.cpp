@@ -2,8 +2,6 @@
 #include "Workspace.hpp"
 #include "LanguageContext.hpp"
 #include "Project.hpp"
-#include "AssetDatabase.hpp"
-#include "PluginManager.hpp"
 
 namespace lna {
 
@@ -45,7 +43,7 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
         m_properties->engine = u"system";
     }
 
-	ln::FileSystem::createDirectory(m_engineDir);
+	//ln::FileSystem::createDirectory(m_engineDir);
 	ln::FileSystem::createDirectory(m_sourcesDir);
 	ln::FileSystem::createDirectory(m_assetsDir);
 	ln::FileSystem::createDirectory(projectsDir());
@@ -63,9 +61,9 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
     ln::Result result = saveProject();
 	CLI::info(u"\nSuccess! Created " + m_projectName + u" at " + m_rootDir + u"\n");
 
-    if (!postInitialize()) {
-        return false;
-    }
+    //if (!postInitialize()) {
+    //    return false;
+    //}
 
 	return result;
 	/* TODO: もうちょっと詳しく出力したい
@@ -118,9 +116,9 @@ ln::Result Project::openProject2(const ln::Path& projectFile)
 		LN_NOTIMPLEMENTED();
 	}
 
-    if (!postInitialize()) {
-        return false;
-    }
+    //if (!postInitialize()) {
+    //    return false;
+    //}
 
 	return true;
 }
@@ -172,23 +170,10 @@ void Project::setupPathes()
 	//}
 }
 
-ln::Result Project::postInitialize()
-{
-    m_assetDatabase = ln::makeRef<AssetDatabase>();
-    if (!m_assetDatabase->init(this)) {
-        return false;
-    }
-
-    m_pluginManager = ln::makeRef<PluginManager>();
-    if (!m_pluginManager->init(this)) {
-        return false;
-    }
-
-    m_pluginManager->reloadPlugins();
-
-    return true;
-}
-
+//ln::Result Project::postInitialize()
+//{
+//}
+//
 #if 0
 //#include "EnvironmentSettings.hpp"
 //#include "Workspace.hpp"

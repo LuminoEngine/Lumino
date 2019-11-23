@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 				BuildCommand cmd;
 				cmd.package = buildCommand_packageOption->isSet();
 				cmd.target = target;
-				return cmd.execute(workspace, workspace->project());
+				return cmd.execute(workspace, workspace->mainProject());
 			}
 			//--------------------------------------------------------------------------------
 			// run command
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 
 				BuildCommand cmd;
 				cmd.target = target;
-				if (cmd.execute(workspace, workspace->project()) != 0) {
+				if (cmd.execute(workspace, workspace->mainProject()) != 0) {
 					return 1;
 				}
 

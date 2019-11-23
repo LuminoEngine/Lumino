@@ -44,7 +44,7 @@ void TilemapSceneListPane::init()
     layout1->addChild(m_listview);
 
 
-    auto project = lna::Workspace::instance()->project();
+    auto project = lna::Workspace::instance()->mainProject();
     m_assetRootDir = ln::Path(project->assetsDir(), u"Scenes");
     ln::FileSystem::createDirectory(m_assetRootDir);
 

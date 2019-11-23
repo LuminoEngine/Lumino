@@ -89,7 +89,7 @@ void AssetBrowserListView::init(AssetBrowserNavigatorExtension* owner)
     UIListView::init();
     m_owner = owner;
 
-    auto project = lna::Workspace::instance()->project();
+    auto project = lna::Workspace::instance()->mainProject();
 
     m_model = ln::makeObject<AssetBrowserListViewModel>();
     setViewModel(m_model);
@@ -135,7 +135,7 @@ void AssetBrowserNavigatorExtension::init()
     m_layout2->addChild(m_listView);
 
 
-    auto project = lna::Workspace::instance()->project();
+    auto project = lna::Workspace::instance()->mainProject();
     m_treeView->setPath(project->assetsDir());
     m_listView->setPath(project->assetsDir());
 }
@@ -169,7 +169,7 @@ void AssetBrowserNavigatorExtension::onImport(ln::UIEventArgs* e)
     if (dlg->showDialog(EditorApplication::instance()->mainWindow()->platformWindow())) {
         auto src = dlg->getPath();
         auto dst = ln::Path(m_listView->path(), src.fileName());
-        EditorApplication::instance()->mainProject()->assetDatabase()->importAsset(src, dst);
+        EditorApplication::instance()->workspace()->mainAssetDatabase()->importAsset(src, dst);
         m_listView->model()->refresh();
     }
 }

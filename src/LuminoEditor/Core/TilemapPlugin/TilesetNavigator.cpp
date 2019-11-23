@@ -43,7 +43,7 @@ void TilesetListPane::init()
     layout1->addChild(m_listview);
 
 
-    auto project = lna::Workspace::instance()->project();
+    auto project = lna::Workspace::instance()->mainProject();
     m_assetRootDir = ln::Path(project->assetsDir(), u"Tilesets");
 
     m_model = ln::makeObject<TilesetListModel>();
@@ -64,7 +64,7 @@ void TilesetListPane::addButton_onClick(ln::UIEventArgs* e)
 
     // make unique path
 	auto path = ln::Path::getUniqueFilePathInDirectory(m_assetRootDir, u"Tileset-", ln::AssetModel::AssetFileExtension.c_str());
-	EditorContext::current()->mainProject()->assetDatabase()->createAsset(tileset, path);
+	EditorContext::current()->assetDatabase()->createAsset(tileset, path);
 
     m_model->refresh();
 }

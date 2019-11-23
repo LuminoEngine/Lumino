@@ -78,7 +78,7 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 	tilemapModel->addLayer(layer);
 	tilemap->setTilemapModel(tilemapModel);
 
-	return context->mainProject()->assetDatabase()->createAsset(scene, filePath);
+	return context->assetDatabase()->createAsset(scene, filePath);
 }
 
 } // namespace lna

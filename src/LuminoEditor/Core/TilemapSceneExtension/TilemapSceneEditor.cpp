@@ -246,12 +246,12 @@ void TilemapSceneEditorExtensionModule::onActivate(lna::EditorContext* context)
     context->mainWindow()->navigatorManager()->addNavigator(m_navigator);
 
     m_editorPloxy = ln::makeObject<TilemapSceneEditorPloxy>();
-    context->application()->mainProject()->pluginManager()->addAssetEditorPloxy(m_editorPloxy);
+    context->pluginManager()->addAssetEditorPloxy(m_editorPloxy);
 }
 
 void TilemapSceneEditorExtensionModule::onDeactivate(lna::EditorContext* context)
 {
-    context->application()->mainProject()->pluginManager()->removeAssetEditorPloxy(m_editorPloxy);
+    context->pluginManager()->removeAssetEditorPloxy(m_editorPloxy);
 }
 
 } // namespace lna
