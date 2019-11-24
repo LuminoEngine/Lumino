@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -16,29 +16,29 @@ jobs:
       run: choco install docfx --version=2.45.1
 
     - name: Build
-      run: |
-        cd docs/WebDocument
-        docfx build
-    #  uses: nikeee/docfx-action@master
-    #  with:
-    #    args: docs/WebDocument/docfx.json
+      uses: nikeee/docfx-action@master
+      with:
+        args: docs/WebDocument/docfx.json
+    #  run: |
+    #    cd docs/WebDocument
+    #    docfx build
 
     - name: Deploy
       env:
         CI_PUSH_TOKEN: ${{ secrets.CI_PUSH_TOKEN }}
       run: |
-        $repo_url = "https://" + $env:GITHUB_ACTOR + ":" + $env:CI_PUSH_TOKEN + "@github.com/lriki/lriki.github.io"
         cd docs/WebDocument
-        git clone $repo_url _docs_repo
-        Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
+        git clone https://${GITHUB_ACTOR}:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
+        cp -rf _site -destination _docs_repo/latest-lumino-webdocs
         cd _docs_repo
-        git config user.name "$env:GITHUB_ACTOR"
-        git config user.email "$env:GITHUB_ACTOR@users.noreply.github.com"
+        ls 
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git config core.autoCRLF false
         git add .
         git commit -m '[CI] Deploy to GitHub Pages'
         git status
-        git config --list
+        #git config --list
         echo "git push"
         git push origin master
         echo $lastexitcode
