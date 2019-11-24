@@ -20,5 +20,5 @@ jobs:
     - name: Deploy
       uses: maxheld83/ghpages@master
       env:
-        BUILD_DIR: _site
+        BUILD_DIR: docs/WebDocument/_site
         GH_PAT: ${{ secrets.CI_PUSH_TOKEN }}
