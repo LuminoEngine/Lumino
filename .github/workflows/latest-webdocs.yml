@@ -1,0 +1,30 @@
+name: .NET Core
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Build WebDocuments
+      run: |
+        choco install docfx --version=2.45.1
+        cd docs/WebDocument
+        docfx build
+        git clone https://lriki:${{secrets.CI_PUSH_TOKEN}}@github.com/lriki/lriki.github.io _docs_repo
+        Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
+        cd _docs_repo
+        git commit -m"[CI] latest build."
+        git push
+
