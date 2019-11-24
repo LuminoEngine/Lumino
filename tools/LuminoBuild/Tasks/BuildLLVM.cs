@@ -35,8 +35,6 @@ namespace LuminoBuild.Tasks
             var repoRoot = Path.Combine(reposDir, "llvm-project", "llvm");
             var packageDir = Path.Combine(reposDir, "LLVMPackage");
             BuildProject(repoRoot, Path.Combine(reposDir, "llvm-project", "_Build"), Path.Combine(packageDir));
-            //BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Debug"), Path.Combine(packageDir, "Debug"), "Debug");
-            //BuildProject(repoRoot, Path.Combine(repoRoot, "_Build-Release"), Path.Combine(packageDir, "Release"), "Release");
         }
 
         public void BuildProject(string cmakeHomeDir, string buildDir, string installDir)
@@ -47,9 +45,10 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"{cmakeHomeDir}",
-                $"-G\"Visual Studio 15 2017\"",
+                $"-G\"Visual Studio 15 Win64\"",
                 //$"-A x64",
-                $"-A Win32",
+                //$"-A Win32",
+                //$"-A Win64",
                 $"-Thost=x64",  // required http://clang.llvm.org/get_started.html
                 $"-DLLVM_ENABLE_PROJECTS=clang",
                 $"-DCMAKE_INSTALL_PREFIX=\"{installDir}\"",

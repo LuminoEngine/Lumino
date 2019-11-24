@@ -5,7 +5,7 @@ include("${_LN_REPO_ROOT}/external/ImportExternalLibraries.cmake")
 include("${_LN_REPO_ROOT}/src/LuminoCommon.cmake")	# for ln_add_pch
 
 set(_LN_INCLUDE_DIR "${_LN_REPO_ROOT}/include")
-set(_LN_CMAKE_BUILD_DIR "${_LN_REPO_ROOT}/build/MSVC2017-x86-MD")
+set(_LN_CMAKE_BUILD_DIR "${_LN_REPO_ROOT}/build/${LN_TARGET_ARCH}")
 
 foreach(LIB IN LISTS LN_EXTERNAL_LIBS)
     list(APPEND _LN_LINK_ONLY_LIBS "\$<LINK_ONLY:${LIB}>")

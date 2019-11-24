@@ -176,7 +176,7 @@ namespace LuminoBuild
                     }
 
                     sw.Stop();
-                    Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.ToString());
+                    Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
                 }
             }
         }
