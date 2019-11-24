@@ -24,13 +24,15 @@ jobs:
     #    args: docs/WebDocument/docfx.json
 
     - name: Deploy
+      env:
+        CI_PUSH_TOKEN: ${{ secrets.CI_PUSH_TOKEN }}
       run: |
         cd docs/WebDocument
-        git config user.name "lriki"
-        git config user.email "lriki.net@gmail.com"
         ls
-        git clone https://${{ secrets.CI_PUSH_TOKEN }}@github.com/lriki/lriki.github.io _docs_repo
+        git clone https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/lriki/lriki.github.io
         ls
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
         git commit -m 'Deploy to GitHub Pages'
         git push
