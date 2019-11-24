@@ -1,4 +1,4 @@
-name: github pages
+name: Build WebDocument
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -25,6 +25,7 @@ jobs:
         Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
         cd _docs_repo
         ls
+        ls latest-lumino-webdocs
         git commit -m 'Deploy to GitHub Pages'
         git push
       #uses: maxheld83/ghpages@master
