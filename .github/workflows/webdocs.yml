@@ -34,13 +34,10 @@ jobs:
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git config core.autoCRLF false
-        echo "git add"
         git add .
-        git status
-        echo "git commit"
         git commit -m '[CI] Deploy to GitHub Pages'
         echo "git push"
-        git push origin master
+        git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/lriki/lriki.github.io master
       #uses: maxheld83/ghpages@master
       #env:
       #  BUILD_DIR: docs/WebDocument/_site
