@@ -36,8 +36,9 @@ jobs:
         git config core.autoCRLF false
         git add .
         git commit -m '[CI] Deploy to GitHub Pages'
+        git show
         echo "git push"
-        git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/lriki/lriki.github.io master
+        git push https://${GITHUB_TOKEN}@github.com/lriki/lriki.github.io master
       #uses: maxheld83/ghpages@master
       #env:
       #  BUILD_DIR: docs/WebDocument/_site
