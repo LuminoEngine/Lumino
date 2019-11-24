@@ -33,9 +33,12 @@ jobs:
         cd _docs_repo
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        echo "git add"
         git add .
+        echo "git commit"
         git commit -m '[CI] Deploy to GitHub Pages'
-        git push
+        echo "git push"
+        git push origin master
       #uses: maxheld83/ghpages@master
       #env:
       #  BUILD_DIR: docs/WebDocument/_site
