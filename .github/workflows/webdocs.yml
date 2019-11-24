@@ -33,6 +33,7 @@ jobs:
         cd _docs_repo
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        git add .
         git commit -m '[CI] Deploy to GitHub Pages'
         git push
       #uses: maxheld83/ghpages@master
