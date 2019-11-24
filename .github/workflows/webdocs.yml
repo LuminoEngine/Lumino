@@ -30,7 +30,7 @@ jobs:
       run: |
         echo "GIT_ACTOR: ${GIT_ACTOR}"
         cd docs/WebDocument
-        git clone https://${GIT_ACTOR}:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
+        git clone https://lriki:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
         Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
         cd _docs_repo
         git config user.name "${GIT_ACTOR}"
@@ -40,7 +40,7 @@ jobs:
         git commit -m '[CI] Deploy to GitHub Pages'
         git show --no-patch
         echo "git push"
-        git push https://${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io master
+        git push https://lriki:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io master
       #uses: maxheld83/ghpages@master
       #env:
       #  BUILD_DIR: docs/WebDocument/_site
