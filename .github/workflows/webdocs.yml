@@ -29,19 +29,19 @@ jobs:
         CI_PUSH_TOKEN: ${{ secrets.CI_PUSH_TOKEN }}
       run: |
         echo "GIT_ACTOR: ${GIT_ACTOR}"
-        echo "GIT_CI_PUSH_TOKENACTOR: ${CI_PUSH_TOKEN}"
+        echo "CI_PUSH_TOKEN: ${CI_PUSH_TOKEN}"
         cd docs/WebDocument
         git clone https://lriki:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
         Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
         cd _docs_repo
-        git config user.name "${GIT_ACTOR}"
-        git config user.email "${GIT_ACTOR}@users.noreply.github.com"
+        git config user.name "lriki"
+        git config user.email "lriki@users.noreply.github.com"
         git config core.autoCRLF false
         git add .
         git commit -m '[CI] Deploy to GitHub Pages'
         git show --no-patch
         echo "git push"
-        git push https://${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io master
+        git push https://lriki:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io master
       #uses: maxheld83/ghpages@master
       #env:
       #  BUILD_DIR: docs/WebDocument/_site
