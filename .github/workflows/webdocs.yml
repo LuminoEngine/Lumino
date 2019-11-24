@@ -1,7 +1,7 @@
-name: Build WebDocument
+name: WebDocument (Latest build)
 
 on:
-  pull_request:
+  push:
     branches:
     - master
 
@@ -12,16 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    #- name: Setup docfx
-    #  run: choco install docfx --version=2.45.1
-
     - name: Build
       uses: nikeee/docfx-action@master
       with:
         args: docs/WebDocument/docfx.json
-    #  run: |
-    #    cd docs/WebDocument
-    #    docfx build
 
     - name: Deploy
       env:
@@ -37,9 +31,5 @@ jobs:
         git config core.autoCRLF false
         git add .
         git commit -m '[CI] Deploy to GitHub Pages'
-        git status
-        #git config --list
-        echo "git push"
         git push origin master
-        echo $lastexitcode
 
