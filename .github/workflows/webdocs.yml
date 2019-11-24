@@ -28,13 +28,12 @@ jobs:
         CI_PUSH_TOKEN: ${{ secrets.CI_PUSH_TOKEN }}
       run: |
         cd docs/WebDocument
-        ls
-        git clone https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/lriki/lriki.github.io
-        ls
+        git clone https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
+        Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
+        cd _docs_repo
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-        Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
-        git commit -m 'Deploy to GitHub Pages'
+        git commit -m '[CI] Deploy to GitHub Pages'
         git push
       #uses: maxheld83/ghpages@master
       #env:
