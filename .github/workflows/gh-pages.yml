@@ -18,7 +18,16 @@ jobs:
         args: docs/WebDocument/docfx.json
 
     - name: Deploy
-      uses: maxheld83/ghpages@master
-      env:
-        BUILD_DIR: docs/WebDocument/_site
-        GH_PAT: ${{ secrets.CI_PUSH_TOKEN }}
+      run: |
+        cd docs/WebDocument
+        ls
+        git clone https://${{ secrets.CI_PUSH_TOKEN }}@github.com/lriki/lriki.github.io _docs_repo
+        Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
+        cd _docs_repo
+        ls
+        git commit -m 'Deploy to GitHub Pages'
+        git push
+      #uses: maxheld83/ghpages@master
+      #env:
+      #  BUILD_DIR: docs/WebDocument/_site
+      #  GH_PAT: ${{ secrets.CI_PUSH_TOKEN }}
