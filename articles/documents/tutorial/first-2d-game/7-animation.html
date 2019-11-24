@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#12450;&#12491;&#12513;&#12540;&#12471;&#12519;&#12531; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#12450;&#12491;&#12513;&#12540;&#12471;&#12519;&#12531; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../../favicon.ico">
+    <link rel="stylesheet" href="../../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../../toc.html">
+    <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="アニメーション">アニメーション</h1>
+
+<p>プレイヤーは移動できるようになりましたが、まだアニメーションが実装されていないため、地面を滑るようにしか移動できません。</p>
+<p>ここでは、以前に作成したスプライトフレームを切り替えて表示する画像を変化させる、パターンアニメーションを実装します。</p>
+<h2 id="実装する動作">実装する動作</h2>
+<p>以前、スプライトフレームは次のように分割しました。</p>
+<p><img src="img/player-3.png" alt=""></p>
+<p>これらは次のような動作に対応します。</p>
+<table>
+<thead>
+<tr>
+<th>フレーム</th>
+<th>動作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>待機</td>
+</tr>
+<tr>
+<td>2, 3</td>
+<td>歩行</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ジャンプ</td>
+</tr>
+<tr>
+<td>5</td>
+<td>下降</td>
+</tr>
+</tbody>
+</table>
+<h2 id="歩行と待機">歩行と待機</h2>
+<p>まずはどのアニメーションを表示すればよいか、現在の状態を判断する必要があります。
+今回は、歩行中と待機中のどちらであるかは X 方向の速度によって決めることにします。</p>
+<pre><code class="lang-cpp">if (onGround) {
+    if (velocity.x &lt; 0.0) {
+        // 左へ移動中
+        playerSprite-&gt;setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
+        playerSprite-&gt;setFlippedX(false);
+    }
+    else if (velocity.x &gt; 0.0) {
+        // 右へ移動中
+        playerSprite-&gt;setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
+        playerSprite-&gt;setFlippedX(true);
+    }
+    else {
+        // 待機中
+        playerSprite-&gt;setFrameIndex(0);
+    }
+}
+</code></pre><p><img src="img/animation-1.gif" alt=""></p>
+<h3 id="経過時間と-frameindex-の計算">経過時間と FrameIndex の計算</h3>
+<p><code>Engine::totalTime()</code> は、ゲーム起動からの経過時間を秒単位の小数値で返します。これを利用して、0.2 秒間隔で FrameIndex を 2, 3 交互に切り替えて歩行アニメーションを表現します。</p>
+<p>※ std::fmod は小数の剰余算を行う、C++ 標準ライブラリの関数です。</p>
+<h3 id="左右反転">左右反転</h3>
+<p>スプライトは <code>setFlippedX()</code> によって、表示するテクスチャを左右反転することができます。</p>
+<p>今回は見た目上の反転だけで充分であるため、このメソッドを使用しています。</p>
+<blockquote><p>左右反転は他に、setScale() というメソッドを使用して X 方向の拡大率を -1.0 にする、という方法があります。
+今回のチュートリアルでは触れませんが、これは例えばキャラクターと武器のスプライトが分かれていて、これらが親子関係でリンクされている場合に有効です。</p>
+</blockquote>
+<h2 id="ジャンプと下降">ジャンプと下降</h2>
+<p>ジャンプと下降の状態判断は、Y 方向の速度によって決めます。
+また、これらは空中にいる場合のみ適用するべきですので、先ほどの「歩行と待機」で追加した &quot;if (onGround)&quot; の else 側にコードを追加します。</p>
+<pre><code class="lang-cpp">if (onGround) {
+    // ... 歩行と待機のアニメーション処理
+}
+else {
+    if (velocity.y &gt; 0.0) {
+        // 上昇中
+        playerSprite-&gt;setFrameIndex(4);
+    }
+    else {
+        // 下降中
+        playerSprite-&gt;setFrameIndex(5);
+    }
+}
+</code></pre><p><img src="img/animation-2.gif" alt=""></p>
+<p>今回は空中では時間経過によるアニメーションは用意されていないため、FrameIndex を切り替えるだけです。</p>
+<h2 id="コード全体">コード全体</h2>
+<pre><code class="lang-cpp">#include &lt;Lumino.hpp&gt;
+
+static const uint32_t GroundGroup = 0x01;   // 地面の衝突グループ
+static const uint32_t PlayerGroup = 0x02;   // プレイヤーの衝突グループ
+
+void Main()
+{
+    // ワールドの 16x12 の範囲を表示する
+    Camera* camera = Engine::mainCamera();
+    camera-&gt;setProjectionMode(ProjectionMode::Orthographic);
+    camera-&gt;setOrthographicSize(16, 12);
+
+    // 空
+    Ref&lt;Texture&gt; skyTexture = Assets::loadTexture(u&quot;sky&quot;);
+    Ref&lt;Sprite&gt; skySprite = Sprite::create(skyTexture, 16, 12);
+
+    // 地面
+    Ref&lt;Texture&gt; mapTexture = Assets::loadTexture(u&quot;map&quot;);
+    Ref&lt;Sprite&gt; groundSprite = Sprite::create(mapTexture, 16, 1);
+    groundSprite-&gt;setSourceRect(0, 0, 80, 8);
+    groundSprite-&gt;setPosition(0, -5.5, 0);
+
+    // 地面の剛体
+    Ref&lt;RigidBody2DComponent&gt; groundBody = RigidBody2DComponent::create();
+    groundBody-&gt;addCollisionShape(BoxCollisionShape2D::create(16, 1));
+    groundBody-&gt;setCollisionGroup(GroundGroup);
+    groundSprite-&gt;addComponent(groundBody);
+
+    // 左の床
+    Ref&lt;Sprite&gt; floorSprite1 = Sprite::create(mapTexture, 4, 1);
+    floorSprite1-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite1-&gt;setPosition(-4.5, -2, 0);
+
+    // 左の床の剛体
+    Ref&lt;RigidBody2DComponent&gt; floorBody1 = RigidBody2DComponent::create();
+    floorBody1-&gt;addCollisionShape(BoxCollisionShape2D::create(4, 1));
+    floorBody1-&gt;setCollisionGroup(GroundGroup);
+    floorSprite1-&gt;addComponent(floorBody1);
+
+    // 右の床
+    Ref&lt;Sprite&gt; floorSprite2 = Sprite::create(mapTexture, 4, 1);
+    floorSprite2-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite2-&gt;setPosition(4.5, 0, 0);
+
+    // 右の床の剛体
+    Ref&lt;RigidBody2DComponent&gt; floorBody2 = RigidBody2DComponent::create();
+    floorBody2-&gt;addCollisionShape(BoxCollisionShape2D::create(4, 1));
+    floorBody2-&gt;setCollisionGroup(GroundGroup);
+    floorSprite2-&gt;addComponent(floorBody2);
+
+    // プレイヤー
+    Ref&lt;Texture&gt; playerTexture = Assets::loadTexture(u&quot;player&quot;);
+    Ref&lt;SpriteFrameSet&gt; frameSet = SpriteFrameSet::create(playerTexture, 16, 16);
+    Ref&lt;Sprite&gt; playerSprite = Sprite::create(frameSet);
+    playerSprite-&gt;setFrameIndex(0);
+
+    // プレイヤーの剛体
+    Ref&lt;RigidBody2DComponent&gt; playerBody = RigidBody2DComponent::create();
+    playerBody-&gt;addCollisionShape(BoxCollisionShape2D::create(1, 1));
+    playerBody-&gt;setMass(2);
+    playerBody-&gt;setFixedRotation(true);
+    playerBody-&gt;setCollisionGroup(PlayerGroup);
+    playerSprite-&gt;addComponent(playerBody);
+
+    // 画面外への移動を制限するための剛体
+    Ref&lt;EdgeCollisionShape2D&gt; wallShape = EdgeCollisionShape2D::create();
+    wallShape-&gt;addPoint(-8, -6);
+    wallShape-&gt;addPoint(8, -6);
+    wallShape-&gt;addPoint(8, 6);
+    wallShape-&gt;addPoint(-8, 6);
+    Ref&lt;RigidBody2DComponent&gt; wallBody = RigidBody2DComponent::create();
+    wallBody-&gt;addCollisionShape(wallShape);
+    skySprite-&gt;addComponent(wallBody);
+
+    // メインループ
+    while (Engine::update())
+    {
+        Vector2 velocity = playerBody-&gt;velocity();
+
+        // プレイヤーの移動処理
+        if (Input::isPressed(u&quot;right&quot;)) {
+            velocity.x = 5.0f;
+        }
+        else if (Input::isPressed(u&quot;left&quot;)) {
+            velocity.x = -5.0f;
+        }
+        else {
+            velocity.x = 0.0f;
+        }
+
+        // プレイヤーのジャンプ処理
+        bool onGround = Physics2D::raycast(playerSprite-&gt;position(), -Vector2::UnitY, 0.6, GroundGroup);
+        if (onGround) {
+            if (Input::isPressed(u&quot;submit&quot;)) {
+                velocity.y = 10.0;
+            }
+        }
+
+        // プレイヤーのアニメーション処理
+        if (onGround) {
+            if (velocity.x &lt; 0.0) {
+                // 左へ移動中
+                playerSprite-&gt;setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
+                playerSprite-&gt;setFlippedX(false);
+            }
+            else if (velocity.x &gt; 0.0) {
+                // 右へ移動中
+                playerSprite-&gt;setFrameIndex(2 + std::fmod(Engine::totalTime(), 0.4) / 0.2);
+                playerSprite-&gt;setFlippedX(true);
+            }
+            else {
+                // 待機中
+                playerSprite-&gt;setFrameIndex(0);
+            }
+        }
+        else {
+            if (velocity.y &gt; 0.0) {
+                // 上昇中
+                playerSprite-&gt;setFrameIndex(4);
+            }
+            else {
+                // 下降中
+                playerSprite-&gt;setFrameIndex(5);
+            }
+        }
+
+        playerBody-&gt;setVelocity(velocity);
+    }
+}
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

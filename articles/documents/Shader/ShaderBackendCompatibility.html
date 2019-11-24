@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>API&#22266;&#26377;&#12398;&#12524;&#12531;&#12480;&#12522;&#12531;&#12464;&#12398;&#36949;&#12356;&#12395;&#12388;&#12356;&#12390; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="API&#22266;&#26377;&#12398;&#12524;&#12531;&#12480;&#12522;&#12531;&#12464;&#12398;&#36949;&#12356;&#12395;&#12388;&#12356;&#12390; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../favicon.ico">
+    <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="api固有のレンダリングの違いについて">API固有のレンダリングの違いについて</h1>
+
+<p>Lumino は様々なレンダリングAPI間の違いをカバーし、GPUへの統一されたインターフェースを提供するように実装されています。
+しかし場合によっては API 間の根本的な違いにより、簡単または効率的に調整することができないケースがあります。</p>
+<p>このページでは、特にクロスプラットフォームなアプリケーションを作成するために必要な、プラットフォーム固有の作業手順や留意事項について説明します。</p>
+<h2 id="openglフレームバッファテクスチャ座標">OpenGLフレームバッファテクスチャ座標</h2>
+<p>Lumino のハイレベルコンポーネントはテクスチャ座標の原点がテクスチャの左上隅であることを前提として実装されています。</p>
+<p>OpenGL では、テクスチャ座標の原点はテクスチャの左下隅となっています。
+通常のテクスチャをサンプリングする場合、GPU へ転送するテクスチャデータを上下反転することで、描画結果の違いを打ち消すことができます。
+一方フレームバッファをサンプリングすると、左上隅を原点とした実装と競合し、上下反転した描画結果となってしまいます。</p>
+<p>Lumino は以下の2つの方法でこの差を調整します。</p>
+<ul>
+<li>通常テクスチャについては、GPU へ転送するテクスチャデータを上下反転することで、最終的な描画結果に差が出ないようにします。</li>
+<li>レンダーターゲットテクスチャについては、シェーダコンパイラがテクスチャサンプリング時にテクスチャ座標の Y値 を反転するコードを挿入します。</li>
+</ul>
+<h2 id="シェーダコードにおける行列の演算方法">シェーダコードにおける行列の演算方法</h2>
+<p>Bad:</p>
+<pre><code>pos = proj * view * model * float4(inPosition, 1.0);
+</code></pre><p>Good:</p>
+<pre><code>pos = mul(float4(inPosition, 1.0), model);
+pos = mul(pos, view);
+pos = mul(pos, proj);
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

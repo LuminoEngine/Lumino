@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#12452;&#12531;&#12488;&#12525;&#12480;&#12463;&#12471;&#12519;&#12531; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#12452;&#12531;&#12488;&#12525;&#12480;&#12463;&#12471;&#12519;&#12531; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../../favicon.ico">
+    <link rel="stylesheet" href="../../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../../toc.html">
+    <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="イントロダクション">イントロダクション</h1>
+
+<p>このセクションは Lumino を使ったゲーム作成に関する最初のチュートリアルです。</p>
+<p>ここでは、ワールドの中でプレイヤーを移動させ、アイテムを集めたり、障害物を避けたりする小さなゲームの作成方法を学びます。</p>
+<p>はじめて Lumino を使う方に向けて、チュートリアルを進めながら Lumino の重要な機能についての説明を行います。</p>
+<h2 id="必要なスキルセット">必要なスキルセット</h2>
+<h3 id="c">C++</h3>
+<p>基礎的な C++ の知識を持っている必要があります。</p>
+<p>特に、クラス、継承、ポリモーフィズム、テンプレートの概念について、熟知とまではいかずとも、使ったことがあるとチュートリアルをスムーズに進めやすくなります。</p>
+<h3 id="グラフィックス">グラフィックス</h3>
+<p>TODO:</p>
+<h2 id="プロジェクトを作成する">プロジェクトを作成する</h2>
+<p>TODO:</p>
+<pre><code>lumino-cli init LuminoFirstGame -t SimpleDesktop
+</code></pre><h2 id="ウィンドウを表示するだけの最小限のプログラム">ウィンドウを表示するだけの最小限のプログラム</h2>
+<p>アプリケーションを実行してウィンドウを表示させてみましょう。</p>
+<p>プロジェクトを作成したら、プロジェクトフォルダの中にある .sln ファイルを Visual Studio で開いてください。</p>
+<p>Main.cpp を開くと、次のようなプログラムが表示されます。</p>
+<pre><code class="lang-cpp">#include &lt;Lumino.hpp&gt;
+
+void Main()
+{
+    while (Engine::update())
+    {
+
+    }
+}
+</code></pre><p>実行すると、次のように何も描かれていないウィンドウが表示されます。</p>
+<p><img src="img/introduction-1.png" alt=""></p>
+<h3 id="プログラムの説明">プログラムの説明</h3>
+<p><code>while (Engine::update())</code> のループを <code>メインループ</code> と呼びます。
+このループはウィンドウが閉じられるまでの間、1秒間に60回の周期で実行され続けます。</p>
+<p>Engine::update() はウィンドウが閉じられていなければ true を返し、ウィンドウ右上の×ボタンを押すなどで閉じられた場合は false を返します。</p>
+<p>このループ1回のことを「フレーム」と呼び、この中に</p>
+<ul>
+<li>プレイヤーの入力を確認し、</li>
+<li>キャラクターを移動し、</li>
+<li>ウィンドウに絵を描く</li>
+</ul>
+<p>といったプログラムを書くことでゲームを進行させます。</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

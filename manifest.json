@@ -1,0 +1,1448 @@
+{
+  "homepages": [],
+  "source_base_path": "/github/workspace/docs/WebDocument",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Conceptual",
+      "source_relative_path": "Readme.md",
+      "output": {
+        ".html": {
+          "relative_path": "Readme.html",
+          "hash": "5WrrKaA7kOcK+n51ncjINg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "hGWPLruu5WQEsWkSQskDwA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/development/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/development/index.html",
+          "hash": "m93RRdfOA2go9BnXnq7hCQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Base/CompoundFormatString.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Base/CompoundFormatString.html",
+          "hash": "4s3TUwqyQALzwd5YfWXkTQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Base/ErrorHandling.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Base/ErrorHandling.html",
+          "hash": "e3OKpBSGYRcZnNoqOLd7iA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Base/MemoryManagement.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Base/MemoryManagement.html",
+          "hash": "brZp/+OEflMQpYeRrD8dcw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Base/String.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Base/String.html",
+          "hash": "l3EGoxbn7SjRiN3I2AEP6A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Base_Logging.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Base_Logging.html",
+          "hash": "EltNd9HJuXf/Wj1B82IZ/g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Engine_ObjectCreation.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Engine_ObjectCreation.html",
+          "hash": "dFLSkzSg1WZW9kQxDpnFGg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/Index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/Index.html",
+          "hash": "Be5I2S827sz/akRzbWGQ9Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/download.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/download.html",
+          "hash": "nQc7CxwS5wG/CLNAwQqDSA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/getting-started-web.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/getting-started-web.html",
+          "hash": "NCAasRIMv+EGXsf1IWbU8A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/getting-started-windows.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/getting-started-windows.html",
+          "hash": "Uthhs/5mdy2vVbQmt/RPlQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/getting-started.html",
+          "hash": "fzrkFWC8Mlt1bPIs/KJCZA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/GettingStarted/img/IntroductionAndGettingStarted-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/GettingStarted/img/IntroductionAndGettingStarted-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/GettingStarted/img/getting-started-web-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/GettingStarted/img/getting-started-web-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/preparing-development-environment-macos.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/preparing-development-environment-macos.html",
+          "hash": "jgBoUeSLc6GEqzOzwsxqAw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/preparing-development-environment-windows.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/preparing-development-environment-windows.html",
+          "hash": "9mG4qmCtio1APxlScPJqQA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/GettingStarted/requirements.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/GettingStarted/requirements.html",
+          "hash": "pZioG0Fl3Y70sB2MtaTs6A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/IO/CommandLineParser.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/IO/CommandLineParser.html",
+          "hash": "Pwb/myfONAW9c+b0grnQsw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/IO/FileReadWrite.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/IO/FileReadWrite.html",
+          "hash": "XF/KePNq2BpkPSuG6JD5oQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/IO/FileSystem.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/IO/FileSystem.html",
+          "hash": "mNu00yPnyQpARbzZbOvpeQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Input_VirtualController.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Input_VirtualController.html",
+          "hash": "c4JI7iBiuwduJSHOiPdN7g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Math/Index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Math/Index.html",
+          "hash": "OWyEvhkxP/Hw07M0t7kQAg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Math/Matrix.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Math/Matrix.html",
+          "hash": "2oQeEsWgYQkQZTv7O8w8Ug=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Math/Quaternion.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Math/Quaternion.html",
+          "hash": "OnTlxrO9WeB2FahCtLIBAQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Math/Utilities.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Math/Utilities.html",
+          "hash": "dmYFcf1DuAPVw8EI5pBuPQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Math/Vector.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Math/Vector.html",
+          "hash": "xHs62GdTUxTTOOFqPpKenQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Serialization.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Serialization.html",
+          "hash": "ffBE5Uy6DH39pd15SksVFQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Shader.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Shader.html",
+          "hash": "42TY5kenukQKv9eBnEdVeQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Shader/HLSL.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Shader/HLSL.html",
+          "hash": "DIOvIKxPItPzUlITtto/Xg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Shader/LuminoAndHLSL.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Shader/LuminoAndHLSL.html",
+          "hash": "icsSbUepziKP0Wg6LuchGA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Shader/ShaderBackendCompatibility.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Shader/ShaderBackendCompatibility.html",
+          "hash": "qfhwj8+pU+pF/OYwv58kFw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Shader/ShaderOverview.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Shader/ShaderOverview.html",
+          "hash": "In1fGThuB3zwC7erptSRkg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Shader/ShaderUsing.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Shader/ShaderUsing.html",
+          "hash": "89yb9uAm/GDYfNGZFFT7kw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/Tools/CliTool.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/Tools/CliTool.html",
+          "hash": "sJiwEmVhiZwb8eOqb2kbKg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/UI_LayoutSystem.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/UI_LayoutSystem.html",
+          "hash": "6aG+73vmN0T2PDakGnR3FA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/index.html",
+          "hash": "MCK4l8PaeYRf+UussBj8Mg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/platform-specific/android.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/platform-specific/android.html",
+          "hash": "IG/Bd/+UFJTeFvSFxq7wWQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/platform-specific/img/nuget-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/platform-specific/img/nuget-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/platform-specific/ios.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/platform-specific/ios.html",
+          "hash": "yddqBq9VwdhN2hZHongaYA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/platform-specific/macos.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/platform-specific/macos.html",
+          "hash": "iKfF/JF14TFI4ldlvS9MTw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/platform-specific/web.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/platform-specific/web.html",
+          "hash": "q/NgbfrIid0UlcuEDbH0yQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/platform-specific/windows-Install-nuget.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/platform-specific/windows-Install-nuget.html",
+          "hash": "iwK2ZX88ugrC81dSH0VQSQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/platform-specific/windows.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/platform-specific/windows.html",
+          "hash": "HvLbKrbV1MXP21equEjejQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/programming-guide/cpp.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/programming-guide/cpp.html",
+          "hash": "RBTv+KFFbJ78qOOP+idoLQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/programming-guide/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/programming-guide/index.html",
+          "hash": "qqghz3oZwFA9zmvyQyhqBQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Toc",
+      "source_relative_path": "articles/documents/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/toc.html",
+          "hash": "66V3oIloyxAn25ZiuymI7g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/basics.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/basics.html",
+          "hash": "Z9d/g4I/M+TqaZs1hwTOjg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/debug.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/debug.html",
+          "hash": "ypDZ5YnzWPxbrspni2wR+Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/display-sprites.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/display-sprites.html",
+          "hash": "bNUBefIN8IyzDiYbx7vclQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/1-introduction.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/1-introduction.html",
+          "hash": "deDOjMTpubYpGTty/LI6xw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/10-gameover.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/10-gameover.html",
+          "hash": "vc4v2RlZi4PnqgTC2/3kRQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/11-sound.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/11-sound.html",
+          "hash": "JrE1ET/pp/YSVIWRgLvxgw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/12-release.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/12-release.html",
+          "hash": "DaA8TU66mJQqKfAwueZ40g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/2-texture-and-sprite.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/2-texture-and-sprite.html",
+          "hash": "P0t8wCrD0+2UCQCAUsI+ow=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/3-world-building.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/3-world-building.html",
+          "hash": "yS1fkEAtZHl6wts65Jbo7g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/4-player.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/4-player.html",
+          "hash": "OXG90uw8VrDBCJiznMfEgw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/5-physics.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/5-physics.html",
+          "hash": "hZ/Dnry4hS1aKjqPfisI7A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/6-physics-moving.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/6-physics-moving.html",
+          "hash": "YFjVvGIg+R8kZUI/eOeBzg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/7-animation.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/7-animation.html",
+          "hash": "aNRRMuLJbJHc+GUgiGI1wA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/8-collecting-items.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/8-collecting-items.html",
+          "hash": "3rH9y1qswBv0D8LhmZFPgw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/9-scoring-ui.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/9-scoring-ui.html",
+          "hash": "MSRtlHm0f9JE6BAL0TL2tw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/animation-1.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/animation-1.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/animation-2.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/animation-2.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/collecting-items-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/collecting-items-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/collecting-items-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/collecting-items-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/collecting-items-3.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/collecting-items-3.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/introduction-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/introduction-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/objects.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/objects.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/physics-1.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/physics-1.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/physics-2.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/physics-2.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-1.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-1.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-2.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-2.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/physics-moving-4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/player-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/player-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/player-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/player-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/player-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/player-3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/player-4.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/player-4.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/texture-and-sprite-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/texture-and-sprite-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/texture-and-sprite-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/texture-and-sprite-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-5.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-5.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-6.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/documents/tutorial/first-2d-game/img/world-building-6.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/graphics.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/graphics.html",
+          "hash": "Jhgy3pBAY6Kw3sncu0fZ1w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/index.html",
+          "hash": "qEyNNCq5QQeeVuZyaSUsRQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/documents/tutorial/runnning-game.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/documents/tutorial/runnning-game.html",
+          "hash": "Dk3n1AfChIENKvCKUit9AQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/downloads/DevVer.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/downloads/DevVer.html",
+          "hash": "RHNGzPZqPm4HmSQlRsAYrg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/downloads/GettingStarted.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/downloads/GettingStarted.html",
+          "hash": "9esfTyijfNL1IkwKF776xw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/downloads/img/1_1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/downloads/img/1_1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/downloads/img/1_2.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/downloads/img/1_2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/downloads/img/installer.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/downloads/img/installer.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/downloads/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/downloads/index.html",
+          "hash": "7x/oH9Pg9veNFqd55JyRZw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "CO+SS7gXZZYAfCkOhKzRkQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/learning/samples/Graphics2D_Sprite2D.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/learning/samples/Graphics2D_Sprite2D.html",
+          "hash": "OKaHCCc1RKbnju0cyJS7eA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/learning/samples/Graphics2D_Text.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/learning/samples/Graphics2D_Text.html",
+          "hash": "RLyP6QaP54vJAWdr5XeUDQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/learning/samples/Input_VirtualController.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/learning/samples/Input_VirtualController.html",
+          "hash": "cYQU0tSYCVG2V6LrSDGC8A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/learning/samples/Lumino_Basic.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/learning/samples/Lumino_Basic.html",
+          "hash": "OUbQDmVxGeHWMoKk2TW6hg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/learning/samples/img/Graphics2D_Sprite2D_1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/learning/samples/img/Graphics2D_Sprite2D_1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/learning/samples/img/Graphics2D_Sprite2D_2.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/learning/samples/img/Graphics2D_Sprite2D_2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/learning/samples/img/Graphics2D_Sprite2D_3.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/learning/samples/img/Graphics2D_Sprite2D_3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/learning/samples/img/Input_VirtualController_1.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/learning/samples/img/Input_VirtualController_1.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/learning/samples/img/Input_VirtualController_2.gif",
+      "output": {
+        "resource": {
+          "relative_path": "articles/learning/samples/img/Input_VirtualController_2.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/learning/samples/img/Lumino_Basic_1.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/learning/samples/img/Lumino_Basic_1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "articles/learning/samples/img/Lumino_Basic_2.png",
+      "output": {
+        "resource": {
+          "relative_path": "articles/learning/samples/img/Lumino_Basic_2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/learning/samples/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/learning/samples/index.html",
+          "hash": "bOjAC1TOYHyVT/kGH6SMnQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/learning/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/learning/toc.html",
+          "hash": "Ro9BIjnXZnmZsYgE9lRqNA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/learning/tutorials/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/learning/tutorials/index.html",
+          "hash": "4rIxlq2COWnnfqBL373BmQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/license/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/license/index.html",
+          "hash": "gP0WuI3d/jWdmTgwb6S8mg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/supports/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/supports/index.html",
+          "hash": "0utPQfpw6YVdeJ6hbBUzTA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "favicon.ico",
+      "output": {
+        "resource": {
+          "relative_path": "favicon.ico"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "index",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "vAv/fXtkhkSc6JgOmXkD6Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "logo.png",
+      "output": {
+        "resource": {
+          "relative_path": "logo.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "BGbql1YY3ma2cGXB2azaXQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot build incrementally because last build info is missing.",
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0,
+        "full_build_reason_code": "NoAvailableBuildCache"
+      },
+      "processors": {
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 75,
+          "skipped_file_count": 0
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot support incremental post processing, the reason is: last post processor info is null.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

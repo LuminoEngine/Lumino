@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#31227;&#21205;&#12392;&#12472;&#12515;&#12531;&#12503; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#31227;&#21205;&#12392;&#12472;&#12515;&#12531;&#12503; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../../favicon.ico">
+    <link rel="stylesheet" href="../../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../../toc.html">
+    <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="移動とジャンプ">移動とジャンプ</h1>
+
+<p>物理ワールドを構築しましたので、次はプレイヤーの各アクションを実装していきます。</p>
+<h2 id="プレイヤーを移動させる">プレイヤーを移動させる</h2>
+<p><img src="img/physics-moving-1.gif" alt=""></p>
+<p>移動は、剛体の速度をコントロールすることで行います。速度をコントロールする方法はいくつかありますが、ここでは直接速度を設定します。</p>
+<pre><code class="lang-cpp">// メインループ
+while (Engine::update())
+{
+    Vector2 velocity = playerBody-&gt;velocity();
+
+    if (Input::isPressed(u&quot;right&quot;)) {
+        velocity.x = 5.0f;
+    }
+    else if (Input::isPressed(u&quot;left&quot;)) {
+        velocity.x = -5.0f;
+    }
+    else {
+        velocity.x = 0.0f;
+    }
+
+    playerBody-&gt;setVelocity(velocity);
+}
+</code></pre><h3 id="速度とベクトル">速度とベクトル</h3>
+<p>速度は X 方向と Y 方向の 2 次元のベクトルで表されます。</p>
+<p>Lumino では 2 次元のベクトルを扱うために <code>Vector2</code> を使います。（同様に、3次元や4次元を表す Vector3 や Vector4 もあります）</p>
+<p>今回のコードは、左右のキーが押されている間は X 方向の速度を直接 5.0 に変更することでプレイヤーを移動しています。（Y 方向の速度は、物理演算によって求められた落下速度などをそのまま使用します）</p>
+<p>なお、速度 5.0 は 1 秒間に 5.0 分の座標を移動することを示します。</p>
+<h3 id="setposition-による移動と-setvelocity-による移動の違い">setPosition による移動と setVelocity による移動の違い</h3>
+<p>setPosition はプレイヤーの位置を直接指定します。実際の振る舞いとしてはワープしているようになります。
+そのため、プレイヤーがとても速く移動している場合、壁などの剛体をすり抜けてしまうことがあります。</p>
+<p>一方 setVelocity はプレイヤーの速度だけを指定して、実際にどの位置に移動するべきかは物理演算に任せます。
+これによってすり抜けなどの問題を回避でき、より正確な動きができるようになります。</p>
+<h2 id="衝突グループを設定する">衝突グループを設定する</h2>
+<p>次にジャンプを実装していきますが、その前にこれまでに用意してきた剛体をグループ分けします。
+これにより、ジャンプの処理で必要となる「地面の上に載っているか？」といった確認を簡単に行えるようになります。</p>
+<pre><code class="lang-cpp">static const uint32_t GroundGroup = 0x01;   // 地面の衝突グループ
+static const uint32_t PlayerGroup = 0x02;   // プレイヤーの衝突グループ
+</code></pre><pre><code class="lang-diff">  // 地面の剛体
+  Ref&lt;RigidBody2DComponent&gt; groundBody = RigidBody2DComponent::create();
+  groundBody-&gt;addCollisionShape(BoxCollisionShape2D::create(16, 1));
++ groundBody-&gt;setCollisionGroup(GroundGroup);
+  groundSprite-&gt;addComponent(groundBody);
+</code></pre><pre><code class="lang-diff">  // 左の床の剛体
+  Ref&lt;RigidBody2DComponent&gt; floorBody1 = RigidBody2DComponent::create();
+  floorBody1-&gt;addCollisionShape(BoxCollisionShape2D::create(4, 1));
++ floorBody1-&gt;setCollisionGroup(GroundGroup);
+  floorSprite1-&gt;addComponent(floorBody1);
+</code></pre><pre><code class="lang-diff">  // 右の床の剛体
+  Ref&lt;RigidBody2DComponent&gt; floorBody2 = RigidBody2DComponent::create();
+  floorBody2-&gt;addCollisionShape(BoxCollisionShape2D::create(4, 1));
++ floorBody2-&gt;setCollisionGroup(GroundGroup);
+  floorSprite2-&gt;addComponent(floorBody2);
+</code></pre><pre><code class="lang-diff">  // プレイヤーの剛体
+  Ref&lt;RigidBody2DComponent&gt; playerBody = RigidBody2DComponent::create();
+  playerBody-&gt;addCollisionShape(BoxCollisionShape2D::create(1, 1));
+  playerBody-&gt;setMass(2);
+  playerBody-&gt;setFixedRotation(true);
++ playerBody-&gt;setCollisionGroup(PlayerGroup);
+  playerSprite-&gt;addComponent(playerBody);
+</code></pre><p>グループはビットフラグで指定します。今回は、1 番目のビットを地面、2 番目のビットをプレイヤーとしています。</p>
+<h2 id="プレイヤーをジャンプさせる">プレイヤーをジャンプさせる</h2>
+<p><img src="img/physics-moving-2.gif" alt=""></p>
+<p>プレイヤーが地面の上にいるときにキーが押された場合、ジャンプするようにします。</p>
+<pre><code class="lang-cpp">bool onGround = Physics2D::raycast(playerSprite-&gt;position(), Vector2(0, -1), 0.6, GroundGroup);
+if (onGround) {
+    if (Input::isPressed(u&quot;submit&quot;)) {
+        velocity.y = 10.0;
+    }
+}
+</code></pre><p>※ &quot;submit&quot; については <a href="4-player.html">プレイヤーの表示</a> を参照してください。</p>
+<h3 id="地面との接触判定">地面との接触判定</h3>
+<p>プレイヤーが地面に乗っているかどうかは、プレイヤーの位置から下方向に延びる線分と、地面の剛体との交差判定で求めます。</p>
+<p>この線分を <code>レイ</code> と呼び、これを使って交差するオブジェクトを検出することを <code>レイキャスト</code> と呼びます。</p>
+<p><code>Physics2D::raycast</code> の引数はそれぞれ次のような意味を持ちます。</p>
+<ul>
+<li>プレイヤーの位置から、</li>
+<li>下方向 (Vector2::UnitY は 上方向(0, 1) を表す定数で、これをマイナスすることで下方向を表します) へ、</li>
+<li>長さ 0.6 のレイを使って、</li>
+<li>衝突グループが GroundGroup (地面) である剛体との交差判定を行う。</li>
+</ul>
+<p>長さ 0.6 は少しイメージしづらいかもしれませんが、次の図のように、プレイヤーのスプライトから少しだけ突き出すようなレイを生成するための値です。</p>
+<p><img src="img/physics-moving-3.png" alt=""></p>
+<p>左は地面と接触している場合、右は接触していない場合の例です。</p>
+<h2 id="画面外への移動を制限する">画面外への移動を制限する</h2>
+<p>移動処理の仕上げとして、画面の外側に移動できないようにします。</p>
+<pre><code class="lang-cpp">Ref&lt;EdgeCollisionShape2D&gt; wallShape = EdgeCollisionShape2D::create();
+wallShape-&gt;addPoint(-8, 6);    // 左上
+wallShape-&gt;addPoint(8, 6);     // 右上
+wallShape-&gt;addPoint(8, -6);    // 右下
+wallShape-&gt;addPoint(-8, -6);   // 左下
+Ref&lt;RigidBody2DComponent&gt; wallBody = RigidBody2DComponent::create();
+wallBody-&gt;addCollisionShape(wallShape);
+skySprite-&gt;addComponent(wallBody);
+</code></pre><h3 id="エッジ衝突判定形状">エッジ衝突判定形状</h3>
+<p>EdgeCollisionShape2D はちょうど壁のような、剛体が通過できない線分を生成するためのクラスです。</p>
+<p>addPoint() によって点を追加することで、各点を結ぶ連続した線分からなる、大きな壁を作ることができます。</p>
+<p>ここでは画面全体を囲むように、左上 → 右上 → 右下 → 左下 の順で点を追加しています。</p>
+<p><img src="img/physics-moving-4.png" alt=""></p>
+<p>また、ちょうど背景のスプライトが同じサイズであったため、新しいオブジェクトを作成するのではなく、skySprite へ静的な剛体をアタッチしています。</p>
+<h2 id="コード全体">コード全体</h2>
+<pre><code class="lang-cpp">#include &lt;Lumino.hpp&gt;
+
+static const uint32_t GroundGroup = 0x01;   // 地面の衝突グループ
+static const uint32_t PlayerGroup = 0x02;   // プレイヤーの衝突グループ
+
+void Main()
+{
+    // ワールドの 16x12 の範囲を表示する
+    Camera* camera = Engine::mainCamera();
+    camera-&gt;setProjectionMode(ProjectionMode::Orthographic);
+    camera-&gt;setOrthographicSize(16, 12);
+
+    // 空
+    Ref&lt;Texture&gt; skyTexture = Assets::loadTexture(u&quot;sky&quot;);
+    Ref&lt;Sprite&gt; skySprite = Sprite::create(skyTexture, 16, 12);
+
+    // 地面
+    Ref&lt;Texture&gt; mapTexture = Assets::loadTexture(u&quot;map&quot;);
+    Ref&lt;Sprite&gt; groundSprite = Sprite::create(mapTexture, 16, 1);
+    groundSprite-&gt;setSourceRect(0, 0, 80, 8);
+    groundSprite-&gt;setPosition(0, -5.5, 0);
+
+    // 地面の剛体
+    Ref&lt;RigidBody2DComponent&gt; groundBody = RigidBody2DComponent::create();
+    groundBody-&gt;addCollisionShape(BoxCollisionShape2D::create(16, 1));
+    groundBody-&gt;setCollisionGroup(GroundGroup);
+    groundSprite-&gt;addComponent(groundBody);
+
+    // 左の床
+    Ref&lt;Sprite&gt; floorSprite1 = Sprite::create(mapTexture, 4, 1);
+    floorSprite1-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite1-&gt;setPosition(-4.5, -2, 0);
+
+    // 左の床の剛体
+    Ref&lt;RigidBody2DComponent&gt; floorBody1 = RigidBody2DComponent::create();
+    floorBody1-&gt;addCollisionShape(BoxCollisionShape2D::create(4, 1));
+    floorBody1-&gt;setCollisionGroup(GroundGroup);
+    floorSprite1-&gt;addComponent(floorBody1);
+
+    // 右の床
+    Ref&lt;Sprite&gt; floorSprite2 = Sprite::create(mapTexture, 4, 1);
+    floorSprite2-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite2-&gt;setPosition(4.5, 0, 0);
+
+    // 右の床の剛体
+    Ref&lt;RigidBody2DComponent&gt; floorBody2 = RigidBody2DComponent::create();
+    floorBody2-&gt;addCollisionShape(BoxCollisionShape2D::create(4, 1));
+    floorBody2-&gt;setCollisionGroup(GroundGroup);
+    floorSprite2-&gt;addComponent(floorBody2);
+
+    // プレイヤー
+    Ref&lt;Texture&gt; playerTexture = Assets::loadTexture(u&quot;player&quot;);
+    Ref&lt;SpriteFrameSet&gt; frameSet = SpriteFrameSet::create(playerTexture, 16, 16);
+    Ref&lt;Sprite&gt; playerSprite = Sprite::create(frameSet);
+    playerSprite-&gt;setFrameIndex(0);
+
+    // プレイヤーの剛体
+    Ref&lt;RigidBody2DComponent&gt; playerBody = RigidBody2DComponent::create();
+    playerBody-&gt;addCollisionShape(BoxCollisionShape2D::create(1, 1));
+    playerBody-&gt;setMass(2);
+    playerBody-&gt;setFixedRotation(true);
+    playerBody-&gt;setCollisionGroup(GroundGroup);
+    playerSprite-&gt;addComponent(playerBody);
+
+    // 画面外への移動を制限するための剛体
+    Ref&lt;EdgeCollisionShape2D&gt; wallShape = EdgeCollisionShape2D::create();
+    wallShape-&gt;addPoint(-8, -6);
+    wallShape-&gt;addPoint(8, -6);
+    wallShape-&gt;addPoint(8, 6);
+    wallShape-&gt;addPoint(-8, 6);
+    Ref&lt;RigidBody2DComponent&gt; wallBody = RigidBody2DComponent::create();
+    wallBody-&gt;addCollisionShape(wallShape);
+    skySprite-&gt;addComponent(wallBody);
+
+    // メインループ
+    while (Engine::update())
+    {
+        Vector2 velocity = playerBody-&gt;velocity();
+
+        // プレイヤーの移動処理
+        if (Input::isPressed(u&quot;right&quot;)) {
+            velocity.x = 5.0f;
+        }
+        else if (Input::isPressed(u&quot;left&quot;)) {
+            velocity.x = -5.0f;
+        }
+        else {
+            velocity.x = 0.0f;
+        }
+
+        // プレイヤーのジャンプ処理
+        bool onGround = Physics2D::raycast(playerSprite-&gt;position(), -Vector2::UnitY, 0.6, GroundGroup);
+        if (onGround) {
+            if (Input::isPressed(u&quot;submit&quot;)) {
+                velocity.y = 10.0;
+            }
+        }
+
+        playerBody-&gt;setVelocity(velocity);
+    }
+}
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

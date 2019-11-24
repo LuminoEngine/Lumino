@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#25991;&#23383;&#21015;&#12398;&#21462;&#12426;&#25201;&#12356; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#25991;&#23383;&#21015;&#12398;&#21462;&#12426;&#25201;&#12356; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../favicon.ico">
+    <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="文字列の取り扱い">文字列の取り扱い</h1>
+
+<p>Lumino は文字列を環境に依存せず透過的に使えるようにするため、Unicode 文字列を扱う String クラスを提供しています。</p>
+<p>String クラスは文字列を UTF-16 コードで表現し、大文字小文字の変更、部分文字列の参照、検索など、様々な種類の文字列操作を行うことができます。</p>
+<p>文字は Char 型で表される 2Byte 値です。65535を 超えるコード値の文字は、サロゲートペア、つまり2つの連続した文字で格納されます。エンディアンは、アプリケーションが動作しているプラットフォームに適した方法で格納されます。</p>
+<h2 id="文字列の初期化">文字列の初期化</h2>
+<p>最も高速で安全な方法は、String クラスのコンストラクタに char16_t 文字列を指定することです。</p>
+<pre><code class="lang-cpp">String str = u&quot;Hello, World!&quot;;
+</code></pre><p>また、std::string と同様の方法で初期化することもできます。</p>
+<pre><code class="lang-cpp">const Char data[] = u&quot;abcd&quot;;
+String str(data, 2);    // &quot;ab&quot; で初期化
+</code></pre><pre><code class="lang-cpp">String str(5, u&#39;a&#39;);    // &quot;aaaaa&quot; で初期化
+</code></pre><h2 id="コードの変換">コードの変換</h2>
+<p>String から std::string など他の文字列型や、その他のエンコーディングと相互変換することができます。</p>
+<p>C++ 標準の型 (char, wchar_t, std::string, std::wstring) との変換に使われるエンコーディングは環境によって異なります。例えば wchar_t はそのサイズによって、UTF-16 または UTF-32 とみなします。</p>
+<p>char, wchar_t 型のエンコーディングは、それぞれ TextEncoding::systemMultiByteEncoding(), TextEncoding::wideCharEncoding() で確認できます。</p>
+<h3 id="string-と-stdstring-の相互変換">String と std::string の相互変換</h3>
+<pre><code class="lang-cpp">std::string stdstr = &quot;abc&quot;;
+
+// std::string -&gt; ln::String
+String str = String::fromStdString(stdstr);
+
+// ln::String -&gt; std::string
+stdstr = str.toStdString();
+</code></pre><h3 id="string-と-stdwstring-の相互変換">String と std::wstring の相互変換</h3>
+<pre><code class="lang-cpp">std::wstring stdstr = L&quot;abc&quot;;
+
+// std::string -&gt; ln::String
+String str = String::fromStdString(stdstr);
+
+// ln::String -&gt; std::string
+stdstr = str.toStdWString();
+</code></pre><h3 id="char-から-string-への変換">char から String への変換</h3>
+<pre><code class="lang-cpp">const char* astr = &quot;abc&quot;;
+String str = String::fromCString(astr);
+</code></pre><h3 id="wchart-から-string-への変換">wchar_t から String への変換</h3>
+<pre><code class="lang-cpp">const wchar_t* wstr = L&quot;abc&quot;;
+String str = String::fromCString(wstr);
+</code></pre><h3 id="string-から-utf-8-バイト列への変換">String から UTF-8 バイト列への変換</h3>
+<pre><code class="lang-cpp">String str = u&quot;abc&quot;;
+Ref&lt;TextEncoding&gt; encoding = TextEncoding::utf8Encoding();
+std::vector&lt;byte_t&gt; utf8Data = encoding.encode(str);
+</code></pre><h2 id="char-型文字列からの暗黙的な初期化">char 型文字列からの暗黙的な初期化</h2>
+<p>String クラスは char 型文字列からの暗黙的な変換をサポートしています。</p>
+<pre><code class="lang-cpp">String str = &quot;Hello, World!&quot;;
+</code></pre><p>これは変換を簡単に記述するための機能ですが、前項と同様の変換処理が行われるため、char16_t 文字列を直接指定するよりもオーバーヘッドがある点に注意してください。</p>
+<p>暗黙的な変換を無効にするには、Lumino の各ヘッダーファイルを include する前に <code>#define LN_STRING_STRICT_CONVERSION</code> を定義します。</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

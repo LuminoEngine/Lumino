@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#12527;&#12540;&#12523;&#12489;&#12398;&#27083;&#31689; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#12527;&#12540;&#12523;&#12489;&#12398;&#27083;&#31689; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../../favicon.ico">
+    <link rel="stylesheet" href="../../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../../toc.html">
+    <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ワールドの構築">ワールドの構築</h1>
+
+<p>スプライトをはじめとした様々なオブジェクトを配置し、ゲームを作り上げるための舞台を <code>ワールド</code> と呼びます。</p>
+<p>ここではワールドに複数のスプライトを配置し、ゲームのマップを作っていきます。</p>
+<p>なお、このページからは説明文中ではコードの断片を説明していきます。全体のコードはページ末尾にありますので、必要に応じて参照してください。</p>
+<h2 id="16x12-の範囲をぴったりウィンドウに収める">16x12 の範囲をぴったりウィンドウに収める</h2>
+<p>まず最初に座標を正確にとらえるようにするため、ウィンドウの四辺がちょうどワールドの幅16、高さ12の範囲を表示するようします。</p>
+<p>Main の先頭に次のコードを追加し、実行します。</p>
+<pre><code>Camera* camera = Engine::mainCamera();
+camera-&gt;setProjectionMode(ProjectionMode::Orthographic);
+camera-&gt;setOrthographicSize(16, 12);
+</code></pre><p><img src="img/world-building-6.png" alt=""></p>
+<p>あまり変化があるようには見えませんが、前回の結果と比べてわずかな見切れが解決され、元の画像全体が正確に表示されるようになりました。</p>
+<h3 id="camera-について">Camera について</h3>
+<p>このチュートリアルではここでしか登場しませんが、Camera について簡単に触れておきます。</p>
+<p>Lumino は 3D をベースとしたゲームエンジンであり、3D 空間をウィンドウに表示するための「視点」の概念として <code>カメラ</code> があります。</p>
+<p>カメラはデフォルトでは奥行きのある投影を行いますが、このためウィンドウの四辺とワールド空間内の位置をマッチさせることが簡単ではありません。</p>
+<p>このチュートリアルでは 2D ゲームとして座標を正確にとらえたいため、<code>setProjectionMode(ProjectionMode::Orthographic)</code> で奥行き感を無くし、<code>setOrthographicSize(16, 12)</code> で 16 x 12 の範囲を表示するようにしています。</p>
+<h2 id="地面を作る">地面を作る</h2>
+<p>メインループの上に次のコードを追加し、実行します。</p>
+<pre><code class="lang-cpp">Ref&lt;Texture&gt; mapTexture = Assets::loadTexture(u&quot;map&quot;);
+
+Ref&lt;Sprite&gt; groundSprite = Sprite::create(mapTexture, 16, 1);
+groundSprite-&gt;setSourceRect(0, 0, 80, 8);
+groundSprite-&gt;setPosition(0, -5.5);
+</code></pre><p><img src="img/world-building-2.png" alt=""></p>
+<p>setSourceRect と setPosition という新しいメソッドが登場しました。</p>
+<h3 id="setsourcerect-について">setSourceRect について</h3>
+<p>このメソッドはスプライトに対して、テクスチャのどの部分を表示するべきかを示す領域を設定します。</p>
+<p>mapTexture に読み込んだテクスチャは次のようになっています。</p>
+<p><img src="img/world-building-4.png" alt=""></p>
+<p><code>setSourceRect(0, 0, 80, 8)</code> は次のように、矩形の左上座標と幅、高さをピクセル単位で指定します。</p>
+<p><img src="img/world-building-1.png" alt=""></p>
+<p>これによって、テクスチャの一部分を切り出して描画することができます。</p>
+<h3 id="setposition-と座標系について">setPosition と座標系について</h3>
+<p>このメソッドはオブジェクトをどの位置に表示するべきかを設定します。</p>
+<p>Lumino の座標系は次のように、右方向を X+、上方向を Y+ としています。</p>
+<p><img src="img/world-building-3.png" alt=""></p>
+<p>今回のシーンでは、Y 座標を -5.5 とすることで、スクリーンの下端にスプライトを配置しています。</p>
+<p>スプライトの原点は画像の中心となっているため、次のように表示されます。</p>
+<h2 id="床を作る">床を作る</h2>
+<p>キャラクターがジャンプで乗ることができる床のイメージを追加します。</p>
+<p>テクスチャは地面のテクスチャ (mapTexture) と共有し、setSourceRect で範囲を指定することで床のイメージを表示します。</p>
+<pre><code class="lang-cpp">Ref&lt;Sprite&gt; floorSprite1 = Sprite::create(mapTexture, 4, 1);
+floorSprite1-&gt;setSourceRect(0, 8, 32, 8);
+floorSprite1-&gt;setPosition(-4.5, -2, 0);
+
+Ref&lt;Sprite&gt; floorSprite2 = Sprite::create(mapTexture, 4, 1);
+floorSprite2-&gt;setSourceRect(0, 8, 32, 8);
+floorSprite2-&gt;setPosition(4.5, 0, 0);
+</code></pre><p><img src="img/world-building-5.png" alt=""></p>
+<h2 id="コード全体">コード全体</h2>
+<pre><code class="lang-cpp">#include &lt;Lumino.hpp&gt;
+
+void Main()
+{
+    // ワールドの 16x12 の範囲を表示する
+    Camera* camera = Engine::mainCamera();
+    camera-&gt;setProjectionMode(ProjectionMode::Orthographic);
+    camera-&gt;setOrthographicSize(16, 12);
+
+    // 空
+    Ref&lt;Texture&gt; skyTexture = Assets::loadTexture(u&quot;sky&quot;);
+    Ref&lt;Sprite&gt; skySprite = Sprite::create(skyTexture, 16, 12);
+
+    // 地面
+    Ref&lt;Texture&gt; mapTexture = Assets::loadTexture(u&quot;map&quot;);
+    Ref&lt;Sprite&gt; groundSprite = Sprite::create(mapTexture, 16, 1);
+    groundSprite-&gt;setSourceRect(0, 0, 80, 8);
+    groundSprite-&gt;setPosition(0, -5.5, 0);
+
+    // 左の床
+    Ref&lt;Sprite&gt; floorSprite1 = Sprite::create(mapTexture, 4, 1);
+    floorSprite1-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite1-&gt;setPosition(-4.5, -2, 0);
+
+    // 右の床
+    Ref&lt;Sprite&gt; floorSprite2 = Sprite::create(mapTexture, 4, 1);
+    floorSprite2-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite2-&gt;setPosition(4.5, 0, 0);
+
+    // メインループ
+    while (Engine::update())
+    {
+    }
+}
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

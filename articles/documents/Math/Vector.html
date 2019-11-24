@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#12505;&#12463;&#12488;&#12523; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#12505;&#12463;&#12488;&#12523; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../favicon.ico">
+    <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ベクトル">ベクトル</h1>
+
+<p>ベクトルは空間内の方向や点を記述するための浮動小数値のセットです。
+Lumino は 2次元、3次元、4次元の浮動小数点ベクトルをサポートしています。</p>
+<h2 id="初期化割り当て">初期化・割り当て</h2>
+<p>各要素は構築時に 0 で初期化されます。</p>
+<pre><code class="lang-cpp">Vector2 vec;
+float x = vec.x; // =&gt; 0.0
+float y = vec.y; // =&gt; 0.0
+</code></pre><h2 id="要素へのアクセス">要素へのアクセス</h2>
+<p>各要素へは、メンバ変数 x, y, z, w でアクセスできます。</p>
+<pre><code class="lang-cpp">Vector3 vec(1, 2, 3);
+vec.y = 5;
+float x = vec.x; // =&gt; 1.0
+float y = vec.y; // =&gt; 5.0
+</code></pre><p>また、HLSL などのシェーダ言語のような、要素のサブセットの取得もサポートしています。</p>
+<pre><code class="lang-cpp">Vector3 v1(1, 2, 3);
+Vector2 v2 = v1.xy();
+float x = v2.x; // =&gt; 1.0
+float y = v2.y; // =&gt; 2.0
+</code></pre><h2 id="算術演算">算術演算</h2>
+<p>各 Vector クラスは、要素単位の演算を行う算術演算子（加算、減算、乗算、除算）をサポートします。</p>
+<pre><code class="lang-cpp">Vector2 v1(1, 2);
+Vector2 v2(3, 4);
+Vector2 v3 = v1 + v2;   // =&gt; (4, 6)
+v2 -= v1;               // =&gt; (2, 2)
+</code></pre><p>また、スカラー値との算術演算もサポートします。各要素へ一様に計算を行います。</p>
+<pre><code class="lang-cpp">Vector2 v1(1, 2);
+Vector2 v2 = v1 + 3;   // =&gt; (4, 5)
+v1 -= 1;               // =&gt; (0, 1)
+</code></pre><h2 id="幾何学演算">幾何学演算</h2>
+<p>各 Vector クラスは、グラフィックスプログラミングで一般的に使用される幾何学演算をサポートします。</p>
+<p>例えば、ベクトルの長さの計算には length() メソッドを使います。</p>
+<pre><code class="lang-cpp">Vector3 v(1, 2, 3);
+float length = v.length();
+</code></pre><p>ドット積（内積）の計算には dot() メソッドを使います。例えば、2つのベクトル間の角度を求めるために使います。</p>
+<pre><code class="lang-cpp">Vector3 v1(1, 0, 0);
+Vector3 v2(0, 1, 0);
+float dot = Vector3::dot(v1, v2);
+</code></pre><p>クロス積（外積）の計算には cross() メソッドを使います。例えば、2つのベクトルに垂直なベクトルを求めるために使います。</p>
+<pre><code class="lang-cpp">Vector3 v1(1, 0, 0);
+Vector3 v2(0, 1, 0);
+Vector3 cross = Vector3::cross(v1, v2);
+</code></pre><p>ベクトルを正規化（長さを1に）するには。例えば、2つのベクトルに垂直なベクトルを求めるために使います。</p>
+<pre><code class="lang-cpp">Vector3 v1(1, 2, 3);
+Vector3 v2 = Vector3::normalize(v1);
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

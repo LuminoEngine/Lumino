@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#12503;&#12524;&#12452;&#12516;&#12540;&#12398;&#34920;&#31034; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#12503;&#12524;&#12452;&#12516;&#12540;&#12398;&#34920;&#31034; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../../favicon.ico">
+    <link rel="stylesheet" href="../../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../../toc.html">
+    <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="プレイヤーの表示">プレイヤーの表示</h1>
+
+<h2 id="スプライトテクスチャを分割して表示する">スプライトテクスチャを分割して表示する</h2>
+<p>アセットのプレイヤー画像ファイル (player.png) には、次のように 5 パターンのアニメーション画像が含まれています。</p>
+<p><img src="img/player-1.png" alt=""></p>
+<p>前回のチュートリアルのように setSourceRect() を使って一部を表示することもできますが、このように小さなパターンがたくさん含まれている場合は管理が大変です。</p>
+<p>Lumino では <code>SpriteFrameSet</code> クラスを使うことで、同一サイズの小さなパターンをグリッド上に分割して簡単にアクセスできるようになります。</p>
+<p>メインループの上に次のコードを追加し、実行してください。</p>
+<pre><code class="lang-cpp">Ref&lt;Texture&gt; playerTexture = Assets::loadTexture(u&quot;player&quot;);
+
+Ref&lt;SpriteFrameSet&gt; frameSet = SpriteFrameSet::create(playerTexture, 16, 16);
+
+Ref&lt;Sprite&gt; playerSprite = Sprite::create(frameSet);
+playerSprite-&gt;setFrameIndex(0);
+</code></pre><p><img src="img/player-2.png" alt=""></p>
+<p><code>SpriteFrameSet::create(playerTexture, 16, 16)</code> は、テクスチャを 幅 16px, 型さ 16px でグリッド状の等間隔に分割し、スプライトフレーム (パターン) の集合 (FrameSet) を作成します。</p>
+<p>分割されたスプライトフレームは次のように、左上から右下に向かって番号が割り当てられます。</p>
+<p><img src="img/player-3.png" alt=""></p>
+<p><code>setFrameIndex</code> を使ってこの番号を指定することで、スプライトを表示することができます。</p>
+<h2 id="キー入力によりプレイヤーを移動する">キー入力によりプレイヤーを移動する</h2>
+<p>左右キーの入力により、プレイヤーの画像を左右にスライドさせてみます。</p>
+<p>単純にキーが押されているかを確認するには、<code>Input::isPressed</code> メソッドを使います。</p>
+<p>メインループの周辺を次のように変更し、実行してください。</p>
+<pre><code class="lang-cpp">float x = 0.0f;
+
+while (Engine::update())
+{
+    if (Input::isPressed(u&quot;left&quot;))
+    {
+        x -= 0.1f;
+    }
+
+    if (Input::isPressed(u&quot;right&quot;))
+    {
+        x += 0.1f;
+    }
+
+    playerSprite-&gt;setPosition(x, 0);
+}
+</code></pre><p>左右キーを押すと、プレイヤーのスプライトが移動します。</p>
+<p><img src="img/player-4.gif" alt=""></p>
+<p><code>Input::isPressed(u&quot;left&quot;)</code> は、左キーが押されている間 true を返します。</p>
+<p>メインループは1秒間に60回の頻度で繰り返されることを思い出してください。ループの中でキーが押されているかを確認し、少しずつ座標を移動することで、キャラクターが移動しているように見せることができます。</p>
+<h3 id="input-クラスについて">Input クラスについて</h3>
+<p>Input クラスは、ゲームとしての一般的なケースで必要となる入力検出を、簡単に扱うためのクラスです。</p>
+<p>上記の例では押されている間を検出しましたが、他にも押された瞬間を検出したり、キーボードだけではなくジョイスティックなどの入力を受け取ることもできます。</p>
+<p>デフォルトでは、次のようにキーやボタンが割り当てられています。</p>
+<table>
+<thead>
+<tr>
+<th>名前</th>
+<th>キーボード</th>
+<th>マウス</th>
+<th>ゲームパッド</th>
+<th>定数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>left</td>
+<td>← キー</td>
+<td>-</td>
+<td>POV左, 第1軸-</td>
+<td>InputButtons::Left</td>
+</tr>
+<tr>
+<td>right</td>
+<td>→ キー</td>
+<td>-</td>
+<td>POV右, 第1軸+</td>
+<td>InputButtons::Right</td>
+</tr>
+<tr>
+<td>up</td>
+<td>↑ キー</td>
+<td>-</td>
+<td>POV上, 第2軸-</td>
+<td>InputButtons::Up</td>
+</tr>
+<tr>
+<td>down</td>
+<td>↓ キー</td>
+<td>-</td>
+<td>POV下, 第2軸+</td>
+<td>InputButtons::Down</td>
+</tr>
+<tr>
+<td>submit</td>
+<td>Z キー</td>
+<td>-</td>
+<td>1 番ボタン</td>
+<td>InputButtons::Submit</td>
+</tr>
+<tr>
+<td>cancel</td>
+<td>X キー</td>
+<td>-</td>
+<td>2 番ボタン</td>
+<td>InputButtons::Cancel</td>
+</tr>
+<tr>
+<td>menu</td>
+<td>X キー</td>
+<td>-</td>
+<td>3 番ボタン</td>
+<td>InputButtons::Menu</td>
+</tr>
+<tr>
+<td>shift</td>
+<td>Shift キー</td>
+<td>-</td>
+<td>4 番ボタン</td>
+<td>InputButtons::Shift</td>
+</tr>
+<tr>
+<td>pageup</td>
+<td>Q キー</td>
+<td>-</td>
+<td>5 番ボタン</td>
+<td>InputButtons::PageUp</td>
+</tr>
+<tr>
+<td>pagedown</td>
+<td>W キー</td>
+<td>-</td>
+<td>6 番ボタン</td>
+<td>InputButtons::PageDown</td>
+</tr>
+<tr>
+<td>any</td>
+<td>※1</td>
+<td>※1</td>
+<td>※1</td>
+<td>InputButtons::Any</td>
+</tr>
+</tbody>
+</table>
+<p>※1: 割り当てられている全てのボタンに対応します。</p>
+<h2 id="コード全体">コード全体</h2>
+<pre><code class="lang-cpp">#include &lt;Lumino.hpp&gt;
+
+void Main()
+{
+    // ワールドの 16x12 の範囲を表示する
+    Camera* camera = Engine::mainCamera();
+    camera-&gt;setProjectionMode(ProjectionMode::Orthographic);
+    camera-&gt;setOrthographicSize(16, 12);
+
+    // 空
+    Ref&lt;Texture&gt; skyTexture = Assets::loadTexture(u&quot;sky&quot;);
+    Ref&lt;Sprite&gt; skySprite = Sprite::create(skyTexture, 16, 12);
+
+    // 地面
+    Ref&lt;Texture&gt; mapTexture = Assets::loadTexture(u&quot;map&quot;);
+    Ref&lt;Sprite&gt; groundSprite = Sprite::create(mapTexture, 16, 1);
+    groundSprite-&gt;setSourceRect(0, 0, 80, 8);
+    groundSprite-&gt;setPosition(0, -5.5, 0);
+
+    // 左の床
+    Ref&lt;Sprite&gt; floorSprite1 = Sprite::create(mapTexture, 4, 1);
+    floorSprite1-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite1-&gt;setPosition(-4.5, -2, 0);
+
+    // 右の床
+    Ref&lt;Sprite&gt; floorSprite2 = Sprite::create(mapTexture, 4, 1);
+    floorSprite2-&gt;setSourceRect(0, 8, 32, 8);
+    floorSprite2-&gt;setPosition(4.5, 0, 0);
+
+    // プレイヤー
+    Ref&lt;Texture&gt; playerTexture = Assets::loadTexture(u&quot;player&quot;);
+    Ref&lt;SpriteFrameSet&gt; frameSet = SpriteFrameSet::create(playerTexture, 16, 16);
+    Ref&lt;Sprite&gt; playerSprite = Sprite::create(frameSet);
+    playerSprite-&gt;setFrameIndex(0);
+
+    // メインループ
+    float x = 0.0f;
+    while (Engine::update())
+    {
+        if (Input::isPressed(u&quot;left&quot;))
+        {
+            x -= 0.1f;
+        }
+
+        if (Input::isPressed(u&quot;right&quot;))
+        {
+            x += 0.1f;
+        }
+
+        playerSprite-&gt;setPosition(x, 0);
+    }
+}
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

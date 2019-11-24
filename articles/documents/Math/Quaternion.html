@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#12463;&#12457;&#12540;&#12479;&#12491;&#12458;&#12531; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#12463;&#12457;&#12540;&#12479;&#12491;&#12458;&#12531; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../favicon.ico">
+    <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="クォータニオン">クォータニオン</h1>
+
+<p>クォータニオンは3次元の向きまたは回転を表現するための浮動小数値のセットです。</p>
+<p>Quaternion クラスの乗算の順番は左から右です。つまり、q1 * q2 は、先に q1、次に q2 の回転を適用する事と同じです。</p>
+<p>この乗算順序は数学的な四元数の定義からは逆行していますが、以下のような理由により採用しています。</p>
+<ul>
+<li>ゲームなどのデジタルアート系の3Dグラフィックスの線形代数ライブラリとしてはよく利用されている</li>
+<li>行優先の Matrix クラスと順序を合わせる</li>
+</ul>
+<p>もし * 演算子を使用することが混乱を招くようであれば Quaternion::multiply() メソッドを使用することで多少注意を促すことができるかもしれません。</p>
+<p>なお、Quaternion クラスは自動的に正規化されません。必要に応じてnormalizeメソッドを呼び出して正規化します。</p>
+<h2 id="初期化割り当て">初期化・割り当て</h2>
+<p>Quaternion クラスは初期値を指定しない場合、単位クォータニオンで初期化されます。</p>
+<pre><code class="lang-cpp">Quaternion q;
+float x = q.x; // =&gt; 0.0
+float y = q.y; // =&gt; 0.0
+float z = q.z; // =&gt; 0.0
+float w = q.w; // =&gt; 1.0
+</code></pre><h2 id="演算">演算</h2>
+<p>冒頭で述べたとおり、乗算の順序に注意してください。</p>
+<p>以下の例はすべて同じ結果となり、q3 は先に q1、次に q2 の回転を適用した結果となります。</p>
+<pre><code class="lang-cpp">Quaternion q3 = Quaternion::multiply(q1, q2);
+</code></pre><pre><code class="lang-cpp">Quaternion q3 = q1 * q2;
+</code></pre><pre><code class="lang-cpp">Quaternion q3 = q1;
+q3 *= q2;
+</code></pre><p>正規化を行うには normalize メソッドを呼び出します。</p>
+<pre><code class="lang-cpp">q1.normalize(); // q1 自身を正規化する
+Quaternion q2 = Quaternion::normalize(q1); // q1 正規化した結果を q2 に格納する (q1 は変更されない)
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

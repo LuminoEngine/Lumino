@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#25991;&#23383;&#21015;&#12398;&#26360;&#24335;&#25351;&#23450; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#25991;&#23383;&#21015;&#12398;&#26360;&#24335;&#25351;&#23450; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../favicon.ico">
+    <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="文字列の書式指定">文字列の書式指定</h1>
+
+<p>C++ では書式を指定してオブジェクトと文字列を結合して出力するために printf や iostream を使用しますが、
+Lumino はそれらの安全で柔軟な代替手段として、Python や .NET のような複合書式文字列を使用する方法を提供します。</p>
+<h2 id="クイックスタート">クイックスタート</h2>
+<p>文字列の書式指定には <code>String::format</code> を使用するのが簡単です。</p>
+<p>この関数は書式として、.NET で使用されている複合書式文字列に似た書式を受け取ります。</p>
+<pre><code class="lang-cpp">String prefix = &quot;file&quot;;
+int index = 5;
+String fileName = String::format(&quot;{}-{}.txt&quot;, prefix, index);   // =&gt; file-5.txt
+</code></pre><h2 id="書式文字列の構文">書式文字列の構文</h2>
+<pre><code>{[index][,alignment][:formatString][precision]}
+</code></pre><ul>
+<li>index<ul>
+<li>引数リストに指定された値の番号。</li>
+</ul>
+</li>
+<li>alignment<ul>
+<li>フィールドの幅。書式設定された文字列よりも長い場合空白で埋められ、値が正の場合は右揃え、負の場合は左揃えになります。</li>
+</ul>
+</li>
+<li>formatString<ul>
+<li>書式指定文字列。以下のセクションを参照してください。</li>
+</ul>
+</li>
+<li>precision<ul>
+<li>精度指定子。formatString によって意味が変わります。</li>
+</ul>
+</li>
+</ul>
+<h3 id="引数リストの番号">引数リストの番号</h3>
+<p>{} 内に数字を指定することで、引数リストのどの値を埋め込むかを選択できます。</p>
+<pre><code class="lang-cpp">String::format(&quot;{0}-{1}-{0}&quot;, &quot;foo&quot;, &quot;bar&quot;));   // =&gt; &quot;foo-bar-foo&quot;
+</code></pre><p>省略した場合は引数リストを順に埋め込みます。</p>
+<pre><code class="lang-cpp">String::format(&quot;{}-{}&quot;, &quot;foo&quot;, &quot;bar&quot;));   // =&gt; &quot;foo-bar&quot;
+</code></pre><h3 id="10-進数-d-書式指定子">10 進数 (&quot;D&quot;) 書式指定子</h3>
+<p>数値を 10 進数文字列に変換します。入力は整数型のみサポートします。</p>
+<p>精度指定子は変換後の文字列の最小桁数です。
+出力がこの桁数未満の場合は0埋めを行います。</p>
+<pre><code class="lang-cpp">String::format(&quot;{0:D}&quot;, 12345));   // =&gt; &quot;12345&quot;
+String::format(&quot;{0:d}&quot;, -12345));  // =&gt; &quot;-12345&quot;
+String::format(&quot;{0:D8}&quot;, 12345));  // =&gt; &quot;00012345&quot;
+</code></pre><h3 id="16-進数-x-書式指定子">16 進数 (&quot;X&quot;) 書式指定子</h3>
+<p>数値を 16 進数文字列に変換します。入力は整数型のみサポートします。
+書式指定子が大文字か小文字かによって出力される文字列の大文字か小文字が決まります。</p>
+<p>精度指定子は変換後の文字列の最小桁数です。
+出力がこの桁数未満の場合は0埋めを行います。</p>
+<pre><code class="lang-cpp">String::format(&quot;{0:x}&quot;, 0x2045e);  // =&gt; &quot;2045e&quot;
+String::format(&quot;{0:X}&quot;, 0x2045e);  // =&gt; &quot;2045E&quot;
+String::format(&quot;{0:X8}&quot;, 0x2045e); // =&gt; &quot;0002045E&quot;
+String::format(&quot;0x{0:X}&quot;, 255);    // =&gt; &quot;0xFF&quot;
+</code></pre><h3 id="固定小数点-f-書式指定子">固定小数点 (&quot;F&quot;) 書式指定子</h3>
+<p>実数を固定小数点の文字列に変換します。</p>
+<p>精度指定子は小数部の桁数です。</p>
+<pre><code class="lang-cpp">String::format(&quot;{0:F}&quot;, 25.1879));                 // =&gt; &quot;25.1879&quot;
+String::format(&quot;{0:f}&quot;, 25.1879));                 // =&gt; &quot;25.1879&quot;
+String::format(&quot;{0:F2}&quot;, 25.1879));                // =&gt; &quot;25.19&quot;
+String::format(Locale(&quot;fr&quot;), &quot;{0:F2}&quot;, 25.1879)); // =&gt; &quot;25,187900&quot;
+</code></pre><h3 id="指数-e-書式指定子">指数 (&quot;E&quot;) 書式指定子</h3>
+<p>実数を指数表現の文字列に変換します。
+書式指定子が大文字か小文字かによって出力される文字列の大文字か小文字が決まります。</p>
+<p>精度指定子は小数部の桁数です。</p>
+<pre><code class="lang-cpp">String::format(&quot;{0:e}&quot;, 12345.6789);                // =&gt; &quot;1.234568e+004&quot;
+String::format(&quot;{0:E10}&quot;, 12345.6789);              // =&gt; &quot;1.2345678900E+004&quot;
+String::format(&quot;{0:e4}&quot;, 12345.6789);               // =&gt; &quot;1.2346e+004&quot;
+String::format(Locale(&quot;fr&quot;), &quot;{0:E}&quot;, 12345.6789); // =&gt; &quot;1,234568E+004&quot;
+</code></pre><h3 id="-のエスケープ">{} のエスケープ</h3>
+<p>左中かっこ ({) および右中かっこ (}) は、書式指定項目の開始および終了として解釈されます。
+したがって、左中かっこおよび右中かっこを文字として表示するためには、エスケープ シーケンスを使用する必要があります。
+左中かっこを 1 つ (&quot;{&quot;) 表示するには、左中かっこ 2 つ (&quot;{{&quot;) を固定テキストに指定します。</p>
+<pre><code class="lang-cpp">String::format(&quot;{{0}}&quot;);         // =&gt; &quot;{0}&quot;
+String::format(&quot;{{{0}}}&quot;, 1);    // =&gt; &quot;{1}&quot;
+</code></pre><h2 id="型安全性">型安全性</h2>
+<p>引数リストに指定された値の型が受け入れられない場合、 コンパイルエラーによってコンパイル時に不正を検出します。</p>
+<p>また、型のサイズは引数リストに指定された値の型から求めるため printf 書式の移植性の問題もありません。</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

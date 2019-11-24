@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Lumino &#12398; C++ &#12503;&#12525;&#12464;&#12521;&#12511;&#12531;&#12464;&#12460;&#12452;&#12489; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Lumino &#12398; C++ &#12503;&#12525;&#12464;&#12521;&#12511;&#12531;&#12464;&#12460;&#12452;&#12489; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../favicon.ico">
+    <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="lumino-の-c-プログラミングガイド">Lumino の C++ プログラミングガイド</h1>
+
+<h2 id="メモリ管理">メモリ管理</h2>
+<p>C++ では通常、new したメモリはプログラマが責任をもって delete しなければメモリリークが発生してしまいます。メモリリークは代表的な問題ですが、C++ はそれ以外にもメモリやポインタに起因する不具合を作りこんでしまいやすいと言われています。</p>
+<h3 id="スマートポインタについて">スマートポインタについて</h3>
+<p>そういった問題の対策のひとつとして、確保したメモリを自動的に解放してくれるクラスが考え出されました。このようなクラスを「スマートポインタ」と呼びます。</p>
+<p>確保したメモリのポインタをスマートポインタに渡すと、スマートポインタはそのメモリに対する所有権を取得します。</p>
+<p>確保したメモリは、いずれかのスマートポインタが所有権を保持している間は解放されません。
+所有権を持つスマートポインタが全て破棄されれば、その時点で解放されます。</p>
+<p>C++11 以降、<code>shared_ptr&lt;T&gt;</code> クラスなどのスマートポインタクラスが標準ライブラリとして追加されています。</p>
+<h3 id="lumino-のスマートポインタについて">Lumino のスマートポインタについて</h3>
+<p>Lumino のスマートポインタは <code>Ref&lt;T&gt;</code> クラスです。</p>
+<p>Lumino のオブジェクト (ln::RefObject のサブクラス) は、オブジェクト自身が参照カウントという値を持ちます。これによって何個のスマートポインタから所有されているかを表します。</p>
+<p>基本的な使い方は次のようになります。</p>
+<pre><code>class MyObject : public ln::RefObject   // RefObject を継承してクラスを定義する
+{};
+
+void Main()
+{
+    // MyObject のインスタンスを作成し、その所有権を持つ ptr を作成
+    Ref&lt;MyObject&gt; ptr = ln::makeRef&lt;MyObject&gt;();
+
+} // ここで ptr のデストラクタが呼ばれて所有権を持つ Ref がいなくなったので、MyObject のインスタンスが解放される
+</code></pre><h3 id="lumino-におけるスマートポインタと通常ポインタの使い分けについて">Lumino におけるスマートポインタと通常ポインタの使い分けについて</h3>
+<p>何らかのオブジェクトを作成して返す関数は、必ずスマートポインタを返します。
+例えば、Assets クラスの loadTexture メソッドの宣言は次のようになっています。</p>
+<pre><code>static Ref&lt;Texture2D&gt; loadTexture(const StringRef&amp; filePath);
+</code></pre><p>一方、既に Lumino のエンジン内部やほかのオブジェクトが保持しているオブジェクトを返すだけの関数は、通常のポインタを返します。
+例えば、Engine::initialize() 時に内部で作成されるカメラを返す、Engine クラスの mainCamera() メソッドの宣言は次のようになっています。</p>
+<pre><code>static Camera* mainCamera();
+</code></pre><p>どちらにしても、返ってきたポインタの delete は不要です。</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#30011;&#20687;&#12398;&#34920;&#31034; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#30011;&#20687;&#12398;&#34920;&#31034; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../../favicon.ico">
+    <link rel="stylesheet" href="../../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../../toc.html">
+    <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="画像の表示">画像の表示</h1>
+
+<h2 id="アセットの準備">アセットの準備</h2>
+<p>ゲームを作るために必要な、画像や音声などの素材のことを <code>アセット</code> と呼びます。</p>
+<p>まず最初に、次の zip ファイルをダウンロードしてください。</p>
+<ul>
+<li><a href="Assets.zip">Assets.zip</a></li>
+</ul>
+<p>この中に、このチュートリアルで作成するゲームのアセットが入っています。</p>
+<p>この zip ファイルの中身を、プロジェクトフォルダの中にある Assets というフォルダへ展開してください。</p>
+<p>TODO: SS</p>
+<h2 id="テクスチャを読み込む">テクスチャを読み込む</h2>
+<p>Lumino では画像のことを <code>テクスチャ</code> と呼びます。</p>
+<p>画像をプログラムで扱うにはまず PNG や JPEG などの画像ファイルを読み込み、テクスチャを作成します。</p>
+<pre><code class="lang-cpp">void Main()
+{
+    Ref&lt;Texture&gt; skyTexture = Assets::loadTexture(u&quot;sky&quot;);
+
+    while (Engine::update())
+    {
+    }
+}
+</code></pre><p><code>Assets::loadTexture</code> というメソッドで &quot;sky&quot; という名前の画像ファイルを読み込んでテクスチャを作成し、 <code>Ref&lt;Texture&gt;</code> という型の変数 skyTexture にテクスチャを格納します。</p>
+<p>読み込まれるファイルはプロジェクトの Assets フォルダの中にある sky.png ファイルです。（ファイルの拡張子は省略可能です）</p>
+<p><code>Ref</code> は「スマートポインタ」と呼ばれる、ポインタを安全に扱うための機能です。解放忘れをはじめとした問題を防止するために使用します。</p>
+<h3 id="スマートポインタ-について">スマートポインタ について</h3>
+<p>多くの C++ の入門本やサイトでは「new によってオブジェクトを作成し、必ず delete で解放すること」と解説されています。
+しかし、スマートポインタを使うことで、オブジェクトが不要になったとき自動的に delete されるようになります。</p>
+<p>もう一度、プログラムで確認してみましょう。</p>
+<pre><code class="lang-cpp">void Main()
+{
+    Ref&lt;Texture&gt; skyTexture = Assets::loadTexture(u&quot;sky&quot;);
+
+    while (Engine::update())
+    {
+    }
+
+    // Main を抜けるとき、もう skyTexture は不要になるため、作成したテクスチャは delete される。
+}
+</code></pre><p>Ref を使っている限り、delete は不要です。というより、必要に応じて自動的に delete されるため <strong>自分で delete してはなりません。</strong></p>
+<p>Ref は Lumino を使う上で非常に重要なキーワードで、今後もたくさん目にすることになります。必ず覚えておいてください。</p>
+<p>より詳細な説明は <a href="../../programming-guide/cpp.html">C++ プログラミングガイドのメモリ管理</a> を参照してください。</p>
+<h2 id="画像を表示する">画像を表示する</h2>
+<p>画像を表示するためには、<code>スプライト</code> と呼ばれるオブジェクトを使用します。</p>
+<p>単に画像と言っても、実際のシーンではキャラクターの位置や向き、透明度、アニメーションなど様々な動作が必要になります。スプライトには、そういった操作で必要となる機能が組み込まれています。</p>
+<p>ちょうど、テクスチャを張り付ける透明な板のようなものをイメージしてください。</p>
+<p>次のプログラムは、画像ファイルを読み込み、スプライトを表示します。</p>
+<pre><code class="lang-cpp">#include &lt;Lumino.hpp&gt;
+
+void Main()
+{
+    Ref&lt;Texture&gt; skyTexture = Assets::loadTexture(u&quot;sky&quot;);
+    Ref&lt;Sprite&gt; skySprite = Sprite::create(skyTexture, 16, 12);
+
+    while (Engine::update())
+    {
+    }
+}
+</code></pre><p>実行すると、次のような画像が表示されます。</p>
+<p><img src="img/texture-and-sprite-1.png" alt=""></p>
+<p><code>Sprite::create(skyTexture, 16, 12)</code> は、先ほど読み込んだテクスチャを表示する、横幅16, 縦幅12 のスプライトを作成します。</p>
+<p>作成したスプライトは、Engine::update() によって自動的に画面に描画されます。</p>
+<h2 id="サイズの単位は">サイズの単位は？</h2>
+<p>16 や 12 という数字はどのようにして求めたのでしょうか？</p>
+<p>Lumino は 3D をベースとしたゲームエンジンです（ただし、3D がメインというより、2D ゲームの表現力を高めるために 3D を利用する、と言った方が正しいかもしれません）。そのため、何らかの描画を行うオブジェクトは基本的に 3D 空間に配置されます。</p>
+<p>先のチュートリアルになりますが、<a href="14-debug.md">デバッグ</a> の機能を使って「カメラ」を操作し、先ほどのスプライトを手前右上の位置から見下ろすと次のように表示されます。</p>
+<p><img src="img/texture-and-sprite-2.png" alt=""></p>
+<p>16 や 12 という数字は、このグリッドが示す距離の単位です。 (ちなみに、Lumino はこの 1 つ分を 1 メートルと考えています。これは物理演算を考えるときに重要な単位となってきます)</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

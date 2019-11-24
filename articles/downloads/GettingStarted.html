@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#38283;&#30330;&#29872;&#22659;&#12398;&#28310;&#20633; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#38283;&#30330;&#29872;&#22659;&#12398;&#28310;&#20633; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="開発環境の準備">開発環境の準備</h1>
+
+<h2 id="必要なソフトウェアをインストールする">必要なソフトウェアをインストールする</h2>
+<h3 id="visual-studio-のインストール">Visual Studio のインストール</h3>
+<p><a href="https://www.visualstudio.com/ja-jp/downloads/download-visual-studio-vs#DownloadFamilies_2">Visual Studio の Web ページ</a> から Visual Studio をダウンロードし、インストールしてください。</p>
+<p>Lumino は以下のバージョンに対応しています。</p>
+<ul>
+<li>Visual Studio 2013</li>
+<li>Visual Studio 2015</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h3 id="directx-エンドユーザーランタイムのインストール">DirectX エンドユーザーランタイムのインストール</h3>
+<p><a href="http://www.microsoft.com/ja-jp/download/details.aspx?id=35">DirectX エンドユーザーランタイムのダウンロードページ</a> から 「DirectX エンド ユーザー ランタイム Web インストーラ」をダウンロード、インストールしてください。</p>
+<h2 id="lumino-をインストールする">Lumino をインストールする</h2>
+<p><a href="index.html">Lumino のダウンロードページ</a> からインストーラをダウンロードし、実行してください。</p>
+<p>インストーラの指示に従ってインストールを行います。</p>
+<p><img src="img/installer.png" alt=""></p>
+<h2 id="プロジェクトを作成する">プロジェクトを作成する</h2>
+<ol>
+<li>Visual Studio を起動し、メニューから [ファイル] &gt; [新規作成] &gt; [プロジェクト] を選択します。</li>
+<li>表示された [新しいプロジェクト] ダイアログの [テンプレート] &gt; [Visual C++] の一覧にある [Lumino Project] を選択します。</li>
+<li>プロジェクト名を入力して、[OK] をクリックします。</li>
+</ol>
+<p><img src="img/1_1.png" alt=""></p>
+<h2 id="プログラムを実行してウィンドウを表示する">プログラムを実行してウィンドウを表示する</h2>
+<p>最初からプロジェクトに含まれている Main.cpp には画像を表示するプログラムが書かれていますが、
+ここでは Lumino を動かすための最も短いコードで、基本的な流れを説明します。</p>
+<pre><code class="lang-cpp">#include &lt;Lumino.h&gt;
+using namespace ln;
+
+void Main()
+{
+    // Lumino の初期化処理
+    Engine::initialize();
+
+    // Lumino の更新処理
+    while (Engine::update())
+    {
+    }
+}
+</code></pre><p>実行すると、次のようなウィンドウが表示されます。</p>
+<p><img src="img/1_2.png" alt=""></p>
+<h3 id="main-関数">Main 関数</h3>
+<p>Lumino のエントリーポイントは Main 関数です。
+プラットフォームごとのエントリーポイントの隠蔽や、エラー処理をスムーズに行うため、独自のエントリーポイントを使用します。
+(main ではありませんので注意してください。通常の main 関数を使用することもできますが、ここでは触れません)</p>
+<h3 id="初期化処理">初期化処理</h3>
+<pre><code>Engine::initialize();
+</code></pre><p>Engine クラスの initialize 関数を呼び出すことで、Lumino の機能を使用するために必要な初期化処理を行います。
+初期化に成功するとウインドウが表示されます。</p>
+<h3 id="更新処理">更新処理</h3>
+<pre><code>while (Engine::update())
+{
+}
+</code></pre><p>このループは、ウィンドウが閉じられるまでの間、1秒間に60回の周期で実行され続けます。
+Engine::update() はウインドウが閉じられていなければ true を返し、ウインドウ右上の×ボタンを押すなどで閉じられた場合は false を返します。</p>
+<p>このループ1回のことを「フレーム」と呼び、この中に</p>
+<ul>
+<li>プレイヤーの入力を確認し、</li>
+<li>キャラクターを移動し、</li>
+<li>ウィンドウに絵を描く</li>
+</ul>
+<p>といったプログラムを書くことでゲームを進行させます。</p>
+<h2 id="アンインストール">アンインストール</h2>
+<p>コントロールパネルの「プログラムのアンインストール」から該当バージョンをアンインストールしてください。</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

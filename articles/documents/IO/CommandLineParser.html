@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&#12467;&#12510;&#12531;&#12489;&#12521;&#12452;&#12531;&#24341;&#25968;&#12398;&#35299;&#26512; | Lumino website </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="&#12467;&#12510;&#12531;&#12489;&#12521;&#12452;&#12531;&#24341;&#25968;&#12398;&#35299;&#26512; | Lumino website ">
+    <meta name="generator" content="docfx 2.45.1.0">
+    
+    <link rel="shortcut icon" href="../../../favicon.ico">
+    <link rel="stylesheet" href="../../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../../styles/docfx.css">
+    <link rel="stylesheet" href="../../../styles/main.css">
+    <meta property="docfx:navrel" content="../../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-default ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="コマンドライン引数の解析">コマンドライン引数の解析</h1>
+
+<p>コマンドライン引数は通常、文字列のリストとしてアプリケーションに渡されますが、これを解析してアプリケーションとして意味のある値を取り出したり、ユーザーにとってわかりやすい使い方を示すことは容易ではありません。</p>
+<p>CommandLineParser は一連のオプションを定義し、コマンドライン引数を解析し、オプションの値を簡単に取得するためのインターフェイスを提供します。</p>
+<h2 id="クイックスタート">クイックスタート</h2>
+<p>次のプログラムは、オプションと位置引数を使用する例です。</p>
+<p>コピー元とコピー先2つのファイルパスを受け取り、ファイルコピーを行います。必要に応じて上書きするオプションを指定します。</p>
+<pre><code class="lang-cpp">int main(int argc, char** argv)
+{
+    CommandLineParser parser;
+    parser.addHelpOption();
+
+    auto* forceOpt = parser.addFlagOption(u&quot;f&quot;, u&quot;force&quot;, u&quot;Overwrite file.&quot;);
+    auto* sourceArg = parser.addPositionalArgument(u&quot;SOURCE&quot;, u&quot;source filename.&quot;);
+    auto* destArg = parser.addPositionalArgument(u&quot;DEST&quot;, u&quot;destination filename.&quot;);
+
+    if (parser.process(argc, argv))
+    {
+        FileSystem::copyFile(sourceArg-&gt;value(), destArg-&gt;value(), parser.has(forceOpt));
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+</code></pre><p>&quot;--help&quot; や &quot;-h&quot; オプションを指定することで、コマンドの使い方が表示されます。</p>
+<pre><code>$ MyApp --help
+usage:
+  MyApp [options...] SOURCE DEST
+
+options:
+  -h, --help    Display this help.
+  -f, --force   Overwrite file.
+
+arguments:
+  SOURCE        source filename.
+  DEST          destination filename.
+</code></pre><p>このアプリケーションを使うには次のようなコマンドを入力します。</p>
+<pre><code class="lang-bash"># ファイル file1.txt を file2.txt へ上書きコピーする
+$ MyApp -f file1.txt file2.txt
+</code></pre><h2 id="使い方の流れ">使い方の流れ</h2>
+<ol>
+<li>CommandLineParser のインスタンスへ基本的な情報を設定する</li>
+<li>コマンドライン引数の情報を設定する</li>
+<li>コマンドライン引数の解析を行う</li>
+<li>2 で設定したコマンドライン引数情報から値を取り出す</li>
+</ol>
+<h3 id="1-commandlineparser-のインスタンスへ基本的な情報を設定する">1. CommandLineParser のインスタンスへ基本的な情報を設定する</h3>
+<p>必要に応じて、コマンドラインアプリケーションとして一般的に使用される機能の設定を行います。</p>
+<pre><code class="lang-cpp">CommandLineParser parser;
+
+// &quot;-h&quot; と &quot;--help&quot; オプションでヘルプを表示できるようにする
+parser.addHelpOption();
+
+// &quot;-v&quot; と &quot;--version&quot; オプションでバージョンを表示できるようにする
+parser.addVersionOption(u&quot;1.2.0&quot;);
+
+// ヘルプにアプリケーションの説明を表示する
+parser.setApplicationDescription(u&quot;sample application.&quot;);
+</code></pre><h3 id="2-コマンドライン引数の情報を設定する">2. コマンドライン引数の情報を設定する</h3>
+<p>CommandLineParser::addFlagOption() や CommandLineParser::addPositionalArgument() を使用して、CommandLineParser のインスタンスに引数情報を登録します。</p>
+<pre><code class="lang-cpp">CommandLineOption* forceOpt = parser.addFlagOption(u&quot;f&quot;, u&quot;force&quot;, u&quot;Overwrite file.&quot;);
+CommandLinePositionalArgument* sourceArg = parser.addPositionalArgument(u&quot;SOURCE&quot;, u&quot;source filename.&quot;);
+</code></pre><h3 id="3-コマンドライン引数の解析を行う">3. コマンドライン引数の解析を行う</h3>
+<p>CommandLineParser::process() は main() などから受け取ったコマンドライン引数をそのまま渡して解析できます。</p>
+<p>また、引数として --help など手順 1 で設定したビルトインオプションが入力されていれば標準出力します。</p>
+<p>解析の結果、値を取り出すことができる場合、CommandLineParser::process() は true を返します。</p>
+<pre><code class="lang-cpp">if (parser.process(argc, argv))
+{
+    // 解析成功。値を取り出すことができる。
+}
+else if (!parser.hasError())
+{
+    // --help などを表示した。解析失敗ではないが、値を取り出すことはできない。
+    return 0;
+}
+else
+{
+    // 解析失敗
+    return 1;
+}
+</code></pre><h3 id="4-2-で設定したコマンドライン引数情報から値を取り出す">4. 2 で設定したコマンドライン引数情報から値を取り出す</h3>
+<p>オプションの有無を確認するには CommandLineParser::has() を使います。</p>
+<p>値を取得するには、CommandLineOption や CommandLinePositionalArgument クラスの value() を使います。
+値は文字列として取得できます。</p>
+<pre><code class="lang-cpp">if (parser.process(argc, argv))
+{
+    if (parser.has(forceOpt))
+    {
+        // --force が指定されている
+    }
+
+    // 値を取り出す
+    String source = sourceArg-&gt;value();
+}
+</code></pre></article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Copyright © 2017-2019 lriki
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
