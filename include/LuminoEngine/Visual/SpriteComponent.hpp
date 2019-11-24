@@ -143,6 +143,8 @@ public:
 protected:
     void onRender(RenderingContext* context);
 
+    LN_SERIALIZE_CLASS_VERSION(1);
+    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     SpriteComponent();

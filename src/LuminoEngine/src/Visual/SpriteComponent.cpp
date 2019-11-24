@@ -264,9 +264,12 @@ void SpriteComponent::onRender(RenderingContext* context)
     context->drawSprite(
         Matrix(), renderSize, anchorPoint, renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
+}
 
-
-
+void SpriteComponent::serialize(Archive& ar)
+{
+    VisualComponent::serialize(ar);
+    ar & makeNVP(u"material", m_material);
 }
 
 } // namespace ln
