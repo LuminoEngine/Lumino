@@ -51,14 +51,24 @@ ln::Result Workspace::newMainProject(const ln::Path& projectDir, const ln::Strin
 {
 	if (LN_REQUIRE(!m_mainProject)) return false;
     m_mainProject = ln::makeRef<Project>(this);
-	return m_mainProject->newProject(projectDir, projectName, u"", u"NativeProject");
+    if (!m_mainProject->newProject(projectDir, projectName, u"", u"NativeProject")) {
+        m_mainProject = nullptr;
+        return false;
+    }
+    postMainProjectLoaded();
+    return true;
 }
 
 ln::Result Workspace::openMainProject(const ln::Path& filePath)
 {
 	if (LN_REQUIRE(!m_mainProject)) return false;
     m_mainProject = ln::makeRef<Project>(this);
-	return m_mainProject->openProject2(filePath);
+    if (!m_mainProject->openProject2(filePath)) {
+        m_mainProject = nullptr;
+        return false;
+    }
+    postMainProjectLoaded();
+    return true;
 }
 
 ln::Result Workspace::closeMainProject()

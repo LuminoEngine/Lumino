@@ -64,19 +64,27 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 	//tileset->reset(tilesetMaterial, 16, 16);
 
 	auto layer = ln::makeObject<ln::TilemapLayer>();
-	layer->resize(5, 5);
+	layer->resize(60, 30);
 	layer->setTileSize(ln::Size(1, 1));
 	layer->setTileId(0, 0, 1);
 	layer->setTileId(1, 1, 1);
-	layer->setTileId(0, 4, 1);
-	layer->setTileId(1, 4, 1);
-	layer->setTileId(2, 4, 1);
-	layer->setTileId(3, 4, 1);
-	layer->setTileId(4, 4, 1);
+    for (auto x = 0; x < layer->getWidth(); x++) {
+        layer->setTileId(x, layer->getHeight() - 1, 1);
+    }
 	auto tilemapModel = ln::makeObject<ln::TilemapModel>();
 	tilemapModel->setTileset(tileset);
 	tilemapModel->addLayer(layer);
 	tilemap->setTilemapModel(tilemapModel);
+
+
+
+    //auto tex1Asset = context->assetDatabase()->openAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/Objects-1.png");
+    //auto tex1 = dynamic_cast<ln::Texture*>(tilesetAsset->target());
+    auto tex1 = ln::Assets::loadTexture(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/Objects-1.png");
+    auto sprite1 = ln::Sprite::create(tex1, 10, 10);
+    sprite1->setPosition(5, 1, 5);
+    scene->addObject(sprite1);
+    //"D:\Proj\LN\PrivateProjects\HC0\Assets\Scenes\Objects-1.png"
 
 	return context->assetDatabase()->createAsset(scene, filePath);
 }
