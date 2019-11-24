@@ -1,0 +1,34 @@
+name: github pages
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Setup docfx
+      run: choco install docfx --version=2.45.1
+
+    - name: Build
+      run: |
+        cd docs/WebDocument
+        docfx build
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v2.4.0
+      env:
+       ACTIONS_DEPLOY_KEY: ${{ secrets.CI_PUSH_TOKEN }}
+       PUBLISH_BRANCH: gh-pages
+       PUBLISH_DIR: ./_site
+
