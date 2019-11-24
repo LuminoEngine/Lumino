@@ -28,7 +28,10 @@ jobs:
         cd docs/WebDocument
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        echo "${GITHUB_ACTOR}@users.noreply.github.com"
+        ls
         git clone https://${{ secrets.CI_PUSH_TOKEN }}@github.com/lriki/lriki.github.io _docs_repo
+        ls
         Copy-Item _site -destination _docs_repo/latest-lumino-webdocs -recurse -force
         git commit -m 'Deploy to GitHub Pages'
         git push
