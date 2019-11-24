@@ -14,7 +14,6 @@ jobs:
 
     - name: Build
       uses: nikeee/docfx-action@master
-      name: Build Documentation
       with:
         args: docs/WebDocument/docfx.json
 
