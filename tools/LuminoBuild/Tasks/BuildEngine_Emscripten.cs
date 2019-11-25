@@ -6,16 +6,14 @@ namespace LuminoBuild.Tasks
 {
     class BuildEngine_Emscripten : BuildTask
     {
-        public override string CommandName { get { return "BuildEngine_Emscripten"; } }
-
-        public override string Description { get { return "Build Emscripten"; } }
+        public override string CommandName => "BuildEngine_Emscripten";
 
         public override void Build(Builder builder)
         {
             var buildArchDir = "Emscripten";
 
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir);
-            var installDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, buildArchDir);
+            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.EngineInstallDirName);
             var cmakeSourceDir = builder.LuminoRootDir;
 
             Directory.CreateDirectory(buildDir);

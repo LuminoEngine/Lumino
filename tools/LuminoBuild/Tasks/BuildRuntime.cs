@@ -8,8 +8,6 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_BuildRuntime";
 
-        public override string Description => "BuildEngine_BuildRuntime";
-
         public override void Build(Builder builder)
         {
         }

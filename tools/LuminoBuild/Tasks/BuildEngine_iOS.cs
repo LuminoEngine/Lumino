@@ -6,9 +6,7 @@ namespace LuminoBuild.Tasks
 {
     class BuildEngine_iOS : BuildTask
     {
-        public override string CommandName { get { return "BuildEngine_iOS"; } }
-
-        public override string Description { get { return "BuildEngine_iOS"; } }
+        public override string CommandName => "BuildEngine_iOS";
 
         public override void Build(Builder builder)
         {
@@ -21,7 +19,7 @@ namespace LuminoBuild.Tasks
 
         private void BuildProject(Builder builder, string buildDirName, string config, string platform)
         {
-            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, buildDirName);
+            string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, buildDirName, BuildEnvironment.EngineInstallDirName);
 
             var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake"));
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildDirName);

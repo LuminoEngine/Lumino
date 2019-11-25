@@ -8,8 +8,6 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "CompressPackage";
 
-        public override string Description => "CompressPackage";
-
         public override void Build(Builder builder)
         {
             string localPackage = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);

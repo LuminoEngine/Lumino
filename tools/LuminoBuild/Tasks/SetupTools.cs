@@ -8,8 +8,6 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "SetupTools";
 
-        public override string Description => "SetupTools";
-
         public override void Build(Builder builder)
         {
         }

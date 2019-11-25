@@ -155,52 +155,24 @@ namespace LuminoBuild
         {
             foreach (var task in tasks)
             {
-                task.CheckPrerequisite(this);
-            }
-            foreach (var task in tasks)
-            {
-                if (task.Buildable)
+                Logger.WriteLine("[{0}] Task started.", task.CommandName);
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+
+                string oldCD = Directory.GetCurrentDirectory();
+                try
                 {
-                    Logger.WriteLine("[{0}] Task started.", task.CommandName);
-                    var sw = new System.Diagnostics.Stopwatch();
-                    sw.Start();
-
-                    string oldCD = Directory.GetCurrentDirectory();
-                    try
-                    {
-                        task.Build(this);
-                    }
-                    finally
-                    {
-                        Directory.SetCurrentDirectory(oldCD);
-                    }
-
-                    sw.Stop();
-                    Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
+                    task.Build(this);
                 }
+                finally
+                {
+                    Directory.SetCurrentDirectory(oldCD);
+                }
+
+                sw.Stop();
+                Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
             }
         }
-
-        public void CheckPrerequisite()
-        {
-            foreach (var rule in Tasks)
-            {
-                rule.CheckPrerequisite(this);
-            }
-        }
-
-        //public void Build()
-        //{
-        //    foreach (var rule in Tasks)
-        //    {
-        //        if (rule.Buildable)
-        //        {
-        //            Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
-        //            rule.Build(this);
-        //            Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
-        //        }
-        //    }
-        //}
 
         public bool HasFlagArgument(string name)
         {
@@ -222,22 +194,6 @@ namespace LuminoBuild
         /// ルールを実行するためのコマンド名
         /// </summary>
         public abstract string CommandName { get; }
-
-        /// <summary>
-        /// ルールの説明
-        /// </summary>
-        public abstract string Description { get; }
-
-        /// <summary>
-        /// ビルドできるか (CheckPrerequisite() で確定する)
-        /// </summary>
-        public bool Buildable { get; protected set; }
-
-        /// <summary>
-        /// 前提条件の確認
-        /// </summary>
-        /// <returns>この Rule を実行できるなら true</returns>
-        public virtual void CheckPrerequisite(Builder builder) { Buildable = true; }
 
         /// <summary>
         /// このルールをビルドする

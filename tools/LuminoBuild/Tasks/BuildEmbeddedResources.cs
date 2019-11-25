@@ -8,8 +8,6 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEmbeddedResources";
 
-        public override string Description => "BuildEmbeddedResources";
-
         public override void Build(Builder builder)
         {
             var searchDirs = new string[]

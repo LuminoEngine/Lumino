@@ -4,30 +4,17 @@ using System.IO;
 
 namespace LuminoBuild
 {
-    public class TargetArch
+    public class TargetInfo
     {
-        public string SourceDirName { get; set; }
-        public string DestDirName { get; set; }
+        public string Name { get; set; }
         public bool PdbCopy { get; set; } = false;
-    }
-
-    [Flags]
-    public enum BuildTargetFlags
-    {
-        None = 0x0000,
-        Windows = 0x0001,
-        Android = 0x0002,
-        macOS = 0x0004,
-        iOS = 0x0008,
-        Web = 0x0010,
-        All = 0xFFFF,
     }
 
     public class BuildEnvironment
     {
         public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
 
-        public const string CMakeTargetInstallDir = "CMakeInstallTemp";
+        public const string EngineInstallDirName = "EngineInstall";
         public const string emsdkVer = "sdk-1.38.12-64bit";
         public const string emVer = "1.38.12";
 
@@ -47,29 +34,31 @@ namespace LuminoBuild
         public static string AndroidNdkRootDir { get; set; }
         public static string AndroidCMakeToolchain { get; set; }
 
-        public static BuildTargetFlags BuildTarget { get; set; }
+        // Build settings
+        public static string Target { get; set; }
+        public static string Configuration { get; set; }
 
-        public static TargetArch[] TargetArchs = new TargetArch[]
+        // Build setting utils.
+        public static bool IsMSVCTarget { get { return Target.Contains("MSVC2017"); } }
+        public static bool IsWebTarget { get { return Target == "Emscripten"; } }
+        public static bool IsAndroidTarget { get { return Target.Contains("Android"); } }
+        public static bool IsMacOSTarget { get { return Target.Contains("macOS"); } }
+        public static bool IsIOSTarget { get { return Target.Contains("iOS"); } }
+
+        public static TargetInfo[] Targets = new TargetInfo[]
         {
-            new TargetArch(){ SourceDirName = "MSVC2017-x86-MD", DestDirName = "MSVC2017-x86-MD", PdbCopy = true },
-            new TargetArch(){ SourceDirName = "MSVC2017-x86-MT", DestDirName = "MSVC2017-x86-MT", PdbCopy = true },
-            //new TargetArch(){ SourceDirName = "MSVC2017-x64-MD", DestDirName = "MSVC2017-x64-MD", PdbCopy = true },
-            //new TargetArch(){ SourceDirName = "MSVC2017-x64-MT", DestDirName = "MSVC2017-x64-MT", PdbCopy = true },
-            new TargetArch(){ SourceDirName = "Emscripten", DestDirName = "Emscripten-Release" },
-            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Debug", DestDirName = "Android-arm64-v8a-Debug" },
-            new TargetArch(){ SourceDirName = "Android-arm64-v8a-Release", DestDirName = "Android-arm64-v8a-Release" },
-            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Debug", DestDirName = "Android-armeabi-v7a-Debug" },
-            new TargetArch(){ SourceDirName = "Android-armeabi-v7a-Release", DestDirName = "Android-armeabi-v7a-Release" },
-            new TargetArch(){ SourceDirName = "Android-x86-Debug", DestDirName = "Android-x86-Debug" },
-            new TargetArch(){ SourceDirName = "Android-x86-Release", DestDirName = "Android-x86-Release" },
-            new TargetArch(){ SourceDirName = "Android-x86_64-Debug", DestDirName = "Android-x86_64-Debug" },
-            new TargetArch(){ SourceDirName = "Android-x86_64-Release", DestDirName = "Android-x86_64-Release" },
-            new TargetArch(){ SourceDirName = "macOS-Debug", DestDirName = "macOS-Debug" },
-            new TargetArch(){ SourceDirName = "macOS-Release", DestDirName = "macOS-Release" },
-            new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Debug", DestDirName = "iOS-SIMULATOR64-Debug" },
-            new TargetArch(){ SourceDirName = "iOS-SIMULATOR64-Release", DestDirName = "iOS-SIMULATOR64-Release" },
-            new TargetArch(){ SourceDirName = "iOS-OS-Debug", DestDirName = "iOS-OS-Debug" },
-            new TargetArch(){ SourceDirName = "iOS-OS-Release", DestDirName = "iOS-OS-Release" },
+            new TargetInfo(){ Name = "MSVC2017-x86-MD", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x86-MT", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x64-MD", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x64-MT", PdbCopy = true },
+            new TargetInfo(){ Name = "Emscripten" },
+            new TargetInfo(){ Name = "Android-arm64-v8a" },
+            new TargetInfo(){ Name = "Android-armeabi-v7a" },
+            new TargetInfo(){ Name = "Android-x86"},
+            new TargetInfo(){ Name = "Android-x86_64" },
+            new TargetInfo(){ Name = "macOS" },
+            new TargetInfo(){ Name = "iOS-SIMULATOR64" },
+            new TargetInfo(){ Name = "iOS-OS" },
         };
 
         public static void Initialize(string repoRootDir)
@@ -102,8 +91,7 @@ namespace LuminoBuild
             Directory.CreateDirectory(BuildToolsDir);
 
             // Install emsdk
-            if (BuildTarget.HasFlag(BuildTargetFlags.Web) &&
-                Utils.IsWin32)
+            if (IsWebTarget && Utils.IsWin32)
             {
                 if (!Directory.Exists(EmsdkDir))
                 {
@@ -128,8 +116,7 @@ namespace LuminoBuild
             }
 
             // Install Android SDK
-            if (BuildTarget.HasFlag(BuildTargetFlags.Android) &&
-                Utils.IsWin32)
+            if (IsAndroidTarget && Utils.IsWin32)
             {
                 var androidSdk = Path.Combine(BuildToolsDir, "android-sdk");
                 if (!Directory.Exists(androidSdk))

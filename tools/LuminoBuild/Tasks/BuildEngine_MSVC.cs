@@ -7,9 +7,7 @@ namespace LuminoBuild.Tasks
 {
     class BuildEngine_MSVC : BuildTask
     {
-        public override string CommandName { get { return "BuildEngine_MSVC"; } }
-
-        public override string Description { get { return "Build engine for C++."; } }
+        public override string CommandName => "BuildEngine_MSVC";
         
         public override void Build(Builder builder)
         {

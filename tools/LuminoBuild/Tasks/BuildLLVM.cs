@@ -8,9 +8,7 @@ namespace LuminoBuild.Tasks
 {
     class BuildLLVM : BuildTask
     {
-        public override string CommandName { get { return "BuildLLVM"; } }
-
-        public override string Description { get { return "BuildLLVM"; } }
+        public override string CommandName => "BuildLLVM";
 
         public override void Build(Builder builder)
         {

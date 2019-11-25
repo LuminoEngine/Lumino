@@ -8,9 +8,7 @@ namespace LuminoBuild.Tasks
 {
     class BuildDocuments : BuildTask
     {
-        public override string CommandName { get { return "BuildDocuments"; } }
-
-        public override string Description { get { return "BuildDocuments"; } }
+        public override string CommandName => "BuildDocuments";
 
         public override void Build(Builder builder)
         {

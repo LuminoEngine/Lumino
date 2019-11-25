@@ -13,9 +13,7 @@ namespace LuminoBuild.Tasks
      */
     class BuildExternalProjects : BuildTask
     {
-        public override string CommandName { get { return "BuildExternalProjects"; } }
-
-        public override string Description { get { return "BuildExternalProjects"; } }
+        public override string CommandName => "BuildExternalProjects";
 
 
         // (システム標準の cmake を使う系)
@@ -318,7 +316,7 @@ namespace LuminoBuild.Tasks
             if (Utils.IsWin32)
             {
                 // Visual C++
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.Windows))
+                if (BuildEnvironment.IsMSVCTarget)
                 {
                     foreach (var target in MakeVSProjects.Targets)
                     {
@@ -347,7 +345,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 // Android
-                if (BuildEnvironment.AndroidStudioFound && BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.Android))
+                if (BuildEnvironment.AndroidStudioFound && BuildEnvironment.IsAndroidTarget)
                 {
                     foreach (var target in BuildEngine_AndroidJNI.Targets)
                     {
@@ -368,7 +366,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 // Emscripten
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.Web))
+                if (BuildEnvironment.IsWebTarget)
                 {
                     var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
@@ -391,7 +389,7 @@ namespace LuminoBuild.Tasks
             else
             {
                 // iOS
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.iOS))
+                if (BuildEnvironment.IsIOSTarget)
                 {
                     var targetInfos = new []
                     {
@@ -425,7 +423,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 // macOS
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.macOS))
+                if (BuildEnvironment.IsMacOSTarget)
                 {
                     var targetArgs = new[]
                     {

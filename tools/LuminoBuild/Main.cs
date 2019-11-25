@@ -7,12 +7,17 @@ namespace LuminoBuild
 {
     class Program
     {
+        // Usage: <Command> <Target> <Configuration>
+        //
+        // Command:         Task or Rule name
+        // Target:          BuildEnvironment.Targets
+        // Configuration:   Debug or Release or "" ("" は .sln など開発用で使いたいとき用)
         static void Main(string[] args)
         {
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakePackage" };
+                args = new string[] { "MakeVSProjects", "MSVC2017" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "Windows" };
                 //args = new string[] { "MakeLocalPackage", "disable-build-external" };
@@ -36,15 +41,9 @@ namespace LuminoBuild
             builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
             builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
-            BuildEnvironment.BuildTarget = BuildTargetFlags.None;
-            if (builder.HasFlagArgument("Windows")) BuildEnvironment.BuildTarget |= BuildTargetFlags.Windows;
-            if (builder.HasFlagArgument("Android")) BuildEnvironment.BuildTarget |= BuildTargetFlags.Android;
-            if (builder.HasFlagArgument("macOS")) BuildEnvironment.BuildTarget |= BuildTargetFlags.macOS;
-            if (builder.HasFlagArgument("iOS")) BuildEnvironment.BuildTarget |= BuildTargetFlags.iOS;
-            if (builder.HasFlagArgument("Web")) BuildEnvironment.BuildTarget |= BuildTargetFlags.Web;
-            if (BuildEnvironment.BuildTarget == BuildTargetFlags.None) BuildEnvironment.BuildTarget = BuildTargetFlags.All;
-
             BuildEnvironment.Initialize(builder.LuminoRootDir);
+            BuildEnvironment.Target = args[1];
+            BuildEnvironment.Configuration = (args.Length >= 2) ? args[2] : "";
 
 
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
@@ -88,7 +87,7 @@ namespace LuminoBuild
                     Console.WriteLine("{0,-8}   {1}", "Command", "Description");
                     foreach (var rule in builder.Tasks)
                     {
-                        Console.WriteLine("{0,-8} : {1}", rule.CommandName, rule.Description);
+                        Console.WriteLine("{0,-8}", rule.CommandName);
                     }
                     Console.WriteLine("all      : Build all.");
                     Console.WriteLine("exit     : Exit.");

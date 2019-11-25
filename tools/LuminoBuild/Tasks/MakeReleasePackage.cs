@@ -9,12 +9,11 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeReleasePackage";
 
-        public override string Description => "MakeReleasePackage";
-
         public bool FileMoving = false;
 
         public override void Build(Builder builder)
         {
+#if false
             var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
 
             string targetRootDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
@@ -121,6 +120,7 @@ namespace LuminoBuild.Tasks
                         Directory.Delete(path, true);
                 }
             }
+#endif
         }
 
         public static string[] externalLibs = new string[]
@@ -144,7 +144,7 @@ namespace LuminoBuild.Tasks
 
         public static void CopyEngineLibs(Builder builder, string tempInstallDir, string nativeEngineRoot, bool fileMoving)
         {
-
+#if false
             foreach (var arch in BuildEnvironment.TargetArchs)
             {
                 if (Directory.Exists(Path.Combine(tempInstallDir, arch.SourceDirName)))   // copy if directory exists.
@@ -205,6 +205,7 @@ namespace LuminoBuild.Tasks
                     }
                 }
             }
+#endif
         }
     }
 }
