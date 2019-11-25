@@ -42,21 +42,21 @@ end
 # 
 class Lumino::Engine
     # エンジンの初期化処理を行います。
-    def initialize(*args)
+    def initialize()
     end
 
     # エンジンの終了処理を行います。
-    def finalize(*args)
+    def finalize()
     end
 
     # 
     # @return [Boolean] アプリケーションの終了が要求されている場合は false を返します。
-    def update(*args)
+    def update()
     end
 
     # 。
     # @return [Lumino::UIControl] 
-    def main_ui_view(*args)
+    def main_ui_view()
     end
 
 end
@@ -75,21 +75,20 @@ end
 # 
 class Lumino::Texture2D < Texture
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
-    # @overload initialize(width, height)
-    #   テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
-    #   @param [Integer] width 
-    #   @param [Integer] height 
-    # @overload initialize(width, height, format)
-    #   テクスチャを作成します。
-    #   @param [Integer] width 
-    #   @param [Integer] height 
-    #   @param [Lumino::TextureFormat] format 
-    # @overload initialize(filePath, format)
-    #   ローカルのファイルを読み込み、テクスチャを作成します。
-    #     このメソッドは TextureImporter のユーティリティです。
-    #   @param [String] filePath 
-    #   @param [Lumino::TextureFormat] format 
-    def initialize(*args)
+    # @param [Integer] width 
+    # @param [Integer] height 
+    def initialize(width, height)
+    end
+    # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+    # @param [Integer] width 
+    # @param [Integer] height 
+    # @param [Lumino::TextureFormat] format 
+    def initialize(width, height, format)
+    end
+    # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+    # @param [String] filePath 
+    # @param [Lumino::TextureFormat] format 
+    def initialize(filePath, format)
     end
 
 end
@@ -104,12 +103,12 @@ end
 class Lumino::VisualComponent < Component
     # 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
     # @param [Boolean] value 
-    def visible=(*args)
+    def visible=(value)
     end
 
     # 可視状態を取得します。
     # @return [Boolean] 
-    def visible?(*args)
+    def visible?()
     end
 
 end
@@ -119,7 +118,7 @@ end
 class Lumino::SpriteComponent < VisualComponent
     # スプライトが表示するテクスチャを設定します。
     # @param [Lumino::Texture] texture 
-    def texture=(*args)
+    def texture=(texture)
     end
 
 end
@@ -129,13 +128,13 @@ end
 class Lumino::ComponentList
     # 
     # @return [Integer] 
-    def get_length(*args)
+    def get_length()
     end
 
     # 
     # @param [Integer] index 
     # @return [Lumino::Component] 
-    def get_item(*args)
+    def get_item(index)
     end
 
 end
@@ -144,84 +143,82 @@ end
 # 
 class Lumino::WorldObject
     # このオブジェクトの位置を設定します。
-    # @overload position=(pos)
-    #   このオブジェクトの位置を設定します。
-    #   @param [Lumino::Vector3] pos 
-    # @overload position=(x, y, z)
-    #   このオブジェクトの位置を設定します。
-    #   @param [Float] x 
-    #   @param [Float] y 
-    #   @param [Float] z 
-    def position=(*args)
+    # @param [Lumino::Vector3] pos 
+    def position=(pos)
+    end
+    # このオブジェクトの位置を設定します。
+    # @param [Float] x 
+    # @param [Float] y 
+    # @param [Float] z 
+    def position=(x, y, z)
     end
 
     # このオブジェクトの位置を位置を取得します。
     # @return [Lumino::Vector3] 
-    def position(*args)
+    def position()
     end
 
     # このオブジェクトの回転を設定します。
     # @param [Lumino::Quaternion] rot 
-    def rotation=(*args)
+    def rotation=(rot)
     end
 
     # このオブジェクトの回転をオイラー角から設定します。(radian)
     # @param [Float] x 
     # @param [Float] y 
     # @param [Float] z 
-    def set_euler_angles(*args)
+    def set_euler_angles(x, y, z)
     end
 
     # このオブジェクトの回転を取得します。
     # @return [Lumino::Quaternion] 
-    def rotation(*args)
+    def rotation()
     end
 
     # このオブジェクトの拡大率を設定します。
-    # @overload scale=(scale)
-    #   このオブジェクトの拡大率を設定します。
-    #   @param [Lumino::Vector3] scale 
-    # @overload scale=(xyz)
-    #   このオブジェクトの拡大率を設定します。
-    #   @param [Float] xyz 
-    # @overload scale=(x, y, z)
-    #   このオブジェクトの拡大率を設定します。
-    #   @param [Float] x 
-    #   @param [Float] y 
-    #   @param [Float] z 
-    def scale=(*args)
+    # @param [Lumino::Vector3] scale 
+    def scale=(scale)
+    end
+    # このオブジェクトの拡大率を設定します。
+    # @param [Float] xyz 
+    def scale=(xyz)
+    end
+    # このオブジェクトの拡大率を設定します。
+    # @param [Float] x 
+    # @param [Float] y 
+    # @param [Float] z 
+    def scale=(x, y, z)
     end
 
     # このオブジェクトの拡大率を取得します。
     # @return [Lumino::Vector3] 
-    def scale(*args)
+    def scale()
     end
 
     # このオブジェクトのローカルの中心位置を設定します。
-    # @overload center_point=(value)
-    #   このオブジェクトのローカルの中心位置を設定します。
-    #   @param [Lumino::Vector3] value 
-    # @overload center_point=(x, y, z)
-    #   このオブジェクトのローカルの中心位置を設定します。
-    #   @param [Float] x 
-    #   @param [Float] y 
-    #   @param [Float] z 
-    def center_point=(*args)
+    # @param [Lumino::Vector3] value 
+    def center_point=(value)
+    end
+    # このオブジェクトのローカルの中心位置を設定します。
+    # @param [Float] x 
+    # @param [Float] y 
+    # @param [Float] z 
+    def center_point=(x, y, z)
     end
 
     # このオブジェクトのローカルの中心位置を取得します。
     # @return [Lumino::Vector3] 
-    def center_point(*args)
+    def center_point()
     end
 
     # 
     # @return [Lumino::ComponentList] 
-    def components(*args)
+    def components()
     end
 
     # フレーム更新
     # @param [Float] elapsedSeconds 
-    def on_update(*args)
+    def on_update(elapsedSeconds)
     end
 
 end
@@ -231,12 +228,12 @@ end
 class Lumino::VisualObject < WorldObject
     # 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
     # @param [Boolean] value 
-    def visible=(*args)
+    def visible=(value)
     end
 
     # 可視状態を取得します。
     # @return [Boolean] 
-    def visible?(*args)
+    def visible?()
     end
 
 end
@@ -246,7 +243,7 @@ end
 class Lumino::Sprite < VisualObject
     # スプライトが表示するテクスチャを設定します。
     # @param [Lumino::Texture] texture 
-    def texture=(*args)
+    def texture=(texture)
     end
 
     # 
@@ -254,14 +251,14 @@ class Lumino::Sprite < VisualObject
     # @param [Float] y 
     # @param [Float] width 
     # @param [Float] height 
-    def set_source_rect(*args)
+    def set_source_rect(x, y, width, height)
     end
 
     # init
     # @param [Lumino::Texture] texture 
     # @param [Float] width 
     # @param [Float] height 
-    def initialize(*args)
+    def initialize(texture, width, height)
     end
 
 end
@@ -271,7 +268,7 @@ end
 class Lumino::UIEventArgs
     # イベントの発生元となった要素を取得します。
     # @return [Lumino::UIElement] 
-    def sender(*args)
+    def sender()
     end
 
 end
@@ -285,78 +282,76 @@ end
 # 
 class Lumino::UIElement < UILayoutElement
     # このオブジェクトの位置を設定します。
-    # @overload position=(pos)
-    #   このオブジェクトの位置を設定します。
-    #   @param [Lumino::Vector3] pos 
-    # @overload position=(x, y, z)
-    #   このオブジェクトの位置を設定します。
-    #   @param [Float] x 
-    #   @param [Float] y 
-    #   @param [Float] z 
-    def position=(*args)
+    # @param [Lumino::Vector3] pos 
+    def position=(pos)
+    end
+    # このオブジェクトの位置を設定します。
+    # @param [Float] x 
+    # @param [Float] y 
+    # @param [Float] z 
+    def position=(x, y, z)
     end
 
     # このオブジェクトの位置を位置を取得します。
     # @return [Lumino::Vector3] 
-    def position(*args)
+    def position()
     end
 
     # このオブジェクトの回転を設定します。
     # @param [Lumino::Quaternion] rot 
-    def rotation=(*args)
+    def rotation=(rot)
     end
 
     # このオブジェクトの回転をオイラー角から設定します。(radian)
     # @param [Float] x 
     # @param [Float] y 
     # @param [Float] z 
-    def set_euler_angles(*args)
+    def set_euler_angles(x, y, z)
     end
 
     # このオブジェクトの回転を取得します。
     # @return [Lumino::Quaternion] 
-    def rotation(*args)
+    def rotation()
     end
 
     # このオブジェクトの拡大率を設定します。
-    # @overload scale=(scale)
-    #   このオブジェクトの拡大率を設定します。
-    #   @param [Lumino::Vector3] scale 
-    # @overload scale=(xyz)
-    #   このオブジェクトの拡大率を設定します。
-    #   @param [Float] xyz 
-    # @overload scale=(x, y)
-    #   このオブジェクトの拡大率を設定します。
-    #   @param [Float] x 
-    #   @param [Float] y 
-    def scale=(*args)
+    # @param [Lumino::Vector3] scale 
+    def scale=(scale)
+    end
+    # このオブジェクトの拡大率を設定します。
+    # @param [Float] xyz 
+    def scale=(xyz)
+    end
+    # このオブジェクトの拡大率を設定します。
+    # @param [Float] x 
+    # @param [Float] y 
+    def scale=(x, y)
     end
 
     # このオブジェクトの拡大率を取得します。
     # @return [Lumino::Vector3] 
-    def scale(*args)
+    def scale()
     end
 
     # このオブジェクトのローカルの中心位置を設定します。
-    # @overload center_point=(value)
-    #   このオブジェクトのローカルの中心位置を設定します。
-    #   @param [Lumino::Vector3] value 
-    # @overload center_point=(x, y, z)
-    #   このオブジェクトのローカルの中心位置を設定します。
-    #   @param [Float] x 
-    #   @param [Float] y 
-    #   @param [Float] z 
-    def center_point=(*args)
+    # @param [Lumino::Vector3] value 
+    def center_point=(value)
+    end
+    # このオブジェクトのローカルの中心位置を設定します。
+    # @param [Float] x 
+    # @param [Float] y 
+    # @param [Float] z 
+    def center_point=(x, y, z)
     end
 
     # このオブジェクトのローカルの中心位置を取得します。
     # @return [Lumino::Vector3] 
-    def center_point(*args)
+    def center_point()
     end
 
     # Add element to container.
     # @param [Lumino::UIElement] child 
-    def add_child(*args)
+    def add_child(child)
     end
 
 end
@@ -371,7 +366,7 @@ end
 class Lumino::UIButtonBase < UIControl
     # set text.
     # @param [String] text 
-    def set_text(*args)
+    def set_text(text)
     end
 
 end
@@ -380,13 +375,13 @@ end
 # 
 class Lumino::UIButton < UIButtonBase
     # init.
-    def initialize(*args)
+    def initialize()
     end
 
     # Clicked イベントの通知を受け取るコールバックを登録します。
     # @param [Lumino::UIEventHandler] handler 
     # @return [] 
-    def connect_on_clicked(*args)
+    def connect_on_clicked(handler)
     end
 
 end

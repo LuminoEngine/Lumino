@@ -20,11 +20,45 @@ gem install yard
 ```
 
 ```
-yardoc Lumino.RubyYARDOCSource.generated.rb
+yardoc --main YARD.Main Lumino.RubyYARDOCSource.generated.rb
 ```
 
 ./doc フォルダに生成される。
 
+
+Gem
+----------
+
+準備
+```
+gem install rake-compiler
+```
+
+ビルド
+```
+rake compile
+rake build
+```
+
+デバッグ
+```
+gem install pkg/lumino-0.9.0.gem
+gem uninstall lumino
+```
+
+spec.files
+https://www.xmisao.com/2014/08/26/get-all-files-in-gemspec.html
+
+拡張ライブラリの gem をつくる
+http://tohka383.hatenablog.jp/entry/20130930/1380471977
+
+BundlerでC拡張を含んだgemを公開する
+https://gam0022.net/blog/2013/10/18/gems-with-extensions/
+
+gmake に paht が通っていると、それを使ってしまってエラーになるので注意
+https://github.com/rake-compiler/rake-compiler/blob/master/lib/rake/extensiontask.rb#L488
+gmake: *** No rule to make target '/C/Ruby26/include/ruby-2.6.0/ruby.h', needed by 'Lumino.RubyExt.generated.o'.  Stop.
+とかエラーになる
 
 Important
 ----------
