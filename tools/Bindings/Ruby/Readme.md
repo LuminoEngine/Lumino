@@ -43,6 +43,7 @@ rake build
 デバッグ
 ```
 gem install pkg/lumino-0.9.0.gem
+gem uninstall lumino
 ```
 
 spec.files
