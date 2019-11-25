@@ -76,13 +76,12 @@ void OutputBuffer::AppendLineInternal(const ln::StringRef& str)
 	//indent();
 	//m_buffer.append(str);
 	AppendLinesInternal(str, ln::String::Empty);
-	NewLine();
 }
 
 void OutputBuffer::AppendLinesInternal(const ln::StringRef& str, const ln::StringRef& lineHeader)
 {
-	ln::String ns = ln::String(str).replace(_T("\r"), _T(""));
-	ln::List<ln::String> lines = ns.split(_T("\n"));
+	ln::String ns = ln::String(str).replace(u"\r", u"");
+	ln::List<ln::String> lines = ns.split(u"\n", ln::StringSplitOptions::RemoveEmptyEntries);
 	for (int i = 0; i < lines.size(); i++)
 	{
 		if (lines[i].length() > 0) indent();
@@ -93,5 +92,6 @@ void OutputBuffer::AppendLinesInternal(const ln::StringRef& str, const ln::Strin
 		if (i != lines.size() - 1) NewLine();
 	}
 	m_state = State::LineHead;
+	NewLine();
 }
 

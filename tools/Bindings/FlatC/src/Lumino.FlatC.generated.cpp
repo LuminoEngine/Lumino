@@ -71,58 +71,46 @@ class LNWS_ln_WorldObject : public ln::WorldObject
 {
 public:
     static LnWorldObject_OnUpdate_OverrideCallback s_LnWorldObject_OnUpdate_OverrideCallback;
-
     virtual void onUpdate(float elapsedSeconds) override
     {
         if (s_LnWorldObject_OnUpdate_OverrideCallback) s_LnWorldObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
     }
-
     void onUpdate_CallBase(float elapsedSeconds)
     {
         ln::WorldObject::onUpdate(elapsedSeconds);
     }
-
 };
 LnWorldObject_OnUpdate_OverrideCallback LNWS_ln_WorldObject::s_LnWorldObject_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_VisualObject : public ln::VisualObject
 {
 public:
     static LnVisualObject_OnUpdate_OverrideCallback s_LnVisualObject_OnUpdate_OverrideCallback;
-
     virtual void onUpdate(float elapsedSeconds) override
     {
         if (s_LnVisualObject_OnUpdate_OverrideCallback) s_LnVisualObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
     }
-
     void onUpdate_CallBase(float elapsedSeconds)
     {
         ln::VisualObject::onUpdate(elapsedSeconds);
     }
-
 };
 LnVisualObject_OnUpdate_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Sprite : public ln::Sprite
 {
 public:
     static LnSprite_OnUpdate_OverrideCallback s_LnSprite_OnUpdate_OverrideCallback;
-
     virtual void onUpdate(float elapsedSeconds) override
     {
         if (s_LnSprite_OnUpdate_OverrideCallback) s_LnSprite_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
     }
-
     void onUpdate_CallBase(float elapsedSeconds)
     {
         ln::Sprite::onUpdate(elapsedSeconds);
     }
-
 };
 LnSprite_OnUpdate_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UIEventArgs : public ln::UIEventArgs
 {
@@ -446,7 +434,6 @@ LN_FLAT_API LnResult LnWorldObject_OnUpdate_SetOverrideCallback(LnWorldObject_On
     LNWS_ln_WorldObject::s_LnWorldObject_OnUpdate_OverrideCallback = callback;
     return LN_SUCCESS;
 }
-
 LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -477,7 +464,6 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_
     LNWS_ln_VisualObject::s_LnVisualObject_OnUpdate_OverrideCallback = callback;
     return LN_SUCCESS;
 }
-
 LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -515,7 +501,6 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_Ove
     LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = callback;
     return LN_SUCCESS;
 }
-
 LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;

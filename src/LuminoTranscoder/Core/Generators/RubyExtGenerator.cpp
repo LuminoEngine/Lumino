@@ -1045,6 +1045,7 @@ void RubyYARDOCSourceGenerator::generate()
 
 		for (auto& overload : classSymbol->overloads()) {
 			code.AppendLines(makeMethodDoc(overload));
+			code.NewLine();
 		}
 
 		code.DecreaseIndent();
@@ -1067,29 +1068,46 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 	auto representative = overloadInfo->representative();
 	auto rubyMethodName = makeRubyMethodName(representative);
 
+	// Overall overview
+	code.AppendLine(u"# " + translateText(representative->document()->summary()));
+	if (!representative->document()->details().isEmpty()) {
+		code.AppendLinesHeaderd(translateText(representative->document()->details()), u"#   ");
+	}
 
-
-	code.AppendLine(u"# " + translateText(overloadInfo->representative()->document()->summary()));
-
-
-	//code.AppendLine("# @overload {0}({1})", rubyMethodName, argsText.ToString()).NewLine();
 
 	for (auto& method : overloadInfo->methods()) {
 		auto paramNames = OutputBuffer();
 		auto params = OutputBuffer();
-
 		for (auto& param : method->parameters()) {
 			paramNames.AppendCommad(param->name());
 
-			params.AppendLine("#   @param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
+			params.AppendLine(u"@param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
 		}
+		auto returns = ln::String::Empty;
+		if (method->returnType() != PredefinedTypes::voidType) {
+			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType()),  method->document()->returns());
+		}
+		
 
-		code.AppendLine("# @overload {0}({1})", rubyMethodName, paramNames.toString());
+		if (overloadInfo->methods().size() == 1) {
+			// dno't have override
+			if (!params.isEmpty()) code.AppendLinesHeaderd(params.toString(), u"# ");
+			if (!returns.isEmpty()) code.AppendLine(u"# " + returns);
+		}
+		else {
+			// dno't have override
+			code.AppendLine(u"# @overload {0}({1})", rubyMethodName, paramNames.toString());
+			code.AppendLine(u"#   " + translateText(method->document()->summary()));
+			if (!method->document()->details().isEmpty()) {
+				code.AppendLinesHeaderd(translateText(method->document()->details()), u"#     ");
+			}
+			if (!params.isEmpty()) code.AppendLinesHeaderd(params.toString(), u"#   ");
+			if (!returns.isEmpty()) code.AppendLine(u"#   " + returns);
+		}
 	}
 
-
-	code.AppendLine("def " + rubyMethodName);
-	code.AppendLine("end");
+	code.AppendLine(u"def {0}(*args)", rubyMethodName);
+	code.AppendLine(u"end");
 	code.NewLine();
 
 
@@ -1099,8 +1117,21 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 ln::String RubyYARDOCSourceGenerator::makeRubyTypeFullName(const TypeSymbol* type) const
 {
 	if (type->isPrimitive()) {
-		LN_NOTIMPLEMENTED();
-		return ln::String::Empty;
+		std::unordered_map<const TypeSymbol*, ln::String> rubyTypeMap = {
+			//{ PredefinedTypes::voidType, u"" },
+			//{ PredefinedTypes::nullptrType, u"" },
+			{ PredefinedTypes::boolType, u"Boolean" },
+			{ PredefinedTypes::intType, u"Integer" },
+			{ PredefinedTypes::int16Type, u"Integer" },
+			{ PredefinedTypes::uint32Type, u"Integer" },
+			{ PredefinedTypes::floatType, u"Float" },
+			{ PredefinedTypes::stringType, u"String" },
+			//{ PredefinedTypes::stringRefType, u"" },
+			{ PredefinedTypes::objectType, u"Object" },
+			//{ PredefinedTypes::EventConnectionType, u"" },
+		};
+
+		return rubyTypeMap[type];
 	}
 	else {
 		return ln::String::format(u"{0}::{1}", config()->moduleName, type->shortName());
