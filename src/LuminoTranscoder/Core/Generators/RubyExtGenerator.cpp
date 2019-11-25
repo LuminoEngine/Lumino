@@ -1068,6 +1068,35 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 	auto representative = overloadInfo->representative();
 	auto rubyMethodName = makeRubyMethodName(representative);
 
+#if 1	// @overload 無しで出力する（こっちの方がサマリーが見やすい）
+
+	for (auto& method : overloadInfo->methods()) {
+		auto paramNames = OutputBuffer();
+		auto params = OutputBuffer();
+		for (auto& param : method->parameters()) {
+			paramNames.AppendCommad(param->name());
+			params.AppendLine(u"@param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
+		}
+		auto returns = ln::String::Empty;
+		if (!method->document()->returns().isEmpty()) {
+			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType()), method->document()->returns());
+		}
+
+		code.AppendLine(u"# " + translateText(representative->document()->summary()));
+		if (!representative->document()->details().isEmpty()) {
+			code.AppendLinesHeaderd(translateText(representative->document()->details()), u"#   ");
+		}
+
+		if (!params.isEmpty()) code.AppendLinesHeaderd(params.toString(), u"# ");
+		if (!returns.isEmpty()) code.AppendLine(u"# " + returns);
+
+		code.AppendLine(u"def {0}({1})", rubyMethodName, paramNames.toString());
+		code.AppendLine(u"end");
+		code.NewLine();
+	}
+
+#else	// @overload 付きで出力する
+
 	// Overall overview
 	code.AppendLine(u"# " + translateText(representative->document()->summary()));
 	if (!representative->document()->details().isEmpty()) {
@@ -1109,6 +1138,7 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 	code.AppendLine(u"def {0}(*args)", rubyMethodName);
 	code.AppendLine(u"end");
 	code.NewLine();
+#endif
 
 
 	return code.toString();
