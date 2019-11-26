@@ -53,6 +53,9 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 # Vulkan
 option(LN_USE_VULKAN "Vulkan" ON)
 
+# build unit test projects
+option(LN_USE_Effekseer "Effekseer" OFF)
+
 #------------------------------------------------------------------------------
 
 message("LN_TARGET_ARCH:${LN_TARGET_ARCH}")
