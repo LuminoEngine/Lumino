@@ -37,6 +37,7 @@ namespace LuminoBuild
         // Build settings
         public static string Target { get; set; }
         public static string Configuration { get; set; }
+        public static string TargetFullName { get { return (string.IsNullOrEmpty(Configuration)) ? Target : $"{Target}-{BuildEnvironment.Configuration}"; } }
 
         // Build setting utils.
         public static bool IsMSVCTarget { get { return Target.Contains("MSVC2017"); } }

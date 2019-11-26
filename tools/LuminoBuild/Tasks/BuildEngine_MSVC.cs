@@ -18,15 +18,17 @@ namespace LuminoBuild.Tasks
     class BuildEngine_MSVC : BuildTask
     {
         public override string CommandName => "BuildEngine_MSVC";
-        
-        class MSVCTargetInfo
+
+        public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
+
+        public class MSVCTargetInfo
         {
             public string Generator;
             public string Platform;
             public string StaticRuntime;
         }
 
-        Dictionary<string, MSVCTargetInfo> _targetInfoMap = new Dictionary<string, MSVCTargetInfo>()
+        public static Dictionary<string, MSVCTargetInfo> TargetInfoMap = new Dictionary<string, MSVCTargetInfo>()
         {
             { "MSVC2017-x86-MD", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "OFF" } },
             { "MSVC2017-x86-MT", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "ON" } },
@@ -36,17 +38,17 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            var targetInfo = _targetInfoMap[BuildEnvironment.Target];
+            var targetInfo = TargetInfoMap[BuildEnvironment.Target];
 
-            var targetName = BuildEnvironment.Target;
-            if (!string.IsNullOrEmpty(BuildEnvironment.Configuration)) targetName += "-" + BuildEnvironment.Configuration;
+            var targetName = BuildEnvironment.TargetFullName;
+            var targetBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
+            var installDir = Path.Combine(builder.LuminoRootDir, "build", targetName, BuildEnvironment.EngineInstallDirName);
 
-            Directory.CreateDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
-            Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
+            Directory.CreateDirectory(targetBuildDir);
+            Directory.SetCurrentDirectory(targetBuildDir);
 
             // Configuration
             {
-                var installDir = Path.Combine(builder.LuminoRootDir, "build", targetName, BuildEnvironment.EngineInstallDirName);
 
                 var additional = "";
                 if (builder.Args.Contains("--enable-bindings") && targetInfo.StaticRuntime == "OFF" && targetInfo.Platform == "Win32")
@@ -87,6 +89,31 @@ namespace LuminoBuild.Tasks
                     Utils.CallProcess("cmake", $"--build . --config Release");
                     Utils.CallProcess("ctest", $"-C Release --output-on-failure");
                     Utils.CallProcess("cmake", $"--build . --config Release --target INSTALL");
+                }
+            }
+
+            // Copy .pdb
+            {
+                // CMake では static library の PDB 出力先をコントロールできない。https://cmake.org/cmake/help/v3.1/prop_tgt/PDB_OUTPUT_DIRECTORY.html
+                // そのためビルドスクリプト側でコントロールする。
+                // 以下、パスに "Debug" を含むもののうち、lib と同じ名前の pdb ファイルをコピーする。
+
+                var fileMoving = false;
+                var installLibDir = Path.Combine(installDir, "lib");
+                var libfiles = Directory.GetFiles(targetBuildDir, "*.lib", SearchOption.TopDirectoryOnly);
+                var libnames = new HashSet<string>(libfiles.Select(x => Path.GetFileNameWithoutExtension(x)));
+                var files1 = Directory.GetFiles(targetBuildDir, "*.pdb", SearchOption.AllDirectories);
+                foreach (var file in files1)
+                {
+                    if (file.Contains("Debug") && libnames.Contains(Path.GetFileNameWithoutExtension(file)))
+                    {
+                        // FIXME: CI サーバのストレージ不足対策
+                        if (fileMoving)
+                            File.Move(file, Path.Combine(installLibDir, Path.GetFileName(file)));
+                        else
+                            File.Copy(file, Path.Combine(installLibDir, Path.GetFileName(file)), true);
+                        Console.WriteLine(file);
+                    }
                 }
             }
         }

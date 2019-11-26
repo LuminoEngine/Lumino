@@ -8,6 +8,8 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeInstaller_Win32";
 
+        public override List<string> Dependencies => new List<string>() { "BuildDocuments", "BuildEngine_MSVC" };
+
         public override void Build(Builder builder)
         {
             string heat = Path.Combine(Environment.GetEnvironmentVariable("WIX"), "bin", "heat");
