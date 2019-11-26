@@ -469,9 +469,10 @@ void UIElement::addAction(UIAction* action)
 
 void UIElement::activate()
 {
-	if (m_focusable) {
-		activateInternal();
-	}
+	//if (m_focusable) {
+	//	activateInternal();
+	//}
+	m_manager->tryGetInputFocus(this);
 }
 
 void UIElement::setRenderPriority(int value)
@@ -561,10 +562,7 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
 void UIElement::focus()
 {
-    if (m_focusable) {
-        m_manager->focus(this);
-        activate();
-    }
+	activate();
 }
 
 void UIElement::retainCapture()
@@ -950,15 +948,15 @@ void UIElement::activateInternal()
 {
 	if (m_visualParent) {
 		m_visualParent->moveVisualChildToForeground(this);
-		m_visualParent->activateInternal();
+		//m_visualParent->activateInternal();
 	}
 }
 
 void UIElement::deactivateInternal()
 {
-	if (m_visualParent) {
-		m_visualParent->deactivateInternal();
-	}
+	//if (m_visualParent) {
+	//	m_visualParent->deactivateInternal();
+	//}
 }
 
 void UIElement::moveVisualChildToForeground(UIElement* child)

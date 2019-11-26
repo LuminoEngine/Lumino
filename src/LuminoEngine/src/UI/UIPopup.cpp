@@ -32,6 +32,11 @@ void UIPopup::setPlacementTarget(UIElement* target)
     m_placementTarget = target;
 }
 
+UIElement* UIPopup::placementTarget() const
+{
+	return m_placementTarget;
+}
+
 void UIPopup::setPlacementMode(PlacementMode mode)
 {
     m_placementMode = mode;
@@ -49,6 +54,8 @@ void UIPopup::open()
         if (renderView) {
             renderView->adornerLayer()->add(m_adorner);
         }
+
+		activate();
         m_opend = true;
     }
 }
@@ -86,7 +93,8 @@ void UIPopupAdorner::init(UIElement* adornedElement, UIPopup* popup)
 Size UIPopupAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     m_popup->measureLayout(layoutContext, constraint);
-    return Size::max(m_popup->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
+
+    return Size::max(m_popup->placementTarget()->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
 }
 
 Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)

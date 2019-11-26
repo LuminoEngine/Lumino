@@ -155,9 +155,56 @@ void UIManager::releaseCapture(UIElement* element)
 	}
 }
 
-void UIManager::focus(UIElement* element)
+void UIManager::tryGetInputFocus(UIElement* element)
 {
-    m_forcusedElement = element;
+	if (element->m_focusable) {
+		m_forcusedElement = element;
+	}
+	else {
+		// ウィンドウ背景などをクリックすると、テキストボックスは入力フォーカスを失ったりする
+		m_forcusedElement = nullptr;
+	}
+	
+	activateTree(element);
+}
+
+void UIManager::activateTree(UIElement* element)
+{
+	m_activationCache.clear();
+
+	// 論理フォーカスを持っているものをすべて列挙
+	UIElement* e = element;
+	while (e)
+	{
+		m_activationCache.add(e);
+		e = e->m_visualParent;
+	}
+
+	// activation と deactivation の分岐点を探しつつ deactivate する
+	UIElement* branchRoot = nullptr;
+	e = m_forcusedElement;
+	while (e)
+	{
+		if (m_activationCache.contains(e)) {
+			branchRoot = e;
+			break;
+		}
+
+		e->deactivateInternal();
+		e = e->m_visualParent;
+	}
+
+	// 基点から分岐点までを activate
+	e = element;
+	while (e)
+	{
+		if (e == branchRoot) {
+			break;
+		}
+
+		e->activateInternal();
+		e = e->m_visualParent;
+	}
 }
 
 void UIManager::postEvent(UIElement* target, UIEventArgs* e)

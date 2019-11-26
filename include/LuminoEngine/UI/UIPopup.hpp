@@ -18,6 +18,8 @@ class UIPopup
 {
 public:
     void setPlacementTarget(UIElement* target);
+	UIElement* placementTarget() const;
+
     void setPlacementMode(PlacementMode mode);
 	PlacementMode placementMode() const { return m_placementMode; }
 
@@ -28,6 +30,11 @@ public:
 
 protected:
     virtual const String& elementName() const  override { static String name = u"UIPopup"; return name; }
+	virtual void deactivateInternal()
+	{
+		UIContainerElement::deactivateInternal();
+	}
+
 
 LN_CONSTRUCT_ACCESS:
     UIPopup();
@@ -44,16 +51,6 @@ private:
 
 // UIAdorner は target にぴったり重なるように layout されるが、
 // UIPopupAdorner は PlacementMode をもとに、その finalRect からの相対位置を使って UIPopup を layout する。
-//
-// モーダルダイアログ（ポップアップ）が複数表示されている場合は、UIPopupAdorner も複数表示される。
-// Material-UI と同じ動作。
-// つまり、画面全体を覆うように半透明グレーで覆うが、それがどんどん深くなる。
-// - UIPopupAdorner
-// - UIDialog
-// - UIPopupAdorner
-// - UIDialog
-// というように。
-// オーバーレイの色もどんどん濃くなる。
 class UIPopupAdorner
     : public UIAdorner
 {

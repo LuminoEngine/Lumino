@@ -49,8 +49,9 @@ public:
 	void releaseCapture(UIElement* element);
 	UIElement* capturedElement() const { return m_capturedElement; }
 
-    void focus(UIElement* element);
+    void tryGetInputFocus(UIElement* element);
     UIElement* forcusedElement() const { return m_forcusedElement; }
+	void activateTree(UIElement* element);
 
     void postEvent(UIElement* target, UIEventArgs* e);
     void dispatchPostedEvents();
@@ -87,6 +88,7 @@ private:
     std::deque<EventQueueItem> m_eventQueue;
 	List<Ref<UIActiveTimer>> m_activeTimers;
 
+	List<UIElement*> m_activationCache;
 };
 
 } // namespace detail
