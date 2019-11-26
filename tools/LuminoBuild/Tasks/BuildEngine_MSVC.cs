@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_MSVC";
 
-        public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
+        //public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
 
         public class MSVCTargetInfo
         {
@@ -38,6 +38,7 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
+            var fileMoving = false;
             var targetInfo = TargetInfoMap[BuildEnvironment.Target];
 
             var targetName = BuildEnvironment.TargetFullName;
@@ -71,7 +72,7 @@ namespace LuminoBuild.Tasks
                 };
                 Utils.CallProcess("cmake", string.Join(' ', args));
 
-                // ƒ|ƒXƒgƒCƒxƒ“ƒg‚©‚çƒtƒ@ƒCƒ‹ƒRƒs[‚ªs‚í‚ê‚é‚½‚ßAæ‚ÉƒtƒHƒ‹ƒ_‚ğì‚Á‚Ä‚¨‚­
+                // ãƒã‚¹ãƒˆã‚¤ãƒ™ãƒ³ãƒˆã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ã‚³ãƒ”ãƒ¼ãŒè¡Œã‚ã‚Œã‚‹ãŸã‚ã€å…ˆã«ãƒ•ã‚©ãƒ«ãƒ€ã‚’ä½œã£ã¦ãŠã
                 Directory.CreateDirectory(Path.Combine(builder.LuminoLibDir, targetName));
             }
 
@@ -92,27 +93,46 @@ namespace LuminoBuild.Tasks
                 }
             }
 
+            // Copy external libs to EngineInstall dir
+            {
+                var externalInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall");
+                var installLibDir = Path.Combine(installDir, "lib");
+
+                foreach (var dir in Directory.GetDirectories(externalInstallDir))
+                {
+                    var libDir = Path.Combine(dir, "lib");
+                    if (Directory.Exists(libDir))
+                    {
+                        foreach (var file in Directory.GetFiles(libDir, "*.lib", SearchOption.TopDirectoryOnly))
+                        {
+                            if (fileMoving)
+                                File.Move(file, Path.Combine(installLibDir, Path.GetFileName(file)));
+                            else
+                                File.Copy(file, Path.Combine(installLibDir, Path.GetFileName(file)), true);
+                        }
+                    }
+                }
+            }
+
             // Copy .pdb
             {
-                // CMake ‚Å‚Í static library ‚Ì PDB o—Íæ‚ğƒRƒ“ƒgƒ[ƒ‹‚Å‚«‚È‚¢Bhttps://cmake.org/cmake/help/v3.1/prop_tgt/PDB_OUTPUT_DIRECTORY.html
-                // ‚»‚Ì‚½‚ßƒrƒ‹ƒhƒXƒNƒŠƒvƒg‘¤‚ÅƒRƒ“ƒgƒ[ƒ‹‚·‚éB
-                // ˆÈ‰ºAƒpƒX‚É "Debug" ‚ğŠÜ‚Ş‚à‚Ì‚Ì‚¤‚¿Alib ‚Æ“¯‚¶–¼‘O‚Ì pdb ƒtƒ@ƒCƒ‹‚ğƒRƒs[‚·‚éB
+                // CMake ã§ã¯ static library ã® PDB å‡ºåŠ›å…ˆã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã§ããªã„ã€‚https://cmake.org/cmake/help/v3.1/prop_tgt/PDB_OUTPUT_DIRECTORY.html
+                // ãã®ãŸã‚ãƒ“ãƒ«ãƒ‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆå´ã§ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã™ã‚‹ã€‚
+                // ä»¥ä¸‹ã€ãƒ‘ã‚¹ã« "Debug" ã‚’å«ã‚€ã‚‚ã®ã®ã†ã¡ã€lib ã¨åŒã˜åå‰ã® pdb ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
 
-                var fileMoving = false;
                 var installLibDir = Path.Combine(installDir, "lib");
-                var libfiles = Directory.GetFiles(targetBuildDir, "*.lib", SearchOption.TopDirectoryOnly);
+                var libfiles = Directory.GetFiles(installLibDir, "*.lib", SearchOption.TopDirectoryOnly);
                 var libnames = new HashSet<string>(libfiles.Select(x => Path.GetFileNameWithoutExtension(x)));
                 var files1 = Directory.GetFiles(targetBuildDir, "*.pdb", SearchOption.AllDirectories);
                 foreach (var file in files1)
                 {
                     if (file.Contains("Debug") && libnames.Contains(Path.GetFileNameWithoutExtension(file)))
                     {
-                        // FIXME: CI ƒT[ƒo‚ÌƒXƒgƒŒ[ƒW•s‘«‘Îô
+                        // FIXME: CI ã‚µãƒ¼ãƒã®ã‚¹ãƒˆãƒ¬ãƒ¼ã‚¸ä¸è¶³å¯¾ç­–
                         if (fileMoving)
                             File.Move(file, Path.Combine(installLibDir, Path.GetFileName(file)));
                         else
                             File.Copy(file, Path.Combine(installLibDir, Path.GetFileName(file)), true);
-                        Console.WriteLine(file);
                     }
                 }
             }

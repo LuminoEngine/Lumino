@@ -34,8 +34,8 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"-DCMAKE_INSTALL_PREFIX={installDir}",
-                $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
-                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE={ov}",
+                $"-DCMAKE_DEBUG_POSTFIX:STRING=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
+                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov}",
                 $"{additionalOptions}",
                 $"-G \"{generator}\"",
                 $"{cmakeSourceDir}",
@@ -62,9 +62,9 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"-DCMAKE_INSTALL_PREFIX={installDir}",
-                $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
-                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE={ov}",
-                $"-DLN_MSVC_STATIC_RUNTIME={targetInfo.StaticRuntime}",
+                $"-DCMAKE_DEBUG_POSTFIX:STRING=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
+                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov}",
+                $"-DLN_MSVC_STATIC_RUNTIME:BOOL={targetInfo.StaticRuntime}",
                 $"{additionalOptions}",
                 $"-G \"{targetInfo.Generator}\"",
                 $"{cmakeSourceDir}",
@@ -333,7 +333,7 @@ namespace LuminoBuild.Tasks
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "zlib"));
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "ogg"));
                     var targetInfo = BuildEngine_MSVC.TargetInfoMap[targetName];
-                    var bulletRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
+                    var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
                         
                     BuildProjectMSVC(builder, "zlib", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "libpng", reposDir, targetName, targetFullName, configuration, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
@@ -346,12 +346,12 @@ namespace LuminoBuild.Tasks
                     BuildProjectMSVC(builder, "freetype2", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "ogg", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "vorbis", reposDir, targetName, targetFullName, configuration, $"-DOGG_ROOT={oggInstallDir}");
-                    BuildProjectMSVC(builder, "bullet3", reposDir, targetName, targetFullName, configuration, $"{bulletRuntime} {bulletOptions}");
+                    BuildProjectMSVC(builder, "bullet3", reposDir, targetName, targetFullName, configuration, $"{altRuntime} {bulletOptions}");
                     BuildProjectMSVC(builder, "pcre", reposDir, targetName, targetFullName, configuration, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, targetName, targetFullName, configuration, $"-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, targetName, targetFullName, configuration, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                     BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, targetName, targetFullName, configuration);
-                    BuildProjectMSVC(builder, "Effekseer", reposDir, targetName, targetFullName, configuration, $"-DBUILD_VULKAN=ON");
+                    BuildProjectMSVC(builder, "Effekseer", reposDir, targetName, targetFullName, configuration, $"{altRuntime} -DBUILD_VULKAN=ON");
                 }
 
                 // Android

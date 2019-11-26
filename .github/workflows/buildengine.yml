@@ -19,9 +19,9 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Build
-      run: dotnet run -- BuildExternalProjects MSVC2017-x64-MD
+      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MD
 
-    #- uses: actions/upload-artifact@v1
-    #  with:
-    #    name: Lumino-artifact
-    #    path: ./build/MSVC2017-x86-MT/ExternalInstall
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Artifact
+        path: ./build/MSVC2017-x86-MD/ExternalInstall
