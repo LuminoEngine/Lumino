@@ -53,6 +53,9 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 # Vulkan
 option(LN_USE_VULKAN "Vulkan" ON)
 
+# build unit test projects
+option(LN_USE_Effekseer "Effekseer" OFF)
+
 #------------------------------------------------------------------------------
 
 message("LN_TARGET_ARCH:${LN_TARGET_ARCH}")
@@ -121,9 +124,6 @@ set(LN_INCLUDES_gtest
 
 set(LN_SOURCES_gtest
     "${CMAKE_CURRENT_LIST_DIR}/external/gtest/src/gtest-all.cc")
-
-set (gtest_force_shared_crt True)
-add_subdirectory(build/ExternalSource/googletest)
 
 #------------------------------------------------------------------------------
 

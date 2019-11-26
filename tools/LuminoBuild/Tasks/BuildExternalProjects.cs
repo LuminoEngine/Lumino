@@ -13,9 +13,7 @@ namespace LuminoBuild.Tasks
      */
     class BuildExternalProjects : BuildTask
     {
-        public override string CommandName { get { return "BuildExternalProjects"; } }
-
-        public override string Description { get { return "BuildExternalProjects"; } }
+        public override string CommandName => "BuildExternalProjects";
 
 
         // (システム標準の cmake を使う系)
@@ -36,8 +34,8 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"-DCMAKE_INSTALL_PREFIX={installDir}",
-                $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
-                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE={ov}",
+                $"-DCMAKE_DEBUG_POSTFIX:STRING=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
+                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov}",
                 $"{additionalOptions}",
                 $"-G \"{generator}\"",
                 $"{cmakeSourceDir}",
@@ -46,14 +44,15 @@ namespace LuminoBuild.Tasks
             Utils.CallProcess("cmake", $"--build . --config {buildType}");
             Utils.CallProcess("cmake", $"--build . --config {buildType} --target install");
         }
-        private void BuildProjectMSVC(Builder builder, string projectDirName, string externalSourceDir, string buildArch, string generator, string additionalOptions = "")
+        private void BuildProjectMSVC(Builder builder, string projectDirName, string externalSourceDir, string targetName, string targetFullName, string configuration, string additionalOptions = "")
         {
             var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
-            var targetName = buildArch;
-            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectName));
-            var installDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectName);
+            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, targetFullName, "ExternalBuild", projectName));
+            var installDir = Path.Combine(builder.LuminoBuildDir, targetFullName, "ExternalInstall", projectName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
+
+            var targetInfo = BuildEngine_MSVC.TargetInfoMap[targetName];
 
             Logger.WriteLine($"BuildProject ({projectDirName}) buildDir:{buildDir}");
 
@@ -63,17 +62,25 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"-DCMAKE_INSTALL_PREFIX={installDir}",
-                $"-DCMAKE_DEBUG_POSTFIX=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
-                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE={ov}",
+                $"-DCMAKE_DEBUG_POSTFIX:STRING=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
+                $"-DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov}",
+                $"-DLN_MSVC_STATIC_RUNTIME:BOOL={targetInfo.StaticRuntime}",
                 $"{additionalOptions}",
-                $"-G \"{generator}\"",
+                $"-G \"{targetInfo.Generator}\"",
                 $"{cmakeSourceDir}",
             };
             Utils.CallProcess("cmake", string.Join(' ', args));
-            Utils.CallProcess("cmake", $"--build . --config Debug");
-            Utils.CallProcess("cmake", $"--build . --config Debug --target install");
-            Utils.CallProcess("cmake", $"--build . --config Release");
-            Utils.CallProcess("cmake", $"--build . --config Release --target install");
+
+            if (string.IsNullOrEmpty(configuration) || targetName.Contains("Debug"))
+            {
+                Utils.CallProcess("cmake", $"--build . --config Debug");
+                Utils.CallProcess("cmake", $"--build . --config Debug --target install");
+            }
+            if (string.IsNullOrEmpty(configuration) || targetName.Contains("Release"))
+            {
+                Utils.CallProcess("cmake", $"--build . --config Release");
+                Utils.CallProcess("cmake", $"--build . --config Release --target install");
+            }
         }
 
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
@@ -318,36 +325,37 @@ namespace LuminoBuild.Tasks
             if (Utils.IsWin32)
             {
                 // Visual C++
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.Windows))
+                if (BuildEnvironment.IsMSVCTarget)
                 {
-                    foreach (var target in MakeVSProjects.Targets)
-                    {
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "zlib"));
-                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{target.DirName}", "ExternalInstall", "ogg"));
-                        var bulletRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (target.MSVCStaticRuntime == "ON" ? "OFF" : "ON");
+                    var targetName = BuildEnvironment.Target;
+                    var targetFullName = BuildEnvironment.TargetFullName;
+                    var configuration = BuildEnvironment.Configuration;
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "zlib"));
+                    var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "ogg"));
+                    var targetInfo = BuildEngine_MSVC.TargetInfoMap[targetName];
+                    var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
                         
-                        BuildProjectMSVC(builder, "zlib", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "libpng", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                        BuildProjectMSVC(builder, "glslang", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "SPIRV-Cross", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "glfw", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
-                        BuildProjectMSVC(builder, "glad", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DGLAD_INSTALL=ON");
-                        BuildProjectMSVC(builder, "openal-soft", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "SDL2", reposDir, target.DirName, target.VSTarget, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF -DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "freetype2", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "ogg", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "vorbis", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DOGG_ROOT={oggInstallDir}");
-                        BuildProjectMSVC(builder, "bullet3", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime} {bulletOptions}");
-                        BuildProjectMSVC(builder, "pcre", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
-                        BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DTMXLITE_STATIC_LIB=ON");
-                        BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} -DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
-                        BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime}");
-                        BuildProjectMSVC(builder, "Effekseer", reposDir, target.DirName, target.VSTarget, $"-DLN_MSVC_STATIC_RUNTIME={target.MSVCStaticRuntime} {bulletRuntime} -DBUILD_VULKAN=ON");
-                    }
+                    BuildProjectMSVC(builder, "zlib", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "libpng", reposDir, targetName, targetFullName, configuration, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                    BuildProjectMSVC(builder, "glslang", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "SPIRV-Cross", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "glfw", reposDir, targetName, targetFullName, configuration, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
+                    BuildProjectMSVC(builder, "glad", reposDir, targetName, targetFullName, configuration, $"-DGLAD_INSTALL=ON");
+                    BuildProjectMSVC(builder, "openal-soft", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "SDL2", reposDir, targetName, targetFullName, configuration, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF ");
+                    BuildProjectMSVC(builder, "freetype2", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "ogg", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "vorbis", reposDir, targetName, targetFullName, configuration, $"-DOGG_ROOT={oggInstallDir}");
+                    BuildProjectMSVC(builder, "bullet3", reposDir, targetName, targetFullName, configuration, $"{altRuntime} {bulletOptions}");
+                    BuildProjectMSVC(builder, "pcre", reposDir, targetName, targetFullName, configuration, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
+                    BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, targetName, targetFullName, configuration, $"-DTMXLITE_STATIC_LIB=ON");
+                    BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, targetName, targetFullName, configuration, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
+                    BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "Effekseer", reposDir, targetName, targetFullName, configuration, $"{altRuntime} -DBUILD_VULKAN=ON");
                 }
 
                 // Android
-                if (BuildEnvironment.AndroidStudioFound && BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.Android))
+                if (BuildEnvironment.AndroidStudioFound && BuildEnvironment.IsAndroidTarget)
                 {
                     foreach (var target in BuildEngine_AndroidJNI.Targets)
                     {
@@ -368,7 +376,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 // Emscripten
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.Web))
+                if (BuildEnvironment.IsWebTarget)
                 {
                     var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
@@ -391,7 +399,7 @@ namespace LuminoBuild.Tasks
             else
             {
                 // iOS
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.iOS))
+                if (BuildEnvironment.IsIOSTarget)
                 {
                     var targetInfos = new []
                     {
@@ -425,7 +433,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 // macOS
-                if (BuildEnvironment.BuildTarget.HasFlag(BuildTargetFlags.macOS))
+                if (BuildEnvironment.IsMacOSTarget)
                 {
                     var targetArgs = new[]
                     {

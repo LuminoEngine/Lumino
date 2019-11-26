@@ -8,12 +8,10 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_Linux";
 
-        public override string Description => "BuildEngine_Linux";
-
         public override void Build(Builder builder)
         {
             var buildDir = Path.Combine(builder.LuminoBuildDir, "Linux-x86_64");
-            var installDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, "Linux-x86_64");
+            var installDir = Path.Combine(builder.LuminoBuildDir, "Linux-x86_64", BuildEnvironment.EngineInstallDirName);
 
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);

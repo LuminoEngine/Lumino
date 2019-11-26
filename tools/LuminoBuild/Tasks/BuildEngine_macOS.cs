@@ -6,9 +6,7 @@ namespace LuminoBuild.Tasks
 {
     class BuildEngine_macOS : BuildTask
     {
-        public override string CommandName { get { return "BuildEngine_macOS"; } }
-
-        public override string Description { get { return "BuildEngine_macOS"; } }
+        public override string CommandName => "BuildEngine_macOS";
 
         public override void Build(Builder builder)
         {
@@ -18,7 +16,7 @@ namespace LuminoBuild.Tasks
 
         public void BuildProject(Builder builder, string config)
         {
-            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, $"macOS-{config}");
+            string cmakeOutputDir = Path.Combine(builder.LuminoBuildDir, $"macOS-{config}", BuildEnvironment.EngineInstallDirName);
 
             string buildDir = Path.Combine(builder.LuminoBuildDir, $"macOS-{config}");
             Directory.CreateDirectory(buildDir);

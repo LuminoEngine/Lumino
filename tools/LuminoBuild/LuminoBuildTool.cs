@@ -127,26 +127,12 @@ namespace LuminoBuild
             }
         }
 
-        private void Execute(string commands)
+        private void Execute(string taskName)
         {
-            var tasks = new List<BuildTask>();
+            var tasks = ResoleveDependencies(taskName);
 
-            if (commands == "all")
-            {
-                foreach (var rule in Tasks)
-                {
-                    tasks.Add(rule);
-                }
-            }
-            else
-            {
-                string[] list = commands.Split(',');
-                foreach (var cmd in list)
-                {
-                    var task = Tasks.Find((r) => r.CommandName == cmd);
-                    if (task != null) tasks.Add(task);
-                }
-            }
+            Console.WriteLine("Task execution order:");
+            tasks.ForEach(x => Console.WriteLine("  " + x.CommandName));
 
             Execute(tasks);
         }
@@ -155,56 +141,79 @@ namespace LuminoBuild
         {
             foreach (var task in tasks)
             {
-                task.CheckPrerequisite(this);
-            }
-            foreach (var task in tasks)
-            {
-                if (task.Buildable)
+                Logger.WriteLine("[{0}] Task started.", task.CommandName);
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+
+                string oldCD = Directory.GetCurrentDirectory();
+                try
                 {
-                    Logger.WriteLine("[{0}] Task started.", task.CommandName);
-                    var sw = new System.Diagnostics.Stopwatch();
-                    sw.Start();
-
-                    string oldCD = Directory.GetCurrentDirectory();
-                    try
-                    {
-                        task.Build(this);
-                    }
-                    finally
-                    {
-                        Directory.SetCurrentDirectory(oldCD);
-                    }
-
-                    sw.Stop();
-                    Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
+                    task.Build(this);
                 }
+                finally
+                {
+                    Directory.SetCurrentDirectory(oldCD);
+                }
+
+                sw.Stop();
+                Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
             }
         }
-
-        public void CheckPrerequisite()
-        {
-            foreach (var rule in Tasks)
-            {
-                rule.CheckPrerequisite(this);
-            }
-        }
-
-        //public void Build()
-        //{
-        //    foreach (var rule in Tasks)
-        //    {
-        //        if (rule.Buildable)
-        //        {
-        //            Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
-        //            rule.Build(this);
-        //            Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
-        //        }
-        //    }
-        //}
 
         public bool HasFlagArgument(string name)
         {
             return Args.Contains(name);
+        }
+
+
+
+        class NeedTaskInfo
+        {
+            public BuildTask Task;
+            public int Depth;
+        }
+
+        private List<BuildTask> ResoleveDependencies(string taskName)
+        {
+            var resultList = new List<NeedTaskInfo>();
+            var task = Tasks.Find((r) => r.CommandName == taskName);
+            //resultList.Add(new NeedTaskInfo() { Task = task, Depth = 0 });
+            ResoleveDependenciesHierarchical(resultList, task, 0);
+
+            //foreach (var needTaskName in task.Dependencies)
+            //{
+            //    var needTask = Tasks.Find((r) => r.CommandName == needTaskName);
+
+            //    if (resultList.Find((x) => x.Task == needTask) == null)
+            //    {
+            //        resultList.Add(new NeedTaskInfo() { Task = needTask, Depth = 1 });
+            //    }
+
+            //    ResoleveDependenciesHierarchical(resultList, needTask, 1);
+            //}
+
+            var stableSorted = resultList.OrderByDescending(x => x.Depth);
+            return stableSorted.Select(x => x.Task).ToList();
+        }
+
+        private void ResoleveDependenciesHierarchical(List<NeedTaskInfo> resultList, BuildTask task, int depth)
+        {
+            if (resultList.Find((x) => x.Task == task) == null)
+            {
+                resultList.Add(new NeedTaskInfo() { Task = task, Depth = depth });
+            }
+
+            var dependencies = task.Dependencies;
+            if (dependencies != null)
+            {
+                foreach (var needTaskName in dependencies)
+                {
+                    var needTask = Tasks.Find((r) => r.CommandName == needTaskName);
+
+                    ResoleveDependenciesHierarchical(resultList, needTask, depth + 1);
+                }
+
+            }
         }
     }
 
@@ -224,20 +233,9 @@ namespace LuminoBuild
         public abstract string CommandName { get; }
 
         /// <summary>
-        /// ルールの説明
+        /// 依存 Task
         /// </summary>
-        public abstract string Description { get; }
-
-        /// <summary>
-        /// ビルドできるか (CheckPrerequisite() で確定する)
-        /// </summary>
-        public bool Buildable { get; protected set; }
-
-        /// <summary>
-        /// 前提条件の確認
-        /// </summary>
-        /// <returns>この Rule を実行できるなら true</returns>
-        public virtual void CheckPrerequisite(Builder builder) { Buildable = true; }
+        public virtual List<string> Dependencies { get { return null; } }
 
         /// <summary>
         /// このルールをビルドする

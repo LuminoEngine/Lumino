@@ -8,7 +8,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeInstaller_Win32";
 
-        public override string Description => "MakeInstaller_Win32";
+        public override List<string> Dependencies => new List<string>() { "BuildDocuments", "BuildEngine_MSVC" };
 
         public override void Build(Builder builder)
         {

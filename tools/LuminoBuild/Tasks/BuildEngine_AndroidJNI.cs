@@ -25,9 +25,7 @@ namespace LuminoBuild.Tasks
             new Target() { ABI = "armeabi-v7a", BuildType = "Release" },
         };
 
-        public override string CommandName { get { return "BuildEngine_AndroidJNI"; } }
-
-        public override string Description { get { return "Build Android JNI"; } }
+        public override string CommandName => "BuildEngine_AndroidJNI";
 
         public override void Build(Builder builder)
         {
@@ -40,7 +38,7 @@ namespace LuminoBuild.Tasks
                 
                 var targetName = $"Android-{abi}-{target.BuildType}";
                 string cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
-                string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir, targetName);
+                string cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, BuildEnvironment.EngineInstallDirName);
 
                 var args = new string[]
                 {

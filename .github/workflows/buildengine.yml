@@ -1,0 +1,27 @@
+name: Build engine
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build-MSVC2017-x64-MD:
+    runs-on: windows-2016 # for VS2017
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Build
+      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MD
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Artifact
+        path: ./build/MSVC2017-x86-MD/ExternalInstall

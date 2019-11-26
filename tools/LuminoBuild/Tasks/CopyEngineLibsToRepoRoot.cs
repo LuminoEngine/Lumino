@@ -11,13 +11,11 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "CopyEngineLibsToRepoRoot";
 
-        public override string Description => "CopyEngineLibsToRepoRoot";
-
         public override void Build(Builder builder)
         {
-            var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
-            var nativeEngineRoot = builder.LuminoRootDir;
-            MakeReleasePackage.CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot, false);
+            //var tempInstallDir = Path.Combine(builder.LuminoBuildDir, BuildEnvironment.CMakeTargetInstallDir);
+            //var nativeEngineRoot = builder.LuminoRootDir;
+            //MakeReleasePackage.CopyEngineLibs(builder, tempInstallDir, nativeEngineRoot, false);
         }
     }
 }

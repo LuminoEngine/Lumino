@@ -28,8 +28,6 @@ namespace LuminoBuild.Tasks
 
         public override string CommandName { get { return "MakeVSProjects"; } }
 
-        public override string Description { get { return "Make visual studio projects."; } }
-
         public override void Build(Builder builder)
         {
 
@@ -43,7 +41,7 @@ namespace LuminoBuild.Tasks
                     Directory.CreateDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
                     Directory.SetCurrentDirectory(Path.Combine(builder.LuminoBuildDir, targetName));
 
-                    var installDir = Path.Combine(builder.LuminoRootDir, "build", BuildEnvironment.CMakeTargetInstallDir, targetName);
+                    var installDir = Path.Combine(builder.LuminoRootDir, "build", targetName, BuildEnvironment.EngineInstallDirName);
 
                     var additional = "";
                     if (builder.Args.Contains("--enable-bindings") && t.MSVCStaticRuntime == "OFF" && t.Platform == "Win32")
@@ -60,7 +58,7 @@ namespace LuminoBuild.Tasks
                         $"-DLN_BUILD_TESTS=ON",
                         $"-DLN_BUILD_TOOLS=ON",
                         $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
-                        $"-DLN_TARGET_ARCH={t.DirName}",
+                        $"-DLN_TARGET_ARCH:STRING={t.DirName}",
                         t.AdditionalOptions + additional,
                         $" ../..",
                     };

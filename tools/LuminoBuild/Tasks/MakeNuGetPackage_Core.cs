@@ -8,10 +8,9 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeNuGetPackage_Core";
 
-        public override string Description => "MakeNuGetPackage_Core";
-
         public override void Build(Builder builder)
         {
+#if false
             var nugetroot = Path.Combine(builder.LuminoBuildDir, "NuGetPackage-LuminoCore");
             var nativeDir = Path.Combine(builder.LuminoBuildDir, "NuGetPackage-LuminoCore", "build", "native");
             Directory.CreateDirectory(nativeDir);
@@ -65,6 +64,7 @@ namespace LuminoBuild.Tasks
 
             Directory.SetCurrentDirectory(nugetroot);
             Utils.CallProcess("nuget", "pack Lumino.Core.nuspec");
+#endif
         }
     }
 }

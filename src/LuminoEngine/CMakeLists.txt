@@ -505,8 +505,6 @@ endif()
 #------------------------------------------------------------------------------
 # Targets
 
-find_package(Vulkan REQUIRED)
-
 set(
     _LN_ENGINE_LINK_LIBS
     LuminoCore
@@ -525,9 +523,12 @@ set(
     tmxlite
     VulkanHeaders
     ${LN_PLATFORM_LIBS}
-    Effekseer EffekseerRendererVulkan LLGI
-	${Vulkan_LIBRARIES}		# for LLGI
 )
+
+if (LN_USE_Effekseer)
+    find_package(Vulkan REQUIRED)
+    list(APPEND _LN_ENGINE_LINK_LIBS ${Vulkan_LIBRARIES} Effekseer EffekseerRendererVulkan LLGI)   # for LLGI
+endif()
 
 add_library(LuminoEngine-static STATIC ${LN_SOURCES})
 target_include_directories(LuminoEngine-static PUBLIC  
