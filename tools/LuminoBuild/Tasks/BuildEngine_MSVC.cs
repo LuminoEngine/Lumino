@@ -19,7 +19,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_MSVC";
 
-        //public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
+        public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
 
         public class MSVCTargetInfo
         {
