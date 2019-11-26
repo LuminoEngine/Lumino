@@ -31,6 +31,8 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
+    void onElementDisposing(UIElement* element);
+
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     Application* application() const { return m_application; }
 
@@ -81,14 +83,15 @@ private:
     Ref<UIControl> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;
     Ref<UIContext> m_mainContext;
-    UIElement* m_mouseHoverElement;
-	UIElement* m_capturedElement;
-    UIElement* m_forcusedElement;
+    Ref<UIElement> m_mouseHoverElement;
+	Ref<UIElement> m_capturedElement;
+    Ref<UIElement> m_forcusedElement;
 	//Ref<UIFrameLayout> m_defaultLayout;
     std::deque<EventQueueItem> m_eventQueue;
 	List<Ref<UIActiveTimer>> m_activeTimers;
 
-	List<UIElement*> m_activationCache;
+    // 
+	List<Ref<UIElement>> m_activationCache;
 };
 
 } // namespace detail

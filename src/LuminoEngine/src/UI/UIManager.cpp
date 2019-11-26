@@ -49,6 +49,19 @@ void UIManager::dispose()
     m_mainContext = nullptr;
 }
 
+void UIManager::onElementDisposing(UIElement* element)
+{
+    //if (m_forcusedElement == element) {
+    //    m_forcusedElement = nullptr;
+    //}
+    //if (m_capturedElement == element) {
+    //    m_capturedElement = nullptr;
+    //}
+    //if (m_mouseHoverElement == element) {
+    //    m_mouseHoverElement = nullptr;
+    //}
+}
+
 void UIManager::setPrimaryElement(UIControl* element)
 {
     m_primaryElement = element;
@@ -157,15 +170,8 @@ void UIManager::releaseCapture(UIElement* element)
 
 void UIManager::tryGetInputFocus(UIElement* element)
 {
-	if (element->m_focusable) {
-		m_forcusedElement = element;
-	}
-	else {
-		// ウィンドウ背景などをクリックすると、テキストボックスは入力フォーカスを失ったりする
-		m_forcusedElement = nullptr;
-	}
-	
 	activateTree(element);
+	m_forcusedElement = element;
 }
 
 void UIManager::activateTree(UIElement* element)
@@ -190,7 +196,10 @@ void UIManager::activateTree(UIElement* element)
 			break;
 		}
 
-		e->deactivateInternal();
+        // deactivate
+        auto args = UIEventArgs::create(e, UIEvents::LostFocusEvent, true);
+        e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+
 		e = e->m_visualParent;
 	}
 
@@ -202,9 +211,15 @@ void UIManager::activateTree(UIElement* element)
 			break;
 		}
 
-		e->activateInternal();
+        // activate
+        e->activateInternal();
+        auto args = UIEventArgs::create(e, UIEvents::GotFocusEvent, true);
+        e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+
 		e = e->m_visualParent;
 	}
+
+    m_activationCache.clear();
 }
 
 void UIManager::postEvent(UIElement* target, UIEventArgs* e)

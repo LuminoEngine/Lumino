@@ -70,10 +70,18 @@ void UIPopup::close()
             if (renderView) {
                 renderView->adornerLayer()->remove(m_adorner);
             }
-            m_adorner = nullptr;
         }
         m_opend = false;
     }
+}
+
+void UIPopup::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::LostFocusEvent) {
+        close();
+    }
+
+    UIContainerElement::onRoutedEvent(e);
 }
 
 //==============================================================================

@@ -27,6 +27,16 @@ enum class UIVisibility : uint8_t
     Collapsed,
 };
 
+/** イベントのルーティング方法を指定します。 */
+enum class UIEventRoutingStrategy
+{
+    /** 親要素へルーティングします。 */
+    Bubble,
+
+    /** ルーティングを行いません。 */
+    Direct,
+};
+
 // TODO: obsolete
 enum class UICollectionChangedAction
 {

@@ -80,6 +80,16 @@ UIElement::~UIElement()
     }
 }
 
+void UIElement::onDispose(bool explicitDisposing)
+{
+    if (m_manager) {
+        m_manager->onElementDisposing(this);
+        m_manager = nullptr;
+    }
+
+    UILayoutElement::onDispose(explicitDisposing);
+}
+
 void UIElement::init()
 {
 	UILayoutElement::init(m_finalStyle);
@@ -491,9 +501,9 @@ void UIElement::updateFrame(float elapsedSeconds)
     }
 }
 
-void UIElement::raiseEvent(UIEventArgs* e)
+void UIElement::raiseEvent(UIEventArgs* e, UIEventRoutingStrategy strategy)
 {
-    raiseEventInternal(e);
+    raiseEventInternal(e, strategy);
 }
 
 void UIElement::postEvent(UIEventArgs* e)
@@ -909,7 +919,7 @@ void UIElement::removeFromLogicalParent()
     }
 }
 
-void UIElement::raiseEventInternal(UIEventArgs* e)
+void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy)
 {
     if (LN_REQUIRE(e)) return;
 
@@ -917,9 +927,9 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
     onRoutedEvent(e);
     if (e->handled) return;
 
-    // bubble
-    if (m_visualParent) {
-        m_visualParent->raiseEventInternal(e);
+    // routing
+    if (strategy == UIEventRoutingStrategy::Bubble && m_visualParent) {
+        m_visualParent->raiseEventInternal(e, strategy);
     }
 }
 
@@ -952,12 +962,12 @@ void UIElement::activateInternal()
 	}
 }
 
-void UIElement::deactivateInternal()
-{
-	//if (m_visualParent) {
-	//	m_visualParent->deactivateInternal();
-	//}
-}
+//void UIElement::deactivateInternal()
+//{
+//	//if (m_visualParent) {
+//	//	m_visualParent->deactivateInternal();
+//	//}
+//}
 
 void UIElement::moveVisualChildToForeground(UIElement* child)
 {

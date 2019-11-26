@@ -29,11 +29,12 @@ public:
     void close();
 
 protected:
-    virtual const String& elementName() const  override { static String name = u"UIPopup"; return name; }
-	virtual void deactivateInternal()
-	{
-		UIContainerElement::deactivateInternal();
-	}
+    virtual const String& elementName() const override { static String name = u"UIPopup"; return name; }
+    virtual void onRoutedEvent(UIEventArgs* e) override;
+	//virtual void deactivateInternal()
+	//{
+	//	UIContainerElement::deactivateInternal();
+	//}
 
 
 LN_CONSTRUCT_ACCESS:
