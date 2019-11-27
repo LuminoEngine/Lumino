@@ -166,6 +166,15 @@ void DrawElementListBuilder::setBaseTransfrom(const Optional<Matrix>& value)
     primaryState()->baseTransform = value;
 }
 
+const Matrix& DrawElementListBuilder::baseTransform() const
+{
+	auto v = primaryStateConst()->baseTransform;
+	if (v)
+		return primaryStateConst()->baseTransform.value();
+	else
+		return Matrix::Identity;
+}
+
 void DrawElementListBuilder::setRenderPriority(int value)
 {
     primaryState()->renderPriority = value;

@@ -52,6 +52,7 @@ public:
     const AbstractMaterial* material() const;
 	void setTransfrom(const Matrix& value);
     void setBaseTransfrom(const Optional<Matrix>& value);
+	const Matrix& baseTransform() const;
     void setRenderPriority(int value);
     void setRenderPhase(RendringPhase value);
 

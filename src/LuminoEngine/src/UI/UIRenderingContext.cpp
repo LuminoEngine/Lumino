@@ -128,7 +128,7 @@ void UIRenderingContext::drawImage(const Rect& destinationRect, AbstractMaterial
 
 void UIRenderingContext::drawVisual(UIElement* element)
 {
-	element->renderClient(this, Matrix());
+	element->renderClient(this, m_builder->baseTransform() * element->m_localTransform);
 }
 
 void UIRenderingContext::resetForBeginRendering()
