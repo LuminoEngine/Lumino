@@ -39,6 +39,9 @@ public:
 
     void setMass(float value);
 
+    /** キネマティックモードを設定します。 キネマティックモードでは、剛体に力はかかりません。 */
+    void setKinematic(bool value) { m_body->setKinematic(value); }
+
     /** 摩擦係数を設定します。 */
     void setFriction(float value) { m_body->setFriction(value); }
 

@@ -351,8 +351,20 @@ void TriggerBody2D::onBeforeStepSimulation()
 
 		b2World* world = physicsWorld()->box2DWorld();
 
+        // Box2D の制約として、2つの body の衝突検知はどちらかが b2_dynamicBody である場合のみ行われる。
+        // つまり、TriggerBody を b2_staticBody または b2_kinematicBody にしてしまうと、
+        // 例えば衝突判定用のkinematicなBodyとの衝突検知ができなくなる。
+        // （キャラクターの移動と、攻撃のヒットボックスを別のBodyにし、ヒットボックスは物理移動しない(kinematic)ようなケース）
+        // isSensor とどの type を一般的に使うべきかはよさげな資料がみつからなかったが、
+        // 実際のところは衝突判定したい対象ごとに変えるべきなのだろう。
+        // b2_dynamicBody と組み合わせているテストコードはリポジトリに入っていたが、これが一般的なのだろうか。
+        // ただ、Lumino としてはその辺の細かいところまでユーザーに意識させたくない。
+        // 最適化の余地がなくなるが、実際にゲーム開発していて躓いたところなので、TriggerBody は基本的に全ての type と衝突できる b2_dynamicBody で作成する。
+        // また、通常は kinematic としてふるまいたいので 質量0, 重力影響0 で作成している。
 		b2BodyDef bodyDef;
+        bodyDef.type = b2_dynamicBody;
 		bodyDef.userData = this;
+        bodyDef.gravityScale = 0.0f;
 		m_body = world->CreateBody(&bodyDef);
 
 		for (auto& collitionShape : m_shapes)
