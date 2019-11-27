@@ -60,7 +60,6 @@ Size UICollectionItem::arrangeOverride(UILayoutContext* layoutContext, const Siz
 void UICollectionItem::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseDownEvent) {
-		m_ownerCollectionControl->notifyItemClicked(this);
 		e->handled = true;
 
 
@@ -77,6 +76,7 @@ void UICollectionItem::onRoutedEvent(UIEventArgs* e)
             e->handled = true;
             m_isPressed = false;
 
+			m_ownerCollectionControl->notifyItemClicked(this);
             onClick(static_cast<UIMouseEventArgs*>(e));
             return;
         }
@@ -117,6 +117,11 @@ void UIItemsControl::init()
 
 	// dummy for single select mode
 	m_selectedItems.add(nullptr);
+}
+
+UICollectionItem* UIItemsControl::selectedItem() const
+{
+	return m_selectedItems[0];
 }
 
 void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild)

@@ -221,10 +221,12 @@ Size UIFrameLayout2::staticMeasureChildrenAreaSize(UILayoutContext* layoutContex
     for (int i = 0; i < childrenCount; i++)
     {
         UIElement* child = ownerElement->getVisualChild(i);
-        child->measureLayout(layoutContext, constraint);
-        const Size& desiredSize = child->desiredSize();
-        childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
-        childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+		if (layoutContext->testLayoutEnabled(child)) {
+			child->measureLayout(layoutContext, constraint);
+			const Size& desiredSize = child->desiredSize();
+			childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+			childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+		}
     }
     return childMaxSize;
 }
@@ -250,11 +252,13 @@ Size UIFrameLayout2::staticArrangeChildrenArea(UILayoutContext* layoutContext, U
     for (int i = 0; i < childrenCount; i++)
     {
         UIElement* child = ownerElement->getVisualChild(i);
+		if (layoutContext->testLayoutEnabled(child)) {
 
-        Rect slotRect;
-        detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+			Rect slotRect;
+			detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
 
-        child->arrangeLayout(layoutContext, slotRect);
+			child->arrangeLayout(layoutContext, slotRect);
+		}
     }
     return finalArea.getSize();
 }

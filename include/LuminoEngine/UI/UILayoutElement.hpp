@@ -128,6 +128,9 @@ public:	// TODO: internal
 	 */
 	const Size& desiredSize() const { return m_desiredSize; }
 
+	// arrangeOverride の戻り値。
+	// border + padding + ContentSize. margin は含まれない。
+	// つまり、この要素を描画するために必要な領域を示す。
     const Size& actualSize() const { return m_actualSize; }
 
 	//const Rect& finalGlobalRect() const { return m_finalGlobalRect; }

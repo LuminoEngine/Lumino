@@ -28,7 +28,10 @@ protected:
     virtual const String& elementName() const  override { static String name = u"UIComboBox"; return name; }
     virtual void onAddChild(UIElement* child) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual void onUpdateLayout(UILayoutContext* layoutContext);
 	virtual void onRender(UIRenderingContext* context) override;
+
+	virtual void onItemClick(UICollectionItem* item, UIClickEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
     UIComboBox();

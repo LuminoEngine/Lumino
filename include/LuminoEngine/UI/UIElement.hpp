@@ -83,6 +83,8 @@ class UILayoutContext
 {
 public:
     float dpiScale() const { return m_dpiScale; }
+
+	bool testLayoutEnabled(UIElement* element) const;
     
 LN_CONSTRUCT_ACCESS:
     UILayoutContext();

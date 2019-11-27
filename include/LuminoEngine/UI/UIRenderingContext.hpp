@@ -30,7 +30,7 @@ public:
 
     void drawImage(const Rect& destinationRect, AbstractMaterial* material);
 
-	void drawVisual(UIElement* element);
+	void drawVisual(UIElement* element, const Matrix& transform);
 
 public: // TODO: inernal
 	void resetForBeginRendering();

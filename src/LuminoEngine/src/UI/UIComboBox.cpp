@@ -37,20 +37,21 @@ void UIComboBox::init()
 	setItemsLayoutPanel(m_itemsHost, false);
 
 	// TODO: test
-	m_itemsHost->setBackgroundColor(Color::BlueViolet);
+	//m_itemsHost->setBackgroundColor(Color::BlueViolet);
 	m_itemsHost->setMargin(5);
 
     m_popup = ln::makeObject<ln::UIPopup>();
-    m_popup->setWidth(200);
-    m_popup->setHeight(300);
-    m_popup->setBackgroundColor(Color::AliceBlue);
+    //m_popup->setWidth(200);
+    //m_popup->setHeight(300);
+    //m_popup->setBackgroundColor(Color::AliceBlue);
     m_popup->setPlacementTarget(this);
 	m_popup->addElement(m_itemsHost);
     addVisualChild(m_popup);
 
 
 	// TODO: test
-	addChild(u"test");
+	addChild(u"test1");
+	addChild(u"test2");
 }
 
 void UIComboBox::onAddChild(UIElement* child)
@@ -80,12 +81,37 @@ void UIComboBox::onRoutedEvent(UIEventArgs* e)
 	UIItemsControl::onRoutedEvent(e);
 }
 
+void UIComboBox::onUpdateLayout(UILayoutContext* layoutContext)
+{
+	UIItemsControl::onUpdateLayout(layoutContext);
+	m_popup->setWidth(actualSize().width);
+}
+
 void UIComboBox::onRender(UIRenderingContext* context)
 {
 	UIItemsControl::onRender(context);
 
-	UIElement* test = m_logicalChildren->at(0);
-	context->drawVisual(test);
+
+	auto area = detail::LayoutHelper::makePaddingRect(this, actualSize());
+
+
+	auto item = selectedItem();
+	if (item) {
+
+		// vertical centering.
+		float y = (area.height - item->actualSize().height) / 2;
+		auto offset = Matrix::makeTranslation(area.x, area.y + y, 0);
+
+		for (auto& child : item->m_visualChildren) {
+			context->drawVisual(child, offset);
+		}
+	}
+}
+
+void UIComboBox::onItemClick(UICollectionItem* item, UIClickEventArgs* e)
+{
+	UIItemsControl::onItemClick(item, e);
+	m_popup->close();
 }
 
 } // namespace ln

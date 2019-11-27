@@ -8,12 +8,11 @@ class App_Example_UIControls : public Application
 
     virtual void onInit() override
     {
-        Engine::mainCamera()->setBackgroundColor(Color::Gray);
+        //Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
         auto combobox1 = ln::makeObject<UIComboBox>();
         combobox1->setWidth(200);
-        combobox1->setHeight(32);
-        combobox1->setBackgroundColor(Color::BurlyWood);
+        //combobox1->setBackgroundColor(Color::BurlyWood);
         Engine::mainUIView()->addElement(combobox1);
     }
 

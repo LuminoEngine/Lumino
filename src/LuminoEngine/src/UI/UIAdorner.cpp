@@ -93,7 +93,9 @@ void UIAdornerLayer::render(UIRenderingContext* context, const Matrix& parentTra
 {
     context->m_adornerRendering = true;
     for (auto& adorner : m_adorners) {
-        adorner->render(context, parentTransform);
+
+        //adorner->render(context, parentTransform * adorner->m_localTransform);
+		adorner->render(context, adorner->m_combinedFinalRenderTransform);
     }
     context->m_adornerRendering = false;
 }

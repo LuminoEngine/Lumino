@@ -31,6 +31,11 @@ void UILayoutContext::init()
     Object::init();
 }
 
+bool UILayoutContext::testLayoutEnabled(UIElement* element) const
+{
+	return !element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
+}
+
 //==============================================================================
 // UIViewModel
 
@@ -865,6 +870,9 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 	// TODO: setMaterial
 	onRender(context);
 
+	// onRender からの drawVisual 内で設定されることに備えて再設定（ComboBox など）
+	// TODO: やっぱり transform も push pop がいいと思う
+	context->setBaseTransfrom(combinedTransform);
 	for (auto& d : m_finalStyle->decorators) {
 		d->render(context, actualSize());
 	}

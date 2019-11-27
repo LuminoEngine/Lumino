@@ -126,9 +126,11 @@ void UIRenderingContext::drawImage(const Rect& destinationRect, AbstractMaterial
         material);
 }
 
-void UIRenderingContext::drawVisual(UIElement* element)
+void UIRenderingContext::drawVisual(UIElement* element, const Matrix& transform)
 {
-	element->renderClient(this, m_builder->baseTransform() * element->m_localTransform);
+	//pushState();
+	element->renderClient(this, m_builder->baseTransform() * element->m_localTransform * transform);
+	//popState();
 }
 
 void UIRenderingContext::resetForBeginRendering()
