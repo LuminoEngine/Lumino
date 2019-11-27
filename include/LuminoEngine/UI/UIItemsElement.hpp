@@ -50,6 +50,9 @@ class UIItemsControl	// TODO: UICollectionItem がほかにいい名前思いつ
 	: public UIControl
 {
 public:
+
+	/** 現在選択されている最初の項目を取得します。 */
+	UICollectionItem* selectedItem() const;
     
     /** ItemClick イベントの通知を受け取るコールバックを登録します。*/
     LN_METHOD(Event)
@@ -61,7 +64,7 @@ public:
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
 
-    void setItemsLayoutPanel(UILayoutPanel2* layout);
+    void setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild = true);
 
 	void addItem(UICollectionItem* item);
 	void removeItem(UICollectionItem* item);
@@ -88,6 +91,7 @@ public: // TODO:
 	List<UICollectionItem*> m_selectedItems;
     Event<UIClickEventHandler> m_onItemClick;
     Event<UISelectionChangedEventHandler> m_onSelectionChanged;
+	bool m_layoutItemsHostLayoutEnabled = true;
 
 	friend class UICollectionItem;
 };

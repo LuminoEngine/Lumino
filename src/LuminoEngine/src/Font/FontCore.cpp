@@ -55,7 +55,11 @@ void FontCore::beginCacheUsing()
 void FontCore::endCacheUsing()
 {
 	m_activeCacheIndex = 0;
-	for (auto& cache : m_fontGlyphTextureCacheList) cache->clearIndex();
+	for (auto& cache : m_fontGlyphTextureCacheList) {
+		if (cache) {
+			cache->clearIndex();
+		}
+	}
 }
 
 void FontCore::getFontGlyphTextureCache(FontGlyphTextureCacheRequest* inout)

@@ -29,7 +29,7 @@ public:
     void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
     void measureLayout(UILayoutContext* layoutContext, const Size& availableSize);
     void arrangeLayout(UILayoutContext* layoutContext, const Rect& localSlotRect);
-    void render(UIRenderingContext* context);
+    void render(UIRenderingContext* context, const Matrix& parentTransform);
 	UIElement* lookupMouseHoverElement(const Point& frameClientPosition);
 
 LN_CONSTRUCT_ACCESS:

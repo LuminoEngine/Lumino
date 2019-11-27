@@ -60,7 +60,6 @@ Size UICollectionItem::arrangeOverride(UILayoutContext* layoutContext, const Siz
 void UICollectionItem::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseDownEvent) {
-		m_ownerCollectionControl->notifyItemClicked(this);
 		e->handled = true;
 
 
@@ -77,6 +76,7 @@ void UICollectionItem::onRoutedEvent(UIEventArgs* e)
             e->handled = true;
             m_isPressed = false;
 
+			m_ownerCollectionControl->notifyItemClicked(this);
             onClick(static_cast<UIMouseEventArgs*>(e));
             return;
         }
@@ -119,7 +119,12 @@ void UIItemsControl::init()
 	m_selectedItems.add(nullptr);
 }
 
-void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
+UICollectionItem* UIItemsControl::selectedItem() const
+{
+	return m_selectedItems[0];
+}
+
+void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild)
 {
     if (LN_REQUIRE(layout)) return;
 
@@ -131,11 +136,14 @@ void UIItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
 
     m_itemssHostLayout = layout;
     m_itemssHostLayout->m_ownerItemsControl = this;
-    addVisualChild(m_itemssHostLayout);
 
-    for (auto& item : *m_logicalChildren) {
-        m_itemssHostLayout->addVisualChild(item);
-    }
+	if (setAsVisualChild) {
+		addVisualChild(m_itemssHostLayout);
+	}
+
+	for (auto& item : *m_logicalChildren) {
+		m_itemssHostLayout->addVisualChild(item);
+	}
 }
 
 void UIItemsControl::addItem(UICollectionItem* item)
@@ -219,7 +227,7 @@ void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const det
 
 Size UIItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    if (m_itemssHostLayout) {
+    if (m_layoutItemsHostLayoutEnabled && m_itemssHostLayout) {
         m_itemssHostLayout->measureLayout(layoutContext, constraint);
         Size layoutSize = m_itemssHostLayout->desiredSize();
         Size localSize = UIElement::measureOverride(layoutContext, constraint);
@@ -232,10 +240,9 @@ Size UIItemsControl::measureOverride(UILayoutContext* layoutContext, const Size&
 
 Size UIItemsControl::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    Rect contentSlotRect(0, 0, finalSize);
-    contentSlotRect = contentSlotRect.makeDeflate(finalStyle()->padding);
+	Rect contentSlotRect = detail::LayoutHelper::makePaddingRect(this, finalSize);
 
-    if (m_itemssHostLayout) {
+    if (m_layoutItemsHostLayoutEnabled && m_itemssHostLayout) {
         m_itemssHostLayout->arrangeLayout(layoutContext, contentSlotRect);
     	return finalSize;
     }

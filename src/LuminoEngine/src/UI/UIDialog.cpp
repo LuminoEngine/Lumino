@@ -122,13 +122,13 @@ UIElement* UIDialogAdorner::lookupMouseHoverElement(const Point& frameClientPosi
 	return UIAdorner::lookupMouseHoverElement(frameClientPosition);
 }
 
-void UIDialogAdorner::render(UIRenderingContext* context)
+void UIDialogAdorner::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
-	UIAdorner::render(context);
+	UIAdorner::render(context, parentTransform);
 
 	// popup は UIAdorner の VisualChildren ではないため、直接呼び出す必要がある
     if (m_popup) {
-        m_popup->render(context);
+        m_popup->render(context, parentTransform);
     }
 }
 

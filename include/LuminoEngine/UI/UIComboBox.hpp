@@ -3,6 +3,7 @@
 
 namespace ln {
 class UIPopup;
+class UILayoutPanel2;
 
 class UIComboBoxItem
     : public UICollectionItem
@@ -27,6 +28,10 @@ protected:
     virtual const String& elementName() const  override { static String name = u"UIComboBox"; return name; }
     virtual void onAddChild(UIElement* child) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual void onUpdateLayout(UILayoutContext* layoutContext);
+	virtual void onRender(UIRenderingContext* context) override;
+
+	virtual void onItemClick(UICollectionItem* item, UIClickEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
     UIComboBox();
@@ -34,6 +39,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<UIPopup> m_popup;
+	Ref<UILayoutPanel2> m_itemsHost;
 };
 
 } // namespace ln

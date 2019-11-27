@@ -31,6 +31,8 @@ public:
 	void init(const Settings& settings);
 	void dispose();
 
+    void onElementDisposing(UIElement* element);
+
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     Application* application() const { return m_application; }
 
@@ -49,8 +51,9 @@ public:
 	void releaseCapture(UIElement* element);
 	UIElement* capturedElement() const { return m_capturedElement; }
 
-    void focus(UIElement* element);
+    void tryGetInputFocus(UIElement* element);
     UIElement* forcusedElement() const { return m_forcusedElement; }
+	void activateTree(UIElement* element);
 
     void postEvent(UIElement* target, UIEventArgs* e);
     void dispatchPostedEvents();
@@ -80,13 +83,15 @@ private:
     Ref<UIControl> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;
     Ref<UIContext> m_mainContext;
-    UIElement* m_mouseHoverElement;
-	UIElement* m_capturedElement;
-    UIElement* m_forcusedElement;
+    Ref<UIElement> m_mouseHoverElement;
+	Ref<UIElement> m_capturedElement;
+    Ref<UIElement> m_forcusedElement;
 	//Ref<UIFrameLayout> m_defaultLayout;
     std::deque<EventQueueItem> m_eventQueue;
 	List<Ref<UIActiveTimer>> m_activeTimers;
 
+    // 
+	List<Ref<UIElement>> m_activationCache;
 };
 
 } // namespace detail

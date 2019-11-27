@@ -11,6 +11,7 @@ class Shader;
 class AbstractMaterial;
 class UIStyle;
 class UILayoutContext;
+class UIElement;
 namespace detail { class LayoutHelper; }
 
 
@@ -127,6 +128,9 @@ public:	// TODO: internal
 	 */
 	const Size& desiredSize() const { return m_desiredSize; }
 
+	// arrangeOverride の戻り値。
+	// border + padding + ContentSize. margin は含まれない。
+	// つまり、この要素を描画するために必要な領域を示す。
     const Size& actualSize() const { return m_actualSize; }
 
 	//const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
@@ -171,8 +175,10 @@ public:	//TODO: internal
 	Size m_desiredSize; // includes, margin, border
 
     
-
+	// メインのレイアウトツリー上での座標変換に使用する。特にマウス位置。
     Matrix m_combinedFinalRenderTransform;
+
+	Matrix m_localTransform;
 
 private:
     Point m_localPosition;  // 親コンテナ内の相対座標
@@ -377,6 +383,7 @@ public:
 		return finalArea.getSize();
 	}
 
+	static Rect makePaddingRect(const UIElement* element, const Size& clientSize);
 };
 
 } // namespace detail

@@ -64,6 +64,7 @@ void UIContext::setupDefaultStyle()
     auto theme = makeObject<UITheme>();
     theme->setSpacing(8); // MUI default
     theme->add(u"control.background", UIColors::get(UIColorHues::Grey, 2));
+	theme->add(u"collection.hoverBackground", UIColors::get(UIColorHues::LightGreen, 0));
     theme->add(u"collection.selectedBackground", UIColors::get(UIColorHues::LightGreen, 2));
     theme->add(u"tab.activeBackground", UIColors::get(UIColorHues::White));
     theme->add(u"tab.inactiveBackground", UIColors::get(UIColorHues::Grey, 3));
@@ -82,8 +83,8 @@ void UIContext::setupDefaultStyle()
 			auto e = sheet->addStyleSet(u"UIButton");
 			{
 				auto s = e->mainStyleClass()->mainStyle();
-                s->minWidth = 64;
-                //s->minHeight = 36;
+				s->minWidth = 64;//
+                s->minHeight = theme->lineContentHeight();
                 s->margin = Thickness(8);   // TODO: spacing?
                 s->padding = theme->spacing(1);
 				s->horizontalContentAlignment = HAlignment::Center;
@@ -217,12 +218,43 @@ void UIContext::setupDefaultStyle()
                 //s->backgroundColor = Color::Green;
             }
             if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
-                s->backgroundColor = Color::Red;
+                s->backgroundColor = theme->get(u"collection.hoverBackground");
             }
             if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
                 s->backgroundColor = theme->get(u"collection.selectedBackground");
             }
         }
+		//--------------------------------
+		// UIComboBox
+		{
+			if (auto s = sheet->obtainStyle(u"UIComboBox")) {
+				s->minHeight = theme->lineContentHeight();
+				s->setBorderColor(Color::Gray);
+				s->borderThickness = 1;
+				s->padding = theme->spacing(1);
+				s->horizontalAlignment = HAlignment::Center;
+				s->verticalAlignment = VAlignment::Center;
+
+				auto icon = makeObject<UIStyleDecorator>();
+				icon->setIconName(u"angle-down", 15);
+				icon->m_hAlignment = HAlignment::Right;
+				icon->m_margin = Thickness(0, 0, theme->spacing(1), 0);
+				icon->m_color = Color::Gray;
+				s->decorators.add(icon);
+			}
+		}
+		//--------------------------------
+		// UIComboBoxItem
+		{
+			if (auto s = sheet->obtainStyle(u"UIComboBoxItem")) {
+			}
+			if (auto s = sheet->obtainStyle(u"UIComboBoxItem:MouseOver")) {
+				s->backgroundColor = theme->get(u"collection.hoverBackground");
+			}
+			if (auto s = sheet->obtainStyle(u"UIComboBoxItem:Selected")) {
+				s->backgroundColor = theme->get(u"collection.selectedBackground");
+			}
+		}
         //--------------------------------
         // UITreeItem
         {

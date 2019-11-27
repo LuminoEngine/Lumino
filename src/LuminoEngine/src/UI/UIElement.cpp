@@ -31,6 +31,11 @@ void UILayoutContext::init()
     Object::init();
 }
 
+bool UILayoutContext::testLayoutEnabled(UIElement* element) const
+{
+	return !element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
+}
+
 //==============================================================================
 // UIViewModel
 
@@ -78,6 +83,16 @@ UIElement::~UIElement()
     if (m_viewModel) {
         m_viewModel->unsubscribe(this);
     }
+}
+
+void UIElement::onDispose(bool explicitDisposing)
+{
+    if (m_manager) {
+        m_manager->onElementDisposing(this);
+        m_manager = nullptr;
+    }
+
+    UILayoutElement::onDispose(explicitDisposing);
 }
 
 void UIElement::init()
@@ -469,9 +484,10 @@ void UIElement::addAction(UIAction* action)
 
 void UIElement::activate()
 {
-	if (m_focusable) {
-		activateInternal();
-	}
+	//if (m_focusable) {
+	//	activateInternal();
+	//}
+	m_manager->tryGetInputFocus(this);
 }
 
 void UIElement::setRenderPriority(int value)
@@ -490,9 +506,9 @@ void UIElement::updateFrame(float elapsedSeconds)
     }
 }
 
-void UIElement::raiseEvent(UIEventArgs* e)
+void UIElement::raiseEvent(UIEventArgs* e, UIEventRoutingStrategy strategy)
 {
-    raiseEventInternal(e);
+    raiseEventInternal(e, strategy);
 }
 
 void UIElement::postEvent(UIEventArgs* e)
@@ -524,10 +540,7 @@ UIFrameRenderView* UIElement::getRenderView()
 
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
-	//printf("UIElement::lookupMouseHoverElement %p\n", this);
-
-	// this は not hit test でも、Visibility なら Child は test したい
-    if (isRenderVisible())
+    if (isHitTestVisibleCore())
     {
 #if 1
 		if (m_orderdVisualChildren) {
@@ -549,10 +562,8 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
         }
 #endif
 
-		if (m_isHitTestVisible) {
-			if (onHitTest(frameClientPosition)) {
-				return this;
-			}
+		if (onHitTest(frameClientPosition)) {
+			return this;
 		}
     }
 
@@ -561,10 +572,7 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
 void UIElement::focus()
 {
-    if (m_focusable) {
-        m_manager->focus(this);
-        activate();
-    }
+	activate();
 }
 
 void UIElement::retainCapture()
@@ -767,7 +775,7 @@ void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, co
 // //   }
 //}
 
-void UIElement::render(UIRenderingContext* context)
+void UIElement::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
     bool enable = false;
     if (m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::Popup)) {
@@ -782,91 +790,101 @@ void UIElement::render(UIRenderingContext* context)
 
     if (enable && isRenderVisible())
     {
+		Matrix combinedTransform = parentTransform * m_localTransform;
 
 
-        context->pushState();
+		renderClient(context, combinedTransform);
 
-        if (m_clipToBounds) {
-            Vector2 points[] = {
-                Vector3::transformCoord({ 0, 0, 0 }, m_combinedFinalRenderTransform).xy(),
-                Vector3::transformCoord({ actualSize().width, 0, 0 }, m_combinedFinalRenderTransform).xy(),
-                Vector3::transformCoord({ 0, actualSize().height, 0 }, m_combinedFinalRenderTransform).xy(),
-                Vector3::transformCoord({ actualSize().width, actualSize().height, 0 }, m_combinedFinalRenderTransform).xy(),
-            };
-            Vector2 minPos = points[0];
-            Vector2 maxPos = points[0];
-            for (int i = 1; i < 4; i++) {
-                minPos = Vector2::min(minPos, points[i]);
-                maxPos = Vector2::max(maxPos, points[i]);
-            }
-            context->setScissorRect(RectI(minPos.x, minPos.y, maxPos.x - minPos.x, maxPos.y - minPos.y));
-        }
-
-        {
-            //Matrix m = Matrix::makeTranslation(-centerPoint());
-            //m.scale(scale());
-            //m.rotateQuaternion(rotation());
-            //m.translate(position());
-            //m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
-            context->setBaseTransfrom(m_combinedFinalRenderTransform);
-        }
-        detail::BuiltinEffectData data;
-        data.opacity = opacity();
-        data.colorScale = colorScale();
-        data.blendColor = blendColor();
-        data.tone = tone();
-        context->setBaseBuiltinEffectData(data);
-        context->setBlendMode(blendMode());
-        context->setRenderPriority(m_renderPriority);
-
-		// background
-		{
-			context->setMaterial(m_finalStyle->backgroundMaterial);
-
-			if (m_finalStyle->shadowBlurRadius > 0.0f)
-			{
-				context->drawBoxShadow(Rect(0, 0, actualSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
-
-			}
-			Rect rect(0, 0, actualSize());
-			rect = rect.makeDeflate(m_finalStyle->borderThickness);
-			
-			if (m_finalStyle->backgroundColor.a > 0.0f) {
-                context->drawSolidRectangle(rect, m_finalStyle->backgroundColor);
-				//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
-				//auto mat = Material::create(tex);
-                //context->drawBoxBackground(rect, m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
-				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
-			}
-
-            if (m_finalStyle->backgroundMaterial && m_finalStyle->backgroundMaterial->mainTexture()) {
-                context->drawImageBox(rect, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundImageBorder, Color::White);
-            }
-
-			if (!m_finalStyle->borderThickness.isZero()) {
-				context->drawBoxBorderLine(rect, m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
-			}
-		}
-
-
-        // TODO: setMaterial
-        onRender(context);
-
-		for (auto& d : m_finalStyle->decorators) {
-			d->render(context, actualSize());
-		}
-
-        context->popState();	// TODO: scoped
-
-        // child elements
-		if (m_orderdVisualChildren) {
-			for (auto& e : m_orderdVisualChildren) {
-				e->render(context);
-			}
-		}
     }
 
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Render);
+}
+
+void UIElement::renderClient(UIRenderingContext* context, const Matrix& combinedTransform)
+{
+	context->pushState();
+
+	if (m_clipToBounds) {
+		Vector2 points[] = {
+			Vector3::transformCoord({ 0, 0, 0 }, combinedTransform).xy(),
+			Vector3::transformCoord({ actualSize().width, 0, 0 }, combinedTransform).xy(),
+			Vector3::transformCoord({ 0, actualSize().height, 0 }, combinedTransform).xy(),
+			Vector3::transformCoord({ actualSize().width, actualSize().height, 0 }, combinedTransform).xy(),
+		};
+		Vector2 minPos = points[0];
+		Vector2 maxPos = points[0];
+		for (int i = 1; i < 4; i++) {
+			minPos = Vector2::min(minPos, points[i]);
+			maxPos = Vector2::max(maxPos, points[i]);
+		}
+		context->setScissorRect(RectI(minPos.x, minPos.y, maxPos.x - minPos.x, maxPos.y - minPos.y));
+	}
+
+	{
+		//Matrix m = Matrix::makeTranslation(-centerPoint());
+		//m.scale(scale());
+		//m.rotateQuaternion(rotation());
+		//m.translate(position());
+		//m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
+		context->setBaseTransfrom(combinedTransform);
+	}
+	detail::BuiltinEffectData data;
+	data.opacity = opacity();
+	data.colorScale = colorScale();
+	data.blendColor = blendColor();
+	data.tone = tone();
+	context->setBaseBuiltinEffectData(data);
+	context->setBlendMode(blendMode());
+	context->setRenderPriority(m_renderPriority);
+
+	// background
+	{
+		context->setMaterial(m_finalStyle->backgroundMaterial);
+
+		if (m_finalStyle->shadowBlurRadius > 0.0f)
+		{
+			context->drawBoxShadow(Rect(0, 0, actualSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
+
+		}
+		Rect rect(0, 0, actualSize());
+		rect = rect.makeDeflate(m_finalStyle->borderThickness);
+
+		if (m_finalStyle->backgroundColor.a > 0.0f) {
+			context->drawSolidRectangle(rect, m_finalStyle->backgroundColor);
+			//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+			//auto mat = Material::create(tex);
+			//context->drawBoxBackground(rect, m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+			//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
+		}
+
+		if (m_finalStyle->backgroundMaterial && m_finalStyle->backgroundMaterial->mainTexture()) {
+			context->drawImageBox(rect, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundImageBorder, Color::White);
+		}
+
+		if (!m_finalStyle->borderThickness.isZero()) {
+			context->drawBoxBorderLine(rect, m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
+		}
+	}
+
+
+	// TODO: setMaterial
+	onRender(context);
+
+	// onRender からの drawVisual 内で設定されることに備えて再設定（ComboBox など）
+	// TODO: やっぱり transform も push pop がいいと思う
+	context->setBaseTransfrom(combinedTransform);
+	for (auto& d : m_finalStyle->decorators) {
+		d->render(context, actualSize());
+	}
+
+	context->popState();	// TODO: scoped
+
+	// child elements
+	if (m_orderdVisualChildren) {
+		for (auto& e : m_orderdVisualChildren) {
+			e->render(context, combinedTransform);
+		}
+	}
 }
 
 void UIElement::onRoutedEvent(UIEventArgs* e)
@@ -911,7 +929,7 @@ void UIElement::removeFromLogicalParent()
     }
 }
 
-void UIElement::raiseEventInternal(UIEventArgs* e)
+void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy)
 {
     if (LN_REQUIRE(e)) return;
 
@@ -919,9 +937,9 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
     onRoutedEvent(e);
     if (e->handled) return;
 
-    // bubble
-    if (m_visualParent) {
-        m_visualParent->raiseEventInternal(e);
+    // routing
+    if (strategy == UIEventRoutingStrategy::Bubble && m_visualParent) {
+        m_visualParent->raiseEventInternal(e, strategy);
     }
 }
 
@@ -950,16 +968,16 @@ void UIElement::activateInternal()
 {
 	if (m_visualParent) {
 		m_visualParent->moveVisualChildToForeground(this);
-		m_visualParent->activateInternal();
+		//m_visualParent->activateInternal();
 	}
 }
 
-void UIElement::deactivateInternal()
-{
-	if (m_visualParent) {
-		m_visualParent->deactivateInternal();
-	}
-}
+//void UIElement::deactivateInternal()
+//{
+//	//if (m_visualParent) {
+//	//	m_visualParent->deactivateInternal();
+//	//}
+//}
 
 void UIElement::moveVisualChildToForeground(UIElement* child)
 {

@@ -49,6 +49,19 @@ void UIManager::dispose()
     m_mainContext = nullptr;
 }
 
+void UIManager::onElementDisposing(UIElement* element)
+{
+    //if (m_forcusedElement == element) {
+    //    m_forcusedElement = nullptr;
+    //}
+    //if (m_capturedElement == element) {
+    //    m_capturedElement = nullptr;
+    //}
+    //if (m_mouseHoverElement == element) {
+    //    m_mouseHoverElement = nullptr;
+    //}
+}
+
 void UIManager::setPrimaryElement(UIControl* element)
 {
     m_primaryElement = element;
@@ -80,6 +93,9 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
         m_mouseHoverElement = hoverdElement;
         auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
         m_mouseHoverElement->raiseEvent(args);
+
+
+		std::cout << m_mouseHoverElement->elementName() << std::endl;
     }
 
 
@@ -155,9 +171,58 @@ void UIManager::releaseCapture(UIElement* element)
 	}
 }
 
-void UIManager::focus(UIElement* element)
+void UIManager::tryGetInputFocus(UIElement* element)
 {
-    m_forcusedElement = element;
+	activateTree(element);
+	m_forcusedElement = element;
+}
+
+void UIManager::activateTree(UIElement* element)
+{
+	m_activationCache.clear();
+
+	// 論理フォーカスを持っているものをすべて列挙
+	UIElement* e = element;
+	while (e)
+	{
+		m_activationCache.add(e);
+		e = e->m_visualParent;
+	}
+
+	// activation と deactivation の分岐点を探しつつ deactivate する
+	UIElement* branchRoot = nullptr;
+	e = m_forcusedElement;
+	while (e)
+	{
+		if (m_activationCache.contains(e)) {
+			branchRoot = e;
+			break;
+		}
+
+        // deactivate
+        auto args = UIEventArgs::create(e, UIEvents::LostFocusEvent, true);
+        e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+
+		e = e->m_visualParent;
+	}
+
+	// 基点から分岐点までを activate
+	e = element;
+	while (e)
+	{
+		if (e == branchRoot) {
+			break;
+		}
+
+        // activate
+        e->activateInternal();
+        auto args = UIEventArgs::create(e, UIEvents::GotFocusEvent, true);
+        e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+
+		e = e->m_visualParent;
+	}
+
+    m_activationCache.clear();
 }
 
 void UIManager::postEvent(UIElement* target, UIEventArgs* e)

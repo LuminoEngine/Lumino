@@ -29,6 +29,16 @@ private:
 };
 
 // Backdrop も兼ねる
+//
+// モーダルダイアログ（ポップアップ）が複数表示されている場合は、UIPopupAdorner も複数表示される。
+// Material-UI と同じ動作。
+// つまり、画面全体を覆うように半透明グレーで覆うが、それがどんどん深くなる。
+// - UIDialogAdorner
+// - UIDialog
+// - UIDialogAdorner
+// - UIDialog
+// というように。
+// オーバーレイの色もどんどん濃くなる。
 class UIDialogAdorner
     : public UIAdorner
 {
@@ -38,7 +48,7 @@ protected:
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
     virtual void onUpdateLayout(UILayoutContext* layoutContext) override;
 	virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
-    virtual void render(UIRenderingContext* context) override;
+    virtual void render(UIRenderingContext* context, const Matrix& parentTransform) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIDialogAdorner();

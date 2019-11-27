@@ -157,6 +157,7 @@ enum class UIOverflowBehavior
 	Scroll,
 };
 
+// 装飾対象の padding の影響を受けない
 class UIStyleDecorator
 	: public Object
 {
@@ -756,6 +757,8 @@ public:
     void setSpacing(float value) { m_spacing = value; }
 
     float spacing(float factor) const { return m_spacing * factor; }
+
+	float lineContentHeight() const { return spacing(4); }
     
 LN_CONSTRUCT_ACCESS:
     UITheme();

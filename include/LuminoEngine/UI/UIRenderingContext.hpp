@@ -3,6 +3,7 @@
 #include "../Rendering/Drawing.hpp"
 
 namespace ln {
+class UIElement;
 
 // 従来の Brush 相当の塗りつぶしパラメータは Material。形状にかかわるものはそれ以外に分離(strokeSize など)
 // ただし、グラデーションなども Brush 相当のパラメータとは分離して考える。Web Canvas。
@@ -28,6 +29,8 @@ public:
 	void drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset);
 
     void drawImage(const Rect& destinationRect, AbstractMaterial* material);
+
+	void drawVisual(UIElement* element, const Matrix& transform);
 
 public: // TODO: inernal
 	void resetForBeginRendering();

@@ -25,11 +25,18 @@ void UIPopup::init()
     // UIAdorner で左上を PlacementTarget と合わせてもらう
     setHorizontalAlignment(HAlignment::Left);
     setVerticalAlignment(VAlignment::Top);
+
+	m_isHitTestVisible = false;
 }
 
 void UIPopup::setPlacementTarget(UIElement* target)
 {
     m_placementTarget = target;
+}
+
+UIElement* UIPopup::placementTarget() const
+{
+	return m_placementTarget;
 }
 
 void UIPopup::setPlacementMode(PlacementMode mode)
@@ -49,6 +56,9 @@ void UIPopup::open()
         if (renderView) {
             renderView->adornerLayer()->add(m_adorner);
         }
+
+		activate();
+		m_isHitTestVisible = true;
         m_opend = true;
     }
 }
@@ -63,11 +73,27 @@ void UIPopup::close()
             if (renderView) {
                 renderView->adornerLayer()->remove(m_adorner);
             }
-            m_adorner = nullptr;
         }
+		m_isHitTestVisible = false;
         m_opend = false;
     }
 }
+
+void UIPopup::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::LostFocusEvent) {
+        close();
+    }
+
+    UIContainerElement::onRoutedEvent(e);
+}
+
+//bool UIPopup::onHitTest(const Point& frameClientPosition)
+//{
+//	if (!m_opend) return false;
+//
+//	UIContainerElement::onHitTest(frameClientPosition);
+//}
 
 //==============================================================================
 // UIPopupAdorner
@@ -86,7 +112,8 @@ void UIPopupAdorner::init(UIElement* adornedElement, UIPopup* popup)
 Size UIPopupAdorner::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     m_popup->measureLayout(layoutContext, constraint);
-    return Size::max(m_popup->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
+
+    return Size::max(m_popup->placementTarget()->desiredSize(), UIElement::measureOverride(layoutContext, constraint));
 }
 
 Size UIPopupAdorner::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
@@ -121,10 +148,10 @@ void UIPopupAdorner::onUpdateLayout(UILayoutContext* layoutContext)
     m_popup->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
 }
 
-void UIPopupAdorner::render(UIRenderingContext* context)
+void UIPopupAdorner::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
     if (m_popup) {
-        m_popup->render(context);
+        m_popup->render(context, parentTransform);
     }
 }
 
