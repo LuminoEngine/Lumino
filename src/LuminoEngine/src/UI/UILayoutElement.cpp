@@ -328,6 +328,12 @@ Rect LayoutHelper::arrangeClientArea(UILayoutElement* element, const Size& final
 	return area;
 }
 
+Rect LayoutHelper::makePaddingRect(const UIElement* element, const Size& clientSize)
+{
+	Rect contentSlotRect(0, 0, clientSize);
+	return contentSlotRect.makeDeflate(element->finalStyle()->padding);
+}
+
 } // namespace detail
 } // namespace ln
 

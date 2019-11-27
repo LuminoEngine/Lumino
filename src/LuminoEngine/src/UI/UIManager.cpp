@@ -93,6 +93,9 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
         m_mouseHoverElement = hoverdElement;
         auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
         m_mouseHoverElement->raiseEvent(args);
+
+
+		std::cout << m_mouseHoverElement->elementName() << std::endl;
     }
 
 

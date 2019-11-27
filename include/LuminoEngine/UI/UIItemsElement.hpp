@@ -61,7 +61,7 @@ public:
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;
 
-    void setItemsLayoutPanel(UILayoutPanel2* layout);
+    void setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild = true);
 
 	void addItem(UICollectionItem* item);
 	void removeItem(UICollectionItem* item);
@@ -88,6 +88,7 @@ public: // TODO:
 	List<UICollectionItem*> m_selectedItems;
     Event<UIClickEventHandler> m_onItemClick;
     Event<UISelectionChangedEventHandler> m_onSelectionChanged;
+	bool m_layoutItemsHostLayoutEnabled = true;
 
 	friend class UICollectionItem;
 };

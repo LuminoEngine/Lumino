@@ -535,10 +535,7 @@ UIFrameRenderView* UIElement::getRenderView()
 
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
-	//printf("UIElement::lookupMouseHoverElement %p\n", this);
-
-	// this は not hit test でも、Visibility なら Child は test したい
-    if (isRenderVisible())
+    if (isHitTestVisibleCore())
     {
 #if 1
 		if (m_orderdVisualChildren) {
@@ -560,10 +557,8 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
         }
 #endif
 
-		if (m_isHitTestVisible) {
-			if (onHitTest(frameClientPosition)) {
-				return this;
-			}
+		if (onHitTest(frameClientPosition)) {
+			return this;
 		}
     }
 
@@ -790,91 +785,95 @@ void UIElement::render(UIRenderingContext* context)
 
     if (enable && isRenderVisible())
     {
+		renderClient(context, m_combinedFinalRenderTransform);
 
-
-        context->pushState();
-
-        if (m_clipToBounds) {
-            Vector2 points[] = {
-                Vector3::transformCoord({ 0, 0, 0 }, m_combinedFinalRenderTransform).xy(),
-                Vector3::transformCoord({ actualSize().width, 0, 0 }, m_combinedFinalRenderTransform).xy(),
-                Vector3::transformCoord({ 0, actualSize().height, 0 }, m_combinedFinalRenderTransform).xy(),
-                Vector3::transformCoord({ actualSize().width, actualSize().height, 0 }, m_combinedFinalRenderTransform).xy(),
-            };
-            Vector2 minPos = points[0];
-            Vector2 maxPos = points[0];
-            for (int i = 1; i < 4; i++) {
-                minPos = Vector2::min(minPos, points[i]);
-                maxPos = Vector2::max(maxPos, points[i]);
-            }
-            context->setScissorRect(RectI(minPos.x, minPos.y, maxPos.x - minPos.x, maxPos.y - minPos.y));
-        }
-
-        {
-            //Matrix m = Matrix::makeTranslation(-centerPoint());
-            //m.scale(scale());
-            //m.rotateQuaternion(rotation());
-            //m.translate(position());
-            //m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
-            context->setBaseTransfrom(m_combinedFinalRenderTransform);
-        }
-        detail::BuiltinEffectData data;
-        data.opacity = opacity();
-        data.colorScale = colorScale();
-        data.blendColor = blendColor();
-        data.tone = tone();
-        context->setBaseBuiltinEffectData(data);
-        context->setBlendMode(blendMode());
-        context->setRenderPriority(m_renderPriority);
-
-		// background
-		{
-			context->setMaterial(m_finalStyle->backgroundMaterial);
-
-			if (m_finalStyle->shadowBlurRadius > 0.0f)
-			{
-				context->drawBoxShadow(Rect(0, 0, actualSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
-
-			}
-			Rect rect(0, 0, actualSize());
-			rect = rect.makeDeflate(m_finalStyle->borderThickness);
-			
-			if (m_finalStyle->backgroundColor.a > 0.0f) {
-                context->drawSolidRectangle(rect, m_finalStyle->backgroundColor);
-				//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
-				//auto mat = Material::create(tex);
-                //context->drawBoxBackground(rect, m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
-				//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
-			}
-
-            if (m_finalStyle->backgroundMaterial && m_finalStyle->backgroundMaterial->mainTexture()) {
-                context->drawImageBox(rect, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundImageBorder, Color::White);
-            }
-
-			if (!m_finalStyle->borderThickness.isZero()) {
-				context->drawBoxBorderLine(rect, m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
-			}
-		}
-
-
-        // TODO: setMaterial
-        onRender(context);
-
-		for (auto& d : m_finalStyle->decorators) {
-			d->render(context, actualSize());
-		}
-
-        context->popState();	// TODO: scoped
-
-        // child elements
-		if (m_orderdVisualChildren) {
-			for (auto& e : m_orderdVisualChildren) {
-				e->render(context);
-			}
-		}
     }
 
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Render);
+}
+
+void UIElement::renderClient(UIRenderingContext* context, const Matrix& combinedTransform)
+{
+	context->pushState();
+
+	if (m_clipToBounds) {
+		Vector2 points[] = {
+			Vector3::transformCoord({ 0, 0, 0 }, combinedTransform).xy(),
+			Vector3::transformCoord({ actualSize().width, 0, 0 }, combinedTransform).xy(),
+			Vector3::transformCoord({ 0, actualSize().height, 0 }, combinedTransform).xy(),
+			Vector3::transformCoord({ actualSize().width, actualSize().height, 0 }, combinedTransform).xy(),
+		};
+		Vector2 minPos = points[0];
+		Vector2 maxPos = points[0];
+		for (int i = 1; i < 4; i++) {
+			minPos = Vector2::min(minPos, points[i]);
+			maxPos = Vector2::max(maxPos, points[i]);
+		}
+		context->setScissorRect(RectI(minPos.x, minPos.y, maxPos.x - minPos.x, maxPos.y - minPos.y));
+	}
+
+	{
+		//Matrix m = Matrix::makeTranslation(-centerPoint());
+		//m.scale(scale());
+		//m.rotateQuaternion(rotation());
+		//m.translate(position());
+		//m.translate(Vector3(m_finalGlobalRect.x, m_finalGlobalRect.y, 0));
+		context->setBaseTransfrom(combinedTransform);
+	}
+	detail::BuiltinEffectData data;
+	data.opacity = opacity();
+	data.colorScale = colorScale();
+	data.blendColor = blendColor();
+	data.tone = tone();
+	context->setBaseBuiltinEffectData(data);
+	context->setBlendMode(blendMode());
+	context->setRenderPriority(m_renderPriority);
+
+	// background
+	{
+		context->setMaterial(m_finalStyle->backgroundMaterial);
+
+		if (m_finalStyle->shadowBlurRadius > 0.0f)
+		{
+			context->drawBoxShadow(Rect(0, 0, actualSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
+
+		}
+		Rect rect(0, 0, actualSize());
+		rect = rect.makeDeflate(m_finalStyle->borderThickness);
+
+		if (m_finalStyle->backgroundColor.a > 0.0f) {
+			context->drawSolidRectangle(rect, m_finalStyle->backgroundColor);
+			//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
+			//auto mat = Material::create(tex);
+			//context->drawBoxBackground(rect, m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
+			//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
+		}
+
+		if (m_finalStyle->backgroundMaterial && m_finalStyle->backgroundMaterial->mainTexture()) {
+			context->drawImageBox(rect, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundImageBorder, Color::White);
+		}
+
+		if (!m_finalStyle->borderThickness.isZero()) {
+			context->drawBoxBorderLine(rect, m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
+		}
+	}
+
+
+	// TODO: setMaterial
+	onRender(context);
+
+	for (auto& d : m_finalStyle->decorators) {
+		d->render(context, actualSize());
+	}
+
+	context->popState();	// TODO: scoped
+
+	// child elements
+	if (m_orderdVisualChildren) {
+		for (auto& e : m_orderdVisualChildren) {
+			e->render(context);
+		}
+	}
 }
 
 void UIElement::onRoutedEvent(UIEventArgs* e)

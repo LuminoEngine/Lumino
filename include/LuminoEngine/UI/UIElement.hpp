@@ -442,6 +442,7 @@ public:	// TODO: internal protected
 	void updateStyleHierarchical(const UIStyleContext* styleContext, const detail::UIStyleInstance* parentFinalStyle);
     void updateFinalLayoutHierarchical(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform);
     virtual void render(UIRenderingContext* context);
+	void renderClient(UIRenderingContext* context, const Matrix& combinedTransform);
 
 	Flags<detail::ObjectManagementFlags>& objectManagementFlags() { return m_objectManagementFlags; }
 	Flags<detail::UISpecialElementFlags>& specialElementFlags() { return m_specialElementFlags; }

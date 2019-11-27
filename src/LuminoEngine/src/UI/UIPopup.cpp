@@ -25,6 +25,8 @@ void UIPopup::init()
     // UIAdorner で左上を PlacementTarget と合わせてもらう
     setHorizontalAlignment(HAlignment::Left);
     setVerticalAlignment(VAlignment::Top);
+
+	m_isHitTestVisible = false;
 }
 
 void UIPopup::setPlacementTarget(UIElement* target)
@@ -56,6 +58,7 @@ void UIPopup::open()
         }
 
 		activate();
+		m_isHitTestVisible = true;
         m_opend = true;
     }
 }
@@ -71,6 +74,7 @@ void UIPopup::close()
                 renderView->adornerLayer()->remove(m_adorner);
             }
         }
+		m_isHitTestVisible = false;
         m_opend = false;
     }
 }
@@ -83,6 +87,13 @@ void UIPopup::onRoutedEvent(UIEventArgs* e)
 
     UIContainerElement::onRoutedEvent(e);
 }
+
+//bool UIPopup::onHitTest(const Point& frameClientPosition)
+//{
+//	if (!m_opend) return false;
+//
+//	UIContainerElement::onHitTest(frameClientPosition);
+//}
 
 //==============================================================================
 // UIPopupAdorner

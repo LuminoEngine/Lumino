@@ -179,7 +179,7 @@ void EngineManager::init()
             m_mainUIRoot = makeObject<UIControl>();
             m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
             m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
-			m_mainUIRoot->m_isHitTestVisible = false;
+			//m_mainUIRoot->m_isHitTestVisible = false;
             m_mainUIRenderView->setRootElement(m_mainUIRoot);
             m_uiManager->setPrimaryElement(m_mainUIRoot);
 

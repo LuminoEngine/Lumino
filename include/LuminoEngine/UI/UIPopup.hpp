@@ -31,6 +31,7 @@ public:
 protected:
     virtual const String& elementName() const override { static String name = u"UIPopup"; return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
+	//virtual bool onHitTest(const Point& frameClientPosition) override;
 	//virtual void deactivateInternal()
 	//{
 	//	UIContainerElement::deactivateInternal();

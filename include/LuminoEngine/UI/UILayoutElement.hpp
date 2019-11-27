@@ -11,6 +11,7 @@ class Shader;
 class AbstractMaterial;
 class UIStyle;
 class UILayoutContext;
+class UIElement;
 namespace detail { class LayoutHelper; }
 
 
@@ -377,6 +378,7 @@ public:
 		return finalArea.getSize();
 	}
 
+	static Rect makePaddingRect(const UIElement* element, const Size& clientSize);
 };
 
 } // namespace detail
