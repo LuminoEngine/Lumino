@@ -147,13 +147,12 @@ void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& 
 
 void UILayoutElement::updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
-    Matrix localMatrix;
-    localMatrix = Matrix::makeTranslation(-m_finalStyle->centerPoint);
-    localMatrix.scale(m_finalStyle->scale);
-    localMatrix.rotateQuaternion(m_finalStyle->rotation);
-    localMatrix.translate(m_finalStyle->position);
-    localMatrix.translate(Vector3(m_localPosition.x, m_localPosition.y, 0));
-    m_combinedFinalRenderTransform = parentCombinedRenderTransform * localMatrix;
+	m_localTransform = Matrix::makeTranslation(-m_finalStyle->centerPoint);
+	m_localTransform.scale(m_finalStyle->scale);
+	m_localTransform.rotateQuaternion(m_finalStyle->rotation);
+	m_localTransform.translate(m_finalStyle->position);
+	m_localTransform.translate(Vector3(m_localPosition.x, m_localPosition.y, 0));
+    m_combinedFinalRenderTransform = parentCombinedRenderTransform * m_localTransform;
 
 	//Rect localRenderRect = getLayoutFinalLocalRect();
 

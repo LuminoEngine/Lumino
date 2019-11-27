@@ -89,11 +89,11 @@ void UIAdornerLayer::arrangeLayout(UILayoutContext* layoutContext, const Rect& l
     }
 }
 
-void UIAdornerLayer::render(UIRenderingContext* context)
+void UIAdornerLayer::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
     context->m_adornerRendering = true;
     for (auto& adorner : m_adorners) {
-        adorner->render(context);
+        adorner->render(context, parentTransform);
     }
     context->m_adornerRendering = false;
 }

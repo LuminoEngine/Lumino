@@ -172,8 +172,10 @@ public:	//TODO: internal
 	Size m_desiredSize; // includes, margin, border
 
     
-
+	// メインのレイアウトツリー上での座標変換に使用する。特にマウス位置。
     Matrix m_combinedFinalRenderTransform;
+
+	Matrix m_localTransform;
 
 private:
     Point m_localPosition;  // 親コンテナ内の相対座標

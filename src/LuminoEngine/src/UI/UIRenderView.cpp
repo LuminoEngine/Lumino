@@ -111,12 +111,12 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
                 m_renderingContext->clear(ClearFlags::Depth, backgroundColor(), 1.0f, 0x00);
             }
 
-            m_rootElement->render(m_renderingContext);
+            m_rootElement->render(m_renderingContext, Matrix());
 
 
             m_renderingContext->m_frameWindowRenderingGraphicsContext = nullptr;
 
-            m_adornerLayer->render(m_renderingContext);
+            m_adornerLayer->render(m_renderingContext, Matrix());
 
 
 

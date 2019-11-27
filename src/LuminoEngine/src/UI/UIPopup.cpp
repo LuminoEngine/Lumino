@@ -148,10 +148,10 @@ void UIPopupAdorner::onUpdateLayout(UILayoutContext* layoutContext)
     m_popup->updateFinalLayoutHierarchical(layoutContext, m_combinedFinalRenderTransform);
 }
 
-void UIPopupAdorner::render(UIRenderingContext* context)
+void UIPopupAdorner::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
     if (m_popup) {
-        m_popup->render(context);
+        m_popup->render(context, parentTransform);
     }
 }
 

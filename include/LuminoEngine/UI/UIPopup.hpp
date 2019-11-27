@@ -60,7 +60,7 @@ public:
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
     virtual void onUpdateLayout(UILayoutContext* layoutContext) override;
-    virtual void render(UIRenderingContext* context) override;
+    virtual void render(UIRenderingContext* context, const Matrix& parentTransform) override;
 
 LN_CONSTRUCT_ACCESS:
     UIPopupAdorner();

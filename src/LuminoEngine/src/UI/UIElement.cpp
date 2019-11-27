@@ -770,7 +770,7 @@ void UIElement::updateFinalLayoutHierarchical(UILayoutContext* layoutContext, co
 // //   }
 //}
 
-void UIElement::render(UIRenderingContext* context)
+void UIElement::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
     bool enable = false;
     if (m_specialElementFlags.hasFlag(detail::UISpecialElementFlags::Popup)) {
@@ -785,7 +785,10 @@ void UIElement::render(UIRenderingContext* context)
 
     if (enable && isRenderVisible())
     {
-		renderClient(context, m_combinedFinalRenderTransform);
+		Matrix combinedTransform = parentTransform * m_localTransform;
+
+
+		renderClient(context, combinedTransform);
 
     }
 
@@ -871,7 +874,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 	// child elements
 	if (m_orderdVisualChildren) {
 		for (auto& e : m_orderdVisualChildren) {
-			e->render(context);
+			e->render(context, combinedTransform);
 		}
 	}
 }
