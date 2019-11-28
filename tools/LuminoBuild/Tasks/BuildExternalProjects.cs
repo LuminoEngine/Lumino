@@ -351,7 +351,11 @@ namespace LuminoBuild.Tasks
                     BuildProjectMSVC(builder, "tmxlite/tmxlite", reposDir, targetName, targetFullName, configuration, $"-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectMSVC(builder, "Box2D/Box2D", reposDir, targetName, targetFullName, configuration, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                     BuildProjectMSVC(builder, "Vulkan-Headers", reposDir, targetName, targetFullName, configuration);
-                    BuildProjectMSVC(builder, "Effekseer", reposDir, targetName, targetFullName, configuration, $"{altRuntime} -DBUILD_VULKAN=ON");
+
+                    if (builder.Args.Contains("--enable-Effekseer"))
+                    {
+                        BuildProjectMSVC(builder, "Effekseer", reposDir, targetName, targetFullName, configuration, $"{altRuntime} -DBUILD_VULKAN=ON");
+                    }
                 }
 
                 // Android
