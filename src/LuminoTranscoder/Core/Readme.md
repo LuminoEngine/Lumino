@@ -5,6 +5,111 @@
 
 
 
+
+[2019/11/28]
+----------
+
+### Manage 側を強参照リストで持つ場合
+
+- あるオブジェクトが、リストからだけ参照されているのか、ロカール変数などからも参照されているのかがわからない。
+    このため、たとえ内部・外部問わず参照カウントが1だからといって、本当に不要であるか判断することはできない。
+- もしこの方式で行くなら、Dispose が必須になる。
+
+### Manage 側を弱参照リストで持つ場合
+
+- Native-object 生存中に Manager-object のデストラクトを許可することになるので、ユーザーが派生クラスを作ったりできなくなる。
+  `button.AddChild(new MyControl());` や `Physics::EmitCollision(..., new UserData());` など。
+- Component や UIElement を継承して実装することは Lumino の標準的なワークフローなので、この制約は致命的。
+
+### ハイブリッドにしてみる
+
+Manage 側のリストアイテムを次のようにする。
+
+```.cs
+struct {
+    WeakReference<LnObject> weakRef;
+    LnObject strongRef;
+}
+```
+
+#### AccessorCache に該当しない Set 操作が発生するケース 1
+
+※ UIElement.AddChild() は List の AccessorCache ではなく、透過的に子要素を追加するための仮想関数。
+
+まず、Native-object の参照カウントの操作があったときに Manage 側のコールバックを呼んでもらうようにする。
+
+```
+{
+    var button = new MyButton();    // Ref -> 1     作られたときは weakRef 参照のみ
+    window.AddChild(button);        // Ref++ -> 2   ここでコールバック
+}
+```
+
+Create 以外で Ref++ が行われたら、weakRef を strongRef に代入して、強参照にしておく。
+
+次に削除。
+
+```
+window.RemoveAllChildren();         // Ref-- -> 1   ここでコールバック
+```
+
+コールバックで Ref=1 つまり Manage-object からしか参照していなかったら削除する。
+
+
+#### すぐに消えるケース
+
+```
+{
+    var button = new MyButton();    // Ref -> 1     作られたときは weakRef 参照のみ
+}
+```
+
+weakRef のみなのでそのうち消える。
+
+
+#### Native 側で Create されたものを Get する
+
+```
+var window = Engine.MainWindow      // Ref++ -> 2   return する前に wrap するが、そこで強参照にする。
+```
+
+#### 内部で Native-object を作って参照するパターン
+
+```.cs
+CollisionManager.EmitCollision(pos, size, time, new UserData(this));
+```
+
+```.cpp
+void CollisionManager::emitCollision(..., userData)
+{
+    auto emitter = new Emitter();
+    ...
+    emitter->userData = userData;       // ref++ -> 2  ここでコールバック。強参照へ。
+    world->addPhysicsObject(emitter);
+}
+```
+
+
+
+### 整理
+
+基本的に Ref=1 は Manage 側からの参照であることを担保としてオブジェクトの寿命を管理する。
+
+### 制限事項
+
+- キャッシュに入ることができなくなる (Native 側で if (getReferenceCount() == 1) みたいな感じで寿命管理しているもの)
+    - 現時点では以下が該当
+        - RenderTarget
+        - DepthBuffer
+        - FontCore
+        - AudioDecoder
+        - Effect
+    - 監視して削除するのではなく、明示的に削除するような場合は良い。(UIEventArgs の Pool とか)
+
+
+
+
+
 [2019/11/14] 参照の管理
 ----------
 - Manage 側を強参照リストで持つ場合
