@@ -1,7 +1,7 @@
 name: Build engine
 
 on:
-  push:
+  pull_request:
     branches:
     - master
 
@@ -24,4 +24,4 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: Artifact
-        path: ./build/MSVC2017-x86-MD/ExternalInstall
+        path: ./build/MSVC2017-x64-MD/EngineInstall
