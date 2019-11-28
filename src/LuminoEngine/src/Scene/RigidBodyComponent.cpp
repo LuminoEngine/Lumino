@@ -11,13 +11,15 @@ namespace ln {
 
 Collision::Collision()
     : m_worldObject(nullptr)
+    , m_physicsObject(nullptr)
 {
 }
 
-void Collision::init(WorldObject* worldObject/*, RigidBody2DComponent* component*/)
+void Collision::init(WorldObject* worldObject/*, RigidBody2DComponent* component*/, PhysicsObject2D* physicsObject)
 {
     Object::init();
     m_worldObject = worldObject;
+    m_physicsObject = physicsObject;
 }
 
 //=============================================================================
@@ -106,31 +108,31 @@ EventConnection RigidBody2DComponent::connectOnCollisionStay(CollisionEventHandl
 void RigidBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact)
 {
     auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
-	if (ownerComponent) {
-		// TODO: Cache
-		auto c = makeObject<Collision>(ownerComponent->worldObject());
-		m_onCollisionEnter.raise(c);
-	}
+    auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+	// TODO: Cache
+	auto c = makeObject<Collision>(worldObject, otherObject);
+	m_onCollisionEnter.raise(c);
 }
 
 void RigidBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact)
 {
     auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
-	if (ownerComponent) {
-		// TODO: Cache
-		auto c = makeObject<Collision>(ownerComponent->worldObject());
-		m_onCollisionLeave.raise(c);
-	}
+    auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+	// TODO: Cache
+	auto c = makeObject<Collision>(worldObject, otherObject);
+	m_onCollisionLeave.raise(c);
 }
 
 void RigidBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact)
 {
     auto* ownerComponent = reinterpret_cast<RigidBody2DComponent*>(otherObject->ownerData());
-	if (ownerComponent) {
-		// TODO: Cache
-		auto c = makeObject<Collision>(ownerComponent->worldObject());
-		m_onCollisionStay.raise(c);
-	}
+    auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+    // TODO: Cache
+    auto c = makeObject<Collision>(worldObject, otherObject);
+    m_onCollisionStay.raise(c);
 }
 
 
@@ -208,31 +210,31 @@ EventConnection TriggerBody2DComponent::connectOnCollisionStay(CollisionEventHan
 void TriggerBody2DComponent::onCollisionEnter(PhysicsObject2D* otherObject, ContactPoint2D* contact)
 {
     auto* ownerComponent = reinterpret_cast<TriggerBody2DComponent*>(otherObject->ownerData());
-    if (ownerComponent) {
-        // TODO: Cache
-        auto c = makeObject<Collision>(ownerComponent->worldObject());
-        m_onCollisionEnter.raise(c);
-    }
+    auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+    // TODO: Cache
+    auto c = makeObject<Collision>(worldObject, otherObject);
+    m_onCollisionEnter.raise(c);
 }
 
 void TriggerBody2DComponent::onCollisionLeave(PhysicsObject2D* otherObject, ContactPoint2D* contact)
 {
     auto* ownerComponent = reinterpret_cast<TriggerBody2DComponent*>(otherObject->ownerData());
-    if (ownerComponent) {
-        // TODO: Cache
-        auto c = makeObject<Collision>(ownerComponent->worldObject());
-        m_onCollisionLeave.raise(c);
-    }
+    auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+    // TODO: Cache
+    auto c = makeObject<Collision>(worldObject, otherObject);
+    m_onCollisionLeave.raise(c);
 }
 
 void TriggerBody2DComponent::onCollisionStay(PhysicsObject2D* otherObject, ContactPoint2D* contact)
 {
     auto* ownerComponent = reinterpret_cast<TriggerBody2DComponent*>(otherObject->ownerData());
-    if (ownerComponent) {
-        // TODO: Cache
-        auto c = makeObject<Collision>(ownerComponent->worldObject());
-        m_onCollisionStay.raise(c);
-    }
+    auto* worldObject = (ownerComponent) ? ownerComponent->worldObject() : nullptr;
+
+    // TODO: Cache
+    auto c = makeObject<Collision>(worldObject, otherObject);
+    m_onCollisionStay.raise(c);
 }
 
 } // namespace ln

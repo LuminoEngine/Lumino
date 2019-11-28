@@ -16,13 +16,17 @@ public:
 	/** 自分自身と衝突している他の WorldObject */
     WorldObject* worldObject() const { return m_worldObject; }
 
+    /** 自分自身と衝突している他の PhysicsObject2D */
+    PhysicsObject2D* physicsObject() const { return m_physicsObject; }
+
 LN_CONSTRUCT_ACCESS:
     Collision();
     virtual ~Collision() = default;
-    void init(WorldObject* worldObject/*, RigidBody2DComponent* component*/);
+    void init(WorldObject* worldObject/*, RigidBody2DComponent* component*/, PhysicsObject2D* physicsObject);
 
 private:
     WorldObject* m_worldObject;
+    PhysicsObject2D* m_physicsObject;
 };
 
 class RigidBody2DComponent

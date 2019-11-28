@@ -26,8 +26,8 @@ class EffectEmitter
     : public Object
 {
 public:
-    void setPosition(const Vector3& value) { m_position = value; }
-    const Vector3& position() const { return m_position; }
+    void setTransform(const Matrix& value) { m_transform = value; }
+    const Matrix& transform() const { return m_transform; }
 
 public: // TODO: internal
     bool update(float elapsedSeconds);
@@ -45,7 +45,7 @@ public: // TODO:
 
 private:
     EffectResource* m_model;
-    Vector3 m_position;
+    Matrix m_transform;
     float m_localTime;
 };
 

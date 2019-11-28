@@ -15,19 +15,19 @@ namespace ln {
 //==============================================================================
 // Effect
 
-EffectEmitter* Effect::emit(EffectResource* effect, const Vector3& position)
+EffectEmitter* Effect::emit(EffectResource* effect, const Matrix& transform)
 {
     EffectEmitter* emitter = detail::EngineDomain::engineManager()->mainWorld()->effectContext()->createEmitter(effect);
-    emitter->setPosition(position);
+    emitter->setTransform(transform);
     return emitter;
 }
 
-EffectEmitter* Effect::emit(const Path& filePath, const Vector3& position)
+EffectEmitter* Effect::emit(const Path& filePath, const Matrix& transform)
 {
     auto emitter = detail::EngineDomain::effectManager()->createEmitterFromFile(filePath);
     if (!emitter) return nullptr;
     detail::EngineDomain::engineManager()->mainWorld()->effectContext()->addEmitter(emitter);
-    emitter->setPosition(position);
+    emitter->setTransform(transform);
     return emitter;
 }
 
@@ -167,10 +167,10 @@ void SpriteFrameEffectEmitter::onRender(RenderingContext* renderingContext)
         detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
             tex, m_data->m_spriteSize, sourceRect, &renderSize, &renderSourceRect);
 
-        Matrix transform = Matrix::makeTranslation(position());
+       // Matrix transform = Matrix::makeTranslation(position());
 
         renderingContext->drawSprite(
-            transform, renderSize, anchorPoint, renderSourceRect, Color::White,
+            transform(), renderSize, anchorPoint, renderSourceRect, Color::White,
             SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None, m_data->m_material);
     }
 }
