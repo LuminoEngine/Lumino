@@ -146,12 +146,10 @@ static VALUE g_LuminoRubyRuntimeManager;
 
 static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj)
 {
-    printf("LuminoRubyRuntimeManager_delete s %p\n", obj);
     if (obj) {
         delete obj;
         LuminoRubyRuntimeManager::instance = nullptr;
     }
-    printf("LuminoRubyRuntimeManager_delete e\n");
 }
 
 static VALUE LuminoRubyRuntimeManager_allocate(VALUE klass)
