@@ -38,36 +38,40 @@ struct Wrap_Object
 class LuminoRubyRuntimeManager
 {
 public:
-    static const int InitialListSize = 8;
+    static const int InitialListSize = 512;
 
     static LuminoRubyRuntimeManager* instance;
     void init();
     VALUE luminoModule() const { return m_luminoModule; }
     VALUE eventSignalClass() const { return m_eventSignalClass; }
     VALUE wrapObjectForGetting(LnHandle handle);
-    VALUE wrapObjectForGetting(LnHandle handle, VALUE& accessorCache);
-    VALUE wrapObjectForGetting(LnHandle handle, std::vector<VALUE>& accessorCache, int index);//, int size);
     LnHandle getHandle(VALUE value) const;
     int registerTypeInfo(VALUE klass, ObjectFactoryFunc factory);
-    void registerWrapperObject(VALUE obj);
+    void registerWrapperObject(VALUE obj, bool forNativeGetting);
     void unregisterWrapperObject(LnHandle handle);
 
     // for generator interface
     static LuminoRubyRuntimeManager* getInstance(VALUE managerInstance);
     static void gc_mark(LuminoRubyRuntimeManager* obj);
+    static void handleReferenceChanged(LnHandle handle, int method, int count);
 
 private:
-    VALUE wrapObjectCore(LnHandle handle);
+    struct ObjectReferenceItem
+    {
+        VALUE weakRef;
+        VALUE strongRef;
+    }
+
     VALUE m_luminoModule;
     VALUE m_eventSignalClass;
     std::vector<TypeInfo> m_typeInfoList;
-    std::vector<VALUE> m_objectList;        // weak reference list.
+    std::vector<ObjectReferenceItem> m_objectList;
     std::stack<int> m_objectListIndexStack;
 };
 
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
-inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, VALUE& accessorCache) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, accessorCache); }
-inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, std::vector<VALUE>& accessorCache, int index) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, accessorCache, index); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, VALUE& accessorCache) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, std::vector<VALUE>& accessorCache, int index) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
 
 #endif
 

@@ -74,6 +74,20 @@ void Object::onSetAssetFilePath(const Path& filePath)
 {
 }
 
+void Object::onRetained()
+{
+	if (m_runtimeData) {
+		detail::EngineDomain::runtimeManager()->onRetainedObject(this);
+	}
+}
+
+void Object::onReleased()
+{
+	if (m_runtimeData) {
+		detail::EngineDomain::runtimeManager()->onReleasedObject(this);
+	}
+}
+
 detail::WeakRefInfo* Object::requestWeakRefInfo()
 {
     std::lock_guard<std::mutex> lock(m_weakRefInfoMutex);
@@ -95,7 +109,6 @@ TypeInfo* Object::_lnref_getThisTypeInfo() const
 {
     return _lnref_getTypeInfo();
 }
-
 
 //==============================================================================
 // WeakRefInfo

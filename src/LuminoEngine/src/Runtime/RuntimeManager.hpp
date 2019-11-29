@@ -51,6 +51,11 @@ public:
 	void setManagedObjectId(LnHandle handle, int64_t id);
 	int64_t getManagedObjectId(LnHandle handle);
 	int64_t getManagedTypeInfoId(LnHandle handle);
+	
+	void setReferenceCountTracker(LnReferenceCountTrackerCallback callback);
+	void setReferenceTrackEnabled(LnHandle handle);
+	void onRetainedObject(Object* obj);
+	void onReleasedObject(Object* obj);
 
 	LnResult processException(Exception* e);
 
@@ -61,6 +66,7 @@ private:
 	std::stack<int> m_objectIndexStack;
 	bool m_systemAliving;
 	std::mutex m_mutex;
+	LnReferenceCountTrackerCallback m_referenceCountTracker;
 };
 
 } // namespace detail

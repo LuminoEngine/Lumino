@@ -21,7 +21,7 @@ namespace LuminoBuild
                 //args = new string[] { "MakeInstaller_Win32", "MSVC2017-x64-MD" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "Windows" };
-                //args = new string[] { "MakeLocalPackage", "disable-build-external" };
+                //args = new string[] { "BuildLLVM", "MSVC2017-x64-MD" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

@@ -100,6 +100,8 @@ public:
     const Uuid& assetId() const { return m_assetId; }
 
 private:
+	virtual void onRetained() override;
+	virtual void onReleased() override;
     detail::WeakRefInfo* requestWeakRefInfo();
     static TypeInfo* _lnref_getTypeInfo();
     virtual TypeInfo* _lnref_getThisTypeInfo() const;

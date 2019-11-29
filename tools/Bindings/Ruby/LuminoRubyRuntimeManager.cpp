@@ -58,59 +58,30 @@ void LuminoRubyRuntimeManager::init()
     m_typeInfoList.push_back({});   // [0] is dummy
 
     for (int i = 0; i < InitialListSize; i++) {
-        m_objectList.push_back(Qnil);
+        m_objectList.push_back({ Qnil, Qnil });
         m_objectListIndexStack.push(i);
     }
+
+    LnRuntime_SetReferenceCountTracker(handleReferenceChanged);
 }
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle)
-{
-    return wrapObjectCore(handle);
-}
-
-VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, VALUE& accessorCache)
-{
-    if (accessorCache != Qnil && getHandle(accessorCache) == handle) {
-        return accessorCache;
-    }
-    else {
-        accessorCache = wrapObjectCore(handle);
-        return accessorCache;
-    }
-}
-
-VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, std::vector<VALUE>& accessorCache, int index)//, int size)
-{
-    //if (accessorCache.size() != size) {
-    //    accessorCache.resize();
-    //}
-
-    if (accessorCache[index] != Qnil && getHandle(accessorCache[index]) == handle) {
-        return accessorCache[index];
-    }
-    else {
-        accessorCache[index] = wrapObjectCore(handle);
-        return accessorCache[index];
-    }
-}
-
-VALUE LuminoRubyRuntimeManager::wrapObjectCore(LnHandle handle)
 {
     int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
     int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
     if (objectIndex <= 0) {
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
-        registerWrapperObject(obj);
+        registerWrapperObject(obj, true);
         LnObject_Retain(handle);
         return obj;
     }
-    else if (TYPE(m_objectList[objectIndex]) == T_NIL) {
+    //else if (TYPE(m_objectList[objectIndex]) == T_NIL) {
         //LNRB_TRACE("T_NIL: %u\n", m_objectList[objectIndex]);
-        m_objectList[objectIndex] = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
-        return m_objectList[objectIndex];
-    }
+    //    m_objectList[objectIndex] = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
+    //    return m_objectList[objectIndex];
+    //}
     else {
-        return m_objectList[objectIndex];
+        return m_objectList[objectIndex].weakRef;
     }
 }
 
@@ -133,7 +104,7 @@ int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc fa
     return m_typeInfoList.size() - 1;
 }
 
-void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj)
+void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGetting)
 {
     // grow
 	if (m_objectListIndexStack.size() == 0)
@@ -141,14 +112,17 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj)
 		int growCount = m_objectList.size();
 		for (int i = 0; i < growCount; i++)
 		{
-			m_objectList.push_back(Qnil);
+			m_objectList.push_back({ Qnil, Qnil });
 			m_objectListIndexStack.push(growCount + i);
 		}
 	}
 
 	int index = m_objectListIndexStack.top();
 	m_objectListIndexStack.pop();
-	m_objectList[index] = obj;
+	m_objectList[index].weakRef = obj;
+    if (forNativeGetting) {
+        m_objectList[index].strongRef = obj;
+    }
 	LnRuntime_SetManagedObjectId(getHandle(obj), index);
 }
 
@@ -157,7 +131,8 @@ void LuminoRubyRuntimeManager::unregisterWrapperObject(LnHandle handle)
     LNRB_TRACE("LuminoRubyRuntimeManager::unregisterWrapperObject: LnHandle=%u\n", handle);
     LnObject_Release(handle);
 	int index = (int)LnRuntime_GetManagedObjectId(handle);
-	m_objectList[index] = Qnil;
+	m_objectList[index].weakRef = Qnil;
+	m_objectList[index].strongRef = Qnil;
 	m_objectListIndexStack.push(index);
 }
 
@@ -186,7 +161,27 @@ void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
     LNRB_TRACE("LuminoRubyRuntimeManager::gc_mark\n");
     rb_gc_mark(obj->m_luminoModule);
     rb_gc_mark(obj->m_eventSignalClass);
+    for (auto& item : m_objectList) {
+        rb_gc_mark(item.strongRef);
+    }
 }
+
+void LuminoRubyRuntimeManager::handleReferenceChanged(LnHandle handle, int method, int count)
+{
+    int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
+
+    if (method == LNI_REFERENCE_RETAINED) {
+        if (count >= 2) {
+            m_objectList[objectIndex].strongRef = m_objectList[objectIndex].weakRef;
+        }
+    }
+    else if (method == LNI_REFERENCE_RELEASED) {
+        if (count <= 1) {
+            m_objectList[objectIndex].strongRef = Qnil;
+        }
+    }
+}
+
 
 extern "C" void InitLuminoRubyRuntimeManager()
 {

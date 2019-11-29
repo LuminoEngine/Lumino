@@ -6,9 +6,10 @@
 #include "Common.hpp"
 
 namespace ln {
+class Object;
 class RefObjectHelper;
-template<class T>
-class Ref;
+template<class T> class Ref;
+namespace detail { struct RefObjectInternal; }
 
 // unitiliy to store b -> a
 #ifndef LN_REFOBJ_SET
@@ -62,10 +63,6 @@ protected:
     /** 参照がなくなり、オブジェクトが削除されようとしているときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
     virtual void finalize();
 
-    // experimental
-    void setValidObject(bool valid = true) { m_ojectFlags = valid; }
-    bool isValidObject() const { return m_ojectFlags; }
-
 private:
     RefObject(const RefObject&) = delete;
     void operator=(const RefObject&) = delete;
@@ -73,6 +70,10 @@ private:
     int32_t getReferenceCount() const;
     int32_t retain();
     int32_t release();
+	void setObjectFlag(uint32_t flag, bool value);
+	uint32_t getObjectFlag(uint32_t flag) const;
+	virtual void onRetained();
+	virtual void onReleased();
 
     mutable std::atomic<int32_t> m_referenceCount;
 	mutable std::atomic<int32_t> m_internalReferenceCount;
@@ -82,19 +83,10 @@ private:
     friend bool valid(const RefObject& obj);
 
     friend class RefObjectHelper;
-    template<class T>
-    friend class Ref;
+    template<class T> friend class Ref;
+	friend class detail::RefObjectInternal;
+	friend class Object;
 };
-
-inline bool valid(const RefObject* obj)
-{
-    return obj && obj->isValidObject();
-}
-
-inline bool valid(const RefObject& obj)
-{
-    return obj.isValidObject();
-}
 
 /** RefObject 参照を直接操作します。 */
 class RefObjectHelper
@@ -504,5 +496,32 @@ inline Ref<T> makeRef(TArgs&&... args)
     return Ref<T>(LN_NEW T(std::forward<TArgs>(args)...), false);
 }
 
+namespace detail {
+enum RefObjectFlags
+{
+	RefObjectFlags_Valid = 0x01,
+	RefObjectFlags_ReferenceTracking = 0x02,
+};
+
+struct RefObjectInternal
+{
+	// experimental
+	static void setValidObject(RefObject* obj, bool valid = true) { obj->setObjectFlag(RefObjectFlags_Valid, valid); }
+	static bool isValidObject(const RefObject* obj) { return obj->getObjectFlag(RefObjectFlags_Valid); }
+
+	static void setObjectFlag(RefObject* obj, uint32_t flag, bool value) { obj->setObjectFlag(flag, value); }
+	static uint32_t getObjectFlag(const RefObject* obj, uint32_t flag) { return obj->getObjectFlag(flag); }
+};
+} // namespace detail
+
+inline bool valid(const RefObject* obj)
+{
+	return obj && detail::RefObjectInternal::isValidObject(obj);
+}
+
+inline bool valid(const RefObject& obj)
+{
+	return detail::RefObjectInternal::isValidObject(&obj);
+}
 
 } // namespace ln

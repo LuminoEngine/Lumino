@@ -31,8 +31,8 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(reposDir);
             */
             var repoRoot = Path.Combine(reposDir, "llvm-project", "llvm");
-            var packageDir = Path.Combine(reposDir, "LLVMPackage");
-            BuildProject(repoRoot, Path.Combine(reposDir, "llvm-project", "_Build"), Path.Combine(packageDir));
+            var installDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MD", "BuildToolsInstall", "llvm");
+            BuildProject(repoRoot, Path.Combine(reposDir, "llvm-project", "_Build_MSVC2017-x64-MD"), installDir);
         }
 
         public void BuildProject(string cmakeHomeDir, string buildDir, string installDir)

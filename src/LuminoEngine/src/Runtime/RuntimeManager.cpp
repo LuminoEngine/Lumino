@@ -5,6 +5,7 @@ namespace detail {
 
 RuntimeManager::RuntimeManager()
 	: m_systemAliving(false)
+	, m_referenceCountTracker(nullptr)
 {
 }
 
@@ -14,7 +15,7 @@ RuntimeManager::~RuntimeManager()
 
 void RuntimeManager::init(const Settings& settings)
 {
-	LN_LOG_DEBUG << "UIManager Initialization started.";
+	LN_LOG_DEBUG << "RuntimeManager Initialization started.";
 
 	// オブジェクト管理配列
 	for (int i = 511; i >= 0; --i)
@@ -31,12 +32,12 @@ void RuntimeManager::init(const Settings& settings)
 
 	m_systemAliving = true;
 
-	LN_LOG_DEBUG << "UIManager Initialization finished.";
+	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
 }
 
 void RuntimeManager::dispose()
 {
-	LN_LOG_DEBUG << "UIManager Initialization started.";
+	LN_LOG_DEBUG << "RuntimeManager Initialization started.";
 
 	for (auto& e : m_objectEntryList) {
 		if (e.object) {
@@ -48,8 +49,9 @@ void RuntimeManager::dispose()
 	}
 
 	m_systemAliving = false;
+	m_referenceCountTracker = nullptr;
 
-	LN_LOG_DEBUG << "UIManager Initialization finished.";
+	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
 }
 
 LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
@@ -199,6 +201,34 @@ int64_t RuntimeManager::getManagedTypeInfoId(LnHandle handle)
 	auto obj = m_objectEntryList[static_cast<int>(handle)].object;
 	auto typeInfo = TypeInfo::getTypeInfo(obj);
 	return detail::TypeInfoInternal::getManagedTypeInfoId(typeInfo);
+}
+
+void RuntimeManager::setReferenceCountTracker(LnReferenceCountTrackerCallback callback)
+{
+	m_referenceCountTracker = callback;
+}
+
+void RuntimeManager::setReferenceTrackEnabled(LnHandle handle)
+{
+	RefObjectInternal::setObjectFlag(m_objectEntryList[static_cast<int>(handle)].object, RefObjectFlags_ReferenceTracking, true);
+}
+
+void RuntimeManager::onRetainedObject(Object* obj)
+{
+	if (m_referenceCountTracker) {
+		if (auto runtimeData = detail::ObjectHelper::getRuntimeData(obj)) {
+			m_referenceCountTracker(runtimeData->index, LNI_REFERENCE_RETAINED, RefObjectHelper::getReferenceCount(obj));
+		}
+	}
+}
+
+void RuntimeManager::onReleasedObject(Object* obj)
+{
+	if (m_referenceCountTracker) {
+		if (auto runtimeData = detail::ObjectHelper::getRuntimeData(obj)) {
+			m_referenceCountTracker(runtimeData->index, LNI_REFERENCE_RELEASED, RefObjectHelper::getReferenceCount(obj));
+		}
+	}
 }
 
 LnResult RuntimeManager::processException(Exception* e)

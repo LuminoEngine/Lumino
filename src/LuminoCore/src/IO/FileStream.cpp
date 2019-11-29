@@ -32,7 +32,7 @@ FileStream::FileStream()
     , m_openModeFlags(FileOpenMode::None)
     , m_writeLen(0)
 {
-    setValidObject(false);
+    detail::RefObjectInternal::setValidObject(this, false);
 }
 
 FileStream::~FileStream()
@@ -63,7 +63,7 @@ bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
     }
 
     if (m_stream) {
-        setValidObject(true);
+		detail::RefObjectInternal::setValidObject(this, true);
     }
     return true;
 }

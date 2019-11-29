@@ -32,18 +32,44 @@ int32_t RefObject::getReferenceCount() const
 
 int32_t RefObject::retain()
 {
-    return m_referenceCount++;
+    m_referenceCount++;
+
+	if (getObjectFlag(detail::RefObjectFlags_ReferenceTracking)) {
+		onRetained();
+	}
+
+	return m_referenceCount;
 }
 
 int32_t RefObject::release()
 {
     int32_t count = (--m_referenceCount);
     int32_t count2 = m_internalReferenceCount;
+
+	if (getObjectFlag(detail::RefObjectFlags_ReferenceTracking)) {
+		onReleased();
+	}
+
     if (count <= 0 && count2 <= 0) {
         finalize();
         delete this;
     }
     return count;
+}
+
+void RefObject::setObjectFlag(uint32_t flag, bool value)
+{
+	if (value) {
+		m_ojectFlags |= flag;
+	}
+	else {
+		m_ojectFlags &= ~flag;
+	}
+}
+
+uint32_t RefObject::getObjectFlag(uint32_t flag) const
+{
+	return (m_ojectFlags & flag) == flag;
 }
 
 void RefObject::releaseInternal()
@@ -54,6 +80,14 @@ void RefObject::releaseInternal()
         finalize();
         delete this;
     }
+}
+
+void RefObject::onRetained()
+{
+}
+
+void RefObject::onReleased()
+{
 }
 
 //==============================================================================
