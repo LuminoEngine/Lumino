@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project(LuminoTranscoder-Core)
 
-set(LWIG_LLVM_PACKAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../build/BuildTools/LLVMPackage/${LN_BUILD_TYPE})
+set(LWIG_LLVM_PACKAGE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../build/${LN_TARGET_ARCH}/BuildToolsInstall/llvm)
 set(CLANG_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/clang)
 set(LLVM_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
 find_package(CLANG REQUIRED CONFIG)
