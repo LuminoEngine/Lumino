@@ -1,6 +1,6 @@
 static void %%FlatClassName%%_delete(%%WrapStructName%%* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 

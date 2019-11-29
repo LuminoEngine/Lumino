@@ -129,6 +129,7 @@ VALUE g_class_Vector3;
 
 void LnVector3_delete(LnVector3* obj)
 {
+    printf("LnVector3_delete s\n");
     free(obj);
 }
 VALUE LnVector3_allocate( VALUE klass )
@@ -149,6 +150,7 @@ VALUE g_class_Quaternion;
 
 void LnQuaternion_delete(LnQuaternion* obj)
 {
+    printf("LnQuaternion_delete s\n");
     free(obj);
 }
 VALUE LnQuaternion_allocate( VALUE klass )
@@ -239,7 +241,8 @@ struct Wrap_GraphicsResource
 
 static void LnGraphicsResource_delete(Wrap_GraphicsResource* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnGraphicsResource_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnGraphicsResource_mark(Wrap_GraphicsResource* obj)
@@ -279,7 +282,8 @@ struct Wrap_Texture
 
 static void LnTexture_delete(Wrap_Texture* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnTexture_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnTexture_mark(Wrap_Texture* obj)
@@ -319,7 +323,8 @@ struct Wrap_Texture2D
 
 static void LnTexture2D_delete(Wrap_Texture2D* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnTexture2D_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnTexture2D_mark(Wrap_Texture2D* obj)
@@ -411,7 +416,8 @@ struct Wrap_Component
 
 static void LnComponent_delete(Wrap_Component* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnComponent_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnComponent_mark(Wrap_Component* obj)
@@ -451,7 +457,8 @@ struct Wrap_VisualComponent
 
 static void LnVisualComponent_delete(Wrap_VisualComponent* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnVisualComponent_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnVisualComponent_mark(Wrap_VisualComponent* obj)
@@ -526,7 +533,8 @@ struct Wrap_SpriteComponent
 
 static void LnSpriteComponent_delete(Wrap_SpriteComponent* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnSpriteComponent_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnSpriteComponent_mark(Wrap_SpriteComponent* obj)
@@ -585,7 +593,8 @@ struct Wrap_ComponentList
 
 static void LnComponentList_delete(Wrap_ComponentList* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnComponentList_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnComponentList_mark(Wrap_ComponentList* obj)
@@ -661,7 +670,8 @@ struct Wrap_WorldObject
 
 static void LnWorldObject_delete(Wrap_WorldObject* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnWorldObject_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnWorldObject_mark(Wrap_WorldObject* obj)
@@ -969,7 +979,8 @@ struct Wrap_VisualObject
 
 static void LnVisualObject_delete(Wrap_VisualObject* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnVisualObject_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnVisualObject_mark(Wrap_VisualObject* obj)
@@ -1050,7 +1061,8 @@ struct Wrap_Sprite
 
 static void LnSprite_delete(Wrap_Sprite* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnSprite_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnSprite_mark(Wrap_Sprite* obj)
@@ -1164,7 +1176,8 @@ struct Wrap_UIEventArgs
 
 static void LnUIEventArgs_delete(Wrap_UIEventArgs* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnUIEventArgs_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIEventArgs_mark(Wrap_UIEventArgs* obj)
@@ -1220,7 +1233,8 @@ struct Wrap_UILayoutElement
 
 static void LnUILayoutElement_delete(Wrap_UILayoutElement* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnUILayoutElement_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUILayoutElement_mark(Wrap_UILayoutElement* obj)
@@ -1260,7 +1274,8 @@ struct Wrap_UIElement
 
 static void LnUIElement_delete(Wrap_UIElement* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnUIElement_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIElement_mark(Wrap_UIElement* obj)
@@ -1544,8 +1559,11 @@ struct Wrap_UIControl
 
 static void LnUIControl_delete(Wrap_UIControl* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnUIControl_delete s1\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    printf("LnUIControl_delete s2\n");
     delete obj;
+    printf("LnUIControl_delete s3\n");
 }
 static void LnUIControl_mark(Wrap_UIControl* obj)
 {
@@ -1584,7 +1602,8 @@ struct Wrap_UIButtonBase
 
 static void LnUIButtonBase_delete(Wrap_UIButtonBase* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnUIButtonBase_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIButtonBase_mark(Wrap_UIButtonBase* obj)
@@ -1645,7 +1664,8 @@ struct Wrap_UIButton
 
 static void LnUIButton_delete(Wrap_UIButton* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    printf("LnUIButton_delete s\n");
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIButton_mark(Wrap_UIButton* obj)
@@ -1717,10 +1737,7 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
 
 extern "C" void Init_Lumino()
 {
-    printf("llllll\n");
-
     InitLuminoRubyRuntimeManager();
-    printf("llllll 2\n");
     g_rootModule = rb_define_module("Lumino");
 
     g_enum_PixelFormat = rb_define_module_under(g_rootModule, "PixelFormat");

@@ -62,7 +62,10 @@ void LuminoRubyRuntimeManager::init()
         m_objectListIndexStack.push(i);
     }
 
+    m_runtimeAliving = true;
+
     LnRuntime_SetReferenceCountTracker(handleReferenceChangedStatic);
+    LnRuntime_SetRuntimeFinalizedCallback(handleRuntimeFinalized);
 }
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle)
@@ -129,11 +132,13 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
 void LuminoRubyRuntimeManager::unregisterWrapperObject(LnHandle handle)
 {
     LNRB_TRACE("LuminoRubyRuntimeManager::unregisterWrapperObject: LnHandle=%u\n", handle);
-    LnObject_Release(handle);
-	int index = (int)LnRuntime_GetManagedObjectId(handle);
-	m_objectList[index].weakRef = Qnil;
-	m_objectList[index].strongRef = Qnil;
-	m_objectListIndexStack.push(index);
+    if (m_runtimeAliving) {
+        LnObject_Release(handle);
+        int index = (int)LnRuntime_GetManagedObjectId(handle);
+        m_objectList[index].weakRef = Qnil;
+        m_objectList[index].strongRef = Qnil;
+        m_objectListIndexStack.push(index);
+    }
 }
 
 static VALUE g_LuminoRubyRuntimeManagerClass;
@@ -141,9 +146,12 @@ static VALUE g_LuminoRubyRuntimeManager;
 
 static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj)
 {
+    printf("LuminoRubyRuntimeManager_delete s %p\n", obj);
     if (obj) {
         delete obj;
+        LuminoRubyRuntimeManager::instance = nullptr;
     }
+    printf("LuminoRubyRuntimeManager_delete e\n");
 }
 
 static VALUE LuminoRubyRuntimeManager_allocate(VALUE klass)
@@ -187,6 +195,12 @@ void LuminoRubyRuntimeManager::handleReferenceChanged(LnHandle handle, int metho
     }
 }
 
+void LuminoRubyRuntimeManager::handleRuntimeFinalized()
+{
+    if (instance) {
+        instance->m_runtimeAliving = false;
+    }
+}
 
 extern "C" void InitLuminoRubyRuntimeManager()
 {

@@ -48,6 +48,8 @@ p list.get_item(0)
 while Engine.update do
 end
 
+p "call Engine.finalize"
 Engine.finalize
+p "called Engine.finalize"
 
 

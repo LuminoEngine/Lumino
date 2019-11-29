@@ -57,6 +57,8 @@ public:
 	void onRetainedObject(Object* obj);
 	void onReleasedObject(Object* obj);
 
+    static void setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
+
 	LnResult processException(Exception* e);
 
 
@@ -67,6 +69,7 @@ private:
 	bool m_systemAliving;
 	std::mutex m_mutex;
 	static LnReferenceCountTrackerCallback m_referenceCountTracker;
+    static LnRuntimeFinalizedCallback m_runtimeFinalizedCallback;
 };
 
 } // namespace detail

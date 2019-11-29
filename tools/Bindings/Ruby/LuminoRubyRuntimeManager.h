@@ -56,6 +56,8 @@ public:
     static void handleReferenceChangedStatic(LnHandle handle, int method, int count);
     void handleReferenceChanged(LnHandle handle, int method, int count);
 
+    static void handleRuntimeFinalized();
+
 private:
     struct ObjectReferenceItem
     {
@@ -68,11 +70,14 @@ private:
     std::vector<TypeInfo> m_typeInfoList;
     std::vector<ObjectReferenceItem> m_objectList;
     std::stack<int> m_objectListIndexStack;
+    bool m_runtimeAliving;
 };
 
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, VALUE& accessorCache) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, std::vector<VALUE>& accessorCache, int index) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
+inline void LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(LnHandle handle) { if ( LuminoRubyRuntimeManager::instance) LuminoRubyRuntimeManager::instance->unregisterWrapperObject(handle); }
+
 
 #endif
 

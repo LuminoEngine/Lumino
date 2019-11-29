@@ -58,6 +58,11 @@ void LnRuntime_SetReferenceTrackEnabled(LnHandle handle)
 	return ln::detail::EngineDomain::runtimeManager()->setReferenceTrackEnabled(handle);
 }
 
+void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
+{
+    return ln::detail::RuntimeManager::setRuntimeFinalizedCallback(callback);
+}
+
 //void LnRuntime_UTF8ToNativeString(const char* src, std::u16string* dst)
 //{
 //	*dst = ln::String::fromCString(src, -1, ln::TextEncoding::utf8Encoding()).c_str();
@@ -65,7 +70,9 @@ void LnRuntime_SetReferenceTrackEnabled(LnHandle handle)
 //
 LN_FLAT_API LnResult LnObject_Release(LnHandle obj)
 {
-	ln::detail::EngineDomain::runtimeManager()->releaseObjectExplicitly(obj);
+    if (auto m = ln::detail::EngineDomain::runtimeManager()) {
+        m->releaseObjectExplicitly(obj);
+    }
 	return LN_SUCCESS;
 }
 

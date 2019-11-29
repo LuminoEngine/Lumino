@@ -69,6 +69,7 @@ typedef enum tagLnBool
 
 
 typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
+typedef void(*LnRuntimeFinalizedCallback)();
 
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
 extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
@@ -76,6 +77,7 @@ extern LN_FLAT_API int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
 extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
 extern LN_FLAT_API void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback);
 extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
+extern LN_FLAT_API void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
 
 //==============================================================================
 
