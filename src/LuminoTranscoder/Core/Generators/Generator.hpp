@@ -38,6 +38,10 @@ public:
 
 	// FlatC の実装コード (.cpp) の先頭に埋め込まれる文字列。ターゲットモジュールの #include 等を指定する。
 	ln::String flatCHeaderString;
+
+
+    ln::String flatCHeaderOutputDirOverride;
+    ln::String flatCSourceOutputDirOverride;
 };
 
 class Generator

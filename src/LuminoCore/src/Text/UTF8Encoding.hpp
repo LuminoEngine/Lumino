@@ -83,6 +83,7 @@ public:
         {
             mUsedDefaultCharCount = 0;
             mCompleted = false;
+            m_bomWrited = false;
             m_lastBufferCount = 0;
         }
 
@@ -90,6 +91,7 @@ public:
         int mUsedDefaultCharCount; // 一連の convertFromUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数
         bool mCompleted;           // 最後の convertFromUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true
         bool m_byteOrderMark;
+        bool m_bomWrited;
         UTF16 m_lastBuffer[2];
         int m_lastBufferCount;
     };

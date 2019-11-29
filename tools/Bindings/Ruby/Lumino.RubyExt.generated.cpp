@@ -129,7 +129,6 @@ VALUE g_class_Vector3;
 
 void LnVector3_delete(LnVector3* obj)
 {
-    printf("LnVector3_delete s\n");
     free(obj);
 }
 VALUE LnVector3_allocate( VALUE klass )
@@ -150,7 +149,6 @@ VALUE g_class_Quaternion;
 
 void LnQuaternion_delete(LnQuaternion* obj)
 {
-    printf("LnQuaternion_delete s\n");
     free(obj);
 }
 VALUE LnQuaternion_allocate( VALUE klass )
@@ -241,7 +239,6 @@ struct Wrap_GraphicsResource
 
 static void LnGraphicsResource_delete(Wrap_GraphicsResource* obj)
 {
-    printf("LnGraphicsResource_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -282,7 +279,6 @@ struct Wrap_Texture
 
 static void LnTexture_delete(Wrap_Texture* obj)
 {
-    printf("LnTexture_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -323,7 +319,6 @@ struct Wrap_Texture2D
 
 static void LnTexture2D_delete(Wrap_Texture2D* obj)
 {
-    printf("LnTexture2D_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -416,7 +411,6 @@ struct Wrap_Component
 
 static void LnComponent_delete(Wrap_Component* obj)
 {
-    printf("LnComponent_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -457,7 +451,6 @@ struct Wrap_VisualComponent
 
 static void LnVisualComponent_delete(Wrap_VisualComponent* obj)
 {
-    printf("LnVisualComponent_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -533,7 +526,6 @@ struct Wrap_SpriteComponent
 
 static void LnSpriteComponent_delete(Wrap_SpriteComponent* obj)
 {
-    printf("LnSpriteComponent_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -593,7 +585,6 @@ struct Wrap_ComponentList
 
 static void LnComponentList_delete(Wrap_ComponentList* obj)
 {
-    printf("LnComponentList_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -670,7 +661,6 @@ struct Wrap_WorldObject
 
 static void LnWorldObject_delete(Wrap_WorldObject* obj)
 {
-    printf("LnWorldObject_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -979,7 +969,6 @@ struct Wrap_VisualObject
 
 static void LnVisualObject_delete(Wrap_VisualObject* obj)
 {
-    printf("LnVisualObject_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -1061,7 +1050,6 @@ struct Wrap_Sprite
 
 static void LnSprite_delete(Wrap_Sprite* obj)
 {
-    printf("LnSprite_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -1176,7 +1164,6 @@ struct Wrap_UIEventArgs
 
 static void LnUIEventArgs_delete(Wrap_UIEventArgs* obj)
 {
-    printf("LnUIEventArgs_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -1233,7 +1220,6 @@ struct Wrap_UILayoutElement
 
 static void LnUILayoutElement_delete(Wrap_UILayoutElement* obj)
 {
-    printf("LnUILayoutElement_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -1274,7 +1260,6 @@ struct Wrap_UIElement
 
 static void LnUIElement_delete(Wrap_UIElement* obj)
 {
-    printf("LnUIElement_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -1559,11 +1544,8 @@ struct Wrap_UIControl
 
 static void LnUIControl_delete(Wrap_UIControl* obj)
 {
-    printf("LnUIControl_delete s1\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    printf("LnUIControl_delete s2\n");
     delete obj;
-    printf("LnUIControl_delete s3\n");
 }
 static void LnUIControl_mark(Wrap_UIControl* obj)
 {
@@ -1602,7 +1584,6 @@ struct Wrap_UIButtonBase
 
 static void LnUIButtonBase_delete(Wrap_UIButtonBase* obj)
 {
-    printf("LnUIButtonBase_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
@@ -1664,7 +1645,6 @@ struct Wrap_UIButton
 
 static void LnUIButton_delete(Wrap_UIButton* obj)
 {
-    printf("LnUIButton_delete s\n");
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }

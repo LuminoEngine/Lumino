@@ -274,6 +274,9 @@ std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUs
 {
     // TODO: this が UTF16 なら memcpy でよい
 
+    const byte_t* pr = preamble();
+    int preambleLen = (pr) ? strlen(reinterpret_cast<const char*>(pr)) : 0;
+
     // 入力に入っている最悪パターンの文字数
     size_t srcMaxCharCount = length;
 
@@ -281,7 +284,7 @@ std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUs
     size_t outputMaxByteCount = srcMaxCharCount * maxByteCount();
 
     // 出力バッファ作成
-    std::vector<byte_t> output(outputMaxByteCount + maxByteCount()); // \0 強制格納に備え、1文字分余裕のあるサイズを指定する
+    std::vector<byte_t> output(preambleLen + outputMaxByteCount + maxByteCount()); // \0 強制格納に備え、1文字分余裕のあるサイズを指定する
 
     // convert
     std::unique_ptr<TextEncoder> encoder(createEncoder());

@@ -18,8 +18,13 @@ UTF8Encoding::UTF8Encoding(bool byteOrderMark)
 
 byte_t* UTF8Encoding::preamble() const
 {
-    static byte_t bom[] = {0xEF, 0xBB, 0xBF, 0x00};
-    return bom;
+    if (m_byteOrderMark) {
+        static byte_t bom[] = { 0xEF, 0xBB, 0xBF, 0x00 };
+        return bom;
+    }
+    else {
+        return nullptr;
+    }
 }
 
 int UTF8Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
@@ -169,6 +174,13 @@ bool UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inpu
     const UTF16* srcEnd = input + inputElementSize;
     UTF8* dstPos = (UTF8*)output;
     UTF8* dstEnd = dstPos + outputByteSize;
+
+    if (m_byteOrderMark) {
+        memcpy(dstPos, UTF8Encoding::BOM, 3);
+        dstPos += 3;
+        outResult->outputByteCount += 3;
+        m_bomWrited = true;
+    }
 
     while (srcPos < srcEnd) {
         // サロゲートの確認

@@ -361,7 +361,8 @@ file(GLOB LN_SOURCES_Runtime
 	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
 	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
 	src/Runtime/*.cpp
-	src/Runtime/*.hpp
+    src/Runtime/*.hpp
+    src/Runtime/*.h
 )
 
 if (LN_USE_VULKAN)
@@ -571,15 +572,14 @@ if (LN_BUILD_TESTS)
     add_subdirectory(sandbox)
 endif()
 
-
 # Shared library
-#add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
-#target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-#target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
-##target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
-#target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-#set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
-#ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
+target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
+#target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
+target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
+ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
 #------------------------------------------------------------------------------
 # Install
@@ -607,3 +607,12 @@ install(
 
 #add_custom_command(TARGET LuminoEngine-static POST_BUILD
 #    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LuminoEngine-static> ../../../../lib/${LN_TARGET_ARCH})
+
+#------------------------------------------------------------------------------
+# Install
+
+install(TARGETS LuminoEngine
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME     DESTINATION bin
+    ARCHIVE     DESTINATION lib
+    LIBRARY     DESTINATION lib)
