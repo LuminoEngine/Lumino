@@ -48,11 +48,13 @@ Gem
 準備
 ```
 gem install rake-compiler
+or
+bundle install
 ```
 
 ビルド
 ```
-rake compile
+rake compile	※不要
 rake build
 ```
 
@@ -61,6 +63,21 @@ rake build
 gem install pkg/lumino-0.9.0.gem
 gem uninstall lumino
 ```
+
+インストール時にビルドが走る
+```
+>gem install pkg/lumino-0.9.0.gem
+Temporarily enhancing PATH for MSYS/MINGW...
+Building native extensions. This could take a while...
+Successfully installed lumino-0.9.0
+Parsing documentation for lumino-0.9.0
+Installing ri documentation for lumino-0.9.0
+Done installing documentation for lumino after 0 seconds
+1 gem installed
+```
+
+C:\tools\ruby26\lib\ruby\gems\2.6.0\gems\lumino-0.9.0
+
 
 spec.files
 https://www.xmisao.com/2014/08/26/get-all-files-in-gemspec.html

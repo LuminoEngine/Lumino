@@ -6,7 +6,7 @@ on:
     - master
 
 jobs:
-  build-MSVC2017-x64-MD:
+  build-MSVC2017-x64-MT:
     runs-on: windows-2016 # for VS2017
 
     steps:
@@ -19,9 +19,9 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Build
-      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MD
+      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
 
     - uses: actions/upload-artifact@v1
       with:
         name: Artifact
-        path: ./build/MSVC2017-x64-MD/EngineInstall
+        path: ./build/MSVC2017-x64-MT/EngineInstall
