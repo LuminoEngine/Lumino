@@ -545,9 +545,6 @@ target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
 set_target_properties(LuminoEngine-static PROPERTIES FOLDER "Lumino")
 ln_add_pch(LuminoEngine-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
-endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.
@@ -580,6 +577,13 @@ target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM
 target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
 set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
 ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+
+
+if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+endif()
+
 
 #------------------------------------------------------------------------------
 # Install
