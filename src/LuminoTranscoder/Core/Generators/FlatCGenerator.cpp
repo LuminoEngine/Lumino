@@ -145,8 +145,7 @@ void FlatCHeaderGenerator::generate()
 		src = src.replace(u"%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
 		src = src.replace(u"%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
 
-		auto fileName = ln::String::format(u"{0}.FlatC.generated.h", config()->moduleName);
-        auto filePath = (config()->flatCHeaderOutputDirOverride.isEmpty()) ? makeOutputFilePath(u"FlatC/include", fileName) : ln::Path::combine(config()->flatCHeaderOutputDirOverride, fileName);
+        auto filePath = makeFlatCHeaderOutputPath();
 		ln::FileSystem::writeAllText(filePath, src, ln::TextEncoding::getEncoding(ln::EncodingType::UTF8));
 	}
 }

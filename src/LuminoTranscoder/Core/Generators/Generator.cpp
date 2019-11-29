@@ -3,6 +3,12 @@
 
 const ln::String Generator::NewLine = _T("\n");
 
+ln::Path Generator::makeFlatCHeaderOutputPath() const
+{
+    auto fileName = ln::String::format(u"{0}.FlatC.generated.h", config()->moduleName);
+    return (config()->flatCHeaderOutputDirOverride.isEmpty()) ? makeOutputFilePath(u"FlatC/include", fileName) : ln::Path::combine(config()->flatCHeaderOutputDirOverride, fileName);
+}
+
 ln::String Generator::makeUpperSnakeName(const ln::String& name)
 {
 	// まず大文字境界で分割

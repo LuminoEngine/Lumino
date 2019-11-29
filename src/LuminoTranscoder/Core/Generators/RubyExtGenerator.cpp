@@ -226,7 +226,7 @@ void RubyExtGenerator::generate()
 	OutputBuffer typeVALUEDecls;
 	OutputBuffer moduleInitializer;
 	{
-		moduleInitializer.AppendLine(u"extern \"C\" void Init_{0}()", config()->moduleName);
+		moduleInitializer.AppendLine(u"extern \"C\" void Init_{0}_RubyExt()", config()->moduleName);
 		moduleInitializer.AppendLine(u"{");
 		moduleInitializer.IncreaseIndent();
 		moduleInitializer.AppendLine(u"InitLuminoRubyRuntimeManager();");
@@ -306,17 +306,23 @@ void RubyExtGenerator::generate()
 
 	// save
 	{
+        auto outputDir = ln::Path(makeOutputFilePath(u"Ruby", u"GemProject/ext/lumino_ruby_core"));
+        ln::FileSystem::createDirectory(outputDir);
+
+        ln::FileSystem::copyFile(config()->flatCCommonHeader, ln::Path(outputDir, u"FlatCommon.generated.h"), ln::FileCopyOption::Overwrite);
+        ln::FileSystem::copyFile(makeFlatCHeaderOutputPath(), ln::Path(outputDir, u"FlatC.generated.h"), ln::FileCopyOption::Overwrite);
+
 		ln::String fileName = ln::String::format("{0}.RubyExt.generated.cpp", config()->moduleName);
 
-		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("RubyExt.cpp.template")))
-			.replace("%%Common%%", u""/*ln::FileSystem::readAllText(config()->flatCCommonHeader)*/)
+		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("RubyExt.template.cpp")))
+			.replace("%%Common%%", u"")
 			.replace("%%FlatCDecls%%", allFlatCApiDecls.toString())
 			.replace("%%EnumTypeVALUEDecls%%", makeEnumTypeVALUEVariableDecls())
 			.replace("%%TypeVALUEDecls%%", typeVALUEDecls.toString())
 			.replace("%%Code%%", code.toString())
 			.replace("%%ModuleInitializer%%", moduleInitializer.toString());
 
-		ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
+		ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
 	}
 }
 

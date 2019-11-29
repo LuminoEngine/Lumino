@@ -1715,7 +1715,7 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
 
 
 
-extern "C" void Init_Lumino()
+extern "C" void Init_Lumino_RubyExt()
 {
     InitLuminoRubyRuntimeManager();
     g_rootModule = rb_define_module("Lumino");

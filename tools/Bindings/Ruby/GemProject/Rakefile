@@ -3,6 +3,7 @@ require "rake/extensiontask"
 task :default => :spec
 
 Rake::ExtensionTask.new "lumino_ruby_core" do |ext|
+    ext.name = "Lumino_RubyExt"
     ext.lib_dir = "lib/lumino"
 end
 
