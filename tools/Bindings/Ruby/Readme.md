@@ -52,9 +52,17 @@ or
 bundle install
 ```
 
+テストのためインストールせずにコンパイルする
+
+```
+set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
+rake compile
+
+```
+
+
 ビルド
 ```
-rake compile	※不要
 rake build
 ```
 
