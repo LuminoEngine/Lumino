@@ -50,7 +50,7 @@ int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle)
 
 void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback)
 {
-	return ln::detail::EngineDomain::runtimeManager()->setReferenceCountTracker(callback);
+	return ln::detail::RuntimeManager::setReferenceCountTracker(callback);
 }
 
 void LnRuntime_SetReferenceTrackEnabled(LnHandle handle)

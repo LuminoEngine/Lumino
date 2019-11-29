@@ -447,7 +447,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 					callerArgList.AppendCommad("&selfObj->handle");
 
 					// コンストラクトされた Object を register
-					callerReturnStmt.AppendLine("LuminoRubyRuntimeManager::instance->registerWrapperObject(self);");
+					callerReturnStmt.AppendLine("LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
 					callerReturnStmt.AppendLine("return Qnil;");
 				}
 				else {

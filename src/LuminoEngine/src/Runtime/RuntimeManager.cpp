@@ -3,9 +3,10 @@
 namespace ln {
 namespace detail {
 
+LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
+
 RuntimeManager::RuntimeManager()
 	: m_systemAliving(false)
-	, m_referenceCountTracker(nullptr)
 {
 }
 

@@ -53,14 +53,15 @@ public:
     // for generator interface
     static LuminoRubyRuntimeManager* getInstance(VALUE managerInstance);
     static void gc_mark(LuminoRubyRuntimeManager* obj);
-    static void handleReferenceChanged(LnHandle handle, int method, int count);
+    static void handleReferenceChangedStatic(LnHandle handle, int method, int count);
+    void handleReferenceChanged(LnHandle handle, int method, int count);
 
 private:
     struct ObjectReferenceItem
     {
         VALUE weakRef;
         VALUE strongRef;
-    }
+    };
 
     VALUE m_luminoModule;
     VALUE m_eventSignalClass;

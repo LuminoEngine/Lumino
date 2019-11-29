@@ -62,7 +62,7 @@ void LuminoRubyRuntimeManager::init()
         m_objectListIndexStack.push(i);
     }
 
-    LnRuntime_SetReferenceCountTracker(handleReferenceChanged);
+    LnRuntime_SetReferenceCountTracker(handleReferenceChangedStatic);
 }
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle)
@@ -161,9 +161,14 @@ void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
     LNRB_TRACE("LuminoRubyRuntimeManager::gc_mark\n");
     rb_gc_mark(obj->m_luminoModule);
     rb_gc_mark(obj->m_eventSignalClass);
-    for (auto& item : m_objectList) {
+    for (auto& item : instance->m_objectList) {
         rb_gc_mark(item.strongRef);
     }
+}
+
+void LuminoRubyRuntimeManager::handleReferenceChangedStatic(LnHandle handle, int method, int count)
+{
+    instance->handleReferenceChanged(handle, method, count);
 }
 
 void LuminoRubyRuntimeManager::handleReferenceChanged(LnHandle handle, int method, int count)

@@ -55,7 +55,6 @@ class Lumino::Engine
     end
 
     # 。
-    # @return [Lumino::UIControl] 
     def main_ui_view()
     end
 
@@ -77,6 +76,7 @@ class Lumino::Texture2D < Texture
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     # @param [Integer] width 
     # @param [Integer] height 
+    # @return [] 作成されたテクスチャ
     def initialize(width, height)
     end
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
@@ -107,7 +107,6 @@ class Lumino::VisualComponent < Component
     end
 
     # 可視状態を取得します。
-    # @return [Boolean] 
     def visible?()
     end
 
@@ -127,13 +126,11 @@ end
 # 
 class Lumino::ComponentList
     # 
-    # @return [Integer] 
     def get_length()
     end
 
     # 
     # @param [Integer] index 
-    # @return [Lumino::Component] 
     def get_item(index)
     end
 
@@ -154,7 +151,6 @@ class Lumino::WorldObject
     end
 
     # このオブジェクトの位置を位置を取得します。
-    # @return [Lumino::Vector3] 
     def position()
     end
 
@@ -171,7 +167,6 @@ class Lumino::WorldObject
     end
 
     # このオブジェクトの回転を取得します。
-    # @return [Lumino::Quaternion] 
     def rotation()
     end
 
@@ -191,7 +186,6 @@ class Lumino::WorldObject
     end
 
     # このオブジェクトの拡大率を取得します。
-    # @return [Lumino::Vector3] 
     def scale()
     end
 
@@ -207,12 +201,10 @@ class Lumino::WorldObject
     end
 
     # このオブジェクトのローカルの中心位置を取得します。
-    # @return [Lumino::Vector3] 
     def center_point()
     end
 
     # 
-    # @return [Lumino::ComponentList] 
     def components()
     end
 
@@ -232,7 +224,6 @@ class Lumino::VisualObject < WorldObject
     end
 
     # 可視状態を取得します。
-    # @return [Boolean] 
     def visible?()
     end
 
@@ -267,7 +258,6 @@ end
 # 
 class Lumino::UIEventArgs
     # イベントの発生元となった要素を取得します。
-    # @return [Lumino::UIElement] 
     def sender()
     end
 
@@ -293,7 +283,6 @@ class Lumino::UIElement < UILayoutElement
     end
 
     # このオブジェクトの位置を位置を取得します。
-    # @return [Lumino::Vector3] 
     def position()
     end
 
@@ -310,7 +299,6 @@ class Lumino::UIElement < UILayoutElement
     end
 
     # このオブジェクトの回転を取得します。
-    # @return [Lumino::Quaternion] 
     def rotation()
     end
 
@@ -329,7 +317,6 @@ class Lumino::UIElement < UILayoutElement
     end
 
     # このオブジェクトの拡大率を取得します。
-    # @return [Lumino::Vector3] 
     def scale()
     end
 
@@ -345,7 +332,6 @@ class Lumino::UIElement < UILayoutElement
     end
 
     # このオブジェクトのローカルの中心位置を取得します。
-    # @return [Lumino::Vector3] 
     def center_point()
     end
 
@@ -380,7 +366,6 @@ class Lumino::UIButton < UIButtonBase
 
     # Clicked イベントの通知を受け取るコールバックを登録します。
     # @param [Lumino::UIEventHandler] handler 
-    # @return [] 
     def connect_on_clicked(handler)
     end
 

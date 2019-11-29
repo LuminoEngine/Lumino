@@ -1,5 +1,6 @@
 
 set PATH=C:\Ruby26\bin;C:\Ruby26\msys32\mingw32\bin;C:\Ruby26\msys32\usr\bin;%PATH%
+set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
 ruby extconf.rb --with-Lumino-include=../FlatC/include
 make
 ruby Test.rb
@@ -10,6 +11,21 @@ ruby Test.rb
 
 https://docs.ruby-lang.org/en/2.4.0/extension_ja_rdoc.html#label-E5-A4-A7-E5-9F-9F-E5-A4-89-E6-95-B0-E5-AE-9A-E7-BE-A9
 
+
+
+```
+choco install -y ruby
+choco install -y msys2
+Update-SessionEnvironment
+ridk install 2 3
+
+
+
+
+
+choco install -y ruby2.devkit
+```
+C:\tools\msys64
 
 Documentation
 ----------
