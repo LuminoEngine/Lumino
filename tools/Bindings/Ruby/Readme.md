@@ -68,7 +68,7 @@ rake build
 
 デバッグ
 ```
-gem install pkg/lumino-0.9.0.gem
+gem install pkg/lumino-0.9.0.pre.gem
 gem uninstall lumino
 ```
 

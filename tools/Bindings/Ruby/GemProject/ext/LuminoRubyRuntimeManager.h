@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <stack>
-#include "FlatCommon.generated.h"
+#include "FlatCommon.h"
 
 //#define LNRB_TRACE(...) printf(__VA_ARGS__)
 #define LNRB_TRACE(...)
