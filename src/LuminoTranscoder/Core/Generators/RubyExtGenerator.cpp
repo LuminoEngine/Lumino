@@ -309,7 +309,7 @@ void RubyExtGenerator::generate()
         auto outputDir = ln::Path(makeOutputFilePath(u"Ruby", u"GemProject/ext"));
         ln::FileSystem::createDirectory(outputDir);
 
-        ln::FileSystem::copyFile(config()->flatCCommonHeader, ln::Path(outputDir, u"FlatCommon.generated.h"), ln::FileCopyOption::Overwrite);
+        ln::FileSystem::copyFile(config()->flatCCommonHeader, ln::Path(outputDir, u"FlatCommon.h"), ln::FileCopyOption::Overwrite);
         ln::FileSystem::copyFile(makeFlatCHeaderOutputPath(), ln::Path(outputDir, u"FlatC.generated.h"), ln::FileCopyOption::Overwrite);
 
 		ln::String fileName = ln::String::format("{0}.RubyExt.generated.cpp", config()->moduleName);

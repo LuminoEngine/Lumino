@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "FlatCommon.generated.h"
+#include "FlatCommon.h"
 
 extern "C"
 {

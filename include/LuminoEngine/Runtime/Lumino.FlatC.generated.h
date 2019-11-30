@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include <LuminoEngine/Runtime/FlatCommon.h>
+#include "FlatCommon.h"
 
 extern "C"
 {
