@@ -132,6 +132,7 @@ void Engine::finalize()
 
 bool Engine::update()
 {
+
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
     if (manager->settings().externalMainLoop) {
         endFrame();
@@ -141,6 +142,7 @@ bool Engine::update()
         beginFrame();
         endFrame();
     }
+
 	return !manager->isExitRequested();
 }
 

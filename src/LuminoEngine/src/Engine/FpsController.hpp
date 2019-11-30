@@ -102,6 +102,51 @@ private:
     bool        m_enableFpsTest;        // true の場合、FPS テストを行う
 };
 
+class FpsController2
+{
+public:
+    FpsController2();
+
+    void setFrameRate(int frameRate);
+    void setMeasurementEnabled(bool enabled) { m_measureTimes = enabled; }
+
+    void process();
+    void processForMeasure();    // ウェイトは取らず、測定のみ行う (ツール用)
+    void refreshSystemDelay();
+    
+    double getTotalGameTime() const { return 0.001 * m_currentGameTime; }
+
+    // measurement results.
+    float totalFps() const { return m_totalFps; }
+    float externalFps() const { return m_externalFps; }
+    float minTimePerSeconds() const { return m_minTimePerSeconds; }
+    float maxTimePerSeconds() const { return m_maxTimePerSeconds; }
+
+private:
+    void measureTimes(uint64_t externalElapsedTime, uint64_t frameElapsedTime);
+
+    int m_frameRate;
+    uint64_t m_frameTime;
+
+    ElapsedTimer m_timer;
+    uint64_t m_currentGameTime;
+    uint64_t m_baseTime;
+    //uint64_t m_lastTime;
+    int m_frameCount;
+
+    bool m_measureTimes;
+    std::vector<uint64_t> m_frameTimes;
+    std::vector<uint64_t> m_externalTimes;
+    float m_totalFps;
+    float m_externalFps;
+    uint64_t m_averageTime;
+    uint64_t m_externalAverageTime;
+    uint64_t m_minTime;
+    uint64_t m_maxTime;
+    uint64_t m_minTimePerSeconds;
+    uint64_t m_maxTimePerSeconds;
+};
+
 } // namespace detail
 } // namespace ln
 

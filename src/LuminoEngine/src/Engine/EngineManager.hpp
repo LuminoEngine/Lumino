@@ -135,7 +135,7 @@ public:
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 	const Ref<RuntimeManager>& runtimeManager() const { return m_runtimeManager; }
 
-    const FpsController& fpsController() const { return m_fpsController; }
+    const FpsController2& fpsController() const { return m_fpsController; }
 	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
     const Path& persistentDataPath() const;
@@ -193,7 +193,8 @@ private:
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
 	Ref<RuntimeManager> m_runtimeManager;
-	FpsController m_fpsController;
+	//FpsController m_fpsController;
+    FpsController2 m_fpsController;
 
 	Ref<DiagnosticsManager> m_activeDiagnostics;
 
