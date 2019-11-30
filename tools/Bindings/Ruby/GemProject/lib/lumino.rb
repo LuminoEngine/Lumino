@@ -1,18 +1,16 @@
 
-
-#require 'Win32API'
-#AddDllDirectory = Win32API.new("kernel32", "AddDllDirectory", %w(p), "p")
-#AddDllDirectory.call("C:/tools/ruby26/lib/ruby/gems/2.6.0/gems/lumino-0.9.0/ext/lumino_ruby_core".encode('UTF-16LE'))
-
-
 require 'fiddle/import'
+require 'rbconfig'
+
 extend Fiddle::Importer
-#dlload 'C:/tools/ruby26/lib/ruby/gems/2.6.0/gems/lumino-0.9.0/ext/lumino_ruby_core/LuminoEngine.dll'
-dlload __dir__ + "/../ext/lumino_ruby_core/LuminoEngine.dll"
+if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+  dlload __dir__ + "/../ext/LuminoEngine.dll"
+else
+  raise "Not supported platform."
+end
 
 require "lumino/version"
-
-require "lumino_ruby_core/Lumino_RubyExt"
+require "Lumino_RubyExt"
 
 module Lumino
   class Error < StandardError; end

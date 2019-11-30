@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{Real-time graphics application framework.}
   spec.homepage      = "https://github.com/lriki/Lumino"
   spec.license       = "MIT"
-  spec.extensions    = %w[ext/lumino_ruby_core/extconf.rb]
+  spec.extensions    = %w[ext/extconf.rb]
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.

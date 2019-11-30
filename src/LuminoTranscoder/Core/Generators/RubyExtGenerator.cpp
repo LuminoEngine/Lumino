@@ -306,7 +306,7 @@ void RubyExtGenerator::generate()
 
 	// save
 	{
-        auto outputDir = ln::Path(makeOutputFilePath(u"Ruby", u"GemProject/ext/lumino_ruby_core"));
+        auto outputDir = ln::Path(makeOutputFilePath(u"Ruby", u"GemProject/ext"));
         ln::FileSystem::createDirectory(outputDir);
 
         ln::FileSystem::copyFile(config()->flatCCommonHeader, ln::Path(outputDir, u"FlatCommon.generated.h"), ln::FileCopyOption::Overwrite);
