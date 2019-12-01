@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lumino (0.9.0)
+    lumino (0.9.0.pre)
 
 GEM
   remote: https://rubygems.org/

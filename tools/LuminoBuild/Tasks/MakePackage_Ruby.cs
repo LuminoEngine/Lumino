@@ -13,7 +13,15 @@ namespace LuminoBuild.Tasks
         {
             if (Utils.IsWin32)
             {
-                File.Copy(Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MT", "EngineInstall", "bin", "LuminoEngine.dll"));
+                var gemprojDir = Path.Combine(builder.LuminoToolsDir, "Bindings", "Ruby", "GemProject");
+
+                File.Copy(
+                    Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MD", "EngineInstall", "bin", "LuminoEngine.dll"),
+                    Path.Combine(gemprojDir, "ext", "LuminoEngine.dll"), true);
+
+                Directory.SetCurrentDirectory(gemprojDir);
+                Utils.CallProcessShell("bundle", "install");    // bundle.cmd
+                Utils.CallProcessShell("rake", "build");
             }
         }
 

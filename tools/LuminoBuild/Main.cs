@@ -17,11 +17,11 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "BuildEngine_MSVC", "MSVC2017-x64-MD" };
+                //args = new string[] { "BuildEngine_MSVC", "MSVC2017-x64-MD" };
                 //args = new string[] { "MakeInstaller_Win32", "MSVC2017-x64-MD" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "Windows" };
-                //args = new string[] { "BuildLLVM", "MSVC2017-x64-MD" };
+                args = new string[] { "MakePackage_Ruby" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -42,7 +42,7 @@ namespace LuminoBuild
             builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
             builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
-            BuildEnvironment.Target = args[1];
+            BuildEnvironment.Target = (args.Length > 1) ? args[1] : "";
             BuildEnvironment.Configuration = (args.Length > 2) ? args[2] : "";
             BuildEnvironment.Initialize(builder.LuminoRootDir);
 
@@ -68,6 +68,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeReleasePackage());
             builder.Tasks.Add(new Tasks.MakeReleasePackage2());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
+            builder.Tasks.Add(new Tasks.MakePackage_Ruby());
             builder.Rules.Add(new Rules.MakePackage());
             builder.Rules.Add(new Rules.MakeLocalPackage());
             builder.Rules.Add(new Rules.BuildForCI_1());
