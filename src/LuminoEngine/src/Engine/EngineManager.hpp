@@ -193,7 +193,7 @@ private:
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
 	Ref<RuntimeManager> m_runtimeManager;
-	FpsController m_fpsController;
+    FpsController m_fpsController;
 
 	Ref<DiagnosticsManager> m_activeDiagnostics;
 

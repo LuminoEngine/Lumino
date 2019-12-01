@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 #include <Windows.h>
 
 #ifdef _WIN32

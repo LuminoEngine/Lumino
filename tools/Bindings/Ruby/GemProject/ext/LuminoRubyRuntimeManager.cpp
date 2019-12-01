@@ -62,7 +62,10 @@ void LuminoRubyRuntimeManager::init()
         m_objectListIndexStack.push(i);
     }
 
-    LnRuntime_SetReferenceCountTracker(handleReferenceChanged);
+    m_runtimeAliving = true;
+
+    LnRuntime_SetReferenceCountTracker(handleReferenceChangedStatic);
+    LnRuntime_SetRuntimeFinalizedCallback(handleRuntimeFinalized);
 }
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle)
@@ -129,11 +132,13 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
 void LuminoRubyRuntimeManager::unregisterWrapperObject(LnHandle handle)
 {
     LNRB_TRACE("LuminoRubyRuntimeManager::unregisterWrapperObject: LnHandle=%u\n", handle);
-    LnObject_Release(handle);
-	int index = (int)LnRuntime_GetManagedObjectId(handle);
-	m_objectList[index].weakRef = Qnil;
-	m_objectList[index].strongRef = Qnil;
-	m_objectListIndexStack.push(index);
+    if (m_runtimeAliving) {
+        LnObject_Release(handle);
+        int index = (int)LnRuntime_GetManagedObjectId(handle);
+        m_objectList[index].weakRef = Qnil;
+        m_objectList[index].strongRef = Qnil;
+        m_objectListIndexStack.push(index);
+    }
 }
 
 static VALUE g_LuminoRubyRuntimeManagerClass;
@@ -143,6 +148,7 @@ static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj)
 {
     if (obj) {
         delete obj;
+        LuminoRubyRuntimeManager::instance = nullptr;
     }
 }
 
@@ -161,9 +167,14 @@ void LuminoRubyRuntimeManager::gc_mark(LuminoRubyRuntimeManager* obj)
     LNRB_TRACE("LuminoRubyRuntimeManager::gc_mark\n");
     rb_gc_mark(obj->m_luminoModule);
     rb_gc_mark(obj->m_eventSignalClass);
-    for (auto& item : m_objectList) {
+    for (auto& item : instance->m_objectList) {
         rb_gc_mark(item.strongRef);
     }
+}
+
+void LuminoRubyRuntimeManager::handleReferenceChangedStatic(LnHandle handle, int method, int count)
+{
+    instance->handleReferenceChanged(handle, method, count);
 }
 
 void LuminoRubyRuntimeManager::handleReferenceChanged(LnHandle handle, int method, int count)
@@ -182,6 +193,12 @@ void LuminoRubyRuntimeManager::handleReferenceChanged(LnHandle handle, int metho
     }
 }
 
+void LuminoRubyRuntimeManager::handleRuntimeFinalized()
+{
+    if (instance) {
+        instance->m_runtimeAliving = false;
+    }
+}
 
 extern "C" void InitLuminoRubyRuntimeManager()
 {

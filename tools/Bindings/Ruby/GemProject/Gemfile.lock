@@ -1,0 +1,23 @@
+PATH
+  remote: .
+  specs:
+    lumino (0.9.0.pre)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (10.5.0)
+    rake-compiler (1.0.8)
+      rake
+
+PLATFORMS
+  x64-mingw32
+
+DEPENDENCIES
+  bundler (~> 1.17)
+  lumino!
+  rake (~> 10.0)
+  rake-compiler
+
+BUNDLED WITH
+   1.17.2

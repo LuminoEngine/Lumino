@@ -3,9 +3,11 @@
 namespace ln {
 namespace detail {
 
+LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
+LnRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
+
 RuntimeManager::RuntimeManager()
 	: m_systemAliving(false)
-	, m_referenceCountTracker(nullptr)
 {
 }
 
@@ -50,6 +52,11 @@ void RuntimeManager::dispose()
 
 	m_systemAliving = false;
 	m_referenceCountTracker = nullptr;
+
+    if (m_runtimeFinalizedCallback) {
+        m_runtimeFinalizedCallback();
+        m_runtimeFinalizedCallback = nullptr;
+    }
 
 	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
 }
@@ -206,6 +213,11 @@ int64_t RuntimeManager::getManagedTypeInfoId(LnHandle handle)
 void RuntimeManager::setReferenceCountTracker(LnReferenceCountTrackerCallback callback)
 {
 	m_referenceCountTracker = callback;
+}
+
+void RuntimeManager::setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
+{
+    m_runtimeFinalizedCallback = callback;
 }
 
 void RuntimeManager::setReferenceTrackEnabled(LnHandle handle)

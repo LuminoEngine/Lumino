@@ -1,5 +1,6 @@
 
 set PATH=C:\Ruby26\bin;C:\Ruby26\msys32\mingw32\bin;C:\Ruby26\msys32\usr\bin;%PATH%
+set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
 ruby extconf.rb --with-Lumino-include=../FlatC/include
 make
 ruby Test.rb
@@ -10,6 +11,21 @@ ruby Test.rb
 
 https://docs.ruby-lang.org/en/2.4.0/extension_ja_rdoc.html#label-E5-A4-A7-E5-9F-9F-E5-A4-89-E6-95-B0-E5-AE-9A-E7-BE-A9
 
+
+
+```
+choco install -y ruby
+choco install -y msys2
+Update-SessionEnvironment
+ridk install 2 3
+
+
+
+
+
+choco install -y ruby2.devkit
+```
+C:\tools\msys64
 
 Documentation
 ----------
@@ -32,19 +48,44 @@ Gem
 準備
 ```
 gem install rake-compiler
+or
+bundle install
 ```
+
+テストのためインストールせずにコンパイルする
+
+```
+set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
+rake compile -- --with-lumino-lib=D:/Proj/LN/Lumino/tools/Bindings/Ruby/GemProject/ext
+
+```
+
 
 ビルド
 ```
-rake compile
 rake build
 ```
 
 デバッグ
 ```
-gem install pkg/lumino-0.9.0.gem
+gem install pkg/lumino-0.9.0.pre.gem
 gem uninstall lumino
 ```
+
+インストール時にビルドが走る
+```
+>gem install pkg/lumino-0.9.0.gem
+Temporarily enhancing PATH for MSYS/MINGW...
+Building native extensions. This could take a while...
+Successfully installed lumino-0.9.0
+Parsing documentation for lumino-0.9.0
+Installing ri documentation for lumino-0.9.0
+Done installing documentation for lumino after 0 seconds
+1 gem installed
+```
+
+C:\tools\ruby26\lib\ruby\gems\2.6.0\gems\lumino-0.9.0
+
 
 spec.files
 https://www.xmisao.com/2014/08/26/get-all-files-in-gemspec.html

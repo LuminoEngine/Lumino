@@ -1,7 +1,7 @@
 
 #include <ruby.h>
 #include "LuminoRubyRuntimeManager.h"
-#include <Lumino.FlatC.generated.h>
+#include "FlatC.generated.h"
 
 
 
@@ -239,7 +239,7 @@ struct Wrap_GraphicsResource
 
 static void LnGraphicsResource_delete(Wrap_GraphicsResource* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnGraphicsResource_mark(Wrap_GraphicsResource* obj)
@@ -279,7 +279,7 @@ struct Wrap_Texture
 
 static void LnTexture_delete(Wrap_Texture* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnTexture_mark(Wrap_Texture* obj)
@@ -319,7 +319,7 @@ struct Wrap_Texture2D
 
 static void LnTexture2D_delete(Wrap_Texture2D* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnTexture2D_mark(Wrap_Texture2D* obj)
@@ -360,7 +360,7 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
             int _height = LNRB_VALUE_TO_NUMBER(height);
             LnResult errorCode = LnTexture2D_Create(_width, _height, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self);
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
             return Qnil;
         }
     }
@@ -376,7 +376,7 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
             LnTextureFormat _format = (LnTextureFormat)FIX2INT(format);
             LnResult errorCode = LnTexture2D_CreateWithFormat(_width, _height, _format, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self);
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
             return Qnil;
         }
     }
@@ -390,7 +390,7 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
             LnTextureFormat _format = (format != Qnil) ? (LnTextureFormat)FIX2INT(format) : (LnTextureFormat)1;
             LnResult errorCode = LnTexture2D_CreateFromFileA(_filePath, _format, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self);
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
             return Qnil;
         }
     }
@@ -411,7 +411,7 @@ struct Wrap_Component
 
 static void LnComponent_delete(Wrap_Component* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnComponent_mark(Wrap_Component* obj)
@@ -451,7 +451,7 @@ struct Wrap_VisualComponent
 
 static void LnVisualComponent_delete(Wrap_VisualComponent* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnVisualComponent_mark(Wrap_VisualComponent* obj)
@@ -526,7 +526,7 @@ struct Wrap_SpriteComponent
 
 static void LnSpriteComponent_delete(Wrap_SpriteComponent* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnSpriteComponent_mark(Wrap_SpriteComponent* obj)
@@ -585,7 +585,7 @@ struct Wrap_ComponentList
 
 static void LnComponentList_delete(Wrap_ComponentList* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnComponentList_mark(Wrap_ComponentList* obj)
@@ -661,7 +661,7 @@ struct Wrap_WorldObject
 
 static void LnWorldObject_delete(Wrap_WorldObject* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnWorldObject_mark(Wrap_WorldObject* obj)
@@ -969,7 +969,7 @@ struct Wrap_VisualObject
 
 static void LnVisualObject_delete(Wrap_VisualObject* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnVisualObject_mark(Wrap_VisualObject* obj)
@@ -1050,7 +1050,7 @@ struct Wrap_Sprite
 
 static void LnSprite_delete(Wrap_Sprite* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnSprite_mark(Wrap_Sprite* obj)
@@ -1137,7 +1137,7 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
             float _height = LNRB_VALUE_TO_FLOAT(height);
             LnResult errorCode = LnSprite_Create(_texture, _width, _height, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self);
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
             return Qnil;
         }
     }
@@ -1164,7 +1164,7 @@ struct Wrap_UIEventArgs
 
 static void LnUIEventArgs_delete(Wrap_UIEventArgs* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIEventArgs_mark(Wrap_UIEventArgs* obj)
@@ -1220,7 +1220,7 @@ struct Wrap_UILayoutElement
 
 static void LnUILayoutElement_delete(Wrap_UILayoutElement* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUILayoutElement_mark(Wrap_UILayoutElement* obj)
@@ -1260,7 +1260,7 @@ struct Wrap_UIElement
 
 static void LnUIElement_delete(Wrap_UIElement* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIElement_mark(Wrap_UIElement* obj)
@@ -1544,7 +1544,7 @@ struct Wrap_UIControl
 
 static void LnUIControl_delete(Wrap_UIControl* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIControl_mark(Wrap_UIControl* obj)
@@ -1584,7 +1584,7 @@ struct Wrap_UIButtonBase
 
 static void LnUIButtonBase_delete(Wrap_UIButtonBase* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIButtonBase_mark(Wrap_UIButtonBase* obj)
@@ -1645,7 +1645,7 @@ struct Wrap_UIButton
 
 static void LnUIButton_delete(Wrap_UIButton* obj)
 {
-    LuminoRubyRuntimeManager::instance->unregisterWrapperObject(obj->handle);
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
 static void LnUIButton_mark(Wrap_UIButton* obj)
@@ -1681,7 +1681,7 @@ static VALUE Wrap_LnUIButton_Create(int argc, VALUE* argv, VALUE self)
         {
             LnResult errorCode = LnUIButton_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self);
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
             return Qnil;
         }
     }
@@ -1715,7 +1715,7 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
 
 
 
-extern "C" void Init_Lumino()
+extern "C" void Init_Lumino_RubyExt()
 {
     InitLuminoRubyRuntimeManager();
     g_rootModule = rb_define_module("Lumino");

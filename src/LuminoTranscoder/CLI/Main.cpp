@@ -83,6 +83,8 @@ int main(int argc, char** argv)
 	config->flatCOutputModuleName = u"Ln";
 	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoEngine/Runtime/FlatCommon.h");
 	config->flatCHeaderString = u"#include <LuminoEngine.hpp>";
+    config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
+    config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
 	{
 		FlatCHeaderGenerator g;

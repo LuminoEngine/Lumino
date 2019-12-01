@@ -1,8 +1,10 @@
 ﻿#pragma once
 
 #if !defined(LN_FLAT_API)
-    #if defined(_WIN32) && defined(LUMINO_BUILD_DLL)
+    #if defined(_WIN32)
         #define LN_FLAT_API __declspec(dllexport)
+    #elif defined(_WIN32) && defined(LUMINO_DLL)
+        #define LN_FLAT_API __declspec(dllimport)
     #elif defined(__GNUC__) && defined(LUMINO_BUILD_DLL)
         #define LN_FLAT_API __attribute__((visibility("default")))
     #else

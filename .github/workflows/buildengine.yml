@@ -1,12 +1,12 @@
 name: Build engine
 
 on:
-  pull_request:
+  push:
     branches:
     - master
 
 jobs:
-  build-MSVC2017-x64-MD:
+  build-MSVC2017-x64-MT:
     runs-on: windows-2016 # for VS2017
 
     steps:
@@ -19,9 +19,37 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Build
-      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MD
+      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
 
     - uses: actions/upload-artifact@v1
       with:
-        name: Artifact
-        path: ./build/MSVC2017-x64-MD/EngineInstall
+        name: LuminoEngine-MSVC2017-x64-MT
+        path: ./build/MSVC2017-x64-MT/EngineInstall
+
+  build-ruby-package:
+    needs: build-MSVC2017-x64-MT
+    runs-on: windows-2016
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+        architecture: 'x64'
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: LuminoEngine-MSVC2017-x64-MT
+        path: ./build/MSVC2017-x64-MT/EngineInstall
+
+    - name: Build and test with Rake
+      run: dotnet run -- MakePackage_Ruby
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: LuminoEngine-RubyGemPackage
+        path: ./tools/Bindings/Ruby/GemProject/pkg/lumino-0.9.0.pre.gem
+  

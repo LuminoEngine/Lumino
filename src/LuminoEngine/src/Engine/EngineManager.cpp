@@ -131,7 +131,7 @@ void EngineManager::init()
     //}
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
-	m_fpsController.setEnableFpsTest(true);
+	m_fpsController.setMeasurementEnabled(true);
 
 	if (m_settings.debugToolEnabled) {
 		setDebugToolMode(DebugToolMode::Minimalized);
@@ -684,7 +684,7 @@ void EngineManager::presentFrame()
 	}
 
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
-        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.getFps(), m_fpsController.getCapacityFps()));
+        m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.totalFps(), m_fpsController.externalFps()));
     }
 }
 
@@ -748,7 +748,7 @@ bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)
 void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 {
 	ImGui::Begin("Statistics");
-	ImGui::Text("FPS: %.2f, Cap: %.2f", m_fpsController.getFps(), m_fpsController.getCapacityFps());
+	ImGui::Text("FPS: %.2f, Ext: %.2f", m_fpsController.totalFps(), m_fpsController.externalFps());
 	ImGui::Text("Min: %.2f, Max: %.2f", m_fpsController.minTimePerSeconds(), m_fpsController.maxTimePerSeconds());
 	ImGui::Separator();
 

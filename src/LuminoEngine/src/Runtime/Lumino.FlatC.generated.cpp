@@ -1,5 +1,5 @@
 #include <LuminoEngine/Runtime/Runtime.hpp>
-#include "Lumino.FlatC.generated.h"
+#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 
 #include <LuminoEngine.hpp>
 

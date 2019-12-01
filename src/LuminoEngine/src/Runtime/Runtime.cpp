@@ -50,12 +50,17 @@ int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle)
 
 void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback)
 {
-	return ln::detail::EngineDomain::runtimeManager()->setReferenceCountTracker(callback);
+	return ln::detail::RuntimeManager::setReferenceCountTracker(callback);
 }
 
 void LnRuntime_SetReferenceTrackEnabled(LnHandle handle)
 {
 	return ln::detail::EngineDomain::runtimeManager()->setReferenceTrackEnabled(handle);
+}
+
+void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
+{
+    return ln::detail::RuntimeManager::setRuntimeFinalizedCallback(callback);
 }
 
 //void LnRuntime_UTF8ToNativeString(const char* src, std::u16string* dst)
@@ -65,7 +70,9 @@ void LnRuntime_SetReferenceTrackEnabled(LnHandle handle)
 //
 LN_FLAT_API LnResult LnObject_Release(LnHandle obj)
 {
-	ln::detail::EngineDomain::runtimeManager()->releaseObjectExplicitly(obj);
+    if (auto m = ln::detail::EngineDomain::runtimeManager()) {
+        m->releaseObjectExplicitly(obj);
+    }
 	return LN_SUCCESS;
 }
 

@@ -1,5 +1,7 @@
 
-#ifdef _WIN32
+// TODO: LuminoPlatformInterface.lib とかに分けたい。
+// 今は Engine.lib に含めているので、dll を作ろうとしたときに LuminoCreateApplicationInstance が未定義エラーになってしまう。
+#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
 #include "Internal.hpp"
 #include <Windows.h>
 #include <LuminoEngine/Engine/Application.hpp>

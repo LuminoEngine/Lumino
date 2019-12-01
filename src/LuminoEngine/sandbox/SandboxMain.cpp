@@ -268,7 +268,7 @@ int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
-    if (1) {
+    if (0) {
         GlobalLogger::addStdErrAdapter();
         EngineSettings::setEngineFeatures(EngineFeature::Experimental);
         EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
@@ -356,7 +356,7 @@ int main(int argc, char** argv)
 	//	ss->save();
 	//}
     
-    GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
+    //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
@@ -421,7 +421,7 @@ int main(int argc, char** argv)
 	navi1->addElement(window2);
 
 
-    Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
+    //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
 #if 0
     auto window1 = UIWindow::create();

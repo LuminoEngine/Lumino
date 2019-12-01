@@ -43,6 +43,7 @@
     <Compile Include="tools/LuminoBuild/Rules/BuildForCI_1.cs" />
     <Compile Include="tools/LuminoBuild/Rules/BuildForCI_2.cs" />
     <Compile Include="tools/LuminoBuild/Rules/BuildForCI_3.cs" />
+    <Compile Include="tools/LuminoBuild/Tasks/MakePackage_Ruby.cs" />
   </ItemGroup>
   
 </Project>

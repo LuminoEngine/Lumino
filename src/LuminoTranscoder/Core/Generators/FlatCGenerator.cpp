@@ -138,15 +138,15 @@ void FlatCHeaderGenerator::generate()
 
 	// save C API Header
 	{
-		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("LuminoC.template.h")));
-		src = src.replace("%%Structs%%", structsText.toString());
-		src = src.replace("%%Enums%%", makeEnumDecls());
-		src = src.replace("%%Delegates%%", delegatesText.toString());
-		src = src.replace("%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
-		src = src.replace("%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
+		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(u"LuminoC.template.h"));
+		src = src.replace(u"%%Structs%%", structsText.toString());
+		src = src.replace(u"%%Enums%%", makeEnumDecls());
+		src = src.replace(u"%%Delegates%%", delegatesText.toString());
+		src = src.replace(u"%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
+		src = src.replace(u"%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
 
-		ln::String fileName = ln::String::format("{0}.FlatC.generated.h", config()->moduleName);
-		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC/include", fileName), src, ln::TextEncoding::utf8Encoding());
+        auto filePath = makeFlatCHeaderOutputPath();
+		ln::FileSystem::writeAllText(filePath, src, ln::TextEncoding::getEncoding(ln::EncodingType::UTF8));
 	}
 }
 
@@ -325,17 +325,21 @@ void FlatCSourceGenerator::generate()
 
 	// save C API Source
 	{
-		ln::String headerName = ln::String::format("{0}.FlatC.generated.h", config()->moduleName);
-		ln::String fileName = ln::String::format("{0}.FlatC.generated.cpp", config()->moduleName);
+        auto includeDirective = ln::String::format("#include \"{0}.FlatC.generated.h\"", config()->moduleName);
+        auto fileName = ln::String::format("{0}.FlatC.generated.cpp", config()->moduleName);
 
-		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp.template")))
-			.replace("%%HeaderName%%", headerName)
+        if (!config()->flatCSourceOutputDirOverride.isEmpty())
+            includeDirective = ln::String::format("#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
+
+        auto src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp.template")))
+			.replace("%%IncludeDirective%%", includeDirective)
 			.replace("%%HeaderString%%", config()->flatCHeaderString)
 			.replace("%%WrapSubclassDecls%%", makeWrapSubclassDecls())
 			.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString())
 			.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
-		ln::FileSystem::writeAllText(makeOutputFilePath("FlatC/src", fileName), src);
+        auto filePath = (config()->flatCSourceOutputDirOverride.isEmpty()) ? makeOutputFilePath("FlatC/src", fileName) : ln::Path::combine(config()->flatCSourceOutputDirOverride, fileName);
+		ln::FileSystem::writeAllText(filePath, src);
 	}
 }
 

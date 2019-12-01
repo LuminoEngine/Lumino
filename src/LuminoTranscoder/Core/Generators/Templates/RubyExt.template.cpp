@@ -1,7 +1,7 @@
 ﻿
 #include <ruby.h>
 #include "LuminoRubyRuntimeManager.h"
-#include <Lumino.FlatC.generated.h>
+#include "FlatC.generated.h"
 
 %%Common%%
 

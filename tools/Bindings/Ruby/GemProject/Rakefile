@@ -2,7 +2,7 @@ require "bundler/gem_tasks"
 require "rake/extensiontask"
 task :default => :spec
 
-Rake::ExtensionTask.new "lumino_ruby_core" do |ext|
+Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
     ext.lib_dir = "lib/lumino"
 end
 

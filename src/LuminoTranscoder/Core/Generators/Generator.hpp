@@ -33,11 +33,16 @@ public:
 	// e.g.) "Ln"
 	ln::String flatCOutputModuleName;
 
-	// LnResult などが定義された C 用の共通ヘッダ
+	// LnResult などが定義された C 用の共通ヘッダ。
+    // ターゲットのフォルダにコピーしたり、ソースコードに埋め込んだりする。
 	ln::Path flatCCommonHeader;
 
 	// FlatC の実装コード (.cpp) の先頭に埋め込まれる文字列。ターゲットモジュールの #include 等を指定する。
 	ln::String flatCHeaderString;
+
+
+    ln::String flatCHeaderOutputDirOverride;
+    ln::String flatCSourceOutputDirOverride;
 };
 
 class Generator
@@ -59,6 +64,7 @@ public:
 	GeneratorConfiguration* config() const { return m_config; }
 	ln::Path makeOutputFilePath(const ln::String& lang, const ln::Path& localPath) const { return ln::Path::combine(m_config->outputDir, lang, localPath); }
 	ln::Path makeTemplateFilePath(const ln::Path& localPath) const { return ln::Path(m_config->templateDir, localPath); }
+    ln::Path makeFlatCHeaderOutputPath() const;
 	//const ln::String& moduleFullName() const { return m_moduleFullName; }
 	//const ln::String& moduleShortName() const { return m_moduleShortName; }
 
