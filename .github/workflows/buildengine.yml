@@ -1,7 +1,7 @@
 name: Build engine
 
 on:
-  pull_request:
+  push:
     branches:
     - master
 
@@ -47,14 +47,6 @@ jobs:
 
     - name: Build and test with Rake
       run: dotnet run -- MakePackage_Ruby
-        #echo "---- Check environment ----"
-        #ruby --version
-        #$Env:Path = "C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/mingw32/bin;" + $Env:Path
-        #$Env:Path = "C:/hostedtoolcache/windows/Ruby/2.6.3/x64/msys64/usr/bin;" + $Env:Path
-        #gcm ruby | fl
-        #gcm make | fl
-        #echo "---------------------------"
-        #dotnet run -- MakePackage_Ruby
 
     - uses: actions/upload-artifact@v1
       with:
