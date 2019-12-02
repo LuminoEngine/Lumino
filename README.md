@@ -9,10 +9,9 @@ Lumino はゲームやデジタルアートなどのリアルタイムグラフ�
 
 Build and Unit Tests
 --------
-| Package | Status  |
-|---------|---------|
-| Windows | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-Windows?branchName=master)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=8?branchName=master) |
-| macOS   | [![Build Status](https://dev.azure.com/lriki/Lumino/_apis/build/status/Lumino-CI-master-macOS?branchName=master)](https://dev.azure.com/lriki/Lumino/_build/latest?definitionId=9?branchName=master) |
+
+[![Actions Status](https://github.com/lriki/Lumino/workflows/Build%20engine/badge.svg)](https://github.com/lriki/Lumino/actions)
+
 
 
 Get started

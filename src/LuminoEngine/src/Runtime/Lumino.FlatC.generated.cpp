@@ -3,6 +3,14 @@
 
 #include <LuminoEngine.hpp>
 
+class LNWS_ln_EngineSettings : public ln::EngineSettings
+{
+public:
+
+
+};
+
+
 class LNWS_ln_Engine : public ln::Engine
 {
 public:
@@ -194,6 +202,79 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 }
 
 
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainBackBufferSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowTitle(title));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title)
+{
+    LnResult result = LnEngineSettings_SetMainWindowTitle(ln::String::fromCString(title, -1, ln::TextEncoding::utf8Encoding()).c_str());
+    return result;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetDirectory(path));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path)
+{
+    LnResult result = LnEngineSettings_AddAssetDirectory(ln::String::fromCString(path, -1, ln::TextEncoding::utf8Encoding()).c_str());
+    return result;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetArchive(fileFullPath, password));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
+{
+    LnResult result = LnEngineSettings_AddAssetArchive(ln::String::fromCString(fileFullPath, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(password, -1, ln::TextEncoding::utf8Encoding()).c_str());
+    return result;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogFilePath(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath)
+{
+    LnResult result = LnEngineSettings_SetEngineLogFilePath(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str());
+    return result;
+}
 
 LN_FLAT_API LnResult LnEngine_Initialize()
 {

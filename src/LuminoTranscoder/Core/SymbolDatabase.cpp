@@ -1033,7 +1033,7 @@ void SymbolDatabase::initPredefineds()
 
 	PredefinedTypes::stringType = addPredefined(u"ln::String");
 
-	PredefinedTypes::stringType = addPredefined(u"ln::StringRef");
+	PredefinedTypes::stringRefType = addPredefined(u"ln::StringRef");
 
 	PredefinedTypes::objectType = addPredefined(u"ln::Object", TypeKind::Class);
 

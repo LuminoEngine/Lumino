@@ -415,8 +415,15 @@ public:
 							auto value = literal->getValue();
 							paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
 						}
+						else if (expr->getStmtClass() == Stmt::StmtClass::MaterializeTemporaryExprClass) {
+							LN_NOTIMPLEMENTED();
+							//auto mte = static_cast<MaterializeTemporaryExpr*>(expr);
+							//auto decl = mte->getExtendingDecl();
+							////auto value = literal->getValue();
+							//paramInfo->defaultValue = ln::makeVariant(value.convertToFloat());
+						}
 						else {
-							std::cout << expr->getStmtClassName();
+							std::cout << expr->getStmtClassName() << std::endl;
 							LN_NOTIMPLEMENTED();
 						}
 					}

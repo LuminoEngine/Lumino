@@ -19,6 +19,7 @@
 #define LN_OS_FAMILY_UNIX
 #elif (defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__CYGWIN__) || defined(Q_OS_WIN))
 #define LN_OS_WIN32
+#define LN_OS_DESKTOP
 #elif defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__) || defined(__xlc__))
 #define LN_OS_DARWIN
 #define LN_OS_FAMILY_UNIX
@@ -26,6 +27,7 @@
 #define LN_OS_LINUX
 #define LN_X11
 #define LN_OS_FAMILY_UNIX
+#define LN_OS_DESKTOP
 #endif
 
 #if defined(LN_OS_DARWIN)
@@ -34,6 +36,7 @@
 #		define LN_OS_IOS
 #	elif defined(TARGET_OS_MAC) && TARGET_OS_MAC
 #		define LN_OS_MAC
+#       define LN_OS_DESKTOP
 #	endif
 #endif
 

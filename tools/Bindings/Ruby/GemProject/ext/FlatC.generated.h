@@ -154,6 +154,55 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 
 
 //==============================================================================
+// ln::EngineSettings
+
+/**
+    @brief メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
+
+
+/**
+    @brief メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
+
+
+/**
+    @brief メインウィンドウのタイトル文字列を設定します。
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title);
+
+
+/**
+    @brief アセットが保存されているディレクトリを登録します。
+*/
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path);
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path);
+
+
+/**
+    @brief アセットファイルを登録します。
+*/
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password);
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password);
+
+
+/**
+    @brief デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
+
+
+/**
+    @brief デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath);
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath);
+
+
+//==============================================================================
 // ln::Engine
 
 /**

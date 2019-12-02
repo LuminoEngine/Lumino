@@ -101,9 +101,11 @@ void EngineManager::init()
 			m_settings.bundleIdentifier = u"lumino";
 		}
 
+#if defined(LN_OS_IOS)
 		if (m_settings.bundleIdentifier.contains(u"lumino", CaseSensitivity::CaseInsensitive)) {
 			LN_WARNING("Bundle Identifier It may not be set.");
 		}
+#endif
 	}
 
 	// setup pathes
@@ -125,10 +127,6 @@ void EngineManager::init()
 	}
 
 	initializeAllManagers();
-
-    //if (!m_settings.externalRenderingManagement) {
-    //    m_graphicsManager->enterRendering();
-    //}
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setMeasurementEnabled(true);
@@ -316,10 +314,15 @@ void EngineManager::initializeAllManagers()
 
 void EngineManager::initializeCommon()
 {
-#if defined(LN_OS_WIN32) || defined(LN_OS_MAC)
-	auto log = Path(Path(Environment::executablePath()).parent(), u"lumino.log");
-	GlobalLogger::addFileAdapter(log.str().toStdString());
+#if defined(LN_OS_DESKTOP)
+	{
+		if (m_settings.engineLogEnabled) {
+			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(Path(Environment::executablePath()).parent(), u"lumino.log") : Path(m_settings.engineLogFilePath);
+			GlobalLogger::addFileAdapter(logfile.str().toStdString());
+		}
+	}
 #endif
+
 #if defined(LN_OS_WIN32)
 
     // CoInitializeEx は ShowWindow() ～ DestroyWindow() の外側で呼び出さなければならない。
@@ -711,7 +714,7 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	if (LN_REQUIRE(window)) return;
 	if (LN_REQUIRE(!m_mainWindow)) return;
 	m_mainWindow = window;
-	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainBackBufferSize);
+	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), (m_settings.mainBackBufferSize.isAnyZero()) ? m_settings.mainWindowSize : m_settings.mainBackBufferSize);
 	m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
 	// TODO: SwapChain だけでいいはず

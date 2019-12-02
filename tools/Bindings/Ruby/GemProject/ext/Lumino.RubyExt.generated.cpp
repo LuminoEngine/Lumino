@@ -31,6 +31,13 @@ inline LnBool LNRB_VALUE_TO_BOOL(VALUE v) { return (TYPE(v) == T_TRUE) ? LN_TRUE
 
 extern "C" void InitLuminoRubyRuntimeManager();
 
+extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
+extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
+extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
+extern "C" LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path);
+extern "C" LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password);
+extern "C" LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
+extern "C" LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath);
 extern "C" LN_FLAT_API LnResult LnEngine_Initialize();
 extern "C" LN_FLAT_API LnResult LnEngine_Finalize();
 extern "C" LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
@@ -103,6 +110,7 @@ VALUE g_enum_TextureFormat;
 VALUE g_enum_DepthBufferFormat;
 
 VALUE g_rootModule;
+VALUE g_class_EngineSettings;
 VALUE g_class_Engine;
 VALUE g_class_GraphicsResource;
 VALUE g_class_Texture;
@@ -162,6 +170,141 @@ VALUE LnQuaternion_allocate( VALUE klass )
     memset(internalObj, 0, sizeof(LnQuaternion));
     return obj;
 }
+//==============================================================================
+// ln::EngineSettings
+
+struct Wrap_EngineSettings
+{
+
+    Wrap_EngineSettings()
+    {}
+};
+
+static VALUE Wrap_LnEngineSettings_SetMainWindowSize(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE width;
+        VALUE height;
+        rb_scan_args(argc, argv, "2", &width, &height);
+        if (LNRB_VALUE_IS_NUMBER(width) && LNRB_VALUE_IS_NUMBER(height))
+        {
+            int _width = LNRB_VALUE_TO_NUMBER(width);
+            int _height = LNRB_VALUE_TO_NUMBER(height);
+            LnResult errorCode = LnEngineSettings_SetMainWindowSize(_width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowSize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetMainBackBufferSize(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE width;
+        VALUE height;
+        rb_scan_args(argc, argv, "2", &width, &height);
+        if (LNRB_VALUE_IS_NUMBER(width) && LNRB_VALUE_IS_NUMBER(height))
+        {
+            int _width = LNRB_VALUE_TO_NUMBER(width);
+            int _height = LNRB_VALUE_TO_NUMBER(height);
+            LnResult errorCode = LnEngineSettings_SetMainBackBufferSize(_width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainBackBufferSize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetMainWindowTitle(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE title;
+        rb_scan_args(argc, argv, "1", &title);
+        if (LNRB_VALUE_IS_STRING(title))
+        {
+            const char* _title = LNRB_VALUE_TO_STRING(title);
+            LnResult errorCode = LnEngineSettings_SetMainWindowTitleA(_title);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowTitle - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_AddAssetDirectory(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE path;
+        rb_scan_args(argc, argv, "1", &path);
+        if (LNRB_VALUE_IS_STRING(path))
+        {
+            const char* _path = LNRB_VALUE_TO_STRING(path);
+            LnResult errorCode = LnEngineSettings_AddAssetDirectoryA(_path);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::addAssetDirectory - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_AddAssetArchive(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE fileFullPath;
+        VALUE password;
+        rb_scan_args(argc, argv, "2", &fileFullPath, &password);
+        if (LNRB_VALUE_IS_STRING(fileFullPath) && LNRB_VALUE_IS_STRING(password))
+        {
+            const char* _fileFullPath = LNRB_VALUE_TO_STRING(fileFullPath);
+            const char* _password = LNRB_VALUE_TO_STRING(password);
+            LnResult errorCode = LnEngineSettings_AddAssetArchiveA(_fileFullPath, _password);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::addAssetArchive - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetEngineLogEnabled(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE enabled;
+        rb_scan_args(argc, argv, "1", &enabled);
+        if (LNRB_VALUE_IS_BOOL(enabled))
+        {
+            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
+            LnResult errorCode = LnEngineSettings_SetEngineLogEnabled(_enabled);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetEngineLogFilePath(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (LNRB_VALUE_IS_STRING(filePath))
+        {
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LnResult errorCode = LnEngineSettings_SetEngineLogFilePathA(_filePath);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogFilePath - wrong argument type.");
+    return Qnil;
+}
+
 //==============================================================================
 // ln::Engine
 
@@ -1743,6 +1886,15 @@ extern "C" void Init_Lumino_RubyExt()
 
     g_class_Quaternion = rb_define_class_under(g_rootModule, "Quaternion", rb_cObject);
     rb_define_alloc_func(g_class_Quaternion, LnQuaternion_allocate);
+
+    g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_back_buffer_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainBackBufferSize), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_title", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowTitle), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "add_asset_directory", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetDirectory), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "add_asset_archive", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetArchive), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_enabled", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetEngineLogEnabled), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_file_path", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetEngineLogFilePath), -1);
 
     g_class_Engine = rb_define_class_under(g_rootModule, "Engine", rb_cObject);
     rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Initialize), -1);

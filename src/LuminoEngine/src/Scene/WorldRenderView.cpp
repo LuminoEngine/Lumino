@@ -167,6 +167,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
+
+#ifdef LN_TEST_ATMOSPHERE 1
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
 
@@ -300,6 +302,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 //renderingContext->drawScreenRectangle();
 				renderingContext->drawMesh(m_skyProjectionPlane->meshContainers()[0]->meshResource(), 0);
                 renderingContext->popState();
+#else
+				LN_NOTIMPLEMENTED();
+#endif
 			}
 
             m_targetWorld->renderObjects();

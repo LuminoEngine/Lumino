@@ -6,31 +6,35 @@
 
 namespace ln {
 
-/** アプリケーションの初期化設定です。 */
+/** アプリケーション起動時に参照する初期化設定です。 */
+LN_CLASS(Static)
 class EngineSettings
 {
 public:
 
 	/** メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480) */
+	LN_METHOD()
 	static void setMainWindowSize(int width, int height);
 
-	/** メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: 640x480) */
+	/** メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等) */
+	LN_METHOD()
 	static void setMainBackBufferSize(int width, int height);
 
 	/** メインウィンドウのタイトル文字列を設定します。*/
-	static void setMainWindowTitle(const StringRef& title);
+	LN_METHOD()
+	static void setMainWindowTitle(const String& title);
 
 	/** アセットが保存されているディレクトリを登録します。 */
-	static void addAssetDirectory(const ln::StringRef& path);
+	LN_METHOD()
+	static void addAssetDirectory(const String& path);
 
 	/** アセットファイルを登録します。 */
-	static void addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password = StringRef());
+	LN_METHOD()
+	static void addAssetArchive(const String& fileFullPath, const String& password);
 
 	/** アセットが保存されている場所へのアクセス優先度を設定します。(default:DirectoryFirst) */
 	static void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
 	
-//	/** デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false) */
-//	static void setEngineLogEnabled(bool enabled);
 //
 //	/** 指定したフォルダをアセットフォルダとして扱います。アセットフォルダのファイルにアクセスするには Assets クラスの機能を使用します。 */
 //	static void addAssetsDirectory(const StringRef& directoryPath);
@@ -57,6 +61,20 @@ public:
 //	/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
 //	static void setD3D9Device(void* device);
 //#endif
+
+
+	/**
+	 * デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+	 */
+	LN_METHOD()
+	static void setEngineLogEnabled(bool enabled);
+	
+	/**
+	 * デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
+	 */
+	LN_METHOD()
+	static void setEngineLogFilePath(const String& filePath);
+
 
 
 	/** ユーザー指定のメインウィンドウのウィンドウハンドルを設定します。*/

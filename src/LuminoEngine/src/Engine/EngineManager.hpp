@@ -55,20 +55,20 @@ struct EngineSettings
     Flags<EngineFeature> features = EngineFeature::Experimental;
 	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
-	SizeI mainBackBufferSize = SizeI(640, 480);
+	SizeI mainBackBufferSize = SizeI(0, 0);
 	String mainWindowTitle = u"Lumino";
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+
+	bool engineLogEnabled = false;
+	String engineLogFilePath;
+
     intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;
 	int frameRate = 60;
-#ifdef LN_DEBUG
-	bool debugToolEnabled = true;
-#else
 	bool debugToolEnabled = false;
-#endif
 
     bool defaultObjectsCreation = true;
     bool useGLFWWindowSystem = true;
@@ -76,6 +76,14 @@ struct EngineSettings
     bool externalMainLoop = true;
     bool externalRenderingManagement = false;
     bool autoCoInitialize = true;
+
+	EngineSettings()
+	{
+#ifdef LN_DEBUG
+		engineLogEnabled = true;
+		debugToolEnabled = true;
+#endif
+	}
 };
 
 class EngineManager

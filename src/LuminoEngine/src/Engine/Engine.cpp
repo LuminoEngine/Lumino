@@ -33,17 +33,17 @@ void EngineSettings::setMainBackBufferSize(int width, int height)
 	detail::EngineDomain::engineManager()->settings().mainBackBufferSize.set(width, height);
 }
 
-void EngineSettings::setMainWindowTitle(const StringRef& title)
+void EngineSettings::setMainWindowTitle(const String& title)
 {
 	detail::EngineDomain::engineManager()->settings().mainWindowTitle = title;
 }
 
-void EngineSettings::addAssetDirectory(const ln::StringRef& path)
+void EngineSettings::addAssetDirectory(const ln::String& path)
 {
 	detail::EngineDomain::engineManager()->settings().assetDirectories.add(path);
 }
 
-void EngineSettings::addAssetArchive(const ln::StringRef& fileFullPath, const ln::StringRef& password)
+void EngineSettings::addAssetArchive(const ln::String& fileFullPath, const ln::String& password)
 {
 	detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
 }
@@ -56,6 +56,16 @@ void EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority va
 void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 {
 	detail::EngineDomain::engineManager()->settings().graphicsAPI = value;
+}
+
+void EngineSettings::setEngineLogEnabled(bool enabled)
+{
+	detail::EngineDomain::engineManager()->settings().engineLogEnabled = enabled;
+}
+
+void EngineSettings::setEngineLogFilePath(const ln::String& filePath)
+{
+	detail::EngineDomain::engineManager()->settings().engineLogFilePath = filePath;
 }
 
 void EngineSettings::setUserMainWindow(intptr_t value)

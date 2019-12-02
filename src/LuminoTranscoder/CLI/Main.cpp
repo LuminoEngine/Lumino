@@ -34,6 +34,7 @@ int main(int argc, char** argv)
 		ln::List<ln::Path> files_LuminoEngine =
 		{
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
+			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",

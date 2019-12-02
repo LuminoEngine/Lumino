@@ -38,6 +38,49 @@ module Lumino::DepthBufferFormat
     D24S8 = 0
 end
 
+# アプリケーション起動時に参照する初期化設定です。
+# 
+class Lumino::EngineSettings
+    # メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
+    # @param [Integer] width 
+    # @param [Integer] height 
+    def set_main_window_size(width, height)
+    end
+
+    # メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等)
+    # @param [Integer] width 
+    # @param [Integer] height 
+    def set_main_back_buffer_size(width, height)
+    end
+
+    # メインウィンドウのタイトル文字列を設定します。
+    # @param [String] title 
+    def set_main_window_title(title)
+    end
+
+    # アセットが保存されているディレクトリを登録します。
+    # @param [String] path 
+    def add_asset_directory(path)
+    end
+
+    # アセットファイルを登録します。
+    # @param [String] fileFullPath 
+    # @param [String] password 
+    def add_asset_archive(fileFullPath, password)
+    end
+
+    # デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+    # @param [Boolean] enabled 
+    def set_engine_log_enabled(enabled)
+    end
+
+    # デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
+    # @param [String] filePath 
+    def set_engine_log_file_path(filePath)
+    end
+
+end
+
 # アプリケーション全体にかかわる処理を行います。
 # 
 class Lumino::Engine
@@ -86,7 +129,7 @@ class Lumino::Texture2D < Texture
     def initialize(width, height, format)
     end
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
-    # @param [String] filePath 
+    # @param [] filePath 
     # @param [Lumino::TextureFormat] format 
     def initialize(filePath, format)
     end
@@ -351,7 +394,7 @@ end
 # 
 class Lumino::UIButtonBase < UIControl
     # set text.
-    # @param [String] text 
+    # @param [] text 
     def set_text(text)
     end
 
