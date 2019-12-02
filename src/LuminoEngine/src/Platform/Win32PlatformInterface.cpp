@@ -1,7 +1,6 @@
-
-// TODO: LuminoPlatformInterface.lib ‚Æ‚©‚É•ª‚¯‚½‚¢B
-// ¡‚Í Engine.lib ‚ÉŠÜ‚ß‚Ä‚¢‚é‚Ì‚ÅAdll ‚ğì‚ë‚¤‚Æ‚µ‚½‚Æ‚«‚É LuminoCreateApplicationInstance ‚ª–¢’è‹`ƒGƒ‰[‚É‚È‚Á‚Ä‚µ‚Ü‚¤B
-#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
+ï»¿
+// TODO: LuminoPlatformInterface.lib ã¨ã‹ã«åˆ†ã‘ãŸã„ã€‚
+// ä»Šã¯ Engine.lib ã«å«ã‚ã¦ã„ã‚‹ã®ã§ã€dll ã‚’ä½œã‚ã†ã¨ã—ãŸã¨ãã« LuminoCreateApplicationInstance ãŒæœªå®šç¾©ã‚¨ãƒ©ãƒ¼ã«ãªã£ã¦ã—ã¾ã†ã€‚
 #include "Internal.hpp"
 #include <Windows.h>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -9,18 +8,27 @@
 #include "../Engine/EngineManager.hpp"
 #include "GLFWPlatformWindowManager.hpp"
 
+#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
+#endif
 
 namespace ln {
 
 static ln::Application* g_app = nullptr;
 
-void Win32PlatformInterface::init()
+void Win32PlatformInterface::init(Application* app)
 {
     detail::EngineSettings& settings = detail::EngineDomain::engineManager()->settings();
     settings.standaloneFpsControl = true;
 
-    g_app = ::LuminoCreateApplicationInstance();
+    if (app) {
+        g_app = app;
+    }
+    else {
+#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
+        g_app = ::LuminoCreateApplicationInstance();
+#endif
+    }
     detail::ApplicationHelper::init(g_app);
 }
 
@@ -36,4 +44,3 @@ int Win32PlatformInterface::WinMain()
 
 } // namespace ln
 
-#endif

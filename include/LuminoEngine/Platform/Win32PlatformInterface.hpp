@@ -3,6 +3,7 @@
 #ifdef _WIN32
 
 namespace ln {
+class Application;
 namespace detail {
 class PlatformWindow;
 }
@@ -10,7 +11,7 @@ class PlatformWindow;
 class Win32PlatformInterface
 {
 public:
-    static void init();
+    static void init(Application* app);
 	static int WinMain();
 };
 
