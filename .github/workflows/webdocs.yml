@@ -1,7 +1,7 @@
 name: WebDocument (Latest build)
 
 on:
-  push:
+  pull_request:
     branches:
     - master
 
@@ -21,6 +21,7 @@ jobs:
       env:
         CI_PUSH_TOKEN: ${{ secrets.CI_PUSH_TOKEN }}
       run: |
+        git rev-parse --short HEAD > docs/WebDocument/template/partials/revision_mark.tmpl.partial
         cd docs/WebDocument
         git clone https://${GITHUB_ACTOR}:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
         cp -rf _site _docs_repo/latest-lumino-webdocs

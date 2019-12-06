@@ -19,4 +19,9 @@
       </form>
     </div>
   </div>
+  <div id="navbar-revision-box" class="navbar-revision-box">
+    <div class="container">
+      {{>partials/revision_mark}}
+    </div>
+  </div>
 </nav>

@@ -219,3 +219,7 @@ svg:hover path {
 .alert p {
   margin-bottom: 0px;
 }
+
+.navbar-revision-box {
+  background-color: #f8d7d7;
+}
