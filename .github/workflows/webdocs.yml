@@ -24,7 +24,8 @@ jobs:
         git rev-parse --short HEAD > docs/WebDocument/template/partials/revision_mark.tmpl.partial
         cd docs/WebDocument
         git clone https://${GITHUB_ACTOR}:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
-        cp -rf _site _docs_repo/latest-lumino-webdocs
+        rm -rf _docs_repo/lumino/latest-lumino-webdocs
+        cp -rf _site _docs_repo/lumino/latest-lumino-webdocs
         cd _docs_repo
         ls 
         git config user.name "${GITHUB_ACTOR}"
