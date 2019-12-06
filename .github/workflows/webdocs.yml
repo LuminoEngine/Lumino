@@ -22,6 +22,7 @@ jobs:
         CI_PUSH_TOKEN: ${{ secrets.CI_PUSH_TOKEN }}
       run: |
         git rev-parse --short HEAD > docs/WebDocument/template/partials/revision_mark.tmpl.partial
+        cat docs/WebDocument/template/partials/revision_mark.tmpl.partial # for logging
         cd docs/WebDocument
         git clone https://${GITHUB_ACTOR}:${CI_PUSH_TOKEN}@github.com/lriki/lriki.github.io _docs_repo
         rm -rf _docs_repo/lumino/latest-lumino-webdocs
