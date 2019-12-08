@@ -27,7 +27,7 @@ jobs:
         path: ./build/MSVC2017-x64-MT/EngineInstall
 
   Ruby:
-    needs: build-MSVC2017-x64-MT
+    needs: Native-MSVC2017-x64-MT
     runs-on: windows-2016
 
     steps:
