@@ -182,6 +182,8 @@ public: // TODO: internal
     void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
     void setOwnerData(void* data) { m_ownerData = data; }
     void* ownerData() const { return m_ownerData; }
+    void setCollisionEmitter(Object* value) { m_collisionEmitter = value; }
+    const Ref<Object>& collisionEmitter() const { return m_collisionEmitter; }
 
 protected:
     // TODO: internal
@@ -216,6 +218,7 @@ private:
     Event<Collision2DEventHandler> m_onCollisionLeave;
     Event<Collision2DEventHandler> m_onCollisionStay;
     void* m_ownerData;
+    Ref<Object> m_collisionEmitter;
 
 	friend class PhysicsWorld2D;
     friend class LocalContactListener;

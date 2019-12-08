@@ -1,4 +1,4 @@
-name: Build engine
+name: Package
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     - master
 
 jobs:
-  build-MSVC2017-x64-MT:
+  Native-MSVC2017-x64-MT:
     runs-on: windows-2016 # for VS2017
 
     steps:
@@ -26,7 +26,7 @@ jobs:
         name: LuminoEngine-MSVC2017-x64-MT
         path: ./build/MSVC2017-x64-MT/EngineInstall
 
-  build-ruby-package:
+  Ruby:
     needs: build-MSVC2017-x64-MT
     runs-on: windows-2016
 
