@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "../../LuminoCore/src/IO/PathHelper.hpp"
-#include <LuminoEngine/Graphics/Texture.hpp>
+//#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Asset/AssetObject.hpp>
 #include "AssetArchive.hpp"
@@ -154,29 +154,29 @@ Ref<ByteBuffer> AssetManager::readAllBytes(const StringRef& filePath)
 	return buffer;
 }
 
-Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
-{
-    static const Char* exts[] = {
-        u".png",
-    };
-
-    auto path = findFilePathFromIndex(filePath);
-    if (!path.isEmpty()) {
-       auto asset = makeObject<AssetModel>();
-       JsonSerializer::deserialize(ln::FileSystem::readAllText(path), path.parent(), *asset);
-       return static_cast<Texture2D*>(asset->target());
-    }
-
-	Path sourceFile;
-    Ref<Stream> stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
-
-	// TODO: cache
-
-    // TODO: mipmap
-	auto ref = makeObject<Texture2D>(stream, TextureFormat::RGBA8);
-	ref->setAssetSource(sourceFile);
-	return ref;
-}
+//Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
+//{
+//    static const Char* exts[] = {
+//        u".png",
+//    };
+//
+//    auto path = findFilePathFromIndex(filePath);
+//    if (!path.isEmpty()) {
+//       auto asset = makeObject<AssetModel>();
+//       JsonSerializer::deserialize(ln::FileSystem::readAllText(path), path.parent(), *asset);
+//       return static_cast<Texture2D*>(asset->target());
+//    }
+//
+//	Path sourceFile;
+//    Ref<Stream> stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
+//
+//	// TODO: cache
+//
+//    // TODO: mipmap
+//	auto ref = makeObject<Texture2D>(stream, TextureFormat::RGBA8);
+//	ref->setAssetSource(sourceFile);
+//	return ref;
+//}
 
 Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
 {

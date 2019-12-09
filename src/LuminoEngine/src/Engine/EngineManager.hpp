@@ -99,6 +99,7 @@ public:
 
 	void initializeAllManagers();
 	void initializeCommon();
+    void initializeAssetManager();
 	void initializePlatformManager();
 	void initializeAnimationManager();
 	void initializeInputManager();
@@ -110,7 +111,6 @@ public:
 	void initializeRenderingManager();
 	void initializeEffectManager();
     void initializePhysicsManager();
-	void initializeAssetManager();
     void initializeVisualManager();
     void initializeSceneManager();
 	void initializeUIManager();
@@ -126,6 +126,7 @@ public:
 
 	EngineSettings& settings() { return m_settings; }
 	const Ref<EngineContext>& engineContext() const { return m_engineContext; }
+    const Ref<AssetManager>& assetManager() const { return m_assetManager; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
@@ -137,7 +138,6 @@ public:
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
     const Ref<EffectManager>& effectManager() const { return m_effectManager; }
     const Ref<PhysicsManager>& physicsManager() const { return m_physicsManager; }
-    const Ref<AssetManager>& assetManager() const { return m_assetManager; }
     const Ref<VisualManager>& visualManager() const { return m_visualManager; }
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
@@ -185,6 +185,7 @@ private:
 	EngineSettings m_settings;
 
 	Ref<EngineContext> m_engineContext;
+    Ref<AssetManager> m_assetManager;
 	Ref<PlatformManager>				m_platformManager;
 	Ref<AnimationManager>			m_animationManager;
 	Ref<InputManager>				m_inputManager;
@@ -196,7 +197,6 @@ private:
 	Ref<RenderingManager>			m_renderingManager;
 	Ref<EffectManager>				m_effectManager;
 	Ref<PhysicsManager>		m_physicsManager;
-	Ref<AssetManager>						m_assetManager;
     Ref<VisualManager>					m_visualManager;
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;

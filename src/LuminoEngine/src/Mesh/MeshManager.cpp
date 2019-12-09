@@ -243,7 +243,8 @@ Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& 
 		return nullptr;
 	}
 
-	return m_assetManager->loadTexture(path);
+    return Texture2D::load(path);
+	//return m_assetManager->loadTexture(path);
 }
 
 } // namespace detail

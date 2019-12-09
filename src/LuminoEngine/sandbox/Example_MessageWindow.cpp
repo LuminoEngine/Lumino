@@ -20,7 +20,7 @@ class App_Example_MessageWindow : public Application
     {
         Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
-        auto windowSkin = Assets::loadTexture(u"Window1");
+        auto windowSkin = Texture2D::load(u"Window1");
 
         auto window1 = UIWindow::create();
         window1->setPosition(10, 10);

@@ -268,7 +268,7 @@ int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
-    if (1) {
+    if (0) {
         GlobalLogger::addStdErrAdapter();
         EngineSettings::setEngineFeatures(EngineFeature::Experimental);
         EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
@@ -341,7 +341,7 @@ int main(int argc, char** argv)
 	//return UISandboxMain();
 
 
-    GlobalLogger::addStdErrAdapter();
+    //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
 	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
@@ -384,7 +384,7 @@ int main(int argc, char** argv)
     //ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
     //ft->map(MapMode::Read)->save(u"test.png");
 
-    auto sprite1 = Sprite::create(Assets::loadTexture(u"Sprite1"), 3, 3);
+    auto sprite1 = Sprite::create(Texture2D::load(u"Sprite1"), 3, 3);
 
 	//auto m_rigidBody = ln::RigidBody2DComponent::create();
 	//m_rigidBody->addCollisionShape(ln::BoxCollisionShape2D::create(5, 2));
@@ -395,7 +395,7 @@ int main(int argc, char** argv)
 	//sprite1->addComponent(m_rigidBody);
 	//Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
-	auto sprite2 = UISprite::create(Assets::loadTexture(u"Sprite1"));
+	auto sprite2 = UISprite::create(Texture2D::load(u"Sprite1"));
 	Engine::mainUIView()->addElement(sprite2);
 
     auto message1 = UIMessageTextArea::create();

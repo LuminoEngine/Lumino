@@ -10,7 +10,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
 {
     // TODO: Builtin shader ごとに行う
 	{
-        auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
+        auto tex1 = Texture2D::load(LN_ASSETFILE("Sprite1.png"));
 
         //* [ ] Hide
         auto sprite1 = Sprite::create(tex1, 3, 3);
@@ -59,7 +59,7 @@ TEST_F(Test_Visual_VisualComponent, BuiltinEffects)
 TEST_F(Test_Visual_VisualComponent, BlendMode)
 {
     {
-        auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
+        auto tex1 = Texture2D::load(LN_ASSETFILE("Sprite1.png"));
 
         //* [ ] Normal
         auto sprite1 = Sprite::create(tex1, 3, 3);

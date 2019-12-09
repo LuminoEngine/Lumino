@@ -18,7 +18,7 @@ class App_Example_Navigator : public Application
     {
         Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
-        auto windowSkin = Assets::loadTexture(u"Window1");
+        auto windowSkin = Texture2D::load(u"Window1");
 
         m_navigator = makeObject<UIFocusNavigator>();
         m_navigator->setBackgroundColor(Color(1., 1., 1., 0.5));    //Color::Green);

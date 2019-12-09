@@ -24,6 +24,7 @@ class GraphicsManager
 public:
 	struct Settings
 	{
+        AssetManager* assetManager = nullptr;
 		PlatformWindow* mainWindow = nullptr;
 		GraphicsAPI graphicsAPI;
 	};
@@ -40,6 +41,7 @@ public:
 	void addGraphicsResource(GraphicsResource* resource);
 	void removeGraphicsResource(GraphicsResource* resource);
 
+    AssetManager* assetManager() const { return m_assetManager; }
 	// deviceContext() は、リソースの CRUD のみを目的として IGraphicsDevice にアクセスしたいときに使うこと。
 	// 描画を目的としたステートの変更や、clear、draw 系は GraphicsContext::commitState() の戻り値を使うこと。
 	// またこれらの予防として、IGraphicsDevice のポインタは持ち出してメンバに保持したりせず、
@@ -76,6 +78,7 @@ private:
 	void createOpenGLContext(const Settings& settings);
 	void createVulkanContext(const Settings& settings);
 
+    AssetManager* m_assetManager;
 	Ref<IGraphicsDevice> m_deviceContext;
 	//Ref<GraphicsContext> m_graphicsContext;
 	Ref<CommandQueue> m_graphicsQueue;

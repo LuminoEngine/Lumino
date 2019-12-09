@@ -10,7 +10,7 @@ TEST_F(Test_UI_UIElement, RenderEffects)
 {
     //* [ ] UISprite はデフォルトで BlendMode=Alpha
 	{
-        auto tex1 = Assets::loadTexture(LN_ASSETFILE("Sprite1.png"));
+        auto tex1 = Texture2D::load(LN_ASSETFILE("Sprite1.png"));
 
         //* [ ] Visible
         auto sprite1 = makeObject<UISprite>();

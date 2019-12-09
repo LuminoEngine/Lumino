@@ -17,10 +17,10 @@ bool Assets::existsFile(const StringRef& filePath)
     return detail::EngineDomain::assetManager()->existsFile(filePath);
 }
 
-Ref<Texture2D> Assets::loadTexture(const StringRef& filePath)
-{
-    return detail::EngineDomain::assetManager()->loadTexture(filePath);
-}
+//Ref<Texture2D> Assets::loadTexture(const StringRef& filePath)
+//{
+//    return detail::EngineDomain::assetManager()->loadTexture(filePath);
+//}
 
 Ref<Shader> Assets::loadShader(const StringRef& filePath)
 {

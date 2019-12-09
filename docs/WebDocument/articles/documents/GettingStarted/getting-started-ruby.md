@@ -18,12 +18,33 @@ Ruby で Lumino をはじめる
 ----------
 
 > [!WARNING]
-> 現在は開発中の最新ビルドからのみお試しいただけます。
+> 安定版はまだリリースされていません。
 
 [ダウンロードページの「現在開発中の最新ビルド」](download.md#現在開発中の最新ビルド) から「LuminoEngine-RubyGemPackage.zip」をダウンロードします。
 
 ```
-
+gem install lumino --pre
 ```
+
+
+最初のプログラム
+----------
+
+```ruby
+require 'lumino'
+include Lumino
+
+Engine.initialize
+
+texture1 = Texture2D.load("logo.png")
+sprite1 = Sprite.new(texture1, 2, 2)
+
+while Engine.update do
+end
+
+Engine.finalize
+```
+
+
 
 
