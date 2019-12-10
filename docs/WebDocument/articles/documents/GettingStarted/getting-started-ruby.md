@@ -34,17 +34,11 @@ gem install lumino --pre
 require 'lumino'
 include Lumino
 
-Engine.initialize
-
-texture1 = Texture2D.load("logo.png")
+texture1 = Texture2D.load("画像.png")
 sprite1 = Sprite.new(texture1, 2, 2)
 
 while Engine.update do
+  
 end
 
-Engine.finalize
 ```
-
-
-
-
