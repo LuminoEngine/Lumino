@@ -21,7 +21,7 @@ public:
 	 * 拡張子は不要です。
 	 * EngineSettings::addAsset~ で指定されたパスを検索します。
 	 */
-    static Ref<Texture2D> loadTexture(const StringRef& filePath);
+    //static Ref<Texture2D> loadTexture(const StringRef& filePath);
 
     static Ref<Shader> loadShader(const StringRef& filePath);
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);

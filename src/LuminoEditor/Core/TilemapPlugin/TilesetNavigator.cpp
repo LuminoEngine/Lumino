@@ -54,7 +54,7 @@ void TilesetListPane::init()
 void TilesetListPane::addButton_onClick(ln::UIEventArgs* e)
 {
 
-	auto tilesetTexture = ln::Assets::loadTexture(u"32066696-1621-4EED-820D-535BB2F22A9D");
+	auto tilesetTexture = ln::Texture2D::load(u"32066696-1621-4EED-820D-535BB2F22A9D");
 	auto tilesetMaterial = ln::makeObject<ln::Material>();
 	tilesetMaterial->setMainTexture(tilesetTexture);
 

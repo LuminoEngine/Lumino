@@ -80,7 +80,7 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 
     //auto tex1Asset = context->assetDatabase()->openAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/Objects-1.png");
     //auto tex1 = dynamic_cast<ln::Texture*>(tilesetAsset->target());
-    auto tex1 = ln::Assets::loadTexture(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/Objects-1.png");
+    auto tex1 = ln::Texture2D::load(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Scenes/Objects-1.png");
     auto sprite1 = ln::Sprite::create(tex1, 10, 10);
     sprite1->setPosition(5, 1, 5);
     scene->addObject(sprite1);

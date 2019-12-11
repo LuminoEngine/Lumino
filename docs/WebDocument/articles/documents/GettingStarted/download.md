@@ -12,7 +12,7 @@ macOS パッケージには次のターゲットをビルドするためのフ�
 - macOS
 - iOS
 
-Latest Release
+最新リリース
 --------
 
 ### 0.8.0
@@ -29,13 +29,20 @@ Latest Release
   <i class="glyphicon glyphicon-download"></i>macOS (ZIP archive)
 </a>
 
-Current development
+
+現在開発中の最新ビルド
 --------
 
+リポジトリの GitHub Actions に紐づけられている Artifacts よりダウンロードできます。
+
+[リポジトリのページ](https://github.com/lriki/Lumino)を開き、✔ マーク > Details > Artifacts から選択してください。
+
+![](img/download-1.png)
+
+![](img/download-2.png)
 
 
-
-Older Releases
+古いリリース
 --------
 
 ### v0.7.0

@@ -315,6 +315,7 @@ public:
 };
 
 namespace detail {
+class AssetManager;
 class RenderingCommandList;
 class GraphicsManager;
 class GraphicsContextInternal;

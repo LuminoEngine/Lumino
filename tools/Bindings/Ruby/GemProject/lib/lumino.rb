@@ -14,8 +14,6 @@ require "Lumino_RubyExt"
 
 module Lumino
   class Error < StandardError; end
-  # Your code goes here...
-
-  class TestSprite
-  end
 end
+
+Lumino::Engine.initialize

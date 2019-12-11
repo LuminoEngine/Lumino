@@ -64,6 +64,7 @@ namespace detail {
 
 EngineManager::EngineManager()
 	: m_settings()
+    , m_assetManager(nullptr)
 	, m_platformManager(nullptr)
 	//, m_animationManager(nullptr)
 	//, m_inputManager(nullptr)
@@ -73,7 +74,6 @@ EngineManager::EngineManager()
 	//, m_effectManager(nullptr)
 	//, m_modelManager(nullptr)
 	//, m_uiManager(nullptr)
-	, m_assetManager(nullptr)
     //, m_application(nullptr)
     , m_timeScale(1.0f)
 	, m_exitRequested(false)
@@ -265,7 +265,6 @@ void EngineManager::dispose()
     if (m_uiManager) m_uiManager->dispose();
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
-	if (m_assetManager) m_assetManager->dispose();
     if (m_physicsManager) m_physicsManager->dispose();
     if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
@@ -277,6 +276,7 @@ void EngineManager::dispose()
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
 	if (m_platformManager) m_platformManager->dispose();
+    if (m_assetManager) m_assetManager->dispose();
 
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {
@@ -294,6 +294,7 @@ void EngineManager::dispose()
 void EngineManager::initializeAllManagers()
 {
 	initializeCommon();
+    initializeAssetManager();
 	initializePlatformManager();
 	initializeAnimationManager();
 	initializeInputManager();
@@ -303,7 +304,6 @@ void EngineManager::initializeAllManagers()
 	initializeFontManager();
 	initializeMeshManager();
     initializePhysicsManager();
-	initializeAssetManager();
 	initializeRenderingManager();
     initializeEffectManager();
     initializeVisualManager();
@@ -341,6 +341,25 @@ void EngineManager::initializeCommon()
         m_oleInitialized = true;
     }
 #endif
+}
+
+void EngineManager::initializeAssetManager()
+{
+    if (!m_assetManager && m_settings.features.hasFlag(EngineFeature::Application))
+    {
+        AssetManager::Settings settings;
+
+        m_assetManager = ln::makeRef<AssetManager>();
+        m_assetManager->init(settings);
+        m_assetManager->setAssetStorageAccessPriority(m_settings.assetStorageAccessPriority);
+
+        for (auto& e : m_settings.assetArchives) {
+            m_assetManager->addAssetArchive(e.filePath, e.password);
+        }
+        for (auto& e : m_settings.assetDirectories) {
+            m_assetManager->addAssetDirectory(e);
+        }
+    }
 }
 
 void EngineManager::initializePlatformManager()
@@ -420,9 +439,11 @@ void EngineManager::initializeGraphicsManager()
 {
 	if (!m_graphicsManager && m_settings.features.hasFlag(EngineFeature::Graphics))
 	{
-		initializePlatformManager();
+        initializeAssetManager();
+        initializePlatformManager();
 
 		GraphicsManager::Settings settings;
+        settings.assetManager = m_assetManager;
 		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
 		settings.graphicsAPI = m_settings.graphicsAPI;
 
@@ -500,25 +521,6 @@ void EngineManager::initializePhysicsManager()
 
         m_physicsManager = ln::makeRef<PhysicsManager>();
         m_physicsManager->init(settings);
-    }
-}
-
-void EngineManager::initializeAssetManager()
-{
-    if (!m_assetManager && m_settings.features.hasFlag(EngineFeature::Application))
-    {
-        AssetManager::Settings settings;
-
-        m_assetManager = ln::makeRef<AssetManager>();
-        m_assetManager->init(settings);
-        m_assetManager->setAssetStorageAccessPriority(m_settings.assetStorageAccessPriority);
-
-        for (auto& e : m_settings.assetArchives) {
-            m_assetManager->addAssetArchive(e.filePath, e.password);
-        }
-		for (auto& e : m_settings.assetDirectories) {
-			m_assetManager->addAssetDirectory(e);
-		}
     }
 }
 

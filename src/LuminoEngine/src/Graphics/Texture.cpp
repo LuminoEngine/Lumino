@@ -9,6 +9,7 @@
 #include <LuminoEngine/Graphics/SwapChain.hpp>
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include "../Asset/AssetManager.hpp"
 #include "../Font/TextLayoutEngine.hpp"
 #include "RenderTargetTextureCache.hpp"
 
@@ -75,6 +76,22 @@ Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
 Ref<Texture2D> Texture2D::create(const StringRef& filePath, TextureFormat format)
 {
 	return makeObject<Texture2D>(filePath, format);
+}
+
+Ref<Texture2D> Texture2D::load(const StringRef& filePath)
+{
+    static const Char* candidateExts[] = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+
+    auto assetManager = detail::EngineDomain::graphicsManager()->assetManager();
+    auto path = assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
+    if (path) {
+        auto stream = assetManager->openStreamFromAssetPath(*path);
+        return makeObject<Texture2D>(stream, TextureFormat::RGBA8);
+    }
+    else {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        return nullptr;
+    }
 }
 
 Texture2D::Texture2D()

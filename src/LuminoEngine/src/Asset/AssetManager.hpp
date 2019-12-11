@@ -3,7 +3,7 @@
 #include <LuminoEngine/Asset/Common.hpp>
 
 namespace ln {
-class Texture2D;
+//class Texture2D;
 class Shader;
 namespace detail {
 class AssetArchive;
@@ -41,7 +41,7 @@ public:
 	bool existsFile(const StringRef& filePath) const;
     Ref<Stream> openFileStream(const StringRef& filePath);
 	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
-	Ref<Texture2D> loadTexture(const StringRef& filePath);
+	//Ref<Texture2D> loadTexture(const StringRef& filePath);
     Ref<Shader> loadShader(const StringRef& filePath);
     Ref<Object> loadAsset(const StringRef& filePath);
 

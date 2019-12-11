@@ -99,7 +99,7 @@ TEST_F(Test_Graphics_Texture, setPixel)
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, blit)
 {
-	auto tex1 = Assets::loadTexture(LN_ASSETFILE("Graphics/Numbers1.png"));
+	auto tex1 = Texture2D::load(LN_ASSETFILE("Graphics/Numbers1.png"));
 	auto tex2 = Texture2D::create(100, 100);
 	tex2->blit(20 * 0, 20 * 0, tex1, 8 * 0, 14 * 0, 8, 14);
 	tex2->blit(20 * 1, 20 * 1, tex1, 8 * 1, 14 * 1, 8, 14);

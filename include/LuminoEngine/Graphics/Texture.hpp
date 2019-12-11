@@ -87,6 +87,16 @@ public:
      */
     static Ref<Texture2D> create(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
 
+    /**
+     * アセットからテクスチャを読み込みます。
+     *
+     * @param[in] filePath : 読み込むファイルのパス
+     *
+     * サポートしているフォーマットは次の通りです。
+     * PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
+     */
+    static Ref<Texture2D> load(const StringRef& filePath);
+
 public:
     /** Mipmap の有無を設定します。(default: false) */
     void setMipmapEnabled(bool value);

@@ -126,13 +126,16 @@ namespace detail {
 // GraphicsManager
 
 GraphicsManager::GraphicsManager()
-	: m_linearAllocatorPageManager()
+	: m_assetManager(nullptr)
+    , m_linearAllocatorPageManager()
 {
 }
 
 void GraphicsManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "GraphicsManager Initialization started.";
+
+    m_assetManager = settings.assetManager;
 
 	// Create device context
 	{

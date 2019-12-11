@@ -1,6 +1,8 @@
 #if 1
 #include "LuminoRubyRuntimeManager.h"
 
+extern "C" LN_FLAT_API LnResult LnEngine_Finalize();
+
 LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::getInstance(VALUE managerInstance)
 {
     LuminoRubyRuntimeManager* instance;
@@ -147,6 +149,7 @@ static VALUE g_LuminoRubyRuntimeManager;
 static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj)
 {
     if (obj) {
+        LnEngine_Finalize();
         delete obj;
         LuminoRubyRuntimeManager::instance = nullptr;
     }
