@@ -177,19 +177,19 @@ public:
 	{
 		// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
 		auto name = ln::String::fromStdString(type.getAsString());
-		name = name.replace(_T("struct"), "");
-		name = name.replace(_T("class"), "");
-		name = name.replace(_T("enum"), "");
-		name = name.replace(_T("const"), "");
-		name = name.replace(_T("*"), "");
-		name = name.replace(_T("&"), "");
+		name = name.replace(u"struct", u"");
+		name = name.replace(u"class", u"");
+		name = name.replace(u"enum", u"");
+		name = name.replace(u"const", u"");
+		name = name.replace(u"*", u"");
+		name = name.replace(u"&", u"");
 
-		if (name == _T("_Bool"))
+		if (name == u"_Bool")
 		{
-			return _T("bool");
+			return u"bool";
 		}
 
-		return name.trim();
+		return name.trim().replace(u" ", u"");
 		//SplitQualType st = type.split();
 		//if (st.Ty->isRecordType())
 		//{
