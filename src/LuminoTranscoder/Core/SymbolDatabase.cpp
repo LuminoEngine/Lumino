@@ -16,10 +16,21 @@ ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 //==============================================================================
 // DocumentInfo
 
+ln::Result ParameterDocumentInfo::init(const ln::String& name, const ln::String& io, const ln::String& desc)
+{
+    m_name = name;
+    m_io = io;
+    m_description = desc;
+    return true;
+}
+
 ln::Result ParameterDocumentInfo::init(PIParamDocument* pi)
 {
 	LN_CHECK(pi);
 	m_pi = pi;
+    m_name = m_pi->name;
+    m_io = m_pi->io;
+    m_description = m_pi->description;
 	return true;
 }
 
@@ -42,6 +53,12 @@ ln::Result DocumentInfo::init(const PIDocument* pi)
 
 	return true;
 }
+
+//ln::Result DocumentInfo::makeFlatParameters()
+//{
+//    m_flatParams
+//    return false;
+//}
 
 //==============================================================================
 // MetadataInfo
@@ -332,16 +349,24 @@ const MethodParameterSymbol* MethodSymbol::findFlatParameter(const ln::StringRef
 
 ln::Result MethodSymbol::makeFlatParameters()
 {
+    auto doc = document();
+
 	// static でなければ、第1引数は this などになる
 	if (!isStatic())
 	{
 		if (m_ownerType->kind() == TypeKind::Struct)
 		{
+            auto name = m_ownerType->shortName().toLower();
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
-			if (!s->init(QualType{ m_ownerType }, m_ownerType->shortName().toLower())) return false;
+			if (!s->init(QualType{ m_ownerType }, name)) return false;
 			s->m_isIn = true;
 			s->m_isThis = true;
 			m_flatParameters.add(s);
+
+            // documetation
+            auto param = ln::makeRef<ParameterDocumentInfo>();
+            if (!param->init(name, u"in", "instance")) return false;
+            doc->m_flatParams.add(param);
 		}
 		else if (isConstructor())
 		{
@@ -349,11 +374,17 @@ ln::Result MethodSymbol::makeFlatParameters()
 		}
 		else if (m_ownerType->kind() == TypeKind::Class)
 		{
+            auto name = m_ownerType->shortName().toLower();
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
-			if (!s->init(QualType{ m_ownerType }, m_ownerType->shortName().toLower())) return false;
+			if (!s->init(QualType{ m_ownerType }, name)) return false;
 			s->m_isIn = true;
 			s->m_isThis = true;
 			m_flatParameters.add(s);
+
+            // documetation
+            auto param = ln::makeRef<ParameterDocumentInfo>();
+            if (!param->init(name, u"in", "instance")) return false;
+            doc->m_flatParams.add(param);
 		}
 		else {
 			LN_UNREACHABLE();
@@ -366,12 +397,20 @@ ln::Result MethodSymbol::makeFlatParameters()
 		auto s = ln::makeRef<MethodParameterSymbol>(db());
 		if (!s->init(QualType{ PredefinedTypes::objectType }, u"__eventOwner")) return false;
 		m_flatParameters.add(s);
+
+        // documetation
+        auto param = ln::makeRef<ParameterDocumentInfo>();
+        if (!param->init(u"eventOwner", u"in", "event owner")) return false;
+        doc->m_flatParams.add(param);
 	}
 
 	// params
 	for (auto& paramInfo : m_parameters) {
 		m_flatParameters.add(paramInfo);
 	}
+    for (auto& paramInfo : doc->m_params) {
+        doc->m_flatParams.add(paramInfo);
+    }
 
 	// return value
 	if (m_returnType.type == PredefinedTypes::voidType || m_returnType.type == PredefinedTypes::EventConnectionType)
@@ -386,6 +425,11 @@ ln::Result MethodSymbol::makeFlatParameters()
 		s->m_isOut = true;
 		s->m_isReturn = true;
 		m_flatParameters.add(s);
+
+        // documetation
+        auto param = ln::makeRef<ParameterDocumentInfo>();
+        if (!param->init(u"outReturn", u"out", "instance.")) return false;
+        doc->m_flatParams.add(param);
 	}
 
 	// constructor
@@ -393,10 +437,16 @@ ln::Result MethodSymbol::makeFlatParameters()
 		if (m_ownerType->isStruct()) {
 		}
 		else {
+            auto name = ln::String::format(u"out{0}", m_ownerType->shortName());
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
-			if (!s->init(QualType{ m_ownerType }, ln::String::format(_T("out{0}"), m_ownerType->shortName()))) return false;
+			if (!s->init(QualType{ m_ownerType }, name)) return false;
 			s->m_isReturn = true;
 			m_flatParameters.add(s);
+
+            // documetation
+            auto param = ln::makeRef<ParameterDocumentInfo>();
+            if (!param->init(name, u"out", "instance.")) return false;
+            doc->m_flatParams.add(param);
 		}
 	}
 

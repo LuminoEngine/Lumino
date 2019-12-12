@@ -21,14 +21,18 @@ struct QualType
 class ParameterDocumentInfo : public ln::RefObject
 {
 public:
-	ln::Result init(PIParamDocument* pi);
+	ln::Result init(const ln::String& name, const ln::String& io, const ln::String& desc);
+    ln::Result init(PIParamDocument* pi);
 
-	const ln::String& name() const { return m_pi->name; }
-	const ln::String& io() const { return m_pi->io; }
-	const ln::String& description() const { return m_pi->description; }
+	const ln::String& name() const { return m_name; }
+	const ln::String& io() const { return m_io; }
+	const ln::String& description() const { return m_description; }
 
 private:
 	PIParamDocument* m_pi;
+    ln::String m_name;
+    ln::String m_io;
+    ln::String m_description;
 };
 
 class DocumentInfo : public ln::RefObject
@@ -40,6 +44,7 @@ public:
 	const ln::String& returns() const { return m_returns; }
 	const ln::String& details() const { return m_details; }
 	const ln::List<Ref<ParameterDocumentInfo>>& params() const { return m_params; }
+    const ln::List<Ref<ParameterDocumentInfo>>& flatParams() const { return m_flatParams; }
 
 	//ln::String copydocMethodName;
 	//ln::String copydocSignature;
@@ -50,11 +55,16 @@ public:
 	void setDetails(const ln::String& value) { m_details = value; }
 
 private:
+    //ln::Result makeFlatParameters();
+
 	const PIDocument* m_pi = nullptr;
 	ln::String m_summary;
 	ln::String m_returns;
 	ln::String m_details;
 	ln::List<Ref<ParameterDocumentInfo>> m_params;
+    ln::List<Ref<ParameterDocumentInfo>> m_flatParams;
+
+    friend class MethodSymbol;
 };
 
 class PredefinedTypes

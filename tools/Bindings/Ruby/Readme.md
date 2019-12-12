@@ -56,7 +56,6 @@ bundle install
 
 ```
 set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
-rake compile -- --with-lumino-lib=D:/Proj/LN/Lumino/tools/Bindings/Ruby/GemProject/ext
 
 ```
 

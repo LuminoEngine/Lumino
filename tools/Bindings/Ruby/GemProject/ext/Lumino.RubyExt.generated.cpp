@@ -501,7 +501,7 @@ static VALUE Wrap_LnTexture2D_Load(int argc, VALUE* argv, VALUE self)
             LnHandle _outReturn;
             LnResult errorCode = LnTexture2D_LoadA(_filePath, &_outReturn);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
         }
     }
     rb_raise(rb_eArgError, "ln::Texture2D::load - wrong argument type.");

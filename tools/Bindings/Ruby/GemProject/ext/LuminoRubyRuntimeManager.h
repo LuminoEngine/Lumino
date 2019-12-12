@@ -44,7 +44,7 @@ public:
     void init();
     VALUE luminoModule() const { return m_luminoModule; }
     VALUE eventSignalClass() const { return m_eventSignalClass; }
-    VALUE wrapObjectForGetting(LnHandle handle);
+    VALUE wrapObjectForGetting(LnHandle handle, bool retain = true);
     LnHandle getHandle(VALUE value) const;
     int registerTypeInfo(VALUE klass, ObjectFactoryFunc factory);
     void registerWrapperObject(VALUE obj, bool forNativeGetting);
@@ -78,6 +78,7 @@ inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, VALUE& accessorCache) { 
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle, std::vector<VALUE>& accessorCache, int index) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }
 inline void LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(LnHandle handle) { if ( LuminoRubyRuntimeManager::instance) LuminoRubyRuntimeManager::instance->unregisterWrapperObject(handle); }
 
+inline VALUE LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, false); }
 
 #endif
 

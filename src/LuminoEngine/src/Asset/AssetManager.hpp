@@ -17,6 +17,7 @@ public:
 
 	struct Settings
 	{
+        AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
 	};
 
 	AssetManager();
@@ -26,7 +27,7 @@ public:
 
 	void addAssetDirectory(const StringRef& path);
     void addAssetArchive(const StringRef& filePath, const StringRef& password);
-	void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
+	//void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
 
     // ファイルパスを入力として、そのファイルが存在する場合は内部表現のパス（セパレータ /）を返す。
     // この値は各種キャッシュのキーとして使用できる。また、findAssetPath() で使用する。

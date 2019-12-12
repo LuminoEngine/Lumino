@@ -317,7 +317,8 @@ void EngineManager::initializeCommon()
 #if defined(LN_OS_DESKTOP)
 	{
 		if (m_settings.engineLogEnabled) {
-			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(Path(Environment::executablePath()).parent(), u"lumino.log") : Path(m_settings.engineLogFilePath);
+            // engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
+			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
 			GlobalLogger::addFileAdapter(logfile.str().toStdString());
 		}
 	}
@@ -348,10 +349,10 @@ void EngineManager::initializeAssetManager()
     if (!m_assetManager && m_settings.features.hasFlag(EngineFeature::Application))
     {
         AssetManager::Settings settings;
+        settings.assetStorageAccessPriority = m_settings.assetStorageAccessPriority;
 
         m_assetManager = ln::makeRef<AssetManager>();
         m_assetManager->init(settings);
-        m_assetManager->setAssetStorageAccessPriority(m_settings.assetStorageAccessPriority);
 
         for (auto& e : m_settings.assetArchives) {
             m_assetManager->addAssetArchive(e.filePath, e.password);

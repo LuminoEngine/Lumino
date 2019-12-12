@@ -15,5 +15,3 @@ require "Lumino_RubyExt"
 module Lumino
   class Error < StandardError; end
 end
-
-Lumino::Engine.initialize

@@ -181,6 +181,7 @@ ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc) const
 
 ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* method) const
 {
+
 	auto doc = method->document();
 
 	OutputBuffer text;
@@ -191,7 +192,7 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 	text.AppendLine(u"@brief {0}", doc->summary());
 
 	// @param
-	for (auto& param : doc->params())
+	for (auto& param : doc->flatParams())
 	{
 		auto desc = param->description();
 		auto paramInfo = method->findFlatParameter(param->name());

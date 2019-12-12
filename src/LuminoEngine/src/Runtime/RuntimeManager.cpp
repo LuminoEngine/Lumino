@@ -66,9 +66,9 @@ LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 	if (!m_systemAliving) return LN_NULL_HANDLE;
 	if (obj == nullptr) return LN_NULL_HANDLE;
 
-	//if (fromCreate) {
-	//	RefObjectHelper::retain(obj);
-	//}
+	if (fromCreate) {
+		RefObjectHelper::retain(obj);
+	}
 
 	// 登録済みならハンドル (管理配列上のインデックス) を返す
 	auto runtimeData = detail::ObjectHelper::getRuntimeData(obj);
