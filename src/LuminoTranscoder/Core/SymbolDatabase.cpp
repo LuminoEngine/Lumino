@@ -193,11 +193,11 @@ ln::Result MethodParameterSymbol::init(PIMethodParameter* pi)
 	return true;
 }
 
-ln::Result MethodParameterSymbol::init(TypeSymbol* type, const ln::String& name)
+ln::Result MethodParameterSymbol::init(const QualType& qualType, const ln::String& name)
 {
-	LN_CHECK(type);
+	LN_CHECK(qualType.type);
 	LN_CHECK(!name.isEmpty());
-	m_type = type;
+	m_qualType = qualType;
 	m_name = name;
 	return true;
 }
@@ -205,11 +205,11 @@ ln::Result MethodParameterSymbol::init(TypeSymbol* type, const ln::String& name)
 ln::Result MethodParameterSymbol::link()
 {
 	if (m_pi) {
-		m_type = db()->getTypeSymbol(m_pi->typeRawName);
-		if (!m_type) return false;
+		m_qualType = db()->parseQualType(m_pi->typeRawName);
+		if (!m_qualType.type) return false;
 
 		// io direction
-		if (m_type->isClass()) {
+		if (type()->isClass()) {
 			m_isIn = true;
 		}
 		else {
@@ -225,9 +225,9 @@ ln::Result MethodParameterSymbol::link()
 		// defaut value
 		if (m_pi->defaultValue) {
 			if (m_pi->defaultValue->isNumeric()) {
-				if (m_type->isEnum()) {
+				if (type()->isEnum()) {
 					m_defaultValue = ln::makeRef<ConstantSymbol>(db());
-					if (!m_defaultValue->init(m_type, m_pi->defaultValue)) return false;
+					if (!m_defaultValue->init(m_qualType.type, m_pi->defaultValue)) return false;
 				}
 				else if (m_pi->defaultValue->type() == ln::VariantType::Float ||
 					m_pi->defaultValue->type() == ln::VariantType::Double) {
@@ -247,15 +247,15 @@ ln::Result MethodParameterSymbol::link()
 	}
 	else {
 		// 内部的に作成された Param は、あらかじめ型をセットしておく必要がある
-		if (LN_REQUIRE(m_type)) return false;
+		if (LN_REQUIRE(m_qualType.type)) return false;
 	}
 	return true;
 }
 
 ln::String MethodParameterSymbol::getFullQualTypeName() const
 {
-	ln::String name = m_type->fullName();
-	if (m_type->isClass()) {
+	ln::String name = m_qualType.type->fullName();
+	if (m_qualType.type->isClass()) {
 		name += u"*";
 	}
 	return name;
@@ -297,7 +297,7 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 	return true;
 }
 
-ln::Result MethodSymbol::init(TypeSymbol* ownerType, const ln::String& shortName, TypeSymbol* returnType, const ln::List<Ref<MethodParameterSymbol>>& params)
+ln::Result MethodSymbol::init(TypeSymbol* ownerType, const ln::String& shortName, const QualType& returnType,/*TypeSymbol* returnType,*/ const ln::List<Ref<MethodParameterSymbol>>& params)
 {
 	if (!Symbol::init()) return false;
 	m_ownerType = ownerType;
@@ -312,8 +312,8 @@ ln::Result MethodSymbol::init(TypeSymbol* ownerType, const ln::String& shortName
 ln::Result MethodSymbol::link()
 {
 	if (m_pi) {
-		m_returnType = db()->getTypeSymbol(m_pi->returnTypeRawName);
-		if (!m_returnType) return false;
+		m_returnType = db()->parseQualType(m_pi->returnTypeRawName);
+		if (!m_returnType.type) return false;
 
 		for (auto& p : m_parameters) {
 			if (!p->link()) return false;
@@ -325,6 +325,11 @@ ln::Result MethodSymbol::link()
 	return true;
 }
 
+const MethodParameterSymbol* MethodSymbol::findFlatParameter(const ln::StringRef& name) const
+{
+	return m_flatParameters.findIf([&](auto& x) { return x->name() == name; }).valueOr(nullptr);
+}
+
 ln::Result MethodSymbol::makeFlatParameters()
 {
 	// static でなければ、第1引数は this などになる
@@ -333,7 +338,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 		if (m_ownerType->kind() == TypeKind::Struct)
 		{
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
-			if (!s->init(m_ownerType, m_ownerType->shortName().toLower())) return false;
+			if (!s->init(QualType{ m_ownerType }, m_ownerType->shortName().toLower())) return false;
 			s->m_isIn = true;
 			s->m_isThis = true;
 			m_flatParameters.add(s);
@@ -345,7 +350,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 		else if (m_ownerType->kind() == TypeKind::Class)
 		{
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
-			if (!s->init(m_ownerType, m_ownerType->shortName().toLower())) return false;
+			if (!s->init(QualType{ m_ownerType }, m_ownerType->shortName().toLower())) return false;
 			s->m_isIn = true;
 			s->m_isThis = true;
 			m_flatParameters.add(s);
@@ -359,7 +364,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 	if (m_ownerType->kind() == TypeKind::Delegate)
 	{
 		auto s = ln::makeRef<MethodParameterSymbol>(db());
-		if (!s->init(PredefinedTypes::objectType, u"__eventOwner")) return false;
+		if (!s->init(QualType{ PredefinedTypes::objectType }, u"__eventOwner")) return false;
 		m_flatParameters.add(s);
 	}
 
@@ -369,7 +374,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 	}
 
 	// return value
-	if (m_returnType == PredefinedTypes::voidType || m_returnType == PredefinedTypes::EventConnectionType)
+	if (m_returnType.type == PredefinedTypes::voidType || m_returnType.type == PredefinedTypes::EventConnectionType)
 	{
 		// "void", "EventConnection" は戻り値扱いしない
 	}
@@ -389,7 +394,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 		}
 		else {
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
-			if (!s->init(m_ownerType, ln::String::format(_T("out{0}"), m_ownerType->shortName()))) return false;
+			if (!s->init(QualType{ m_ownerType }, ln::String::format(_T("out{0}"), m_ownerType->shortName()))) return false;
 			s->m_isReturn = true;
 			m_flatParameters.add(s);
 		}
@@ -586,14 +591,14 @@ ln::Result TypeSymbol::link()
 
 		{
 			auto s = ln::makeRef<MethodSymbol>(db());
-			if (!s->init(this, u"getLength", PredefinedTypes::intType, {})) return false;
+			if (!s->init(this, u"getLength", { PredefinedTypes::intType, false }, {})) return false;
 			m_declaredMethods.add(s);
 		}
 		{
 			auto p = ln::makeRef<MethodParameterSymbol>(db());
-			if (!p->init(PredefinedTypes::intType, u"index")) return false;
+			if (!p->init(QualType{ PredefinedTypes::intType }, u"index")) return false;
 			auto s = ln::makeRef<MethodSymbol>(db());
-			if (!s->init(this, u"getItem", m_collectionItemType, { p })) return false;
+			if (!s->init(this, u"getItem", { m_collectionItemType, false }, { p })) return false;
 			s->metadata()->setValue(u"Collection_GetItem");
 			m_declaredMethods.add(s);
 		}
@@ -806,13 +811,13 @@ ln::Result TypeSymbol::linkProperties()
 				LN_DCHECK(!prop->m_getter);
 				prop->m_getter = methodInfo;
 				if (!prop->m_type)	// return 型をプロパティの型とする
-					prop->m_type = methodInfo->returnType();
+					prop->m_type = methodInfo->returnType().type;
 			}
 			else {
 				LN_DCHECK(!prop->m_setter);
 				prop->m_setter = methodInfo;
 				if (!prop->m_type)	// 第1引数の型をプロパティの型とする
-					prop->m_type = methodInfo->parameters()[0]->type();
+					prop->m_type = methodInfo->parameters()[0]->qualType().type;
 			}
 
 			methodInfo->m_ownerProperty = prop;
@@ -1040,7 +1045,7 @@ void SymbolDatabase::initPredefineds()
 	PredefinedTypes::EventConnectionType = addPredefined(u"ln::EventConnection");
 }
 
-TypeSymbol* SymbolDatabase::findTypeSymbol(const ln::String& typeFullName)
+TypeSymbol* SymbolDatabase::findTypeSymbol(const ln::String& typeFullName) const
 {
 	auto type = m_allTypes.findIf([typeFullName](ln::Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
 	if (type)
@@ -1049,10 +1054,27 @@ TypeSymbol* SymbolDatabase::findTypeSymbol(const ln::String& typeFullName)
 		return nullptr;
 }
 
-TypeSymbol* SymbolDatabase::getTypeSymbol(const ln::String& typeFullName)
+TypeSymbol* SymbolDatabase::getTypeSymbol(const ln::String& typeFullName) const
 {
 	auto type = findTypeSymbol(typeFullName);
 	if (!type)
 		m_diag->reportError(u"Undefined type : " + typeFullName);
 	return type;
+}
+
+QualType SymbolDatabase::parseQualType(const ln::String& rawTypeName) const
+{
+	QualType qt;
+
+	if (rawTypeName.indexOf(u"Ref<") == 0) {
+		auto name = rawTypeName.substr(4, rawTypeName.length() - 5);
+		qt.type = getTypeSymbol(name);
+		qt.strongReference = true;
+	}
+	else {
+		qt.type = getTypeSymbol(rawTypeName);
+		qt.strongReference = false;
+	}
+
+	return qt;
 }

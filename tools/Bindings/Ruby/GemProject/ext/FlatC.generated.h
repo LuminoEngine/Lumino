@@ -240,6 +240,15 @@ LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
 // ln::Texture2D
 
 /**
+    @brief アセットからテクスチャを読み込みます。
+    @param[in] filePath : 読み込むファイルのパス
+    @details サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
+*/
+LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn);
+LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn);
+
+
+/**
     @brief テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     @param[in] width : 幅 (px 単位)
     @param[in] height : 高さ (px 単位)

@@ -3,6 +3,16 @@
 
 int main(int argc, const char** argv)
 {
+#if _DEBUG
+	if (argc == 1) {
+		static const char* localArgv[] = {
+			argv[0],
+			"C:/Users/hldc0061/AppData/Local/Temp/lnCodeAnalyzerCDB-1",
+		};
+		argc = 2;
+		argv = localArgv;
+	}
+#endif
 	if (argc != 2) {
 		std::cerr << "Invalid args." << std::endl;
 		return 1;
@@ -18,13 +28,13 @@ int main(int argc, const char** argv)
 	auto pidb = ln::makeRef<PIDatabase>();
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	int result = parser.parse(cdb.inputFile, pidb, diag);
+	
+	std::cerr << "Internal exit code: " << result << std::endl;
 
-	if (result == 0) {
-		pidb->save(cdb.outputPIDB);
-	}
+	pidb->save(cdb.outputPIDB);
 
 	// TODO: logging
 	diag->dumpToLog();
 
-	return result;
+	return 0;
 }

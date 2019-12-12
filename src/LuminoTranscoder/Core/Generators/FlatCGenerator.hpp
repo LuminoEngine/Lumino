@@ -32,6 +32,7 @@ public:
 
 private:
 	ln::String makeDocumentComment(DocumentInfo* doc) const;
+	ln::String makeMethodDocumentComment(const MethodSymbol* method) const;
 
 	//ln::String GenerateOverrideCallerFuncPtrs();
 

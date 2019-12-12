@@ -31,7 +31,18 @@ ln::String PIDocument::formatComment(const ln::String& comment)
 	return output;
 }
 
+bool PIDocument::equalsLocalSigneture(const PIDocument* lhs, const PIDocument* rhs)
+{
+	if (lhs->copydocLocalSignature.size() != rhs->copydocLocalSignature.size()) return false;
 
+	for (int i = 0; i < lhs->copydocLocalSignature.size(); i++) {
+		if (lhs->copydocLocalSignature[i] != rhs->copydocLocalSignature[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 //==============================================================================
 // PIDatabase
@@ -118,6 +129,12 @@ void PIDatabase::mergeFrom(const PIDatabase* src)
 	for (auto& t : src->types) {
 		if (!types.containsIf([&](auto& x) { return x->rawFullName == t->rawFullName; })) {
 			types.add(t);
+		}
+	}
+
+	for (auto& d : src->relativeDocuments) {
+		if (!relativeDocuments.containsIf([&](auto& x) { return PIDocument::equalsLocalSigneture(x, d); })) {
+			relativeDocuments.add(d);
 		}
 	}
 }

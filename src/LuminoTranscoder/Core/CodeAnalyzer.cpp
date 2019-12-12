@@ -58,6 +58,7 @@ void CodeAnalyzer::callParser(CompilationDatabase& cdb, int index)
 	auto cdbFile = ln::Path(ln::Environment::specialFolderPath(ln::SpecialFolder::Temporary), u"lnCodeAnalyzerCDB-" + ln::String::fromNumber(index));// ln::Uuid::generate().toString());
 	auto pidbFile = ln::Path(ln::Environment::specialFolderPath(ln::SpecialFolder::Temporary), u"lnCodeAnalyzerPIDB-" + ln::String::fromNumber(index));
 
+	cdb.outputPIDB = pidbFile;
 	cdb.save(cdbFile);
 
 	{

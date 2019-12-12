@@ -116,6 +116,12 @@ end
 # 2D テクスチャのクラスです。
 # 
 class Lumino::Texture2D < Texture
+    # アセットからテクスチャを読み込みます。
+    #   サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
+    # @param [] filePath 
+    def load(filePath)
+    end
+
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     # @param [Integer] width 
     # @param [Integer] height 

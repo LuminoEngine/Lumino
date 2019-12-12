@@ -314,6 +314,19 @@ LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture>(), id);
 }
 
+LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn)
+{
+    LnResult result = LnTexture2D_Load(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
+    return result;
+}
+
 LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outTexture2D)
 {
     LNI_FUNC_TRY_BEGIN;

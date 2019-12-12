@@ -33,6 +33,7 @@ public:
 	ln::List<ln::String> copydocLocalSignature;
 
 	static ln::String formatComment(const ln::String& comment);
+	static bool equalsLocalSigneture(const PIDocument* lhs, const PIDocument* rhs);
 
 protected:
 	LN_SERIALIZE_CLASS_VERSION(1);

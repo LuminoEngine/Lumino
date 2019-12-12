@@ -44,6 +44,7 @@ extern "C" LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
 extern "C" LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
 extern "C" LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn);
 extern "C" LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outTexture2D);
 extern "C" LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D);
 extern "C" LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextureFormat format, LnHandle* outTexture2D);
@@ -489,6 +490,24 @@ static VALUE LnTexture2D_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+static VALUE Wrap_LnTexture2D_Load(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (LNRB_VALUE_IS_STRING(filePath))
+        {
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LnHandle _outReturn;
+            LnResult errorCode = LnTexture2D_LoadA(_filePath, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Texture2D::load - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Texture2D* selfObj;
@@ -1912,6 +1931,7 @@ extern "C" void Init_Lumino_RubyExt()
 
     g_class_Texture2D = rb_define_class_under(g_rootModule, "Texture2D", g_class_Texture);
     rb_define_alloc_func(g_class_Texture2D, LnTexture2D_allocate);
+    rb_define_singleton_method(g_class_Texture2D, "load", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Load), -1);
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Create), -1);
     LnTexture2D_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture2D, LnTexture2D_allocateForGetObject));
 

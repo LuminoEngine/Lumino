@@ -25,8 +25,9 @@
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
 
 #define LNI_CREATE_OBJECT(out, type, initFunc, ...) { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); ::ln::RefObjectHelper::retain(ptr); *out = ::ln::Runtime::makeObjectWrap(ptr, true); }
-#define LNI_HANDLE_TO_OBJECT(type, h)               static_cast<type*>((h) ? ::ln::Runtime::getObject(h) : nullptr)
-#define LNI_OBJECT_TO_HANDLE(obj)					::ln::Runtime::makeObjectWrap(obj, false)
+#define LNI_HANDLE_TO_OBJECT(type, h)					static_cast<type*>((h) ? ::ln::Runtime::getObject(h) : nullptr)
+#define LNI_OBJECT_TO_HANDLE(obj)						::ln::Runtime::makeObjectWrap(obj, false)
+#define LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(obj)	::ln::Runtime::makeObjectWrap(obj, true)
 
 #define LNI_REFERENCE_RETAINED (1)
 #define LNI_REFERENCE_RELEASED (2)
