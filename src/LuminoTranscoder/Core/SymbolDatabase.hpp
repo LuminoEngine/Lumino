@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "Common.hpp"
-#include "ParserIntermediates.hpp"
+#include "../Parser/ParserIntermediates.hpp"
 
 class SymbolDatabase;
 class TypeSymbol;

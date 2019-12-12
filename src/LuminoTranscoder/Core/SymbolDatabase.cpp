@@ -276,7 +276,7 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 	LN_CHECK(ownerType);
 	m_ownerType = ownerType;
 	m_pi = pi;
-	m_accessLevel = m_pi->accessLevelAsEnum();
+	m_accessLevel = accessLevelAsEnum(m_pi->accessLevel);
 	m_shortName = m_pi->name;
 	m_fullName = m_ownerType->fullName() + u"::" + m_shortName;
 
@@ -537,7 +537,7 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 
 	LN_CHECK(piType);
 	m_piType = piType;
-	m_kind = m_piType->kindAsEnum();
+	m_kind = kindAsEnum(m_piType->kind);
 	setFullName(m_piType->rawFullName);
 
 	for (auto& i : m_piType->fields) {
