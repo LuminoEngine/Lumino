@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     
 		const char* debugArgv[] = {
 			"<program>",
-			"init", "Test",
+			"new", "Test",
 			//"init", "TH-10", "--engine=repo:0.10.0"
             //"init", "RinoTutorial", "-t", "SimpleDesktop",
 			//"build", "-p", "Windows"
@@ -70,12 +70,12 @@ int main(int argc, char** argv)
         parser.addHelpOption();
 
 		//--------------------------------------------------------------------------------
-		// init command
-		auto initCommand = parser.addCommand(u"init", u"Create a Lumino project.");
-		auto initCommand_projectNameArg = initCommand->addPositionalArgument(u"project-name", u"Project name.");
-        auto initCommand_projectDirectoryArg = initCommand->addPositionalArgument(u"project-directory", u"Project directory.", ln::CommandLinePositionalArgumentFlags::Optional);
-        auto initCommand_templateArg = initCommand->addValueOption(u"t", u"template", u"Project template.");
-        auto initCommand_engineArg = initCommand->addValueOption(u"e", u"engine", u"Engine source.");
+		// new command
+		auto newCommand = parser.addCommand(u"new", u"Create a new project.");
+		auto newCommand_pathArg = newCommand->addPositionalArgument(u"path", u"Project directory path.", ln::CommandLinePositionalArgumentFlags::Optional);
+		auto newCommand_nameOption = newCommand->addValueOption(u"n", u"name", u" Set the resulting project name, defaults to the directory name.");
+        auto newCommand_templateOption = newCommand->addValueOption(u"t", u"template", u"Project template.");
+        auto newCommand_engineOption = newCommand->addValueOption(u"e", u"engine", u"Engine source.");
 
 		//--------------------------------------------------------------------------------
 		// build command
@@ -117,20 +117,23 @@ int main(int argc, char** argv)
             auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
 
 			//--------------------------------------------------------------------------------
-			// init command
-			if (parser.has(initCommand))
+			// new command
+			if (parser.has(newCommand))
 			{
                 InitCommand cmd;
-                if (initCommand_projectDirectoryArg->hasValue()) {
-                    cmd.projectDirectory = initCommand_projectDirectoryArg->value();
+                if (newCommand_nameOption->hasValue()) {
+                    cmd.projectName = newCommand_nameOption->value();
                 }
-                if (initCommand_engineArg->hasValue()) {
-                    cmd.engineSource = initCommand_engineArg->value();
+				if (newCommand_templateOption->hasValue()) {
+					cmd.templateName = newCommand_templateOption->value();
+				}
+                if (newCommand_engineOption->hasValue()) {
+                    cmd.engineSource = newCommand_engineOption->value();
                 }
-                if (initCommand_templateArg->hasValue()) {
-                    cmd.templateName = initCommand_templateArg->value();
-                }
-                return cmd.execute(workspace, initCommand_projectNameArg->value());
+				if (newCommand_pathArg->hasValue()) {
+					cmd.engineSource = newCommand_pathArg->value();
+				}
+                return cmd.execute(workspace);
 			}
 			//--------------------------------------------------------------------------------
 			// build command

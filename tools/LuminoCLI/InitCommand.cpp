@@ -2,20 +2,24 @@
 #include "Project.hpp"
 #include "InitCommand.hpp"
 
-int InitCommand::execute(lna::Workspace* workspace, const ln::String& projectName)
+int InitCommand::execute(lna::Workspace* workspace)
 {
-    auto projectDir = ln::Path(projectDirectory);
-    if (projectDir.isEmpty()) {
-        projectDir = ln::Path(ln::Environment::currentDirectory(), projectName);
-    }
+	if (projectDirectory.isEmpty()) {
+		projectDirectory = ln::Environment::currentDirectory();
+	}
 
-    if (lna::Project::existsProjectFile(projectDir)) {
+	auto path = ln::Path(projectDirectory).canonicalize();
+	if (projectName.isEmpty()) {
+		projectName = path.fileName();
+	}
+
+    if (lna::Project::existsProjectFile(projectDirectory)) {
         CLI::error("Project file already exists.");
         return 1;
     }
     else {
         auto m_project = ln::makeRef<lna::Project>(workspace);
-        if (!m_project->newProject(projectDir, projectName, engineSource, templateName)) {
+        if (!m_project->newProject(path, projectName, engineSource, templateName)) {
             return 1;
         }
     }

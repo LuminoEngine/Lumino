@@ -3,11 +3,12 @@
 class InitCommand
 {
 public:
-    ln::String projectDirectory;
+    ln::String projectName;
+	ln::String templateName;
     ln::String engineSource;
-    ln::String templateName;
+	ln::String projectDirectory;
 
-    int execute(lna::Workspace* workspace, const ln::String& projectName);
+    int execute(lna::Workspace* workspace);
 
 private:
 
