@@ -47,6 +47,7 @@ Gem
 
 準備
 ```
+gem install bundler 
 gem install rake-compiler
 or
 bundle install
