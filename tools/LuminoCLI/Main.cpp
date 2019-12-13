@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     
 		const char* debugArgv[] = {
 			"<program>",
-			"new", "Test",
+			//"new", "Test",
 			//"init", "TH-10", "--engine=repo:0.10.0"
             //"init", "RinoTutorial", "-t", "SimpleDesktop",
 			//"build", "-p", "Windows"
@@ -68,6 +68,9 @@ int main(int argc, char** argv)
 
 		ln::CommandLineParser parser;
         parser.addHelpOption();
+
+		//auto langOption = parser.addNamedValueOption(u"l", u"lang", u"language.", { u"cpp", u"rb" });
+
 
 		//--------------------------------------------------------------------------------
 		// new command

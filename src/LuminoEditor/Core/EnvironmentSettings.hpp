@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Common.hpp"
 
 namespace lna {
 
@@ -25,14 +26,15 @@ public:
 
 	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
 
-	const ln::Path& luminoEmscriptenSdkDirPath() const { return m_luminoEmscriptenSdkDirPath; }
-	
-	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
+	Language defaultLanguage() const { return m_defaultLanguage; }
 
+	// Pathes
+	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
 	const ln::Path& luminoPackageRootDir() const { return m_luminoPackageRootDir; }
 	const ln::Path& luminoPackageToolsDir() const { return m_luminoPackageToolsDir; }
 	
 	// Emscripten
+	const ln::Path& luminoEmscriptenSdkDirPath() const { return m_luminoEmscriptenSdkDirPath; }
 	const ln::String& msdkVer() const { return m_emsdkVer; }
 	const ln::String& emsdkName() const { return m_emsdkName; }
 	const ln::Path& emsdkDirPath() const { return m_emsdkRootDir; }
@@ -58,6 +60,8 @@ private:
 	static ln::Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
 
 	ln::String m_defaultTargetName;
+	Language m_defaultLanguage;
+
 	ln::Path m_appDataDirPath;
 	ln::Path m_luminoPackageRootDir;
 	ln::Path m_luminoPackageToolsDir;

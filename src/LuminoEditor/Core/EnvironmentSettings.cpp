@@ -20,6 +20,11 @@ BuildEnvironment::BuildEnvironment()
 #else
 	static_assert("Target not supported.");
 #endif
+
+	m_defaultLanguage = Language::Cpp;
+	if (ln::Environment::executablePath().endsWith(u"-rb")) {
+		m_defaultLanguage = Language::Ruby;
+	}
 }
 
 void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
