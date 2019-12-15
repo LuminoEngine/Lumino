@@ -152,31 +152,31 @@ void FlatCHeaderGenerator::generate()
 
 ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc) const
 {
-	OutputBuffer text;
-	text.AppendLine(u"/**");
-	text.IncreaseIndent();
+	OutputBuffer code;
+    code.AppendLine(u"/**");
+    code.IncreaseIndent();
 
 	// @brief
-	text.AppendLine(u"@brief {0}", doc->summary());
+    code.AppendLine(u"@brief {0}", doc->summary());
 
 	// @param
 	for (auto& param : doc->params())
 	{
-		text.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), param->description());
+        code.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), param->description());
 	}
 
 	// @return
 	if (!doc->returns().isEmpty())
-		text.AppendLine(u"@return {0}", doc->returns());
+        code.AppendLine(u"@return {0}", doc->returns());
 
 	// @details
 	if (!doc->details().isEmpty())
-		text.AppendLine(u"@details {0}", doc->details());
+        code.AppendLine(u"@details {0}", doc->details());
 
-	text.DecreaseIndent();
-	text.AppendLine(u"*/");
+    code.DecreaseIndent();
+    code.AppendLine(u"*/");
 
-	return text.toString().trim();
+	return code.toString().trim();
 }
 
 ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* method) const
@@ -184,12 +184,12 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 
 	auto doc = method->document();
 
-	OutputBuffer text;
-	text.AppendLine(u"/**");
-	text.IncreaseIndent();
+	OutputBuffer code;
+    code.AppendLine(u"/**");
+    code.IncreaseIndent();
 
 	// @brief
-	text.AppendLine(u"@brief {0}", doc->summary());
+    code.AppendLine(u"@brief {0}", doc->summary());
 
 	// @param
 	for (auto& param : doc->flatParams())
@@ -200,21 +200,21 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 			desc += u" (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)";
 		}
 
-		text.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), desc);
+        code.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), desc);
 	}
 
 	// @return
 	if (!doc->returns().isEmpty())
-		text.AppendLine(u"@return {0}", doc->returns());
+        code.AppendLine(u"@return {0}", doc->returns());
 
 	// @details
 	if (!doc->details().isEmpty())
-		text.AppendLine(u"@details {0}", doc->details());
+        code.AppendLine(u"@details {0}", doc->details());
 
-	text.DecreaseIndent();
-	text.AppendLine(u"*/");
+    code.DecreaseIndent();
+    code.AppendLine(u"*/");
 
-	return text.toString().trim();
+	return code.toString().trim();
 }
 
 ln::String FlatCHeaderGenerator::makeEnumDecls() const

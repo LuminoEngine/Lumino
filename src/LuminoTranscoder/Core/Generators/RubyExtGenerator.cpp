@@ -314,7 +314,7 @@ void RubyExtGenerator::generate()
 
 		ln::String fileName = ln::String::format("{0}.RubyExt.generated.cpp", config()->moduleName);
 
-		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("RubyExt.template.cpp")))
+		ln::String src = ln::FileSystem::readAllText(makeTemplateFilePath(u"RubyExt.template.cpp"))
 			.replace("%%Common%%", u"")
 			.replace("%%FlatCDecls%%", allFlatCApiDecls.toString())
 			.replace("%%EnumTypeVALUEDecls%%", makeEnumTypeVALUEVariableDecls())

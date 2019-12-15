@@ -81,7 +81,7 @@ void OutputBuffer::AppendLineInternal(const ln::StringRef& str)
 void OutputBuffer::AppendLinesInternal(const ln::StringRef& str, const ln::StringRef& lineHeader)
 {
 	ln::String ns = ln::String(str).replace(u"\r", u"");
-	ln::List<ln::String> lines = ns.split(u"\n", ln::StringSplitOptions::RemoveEmptyEntries);
+	ln::List<ln::String> lines = ns.split(u"\n", ln::StringSplitOptions::None);
 	for (int i = 0; i < lines.size(); i++)
 	{
 		if (lines[i].length() > 0) indent();
