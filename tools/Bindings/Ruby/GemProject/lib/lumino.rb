@@ -13,5 +13,11 @@ require "lumino/version"
 require "Lumino_RubyExt"
 
 module Lumino
-  class Error < StandardError; end
+  #class Error < StandardError; end
+
+  class Application
+    def run
+      Lumino::Application.run_app_internal(self)
+    end
+  end
 end

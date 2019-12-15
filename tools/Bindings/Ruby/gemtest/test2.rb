@@ -6,12 +6,19 @@ include Lumino
 #Engine.initialize
 
 class App < Application
-    def on_initialize()
-        p "!!!!!!!!!!!! init"
+    def on_init()
+        @texture1 = Texture2D.load("logo.png")
+        @sprite1 = Sprite.new(@texture1, 2, 2)
+    end
+
+    def on_update()
+        p "on_update"
     end
 end
 
-Lumino::Application.run_app_internal(App.new)
+App.new.run
+
+#Lumino::Application.run_app_internal(App.new)
 
 #texture1 = Texture2D.load("logo.png")
 #sprite1 = Sprite.new(texture1, 2, 2)
