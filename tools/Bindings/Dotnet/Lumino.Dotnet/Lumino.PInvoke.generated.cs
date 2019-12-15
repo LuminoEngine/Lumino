@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Lumino
 {
@@ -91,6 +92,27 @@ namespace Lumino
         /// </summary>
         D24S8 = 0,
 
+    }
+
+
+    /// <summary>
+    /// 3次元のベクトルを定義します。
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Vector3
+    {
+    }
+
+    /// <summary>
+    /// クォータニオンを定義します。
+    /// </summary>
+    /// <remakes>
+    /// このクォータニオンクラスの乗算の順番は左から右です。つまり、q1 * q2 は、先に q1、次に q2 の回転を適用する事と同じです。
+    /// この乗算順序は数学的な四元数の定義からは逆行している点に注意してください。
+    /// </remakes>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Quaternion
+    {
     }
 
 

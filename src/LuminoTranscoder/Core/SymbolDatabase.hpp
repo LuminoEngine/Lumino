@@ -380,6 +380,7 @@ public:
 	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class ?
 	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
 	bool isCollection() const { return metadata()->hasKey(u"Collection"); }
+    bool isFlags() const { return metadata()->hasKey(u"Flags"); }
 
 private:
 	void setFullName(const ln::String& value);
