@@ -1,5 +1,7 @@
 ﻿#include "Internal.hpp"
+#include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
+#include "../Engine/EngineManager.hpp"
 #include "RuntimeManager.hpp"
 
 namespace ln {
@@ -33,6 +35,12 @@ LnResult Runtime::processException(Exception* e)
 
 extern "C" {
 
+void LnRuntime_Initialize()
+{
+    auto manager = ln::detail::EngineDomain::engineManager();
+    manager->initializeRuntimeManager();
+}
+
 void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id)
 {
 	ln::detail::EngineDomain::runtimeManager()->setManagedObjectId(handle, id);
@@ -63,11 +71,12 @@ void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
     return ln::detail::RuntimeManager::setRuntimeFinalizedCallback(callback);
 }
 
-//void LnRuntime_UTF8ToNativeString(const char* src, std::u16string* dst)
-//{
-//	*dst = ln::String::fromCString(src, -1, ln::TextEncoding::utf8Encoding()).c_str();
-//}
-//
+void LnRuntime_RunAppInternal(LnHandle app)
+{
+    ln::detail::ApplicationHelper::run(
+        static_cast<ln::Application*>(ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(app)));
+}
+
 LN_FLAT_API LnResult LnObject_Release(LnHandle obj)
 {
     if (auto m = ln::detail::EngineDomain::runtimeManager()) {

@@ -8,16 +8,6 @@
 //#define LNRB_TRACE(...) printf(__VA_ARGS__)
 #define LNRB_TRACE(...)
 
-#if 1
-/*
-extern "C" int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
-typedef intptr_t LnHandle;
-extern "C" void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
-extern "C" void LnRuntime_UTF8ToNativeString(const char* src, std::u16string* dst);
-extern "C" LnResult LnObject_Release(LnHandle obj);
-extern "C" void InitLuminoRubyRuntimeManager();
- */
-
 typedef VALUE(*ObjectFactoryFunc)(VALUE klass, LnHandle handle);
 
 struct TypeInfo
@@ -80,5 +70,4 @@ inline void LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(LnHandle handle) { if ( LuminoRu
 
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle, false); }
 
-#endif
 

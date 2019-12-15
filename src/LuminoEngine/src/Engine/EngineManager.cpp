@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -127,6 +128,11 @@ void EngineManager::init()
 	}
 
 	initializeAllManagers();
+
+    // register types
+    {
+        EngineDomain::registerType<Application>();
+    }
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setMeasurementEnabled(true);
@@ -294,6 +300,7 @@ void EngineManager::dispose()
 void EngineManager::initializeAllManagers()
 {
 	initializeCommon();
+    initializeRuntimeManager();
     initializeAssetManager();
 	initializePlatformManager();
 	initializeAnimationManager();
@@ -309,7 +316,6 @@ void EngineManager::initializeAllManagers()
     initializeVisualManager();
     initializeSceneManager();
 	initializeUIManager();
-	initializeRuntimeManager();
 }
 
 void EngineManager::initializeCommon()
@@ -342,6 +348,19 @@ void EngineManager::initializeCommon()
         m_oleInitialized = true;
     }
 #endif
+}
+
+void EngineManager::initializeRuntimeManager()
+{
+    if (!m_runtimeManager)
+    {
+        initializeCommon();
+
+        RuntimeManager::Settings settings;
+
+        m_runtimeManager = makeRef<RuntimeManager>();
+        m_runtimeManager->init(settings);
+    }
 }
 
 void EngineManager::initializeAssetManager()
@@ -567,17 +586,6 @@ void EngineManager::initializeUIManager()
 
         m_mainUIContext = makeObject<UIContext>();
         m_uiManager->setMainContext(m_mainUIContext);
-	}
-}
-
-void EngineManager::initializeRuntimeManager()
-{
-	if (!m_runtimeManager)
-	{
-		RuntimeManager::Settings settings;
-
-		m_runtimeManager = makeRef<RuntimeManager>();
-		m_runtimeManager->init(settings);
 	}
 }
 

@@ -2,6 +2,9 @@
 
 namespace ln {
 namespace detail {
+    
+//==============================================================================
+// RuntimeManager
 
 LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
 LnRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
@@ -189,6 +192,11 @@ void RuntimeManager::onDestructObject(Object* obj)
 ObjectEntry* RuntimeManager::getObjectEntry(LnHandle handle)
 {
 	return &m_objectEntryList[static_cast<int>(handle)];
+}
+
+Object* RuntimeManager::getObjectFromHandle(LnHandle handle)
+{
+    return m_objectEntryList[static_cast<int>(handle)].object;
 }
 
 void RuntimeManager::setManagedObjectId(LnHandle handle, int64_t id)

@@ -239,6 +239,37 @@ LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
 
 
 //==============================================================================
+// ln::Application
+
+/**
+    @brief エンジンの初期化処理が完了した後に呼び出されます。
+    @param[in] application : instance
+*/
+LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
+
+
+/**
+    @brief 毎フレーム呼び出されます。
+    @param[in] application : instance
+*/
+LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
+
+
+/**
+    @brief 
+    @param[out] outApplication : instance.
+*/
+LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
+
+
+typedef LnResult(*LnApplication_OnInit_OverrideCallback)(LnHandle application);
+LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback);
+LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application);
+typedef LnResult(*LnApplication_OnUpdate_OverrideCallback)(LnHandle application);
+LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application);
+
+//==============================================================================
 // ln::GraphicsResource
 
 //==============================================================================

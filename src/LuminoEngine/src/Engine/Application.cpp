@@ -9,9 +9,19 @@ namespace ln {
 //==============================================================================
 // Application
 
+LN_OBJECT_IMPLEMENT(Application, Object)
+{
+    context->registerType<Application>({});
+}
+
 Application::Application()
 {
     detail::EngineDomain::engineManager()->settings().application = this;
+}
+
+void Application::init()
+{
+    Object::init();
 }
 
 Application::~Application()
@@ -81,7 +91,7 @@ void Application::run()
 #ifdef __EMSCRIPTEN__
 	LN_UNREACHABLE();
 #endif
-	//initInternal();
+	initInternal();
 
 	while (updateInertnal());
 

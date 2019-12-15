@@ -103,6 +103,23 @@ class Lumino::Engine
 
 end
 
+# グローバルなアプリケーション状態を扱うための基本クラスです。
+# 
+class Lumino::Application
+    # エンジンの初期化処理が完了した後に呼び出されます。
+    def on_init()
+    end
+
+    # 毎フレーム呼び出されます。
+    def on_update()
+    end
+
+    # 
+    def initialize()
+    end
+
+end
+
 # Graphics 機能に関係するリソースのベースクラスです。
 # 
 class Lumino::GraphicsResource

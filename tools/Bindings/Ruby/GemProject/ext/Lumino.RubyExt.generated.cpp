@@ -42,6 +42,10 @@ extern "C" LN_FLAT_API LnResult LnEngine_Initialize();
 extern "C" LN_FLAT_API LnResult LnEngine_Finalize();
 extern "C" LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
 extern "C" LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
+extern "C" LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
+extern "C" LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
+extern "C" LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
+extern "C" LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn);
@@ -113,6 +117,7 @@ VALUE g_enum_DepthBufferFormat;
 VALUE g_rootModule;
 VALUE g_class_EngineSettings;
 VALUE g_class_Engine;
+VALUE g_class_Application;
 VALUE g_class_GraphicsResource;
 VALUE g_class_Texture;
 VALUE g_class_Texture2D;
@@ -370,6 +375,104 @@ static VALUE Wrap_LnEngine_MainUIView(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+//==============================================================================
+// ln::Application
+
+struct Wrap_Application
+    : public Wrap_Object
+{
+
+    Wrap_Application()
+    {}
+};
+
+static void LnApplication_delete(Wrap_Application* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+static void LnApplication_mark(Wrap_Application* obj)
+{
+	
+}
+static VALUE LnApplication_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Application* internalObj;
+    internalObj = new Wrap_Application();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
+    obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
+    return obj;
+}
+static VALUE LnApplication_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Application* internalObj;
+    internalObj = new Wrap_Application();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
+    obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+static VALUE Wrap_LnApplication_OnInit(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+        {
+            LnResult errorCode = LnApplication_OnInit_CallOverrideBase(selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::onInit - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnApplication_OnUpdate(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+        {
+            LnResult errorCode = LnApplication_OnUpdate_CallOverrideBase(selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::onUpdate - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+        {
+            LnResult errorCode = LnApplication_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnApplication_OnInit_OverrideCallback(LnHandle application)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
+    VALUE retval = rb_funcall(obj, rb_intern("on_init"), 0, );
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnApplication_OnUpdate_OverrideCallback(LnHandle application)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 0, );
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::GraphicsResource
 
@@ -1920,6 +2023,15 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Finalize), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "main_ui_view", LN_TO_RUBY_FUNC(Wrap_LnEngine_MainUIView), -1);
+
+    g_class_Application = rb_define_class_under(g_rootModule, "Application", rb_cObject);
+    rb_define_alloc_func(g_class_Application, LnApplication_allocate);
+    rb_define_method(g_class_Application, "on_init", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnInit), -1);
+    rb_define_method(g_class_Application, "on_update", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnUpdate), -1);
+    rb_define_private_method(g_class_Application, "initialize", LN_TO_RUBY_FUNC(Wrap_LnApplication_Create), -1);
+    LnApplication_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Application, LnApplication_allocateForGetObject));
+    LnApplication_OnInit_SetOverrideCallback(Wrap_LnApplication_OnInit_OverrideCallback);
+    LnApplication_OnUpdate_SetOverrideCallback(Wrap_LnApplication_OnUpdate_OverrideCallback);
 
     g_class_GraphicsResource = rb_define_class_under(g_rootModule, "GraphicsResource", rb_cObject);
     rb_define_alloc_func(g_class_GraphicsResource, LnGraphicsResource_allocate);

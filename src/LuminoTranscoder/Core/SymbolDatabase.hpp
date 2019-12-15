@@ -288,6 +288,7 @@ public:
 	bool isPropertyGetter() const { return m_ownerProperty && m_parameters.isEmpty(); }
 	bool isPropertySetter() const { return m_ownerProperty && !m_parameters.isEmpty(); }
 	bool isCollectionGetItem() const { return metadata()->hasKey(u"Collection_GetItem"); }	// AccessorCache を使うときにインデックス指定するものであるかどうか
+    bool isRuntimeInitializer() const { return metadata()->hasKey(u"RuntimeInitializer"); }
 
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
