@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -127,6 +128,11 @@ void EngineManager::init()
 	}
 
 	initializeAllManagers();
+
+    // register types
+    {
+        EngineDomain::registerType<Application>();
+    }
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setMeasurementEnabled(true);
@@ -294,6 +300,7 @@ void EngineManager::dispose()
 void EngineManager::initializeAllManagers()
 {
 	initializeCommon();
+    initializeRuntimeManager();
     initializeAssetManager();
 	initializePlatformManager();
 	initializeAnimationManager();
@@ -309,7 +316,6 @@ void EngineManager::initializeAllManagers()
     initializeVisualManager();
     initializeSceneManager();
 	initializeUIManager();
-	initializeRuntimeManager();
 }
 
 void EngineManager::initializeCommon()
@@ -317,7 +323,8 @@ void EngineManager::initializeCommon()
 #if defined(LN_OS_DESKTOP)
 	{
 		if (m_settings.engineLogEnabled) {
-			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(Path(Environment::executablePath()).parent(), u"lumino.log") : Path(m_settings.engineLogFilePath);
+            // engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
+			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
 			GlobalLogger::addFileAdapter(logfile.str().toStdString());
 		}
 	}
@@ -343,15 +350,28 @@ void EngineManager::initializeCommon()
 #endif
 }
 
+void EngineManager::initializeRuntimeManager()
+{
+    if (!m_runtimeManager)
+    {
+        initializeCommon();
+
+        RuntimeManager::Settings settings;
+
+        m_runtimeManager = makeRef<RuntimeManager>();
+        m_runtimeManager->init(settings);
+    }
+}
+
 void EngineManager::initializeAssetManager()
 {
     if (!m_assetManager && m_settings.features.hasFlag(EngineFeature::Application))
     {
         AssetManager::Settings settings;
+        settings.assetStorageAccessPriority = m_settings.assetStorageAccessPriority;
 
         m_assetManager = ln::makeRef<AssetManager>();
         m_assetManager->init(settings);
-        m_assetManager->setAssetStorageAccessPriority(m_settings.assetStorageAccessPriority);
 
         for (auto& e : m_settings.assetArchives) {
             m_assetManager->addAssetArchive(e.filePath, e.password);
@@ -566,17 +586,6 @@ void EngineManager::initializeUIManager()
 
         m_mainUIContext = makeObject<UIContext>();
         m_uiManager->setMainContext(m_mainUIContext);
-	}
-}
-
-void EngineManager::initializeRuntimeManager()
-{
-	if (!m_runtimeManager)
-	{
-		RuntimeManager::Settings settings;
-
-		m_runtimeManager = makeRef<RuntimeManager>();
-		m_runtimeManager->init(settings);
 	}
 }
 

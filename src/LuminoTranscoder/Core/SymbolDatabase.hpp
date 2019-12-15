@@ -4,27 +4,35 @@
 #include <unordered_map>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "Common.hpp"
-#include "ParserIntermediates.hpp"
+#include "../Parser/ParserIntermediates.hpp"
 
 class SymbolDatabase;
 class TypeSymbol;
 class ConstantSymbol;
-//class DocumentSymbol;
 class MethodSymbol;
 class PropertySymbol;
 
+struct QualType
+{
+	TypeSymbol* type = nullptr;
+	bool strongReference = false;
+};
 
 class ParameterDocumentInfo : public ln::RefObject
 {
 public:
-	ln::Result init(PIParamDocument* pi);
+	ln::Result init(const ln::String& name, const ln::String& io, const ln::String& desc);
+    ln::Result init(PIParamDocument* pi);
 
-	const ln::String& name() const { return m_pi->name; }
-	const ln::String& io() const { return m_pi->io; }
-	const ln::String& description() const { return m_pi->description; }
+	const ln::String& name() const { return m_name; }
+	const ln::String& io() const { return m_io; }
+	const ln::String& description() const { return m_description; }
 
 private:
 	PIParamDocument* m_pi;
+    ln::String m_name;
+    ln::String m_io;
+    ln::String m_description;
 };
 
 class DocumentInfo : public ln::RefObject
@@ -36,6 +44,7 @@ public:
 	const ln::String& returns() const { return m_returns; }
 	const ln::String& details() const { return m_details; }
 	const ln::List<Ref<ParameterDocumentInfo>>& params() const { return m_params; }
+    const ln::List<Ref<ParameterDocumentInfo>>& flatParams() const { return m_flatParams; }
 
 	//ln::String copydocMethodName;
 	//ln::String copydocSignature;
@@ -46,11 +55,16 @@ public:
 	void setDetails(const ln::String& value) { m_details = value; }
 
 private:
+    //ln::Result makeFlatParameters();
+
 	const PIDocument* m_pi = nullptr;
 	ln::String m_summary;
 	ln::String m_returns;
 	ln::String m_details;
 	ln::List<Ref<ParameterDocumentInfo>> m_params;
+    ln::List<Ref<ParameterDocumentInfo>> m_flatParams;
+
+    friend class MethodSymbol;
 };
 
 class PredefinedTypes
@@ -194,10 +208,11 @@ class MethodParameterSymbol : public Symbol
 public:
 	MethodParameterSymbol(SymbolDatabase* db);
 	ln::Result init(PIMethodParameter* pi);
-	ln::Result init(TypeSymbol* type, const ln::String& name);
+	ln::Result init(const QualType& qualType, const ln::String& name);
 	ln::Result link();
 
-	TypeSymbol* type() const { return m_type; }
+	const TypeSymbol* type() const { return m_qualType.type; }
+	const QualType& qualType() const { return m_qualType; }
 	const ln::String& name() const { return m_name; }
 	const ln::Ref<ConstantSymbol>& defaultValue() const { return m_defaultValue; }
 
@@ -210,7 +225,8 @@ public:
 
 private:
 	PIMethodParameter* m_pi = nullptr;
-	TypeSymbol* m_type = nullptr;
+	//TypeSymbol* m_type = nullptr;
+	QualType m_qualType;
 	ln::String m_name;
 	ln::Ref<ConstantSymbol> m_defaultValue;
 
@@ -246,16 +262,17 @@ public:
 public:
 	MethodSymbol(SymbolDatabase* db);
 	ln::Result init(PIMethod* pi, TypeSymbol* ownerType);
-	ln::Result init(TypeSymbol* ownerType, const ln::String& shortName, TypeSymbol* returnType, const ln::List<Ref<MethodParameterSymbol>>& params);
+	ln::Result init(TypeSymbol* ownerType, const ln::String& shortName, const QualType& returnType, /*TypeSymbol* returnType,*/ const ln::List<Ref<MethodParameterSymbol>>& params);
 	ln::Result link();
 
 	AccessLevel accessLevel() const { return m_accessLevel; }
 	TypeSymbol* ownerType() const { return m_ownerType; }
-	TypeSymbol* returnType() const { return m_returnType; }
+	const QualType& returnType() const { return m_returnType; }
 	const ln::String& shortName() const { return m_shortName; }
 	const ln::String& fullName() const { return m_fullName; }
 	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
 	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
+	const MethodParameterSymbol* findFlatParameter(const ln::StringRef& name) const;
 	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
 	PropertySymbol* ownerProperty() const { return m_ownerProperty; }
 	ln::String overloadPostfix() const { return metadata()->getValue(MetadataInfo::OverloadPostfixAttr, ln::String::Empty); }
@@ -271,6 +288,7 @@ public:
 	bool isPropertyGetter() const { return m_ownerProperty && m_parameters.isEmpty(); }
 	bool isPropertySetter() const { return m_ownerProperty && !m_parameters.isEmpty(); }
 	bool isCollectionGetItem() const { return metadata()->hasKey(u"Collection_GetItem"); }	// AccessorCache を使うときにインデックス指定するものであるかどうか
+    bool isRuntimeInitializer() const { return metadata()->hasKey(u"RuntimeInitializer"); }
 
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
@@ -280,7 +298,8 @@ private:
 	PIMethod* m_pi = nullptr;
 	AccessLevel m_accessLevel = AccessLevel::Public;
 	TypeSymbol* m_ownerType = nullptr;
-	TypeSymbol* m_returnType = nullptr;
+	//TypeSymbol* m_returnType = nullptr;
+	QualType m_returnType;
 	ln::String m_shortName;
 	ln::String m_fullName;
 	ln::List<Ref<MethodParameterSymbol>> m_parameters;
@@ -457,11 +476,12 @@ public:
 
 public:
 	void initPredefineds();
-	TypeSymbol* findTypeSymbol(const ln::String& typeFullName);
+	TypeSymbol* findTypeSymbol(const ln::String& typeFullName) const;
 
 	// 型検索。見つからない場合はエラーをレポートして nullptr を返す。
-	TypeSymbol* getTypeSymbol(const ln::String& typeFullName);
+	TypeSymbol* getTypeSymbol(const ln::String& typeFullName) const;
 
+	QualType parseQualType(const ln::String& rawTypeName) const;
 
 private:
 	Ref<PIDatabase> m_pidb;

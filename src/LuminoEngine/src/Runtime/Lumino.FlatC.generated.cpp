@@ -19,6 +19,31 @@ public:
 };
 
 
+class LNWS_ln_Application : public ln::Application
+{
+public:
+    static LnApplication_OnInit_OverrideCallback s_LnApplication_OnInit_OverrideCallback;
+    static LnApplication_OnUpdate_OverrideCallback s_LnApplication_OnUpdate_OverrideCallback;
+    virtual void onInit() override
+    {
+        if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+    void onInit_CallBase()
+    {
+        ln::Application::onInit();
+    }
+    virtual void onUpdate() override
+    {
+        if (s_LnApplication_OnUpdate_OverrideCallback) s_LnApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+    void onUpdate_CallBase()
+    {
+        ln::Application::onUpdate();
+    }
+};
+LnApplication_OnInit_OverrideCallback LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = nullptr;
+LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = nullptr;
+
 class LNWS_ln_GraphicsResource : public ln::GraphicsResource
 {
 public:
@@ -279,6 +304,7 @@ LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath
 LN_FLAT_API LnResult LnEngine_Initialize()
 {
     LNI_FUNC_TRY_BEGIN;
+    LnRuntime_Initialize();
     (ln::Engine::initialize());
     LNI_FUNC_TRY_END_RETURN;
 }
@@ -304,6 +330,55 @@ LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn)
     LNI_FUNC_TRY_END_RETURN;
 }
 
+LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onInit_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LnRuntime_Initialize();
+    LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
+}
+
+LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onInit_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
 LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::GraphicsResource>(), id);
@@ -312,6 +387,19 @@ LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture>(), id);
+}
+
+LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn)
+{
+    LnResult result = LnTexture2D_Load(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
+    return result;
 }
 
 LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outTexture2D)

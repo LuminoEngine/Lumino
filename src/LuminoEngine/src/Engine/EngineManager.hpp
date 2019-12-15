@@ -99,6 +99,7 @@ public:
 
 	void initializeAllManagers();
 	void initializeCommon();
+	void initializeRuntimeManager();
     void initializeAssetManager();
 	void initializePlatformManager();
 	void initializeAnimationManager();
@@ -114,7 +115,6 @@ public:
     void initializeVisualManager();
     void initializeSceneManager();
 	void initializeUIManager();
-	void initializeRuntimeManager();
 
 	bool updateUnitily();
 	void updateFrame();

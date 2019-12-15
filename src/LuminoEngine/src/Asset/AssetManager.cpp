@@ -29,6 +29,10 @@ void AssetManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "AssetManager Initialization started.";
 
+    if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
+        addAssetDirectory(Environment::currentDirectory());
+    }
+
     LN_LOG_DEBUG << "AssetManager Initialization ended.";
 }
 
@@ -46,6 +50,8 @@ void AssetManager::addAssetDirectory(const StringRef& path)
 	archive->setRootPath(path);
 	m_requestedArchives.add(archive);
 	refreshActualArchives();
+
+    LN_LOG_INFO << "Asset directory added: " << path;
 }
 
 void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& password)
@@ -55,14 +61,16 @@ void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& p
     if (LN_ENSURE(result)) return;
 	m_requestedArchives.add(archive);
 	refreshActualArchives();
-}
 
-void AssetManager::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
-{
-	m_storageAccessPriority = value;
-	refreshActualArchives();
+    LN_LOG_INFO << "Asset archive added: " << filePath;
 }
-
+//
+//void AssetManager::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
+//{
+//	m_storageAccessPriority = value;
+//	refreshActualArchives();
+//}
+//
 Optional<String> AssetManager::findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const
 {
     List<Path> paths;

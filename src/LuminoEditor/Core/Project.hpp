@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoCore/IO/DllLoader.hpp>
+#include "Common.hpp"
 
 namespace lna {
 

@@ -25,9 +25,13 @@ UTF16Encoding::UTF16Encoding(bool bigEndian, bool byteOrderMark)
 
 byte_t* UTF16Encoding::preamble() const
 {
-    static byte_t bom[] = {0x00};
-    LN_NOTIMPLEMENTED();
-    return bom;
+	if (m_byteOrderMark) {
+		static byte_t bom[] = { 0xFF, 0xFE, 0x00 };	// little
+		return bom;
+	}
+	else {
+		return nullptr;
+	}
 };
 
 int UTF16Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) const

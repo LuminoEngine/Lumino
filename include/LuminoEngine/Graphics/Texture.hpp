@@ -95,6 +95,7 @@ public:
      * サポートしているフォーマットは次の通りです。
      * PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
      */
+	LN_METHOD()
     static Ref<Texture2D> load(const StringRef& filePath);
 
 public:

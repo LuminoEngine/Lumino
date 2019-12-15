@@ -84,7 +84,7 @@ ln::String RubyGeneratorBase::makeRubyMethodName(MethodSymbol* method) const
 		name = makeSnakeStyleName(prop->shortName());
 
 		// bool 型の getter である場合、is を外して ? を付ける
-		if (method->isPropertyGetter() && method->returnType() == PredefinedTypes::boolType) {
+		if (method->isPropertyGetter() && method->returnType().type == PredefinedTypes::boolType) {
 			if (name.indexOf(u"is_") == 0) {
 				if (!isdigit(name[3])) {    // 変換した結果数値が識別子の先頭にならないこと
 					name = name.substr(3);
@@ -719,7 +719,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 }
 
 // C言語変数 → VALUE 変換式の作成 (return 用)
-ln::String RubyExtGenerator::makeVALUEReturnExpr(TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const
+ln::String RubyExtGenerator::makeVALUEReturnExpr(const TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const
 {
 	// primitive type
 	if (type->isPrimitive()) {
@@ -742,7 +742,10 @@ ln::String RubyExtGenerator::makeVALUEReturnExpr(TypeSymbol* type, const MethodS
 	}
 	// class type
 	else if (type->isClass()) {
-		if (method->isPropertyGetter()) {
+        if (method->returnType().strongReference) {
+            return ln::String::format(u"return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN({0});", varName);
+        }
+		else if (method->isPropertyGetter()) {
 			return ln::String::format(u"return LNRB_HANDLE_WRAP_TO_VALUE({0}, selfObj->{1});", varName, makeAccessorCacheName(method));
 		}
 		else if (method->isCollectionGetItem()) {
@@ -892,7 +895,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 			code.AppendLine(u"VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE({0});", method->flatParameters().front()->name());
 			code.AppendLine(u"VALUE retval = rb_funcall(obj, rb_intern(\"{0}\"), {1}, {2});", makeRubyMethodName(method), method->flatParameters().size() - 1, args.toString());
 
-			if (method->returnType() != PredefinedTypes::voidType) {
+			if (method->returnType().type != PredefinedTypes::voidType) {
 				code.AppendLine(u"Return-type is not impelemnted.");
 			}
 
@@ -1085,7 +1088,7 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 		}
 		auto returns = ln::String::Empty;
 		if (!method->document()->returns().isEmpty()) {
-			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType()), method->document()->returns());
+			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType().type), method->document()->returns());
 		}
 
 		code.AppendLine(u"# " + translateText(representative->document()->summary()));

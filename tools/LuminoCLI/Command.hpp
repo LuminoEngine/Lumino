@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class InitCommand
+class Command
 {
 public:
     ln::String projectName;

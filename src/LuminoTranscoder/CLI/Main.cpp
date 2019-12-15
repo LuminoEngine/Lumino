@@ -1,6 +1,6 @@
 
+#include "../Core/CodeAnalyzer.hpp"
 #include "../Core/SymbolDatabase.hpp"
-#include "../Core/HeaderParser2.hpp"
 #include "../Core/Generators/FlatCGenerator.hpp"
 #include "../Core/Generators/RubyExtGenerator.hpp"
 
@@ -13,8 +13,9 @@ int main(int argc, char** argv)
 	auto pidb = ln::makeRef<PIDatabase>();
 
 	if (!ln::FileSystem::existsFile(u"pidb.json"))
-	//if (1)
 	{
+
+
 		ln::List<ln::Path> files_LuminoCore =
 		{
 			//TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
@@ -24,18 +25,12 @@ int main(int argc, char** argv)
 			//TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
 		};
 
-		for (auto& file : files_LuminoCore) {
-			HeaderParser2 parser;
-			parser.addIncludePath(TEST_ROOT "include");
-			parser.addForceIncludeFile(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
-			parser.parse(file, pidb, diag);
-		}
-
 		ln::List<ln::Path> files_LuminoEngine =
 		{
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
+            TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Texture.hpp",
@@ -52,20 +47,36 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UIButton.hpp",
 		};
 
-		for (auto& file : files_LuminoEngine) {
-			HeaderParser2 parser;
-			parser.addIncludePath(TEST_ROOT "include");
-			parser.addForceIncludeFile(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
-			parser.parse(file, pidb, diag);
+		CodeAnalyzer ca;
+		ca.parserExecutable = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), u"../../Parser/Debug/LuminoTranscoder-Parser.exe").canonicalize();
+
+		for (auto& file : files_LuminoCore) {
+			CompilationDatabase cdb;
+			cdb.inputFile = file;
+			cdb.includeDirectories.add(TEST_ROOT "include");
+			cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
+			ca.inputs.add(cdb);
 		}
+
+		for (auto& file : files_LuminoEngine) {
+			CompilationDatabase cdb;
+			cdb.inputFile = file;
+			cdb.includeDirectories.add(TEST_ROOT "include");
+			cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
+			ca.inputs.add(cdb);
+		}
+
+		ca.analyze(pidb, diag);
 
 		pidb->save(u"pidb.json");
 		return 0;
 	}
-	else
-	{
+	else {
 		pidb->load(u"pidb.json");
 	}
+
+
+
 
 	auto db = ln::makeRef<SymbolDatabase>(diag);
 	db->initTypes(pidb);

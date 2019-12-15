@@ -103,6 +103,23 @@ class Lumino::Engine
 
 end
 
+# グローバルなアプリケーション状態を扱うための基本クラスです。
+# 
+class Lumino::Application
+    # エンジンの初期化処理が完了した後に呼び出されます。
+    def on_init()
+    end
+
+    # 毎フレーム呼び出されます。
+    def on_update()
+    end
+
+    # 
+    def initialize()
+    end
+
+end
+
 # Graphics 機能に関係するリソースのベースクラスです。
 # 
 class Lumino::GraphicsResource
@@ -116,6 +133,12 @@ end
 # 2D テクスチャのクラスです。
 # 
 class Lumino::Texture2D < Texture
+    # アセットからテクスチャを読み込みます。
+    #   サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
+    # @param [] filePath 
+    def load(filePath)
+    end
+
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     # @param [Integer] width 
     # @param [Integer] height 

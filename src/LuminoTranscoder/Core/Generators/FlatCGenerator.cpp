@@ -82,7 +82,7 @@ void FlatCHeaderGenerator::generate()
 		for (auto& methodInfo : structInfo->publicMethods())
 		{
 			// comment
-			structMemberFuncDeclsText.AppendLine(makeDocumentComment(methodInfo->document()));
+			structMemberFuncDeclsText.AppendLine(makeMethodDocumentComment(methodInfo));
 
 			// decl
 			structMemberFuncDeclsText.AppendLine(makeFuncHeader(methodInfo, FlatCharset::Unicode) + u";").NewLine(2);
@@ -108,7 +108,7 @@ void FlatCHeaderGenerator::generate()
 		for (auto& method : classInfo->publicMethods())
 		{
 			// comment
-			classMemberFuncDeclsText.AppendLine(makeDocumentComment(method->document()));
+			classMemberFuncDeclsText.AppendLine(makeMethodDocumentComment(method));
 
 			// decl
 			classMemberFuncDeclsText.AppendLine(makeFuncHeader(method, FlatCharset::Unicode) + u";");
@@ -153,28 +153,66 @@ void FlatCHeaderGenerator::generate()
 ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc) const
 {
 	OutputBuffer text;
-	text.AppendLine("/**");
+	text.AppendLine(u"/**");
 	text.IncreaseIndent();
 
 	// @brief
-	text.AppendLine("@brief {0}", doc->summary());
+	text.AppendLine(u"@brief {0}", doc->summary());
 
 	// @param
 	for (auto& param : doc->params())
 	{
-		text.AppendLine("@param[{0}] {1} : {2}", param->io(), param->name(), param->description());
+		text.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), param->description());
 	}
 
 	// @return
 	if (!doc->returns().isEmpty())
-		text.AppendLine("@return {0}", doc->returns());
+		text.AppendLine(u"@return {0}", doc->returns());
 
 	// @details
 	if (!doc->details().isEmpty())
-		text.AppendLine("@details {0}", doc->details());
+		text.AppendLine(u"@details {0}", doc->details());
 
 	text.DecreaseIndent();
-	text.AppendLine("*/");
+	text.AppendLine(u"*/");
+
+	return text.toString().trim();
+}
+
+ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* method) const
+{
+
+	auto doc = method->document();
+
+	OutputBuffer text;
+	text.AppendLine(u"/**");
+	text.IncreaseIndent();
+
+	// @brief
+	text.AppendLine(u"@brief {0}", doc->summary());
+
+	// @param
+	for (auto& param : doc->flatParams())
+	{
+		auto desc = param->description();
+		auto paramInfo = method->findFlatParameter(param->name());
+		if (paramInfo && paramInfo->qualType().strongReference) {
+			desc += u" (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)";
+		}
+
+		text.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), desc);
+	}
+
+	// @return
+	if (!doc->returns().isEmpty())
+		text.AppendLine(u"@return {0}", doc->returns());
+
+	// @details
+	if (!doc->details().isEmpty())
+		text.AppendLine(u"@details {0}", doc->details());
+
+	text.DecreaseIndent();
+	text.AppendLine(u"*/");
 
 	return text.toString().trim();
 }
@@ -365,7 +403,7 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 
 			// override
 			{
-				overrideMethod.AppendLine(u"virtual {0} {1}({2}) override", method->returnType()->fullName(), method->shortName(), paramList.toString());
+				overrideMethod.AppendLine(u"virtual {0} {1}({2}) override", method->returnType().type->fullName(), method->shortName(), paramList.toString());
 				overrideMethod.AppendLine(u"{");
 				overrideMethod.IncreaseIndent();
 				OutputBuffer argList;
@@ -384,7 +422,7 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 
 			// base caller
 			{
-				overrideMethod.AppendLine(u"{0} {1}_CallBase({2})", method->returnType()->fullName(), method->shortName(), paramList.toString());
+				overrideMethod.AppendLine(u"{0} {1}_CallBase({2})", method->returnType().type->fullName(), method->shortName(), paramList.toString());
 				overrideMethod.AppendLine(u"{");
 				overrideMethod.IncreaseIndent();
 				OutputBuffer argList;
@@ -415,7 +453,6 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 ln::String FlatCSourceGenerator::makeNativeArgList(const MethodSymbol* method) const
 {
 	OutputBuffer argList;
-	//argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
 	for (auto& param : method->parameters()) {
 		if (param->type()->isClass())
 			argList.AppendCommad(u"LNI_HANDLE_TO_OBJECT({0}, {1})", param->type()->fullName(), param->name());
@@ -470,10 +507,10 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 
 	// make func body
 	OutputBuffer body;
-	//if (methodInfo->IsRuntimeInitializer())
-	//{
-	//	body.AppendLine("LFManager::preInitialize();");
-	//}
+
+	if (methodInfo->isRuntimeInitializer()) {
+		body.AppendLine("LnRuntime_Initialize();");
+	}
 
 	{
 		// make call args
@@ -506,15 +543,18 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		}
 
 		// return output
-		if (methodInfo->returnType() != PredefinedTypes::voidType)
+		if (methodInfo->returnType().type != PredefinedTypes::voidType)
 		{
-			if (methodInfo->returnType()->isStruct())
-				body.append("*outReturn = reinterpret_cast<const {0}&>", makeFlatClassName(methodInfo->returnType()));
-			else if (methodInfo->returnType()->isClass())
-				body.append("*outReturn = LNI_OBJECT_TO_HANDLE");
-			else if (methodInfo->returnType() == PredefinedTypes::boolType)
+			if (methodInfo->returnType().type->isStruct())
+				body.append("*outReturn = reinterpret_cast<const {0}&>", makeFlatClassName(methodInfo->returnType().type));
+			else if (methodInfo->returnType().type->isClass())
+				if (methodInfo->returnType().strongReference)
+					body.append("*outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE");
+				else
+					body.append("*outReturn = LNI_OBJECT_TO_HANDLE");
+			else if (methodInfo->returnType().type == PredefinedTypes::boolType)
 				body.append("*outReturn = LNI_BOOL_TO_LNBOOL");
-			else if (methodInfo->returnType()->isString())
+			else if (methodInfo->returnType().type->isString())
 				body.append("*outReturn = LNI_STRING_TO_STRPTR");
 			else
 				body.append("*outReturn = ");

@@ -47,6 +47,7 @@ public:
 	void onDestructObject(Object* obj);
 
 	ObjectEntry* getObjectEntry(LnHandle handle);
+    Object* getObjectFromHandle(LnHandle handle);
 
 	void setManagedObjectId(LnHandle handle, int64_t id);
 	int64_t getManagedObjectId(LnHandle handle);

@@ -47,6 +47,7 @@ Gem
 
 準備
 ```
+gem install bundler 
 gem install rake-compiler
 or
 bundle install
@@ -56,7 +57,6 @@ bundle install
 
 ```
 set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
-rake compile -- --with-lumino-lib=D:/Proj/LN/Lumino/tools/Bindings/Ruby/GemProject/ext
 
 ```
 

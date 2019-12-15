@@ -24,9 +24,10 @@
 #define LNI_BOOL_TO_LNBOOL(x)    (x) ? LN_TRUE : LN_FALSE
 #define LNI_LNBOOL_TO_BOOL(x)    (x != LN_FALSE)
 
-#define LNI_CREATE_OBJECT(out, type, initFunc, ...) { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); ::ln::RefObjectHelper::retain(ptr); *out = ::ln::Runtime::makeObjectWrap(ptr, true); }
-#define LNI_HANDLE_TO_OBJECT(type, h)               static_cast<type*>((h) ? ::ln::Runtime::getObject(h) : nullptr)
-#define LNI_OBJECT_TO_HANDLE(obj)					::ln::Runtime::makeObjectWrap(obj, false)
+#define LNI_CREATE_OBJECT(out, type, initFunc, ...) { auto ptr = ::ln::makeObject<type>(__VA_ARGS__); *out = ::ln::Runtime::makeObjectWrap(ptr, true); }
+#define LNI_HANDLE_TO_OBJECT(type, h)					static_cast<type*>((h) ? ::ln::Runtime::getObject(h) : nullptr)
+#define LNI_OBJECT_TO_HANDLE(obj)						::ln::Runtime::makeObjectWrap(obj, false)
+#define LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(obj)	::ln::Runtime::makeObjectWrap(obj, true)
 
 #define LNI_REFERENCE_RETAINED (1)
 #define LNI_REFERENCE_RELEASED (2)
@@ -69,6 +70,7 @@ typedef enum tagLnBool
 typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
 typedef void(*LnRuntimeFinalizedCallback)();
 
+extern void LnRuntime_Initialize();
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
 extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
 extern LN_FLAT_API int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
@@ -76,6 +78,7 @@ extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
 extern LN_FLAT_API void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback);
 extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
 extern LN_FLAT_API void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
+extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
 
 //==============================================================================
 

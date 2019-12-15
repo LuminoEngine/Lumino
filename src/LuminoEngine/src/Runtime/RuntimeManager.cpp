@@ -2,6 +2,9 @@
 
 namespace ln {
 namespace detail {
+    
+//==============================================================================
+// RuntimeManager
 
 LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
 LnRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
@@ -66,9 +69,9 @@ LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 	if (!m_systemAliving) return LN_NULL_HANDLE;
 	if (obj == nullptr) return LN_NULL_HANDLE;
 
-	//if (fromCreate) {
-	//	RefObjectHelper::retain(obj);
-	//}
+	if (fromCreate) {
+		RefObjectHelper::retain(obj);
+	}
 
 	// 登録済みならハンドル (管理配列上のインデックス) を返す
 	auto runtimeData = detail::ObjectHelper::getRuntimeData(obj);
@@ -189,6 +192,11 @@ void RuntimeManager::onDestructObject(Object* obj)
 ObjectEntry* RuntimeManager::getObjectEntry(LnHandle handle)
 {
 	return &m_objectEntryList[static_cast<int>(handle)];
+}
+
+Object* RuntimeManager::getObjectFromHandle(LnHandle handle)
+{
+    return m_objectEntryList[static_cast<int>(handle)].object;
 }
 
 void RuntimeManager::setManagedObjectId(LnHandle handle, int64_t id)

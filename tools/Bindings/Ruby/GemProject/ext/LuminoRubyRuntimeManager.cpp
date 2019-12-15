@@ -2,6 +2,21 @@
 #include "LuminoRubyRuntimeManager.h"
 
 extern "C" LN_FLAT_API LnResult LnEngine_Finalize();
+extern "C" LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
+
+//==============================================================================
+// 
+
+static VALUE Wrap_LnRuntime_RunAppInternal(VALUE self, VALUE app)
+{
+    LnHandle handle = LuminoRubyRuntimeManager::instance->getHandle(app);
+    LnRuntime_RunAppInternal(handle);
+    return Qnil;
+}
+
+
+//==============================================================================
+// LuminoRubyRuntimeManager
 
 LuminoRubyRuntimeManager* LuminoRubyRuntimeManager::getInstance(VALUE managerInstance)
 {
@@ -53,6 +68,9 @@ void LuminoRubyRuntimeManager::init()
             ,
             &state);
         m_eventSignalClass = rb_eval_string("Lumino::EventSignal");
+
+        VALUE class_Application = rb_define_class_under(m_luminoModule, "Application", rb_cObject);
+        rb_define_singleton_method(class_Application, "run_app_internal", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LnRuntime_RunAppInternal), 1);
     }
 
 
@@ -70,13 +88,15 @@ void LuminoRubyRuntimeManager::init()
     LnRuntime_SetRuntimeFinalizedCallback(handleRuntimeFinalized);
 }
 
-VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle)
+VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retain)
 {
     int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
     int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
     if (objectIndex <= 0) {
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
-        registerWrapperObject(obj, true);
+        if (retain) {
+            registerWrapperObject(obj, true);
+        }
         LnObject_Retain(handle);
         return obj;
     }
