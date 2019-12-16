@@ -54,6 +54,11 @@ void Sprite::init(SpriteFrameSet* frameSet)
 void Sprite::setTexture(Texture* texture)
 {
     m_component->setTexture(texture);
+
+	if (m_testDelegate) {
+		int a = m_testDelegate->call(10);
+		std::cout << "m_testDelegate: " << a << std::endl;
+	}
 }
 
 void Sprite::setSize(const Size& size)

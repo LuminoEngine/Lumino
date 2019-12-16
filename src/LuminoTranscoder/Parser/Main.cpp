@@ -18,6 +18,11 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
+	// dump args
+	for (int i = 0; i < argc; i++) {
+		std::cerr << argv[i] << std::endl;
+	}
+
 	CompilationDatabase cdb;
 	cdb.load(ln::String::fromCString(argv[1]));
 

@@ -1,11 +1,21 @@
 ﻿
 #pragma once
 #include "VisualObject.hpp"
+#include "../Base/Delegate.hpp"	// TODO: test
 
 namespace ln {
 class Texture;
 class SpriteFrameSet;
 class SpriteComponent;
+
+
+/**
+	@brief		test
+	@param[in]	e		: test
+*/
+LN_DELEGATE()
+using TestDelegate = Delegate<int(int a)>;
+
 
 /**
  * スプライトオブジェクトを表します。
@@ -75,6 +85,11 @@ public:
     /** 表示するテクスチャを垂直に反転するかどうかを確認します。 */
     bool isFlippedY() const;
 
+
+	/** test */
+	LN_METHOD()
+	void setCallerTest(TestDelegate* callback) { m_testDelegate = callback; }
+
 protected:
 
 LN_CONSTRUCT_ACCESS:
@@ -91,6 +106,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<SpriteComponent> m_component;
+	Ref<TestDelegate> m_testDelegate;
 };
 
 } // namespace ln

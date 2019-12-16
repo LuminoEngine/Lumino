@@ -8,8 +8,6 @@ public:
     ln::String engineSource;
 	ln::String projectDirectory;
 
-    int execute(lna::Workspace* workspace);
-
 private:
 
 };
