@@ -8,37 +8,10 @@
 //==============================================================================
 // FlatCCommon
 
-
-
-
 ln::String FlatCCommon::makeEnumMemberName(GeneratorConfiguration* config, TypeSymbol* enumType, ConstantSymbol* member)
 {
 	return config->flatCOutputModuleName.toUpper() + u"_" + Generator::makeUpperSnakeName(enumType->shortName()) + u"_" + Generator::makeUpperSnakeName(member->name());
 }
-
-
-#if 0
-ln::String FlatCCommon::makeCppQualTypeName(TypeSymbol* typeInfo)
-{
-	if (typeInfo->IsClass())
-	{
-		return typeInfo->shortName() + _T("*");
-	}
-
-	return typeInfo->shortName();
-}
-
-ln::String FlatCCommon::makeFlatCQualTypeName(TypeSymbol* typeInfo)
-{
-	if (typeInfo->IsClass())
-	{
-		return typeInfo->shortName() + _T("*");
-	}
-	return typeInfo->shortName();
-}
-
-
-#endif
 
 ln::String FlatCCommon::makeInstanceParamName(TypeSymbol* type)
 {
@@ -53,13 +26,25 @@ void FlatCHeaderGenerator::generate()
 	// delegates
 	OutputBuffer delegatesText;
 	for (auto& delegateSymbol : db()->delegates()) {
-		// make params
-		OutputBuffer params;
-		for (auto& param : delegateSymbol->delegateDeclaration()->flatParameters()) {
-			params.AppendCommad("{0}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode));
-		}
-		delegatesText.AppendLine(u"typedef void(*{0})({1});", makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode), params.toString());
+		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
 	}
+    delegatesText.NewLine();
+
+    // delegateObjects
+    for (auto& delegateSymbol : db()->delegateObjects()) {
+        delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
+
+        // make params
+        OutputBuffer params;
+        params.AppendCommad(u"LnHandle handle");
+        for (auto& param : delegateSymbol->delegateDeclaration()->parameters()) {
+            params.AppendCommad("{0}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode));
+        }
+        delegatesText.AppendLine(u"typedef {0}(*{1})({2});",
+            delegateSymbol->delegateDeclaration()->returnType().type->shortName(),
+            makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode),
+            params.toString());
+    }
 
 	// structs
 	OutputBuffer structsText;
@@ -217,6 +202,16 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 	return code.toString().trim();
 }
 
+ln::String FlatCHeaderGenerator::makeDelegateFuncPtrDecl(const TypeSymbol* delegateSymbol) const
+{
+    // make params
+    OutputBuffer params;
+    for (auto& param : delegateSymbol->delegateDeclaration()->flatParameters()) {
+        params.AppendCommad("{0}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode));
+    }
+    return ln::String::format(u"typedef void(*{0})({1});", makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode), params.toString());
+}
+
 ln::String FlatCHeaderGenerator::makeEnumDecls() const
 {
 	OutputBuffer code;
@@ -305,6 +300,12 @@ void FlatCSourceGenerator::generate()
 		}
 	}
 
+    //for (auto& delegateSymbol : db()->delegateObjects()) {
+    //    for (auto& methodInfo : structInfo->publicMethods()) {
+    //        structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
+    //    }
+    //}
+
 	// classes
 	OutputBuffer classMemberFuncImplsText;
 	for (auto& classInfo : db()->classes()) {
@@ -363,13 +364,13 @@ void FlatCSourceGenerator::generate()
 
 	// save C API Source
 	{
-        auto includeDirective = ln::String::format("#include \"{0}.FlatC.generated.h\"", config()->moduleName);
-        auto fileName = ln::String::format("{0}.FlatC.generated.cpp", config()->moduleName);
+        auto includeDirective = ln::String::format(u"#include \"{0}.FlatC.generated.h\"", config()->moduleName);
+        auto fileName = ln::String::format(u"{0}.FlatC.generated2.cpp", config()->moduleName);
 
         if (!config()->flatCSourceOutputDirOverride.isEmpty())
-            includeDirective = ln::String::format("#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
+            includeDirective = ln::String::format(u"#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
 
-        auto src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp.template")))
+        auto src = ln::FileSystem::readAllText(makeTemplateFilePath(u"Source.cpp.template"))
 			.replace("%%IncludeDirective%%", includeDirective)
 			.replace("%%HeaderString%%", config()->flatCHeaderString)
 			.replace("%%WrapSubclassDecls%%", makeWrapSubclassDecls())

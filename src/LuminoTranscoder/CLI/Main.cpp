@@ -100,16 +100,16 @@ int main(int argc, char** argv)
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		FlatCHeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		FlatCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	//{
 	//	RubyExtGenerator g;
 	//	g.setup(db, config);

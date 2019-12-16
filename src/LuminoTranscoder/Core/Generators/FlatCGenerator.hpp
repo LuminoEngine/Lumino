@@ -33,6 +33,7 @@ public:
 private:
 	ln::String makeDocumentComment(DocumentInfo* doc) const;
 	ln::String makeMethodDocumentComment(const MethodSymbol* method) const;
+    ln::String makeDelegateFuncPtrDecl(const TypeSymbol* delegateSymbol) const;
 
 	//ln::String GenerateOverrideCallerFuncPtrs();
 

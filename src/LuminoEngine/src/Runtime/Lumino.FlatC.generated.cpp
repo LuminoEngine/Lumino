@@ -3,6 +3,41 @@
 
 #include <LuminoEngine.hpp>
 
+
+
+
+class LNWS_ln_TestDelegate : public ln::TestDelegate
+{
+public:
+    LnTestDelegateCallback m_callback;
+
+    LNWS_ln_TestDelegate()
+        : ln::TestDelegate([this](int v1) -> int
+        {
+            int ret = {};
+            auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), v1, &ret);
+            if (r != LN_SUCCESS) { LN_ERROR("LnTestDelegateCallback"); }
+            return ret;
+        })
+    {}
+
+    void init(LnTestDelegateCallback callback)
+    {
+        ln::TestDelegate::init();
+        m_callback = callback;
+    }
+};
+
+
+
+LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 class LNWS_ln_EngineSettings : public ln::EngineSettings
 {
 public:
@@ -14,7 +49,6 @@ public:
 class LNWS_ln_Engine : public ln::Engine
 {
 public:
-
 
 };
 
@@ -644,6 +678,13 @@ LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float 
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setSourceRect(x, y, width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setCallerTest(LNI_HANDLE_TO_OBJECT(ln::TestDelegate, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

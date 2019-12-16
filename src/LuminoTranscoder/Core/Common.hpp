@@ -18,6 +18,7 @@ enum class TypeKind
 	Enum,
 	Delegate,
 	Collection,
+    DelegateObject,
 };
 
 inline AccessLevel accessLevelAsEnum(const ln::String& accessLevel)
@@ -47,6 +48,8 @@ inline TypeKind kindAsEnum(const ln::String& kind)
 		return TypeKind::Delegate;
 	if (ln::String::compare(kind, u"Collection", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return TypeKind::Collection;
+    if (ln::String::compare(kind, u"DelegateObject", ln::CaseSensitivity::CaseInsensitive) == 0)
+        return TypeKind::DelegateObject;
 
 	LN_UNREACHABLE();
 	return TypeKind::Primitive;
