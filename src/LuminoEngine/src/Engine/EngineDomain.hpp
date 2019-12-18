@@ -12,6 +12,8 @@ namespace ln
 //class World3D;
 class EngineContext;
 
+class World;
+
 namespace detail
 {
 class EngineManager;
@@ -54,6 +56,8 @@ public:
 	static UIManager* uiManager();
 	static RuntimeManager* runtimeManager();
     static EngineContext* engineContext();
+
+    static World* mainWorld();
 	
 	template<class T>
 	static void registerType() {

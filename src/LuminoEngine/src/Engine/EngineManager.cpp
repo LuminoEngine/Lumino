@@ -944,6 +944,11 @@ EngineContext* EngineDomain::engineContext()
     return engineManager()->engineContext();
 }
 
+World* EngineDomain::mainWorld()
+{
+    return engineManager()->mainWorld();
+}
+
 } // namespace detail
 } // namespace ln
 

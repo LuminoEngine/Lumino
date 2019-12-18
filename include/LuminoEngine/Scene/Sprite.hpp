@@ -29,15 +29,30 @@ class Sprite
 {
 	LN_OBJECT;
 public:
+    class Builder
+    {
+    public:
+        Builder& texture(Texture* value) noexcept;
+        Builder& pixelsParUnit(float value) noexcept;
+        Ref<Sprite> build();
+        Ref<Sprite> buildInMainWorld();
+
+    private:
+        // TODO: 内容は基本的に Component と同じなので共用の構造体を用意してみたい
+        Ref<Texture> m_texture;
+        float m_pixelsParUnit;
+        friend class Sprite;
+    };
+
     static Ref<Sprite> create(Texture* texture, float width, float height);
 	static Ref<Sprite> create(SpriteFrameSet* frameSet);
 
     /** スプライトが表示するテクスチャを設定します。 */
     LN_METHOD(Property)
-    void setTexture(Texture* texture);
+    void setTexture(Texture* value);
 
     /** スプライトの大きさを設定します。 */
-    void setSize(const Size& size);
+    void setSize(const Size& value);
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
 	//LN_METHOD(Property)
@@ -85,6 +100,7 @@ public:
     /** 表示するテクスチャを垂直に反転するかどうかを確認します。 */
     bool isFlippedY() const;
 
+    void setPixelsParUnit(float value);
 
 	/** test */
 	LN_METHOD()
@@ -96,6 +112,7 @@ LN_CONSTRUCT_ACCESS:
 	Sprite();
 	virtual ~Sprite();
 
+    Result init(const Builder& builder);
 	void init();
 
 	/** init */
