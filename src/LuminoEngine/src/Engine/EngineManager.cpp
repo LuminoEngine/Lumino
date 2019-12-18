@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -132,6 +133,7 @@ void EngineManager::init()
     // register types
     {
         EngineDomain::registerType<Application>();
+		EngineDomain::registerType<Serializer>();
     }
 
 	m_fpsController.setFrameRate(m_settings.frameRate);

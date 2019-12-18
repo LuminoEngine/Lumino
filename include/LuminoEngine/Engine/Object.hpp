@@ -311,26 +311,26 @@ struct TypeInfoInternal
 };
 } // namespace detail
 
-class Serializer
-{
-public:
-	template<class T>
-	static String serialize(const Ref<T>&& value)
-	{
-		JsonTextOutputArchive ar;
-		ar.save(*value);
-		return ar.toString(JsonFormatting::None);
-	}
-
-	template<class T>
-	static Ref<T> deserialize(const StringRef& jsonText)
-	{
-		Ref<T> value = makeObject<T>();
-		JsonTextInputArchive ar(jsonText);
-		ar.load(*value);
-		return value;
-	}
-};
+//class Serializer
+//{
+//public:
+//	template<class T>
+//	static String serialize(const Ref<T>&& value)
+//	{
+//		JsonTextOutputArchive ar;
+//		ar.save(*value);
+//		return ar.toString(JsonFormatting::None);
+//	}
+//
+//	template<class T>
+//	static Ref<T> deserialize(const StringRef& jsonText)
+//	{
+//		Ref<T> value = makeObject<T>();
+//		JsonTextInputArchive ar(jsonText);
+//		ar.load(*value);
+//		return value;
+//	}
+//};
 
 //template<
 //	typename TValue,

@@ -77,6 +77,7 @@ public:
 	static ln::Ref<TypeSymbol>	int16Type;
 	static ln::Ref<TypeSymbol>	uint32Type;
 	static ln::Ref<TypeSymbol>	floatType;
+	static ln::Ref<TypeSymbol>	doubleType;
 	static ln::Ref<TypeSymbol>	stringType;
 	static ln::Ref<TypeSymbol>	stringRefType;
 	static ln::Ref<TypeSymbol>	objectType;
@@ -382,6 +383,9 @@ public:
 	bool isCollection() const { return metadata()->hasKey(u"Collection"); }
     bool isFlags() const { return metadata()->hasKey(u"Flags"); }
     bool isDelegateObject() const { return kind() == TypeKind::DelegateObject; }
+
+	// LnHandle として扱うものかどうか
+	bool isObjectGroup() const { return isClass() || isDelegateObject(); }
 
 private:
 	void setFullName(const ln::String& value);

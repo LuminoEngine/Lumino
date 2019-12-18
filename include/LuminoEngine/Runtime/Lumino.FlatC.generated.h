@@ -4,13 +4,6 @@
 
 extern "C"
 {
-
-
-typedef LnResult(*LnTestDelegateCallback)(LnHandle handle, int, int* outReturn);
-
-LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
-
-
 /**
     @brief 3次元のベクトルを定義します。
 */
@@ -125,7 +118,9 @@ typedef enum tagLnDepthBufferFormat
 
 } LnDepthBufferFormat;
 
-typedef void(*LnUIEventHandlerCallback)(LnHandle, LnHandle);
+typedef void(*LnUIEventHandlerCallback)(LnHandle __eventOwner, LnHandle p1);
+
+typedef LnResult(*LnTestDelegateCallback)(LnHandle, int p1, int* outReturn);
 
 
 /**
@@ -167,6 +162,98 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 
 
 //==============================================================================
+// ln::Serializer
+
+/**
+    @brief write
+    @param[in] serializer : instance
+*/
+LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* name, LnBool value);
+LN_FLAT_API LnResult LnSerializer_WriteBoolA(LnHandle serializer, const char* name, LnBool value);
+
+/**
+    @brief write
+    @param[in] serializer : instance
+*/
+LN_FLAT_API LnResult LnSerializer_WriteInt(LnHandle serializer, const LnChar* name, int value);
+LN_FLAT_API LnResult LnSerializer_WriteIntA(LnHandle serializer, const char* name, int value);
+
+/**
+    @brief write
+    @param[in] serializer : instance
+*/
+LN_FLAT_API LnResult LnSerializer_WriteDouble(LnHandle serializer, const LnChar* name, double value);
+LN_FLAT_API LnResult LnSerializer_WriteDoubleA(LnHandle serializer, const char* name, double value);
+
+/**
+    @brief write
+    @param[in] serializer : instance
+*/
+LN_FLAT_API LnResult LnSerializer_WriteString(LnHandle serializer, const LnChar* name, const LnChar* value);
+LN_FLAT_API LnResult LnSerializer_WriteStringA(LnHandle serializer, const char* name, const char* value);
+
+/**
+    @brief write
+    @param[in] serializer : instance
+*/
+LN_FLAT_API LnResult LnSerializer_WriteObject(LnHandle serializer, const LnChar* name, LnHandle value);
+LN_FLAT_API LnResult LnSerializer_WriteObjectA(LnHandle serializer, const char* name, LnHandle value);
+
+/**
+    @brief read
+    @param[in] serializer : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* name, LnBool* outReturn);
+LN_FLAT_API LnResult LnSerializer_ReadBoolA(LnHandle serializer, const char* name, LnBool* outReturn);
+
+/**
+    @brief read
+    @param[in] serializer : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* name, int* outReturn);
+LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name, int* outReturn);
+
+/**
+    @brief read
+    @param[in] serializer : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSerializer_ReadDouble(LnHandle serializer, const LnChar* name, double* outReturn);
+LN_FLAT_API LnResult LnSerializer_ReadDoubleA(LnHandle serializer, const char* name, double* outReturn);
+
+/**
+    @brief read
+    @param[in] serializer : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn);
+LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* name, const char** outReturn);
+
+/**
+    @brief read
+    @param[in] serializer : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* name, LnHandle* outReturn);
+LN_FLAT_API LnResult LnSerializer_ReadObjectA(LnHandle serializer, const char* name, LnHandle* outReturn);
+
+/**
+    @brief serialize
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn);
+LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePath, const char** outReturn);
+
+/**
+    @brief serialize
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* basePath, LnHandle* outReturn);
+LN_FLAT_API LnResult LnSerializer_DeserializeA(const char* str, const char* basePath, LnHandle* outReturn);
+
+//==============================================================================
 // ln::EngineSettings
 
 /**
@@ -174,12 +261,10 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 */
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
 
-
 /**
     @brief メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等)
 */
 LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
-
 
 /**
     @brief メインウィンドウのタイトル文字列を設定します。
@@ -187,13 +272,11 @@ LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int heigh
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title);
 
-
 /**
     @brief アセットが保存されているディレクトリを登録します。
 */
 LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path);
 LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path);
-
 
 /**
     @brief アセットファイルを登録します。
@@ -201,19 +284,16 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path);
 LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password);
 LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password);
 
-
 /**
     @brief デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
 */
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
-
 
 /**
     @brief デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
 */
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath);
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath);
-
 
 //==============================================================================
 // ln::Engine
@@ -223,12 +303,10 @@ LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath
 */
 LN_FLAT_API LnResult LnEngine_Initialize();
 
-
 /**
     @brief エンジンの終了処理を行います。
 */
 LN_FLAT_API LnResult LnEngine_Finalize();
-
 
 /**
     @brief 
@@ -237,13 +315,11 @@ LN_FLAT_API LnResult LnEngine_Finalize();
 */
 LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
 
-
 /**
     @brief 。
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
-
 
 //==============================================================================
 // ln::Application
@@ -254,20 +330,17 @@ LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
 */
 LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
 
-
 /**
     @brief 毎フレーム呼び出されます。
     @param[in] application : instance
 */
 LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
 
-
 /**
     @brief 
     @param[out] outApplication : instance.
 */
 LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
-
 
 typedef LnResult(*LnApplication_OnInit_OverrideCallback)(LnHandle application);
 LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback);
@@ -294,7 +367,6 @@ LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle applicatio
 LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn);
 LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn);
 
-
 /**
     @brief テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     @param[in] width : 幅 (px 単位)
@@ -303,7 +375,6 @@ LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn
     @return 作成されたテクスチャ
 */
 LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outTexture2D);
-
 
 /**
     @brief テクスチャを作成します。
@@ -314,7 +385,6 @@ LN_FLAT_API LnResult LnTexture2D_Create(int width, int height, LnHandle* outText
 */
 LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextureFormat format, LnHandle* outTexture2D);
 
-
 /**
     @brief ローカルのファイルを読み込み、テクスチャを作成します。
     @param[in] filePath : 読み込むファイルのパス
@@ -324,7 +394,6 @@ LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextu
 */
 LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextureFormat format, LnHandle* outTexture2D);
 LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTextureFormat format, LnHandle* outTexture2D);
-
 
 //==============================================================================
 // ln::Component
@@ -338,14 +407,12 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTexture
 */
 LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value);
 
-
 /**
     @brief 可視状態を取得します。
     @param[in] visualcomponent : instance
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBool* outReturn);
-
 
 //==============================================================================
 // ln::SpriteComponent
@@ -355,7 +422,6 @@ LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBoo
     @param[in] spritecomponent : instance
 */
 LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture);
-
 
 //==============================================================================
 // ln::ComponentList
@@ -367,14 +433,12 @@ LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHa
 */
 LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn);
 
-
 /**
     @brief 
     @param[in] componentlist : instance
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn);
-
 
 //==============================================================================
 // ln::WorldObject
@@ -385,13 +449,11 @@ LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, 
 */
 LN_FLAT_API LnResult LnWorldObject_SetPosition(LnHandle worldobject, const LnVector3* pos);
 
-
 /**
     @brief このオブジェクトの位置を設定します。
     @param[in] worldobject : instance
 */
 LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x, float y, float z);
-
 
 /**
     @brief このオブジェクトの位置を位置を取得します。
@@ -400,20 +462,17 @@ LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x,
 */
 LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* outReturn);
 
-
 /**
     @brief このオブジェクトの回転を設定します。
     @param[in] worldobject : instance
 */
 LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQuaternion* rot);
 
-
 /**
     @brief このオブジェクトの回転をオイラー角から設定します。(radian)
     @param[in] worldobject : instance
 */
 LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x, float y, float z);
-
 
 /**
     @brief このオブジェクトの回転を取得します。
@@ -422,13 +481,11 @@ LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x,
 */
 LN_FLAT_API LnResult LnWorldObject_GetRotation(LnHandle worldobject, LnQuaternion* outReturn);
 
-
 /**
     @brief このオブジェクトの拡大率を設定します。
     @param[in] worldobject : instance
 */
 LN_FLAT_API LnResult LnWorldObject_SetScale(LnHandle worldobject, const LnVector3* scale);
-
 
 /**
     @brief このオブジェクトの拡大率を設定します。
@@ -436,13 +493,11 @@ LN_FLAT_API LnResult LnWorldObject_SetScale(LnHandle worldobject, const LnVector
 */
 LN_FLAT_API LnResult LnWorldObject_SetScaleS(LnHandle worldobject, float xyz);
 
-
 /**
     @brief このオブジェクトの拡大率を設定します。
     @param[in] worldobject : instance
 */
 LN_FLAT_API LnResult LnWorldObject_SetScaleXYZ(LnHandle worldobject, float x, float y, float z);
-
 
 /**
     @brief このオブジェクトの拡大率を取得します。
@@ -451,20 +506,17 @@ LN_FLAT_API LnResult LnWorldObject_SetScaleXYZ(LnHandle worldobject, float x, fl
 */
 LN_FLAT_API LnResult LnWorldObject_GetScale(LnHandle worldobject, LnVector3* outReturn);
 
-
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
     @param[in] worldobject : instance
 */
 LN_FLAT_API LnResult LnWorldObject_SetCenterPoint(LnHandle worldobject, const LnVector3* value);
 
-
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
     @param[in] worldobject : instance
 */
 LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float x, float y, float z);
-
 
 /**
     @brief このオブジェクトのローカルの中心位置を取得します。
@@ -473,14 +525,12 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
 */
 LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector3* outReturn);
 
-
 /**
     @brief 
     @param[in] worldobject : instance
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnWorldObject_GetComponents(LnHandle worldobject, LnHandle* outReturn);
-
 
 typedef LnResult(*LnWorldObject_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
 LN_FLAT_API LnResult LnWorldObject_OnUpdate_SetOverrideCallback(LnWorldObject_OnUpdate_OverrideCallback callback);
@@ -495,14 +545,12 @@ LN_FLAT_API LnResult LnWorldObject_OnUpdate_CallOverrideBase(LnHandle worldobjec
 */
 LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool value);
 
-
 /**
     @brief 可視状態を取得します。
     @param[in] visualobject : instance
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnVisualObject_IsVisible(LnHandle visualobject, LnBool* outReturn);
-
 
 typedef LnResult(*LnVisualObject_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
 LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_OnUpdate_OverrideCallback callback);
@@ -517,13 +565,16 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_CallOverrideBase(LnHandle worldobje
 */
 LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture);
 
-
 /**
     @brief 
     @param[in] sprite : instance
 */
 LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float y, float width, float height);
 
+/**
+    @brief test
+    @param[in] sprite : instance
+*/
 LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback);
 
 /**
@@ -531,7 +582,6 @@ LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback);
     @param[out] outSprite : instance.
 */
 LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite);
-
 
 typedef LnResult(*LnSprite_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
 LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_OverrideCallback callback);
@@ -547,7 +597,6 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, fl
 */
 LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn);
 
-
 //==============================================================================
 // ln::UILayoutElement
 
@@ -560,13 +609,11 @@ LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outRet
 */
 LN_FLAT_API LnResult LnUIElement_SetPosition(LnHandle uielement, const LnVector3* pos);
 
-
 /**
     @brief このオブジェクトの位置を設定します。
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, float y, float z);
-
 
 /**
     @brief このオブジェクトの位置を位置を取得します。
@@ -575,20 +622,17 @@ LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, flo
 */
 LN_FLAT_API LnResult LnUIElement_GetPosition(LnHandle uielement, LnVector3* outReturn);
 
-
 /**
     @brief このオブジェクトの回転を設定します。
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_SetRotation(LnHandle uielement, const LnQuaternion* rot);
 
-
 /**
     @brief このオブジェクトの回転をオイラー角から設定します。(radian)
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, float y, float z);
-
 
 /**
     @brief このオブジェクトの回転を取得します。
@@ -597,13 +641,11 @@ LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, flo
 */
 LN_FLAT_API LnResult LnUIElement_GetRotation(LnHandle uielement, LnQuaternion* outReturn);
 
-
 /**
     @brief このオブジェクトの拡大率を設定します。
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_SetScale(LnHandle uielement, const LnVector3* scale);
-
 
 /**
     @brief このオブジェクトの拡大率を設定します。
@@ -611,13 +653,11 @@ LN_FLAT_API LnResult LnUIElement_SetScale(LnHandle uielement, const LnVector3* s
 */
 LN_FLAT_API LnResult LnUIElement_SetScaleS(LnHandle uielement, float xyz);
 
-
 /**
     @brief このオブジェクトの拡大率を設定します。
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y);
-
 
 /**
     @brief このオブジェクトの拡大率を取得します。
@@ -626,20 +666,17 @@ LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y
 */
 LN_FLAT_API LnResult LnUIElement_GetScale(LnHandle uielement, LnVector3* outReturn);
 
-
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_SetCenterPoint(LnHandle uielement, const LnVector3* value);
 
-
 /**
     @brief このオブジェクトのローカルの中心位置を設定します。
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, float y, float z);
-
 
 /**
     @brief このオブジェクトのローカルの中心位置を取得します。
@@ -648,13 +685,11 @@ LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, 
 */
 LN_FLAT_API LnResult LnUIElement_GetCenterPoint(LnHandle uielement, LnVector3* outReturn);
 
-
 /**
     @brief Add element to container.
     @param[in] uielement : instance
 */
 LN_FLAT_API LnResult LnUIElement_AddChild(LnHandle uielement, LnHandle child);
-
 
 //==============================================================================
 // ln::UIControl
@@ -669,7 +704,6 @@ LN_FLAT_API LnResult LnUIElement_AddChild(LnHandle uielement, LnHandle child);
 LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar* text);
 LN_FLAT_API LnResult LnUIButtonBase_SetTextA(LnHandle uibuttonbase, const char* text);
 
-
 //==============================================================================
 // ln::UIButton
 
@@ -679,13 +713,11 @@ LN_FLAT_API LnResult LnUIButtonBase_SetTextA(LnHandle uibuttonbase, const char* 
 */
 LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton);
 
-
 /**
     @brief Clicked イベントの通知を受け取るコールバックを登録します。
     @param[in] uibutton : instance
 */
 LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler);
-
 
 
 

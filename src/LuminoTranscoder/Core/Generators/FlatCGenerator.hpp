@@ -31,15 +31,10 @@ public:
 	void generate();
 
 private:
+
 	ln::String makeDocumentComment(DocumentInfo* doc) const;
 	ln::String makeMethodDocumentComment(const MethodSymbol* method) const;
     ln::String makeDelegateFuncPtrDecl(const TypeSymbol* delegateSymbol) const;
-
-	//ln::String GenerateOverrideCallerFuncPtrs();
-
-	//ln::String MakeInstanceParamName(ln::Ref<TypeSymbol> info);
-	////ln::String MakeMethods(Ref<TypeSymbol> typeInfo);
-	//ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo);
 
 	ln::String makeEnumDecls() const;
 
@@ -54,11 +49,15 @@ public:
 	void generate();
 
 private:
+	ln::String generateDelegateObjects() const;
+
 	ln::String makeFlatFullName(const TypeSymbol* type) const { return type->fullName().replace(u"::", u"_"); }	// ln::Texture -> ln_Texture
 
 	ln::String makeWrapSubclassDecls() const;
 	ln::String makeWrapSubclassName(const TypeSymbol* type) const { return u"LNWS_" + makeFlatFullName(type); }
+	ln::String makeNativeParamList(const MethodSymbol* method) const;
 	ln::String makeNativeArgList(const MethodSymbol* method) const;
+	ln::String makeFlatArgList(const MethodSymbol* method) const;
 
 	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo);
 	ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
