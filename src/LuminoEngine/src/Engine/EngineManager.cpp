@@ -128,13 +128,13 @@ void EngineManager::init()
 		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
 	}
 
-	initializeAllManagers();
-
     // register types
     {
         EngineDomain::registerType<Application>();
 		EngineDomain::registerType<Serializer>();
     }
+
+	initializeAllManagers();
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setMeasurementEnabled(true);
