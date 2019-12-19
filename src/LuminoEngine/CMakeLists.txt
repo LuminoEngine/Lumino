@@ -218,30 +218,7 @@ set(LN_SOURCES_Font
     src/Font/TextLayoutEngine.hpp
 )
 
-set(LN_SOURCES_Mesh
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/Mesh.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/SkinnedMeshModel.hpp
-    src/Mesh/Internal.hpp
-    src/Mesh/CCDIKSolver.cpp
-    src/Mesh/CCDIKSolver.hpp
-    src/Mesh/GMesh.cpp
-    src/Mesh/GMesh.hpp
-    src/Mesh/Mesh.cpp
-    src/Mesh/MeshGenerater.cpp
-    src/Mesh/MeshGenerater.hpp
-    src/Mesh/MeshImporter.cpp
-    src/Mesh/MeshImporter.hpp
-    src/Mesh/MeshManager.cpp
-    src/Mesh/MeshManager.hpp
-    src/Mesh/MqoImporter.cpp
-    src/Mesh/MqoImporter.hpp
-    src/Mesh/ObjMeshImporter.cpp
-    src/Mesh/ObjMeshImporter.hpp
-    src/Mesh/PmxImporter.cpp
-    src/Mesh/PmxImporter.hpp
-    src/Mesh/SkinnedMeshModel.cpp
-)
+file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/Mesh/*.cpp src/Mesh/*.hpp)
 
 file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp)
 

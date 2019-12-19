@@ -143,6 +143,7 @@ struct MeshSection2
 	PrimitiveTopology topology;
 };
 
+// LOD
 class Mesh
 	: public Object
 {
@@ -163,11 +164,18 @@ public:
 	struct SectionView
 	{
 		std::vector<VertexBufferView> vertexBufferViews;
-		const void* indexData;
-		size_t indexElementSize;	// byte size. (1, 2, 4)
-		size_t indexBufferSize;		// byte size. 
+        int indexOffset;    // (unit: index number. not byte size)
+        int indexCount;     // (unit: index number. not byte size)
 		PrimitiveTopology topology;
 	};
+
+    struct MeshView
+    {
+        std::vector<SectionView> sectionViews;
+        const void* indexData;
+        size_t indexElementSize;	// byte size. (1, 2, 4)
+        size_t indexCount;
+    };
 
 	///** 頂点の数を変更します。 */
 	//void resizeVertexBuffer(int vertexCount);
@@ -185,11 +193,12 @@ LN_CONSTRUCT_ACCESS:
 	Mesh();
 	virtual ~Mesh();
 	void init();
-	void init(const std::vector<SectionView>& sectionViews);
+	void init(const MeshView& meshView);
 
 private:
 	struct VertexBufferAttribute
 	{
+        VertexElementType type;
 		VertexElementUsage usage;
 		Ref<VertexBuffer> buffer;
 	};
@@ -229,6 +238,11 @@ public:
 
 	void calculateBounds();
 
+
+    void setMesh(Mesh* mesh);
+    Mesh* mesh() const;
+
+
 LN_CONSTRUCT_ACCESS:
 	MeshContainer();
 	virtual ~MeshContainer();
@@ -239,7 +253,8 @@ LN_CONSTRUCT_ACCESS:
 private:
 	ln::String m_name;
 	Box m_boundingBox;
-	List<Ref<MeshResource>> m_lodResources;
+	List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
+    List<Ref<Mesh>> m_lodMesh;
 
 	friend class StaticMeshModel;
 };

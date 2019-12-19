@@ -43,6 +43,11 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Stri
 	}
 	else {
 		m_model = &model;
+        m_meshModel = makeObject<StaticMeshModel>();
+
+        for (auto& material : m_model->materials) {
+            m_meshModel->addMaterial(readMaterial(material));
+        }
 
 		int scene_to_display = model.defaultScene > -1 ? model.defaultScene : 0;
 		const tinygltf::Scene &scene = model.scenes[scene_to_display];
@@ -50,8 +55,29 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Stri
 			readNode(model.nodes[scene.nodes[i]], Matrix::Identity);
 		}
 
-		return nullptr;
+		return m_meshModel;
 	}
+}
+
+Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
+{
+    auto coreMaterial = makeObject<Material>();
+
+    auto itr = material.values.find("baseColorFactor");
+    if (itr != material.values.end()) {
+        auto& c = itr->second.number_array;
+        assert(c.size() == 4);
+        coreMaterial->setColor(Color(c[0], c[1], c[2], c[3]));
+    }
+
+    itr = material.values.find("metallicFactor");
+    if (itr != material.values.end()) {
+        assert(itr->second.has_number_value);
+        coreMaterial->setMetallic(itr->second.number_value);
+    }
+
+
+    return coreMaterial;
 }
 
 bool GLTFImporter::readNode(const tinygltf::Node& node, const Matrix& parentTransform)
@@ -84,9 +110,12 @@ bool GLTFImporter::readNode(const tinygltf::Node& node, const Matrix& parentTran
 
 	if (node.mesh > -1) {
 		assert(node.mesh < m_model->meshes.size());
-		if (!readMesh(m_model->meshes[node.mesh], localTransform)) {
+        auto meshContainer = readMesh(m_model->meshes[node.mesh], localTransform);
+		if (!meshContainer) {
 			return false;
 		}
+
+        m_meshModel->addMeshContainer(meshContainer);
 	}
 
 	for (size_t i = 0; i < node.children.size(); i++) {
@@ -99,13 +128,17 @@ bool GLTFImporter::readNode(const tinygltf::Node& node, const Matrix& parentTran
 	return true;
 }
 
-bool GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
+Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
 {
-	std::vector<Mesh::SectionView> sectionViews;
+	//std::vector<Mesh::SectionView> sectionViews;
+    Mesh::MeshView meshView;
+
+    int indexBufferViewIndex = -1;
+    int indexComponentType = -1;
 
 	for (size_t i = 0; i < mesh.primitives.size(); i++) {
 		const tinygltf::Primitive& primitive = mesh.primitives[i];
-		if (primitive.indices < 0) return false;
+		if (primitive.indices < 0) return nullptr;
 
 		Mesh::SectionView sectionView;
 
@@ -116,7 +149,7 @@ bool GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
 			
 			if (accessor.sparse.isSparse) {
 				LN_NOTIMPLEMENTED();
-				return false;
+				return nullptr;
 			}
 
 			Mesh::VertexBufferView vbView;
@@ -143,7 +176,7 @@ bool GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
 			}
 			else {
 				LN_UNREACHABLE();
-				return false;
+				return nullptr;
 			}
 
 			// Usage
@@ -163,7 +196,7 @@ bool GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
 			}
 			else {
 				LN_UNREACHABLE();
-				return false;
+				return nullptr;
 			}
 
 			// Stride
@@ -181,30 +214,44 @@ bool GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
 		// Index buffer
 		{
 			const tinygltf::Accessor& indexAccessor = m_model->accessors[primitive.indices];
-			const tinygltf::BufferView& indexBufferView = m_model->bufferViews[indexAccessor.bufferView];
-			const tinygltf::Buffer& buffer = m_model->buffers[indexBufferView.buffer];
+            const tinygltf::BufferView& indexBufferView = m_model->bufferViews[indexAccessor.bufferView];
+            const tinygltf::Buffer& buffer = m_model->buffers[indexBufferView.buffer];
+
+            if (indexBufferViewIndex < 0) {
+                // 最初に見つかったものをインデックスバッファとして採用
+                indexBufferViewIndex = indexAccessor.bufferView;
+                indexComponentType = indexAccessor.componentType;
+
+                // 1byte
+                if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_BYTE || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
+                    meshView.indexElementSize = 1;
+                }
+                // 2byte
+                else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+                    meshView.indexElementSize = 2;
+                }
+                // 4byte
+                else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+                    meshView.indexElementSize = 4;
+                }
+                else {
+                    LN_NOTIMPLEMENTED();
+                    return nullptr;
+                }
+            }
+            else if (indexAccessor.bufferView != indexBufferViewIndex || indexAccessor.componentType != indexComponentType) {
+                // ひとつの Mesh の中で、別の index buffer を作るのはサポートしない
+                LN_ERROR();
+                return nullptr;
+            }
 
 			if (indexAccessor.sparse.isSparse) {
 				LN_NOTIMPLEMENTED();
-				return false;
+				return nullptr;
 			}
 
-			sectionView.indexBufferSize = indexBufferView.byteLength;
-
-			// 1byte
-			if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_BYTE || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
-				sectionView.indexElementSize = 1;
-			}
-			// 2byte
-			else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
-				sectionView.indexElementSize = 2;
-			}
-			// 4byte
-			else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
-				sectionView.indexElementSize = 4;
-			}
-
-			sectionView.indexData = buffer.data.data() + indexBufferView.byteOffset;
+            sectionView.indexOffset = indexBufferView.byteOffset / meshView.indexElementSize;
+            sectionView.indexCount = indexBufferView.byteLength / meshView.indexElementSize;
 		}
 
 		// Topology
@@ -225,19 +272,21 @@ bool GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
 		}
 		else if (primitive.mode == TINYGLTF_MODE_LINE_LOOP) {
 			LN_NOTIMPLEMENTED();
-			return false;
+			return nullptr;
 		}
 		else {
 			LN_UNREACHABLE();
-			return false;
+			return nullptr;
 		}
 
-		sectionViews.push_back(std::move(sectionView));
+		meshView.sectionViews.push_back(std::move(sectionView));
 	}
 
-	auto mesh = makeObject<Mesh>(sectionViews);
+	auto coreMesh = makeObject<Mesh>(meshView);
+    auto meshContainer = makeObject<MeshContainer>();
+    meshContainer->setMesh(coreMesh);
 
-	return true;
+	return meshContainer;
 }
 
 bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)

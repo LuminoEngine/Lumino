@@ -343,22 +343,51 @@ void Mesh::init()
 	Object::init();
 }
 
-void Mesh::init(const std::vector<SectionView>& sectionViews)
+void Mesh::init(const MeshView& meshView)
 {
 	init();
 
-	for (auto& section : sectionViews) {
+    // Validation and count vertices
+    int vertexCount = 0;
+	for (auto& section : meshView.sectionViews) {
 		int count = section.vertexBufferViews[0].count;
 		for (size_t i = 1; i < section.vertexBufferViews.size(); i++) {
-			if (count != section.vertexBufferViews[i].count) {
+            auto& view = section.vertexBufferViews[i];
+			if (count != view.count) {
 				// ひとつの section 内ではすべての頂点数が一致していることが前提
 				LN_ERROR();
 				return;
 			}
+
+            auto r = m_vertexBuffers.findIf([&](auto& x) { return x.type == view.type && x.usage == view.usage; });
+            if (!r) {
+                m_vertexBuffers.add({ view.type, view.usage, nullptr });
+            }
 		}
+        vertexCount += count;
 	}
 
+    // Allocate vertex buffers
+    for (auto& attr : m_vertexBuffers) {
+        attr.buffer = makeObject<VertexBuffer>(vertexCount * GraphicsHelper::getVertexElementTypeSize(attr.type));
+    }
 
+    // Index buffer
+    {
+        if (meshView.indexElementSize == 1) {
+            LN_NOTIMPLEMENTED();
+        }
+        else if (meshView.indexElementSize == 2) {
+            m_indexBuffer = makeObject<IndexBuffer>(meshView.indexCount, IndexBufferFormat::UInt16, meshView.indexData, GraphicsResourceUsage::Static);
+        }
+        else if (meshView.indexElementSize == 4) {
+            m_indexBuffer = makeObject<IndexBuffer>(meshView.indexCount, IndexBufferFormat::UInt32, meshView.indexData, GraphicsResourceUsage::Static);
+        }
+        else {
+            LN_NOTIMPLEMENTED();
+        }
+    }
+    
 
 }
 
@@ -369,6 +398,7 @@ MeshContainer::MeshContainer()
 	: m_name()
 	, m_lodResources()
 {
+    m_lodMesh.resize(1);
 }
 
 MeshContainer::~MeshContainer()
@@ -445,6 +475,16 @@ void MeshContainer::calculateBounds()
 	{
 		m_boundingBox = Box();
 	}
+}
+
+void MeshContainer::setMesh(Mesh* mesh)
+{
+    m_lodMesh[0] = mesh;
+}
+
+Mesh* MeshContainer::mesh() const
+{
+    return m_lodMesh[0];
 }
 
 //==============================================================================

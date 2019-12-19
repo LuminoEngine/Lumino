@@ -5,6 +5,7 @@ namespace tinygltf {
 class Model;
 class Node;
 class Mesh;
+class Material;
 }
 
 namespace ln {
@@ -17,8 +18,9 @@ public:
     Ref<StaticMeshModel> import(AssetManager* assetManager, const String& assetPath, DiagnosticsManager* diag);
 
 private:
+    Ref<Material> readMaterial(const tinygltf::Material& material);
 	bool readNode(const tinygltf::Node& node, const Matrix& parentTransform);
-	bool readMesh(const tinygltf::Mesh& mesh, const Matrix& transform);
+	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh, const Matrix& transform);
 
 	static bool FileExists(const std::string &abs_filename, void *user_data);
 	static std::string ExpandFilePath(const std::string &filepath, void *user_data);
@@ -28,6 +30,7 @@ private:
 	AssetManager* m_assetManager;
 	String m_basedir;
 	tinygltf::Model* m_model;
+    Ref<StaticMeshModel> m_meshModel;
 };
 
 } // namespace detail
