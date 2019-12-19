@@ -90,10 +90,10 @@ void Sprite::init(SpriteFrameSet* frameSet)
 
 void Sprite::setTexture(Texture* value)
 {
-	if (m_testDelegate) {
-		int a = m_testDelegate->call(10);
-		std::cout << "m_testDelegate: " << a << std::endl;
-	}
+	//if (m_testDelegate) {
+	//	int a = m_testDelegate->call(10);
+	//	std::cout << "m_testDelegate: " << a << std::endl;
+	//}
 
     m_component->setTexture(value);
 }
