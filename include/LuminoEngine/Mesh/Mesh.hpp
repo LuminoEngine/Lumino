@@ -148,7 +148,7 @@ class Mesh
 	: public Object
 {
 public:
-	// ファイルからのデータ読み込み用
+	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。
 	struct VertexBufferView
 	{
 		VertexElementType type;
@@ -164,17 +164,21 @@ public:
 	struct SectionView
 	{
 		std::vector<VertexBufferView> vertexBufferViews;
-        int indexOffset;    // (unit: index number. not byte size)
-        int indexCount;     // (unit: index number. not byte size)
+        //int indexOffset;    // (unit: index number. not byte size)
+        //int indexCount;     // (unit: index number. not byte size)
+
+        const void* indexData;  // このセクション内で 0 から始まるインデックス
+        int indexElementSize;	// byte size. (1, 2, 4)
+        size_t indexCount;
+
+        int materialIndex;
+
 		PrimitiveTopology topology;
 	};
 
     struct MeshView
     {
         std::vector<SectionView> sectionViews;
-        const void* indexData;
-        size_t indexElementSize;	// byte size. (1, 2, 4)
-        size_t indexCount;
     };
 
 	///** 頂点の数を変更します。 */
@@ -187,7 +191,8 @@ public:
 	void addSection(int startIndex, int primitiveCount, int materialIndex);
 
 	// TODO: internal
-	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
+	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
+    const List<MeshSection2>& sections() const { return m_sections; }
 
 LN_CONSTRUCT_ACCESS:
 	Mesh();
@@ -200,12 +205,14 @@ private:
 	{
         VertexElementType type;
 		VertexElementUsage usage;
+        int usageIndex;
 		Ref<VertexBuffer> buffer;
 	};
 
 	
 	List<VertexBufferAttribute> m_vertexBuffers;
 	Ref<IndexBuffer> m_indexBuffer;
+    Ref<VertexLayout> m_vertexLayout;
 	List<MeshSection2> m_sections;
 };
 

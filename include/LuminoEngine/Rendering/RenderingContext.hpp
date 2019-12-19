@@ -13,6 +13,7 @@ class RenderTargetTexture;
 class DepthBuffer;
 class AbstractMaterial;
 class MeshResource;
+class Mesh;
 class MeshContainer;
 class RenderViewPoint;
 namespace detail {
@@ -140,6 +141,7 @@ public:
 
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
+    void drawMesh(Mesh* mesh, int sectionIndex);
 
     // font が nullptr の場合は defaultFont
     void drawText(const StringRef& text, const Color& color, Font* font = nullptr);

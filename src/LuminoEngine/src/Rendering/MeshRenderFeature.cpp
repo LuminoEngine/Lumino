@@ -55,6 +55,37 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return RequestBatchResult::Staging;
 }
 
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex)
+{
+    if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
+    auto* _this = this;
+
+    MeshSection2 section;
+    VertexLayout* layout;
+    std::array<VertexBuffer*, MaxVertexStreams> vb = {};
+    int vbCount;
+    IndexBuffer* ib;
+    mesh->commitRenderData(sectionIndex, &section, &layout, &vb, &vbCount, &ib);
+
+    DrawMeshData data;
+    data.vertexLayout = layout;
+    for (int i = 0; i < vbCount; ++i) {
+        data.vertexBuffers[i] = vb[i];
+    }
+    data.vertexBuffersCount = vbCount;
+    data.indexBuffer = ib;
+    data.startIndex = section.startIndex;
+    data.primitiveCount = section.primitiveCount;
+    data.primitiveType = section.topology;
+
+    if (LN_REQUIRE(data.vertexBuffers[0])) return RequestBatchResult::Staging;
+    if (data.primitiveCount <= 0) return RequestBatchResult::Staging;
+
+    m_meshes.push_back(std::move(data));
+    m_batchData.count++;
+    return RequestBatchResult::Staging;
+}
+
 void MeshRenderFeature::beginRendering()
 {
 	m_meshes.clear();
@@ -82,7 +113,7 @@ void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch
 		for (int i = 0; i < data.vertexBuffersCount; ++i) {
 			context->setVertexBuffer(i, data.vertexBuffers[i]);
 		}
-		context->setPrimitiveTopology(data.primitiveType);
+		context->setPrimitiveTopology(data.primitiveType);  // TODO: これは RenderingContext がわでやるようになっている
 		if (data.indexBuffer) {
 			context->setIndexBuffer(data.indexBuffer);
 			context->drawPrimitiveIndexed(data.startIndex, data.primitiveCount);

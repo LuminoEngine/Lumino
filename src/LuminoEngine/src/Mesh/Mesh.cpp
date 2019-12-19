@@ -8,6 +8,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include "MeshManager.hpp"
@@ -347,11 +348,13 @@ void Mesh::init(const MeshView& meshView)
 {
 	init();
 
+    m_vertexLayout = makeObject<VertexLayout>();
+
     // Validation and count vertices
     int vertexCount = 0;
 	for (auto& section : meshView.sectionViews) {
 		int count = section.vertexBufferViews[0].count;
-		for (size_t i = 1; i < section.vertexBufferViews.size(); i++) {
+		for (size_t i = 0; i < section.vertexBufferViews.size(); i++) {
             auto& view = section.vertexBufferViews[i];
 			if (count != view.count) {
 				// ひとつの section 内ではすべての頂点数が一致していることが前提
@@ -361,34 +364,145 @@ void Mesh::init(const MeshView& meshView)
 
             auto r = m_vertexBuffers.findIf([&](auto& x) { return x.type == view.type && x.usage == view.usage; });
             if (!r) {
-                m_vertexBuffers.add({ view.type, view.usage, nullptr });
+                m_vertexBuffers.add({ view.type, view.usage, view.usageIndex, nullptr });
             }
 		}
         vertexCount += count;
 	}
 
     // Allocate vertex buffers
-    for (auto& attr : m_vertexBuffers) {
-        attr.buffer = makeObject<VertexBuffer>(vertexCount * GraphicsHelper::getVertexElementTypeSize(attr.type));
+    for (int i = 0; i < m_vertexBuffers.size(); i++) {
+        auto& attr = m_vertexBuffers[i];
+        attr.buffer = makeObject<VertexBuffer>(vertexCount * GraphicsHelper::getVertexElementTypeSize(attr.type), GraphicsResourceUsage::Static);
     }
 
-    // Index buffer
+    int vertexOffset = 0;
+    for (auto& section : meshView.sectionViews) {
+        int vertexCount = section.vertexBufferViews[0].count;
+
+        for (auto& vbView : section.vertexBufferViews) {
+            auto attr = m_vertexBuffers.findIf([&](auto& x) { return x.type == vbView.type && x.usage == vbView.usage; });
+            auto* buf = static_cast<byte_t*>(attr->buffer->map(MapMode::Write));
+            auto* src = static_cast<const byte_t*>(vbView.data) + vbView.byteOffset;
+
+            int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+            for (int i = 0; i < vertexCount; i++) {
+                memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
+            }
+
+            // TODO: unmap 無いとめんどい以前に怖い
+        }
+    }
+
+    // 
     {
-        if (meshView.indexElementSize == 1) {
-            LN_NOTIMPLEMENTED();
+        auto r = m_vertexBuffers.findIf([&](auto& x) { return x.usage == VertexElementUsage::Color; });
+        if (!r) {
+            VertexBufferAttribute attr;
+            attr.type = VertexElementType::Float4;
+            attr.usage = VertexElementUsage::Color;
+            attr.usageIndex = 0;
+            attr.buffer = makeObject<VertexBuffer>(vertexCount * sizeof(Vector4), GraphicsResourceUsage::Static);
+            m_vertexBuffers.add(attr);
+            
+            auto* buf = static_cast<Vector4*>(attr.buffer->map(MapMode::Write));
+            for (int i = 0; i < vertexCount; i++) {
+                buf[i] = Vector4(1, 1, 1, 1);
+            }
         }
-        else if (meshView.indexElementSize == 2) {
-            m_indexBuffer = makeObject<IndexBuffer>(meshView.indexCount, IndexBufferFormat::UInt16, meshView.indexData, GraphicsResourceUsage::Static);
+    }
+
+    VertexBufferAttribute posa = m_vertexBuffers[1];
+    m_vertexBuffers.removeAt(1);
+    m_vertexBuffers.insert(0, posa);
+
+
+    for (int i = 0; i < m_vertexBuffers.size(); i++) {
+        auto& attr = m_vertexBuffers[i];
+        m_vertexLayout->addElement(i, attr.type, attr.usage, attr.usageIndex);
+    }
+
+    // Index buffer.
+    //   Lumino の MeshSection は glTF の Primitive と対応させているが、glTF の Primitive は様々な Index buffer を参照することができる。
+    //   MeshSection で扱うにはそれらすべてをひとつの Index buffer に統合する必要がある。
+    {
+        // 全ての index buffer を調べて、一番大きい Format でバッファ確保
+        int indexElementSize = 0;
+        int indexCount = 0;
+        for (auto& section : meshView.sectionViews) {
+            indexElementSize = std::max(indexElementSize, section.indexElementSize);
+            indexCount += section.indexCount;
         }
-        else if (meshView.indexElementSize == 4) {
-            m_indexBuffer = makeObject<IndexBuffer>(meshView.indexCount, IndexBufferFormat::UInt32, meshView.indexData, GraphicsResourceUsage::Static);
+        if (indexElementSize == 1 || indexElementSize == 2) {
+            m_indexBuffer = makeObject<IndexBuffer>(indexCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
+            indexElementSize = 2;
+        }
+        else if (indexElementSize == 4) {
+            m_indexBuffer = makeObject<IndexBuffer>(indexCount, IndexBufferFormat::UInt32, GraphicsResourceUsage::Static);
         }
         else {
             LN_NOTIMPLEMENTED();
         }
+
+        void* buf = m_indexBuffer->map(MapMode::Write);
+
+        int beginVertexIndex = 0;
+        int indexOffset = 0;
+        for (auto& section : meshView.sectionViews) {
+            int vertexCount = section.vertexBufferViews[0].count;
+
+            if (indexElementSize == 2) {
+                if (section.indexElementSize == 1) {
+                    LN_NOTIMPLEMENTED();
+                }
+                else if (section.indexElementSize == 2) {
+                    auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+                    auto* s = static_cast<const uint16_t*>(section.indexData);
+                    for (int i = 0; i < section.indexCount; i++) b[i] = beginVertexIndex + s[i];
+                }
+                else if (section.indexElementSize == 4) {
+                }
+                else {
+                    LN_NOTIMPLEMENTED();
+                }
+            }
+            else if (indexElementSize == 4) {
+                LN_NOTIMPLEMENTED();
+            }
+            else {
+                LN_NOTIMPLEMENTED();
+            }
+
+            // make mesh section
+            MeshSection2 meshSection;
+            meshSection.startIndex = indexOffset;
+            meshSection.primitiveCount = section.indexCount / 3;    // TODO: tri only
+            meshSection.materialIndex = section.materialIndex;
+            meshSection.topology = section.topology;
+            m_sections.add(meshSection);
+
+            // next
+            indexOffset += section.indexCount;
+            beginVertexIndex += vertexCount;
+        }
+
+        // TODO: unmap 無いとめんどい以前に怖い
+
     }
     
 
+}
+
+void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
+{
+    *outSection = m_sections[sectionIndex];
+    *outDecl = m_vertexLayout;
+    *outIB = m_indexBuffer;
+    *outVBCount = m_vertexBuffers.size();
+
+    for (int i = 0; i < m_vertexBuffers.size(); i++) {
+        (*outVBs)[i] = m_vertexBuffers[i].buffer;
+    }
 }
 
 //==============================================================================

@@ -141,6 +141,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matr
 		if (primitive.indices < 0) return nullptr;
 
 		Mesh::SectionView sectionView;
+        sectionView.materialIndex = primitive.material;
 
 		// Vertex buffers
 		for (auto itr = primitive.attributes.begin(); itr != primitive.attributes.end(); ++itr) {
@@ -217,41 +218,36 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matr
             const tinygltf::BufferView& indexBufferView = m_model->bufferViews[indexAccessor.bufferView];
             const tinygltf::Buffer& buffer = m_model->buffers[indexBufferView.buffer];
 
-            if (indexBufferViewIndex < 0) {
-                // 最初に見つかったものをインデックスバッファとして採用
-                indexBufferViewIndex = indexAccessor.bufferView;
-                indexComponentType = indexAccessor.componentType;
-
-                // 1byte
-                if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_BYTE || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
-                    meshView.indexElementSize = 1;
-                }
-                // 2byte
-                else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
-                    meshView.indexElementSize = 2;
-                }
-                // 4byte
-                else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
-                    meshView.indexElementSize = 4;
-                }
-                else {
-                    LN_NOTIMPLEMENTED();
-                    return nullptr;
-                }
-            }
-            else if (indexAccessor.bufferView != indexBufferViewIndex || indexAccessor.componentType != indexComponentType) {
-                // ひとつの Mesh の中で、別の index buffer を作るのはサポートしない
-                LN_ERROR();
-                return nullptr;
-            }
 
 			if (indexAccessor.sparse.isSparse) {
 				LN_NOTIMPLEMENTED();
 				return nullptr;
 			}
 
-            sectionView.indexOffset = indexBufferView.byteOffset / meshView.indexElementSize;
-            sectionView.indexCount = indexBufferView.byteLength / meshView.indexElementSize;
+
+            // 最初に見つかったものをインデックスバッファとして採用
+            indexBufferViewIndex = indexAccessor.bufferView;
+            indexComponentType = indexAccessor.componentType;
+
+            // 1byte
+            if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_BYTE || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
+                sectionView.indexElementSize = 1;
+            }
+            // 2byte
+            else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+                sectionView.indexElementSize = 2;
+            }
+            // 4byte
+            else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+                sectionView.indexElementSize = 4;
+            }
+            else {
+                LN_NOTIMPLEMENTED();
+                return nullptr;
+            }
+
+            sectionView.indexData = buffer.data.data() + indexBufferView.byteOffset;// / sectionView.indexElementSize;
+            sectionView.indexCount = indexBufferView.byteLength / sectionView.indexElementSize;
 		}
 
 		// Topology
