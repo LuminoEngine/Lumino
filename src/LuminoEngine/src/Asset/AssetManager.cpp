@@ -102,6 +102,28 @@ Optional<String> AssetManager::findAssetPath(const StringRef& filePath, const Ch
         return nullptr;
 }
 
+bool AssetManager::existsAsset(const String& assetPath) const
+{
+	String archiveName;
+	Path path;
+	if (tryParseAssetPath(assetPath, &archiveName, &path)) {
+		if (String::compare(archiveName, LocalhostPrefix, CaseSensitivity::CaseInsensitive) == 0) {
+			if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+				return FileSystem::existsFile(path);
+			}
+		}
+		else {
+			for (auto& archive : m_actualArchives) {
+				if (archive->existsFile(path)) {
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 Ref<Stream> AssetManager::openStreamFromAssetPath(const String& assetPath) const
 {
     String archiveName;

@@ -7,6 +7,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
+#include "GLTFImporter.hpp"
 #include "ObjMeshImporter.hpp"
 #include "PmxImporter.hpp"
 #include "MeshManager.hpp"
@@ -209,18 +210,31 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 
 Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, float scale)
 {
-    Ref<StaticMeshModel> mesh;
+	static const Char* candidateExts[] = { u".gltf" };
+	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
+	if (path) {
 
-    {
-        auto diag = makeObject<DiagnosticsManager>();
+		Ref<StaticMeshModel> mesh;
 
-        ObjMeshImporter importer;
-        mesh = importer.import(filePath, scale, diag);
+		{
+			auto diag = makeObject<DiagnosticsManager>();
 
-        diag->dumpToLog();
-    }
+			GLTFImporter importer;
+			mesh = importer.import(m_assetManager, *path, diag);
 
-    return mesh;
+			//ObjMeshImporter importer;
+			//mesh = importer.import(filePath, scale, diag);
+
+			diag->dumpToLog();
+		}
+
+		return mesh;
+	}
+	else {
+		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+		return nullptr;
+	}
+
 }
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)

@@ -127,6 +127,79 @@ public: // TODO:
 	friend class MeshContainer;
 };
 
+
+
+struct MeshSection2
+{
+	/** 開始インデックス */
+	int startIndex;
+
+	/** 描画プリミティブ数 */
+	int	primitiveCount;
+
+	/** 対応するマテリアル番号 */
+	int	materialIndex;
+
+	PrimitiveTopology topology;
+};
+
+class Mesh
+	: public Object
+{
+public:
+	// ファイルからのデータ読み込み用
+	struct VertexBufferView
+	{
+		VertexElementType type;
+		VertexElementUsage usage;
+		int usageIndex;
+		const void* data;
+		size_t byteOffset;
+		size_t count;	// vertex count. not byte size. (byte size = count * size(type))
+		size_t byteStride;
+	};
+
+	// ファイルからのデータ読み込み用
+	struct SectionView
+	{
+		std::vector<VertexBufferView> vertexBufferViews;
+		const void* indexData;
+		size_t indexElementSize;	// byte size. (1, 2, 4)
+		size_t indexBufferSize;		// byte size. 
+		PrimitiveTopology topology;
+	};
+
+	///** 頂点の数を変更します。 */
+	//void resizeVertexBuffer(int vertexCount);
+
+	///** インデックスの数を変更します。 */
+	//void resizeIndexBuffer(int indexCount);
+
+	/** セクションの情報を追加します。 */
+	void addSection(int startIndex, int primitiveCount, int materialIndex);
+
+	// TODO: internal
+	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
+
+LN_CONSTRUCT_ACCESS:
+	Mesh();
+	virtual ~Mesh();
+	void init();
+	void init(const std::vector<SectionView>& sectionViews);
+
+private:
+	struct VertexBufferAttribute
+	{
+		VertexElementUsage usage;
+		Ref<VertexBuffer> buffer;
+	};
+
+	
+	List<VertexBufferAttribute> m_vertexBuffers;
+	Ref<IndexBuffer> m_indexBuffer;
+	List<MeshSection2> m_sections;
+};
+
 // ひとつのメッシュモデルデータ内にいくつかのメッシュノードが含まれているとき、それを名前検索するために使用する。
 // 例えば、フィールドのモデルに ビジュアル用のメッシュとコリジョン用のメッシュが含まれている場合、名前検索でコリジョンを取り出して Phyiscs モジュールに渡したりする。
 // また、LOD の管理も行う。

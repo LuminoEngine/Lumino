@@ -328,6 +328,41 @@ bool MeshResource::isInitialEmpty() const
 }
 
 //==============================================================================
+// Mesh
+
+Mesh::Mesh()
+{
+}
+
+Mesh::~Mesh()
+{
+}
+
+void Mesh::init()
+{
+	Object::init();
+}
+
+void Mesh::init(const std::vector<SectionView>& sectionViews)
+{
+	init();
+
+	for (auto& section : sectionViews) {
+		int count = section.vertexBufferViews[0].count;
+		for (size_t i = 1; i < section.vertexBufferViews.size(); i++) {
+			if (count != section.vertexBufferViews[i].count) {
+				// ひとつの section 内ではすべての頂点数が一致していることが前提
+				LN_ERROR();
+				return;
+			}
+		}
+	}
+
+
+
+}
+
+//==============================================================================
 // MeshContainer
 
 MeshContainer::MeshContainer()

@@ -423,6 +423,9 @@ int main(int argc, char** argv)
 
     //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
+
+	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+
 #if 0
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));
