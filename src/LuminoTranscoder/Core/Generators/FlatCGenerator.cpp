@@ -8,37 +8,10 @@
 //==============================================================================
 // FlatCCommon
 
-
-
-
 ln::String FlatCCommon::makeEnumMemberName(GeneratorConfiguration* config, TypeSymbol* enumType, ConstantSymbol* member)
 {
 	return config->flatCOutputModuleName.toUpper() + u"_" + Generator::makeUpperSnakeName(enumType->shortName()) + u"_" + Generator::makeUpperSnakeName(member->name());
 }
-
-
-#if 0
-ln::String FlatCCommon::makeCppQualTypeName(TypeSymbol* typeInfo)
-{
-	if (typeInfo->IsClass())
-	{
-		return typeInfo->shortName() + _T("*");
-	}
-
-	return typeInfo->shortName();
-}
-
-ln::String FlatCCommon::makeFlatCQualTypeName(TypeSymbol* typeInfo)
-{
-	if (typeInfo->IsClass())
-	{
-		return typeInfo->shortName() + _T("*");
-	}
-	return typeInfo->shortName();
-}
-
-
-#endif
 
 ln::String FlatCCommon::makeInstanceParamName(TypeSymbol* type)
 {
@@ -53,13 +26,25 @@ void FlatCHeaderGenerator::generate()
 	// delegates
 	OutputBuffer delegatesText;
 	for (auto& delegateSymbol : db()->delegates()) {
-		// make params
-		OutputBuffer params;
-		for (auto& param : delegateSymbol->delegateDeclaration()->flatParameters()) {
-			params.AppendCommad("{0}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode));
-		}
-		delegatesText.AppendLine(u"typedef void(*{0})({1});", makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode), params.toString());
+		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
 	}
+    delegatesText.NewLine();
+
+    // delegateObjects
+    for (auto& delegateSymbol : db()->delegateObjects()) {
+		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
+
+        // make params
+        //OutputBuffer params;
+        //params.AppendCommad(u"LnHandle handle");
+        //for (auto& param : delegateSymbol->delegateDeclaration()->parameters()) {
+        //    params.AppendCommad("{0}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode));
+        //}
+        //delegatesText.AppendLine(u"typedef {0}(*{1})({2});",
+        //    delegateSymbol->delegateDeclaration()->returnType().type->shortName(),
+        //    makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode),
+        //    params.toString());
+    }
 
 	// structs
 	OutputBuffer structsText;
@@ -117,7 +102,7 @@ void FlatCHeaderGenerator::generate()
 				classMemberFuncDeclsText.AppendLine(makeFuncHeader(method, FlatCharset::Ascii) + u";");
 			}
 
-			classMemberFuncDeclsText.NewLine(2);
+			classMemberFuncDeclsText.NewLine();
 		}
 
 		// virtual callback
@@ -152,31 +137,31 @@ void FlatCHeaderGenerator::generate()
 
 ln::String FlatCHeaderGenerator::makeDocumentComment(DocumentInfo* doc) const
 {
-	OutputBuffer text;
-	text.AppendLine(u"/**");
-	text.IncreaseIndent();
+	OutputBuffer code;
+    code.AppendLine(u"/**");
+    code.IncreaseIndent();
 
 	// @brief
-	text.AppendLine(u"@brief {0}", doc->summary());
+    code.AppendLine(u"@brief {0}", doc->summary());
 
 	// @param
 	for (auto& param : doc->params())
 	{
-		text.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), param->description());
+        code.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), param->description());
 	}
 
 	// @return
 	if (!doc->returns().isEmpty())
-		text.AppendLine(u"@return {0}", doc->returns());
+        code.AppendLine(u"@return {0}", doc->returns());
 
 	// @details
 	if (!doc->details().isEmpty())
-		text.AppendLine(u"@details {0}", doc->details());
+        code.AppendLine(u"@details {0}", doc->details());
 
-	text.DecreaseIndent();
-	text.AppendLine(u"*/");
+    code.DecreaseIndent();
+    code.AppendLine(u"*/");
 
-	return text.toString().trim();
+	return code.toString().trim();
 }
 
 ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* method) const
@@ -184,12 +169,12 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 
 	auto doc = method->document();
 
-	OutputBuffer text;
-	text.AppendLine(u"/**");
-	text.IncreaseIndent();
+	OutputBuffer code;
+    code.AppendLine(u"/**");
+    code.IncreaseIndent();
 
 	// @brief
-	text.AppendLine(u"@brief {0}", doc->summary());
+    code.AppendLine(u"@brief {0}", doc->summary());
 
 	// @param
 	for (auto& param : doc->flatParams())
@@ -200,21 +185,37 @@ ln::String FlatCHeaderGenerator::makeMethodDocumentComment(const MethodSymbol* m
 			desc += u" (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)";
 		}
 
-		text.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), desc);
+        code.AppendLine(u"@param[{0}] {1} : {2}", param->io(), param->name(), desc);
 	}
 
 	// @return
 	if (!doc->returns().isEmpty())
-		text.AppendLine(u"@return {0}", doc->returns());
+        code.AppendLine(u"@return {0}", doc->returns());
 
 	// @details
 	if (!doc->details().isEmpty())
-		text.AppendLine(u"@details {0}", doc->details());
+        code.AppendLine(u"@details {0}", doc->details());
 
-	text.DecreaseIndent();
-	text.AppendLine(u"*/");
+    code.DecreaseIndent();
+    code.AppendLine(u"*/");
 
-	return text.toString().trim();
+	return code.toString().trim();
+}
+
+ln::String FlatCHeaderGenerator::makeDelegateFuncPtrDecl(const TypeSymbol* delegateSymbol) const
+{
+	// return
+	auto returnType = (delegateSymbol->isDelegateObject()) ? u"LnResult" : u"void";
+
+    // make params
+    OutputBuffer params;
+	if (delegateSymbol->isDelegateObject()) {
+		params.AppendCommad(u"LnHandle");
+	}
+    for (auto& param : delegateSymbol->delegateDeclaration()->flatParameters()) {
+        params.AppendCommad(u"{0} {1}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode), param->name());
+    }
+    return ln::String::format(u"typedef {0}(*{1})({2});", returnType, makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode), params.toString());
 }
 
 ln::String FlatCHeaderGenerator::makeEnumDecls() const
@@ -243,54 +244,6 @@ ln::String FlatCHeaderGenerator::makeEnumDecls() const
 	return code.toString().trim();
 }
 
-#if 0
-
-//ln::String WrapperIFGenerator::MakeMethods(Ref<TypeSymbol> typeInfo)
-//{
-//	OutputBuffer buffer;
-//
-//	for (auto& methodInfo : typeInfo->declaredMethods)
-//	{
-//		// event
-//		if (methodInfo->IsEventSetter())
-//		{
-//			// ※Event は引数1つが前提
-//			auto delegateClass = methodInfo->parameters[0]->type;
-//
-//			// event setter
-//			buffer.AppendLines(funcBodyTemplate
-//				.replace("%ClassName%", typeInfo->shortName())
-//				.replace("%FuncName%", methodInfo->GetCAPIFuncName())
-//				.replace("%ParamList%", ln::String::format("LNHandle self, LN{0} callback", delegateClass->shortName()))
-//				.replace("%FuncBody%", ln::String::format("LNI_TO_OBJECT(LN{0}, self)->{1}.Connect(callback);", typeInfo->shortName(), MakeEventWrapperMemberVariableName(methodInfo))));
-//		}
-//		else
-//		{
-//			buffer.AppendLines(makeFuncBody(typeInfo, methodInfo, false));
-//
-//			// override
-//			if (methodInfo->isVirtual)
-//			{
-//				// base caller
-//				buffer.AppendLines(makeFuncBody(typeInfo, methodInfo, true));
-//
-//				// override setter
-//				buffer.AppendLines(funcBodyTemplate
-//					.replace("%ClassName%", typeInfo->shortName())
-//					.replace("%FuncName%", methodInfo->GetCAPIFuncName() + "_SetOverrideCaller")
-//					.replace("%ParamList%", ln::String::format("{0}_{1}_OverrideCaller callback", typeInfo->shortName(), methodInfo->name))
-//					.replace("%FuncBody%", ln::String::format("LN{0}::m_{1}_OverrideCaller = callback;", typeInfo->shortName(), methodInfo->name)));
-//			}
-//		}
-//	}
-//
-//	return buffer.toString();
-//}
-
-
-
-#endif
-
 //==============================================================================
 // FlatCSourceGenerator
 
@@ -304,6 +257,12 @@ void FlatCSourceGenerator::generate()
 			structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
 		}
 	}
+
+    //for (auto& delegateSymbol : db()->delegateObjects()) {
+    //    for (auto& methodInfo : structInfo->publicMethods()) {
+    //        structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
+    //    }
+    //}
 
 	// classes
 	OutputBuffer classMemberFuncImplsText;
@@ -363,13 +322,13 @@ void FlatCSourceGenerator::generate()
 
 	// save C API Source
 	{
-        auto includeDirective = ln::String::format("#include \"{0}.FlatC.generated.h\"", config()->moduleName);
-        auto fileName = ln::String::format("{0}.FlatC.generated.cpp", config()->moduleName);
+        auto includeDirective = ln::String::format(u"#include \"{0}.FlatC.generated.h\"", config()->moduleName);
+        auto fileName = ln::String::format(u"{0}.FlatC.generated.cpp", config()->moduleName);
 
         if (!config()->flatCSourceOutputDirOverride.isEmpty())
-            includeDirective = ln::String::format("#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
+            includeDirective = ln::String::format(u"#include <LuminoEngine/Runtime/{0}.FlatC.generated.h>", config()->moduleName);
 
-        auto src = ln::FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp.template")))
+        auto src = ln::FileSystem::readAllText(makeTemplateFilePath(u"Source.cpp.template"))
 			.replace("%%IncludeDirective%%", includeDirective)
 			.replace("%%HeaderString%%", config()->flatCHeaderString)
 			.replace("%%WrapSubclassDecls%%", makeWrapSubclassDecls())
@@ -381,9 +340,77 @@ void FlatCSourceGenerator::generate()
 	}
 }
 
+ln::String FlatCSourceGenerator::generateDelegateObjects() const
+{
+	OutputBuffer code;
+
+	for (auto& delegateSymbol : db()->delegateObjects()) {
+		auto className = makeWrapSubclassName(delegateSymbol);
+		auto baseclassName = delegateSymbol->fullName();
+		auto funcPtrType = makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode);
+		auto nativeReturnType = delegateSymbol->delegateDeclaration()->returnType().type->fullName();
+		auto flatClassName = makeFlatClassName(delegateSymbol);
+
+		code.AppendLine(u"class {0} : public {1}", className, baseclassName);
+		code.AppendLine(u"{");
+		code.AppendLine(u"public:");
+		code.IncreaseIndent();
+		{
+			code.AppendLine(u"{0} m_callback;", funcPtrType);
+			code.NewLine();
+
+			// constructor
+			code.AppendLine(u"{0}() : {1}([this]({2}) -> {3}", className, baseclassName, makeNativeParamList(delegateSymbol->delegateDeclaration()), nativeReturnType);
+			code.AppendLine(u"{");
+			code.IncreaseIndent();
+			{
+				code.AppendLine(nativeReturnType + u" ret = {};");
+				code.AppendLine(u"auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), {0}, &ret);", makeFlatArgList(delegateSymbol->delegateDeclaration()));
+				code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+				code.AppendLine(u"return ret;");
+			}
+			code.DecreaseIndent();
+			code.AppendLine(u"})");
+			code.AppendLine(u"{}");
+			code.NewLine();
+
+			// init()
+			code.AppendLine(u"void init({0} callback)", funcPtrType);
+			code.AppendLine(u"{");
+			code.IncreaseIndent();
+			{
+				code.AppendLine(u"{0}::init();", delegateSymbol->fullName());
+				code.AppendLine(u"m_callback = callback;");
+			}
+			code.DecreaseIndent();
+			code.AppendLine(u"}");
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"};");
+		code.NewLine();
+
+		// Create
+		code.AppendLine(u"LN_FLAT_API LnResult {0}_Create({1} callback, LnHandle* outDelegate)", flatClassName, funcPtrType);
+		code.AppendLine(u"{");
+		code.IncreaseIndent();
+		{
+			code.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
+			code.AppendLine(u"LNI_CREATE_OBJECT(outDelegate, {0}, init, callback);", className);
+			code.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"}");
+	}
+
+	return code.toString();
+}
+
 ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 {
 	OutputBuffer code;
+
+	code.AppendLines(generateDelegateObjects());
+
 	for (auto& classSymbol : db()->classes()) {
 
 		OutputBuffer overrideCallbackDecl;
@@ -449,12 +476,34 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 	return code.toString();
 }
 
+ln::String FlatCSourceGenerator::makeNativeParamList(const MethodSymbol* method) const
+{
+	OutputBuffer params;
+	for (auto& param : method->parameters()) {
+		params.AppendCommad(u"{0} {1}", param->getFullQualTypeName(), param->name());
+	}
+	return params.toString();
+}
+
 // FlatC(Handleなど) -> Native(UIElement*など) への呼び出し実引数リストを作成する。
 ln::String FlatCSourceGenerator::makeNativeArgList(const MethodSymbol* method) const
 {
 	OutputBuffer argList;
 	for (auto& param : method->parameters()) {
-		if (param->type()->isClass())
+		if (param->type()->isObjectGroup())
+			argList.AppendCommad(u"LNI_HANDLE_TO_OBJECT({0}, {1})", param->type()->fullName(), param->name());
+		else
+			argList.AppendCommad(param->name());
+	}
+	return argList.toString();
+}
+
+// Native -> FlatC への呼び出し実引数リストを作成する。Native のコールバックから、FlatC のコールバックを呼び出すときなどに使用する。 
+ln::String FlatCSourceGenerator::makeFlatArgList(const MethodSymbol* method) const
+{
+	OutputBuffer argList;
+	for (auto& param : method->parameters()) {
+		if (param->type()->isObjectGroup())
 			argList.AppendCommad(u"LNI_HANDLE_TO_OBJECT({0}, {1})", param->type()->fullName(), param->name());
 		else
 			argList.AppendCommad(param->name());
@@ -518,7 +567,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		for (auto& paramInfo : methodInfo->parameters())
 		{
 			auto* type = paramInfo->type();
-			if (type->isClass())
+			if (type->isObjectGroup())
 			{
 				args.AppendCommad("LNI_HANDLE_TO_OBJECT({0}, {1})", type->fullName(), paramInfo->name());
 			}

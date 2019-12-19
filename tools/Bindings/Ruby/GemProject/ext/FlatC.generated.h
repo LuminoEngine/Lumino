@@ -4,6 +4,13 @@
 
 extern "C"
 {
+
+
+typedef LnResult(*LnTestDelegateCallback)(LnHandle handle, int, int* outReturn);
+
+LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
+
+
 /**
     @brief 3次元のベクトルを定義します。
 */
@@ -517,6 +524,7 @@ LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture);
 */
 LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float y, float width, float height);
 
+LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback);
 
 /**
     @brief init

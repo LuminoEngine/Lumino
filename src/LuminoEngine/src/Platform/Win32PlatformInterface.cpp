@@ -16,24 +16,27 @@ namespace ln {
 
 static ln::Application* g_app = nullptr;
 
-void Win32PlatformInterface::init(Application* app)
+//void Win32PlatformInterface::init(Application* app)
+//{
+//
+//    if (app) {
+//        g_app = app;
+//    }
+//    else {
+//#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
+//        g_app = ::LuminoCreateApplicationInstance();
+//#endif
+//    }
+//    detail::ApplicationHelper::init(g_app);
+//}
+//
+int Win32PlatformInterface::WinMain(Application* app)
 {
+    g_app = app;
+
     detail::EngineSettings& settings = detail::EngineDomain::engineManager()->settings();
     settings.standaloneFpsControl = true;
 
-    if (app) {
-        g_app = app;
-    }
-    else {
-#if defined(_WIN32) && !defined(LUMINO_BUILD_DLL)
-        g_app = ::LuminoCreateApplicationInstance();
-#endif
-    }
-    detail::ApplicationHelper::init(g_app);
-}
-
-int Win32PlatformInterface::WinMain()
-{
 	detail::ApplicationHelper::run(g_app);
 	detail::ApplicationHelper::finalize(g_app);
 	RefObjectHelper::release(g_app);

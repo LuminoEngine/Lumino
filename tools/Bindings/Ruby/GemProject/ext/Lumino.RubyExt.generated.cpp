@@ -127,6 +127,7 @@ VALUE g_class_SpriteComponent;
 VALUE g_class_ComponentList;
 VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
+VALUE g_class_TestDelegate;
 VALUE g_class_Sprite;
 VALUE g_class_UIEventArgs;
 VALUE g_class_UILayoutElement;
@@ -1302,6 +1303,95 @@ LnResult Wrap_LnVisualObject_OnUpdate_OverrideCallback(LnHandle worldobject, flo
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
     return LN_SUCCESS;
 }
+
+
+
+//==============================================================================
+// ln::TestDelegate
+
+struct Wrap_TestDelegate
+    : public Wrap_Object
+{
+    VALUE m_callback;
+
+    Wrap_TestDelegate()
+    {}
+
+    static LnResult StaticCallback(LnHandle handle, int v1, int* outReturn)
+    {
+        printf("====StaticCallback s\n");
+        VALUE self = LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(handle);
+        Wrap_TestDelegate* selfObj;
+        Data_Get_Struct(self, Wrap_TestDelegate, selfObj);
+    
+        VALUE _v1 = LNI_TO_RUBY_VALUE(v1);
+        rb_funcall(selfObj->m_callback, rb_intern("call"), 1, _v1);
+        printf("====StaticCallback e\n");
+        *outReturn = v1 + 1;
+        return LN_SUCCESS;
+    }
+
+};
+
+static void LnTestDelegate_delete(Wrap_TestDelegate* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+static void LnTestDelegate_mark(Wrap_TestDelegate* obj)
+{
+	rb_gc_mark(obj->m_callback);
+}
+static VALUE LnTestDelegate_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_TestDelegate* internalObj;
+    internalObj = new Wrap_TestDelegate();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTestDelegate_allocate");
+    obj = Data_Wrap_Struct(klass, LnTestDelegate_mark, LnTestDelegate_delete, internalObj);
+    return obj;
+}
+static VALUE LnTestDelegate_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_TestDelegate* internalObj;
+    internalObj = new Wrap_TestDelegate();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTestDelegate_allocate");
+    obj = Data_Wrap_Struct(klass, LnTestDelegate_mark, LnTestDelegate_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+// https://qiita.com/lnznt/items/d2d18e45bcab48cf107d
+static VALUE Wrap_LnTestDelegate_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_TestDelegate* selfObj;
+    Data_Get_Struct(self, Wrap_TestDelegate, selfObj);
+    VALUE proc = rb_block_proc();  // https://www.ruby-forum.com/t/passing-blocks-around-in-a-c-extension/66602/2
+    // ↑ block が与えられていない場合 tried to create Proc object without a block (ArgumentError)
+    printf("Wrap_LnTestDelegate_Create, argc:%d %d\n", argc, proc);
+    //if (1 <= argc && argc <= 1) {
+        //VALUE proc;
+        //rb_scan_args(argc, argv, "1", &proc);
+        if (1)
+        {
+            selfObj->m_callback = proc;
+
+            LnResult errorCode = LnTestDelegate_Create(Wrap_TestDelegate::StaticCallback, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+            return Qnil;
+        }
+    //}
+    //rb_raise(rb_eArgError, "ln::TestDelegate::init - wrong argument type.");
+    return Qnil;
+}
+
+
+
+
+
 //==============================================================================
 // ln::Sprite
 
@@ -1378,6 +1468,25 @@ static VALUE Wrap_LnSprite_SetSourceRectXYWH(int argc, VALUE* argv, VALUE self)
             float _width = LNRB_VALUE_TO_FLOAT(width);
             float _height = LNRB_VALUE_TO_FLOAT(height);
             LnResult errorCode = LnSprite_SetSourceRectXYWH(selfObj->handle, _x, _y, _width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Sprite::setSourceRect - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSprite_SetCallerTest(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Sprite* selfObj;
+    Data_Get_Struct(self, Wrap_Sprite, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE callback;
+        rb_scan_args(argc, argv, "1", &callback);
+        if (1)
+        {
+            LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
+            LnResult errorCode = LnSprite_SetCallerTest(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -2091,10 +2200,16 @@ extern "C" void Init_Lumino_RubyExt()
     LnVisualObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualObject, LnVisualObject_allocateForGetObject));
     LnVisualObject_OnUpdate_SetOverrideCallback(Wrap_LnVisualObject_OnUpdate_OverrideCallback);
 
+    g_class_TestDelegate = rb_define_class_under(g_rootModule, "TestDelegate", g_class_VisualObject);
+    rb_define_alloc_func(g_class_TestDelegate, LnTestDelegate_allocate);
+    rb_define_private_method(g_class_TestDelegate, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTestDelegate_Create), -1);
+    //LnTestDelegate_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_TestDelegate, LnTestDelegate_allocateForGetObject));
+
     g_class_Sprite = rb_define_class_under(g_rootModule, "Sprite", g_class_VisualObject);
     rb_define_alloc_func(g_class_Sprite, LnSprite_allocate);
     rb_define_method(g_class_Sprite, "texture=", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetTexture), -1);
     rb_define_method(g_class_Sprite, "set_source_rect", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSourceRectXYWH), -1);
+    rb_define_method(g_class_Sprite, "set_caller_test", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetCallerTest), -1);
     rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSprite_Create), -1);
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
     LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);

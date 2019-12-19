@@ -4,6 +4,7 @@
 
 #include "LuminoEngine/Base/Regex.hpp"
 #include "LuminoEngine/Base/Variant.hpp"
+#include "LuminoEngine/Base/Serializer.hpp"
 
 #include "LuminoEngine/Engine/EngineSettings.hpp"
 #include "LuminoEngine/Engine/Engine.hpp"

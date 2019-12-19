@@ -1,9 +1,38 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Scene/Sprite.hpp>
+#include <LuminoEngine/Scene/World.hpp>
 
 namespace ln {
+
+//==============================================================================
+// Sprite
+
+Sprite::Builder& Sprite::Builder::texture(Texture* value) noexcept
+{
+    m_texture = value;
+    return *this;
+}
+
+Sprite::Builder& Sprite::Builder::pixelsParUnit(float value) noexcept
+{
+    m_pixelsParUnit = value;
+    return *this;
+}
+
+Ref<Sprite> Sprite::Builder::build()
+{
+    return makeObject<Sprite>(*this);
+}
+
+Ref<Sprite> Sprite::Builder::buildInMainWorld()
+{
+    auto ptr = build();
+    detail::EngineDomain::mainWorld()->addObject(ptr);
+    return ptr;
+}
 
 //==============================================================================
 // Sprite
@@ -30,6 +59,14 @@ Sprite::~Sprite()
 {
 }
 
+Result Sprite::init(const Builder& builder)
+{
+    init();
+    setTexture(builder.m_texture);
+    setPixelsParUnit(builder.m_pixelsParUnit);
+    return true;
+}
+
 void Sprite::init()
 {
     VisualObject::init();
@@ -51,14 +88,19 @@ void Sprite::init(SpriteFrameSet* frameSet)
 	setFrameSet(frameSet);
 }
 
-void Sprite::setTexture(Texture* texture)
+void Sprite::setTexture(Texture* value)
 {
-    m_component->setTexture(texture);
+	//if (m_testDelegate) {
+	//	int a = m_testDelegate->call(10);
+	//	std::cout << "m_testDelegate: " << a << std::endl;
+	//}
+
+    m_component->setTexture(value);
 }
 
-void Sprite::setSize(const Size& size)
+void Sprite::setSize(const Size& value)
 {
-    m_component->setSize(size);
+    m_component->setSize(value);
 }
 
 void Sprite::setSourceRect(const Rect& rect)
@@ -114,6 +156,11 @@ void Sprite::setFlippedY(bool value)
 bool Sprite::isFlippedY() const
 {
     return m_component->isFlippedY();
+}
+
+void Sprite::setPixelsParUnit(float value)
+{
+    return m_component->setPixelsParUnit(value);
 }
 
 } // namespace ln

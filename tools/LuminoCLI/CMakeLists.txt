@@ -22,8 +22,6 @@ target_link_libraries(${PROJECT_NAME} LuminoEngine-static EditorCore)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "LuminoCLI.PCH.hpp" "LuminoCLI.PCH.cpp")
 
-add_subdirectory(test)
-
 #------------------------------------------------------------------------------
 # Install
 

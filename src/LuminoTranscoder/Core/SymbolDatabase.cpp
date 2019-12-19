@@ -8,6 +8,7 @@ ln::Ref<TypeSymbol>	PredefinedTypes::intType;
 ln::Ref<TypeSymbol>	PredefinedTypes::int16Type;
 ln::Ref<TypeSymbol>	PredefinedTypes::uint32Type;
 ln::Ref<TypeSymbol>	PredefinedTypes::floatType;
+ln::Ref<TypeSymbol>	PredefinedTypes::doubleType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringRefType;
 ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
@@ -226,7 +227,7 @@ ln::Result MethodParameterSymbol::link()
 		if (!m_qualType.type) return false;
 
 		// io direction
-		if (type()->isClass()) {
+		if (type()->isObjectGroup()) {
 			m_isIn = true;
 		}
 		else {
@@ -331,6 +332,13 @@ ln::Result MethodSymbol::link()
 	if (m_pi) {
 		m_returnType = db()->parseQualType(m_pi->returnTypeRawName);
 		if (!m_returnType.type) return false;
+
+		// std::function の alias などでは引数名が取れないことがあるため、名前を作っておく
+		for (int i = 0; i < m_parameters.size(); i++) {
+			if (m_parameters[i]->m_name.isEmpty()) {
+				m_parameters[i]->m_name = ln::String::format(u"p{0}", i + 1);
+			}
+		}
 
 		for (auto& p : m_parameters) {
 			if (!p->link()) return false;
@@ -985,76 +993,6 @@ ln::Result SymbolDatabase::linkTypes()
 	return true;
 }
 
-//tr::Enumerator<ln::Ref<MethodSymbol>> SymbolDatabase::GetAllMethods()
-//{
-//	ln::List<ln::Ref<MethodSymbol>> dummy;
-//	auto e = tr::MakeEnumerator::from(dummy);
-//
-//	for (auto& structInfo : structs)
-//	{
-//		e.Join(structInfo->declaredMethods);
-//	}
-//	for (auto& classInfo : classes)
-//	{
-//		e.Join(classInfo->declaredMethods);
-//	}
-//
-//	return e;
-//}
-
-//void SymbolDatabase::FindEnumTypeAndValue(const ln::String& typeFullName, const ln::String& memberName, ln::Ref<TypeSymbol>* outEnum, ln::Ref<ConstantSymbol>* outMember)
-//{
-//	for (auto& enumInfo : enums)
-//	{
-//		if (enumInfo->fullName() == typeFullName)
-//		{
-//			for (auto& constantInfo : enumInfo->declaredConstants)
-//			{
-//				if (constantInfo->name == memberName)
-//				{
-//					*outEnum = enumInfo;
-//					*outMember = constantInfo;
-//					return;
-//				}
-//			}
-//		}
-//	}
-//
-//	LN_ENSURE(0, "Undefined enum: %s::%s", typeFullName.c_str(), memberName.c_str());
-//}
-
-//ln::Ref<ConstantSymbol> SymbolDatabase::createConstantFromLiteralString(const ln::String& valueStr)
-//{
-//	auto info = ln::makeRef<ConstantSymbol>();
-//	if (valueStr == "true")
-//	{
-//		info->type = PredefinedTypes::boolType;
-//		info->value = ln::makeVariant(true);
-//	}
-//	else if (valueStr == "false")
-//	{
-//		info->type = PredefinedTypes::boolType;
-//		info->value = ln::makeVariant(false);
-//	}
-//	else if (valueStr == "nullptr")
-//	{
-//		info->type = PredefinedTypes::nullptrType;
-//		info->value = ln::makeVariant(nullptr);
-//	}
-//	else if (valueStr.contains('.'))
-//	{
-//		info->type = PredefinedTypes::floatType;
-//		info->value = ln::makeVariant(ln::StringHelper::toFloat(valueStr.c_str()));
-//	}
-//	else
-//	{
-//		info->type = PredefinedTypes::intType;
-//		info->value = ln::makeVariant(ln::StringHelper::toInt32(valueStr.c_str()));
-//	}
-//
-//	return info;
-//}
-
 const PIDocument* SymbolDatabase::resolveCopyDoc(const PIDocument* pi) const
 {
 	if (pi->copydocLocalSignature.isEmpty())
@@ -1085,6 +1023,8 @@ void SymbolDatabase::initPredefineds()
 	PredefinedTypes::uint32Type = addPredefined(u"uint32_t");
 
 	PredefinedTypes::floatType = addPredefined(u"float");
+
+	PredefinedTypes::doubleType = addPredefined(u"double");
 
 	PredefinedTypes::stringType = addPredefined(u"ln::String");
 

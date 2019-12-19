@@ -61,7 +61,6 @@ private:
 	CompilerInstance * m_ci;
 	const SourceManager& m_sm;
 	::HeaderParser2* m_parser;
-	//Ref<DocumentSymbol> m_lastDocument;
 	PITypeInfo* m_currentRecord;
 
 public:
@@ -79,25 +78,20 @@ public:
 	std::vector<std::string> getAnnotation(Decl* decl)
 	{
 		std::vector<std::string> attrs;
-		//if (decl->hasAttrs())
+
+		for (auto& attr : decl->attrs())
 		{
-			//AttributeDeclKind::
-			//AnnotateAttr::getKind
-			//clang::attr::Kind::
-			//decl->attrs
-			for (auto& attr : decl->attrs())
+			auto kind = attr->getKind();
+
+			auto str = getSourceText(attr->getRange());
+
+			auto* anno = dyn_cast<AnnotateAttr>(attr);
+			if (anno != nullptr)
 			{
-				auto kind = attr->getKind();
-
-				auto str = getSourceText(attr->getRange());
-
-				auto* anno = dyn_cast<AnnotateAttr>(attr);
-				if (anno != nullptr)
-				{
-					attrs.push_back(anno->getAnnotation().str());
-				}
+				attrs.push_back(anno->getAnnotation().str());
 			}
 		}
+
 		return attrs;
 	}
 
@@ -538,6 +532,8 @@ public:
 				TypeSourceInfo* typeSourceInfo = decl->getTypeSourceInfo();	// "std::function<void(UIEventArgs* e)>"
 				SplitQualType st = typeSourceInfo->getType().split();
 				auto type = st.Ty;
+
+				// std::function is Elaborated
 				if (type->getTypeClass() == clang::Type::TypeClass::Elaborated) {
 					const ElaboratedType* elaboratedType = llvm::cast<clang::ElaboratedType, clang::Type const>(type);
 					NestedNameSpecifier* eaboratedTypeQualifier = elaboratedType->getQualifier();	// "std::"
@@ -561,6 +557,59 @@ public:
 									// ここまで来たら delegate として抽出する
 									auto typeInfo = ln::makeRef<PITypeInfo>();
 									typeInfo->kind = u"Delegate";
+									typeInfo->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
+									typeInfo->document = parseDocument(decl);
+									m_parser->getDB()->types.add(typeInfo);
+
+									auto methodInfo = ln::makeRef<PIMethod>();
+									methodInfo->document = parseDocument(decl);
+									methodInfo->name = ln::String::fromStdString(decl->getNameAsString());
+									methodInfo->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
+									methodInfo->accessLevel = u"Public";
+									methodInfo->isStatic = true;
+									typeInfo->methods.add(methodInfo);
+
+									for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
+										QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
+										SplitQualType paramTypeSplit = paramType.split();
+
+										auto paramInfo = ln::makeRef<PIMethodParameter>();
+										paramInfo->typeRawName = getRawTypeFullName(paramType);
+										paramInfo->isConst = paramType.getQualifiers().hasConst();
+										paramInfo->isPointer = paramTypeSplit.Ty->isPointerType();
+										methodInfo->parameters.add(paramInfo);
+									}
+								}
+							}
+						}
+					}
+				}
+				// ln::Delegate is TemplateSpecialization
+				else if (type->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
+					const TemplateSpecializationType* templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(type);
+
+					templateSpecializationType->dump();
+
+					TemplateName templateName = templateSpecializationType->getTemplateName();	// "function"
+
+					TemplateDecl* templateDecl = templateName.getAsTemplateDecl();
+					if (templateDecl->getQualifiedNameAsString() == "ln::Delegate") {
+						// Note: templateDecl->getNameAsString() で "Delegate" だけとれる
+
+						auto args = templateSpecializationType->template_arguments();
+						if (args.size() == 1) {
+
+							const TemplateArgument& templateArg = args[0];	// "void(UIEventArgs* e)"
+							if (templateArg.getKind() == TemplateArgument::Type) {
+								QualType argType = templateArg.getAsType();
+								SplitQualType argTypeSplit = argType.split();
+
+								if (argTypeSplit.Ty->getTypeClass() == clang::Type::TypeClass::FunctionProto) {
+									const FunctionProtoType* functionProtoType = llvm::cast<clang::FunctionProtoType, clang::Type const>(argTypeSplit.Ty);
+
+									// ここまで来たら delegate として抽出する
+									auto typeInfo = ln::makeRef<PITypeInfo>();
+									typeInfo->kind = u"DelegateObject";
 									typeInfo->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
 									typeInfo->document = parseDocument(decl);
 									m_parser->getDB()->types.add(typeInfo);

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -127,12 +128,13 @@ void EngineManager::init()
 		m_activeDiagnostics->registerProfilingItem(ProfilingItem::Graphics_RenderPassCount);
 	}
 
-	initializeAllManagers();
-
     // register types
     {
         EngineDomain::registerType<Application>();
+		EngineDomain::registerType<Serializer>();
     }
+
+	initializeAllManagers();
 
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setMeasurementEnabled(true);
@@ -940,6 +942,11 @@ RuntimeManager* EngineDomain::runtimeManager()
 EngineContext* EngineDomain::engineContext()
 {
     return engineManager()->engineContext();
+}
+
+World* EngineDomain::mainWorld()
+{
+    return engineManager()->mainWorld();
 }
 
 } // namespace detail

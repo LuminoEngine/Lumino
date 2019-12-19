@@ -1,7 +1,7 @@
 ﻿
 #include "Generator.hpp"
 
-const ln::String Generator::NewLine = _T("\n");
+const ln::String Generator::NewLine = u"\n";
 
 ln::Path Generator::makeFlatCHeaderOutputPath() const
 {
@@ -205,14 +205,14 @@ ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo,
 	{
 		ln::String name;
 		if (typeInfo == PredefinedTypes::boolType)
-			name = _T("LnBool");
-		else if (typeInfo->kind() == TypeKind::Class)
-			name = "LnHandle";
+			name = u"LnBool";
+		else if (typeInfo->isObjectGroup())
+			name = u"LnHandle";
 		else
 			name = typeInfo->shortName();
 
 		if (paramInfo->isOut() || paramInfo->isReturn())
-			name += "*";
+			name += u"*";
 
 		//if (typeInfo->isStruct && paramInfo->isThis)
 		//{

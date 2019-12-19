@@ -50,6 +50,9 @@ public:
 	/** 文字列を追加する (各行の先頭をインデント) */
 	OutputBuffer& AppendLinesHeaderd(const ln::StringRef& str, const ln::StringRef& lineHeader) { AppendLinesInternal(str, lineHeader); return *this; }
 
+    /** 文字列を追加する (各行の先頭をインデント) */
+    OutputBuffer& AppendLinesHeaderd2(const ln::StringRef& lineHeader, const ln::StringRef& str) { AppendLinesInternal(str, lineHeader); return *this; }
+
 	/** 既に文字列が存在すれば , を挿入して文字列を追加する */
 	template<typename... TArgs>
 	OutputBuffer& AppendCommad(const ln::StringRef& format, const TArgs&... args)

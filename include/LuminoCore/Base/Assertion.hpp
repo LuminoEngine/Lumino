@@ -20,7 +20,7 @@ class String;
  *
  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを続行します。
  */
-#define LN_WARNING(...) ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_WARNING(...) ln::detail::notifyException<::ln::Exception>(::ln::ExceptionLevel::Warning, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
 /**
  * アプリケーションが不正な状態になる可能性がある問題を通知するためのマクロです。
@@ -31,7 +31,7 @@ class String;
  *
  * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
  */
-#define LN_ERROR(...) ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_ERROR(...) ln::detail::notifyException<::ln::Exception>(::ln::ExceptionLevel::Error, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
  /**
   * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
@@ -41,7 +41,7 @@ class String;
   *
   * デフォルトの例外ハンドラの動作は、メッセージをロギングしてプログラムを停止します。
   */
-#define LN_FATAL(...) ln::detail::notifyException<::ln::Exception>(ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
+#define LN_FATAL(...) ln::detail::notifyException<::ln::Exception>(::ln::ExceptionLevel::Fatal, __FILE__, __LINE__, nullptr, ##__VA_ARGS__)
 
 /**
  * コードを実行する前の前提条件を検証するためのマクロです。

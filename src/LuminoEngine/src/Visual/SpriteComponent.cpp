@@ -182,7 +182,7 @@ SpriteComponent::SpriteComponent()
     , m_anchorPoint(0.5, 0.5)
 	, m_frameIndex(0)
     , m_flipFlags(detail::SpriteFlipFlags::None)
-    , m_pixelsParUnit(1.0f)
+    , m_pixelsParUnit(0.0f)
 {
 }
 
@@ -251,7 +251,7 @@ void SpriteComponent::onRender(RenderingContext* context)
 	}
 
     Size size = m_size;
-    if (m_size.width < 0 && m_size.height < 0) {
+    if (m_pixelsParUnit > 0.0f && (sourceRect.width > 0.0f && sourceRect.height > 0.0f)/*m_size.width < 0 && m_size.height < 0*/) {
         size.width = sourceRect.width / m_pixelsParUnit;
         size.height = sourceRect.height / m_pixelsParUnit;
     }

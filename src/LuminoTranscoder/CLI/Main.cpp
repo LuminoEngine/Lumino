@@ -3,6 +3,8 @@
 #include "../Core/SymbolDatabase.hpp"
 #include "../Core/Generators/FlatCGenerator.hpp"
 #include "../Core/Generators/RubyExtGenerator.hpp"
+#include "../Core/Generators/DotNetPInvokeGenerator.hpp"
+#include "../Core/Generators/DotnetClassGenerator.hpp"
 
 #define TEST_ROOT u"D:/Proj/LN/Lumino/"
 
@@ -28,6 +30,7 @@ int main(int argc, char** argv)
 		ln::List<ln::Path> files_LuminoEngine =
 		{
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
+			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
             TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
@@ -108,17 +111,26 @@ int main(int argc, char** argv)
 		g.setup(db, config);
 		g.generate();
 	}
-	{
-		RubyExtGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		RubyYARDOCSourceGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-
+	//{
+	//	RubyExtGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	RubyYARDOCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+    {
+        DotNetPInvokeGenerator g;
+        g.setup(db, config);
+        g.generate();
+    }
+    {
+        DotnetClassGenerator g;
+        g.setup(db, config);
+        g.generate();
+    }
 
 	return 0;
 }
