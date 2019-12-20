@@ -138,6 +138,10 @@ enum class VertexElementUsage
     /** (obsolete) ポイントスプライトサイズ */
     PointSize,
 
+	Tangent,
+
+	Binormal,
+
     /** ブレンディング (スキニング) のインデックス */
     BlendIndices,
 

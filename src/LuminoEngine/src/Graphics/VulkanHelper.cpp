@@ -1954,8 +1954,7 @@ Result VulkanPipeline::init(VulkanDevice* deviceContext, VulkanRenderPass* owner
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-    auto bindingDescription = vertexDeclaration->vertexBindingDescriptions(); //Vertex::getBindingDescription();
-    //auto attributeDescriptions = Vertex::getAttributeDescriptions();
+    auto bindingDescription = vertexDeclaration->vertexBindingDescriptions();
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
     {
         auto& attrs = vertexDeclaration->vertexAttributeDescriptionSources();
@@ -1982,8 +1981,8 @@ Result VulkanPipeline::init(VulkanDevice* deviceContext, VulkanRenderPass* owner
     VkViewport viewport = {};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = state.regionRects.viewportRect.width; //(float)swapChainExtent.width;
-    viewport.height = state.regionRects.viewportRect.height;//(float)swapChainExtent.height;
+    viewport.width = state.regionRects.viewportRect.width;
+    viewport.height = state.regionRects.viewportRect.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
@@ -2015,28 +2014,12 @@ Result VulkanPipeline::init(VulkanDevice* deviceContext, VulkanRenderPass* owner
         rasterizerInfo.depthBiasSlopeFactor = 0.0f;
         rasterizerInfo.lineWidth = 1.0f;
     }
-    //VkPipelineRasterizationStateCreateInfo rasterizer = {};
-    //rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    //rasterizer.depthClampEnable = VK_FALSE;
-    //rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    //rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    //rasterizer.lineWidth = 1.0f;
-    //rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    //rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE; // Viewport height を反転しているので、時計回りを正面 //VK_FRONT_FACE_COUNTER_CLOCKWISE;
-    //rasterizer.depthBiasEnable = VK_FALSE;
 
     VkPipelineMultisampleStateCreateInfo multisampling = {};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     multisampling.sampleShadingEnable = VK_FALSE;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-    //VkPipelineDepthStencilStateCreateInfo depthStencil = {};
-    //depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    //depthStencil.depthTestEnable = VK_TRUE;
-    //depthStencil.depthWriteEnable = VK_TRUE;
-    //depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
-    //depthStencil.depthBoundsTestEnable = VK_FALSE;
-    //depthStencil.stencilTestEnable = VK_FALSE;
     VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
     {
         const DepthStencilStateDesc& desc = state.pipelineState.depthStencilState;
@@ -2108,23 +2091,11 @@ Result VulkanPipeline::init(VulkanDevice* deviceContext, VulkanRenderPass* owner
         colorBlending.blendConstants[2] = 1.0f;
         colorBlending.blendConstants[3] = 1.0f;
     }
-    //VkPipelineColorBlendStateCreateInfo colorBlending = {};
-    //colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    //colorBlending.logicOpEnable = VK_FALSE;
-    //colorBlending.logicOp = VK_LOGIC_OP_COPY;
-    //colorBlending.attachmentCount = 1;
-    //colorBlending.pAttachments = &colorBlendAttachment;
-    //colorBlending.blendConstants[0] = 0.0f;
-    //colorBlending.blendConstants[1] = 0.0f;
-    //colorBlending.blendConstants[2] = 0.0f;
-    //colorBlending.blendConstants[3] = 0.0f;
 
     const VkDynamicState dynamicStates[] =
     {
         VK_DYNAMIC_STATE_VIEWPORT,
         VK_DYNAMIC_STATE_SCISSOR,
-        //VK_DYNAMIC_STATE_BLEND_CONSTANTS,
-        //VK_DYNAMIC_STATE_STENCIL_REFERENCE,
     };
     VkPipelineDynamicStateCreateInfo dynamicState;
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
@@ -2132,17 +2103,6 @@ Result VulkanPipeline::init(VulkanDevice* deviceContext, VulkanRenderPass* owner
     dynamicState.flags = 0;
     dynamicState.dynamicStateCount = LN_ARRAY_SIZE_OF(dynamicStates);
     dynamicState.pDynamicStates = dynamicStates;
-
-    //VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-    //pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    //pipelineLayoutInfo.setLayoutCount = m_shaderPass->descriptorSetLayouts().size();
-    //pipelineLayoutInfo.pSetLayouts = m_shaderPass->descriptorSetLayouts().data();
-
-    //if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-    //    throw std::runtime_error("failed to create pipeline layout!");
-    //}
-
-    //renderPass = framebuffer->vulkanRenderPass();//
 
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

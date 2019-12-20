@@ -3,6 +3,7 @@
 #include "../../src/LuminoEngine/src/Shader/ShaderTranspiler.hpp"
 #include "../../src/LuminoEngine/src/Shader/HLSLMetadataParser.hpp"
 #include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
+#include "../../src/LuminoEngine/src/Shader/UnifiedShaderCompiler.hpp"
 #include "Project.hpp"
 #include "FxcCommand.hpp"
 
@@ -68,6 +69,7 @@ bool FxcCommand::generate(const ln::Path& inputFile)
 		return false;
 	}
 
+	// dump intermediate codes.
     if (saveCodes) {
 		compiler.unifiedShader()->saveCodes(outputFilePath);
     }

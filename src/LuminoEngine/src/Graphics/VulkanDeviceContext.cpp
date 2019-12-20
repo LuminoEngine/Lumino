@@ -2800,6 +2800,10 @@ VulkanShaderPass::VulkanShaderPass()
 Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
     LN_DCHECK(deviceContext);
+	if (!IShaderPass::init(createInfo)) {
+		return false;
+	}
+
     m_deviceContext = deviceContext;
 
     VkDevice device = m_deviceContext->vulkanDevice();

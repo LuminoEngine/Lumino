@@ -54,6 +54,7 @@ public:
 	enum FileVersion {
 		FileVersion_1 = 1,  // 0.7.0
         FileVersion_2,      // 0.8.0
+		FileVersion_3,      // 0.9.0
 		FileVersion_Last,
 		FileVersion_Current = FileVersion_Last - 1,
 	};
@@ -95,6 +96,7 @@ public:
     ShaderRenderState* renderState(PassId pass) const;
 	const DescriptorLayout& descriptorLayout(PassId pass) const;
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
+	const std::vector<VertexInputAttribute>& attributes(PassId pass) const;
 
     void saveCodes(const StringRef& perfix) const;
 
@@ -131,6 +133,7 @@ private:
         CodeContainerId pixelShader;
         Ref<ShaderRenderState> renderState;
 		DescriptorLayout descriptorLayout;
+		std::vector<VertexInputAttribute> attributes;	// used by vertexShader
     };
 
     DiagnosticsManager* m_diag;
@@ -138,42 +141,6 @@ private:
     List<TechniqueInfo> m_techniques;
     List<PassInfo> m_passes;
 };
-
-#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-
-class UnifiedShaderCompiler
-{
-public:
-	UnifiedShaderCompiler(ShaderManager* manager, DiagnosticsManager* diag);
-
-	// ※ inputCode は非 const。中身が書き換わる。
-	bool compile(
-		char* inputCode, size_t inputCodeLength,
-		const List<Path>& includeDirectories, const List<String>& definitions);
-
-	bool compileSingleCodes(
-		const char* vsData, size_t vsLen, const std::string& vsEntryPoint,
-		const char* psData, size_t psLen, const std::string& psEntryPoint,
-		const List<Path>& includeDirectories, const List<String>& definitions);
-
-	bool link();
-
-	const Ref<UnifiedShader>& unifiedShader() const { return m_unifiedShader; }
-
-private:
-    bool createTechPassCodeContainer();
-	static std::string makeKey(ShaderStage2 stage, const std::string& entryPoint);
-    static std::string makeKey2(const std::string& techName, const std::string& passName, ShaderStage2 stage, const std::string& entryPoint);
-
-	ShaderManager* m_manager;
-	Ref<UnifiedShader> m_unifiedShader;
-	DiagnosticsManager* m_diag;
-	HLSLMetadataParser m_metadataParser;
-	std::unordered_map<std::string, std::shared_ptr<ShaderCodeTranspiler>> m_transpilerMap;	// kei is "stage:entryPoint"
-	// TODO: ↑ unordered_map やめたい。順序付けされなくなるので。今は makeKey() で 1 とか 2 とか prefix つけることで対策している。
-};
-
-#endif // LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
 
 } // namespace detail
 } // namespace ln

@@ -412,9 +412,9 @@ void Mesh::init(const MeshView& meshView)
         }
     }
 
-    VertexBufferAttribute posa = m_vertexBuffers[1];
-    m_vertexBuffers.removeAt(1);
-    m_vertexBuffers.insert(0, posa);
+    //VertexBufferAttribute posa = m_vertexBuffers[1];
+    //m_vertexBuffers.removeAt(1);
+    //m_vertexBuffers.insert(0, posa);
 
 
     for (int i = 0; i < m_vertexBuffers.size(); i++) {

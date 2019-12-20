@@ -666,6 +666,11 @@ private:
 // - VK_DYNAMIC_STATE_STENCIL_REFERENCE,
 // これらは頻繁に変更される可能性があるためマークしている。
 // なお、これらは computeHash に含める必要はない。
+//
+// 依存関係
+//	- VertexLayout
+//	- ShaderPass
+//		- VkVertexInputAttributeDescription を作るために必要
 class VulkanPipeline
     : public RefObject
 {

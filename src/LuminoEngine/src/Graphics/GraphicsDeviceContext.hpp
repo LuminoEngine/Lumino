@@ -133,6 +133,15 @@ struct ShaderPassCreateInfo
     const char* vsEntryPointName;
     const char* psEntryPointName;
     const DescriptorLayout* descriptorLayout;
+	const std::vector<VertexInputAttribute>* attributes;
+};
+
+class IGraphicsHelper
+{
+public:
+	static AttributeUsage ElementUsageToAttributeUsage(VertexElementUsage value);
+	static VertexElementUsage AttributeUsageToElementUsage(AttributeUsage value);
+	
 };
 
 class IGraphicsDeviceObject
@@ -400,15 +409,19 @@ public:
 
 	uint64_t hash() const { return m_hash; }
 	static uint64_t computeHash(const VertexElement* elements, int count);
+	//const VertexElement* findElement(AttributeUsage usage, int usageIndex) const;
 
 	virtual void dispose();
 
 protected:
 	IVertexDeclaration();
 	virtual ~IVertexDeclaration() = default;
+	bool init(const VertexElement* elements, int count);
 
 private:
 	IGraphicsDevice* m_device = nullptr;
+
+	//std::vector<VertexElement> m_elements;
 
 	friend class IGraphicsDevice;
 };
@@ -540,6 +553,9 @@ class IShaderPass
 	: public IGraphicsDeviceObject
 {
 public:
+	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
+	const VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
+
 	//virtual int getUniformCount() const = 0;
 	//virtual IShaderUniform* getUniform(int index) const = 0;
 	//virtual void setUniformValue(int index, const void* data, size_t size) = 0;
@@ -549,14 +565,17 @@ public:
 
 	virtual IShaderSamplerBuffer* samplerBuffer() const = 0;
 
+
 	virtual void dispose();
 
 protected:
 	IShaderPass();
 	virtual ~IShaderPass() = default;
+	bool init(const ShaderPassCreateInfo& createInfo);
 
 private:
 	IGraphicsDevice* m_device = nullptr;
+	std::vector<VertexInputAttribute> m_attributes;
 
 	friend class IGraphicsDevice;
 };
@@ -610,12 +629,12 @@ public:
 	uint64_t cacheKeyHash = 0;
 
 	virtual void dispose();
-
-protected:
-	virtual ~IPipeline() = default;
 	const IVertexDeclaration* vertexLayout() const { return m_sourceVertexLayout; }
 	const IRenderPass* renderPass() const { return m_sourceRenderPass; }
 	const IShaderPass* shaderPass() const { return m_sourceShaderPass; }
+
+protected:
+	virtual ~IPipeline() = default;
 
 private:
 	//IGraphicsDevice* m_device = nullptr;
