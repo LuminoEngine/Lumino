@@ -96,6 +96,7 @@ public:
     ShaderRenderState* renderState(PassId pass) const;
 	const DescriptorLayout& descriptorLayout(PassId pass) const;
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
+    void setAttributes(PassId pass, const std::vector<VertexInputAttribute>& attrs);
 	const std::vector<VertexInputAttribute>& attributes(PassId pass) const;
 
     void saveCodes(const StringRef& perfix) const;

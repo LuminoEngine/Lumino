@@ -239,8 +239,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 
 	// TODO: SurfaceShader を入れるのはこのあたり
 	//surface.Albedo = ln_MaterialTexture.Sample(ln_MaterialTextureSamplerState, input.UV) * input.Color;
-	surface.Albedo = tex2D(ln_MaterialTexture, input.UV) * input.Color;
-	surface.Albedo *= ln_MaterialColor;
+	surface.Albedo = tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color;
 
 	surface.Emission = (ln_MaterialEmissive.rgb * ln_MaterialEmissive.a);
 	
@@ -258,7 +257,8 @@ float4	ln_MaterialAmbient;	// TODO: とりあえず MMD モデル用のために
 
 float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 {
-	return LN_GetBuiltinEffectColor(tex2D(ln_MaterialTexture, input.UV) * input.Color);
+	//return float4(0, 1, 0, 1);
+	return LN_GetBuiltinEffectColor(tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color);
 }
 
 //------------------------------------------------------------------------------

@@ -615,6 +615,11 @@ const DescriptorLayout& UnifiedShader::descriptorLayout(PassId pass) const
 	return m_passes[idToIndex(pass)].descriptorLayout;
 }
 
+void UnifiedShader::setAttributes(PassId pass, const std::vector<VertexInputAttribute>& attrs)
+{
+    m_passes[idToIndex(pass)].attributes = attrs;
+}
+
 const std::vector<VertexInputAttribute>& UnifiedShader::attributes(PassId pass) const
 {
 	return m_passes[idToIndex(pass)].attributes;

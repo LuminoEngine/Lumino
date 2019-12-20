@@ -1800,7 +1800,7 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
                 attributeDescriptions.push_back(desc);
             }
             else {
-
+                // Shader が必要としている情報が頂点バッファ側に足りていない。警告が出る。
             }
         }
     }
