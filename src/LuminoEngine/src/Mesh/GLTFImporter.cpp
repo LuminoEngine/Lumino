@@ -7,6 +7,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include "../Asset/AssetManager.hpp"
@@ -63,19 +64,78 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 {
     auto coreMaterial = makeObject<Material>();
 
-    auto itr = material.values.find("baseColorFactor");
-    if (itr != material.values.end()) {
-        auto& c = itr->second.number_array;
-        assert(c.size() == 4);
-        coreMaterial->setColor(Color(c[0], c[1], c[2], c[3]));
+    {
+        auto itr = material.values.find("baseColorFactor");
+        if (itr != material.values.end()) {
+            auto& c = itr->second.number_array;
+            assert(c.size() == 4);
+            coreMaterial->setColor(Color(c[0], c[1], c[2], c[3]));
+        }
     }
 
-    itr = material.values.find("metallicFactor");
-    if (itr != material.values.end()) {
-        assert(itr->second.has_number_value);
-        coreMaterial->setMetallic(itr->second.number_value);
+    {
+        auto itr = material.values.find("metallicFactor");
+        if (itr != material.values.end()) {
+            assert(itr->second.has_number_value);
+            coreMaterial->setMetallic(itr->second.number_value);
+        }
     }
 
+    {
+        auto itr = material.values.find("baseColorTexture");
+        if (itr != material.values.end()) {
+            auto itr2 = itr->second.json_double_value.find("index");
+            assert(itr2 != itr->second.json_double_value.end());
+
+            int index = static_cast<int>(itr2->second);
+            const tinygltf::Texture& texture = m_model->textures[index];
+            const tinygltf::Image& image = m_model->images[texture.source];
+
+            Ref<Bitmap2D> bitmap;
+            if (image.pixel_type == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE &&  // GL_UNSIGNED_BYTE
+                image.component == 4 &&     // RGBA
+                image.bits == 8) {
+                bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+            }
+            else {
+                LN_NOTIMPLEMENTED();
+                return nullptr;
+            }
+
+            auto coreTexture = makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+            coreMaterial->setMainTexture(coreTexture);
+        }
+    }
+
+    {
+        auto itr = material.values.find("metallicRoughnessTexture");
+        if (itr != material.values.end()) {
+            auto itr2 = itr->second.json_double_value.find("index");
+            assert(itr2 != itr->second.json_double_value.end());
+            int index = static_cast<int>(itr2->second);
+            // TODO:
+        }
+    }
+
+    {
+        auto itr = material.additionalValues.find("normalTexture");
+        if (itr != material.additionalValues.end()) {
+            auto itr2 = itr->second.json_double_value.find("index");
+            assert(itr2 != itr->second.json_double_value.end());
+            int index = static_cast<int>(itr2->second);
+            // TODO:
+        }
+    }
+
+    {
+        auto itr = material.additionalValues.find("occlusionTexture");
+        if (itr != material.additionalValues.end()) {
+            auto itr2 = itr->second.json_double_value.find("index");
+            assert(itr2 != itr->second.json_double_value.end());
+            int index = static_cast<int>(itr2->second);
+            // TODO:
+        }
+    }
 
     return coreMaterial;
 }
@@ -200,6 +260,10 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matr
 				vbView.usage = VertexElementUsage::TexCoord;
 				vbView.usageIndex = 0;
 			}
+            else if (itr->first.compare("TANGENT") == 0) {
+                vbView.usage = VertexElementUsage::Tangent;
+                vbView.usageIndex = 0;
+            }
 			else {
 				LN_UNREACHABLE();
 				return nullptr;

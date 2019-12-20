@@ -456,7 +456,12 @@ void Mesh::init(const MeshView& meshView)
 
             if (indexElementSize == 2) {
                 if (section.indexElementSize == 1) {
-                    LN_NOTIMPLEMENTED();
+                    auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+                    auto* s = static_cast<const uint8_t*>(section.indexData);
+                    for (int i = 0; i < section.indexCount; i++) {
+                        b[i] = beginVertexIndex + s[i];
+                        assert(b[i] < vertexCount);
+                    }
                 }
                 else if (section.indexElementSize == 2) {
                     auto* b = static_cast<uint16_t*>(buf) + indexOffset;

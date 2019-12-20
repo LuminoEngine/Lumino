@@ -267,10 +267,13 @@ void Bitmap2D::init()
 	m_format = PixelFormat::Unknown;
 }
 
-void Bitmap2D::init(int width, int height, PixelFormat format)
+void Bitmap2D::init(int width, int height, PixelFormat format, const void* data)
 {
 	m_format = format;
 	resize(width, height);
+    if (data) {
+        memcpy(m_buffer->data(), data, m_buffer->size());
+    }
 }
 
 ColorI Bitmap2D::getPixel32(int x, int y) const
