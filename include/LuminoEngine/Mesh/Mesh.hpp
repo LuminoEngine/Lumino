@@ -155,7 +155,7 @@ public:
 		VertexElementUsage usage;
 		int usageIndex;
 		const void* data;
-		size_t byteOffset;
+		//size_t byteOffset;
 		size_t count;	// vertex count. not byte size. (byte size = count * size(type))
 		size_t byteStride;
 	};

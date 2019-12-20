@@ -378,20 +378,23 @@ void Mesh::init(const MeshView& meshView)
 
     int vertexOffset = 0;
     for (auto& section : meshView.sectionViews) {
-        int vertexCount = section.vertexBufferViews[0].count;
+        int vertexCountInSection = section.vertexBufferViews[0].count;
 
         for (auto& vbView : section.vertexBufferViews) {
             auto attr = m_vertexBuffers.findIf([&](auto& x) { return x.type == vbView.type && x.usage == vbView.usage; });
             auto* buf = static_cast<byte_t*>(attr->buffer->map(MapMode::Write));
-            auto* src = static_cast<const byte_t*>(vbView.data) + vbView.byteOffset;
+            auto* src = static_cast<const byte_t*>(vbView.data);// +vbView.byteOffset;
 
             int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
-            for (int i = 0; i < vertexCount; i++) {
+            for (int i = 0; i < vertexCountInSection; i++) {
                 memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
+                //memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
             }
 
             // TODO: unmap 無いとめんどい以前に怖い
         }
+
+        vertexOffset += vertexCountInSection;
     }
 
     // 
@@ -449,7 +452,7 @@ void Mesh::init(const MeshView& meshView)
         int beginVertexIndex = 0;
         int indexOffset = 0;
         for (auto& section : meshView.sectionViews) {
-            int vertexCount = section.vertexBufferViews[0].count;
+            int vertexCountInSection = section.vertexBufferViews[0].count;
 
             if (indexElementSize == 2) {
                 if (section.indexElementSize == 1) {
@@ -458,7 +461,10 @@ void Mesh::init(const MeshView& meshView)
                 else if (section.indexElementSize == 2) {
                     auto* b = static_cast<uint16_t*>(buf) + indexOffset;
                     auto* s = static_cast<const uint16_t*>(section.indexData);
-                    for (int i = 0; i < section.indexCount; i++) b[i] = beginVertexIndex + s[i];
+                    for (int i = 0; i < section.indexCount; i++) {
+                        b[i] = beginVertexIndex + s[i];
+                        assert(b[i] < vertexCount);
+                    }
                 }
                 else if (section.indexElementSize == 4) {
                 }
@@ -473,6 +479,8 @@ void Mesh::init(const MeshView& meshView)
                 LN_NOTIMPLEMENTED();
             }
 
+            assert(section.topology == PrimitiveTopology::TriangleList);
+
             // make mesh section
             MeshSection2 meshSection;
             meshSection.startIndex = indexOffset;
@@ -483,7 +491,7 @@ void Mesh::init(const MeshView& meshView)
 
             // next
             indexOffset += section.indexCount;
-            beginVertexIndex += vertexCount;
+            beginVertexIndex += vertexCountInSection;
         }
 
         // TODO: unmap 無いとめんどい以前に怖い

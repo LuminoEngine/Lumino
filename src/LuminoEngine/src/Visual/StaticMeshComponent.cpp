@@ -37,8 +37,11 @@ StaticMeshModel* StaticMeshComponent::model() const
 
 void StaticMeshComponent::onRender(RenderingContext* context)
 {
-    for (auto& meshContainer : m_model->meshContainers())
+    const auto& containers = m_model->meshContainers();
+    for (int iContainer = 0; iContainer < containers.size(); iContainer++)
     {
+        const auto& meshContainer = containers[iContainer];
+
         MeshResource* meshResource = meshContainer->meshResource();
         if (meshResource) {
             for (int iSection = 0; iSection < meshResource->sections().size(); iSection++) {

@@ -116,6 +116,7 @@ bool GLTFImporter::readNode(const tinygltf::Node& node, const Matrix& parentTran
 		}
 
         m_meshModel->addMeshContainer(meshContainer);
+
 	}
 
 	for (size_t i = 0; i < node.children.size(); i++) {
@@ -130,6 +131,10 @@ bool GLTFImporter::readNode(const tinygltf::Node& node, const Matrix& parentTran
 
 Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
 {
+    //if (m_meshModel->meshContainers().size() == 66) {
+    //    printf("");
+    //}
+
 	//std::vector<Mesh::SectionView> sectionViews;
     Mesh::MeshView meshView;
 
@@ -154,7 +159,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matr
 			}
 
 			Mesh::VertexBufferView vbView;
-			vbView.byteOffset = accessor.byteOffset;
+			//vbView.byteOffset = accessor.byteOffset;
 			vbView.count = accessor.count;
 
 			// Type
@@ -207,7 +212,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matr
 
 			// Buffer
 			const tinygltf::Buffer& buffer = m_model->buffers[vertexBufferView.buffer];
-			vbView.data = buffer.data.data() + vertexBufferView.byteOffset;
+			vbView.data = buffer.data.data() + accessor.byteOffset + vertexBufferView.byteOffset;
 
 			sectionView.vertexBufferViews.push_back(std::move(vbView));
 		}
@@ -224,10 +229,15 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matr
 				return nullptr;
 			}
 
+            if (indexBufferView.byteStride) {
+                // 未対応。というか、エラー？普通インデックスバッファを飛び飛びで使わないと思うが…
+                LN_NOTIMPLEMENTED();
+                return nullptr;
+            }
 
-            // 最初に見つかったものをインデックスバッファとして採用
-            indexBufferViewIndex = indexAccessor.bufferView;
-            indexComponentType = indexAccessor.componentType;
+            //// 最初に見つかったものをインデックスバッファとして採用
+            //indexBufferViewIndex = indexAccessor.bufferView;
+            //indexComponentType = indexAccessor.componentType;
 
             // 1byte
             if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_BYTE || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
@@ -246,8 +256,9 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matr
                 return nullptr;
             }
 
-            sectionView.indexData = buffer.data.data() + indexBufferView.byteOffset;// / sectionView.indexElementSize;
-            sectionView.indexCount = indexBufferView.byteLength / sectionView.indexElementSize;
+
+            sectionView.indexData = buffer.data.data() + indexAccessor.byteOffset + indexBufferView.byteOffset;// / sectionView.indexElementSize;
+            sectionView.indexCount = indexAccessor.count;/// / sectionView.indexElementSize;
 		}
 
 		// Topology
