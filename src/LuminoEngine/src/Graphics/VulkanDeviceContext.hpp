@@ -58,7 +58,7 @@ public:
 
     VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
     //VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
-    VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
+    //VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
 	//const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
     VulkanNativeGraphicsInterface* vulkanNativeGraphicsInterface() const { return m_nativeInterface.get(); }
 
@@ -125,7 +125,7 @@ public: // TODO:
 
     VulkanRenderPassCache m_renderPassCache;
     //VulkanFramebufferCache m_framebufferCache;
-    VulkanPipelineCache m_pipelineCache;
+    //VulkanPipelineCache m_pipelineCache;
 
 	//Ref<VulkanGraphicsContext> m_graphicsContext;
 	std::unique_ptr<VulkanNativeGraphicsInterface> m_nativeInterface;
@@ -298,6 +298,9 @@ public:
     // location は、Pipleline 作成時に m_elements が持っているセマンティクス情報と、ShaderPass が持っているセマンティクス情報とつなげて確定させる。
     struct AttributeDescriptionSource
     {
+        VertexElementUsage usage;
+        uint32_t usageIndex;
+
         uint32_t binding;   // DirectX でいうところの StreamIndex。頂点バッファを複数分けるときに使う。
         VkFormat format;
         uint32_t offset;
@@ -310,6 +313,7 @@ public:
     const std::vector<VertexElement>& elements() const { return m_elements; }
     const std::vector<VkVertexInputBindingDescription>& vertexBindingDescriptions() const { return m_bindings; }
     const std::vector<AttributeDescriptionSource>& vertexAttributeDescriptionSources() const { return m_attributeSources; }
+    const VulkanVertexDeclaration::AttributeDescriptionSource* findAttributeDescriptionSource(AttributeUsage usage, int usageIndex) const;
 
 private:
 

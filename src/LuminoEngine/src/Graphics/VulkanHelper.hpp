@@ -671,66 +671,66 @@ private:
 //	- VertexLayout
 //	- ShaderPass
 //		- VkVertexInputAttributeDescription を作るために必要
-class VulkanPipeline
-    : public RefObject
-{
-public:
-    VulkanPipeline();
-    Result init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const GraphicsContextState& state);
-    void dispose();
-
-    VkPipeline vulkanPipeline() const { return m_pipeline; }
-    bool containsShaderPass(VulkanShaderPass* value) const { return m_relatedShaderPass == value; }
-    //bool containsVertexDeclaration(VulkanVertexDeclaration* value) const { return m_relatedVertexDeclaration == value; }
-    //bool containsFramebuffer(VulkanFramebuffer* value) const { return m_relatedFramebuffer == value; }
-
-
-private:
-    VulkanDevice* m_deviceContext;
-    VulkanRenderPass* m_ownerRenderPass;
-    VkPipeline m_pipeline;
-    VulkanShaderPass* m_relatedShaderPass;                  // pipeline に関連づいている ShaderPass。これが削除されたらこの pipeline も削除する。
-    //VulkanVertexDeclaration* m_relatedVertexDeclaration;    // pipeline に関連づいている VertexDeclaration。これが削除されたらこの pipeline も削除する。
-    //VulkanFramebuffer* m_relatedFramebuffer;                // pipeline に関連づいている Framebuffer。これに含まれる RenderTarget か DepthBuffer が削除されたらこの pipeline も削除する。
-};
-
-class VulkanPipelineCache
-    : public HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>
-{
-public:
-    struct FetchKey
-    {
-        const GraphicsContextState& state;
-        VulkanRenderPass* renderPass;
-    };
-
-    VulkanPipelineCache();
-    Result init(VulkanDevice* deviceContext);
-    void dispose();
-    // renderPass : この cache は vkCmdBeginRenderPass ～ vkCmdEndRenderPass の間で呼び出し、pipeline を得ることを目的としている。
-    // この renderPass は、その間の RenderPass。あらかじめわかっている値を入れることで、Pipeline 作成の中でもう一度検索の必要がないようにする。
-    VulkanPipeline* findOrCreate(const FetchKey& key);
-
-    static uint64_t computeHash(const FetchKey& key);
-    
-    void invalidateFromShaderPass(VulkanShaderPass* value)
-    {
-        HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::invalidateAllIf([&](Ref<VulkanPipeline>& x) { return x->containsShaderPass(value); });
-    }
-
-    //void invalidateFromFrameBuffer(VulkanFramebuffer* value)
-    //{
-    //    HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::removeAllIf([&](Ref<VulkanPipeline>& x) { return x->containsFramebuffer(value); });
-    //}
-
-    void onInvalidate(const Ref<VulkanPipeline>& value)
-    {
-        value->dispose();
-    }
-
-private:
-    VulkanDevice* m_deviceContext;
-};
+//class VulkanPipeline
+//    : public RefObject
+//{
+//public:
+//    VulkanPipeline();
+//    Result init(VulkanDevice* deviceContext, VulkanRenderPass* ownerRenderPass, const GraphicsContextState& state);
+//    void dispose();
+//
+//    VkPipeline vulkanPipeline() const { return m_pipeline; }
+//    bool containsShaderPass(VulkanShaderPass* value) const { return m_relatedShaderPass == value; }
+//    //bool containsVertexDeclaration(VulkanVertexDeclaration* value) const { return m_relatedVertexDeclaration == value; }
+//    //bool containsFramebuffer(VulkanFramebuffer* value) const { return m_relatedFramebuffer == value; }
+//
+//
+//private:
+//    VulkanDevice* m_deviceContext;
+//    VulkanRenderPass* m_ownerRenderPass;
+//    VkPipeline m_pipeline;
+//    VulkanShaderPass* m_relatedShaderPass;                  // pipeline に関連づいている ShaderPass。これが削除されたらこの pipeline も削除する。
+//    //VulkanVertexDeclaration* m_relatedVertexDeclaration;    // pipeline に関連づいている VertexDeclaration。これが削除されたらこの pipeline も削除する。
+//    //VulkanFramebuffer* m_relatedFramebuffer;                // pipeline に関連づいている Framebuffer。これに含まれる RenderTarget か DepthBuffer が削除されたらこの pipeline も削除する。
+//};
+//
+//class VulkanPipelineCache
+//    : public HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>
+//{
+//public:
+//    struct FetchKey
+//    {
+//        const GraphicsContextState& state;
+//        VulkanRenderPass* renderPass;
+//    };
+//
+//    VulkanPipelineCache();
+//    Result init(VulkanDevice* deviceContext);
+//    void dispose();
+//    // renderPass : この cache は vkCmdBeginRenderPass ～ vkCmdEndRenderPass の間で呼び出し、pipeline を得ることを目的としている。
+//    // この renderPass は、その間の RenderPass。あらかじめわかっている値を入れることで、Pipeline 作成の中でもう一度検索の必要がないようにする。
+//    VulkanPipeline* findOrCreate(const FetchKey& key);
+//
+//    static uint64_t computeHash(const FetchKey& key);
+//    
+//    void invalidateFromShaderPass(VulkanShaderPass* value)
+//    {
+//        HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::invalidateAllIf([&](Ref<VulkanPipeline>& x) { return x->containsShaderPass(value); });
+//    }
+//
+//    //void invalidateFromFrameBuffer(VulkanFramebuffer* value)
+//    //{
+//    //    HashedObjectCache<Ref<VulkanPipeline>, VulkanPipelineCache>::removeAllIf([&](Ref<VulkanPipeline>& x) { return x->containsFramebuffer(value); });
+//    //}
+//
+//    void onInvalidate(const Ref<VulkanPipeline>& value)
+//    {
+//        value->dispose();
+//    }
+//
+//private:
+//    VulkanDevice* m_deviceContext;
+//};
 
 } // namespace detail
 } // namespace ln

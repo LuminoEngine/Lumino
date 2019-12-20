@@ -180,26 +180,9 @@ set(LN_SOURCES_Audio_Device
     src/Audio/SDLAudioDevice.hpp
 )
 
-file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
+file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp)
 
-set(LN_SOURCES_Shader
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/Shader.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/ShaderHelper.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/ShaderInterfaceFramework.hpp
-    src/Shader/Internal.hpp
-    src/Shader/HLSLMetadataParser.cpp
-    src/Shader/HLSLMetadataParser.hpp
-    src/Shader/Shader.cpp
-    src/Shader/ShaderTranspiler.cpp
-    src/Shader/ShaderTranspiler.hpp
-    src/Shader/ShaderHelper.cpp
-    src/Shader/ShaderInterfaceFramework.cpp
-    src/Shader/ShaderManager.cpp
-    src/Shader/ShaderManager.hpp
-    src/Shader/UnifiedShader.cpp
-    src/Shader/UnifiedShader.hpp
-)
+file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 
 set(LN_SOURCES_Font
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Font/Common.hpp
@@ -377,8 +360,8 @@ source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio"     FILES ${LN_SOURCES_Audio})
 source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
 source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
-source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
 source_group("Shader"    FILES ${LN_SOURCES_Shader})
+source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
 source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
@@ -406,8 +389,8 @@ set(LN_SOURCES
 	${LN_SOURCES_Audio}
 	${LN_SOURCES_Audio_Decoder}
 	${LN_SOURCES_Audio_Device}
-    ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Shader}
+    ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
