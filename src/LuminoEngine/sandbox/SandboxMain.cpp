@@ -349,6 +349,8 @@ int main(int argc, char** argv)
 
 
 	Engine::initialize();
+
+
 	//{
 	//	auto ss = makeObject<ed::SceneAsset>();
 	//	ss->setup("SceneTest1.json");

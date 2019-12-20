@@ -1201,15 +1201,19 @@ Result VulkanCommandBuffer::init(VulkanDevice* deviceContext)
 
 void VulkanCommandBuffer::dispose()
 {
-    cleanInFlightResources();
+    // Wait for execution to complete as it may be pending.
+    vkWaitForFences(m_deviceContext->vulkanDevice(), 1, &m_inFlightFence, VK_TRUE, std::numeric_limits<uint64_t>::max());
 
-	m_stagingBufferPool.clear();
-	m_stagingBufferPoolUsed = 0;
-
+    // CommandBuffer must be released before vkResetDescriptorPool.
     if (m_commandBuffer) {
         vkFreeCommandBuffers(m_deviceContext->vulkanDevice(), m_deviceContext->vulkanCommandPool(), 1, &m_commandBuffer);
         m_commandBuffer = VK_NULL_HANDLE;
     }
+
+    cleanInFlightResources();
+
+	m_stagingBufferPool.clear();
+	m_stagingBufferPoolUsed = 0;
 
     if (m_inFlightFence) {
         vkDestroyFence(m_deviceContext->vulkanDevice(), m_inFlightFence, m_deviceContext->vulkanAllocator());

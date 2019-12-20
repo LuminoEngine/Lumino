@@ -222,7 +222,6 @@ void GraphicsManager::dispose()
 	m_depthBufferCacheManager = nullptr;
 	m_renderTargetTextureCacheManager = nullptr;
 
-	//m_graphicsContext->dispose();
 	m_deviceContext->dispose();
 }
 
@@ -290,7 +289,7 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 
 	VulkanDevice::Settings dcSettings;
     dcSettings.mainWindow = settings.mainWindow;
-	dcSettings.debugMode = true;
+	dcSettings.debugMode = false;
 	auto ctx = makeRef<VulkanDevice>();
 	bool driverSupported = false;
 	if (!ctx->init(dcSettings, &driverSupported)) {
