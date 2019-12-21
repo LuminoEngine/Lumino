@@ -51,12 +51,31 @@ void StaticMeshComponent::onRender(RenderingContext* context)
         }
 
 
-        Mesh* mesh = meshContainer->mesh();
-        if (mesh) {
-            for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
-                context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
-                context->drawMesh(mesh, iSection);
+        //Mesh* mesh = meshContainer->mesh();
+        //if (mesh) {
+        //    for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
+        //        context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
+        //        context->drawMesh(mesh, iSection);
+        //    }
+        //}
+    }
+
+
+    for (const auto& node : m_model->meshNodes()) {
+        if (node->meshContainerIndex() >= 0) {
+            context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
+
+
+            const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
+
+            Mesh* mesh = meshContainer->mesh();
+            if (mesh) {
+                for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
+                    context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
+                    context->drawMesh(mesh, iSection);
+                }
             }
+
         }
     }
 }

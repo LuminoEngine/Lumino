@@ -613,6 +613,31 @@ Mesh* MeshContainer::mesh() const
 {
     return m_lodMesh[0];
 }
+//==============================================================================
+// MeshNode
+
+MeshNode::MeshNode()
+    : m_index(-1)
+    , m_meshContainerIndex(-1)
+    , m_children()
+    , m_localTransform(Matrix::Identity)
+{
+}
+
+void MeshNode::setMeshContainerIndex(int value)
+{
+    m_meshContainerIndex = value;
+}
+
+void MeshNode::addChildIndex(int value)
+{
+    m_children.add(value);
+}
+
+void MeshNode::setLocalTransform(const Matrix& value)
+{
+    m_localTransform = value;
+}
 
 //==============================================================================
 // StaticMeshModel
@@ -633,9 +658,39 @@ void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 	m_meshContainers.add(meshContainer);
 }
 
+void StaticMeshModel::addNode(MeshNode* node)
+{
+    if (LN_REQUIRE(node)) return;
+    node->m_index = m_nodes.size();
+    m_nodes.add(node);
+}
+
 void StaticMeshModel::addMaterial(AbstractMaterial* material)
 {
 	m_materials.add(material);
+}
+
+void StaticMeshModel::addRootNode(int index)
+{
+    m_rootNodes.add(index);
+}
+
+void StaticMeshModel::updateNodeTransforms()
+{
+    m_nodeGlobalTransforms.resize(m_nodes.size());
+    for (int index : m_rootNodes) {
+        updateNodeTransformsHierarchical(index, Matrix::Identity);
+    }
+}
+
+void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform)
+{
+    auto node = m_nodes[nodeIndex];
+    m_nodeGlobalTransforms[nodeIndex] = node->localTransform() * parentTransform;   // NOTE: glTF はこの順である必要がある。
+
+    for (int child : node->m_children) {
+        updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex]);
+    }
 }
 
 namespace detail {

@@ -19,8 +19,8 @@ public:
 
 private:
     Ref<Material> readMaterial(const tinygltf::Material& material);
-	bool readNode(const tinygltf::Node& node, const Matrix& parentTransform);
-	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh, const Matrix& transform);
+	Ref<MeshNode> readNode(const tinygltf::Node& node);
+	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
 
 	static bool FileExists(const std::string &abs_filename, void *user_data);
 	static std::string ExpandFilePath(const std::string &filepath, void *user_data);

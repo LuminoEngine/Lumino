@@ -50,12 +50,29 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Stri
             m_meshModel->addMaterial(readMaterial(material));
         }
 
-		int scene_to_display = model.defaultScene > -1 ? model.defaultScene : 0;
-		const tinygltf::Scene &scene = model.scenes[scene_to_display];
-		for (size_t i = 0; i < scene.nodes.size(); i++) {
-			readNode(model.nodes[scene.nodes[i]], Matrix::Identity);
-		}
+        for (auto& mesh : m_model->meshes) {
+            auto meshContainer = readMesh(mesh);
+            if (!meshContainer) {
+                return nullptr;
+            }
+            m_meshModel->addMeshContainer(meshContainer);
+        }
 
+        for (auto& node : m_model->nodes) {
+            auto meshNode = readNode(node);
+            if (!meshNode) {
+                return nullptr;
+            }
+            m_meshModel->addNode(meshNode);
+        }
+
+        int scene_to_display = model.defaultScene > -1 ? model.defaultScene : 0;
+        const tinygltf::Scene &scene = model.scenes[scene_to_display];
+        for (size_t i = 0; i < scene.nodes.size(); i++) {
+            m_meshModel->addRootNode(scene.nodes[i]);
+        }
+
+        m_meshModel->updateNodeTransforms();
 		return m_meshModel;
 	}
 }
@@ -78,6 +95,20 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
         if (itr != material.values.end()) {
             assert(itr->second.has_number_value);
             coreMaterial->setMetallic(itr->second.number_value);
+        }
+        else {
+            coreMaterial->setMetallic(1.0f);    // glTF default
+        }
+    }
+
+    {
+        auto itr = material.values.find("roughnessFactor");
+        if (itr != material.values.end()) {
+            assert(itr->second.has_number_value);
+            coreMaterial->setMetallic(itr->second.number_value);
+        }
+        else {
+            coreMaterial->setRoughness(1.0f);    // glTF default
         }
     }
 
@@ -140,16 +171,22 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
     return coreMaterial;
 }
 
-bool GLTFImporter::readNode(const tinygltf::Node& node, const Matrix& parentTransform)
+Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 {
 	Matrix nodeTransform;
 	if (node.matrix.size() == 16) {
 		const double* m = node.matrix.data();
-		nodeTransform.set(	// transpose
-			m[0], m[4], m[8], m[12],
-			m[1], m[5], m[9], m[13],
-			m[2], m[6], m[10], m[14],
-			m[3], m[7], m[11], m[15]);
+        nodeTransform.set(
+            m[0], m[1], m[2], m[3],
+            m[4], m[5], m[6], m[7],
+            m[8], m[9], m[10], m[11],
+            m[12], m[13], m[14], m[15]);
+
+		//nodeTransform.set(	// transpose
+		//	m[0], m[4], m[8], m[12],
+		//	m[1], m[5], m[9], m[13],
+		//	m[2], m[6], m[10], m[14],
+		//	m[3], m[7], m[11], m[15]);
 	}
 	else {
 		if (node.scale.size() == 3) {
@@ -166,30 +203,23 @@ bool GLTFImporter::readNode(const tinygltf::Node& node, const Matrix& parentTran
 		}
 	}
 
-	Matrix localTransform = parentTransform * nodeTransform;
+    auto coreNode = makeObject<MeshNode>();
+    coreNode->setLocalTransform(nodeTransform);
 
-	if (node.mesh > -1) {
-		assert(node.mesh < m_model->meshes.size());
-        auto meshContainer = readMesh(m_model->meshes[node.mesh], localTransform);
-		if (!meshContainer) {
-			return false;
-		}
-
-        m_meshModel->addMeshContainer(meshContainer);
-
+    if (node.mesh > -1) {
+        assert(node.mesh < m_model->meshes.size());
+        coreNode->setMeshContainerIndex(node.mesh);
 	}
 
 	for (size_t i = 0; i < node.children.size(); i++) {
 		assert(node.children[i] < m_model->nodes.size());
-		if (!readNode(m_model->nodes[node.children[i]], localTransform)) {
-			return false;
-		}
+        coreNode->addChildIndex(node.children[i]);
 	}
 
-	return true;
+	return coreNode;
 }
 
-Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh, const Matrix& transform)
+Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 {
     //if (m_meshModel->meshContainers().size() == 66) {
     //    printf("");

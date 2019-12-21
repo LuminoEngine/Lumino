@@ -266,6 +266,34 @@ private:
 	friend class StaticMeshModel;
 };
 
+// Bone and Container
+class MeshNode : public Object
+{
+public:
+    int index() const { return m_index; }
+
+    void setMeshContainerIndex(int value);
+    int meshContainerIndex() const { return m_meshContainerIndex; }
+
+    void addChildIndex(int value);
+
+    void setLocalTransform(const Matrix& value);
+
+    const Matrix& localTransform() const { return m_localTransform; }
+    
+LN_CONSTRUCT_ACCESS:
+	MeshNode();
+    virtual ~MeshNode() = default;
+
+private:
+    int m_index;
+    int m_meshContainerIndex;
+    List<int> m_children;
+    Matrix m_localTransform;
+
+    friend class StaticMeshModel;
+};
+
 namespace detail {
 enum class InternalMeshModelType
 {
@@ -279,23 +307,42 @@ class StaticMeshModel
 {
 public:
 	void addMeshContainer(MeshContainer* meshContainer);
+    void addNode(MeshNode* node);
 	void addMaterial(AbstractMaterial* material);
 
 
 	const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
-	const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
+    const List<Ref<MeshNode>>& meshNodes() const { return m_nodes; }
+    const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
+
+    void addRootNode(int index);
+
 
     // TODO: internal
     detail::InternalMeshModelType meshModelType() const { return m_type; }
+    //Matrix* nodeGlobalTransformPtr(int nodeIndex) { return &m_nodeGlobalTransforms[nodeIndex]; }
+    const Matrix& nodeGlobalTransform(int nodeIndex) { return m_nodeGlobalTransforms[nodeIndex]; }
+    void updateNodeTransforms();
 
 LN_CONSTRUCT_ACCESS:
     StaticMeshModel();
     StaticMeshModel(detail::InternalMeshModelType type);
 
 private:
+    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform);
+
     detail::InternalMeshModelType m_type;
 	List<Ref<MeshContainer>> m_meshContainers;
+    List<Ref<MeshNode>> m_nodes;
 	List<Ref<AbstractMaterial>> m_materials;
+    List<int> m_rootNodes;
+
+    // 静的データである localTransform に対する動的データ。
+    // といっても StaticMesh はリアルタイム更新はしない。
+    // ロード後にまとめて構築するだけ。
+    // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
+    // データが無駄になったりする。
+    List<Matrix> m_nodeGlobalTransforms;
 };
 
 } // namespace ln
