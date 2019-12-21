@@ -29,6 +29,7 @@
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
+#include <LuminoEngine/Tilemap/Voxel.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -427,11 +428,17 @@ int main(int argc, char** argv)
 
 
 	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
-    auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
 
     // MeshContainer 複数
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
+
+    auto voxelmap1 = makeObject<VisualObject>();
+    auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
+    voxelmap1->addComponent(voxelmapComponent1);
 
 #if 0
     auto window1 = UIWindow::create();
