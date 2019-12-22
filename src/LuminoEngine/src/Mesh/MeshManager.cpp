@@ -210,7 +210,7 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 
 Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, float scale)
 {
-	static const Char* candidateExts[] = { u".gltf" };
+	static const Char* candidateExts[] = { u".gltf", u".glb" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
 

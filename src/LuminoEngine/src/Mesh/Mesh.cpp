@@ -344,6 +344,15 @@ void Mesh::init()
 	Object::init();
 }
 
+template<class T>
+void flipFaceIndex_Triangle(T* indices, int count)
+{
+    int c = count / 3;
+    for (int i = 0; i < c; i++) {
+        std::swap(indices[(i * 3) + 1], indices[(i * 3) + 2]);
+    }
+}
+
 void Mesh::init(const MeshView& meshView)
 {
 	init();
@@ -393,6 +402,8 @@ void Mesh::init(const MeshView& meshView)
 
             // TODO: unmap 無いとめんどい以前に怖い
         }
+
+        // TODO: z 反転
 
         vertexOffset += vertexCountInSection;
     }
@@ -462,6 +473,7 @@ void Mesh::init(const MeshView& meshView)
                         b[i] = beginVertexIndex + s[i];
                         assert(b[i] < vertexCount);
                     }
+                    flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
                 }
                 else if (section.indexElementSize == 2) {
                     auto* b = static_cast<uint16_t*>(buf) + indexOffset;
@@ -470,6 +482,7 @@ void Mesh::init(const MeshView& meshView)
                         b[i] = beginVertexIndex + s[i];
                         assert(b[i] < vertexCount);
                     }
+                    flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
                 }
                 else if (section.indexElementSize == 4) {
                 }
@@ -641,6 +654,11 @@ void MeshNode::setLocalTransform(const Matrix& value)
 
 //==============================================================================
 // StaticMeshModel
+
+Ref<StaticMeshModel> StaticMeshModel::load(const StringRef& filePath, float scale)
+{
+    return detail::EngineDomain::meshManager()->createStaticMeshModel(filePath, scale);
+}
 
 StaticMeshModel::StaticMeshModel()
     : m_type(detail::InternalMeshModelType::StaticMesh)

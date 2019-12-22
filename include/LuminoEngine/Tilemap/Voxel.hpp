@@ -4,12 +4,15 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class StaticMeshModel;
+class RenderingContext;
 
 class VoxelmapModel
 	: public Object
 {
     LN_OBJECT;
 public:
+    void render(RenderingContext* context);
 
 protected:
     virtual void serialize(Archive& ar) override;
@@ -26,6 +29,9 @@ private:
     int m_width;
     int m_height;
     int m_depth;
+
+    Ref<StaticMeshModel> m_box;
+    Ref<StaticMeshModel> m_mapBlocksMesh;
 };
 
 } // namespace ln

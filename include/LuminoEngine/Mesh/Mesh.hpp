@@ -306,6 +306,8 @@ class StaticMeshModel
 	: public Object
 {
 public:
+    static Ref<StaticMeshModel> load(const StringRef& filePath, float scale = 1.0f);
+
 	void addMeshContainer(MeshContainer* meshContainer);
     void addNode(MeshNode* node);
 	void addMaterial(AbstractMaterial* material);

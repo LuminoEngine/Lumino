@@ -36,7 +36,13 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Stri
 
 	std::string err;
 	std::string warn;
-	bool result = loader.LoadASCIIFromString(&model, &err, &warn, (const char*)data.data(), data.size(), "");
+    bool result;
+    if (data[0] == 'g' && data[1] == 'l' && data[2] == 'T' && data[3] == 'F') {
+        result = loader.LoadBinaryFromMemory(&model, &err, &warn, data.data(), data.size(), "");
+    }
+    else {
+        result = loader.LoadASCIIFromString(&model, &err, &warn, (const char*)data.data(), data.size(), "");
+    }
 	if (!err.empty()) diag->reportError(String::fromStdString(err));
 	if (!warn.empty()) diag->reportError(String::fromStdString(warn));
 	if (!result) {
