@@ -6,6 +6,57 @@
 namespace ln {
 namespace detail {
 
+
+//=============================================================================
+// IGraphicsDeviceObject
+
+AttributeUsage IGraphicsHelper::ElementUsageToAttributeUsage(VertexElementUsage value)
+{
+	static struct
+	{
+		VertexElementUsage v1;
+		AttributeUsage v2;
+	}
+	s_conversionTable[] =
+	{
+		{ VertexElementUsage::Unknown, AttributeUsage_Unknown },
+		{ VertexElementUsage::Position, AttributeUsage_Position },
+		{ VertexElementUsage::Normal, AttributeUsage_Normal },
+		{ VertexElementUsage::Color, AttributeUsage_Color },
+		{ VertexElementUsage::TexCoord, AttributeUsage_TexCoord},
+		{ VertexElementUsage::PointSize, AttributeUsage_Unknown },
+		{ VertexElementUsage::Tangent, AttributeUsage_Tangent },
+		{ VertexElementUsage::Binormal, AttributeUsage_Binormal,},
+		{ VertexElementUsage::BlendIndices, AttributeUsage_BlendIndices },
+		{ VertexElementUsage::BlendWeight, AttributeUsage_BlendWeight },
+	};
+	assert(s_conversionTable[(int)value].v1 == value);
+	return s_conversionTable[(int)value].v2;
+}
+
+VertexElementUsage IGraphicsHelper::AttributeUsageToElementUsage(AttributeUsage value)
+{
+	static struct
+	{
+		AttributeUsage v1;
+		VertexElementUsage v2;
+	}
+	s_conversionTable[] =
+	{
+		{ AttributeUsage_Unknown, VertexElementUsage::Unknown },
+		{ AttributeUsage_Position, VertexElementUsage::Position },
+		{ AttributeUsage_BlendIndices, VertexElementUsage::BlendIndices },
+		{ AttributeUsage_BlendWeight, VertexElementUsage::BlendWeight },
+		{ AttributeUsage_Normal, VertexElementUsage::Normal },
+		{ AttributeUsage_TexCoord, VertexElementUsage::TexCoord },
+		{ AttributeUsage_Tangent, VertexElementUsage::Tangent },
+		{ AttributeUsage_Binormal, VertexElementUsage::Binormal },
+		{ AttributeUsage_Color, VertexElementUsage::Color },
+	};
+	assert(s_conversionTable[(int)value].v1 == value);
+	return s_conversionTable[(int)value].v2;
+}
+
 //=============================================================================
 // IGraphicsDeviceObject
 
@@ -258,6 +309,7 @@ Ref<IShaderPass> IGraphicsDevice::createShaderPassFromUnifiedShaderPass(const Un
         vsEntryPointName,
         psEntryPointName,
         &unifiedShader->descriptorLayout(passId),
+		&unifiedShader->attributes(passId),
     };
 
     ShaderCompilationDiag sdiag;
@@ -554,6 +606,13 @@ IVertexDeclaration::IVertexDeclaration()
 	LN_LOG_VERBOSE << "IVertexDeclaration [0x" << this << "] constructed.";
 }
 
+bool IVertexDeclaration::init(const VertexElement* elements, int count)
+{
+	//m_elements.resize(count);
+	//for (int i = 0; i < count; i++) m_elements[i] = elements[i];
+	return true;
+}
+
 void IVertexDeclaration::dispose()
 {
 	if (m_device) {
@@ -577,6 +636,19 @@ uint64_t IVertexDeclaration::computeHash(const VertexElement* elements, int coun
 	}
 	return hash.value();
 }
+
+//const VertexElement* IVertexDeclaration::findElement(AttributeUsage usage, int usageIndex) const
+//{
+//	// TODO: これ線形探索じゃなくて、map 作った方がいいかも。
+//	// usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
+//	auto u = IGraphicsHelper::AttributeUsageToElementUsage(usage);
+//	for (auto& e : m_elements) {
+//		if (e.Usage == u && e.UsageIndex == usageIndex) {
+//			return &e;
+//		}
+//	}
+//	return nullptr;
+//}
 
 //=============================================================================
 // IVertexBuffer
@@ -634,6 +706,25 @@ void IShaderPass::dispose()
 		m_device = nullptr;
 	}
 	IGraphicsDeviceObject::dispose();
+}
+
+bool IShaderPass::init(const ShaderPassCreateInfo& createInfo)
+{
+	m_attributes = *(createInfo.attributes);
+	return true;
+}
+
+const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage, int usageIndex) const
+{
+	// TODO: これ線形探索じゃなくて、map 作った方がいいかも。
+	// usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
+	auto au = IGraphicsHelper::ElementUsageToAttributeUsage(usage);
+	for (auto& a : m_attributes) {
+		if (a.usage == au && a.index == usageIndex) {
+			return &a;
+		}
+	}
+	return nullptr;
 }
 
 //=============================================================================

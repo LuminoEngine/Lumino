@@ -36,6 +36,7 @@ public:
     // "asset:///dir/file.txt"         => ローカルファイルパス。登録されているいずれかの AssetArchive 内のファイルを指す。
     // TODO: "asset://ArchiveName/" とかで AssetArchive を明示できるようにしてもいい気がする
     Optional<String> findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const;
+	bool existsAsset(const String& assetPath) const;
     Ref<Stream> openStreamFromAssetPath(const String& assetPath) const;
 
 

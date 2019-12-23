@@ -29,6 +29,7 @@
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
+#include <LuminoEngine/Tilemap/Voxel.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -343,12 +344,14 @@ int main(int argc, char** argv)
 
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
-	int div = 2;
+	int div = 1;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
 
 
 	Engine::initialize();
+
+
 	//{
 	//	auto ss = makeObject<ed::SceneAsset>();
 	//	ss->setup("SceneTest1.json");
@@ -361,7 +364,7 @@ int main(int argc, char** argv)
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
-	//Engine::mainCamera()->setPosition(0, 0, 0);
+	Engine::mainCamera()->setPosition(0, 1, -5);
 
 
     auto ft = Texture2D::create(512, 256);
@@ -384,7 +387,7 @@ int main(int argc, char** argv)
     //ft->drawText(u"ABCDEFGHIJKabcdefghijk", Rect(0, 0, 512, 256), font1, Color::Black);
     //ft->map(MapMode::Read)->save(u"test.png");
 
-    auto sprite1 = Sprite::create(Texture2D::load(u"Sprite1"), 3, 3);
+    //auto sprite1 = Sprite::create(Texture2D::load(u"Sprite1"), 3, 3);
 
 	//auto m_rigidBody = ln::RigidBody2DComponent::create();
 	//m_rigidBody->addCollisionShape(ln::BoxCollisionShape2D::create(5, 2));
@@ -395,33 +398,52 @@ int main(int argc, char** argv)
 	//sprite1->addComponent(m_rigidBody);
 	//Engine::mainRenderView()->setPhysicsDebugDrawEnabled(true);
 
-	auto sprite2 = UISprite::create(Texture2D::load(u"Sprite1"));
-	Engine::mainUIView()->addElement(sprite2);
+	//auto sprite2 = UISprite::create(Texture2D::load(u"Sprite1"));
+	//Engine::mainUIView()->addElement(sprite2);
 
-    auto message1 = UIMessageTextArea::create();
-    Engine::mainUIView()->addElement(message1);
+ //   auto message1 = UIMessageTextArea::create();
+ //   Engine::mainUIView()->addElement(message1);
 
 
 
-	auto navi1 = makeObject<UIFocusNavigator>();
-	Engine::mainUIView()->addElement(navi1);
+	//auto navi1 = makeObject<UIFocusNavigator>();
+	//Engine::mainUIView()->addElement(navi1);
 
-	auto window1 = UIWindow::create();
-	window1->setPosition(10, 10);
-	window1->setWidth(50);
-	window1->setHeight(30);
-	window1->setBackgroundColor(Color::Red);
-	navi1->addElement(window1);
+	//auto window1 = UIWindow::create();
+	//window1->setPosition(10, 10);
+	//window1->setWidth(50);
+	//window1->setHeight(30);
+	//window1->setBackgroundColor(Color::Red);
+	//navi1->addElement(window1);
 
-	auto window2 = UIWindow::create();
-	window2->setPosition(20, 20);
-	window2->setWidth(50);
-	window2->setHeight(30);
-	window2->setBackgroundColor(Color::Blue);
-	navi1->addElement(window2);
+	//auto window2 = UIWindow::create();
+	//window2->setPosition(20, 20);
+	//window2->setWidth(50);
+	//window2->setHeight(30);
+	//window2->setBackgroundColor(Color::Blue);
+	//navi1->addElement(window2);
 
 
     //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
+
+
+	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
+    auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+    mesh1->setBlendMode(BlendMode::Add);
+    mesh1->setScale(100);
+    mesh1->setColorScale(Color(0.3, 0.3, 0.3));
+    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    
+    // MeshContainer 複数
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
+
+    //auto voxelmap1 = makeObject<VisualObject>();
+    //auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
+    //voxelmap1->addComponent(voxelmapComponent1);
 
 #if 0
     auto window1 = UIWindow::create();
@@ -584,7 +606,7 @@ int main(int argc, char** argv)
 	{
 		int x = 0;
 		while (Engine::update()) {
-			sprite2->setPosition(x, 0, 0);
+			//sprite2->setPosition(x, 0, 0);
 			++x;
 			//sprite1->setEulerAngles(0, Engine::totalTime(), 0);
 			

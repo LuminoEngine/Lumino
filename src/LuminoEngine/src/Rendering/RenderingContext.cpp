@@ -468,6 +468,33 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
     // TODO: bounding
 }
 
+void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
+{
+    class DrawMesh : public detail::RenderDrawElement
+    {
+    public:
+        Ref<Mesh>  mesh;
+        int sectionIndex;
+
+        virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+        {
+            // TODO: boneTexture を送る仕組み
+            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex);
+        }
+    };
+
+    //if (meshResource->isInitialEmpty()) return;
+
+    m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
+    auto* element = m_builder->addNewDrawElement<DrawMesh>(
+        m_manager->meshRenderFeature(),
+        m_builder->meshRenderFeatureStageParameters());
+    element->mesh = mesh;
+    element->sectionIndex = sectionIndex;
+
+    // TODO: bounding
+}
+
 //void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
 //{
 //	class DrawMesh : public detail::RenderDrawElement

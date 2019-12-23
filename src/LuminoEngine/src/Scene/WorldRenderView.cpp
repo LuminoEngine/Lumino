@@ -168,7 +168,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
 
-#ifdef LN_TEST_ATMOSPHERE 1
+#ifdef LN_TEST_ATMOSPHERE
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
 

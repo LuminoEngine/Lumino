@@ -222,7 +222,6 @@ void GraphicsManager::dispose()
 	m_depthBufferCacheManager = nullptr;
 	m_renderTargetTextureCacheManager = nullptr;
 
-	//m_graphicsContext->dispose();
 	m_deviceContext->dispose();
 }
 

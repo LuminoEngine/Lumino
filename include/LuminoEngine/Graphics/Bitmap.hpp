@@ -219,7 +219,7 @@ LN_CONSTRUCT_ACCESS:
 	Bitmap2D();
 	virtual ~Bitmap2D();
 	void init();
-	void init(int width, int height, PixelFormat format);
+	void init(int width, int height, PixelFormat format, const void* data = nullptr);
 
 LN_INTERNAL_ACCESS:
 	ByteBuffer* rawBuffer() { return m_buffer; }

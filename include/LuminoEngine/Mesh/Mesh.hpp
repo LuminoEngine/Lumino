@@ -127,6 +127,95 @@ public: // TODO:
 	friend class MeshContainer;
 };
 
+
+
+struct MeshSection2
+{
+	/** 開始インデックス */
+	int startIndex;
+
+	/** 描画プリミティブ数 */
+	int	primitiveCount;
+
+	/** 対応するマテリアル番号 */
+	int	materialIndex;
+
+	PrimitiveTopology topology;
+};
+
+// LOD
+class Mesh
+	: public Object
+{
+public:
+	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。
+	struct VertexBufferView
+	{
+		VertexElementType type;
+		VertexElementUsage usage;
+		int usageIndex;
+		const void* data;
+		//size_t byteOffset;
+		size_t count;	// vertex count. not byte size. (byte size = count * size(type))
+		size_t byteStride;
+	};
+
+	// ファイルからのデータ読み込み用
+	struct SectionView
+	{
+		std::vector<VertexBufferView> vertexBufferViews;
+        //int indexOffset;    // (unit: index number. not byte size)
+        //int indexCount;     // (unit: index number. not byte size)
+
+        const void* indexData;  // このセクション内で 0 から始まるインデックス
+        int indexElementSize;	// byte size. (1, 2, 4)
+        size_t indexCount;
+
+        int materialIndex;
+
+		PrimitiveTopology topology;
+	};
+
+    struct MeshView
+    {
+        std::vector<SectionView> sectionViews;
+    };
+
+	///** 頂点の数を変更します。 */
+	//void resizeVertexBuffer(int vertexCount);
+
+	///** インデックスの数を変更します。 */
+	//void resizeIndexBuffer(int indexCount);
+
+	/** セクションの情報を追加します。 */
+	void addSection(int startIndex, int primitiveCount, int materialIndex);
+
+	// TODO: internal
+	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
+    const List<MeshSection2>& sections() const { return m_sections; }
+
+LN_CONSTRUCT_ACCESS:
+	Mesh();
+	virtual ~Mesh();
+	void init();
+	void init(const MeshView& meshView);
+
+private:
+	struct VertexBufferAttribute
+	{
+        VertexElementType type;
+		VertexElementUsage usage;
+        int usageIndex;
+		Ref<VertexBuffer> buffer;
+	};
+
+	
+	List<VertexBufferAttribute> m_vertexBuffers;
+	Ref<IndexBuffer> m_indexBuffer;
+    Ref<VertexLayout> m_vertexLayout;
+	List<MeshSection2> m_sections;
+};
+
 // ひとつのメッシュモデルデータ内にいくつかのメッシュノードが含まれているとき、それを名前検索するために使用する。
 // 例えば、フィールドのモデルに ビジュアル用のメッシュとコリジョン用のメッシュが含まれている場合、名前検索でコリジョンを取り出して Phyiscs モジュールに渡したりする。
 // また、LOD の管理も行う。
@@ -156,6 +245,11 @@ public:
 
 	void calculateBounds();
 
+
+    void setMesh(Mesh* mesh);
+    Mesh* mesh() const;
+
+
 LN_CONSTRUCT_ACCESS:
 	MeshContainer();
 	virtual ~MeshContainer();
@@ -166,9 +260,38 @@ LN_CONSTRUCT_ACCESS:
 private:
 	ln::String m_name;
 	Box m_boundingBox;
-	List<Ref<MeshResource>> m_lodResources;
+	List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
+    List<Ref<Mesh>> m_lodMesh;
 
 	friend class StaticMeshModel;
+};
+
+// Bone and Container
+class MeshNode : public Object
+{
+public:
+    int index() const { return m_index; }
+
+    void setMeshContainerIndex(int value);
+    int meshContainerIndex() const { return m_meshContainerIndex; }
+
+    void addChildIndex(int value);
+
+    void setLocalTransform(const Matrix& value);
+
+    const Matrix& localTransform() const { return m_localTransform; }
+    
+LN_CONSTRUCT_ACCESS:
+	MeshNode();
+    virtual ~MeshNode() = default;
+
+private:
+    int m_index;
+    int m_meshContainerIndex;
+    List<int> m_children;
+    Matrix m_localTransform;
+
+    friend class StaticMeshModel;
 };
 
 namespace detail {
@@ -183,24 +306,45 @@ class StaticMeshModel
 	: public Object
 {
 public:
+    static Ref<StaticMeshModel> load(const StringRef& filePath, float scale = 1.0f);
+
 	void addMeshContainer(MeshContainer* meshContainer);
+    void addNode(MeshNode* node);
 	void addMaterial(AbstractMaterial* material);
 
 
 	const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
-	const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
+    const List<Ref<MeshNode>>& meshNodes() const { return m_nodes; }
+    const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
+
+    void addRootNode(int index);
+
 
     // TODO: internal
     detail::InternalMeshModelType meshModelType() const { return m_type; }
+    //Matrix* nodeGlobalTransformPtr(int nodeIndex) { return &m_nodeGlobalTransforms[nodeIndex]; }
+    const Matrix& nodeGlobalTransform(int nodeIndex) { return m_nodeGlobalTransforms[nodeIndex]; }
+    void updateNodeTransforms();
 
 LN_CONSTRUCT_ACCESS:
     StaticMeshModel();
     StaticMeshModel(detail::InternalMeshModelType type);
 
 private:
+    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform);
+
     detail::InternalMeshModelType m_type;
 	List<Ref<MeshContainer>> m_meshContainers;
+    List<Ref<MeshNode>> m_nodes;
 	List<Ref<AbstractMaterial>> m_materials;
+    List<int> m_rootNodes;
+
+    // 静的データである localTransform に対する動的データ。
+    // といっても StaticMesh はリアルタイム更新はしない。
+    // ロード後にまとめて構築するだけ。
+    // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
+    // データが無駄になったりする。
+    List<Matrix> m_nodeGlobalTransforms;
 };
 
 } // namespace ln

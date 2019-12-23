@@ -70,11 +70,16 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	if (!m_renderPassCache.init(this)) {
 		return false;
 	}
-	if (!m_pipelineCache.init(this)) {
-		return false;
-	}
+	//if (!m_pipelineCache.init(this)) {
+	//	return false;
+	//}
 
 	m_nativeInterface = std::make_unique<VulkanNativeGraphicsInterface>(this);
+
+
+    //{
+    //    vkGetPhysicalDeviceFormatProperties()
+    //}
 
 	return true;
 }
@@ -94,7 +99,7 @@ void VulkanDevice::dispose()
     IGraphicsDevice::dispose();
 
 
-    m_pipelineCache.dispose();
+    //m_pipelineCache.dispose();
     //m_framebufferCache.dispose();
     m_renderPassCache.dispose();
 
@@ -1767,21 +1772,41 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-	auto bindingDescription = vertexDeclaration->vertexBindingDescriptions(); //Vertex::getBindingDescription();
-	//auto attributeDescriptions = Vertex::getAttributeDescriptions();
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-	{
-		auto& attrs = vertexDeclaration->vertexAttributeDescriptionSources();
-		for (int i = 0; i < attrs.size(); i++) {
-			VkVertexInputAttributeDescription desc;
-			desc.location = i;  // UnifiedShader からセマンティクス情報取れなければやむを得ないので連番
-			desc.binding = attrs[i].binding;
-			desc.format = attrs[i].format;
-			desc.offset = attrs[i].offset;
-			attributeDescriptions.push_back(desc);
-		}
-	}
+	//auto bindingDescription = vertexDeclaration->vertexBindingDescriptions(); //Vertex::getBindingDescription();
+	////auto attributeDescriptions = Vertex::getAttributeDescriptions();
+	//std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+	//{
+	//	auto& attrs = vertexDeclaration->vertexAttributeDescriptionSources();
+	//	for (int i = 0; i < attrs.size(); i++) {
+	//		VkVertexInputAttributeDescription desc;
+	//		desc.location = i;  // UnifiedShader からセマンティクス情報取れなければやむを得ないので連番
+	//		desc.binding = attrs[i].binding;
+	//		desc.format = attrs[i].format;
+	//		desc.offset = attrs[i].offset;
+	//		attributeDescriptions.push_back(desc);
+	//	}
+	//}
+    std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+    {
+        const auto& attrs = shaderPass->attributes();
+        for (size_t i = 0; i < attrs.size(); i++) {
+            const auto& attr = attrs[i];
+            if (const auto* s = vertexDeclaration->findAttributeDescriptionSource(attr.usage, attr.index)) {
+                VkVertexInputAttributeDescription desc;
+                desc.location = i;
+                desc.binding = s->binding;
+                desc.format = s->format;
+                desc.offset = s->offset;
+                attributeDescriptions.push_back(desc);
+            }
+            else {
+                // Shader が必要としている情報が頂点バッファ側に足りていない。警告が出る。
+            }
+        }
+    }
+    //{
 
+    const auto& bindingDescription = vertexDeclaration->vertexBindingDescriptions();
 	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescription.size());
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 	vertexInputInfo.pVertexBindingDescriptions = bindingDescription.data();
@@ -2025,7 +2050,9 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
         auto& element = m_elements[i];
 
         AttributeDescriptionSource attr;
-        attr.binding = elements[i].StreamIndex;
+        attr.usage = element.Usage;
+        attr.usageIndex = element.UsageIndex;
+        attr.binding = element.StreamIndex;
         attr.format = VulkanHelper::LNVertexElementTypeToVkFormat(elements[i].Type);
         attr.offset = m_bindings[attr.binding].stride;
         m_attributeSources.push_back(attr);
@@ -2039,6 +2066,19 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
 void VulkanVertexDeclaration::dispose()
 {
     IVertexDeclaration::dispose();
+}
+
+const VulkanVertexDeclaration::AttributeDescriptionSource* VulkanVertexDeclaration::findAttributeDescriptionSource(AttributeUsage usage, int usageIndex) const
+{
+    // TODO: これ線形探索じゃなくて、map 作った方がいいかも。
+    // usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
+    auto u = IGraphicsHelper::AttributeUsageToElementUsage(usage);
+    for (auto& e : m_attributeSources) {
+        if (e.usage == u && e.usageIndex == usageIndex) {
+            return &e;
+        }
+    }
+    return nullptr;
 }
 
 //==============================================================================
@@ -2800,6 +2840,10 @@ VulkanShaderPass::VulkanShaderPass()
 Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
     LN_DCHECK(deviceContext);
+	if (!IShaderPass::init(createInfo)) {
+		return false;
+	}
+
     m_deviceContext = deviceContext;
 
     VkDevice device = m_deviceContext->vulkanDevice();
@@ -3045,7 +3089,7 @@ void VulkanShaderPass::dispose()
             m_fragShaderModule = VK_NULL_HANDLE;
         }
 
-        m_deviceContext->pipelineCache()->invalidateFromShaderPass(this);
+        //m_deviceContext->pipelineCache()->invalidateFromShaderPass(this);
         m_deviceContext = nullptr;
     }
 

@@ -408,7 +408,7 @@ Ref<ISamplerState> OpenGLDevice::onCreateSamplerState(const SamplerStateData& de
 Ref<IShaderPass> OpenGLDevice::onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag)
 {
 	auto ptr = makeRef<GLShaderPass>();
-	ptr->init(this, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag);
+	ptr->init(this, createInfo, createInfo.vsCode, createInfo.vsCodeLen, createInfo.psCode, createInfo.psCodeLen, diag);
 	return ptr;
 }
 
@@ -519,16 +519,6 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 
 	// Update primitive data
 	{
-		//if (LN_REQUIRE(decls)) return;
-		//if (LN_REQUIRE(vertexBuufers)) return;
-		//if (LN_REQUIRE(vertexBuffersCount >= 1)) return;
-
-		// 複数の頂点バッファを使う
-		// https://qiita.com/y_UM4/items/75941cb75afb0a46aa5e
-
-		// IVertexDeclaration で指定された頂点レイアウトと、GLSL に書かれている attribute 変数の定義順序が一致していることを前提としている。
-		// ※0.4.0 以前は変数名を固定していたが、それを廃止。リフレクションっぽいことをこのモジュールの中でやりたくない。複雑になりすぎる。
-
 		if (m_vao) {
 			GL_CHECK(glBindVertexArray(m_vao));
 		}
@@ -540,6 +530,11 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
         auto* glPipeline = static_cast<GLPipeline*>(pipeline);
         glPipeline->bind(state.primitive.vertexBuffers, state.primitive.indexBuffer);
     }
+
+
+	//if (m_activeShaderPass && pipeline->vertexLayout()) {
+
+	//}
 
 #else
 	// UpdateStatus
@@ -1229,6 +1224,19 @@ void GLVertexDeclaration::init(const VertexElement* elements, int elementsCount)
 void GLVertexDeclaration::dispose()
 {
 	IVertexDeclaration::dispose();
+}
+
+const GLVertexElement* GLVertexDeclaration::findGLVertexElement(AttributeUsage usage, int usageIndex) const
+{
+	// TODO: これ線形探索じゃなくて、map 作った方がいいかも。
+	// usage の種類は固定だし、usageIndex も最大 16 あれば十分だし、byte 型 8x16 くらいの Matrix で足りる。
+	auto u = IGraphicsHelper::AttributeUsageToElementUsage(usage);
+	for (auto& e : m_vertexElements) {
+		if (e.usage == u && e.usageIndex == usageIndex) {
+			return &e;
+		}
+	}
+	return nullptr;
 }
 
 void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElements, int elementsCount, List<GLVertexElement>* outList)
@@ -1991,8 +1999,12 @@ GLShaderPass::~GLShaderPass()
 {
 }
 
-void GLShaderPass::init(OpenGLDevice* context, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
+void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCode, int fsCodeLen, ShaderCompilationDiag* diag)
 {
+	if (!IShaderPass::init(createInfo)) {
+		return;
+	}
+
 	m_context = context;
 
 	GLSLShader vertexShader;
@@ -2902,6 +2914,31 @@ void GLPipeline::bind(const std::array<IVertexBuffer*, MaxVertexStreams>& vertex
 		auto* glDecl = static_cast<const GLVertexDeclaration*>(vertexLayout());
 		if (glDecl)
 		{
+			size_t count = shaderPass()->attributes().size();
+			for (size_t iAttr = 0; iAttr < count; iAttr++) {
+				auto& attr = shaderPass()->attributes()[iAttr];
+
+				if (const auto* element = glDecl->findGLVertexElement(attr.usage, attr.index)) {
+
+					GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));
+					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->vertexBufferId()));
+					GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->byteOffset)));
+				}
+				else {
+					GL_CHECK(glDisableVertexAttribArray(attr.layoutLocation));
+					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, 0));
+				}
+				
+			}
+
+			//for (int iElement = 0; iElement < count; iElement++) {
+			//	const GLVertexElement& element = glDecl->vertexElements()[iElement];
+			//	// usage と usageIndex で attribute を検索して、一致する location にバインドする
+			//	if (auto attr = shaderPass()->findAttribute(element.usage, element.usageIndex)) {
+
+			//	}
+			//}
+#if 0
 			for (int iElement = 0; iElement < m_device->caps().MAX_VERTEX_ATTRIBS; iElement++)
 			{
 				GLuint attrLoc = iElement;	// 本来は attribute 変数の location
@@ -2940,6 +2977,7 @@ void GLPipeline::bind(const std::array<IVertexBuffer*, MaxVertexStreams>& vertex
 			//}
 
 			//m_lastUsedAttribIndex = iElement;
+#endif
 		}
 
 		auto* glIndexBuffer = static_cast<const GLIndexBuffer*>(indexBuffer);
