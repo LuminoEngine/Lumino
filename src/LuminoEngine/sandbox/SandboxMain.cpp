@@ -432,13 +432,18 @@ int main(int argc, char** argv)
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-
+    auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+    mesh1->setBlendMode(BlendMode::Add);
+    mesh1->setScale(100);
+    mesh1->setColorScale(Color(0.3, 0.3, 0.3));
+    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    
     // MeshContainer 複数
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
 
-    auto voxelmap1 = makeObject<VisualObject>();
-    auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
-    voxelmap1->addComponent(voxelmapComponent1);
+    //auto voxelmap1 = makeObject<VisualObject>();
+    //auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
+    //voxelmap1->addComponent(voxelmapComponent1);
 
 #if 0
     auto window1 = UIWindow::create();

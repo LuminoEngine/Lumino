@@ -400,6 +400,20 @@ void Mesh::init(const MeshView& meshView)
                 //memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
             }
 
+            if (attr->usage == VertexElementUsage::Position) {
+                if (attr->type == VertexElementType::Float3) {
+                    auto* p = reinterpret_cast<Vector3*>(buf);
+                    for (int i = 0; i < vertexCountInSection; i++) {
+                        p[i].z *= -1.0f;
+                    }
+                }
+                else {
+                    LN_NOTIMPLEMENTED();
+                    return;
+                }
+
+            }
+
             // TODO: unmap 無いとめんどい以前に怖い
         }
 
