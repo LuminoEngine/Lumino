@@ -1,7 +1,7 @@
 ﻿
-#include "../Project.hpp"
-#include "../PluginManager.hpp"
-#include "../AssetDatabase.hpp"
+#include "../Project/Project.hpp"
+#include "../Project/PluginManager.hpp"
+#include "../Project/AssetDatabase.hpp"
 #include "EditorContext.hpp"
 #include "Application.hpp"
 

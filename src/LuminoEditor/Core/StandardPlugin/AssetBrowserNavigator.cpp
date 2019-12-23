@@ -1,8 +1,8 @@
 ﻿
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <Workspace.hpp>
-#include <Project.hpp>
-#include <AssetDatabase.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/AssetDatabase.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
 #include "AssetBrowserNavigator.hpp"

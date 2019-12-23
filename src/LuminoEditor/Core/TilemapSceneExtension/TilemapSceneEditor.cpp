@@ -83,9 +83,9 @@ PGMMV では統合されてたけど、大きなオブジェクトがあるときに、その後ろのタイルを選
 */
 
 #include <Workspace.hpp>
-#include <Project.hpp>
-#include <AssetDatabase.hpp>
-#include <PluginManager.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/AssetDatabase.hpp"
+#include "../Project/PluginManager.hpp"
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
