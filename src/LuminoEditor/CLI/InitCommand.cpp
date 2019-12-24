@@ -1,5 +1,5 @@
 ﻿
-#include "Project.hpp"
+#include <Project/Project.hpp>
 #include "InitCommand.hpp"
 
 int InitCommand::execute(lna::Workspace* workspace)

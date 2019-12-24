@@ -30,6 +30,7 @@
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
+#include <LuminoEngine/Scene/TransformControls.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -344,7 +345,7 @@ int main(int argc, char** argv)
 
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
-	int div = 1;
+	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
 
@@ -427,15 +428,16 @@ int main(int argc, char** argv)
     //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
 
-	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-    auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
-    mesh1->setBlendMode(BlendMode::Add);
-    mesh1->setScale(100);
-    mesh1->setColorScale(Color(0.3, 0.3, 0.3));
+    
+	//auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+ //   mesh1->setBlendMode(BlendMode::Add);
+ //   mesh1->setScale(100);
+ //   mesh1->setColorScale(Color(0.3, 0.3, 0.3));
     //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
     
     // MeshContainer 複数
@@ -444,6 +446,8 @@ int main(int argc, char** argv)
     //auto voxelmap1 = makeObject<VisualObject>();
     //auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
     //voxelmap1->addComponent(voxelmapComponent1);
+
+	//auto tc1 = makeObject<TransformControls>();
 
 #if 0
     auto window1 = UIWindow::create();

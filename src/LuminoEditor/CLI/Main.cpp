@@ -1,7 +1,7 @@
 
-#include "EnvironmentSettings.hpp"
-#include "Workspace.hpp"
-#include "Project.hpp"
+#include <EnvironmentSettings.hpp>
+#include <Workspace.hpp>
+#include <Project/Project.hpp>
 #include "InitCommand.hpp"
 #include "FxcCommand.hpp"
 #include "BuildCommand.hpp"

@@ -177,7 +177,7 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
         {
-            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::SingleLineGenerater>(batchList, context, data);
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
         }
     };
 
@@ -202,7 +202,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::PlaneMeshGenerater>(batchList, context, data);
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
         }
     };
 
@@ -224,7 +224,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater<detail::RegularSphereMeshFactory>(batchList, context, data);
+            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
         }
     };
 

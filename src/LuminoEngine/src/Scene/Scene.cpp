@@ -204,7 +204,7 @@ void Scene::renderObjects(RenderingContext* context)
 {
     for (auto& obj : m_rootWorldObjectList)
     {
-        obj->render();
+        obj->render(context);
 
         for (auto& c : *(obj->m_components))
         {

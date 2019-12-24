@@ -3,12 +3,14 @@
 #include "Common.hpp"
 #include "../Asset/AssetObject.hpp"
 #include "../Base/Collection.hpp"
+#include "Component.hpp"
 
 namespace ln {
 class World;
 class Scene;
 class WorldObject;
 class Component;
+class RenderingContext;
 
 LN_CLASS()
 class ComponentList : public Collection<Ref<Component>>
@@ -186,7 +188,7 @@ protected:
 	LN_METHOD()
     virtual void onUpdate(float elapsedSeconds);
 
-    virtual void onRender();
+    virtual void onRender(RenderingContext* context);
 
 
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
@@ -215,7 +217,7 @@ public: // TODO:
 	void start();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
-    void render();
+    void render(RenderingContext* context);
     void notifyTransformChanged();
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();

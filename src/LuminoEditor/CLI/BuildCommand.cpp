@@ -1,9 +1,9 @@
 ﻿
-#include "../../src/LuminoEngine/src/Asset/AssetArchive.hpp"
-#include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
-#include "EnvironmentSettings.hpp"
-#include "Workspace.hpp"
-#include "Project.hpp"
+#include "../../LuminoEngine/src/Asset/AssetArchive.hpp"
+#include "../../LuminoEngine/src/Shader/UnifiedShader.hpp"
+#include <EnvironmentSettings.hpp>
+#include <Workspace.hpp>
+#include <Project/Project.hpp>
 #include "BuildCommand.hpp"
 #include "FxcCommand.hpp"
 

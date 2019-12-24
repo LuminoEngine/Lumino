@@ -30,7 +30,7 @@ endif()
 option(LN_BUILD_TESTS "build unit test projects." ON)
 
 # build tool projects
-option(LN_BUILD_TOOLS "build tool projects." ON)
+#option(LN_BUILD_TOOLS "build tool projects." ON)
 
 # build language bindings projects
 option(LN_BUILD_BINDINGS "build language bindings." OFF)
@@ -144,7 +144,7 @@ else()
         #add_subdirectory(tools/LuminoStudio)
         #add_subdirectory(tools/Editor)
     endif()
-    if (LN_BUILD_TOOLS)
-        add_subdirectory(tools/LuminoCLI)
-    endif()
+    #if (LN_BUILD_TOOLS)
+    #    add_subdirectory(tools/LuminoCLI)
+    #endif()
 endif()

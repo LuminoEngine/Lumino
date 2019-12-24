@@ -168,7 +168,6 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
 
-#ifdef LN_TEST_ATMOSPHERE
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
 
@@ -285,14 +284,14 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 				auto p3 = Vector3::normalize(p3r);
                 m_clearMaterial->setMatrix(u"_localWorld", rot);
                 m_clearMaterial->setMatrix(u"_scaleMatrix", ss);
-                printf("----\n");
-				camera.viewDirection.print();
-				rot.front().print();
-                p0.print();
-                p1.print();
-                p2.print();
-                p3.print();
-                printf("----\n");
+    //            printf("----\n");
+				//camera.viewDirection.print();
+				//rot.front().print();
+    //            p0.print();
+    //            p1.print();
+    //            p2.print();
+    //            p3.print();
+    //            printf("----\n");
                 //lookAt.print();
                 //rot.inverse();
                 renderingContext->pushState();
@@ -302,9 +301,6 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 //renderingContext->drawScreenRectangle();
 				renderingContext->drawMesh(m_skyProjectionPlane->meshContainers()[0]->meshResource(), 0);
                 renderingContext->popState();
-#else
-				LN_NOTIMPLEMENTED();
-#endif
 			}
 
             m_targetWorld->renderObjects();

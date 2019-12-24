@@ -215,7 +215,7 @@ void WorldObject::onUpdate(float elapsedSeconds)
 
 }
 
-void WorldObject::onRender()
+void WorldObject::onRender(RenderingContext* context)
 {
 
 }
@@ -300,9 +300,9 @@ void WorldObject::updateFrame(float elapsedSeconds)
     }
 }
 
-void WorldObject::render()
+void WorldObject::render(RenderingContext* context)
 {
-    onRender();
+    onRender(context);
 }
 
 void WorldObject::notifyTransformChanged()

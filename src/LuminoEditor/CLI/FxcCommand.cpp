@@ -1,10 +1,10 @@
 ﻿
-#include "../../src/LuminoEngine/src/Shader/ShaderManager.hpp"
-#include "../../src/LuminoEngine/src/Shader/ShaderTranspiler.hpp"
-#include "../../src/LuminoEngine/src/Shader/HLSLMetadataParser.hpp"
-#include "../../src/LuminoEngine/src/Shader/UnifiedShader.hpp"
-#include "../../src/LuminoEngine/src/Shader/UnifiedShaderCompiler.hpp"
-#include "Project.hpp"
+#include "../../LuminoEngine/src/Shader/ShaderManager.hpp"
+#include "../../LuminoEngine/src/Shader/ShaderTranspiler.hpp"
+#include "../../LuminoEngine/src/Shader/HLSLMetadataParser.hpp"
+#include "../../LuminoEngine/src/Shader/UnifiedShader.hpp"
+#include "../../LuminoEngine/src/Shader/UnifiedShaderCompiler.hpp"
+#include <Project/Project.hpp>
 #include "FxcCommand.hpp"
 
 /*

@@ -82,40 +82,67 @@ public:
 
 
 
-    //void drawMeshGenerater(const MeshGenerater* generator);
-    template<class TFactory>
-	RequestBatchResult drawMeshGenerater(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const TFactory& generator)
-    {
-		//// TODO: toporogy も RenderStage のパラメータに持っていく
-  //      if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
-		//	submitBatch(context, nullptr);
-  //      }
-  //      m_lastPrimitiveType = generator.primitiveType();
+ //   //void drawMeshGenerater(const MeshGenerater* generator);
+ //   template<class TFactory>
+	//RequestBatchResult drawMeshGenerater(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const TFactory& generator)
+ //   {
+	//	//// TODO: toporogy も RenderStage のパラメータに持っていく
+ // //      if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator.primitiveType()) {
+	//	//	submitBatch(context, nullptr);
+ // //      }
+ // //      m_lastPrimitiveType = generator.primitiveType();
 
-        LN_ENQUEUE_RENDER_COMMAND_2(
-            PrimitiveRenderFeature_drawMeshGenerater, context,
-            InternalPrimitiveRenderer*, m_internal,
-            TFactory, generator,
-            {
-                m_internal->drawMeshGenerater(&generator);
-            });
+ //       LN_ENQUEUE_RENDER_COMMAND_2(
+ //           PrimitiveRenderFeature_drawMeshGenerater, context,
+ //           InternalPrimitiveRenderer*, m_internal,
+ //           TFactory, generator,
+ //           {
+ //               m_internal->drawMeshGenerater(&generator);
+ //           });
 
-		return RequestBatchResult::Staging;
-    }
+	//	return RequestBatchResult::Staging;
+ //   }
 
 
     //void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 
 
+	RequestBatchResult drawMeshGenerater(const MeshGenerater* generator);
 
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
+	struct BatchData
+	{
+		PrimitiveTopology topology;
+		int indexOffset;
+		int indexCount;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
+	void resetBatchData();
+	void prepareBuffers(int vertexCount, int indexCount);
+
     //Optional<PrimitiveTopology> m_lastPrimitiveType;
 	RenderingManager* m_manager;
-    Ref<InternalPrimitiveRenderer> m_internal;
+    //Ref<InternalPrimitiveRenderer> m_internal;
+
+	Ref<LinearAllocator> m_linearAllocator;
+	List<MeshGenerater*> m_generators;
+	//PrimitiveTopology m_primitiveType;
+	BatchData m_batchData;
+
+	// RHI
+	Ref<VertexLayout> m_vertexLayout;
+	Ref<VertexBuffer> m_vertexBuffer;
+	Ref<IndexBuffer> m_indexBuffer;
 };
 
 class PrimitiveRenderFeature
