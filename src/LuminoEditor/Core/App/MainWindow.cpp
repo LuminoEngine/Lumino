@@ -34,9 +34,8 @@ void MainWindow::onLoaded()
 
     m_mainHSplitter = ln::makeObject<ln::UISplitter>();
     m_mainHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Auto);
-    m_mainHSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 300);
-    m_mainHSplitter->setCellDefinition(2);
-    m_mainHSplitter->setCellDefinition(3, ln::UILayoutLengthType::Direct, 300);
+    m_mainHSplitter->setCellDefinition(1);
+    m_mainHSplitter->setCellDefinition(2, ln::UILayoutLengthType::Direct, 300);
     //addElement(m_mainHSplitter);
     layout1->addChild(m_mainHSplitter, ln::UILayoutLengthType::Ratio);
 
@@ -47,32 +46,40 @@ void MainWindow::onLoaded()
         m_navigatorManager->navigationViewClose = ln::bind(this, &MainWindow::onNavigationViewClose);
         m_mainHSplitter->addElement(m_navigatorManager);
 
-        //--------
 
-        m_mainHSplitter->addElement(m_documentManager->modePanesArea());
-
-        //--------
-
-		m_mainVSplitter = ln::makeObject<ln::UISplitter>();
-		m_mainVSplitter->setOrientation(ln::Orientation::Vertical);
-		m_mainVSplitter->setCellDefinition(0);
-		m_mainVSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
+        m_mainVSplitter = ln::makeObject<ln::UISplitter>();
+        m_mainVSplitter->setOrientation(ln::Orientation::Vertical);
+        m_mainVSplitter->setCellDefinition(0);
+        m_mainVSplitter->setCellDefinition(1, ln::UILayoutLengthType::Direct, 200);
         m_mainHSplitter->addElement(m_mainVSplitter);
 
-		{
-			m_mainVSplitter->addElement(m_documentManager);
+        {
+            {
+                auto documentHSplitter = ln::makeObject<ln::UISplitter>();
+                documentHSplitter->setOrientation(ln::Orientation::Horizontal);
+                documentHSplitter->setCellDefinition(0, ln::UILayoutLengthType::Direct, 300);
+                
+                documentHSplitter->addElement(m_documentManager->modePanesArea());
+                //--------
+                documentHSplitter->addElement(m_documentManager);
 
-			//--------
+                m_mainVSplitter->addElement(documentHSplitter);
+            }
 
-			m_mainVSplitter->addElement(m_documentManager->toolPanesArea());
+            //--------
 
-			m_outputPane = ln::makeObject<OutputPane>();
+            m_mainVSplitter->addElement(m_documentManager->toolPanesArea());
+
+            m_outputPane = ln::makeObject<OutputPane>();
             m_documentManager->toolPanesArea()->addPane(m_outputPane);
-		}
+        }
 
-		//--------
+        //--------
 
         m_mainHSplitter->addElement(m_documentManager->inspectorPanesArea());
+
+
+
     }
 }
 

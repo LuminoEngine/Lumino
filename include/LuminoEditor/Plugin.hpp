@@ -30,8 +30,17 @@ enum class EditorExtensionType
 
 enum class EditorPaneKind
 {
+    // Navigation と DocumentView の間に配置される、現在開いている Document の動作モードおよび、それに関連する主データを表示するための場所。
+    // 例えば Scene Editor では、以下のようなモードがある
+    // - A. プレハブ (WorldObject) を配置するモード（Blender のオブジェクトモード）
+    // - B. タイルマップやテラインの編集を行うモード（Blender の編集モード。タイルマップは別窓ではなくシーン内で編集したい）
+    // - C. グレーボクシングのための定義済みシェイプの配置モード
+    // ここで選ぶモードに応じて、右側のドキュメント、Inspector, Tool 部分は大きく様子を変える。
+    // 
     Mode,
+
     Inspector,
+    
     Tool,
 };
 
