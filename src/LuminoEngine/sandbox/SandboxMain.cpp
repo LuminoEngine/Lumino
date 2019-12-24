@@ -449,6 +449,8 @@ int main(int argc, char** argv)
 
 	//auto tc1 = makeObject<TransformControls>();
 
+    Engine::mainRenderView()->transformControls()->setTarget(mesh1);
+
 #if 0
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));

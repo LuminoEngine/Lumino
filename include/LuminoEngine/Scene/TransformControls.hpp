@@ -6,6 +6,7 @@ namespace ln {
 class Material;
 class RenderingContext;
 class UIEventArgs;
+class WorldObject;
 
 enum class TransformControlsType
 {
@@ -18,6 +19,9 @@ class TransformControls
 	: public Object
 {
 public:
+    void setTarget(WorldObject* value);
+
+
     void setViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const Size& viewPixelSize);
 
 
@@ -57,11 +61,20 @@ private:
     static const float RotationViewZRingOuter;
     static const float BaseOpacity;
 
+    bool enabled() const { return m_target != nullptr; }
+    bool handleMouseDown(const Point& point);
+    bool handleMouseUp(const Point& point);
+    bool handleMouseMove(const Point& point);
+    void onTargetTransformChanged();
 
+    void startEditing();
+    void submitEditing();
     void makeScreenFactor();
     OperationType getDirectionOperationType(float x, float y, Plane* outLocalPlane) const;
     void intersectsLocalAAPlanes(float x, float y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay) const;
     Ray makeLocalRay(float x, float y) const;
+
+    Ref<WorldObject> m_target;
 
     Matrix m_view;
     Matrix m_proj;
@@ -76,6 +89,18 @@ private:
 
     OperationType m_operationType;
 
+    // TransformControls によって操作される transform
+    AttitudeTransform m_targetInitialTransform;
+    AttitudeTransform m_targetTransform;
+
+    // Dragging infomation
+    bool m_dragging;
+    Plane m_draggingLocalPlane;
+    Vector3 m_draggingStartLocalPosition;
+    Matrix m_draggingStartGizmoTransform;
+    Point m_draggingStartViewPixelPoint;
+
+    // Rendering resources
     Ref<Material> m_xColorMaterial;
     Ref<Material> m_yColorMaterial;
     Ref<Material> m_zColorMaterial;

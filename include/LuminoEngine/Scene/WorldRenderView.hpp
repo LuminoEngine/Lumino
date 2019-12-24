@@ -31,6 +31,8 @@ public:
     void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
 	bool physicsDebugDrawEnabled() const { return m_physicsDebugDrawEnabled; }
 
+    const Ref<TransformControls>& transformControls() const{ return m_transformControls; }
+
     // TODO: internal
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 

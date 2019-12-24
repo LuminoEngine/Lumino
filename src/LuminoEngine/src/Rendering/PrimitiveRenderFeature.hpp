@@ -32,14 +32,6 @@ private:
     Ref<IVertexBuffer> m_vertexBuffer;
     Ref<IIndexBuffer> m_indexBuffer;
 
-    /*
-     0.4.0 までは CacheBuffer という、内部実装は vector なバッファを使っていたが、
-     これだと常に最大使用量のメモリが確保されたままになるので、メモリ効率が良くない。
-     LinearAllocator を使うことで平均化できるが、一方こちらはバッファがひとつながりではないので、
-     CacheBuffer の時のように頂点バッファデータをキャッシュすることはできなくなる。
-     そのため Sprite と同じように、まずは描画情報 (MeshGenerater) をリストで持って、
-     flush 時に頂点データ化するという流れで描画を行う。
-    */
 };
 
 // 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
@@ -72,6 +64,14 @@ private:
 // MeshRenderFeature が Mesh(VertexBuffer, IndexBuffer) を受け取って描画するのに対し、
 // こちらは形状の情報（球なら中心位置と半径）を受け取って描画する。そのためデータサイズを非常に小さく抑えることができる。
 // また、スプライトのようなバッファリングによるドローコール削減も狙う。
+    /*
+     0.4.0 までは CacheBuffer という、内部実装は vector なバッファを使っていたが、
+     これだと常に最大使用量のメモリが確保されたままになるので、メモリ効率が良くない。
+     LinearAllocator を使うことで平均化できるが、一方こちらはバッファがひとつながりではないので、
+     CacheBuffer の時のように頂点バッファデータをキャッシュすることはできなくなる。
+     そのため Sprite と同じように、まずは描画情報 (MeshGenerater) をリストで持って、
+     flush 時に頂点データ化するという流れで描画を行う。
+    */
 class MeshGeneraterRenderFeature
 	: public RenderFeature
 {
@@ -112,7 +112,7 @@ public:
     virtual void endRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
-    virtual bool drawElementTransformNegate() const override { return true; }
+    //virtual bool drawElementTransformNegate() const override { return true; }
 
 private:
 	struct BatchData

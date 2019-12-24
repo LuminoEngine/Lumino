@@ -142,50 +142,10 @@ void MeshGeneraterRenderFeature::init(RenderingManager* manager)
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 	m_linearAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
-    //m_internal = makeRef<InternalPrimitiveRenderer>();
-    //m_internal->init(manager);
 	prepareBuffers(512, 512 * 3);
 	m_vertexLayout = m_manager->standardVertexDeclaration();
 	resetBatchData();
 }
-
-//void PrimitiveRenderFeature::drawMeshGenerater(const MeshGenerater* generator)
-//{
-//    if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator->primitiveType()) {
-//        flush(m_manager->graphicsManager()->graphicsContext());
-//    }
-//        
-//    m_lastPrimitiveType = generator->primitiveType();
-//
-//
-//
-//    GraphicsManager* manager = m_manager->graphicsManager();
-//    LN_ENQUEUE_RENDER_COMMAND_2(
-//        PrimitiveRenderFeature_drawMeshGenerater, manager,
-//        InternalPrimitiveRenderer*, m_internal,
-//        InternalSpriteRenderer::State, m_state,
-//        {
-//            m_internal->setState(m_state);
-//        });
-//}
-
-//void PrimitiveRenderFeature::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
-//{
-//    GraphicsManager* manager = m_manager->graphicsManager();
-//    LN_ENQUEUE_RENDER_COMMAND_2(
-//        SpriteRenderFeature_setState, manager,
-//        InternalSpriteRenderer*, m_internal,
-//        InternalSpriteRenderer::State, m_state,
-//        {
-//            m_internal->setState(m_state);
-//        });
-//
-//    if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != PrimitiveType::LineList) {
-//        flush(m_manager->graphicsManager()->graphicsContext());
-//    }
-//
-//    m_lastPrimitiveType = PrimitiveType::LineList;
-//}
 
 RequestBatchResult MeshGeneraterRenderFeature::drawMeshGenerater(const MeshGenerater* generator)
 {
@@ -208,10 +168,6 @@ RequestBatchResult MeshGeneraterRenderFeature::drawMeshGenerater(const MeshGener
 
 void MeshGeneraterRenderFeature::endRendering()
 {
-    //for (MeshGenerater* gen : m_generators) {
-    //    gen->~MeshGenerater();
-    //}
-
     resetBatchData();
 }
 
@@ -292,13 +248,6 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFea
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->drawPrimitiveIndexed(localBatch->data.indexOffset, primitiveCount);
-
-	//context->setVertexDeclaration(m_vertexDeclaration);
-	//context->setVertexBuffer(0, m_vertexBuffer);
-	//context->setIndexBuffer(m_indexBuffer);
-	//context->setPrimitiveTopology(m_primitiveType);
-	//context->drawPrimitiveIndexed(0, primitiveCount);
-
 }
 
 void MeshGeneraterRenderFeature::resetBatchData()
