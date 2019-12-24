@@ -16,7 +16,7 @@ SceneEditorPlugin::SceneEditorPlugin()
 
 }
 
-ln::Ref<ln::AssetEditor> SceneEditorPlugin::createEditor()
+ln::Ref<lna::AssetEditor> SceneEditorPlugin::createEditor()
 {
     return ln::makeObject<SceneEditor>();
 }

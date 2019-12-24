@@ -8,6 +8,7 @@ class StandardPluginModule;
 class TilesetExtensionModule;
 class TilemapSceneEditorExtensionModule;
 class EditorContext;
+class AssetEditor;
 
 class PluginManager
 	: public ln::RefObject
@@ -25,7 +26,7 @@ public:
 
     ln::List<ln::IAssetNavigatorExtension*> getAssetNavigatorExtensions() const;
     ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> getAssetImporterExtensions(const ln::Path& assetSourceFilePath) const;
-    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<ln::AssetEditor>>> geAssetEditorExtensions(const ln::String& assetType) const;
+    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditor>>> geAssetEditorExtensions(const ln::String& assetType) const;
     ln::List<ln::AssetEditorPloxy*> geAssetEditorPloxy(const ln::String& assetType) const;
 
 private:

@@ -2,13 +2,13 @@
 
 namespace lna {
 class EditorContext;
+class AssetEditor;
 }
 
 namespace ln {
 class UIFrame;
 class NavigationMenuItem;
 class AssetImporter;
-class AssetEditor;
 class EditorPane;
 class IEditorExtension;
 
@@ -28,21 +28,6 @@ enum class EditorExtensionType
     AssetSubEditor,
 };
 
-enum class EditorPaneKind
-{
-    // Navigation と DocumentView の間に配置される、現在開いている Document の動作モードおよび、それに関連する主データを表示するための場所。
-    // 例えば Scene Editor では、以下のようなモードがある
-    // - A. プレハブ (WorldObject) を配置するモード（Blender のオブジェクトモード）
-    // - B. タイルマップやテラインの編集を行うモード（Blender の編集モード。タイルマップは別窓ではなくシーン内で編集したい）
-    // - C. グレーボクシングのための定義済みシェイプの配置モード
-    // ここで選ぶモードに応じて、右側のドキュメント、Inspector, Tool 部分は大きく様子を変える。
-    // 
-    Mode,
-
-    Inspector,
-    
-    Tool,
-};
 
 // Plugin に限らず、トランスパイらによって生成されたモジュールなども含む、DynamicLoad のルートインターフェイス。
 class IModuleInterface
@@ -113,7 +98,7 @@ public:
     /** この DocumentEditor が編集対象とするオブジェクトの種別。asset ファイルに埋め込まれる種類。 */
     virtual const Char* typeKeyword() const = 0;
 
-    virtual Ref<AssetEditor> createEditor() = 0;
+    virtual Ref<lna::AssetEditor> createEditor() = 0;
 };
 
 
@@ -121,37 +106,11 @@ class AssetEditorPloxy : public ln::Object
 {
 public:
     virtual ln::String targetTypeName() = 0;
-    virtual Ref<AssetEditor> createEditor() = 0;
+    virtual Ref<lna::AssetEditor> createEditor() = 0;
 };
 
 
 
-enum class AssetEditorViewType
-{
-    Scene,
-};
-
-class AssetEditor
-    : public Object
-{
-public:
-    AssetEditorViewType viewType() const { return AssetEditorViewType::Scene; }
-
-    virtual void onOpened(AssetModel* asset, UIContainerElement* frame) {}
-    virtual void onClosed() {}
-
-    // ドキュメントがアクティブになったりしたときに呼ばれる。
-    // AssetEditor は派生クラスのメンバ変数など内部 AssetEditorViewModel を持つことができるが、
-    // それをアクティブにしたい場合はこの実装で処理を行う。
-    virtual void onActivate() {}
-
-    virtual Ref<List<Ref<EditorPane>>> getEditorPanes(EditorPaneKind kind) { return nullptr; }
-
-    lna::EditorContext* editorContext() const { return m_editorContext; }
-
-public: // TODO: internal
-    lna::EditorContext* m_editorContext;
-};
 
 using GetModuleClassFunc = ::ln::IPluginModule*();
 

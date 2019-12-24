@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEditor/Plugin.hpp>
+#include "../AssetEditor/AssetEditor.hpp"
 
 /*
     タイルマップをシーンエディタといい感じに協調して編集したいけどどうする？
@@ -23,7 +24,7 @@
     SceneEditor を拡張する TilemapEditor とか、あるいは Scene でなくても、Database のデフォルトの Editor を拡張するものとかも考えられる。
     これ系の拡張は、何らかの Editor を開いたら Manager から検索して、その Editor にアタッチして、あとは必要なタイミングで動いてもらうみたいな動きになる。
 */
-class SceneEditor : public ln::AssetEditor
+class SceneEditor : public lna::AssetEditor
 {
 public:
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
@@ -37,7 +38,7 @@ public:
     virtual const ln::Char* id() const { return u"7B7D6551-3105-4877-99C4-D4EE8EA06482"; }
     virtual const ln::Char* displayName() const { return u"SceneEditorPlugin"; }
     virtual const ln::Char* typeKeyword() const { return u"Scene"; }
-    virtual ln::Ref<ln::AssetEditor> createEditor() override;
+    virtual ln::Ref<lna::AssetEditor> createEditor() override;
 
 private:
 };

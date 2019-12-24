@@ -12,6 +12,9 @@ source_group("Sources" FILES ${LN_SOURCES_LuminoEditor})
 file(GLOB LN_SOURCES_Project Project/*.hpp Project/*.cpp)
 source_group("Project" FILES ${LN_SOURCES_Project})
 
+file(GLOB LN_SOURCES_AssetEditor AssetEditor/*.hpp AssetEditor/*.cpp)
+source_group("AssetEditor" FILES ${LN_SOURCES_AssetEditor})
+
 file(GLOB LN_SOURCES_StandardPlugin StandardPlugin/*.hpp StandardPlugin/*.cpp)
 source_group("StandardPlugin" FILES ${LN_SOURCES_StandardPlugin})
 
@@ -32,6 +35,7 @@ set(
 	${LOCAL_HEADERS}
 	${LN_SOURCES_LuminoEditor}
 	${LN_SOURCES_Project}
+	${LN_SOURCES_AssetEditor}
 	${LN_SOURCES_StandardPlugin}
 	${LN_SOURCES_TilemapPlugin}
 	${LN_SOURCES_TilemapSceneExtension}

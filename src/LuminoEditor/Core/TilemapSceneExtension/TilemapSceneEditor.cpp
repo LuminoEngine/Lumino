@@ -167,15 +167,15 @@ void TilemapSceneEditor::onClosed()
 {
 }
 
-Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(ln::EditorPaneKind kind)
+Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(lna::EditorPaneKind kind)
 {
     switch (kind)
     {
-    case ln::EditorPaneKind::Mode:
+    case lna::EditorPaneKind::Mode:
         return m_modePanes;
-    case ln::EditorPaneKind::Inspector:
+    case lna::EditorPaneKind::Inspector:
         return m_inspectorPanes;
-    case ln::EditorPaneKind::Tool:
+    case lna::EditorPaneKind::Tool:
         return m_toolPanes;
     }
     return nullptr;
@@ -232,7 +232,7 @@ void TilemapSceneEditor::handleTickEvent(ln::UITimerEventArgs* e)
 //==============================================================================
 // TilemapSceneEditorPloxy
 
-Ref<ln::AssetEditor> TilemapSceneEditorPloxy::createEditor()
+Ref<lna::AssetEditor> TilemapSceneEditorPloxy::createEditor()
 {
     return ln::makeObject<TilemapSceneEditor>();
 }

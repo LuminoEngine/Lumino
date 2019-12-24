@@ -116,9 +116,9 @@ ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> 
     return result;
 } 
 
-ln::List<std::pair<ln::IAssetEditorExtension*, Ref<ln::AssetEditor>>> PluginManager::geAssetEditorExtensions(const ln::String& assetType) const
+ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditor>>> PluginManager::geAssetEditorExtensions(const ln::String& assetType) const
 {
-    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<ln::AssetEditor>>> result;
+    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditor>>> result;
     for (auto& module : m_pluginModules) {
         int count = module->getEditorExtensionCount();
         for (int i = 0; i < count; i++) {

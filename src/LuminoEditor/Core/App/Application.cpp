@@ -9,6 +9,7 @@
 #include "../Project/Project.hpp"
 #include "../Project/AssetDatabase.hpp"
 #include "../Project/PluginManager.hpp"
+#include "AssetEditor/AssetEditor.hpp"
 #include "NavigatorManager.hpp"
 #include "DocumentManager.hpp"
 #include "MainWindow.hpp"

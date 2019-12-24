@@ -2,6 +2,7 @@
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/ToolPanesArea.hpp"
 #include "../App/NavigatorManager.hpp"
+#include "../AssetEditor/AssetEditor.hpp"
 
 
 namespace lna {
@@ -10,13 +11,13 @@ class TilemapSceneEditorModel;
 class TilemapSceneModePane;
 
 class TilemapSceneEditor
-    : public ln::AssetEditor
+    : public lna::AssetEditor
 {
 public:
     ln::Result init();
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
     virtual void onClosed() override;
-    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(ln::EditorPaneKind kind) override;
+    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(lna::EditorPaneKind kind) override;
 
 	ln::TilemapComponent* targetTilemapComponent() const { return m_tilemap->tilemapComponent(); }
 
@@ -49,7 +50,7 @@ class TilemapSceneEditorPloxy
 {
 public:
     virtual ln::String targetTypeName() override { return u"Scene"; }
-    virtual Ref<ln::AssetEditor> createEditor() override;
+    virtual Ref<lna::AssetEditor> createEditor() override;
 };
 
 class TilemapSceneEditorExtensionModule

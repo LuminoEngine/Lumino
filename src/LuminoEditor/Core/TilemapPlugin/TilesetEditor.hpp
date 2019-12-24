@@ -1,6 +1,7 @@
 #pragma once
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/NavigatorManager.hpp"
+#include "../AssetEditor/AssetEditor.hpp"
 
 namespace lna {
 
@@ -18,13 +19,13 @@ private:
 };
 
 class TilesetEditor
-    : public ln::AssetEditor
+    : public lna::AssetEditor
 {
 public:
     ln::Result init();
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
     virtual void onClosed() override;
-    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(ln::EditorPaneKind kind) override;
+    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(lna::EditorPaneKind kind) override;
 
 private:
     Ref<TilesetView> m_tilesetView;
@@ -35,7 +36,7 @@ class TilesetEditorPloxy
 {
 public:
     virtual ln::String targetTypeName() override { return u"Tileset"; }
-    virtual Ref<ln::AssetEditor> createEditor() override;
+    virtual Ref<lna::AssetEditor> createEditor() override;
 };
 
 } // namespace lna
