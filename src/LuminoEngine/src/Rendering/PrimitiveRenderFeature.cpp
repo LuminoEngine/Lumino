@@ -190,7 +190,7 @@ void MeshGeneraterRenderFeature::init(RenderingManager* manager)
 RequestBatchResult MeshGeneraterRenderFeature::drawMeshGenerater(const MeshGenerater* generator)
 {
 	// Verify
-	if (m_generators.isEmpty()) {
+	if (m_batchData.indexCount == 0) {
 		m_batchData.topology = generator->primitiveType();
 	}
 	else {
@@ -204,6 +204,15 @@ RequestBatchResult MeshGeneraterRenderFeature::drawMeshGenerater(const MeshGener
 	m_batchData.indexCount += gen->indexCount();
 
 	return RequestBatchResult::Staging;
+}
+
+void MeshGeneraterRenderFeature::endRendering()
+{
+    //for (MeshGenerater* gen : m_generators) {
+    //    gen->~MeshGenerater();
+    //}
+
+    resetBatchData();
 }
 
 void MeshGeneraterRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
@@ -221,60 +230,64 @@ void MeshGeneraterRenderFeature::submitBatch(GraphicsContext* context, detail::R
 void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
 {
 	if (m_generators.isEmpty()) return;
+    auto localBatch = static_cast<Batch*>(batch);
 
-	// Prepare buffers
-	int vertexCount = 0;
-	int indexCount = 0;
-	for (MeshGenerater* gen : m_generators) {
-		vertexCount += gen->vertexCount();
-		indexCount += gen->indexCount();
-	}
-	prepareBuffers(vertexCount, indexCount);
+    // TODO: ↓ SceneRenderer から、一連の Batch 描画の開始タイミングを教えてもらってそこでやるほうがいいかも
+    if (localBatch->data.indexOffset == 0) {
+        // Prepare buffers
+        int vertexCount = 0;
+        int indexCount = 0;
+        for (MeshGenerater* gen : m_generators) {
+            vertexCount += gen->vertexCount();
+            indexCount += gen->indexCount();
+        }
+        prepareBuffers(vertexCount, indexCount);
 
-	// Create Vertex and Index buffers
-	Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->map(MapMode::Write);
-	uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map(MapMode::Write);
-	MeshGeneraterBuffer buffer;
-	size_t vertexOffset = 0;
-	size_t indexOffset = 0;
-	for (MeshGenerater* gen : m_generators) {
-		buffer.setBuffer(vertexBuffer + vertexOffset, indexBuffer + indexOffset, IndexBufferFormat::UInt16, vertexOffset);
-		buffer.generate(gen);
-		vertexOffset += gen->vertexCount();
-		indexOffset += gen->indexCount();
-	}
-	//context->unmap(m_vertexBuffer);
-	//context->unmap(m_indexBuffer);
+        // Create Vertex and Index buffers
+        Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->map(MapMode::Write);
+        uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map(MapMode::Write);
+        MeshGeneraterBuffer buffer;
+        size_t vertexOffset = 0;
+        size_t indexOffset = 0;
+        for (MeshGenerater* gen : m_generators) {
+            buffer.setBuffer(vertexBuffer + vertexOffset, indexBuffer + indexOffset, IndexBufferFormat::UInt16, vertexOffset);
+            buffer.generate(gen);
+            vertexOffset += gen->vertexCount();
+            indexOffset += gen->indexCount();
+        }
+        //context->unmap(m_vertexBuffer);
+        //context->unmap(m_indexBuffer);
 
-	int primitiveCount = 0;
-	switch (m_batchData.topology)
-	{
-	case ln::PrimitiveTopology::TriangleList:
-		primitiveCount = indexCount / 3;
-		break;
-	case ln::PrimitiveTopology::TriangleStrip:
-		LN_NOTIMPLEMENTED();
-		break;
-	case ln::PrimitiveTopology::TriangleFan:
-		LN_NOTIMPLEMENTED();
-		break;
-	case ln::PrimitiveTopology::LineList:
-		primitiveCount = indexCount / 2;
-		break;
-	case ln::PrimitiveTopology::LineStrip:
-		LN_NOTIMPLEMENTED();
-		break;
-	case ln::PrimitiveTopology::PointList:
-		LN_NOTIMPLEMENTED();
-		break;
-	default:
-		LN_UNREACHABLE();
-		break;
-	}
 
+    }
+
+    int primitiveCount = 0;
+    switch (localBatch->data.topology)
+    {
+    case ln::PrimitiveTopology::TriangleList:
+        primitiveCount = localBatch->data.indexCount / 3;
+        break;
+    case ln::PrimitiveTopology::TriangleStrip:
+        LN_NOTIMPLEMENTED();
+        break;
+    case ln::PrimitiveTopology::TriangleFan:
+        LN_NOTIMPLEMENTED();
+        break;
+    case ln::PrimitiveTopology::LineList:
+        primitiveCount = localBatch->data.indexCount / 2;
+        break;
+    case ln::PrimitiveTopology::LineStrip:
+        LN_NOTIMPLEMENTED();
+        break;
+    case ln::PrimitiveTopology::PointList:
+        LN_NOTIMPLEMENTED();
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
 
 	// Render
-	auto localBatch = static_cast<Batch*>(batch);
 	context->setVertexLayout(m_vertexLayout);
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
@@ -286,11 +299,6 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFea
 	//context->setPrimitiveTopology(m_primitiveType);
 	//context->drawPrimitiveIndexed(0, primitiveCount);
 
-	for (MeshGenerater* gen : m_generators) {
-		gen->~MeshGenerater();
-	}
-
-	resetBatchData();
 }
 
 void MeshGeneraterRenderFeature::resetBatchData()

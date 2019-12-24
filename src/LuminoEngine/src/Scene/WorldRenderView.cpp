@@ -80,6 +80,8 @@ void WorldRenderView::init()
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
 	}
+
+    m_transformControls = makeObject<TransformControls>();
 }
 
 void WorldRenderView::setTargetWorld(World* world)
@@ -324,6 +326,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             adjustGridPlane(m_viewPoint->viewFrustum, this);
             renderGridPlane(renderingContext, this);
 
+            m_transformControls->setViewInfo(m_viewPoint->viewPosition, m_viewPoint->viewMatrix, m_viewPoint->projMatrix, m_viewPoint->viewPixelSize);
+            m_transformControls->onRender(renderingContext);
+
             detail::EngineDomain::effectManager()->testDraw(renderingContext);
             //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
         }
@@ -500,12 +505,15 @@ void WorldRenderView::adjustGridPlane(const ViewFrustum& viewFrustum, RenderView
     }
 }
 
-//void WorldRenderView::onRoutedEvent(UIEventArgs* e)
-//{
-//    if (m_camera)
-//    {
-//    }
-//}
+void WorldRenderView::onRoutedEvent(UIEventArgs* e)
+{
+    if (m_transformControls)
+    {
+        m_transformControls->onRoutedEvent(e);
+    }
+
+    RenderView::onRoutedEvent(e);
+}
 
 } // namespace ln
 

@@ -109,6 +109,7 @@ public:
 
 	RequestBatchResult drawMeshGenerater(const MeshGenerater* generator);
 
+    virtual void endRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
     virtual bool drawElementTransformNegate() const override { return true; }

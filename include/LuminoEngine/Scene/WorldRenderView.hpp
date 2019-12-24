@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Rendering/RenderView.hpp"
+#include "TransformControls.hpp"
 
 namespace ln {
 class Material;
@@ -34,7 +35,7 @@ public:
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 
 protected:
-    //virtual void onRoutedEvent(UIEventArgs* e) override;
+    virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
     WorldRenderView();
@@ -57,6 +58,8 @@ private:
     Ref<StaticMeshModel> m_gridPlane;
     bool m_visibleGridPlane;
     bool m_physicsDebugDrawEnabled;
+
+    Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
 };
 
 } // namespace ln
