@@ -313,42 +313,6 @@ private:
 //};
 
 
-
-
-// 必須情報。border の情報が含まれているが、Shadow を正しく描画するために必要となる
-struct BoxElementShapeBaseStyle
-{
-	Matrix transform;
-	Rect baseRect;
-	CornerRadius cornerRadius;
-	Thickness borderThickness;
-	bool borderInset = false;
-	bool aligndLineAntiAlias = false;	// 軸に平行な辺にも AA を適用するか (回転させたい場合に使用)
-};
-
-struct BoxElementShapeBackgroundStyle
-{
-	Color color;
-};
-
-struct BoxElementShapeBorderStyle
-{
-	Color borderLeftColor;
-	Color borderTopColor;
-	Color borderRightColor;
-	Color borderBottomColor;
-};
-
-struct BoxElementShapeShadowStyle
-{
-	Vector2 shadowOffset;
-	Color shadowColor;
-	float shadowWidth = 0.0f;
-	float shadowBlur = 0.0f;
-	bool shadowInset = false;
-};
-
-
 // Shape ひとつ分の構築を担当する。
 // Shape(Box、Border, Shadow など) は例えば Box と Shadow を分けて考えてもいいし、addXXXX で、ひとつの Shape として扱ってもよい。
 // このクラスでは RHI の VertexBuffer は扱わない。インデックスは生成するが、ひとつの Shape の中で閉じた 0 スタートで生成する。
@@ -545,7 +509,9 @@ protected:
 	virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
-	virtual bool drawElementTransformNegate() const override { return true; }
+	
+    // モノによってはかなりの頂点数となるため、CPU 側での頂点変換はコストが高すぎる
+    virtual bool drawElementTransformNegate() const override { return false; }
 
 private:
 	struct BatchData

@@ -1275,9 +1275,9 @@ void BoxElementShapeBuilder::build()
 	{
 		// Make shape outer rect
 		m_shapeOuterRect = m_baseStyle.baseRect;
-		if (!m_baseStyle.borderInset) {
-			m_shapeOuterRect.width += m_baseStyle.borderThickness.width();
-			m_shapeOuterRect.height += m_baseStyle.borderThickness.height();
+		if (m_borderEnabled && !m_borderStyle.borderInset) {
+			m_shapeOuterRect.width += m_borderStyle.borderThickness.width();
+			m_shapeOuterRect.height += m_borderStyle.borderThickness.height();
 		}
 
 		makeBasePointsAndBorderComponent(m_shapeOuterRect, m_baseStyle.cornerRadius, m_borderComponents);
@@ -1291,10 +1291,10 @@ void BoxElementShapeBuilder::build()
 		const float trRad = m_baseStyle.cornerRadius.topRight;
 		const float blRad = m_baseStyle.cornerRadius.bottomLeft;
 		const float brRad = m_baseStyle.cornerRadius.bottomRight;
-		const float tw = m_baseStyle.borderThickness.top;
-		const float rw = m_baseStyle.borderThickness.right;
-		const float bw = m_baseStyle.borderThickness.bottom;
-		const float lw = m_baseStyle.borderThickness.left;
+		const float tw = (m_borderEnabled) ? m_borderStyle.borderThickness.top : 0.0f;
+		const float rw = (m_borderEnabled) ? m_borderStyle.borderThickness.right : 0.0f;
+		const float bw = (m_borderEnabled) ? m_borderStyle.borderThickness.bottom : 0.0f;
+		const float lw = (m_borderEnabled) ? m_borderStyle.borderThickness.left : 0.0f;
 
 		// top-side
 		{
@@ -1806,8 +1806,6 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCo
 						s.baseRect = cmd->rect;
 						s.transform = cmd->transform;
 						s.cornerRadius = cmd->cornerRadius;
-						s.borderThickness = cmd->thickness;
-						s.borderInset = cmd->borderInset;
 						m_shapeBuilder.setBaseRect(s);
 					}
 					{
@@ -1816,6 +1814,8 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCo
 						s.borderTopColor = cmd->topColor;
 						s.borderRightColor = cmd->rightColor;
 						s.borderBottomColor = cmd->bottomColor;
+						s.borderThickness = cmd->thickness;
+						s.borderInset = cmd->borderInset;
 						m_shapeBuilder.setBoxBorderLine(s);
 					}
 					break;

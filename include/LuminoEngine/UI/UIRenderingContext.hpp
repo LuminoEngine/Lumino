@@ -28,6 +28,8 @@ public:
 
 	void drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset);
 
+    void drawBoxElement(const BoxElementShapeBaseStyle& baseStyle, const BoxElementShapeBackgroundStyle* backbroundStyle = nullptr, const BoxElementShapeBorderStyle* borderStyle = nullptr, const BoxElementShapeShadowStyle* shadowStyle = nullptr);
+
     void drawImage(const Rect& destinationRect, AbstractMaterial* material);
 
 	void drawVisual(UIElement* element, const Matrix& transform);

@@ -111,6 +111,21 @@ void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cor
 
 }
 
+void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyle, const BoxElementShapeBackgroundStyle* backbroundStyle, const BoxElementShapeBorderStyle* borderStyle, const BoxElementShapeShadowStyle* shadowStyle)
+{
+    auto* element = m_builder->addNewDrawElement<detail::DrawBoxElementShape>(
+        m_manager->shapesRenderFeature(),
+        m_builder->shapesRenderFeatureStageParameters());
+
+    auto& allocator = m_builder->targetList()->dataAllocator();
+    element->commandList.addResetCommand(allocator);
+    element->commandList.addBaseCommand(allocator, baseStyle);
+    if (backbroundStyle) element->commandList.addBackgroundCommand(allocator, *backbroundStyle);
+    if (borderStyle) element->commandList.addBorderCommand(allocator, *borderStyle);
+    if (shadowStyle) element->commandList.addShadowCommand(allocator, *shadowStyle);
+    element->commandList.addSubmitCommand(allocator);
+}
+
 void UIRenderingContext::drawImage(const Rect& destinationRect, AbstractMaterial* material)
 {
     auto texture = material->mainTexture();

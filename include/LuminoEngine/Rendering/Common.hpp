@@ -139,6 +139,42 @@ struct ClearInfo
     uint8_t stencil;
 };
 
+
+
+// 必須情報。border の情報が含まれているが、Shadow を正しく描画するために必要となる
+struct BoxElementShapeBaseStyle
+{
+    Matrix transform;
+    Rect baseRect;
+    CornerRadius cornerRadius;
+    bool aligndLineAntiAlias = false;	// 軸に平行な辺にも AA を適用するか (回転させたい場合に使用)
+};
+
+struct BoxElementShapeBackgroundStyle
+{
+    Color color;
+};
+
+struct BoxElementShapeBorderStyle
+{
+    Color borderLeftColor;
+    Color borderTopColor;
+    Color borderRightColor;
+    Color borderBottomColor;
+    Thickness borderThickness;
+    bool borderInset = false;
+};
+
+struct BoxElementShapeShadowStyle
+{
+    Vector2 shadowOffset;
+    Color shadowColor;
+    float shadowWidth = 0.0f;
+    float shadowBlur = 0.0f;
+    bool shadowInset = false;
+};
+
+
 namespace detail {
 
 

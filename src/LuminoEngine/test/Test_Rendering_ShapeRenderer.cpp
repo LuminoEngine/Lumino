@@ -44,19 +44,31 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
     //LN_TEST_CLEAN_SCENE;
 
 
-    //element1->render = [](UIRenderingContext* context)
-    //{
-    //    context->drawBoxBorderLine(
-    //        Rect(0, 0, 80, 60),
-    //        Thickness(5),
-    //        Color::Red, Color::Red, Color::Red, Color::Red,
-    //        CornerRadius(),
-    //        false);
-    //};
-    //TestEnv::updateFrame();
-    //TestEnv::updateFrame();
-    //TestEnv::updateFrame();
-    //ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-2.png"));
-    //LN_TEST_CLEAN_SCENE;
+    element1->render = [](UIRenderingContext* context)
+    {
+        BoxElementShapeBaseStyle baseStyle;
+        baseStyle.baseRect = Rect(0, 0, 80, 60);
+
+        BoxElementShapeBorderStyle borderStyle;
+        borderStyle.borderThickness = Thickness(5);
+        borderStyle.borderLeftColor =
+            borderStyle.borderTopColor =
+            borderStyle.borderRightColor =
+            borderStyle.borderBottomColor = Color::Red;
+        borderStyle.borderInset = false;
+
+        context->drawBoxElement(baseStyle, nullptr, &borderStyle, nullptr);
+        //context->drawBoxBorderLine(
+        //    Rect(0, 0, 80, 60),
+        //    Thickness(5),
+        //    Color::Red, Color::Red, Color::Red, Color::Red,
+        //    CornerRadius(),
+        //    false);
+    };
+    TestEnv::updateFrame();
+    TestEnv::updateFrame();
+    TestEnv::updateFrame();
+    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-2.png"));
+    LN_TEST_CLEAN_SCENE;
 }
 
