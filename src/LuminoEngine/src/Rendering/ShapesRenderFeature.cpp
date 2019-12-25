@@ -1366,7 +1366,13 @@ void BoxElementShapeBuilder::build()
 
 
     if (m_backgroundEnabled) {
-        LN_NOTIMPLEMENTED();
+        auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Red);
+        for (int i = 0; i < m_innerBaselinePath.pointCount; i++) {
+            int baseIndex = m_innerBaselinePath.pointStart + i;
+            auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
+            addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1 });
+        }
+        endOutlinePath(path);
     }
 
 
@@ -1415,22 +1421,6 @@ void BoxElementShapeBuilder::writeToBuffer(Vertex* vertexBuffer, uint16_t* index
     for (int i = 0; i < m_indexCache.getCount(); i++) {
         indexBuffer[i] = indexOffset + ((uint16_t*)m_indexCache.getBuffer())[i];
     }
-
-
-	//vertexBuffer[0].position = Vector3(0, 0, 0);
-	//vertexBuffer[0].color = Color::Red;
-	//vertexBuffer[1].position = Vector3(100, 0, 0);
-	//vertexBuffer[1].color = Color::Red;
-	//vertexBuffer[2].position = Vector3(0, 100, 0);
-	//vertexBuffer[2].color = Color::Red;
-	//vertexBuffer[3].position = Vector3(100, 100, 0);
-	//vertexBuffer[3].color = Color::Red;
-	//indexBuffer[0] = 0;
-	//indexBuffer[1] = 1;
-	//indexBuffer[2] = 2;
-	//indexBuffer[3] = 2;
-	//indexBuffer[4] = 1;
-	//indexBuffer[5] = 3;
 }
 
 void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, const CornerRadius& cornerRadius, BorderComponent components[4])
@@ -1464,13 +1454,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		if (tlRad == 0.0f)
 			m_baselinePointBuffer.add({ lt[0], Vector2(0, -1), 1.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(1, 0), 0.5f, 1.0f, lt[1]);
+			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.5f, 1.0f, lt[1]);
 		components[Top].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// top-right
 		if (trRad == 0.0f)
 			m_baselinePointBuffer.add({ rt[0], Vector2(0, -1), 0.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, 1), 0.0f, 0.5f, rt[1]);
+			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.0f, 0.5f, rt[1]);
 		components[Top].pointCount = m_baselinePointBuffer.getCount() - components[Top].startPoint;
 	}
 
@@ -1482,13 +1472,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		if (trRad == 0.0f)
 			m_baselinePointBuffer.add({ rt[0], Vector2(1, 0), 1.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, 1), 0.5f, 1.0f, rt[1]);
+			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.5f, 1.0f, rt[1]);
 		components[Right].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// bottom-right
 		if (brRad == 0.0f)
 			m_baselinePointBuffer.add({ rb[0], Vector2(1, 0), 0.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(-1, 0), 0.0f, 0.5f, rb[1]);
+			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.0f, 0.5f, rb[1]);
 		components[Right].pointCount = m_baselinePointBuffer.getCount() - components[Right].startPoint;
 	}
 
@@ -1500,13 +1490,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		if (brRad == 0.0f)
 			m_baselinePointBuffer.add({ rb[0], Vector2(0, 1), 1.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(-1, 0), 0.5f, 1.0f, rb[1]);
+			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.5f, 1.0f, rb[1]);
 		components[Bottom].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// bottom-left
 		if (blRad == 0.0f)
 			m_baselinePointBuffer.add({ lb[1], Vector2(0, 1), 0.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, -1), 0.0f, 0.5f, lb[1]);
+			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.0f, 0.5f, lb[1]);
 		components[Bottom].pointCount = m_baselinePointBuffer.getCount() - components[Bottom].startPoint;
 	}
 
@@ -1518,13 +1508,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		if (blRad == 0.0f)
 			m_baselinePointBuffer.add({ lb[0], Vector2(-1, 0), 1.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, -1), 0.5f, 1.0f, lb[1]);
+			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.5f, 1.0f, lb[1]);
 		components[Left].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// top-left
 		if (tlRad == 0.0f)
 			m_baselinePointBuffer.add({ lt[0], Vector2(-1, 0), 0.0f });
 		else
-			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(1, 0), 0.0f, 0.5f, lt[1]);
+			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.0f, 0.5f, lt[1]);
 		components[Left].pointCount = m_baselinePointBuffer.getCount() - components[Left].startPoint;
 	}
 

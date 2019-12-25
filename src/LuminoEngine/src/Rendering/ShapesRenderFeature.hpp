@@ -434,6 +434,7 @@ private:
     CacheBuffer<OutlinePoint> m_outlinePointBuffer;
     List<OutlinePath> m_outlinePaths;
 
+    // TODO: 以下、いらないかも。見積もり立てて、外部からもらったBufferに直接書くこともできる
     CacheBuffer<Vertex> m_vertexCache;
     CacheBuffer<uint16_t> m_indexCache;
 };

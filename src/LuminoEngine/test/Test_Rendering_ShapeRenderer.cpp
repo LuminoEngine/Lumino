@@ -48,16 +48,22 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
     {
         BoxElementShapeBaseStyle baseStyle;
         baseStyle.baseRect = Rect(0, 0, 80, 60);
+        baseStyle.cornerRadius = CornerRadius(10);
 
-        BoxElementShapeBorderStyle borderStyle;
-        borderStyle.borderThickness = Thickness(5);
-        borderStyle.borderLeftColor =
-            borderStyle.borderTopColor =
-            borderStyle.borderRightColor =
-            borderStyle.borderBottomColor = Color::Red;
-        borderStyle.borderInset = false;
+        BoxElementShapeBackgroundStyle backgroundStyle;
+        backgroundStyle.color = Color::Red;
+        context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, nullptr);
 
-        context->drawBoxElement(baseStyle, nullptr, &borderStyle, nullptr);
+        //BoxElementShapeBorderStyle borderStyle;
+        //borderStyle.borderThickness = Thickness(5);
+        //borderStyle.borderLeftColor =
+        //    borderStyle.borderTopColor =
+        //    borderStyle.borderRightColor =
+        //    borderStyle.borderBottomColor = Color::Red;
+        //borderStyle.borderInset = false;
+        //context->drawBoxElement(baseStyle, nullptr, &borderStyle, nullptr);
+
+
         //context->drawBoxBorderLine(
         //    Rect(0, 0, 80, 60),
         //    Thickness(5),
