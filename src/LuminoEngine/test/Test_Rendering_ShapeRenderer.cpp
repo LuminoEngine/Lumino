@@ -25,6 +25,7 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
     element1->setVerticalAlignment(VAlignment::Center);
     element1->setWidth(80);
     element1->setHeight(60);
+	Engine::mainUIView()->addChild(element1);
     //element1->render = [](UIRenderingContext* context)
     //{
     //    context->drawBoxBackground(

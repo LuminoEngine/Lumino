@@ -79,7 +79,11 @@ void RenderingManager::init(const Settings& settings)
 	m_frameRectRenderFeature = makeObject<FrameRectRenderFeature>(this);
 	m_renderFeatures.add(m_frameRectRenderFeature);
 
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+	m_shapesRenderFeature = makeObject<ShapesRenderFeature2>(this);
+#else
 	m_shapesRenderFeature = makeObject<ShapesRenderFeature>(this);
+#endif
 	m_renderFeatures.add(m_shapesRenderFeature);
 
     m_extensionRenderFeature = makeObject<ExtensionRenderFeature>(this);

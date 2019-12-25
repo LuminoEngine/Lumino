@@ -20,6 +20,7 @@ class PrimitiveRenderFeature;
 class SpriteTextRenderFeature;
 class FrameRectRenderFeature;
 class ShapesRenderFeature;
+class ShapesRenderFeature2;
 class ExtensionRenderFeature;
 
 enum class BuiltinShader
@@ -159,7 +160,11 @@ public:
 	const Ref<PrimitiveRenderFeature>& primitiveRenderFeature() const { return m_primitiveRenderFeature; }
     const Ref<SpriteTextRenderFeature>& spriteTextRenderFeature() const { return m_spriteTextRenderFeature; }
 	const Ref<FrameRectRenderFeature>& frameRectRenderFeature() const { return m_frameRectRenderFeature; }
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+	const Ref<ShapesRenderFeature2>& shapesRenderFeature() const { return m_shapesRenderFeature; }
+#else
 	const Ref<ShapesRenderFeature>& shapesRenderFeature() const { return m_shapesRenderFeature; }
+#endif
     const Ref<ExtensionRenderFeature>& extensionRenderFeature() const { return m_extensionRenderFeature; }
 	const List<Ref<RenderFeature>>& renderFeatures() const { return m_renderFeatures; }
 
@@ -182,7 +187,11 @@ private:
 	Ref<PrimitiveRenderFeature> m_primitiveRenderFeature;
     Ref<SpriteTextRenderFeature> m_spriteTextRenderFeature;
 	Ref<FrameRectRenderFeature> m_frameRectRenderFeature;
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+	Ref<ShapesRenderFeature2> m_shapesRenderFeature;
+#else
 	Ref<ShapesRenderFeature> m_shapesRenderFeature;
+#endif
     Ref<ExtensionRenderFeature> m_extensionRenderFeature;
 	List<Ref<RenderFeature>> m_renderFeatures;
 

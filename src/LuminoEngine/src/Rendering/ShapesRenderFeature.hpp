@@ -310,6 +310,197 @@ private:
 //	Ref<InternalShapesRenderer> m_internal;
 //};
 
+
+
+
+// 必須情報。border の情報が含まれているが、Shadow を正しく描画するために必要となる
+struct BoxElementShapeBaseStyle
+{
+	Matrix transform;
+	Rect baseRect;
+	CornerRadius cornerRadius;
+	Thickness borderThickness;
+	bool borderInset = false;
+	bool aligndLineAntiAlias = false;	// 軸に平行な辺にも AA を適用するか (回転させたい場合に使用)
+};
+
+struct BoxElementShapeBackgroundStyle
+{
+	Color color;
+};
+
+struct BoxElementShapeBorderStyle
+{
+	Color borderLeftColor;
+	Color borderTopColor;
+	Color borderRightColor;
+	Color borderBottomColor;
+};
+
+struct BoxElementShapeShadowStyle
+{
+	Vector2 shadowOffset;
+	Color shadowColor;
+	float shadowWidth = 0.0f;
+	float shadowBlur = 0.0f;
+	bool shadowInset = false;
+};
+
+
+// Shape ひとつ分の構築を担当する。
+// Shape(Box、Border, Shadow など) は例えば Box と Shadow を分けて考えてもいいし、addXXXX で、ひとつの Shape として扱ってもよい。
+// このクラスでは RHI の VertexBuffer は扱わない。インデックスは生成するが、ひとつの Shape の中で閉じた 0 スタートで生成する。
+//（このクラスの呼び出し側で RHI の IndexBuffer に転送するときにオフセットを付ける必要がある）
+class BoxElementShapeBuilder
+{
+public:
+	BoxElementShapeBuilder();
+	void init();
+
+	void reset();
+	void setBaseRect(const BoxElementShapeBaseStyle& style);
+	void setFillBox(const BoxElementShapeBackgroundStyle& style);
+	void setBoxBorderLine(const BoxElementShapeBorderStyle& style);
+	void setBoxShadow(const BoxElementShapeShadowStyle& style);
+	//void setBaseRect(const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius);
+	//void setFillBox(const Color& color);
+	//void setBoxBorderLine(const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, bool borderInset);
+	//void setBoxShadow(const Vector2& offset, const Color& color, float blur, float width, bool inset);
+	void build();
+
+	int vertexCount() const;
+	int indexCount() const;
+	void writeToBuffer(Vertex* vertexBuffer, uint16_t* indexBuffer, uint16_t indexOffset);
+
+private:
+	struct BaselinePoint
+	{
+		Vector2	pos;
+		Vector2	infrateDir;	// AA や Shadow のための押し出し方向。Shape に対して外向きのベクトル。必ずしも放射状であるとは限らない
+		float cornerRatio;		// corner の始点～終点のどこに位置している点か。0.0 は始点、1.0 は終点。外周を時計回りで考える
+		
+		
+		//Vector2	front;	// Path 内の次の点への向き
+	};
+
+	struct BaselinePath
+	{
+		int startPoint;	// index of m_baselinePointBuffer
+		int pointCount;
+	};
+
+	// Baselineの[上][左][下][右]、計4つセットの基本要素。
+	// Border は上下左右で個別に Color を設定できるが、その単位となる。
+	struct BorderComponent
+	{
+		int	startPoint;
+		int pointCount;
+
+		// 外周のうち、カーブの部分
+		int outerCornerStart1;	// 丸めない場合は始点を指す（通常 startPoint と同値）
+		int outerCornerStart2;	// 丸めない場合は終点を指す
+		int outerCornerCount1() const { return outerCornerStart2 - outerCornerStart1; }
+		int outerCornerCount2() const { return pointCount - outerCornerCount1(); }
+
+		// 内周全体
+		int	innterPointStart;
+		int innterPointCount;
+	};
+
+	enum Side
+	{
+		Top = 0,
+		Right = 1,
+		Bottom = 2,
+		Left = 3,
+	};
+
+	void makeBasePointsAndBorderComponent(const Rect& shapeOuterRect, const CornerRadius& cornerRadius, BorderComponent components[4]);
+	void plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
+	//void calculateBasePointsDirection();
+
+	// Input infomation
+	BoxElementShapeBaseStyle m_baseStyle;
+	BoxElementShapeBackgroundStyle m_backgroundStyle;
+	BoxElementShapeBorderStyle m_borderStyle;
+	BoxElementShapeShadowStyle m_shadowStyle;
+	//Matrix m_transform;
+	//Rect m_baseRect;
+	//CornerRadius m_cornerRadius;
+	//Color m_boxColor;
+	//Thickness m_borderThickness;
+	//Color m_borderLeftColor;
+	//Color m_borderTopColor;
+	//Color m_borderRightColor;
+	//Color m_borderBottomColor;
+	//bool m_borderInset = false;
+	//Vector2 m_shadowOffset;
+	//Color m_shadowColor;
+	//float m_shadowWidth = 0.0f;
+	//float m_shadowBlur = 0.0f;
+	//bool m_shadowInset = false;
+	//bool m_aligndLineAntiAlias = false;	// 軸に平行な辺にも AA を適用するか (回転させたい場合に使用)
+	bool m_backgroundEnabled;
+	bool m_borderEnabled;
+	bool m_shadowEnabled;
+
+	// Working data
+	Rect m_shapeOuterRect;
+	BorderComponent m_borderComponents[4];
+
+	CacheBuffer<BaselinePoint> m_baselinePointBuffer;
+	BaselinePath m_outerBaselinePath;
+
+
+//List<BaselinePath> m_baselinePaths;
+
+};
+
+
+// TODO: name:BoxElementRenderFeature
+class ShapesRenderFeature2
+	: public RenderFeature
+{
+public:
+	ShapesRenderFeature2();
+	void init(RenderingManager* manager);
+
+	RequestBatchResult requestDrawCommandList(ShapesRendererCommandList* commandList);
+
+protected:
+	virtual void beginRendering() override;
+	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
+	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
+	virtual bool drawElementTransformNegate() const override { return true; }
+
+private:
+	struct BatchData
+	{
+		int indexOffset;
+		int indexCount;
+	};
+
+	class Batch : public RenderFeatureBatch
+	{
+	public:
+		BatchData data;
+	};
+
+	RenderingManager* m_manager;
+	BatchData m_batchData;
+	BoxElementShapeBuilder m_shapeBuilder;
+	
+	// Rendering resource
+	Ref<VertexLayout> m_vertexLayout;
+	Ref<VertexBuffer> m_vertexBuffer;
+	Ref<IndexBuffer> m_indexBuffer;
+	size_t m_vertexUsedCount = 0;
+	size_t m_indexUsedCount = 0;
+};
+
+
+
+
 class DrawShapesElement : public RenderDrawElement
 {
 public:
@@ -317,11 +508,15 @@ public:
 
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 	{
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+		return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(&commandList);
+#else
 		return static_cast<detail::ShapesRenderFeature*>(renderFeature)->requestDrawCommandList(context, &commandList);
-    }
+#endif
+	}
 
 private:
-    //SizeI m_srcTextureSize;
+	//SizeI m_srcTextureSize;
 };
 
 } // namespace detail

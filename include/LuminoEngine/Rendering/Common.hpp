@@ -3,6 +3,8 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 
+#define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
+
 namespace ln {
 
 enum class ShadingModel : uint8_t

@@ -1050,6 +1050,658 @@ void ShapesRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBat
 }
 #endif
 
+
+
+//==============================================================================
+// BoxElementShapeBuilder
+
+/*
+
+座標系のルール
+----------
+
+- Y を下方向とする左手系とする。
+- 面方向や処理順は時計回りで作っていく。
+
+
+Component
+----------
+四辺の各情報を表す単位。
+
+次の図は Box の右上を示しているが、Component の境界は B と C の境界のように、斜線で区切られる。
+これによって、丸められた Border 間を自然につないだり、CSS で三角形を作るように Box を描画することができるようになる。
+
+```
+-------*
+	  /|
+ B   / |
+    /  |
+---* C |
+ A |   |
+```
+
+
+
+
+Path の基本要素
+----------
+
+参考ページ：
+http://www.bad-company.jp/box-shadow/
+
+### BaseLine
+各種 Path (Box、Border、Shadow 及び、その中でさらに分割された要素) の基準となる頂点リスト。
+
+以下の種類があり、それぞれ始点と終点は一を共有した循環パスとなる。
+ただし、Component 間は頂点を共有しない。（処理簡略化と、Border の色を頂点カラーで分ける場合に備える）
+
+
+- Background 境界 (通常、Border の一辺と共有する)
+- Border 境界
+- Shadow の Box (CSS の shadow-offset 対策)
+- Shadow のぼかしの境界
+- Shadow の外側
+
+#### Background 境界
+
+Border 無しまたは、Border が Outset の場合、このサイズは入力となる BaseRect のサイズと等しくなる。
+
+Border が Inset の場合、BaseRect の境界から内側に縮退した分が、Background 境界となる。
+
+
+#### Border 境界
+
+Inset か Outset かによって位置は異なるが、一部の頂点を Background と共有することでメモリ削減を狙う。
+
+
+#### Shadow の Box
+
+基本は BaseRect と同一だが、shadow-offset によって平行移動の修正が入る。
+
+また Background や Border の色を頂点カラーで表すが、Shadow とそれらの色は通常異なるため、頂点を共有することはできない。
+
+
+Outline
+----------
+
+BaseLine に対して、アンチエイリアスを施した頂点データを Outline とする。
+
+実際に RHI の頂点バッファに書き込む位置データは、この Outline が持つ情報から作る。
+
+
+```
+.------.
+|\    /|
+| *--* |
+| |  | |
+| |  | |
+| *--* |
+|/    \|
+.------.
+```
+
+上の図の * と . はペアとなっていて、OutlinePoint 構造体で管理される。
+. は * から、1px 分、外側に押し出すことで作成する。
+
+* の alpha 値は BackgroundColor は ShadowColor の alpha 値だが、. の alpha 値は 0 となる。
+
+
+### Shadow の場合
+
+* は box との接合点、 . はShadow のぼかしの境界、+ はShadow の外側(alpha 0)となる。
+
+```
++----------+
+|\        /|
+| .------. |
+| |\    /| |
+| | *--* | |
+| | |  | | |
+| | |  | | |
+| | *--* | |
+| |/    \| |
+| .------. |
+|/        \|
++----------+
+```
+
+box との接合点 については、border の有無、border の inset, shadow の inset によって変わるが、基本的に何らかの頂点を共有する。
+
+
+
+Tessellation
+----------
+
+### Background (Box)
+
+中央に１点、後は Outline の頂点をなぞって TriangleFan で作る (実際の Toporogy は、他の Path とバッチ描画できるように TriangleList)
+
+CornerRadius が無い場合は次のようになる。
+
+```
+*-----*
+|\   /|
+| \ / |
+|  *  |
+| / \ |
+|/   \|
+*-----*
+```
+
+
+Shadow
+----------
+
+Shadow は、Background と Border の部分についてはステンシルバッファを用いてフィルタリングしたように、描画することはない。
+例えば Background と Border を半透明にすると、その後ろの Shadow は描画されていないことがわかる。
+
+これに対応するために、
+- まずは Shadow の根本＝ShadowBasePoint (outset なら box の外周、inset なら内周など) と頂点を共有して、普通に Outline を作る
+- ShadowBasePoint 以外（外周とぼかしの境界）を ShadowOffset で移動する (ShadowBasePoint はそのまま、box と頂点を共有)
+- 外周とぼかしの境界をそれぞれ、ShadowBasePoint との距離と、ShadowBasePointの進行右手方向との内積によって、位置と alpha 値を調節する。
+  - 例えば Shadow が outset なら、外周頂点を内側には移動させない。＝ShadowBasePointと同じ位置にする。
+    - 面は見えなくなるが、頂点は削除せずに縮退面で表現する。（削除まで絡めると処理が複雑になりすぎるため）
+
+*/
+
+BoxElementShapeBuilder::BoxElementShapeBuilder()
+{
+}
+
+void BoxElementShapeBuilder::init()
+{
+	reset();
+}
+
+void BoxElementShapeBuilder::reset()
+{
+	//m_transform = Matrix::Identity;
+	//m_baseRect = Rect::Zero;
+	//m_cornerRadius = CornerRadius::Zero;
+	//m_boxColor = Color::White;
+	//m_borderThickness = Thickness::Zero;
+	//m_borderLeftColor = Color::Black;
+	//m_borderTopColor = Color::Black;
+	//m_borderRightColor = Color::Black;
+	//m_borderBottomColor = Color::Black;
+	//m_borderInset = false;
+	//m_shadowOffset = Vector2::Zero;
+	//m_shadowColor = Color(1.0f, 1.0f, 1.0f, 0.5f);
+	//m_shadowWidth = 0.0f;
+	//m_shadowBlur = 0.0f;
+	//m_shadowInset = false;
+	//m_aligndLineAntiAlias = false;	// 軸に平行な辺にも AA を適用するか (回転させたい場合に使用)
+	m_baseStyle.transform = Matrix::Identity;
+	m_baseStyle.baseRect = Rect::Zero;
+	m_baseStyle.cornerRadius = CornerRadius::Zero;
+	m_baseStyle.aligndLineAntiAlias = false;
+	m_backgroundEnabled = false;
+	m_borderEnabled = false;
+	m_shadowEnabled = false;
+}
+
+void BoxElementShapeBuilder::setBaseRect(const BoxElementShapeBaseStyle& style)
+{
+	m_baseStyle = style;
+}
+
+void BoxElementShapeBuilder::setFillBox(const BoxElementShapeBackgroundStyle& style)
+{
+	m_backgroundStyle = style;
+	m_backgroundEnabled = true;
+}
+
+void BoxElementShapeBuilder::setBoxBorderLine(const BoxElementShapeBorderStyle& style)
+{
+	m_borderStyle = style;
+	m_borderEnabled = true;
+}
+
+void BoxElementShapeBuilder::setBoxShadow(const BoxElementShapeShadowStyle& style)
+{
+	m_shadowStyle = style;
+	m_shadowEnabled = true;
+}
+
+//void BoxElementShapeBuilder::setBaseRect(const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius)
+//{
+//	m_transform = transform;
+//	m_baseRect = rect;
+//	m_cornerRadius = cornerRadius;
+//}
+//
+//void BoxElementShapeBuilder::setFillBox(const Color& color)
+//{
+//	m_boxColor = color;
+//	m_boxEnabled = true;
+//}
+//
+//void BoxElementShapeBuilder::setBoxBorderLine(const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, bool borderInset)
+//{
+//	m_borderThickness = thickness;
+//	m_borderLeftColor = leftColor;
+//	m_borderTopColor = topColor;
+//	m_borderRightColor = rightColor;
+//	m_borderBottomColor = bottomColor;
+//	m_borderInset = borderInset;
+//	m_borderEnabled = true;
+//}
+//
+//void BoxElementShapeBuilder::setBoxShadow(const Vector2& offset, const Color& color, float blur, float width, bool inset)
+//{
+//	m_shadowOffset = offset;
+//	m_shadowColor = color;
+//	m_shadowWidth = width;
+//	m_shadowBlur = blur;
+//	m_shadowInset = inset;
+//	m_shadowEnabled = true;
+//}
+
+void BoxElementShapeBuilder::build()
+{
+	// Make shape outer baseline and component
+	{
+		// Make shape outer rect
+		m_shapeOuterRect = m_baseStyle.baseRect;
+		if (!m_baseStyle.borderInset) {
+			m_shapeOuterRect.width += m_baseStyle.borderThickness.width();
+			m_shapeOuterRect.height += m_baseStyle.borderThickness.height();
+		}
+
+		makeBasePointsAndBorderComponent(m_shapeOuterRect, m_baseStyle.cornerRadius, m_borderComponents);
+	}
+
+	// Make innter baseline
+	if (m_borderEnabled) {
+		int outerCount = m_baselinePointBuffer.getCount();
+
+		const float tlRad = m_baseStyle.cornerRadius.topLeft;
+		const float trRad = m_baseStyle.cornerRadius.topRight;
+		const float blRad = m_baseStyle.cornerRadius.bottomLeft;
+		const float brRad = m_baseStyle.cornerRadius.bottomRight;
+		const float tw = m_baseStyle.borderThickness.top;
+		const float rw = m_baseStyle.borderThickness.right;
+		const float bw = m_baseStyle.borderThickness.bottom;
+		const float lw = m_baseStyle.borderThickness.left;
+
+		// top-side
+		{
+			m_borderComponents[Top].innterPointStart = m_baselinePointBuffer.getCount();
+			// top-left
+			if (lw >= tlRad || tw >= tlRad) {	// どちらかの BorderThickness が Radius を超えている場合、inner の角を丸める必要はない
+				m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getTop() + tw), Vector2(0, -1), 1.0f });
+			}
+			else {
+				for (int i = 0; i < m_borderComponents[Top].outerCornerCount1(); i++) {
+					auto& basePt = m_baselinePointBuffer.getAt(m_borderComponents[Top].outerCornerStart1 + i);
+					float w = Math::lerp(lw, tw, basePt.cornerRatio);	// 始点から終点に向かって厚さを合わせていく
+					m_baselinePointBuffer.add({ (basePt.pos + (-basePt.infrateDir) * w), basePt.infrateDir, basePt.cornerRatio });
+				}
+			}
+			// top-right
+			if (tw >= trRad || rw >= trRad) {
+				m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() + rw, m_shapeOuterRect.getTop() + tw), Vector2(0, -1), 1.0f });
+			}
+			else {
+				for (int i = 0; i < m_borderComponents[Top].outerCornerCount2(); i++) {
+					auto& basePt = m_baselinePointBuffer.getAt(m_borderComponents[Top].outerCornerStart2 + i);
+					float w = Math::lerp(tw, rw, basePt.cornerRatio);
+					m_baselinePointBuffer.add({ (basePt.pos + (-basePt.infrateDir) * w), basePt.infrateDir, basePt.cornerRatio });
+				}
+			}
+			m_borderComponents[Top].innterPointCount = m_baselinePointBuffer.getCount() - m_borderComponents[Top].innterPointStart;
+		}
+
+
+	}
+	else {
+		// inter は outer と同一とする
+	}
+
+}
+
+int BoxElementShapeBuilder::vertexCount() const
+{
+	return 4;
+}
+
+int BoxElementShapeBuilder::indexCount() const
+{
+	return 6;
+}
+
+void BoxElementShapeBuilder::writeToBuffer(Vertex* vertexBuffer, uint16_t* indexBuffer, uint16_t indexOffset)
+{
+	vertexBuffer[0].position = Vector3(0, 0, 0);
+	vertexBuffer[0].color = Color::Red;
+	vertexBuffer[1].position = Vector3(100, 0, 0);
+	vertexBuffer[1].color = Color::Red;
+	vertexBuffer[2].position = Vector3(0, 100, 0);
+	vertexBuffer[2].color = Color::Red;
+	vertexBuffer[3].position = Vector3(100, 100, 0);
+	vertexBuffer[3].color = Color::Red;
+	indexBuffer[0] = 0;
+	indexBuffer[1] = 1;
+	indexBuffer[2] = 2;
+	indexBuffer[3] = 2;
+	indexBuffer[4] = 1;
+	indexBuffer[5] = 3;
+}
+
+void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, const CornerRadius& cornerRadius, BorderComponent components[4])
+{
+	float tlRad = cornerRadius.topLeft;
+	float trRad = cornerRadius.topRight;
+	float blRad = cornerRadius.bottomLeft;
+	float brRad = cornerRadius.bottomRight;
+	Vector2 lt[2];
+	Vector2 rt[2];
+	Vector2 lb[2];
+	Vector2 rb[2];
+	// outer
+	lt[0] = rect.getTopLeft();
+	rt[0] = rect.getTopRight();
+	lb[0] = rect.getBottomLeft();
+	rb[0] = rect.getBottomRight();
+	// inner (cornerRadius がある場合、その中心点)
+	lt[1] = Vector2(lt[0].x + tlRad, lt[0].y + tlRad);
+	rt[1] = Vector2(rt[0].x - trRad, rt[0].y + trRad);
+	lb[1] = Vector2(lb[0].x + blRad, lb[0].y - blRad);
+	rb[1] = Vector2(rb[0].x - brRad, rb[0].y - brRad);
+
+	// top-side component
+	{
+		components[Top].startPoint = m_baselinePointBuffer.getCount();
+		components[Top].outerCornerStart1 = m_baselinePointBuffer.getCount();
+		// top-left
+		if (tlRad == 0.0f)
+			m_baselinePointBuffer.add({ lt[0], Vector2(0, -1), 1.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(1, 0), 0.5f, 1.0f, lt[1]);
+		components[Top].outerCornerStart2 = m_baselinePointBuffer.getCount();
+		// top-right
+		if (trRad == 0.0f)
+			m_baselinePointBuffer.add({ rt[0], Vector2(0, -1), 0.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, 1), 0.0f, 0.5f, rt[1]);
+		components[Top].pointCount = m_baselinePointBuffer.getCount() - components[Top].startPoint;
+	}
+
+	// right-side component
+	{
+		components[Right].startPoint = m_baselinePointBuffer.getCount();
+		components[Right].outerCornerStart1 = m_baselinePointBuffer.getCount();
+		// top-right
+		if (trRad == 0.0f)
+			m_baselinePointBuffer.add({ rt[0], Vector2(1, 0), 1.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, 1), 0.5f, 1.0f, rt[1]);
+		components[Right].outerCornerStart2 = m_baselinePointBuffer.getCount();
+		// bottom-right
+		if (brRad == 0.0f)
+			m_baselinePointBuffer.add({ rb[0], Vector2(1, 0), 0.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(-1, 0), 0.0f, 0.5f, rb[1]);
+		components[Right].pointCount = m_baselinePointBuffer.getCount() - components[Right].startPoint;
+	}
+
+	// bottom-side component
+	{
+		components[Bottom].startPoint = m_baselinePointBuffer.getCount();
+		components[Bottom].outerCornerStart1 = m_baselinePointBuffer.getCount();
+		// bottom-right
+		if (brRad == 0.0f)
+			m_baselinePointBuffer.add({ rb[0], Vector2(0, 1), 1.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(-1, 0), 0.5f, 1.0f, rb[1]);
+		components[Bottom].outerCornerStart2 = m_baselinePointBuffer.getCount();
+		// bottom-left
+		if (blRad == 0.0f)
+			m_baselinePointBuffer.add({ lb[1], Vector2(0, 1), 0.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, -1), 0.0f, 0.5f, lb[1]);
+		components[Bottom].pointCount = m_baselinePointBuffer.getCount() - components[Bottom].startPoint;
+	}
+
+	// left-side component
+	{
+		components[Left].startPoint = m_baselinePointBuffer.getCount();
+		components[Left].outerCornerStart1 = m_baselinePointBuffer.getCount();
+		// bottom-left
+		if (blRad == 0.0f)
+			m_baselinePointBuffer.add({ lb[0], Vector2(-1, 0), 1.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, -1), 0.5f, 1.0f, lb[1]);
+		components[Left].outerCornerStart2 = m_baselinePointBuffer.getCount();
+		// top-left
+		if (tlRad == 0.0f)
+			m_baselinePointBuffer.add({ lt[0], Vector2(-1, 0), 0.0f });
+		else
+			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(1, 0), 0.0f, 0.5f, lt[1]);
+		components[Left].pointCount = m_baselinePointBuffer.getCount() - components[Left].startPoint;
+	}
+}
+
+/*
+	円弧を描く点を作成して m_basePoints に追加する
+	firstCp		: 開始制御点
+	firstCpDir	: 開始制御点の方向
+	lastCp		: 終了制御点
+	lastCpDir	: 終了制御点の方向
+	firstT		: firstCp ～ lastCp を 0.0～1.0 としたとき、どこから点を打ち始めるか
+	lastT		: firstCp ～ lastCp を 0.0～1.0 としたとき、どこまで点を打つか
+	center		: 生成する円弧の中心点 (AAのための押し出し方向を点に設定するために使用)
+*/
+void BoxElementShapeBuilder::plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center)
+{
+	assert(firstT < lastT);
+	const int tess = 8;
+	const float rtir = 0.55228f;	// https://cat-in-136.github.io/2014/03/bezier-1-kappa.html
+	Vector2 d(std::abs(last.x - first.x), std::abs(last.y - first.y));
+	Vector2 cp2 = (first)+(d * firstCpDir) * rtir;
+	Vector2 cp3 = (last)+(d * lastCpDir) * rtir;
+	float step = (lastT - firstT) / tess;
+	for (int i = 0; i < tess; i++)
+	{
+		float t = firstT + (step * i);
+		auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, t), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, t));
+		m_baselinePointBuffer.add({ pos, Vector2::normalize(pos - center), t });
+	}
+
+	// end point
+	auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, lastT), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
+	m_baselinePointBuffer.add({ pos, Vector2::normalize(pos - center), 1.0f });
+}
+
+//void BoxElementShapeBuilder::calculateBasePointsDirection()
+//{
+//	for (int i = 0; i < m_baselinePointBuffer.getCount(); i++) {
+//		BaselinePoint* pt = &m_baselinePointBuffer.getAt(i);
+//		BaselinePoint* nextPt = (i == m_baselinePointBuffer.getCount() - 1) ? &m_baselinePointBuffer.getAt(0) : &m_baselinePointBuffer.getAt(i + 1);
+//
+//	}
+//}
+
+//==============================================================================
+// ShapesRenderFeature2
+
+ShapesRenderFeature2::ShapesRenderFeature2()
+	: m_manager(nullptr)
+	, m_batchData()
+{
+}
+
+void ShapesRenderFeature2::init(RenderingManager* manager)
+{
+	m_manager = manager;
+	m_batchData.indexOffset = 0;
+	m_batchData.indexCount = 0;
+
+	m_vertexLayout = m_manager->standardVertexDeclaration();
+	m_vertexBuffer = makeObject<VertexBuffer>(4096 * sizeof(Vertex), GraphicsResourceUsage::Dynamic);
+	m_indexBuffer = makeObject<IndexBuffer>(4096, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+}
+
+RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCommandList* commandList)
+{
+	ShapesRendererCommandList::ListNode* node = commandList->head;
+	while (node)
+	{
+		{
+			m_shapeBuilder.reset();
+
+			switch (node->type)
+			{
+				case ShapesRendererCommandList::Cmd_DrawBoxBackground:
+				{
+					auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxBackgroundCommand*>(node);
+					{
+						BoxElementShapeBaseStyle s;
+						s.baseRect = cmd->rect;
+						s.transform = cmd->transform;
+						s.cornerRadius = cmd->cornerRadius;
+						m_shapeBuilder.setBaseRect(s);
+					}
+					{
+						BoxElementShapeBackgroundStyle s;
+						s.color = cmd->color;
+						m_shapeBuilder.setFillBox(s);
+					}
+					break;
+				}
+				case ShapesRendererCommandList::Cmd_DrawBoxBorderLine:
+				{
+					auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxBorderLineCommand*>(node);
+					{
+						BoxElementShapeBaseStyle s;
+						s.baseRect = cmd->rect;
+						s.transform = cmd->transform;
+						s.cornerRadius = cmd->cornerRadius;
+						s.borderThickness = cmd->thickness;
+						s.borderInset = cmd->borderInset;
+						m_shapeBuilder.setBaseRect(s);
+					}
+					{
+						BoxElementShapeBorderStyle s;
+						s.borderLeftColor = cmd->leftColor;
+						s.borderTopColor = cmd->topColor;
+						s.borderRightColor = cmd->rightColor;
+						s.borderBottomColor = cmd->bottomColor;
+						m_shapeBuilder.setBoxBorderLine(s);
+					}
+					break;
+				}
+				case ShapesRendererCommandList::Cmd_DrawBoxShadow:
+				{
+					auto* cmd = reinterpret_cast<ShapesRendererCommandList::DrawBoxShadowCommand*>(node);
+					{
+						BoxElementShapeBaseStyle s;
+						s.baseRect = cmd->rect;
+						s.transform = cmd->transform;
+						s.cornerRadius = cmd->cornerRadius;
+						m_shapeBuilder.setBaseRect(s);
+					}
+					{
+						BoxElementShapeShadowStyle s;
+						s.shadowOffset = cmd->offset;
+						s.shadowColor = cmd->color;
+						s.shadowWidth = cmd->width;
+						s.shadowBlur = cmd->blur;
+						s.shadowInset = cmd->inset;
+						m_shapeBuilder.setBoxShadow(s);
+					}
+					break;
+				}
+
+				default:
+					LN_UNREACHABLE();
+					break;
+			}
+
+
+
+			m_shapeBuilder.build();
+
+
+			// サイズが足りなければ再作成
+			{
+				// VertexBuffer
+				int vertexBufferRequestSize = (m_vertexUsedCount + m_shapeBuilder.vertexCount()) * sizeof(Vertex);
+				if (!m_vertexBuffer) {
+					m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
+				}
+				else if (m_vertexBuffer->size() < vertexBufferRequestSize) {
+					auto newSize = std::max(m_vertexBuffer->size() * 2, vertexBufferRequestSize);
+					m_vertexBuffer->resize(newSize);
+				}
+
+				// IndexBuffer
+				int indexBufferRequestCount = m_indexUsedCount + m_shapeBuilder.indexCount();
+				if (!m_indexBuffer) {
+					m_indexBuffer = makeObject<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+				}
+				else if (m_indexBuffer->size() < indexBufferRequestCount) {
+					auto newSize = std::max(m_indexBuffer->size() * 2, indexBufferRequestCount);
+					m_indexBuffer->resize(newSize);
+				}
+			}
+
+
+			auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+			auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
+			m_shapeBuilder.writeToBuffer(vb, ib, m_indexUsedCount);
+
+
+			m_vertexUsedCount += m_shapeBuilder.vertexCount();
+			m_indexUsedCount += m_shapeBuilder.indexCount();
+
+			m_batchData.indexCount += m_shapeBuilder.indexCount();
+
+		}
+		node = node->next;
+	}
+
+
+
+
+	return RequestBatchResult::Staging;
+}
+
+void ShapesRenderFeature2::beginRendering()
+{
+	m_batchData.indexOffset = 0;
+	m_batchData.indexCount = 0;
+	m_vertexUsedCount = 0;
+	m_indexUsedCount = 0;
+}
+
+void ShapesRenderFeature2::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
+{
+	//if (m_mappedVertices) {
+	//	// TODO: unmap (今は自動だけど、明示した方が安心かも)
+	//}
+
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
+
+	m_batchData.indexOffset = m_batchData.indexOffset + m_batchData.indexCount;
+	m_batchData.indexCount = 0;
+}
+
+void ShapesRenderFeature2::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
+{
+	auto localBatch = static_cast<Batch*>(batch);
+
+
+
+	context->setVertexLayout(m_vertexLayout);
+	context->setVertexBuffer(0, m_vertexBuffer);
+	context->setIndexBuffer(m_indexBuffer);
+	context->drawPrimitiveIndexed(localBatch->data.indexOffset, localBatch->data.indexCount / 3);
+}
+
+
+
 } // namespace detail
 } // namespace ln
 
