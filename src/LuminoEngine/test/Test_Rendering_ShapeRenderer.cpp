@@ -44,19 +44,19 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
     //LN_TEST_CLEAN_SCENE;
 
 
-    element1->render = [](UIRenderingContext* context)
-    {
-        context->drawBoxBorderLine(
-            Rect(0, 0, 80, 60),
-            Thickness(5),
-            Color::Red, Color::Red, Color::Red, Color::Red,
-            CornerRadius(),
-            false);
-    };
-    TestEnv::updateFrame();
-    TestEnv::updateFrame();
-    TestEnv::updateFrame();
-    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-2.png"));
-    LN_TEST_CLEAN_SCENE;
+    //element1->render = [](UIRenderingContext* context)
+    //{
+    //    context->drawBoxBorderLine(
+    //        Rect(0, 0, 80, 60),
+    //        Thickness(5),
+    //        Color::Red, Color::Red, Color::Red, Color::Red,
+    //        CornerRadius(),
+    //        false);
+    //};
+    //TestEnv::updateFrame();
+    //TestEnv::updateFrame();
+    //TestEnv::updateFrame();
+    //ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-2.png"));
+    //LN_TEST_CLEAN_SCENE;
 }
 

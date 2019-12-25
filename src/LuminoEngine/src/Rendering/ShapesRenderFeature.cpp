@@ -1696,6 +1696,62 @@ void BoxElementShapeBuilder::expandFill(const OutlinePath& path)
 
 
 //==============================================================================
+// BoxElementShapeCommandList
+
+void BoxElementShapeCommandList::addCommandNode(ListNode* cmd, CommandType type)
+{
+    cmd->type = type;
+    cmd->next = nullptr;
+    if (!head) {
+        head = cmd;
+    }
+    if (tail) {
+        tail->next = cmd;
+    }
+    tail = cmd;
+}
+
+void BoxElementShapeCommandList::addResetCommand(LinearAllocator* allocator)
+{
+    auto* cmd = reinterpret_cast<ListNode*>(allocator->allocate(sizeof(ListNode)));
+    addCommandNode(cmd, Cmd_Reset);
+}
+
+void BoxElementShapeCommandList::addBaseCommand(LinearAllocator* allocator, const BoxElementShapeBaseStyle& style)
+{
+    auto* cmd = reinterpret_cast<BaseCommand*>(allocator->allocate(sizeof(BaseCommand)));
+    addCommandNode(cmd, Cmd_Base);
+    cmd->style = style;
+}
+
+void BoxElementShapeCommandList::addBackgroundCommand(LinearAllocator* allocator, const BoxElementShapeBackgroundStyle& style)
+{
+    auto* cmd = reinterpret_cast<BackgroundCommand*>(allocator->allocate(sizeof(BackgroundCommand)));
+    addCommandNode(cmd, Cmd_Background);
+    cmd->style = style;
+}
+
+void BoxElementShapeCommandList::addBorderCommand(LinearAllocator* allocator, const BoxElementShapeBorderStyle& style)
+{
+    auto* cmd = reinterpret_cast<BorderCommand*>(allocator->allocate(sizeof(BorderCommand)));
+    addCommandNode(cmd, Cmd_Border);
+    cmd->style = style;
+}
+
+void BoxElementShapeCommandList::addShadowCommand(LinearAllocator* allocator, const BoxElementShapeShadowStyle& style)
+{
+    auto* cmd = reinterpret_cast<ShadowCommand*>(allocator->allocate(sizeof(ShadowCommand)));
+    addCommandNode(cmd, Cmd_Shadow);
+    cmd->style = style;
+}
+
+void BoxElementShapeCommandList::addSubmitCommand(LinearAllocator* allocator)
+{
+    auto* cmd = reinterpret_cast<ListNode*>(allocator->allocate(sizeof(ListNode)));
+    addCommandNode(cmd, Cmd_Submit);
+}
+
+//==============================================================================
 // ShapesRenderFeature2
 
 ShapesRenderFeature2::ShapesRenderFeature2()
@@ -1838,6 +1894,92 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(ShapesRendererCo
 
 
 	return RequestBatchResult::Staging;
+}
+
+RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(BoxElementShapeCommandList* commandList)
+{
+    BoxElementShapeCommandList::ListNode* node = commandList->head;
+    while (node)
+    {
+        switch (node->type)
+        {
+            case BoxElementShapeCommandList::Cmd_Reset:
+            {
+                m_shapeBuilder.reset();
+                break;
+            }
+            case BoxElementShapeCommandList::Cmd_Base:
+            {
+                auto* cmd = reinterpret_cast<BoxElementShapeCommandList::BaseCommand*>(node);
+                m_shapeBuilder.setBaseRect(cmd->style);
+                break;
+            }
+            case BoxElementShapeCommandList::Cmd_Background:
+            {
+                auto* cmd = reinterpret_cast<BoxElementShapeCommandList::BackgroundCommand*>(node);
+                m_shapeBuilder.setFillBox(cmd->style);
+                break;
+            }
+            case BoxElementShapeCommandList::Cmd_Border:
+            {
+                auto* cmd = reinterpret_cast<BoxElementShapeCommandList::BorderCommand*>(node);
+                m_shapeBuilder.setBoxBorderLine(cmd->style);
+                break;
+            }
+            case BoxElementShapeCommandList::Cmd_Shadow:
+            {
+                auto* cmd = reinterpret_cast<BoxElementShapeCommandList::ShadowCommand*>(node);
+                m_shapeBuilder.setBoxShadow(cmd->style);
+                break;
+            }
+            case BoxElementShapeCommandList::Cmd_Submit:
+            {
+                m_shapeBuilder.build();
+
+                // サイズが足りなければ再作成
+                {
+                    // VertexBuffer
+                    int vertexBufferRequestSize = (m_vertexUsedCount + m_shapeBuilder.vertexCount()) * sizeof(Vertex);
+                    if (!m_vertexBuffer) {
+                        m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferRequestSize, GraphicsResourceUsage::Dynamic);
+                    }
+                    else if (m_vertexBuffer->size() < vertexBufferRequestSize) {
+                        auto newSize = std::max(m_vertexBuffer->size() * 2, vertexBufferRequestSize);
+                        m_vertexBuffer->resize(newSize);
+                    }
+
+                    // IndexBuffer
+                    int indexBufferRequestCount = m_indexUsedCount + m_shapeBuilder.indexCount();
+                    if (!m_indexBuffer) {
+                        m_indexBuffer = makeObject<IndexBuffer>(indexBufferRequestCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+                    }
+                    else if (m_indexBuffer->size() < indexBufferRequestCount) {
+                        auto newSize = std::max(m_indexBuffer->size() * 2, indexBufferRequestCount);
+                        m_indexBuffer->resize(newSize);
+                    }
+                }
+
+
+                auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+                auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
+                m_shapeBuilder.writeToBuffer(vb + m_vertexUsedCount, ib + m_indexUsedCount, m_indexUsedCount);
+
+
+                m_vertexUsedCount += m_shapeBuilder.vertexCount();
+                m_indexUsedCount += m_shapeBuilder.indexCount();
+
+                m_batchData.indexCount += m_shapeBuilder.indexCount();
+                break;
+            }
+            default:
+                LN_UNREACHABLE();
+                break;
+        }
+
+        node = node->next;
+    }
+
+    return RequestBatchResult::Staging;
 }
 
 void ShapesRenderFeature2::beginRendering()

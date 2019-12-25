@@ -475,6 +475,61 @@ private:
 };
 
 
+class BoxElementShapeCommandList
+{
+public:
+    enum CommandType
+    {
+        Cmd_Reset,
+        Cmd_Base,
+        Cmd_Background,
+        Cmd_Border,
+        Cmd_Shadow,
+        Cmd_Submit,
+    };
+
+    struct ListNode
+    {
+        CommandType type;
+        ListNode* next;
+    };
+
+    struct BaseCommand : public ListNode
+    {
+        BoxElementShapeBaseStyle style;
+    };
+
+    struct BackgroundCommand : public ListNode
+    {
+        BoxElementShapeBackgroundStyle style;
+    };
+
+    struct BorderCommand : public ListNode
+    {
+        BoxElementShapeBorderStyle style;
+    };
+
+    struct ShadowCommand : public ListNode
+    {
+        BoxElementShapeShadowStyle style;
+    };
+
+    void addResetCommand(LinearAllocator* allocator);
+    void addBaseCommand(LinearAllocator* allocator, const BoxElementShapeBaseStyle& style);
+    void addBackgroundCommand(LinearAllocator* allocator, const BoxElementShapeBackgroundStyle& style);
+    void addBorderCommand(LinearAllocator* allocator, const BoxElementShapeBorderStyle& style);
+    void addShadowCommand(LinearAllocator* allocator, const BoxElementShapeShadowStyle& style);
+    void addSubmitCommand(LinearAllocator* allocator);
+
+    ListNode* head = nullptr;
+    ListNode* tail = nullptr;
+
+private:
+    void addCommandNode(ListNode* cmd, CommandType type);
+};
+
+
+
 // TODO: name:BoxElementRenderFeature
 class ShapesRenderFeature2
 	: public RenderFeature
@@ -484,6 +539,7 @@ public:
 	void init(RenderingManager* manager);
 
 	RequestBatchResult requestDrawCommandList(ShapesRendererCommandList* commandList);
+    RequestBatchResult requestDrawCommandList(BoxElementShapeCommandList* commandList);
 
 protected:
 	virtual void beginRendering() override;
@@ -535,6 +591,17 @@ public:
 
 private:
 	//SizeI m_srcTextureSize;
+};
+
+class DrawBoxElementShape : public RenderDrawElement
+{
+public:
+    BoxElementShapeCommandList commandList;
+
+    virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+    {
+        return static_cast<detail::ShapesRenderFeature2*>(renderFeature)->requestDrawCommandList(&commandList);
+    }
 };
 
 } // namespace detail
