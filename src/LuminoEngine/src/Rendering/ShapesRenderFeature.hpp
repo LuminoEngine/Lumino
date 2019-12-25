@@ -17,6 +17,7 @@ public:
 		, m_capacity(0)
 		, m_count(0)
 	{
+        clearAndReserve(54);
 	}
 
 	void clearAndReserve(int count)
@@ -58,7 +59,8 @@ private:
 	{
 		if (/*m_count + */requestCount > m_capacity)
 		{
-			clearAndReserve(m_capacity * 2);
+            m_capacity = m_capacity * 2;
+            m_buffer.resize(sizeof(T) * m_capacity);
 		}
 	}
 
@@ -362,10 +364,6 @@ public:
 	void setFillBox(const BoxElementShapeBackgroundStyle& style);
 	void setBoxBorderLine(const BoxElementShapeBorderStyle& style);
 	void setBoxShadow(const BoxElementShapeShadowStyle& style);
-	//void setBaseRect(const Matrix& transform, const Rect& rect, const CornerRadius& cornerRadius);
-	//void setFillBox(const Color& color);
-	//void setBoxBorderLine(const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, bool borderInset);
-	//void setBoxShadow(const Vector2& offset, const Color& color, float blur, float width, bool inset);
 	void build();
 
 	int vertexCount() const;
@@ -385,7 +383,7 @@ private:
 
 	struct BaselinePath
 	{
-		int startPoint;	// index of m_baselinePointBuffer
+		int pointStart;	// index of m_baselinePointBuffer
 		int pointCount;
 	};
 
@@ -415,31 +413,48 @@ private:
 		Left = 3,
 	};
 
+    struct OutlinePoint
+    {
+        int basePoint = -1;
+        Vector2 pos;
+        float alpha = 1.0f;
+        int stripePair = -1; // ストライプを作るときの、対応する OutlinePoint インデックス
+    };
+
+    enum class OutlinePathType
+    {
+        Convex,         // 始点と終点を結んだ領域を面張りする
+        PairdStripe,    // OutlinePoint::stripePair の頂点位置を使用して面張りする
+    };
+
+    struct OutlinePath
+    {
+        OutlinePathType type;
+        int pointStart;
+        int pointCount;
+        Color color;
+        //bool antialias; // AA 有無。例えば Border と Background を同時に描画している場合、Background の AA は不要。
+    };
+
 	void makeBasePointsAndBorderComponent(const Rect& shapeOuterRect, const CornerRadius& cornerRadius, BorderComponent components[4]);
 	void plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
-	//void calculateBasePointsDirection();
+    void plotInnerBasePoints(int pointStart, int pointCount, float startWidth, float endWidth);
+
+    //void calculateBasePointsDirection();
+
+    OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color);
+    void endOutlinePath(OutlinePath* path);
+    int addOutlinePoint(const OutlinePoint& point);
+
+    void expandPathes();
+    void expandVertices(const OutlinePath& path);
+    void expandFill(const OutlinePath& path);
 
 	// Input infomation
 	BoxElementShapeBaseStyle m_baseStyle;
 	BoxElementShapeBackgroundStyle m_backgroundStyle;
 	BoxElementShapeBorderStyle m_borderStyle;
 	BoxElementShapeShadowStyle m_shadowStyle;
-	//Matrix m_transform;
-	//Rect m_baseRect;
-	//CornerRadius m_cornerRadius;
-	//Color m_boxColor;
-	//Thickness m_borderThickness;
-	//Color m_borderLeftColor;
-	//Color m_borderTopColor;
-	//Color m_borderRightColor;
-	//Color m_borderBottomColor;
-	//bool m_borderInset = false;
-	//Vector2 m_shadowOffset;
-	//Color m_shadowColor;
-	//float m_shadowWidth = 0.0f;
-	//float m_shadowBlur = 0.0f;
-	//bool m_shadowInset = false;
-	//bool m_aligndLineAntiAlias = false;	// 軸に平行な辺にも AA を適用するか (回転させたい場合に使用)
 	bool m_backgroundEnabled;
 	bool m_borderEnabled;
 	bool m_shadowEnabled;
@@ -450,10 +465,13 @@ private:
 
 	CacheBuffer<BaselinePoint> m_baselinePointBuffer;
 	BaselinePath m_outerBaselinePath;
+    BaselinePath m_innerBaselinePath;
 
+    CacheBuffer<OutlinePoint> m_outlinePointBuffer;
+    List<OutlinePath> m_outlinePaths;
 
-//List<BaselinePath> m_baselinePaths;
-
+    CacheBuffer<Vertex> m_vertexCache;
+    CacheBuffer<uint16_t> m_indexCache;
 };
 
 
