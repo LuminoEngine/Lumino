@@ -361,6 +361,8 @@ private:
 	// Border は上下左右で個別に Color を設定できるが、その単位となる。
 	struct BorderComponent
 	{
+		float width;	// 厚さ
+		Color color;
 		int	startPoint;
 		int pointCount;
 
@@ -437,6 +439,7 @@ private:
 	bool m_backgroundEnabled;
 	bool m_borderEnabled;
 	bool m_shadowEnabled;
+	bool m_shapeAAEnabled;
 
 	// Working data
 	EdgeInfo m_edgeInfo;

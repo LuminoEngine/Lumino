@@ -1271,15 +1271,45 @@ void BoxElementShapeBuilder::setBoxShadow(const BoxElementShapeShadowStyle& styl
 
 void BoxElementShapeBuilder::build()
 {
+	if (Math::nearEqual(m_baseStyle.cornerRadius.topLeft, 0.0f) &&
+		Math::nearEqual(m_baseStyle.cornerRadius.topRight, 0.0f) &&
+		Math::nearEqual(m_baseStyle.cornerRadius.bottomRight, 0.0f) &&
+		Math::nearEqual(m_baseStyle.cornerRadius.bottomLeft, 0.0f) &&
+		!m_baseStyle.aligndLineAntiAlias) {
+		m_shapeAAEnabled = false;	// Axis-Aligned な辺だけで外部から Anti-alias も要求されていないため、全体的に Anti-alias は不要
+	}
+	else {
+		m_shapeAAEnabled = true;
+	}
 
 
 	// Make shape outer baseline and component
 	{
 		// Make shape outer rect
 		m_shapeOuterRect = m_baseStyle.baseRect;
-		if (m_borderEnabled && !m_borderStyle.borderInset) {
-			m_shapeOuterRect.width += m_borderStyle.borderThickness.width();
-			m_shapeOuterRect.height += m_borderStyle.borderThickness.height();
+		m_shapeOuterRect.width = std::max(0.0f, m_shapeOuterRect.width);
+		m_shapeOuterRect.height = std::max(0.0f, m_shapeOuterRect.height);
+		if (m_borderEnabled) {
+			if (m_borderStyle.borderInset) {
+				// Note: CSS はデフォルトで inset. Box のサイズは、Border の合計サイズよりも小さくすることはできない。(Style で width: 0px とかはできるが、表示時に調整される)
+				m_shapeOuterRect.width = std::max(m_shapeOuterRect.width, m_borderStyle.borderThickness.width());
+				m_shapeOuterRect.height = std::max(m_shapeOuterRect.height, m_borderStyle.borderThickness.height());
+			}
+			else {
+				m_shapeOuterRect.width += m_borderStyle.borderThickness.width();
+				m_shapeOuterRect.height += m_borderStyle.borderThickness.height();
+			}
+		}
+
+		if (m_borderEnabled) {
+			m_borderComponents[Top].width = m_borderStyle.borderThickness.top;
+			m_borderComponents[Top].color = m_borderStyle.borderTopColor;
+			m_borderComponents[Right].width = m_borderStyle.borderThickness.right;
+			m_borderComponents[Right].color = m_borderStyle.borderRightColor;
+			m_borderComponents[Bottom].width = m_borderStyle.borderThickness.bottom;
+			m_borderComponents[Bottom].color = m_borderStyle.borderBottomColor;
+			m_borderComponents[Left].width = m_borderStyle.borderThickness.left;
+			m_borderComponents[Left].color = m_borderStyle.borderLeftColor;
 		}
 
 		// Make edge info
@@ -1439,7 +1469,7 @@ void BoxElementShapeBuilder::build()
 
     if (m_backgroundEnabled) {
 		// inner に面を張る
-        auto* backgroundPath = beginOutlinePath(OutlinePathType::Convex, Color::Red);
+        auto* backgroundPath = beginOutlinePath(OutlinePathType::Convex, m_backgroundStyle.color);
         for (int i = 0; i < m_innerBaselinePath.pointCount; i++) {
             int baseIndex = m_innerBaselinePath.pointStart + i;
             auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
@@ -1447,26 +1477,27 @@ void BoxElementShapeBuilder::build()
         }
         endOutlinePath(backgroundPath);
 
-		// Border が無ければ、Background の色を使って外周に AA を作る
-		if (!m_borderEnabled) {
+		if (m_shapeAAEnabled) {
+			// Border が無ければ、Background の色を使って外周に AA を作る
+			if (!m_borderEnabled) {
+				auto* path = beginOutlinePath(OutlinePathType::PairdStripe, m_backgroundStyle.color);
+				for (int i = 0; i < backgroundPath->pointCount; i++) {
+					int outlineIndex = backgroundPath->pointStart + i;
+					auto& pt = m_outlinePointBuffer.getAt(outlineIndex);
+					auto& basePt = m_baselinePointBuffer.getAt(pt.basePoint);
 
-			auto* path = beginOutlinePath(OutlinePathType::PairdStripe, m_backgroundStyle.color);
-			for (int i = 0; i < backgroundPath->pointCount; i++) {
-				int outlineIndex = backgroundPath->pointStart + i;
-				auto& pt = m_outlinePointBuffer.getAt(outlineIndex);
-				auto& basePt = m_baselinePointBuffer.getAt(pt.basePoint);
+					Vector2 pos = pt.pos + basePt.infrateDir;
+					if (!m_baseStyle.aligndLineAntiAlias) {
+						float d = std::acos(std::abs(basePt.rightDir.x)) / (Math::PIDiv2);	// 0.0(dig0) ~ 1.0(dig90) になる
+						d = std::abs((d - 0.5f) * 2.0f);										// dig45 に近ければ 0.0, dig0 か dig90 に近ければ 1.0
+						pos = Vector2::lerp(pos, pt.pos, d);
+					}
 
-				Vector2 pos = pt.pos + basePt.infrateDir;
-				if (!m_baseStyle.aligndLineAntiAlias) {
-					float d = std::acos(std::abs(basePt.rightDir.x)) / (Math::PIDiv2);	// 0.0(dig0) ~ 1.0(dig90) になる
-					d = std::abs((d - 0.5f) * 2.0f);										// dig45 に近ければ 0.0, dig0 か dig90 に近ければ 1.0
-					pos = Vector2::lerp(pos, pt.pos, d);
+					addOutlinePoint({ pt.basePoint, pos, 0.0f, outlineIndex });
 				}
+				endOutlinePath(path);
 
-				addOutlinePoint({ pt.basePoint, pos, 0.0f, outlineIndex });
 			}
-			endOutlinePath(path);
-
 		}
     }
 
@@ -1508,24 +1539,27 @@ void BoxElementShapeBuilder::build()
     if (m_borderEnabled) {
         for (int iComponent = 0; iComponent < 4; iComponent++) {
             auto& cmp = m_borderComponents[iComponent];
+			if (cmp.width > 0.0f) {
+				auto* path = beginOutlinePath(OutlinePathType::Convex, cmp.color);
 
-            auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Red);
+				// outer
+				for (int i = 0; i < cmp.pointCount; i++) {
+					int baseIndex = cmp.startPoint + i;
+					auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
+					addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1 });
+					basePt.pos.print();
+				}
 
-            // outer
-            for (int i = 0; i < cmp.pointCount; i++) {
-                int baseIndex = cmp.startPoint + i;
-                auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
-                addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1 });
-            }
+				// inner (面張りのため逆順)
+				for (int i = cmp.innterPointCount - 1; i >= 0; i--) {
+					int baseIndex = cmp.innterPointStart + i;
+					auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
+					addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1 });
+					basePt.pos.print();
+				}
 
-            // inner (面張りのため逆順)
-            for (int i = cmp.innterPointCount - 1; i >= 0; i--) {
-                int baseIndex = cmp.innterPointStart + i;
-                auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
-                addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1 });
-            }
-
-            endOutlinePath(path);
+				endOutlinePath(path);
+			}
         }
     }
 
