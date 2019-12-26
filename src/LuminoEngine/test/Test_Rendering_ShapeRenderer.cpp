@@ -337,7 +337,7 @@ TEST_F(Test_Rendering_ShapeRenderer, BorderOnly)
 		};
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-5.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-5.png"));
 	}
 
 	LN_TEST_CLEAN_SCENE;

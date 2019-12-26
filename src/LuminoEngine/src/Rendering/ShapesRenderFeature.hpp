@@ -391,6 +391,7 @@ private:
         Vector2 pos;
         float alpha = 1.0f;
         int stripePair = -1; // ストライプを作るときの、対応する OutlinePoint インデックス
+        Vector2 antiAliasDir;   // AA を作るときの押し出し方向。特に、Border と Border の接合点は互いに向き合う方向に独自で作る必要がある
     };
 
     enum class OutlinePathType
@@ -414,6 +415,7 @@ private:
         Color color;
 		PathWinding winding;
         //bool antialias; // AA 有無。例えば Border と Background を同時に描画している場合、Background の AA は不要。
+        bool stripeClosing = false;
     };
 
 	void makeBasePointsAndBorderComponent(const Rect& shapeOuterRect, const CornerRadius& cornerRadius, BorderComponent components[4]);
@@ -424,6 +426,7 @@ private:
     OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
     void endOutlinePath(OutlinePath* path);
     int addOutlinePoint(const OutlinePoint& point);
+    void makeOutlineAntiAlias(const OutlinePath* path, int start, int count);
 
     void expandPathes();
     void expandVertices(const OutlinePath& path);
