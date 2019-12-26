@@ -1489,8 +1489,8 @@ void BoxElementShapeBuilder::build()
 				auto md = Vector2::normalize(middlePoint - basePt.pos);
 				auto dot = Vector2::dot(md, -basePt.infrateDir);
 				if (dot >= 0) {
+					middleAlpha = ((outerPoint - basePt.pos).length() / m_shadowStyle.shadowBlur);
 					middlePoint = basePt.pos;
-					middleAlpha = ((outerPoint - middlePoint).length() / m_shadowStyle.shadowBlur);
 				}
 			}
 
@@ -1542,8 +1542,8 @@ void BoxElementShapeBuilder::build()
 				auto md = Vector2::normalize(middlePoint - basePt.pos);
 				auto dot = Vector2::dot(md, -basePt.infrateDir);
 				if (dot <= 0) {
+					middleAlpha = ((innnerPoint - basePt.pos).length() / m_shadowStyle.shadowBlur);
 					middlePoint = basePt.pos;
-					middleAlpha = ((innnerPoint - middlePoint).length() / m_shadowStyle.shadowBlur);
 				}
 			}
 

@@ -565,41 +565,41 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
             BoxElementShapeBaseStyle baseStyle;
             BoxElementShapeShadowStyle shadowStyle;
 
-            baseStyle.baseRect = Rect(20, 20, 20, 20);
-            baseStyle.cornerRadius = CornerRadius(5);
-            shadowStyle.shadowWidth = 20;
-            shadowStyle.shadowBlur = 10;
-            shadowStyle.shadowColor = Color::Red;
-            shadowStyle.shadowOffset = Vector2(5, 0);
-            shadowStyle.shadowInset = false;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            //baseStyle.baseRect = Rect(20, 20, 20, 20);
+            //baseStyle.cornerRadius = CornerRadius(5);
+            //shadowStyle.shadowWidth = 20;
+            //shadowStyle.shadowBlur = 10;
+            //shadowStyle.shadowColor = Color::Red;
+            //shadowStyle.shadowOffset = Vector2(5, 0);
+            //shadowStyle.shadowInset = false;
+            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
             baseStyle.baseRect = Rect(100, 20, 20, 20);
-            baseStyle.cornerRadius = CornerRadius(5);
+            baseStyle.cornerRadius = CornerRadius(0);
             shadowStyle.shadowWidth = 20;
             shadowStyle.shadowBlur = 10;
             shadowStyle.shadowColor = Color::Green;
-            shadowStyle.shadowOffset = Vector2(15, 0);
+            shadowStyle.shadowOffset = Vector2(0, 10);
             shadowStyle.shadowInset = false;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            baseStyle.baseRect = Rect(20, 70, 40, 40);
-            baseStyle.cornerRadius = CornerRadius(5);
-            shadowStyle.shadowWidth = 20;
-            shadowStyle.shadowBlur = 10;
-            shadowStyle.shadowColor = Color::Red;
-            shadowStyle.shadowOffset = Vector2(5, 0);
-            shadowStyle.shadowInset = true;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            //baseStyle.baseRect = Rect(20, 70, 40, 40);
+            //baseStyle.cornerRadius = CornerRadius(5);
+            //shadowStyle.shadowWidth = 20;
+            //shadowStyle.shadowBlur = 10;
+            //shadowStyle.shadowColor = Color::Red;
+            //shadowStyle.shadowOffset = Vector2(5, 0);
+            //shadowStyle.shadowInset = true;
+            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            baseStyle.baseRect = Rect(100, 70, 40, 40);
-            baseStyle.cornerRadius = CornerRadius(5);
-            shadowStyle.shadowWidth = 20;
-            shadowStyle.shadowBlur = 10;
-            shadowStyle.shadowColor = Color::Green;
-            shadowStyle.shadowOffset = Vector2(15, 0);
-            shadowStyle.shadowInset = true;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            //baseStyle.baseRect = Rect(100, 70, 40, 40);
+            //baseStyle.cornerRadius = CornerRadius(5);
+            //shadowStyle.shadowWidth = 20;
+            //shadowStyle.shadowBlur = 10;
+            //shadowStyle.shadowColor = Color::Green;
+            //shadowStyle.shadowOffset = Vector2(15, 0);
+            //shadowStyle.shadowInset = true;
+            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
         };
 
         TestEnv::updateFrame();
