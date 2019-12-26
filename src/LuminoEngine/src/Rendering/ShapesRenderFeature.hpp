@@ -335,10 +335,16 @@ public:
 	void writeToBuffer(Vertex* vertexBuffer, uint16_t* indexBuffer, uint16_t indexOffset);
 
 private:
+	struct EdgeInfo
+	{
+		Thickness thickness;	// 各辺の太さ。Border が無い場合は 0.0
+		Vector2 outerDirs[4];	// 外側への向き。CornerRadius が無い場合に使用する。[TopLeft, TopRight, BottomRight, BottomLeft]
+	};
+
 	struct BaselinePoint
 	{
 		Vector2	pos;
-		Vector2	infrateDir;	// AA や Shadow のための押し出し方向。Shape に対して外向きのベクトル。必ずしも放射状であるとは限らない
+		Vector2	infrateDir;		// AA や Shadow のための押し出し方向。outer の場合は Shape に対して外向きのベクトル、innter は内向き。
 		float cornerRatio;		// corner の始点～終点のどこに位置している点か。0.0 は始点、1.0 は終点。外周を時計回りで考える
 		
 		
@@ -389,7 +395,14 @@ private:
     {
         Convex,         // 始点と終点を結んだ領域を面張りする
         PairdStripe,    // OutlinePoint::stripePair の頂点位置を使用して面張りする
+		Strip3Point,	// これは AA できない。シャドウ用
     };
+
+	enum class PathWinding
+	{
+		CW,	// 時計回り (基本)
+		CCW,
+	};
 
     struct OutlinePath
     {
@@ -397,6 +410,7 @@ private:
         int pointStart;
         int pointCount;
         Color color;
+		PathWinding winding;
         //bool antialias; // AA 有無。例えば Border と Background を同時に描画している場合、Background の AA は不要。
     };
 
@@ -406,13 +420,15 @@ private:
 
     //void calculateBasePointsDirection();
 
-    OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color);
+    OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
     void endOutlinePath(OutlinePath* path);
     int addOutlinePoint(const OutlinePoint& point);
 
     void expandPathes();
     void expandVertices(const OutlinePath& path);
     void expandFill(const OutlinePath& path);
+	void expandPairdStripeStroke(const OutlinePath& path);
+	void expandStrip3PointStroke(const OutlinePath& path);
 
 	// Input infomation
 	BoxElementShapeBaseStyle m_baseStyle;
@@ -424,6 +440,7 @@ private:
 	bool m_shadowEnabled;
 
 	// Working data
+	EdgeInfo m_edgeInfo;
 	Rect m_shapeOuterRect;
 	BorderComponent m_borderComponents[4];
 

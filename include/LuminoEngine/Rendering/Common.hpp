@@ -167,7 +167,9 @@ struct BoxElementShapeBorderStyle
 
 struct BoxElementShapeShadowStyle
 {
+	/** シャドウのオフセット距離です (シャドウの生成処理は、オフセットが BoxElement から大きく離れないことを前提として最適化されています。オフセットは shadowWidth を超えないようにしてください) */
     Vector2 shadowOffset;
+
     Color shadowColor;
     float shadowWidth = 0.0f;
     float shadowBlur = 0.0f;

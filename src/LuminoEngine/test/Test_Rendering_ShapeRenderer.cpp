@@ -52,7 +52,16 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
 
         BoxElementShapeBackgroundStyle backgroundStyle;
         backgroundStyle.color = Color::Red;
-        context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, nullptr);
+
+		BoxElementShapeShadowStyle shadowStyle;
+		shadowStyle.shadowOffset.x = 6;
+		shadowStyle.shadowOffset.y = 6;
+		shadowStyle.shadowWidth = 10;
+		shadowStyle.shadowBlur = 5;
+		shadowStyle.shadowInset = true;
+
+        //context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, &shadowStyle);
+		context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
         //BoxElementShapeBorderStyle borderStyle;
         //borderStyle.borderThickness = Thickness(5);
