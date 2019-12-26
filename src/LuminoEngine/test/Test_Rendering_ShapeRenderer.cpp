@@ -3,22 +3,23 @@
 
 //==============================================================================
 //# ShapeRenderer
-class Test_Rendering_ShapeRenderer : public LuminoSceneTest {};
+class Test_Rendering_ShapeRenderer : public LuminoSceneTest
+{
+public:
+	class TestElement : public UIElement
+	{
+	public:
+		std::function<void(UIRenderingContext* context)> render;
+
+		virtual void onRender(UIRenderingContext* context) override { render(context); }
+	};
+
+};
 
 //------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_Rendering_ShapeRenderer, Basic)
 {
-    class TestElement : public UIElement
-    {
-    public:
-        std::function<void(UIRenderingContext* context)> render;
-
-        virtual void onRender(UIRenderingContext* context) override
-        {
-            render(context);
-        }
-    };
 
     auto element1 = makeObject<TestElement>();
     element1->setHorizontalAlignment(HAlignment::Center);
@@ -85,5 +86,45 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
     TestEnv::updateFrame();
     ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-2.png"));
     LN_TEST_CLEAN_SCENE;
+}
+
+TEST_F(Test_Rendering_ShapeRenderer, BackgroundOnly)
+{
+	auto element1 = makeObject<TestElement>();
+	element1->setHorizontalAlignment(HAlignment::Stretch);
+	element1->setVerticalAlignment(VAlignment::Stretch);
+	Engine::mainUIView()->addChild(element1);
+
+	element1->render = [](UIRenderingContext* context)
+	{
+		BoxElementShapeBaseStyle baseStyle;
+		BoxElementShapeBackgroundStyle backgroundStyle;
+
+		baseStyle.baseRect = Rect(0, 0, 80, 60);
+		baseStyle.cornerRadius = CornerRadius(0);
+		backgroundStyle.color = Color::Red;
+		context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, nullptr);
+
+		baseStyle.baseRect = Rect(80, 0, 80, 60);
+		baseStyle.cornerRadius = CornerRadius(20);
+		backgroundStyle.color = Color::Green;
+		context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, nullptr);
+
+		baseStyle.baseRect = Rect(0, 60, 80, 60);
+		baseStyle.cornerRadius = CornerRadius(20, 0, 20, 0);
+		backgroundStyle.color = Color::Blue;
+		context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, nullptr);
+
+		baseStyle.baseRect = Rect(80, 60, 80, 60);
+		baseStyle.cornerRadius = CornerRadius(0, 20, 0, 20);
+		backgroundStyle.color = Color::Yellow;
+		context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, nullptr);
+	};
+
+	TestEnv::updateFrame();
+	TestEnv::updateFrame();
+	TestEnv::updateFrame();
+	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BackgroundOnly-1.png"));
+	LN_TEST_CLEAN_SCENE;
 }
 

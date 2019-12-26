@@ -346,7 +346,7 @@ private:
 		Vector2	pos;
 		Vector2	infrateDir;		// AA や Shadow のための押し出し方向。outer の場合は Shape に対して外向きのベクトル、innter は内向き。
 		float cornerRatio;		// corner の始点～終点のどこに位置している点か。0.0 は始点、1.0 は終点。外周を時計回りで考える
-		
+		Vector2 rightDir;		// 軸と平行な辺に対して AA を作るかどうかの判断に使う
 		
 		//Vector2	front;	// Path 内の次の点への向き
 	};
@@ -417,8 +417,7 @@ private:
 	void makeBasePointsAndBorderComponent(const Rect& shapeOuterRect, const CornerRadius& cornerRadius, BorderComponent components[4]);
 	void plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
     void plotInnerBasePoints(int pointStart, int pointCount, float startWidth, float endWidth);
-
-    //void calculateBasePointsDirection();
+    //void calculateBasePointsNextDirection();
 
     OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
     void endOutlinePath(OutlinePath* path);

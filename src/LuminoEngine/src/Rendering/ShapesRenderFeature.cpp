@@ -1310,6 +1310,8 @@ void BoxElementShapeBuilder::build()
 		}
 
 		makeBasePointsAndBorderComponent(m_shapeOuterRect, m_baseStyle.cornerRadius, m_borderComponents);
+
+		//calculateBasePointsNextDirection();
 	}
 
 	// Make innter baseline
@@ -1330,12 +1332,12 @@ void BoxElementShapeBuilder::build()
 			m_borderComponents[Top].innterPointStart = m_baselinePointBuffer.getCount();
 			// top-left
 			if (lw >= tlRad || tw >= tlRad)	// どちらかの BorderThickness が Radius を超えている場合、inner の角を丸める必要はない
-				m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[0], 1.0f });
+				m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[0], 1.0f, Vector2(0, -1) });
 			else
                 plotInnerBasePoints(m_borderComponents[Top].outerCornerStart1, m_borderComponents[Top].outerCornerCount1(), lw, tw);
 			// top-right
 			if (tw >= trRad || rw >= trRad)
-				m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[1], 0.0f });
+				m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[1], 0.0f, Vector2(0, -1) });
 			else
                 plotInnerBasePoints(m_borderComponents[Top].outerCornerStart2, m_borderComponents[Top].outerCornerCount2(), tw, rw);
 			m_borderComponents[Top].innterPointCount = m_baselinePointBuffer.getCount() - m_borderComponents[Top].innterPointStart;
@@ -1345,12 +1347,12 @@ void BoxElementShapeBuilder::build()
             m_borderComponents[Right].innterPointStart = m_baselinePointBuffer.getCount();
             // top-right
             if (tw >= trRad || rw >= trRad)
-                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[1], 1.0f });
+                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[1], 1.0f, Vector2(1, 0) });
             else
                 plotInnerBasePoints(m_borderComponents[Right].outerCornerStart1, m_borderComponents[Right].outerCornerCount1(), tw, rw);
             // bottom-right
             if (rw >= brRad || bw >= brRad)
-                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[2], 0.0f });
+                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[2], 0.0f, Vector2(1, 0) });
             else
                 plotInnerBasePoints(m_borderComponents[Right].outerCornerStart2, m_borderComponents[Right].outerCornerCount2(), rw, bw);
             m_borderComponents[Right].innterPointCount = m_baselinePointBuffer.getCount() - m_borderComponents[Right].innterPointStart;
@@ -1360,12 +1362,12 @@ void BoxElementShapeBuilder::build()
             m_borderComponents[Bottom].innterPointStart = m_baselinePointBuffer.getCount();
             // bottom-right
             if (rw >= brRad || bw >= brRad)
-                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[2], 1.0f });
+                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getRight() - rw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[2], 1.0f, Vector2(0, 1) });
             else
                 plotInnerBasePoints(m_borderComponents[Bottom].outerCornerStart1, m_borderComponents[Bottom].outerCornerCount1(), rw, bw);
             // bottom-left
             if (bw >= blRad || lw >= blRad)
-                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[3], 0.0f });
+                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[3], 0.0f, Vector2(0, 1) });
             else
                 plotInnerBasePoints(m_borderComponents[Bottom].outerCornerStart2, m_borderComponents[Bottom].outerCornerCount2(), bw, lw);
             m_borderComponents[Bottom].innterPointCount = m_baselinePointBuffer.getCount() - m_borderComponents[Bottom].innterPointStart;
@@ -1375,12 +1377,12 @@ void BoxElementShapeBuilder::build()
             m_borderComponents[Left].innterPointStart = m_baselinePointBuffer.getCount();
             // bottom-left
             if (bw >= blRad || lw >= blRad)
-                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[3], 1.0f });
+                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getBottom() - bw), -m_edgeInfo.outerDirs[3], 1.0f, Vector2(-1, 0) });
             else
                 plotInnerBasePoints(m_borderComponents[Left].outerCornerStart1, m_borderComponents[Left].outerCornerCount1(), bw, lw);
             // top-left
             if (lw >= tlRad || tw >= tlRad)
-                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[0], 0.0f });
+                m_baselinePointBuffer.add({ Vector2(m_shapeOuterRect.getLeft() + lw, m_shapeOuterRect.getTop() + tw), -m_edgeInfo.outerDirs[0], 0.0f, Vector2(-1, 0) });
             else
                 plotInnerBasePoints(m_borderComponents[Left].outerCornerStart2, m_borderComponents[Left].outerCornerCount2(), lw, tw);
             m_borderComponents[Left].innterPointCount = m_baselinePointBuffer.getCount() - m_borderComponents[Left].innterPointStart;
@@ -1456,7 +1458,7 @@ void BoxElementShapeBuilder::build()
 
 				Vector2 pos = pt.pos + basePt.infrateDir;
 				if (!m_baseStyle.aligndLineAntiAlias) {
-					float d = std::acos(std::abs(basePt.infrateDir.x)) / (Math::PIDiv2);	// 0.0(dig0) ~ 1.0(dig90) になる
+					float d = std::acos(std::abs(basePt.rightDir.x)) / (Math::PIDiv2);	// 0.0(dig0) ~ 1.0(dig90) になる
 					d = std::abs((d - 0.5f) * 2.0f);										// dig45 に近ければ 0.0, dig0 か dig90 に近ければ 1.0
 					pos = Vector2::lerp(pos, pt.pos, d);
 				}
@@ -1579,13 +1581,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		components[Top].outerCornerStart1 = m_baselinePointBuffer.getCount();
 		// top-left
 		if (tlRad == 0.0f)
-			m_baselinePointBuffer.add({ lt[0], m_edgeInfo.outerDirs[0], 1.0f });
+			m_baselinePointBuffer.add({ lt[0], m_edgeInfo.outerDirs[0], 1.0f, Vector2(0, -1) });
 		else
 			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.5f, 1.0f, lt[1]);
 		components[Top].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// top-right
 		if (trRad == 0.0f)
-			m_baselinePointBuffer.add({ rt[0], m_edgeInfo.outerDirs[1], 0.0f });
+			m_baselinePointBuffer.add({ rt[0], m_edgeInfo.outerDirs[1], 0.0f, Vector2(0, -1) });
 		else
 			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.0f, 0.5f, rt[1]);
 		components[Top].pointCount = m_baselinePointBuffer.getCount() - components[Top].startPoint;
@@ -1597,13 +1599,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		components[Right].outerCornerStart1 = m_baselinePointBuffer.getCount();
 		// top-right
 		if (trRad == 0.0f)
-			m_baselinePointBuffer.add({ rt[0], m_edgeInfo.outerDirs[1], 1.0f });
+			m_baselinePointBuffer.add({ rt[0], m_edgeInfo.outerDirs[1], 1.0f, Vector2(1, 0) });
 		else
 			plotCornerBasePointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.5f, 1.0f, rt[1]);
 		components[Right].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// bottom-right
 		if (brRad == 0.0f)
-			m_baselinePointBuffer.add({ rb[0], m_edgeInfo.outerDirs[2], 0.0f });
+			m_baselinePointBuffer.add({ rb[0], m_edgeInfo.outerDirs[2], 0.0f, Vector2(1, 0) });
 		else
 			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.0f, 0.5f, rb[1]);
 		components[Right].pointCount = m_baselinePointBuffer.getCount() - components[Right].startPoint;
@@ -1615,13 +1617,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		components[Bottom].outerCornerStart1 = m_baselinePointBuffer.getCount();
 		// bottom-right
 		if (brRad == 0.0f)
-			m_baselinePointBuffer.add({ rb[0], m_edgeInfo.outerDirs[2], 1.0f });
+			m_baselinePointBuffer.add({ rb[0], m_edgeInfo.outerDirs[2], 1.0f, Vector2(0, 1) });
 		else
 			plotCornerBasePointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.5f, 1.0f, rb[1]);
 		components[Bottom].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// bottom-left
 		if (blRad == 0.0f)
-			m_baselinePointBuffer.add({ lb[1], m_edgeInfo.outerDirs[3], 0.0f });
+			m_baselinePointBuffer.add({ lb[1], m_edgeInfo.outerDirs[3], 0.0f, Vector2(0, 1) });
 		else
 			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.0f, 0.5f, lb[1]);
 		components[Bottom].pointCount = m_baselinePointBuffer.getCount() - components[Bottom].startPoint;
@@ -1633,13 +1635,13 @@ void BoxElementShapeBuilder::makeBasePointsAndBorderComponent(const Rect& rect, 
 		components[Left].outerCornerStart1 = m_baselinePointBuffer.getCount();
 		// bottom-left
 		if (blRad == 0.0f)
-			m_baselinePointBuffer.add({ lb[0], m_edgeInfo.outerDirs[3], 1.0f });
+			m_baselinePointBuffer.add({ lb[0], m_edgeInfo.outerDirs[3], 1.0f, Vector2(-1, 0) });
 		else
 			plotCornerBasePointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.5f, 1.0f, lb[1]);
 		components[Left].outerCornerStart2 = m_baselinePointBuffer.getCount();
 		// top-left
 		if (tlRad == 0.0f)
-			m_baselinePointBuffer.add({ lt[0], m_edgeInfo.outerDirs[0], 0.0f });
+			m_baselinePointBuffer.add({ lt[0], m_edgeInfo.outerDirs[0], 0.0f, Vector2(-1, 0) });
 		else
 			plotCornerBasePointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.0f, 0.5f, lt[1]);
 		components[Left].pointCount = m_baselinePointBuffer.getCount() - components[Left].startPoint;
@@ -1671,12 +1673,14 @@ void BoxElementShapeBuilder::plotCornerBasePointsBezier(const Vector2& first, co
 	{
 		float t = firstT + (step * i);
 		auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, t), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, t));
-		m_baselinePointBuffer.add({ pos, Vector2::normalize(pos - center), t });
+		auto dir = Vector2::normalize(pos - center);
+		m_baselinePointBuffer.add({ pos, dir, t, dir });
 	}
 
 	// end point
 	auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, lastT), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
-	m_baselinePointBuffer.add({ pos, Vector2::normalize(pos - center), 1.0f });
+	auto dir = Vector2::normalize(pos - center);
+	m_baselinePointBuffer.add({ pos, dir, 1.0f, dir });
 }
 
 void BoxElementShapeBuilder::plotInnerBasePoints(int pointStart, int pointCount, float startWidth, float endWidth)
@@ -1684,16 +1688,16 @@ void BoxElementShapeBuilder::plotInnerBasePoints(int pointStart, int pointCount,
     for (int i = 0; i < pointCount; i++) {
         auto& basePt = m_baselinePointBuffer.getAt(pointStart + i);
         float w = Math::lerp(startWidth, endWidth, basePt.cornerRatio);	// 始点から終点に向かって厚さを合わせていく
-        m_baselinePointBuffer.add({ (basePt.pos + (-basePt.infrateDir) * w), basePt.infrateDir, basePt.cornerRatio });
+        m_baselinePointBuffer.add({ (basePt.pos + (-basePt.infrateDir) * w), basePt.infrateDir, basePt.cornerRatio, basePt.rightDir });
     }
 }
 
-//void BoxElementShapeBuilder::calculateBasePointsDirection()
+//void BoxElementShapeBuilder::calculateBasePointsNextDirection()
 //{
 //	for (int i = 0; i < m_baselinePointBuffer.getCount(); i++) {
 //		BaselinePoint* pt = &m_baselinePointBuffer.getAt(i);
 //		BaselinePoint* nextPt = (i == m_baselinePointBuffer.getCount() - 1) ? &m_baselinePointBuffer.getAt(0) : &m_baselinePointBuffer.getAt(i + 1);
-//
+//		pt->nextDir = Vector2::normalize(nextPt->pos - pt->pos);
 //	}
 //}
 
@@ -2175,7 +2179,7 @@ RequestBatchResult ShapesRenderFeature2::requestDrawCommandList(BoxElementShapeC
 
                 auto vb = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
                 auto ib = static_cast<uint16_t*>(m_indexBuffer->map(MapMode::Write));
-                m_shapeBuilder.writeToBuffer(vb + m_vertexUsedCount, ib + m_indexUsedCount, m_indexUsedCount);
+                m_shapeBuilder.writeToBuffer(vb + m_vertexUsedCount, ib + m_indexUsedCount, m_vertexUsedCount);
 
 
                 m_vertexUsedCount += m_shapeBuilder.vertexCount();
