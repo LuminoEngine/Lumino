@@ -1312,6 +1312,34 @@ void BoxElementShapeBuilder::build()
 			m_borderComponents[Left].color = m_borderStyle.borderLeftColor;
 		}
 
+        {
+            m_actualCornerRadius = m_baseStyle.cornerRadius;
+            float l = std::max(m_actualCornerRadius.topLeft, m_actualCornerRadius.bottomLeft);
+            float r = std::max(m_actualCornerRadius.topRight, m_actualCornerRadius.bottomRight);
+            float t = std::max(m_actualCornerRadius.topLeft, m_actualCornerRadius.topRight);
+            float b = std::max(m_actualCornerRadius.bottomLeft, m_actualCornerRadius.bottomRight);
+            float radiusMaxWidth = l + r;
+            float radiusMaxHeight = t + b;
+
+            if (m_shapeOuterRect.width < radiusMaxWidth) {
+                float lr = l / radiusMaxWidth;
+                float rr = r / radiusMaxWidth;
+                m_actualCornerRadius.topLeft = std::min(m_shapeOuterRect.width * lr, m_actualCornerRadius.topLeft);
+                m_actualCornerRadius.bottomLeft = std::min(m_shapeOuterRect.width * lr, m_actualCornerRadius.bottomLeft);
+                m_actualCornerRadius.topRight = std::min(m_shapeOuterRect.width * rr, m_actualCornerRadius.topRight);
+                m_actualCornerRadius.bottomRight = std::min(m_shapeOuterRect.width * rr, m_actualCornerRadius.bottomRight);
+            }
+
+            if (m_shapeOuterRect.height < radiusMaxHeight) {
+                float tr = t / radiusMaxHeight;
+                float br = b / radiusMaxHeight;
+                m_actualCornerRadius.topLeft = std::min(m_shapeOuterRect.height * tr, m_actualCornerRadius.topLeft);
+                m_actualCornerRadius.topRight = std::min(m_shapeOuterRect.height * tr, m_actualCornerRadius.topRight);
+                m_actualCornerRadius.bottomLeft = std::min(m_shapeOuterRect.height * br, m_actualCornerRadius.bottomLeft);
+                m_actualCornerRadius.bottomRight = std::min(m_shapeOuterRect.height * br, m_actualCornerRadius.bottomRight);
+            }
+        }
+
 		// Make edge info
 		if (m_borderEnabled) {
 			m_edgeInfo.thickness = m_borderStyle.borderThickness;
@@ -1330,6 +1358,12 @@ void BoxElementShapeBuilder::build()
 			d = m_shapeOuterRect.getBottomLeft() - innerRect.getBottomLeft();
 			m_edgeInfo.outerDirs[3] = (!Vector2::nearEqual(d, Vector2::Zero)) ? Vector2::normalize(d) : Vector2::normalize(m_shapeOuterRect.getBottomLeft() - center);
 		}
+        else if (m_shapeOuterRect.width <= 0.0f && m_shapeOuterRect.height <= 0.0f) {
+            m_edgeInfo.outerDirs[0] = Vector2(-1, -1);
+            m_edgeInfo.outerDirs[1] = Vector2(1, -1);
+            m_edgeInfo.outerDirs[2] = Vector2(1, 1);
+            m_edgeInfo.outerDirs[3] = Vector2(-1, 1);
+        }
 		else {
 			m_edgeInfo.thickness = Thickness::Zero;
 			auto center = Vector2(m_shapeOuterRect.x + (m_shapeOuterRect.width / 2), m_shapeOuterRect.y + (m_shapeOuterRect.height / 2));
@@ -1339,7 +1373,7 @@ void BoxElementShapeBuilder::build()
 			m_edgeInfo.outerDirs[3] = Vector2::normalize(Vector2(m_shapeOuterRect.getBottomLeft()) - center);
 		}
 
-		makeBasePointsAndBorderComponent(m_shapeOuterRect, m_baseStyle.cornerRadius, m_borderComponents);
+		makeBasePointsAndBorderComponent(m_shapeOuterRect, m_actualCornerRadius, m_borderComponents);
 
 		//calculateBasePointsNextDirection();
 	}
@@ -1348,10 +1382,10 @@ void BoxElementShapeBuilder::build()
 	if (m_borderEnabled) {
         m_innerBaselinePath.pointStart = m_baselinePointBuffer.getCount();
 
-		const float tlRad = m_baseStyle.cornerRadius.topLeft;
-		const float trRad = m_baseStyle.cornerRadius.topRight;
-		const float blRad = m_baseStyle.cornerRadius.bottomLeft;
-		const float brRad = m_baseStyle.cornerRadius.bottomRight;
+		const float tlRad = m_actualCornerRadius.topLeft;
+		const float trRad = m_actualCornerRadius.topRight;
+		const float blRad = m_actualCornerRadius.bottomLeft;
+		const float brRad = m_actualCornerRadius.bottomRight;
 		const float tw = (m_borderEnabled) ? m_borderStyle.borderThickness.top : 0.0f;
 		const float rw = (m_borderEnabled) ? m_borderStyle.borderThickness.right : 0.0f;
 		const float bw = (m_borderEnabled) ? m_borderStyle.borderThickness.bottom : 0.0f;
@@ -1437,7 +1471,7 @@ void BoxElementShapeBuilder::build()
 	if (m_shadowEnabled && !m_shadowStyle.shadowInset) {
 		const auto ofs = m_shadowStyle.shadowOffset;
 
-		auto* path = beginOutlinePath(OutlinePathType::Strip3Point, Color::Black);
+		auto* path = beginOutlinePath(OutlinePathType::Strip3Point, m_shadowStyle.shadowColor);
 		for (int i = 0; i < m_outerBaselinePath.pointCount; i++) {
 			int baseIndex = m_outerBaselinePath.pointStart + i;
 			auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
@@ -1490,7 +1524,7 @@ void BoxElementShapeBuilder::build()
 	if (m_shadowEnabled && m_shadowStyle.shadowInset) {
 		const auto ofs = m_shadowStyle.shadowOffset;
 
-		auto* path = beginOutlinePath(OutlinePathType::Strip3Point, Color::Black, PathWinding::CCW);
+		auto* path = beginOutlinePath(OutlinePathType::Strip3Point, m_shadowStyle.shadowColor, PathWinding::CCW);
 		for (int i = 0; i < m_innerBaselinePath.pointCount; i++) {
 			int baseIndex = m_innerBaselinePath.pointStart + i;
 			auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
@@ -1526,19 +1560,43 @@ void BoxElementShapeBuilder::build()
 			if (cmp.width > 0.0f) {
 				auto* path = beginOutlinePath(OutlinePathType::Convex, cmp.color);
 
+                //int p0 = m_outlinePointBuffer.getCount();
+
 				// outer
 				for (int i = 0; i < cmp.pointCount; i++) {
 					int baseIndex = cmp.startPoint + i;
 					auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
-					addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1 });
+					addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1, basePt.infrateDir, basePt.rightDir });
 				}
+
+                //int p1 = m_outlinePointBuffer.getCount() - 1;
+                //int p2 = m_outlinePointBuffer.getCount();
 
 				// inner (面張りのため逆順)
 				for (int i = cmp.innterPointCount - 1; i >= 0; i--) {
 					int baseIndex = cmp.innterPointStart + i;
 					auto& basePt = m_baselinePointBuffer.getAt(baseIndex);
-					addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1 });
+					addOutlinePoint({ baseIndex, basePt.pos, 1.0f, -1, basePt.infrateDir, basePt.rightDir });
 				}
+
+                //int p3 = m_outlinePointBuffer.getCount() - 1;
+
+                // TODO: border と border 間の AA
+
+                //auto& pt1 = m_outlinePointBuffer.getAt(p1);
+                //auto& pt2 = m_outlinePointBuffer.getAt(p2);
+                //auto& pt3 = m_outlinePointBuffer.getAt(p3);
+                //auto& pt0 = m_outlinePointBuffer.getAt(p0);
+
+
+                //pt1.antiAliasDir = pt2.antiAliasDir = 
+                //    pt1.rightDir = pt2.rightDir =
+                //    Vector3::cross(Vector3(Vector2::normalize(pt2.pos - pt1.pos), 0), Vector3::UnitZ).xy();// *Vector2(1, -1);
+                //
+                //pt3.antiAliasDir = pt0.antiAliasDir =
+                //    pt3.rightDir = pt0.rightDir = Vector3::cross(Vector3(Vector2::normalize(pt0.pos - pt3.pos), 0), Vector3::UnitZ).xy();// *Vector2(1, -1);
+
+
 
 				endOutlinePath(path);
 
@@ -1746,11 +1804,11 @@ void BoxElementShapeBuilder::makeOutlineAntiAlias(const OutlinePath* path, int s
     for (int i = 0; i < count; i++) {
         int outlineIndex = startPoint + start + i;
         auto& pt = m_outlinePointBuffer.getAt(outlineIndex);
-        auto& basePt = m_baselinePointBuffer.getAt(pt.basePoint);
+        //auto& basePt = m_baselinePointBuffer.getAt(pt.basePoint);
 
-        Vector2 pos = pt.pos + (basePt.infrateDir * length);
+        Vector2 pos = pt.pos + (pt.antiAliasDir * length);
         if (!m_baseStyle.aligndLineAntiAlias) {
-            float d = std::acos(std::abs(basePt.rightDir.x)) / (Math::PIDiv2);	// 0.0(dig0) ~ 1.0(dig90) になる
+            float d = std::acos(std::abs(pt.rightDir.x)) / (Math::PIDiv2);	// 0.0(dig0) ~ 1.0(dig90) になる
             d = std::abs((d - 0.5f) * 2.0f);										// dig45 に近ければ 0.0, dig0 か dig90 に近ければ 1.0
             pos = Vector2::lerp(pos, pt.pos, d);
         }

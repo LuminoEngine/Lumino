@@ -392,6 +392,7 @@ private:
         float alpha = 1.0f;
         int stripePair = -1; // ストライプを作るときの、対応する OutlinePoint インデックス
         Vector2 antiAliasDir;   // AA を作るときの押し出し方向。特に、Border と Border の接合点は互いに向き合う方向に独自で作る必要がある
+        Vector2 rightDir;		// 軸と平行な辺に対して AA を作るかどうかの判断に使う
     };
 
     enum class OutlinePathType
@@ -447,6 +448,7 @@ private:
 	// Working data
 	EdgeInfo m_edgeInfo;
 	Rect m_shapeOuterRect;
+    CornerRadius m_actualCornerRadius;
 	BorderComponent m_borderComponents[4];
 
 	CacheBuffer<BaselinePoint> m_baselinePointBuffer;
