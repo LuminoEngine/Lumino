@@ -48,6 +48,7 @@ public:
 	}
 
 	T& getAt(int index) { return ((T*)(m_buffer.data()))[index]; }
+	const T& getAt(int index) const { return ((T*)(m_buffer.data()))[index]; }
 	T& getLast() { return getAt(m_count - 1); }
 
 	int getCount() const { return m_count; }
@@ -335,6 +336,13 @@ public:
 	void writeToBuffer(Vertex* vertexBuffer, uint16_t* indexBuffer, uint16_t indexOffset);
 
 private:
+	// Baseline の作成基準となる、Round 情報などを持った矩形領域
+	struct BaseRect
+	{
+		Rect rect;
+		CornerRadius corner;
+	};
+
 	struct EdgeInfo
 	{
 		Thickness thickness;	// 各辺の太さ。Border が無い場合は 0.0
@@ -419,10 +427,14 @@ private:
         bool stripeClosing = false;
     };
 
+	const BaselinePoint& baselinePoint(int index) const { return m_baselinePointBuffer.getAt(index); }
+	OutlinePoint& outlinePoint(int index) { return m_outlinePointBuffer.getAt(index); }
+
 	void makeBasePointsAndBorderComponent(const Rect& shapeOuterRect, const CornerRadius& cornerRadius, BorderComponent components[4]);
 	void plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
     void plotInnerBasePoints(int pointStart, int pointCount, float startWidth, float endWidth);
     //void calculateBasePointsNextDirection();
+	void makeShadowBaseline();
 
     OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
     void endOutlinePath(OutlinePath* path);
@@ -447,13 +459,17 @@ private:
 
 	// Working data
 	EdgeInfo m_edgeInfo;
-	Rect m_shapeOuterRect;
-    CornerRadius m_actualCornerRadius;
+	BaseRect m_shapeOuterRect;	// shape の外周。Background または、outsetBorder の外側。
+	BaseRect m_shapeInnerRect;	// shape の内周。insetBorder の境界。insetShadow の接合部。border が無い場合は Background の外周と等しい。
+	BaseRect m_shadowBaseRect;		// shadow の外周。inset/outset共有。shadowBlur はこの時点では考慮しない。
+
+//CornerRadius m_actualCornerRadius;
 	BorderComponent m_borderComponents[4];
 
 	CacheBuffer<BaselinePoint> m_baselinePointBuffer;
 	BaselinePath m_outerBaselinePath;
     BaselinePath m_innerBaselinePath;
+	BaselinePath m_shadowBaselinePath;	// outer または inner
 
     CacheBuffer<OutlinePoint> m_outlinePointBuffer;
     List<OutlinePath> m_outlinePaths;
@@ -518,6 +534,151 @@ private:
 };
 
 
+// Shape ひとつ分の構築を担当する。
+// Shape(Box、Border, Shadow など) は例えば Box と Shadow を分けて考えてもいいし、addXXXX で、ひとつの Shape として扱ってもよい。
+// このクラスでは RHI の VertexBuffer は扱わない。インデックスは生成するが、ひとつの Shape の中で閉じた 0 スタートで生成する。
+//（このクラスの呼び出し側で RHI の IndexBuffer に転送するときにオフセットを付ける必要がある）
+class BoxElementShapeBuilder2
+{
+public:
+	BoxElementShapeBuilder2();
+	void init();
+
+	void reset();
+	void setBaseRect(const BoxElementShapeBaseStyle& style);
+	void setFillBox(const BoxElementShapeBackgroundStyle& style);
+	void setBoxBorderLine(const BoxElementShapeBorderStyle& style);
+	void setBoxShadow(const BoxElementShapeShadowStyle& style);
+	void build();
+
+	int vertexCount() const;
+	int indexCount() const;
+	void writeToBuffer(Vertex* vertexBuffer, uint16_t* indexBuffer, uint16_t indexOffset);
+
+private:
+	
+	// Baseline の作成基準となる、Round 情報などを持った矩形領域
+	struct BaseRect
+	{
+		Rect rect;
+		CornerRadius corner;
+	};
+
+	struct BasePath
+	{
+		int start;
+		int count;
+
+		int begin() const { return start; }
+		int end() const { return start + count; }
+	};
+
+	// Baselineの[上][左][下][右]、計4つセットの基本要素。
+	// Border は上下左右で個別に Color を設定できるが、その単位となる。
+	struct BorderComponent
+	{
+		float width;	// 厚さ
+		Color color;
+		int	outerPointStart;
+		int outerPointCount;
+
+		int beginOuter() const { return outerPointStart; }
+		int endOuter() const { return outerPointStart + outerPointCount; }
+
+		// 外周のうち、カーブの部分
+		int outerCornerStart1;	// 丸めない場合は始点を指す（通常 startPoint と同値）
+		int outerCornerStart2;	// 丸めない場合は終点を指す
+		int outerCornerCount1() const { return outerCornerStart2 - outerCornerStart1; }
+		int outerCornerCount2() const { return outerPointCount - outerCornerCount1(); }
+
+		// 内周全体
+		int	innterPointStart;
+		int innterPointCount;
+	};
+
+	enum Side
+	{
+		Top = 0,
+		Right = 1,
+		Bottom = 2,
+		Left = 3,
+	};
+
+	struct OutlinePoint
+	{
+		Vector2 pos;
+		float alpha = 1.0f;
+		Vector2 antiAliasDir[2];	// AA を作るときの押し出し方向。
+		Vector2 rightDir;			// 軸と平行な辺に対して AA を作るかどうかの判断に使う
+	};
+
+	enum class OutlinePathType
+	{
+		Convex,         // 始点と終点を結んだ領域を面張りする
+		Stripe,    // AA用
+	};
+
+	enum class PathWinding
+	{
+		CW,	// 時計回り (基本)
+		CCW,
+	};
+
+	struct OutlinePath
+	{
+		OutlinePathType type;
+		int pointStart;
+		int pointCount;
+		Color color;
+		PathWinding winding;
+		bool stripeClosing = false;
+
+		// 頂点index. IndexBuffer に書き込める値。
+		int begin() const { return pointStart; }
+		int end() const { return pointStart + pointCount; }
+	};
+
+	void setupBaseRects();
+	int addOutlinePoint(const Vector2& pos);
+	void makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, BorderComponent components[4], BasePath* outBasePath);
+	
+	OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
+	void endOutlinePath(OutlinePath* path);
+	int addOutlineIndex(int index);
+	OutlinePoint& outlinePoint(int index) { return m_outlinePointBuffer.getAt(index); }
+	int outlineIndex(int index) const { return m_outlineIndices.getAt(index); }
+
+	void expandPathes();
+	void expandConvex(const OutlinePath& path);
+	void expandStripeStroke(const OutlinePath& path);
+
+	// Input infomation
+	BoxElementShapeBaseStyle m_baseStyle;
+	BoxElementShapeBackgroundStyle m_backgroundStyle;
+	BoxElementShapeBorderStyle m_borderStyle;
+	BoxElementShapeShadowStyle m_shadowStyle;
+	bool m_backgroundEnabled;
+	bool m_borderEnabled;
+	bool m_shadowEnabled;
+	bool m_shapeAAEnabled;
+
+	// Working data
+	BaseRect m_shapeOuterRect;	// shape の外周。Background または、outsetBorder の外側。
+	BaseRect m_shapeInnerRect;	// shape の内周。insetBorder の境界。insetShadow の接合部。border が無い場合は Background の外周と等しい。
+	BaseRect m_shadowBaseRect;	// shadow の外周。inset/outset共有。shadowBlur はこの時点では考慮しない。
+	BasePath m_shapeOuterBasePath;
+	BasePath m_shadowBasePath;
+	BorderComponent m_components[4];
+	CacheBuffer<OutlinePoint> m_outlinePointBuffer;
+
+	List<OutlinePath> m_outlinePaths;
+	CacheBuffer<uint16_t> m_outlineIndices;
+
+	// TODO: 以下、いらないかも。見積もり立てて、外部からもらったBufferに直接書くこともできる
+	CacheBuffer<Vertex> m_vertexCache;
+	CacheBuffer<uint16_t> m_indexCache;
+};
+
 
 // TODO: name:BoxElementRenderFeature
 class ShapesRenderFeature2
@@ -553,7 +714,7 @@ private:
 
 	RenderingManager* m_manager;
 	BatchData m_batchData;
-	BoxElementShapeBuilder m_shapeBuilder;
+	BoxElementShapeBuilder2 m_shapeBuilder;
 	
 	// Rendering resource
 	Ref<VertexLayout> m_vertexLayout;

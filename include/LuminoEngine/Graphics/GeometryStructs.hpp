@@ -290,7 +290,7 @@ public:
     }
 
 	/** 指定した厚さだけ、この矩形から拡大した矩形を作成します。 */
-	//Rect makeInflate(const Thickness& thickness) const;
+	Rect makeInflate(const Thickness& thickness) const;
 
     /** 指定した厚さだけ、この矩形から縮小した矩形を作成します。 */
     Rect makeDeflate(const Thickness& thickness) const;
