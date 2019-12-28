@@ -419,16 +419,34 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
             shadowStyle.shadowWidth = 10;
             shadowStyle.shadowBlur = 10;
             shadowStyle.shadowColor = Color::Red;
-            shadowStyle.shadowOffset = Vector2(5, 10);
+            shadowStyle.shadowOffset = Vector2(0, 10);
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            //baseStyle.baseRect = Rect(100, 20, 40, 20);
-            //baseStyle.cornerRadius = CornerRadius(10);
-            //shadowStyle.shadowWidth = 10;
-            //shadowStyle.shadowBlur = 10;
-            //shadowStyle.shadowColor = Color::Green;
-            //shadowStyle.shadowOffset = Vector2(5, 5);
-            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            baseStyle.baseRect = Rect(100, 20, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(10);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 10;
+            shadowStyle.shadowColor = Color::Green;
+            shadowStyle.shadowOffset = Vector2(0, 10);
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+
+            // [Limitation] Blur 幅以上のオフセットは描画が崩れる。一応動作を見ておく。
+            baseStyle.baseRect = Rect(20, 80, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 10;
+            shadowStyle.shadowColor = Color::Red;
+            shadowStyle.shadowOffset = Vector2(0, 15);
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+
+            // [Limitation] Blur 幅以上のオフセットは描画が崩れる。一応動作を見ておく。
+            baseStyle.baseRect = Rect(100, 80, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(10);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 10;
+            shadowStyle.shadowColor = Color::Green;
+            shadowStyle.shadowOffset = Vector2(0, 15);
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
         };
 
         TestEnv::updateFrame();

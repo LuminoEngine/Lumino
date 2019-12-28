@@ -617,6 +617,8 @@ private:
 		Vector2 antiAliasDir[2];	// AA を作るときの押し出し方向。
 		Vector2 rightDir;			// 軸と平行な辺に対して AA を作るかどうかの判断に使う
         float cornerRatio;		// corner の始点～終点のどこに位置している点か。0.0 は始点、1.0 は終点。外周を時計回りで考える。curve を生成しない場合でも、Component の始点は 0.0, 終点は 1.0
+    
+        int stripePairPointId = -1;  // (outsetの場合) ひとつ内側の Path 上の、対応する頂点Id
     };
 
 	enum class OutlinePathType
