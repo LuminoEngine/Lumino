@@ -2632,7 +2632,8 @@ template<class TCallback>
 void Utils_plotCornerPointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center, TCallback callback)
 {
 	assert(firstT < lastT);
-	const int tess = 8;
+	//const int tess = 8;
+    const int tess = (int)Math::clamp((std::max(std::abs(last.x - first.x), std::abs(last.y - first.y)) / 2) * (lastT - firstT), 2.0f, 8.0f);
 	const float rtir = 0.55228f;	// https://cat-in-136.github.io/2014/03/bezier-1-kappa.html
 	Vector2 d(std::abs(last.x - first.x), std::abs(last.y - first.y));
 	Vector2 cp2 = (first)+(d * firstCpDir) * rtir;
@@ -2753,10 +2754,8 @@ void BoxElementShapeBuilder2::build()
 
 
         BaseRect nearShadowRect;
-        BaseRect nearVirtualShadowRect;
         //{
             auto rect2 = m_shadowBaseRect.rect.makeDeflate(wd2);
-            nearVirtualShadowRect.rect = rect2;
             rect2.x += m_shadowStyle.shadowOffset.x;
             rect2.y += m_shadowStyle.shadowOffset.y;
             //float dt = rect2.getTop() - m_shapeOuterRect.rect.getTop();
@@ -2786,58 +2785,56 @@ void BoxElementShapeBuilder2::build()
         nearShadowRect.corner.topRight = std::max(nearShadowRect.corner.topRight - wd2, m_shapeOuterRect.corner.topRight);
         nearShadowRect.corner.bottomRight = std::max(nearShadowRect.corner.bottomRight - wd2, m_shapeOuterRect.corner.bottomRight);
         nearShadowRect.corner.bottomLeft = std::max(nearShadowRect.corner.bottomLeft - wd2, m_shapeOuterRect.corner.bottomLeft);
-        nearVirtualShadowRect.corner = nearShadowRect.corner;
 
 
 #if 1
-        const float zeros[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        const float ones[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-
-        applyColorToShadowComponents(m_shapeOuterComponents, ones);
-
-
-        //BorderComponent nearVirtualShadowComponents[4];
-        //BasePath nearVirtualShadowBasePath;
-        //makeBaseOuterPointsAndBorderComponent(nearVirtualShadowRect, 1.0f, nearVirtualShadowComponents, &nearVirtualShadowBasePath);
+        BorderComponent shapeShadowComponent[4];
+        BasePath shapeShadowBasePath;
+        makeBaseOuterPointsAndBorderComponent(m_shapeOuterRect, 1.0f, shapeShadowComponent, &shapeShadowBasePath);
+        applyColorToShadowComponents(shapeShadowComponent, 1.0f);
 
         BorderComponent nearShadowComponents[4];
         makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_nearShadowBasePath);
-        applyColorToShadowComponents(nearShadowComponents, ones);
+        applyColorToShadowComponents(nearShadowComponents, 1.0f);
 
         BorderComponent farShadowComponents[4];
         makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, farShadowComponents, &m_farShadowBasePath);
-        applyColorToShadowComponents(farShadowComponents, zeros);
-
-        //for (int id = m_farShadowBasePath.begin(); id < m_farShadowBasePath.end(); id++) {
-        //    outlinePoint(id).color.a = 0.0f;
-        //}
+        applyColorToShadowComponents(farShadowComponents, 0.0f);
 
 
-        auto makeStripePair = [this](BorderComponent* outerCmp, BorderComponent* innerCmp)
+        auto makeStripePair = [this](BorderComponent* outerCmps, const BorderComponent* innerCmps)
         {
-            {
-                int innerId = innerCmp->beginIds1();
-                for (int id = outerCmp->beginIds1(); id < outerCmp->endIds1(); id++) {
-                    if (innerId < innerCmp->endIds1() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                        innerId++;
+            for (int iCmp = 0; iCmp < 4; iCmp++) {
+                auto& outerCmp = outerCmps[iCmp];
+                const auto& innerCmp = innerCmps[iCmp];
+
+                {
+                    int innerId = innerCmp.beginIds1();
+                    for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
+                        if (innerId < innerCmp.endIds1() - 1 &&
+                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                            innerId++;
+                        }
+                        assert(innerCmp.beginIds1() <= innerId && innerId < innerCmp.endIds1());
+                        outlinePoint(id).stripePairPointId = innerId;
                     }
-                    outlinePoint(id).stripePairPointId = innerId;
                 }
-            }
-            {
-                int innerId = innerCmp->beginIds2();
-                for (int id = outerCmp->beginIds2(); id < outerCmp->endIds2(); id++) {
-                    if (innerId < innerCmp->endIds2() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                        innerId++;
+
+                {
+                    int innerId = innerCmp.beginIds2();
+                    for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
+                        if (innerId < innerCmp.endIds2() - 1 &&
+                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                            innerId++;
+                        }
+                        assert(innerCmp.beginIds2() <= innerId && innerId < innerCmp.endIds2());
+                        outlinePoint(id).stripePairPointId = innerId;
                     }
-                    outlinePoint(id).stripePairPointId = innerId;
                 }
             }
         };
-        makeStripePair(nearShadowComponents, m_shapeOuterComponents);
+        makeStripePair(nearShadowComponents, shapeShadowComponent);
+        makeStripePair(farShadowComponents, nearShadowComponents);
 
         for (int iId = m_nearShadowBasePath.begin(); iId < m_nearShadowBasePath.end(); iId++) {
             auto& iPt = outlinePoint(iId);
@@ -2875,32 +2872,32 @@ void BoxElementShapeBuilder2::build()
         // inner shadow
         for (int iCmp = 0; iCmp < 4; iCmp++) {
             const auto& outerCmp = nearShadowComponents[iCmp];
-            const auto& innerCmp = m_shapeOuterComponents[iCmp];
+            const auto& innerCmp = shapeShadowComponent[iCmp];
 
 
             auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
 
             {
-                int innerId = innerCmp.beginIds1();
+                //int innerId = innerCmp.beginIds1();
                 for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
-                    if (innerId < innerCmp.endIds1() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                        innerId++;
-                    }
+                    //if (innerId < innerCmp.endIds1() - 1 &&
+                    //    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                    //    innerId++;
+                    //}
+                    //addOutlineIndex(id);
+                    //addOutlineIndex(innerId);
+                    const auto& pt = outlinePoint(id);
                     addOutlineIndex(id);
-                    addOutlineIndex(innerId);
+                    addOutlineIndex(pt.stripePairPointId);
                 }
             }
 
             {
-                int innerId = innerCmp.beginIds2();
+                //int innerId = innerCmp.beginIds2();
                 for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
-                    if (innerId < innerCmp.endIds2() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                        innerId++;
-                    }
+                    const auto& pt = outlinePoint(id);
                     addOutlineIndex(id);
-                    addOutlineIndex(innerId);
+                    addOutlineIndex(pt.stripePairPointId);
                 }
             }
             endOutlinePath(path);
@@ -2916,26 +2913,30 @@ void BoxElementShapeBuilder2::build()
                 auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
 
                 {
-                    int innerId = innerCmp.beginIds1();
+                    //int innerId = innerCmp.beginIds1();
                     for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
-                        if (innerId < innerCmp.endIds1() - 1 &&
-                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                            innerId++;
-                        }
                         addOutlineIndex(id);
-                        addOutlineIndex(innerId);
+                        addOutlineIndex(outlinePoint(id).stripePairPointId);
+                        //if (innerId < innerCmp.endIds1() - 1 &&
+                        //    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                        //    innerId++;
+                        //}
+                        //addOutlineIndex(id);
+                        //addOutlineIndex(innerId);
                     }
                 }
 
                 {
-                    int innerId = innerCmp.beginIds2();
+                    //int innerId = innerCmp.beginIds2();
                     for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
-                        if (innerId < innerCmp.endIds2() - 1 &&
-                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                            innerId++;
-                        }
                         addOutlineIndex(id);
-                        addOutlineIndex(innerId);
+                        addOutlineIndex(outlinePoint(id).stripePairPointId);
+                        //if (innerId < innerCmp.endIds2() - 1 &&
+                        //    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                        //    innerId++;
+                        //}
+                        //addOutlineIndex(id);
+                        //addOutlineIndex(innerId);
                     }
                 }
                 endOutlinePath(path);
@@ -3364,16 +3365,15 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
     }
 }
 
-void BoxElementShapeBuilder2::applyColorToShadowComponents(BorderComponent components[4], const float* alphas)
+void BoxElementShapeBuilder2::applyColorToShadowComponents(BorderComponent components[4], float alpha)
 {
     const float ones[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    if (!alphas) alphas = ones;
 
     for (int iCmp = 0; iCmp < 4; iCmp++) {
         const auto& cmp = components[iCmp];
         for (int id = cmp.beginOuter(); id < cmp.endOuter(); id++) {
             outlinePoint(id).color = m_shadowStyle.shadowColor;
-            outlinePoint(id).color.a *= alphas[iCmp];
+            outlinePoint(id).color.a *= alpha;
         }
     }
 }

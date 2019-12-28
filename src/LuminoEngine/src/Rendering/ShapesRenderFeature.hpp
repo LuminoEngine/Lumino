@@ -658,7 +658,7 @@ private:
 	OutlinePoint& outlinePoint(int index) { return m_outlinePointBuffer.getAt(index); }
 	int outlineIndex(int index) const { return m_outlineIndices.getAt(index); }
     void makeOutlineAntiAlias(const OutlinePath* path/*, int start, int count*/);
-    void applyColorToShadowComponents(BorderComponent components[4], const float* alphas = nullptr);
+    void applyColorToShadowComponents(BorderComponent components[4], float alpha);
 
 	void expandPathes();
 	void expandConvex(const OutlinePath& path);

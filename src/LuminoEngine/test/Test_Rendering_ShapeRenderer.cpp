@@ -28,27 +28,43 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
 
 	element1->render = [](UIRenderingContext* context)
     {
-		BoxElementShapeBaseStyle baseStyle;
-        BoxElementShapeBorderStyle borderStyle;
-        borderStyle.borderLeftColor = Color::Red;
-        borderStyle.borderTopColor = Color::Green;
-        borderStyle.borderRightColor = Color::Blue;
-        borderStyle.borderBottomColor = Color::Yellow;
-		BoxElementShapeShadowStyle shadowStyle;
-		shadowStyle.shadowInset = false;
-/*
-		baseStyle.baseRect = Rect(30, 30, 60, 40);
-		baseStyle.cornerRadius = CornerRadius(0);
-		shadowStyle.shadowWidth = 20;
-		shadowStyle.shadowBlur = 10;
-		shadowStyle.shadowColor = Color::Red;
-		context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);*/
+//		BoxElementShapeBaseStyle baseStyle;
+//        BoxElementShapeBorderStyle borderStyle;
+//        borderStyle.borderLeftColor = Color::Red;
+//        borderStyle.borderTopColor = Color::Green;
+//        borderStyle.borderRightColor = Color::Blue;
+//        borderStyle.borderBottomColor = Color::Yellow;
+//		BoxElementShapeShadowStyle shadowStyle;
+//		shadowStyle.shadowInset = false;
+///*
+//		baseStyle.baseRect = Rect(30, 30, 60, 40);
+//		baseStyle.cornerRadius = CornerRadius(0);
+//		shadowStyle.shadowWidth = 20;
+//		shadowStyle.shadowBlur = 10;
+//		shadowStyle.shadowColor = Color::Red;
+//		context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);*/
+//
+//        baseStyle.baseRect = Rect(20, 20, 80, 40);
+//        baseStyle.cornerRadius = CornerRadius(10);
+//        borderStyle.borderThickness = Thickness(0, 10, 0, 10);
+//        borderStyle.borderInset = false;
+//        context->drawBoxElement(baseStyle, nullptr, &borderStyle, nullptr);
 
+
+        BoxElementShapeBaseStyle baseStyle;
         baseStyle.baseRect = Rect(20, 20, 80, 40);
-        baseStyle.cornerRadius = CornerRadius(10);
-        borderStyle.borderThickness = Thickness(0, 10, 0, 10);
-        borderStyle.borderInset = false;
-        context->drawBoxElement(baseStyle, nullptr, &borderStyle, nullptr);
+        baseStyle.cornerRadius = CornerRadius(4);
+
+        BoxElementShapeBackgroundStyle backgroundStyle;
+        backgroundStyle.color = Color::White;
+
+        BoxElementShapeShadowStyle shadowStyle;
+        shadowStyle.shadowColor = Color::Black.withAlpha(0.5f);
+        shadowStyle.shadowWidth = 0;
+        shadowStyle.shadowBlur = 2;
+        shadowStyle.shadowOffset = Vector2(0, 2);
+
+        context->drawBoxElement(baseStyle, &backgroundStyle, nullptr, &shadowStyle);
 	};
 
     TestEnv::updateFrame();
