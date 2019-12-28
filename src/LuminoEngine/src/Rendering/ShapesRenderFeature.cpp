@@ -2852,7 +2852,8 @@ void BoxElementShapeBuilder2::build()
             //if (dot >= 0) {
             float d = plane.getDistanceToPoint(Vector3(iPt.pos, 0));
             //if (d < 0) {
-                if (m_shapeOuterRect.rect.contains(iPt.pos)) {
+                //if (m_shapeOuterRect.rect.contains(iPt.pos)) {
+                if ((iPt.pos.x > m_shapeOuterRect.rect.x) && (iPt.pos.x - m_shapeOuterRect.rect.width < m_shapeOuterRect.rect.x) && (iPt.pos.y > m_shapeOuterRect.rect.y) && (iPt.pos.y - m_shapeOuterRect.rect.height < m_shapeOuterRect.rect.y)) {
                     iPt.pos = vPt.pos;
 
                     vPt.color = Color::Green;
