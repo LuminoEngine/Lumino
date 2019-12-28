@@ -607,7 +607,7 @@ private:
 	struct OutlinePoint
 	{
 		Vector2 pos;
-		float alpha = 1.0f;
+        Color color;
 		Vector2 antiAliasDir[2];	// AA を作るときの押し出し方向。
 		Vector2 rightDir;			// 軸と平行な辺に対して AA を作るかどうかの判断に使う
 	};
@@ -627,8 +627,8 @@ private:
 	struct OutlinePath
 	{
 		OutlinePathType type;
-		int pointStart;
-		int pointCount;
+		int pointStart; // TODO: id
+		int pointCount; // TODO: id
 		Color color;
 		PathWinding winding;
 		bool stripeClosing = false;
@@ -639,7 +639,7 @@ private:
 	};
 
 	void setupBaseRects();
-	int addOutlinePoint(const Vector2& pos);
+	int addOutlinePoint(const Vector2& pos, const Vector2& infrateDir);
 	void makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, BorderComponent components[4], BasePath* outBasePath);
 	
 	OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
@@ -647,6 +647,7 @@ private:
 	int addOutlineIndex(int index);
 	OutlinePoint& outlinePoint(int index) { return m_outlinePointBuffer.getAt(index); }
 	int outlineIndex(int index) const { return m_outlineIndices.getAt(index); }
+    void makeOutlineAntiAlias(const OutlinePath* path/*, int start, int count*/);
 
 	void expandPathes();
 	void expandConvex(const OutlinePath& path);

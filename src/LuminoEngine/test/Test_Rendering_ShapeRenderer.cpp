@@ -32,10 +32,10 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
 		BoxElementShapeShadowStyle shadowStyle;
 		shadowStyle.shadowInset = false;
 
-		baseStyle.baseRect = Rect(20, 20, 60, 40);
+		baseStyle.baseRect = Rect(30, 30, 60, 40);
 		baseStyle.cornerRadius = CornerRadius(0);
-		shadowStyle.shadowWidth = 10;
-		shadowStyle.shadowBlur = 0;
+		shadowStyle.shadowWidth = 20;
+		shadowStyle.shadowBlur = 10;
 		shadowStyle.shadowColor = Color::Red;
 		context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 	};
@@ -79,7 +79,7 @@ TEST_F(Test_Rendering_ShapeRenderer, BackgroundOnly)
 	};
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BackgroundOnly-1.png"));
+	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BackgroundOnly-1.png"));
 	LN_TEST_CLEAN_SCENE;
 }
 

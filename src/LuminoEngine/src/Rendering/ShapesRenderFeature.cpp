@@ -2642,15 +2642,15 @@ void Utils_plotCornerPointsBezier(const Vector2& first, const Vector2& firstCpDi
 	{
 		float t = firstT + (step * i);
 		auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, t), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, t));
-		auto dir = Vector2::normalize(pos - center);
-		callback(pos, dir, t);
+		auto infrateDir = Vector2::normalize(pos - center);
+		callback(pos, infrateDir, t);
 		//m_baselinePointBuffer.add({ pos, dir, t, dir });
 	}
 
 	// end point
 	auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, lastT), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
-	auto dir = Vector2::normalize(pos - center);
-	callback(pos, dir, 1.0f);
+	auto infrateDir = Vector2::normalize(pos - center);
+	callback(pos, infrateDir, 1.0f);
 	//m_baselinePointBuffer.add({ pos, dir, 1.0f, dir });
 }
 
@@ -2705,42 +2705,105 @@ void BoxElementShapeBuilder2::setBoxShadow(const BoxElementShapeShadowStyle& sty
 
 void BoxElementShapeBuilder2::build()
 {
+    if (Math::nearEqual(m_baseStyle.cornerRadius.topLeft, 0.0f) &&
+        Math::nearEqual(m_baseStyle.cornerRadius.topRight, 0.0f) &&
+        Math::nearEqual(m_baseStyle.cornerRadius.bottomRight, 0.0f) &&
+        Math::nearEqual(m_baseStyle.cornerRadius.bottomLeft, 0.0f) &&
+        !m_baseStyle.aligndLineAntiAlias) {
+        m_shapeAAEnabled = false;	// Axis-Aligned な辺だけで外部から Anti-alias も要求されていないため、全体的に Anti-alias は不要
+    }
+    else {
+        m_shapeAAEnabled = true;
+    }
+
 	setupBaseRects();
 
 	makeBaseOuterPointsAndBorderComponent(m_shapeOuterRect, m_components, &m_shapeOuterBasePath);
 
+    if (m_backgroundEnabled)
 	{
 		auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Red);
-
 		for (int i = m_shapeOuterBasePath.begin(); i < m_shapeOuterBasePath.end(); i++) {
 			addOutlineIndex(i);
+            outlinePoint(i).color = m_backgroundStyle.color;
 		}
-
 		endOutlinePath(path);
+
+
+        if (m_shapeAAEnabled) {
+            // Border が無ければ、Background の色を使って外周に AA を作る
+            if (!m_borderEnabled) {
+                makeOutlineAntiAlias(path);
+            }
+        }
 	}
 
 
 	if (m_shadowEnabled && !m_shadowStyle.shadowInset) {
-		BorderComponent shadowComponents[4];
-		makeBaseOuterPointsAndBorderComponent(m_shadowBaseRect, shadowComponents, &m_shadowBasePath);
+        const float wd2 = m_shadowStyle.shadowBlur / 2;
+
+        BaseRect farShadowRect;
+        farShadowRect.rect = m_shadowBaseRect.rect.makeInflate(wd2);
+        farShadowRect.corner = m_shadowBaseRect.corner;
+        farShadowRect.corner.topLeft += wd2;
+        farShadowRect.corner.topRight += wd2;
+        farShadowRect.corner.bottomRight += wd2;
+        farShadowRect.corner.bottomLeft += wd2;
 
 
-		for (int iCmp = 0; iCmp < 4; iCmp++) {
-			auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
+        BaseRect nearShadowRect;
+        nearShadowRect.rect = m_shadowBaseRect.rect.makeDeflate(wd2);
+        nearShadowRect.corner = m_shadowBaseRect.corner;
 
-			for (int i = shadowComponents[iCmp].beginOuter(); i < shadowComponents[iCmp].endOuter(); i++) {
-				addOutlineIndex(i);
-				outlinePoint(i).pos.print();
-			}
 
-			for (int i = m_components[iCmp].endOuter() - 1; i >= m_components[iCmp].beginOuter(); i--) {
-				addOutlineIndex(i);
-				outlinePoint(i).pos.print();
-			}
+        BorderComponent nearShadowComponents[4];
+        makeBaseOuterPointsAndBorderComponent(nearShadowRect, nearShadowComponents, &m_shadowBasePath);
 
-			endOutlinePath(path);
-			break;
-		}
+
+        // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
+        // ただし Convex は凸形状でなければ描画が崩れるので、外周を囲って中抜きする Shadow は 1 パスでは描けない。
+        // そのため上下左右分けて Path を作る
+        for (int iCmp = 0; iCmp < 4; iCmp++) {
+            auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
+
+            for (int i = nearShadowComponents[iCmp].beginOuter(); i < nearShadowComponents[iCmp].endOuter(); i++) {
+                addOutlineIndex(i);
+                outlinePoint(i).color.a = 1.0f;
+            }
+
+            for (int i = m_components[iCmp].endOuter() - 1; i >= m_components[iCmp].beginOuter(); i--) {
+                addOutlineIndex(i);
+            }
+
+            endOutlinePath(path);
+        }
+
+
+
+        {
+            BorderComponent shadowComponents[4];
+            makeBaseOuterPointsAndBorderComponent(farShadowRect, shadowComponents, &m_shadowBasePath);
+
+
+            // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
+            // ただし Convex は凸形状でなければ描画が崩れるので、外周を囲って中抜きする Shadow は 1 パスでは描けない。
+            // そのため上下左右分けて Path を作る
+            for (int iCmp = 0; iCmp < 4; iCmp++) {
+                auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
+
+                for (int i = shadowComponents[iCmp].beginOuter(); i < shadowComponents[iCmp].endOuter(); i++) {
+                    addOutlineIndex(i);
+                    outlinePoint(i).color.a = 0.0f;
+                }
+
+                for (int i = nearShadowComponents[iCmp].endOuter() - 1; i >= nearShadowComponents[iCmp].beginOuter(); i--) {
+                    addOutlineIndex(i);
+                }
+
+                endOutlinePath(path);
+                //break;
+            }
+        }
 
 	}
 
@@ -2890,10 +2953,10 @@ void BoxElementShapeBuilder2::setupBaseRects()
 	}
 }
 
-int BoxElementShapeBuilder2::addOutlinePoint(const Vector2& pos)
+int BoxElementShapeBuilder2::addOutlinePoint(const Vector2& pos, const Vector2& infrateDir)
 {
-	m_outlinePointBuffer.add({ pos });
-	return m_outlinePointBuffer.getCount();
+    m_outlinePointBuffer.add({ pos, Color::Black, {infrateDir, infrateDir}, infrateDir });
+	return m_outlinePointBuffer.getCount() - 1;
 }
 
 void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, BorderComponent components[4], BasePath* outBasePath)
@@ -2919,21 +2982,21 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 	lb[1] = Vector2(lb[0].x + blRad, lb[0].y - blRad);
 	rb[1] = Vector2(rb[0].x - brRad, rb[0].y - brRad);
 
-	auto addPointCallback = [this](const Vector2& pos, const Vector2& dir, float t) { addOutlinePoint(pos); };
+	auto addPointCallback = [this](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, infrateDir); };
 
 	// top-side component
 	{
 		components[Top].outerPointStart = m_outlinePointBuffer.getCount();
 		components[Top].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// top-left
-		if (tlRad == 0.0f)
-			addOutlinePoint(lt[0]);
+		if (tlRad <= 0.0f)
+			addOutlinePoint(lt[0], Vector2(0, -1));
 		else
 			Utils_plotCornerPointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.5f, 1.0f, lt[1], addPointCallback);
 		components[Top].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// top-right
-		if (trRad == 0.0f)
-			addOutlinePoint(rt[0]);
+		if (trRad <= 0.0f)
+			addOutlinePoint(rt[0], Vector2(0, -1));
 		else
 			Utils_plotCornerPointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.0f, 0.5f, rt[1], addPointCallback);
 		components[Top].outerPointCount = m_outlinePointBuffer.getCount() - components[Top].outerPointStart;
@@ -2944,14 +3007,14 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 		components[Right].outerPointStart = m_outlinePointBuffer.getCount();
 		components[Right].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// top-right
-		if (trRad == 0.0f)
-			addOutlinePoint(rt[0]);
+		if (trRad <= 0.0f)
+			addOutlinePoint(rt[0], Vector2(1, 0));
 		else
 			Utils_plotCornerPointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.5f, 1.0f, rt[1], addPointCallback);
 		components[Right].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// bottom-right
-		if (brRad == 0.0f)
-			addOutlinePoint(rb[0]);
+		if (brRad <= 0.0f)
+			addOutlinePoint(rb[0], Vector2(1, 0));
 		else
 			Utils_plotCornerPointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.0f, 0.5f, rb[1], addPointCallback);
 		components[Right].outerPointCount = m_outlinePointBuffer.getCount() - components[Right].outerPointStart;
@@ -2962,14 +3025,14 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 		components[Bottom].outerPointStart = m_outlinePointBuffer.getCount();
 		components[Bottom].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// bottom-right
-		if (brRad == 0.0f)
-			addOutlinePoint(rb[0]);
+		if (brRad <= 0.0f)
+			addOutlinePoint(rb[0], Vector2(0, 1));
 		else
 			Utils_plotCornerPointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.5f, 1.0f, rb[1], addPointCallback);
 		components[Bottom].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// bottom-left
-		if (blRad == 0.0f)
-			addOutlinePoint(lb[0]);
+		if (blRad <= 0.0f)
+			addOutlinePoint(lb[0], Vector2(0, 1));
 		else
 			Utils_plotCornerPointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.0f, 0.5f, lb[1], addPointCallback);
 		components[Bottom].outerPointCount = m_outlinePointBuffer.getCount() - components[Bottom].outerPointStart;
@@ -2980,14 +3043,14 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 		components[Left].outerPointStart = m_outlinePointBuffer.getCount();
 		components[Left].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// bottom-left
-		if (blRad == 0.0f)
-			addOutlinePoint(lb[0]);
+		if (blRad <= 0.0f)
+			addOutlinePoint(lb[0], Vector2(-1, 0));
 		else
 			Utils_plotCornerPointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.5f, 1.0f, lb[1], addPointCallback);
 		components[Left].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// top-left
-		if (tlRad == 0.0f)
-			addOutlinePoint(lt[0]);
+		if (tlRad <= 0.0f)
+			addOutlinePoint(lt[0], Vector2(-1, 0));
 		else
 			Utils_plotCornerPointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.0f, 0.5f, lt[1], addPointCallback);
 		components[Left].outerPointCount = m_outlinePointBuffer.getCount() - components[Left].outerPointStart;
@@ -3013,6 +3076,39 @@ int BoxElementShapeBuilder2::addOutlineIndex(int index)
 	return m_outlineIndices.getCount();
 }
 
+void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, int start, int count*/)
+{
+    const float length = 1.0;
+    int startPoint = path->pointStart;
+    int count = path->pointCount;
+
+    for (int iAA = 0; iAA < 2; iAA++) {
+
+
+        auto* aaPath = beginOutlinePath(OutlinePathType::Stripe, path->color, PathWinding::CW);
+        aaPath->stripeClosing = true;
+        for (int i = 0; i < count; i++) {
+            int idIndex = startPoint /*+ start*/ + i;
+            auto& pt = m_outlinePointBuffer.getAt(idIndex);
+            //auto& basePt = m_baselinePointBuffer.getAt(pt.basePoint);
+
+            Vector2 pos = pt.pos + (pt.antiAliasDir[iAA] * length);
+            if (!m_baseStyle.aligndLineAntiAlias) {
+                float d = std::acos(std::abs(pt.rightDir.x)) / (Math::PIDiv2);	// 0.0(dig0) ~ 1.0(dig90) になる
+                d = std::abs((d - 0.5f) * 2.0f);										// dig45 に近ければ 0.0, dig0 か dig90 に近ければ 1.0
+                pos = Vector2::lerp(pos, pt.pos, d);
+            }
+
+            int newId = addOutlinePoint(pos, pt.rightDir);
+            outlinePoint(newId).color = pt.color.withAlpha(0.0f);
+
+            addOutlineIndex(newId);
+            addOutlineIndex(outlineIndex(idIndex));
+        }
+        endOutlinePath(aaPath);
+    }
+}
+
 void BoxElementShapeBuilder2::expandPathes()
 {
 	for (int i = 0; i < m_outlinePointBuffer.getCount(); i++)
@@ -3022,12 +3118,8 @@ void BoxElementShapeBuilder2::expandPathes()
 		v.position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), m_baseStyle.transform);
 		v.normal = Vector3::UnitZ;
 		v.uv = Vector2::Zero;
-		v.color = Color::Red;//path.color;
-		v.color.a *= pt.alpha;
+        v.color = pt.color;
 		m_vertexCache.add(v);
-
-		printf("[%d] ", i);
-		pt.pos.print();
 	}
 
 
@@ -3122,54 +3214,51 @@ void BoxElementShapeBuilder2::expandConvex(const OutlinePath& path)
 
 void BoxElementShapeBuilder2::expandStripeStroke(const OutlinePath& path)
 {
-#if 0
 	/*
 		0-1-2
 		|/|/|	-> front
 		x-y-z
 	*/
 
-	int startIndex = m_vertexCache.getCount();
-
-
-	for (int i = 0; i < path.pointCount - 1; i++)
+	for (int i = 0; i < (path.pointCount / 2) - 1; i++)
 	{
-		int ib = path.pointStart + i;// TODO: 頂点indexは OutlinePoint に持たせた方がいいかな。今は m_outlinePointBuffer.add した順に並ぶことを前提としている
-		int x = m_outlinePointBuffer.getAt(path.pointStart + i).stripePair;
-		int y = m_outlinePointBuffer.getAt(path.pointStart + i + 1).stripePair;
+		//int ib = path.pointStart + i;// TODO: 頂点indexは OutlinePoint に持たせた方がいいかな。今は m_outlinePointBuffer.add した順に並ぶことを前提としている
+		
+        int p0 = outlineIndex(path.pointStart + (i * 2) + 0);
+        int p1 = outlineIndex(path.pointStart + (i * 2) + 2);
+        int p2 = outlineIndex(path.pointStart + (i * 2) + 1);
+        int p3 = outlineIndex(path.pointStart + (i * 2) + 3);
 
 		if (path.winding == PathWinding::CW) {
-			m_indexCache.add(ib + 0);
-			m_indexCache.add(ib + 1);
-			m_indexCache.add(x);
-			m_indexCache.add(x);
-			m_indexCache.add(ib + 1);
-			m_indexCache.add(y);
+			m_indexCache.add(p0);
+			m_indexCache.add(p1);
+			m_indexCache.add(p2);
+			m_indexCache.add(p2);
+			m_indexCache.add(p1);
+			m_indexCache.add(p3);
 		}
 		else {
-			m_indexCache.add(ib + 0);
-			m_indexCache.add(x);
-			m_indexCache.add(ib + 1);
-			m_indexCache.add(x);
-			m_indexCache.add(y);
-			m_indexCache.add(ib + 1);
+            m_indexCache.add(p0);
+            m_indexCache.add(p2);
+            m_indexCache.add(p1);
+            m_indexCache.add(p2);
+            m_indexCache.add(p3);
+            m_indexCache.add(p1);
 		}
 	}
 
-
+    return;
 	if (path.stripeClosing) {
-		const auto& endPt = m_outlinePointBuffer.getAt(path.pointStart + path.pointCount - 1);
-		const auto& startPt = m_outlinePointBuffer.getAt(path.pointStart);
-
 		/*
 			0-1
 			|/|
 			2-3
 		*/
-		int p0 = path.pointStart + path.pointCount - 1;// TODO: 頂点indexは OutlinePoint に持たせた方がいいかな。今は m_outlinePointBuffer.add した順に並ぶことを前提としている
-		int p1 = path.pointStart;   // TODO: 頂点indexは OutlinePoint に持たせた方がいいかな。今は m_outlinePointBuffer.add した順に並ぶことを前提としている
-		int p2 = endPt.stripePair;
-		int p3 = startPt.stripePair;
+        // TODO: 頂点indexは OutlinePoint に持たせた方がいいかな。今は m_outlinePointBuffer.add した順に並ぶことを前提としている
+		int p0 = outlineIndex(path.pointStart + (0));
+        int p1 = outlineIndex(path.pointStart + (path.pointCount - 2));
+		int p2 = outlineIndex(path.pointStart + (1));
+        int p3 = outlineIndex(path.pointStart + (path.pointCount - 1));
 
 		if (path.winding == PathWinding::CW) {
 			m_indexCache.add(p0);
@@ -3188,7 +3277,6 @@ void BoxElementShapeBuilder2::expandStripeStroke(const OutlinePath& path)
 			m_indexCache.add(p1);
 		}
 	}
-#endif
 }
 
 

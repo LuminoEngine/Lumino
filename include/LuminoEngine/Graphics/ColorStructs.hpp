@@ -236,6 +236,8 @@ public:
         a = a_;
     }
 
+    Color withAlpha(float alpha) const { return Color(r, g, b, alpha); }
+
     /** 2 つの色を加算します。結果を 0.0～1.0 にクランプします。 */
     static constexpr Color addClamp(const Color& c1, const Color& c2) noexcept;
 
