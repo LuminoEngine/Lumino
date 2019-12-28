@@ -2736,20 +2736,38 @@ void BoxElementShapeBuilder2::build()
 
 
 	if (m_shadowEnabled && !m_shadowStyle.shadowInset) {
+        //const float maxOuterSize = std::min(m_shapeOuterRect.rect.width, m_shapeOuterRect.rect.height);
+
+
         const float wd2 = m_shadowStyle.shadowBlur / 2;
 
         BaseRect farShadowRect;
         farShadowRect.rect = m_shadowBaseRect.rect.makeInflate(wd2);
+        farShadowRect.rect.x += m_shadowStyle.shadowOffset.x;
+        farShadowRect.rect.y += m_shadowStyle.shadowOffset.y;
         farShadowRect.corner = m_shadowBaseRect.corner;
-        farShadowRect.corner.topLeft += wd2 * 2;
+        farShadowRect.corner.topLeft += wd2;
         farShadowRect.corner.topRight += wd2;
         farShadowRect.corner.bottomRight += wd2;
         farShadowRect.corner.bottomLeft += wd2;
 
 
         BaseRect nearShadowRect;
-        {
+        //{
             auto rect2 = m_shadowBaseRect.rect.makeDeflate(wd2);
+            rect2.x += m_shadowStyle.shadowOffset.x;
+            rect2.y += m_shadowStyle.shadowOffset.y;
+            float dt = rect2.getTop() - m_shapeOuterRect.rect.getTop();
+            float dr = rect2.getRight() - m_shapeOuterRect.rect.getRight();
+            float db = rect2.getBottom() - m_shapeOuterRect.rect.getBottom();
+            float dl = rect2.getLeft() - m_shapeOuterRect.rect.getLeft();
+            float alphas[4] = {
+                 dt <= 0.0f ? 1.0f : 1.0f - (std::abs(dt) / m_shadowStyle.shadowBlur),
+                 dr >= 0.0f ? 1.0f : 1.0f - (std::abs(dr) / m_shadowStyle.shadowBlur),
+                 db >= 0.0f ? 1.0f : 1.0f - (std::abs(db) / m_shadowStyle.shadowBlur),
+                 dl <= 0.0f ? 1.0f : 1.0f - (std::abs(dl) / m_shadowStyle.shadowBlur),
+            };
+
             float l = rect2.getLeft();
             float t = rect2.getTop();
             float r = rect2.getRight();
@@ -2759,21 +2777,33 @@ void BoxElementShapeBuilder2::build()
             r = std::max(r, m_shapeOuterRect.rect.getRight());
             b = std::max(b, m_shapeOuterRect.rect.getBottom());
             nearShadowRect.rect = Rect(l, t, r - l, b - t);
-        }
-        //nearShadowRect.corner = m_shadowBaseRect.corner;
-        nearShadowRect.corner.topLeft -= wd2;
-        nearShadowRect.corner.topRight -= wd2;
-        nearShadowRect.corner.bottomRight -= wd2;
-        nearShadowRect.corner.bottomLeft -= wd2;
+        //}
+        nearShadowRect.corner = m_shadowBaseRect.corner;
+        nearShadowRect.corner.topLeft = std::max(nearShadowRect.corner.topLeft - wd2, m_shapeOuterRect.corner.topLeft);
+        nearShadowRect.corner.topRight = std::max(nearShadowRect.corner.topRight - wd2, m_shapeOuterRect.corner.topRight);
+        nearShadowRect.corner.bottomRight = std::max(nearShadowRect.corner.bottomRight - wd2, m_shapeOuterRect.corner.bottomRight);
+        nearShadowRect.corner.bottomLeft = std::max(nearShadowRect.corner.bottomLeft - wd2, m_shapeOuterRect.corner.bottomLeft);
+
 
 
 #if 1
+        const float zeros[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        const float ones[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+
+        applyColorToShadowComponents(m_shapeOuterComponents, ones);
+
         BorderComponent nearShadowComponents[4];
         makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_nearShadowBasePath);
+        applyColorToShadowComponents(nearShadowComponents, alphas);
 
         BorderComponent farShadowComponents[4];
         makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, farShadowComponents, &m_farShadowBasePath);
-        for (int id = m_farShadowBasePath.begin(); id < m_farShadowBasePath.end(); id++) outlinePoint(id).color.a = 0.0f;
+        applyColorToShadowComponents(farShadowComponents, zeros);
+
+        //for (int id = m_farShadowBasePath.begin(); id < m_farShadowBasePath.end(); id++) {
+        //    outlinePoint(id).color.a = 0.0f;
+        //}
 
         // inner shadow
         for (int iCmp = 0; iCmp < 4; iCmp++) {
@@ -2787,7 +2817,7 @@ void BoxElementShapeBuilder2::build()
                 int innerId = innerCmp.beginIds1();
                 for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
                     if (innerId < innerCmp.endIds1() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
+                        outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
                         innerId++;
                     }
                     addOutlineIndex(id);
@@ -2799,7 +2829,7 @@ void BoxElementShapeBuilder2::build()
                 int innerId = innerCmp.beginIds2();
                 for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
                     if (innerId < innerCmp.endIds2() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
+                        outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
                         innerId++;
                     }
                     addOutlineIndex(id);
@@ -2809,38 +2839,40 @@ void BoxElementShapeBuilder2::build()
             endOutlinePath(path);
         }
 
-        // outer shadow
-        for (int iCmp = 0; iCmp < 4; iCmp++) {
-            const auto& outerCmp = farShadowComponents[iCmp];
-            const auto& innerCmp = nearShadowComponents[iCmp];
+        if (m_shadowStyle.shadowBlur > 0.0f) {
+            // outer shadow
+            for (int iCmp = 0; iCmp < 4; iCmp++) {
+                const auto& outerCmp = farShadowComponents[iCmp];
+                const auto& innerCmp = nearShadowComponents[iCmp];
 
 
-            auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
+                auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
 
-            {
-                int innerId = innerCmp.beginIds1();
-                for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
-                    if (innerId < innerCmp.endIds1() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
-                        innerId++;
+                {
+                    int innerId = innerCmp.beginIds1();
+                    for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
+                        if (innerId < innerCmp.endIds1() - 1 &&
+                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                            innerId++;
+                        }
+                        addOutlineIndex(id);
+                        addOutlineIndex(innerId);
                     }
-                    addOutlineIndex(id);
-                    addOutlineIndex(innerId);
                 }
-            }
 
-            {
-                int innerId = innerCmp.beginIds2();
-                for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
-                    if (innerId < innerCmp.endIds2() - 1 &&
-                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
-                        innerId++;
+                {
+                    int innerId = innerCmp.beginIds2();
+                    for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
+                        if (innerId < innerCmp.endIds2() - 1 &&
+                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                            innerId++;
+                        }
+                        addOutlineIndex(id);
+                        addOutlineIndex(innerId);
                     }
-                    addOutlineIndex(id);
-                    addOutlineIndex(innerId);
                 }
+                endOutlinePath(path);
             }
-            endOutlinePath(path);
         }
 
 #else
@@ -3083,7 +3115,7 @@ void BoxElementShapeBuilder2::setupBaseRects()
 
 	// ShadowRect を確定する
 	{
-		const float w = m_shadowStyle.shadowBlur / 2;
+        const float w = m_shadowStyle.shadowWidth;//m_shadowStyle.shadowBlur / 2;
 
 		if (m_shadowStyle.shadowInset) {
 			// shadowWidth の押し出し分だけ半径を調整する
@@ -3262,6 +3294,20 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
         //if (iAA == 0 && pt.antiAliasDir[iAA + 1] != Vector2::Zero) {
 
         //}
+    }
+}
+
+void BoxElementShapeBuilder2::applyColorToShadowComponents(BorderComponent components[4], const float* alphas)
+{
+    const float ones[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    if (!alphas) alphas = ones;
+
+    for (int iCmp = 0; iCmp < 4; iCmp++) {
+        const auto& cmp = components[iCmp];
+        for (int id = cmp.beginOuter(); id < cmp.endOuter(); id++) {
+            outlinePoint(id).color = m_shadowStyle.shadowColor;
+            outlinePoint(id).color.a *= alphas[iCmp];
+        }
     }
 }
 
