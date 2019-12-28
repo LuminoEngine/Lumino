@@ -2716,27 +2716,23 @@ void BoxElementShapeBuilder2::build()
         m_shapeAAEnabled = true;
     }
 
+    {
+        if (m_borderEnabled) {
+            m_shapeOuterComponents[Top].width = m_borderStyle.borderThickness.top;
+            m_shapeOuterComponents[Top].color = m_borderStyle.borderTopColor;
+            m_shapeOuterComponents[Right].width = m_borderStyle.borderThickness.right;
+            m_shapeOuterComponents[Right].color = m_borderStyle.borderRightColor;
+            m_shapeOuterComponents[Bottom].width = m_borderStyle.borderThickness.bottom;
+            m_shapeOuterComponents[Bottom].color = m_borderStyle.borderBottomColor;
+            m_shapeOuterComponents[Left].width = m_borderStyle.borderThickness.left;
+            m_shapeOuterComponents[Left].color = m_borderStyle.borderLeftColor;
+        }
+    }
+
 	setupBaseRects();
 
-	makeBaseOuterPointsAndBorderComponent(m_shapeOuterRect, m_components, &m_shapeOuterBasePath);
+	makeBaseOuterPointsAndBorderComponent(m_shapeOuterRect, 1.0f, m_shapeOuterComponents, &m_shapeOuterBasePath);
 
-    if (m_backgroundEnabled)
-	{
-		auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Red);
-		for (int i = m_shapeOuterBasePath.begin(); i < m_shapeOuterBasePath.end(); i++) {
-			addOutlineIndex(i);
-            outlinePoint(i).color = m_backgroundStyle.color;
-		}
-		endOutlinePath(path);
-
-
-        if (m_shapeAAEnabled) {
-            // Border が無ければ、Background の色を使って外周に AA を作る
-            if (!m_borderEnabled) {
-                makeOutlineAntiAlias(path);
-            }
-        }
-	}
 
 
 	if (m_shadowEnabled && !m_shadowStyle.shadowInset) {
@@ -2757,7 +2753,7 @@ void BoxElementShapeBuilder2::build()
 
 
         BorderComponent nearShadowComponents[4];
-        makeBaseOuterPointsAndBorderComponent(nearShadowRect, nearShadowComponents, &m_shadowBasePath);
+        makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_shadowBasePath);
 
 
         // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
@@ -2771,7 +2767,7 @@ void BoxElementShapeBuilder2::build()
                 outlinePoint(i).color.a = 1.0f;
             }
 
-            for (int i = m_components[iCmp].endOuter() - 1; i >= m_components[iCmp].beginOuter(); i--) {
+            for (int i = m_shapeOuterComponents[iCmp].endOuter() - 1; i >= m_shapeOuterComponents[iCmp].beginOuter(); i--) {
                 addOutlineIndex(i);
             }
 
@@ -2782,7 +2778,7 @@ void BoxElementShapeBuilder2::build()
 
         {
             BorderComponent shadowComponents[4];
-            makeBaseOuterPointsAndBorderComponent(farShadowRect, shadowComponents, &m_shadowBasePath);
+            makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, shadowComponents, &m_shadowBasePath);
 
 
             // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
@@ -2804,8 +2800,59 @@ void BoxElementShapeBuilder2::build()
                 //break;
             }
         }
-
 	}
+
+    if (m_backgroundEnabled)
+    {
+        auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Red);
+        for (int i = m_shapeOuterBasePath.begin(); i < m_shapeOuterBasePath.end(); i++) {
+            addOutlineIndex(i);
+            outlinePoint(i).color = m_backgroundStyle.color;
+        }
+        endOutlinePath(path);
+
+
+        if (m_shapeAAEnabled) {
+            // Border が無ければ、Background の色を使って外周に AA を作る
+            if (!m_borderEnabled) {
+                makeOutlineAntiAlias(path);
+            }
+        }
+    }
+
+    if (m_borderEnabled) {
+
+        BorderComponent shapeInnerComponent[4];
+        makeBaseOuterPointsAndBorderComponent(m_shapeInnerRect, -1.0f, shapeInnerComponent, &m_shapeInnerBasePath);
+
+        for (int iCmp = 0; iCmp < 4; iCmp++) {
+            if (m_shapeOuterComponents[iCmp].width > 0.0f) {
+                auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
+
+                for (int i = m_shapeOuterComponents[iCmp].beginOuter(); i < m_shapeOuterComponents[iCmp].endOuter(); i++) {
+                    addOutlineIndex(i);
+                    outlinePoint(i).color = m_shapeOuterComponents[iCmp].color;
+                }
+
+                for (int i = shapeInnerComponent[iCmp].endOuter() - 1; i >= shapeInnerComponent[iCmp].beginOuter(); i--) {
+                    addOutlineIndex(i);
+                    outlinePoint(i).color = m_shapeOuterComponents[iCmp].color;
+                }
+
+                if (iCmp == Top) {
+                    int id = shapeInnerComponent[iCmp].beginOuter();
+                    outlinePoint(id).antiAliasDir[0] = Vector2(-1, 0);
+                }
+
+                endOutlinePath(path);
+
+                if (m_shapeAAEnabled) {
+                    makeOutlineAntiAlias(path);
+                }
+            }
+
+        }
+    }
 
 	expandPathes();
 }
@@ -2959,7 +3006,7 @@ int BoxElementShapeBuilder2::addOutlinePoint(const Vector2& pos, const Vector2& 
 	return m_outlinePointBuffer.getCount() - 1;
 }
 
-void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, BorderComponent components[4], BasePath* outBasePath)
+void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, float dirSign, BorderComponent components[4], BasePath* outBasePath)
 {
 	outBasePath->start = m_outlinePointBuffer.getCount();
 
@@ -2982,7 +3029,7 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 	lb[1] = Vector2(lb[0].x + blRad, lb[0].y - blRad);
 	rb[1] = Vector2(rb[0].x - brRad, rb[0].y - brRad);
 
-	auto addPointCallback = [this](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, infrateDir); };
+	auto addPointCallback = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir); };
 
 	// top-side component
 	{
@@ -3082,14 +3129,15 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
     int startPoint = path->pointStart;
     int count = path->pointCount;
 
-    for (int iAA = 0; iAA < 2; iAA++) {
+    for (int iAA = 0; iAA < 1; iAA++) {
 
 
         auto* aaPath = beginOutlinePath(OutlinePathType::Stripe, path->color, PathWinding::CW);
         aaPath->stripeClosing = true;
         for (int i = 0; i < count; i++) {
             int idIndex = startPoint /*+ start*/ + i;
-            auto& pt = m_outlinePointBuffer.getAt(idIndex);
+            auto& pt = outlinePoint(outlineIndex(idIndex));
+            //auto& pt = m_outlinePointBuffer.getAt(idIndex);
             //auto& basePt = m_baselinePointBuffer.getAt(pt.basePoint);
 
             Vector2 pos = pt.pos + (pt.antiAliasDir[iAA] * length);
@@ -3106,6 +3154,10 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
             addOutlineIndex(outlineIndex(idIndex));
         }
         endOutlinePath(aaPath);
+
+        //if (iAA == 0 && pt.antiAliasDir[iAA + 1] != Vector2::Zero) {
+
+        //}
     }
 }
 
@@ -3247,7 +3299,6 @@ void BoxElementShapeBuilder2::expandStripeStroke(const OutlinePath& path)
 		}
 	}
 
-    return;
 	if (path.stripeClosing) {
 		/*
 			0-1
@@ -3262,19 +3313,19 @@ void BoxElementShapeBuilder2::expandStripeStroke(const OutlinePath& path)
 
 		if (path.winding == PathWinding::CW) {
 			m_indexCache.add(p0);
-			m_indexCache.add(p1);
-			m_indexCache.add(p2);
 			m_indexCache.add(p2);
 			m_indexCache.add(p1);
+			m_indexCache.add(p2);
 			m_indexCache.add(p3);
+			m_indexCache.add(p1);
 		}
 		else {
 			m_indexCache.add(p0);
-			m_indexCache.add(p2);
 			m_indexCache.add(p1);
 			m_indexCache.add(p2);
+			m_indexCache.add(p2);
+			m_indexCache.add(p1);
 			m_indexCache.add(p3);
-			m_indexCache.add(p1);
 		}
 	}
 }

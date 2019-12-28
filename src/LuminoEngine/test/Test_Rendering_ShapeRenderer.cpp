@@ -29,19 +29,30 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
 	element1->render = [](UIRenderingContext* context)
     {
 		BoxElementShapeBaseStyle baseStyle;
+        BoxElementShapeBorderStyle borderStyle;
+        borderStyle.borderLeftColor = Color::Red;
+        borderStyle.borderTopColor = Color::Green;
+        borderStyle.borderRightColor = Color::Blue;
+        borderStyle.borderBottomColor = Color::Yellow;
 		BoxElementShapeShadowStyle shadowStyle;
 		shadowStyle.shadowInset = false;
-
+/*
 		baseStyle.baseRect = Rect(30, 30, 60, 40);
 		baseStyle.cornerRadius = CornerRadius(0);
 		shadowStyle.shadowWidth = 20;
 		shadowStyle.shadowBlur = 10;
 		shadowStyle.shadowColor = Color::Red;
-		context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+		context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);*/
+
+        baseStyle.baseRect = Rect(20, 20, 80, 40);
+        baseStyle.cornerRadius = CornerRadius(10);
+        borderStyle.borderThickness = Thickness(0, 10, 0, 10);
+        borderStyle.borderInset = false;
+        context->drawBoxElement(baseStyle, nullptr, &borderStyle, nullptr);
 	};
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-2.png"));
+    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 

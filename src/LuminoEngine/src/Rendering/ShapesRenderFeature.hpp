@@ -640,7 +640,7 @@ private:
 
 	void setupBaseRects();
 	int addOutlinePoint(const Vector2& pos, const Vector2& infrateDir);
-	void makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, BorderComponent components[4], BasePath* outBasePath);
+	void makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, float dirSign, BorderComponent components[4], BasePath* outBasePath);
 	
 	OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
 	void endOutlinePath(OutlinePath* path);
@@ -668,8 +668,9 @@ private:
 	BaseRect m_shapeInnerRect;	// shape の内周。insetBorder の境界。insetShadow の接合部。border が無い場合は Background の外周と等しい。
 	BaseRect m_shadowBaseRect;	// shadow の外周。inset/outset共有。shadowBlur はこの時点では考慮しない。
 	BasePath m_shapeOuterBasePath;
+    BasePath m_shapeInnerBasePath;
 	BasePath m_shadowBasePath;
-	BorderComponent m_components[4];
+	BorderComponent m_shapeOuterComponents[4];
 	CacheBuffer<OutlinePoint> m_outlinePointBuffer;
 
 	List<OutlinePath> m_outlinePaths;
