@@ -2741,19 +2741,111 @@ void BoxElementShapeBuilder2::build()
         BaseRect farShadowRect;
         farShadowRect.rect = m_shadowBaseRect.rect.makeInflate(wd2);
         farShadowRect.corner = m_shadowBaseRect.corner;
-        farShadowRect.corner.topLeft += wd2;
+        farShadowRect.corner.topLeft += wd2 * 2;
         farShadowRect.corner.topRight += wd2;
         farShadowRect.corner.bottomRight += wd2;
         farShadowRect.corner.bottomLeft += wd2;
 
 
         BaseRect nearShadowRect;
-        nearShadowRect.rect = m_shadowBaseRect.rect.makeDeflate(wd2);
-        nearShadowRect.corner = m_shadowBaseRect.corner;
+        {
+            auto rect2 = m_shadowBaseRect.rect.makeDeflate(wd2);
+            float l = rect2.getLeft();
+            float t = rect2.getTop();
+            float r = rect2.getRight();
+            float b = rect2.getBottom();
+            l = std::min(l, m_shapeOuterRect.rect.getLeft());
+            t = std::min(t, m_shapeOuterRect.rect.getTop());
+            r = std::max(r, m_shapeOuterRect.rect.getRight());
+            b = std::max(b, m_shapeOuterRect.rect.getBottom());
+            nearShadowRect.rect = Rect(l, t, r - l, b - t);
+        }
+        //nearShadowRect.corner = m_shadowBaseRect.corner;
+        nearShadowRect.corner.topLeft -= wd2;
+        nearShadowRect.corner.topRight -= wd2;
+        nearShadowRect.corner.bottomRight -= wd2;
+        nearShadowRect.corner.bottomLeft -= wd2;
 
 
+#if 1
         BorderComponent nearShadowComponents[4];
-        makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_shadowBasePath);
+        makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_nearShadowBasePath);
+
+        BorderComponent farShadowComponents[4];
+        makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, farShadowComponents, &m_farShadowBasePath);
+        for (int id = m_farShadowBasePath.begin(); id < m_farShadowBasePath.end(); id++) outlinePoint(id).color.a = 0.0f;
+
+        // inner shadow
+        for (int iCmp = 0; iCmp < 4; iCmp++) {
+            const auto& outerCmp = nearShadowComponents[iCmp];
+            const auto& innerCmp = m_shapeOuterComponents[iCmp];
+
+
+            auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
+
+            {
+                int innerId = innerCmp.beginIds1();
+                for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
+                    if (innerId < innerCmp.endIds1() - 1 &&
+                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
+                        innerId++;
+                    }
+                    addOutlineIndex(id);
+                    addOutlineIndex(innerId);
+                }
+            }
+
+            {
+                int innerId = innerCmp.beginIds2();
+                for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
+                    if (innerId < innerCmp.endIds2() - 1 &&
+                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
+                        innerId++;
+                    }
+                    addOutlineIndex(id);
+                    addOutlineIndex(innerId);
+                }
+            }
+            endOutlinePath(path);
+        }
+
+        // outer shadow
+        for (int iCmp = 0; iCmp < 4; iCmp++) {
+            const auto& outerCmp = farShadowComponents[iCmp];
+            const auto& innerCmp = nearShadowComponents[iCmp];
+
+
+            auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
+
+            {
+                int innerId = innerCmp.beginIds1();
+                for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
+                    if (innerId < innerCmp.endIds1() - 1 &&
+                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
+                        innerId++;
+                    }
+                    addOutlineIndex(id);
+                    addOutlineIndex(innerId);
+                }
+            }
+
+            {
+                int innerId = innerCmp.beginIds2();
+                for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
+                    if (innerId < innerCmp.endIds2() - 1 &&
+                        outlinePoint(id).cornerRatio >= outlinePoint(innerId).cornerRatio) {
+                        innerId++;
+                    }
+                    addOutlineIndex(id);
+                    addOutlineIndex(innerId);
+                }
+            }
+            endOutlinePath(path);
+        }
+
+#else
+        BorderComponent nearShadowComponents[4];
+        makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_nearShadowBasePath);
 
 
         // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
@@ -2778,7 +2870,7 @@ void BoxElementShapeBuilder2::build()
 
         {
             BorderComponent shadowComponents[4];
-            makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, shadowComponents, &m_shadowBasePath);
+            makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, shadowComponents, &m_farShadowBasePath);
 
 
             // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
@@ -2800,6 +2892,7 @@ void BoxElementShapeBuilder2::build()
                 //break;
             }
         }
+#endif
 	}
 
     if (m_backgroundEnabled)
@@ -2839,16 +2932,27 @@ void BoxElementShapeBuilder2::build()
                     outlinePoint(i).color = m_shapeOuterComponents[iCmp].color;
                 }
 
-                if (iCmp == Top) {
-                    int id = shapeInnerComponent[iCmp].beginOuter();
-                    outlinePoint(id).antiAliasDir[0] = Vector2(-1, 0);
-                }
-
                 endOutlinePath(path);
 
                 if (m_shapeAAEnabled) {
                     makeOutlineAntiAlias(path);
                 }
+
+
+
+
+                //if (iCmp == Top) {
+                //    auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
+
+                //    int id = shapeInnerComponent[iCmp].beginOuter();
+                //    outlinePoint(id).antiAliasDir[1] = Vector2(0, 1);
+
+                //    outlinePoint(shapeInnerComponent[iCmp].endOuter() - 1).antiAliasDir[1] = Vector2(0, 1);
+
+                //    path->antiAliasCount = 2;
+
+                //    endOutlinePath(path);
+                //}
             }
 
         }
@@ -3000,9 +3104,9 @@ void BoxElementShapeBuilder2::setupBaseRects()
 	}
 }
 
-int BoxElementShapeBuilder2::addOutlinePoint(const Vector2& pos, const Vector2& infrateDir)
+int BoxElementShapeBuilder2::addOutlinePoint(const Vector2& pos, const Vector2& infrateDir, float cornerRatio)
 {
-    m_outlinePointBuffer.add({ pos, Color::Black, {infrateDir, infrateDir}, infrateDir });
+    m_outlinePointBuffer.add({ pos, Color::Black, {infrateDir, infrateDir}, infrateDir, cornerRatio });
 	return m_outlinePointBuffer.getCount() - 1;
 }
 
@@ -3029,7 +3133,7 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 	lb[1] = Vector2(lb[0].x + blRad, lb[0].y - blRad);
 	rb[1] = Vector2(rb[0].x - brRad, rb[0].y - brRad);
 
-	auto addPointCallback = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir); };
+	auto addPointCallback = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t); };
 
 	// top-side component
 	{
@@ -3037,13 +3141,13 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 		components[Top].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// top-left
 		if (tlRad <= 0.0f)
-			addOutlinePoint(lt[0], Vector2(0, -1));
+			addOutlinePoint(lt[0], Vector2(0, -1), 0.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.5f, 1.0f, lt[1], addPointCallback);
 		components[Top].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// top-right
 		if (trRad <= 0.0f)
-			addOutlinePoint(rt[0], Vector2(0, -1));
+			addOutlinePoint(rt[0], Vector2(0, -1), 1.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.0f, 0.5f, rt[1], addPointCallback);
 		components[Top].outerPointCount = m_outlinePointBuffer.getCount() - components[Top].outerPointStart;
@@ -3055,13 +3159,13 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 		components[Right].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// top-right
 		if (trRad <= 0.0f)
-			addOutlinePoint(rt[0], Vector2(1, 0));
+			addOutlinePoint(rt[0], Vector2(1, 0), 0.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.5f, 1.0f, rt[1], addPointCallback);
 		components[Right].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// bottom-right
 		if (brRad <= 0.0f)
-			addOutlinePoint(rb[0], Vector2(1, 0));
+			addOutlinePoint(rb[0], Vector2(1, 0), 1.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.0f, 0.5f, rb[1], addPointCallback);
 		components[Right].outerPointCount = m_outlinePointBuffer.getCount() - components[Right].outerPointStart;
@@ -3073,13 +3177,13 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 		components[Bottom].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// bottom-right
 		if (brRad <= 0.0f)
-			addOutlinePoint(rb[0], Vector2(0, 1));
+			addOutlinePoint(rb[0], Vector2(0, 1), 0.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.5f, 1.0f, rb[1], addPointCallback);
 		components[Bottom].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// bottom-left
 		if (blRad <= 0.0f)
-			addOutlinePoint(lb[0], Vector2(0, 1));
+			addOutlinePoint(lb[0], Vector2(0, 1), 1.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.0f, 0.5f, lb[1], addPointCallback);
 		components[Bottom].outerPointCount = m_outlinePointBuffer.getCount() - components[Bottom].outerPointStart;
@@ -3091,13 +3195,13 @@ void BoxElementShapeBuilder2::makeBaseOuterPointsAndBorderComponent(const BaseRe
 		components[Left].outerCornerStart1 = m_outlinePointBuffer.getCount();
 		// bottom-left
 		if (blRad <= 0.0f)
-			addOutlinePoint(lb[0], Vector2(-1, 0));
+			addOutlinePoint(lb[0], Vector2(-1, 0), 0.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.5f, 1.0f, lb[1], addPointCallback);
 		components[Left].outerCornerStart2 = m_outlinePointBuffer.getCount();
 		// top-left
 		if (tlRad <= 0.0f)
-			addOutlinePoint(lt[0], Vector2(-1, 0));
+			addOutlinePoint(lt[0], Vector2(-1, 0), 1.0f);
 		else
 			Utils_plotCornerPointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.0f, 0.5f, lt[1], addPointCallback);
 		components[Left].outerPointCount = m_outlinePointBuffer.getCount() - components[Left].outerPointStart;
@@ -3129,7 +3233,7 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
     int startPoint = path->pointStart;
     int count = path->pointCount;
 
-    for (int iAA = 0; iAA < 1; iAA++) {
+    for (int iAA = 0; iAA < path->antiAliasCount; iAA++) {
 
 
         auto* aaPath = beginOutlinePath(OutlinePathType::Stripe, path->color, PathWinding::CW);
@@ -3147,7 +3251,7 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
                 pos = Vector2::lerp(pos, pt.pos, d);
             }
 
-            int newId = addOutlinePoint(pos, pt.rightDir);
+            int newId = addOutlinePoint(pos, pt.rightDir, pt.cornerRatio);
             outlinePoint(newId).color = pt.color.withAlpha(0.0f);
 
             addOutlineIndex(newId);

@@ -322,32 +322,33 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
     {
         element1->render = [](UIRenderingContext* context)
         {
+            
             BoxElementShapeBaseStyle baseStyle;
             BoxElementShapeShadowStyle shadowStyle;
             shadowStyle.shadowInset = false;
 
-            baseStyle.baseRect = Rect(10, 10, 60, 40);
+            baseStyle.baseRect = Rect(20, 20, 40, 20);
             baseStyle.cornerRadius = CornerRadius(0);
             shadowStyle.shadowWidth = 10;
             shadowStyle.shadowBlur = 0;
             shadowStyle.shadowColor = Color::Red;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            baseStyle.baseRect = Rect(90, 10, 60, 40);
+            baseStyle.baseRect = Rect(100, 20, 40, 20);
             baseStyle.cornerRadius = CornerRadius(0);
             shadowStyle.shadowWidth = 10;
             shadowStyle.shadowBlur = 5;
             shadowStyle.shadowColor = Color::Green;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            baseStyle.baseRect = Rect(10, 70, 60, 40);
+            baseStyle.baseRect = Rect(20, 80, 40, 20);
             baseStyle.cornerRadius = CornerRadius(0);
             shadowStyle.shadowWidth = 10;
             shadowStyle.shadowBlur = 10;
             shadowStyle.shadowColor = Color::Blue;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            baseStyle.baseRect = Rect(90, 70, 60, 40);
+            baseStyle.baseRect = Rect(100, 80, 40, 20);
             baseStyle.cornerRadius = CornerRadius(0);
             shadowStyle.shadowWidth = 10;
             shadowStyle.shadowBlur = 20;

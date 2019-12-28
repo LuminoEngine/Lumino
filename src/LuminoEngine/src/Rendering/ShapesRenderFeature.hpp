@@ -591,6 +591,12 @@ private:
 		int outerCornerCount1() const { return outerCornerStart2 - outerCornerStart1; }
 		int outerCornerCount2() const { return outerPointCount - outerCornerCount1(); }
 
+        int beginIds1() const { return outerCornerStart1; }
+        int endIds1() const { return outerCornerStart1 + outerCornerCount1(); }
+        int beginIds2() const { return outerCornerStart2; }
+        int endIds2() const { return outerCornerStart2 + outerCornerCount2(); }
+
+
 		// 内周全体
 		int	innterPointStart;
 		int innterPointCount;
@@ -610,7 +616,8 @@ private:
         Color color;
 		Vector2 antiAliasDir[2];	// AA を作るときの押し出し方向。
 		Vector2 rightDir;			// 軸と平行な辺に対して AA を作るかどうかの判断に使う
-	};
+        float cornerRatio;		// corner の始点～終点のどこに位置している点か。0.0 は始点、1.0 は終点。外周を時計回りで考える。curve を生成しない場合でも、Component の始点は 0.0, 終点は 1.0
+    };
 
 	enum class OutlinePathType
 	{
@@ -632,6 +639,7 @@ private:
 		Color color;
 		PathWinding winding;
 		bool stripeClosing = false;
+        int antiAliasCount = 1;
 
 		// 頂点index. IndexBuffer に書き込める値。
 		int begin() const { return pointStart; }
@@ -639,7 +647,7 @@ private:
 	};
 
 	void setupBaseRects();
-	int addOutlinePoint(const Vector2& pos, const Vector2& infrateDir);
+	int addOutlinePoint(const Vector2& pos, const Vector2& infrateDir, float cornerRatio);
 	void makeBaseOuterPointsAndBorderComponent(const BaseRect& baseRect, float dirSign, BorderComponent components[4], BasePath* outBasePath);
 	
 	OutlinePath* beginOutlinePath(OutlinePathType type, const Color& color, PathWinding winding = PathWinding::CW);
@@ -669,7 +677,8 @@ private:
 	BaseRect m_shadowBaseRect;	// shadow の外周。inset/outset共有。shadowBlur はこの時点では考慮しない。
 	BasePath m_shapeOuterBasePath;
     BasePath m_shapeInnerBasePath;
-	BasePath m_shadowBasePath;
+    BasePath m_nearShadowBasePath;  // middle
+	BasePath m_farShadowBasePath;   // shape との接合部から離れている方
 	BorderComponent m_shapeOuterComponents[4];
 	CacheBuffer<OutlinePoint> m_outlinePointBuffer;
 
