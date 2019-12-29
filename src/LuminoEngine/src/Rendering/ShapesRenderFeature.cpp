@@ -2891,6 +2891,30 @@ void BoxElementShapeBuilder2::build()
         makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, farShadowComponents, &farShadowBasePath);
         applyColorToShadowComponents(farShadowComponents, 0.0f);
 
+        // near shadow
+        // Point 数が多い方をベースに Path を作る必要がある。
+        if (nearShadowComponents[0].outerPointCount >= shapeShadowComponent[0].outerPointCount) {
+            makeStripePointPair(nearShadowComponents, shapeShadowComponent);
+            makeStripePath(nearShadowComponents, shapeShadowComponent, PathWinding::CCW);
+        }
+        else {
+            makeStripePointPair(shapeShadowComponent, nearShadowComponents);
+            makeStripePath(shapeShadowComponent, nearShadowComponents, PathWinding::CCW);
+        }
+
+        // far shadow
+        if (m_shadowStyle.shadowBlur > 0.0f) {
+            if (farShadowComponents[0].outerPointCount >= nearShadowComponents[0].outerPointCount) {
+                makeStripePointPair(farShadowComponents, nearShadowComponents);
+                makeStripePath(farShadowComponents, nearShadowComponents, PathWinding::CW);
+            }
+            else {
+                makeStripePointPair(nearShadowComponents, farShadowComponents);
+                makeStripePath(nearShadowComponents, farShadowComponents, PathWinding::CW);
+            }
+        }
+#if 0
+
         // near 側の方が基本的に半径が大きくなるので、そちらから pair を作る
         makeStripePointPair(nearShadowComponents, shapeShadowComponent);
         makeStripePointPair(farShadowComponents, nearShadowComponents);
@@ -2917,6 +2941,7 @@ void BoxElementShapeBuilder2::build()
         if (m_shadowStyle.shadowBlur > 0.0f) {
             makeStripePath(farShadowComponents, nearShadowComponents, PathWinding::CCW);
         }
+#endif
     }
 
 	expandPathes();
@@ -3254,40 +3279,41 @@ void BoxElementShapeBuilder2::makeStripePointPair(BorderComponent* mainCmps, con
             }
         }
         else {
-            auto& mainCmp = mainCmps[iCmp];
-            const auto& otherCmp = otherCmps[iCmp];
+            LN_UNREACHABLE();
+            //auto& mainCmp = mainCmps[iCmp];
+            //const auto& otherCmp = otherCmps[iCmp];
 
-            {
-                int mainId = mainCmp.beginIds1();
-                for (int otherId = otherCmp.beginIds1(); otherId < otherCmp.endIds1(); otherId++) {
-                    if (mainId < mainCmp.endIds1() - 1 &&
-                        outlinePoint(otherId).cornerRatio >= outlinePoint(mainId + 1).cornerRatio) {
-                        mainId++;
-                    }
-                    assert(mainCmp.beginIds1() <= mainId && mainId < mainCmp.endIds1());
-                    if (otherId == otherCmp.endIds1() - 1) {
-                        assert(mainId == mainCmp.endIds1() - 1);
-                    }
-                    if (outlinePoint(mainId).stripePairPointId < 0)
-                        outlinePoint(mainId).stripePairPointId = otherId;
-                }
-            }
+            //{
+            //    int mainId = mainCmp.beginIds1();
+            //    for (int otherId = otherCmp.beginIds1(); otherId < otherCmp.endIds1(); otherId++) {
+            //        if (mainId < mainCmp.endIds1() - 1 &&
+            //            outlinePoint(otherId).cornerRatio >= outlinePoint(mainId + 1).cornerRatio) {
+            //            mainId++;
+            //        }
+            //        assert(mainCmp.beginIds1() <= mainId && mainId < mainCmp.endIds1());
+            //        if (otherId == otherCmp.endIds1() - 1) {
+            //            assert(mainId == mainCmp.endIds1() - 1);
+            //        }
+            //        if (outlinePoint(mainId).stripePairPointId < 0)
+            //            outlinePoint(mainId).stripePairPointId = otherId;
+            //    }
+            //}
 
-            {
-                int mainId = mainCmp.beginIds2();
-                for (int otherId = otherCmp.beginIds2(); otherId < otherCmp.endIds2(); otherId++) {
-                    if (mainId < mainCmp.endIds2() - 1 &&
-                        outlinePoint(otherId).cornerRatio >= outlinePoint(mainId + 1).cornerRatio) {
-                        mainId++;
-                    }
-                    assert(mainCmp.beginIds2() <= mainId && mainId < mainCmp.endIds2());
-                    if (otherId == otherCmp.endIds2() - 1) {
-                        assert(mainId == mainCmp.endIds2() - 1);
-                    }
-                    if (outlinePoint(mainId).stripePairPointId < 0)
-                        outlinePoint(mainId).stripePairPointId = otherId;
-                }
-            }
+            //{
+            //    int mainId = mainCmp.beginIds2();
+            //    for (int otherId = otherCmp.beginIds2(); otherId < otherCmp.endIds2(); otherId++) {
+            //        if (mainId < mainCmp.endIds2() - 1 &&
+            //            outlinePoint(otherId).cornerRatio >= outlinePoint(mainId + 1).cornerRatio) {
+            //            mainId++;
+            //        }
+            //        assert(mainCmp.beginIds2() <= mainId && mainId < mainCmp.endIds2());
+            //        if (otherId == otherCmp.endIds2() - 1) {
+            //            assert(mainId == mainCmp.endIds2() - 1);
+            //        }
+            //        if (outlinePoint(mainId).stripePairPointId < 0)
+            //            outlinePoint(mainId).stripePairPointId = otherId;
+            //    }
+            //}
         }
     }
 }
