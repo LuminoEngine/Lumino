@@ -657,7 +657,9 @@ private:
 	int addOutlineIndex(int index);
 	OutlinePoint& outlinePoint(int index) { return m_outlinePointBuffer.getAt(index); }
 	int outlineIndex(int index) const { return m_outlineIndices.getAt(index); }
+    void makeStripePointPair(BorderComponent* outerCmps, const BorderComponent* innerCmps);
     void makeOutlineAntiAlias(const OutlinePath* path/*, int start, int count*/);
+    void makeStripePath(const BorderComponent* outerCmps, const BorderComponent* innerCmps);
     void applyColorToShadowComponents(BorderComponent components[4], float alpha);
 
 	void expandPathes();
@@ -680,8 +682,6 @@ private:
 	BaseRect m_shadowBaseRect;	// shadow の外周。inset/outset共有。shadowBlur はこの時点では考慮しない。
 	BasePath m_shapeOuterBasePath;
     BasePath m_shapeInnerBasePath;
-    BasePath m_nearShadowBasePath;  // middle
-	BasePath m_farShadowBasePath;   // shape との接合部から離れている方
 	BorderComponent m_shapeOuterComponents[4];
 	CacheBuffer<OutlinePoint> m_outlinePointBuffer;
 

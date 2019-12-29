@@ -338,7 +338,6 @@ TEST_F(Test_Rendering_BoxElement, ShadowOutset)
     {
         element1->render = [](UIRenderingContext* context)
         {
-            
             BoxElementShapeBaseStyle baseStyle;
             BoxElementShapeShadowStyle shadowStyle;
             shadowStyle.shadowInset = false;

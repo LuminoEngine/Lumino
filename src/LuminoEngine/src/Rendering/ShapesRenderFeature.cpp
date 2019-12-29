@@ -2737,57 +2737,28 @@ void BoxElementShapeBuilder2::build()
 
 
 	if (m_shadowEnabled && !m_shadowStyle.shadowInset) {
-
-
         const float wd2 = m_shadowStyle.shadowBlur / 2;
 
         BaseRect farShadowRect;
         farShadowRect.rect = m_shadowBaseRect.rect.makeInflate(wd2);
         farShadowRect.rect.x += m_shadowStyle.shadowOffset.x;
         farShadowRect.rect.y += m_shadowStyle.shadowOffset.y;
-
         const float maxOuterShadowCornerSize = std::min(farShadowRect.rect.width, farShadowRect.rect.height) / 2;
-
         farShadowRect.corner = m_shadowBaseRect.corner;
         farShadowRect.corner.topLeft = std::min(farShadowRect.corner.topLeft + wd2, maxOuterShadowCornerSize);
         farShadowRect.corner.topRight = std::min(farShadowRect.corner.topRight + wd2, maxOuterShadowCornerSize);
         farShadowRect.corner.bottomRight = std::min(farShadowRect.corner.bottomRight + wd2, maxOuterShadowCornerSize);
         farShadowRect.corner.bottomLeft = std::min(farShadowRect.corner.bottomLeft + wd2, maxOuterShadowCornerSize);
 
-
         BaseRect nearShadowRect;
-        //{
-            auto rect2 = m_shadowBaseRect.rect.makeDeflate(wd2);
-            rect2.x += m_shadowStyle.shadowOffset.x;
-            rect2.y += m_shadowStyle.shadowOffset.y;
-            //float dt = rect2.getTop() - m_shapeOuterRect.rect.getTop();
-            //float dr = rect2.getRight() - m_shapeOuterRect.rect.getRight();
-            //float db = rect2.getBottom() - m_shapeOuterRect.rect.getBottom();
-            //float dl = rect2.getLeft() - m_shapeOuterRect.rect.getLeft();
-            //float alphas[4] = {
-            //     dt <= 0.0f ? 1.0f : 1.0f - (std::abs(dt) / m_shadowStyle.shadowBlur),
-            //     dr >= 0.0f ? 1.0f : 1.0f - (std::abs(dr) / m_shadowStyle.shadowBlur),
-            //     db >= 0.0f ? 1.0f : 1.0f - (std::abs(db) / m_shadowStyle.shadowBlur),
-            //     dl <= 0.0f ? 1.0f : 1.0f - (std::abs(dl) / m_shadowStyle.shadowBlur),
-            //};
-
-            //float l = rect2.getLeft();
-            //float t = rect2.getTop();
-            //float r = rect2.getRight();
-            //float b = rect2.getBottom();
-            //l = std::min(l, m_shapeOuterRect.rect.getLeft());
-            //t = std::min(t, m_shapeOuterRect.rect.getTop());
-            //r = std::max(r, m_shapeOuterRect.rect.getRight());
-            //b = std::max(b, m_shapeOuterRect.rect.getBottom());
-            //nearShadowRect.rect = Rect(l, t, r - l, b - t);
-            nearShadowRect.rect = rect2;
-        //}
+        nearShadowRect.rect = m_shadowBaseRect.rect.makeDeflate(wd2);
+        nearShadowRect.rect.x += m_shadowStyle.shadowOffset.x;
+        nearShadowRect.rect.y += m_shadowStyle.shadowOffset.y;
         nearShadowRect.corner = m_shadowBaseRect.corner;
         nearShadowRect.corner.topLeft = std::max(nearShadowRect.corner.topLeft - wd2, m_shapeOuterRect.corner.topLeft);
         nearShadowRect.corner.topRight = std::max(nearShadowRect.corner.topRight - wd2, m_shapeOuterRect.corner.topRight);
         nearShadowRect.corner.bottomRight = std::max(nearShadowRect.corner.bottomRight - wd2, m_shapeOuterRect.corner.bottomRight);
         nearShadowRect.corner.bottomLeft = std::max(nearShadowRect.corner.bottomLeft - wd2, m_shapeOuterRect.corner.bottomLeft);
-
 
         BorderComponent shapeShadowComponent[4];
         BasePath shapeShadowBasePath;
@@ -2795,155 +2766,40 @@ void BoxElementShapeBuilder2::build()
         applyColorToShadowComponents(shapeShadowComponent, 1.0f);
 
         BorderComponent nearShadowComponents[4];
-        makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_nearShadowBasePath);
+        BasePath nearShadowBasePath;
+        makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &nearShadowBasePath);
         applyColorToShadowComponents(nearShadowComponents, 1.0f);
 
         BorderComponent farShadowComponents[4];
-        makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, farShadowComponents, &m_farShadowBasePath);
+        BasePath farShadowBasePath;
+        makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, farShadowComponents, &farShadowBasePath);
         applyColorToShadowComponents(farShadowComponents, 0.0f);
 
+        makeStripePointPair(nearShadowComponents, shapeShadowComponent);
+        makeStripePointPair(farShadowComponents, nearShadowComponents);
 
-        auto makeStripePair = [this](BorderComponent* outerCmps, const BorderComponent* innerCmps)
-        {
-            for (int iCmp = 0; iCmp < 4; iCmp++) {
-                auto& outerCmp = outerCmps[iCmp];
-                const auto& innerCmp = innerCmps[iCmp];
-
-                {
-                    int innerId = innerCmp.beginIds1();
-                    for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
-                        if (innerId < innerCmp.endIds1() - 1 &&
-                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                            innerId++;
-                        }
-                        assert(innerCmp.beginIds1() <= innerId && innerId < innerCmp.endIds1());
-                        outlinePoint(id).stripePairPointId = innerId;
-                    }
-                }
-
-                {
-                    int innerId = innerCmp.beginIds2();
-                    for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
-                        if (innerId < innerCmp.endIds2() - 1 &&
-                            outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                            innerId++;
-                        }
-                        assert(innerCmp.beginIds2() <= innerId && innerId < innerCmp.endIds2());
-                        outlinePoint(id).stripePairPointId = innerId;
-                    }
-                }
-            }
-        };
-        makeStripePair(nearShadowComponents, shapeShadowComponent);
-        makeStripePair(farShadowComponents, nearShadowComponents);
-
-        for (int iId = m_nearShadowBasePath.begin(); iId < m_nearShadowBasePath.end(); iId++) {
+        // 位置オフセットや blur の適用によって、ShapeOuterRect の内側に入り込んだ Point の位置と alpha を調整する
+        for (int iId = nearShadowBasePath.begin(); iId < nearShadowBasePath.end(); iId++) {
             auto& iPt = outlinePoint(iId);
             auto& vPt = outlinePoint(iPt.stripePairPointId);
 
-            Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.rightDir, 0));
-
             // middle を Shape の頂点にスナップし、alpha を調整する。
-            // ※shape と middle の間は縮退面となるが、頂点の結合までやると複雑になるので今は若干無駄な頂点が増えている。
-            //auto md = Vector2::normalize(middlePoint - base.pos);
-            //auto dot = Vector2::dot(md, -basePt.infrateDir);
-            //if (dot >= 0) {
-            float d = plane.getDistanceToPoint(Vector3(iPt.pos, 0));
-            //if (d < 0) {
-                if (m_shapeOuterRect.rect.contains(iPt.pos)) {
-                //if ((iPt.pos.x > m_shapeOuterRect.rect.x) && (iPt.pos.x - m_shapeOuterRect.rect.width < m_shapeOuterRect.rect.x) && (iPt.pos.y > m_shapeOuterRect.rect.y) && (iPt.pos.y - m_shapeOuterRect.rect.height < m_shapeOuterRect.rect.y)) {
-                    iPt.pos = vPt.pos;
-
-                    //vPt.color = Color::Green;
-
-                    // スナップ後の位置で再び、線分からの垂直距離を求める
-                    //float d2 = plane.getDistanceToPoint(Vector3(iPt.pos, 0));
-                    float a = Math::clamp01(1.0f - (std::abs(d) / m_shadowStyle.shadowBlur));
-                    iPt.color.a *= a;
-                    //vPt.color.a *= a;
-
-
-                }
-           // }
+            if (m_shapeOuterRect.rect.contains(iPt.pos)) {
+                Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.rightDir, 0));
+                float d = plane.getDistanceToPoint(Vector3(iPt.pos, 0));
+                iPt.pos = vPt.pos;
+                float a = Math::clamp01(1.0f - (std::abs(d) / m_shadowStyle.shadowBlur));
+                iPt.color.a *= a;
+            }
         }
-
-
-
 
         // inner shadow
-        for (int iCmp = 0; iCmp < 4; iCmp++) {
-            const auto& outerCmp = nearShadowComponents[iCmp];
-            const auto& innerCmp = shapeShadowComponent[iCmp];
+        makeStripePath(nearShadowComponents, shapeShadowComponent);
 
-
-            auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
-
-            {
-                //int innerId = innerCmp.beginIds1();
-                for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
-                    //if (innerId < innerCmp.endIds1() - 1 &&
-                    //    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                    //    innerId++;
-                    //}
-                    //addOutlineIndex(id);
-                    //addOutlineIndex(innerId);
-                    const auto& pt = outlinePoint(id);
-                    addOutlineIndex(id);
-                    addOutlineIndex(pt.stripePairPointId);
-                }
-            }
-
-            {
-                //int innerId = innerCmp.beginIds2();
-                for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
-                    const auto& pt = outlinePoint(id);
-                    addOutlineIndex(id);
-                    addOutlineIndex(pt.stripePairPointId);
-                }
-            }
-            endOutlinePath(path);
-        }
-
+        // outer shadow
         if (m_shadowStyle.shadowBlur > 0.0f) {
-            // outer shadow
-            for (int iCmp = 0; iCmp < 4; iCmp++) {
-                const auto& outerCmp = farShadowComponents[iCmp];
-                const auto& innerCmp = nearShadowComponents[iCmp];
-
-
-                auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
-
-                {
-                    //int innerId = innerCmp.beginIds1();
-                    for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
-                        addOutlineIndex(id);
-                        addOutlineIndex(outlinePoint(id).stripePairPointId);
-                        //if (innerId < innerCmp.endIds1() - 1 &&
-                        //    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                        //    innerId++;
-                        //}
-                        //addOutlineIndex(id);
-                        //addOutlineIndex(innerId);
-                    }
-                }
-
-                {
-                    //int innerId = innerCmp.beginIds2();
-                    for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
-                        addOutlineIndex(id);
-                        addOutlineIndex(outlinePoint(id).stripePairPointId);
-                        //if (innerId < innerCmp.endIds2() - 1 &&
-                        //    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
-                        //    innerId++;
-                        //}
-                        //addOutlineIndex(id);
-                        //addOutlineIndex(innerId);
-                    }
-                }
-                endOutlinePath(path);
-            }
+            makeStripePath(farShadowComponents, nearShadowComponents);
         }
-
 	}
 
     if (m_backgroundEnabled)
@@ -3261,6 +3117,39 @@ int BoxElementShapeBuilder2::addOutlineIndex(int index)
 	return m_outlineIndices.getCount();
 }
 
+// ある Path(outerCmps) 上の　Point の stripePairPointId へ、その内側の Path(innerCmps) 上の対応する PointId を設定する
+void BoxElementShapeBuilder2::makeStripePointPair(BorderComponent* outerCmps, const BorderComponent* innerCmps)
+{
+    for (int iCmp = 0; iCmp < 4; iCmp++) {
+        auto& outerCmp = outerCmps[iCmp];
+        const auto& innerCmp = innerCmps[iCmp];
+
+        {
+            int innerId = innerCmp.beginIds1();
+            for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
+                if (innerId < innerCmp.endIds1() - 1 &&
+                    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                    innerId++;
+                }
+                assert(innerCmp.beginIds1() <= innerId && innerId < innerCmp.endIds1());
+                outlinePoint(id).stripePairPointId = innerId;
+            }
+        }
+
+        {
+            int innerId = innerCmp.beginIds2();
+            for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
+                if (innerId < innerCmp.endIds2() - 1 &&
+                    outlinePoint(id).cornerRatio >= outlinePoint(innerId + 1).cornerRatio) {
+                    innerId++;
+                }
+                assert(innerCmp.beginIds2() <= innerId && innerId < innerCmp.endIds2());
+                outlinePoint(id).stripePairPointId = innerId;
+            }
+        }
+    }
+}
+
 void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, int start, int count*/)
 {
     const float length = 1.0;
@@ -3288,6 +3177,28 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
             addOutlineIndex(outlineIndex(idIndex));
         }
         endOutlinePath(aaPath);
+    }
+}
+
+void BoxElementShapeBuilder2::makeStripePath(const BorderComponent* outerCmps, const BorderComponent* innerCmps)
+{
+    for (int iCmp = 0; iCmp < 4; iCmp++) {
+        const auto& outerCmp = outerCmps[iCmp];
+        const auto& innerCmp = innerCmps[iCmp];
+
+        auto* path = beginOutlinePath(OutlinePathType::Stripe, Color::Black);
+
+        for (int id = outerCmp.beginIds1(); id < outerCmp.endIds1(); id++) {
+            addOutlineIndex(id);
+            addOutlineIndex(outlinePoint(id).stripePairPointId);
+        }
+
+        for (int id = outerCmp.beginIds2(); id < outerCmp.endIds2(); id++) {
+            addOutlineIndex(id);
+            addOutlineIndex(outlinePoint(id).stripePairPointId);
+        }
+
+        endOutlinePath(path);
     }
 }
 
