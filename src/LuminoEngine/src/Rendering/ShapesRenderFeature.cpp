@@ -1151,6 +1151,33 @@ static void Utils_plotCornerPointsBezier(const Vector2& first, const Vector2& fi
     //m_baselinePointBuffer.add({ pos, dir, 1.0f, dir });
 }
 
+template<class TCallback>
+static void Utils_plotCornerPointsBezier2(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center, int tess, TCallback callback)
+{
+    assert(firstT < lastT);
+    //const int tess = 8;
+    //const int tess = (int)Math::clamp((std::max(std::abs(last.x - first.x), std::abs(last.y - first.y)) / 2) * (lastT - firstT), 2.0f, 8.0f);
+    const float rtir = 0.55228f;	// https://cat-in-136.github.io/2014/03/bezier-1-kappa.html
+    Vector2 d(std::abs(last.x - first.x), std::abs(last.y - first.y));
+    Vector2 cp2 = (first)+(d * firstCpDir) * rtir;
+    Vector2 cp3 = (last)+(d * lastCpDir) * rtir;
+    float step = (lastT - firstT) / tess;
+    for (int i = 0; i < tess; i++)
+    {
+        float t = firstT + (step * i);
+        auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, t), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, t));
+        auto infrateDir = Vector2::normalize(pos - center);
+        callback(pos, infrateDir, t);
+        //m_baselinePointBuffer.add({ pos, dir, t, dir });
+    }
+
+    // end point
+    auto pos = Vector2(Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, lastT), Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
+    auto infrateDir = Vector2::normalize(pos - center);
+    callback(pos, infrateDir, 1.0f);
+    //m_baselinePointBuffer.add({ pos, dir, 1.0f, dir });
+}
+
 void BoxElementShapeBuilderCommon::resetComon()
 {
     m_baseStyle.transform = Matrix::Identity;
@@ -1316,24 +1343,28 @@ void BoxElementShapeBuilderCommon::setupGuideline()
         // Innre shadow の Corner は InnerRect の Corner の影響を受けるが、
         // 影響を受けるのは InnerRect と NearGuide の幅が shadowWidth を割ったときだけ。
         // shadowWidth がたくさんある場合は InnerRect の Corner をちょっと変えても、NearGuide の Corner は変わらない。
-        CornerRadius baseRadius;
-        baseRadius.topLeft = (m_shapeInnerGuide.corner.topLeft > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.topLeft - m_shadowStyle.shadowWidth : 0.0f;
-        baseRadius.topRight = (m_shapeInnerGuide.corner.topRight > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.topRight - m_shadowStyle.shadowWidth : 0.0f;
-        baseRadius.bottomRight = (m_shapeInnerGuide.corner.bottomRight > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.bottomRight - m_shadowStyle.shadowWidth : 0.0f;
-        baseRadius.bottomLeft = (m_shapeInnerGuide.corner.bottomLeft > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.bottomLeft - m_shadowStyle.shadowWidth : 0.0f;
+        GuideArea baseGuide;
+        baseGuide.rect = m_shapeInnerGuide.rect.makeDeflate(Thickness(m_shadowStyle.shadowWidth));
+        baseGuide.corner.topLeft = (m_shapeInnerGuide.corner.topLeft > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.topLeft - m_shadowStyle.shadowWidth : 0.0f;
+        baseGuide.corner.topRight = (m_shapeInnerGuide.corner.topRight > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.topRight - m_shadowStyle.shadowWidth : 0.0f;
+        baseGuide.corner.bottomRight = (m_shapeInnerGuide.corner.bottomRight > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.bottomRight - m_shadowStyle.shadowWidth : 0.0f;
+        baseGuide.corner.bottomLeft = (m_shapeInnerGuide.corner.bottomLeft > m_shadowStyle.shadowWidth) ? m_shapeInnerGuide.corner.bottomLeft - m_shadowStyle.shadowWidth : 0.0f;
 
         // NearGuide は Blur が大きい場合、ShapeInner よりも大きい矩形となることがある
         const float near = m_shadowStyle.shadowWidth - hw;
-        m_innerShadowNearGuide.rect = m_shapeInnerGuide.rect.makeDeflate(Thickness(near));
-        m_innerShadowNearGuide.corner.topLeft = std::abs(baseRadius.topLeft - near);    // 内周サイズが 0 であれば外向きに near. サイズが 0 より大きければ、内向きに near 引いた分.
-        m_innerShadowNearGuide.corner.topRight = std::abs(baseRadius.topRight - near);
-        m_innerShadowNearGuide.corner.bottomRight = std::abs(baseRadius.bottomRight - near);
-        m_innerShadowNearGuide.corner.bottomLeft = std::abs(baseRadius.bottomLeft - near);
+        m_innerShadowNearGuide.rect = baseGuide.rect.makeInflate(Thickness(hw));
+        m_innerShadowNearGuide.corner.topLeft = baseGuide.corner.topLeft + hw;
+        m_innerShadowNearGuide.corner.topRight = baseGuide.corner.topRight + hw;
+        m_innerShadowNearGuide.corner.bottomRight = baseGuide.corner.bottomRight + hw;
+        m_innerShadowNearGuide.corner.bottomLeft = baseGuide.corner.bottomLeft + hw;
         ajustGuidelineCorners(&m_innerShadowNearGuide);
 
         // FarGuide は Shadow が角張って見えるのを防ぐため、Corner の基本は shadowWidth とする
         const float far = m_shadowStyle.shadowWidth + hw;
-        m_innerShadowFarGuide.rect = m_shapeInnerGuide.rect.makeDeflate(Thickness(far));
+        m_innerShadowFarGuide.rect = baseGuide.rect.makeDeflate(Thickness(hw));
+        if (m_innerShadowFarGuide.rect.width <= 0.0f) m_innerShadowFarGuide.rect.x = m_innerShadowNearGuide.rect.x + m_innerShadowNearGuide.rect.width / 2;
+        if (m_innerShadowFarGuide.rect.height <= 0.0f) m_innerShadowFarGuide.rect.y = m_innerShadowNearGuide.rect.y + m_innerShadowNearGuide.rect.height / 2;
+
         m_innerShadowFarGuide.corner.topLeft = m_shadowStyle.shadowWidth;
         m_innerShadowFarGuide.corner.topRight = m_shadowStyle.shadowWidth;
         m_innerShadowFarGuide.corner.bottomRight = m_shadowStyle.shadowWidth;
@@ -1377,9 +1408,9 @@ void BoxElementShapeBuilderCommon::ajustGuidelineCorners(GuideArea* guide)
     }
 }
 
-int BoxElementShapeBuilderCommon::addOutlinePoint(const Vector2& pos, const Vector2& infrateDir, float cornerRatio)
+int BoxElementShapeBuilderCommon::addOutlinePoint(const Vector2& pos, const Vector2& infrateDir, float cornerRatio, Corner cornerGroup)
 {
-    m_outlinePointBuffer.add({ pos, Color::Black, {infrateDir, infrateDir}, infrateDir, cornerRatio });
+    m_outlinePointBuffer.add({ pos, Color::Black, {infrateDir, infrateDir}, infrateDir, cornerRatio, cornerGroup });
     return m_outlinePointBuffer.getCount() - 1;
 }
 
@@ -1394,9 +1425,9 @@ void BoxElementShapeBuilderCommon::endOutlinePath(OutlinePath* path)
     path->indexCount = m_outlineIndices.getCount() - path->indexStart;
 }
 
-int BoxElementShapeBuilderCommon::addOutlineIndex(int index)
+int BoxElementShapeBuilderCommon::addOutlineIndex(int pointId)
 {
-    m_outlineIndices.add(index);
+    m_outlineIndices.add(pointId);
     return m_outlineIndices.getCount();
 }
 
@@ -2492,10 +2523,291 @@ void BoxElementShapeBuilder3::build()
 {
     setupGuideline();
 
+    if (outerShadowEnabled()) {
+        m_shadowtess[TopLeft] = (int)Math::clamp(m_shapeOuterGuide.corner.topLeft / 2, 1, 8);
+        m_shadowtess[TopRight] = (int)Math::clamp(m_shapeOuterGuide.corner.topRight / 2, 1, 8);
+        m_shadowtess[BottomRight] = (int)Math::clamp(m_shapeOuterGuide.corner.bottomRight / 2, 1, 8);
+        m_shadowtess[BottomLeft] = (int)Math::clamp(m_shapeOuterGuide.corner.bottomLeft / 2, 1, 8);
+    }
+    else if (insetShadowEnabled()) {
+        m_shadowtess[TopLeft] = (int)Math::clamp(m_innerShadowNearGuide.corner.topLeft / 2, 1, 8);
+        m_shadowtess[TopRight] = (int)Math::clamp(m_innerShadowNearGuide.corner.topRight / 2, 1, 8);
+        m_shadowtess[BottomRight] = (int)Math::clamp(m_innerShadowNearGuide.corner.bottomRight / 2, 1, 8);
+        m_shadowtess[BottomLeft] = (int)Math::clamp(m_innerShadowNearGuide.corner.bottomLeft / 2, 1, 8);
+    }
 
+
+
+    // Inner shadow
+    // Note: inner shadow の offset はサポートしない。
+    if (insetShadowEnabled()) {
+        PointIdRange innerRange;
+        makeShadowoutlinePoints(m_shapeInnerGuide, 1.0f, &innerRange);
+        applyColors(innerRange, m_shadowStyle.shadowColor);
+
+        PointIdRange nearRange;
+        makeShadowoutlinePoints(m_innerShadowNearGuide, 1.0f, &nearRange);
+        applyColors(nearRange, m_shadowStyle.shadowColor);//Color::Green);//
+
+
+        //static const std::function<bool(const OutlinePoint& iPt, const OutlinePoint& vPt)> checkOuterFuncs[4] = {
+        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x < vPt.pos.x || nPt.pos.y < vPt.pos.y; },   // TopLeft
+        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x > vPt.pos.x || nPt.pos.y < vPt.pos.y; },   // TopRight
+        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x > vPt.pos.x || nPt.pos.y > vPt.pos.y; },   // BottomRight
+        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x < vPt.pos.x || nPt.pos.y > vPt.pos.y; },   // BottomLeft
+        //};
+        //for (int i = 0; i < innerRange.countId; i++) {
+        //    const auto& vPt = outlinePoint(innerRange.startId + i);
+        //    auto& nPt = outlinePoint(nearRange.startId + i);
+        //    nPt.pos += m_shadowStyle.shadowOffset;
+
+        //    if (checkOuterFuncs[nPt.cornerGroup](nPt, vPt)) {
+        //        float d = (vPt.pos - nPt.pos).length();
+        //        float a = Math::clamp01(1.0f - (std::abs(d) / m_shadowStyle.shadowBlur));
+        //        nPt.color.a *= a;
+        //        nPt.pos = vPt.pos;
+        //    }
+        //}
+
+
+        assert(innerRange.countId == nearRange.countId);
+        auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
+        path->stripeClosing = true;
+        for (int i = 0; i < innerRange.countId; i++) {
+            addOutlineIndex(innerRange.startId + i);
+            addOutlineIndex(nearRange.startId + i);
+        }
+        endOutlinePath(path);
+
+        if (m_shadowStyle.shadowBlur > 0.0f) {
+            PointIdRange farRange;
+            makeShadowoutlinePoints(m_innerShadowFarGuide, 1.0f, &farRange);
+            applyColors(farRange, m_shadowStyle.shadowColor.withAlpha(0.0f));//Color::Blue);//
+
+
+            //for (int i = 0; i < farRange.countId; i++) {
+            //    auto& nPt = outlinePoint(farRange.startId + i);
+            //    nPt.pos += m_shadowStyle.shadowOffset;
+            //}
+
+            assert(nearRange.countId == farRange.countId);
+            auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
+            path->stripeClosing = true;
+            for (int i = 0; i < nearRange.countId; i++) {
+                addOutlineIndex(nearRange.startId + i);
+                addOutlineIndex(farRange.startId + i);
+            }
+            endOutlinePath(path);
+        }
+    }
 
 
     expandPathes();
+}
+
+// Border 用。Shadow 用とは別にする。
+void BoxElementShapeBuilder3::makeBaseOuterPointsAndBorderComponent(const GuideArea& baseRect, float dirSign, ComponentSet* outSet)
+{
+    outSet->startId = m_outlinePointBuffer.getCount();
+    Component* components = outSet->components;
+
+    float tlRad = baseRect.corner.topLeft;
+    float trRad = baseRect.corner.topRight;
+    float blRad = baseRect.corner.bottomLeft;
+    float brRad = baseRect.corner.bottomRight;
+    Vector2 lt[2];
+    Vector2 rt[2];
+    Vector2 lb[2];
+    Vector2 rb[2];
+    // outer
+    lt[0] = baseRect.rect.getTopLeft();
+    rt[0] = baseRect.rect.getTopRight();
+    lb[0] = baseRect.rect.getBottomLeft();
+    rb[0] = baseRect.rect.getBottomRight();
+    // inner (cornerRadius がある場合、その中心点)
+    lt[1] = Vector2(lt[0].x + tlRad, lt[0].y + tlRad);
+    rt[1] = Vector2(rt[0].x - trRad, rt[0].y + trRad);
+    lb[1] = Vector2(lb[0].x + blRad, lb[0].y - blRad);
+    rb[1] = Vector2(rb[0].x - brRad, rb[0].y - brRad);
+
+    auto addPointCallback_TL = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::TopLeft); };
+    auto addPointCallback_TR = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::TopRight); };
+    auto addPointCallback_BR = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::BottomRight); };
+    auto addPointCallback_BL = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::BottomLeft); };
+
+    // top-side component
+    {
+        components[Top].pointIdStart = m_outlinePointBuffer.getCount();
+        components[Top].cornerStart1 = m_outlinePointBuffer.getCount();
+        // top-left
+        if (tlRad <= 0.0f)
+            addOutlinePoint(rt[0], Vector2(0, -1), 0.0f, Corner::TopLeft);
+        else
+            Utils_plotCornerPointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.5f, 1.0f, lt[1], addPointCallback_TL);
+        components[Top].cornerStart2 = m_outlinePointBuffer.getCount();
+        // top-right
+        if (trRad <= 0.0f)
+            addOutlinePoint(rt[0], Vector2(0, -1), 1.0f, Corner::TopRight);
+        else
+            Utils_plotCornerPointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.0f, 0.5f, rt[1], addPointCallback_TR);
+        components[Top].pointIdCount = m_outlinePointBuffer.getCount() - components[Top].pointIdStart;
+    }
+
+    // right-side component
+    {
+        components[Right].pointIdStart = m_outlinePointBuffer.getCount();
+        components[Right].cornerStart1 = m_outlinePointBuffer.getCount();
+        // top-right
+        if (trRad <= 0.0f)
+            addOutlinePoint(rt[0], Vector2(1, 0), 0.0f, Corner::TopRight);
+        else
+            Utils_plotCornerPointsBezier(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.5f, 1.0f, rt[1], addPointCallback_TR);
+        components[Right].cornerStart2 = m_outlinePointBuffer.getCount();
+        // bottom-right
+        if (brRad <= 0.0f)
+            addOutlinePoint(rb[0], Vector2(1, 0), 1.0f, Corner::BottomRight);
+        else
+            Utils_plotCornerPointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.0f, 0.5f, rb[1], addPointCallback_BR);
+        components[Right].pointIdCount = m_outlinePointBuffer.getCount() - components[Right].pointIdStart;
+    }
+
+    // bottom-side component
+    {
+        components[Bottom].pointIdStart = m_outlinePointBuffer.getCount();
+        components[Bottom].cornerStart1 = m_outlinePointBuffer.getCount();
+        // bottom-right
+        if (brRad <= 0.0f)
+            addOutlinePoint(rb[0], Vector2(0, 1), 0.0f, Corner::BottomRight);
+        else
+            Utils_plotCornerPointsBezier(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.5f, 1.0f, rb[1], addPointCallback_BR);
+        components[Bottom].cornerStart2 = m_outlinePointBuffer.getCount();
+        // bottom-left
+        if (blRad <= 0.0f)
+            addOutlinePoint(lb[0], Vector2(0, 1), 1.0f, Corner::BottomLeft);
+        else
+            Utils_plotCornerPointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.0f, 0.5f, lb[1], addPointCallback_BL);
+        components[Bottom].pointIdCount = m_outlinePointBuffer.getCount() - components[Bottom].pointIdStart;
+    }
+
+    // left-side component
+    {
+        components[Left].pointIdStart = m_outlinePointBuffer.getCount();
+        components[Left].cornerStart1 = m_outlinePointBuffer.getCount();
+        // bottom-left
+        if (blRad <= 0.0f)
+            addOutlinePoint(lb[0], Vector2(-1, 0), 0.0f, Corner::BottomLeft);
+        else
+            Utils_plotCornerPointsBezier(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.5f, 1.0f, lb[1], addPointCallback_BL);
+        components[Left].cornerStart2 = m_outlinePointBuffer.getCount();
+        // top-left
+        if (tlRad <= 0.0f)
+            addOutlinePoint(lt[0], Vector2(-1, 0), 1.0f, Corner::TopLeft);
+        else
+            Utils_plotCornerPointsBezier(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.0f, 0.5f, lt[1], addPointCallback_TL);
+        components[Left].pointIdCount = m_outlinePointBuffer.getCount() - components[Left].pointIdStart;
+    }
+
+    outSet->countId = m_outlinePointBuffer.getCount() - outSet->startId;
+}
+
+void BoxElementShapeBuilder3::makeShadowoutlinePoints(const GuideArea& baseRect, float dirSign, PointIdRange* outRange)
+{
+    outRange->startId = m_outlinePointBuffer.getCount();
+
+    float tlRad = baseRect.corner.topLeft;
+    float trRad = baseRect.corner.topRight;
+    float blRad = baseRect.corner.bottomLeft;
+    float brRad = baseRect.corner.bottomRight;
+    Vector2 lt[2];
+    Vector2 rt[2];
+    Vector2 lb[2];
+    Vector2 rb[2];
+    // outer
+    lt[0] = baseRect.rect.getTopLeft();
+    rt[0] = baseRect.rect.getTopRight();
+    lb[0] = baseRect.rect.getBottomLeft();
+    rb[0] = baseRect.rect.getBottomRight();
+    // inner (cornerRadius がある場合、その中心点)
+    lt[1] = Vector2(lt[0].x + tlRad, lt[0].y + tlRad);
+    rt[1] = Vector2(rt[0].x - trRad, rt[0].y + trRad);
+    lb[1] = Vector2(lb[0].x + blRad, lb[0].y - blRad);
+    rb[1] = Vector2(rb[0].x - brRad, rb[0].y - brRad);
+
+    auto addPointCallback_TL = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::TopLeft); };
+    auto addPointCallback_TR = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::TopRight); };
+    auto addPointCallback_BR = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::BottomRight); };
+    auto addPointCallback_BL = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::BottomLeft); };
+
+    // TopLeft
+    {
+        if (tlRad <= 0.0f) {
+            const Vector2 dir = Vector2::normalize(Vector2(-1, -1));
+            for (int i = 0; i < m_shadowtess[TopLeft] + 1; i++) {   // 必ず要求されている数だけ作る. +1 は Utils_plotCornerPointsBezier2 と生成数を合わせるための調整
+                addOutlinePoint(lt[0], dir, 0.0f, Corner::TopLeft);
+            }
+        }
+        else {
+            Utils_plotCornerPointsBezier2(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.0f, 1.0f, lt[1], m_shadowtess[TopLeft], addPointCallback_TL);
+        }
+    }
+
+    // TopRight
+    {
+        if (trRad <= 0.0f) {
+            const Vector2 dir = Vector2::normalize(Vector2(1, -1));
+            for (int i = 0; i < m_shadowtess[TopRight] + 1; i++) { 
+                addOutlinePoint(rt[0], dir, 0.0f, Corner::TopRight);
+            }
+        }
+        else {
+            Utils_plotCornerPointsBezier2(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.0f, 1.0f, rt[1], m_shadowtess[TopRight], addPointCallback_TR);
+        }
+    }
+
+    // BottomRight
+    {
+        if (brRad <= 0.0f) {
+            const Vector2 dir = Vector2::normalize(Vector2(1, 1));
+            for (int i = 0; i < m_shadowtess[BottomRight] + 1; i++) {
+                addOutlinePoint(rb[0], dir, 0.0f, Corner::BottomRight);
+            }
+        }
+        else {
+            Utils_plotCornerPointsBezier2(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.0f, 1.0f, rb[1], m_shadowtess[BottomRight], addPointCallback_BR);
+        }
+    }
+
+    // BottomLeft
+    {
+        if (brRad <= 0.0f) {
+            const Vector2 dir = Vector2::normalize(Vector2(-1, 1));
+            for (int i = 0; i < m_shadowtess[BottomLeft] + 1; i++) {
+                addOutlinePoint(lb[0], dir, 0.0f, Corner::BottomLeft);
+            }
+        }
+        else {
+            Utils_plotCornerPointsBezier2(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.0f, 1.0f, rb[1], m_shadowtess[BottomLeft], addPointCallback_BL);
+        }
+    }
+
+    outRange->countId = m_outlinePointBuffer.getCount() - outRange->startId;
+}
+
+void BoxElementShapeBuilder3::applyColors(const PointIdRange& range, const Color& color)
+{
+    for (int id = range.beginIds(); id < range.endIds(); id++) {
+        auto& pt = outlinePoint(id);
+        pt.color = color;
+    }
+}
+
+void BoxElementShapeBuilder3::applyColorsAndOffset(const PointIdRange& range, const Color& color, const Vector2& offset)
+{
+    for (int id = range.beginIds(); id < range.endIds(); id++) {
+        auto& pt = outlinePoint(id);
+        pt.color = color;
+        pt.pos += offset;
+    }
 }
 
 //==============================================================================

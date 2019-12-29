@@ -363,6 +363,22 @@ public:
     void writeToBuffer(Vertex* vertexBuffer, uint16_t* indexBuffer, uint16_t indexOffset);
 
 protected:
+    enum Side
+    {
+        Top = 0,
+        Right = 1,
+        Bottom = 2,
+        Left = 3,
+    };
+
+    enum Corner
+    {
+        TopLeft = 0,
+        TopRight = 1,
+        BottomRight = 2,
+        BottomLeft = 3,
+    };
+
     struct GuideArea
     {
         Rect rect;
@@ -378,6 +394,7 @@ protected:
         Vector2 antiAliasDir[2];	// AA を作るときの押し出し方向。
         Vector2 rightDir;			// 軸と平行な辺に対して AA を作るかどうかの判断に使う
         float cornerRatio;		// corner の始点～終点のどこに位置している点か。0.0 は始点、1.0 は終点。外周を時計回りで考える。curve を生成しない場合でも、Component の始点は 0.0, 終点は 1.0
+        Corner cornerGroup;
     };
 
     enum class OutlinePathType
@@ -413,10 +430,10 @@ protected:
 
     static void ajustGuidelineCorners(GuideArea* guide);
 
-    int addOutlinePoint(const Vector2& pos, const Vector2& infrateDir, float cornerRatio);
+    int addOutlinePoint(const Vector2& pos, const Vector2& infrateDir, float cornerRatio, Corner cornerGroup);
     OutlinePath* beginOutlinePath(OutlinePathType type, PathWinding winding = PathWinding::CW);
     void endOutlinePath(OutlinePath* path);
-    int addOutlineIndex(int index);
+    int addOutlineIndex(int pointId);
     OutlinePoint& outlinePoint(int index) { return m_outlinePointBuffer.getAt(index); }
     int outlineIndex(int index) const { return m_outlineIndices.getAt(index); }
     
@@ -511,14 +528,6 @@ private:
 		int innterPointCount;
 	};
 
-	enum Side
-	{
-		Top = 0,
-		Right = 1,
-		Bottom = 2,
-		Left = 3,
-	};
-
 	struct OutlinePoint
 	{
 		Vector2 pos;
@@ -592,6 +601,55 @@ public:
     void build();
 
 private:
+    
+    // Baselineの[上][左][下][右]、計4つセットの基本要素。
+	// Border は上下左右で個別に Color を設定できるが、その単位となる。
+    struct Component
+    {
+        float width;	// 厚さ
+        Color color;
+        int	pointIdStart;
+        int pointIdCount;
+
+        int beginIds() const { return pointIdStart; }
+        int endIds() const { return pointIdStart + pointIdCount; }
+
+        // 外周のうち、カーブの部分
+        int cornerStart1;	// 丸めない場合は始点を指す（通常 startPoint と同値）
+        int cornerStart2;	// 丸めない場合は終点を指す
+        int cornerCount1() const { return cornerStart2 - cornerStart1; }
+        int cornerCount2() const { return pointIdCount - cornerCount1(); }
+
+        int beginIds1() const { return cornerStart1; }
+        int endIds1() const { return cornerStart1 + cornerCount1(); }
+        int beginIds2() const { return cornerStart2; }
+        int endIds2() const { return cornerStart2 + cornerCount2(); }
+    };
+
+    struct ComponentSet
+    {
+        Component components[4];
+        int startId;
+        int countId;
+    };
+
+    struct PointIdRange
+    {
+        int startId;
+        int countId;
+
+        int beginIds() const { return startId; }
+        int endIds() const { return startId + countId; }
+    };
+
+    void makeBaseOuterPointsAndBorderComponent(const GuideArea& baseRect, float dirSign, ComponentSet* outSet);
+    void makeShadowoutlinePoints(const GuideArea& baseRect, float dirSign, PointIdRange* outRange);
+
+    void applyColors(const PointIdRange& range, const Color& color);
+    void applyColorsAndOffset(const PointIdRange& range, const Color& color, const Vector2& offset);
+
+    // 0 は Curve 無しを表す
+    int m_shadowtess[4];
 };
 
 // TODO: name:BoxElementRenderFeature
