@@ -2891,16 +2891,83 @@ void BoxElementShapeBuilder2::build()
         makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, farShadowComponents, &farShadowBasePath);
         applyColorToShadowComponents(farShadowComponents, 0.0f);
 
+
         // near shadow
-        // Point 数が多い方をベースに Path を作る必要がある。
-        if (nearShadowComponents[0].outerPointCount >= shapeShadowComponent[0].outerPointCount) {
-            makeStripePointPair(nearShadowComponents, shapeShadowComponent);
-            makeStripePath(nearShadowComponents, shapeShadowComponent, PathWinding::CCW);
+        makeStripePointPair(nearShadowComponents, shapeShadowComponent);
+
+#if 1
+        std::function<bool(const OutlinePoint& iPt, const OutlinePoint& vPt)> checkOuterFunc1[4] = {
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x < vPt.pos.x || iPt.pos.y < vPt.pos.y; },   // TopLeft
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x > vPt.pos.x || iPt.pos.y < vPt.pos.y; },   // TopRight
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x > vPt.pos.x || iPt.pos.y > vPt.pos.y; },   // BottomRight
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x < vPt.pos.x || iPt.pos.y > vPt.pos.y; },   // BottomLeft
+        };
+        std::function<bool(const OutlinePoint& iPt, const OutlinePoint& vPt)> checkOuterFunc2[4] = {
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x > vPt.pos.x || iPt.pos.y < vPt.pos.y; },   // TopRight
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x > vPt.pos.x || iPt.pos.y > vPt.pos.y; },   // BottomRight
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x < vPt.pos.x || iPt.pos.y > vPt.pos.y; },   // BottomLeft
+            [](const OutlinePoint& iPt, const OutlinePoint& vPt) { return iPt.pos.x < vPt.pos.x || iPt.pos.y < vPt.pos.y; },   // TopLeft
+        };
+
+        for (int iCmp = 0; iCmp < 4; iCmp++) {
+            auto& cmp = nearShadowComponents[iCmp];
+
+
+            for (int id = cmp.beginIds1(); id < cmp.endIds1(); id++) {
+                auto& iPt = outlinePoint(id);
+                auto& vPt = outlinePoint(iPt.stripePairPointId);
+                if (checkOuterFunc1[iCmp](iPt, vPt)) {
+                    float d = (vPt.pos - iPt.pos).length();
+                    float a = Math::clamp01(1.0f - (std::abs(d) / m_shadowStyle.shadowBlur));
+                    iPt.color.a *= a;
+                    iPt.pos = vPt.pos;
+                }
+            }
+
+            for (int id = cmp.beginIds2(); id < cmp.endIds2(); id++) {
+                auto& iPt = outlinePoint(id);
+                auto& vPt = outlinePoint(iPt.stripePairPointId);
+                if (checkOuterFunc2[iCmp](iPt, vPt)) {
+                    float d = (vPt.pos - iPt.pos).length();
+                    float a = Math::clamp01(1.0f - (std::abs(d) / m_shadowStyle.shadowBlur));
+                    iPt.color.a *= a;
+                    iPt.pos = vPt.pos;
+                }
+            }
         }
-        else {
-            makeStripePointPair(shapeShadowComponent, nearShadowComponents);
-            makeStripePath(shapeShadowComponent, nearShadowComponents, PathWinding::CCW);
+
+#else
+        // 位置オフセットや blur の適用によって、ShapeOuterRect の内側に入り込んだ Point の位置と alpha を調整する
+        for (int iId = nearShadowBasePath.begin(); iId < nearShadowBasePath.end(); iId++) {
+            auto& iPt = outlinePoint(iId);
+            auto& vPt = outlinePoint(iPt.stripePairPointId);
+
+            // middle を Shape の頂点にスナップし、alpha を調整する。
+            Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.rightDir, 0));
+            float d = plane.getDistanceToPoint(Vector3(iPt.pos, 0));
+            if (d >= 0) {
+            //if (!m_shapeInnerRect.rect.contains(iPt.pos)) {
+                // ShapeInner が Radius を持たない場合、スナップしてもすべての頂点が四隅に集まってしまい、描画が崩れる。
+                // 最寄りの辺にスナップさせる。
+                iPt.pos -= vPt.rightDir * std::abs(d);//vPt.pos;
+                float a = Math::clamp01(1.0f - (std::abs(d) / m_shadowStyle.shadowBlur));
+                iPt.color.a *= a;
+
+                //iPt.color.a = 0.5;
+            }
         }
+#endif
+
+        makeStripePath(nearShadowComponents, shapeShadowComponent, PathWinding::CCW);
+        //// Point 数が多い方をベースに Path を作る必要がある。
+        //if (nearShadowComponents[0].outerPointCount >= shapeShadowComponent[0].outerPointCount) {
+        //    makeStripePointPair(nearShadowComponents, shapeShadowComponent);
+        //    makeStripePath(nearShadowComponents, shapeShadowComponent, PathWinding::CCW);
+        //}
+        //else {
+        //    makeStripePointPair(shapeShadowComponent, nearShadowComponents);
+        //    makeStripePath(shapeShadowComponent, nearShadowComponents, PathWinding::CCW);
+        //}
 
         // far shadow
         if (m_shadowStyle.shadowBlur > 0.0f) {
