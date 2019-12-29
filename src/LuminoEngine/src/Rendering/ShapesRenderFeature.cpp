@@ -2973,7 +2973,7 @@ void BoxElementShapeBuilder2::build()
         if (m_shadowStyle.shadowBlur > 0.0f) {
             if (farShadowComponents[0].outerPointCount >= nearShadowComponents[0].outerPointCount) {
                 makeStripePointPair(farShadowComponents, nearShadowComponents);
-                makeStripePath(farShadowComponents, nearShadowComponents, PathWinding::CW);
+                makeStripePath(farShadowComponents, nearShadowComponents, PathWinding::CCW);
             }
             else {
                 makeStripePointPair(nearShadowComponents, farShadowComponents);
