@@ -327,100 +327,100 @@ TEST_F(Test_Rendering_BoxElement, Border)
 	LN_TEST_CLEAN_SCENE;
 }
 
-TEST_F(Test_Rendering_BoxElement, ShadowOnly)
+TEST_F(Test_Rendering_BoxElement, ShadowOutset)
 {
     auto element1 = makeObject<TestElement>();
     element1->setHorizontalAlignment(HAlignment::Stretch);
     element1->setVerticalAlignment(VAlignment::Stretch);
     Engine::mainUIView()->addChild(element1);
 
-    //// outset
-    //{
-    //    element1->render = [](UIRenderingContext* context)
-    //    {
-    //        
-    //        BoxElementShapeBaseStyle baseStyle;
-    //        BoxElementShapeShadowStyle shadowStyle;
-    //        shadowStyle.shadowInset = false;
+    // outset
+    {
+        element1->render = [](UIRenderingContext* context)
+        {
+            
+            BoxElementShapeBaseStyle baseStyle;
+            BoxElementShapeShadowStyle shadowStyle;
+            shadowStyle.shadowInset = false;
 
-    //        baseStyle.baseRect = Rect(20, 20, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(0);
-    //        shadowStyle.shadowWidth = 10;
-    //        shadowStyle.shadowBlur = 0;
-    //        shadowStyle.shadowColor = Color::Red;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            baseStyle.baseRect = Rect(20, 20, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 0;
+            shadowStyle.shadowColor = Color::Red;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-    //        baseStyle.baseRect = Rect(100, 20, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(0);
-    //        shadowStyle.shadowWidth = 10;
-    //        shadowStyle.shadowBlur = 5;
-    //        shadowStyle.shadowColor = Color::Green;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            baseStyle.baseRect = Rect(100, 20, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 5;
+            shadowStyle.shadowColor = Color::Green;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-    //        baseStyle.baseRect = Rect(20, 80, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(0);
-    //        shadowStyle.shadowWidth = 10;
-    //        shadowStyle.shadowBlur = 10;
-    //        shadowStyle.shadowColor = Color::Blue;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            baseStyle.baseRect = Rect(20, 80, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 20;
+            shadowStyle.shadowColor = Color::Blue;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-    //        baseStyle.baseRect = Rect(100, 80, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(0);
-    //        shadowStyle.shadowWidth = 10;
-    //        shadowStyle.shadowBlur = 20;
-    //        shadowStyle.shadowColor = Color::Yellow;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-    //    };
+            baseStyle.baseRect = Rect(100, 80, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 0;
+            shadowStyle.shadowBlur = 20;
+            shadowStyle.shadowColor = Color::Yellow;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+        };
 
-    //    TestEnv::updateFrame();
-    //    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-1.png"));
-    //}
+        TestEnv::updateFrame();
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowOutset-1.png"));
+    }
 
-    //// outset-corner
-    //{
-    //    element1->render = [](UIRenderingContext* context)
-    //    {
-    //        BoxElementShapeBaseStyle baseStyle;
-    //        BoxElementShapeShadowStyle shadowStyle;
-    //        shadowStyle.shadowInset = false;
+    // outset-corner
+    {
+        element1->render = [](UIRenderingContext* context)
+        {
+            BoxElementShapeBaseStyle baseStyle;
+            BoxElementShapeShadowStyle shadowStyle;
+            shadowStyle.shadowInset = false;
 
-    //        // non-blur
-    //        baseStyle.baseRect = Rect(20, 20, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(10);
-    //        shadowStyle.shadowWidth = 10;
-    //        shadowStyle.shadowBlur = 0;
-    //        shadowStyle.shadowColor = Color::Red;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            // non-blur
+            baseStyle.baseRect = Rect(20, 20, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(10);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 0;
+            shadowStyle.shadowColor = Color::Red;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-    //        // mini-blur & big-radius
-    //        // サイズより大きい CornerRadius を指定しても、サイズ内に収まるように比率を考慮して縮小する
-    //        baseStyle.baseRect = Rect(100, 20, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(130);
-    //        shadowStyle.shadowWidth = 10;
-    //        shadowStyle.shadowBlur = 10;
-    //        shadowStyle.shadowColor = Color::Green;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            // mini-blur & big-radius
+            // サイズより大きい CornerRadius を指定しても、サイズ内に収まるように比率を考慮して縮小する
+            baseStyle.baseRect = Rect(100, 20, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(130);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 10;
+            shadowStyle.shadowColor = Color::Green;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-    //        // fit-blur
-    //        baseStyle.baseRect = Rect(20, 80, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(10);
-    //        shadowStyle.shadowWidth = 10;
-    //        shadowStyle.shadowBlur = 20;
-    //        shadowStyle.shadowColor = Color::Blue;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            // fit-blur
+            baseStyle.baseRect = Rect(20, 80, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(10);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 20;
+            shadowStyle.shadowColor = Color::Blue;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-    //        // big-blur
-    //        baseStyle.baseRect = Rect(100, 80, 40, 20);
-    //        baseStyle.cornerRadius = CornerRadius(10);
-    //        shadowStyle.shadowWidth = 5;
-    //        shadowStyle.shadowBlur = 30;
-    //        shadowStyle.shadowColor = Color::Yellow;
-    //        context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-    //    };
+            // big-blur
+            baseStyle.baseRect = Rect(100, 80, 40, 20);
+            baseStyle.cornerRadius = CornerRadius(10);
+            shadowStyle.shadowWidth = 5;
+            shadowStyle.shadowBlur = 30;
+            shadowStyle.shadowColor = Color::Yellow;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+        };
 
-    //    TestEnv::updateFrame();
-    //    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-2.png"));
-    //}
+        TestEnv::updateFrame();
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowOutset-2.png"));
+    }
 
     // outset-offset
     {
@@ -447,6 +447,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowOnly)
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
             // [Limitation] Blur 幅以上のオフセットは描画が崩れる。一応動作を見ておく。
+            // Note: なんか突き出ているが、対応する場合は Border と Border の接合点を共有していないので、同一位置の頂点も合わせて移動する。
             baseStyle.baseRect = Rect(20, 80, 40, 20);
             baseStyle.cornerRadius = CornerRadius(0);
             shadowStyle.shadowWidth = 10;
@@ -466,8 +467,19 @@ TEST_F(Test_Rendering_BoxElement, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-3.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowOutset-3.png"));
     }
+
+    LN_TEST_CLEAN_SCENE;
+}
+
+TEST_F(Test_Rendering_BoxElement, ShadowInset)
+{
+    auto element1 = makeObject<TestElement>();
+    element1->setHorizontalAlignment(HAlignment::Stretch);
+    element1->setVerticalAlignment(VAlignment::Stretch);
+    Engine::mainUIView()->addChild(element1);
+
 
     // inset
     {
@@ -507,7 +519,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-3.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowInset-1.png"));
     }
 
     // inset-corner
@@ -548,8 +560,19 @@ TEST_F(Test_Rendering_BoxElement, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-4.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowInset-2.png"));
     }
+
+
+    LN_TEST_CLEAN_SCENE;
+}
+
+TEST_F(Test_Rendering_BoxElement, ShadowIllegals)
+{
+    auto element1 = makeObject<TestElement>();
+    element1->setHorizontalAlignment(HAlignment::Stretch);
+    element1->setVerticalAlignment(VAlignment::Stretch);
+    Engine::mainUIView()->addChild(element1);
 
     // 0 size
     {
@@ -591,59 +614,69 @@ TEST_F(Test_Rendering_BoxElement, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-5.png"));
-    }
-
-    // offset
-    {
-        element1->render = [](UIRenderingContext* context)
-        {
-            BoxElementShapeBaseStyle baseStyle;
-            BoxElementShapeShadowStyle shadowStyle;
-
-            //baseStyle.baseRect = Rect(20, 20, 20, 20);
-            //baseStyle.cornerRadius = CornerRadius(5);
-            //shadowStyle.shadowWidth = 20;
-            //shadowStyle.shadowBlur = 10;
-            //shadowStyle.shadowColor = Color::Red;
-            //shadowStyle.shadowOffset = Vector2(5, 0);
-            //shadowStyle.shadowInset = false;
-            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-
-            baseStyle.baseRect = Rect(100, 20, 20, 20);
-            baseStyle.cornerRadius = CornerRadius(0);
-            shadowStyle.shadowWidth = 20;
-            shadowStyle.shadowBlur = 10;
-            shadowStyle.shadowColor = Color::Green;
-            shadowStyle.shadowOffset = Vector2(0, 10);
-            shadowStyle.shadowInset = false;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-
-            //baseStyle.baseRect = Rect(20, 70, 40, 40);
-            //baseStyle.cornerRadius = CornerRadius(5);
-            //shadowStyle.shadowWidth = 20;
-            //shadowStyle.shadowBlur = 10;
-            //shadowStyle.shadowColor = Color::Red;
-            //shadowStyle.shadowOffset = Vector2(5, 0);
-            //shadowStyle.shadowInset = true;
-            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-
-            //baseStyle.baseRect = Rect(100, 70, 40, 40);
-            //baseStyle.cornerRadius = CornerRadius(5);
-            //shadowStyle.shadowWidth = 20;
-            //shadowStyle.shadowBlur = 10;
-            //shadowStyle.shadowColor = Color::Green;
-            //shadowStyle.shadowOffset = Vector2(15, 0);
-            //shadowStyle.shadowInset = true;
-            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-        };
-
-        TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-6.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowIllegals-1.png"));
     }
 
     LN_TEST_CLEAN_SCENE;
 }
+
+//TEST_F(Test_Rendering_BoxElement, ShadowOffset)
+//{
+//    auto element1 = makeObject<TestElement>();
+//    element1->setHorizontalAlignment(HAlignment::Stretch);
+//    element1->setVerticalAlignment(VAlignment::Stretch);
+//    Engine::mainUIView()->addChild(element1);
+//
+//    // offset
+//    {
+//        element1->render = [](UIRenderingContext* context)
+//        {
+//            BoxElementShapeBaseStyle baseStyle;
+//            BoxElementShapeShadowStyle shadowStyle;
+//
+//            //baseStyle.baseRect = Rect(20, 20, 20, 20);
+//            //baseStyle.cornerRadius = CornerRadius(5);
+//            //shadowStyle.shadowWidth = 20;
+//            //shadowStyle.shadowBlur = 10;
+//            //shadowStyle.shadowColor = Color::Red;
+//            //shadowStyle.shadowOffset = Vector2(5, 0);
+//            //shadowStyle.shadowInset = false;
+//            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//
+//            baseStyle.baseRect = Rect(100, 20, 20, 20);
+//            baseStyle.cornerRadius = CornerRadius(0);
+//            shadowStyle.shadowWidth = 20;
+//            shadowStyle.shadowBlur = 10;
+//            shadowStyle.shadowColor = Color::Green;
+//            shadowStyle.shadowOffset = Vector2(0, 10);
+//            shadowStyle.shadowInset = false;
+//            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//
+//            //baseStyle.baseRect = Rect(20, 70, 40, 40);
+//            //baseStyle.cornerRadius = CornerRadius(5);
+//            //shadowStyle.shadowWidth = 20;
+//            //shadowStyle.shadowBlur = 10;
+//            //shadowStyle.shadowColor = Color::Red;
+//            //shadowStyle.shadowOffset = Vector2(5, 0);
+//            //shadowStyle.shadowInset = true;
+//            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//
+//            //baseStyle.baseRect = Rect(100, 70, 40, 40);
+//            //baseStyle.cornerRadius = CornerRadius(5);
+//            //shadowStyle.shadowWidth = 20;
+//            //shadowStyle.shadowBlur = 10;
+//            //shadowStyle.shadowColor = Color::Green;
+//            //shadowStyle.shadowOffset = Vector2(15, 0);
+//            //shadowStyle.shadowInset = true;
+//            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//        };
+//
+//        TestEnv::updateFrame();
+//        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowOffset-1.png"));
+//    }
+//
+//    LN_TEST_CLEAN_SCENE;
+//}
 
 TEST_F(Test_Rendering_BoxElement, BorderIlls)
 {

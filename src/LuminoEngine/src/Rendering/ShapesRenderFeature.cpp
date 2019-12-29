@@ -2737,7 +2737,6 @@ void BoxElementShapeBuilder2::build()
 
 
 	if (m_shadowEnabled && !m_shadowStyle.shadowInset) {
-        //const float maxOuterSize = std::min(m_shapeOuterRect.rect.width, m_shapeOuterRect.rect.height);
 
 
         const float wd2 = m_shadowStyle.shadowBlur / 2;
@@ -2746,11 +2745,14 @@ void BoxElementShapeBuilder2::build()
         farShadowRect.rect = m_shadowBaseRect.rect.makeInflate(wd2);
         farShadowRect.rect.x += m_shadowStyle.shadowOffset.x;
         farShadowRect.rect.y += m_shadowStyle.shadowOffset.y;
+
+        const float maxOuterShadowCornerSize = std::min(farShadowRect.rect.width, farShadowRect.rect.height) / 2;
+
         farShadowRect.corner = m_shadowBaseRect.corner;
-        farShadowRect.corner.topLeft += wd2;
-        farShadowRect.corner.topRight += wd2;
-        farShadowRect.corner.bottomRight += wd2;
-        farShadowRect.corner.bottomLeft += wd2;
+        farShadowRect.corner.topLeft = std::min(farShadowRect.corner.topLeft + wd2, maxOuterShadowCornerSize);
+        farShadowRect.corner.topRight = std::min(farShadowRect.corner.topRight + wd2, maxOuterShadowCornerSize);
+        farShadowRect.corner.bottomRight = std::min(farShadowRect.corner.bottomRight + wd2, maxOuterShadowCornerSize);
+        farShadowRect.corner.bottomLeft = std::min(farShadowRect.corner.bottomLeft + wd2, maxOuterShadowCornerSize);
 
 
         BaseRect nearShadowRect;
@@ -2787,7 +2789,6 @@ void BoxElementShapeBuilder2::build()
         nearShadowRect.corner.bottomLeft = std::max(nearShadowRect.corner.bottomLeft - wd2, m_shapeOuterRect.corner.bottomLeft);
 
 
-#if 1
         BorderComponent shapeShadowComponent[4];
         BasePath shapeShadowBasePath;
         makeBaseOuterPointsAndBorderComponent(m_shapeOuterRect, 1.0f, shapeShadowComponent, &shapeShadowBasePath);
@@ -2849,11 +2850,11 @@ void BoxElementShapeBuilder2::build()
             //if (dot >= 0) {
             float d = plane.getDistanceToPoint(Vector3(iPt.pos, 0));
             //if (d < 0) {
-                //if (m_shapeOuterRect.rect.contains(iPt.pos)) {
-                if ((iPt.pos.x > m_shapeOuterRect.rect.x) && (iPt.pos.x - m_shapeOuterRect.rect.width < m_shapeOuterRect.rect.x) && (iPt.pos.y > m_shapeOuterRect.rect.y) && (iPt.pos.y - m_shapeOuterRect.rect.height < m_shapeOuterRect.rect.y)) {
+                if (m_shapeOuterRect.rect.contains(iPt.pos)) {
+                //if ((iPt.pos.x > m_shapeOuterRect.rect.x) && (iPt.pos.x - m_shapeOuterRect.rect.width < m_shapeOuterRect.rect.x) && (iPt.pos.y > m_shapeOuterRect.rect.y) && (iPt.pos.y - m_shapeOuterRect.rect.height < m_shapeOuterRect.rect.y)) {
                     iPt.pos = vPt.pos;
 
-                    vPt.color = Color::Green;
+                    //vPt.color = Color::Green;
 
                     // スナップ後の位置で再び、線分からの垂直距離を求める
                     //float d2 = plane.getDistanceToPoint(Vector3(iPt.pos, 0));
@@ -2943,56 +2944,6 @@ void BoxElementShapeBuilder2::build()
             }
         }
 
-#else
-        BorderComponent nearShadowComponents[4];
-        makeBaseOuterPointsAndBorderComponent(nearShadowRect, 1.0f, nearShadowComponents, &m_nearShadowBasePath);
-
-
-        // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
-        // ただし Convex は凸形状でなければ描画が崩れるので、外周を囲って中抜きする Shadow は 1 パスでは描けない。
-        // そのため上下左右分けて Path を作る
-        for (int iCmp = 0; iCmp < 4; iCmp++) {
-            auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
-
-            for (int i = nearShadowComponents[iCmp].beginOuter(); i < nearShadowComponents[iCmp].endOuter(); i++) {
-                addOutlineIndex(i);
-                outlinePoint(i).color.a = 1.0f;
-            }
-
-            for (int i = m_shapeOuterComponents[iCmp].endOuter() - 1; i >= m_shapeOuterComponents[iCmp].beginOuter(); i--) {
-                addOutlineIndex(i);
-            }
-
-            endOutlinePath(path);
-        }
-
-
-
-        {
-            BorderComponent shadowComponents[4];
-            makeBaseOuterPointsAndBorderComponent(farShadowRect, 1.0f, shadowComponents, &m_farShadowBasePath);
-
-
-            // 外周と内周の頂点数が異なる場合に備えて、Stripe ではなく Convex で Path を作る。
-            // ただし Convex は凸形状でなければ描画が崩れるので、外周を囲って中抜きする Shadow は 1 パスでは描けない。
-            // そのため上下左右分けて Path を作る
-            for (int iCmp = 0; iCmp < 4; iCmp++) {
-                auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
-
-                for (int i = shadowComponents[iCmp].beginOuter(); i < shadowComponents[iCmp].endOuter(); i++) {
-                    addOutlineIndex(i);
-                    outlinePoint(i).color.a = 0.0f;
-                }
-
-                for (int i = nearShadowComponents[iCmp].endOuter() - 1; i >= nearShadowComponents[iCmp].beginOuter(); i--) {
-                    addOutlineIndex(i);
-                }
-
-                endOutlinePath(path);
-                //break;
-            }
-        }
-#endif
 	}
 
     if (m_backgroundEnabled)
@@ -3037,24 +2988,7 @@ void BoxElementShapeBuilder2::build()
                 if (m_shapeAAEnabled) {
                     makeOutlineAntiAlias(path);
                 }
-
-
-
-
-                //if (iCmp == Top) {
-                //    auto* path = beginOutlinePath(OutlinePathType::Convex, Color::Black);
-
-                //    int id = shapeInnerComponent[iCmp].beginOuter();
-                //    outlinePoint(id).antiAliasDir[1] = Vector2(0, 1);
-
-                //    outlinePoint(shapeInnerComponent[iCmp].endOuter() - 1).antiAliasDir[1] = Vector2(0, 1);
-
-                //    path->antiAliasCount = 2;
-
-                //    endOutlinePath(path);
-                //}
             }
-
         }
     }
 
@@ -3183,7 +3117,7 @@ void BoxElementShapeBuilder2::setupBaseRects()
 
 	// ShadowRect を確定する
 	{
-        const float w = m_shadowStyle.shadowWidth;//m_shadowStyle.shadowBlur / 2;
+        const float w = m_shadowStyle.shadowBlur / 2;//m_shadowStyle.shadowWidth;//
 
 		if (m_shadowStyle.shadowInset) {
 			// shadowWidth の押し出し分だけ半径を調整する
@@ -3334,15 +3268,11 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
     int count = path->pointCount;
 
     for (int iAA = 0; iAA < path->antiAliasCount; iAA++) {
-
-
         auto* aaPath = beginOutlinePath(OutlinePathType::Stripe, path->color, PathWinding::CW);
         aaPath->stripeClosing = true;
         for (int i = 0; i < count; i++) {
-            int idIndex = startPoint /*+ start*/ + i;
+            int idIndex = startPoint + i;
             auto& pt = outlinePoint(outlineIndex(idIndex));
-            //auto& pt = m_outlinePointBuffer.getAt(idIndex);
-            //auto& basePt = m_baselinePointBuffer.getAt(pt.basePoint);
 
             Vector2 pos = pt.pos + (pt.antiAliasDir[iAA] * length);
             if (!m_baseStyle.aligndLineAntiAlias) {
@@ -3358,10 +3288,6 @@ void BoxElementShapeBuilder2::makeOutlineAntiAlias(const OutlinePath* path/*, in
             addOutlineIndex(outlineIndex(idIndex));
         }
         endOutlinePath(aaPath);
-
-        //if (iAA == 0 && pt.antiAliasDir[iAA + 1] != Vector2::Zero) {
-
-        //}
     }
 }
 
@@ -3391,24 +3317,9 @@ void BoxElementShapeBuilder2::expandPathes()
 		m_vertexCache.add(v);
 	}
 
-
-
 	for (int iPath = 0; iPath < m_outlinePaths.size(); iPath++)
 	{
 		auto& path = m_outlinePaths[iPath];
-
-		//for (int i = 0; i < path.pointCount; i++)
-		//{
-		//	const OutlinePoint& pt = m_outlinePointBuffer.getAt(path.pointStart + i);
-		//	Vertex v;
-		//	v.position = Vector3::transformCoord(Vector3(pt.pos + g_finalOffset, 0), m_baseStyle.transform);
-		//	v.normal = Vector3::UnitZ;
-		//	v.uv = Vector2::Zero;
-		//	v.color = path.color;
-		//	v.color.a *= pt.alpha;
-		//	m_vertexCache.add(v);
-		//}
-
 		switch (path.type)
 		{
 		case OutlinePathType::Convex:
