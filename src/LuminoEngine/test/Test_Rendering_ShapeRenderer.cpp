@@ -2,8 +2,8 @@
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 
 //==============================================================================
-//# ShapeRenderer
-class Test_Rendering_ShapeRenderer : public LuminoSceneTest
+//# Test_Rendering_BoxElement
+class Test_Rendering_BoxElement : public LuminoSceneTest
 {
 public:
 	class TestElement : public UIElement
@@ -18,7 +18,7 @@ public:
 
 //------------------------------------------------------------------------------
 //## Basic
-TEST_F(Test_Rendering_ShapeRenderer, Basic)
+TEST_F(Test_Rendering_BoxElement, Basic)
 {
 
     auto element1 = makeObject<TestElement>();
@@ -68,11 +68,11 @@ TEST_F(Test_Rendering_ShapeRenderer, Basic)
 	};
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-Basic-1.png"));
+    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Basic-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 
-TEST_F(Test_Rendering_ShapeRenderer, BackgroundOnly)
+TEST_F(Test_Rendering_BoxElement, Background)
 {
 	auto element1 = makeObject<TestElement>();
 	element1->setHorizontalAlignment(HAlignment::Stretch);
@@ -106,11 +106,11 @@ TEST_F(Test_Rendering_ShapeRenderer, BackgroundOnly)
 	};
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BackgroundOnly-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Background-1.png"));
 	LN_TEST_CLEAN_SCENE;
 }
 
-TEST_F(Test_Rendering_ShapeRenderer, BorderOnly)
+TEST_F(Test_Rendering_BoxElement, Border)
 {
 	auto element1 = makeObject<TestElement>();
 	element1->setHorizontalAlignment(HAlignment::Stretch);
@@ -155,7 +155,7 @@ TEST_F(Test_Rendering_ShapeRenderer, BorderOnly)
 		};
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Border-1.png"));
 	}
 
 	// outset, enable-corner
@@ -195,7 +195,7 @@ TEST_F(Test_Rendering_ShapeRenderer, BorderOnly)
 		};
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-2.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Border-2.png"));
 	}
 
 	// inset, disable-corner
@@ -236,7 +236,7 @@ TEST_F(Test_Rendering_ShapeRenderer, BorderOnly)
 		};
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-3.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Border-3.png"));
 	}
 
 	// outset, enable-corner
@@ -276,7 +276,7 @@ TEST_F(Test_Rendering_ShapeRenderer, BorderOnly)
 		};
 
 		TestEnv::updateFrame();
-		ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-4.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Border-4.png"));
 	}
 
 	//  0 size
@@ -321,13 +321,13 @@ TEST_F(Test_Rendering_ShapeRenderer, BorderOnly)
 		};
 
 		TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-5.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Border-5.png"));
 	}
 
 	LN_TEST_CLEAN_SCENE;
 }
 
-TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
+TEST_F(Test_Rendering_BoxElement, ShadowOnly)
 {
     auto element1 = makeObject<TestElement>();
     element1->setHorizontalAlignment(HAlignment::Stretch);
@@ -373,7 +373,7 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
     //    };
 
     //    TestEnv::updateFrame();
-    //    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-ShadowOnly-1.png"));
+    //    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-1.png"));
     //}
 
     //// outset-corner
@@ -419,7 +419,7 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
     //    };
 
     //    TestEnv::updateFrame();
-    //    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-ShadowOnly-2.png"));
+    //    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-2.png"));
     //}
 
     // outset-offset
@@ -466,7 +466,7 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-ShadowOnly-3.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-3.png"));
     }
 
     // inset
@@ -507,7 +507,7 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-ShadowOnly-3.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-3.png"));
     }
 
     // inset-corner
@@ -548,7 +548,7 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-ShadowOnly-4.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-4.png"));
     }
 
     // 0 size
@@ -591,7 +591,7 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-ShadowOnly-5.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-5.png"));
     }
 
     // offset
@@ -639,13 +639,13 @@ TEST_F(Test_Rendering_ShapeRenderer, ShadowOnly)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-ShadowOnly-6.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-ShadowOnly-6.png"));
     }
 
     LN_TEST_CLEAN_SCENE;
 }
 
-TEST_F(Test_Rendering_ShapeRenderer, BorderIlls)
+TEST_F(Test_Rendering_BoxElement, BorderIlls)
 {
 	auto element1 = makeObject<TestElement>();
 	element1->setHorizontalAlignment(HAlignment::Stretch);
@@ -667,7 +667,7 @@ TEST_F(Test_Rendering_ShapeRenderer, BorderIlls)
 	TestEnv::updateFrame();
 	TestEnv::updateFrame();
 	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Result/Test_Rendering_ShapeRenderer-BorderOnly-1.png"));
+	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-BorderOnly-1.png"));
 	LN_TEST_CLEAN_SCENE;
 }
 
