@@ -659,7 +659,7 @@ private:
 	int outlineIndex(int index) const { return m_outlineIndices.getAt(index); }
     void makeStripePointPair(BorderComponent* outerCmps, const BorderComponent* innerCmps);
     void makeOutlineAntiAlias(const OutlinePath* path/*, int start, int count*/);
-    void makeStripePath(const BorderComponent* outerCmps, const BorderComponent* innerCmps);
+    void makeStripePath(const BorderComponent* outerCmps, const BorderComponent* innerCmps, PathWinding winding = PathWinding::CW);
     void applyColorToShadowComponents(BorderComponent components[4], float alpha);
 
 	void expandPathes();
@@ -677,6 +677,7 @@ private:
 	bool m_shapeAAEnabled;
 
 	// Working data
+    CornerRadius m_cornerRatios;
 	BaseRect m_shapeOuterRect;	// shape の外周。Background または、outsetBorder の外側。
 	BaseRect m_shapeInnerRect;	// shape の内周。insetBorder の境界。insetShadow の接合部。border が無い場合は Background の外周と等しい。
 	BaseRect m_shadowBaseRect;	// shadow の外周。inset/outset共有。shadowBlur はこの時点では考慮しない。
