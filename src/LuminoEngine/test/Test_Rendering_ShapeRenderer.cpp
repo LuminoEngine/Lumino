@@ -646,59 +646,59 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
     LN_TEST_CLEAN_SCENE;
 }
 
-TEST_F(Test_Rendering_BoxElement, ShadowIllegals)
-{
-    auto element1 = makeObject<TestElement>();
-    element1->setHorizontalAlignment(HAlignment::Stretch);
-    element1->setVerticalAlignment(VAlignment::Stretch);
-    Engine::mainUIView()->addChild(element1);
-
-    // 0 size
-    {
-        element1->render = [](UIRenderingContext* context)
-        {
-            BoxElementShapeBaseStyle baseStyle;
-            BoxElementShapeShadowStyle shadowStyle;
-
-            baseStyle.baseRect = Rect(10, 10, 0, 0);
-            shadowStyle.shadowWidth = 10;
-            shadowStyle.shadowBlur = 5;
-            shadowStyle.shadowColor = Color::Red;
-            shadowStyle.shadowInset = false;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-
-            baseStyle.baseRect = Rect(70, 10, 0, 0);
-            baseStyle.cornerRadius = CornerRadius(5);
-            shadowStyle.shadowWidth = 10;
-            shadowStyle.shadowBlur = 5;
-            shadowStyle.shadowColor = Color::Blue;
-            shadowStyle.shadowInset = false;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-
-            // Size 0 だと inset は描画されない
-            baseStyle.baseRect = Rect(0, 60, 0, 0);
-            shadowStyle.shadowWidth = 10;
-            shadowStyle.shadowBlur = 5;
-            shadowStyle.shadowColor = Color::Green;
-            shadowStyle.shadowInset = true;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-
-            baseStyle.baseRect = Rect(80, 60, 20, 20);
-            baseStyle.cornerRadius = CornerRadius(10);
-            shadowStyle.shadowWidth = 10;
-            shadowStyle.shadowBlur = 5;
-            shadowStyle.shadowColor = Color::Yellow;
-            shadowStyle.shadowInset = true;
-            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-        };
-
-        TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowIllegals-1.png"));
-    }
-
-    LN_TEST_CLEAN_SCENE;
-}
-
+//TEST_F(Test_Rendering_BoxElement, ShadowIllegals)
+//{
+//    auto element1 = makeObject<TestElement>();
+//    element1->setHorizontalAlignment(HAlignment::Stretch);
+//    element1->setVerticalAlignment(VAlignment::Stretch);
+//    Engine::mainUIView()->addChild(element1);
+//
+//    // 0 size
+//    {
+//        element1->render = [](UIRenderingContext* context)
+//        {
+//            BoxElementShapeBaseStyle baseStyle;
+//            BoxElementShapeShadowStyle shadowStyle;
+//
+//            baseStyle.baseRect = Rect(10, 10, 0, 0);
+//            shadowStyle.shadowWidth = 10;
+//            shadowStyle.shadowBlur = 5;
+//            shadowStyle.shadowColor = Color::Red;
+//            shadowStyle.shadowInset = false;
+//            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//
+//            baseStyle.baseRect = Rect(70, 10, 0, 0);
+//            baseStyle.cornerRadius = CornerRadius(5);
+//            shadowStyle.shadowWidth = 10;
+//            shadowStyle.shadowBlur = 5;
+//            shadowStyle.shadowColor = Color::Blue;
+//            shadowStyle.shadowInset = false;
+//            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//
+//            // Size 0 だと inset は描画されない
+//            baseStyle.baseRect = Rect(0, 60, 0, 0);
+//            shadowStyle.shadowWidth = 10;
+//            shadowStyle.shadowBlur = 5;
+//            shadowStyle.shadowColor = Color::Green;
+//            shadowStyle.shadowInset = true;
+//            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//
+//            baseStyle.baseRect = Rect(80, 60, 20, 20);
+//            baseStyle.cornerRadius = CornerRadius(10);
+//            shadowStyle.shadowWidth = 10;
+//            shadowStyle.shadowBlur = 5;
+//            shadowStyle.shadowColor = Color::Yellow;
+//            shadowStyle.shadowInset = true;
+//            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+//        };
+//
+//        TestEnv::updateFrame();
+//        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowIllegals-1.png"));
+//    }
+//
+//    LN_TEST_CLEAN_SCENE;
+//}
+//
 //TEST_F(Test_Rendering_BoxElement, ShadowOffset)
 //{
 //    auto element1 = makeObject<TestElement>();

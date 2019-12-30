@@ -387,6 +387,12 @@ protected:
         bool verify() const;
     };
 
+    struct GlobalComponent
+    {
+        float width;
+        Color color;
+    };
+
     struct OutlinePoint
     {
         Vector2 pos;
@@ -436,7 +442,8 @@ protected:
     int addOutlineIndex(int pointId);
     OutlinePoint& outlinePoint(int index) { return m_outlinePointBuffer.getAt(index); }
     int outlineIndex(int index) const { return m_outlineIndices.getAt(index); }
-    
+    void makeOutlineAntiAlias(const OutlinePath* path/*, int start, int count*/);
+
     void expandPathes();
     void expandConvex(const OutlinePath& path);
     void expandStripeStroke(const OutlinePath& path);
@@ -458,6 +465,7 @@ protected:
     GuideArea m_outerShadowFarGuide;    // shape の外側 Shadow の、Blur 消失点 (alpha 0.0)
     GuideArea m_innerShadowNearGuide;   // shape の外側 Shadow の、Blur 中間点 (alpha 1.0)
     GuideArea m_innerShadowFarGuide;    // shape の外側 Shadow の、Blur 消失点 (alpha 0.0)
+    GlobalComponent m_commonComponents[4];
 
     // Outline
     CacheBuffer<OutlinePoint> m_outlinePointBuffer;
