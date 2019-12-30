@@ -1323,11 +1323,11 @@ void BoxElementShapeBuilderCommon::setupGuideline()
 
         GuideArea baseGuide;
         baseGuide.rect = m_shapeOuterGuide.rect.makeInflate(Thickness(m_shadowStyle.shadowWidth));
-        baseGuide.corner = m_shapeOuterGuide.corner;
-        baseGuide.corner.topLeft += m_shadowStyle.shadowWidth;
-        baseGuide.corner.topRight += m_shadowStyle.shadowWidth;
-        baseGuide.corner.bottomRight += m_shadowStyle.shadowWidth;
-        baseGuide.corner.bottomLeft += m_shadowStyle.shadowWidth;
+        //baseGuide.corner = m_shapeOuterGuide.corner;
+        baseGuide.corner.topLeft = (m_shapeOuterGuide.corner.topLeft > 0.0f) ? (m_shapeOuterGuide.corner.topLeft + m_shadowStyle.shadowWidth) : hw;
+        baseGuide.corner.topRight = (m_shapeOuterGuide.corner.topRight > 0.0f) ? (m_shapeOuterGuide.corner.topRight + m_shadowStyle.shadowWidth) : hw;
+        baseGuide.corner.bottomRight = (m_shapeOuterGuide.corner.bottomRight > 0.0f) ? (m_shapeOuterGuide.corner.bottomRight + m_shadowStyle.shadowWidth) : hw;
+        baseGuide.corner.bottomLeft = (m_shapeOuterGuide.corner.bottomLeft > 0.0f) ? (m_shapeOuterGuide.corner.bottomLeft + m_shadowStyle.shadowWidth) : hw;
         ajustGuidelineCorners(&baseGuide);
 
         // NearGuide は Blur が大きい場合、ShapeOuter よりも小さい矩形となることがある
@@ -2582,7 +2582,7 @@ void BoxElementShapeBuilder3::build()
 
         const float hb = (m_shadowStyle.shadowBlur / 2);
         for (int i = 0; i < shaprRange.countId; i++) {
-            const auto& vPt = outlinePoint(shaprRange.startId + i);
+            auto& vPt = outlinePoint(shaprRange.startId + i);
             auto& nPt = outlinePoint(nearRange.startId + i);
 
             //Plane plane(Vector3(nPt))
@@ -2590,6 +2590,8 @@ void BoxElementShapeBuilder3::build()
 #if 1
             //float dx = std::abs(nPt.pos.x - vPt.pos.x);
             //float dy = std::abs(nPt.pos.y - vPt.pos.y);
+
+
 
             Vector2 org = nPt.pos;
 
@@ -2636,6 +2638,10 @@ void BoxElementShapeBuilder3::build()
                 float a = Math::clamp01(1.0f - d / m_shadowStyle.shadowBlur);
                 nPt.color.a *= a;
                 //nPt.color = Color::Blue;
+
+                // 次のオフセット調整で、shape の内側に入り込んだ near が外に出ることに備えて、shape の色を合わせておく
+                // こうしないと、はみ出たときに境界付近だけ色が濃くなる。
+                vPt.color = nPt.color;
             }
             //if (ratio != Vector2::Ones) {
             //    float dx = std::abs(nPt.pos.x - org.x);
@@ -2664,27 +2670,29 @@ void BoxElementShapeBuilder3::build()
         //applyColorsAndOffset(nearRange, m_shadowStyle.shadowColor, m_shadowStyle.shadowOffset);
 
 
+        if (m_shadowStyle.shadowOffset != Vector2::Zero) {
+            for (int i = 0; i < shaprRange.countId; i++) {
+                const auto& vPt = outlinePoint(shaprRange.startId + i);
+                auto& nPt = outlinePoint(nearRange.startId + i);
 
-        for (int i = 0; i < shaprRange.countId; i++) {
-            const auto& vPt = outlinePoint(shaprRange.startId + i);
-            auto& nPt = outlinePoint(nearRange.startId + i);
-
-            nPt.pos += m_shadowStyle.shadowOffset;
+                nPt.pos += m_shadowStyle.shadowOffset;
 
 
-            float e = 1.0f;// std::abs(Vector2::dot(Vector2::normalize(m_shadowStyle.shadowOffset), vPt.antiAliasDir[0]));//1.0f;//
-            Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.antiAliasDir[0], 0));
-            float d2 = plane.getDistanceToPoint(Vector3(nPt.pos, 0));
-            if (d2 < 0.0f) {
+                float e = 1.0f;// std::abs(Vector2::dot(Vector2::normalize(m_shadowStyle.shadowOffset), vPt.antiAliasDir[0]));//1.0f;//
+                Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.antiAliasDir[0], 0));
+                float d2 = plane.getDistanceToPoint(Vector3(nPt.pos, 0));
+                if (d2 < 0.0f) {
 
-                float d = std::abs(d2);  // 内側に入っているはずなのでマイナスを消す
-                float a = Math::clamp01(1.0f - d / m_shadowStyle.shadowBlur);
+                    float d = std::abs(d2);  // 内側に入っているはずなのでマイナスを消す
+                    float a = Math::clamp01(1.0f - d / m_shadowStyle.shadowBlur);
 
-                nPt.color.a = Math::lerp(nPt.color.a, a, e);
-                nPt.pos = vPt.pos;
+                    //nPt.color.a = Math::lerp(nPt.color.a, a, e);
+                    nPt.color.a *= a;
+                    nPt.pos = vPt.pos;
+                }
+
+
             }
-
-
         }
 #else
 
