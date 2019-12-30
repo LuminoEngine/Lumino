@@ -639,6 +639,9 @@ private:
         Component components[4];
         int startId;
         int countId;
+
+        int beginIds() const { return startId; }
+        int endIds() const { return startId + countId; }
     };
 
     struct PointIdRange

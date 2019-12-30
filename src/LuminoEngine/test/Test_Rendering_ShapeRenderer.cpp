@@ -70,7 +70,7 @@ TEST_F(Test_Rendering_BoxElement, Basic)
 	};
 
     TestEnv::updateFrame();
-    ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Basic-1.png"));
+    ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/ShapeRenderer-Basic-1.png"));
     LN_TEST_CLEAN_SCENE;
 }
 
@@ -516,7 +516,7 @@ TEST_F(Test_Rendering_BoxElement, OutsetShadowOffset)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-OutsetShadowOffset-4.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-OutsetShadowOffset-4.png"));
     }
 
     LN_TEST_CLEAN_SCENE;
@@ -693,7 +693,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
 //        };
 //
 //        TestEnv::updateFrame();
-//        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowIllegals-1.png"));
+//        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowIllegals-1.png"));
 //    }
 //
 //    LN_TEST_CLEAN_SCENE;
@@ -777,9 +777,7 @@ TEST_F(Test_Rendering_BoxElement, BorderIlls)
 	};
 
 	TestEnv::updateFrame();
-	TestEnv::updateFrame();
-	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/Test_Rendering_BoxElement-BorderOnly-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-BorderIlls-1.png"));
 	LN_TEST_CLEAN_SCENE;
 }
 

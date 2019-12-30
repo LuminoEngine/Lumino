@@ -1188,6 +1188,8 @@ void BoxElementShapeBuilderCommon::resetComon()
     m_borderEnabled = false;
     m_shadowEnabled = false;
 
+    for (int iCmp = 0; iCmp < 4; iCmp++) m_commonComponents[iCmp].width = 0.0f;
+
     m_outlinePointBuffer.clear();
     m_outlinePaths.clear();
     m_outlineIndices.clear();
@@ -1313,7 +1315,12 @@ void BoxElementShapeBuilderCommon::setupGuideline()
         else
             m_shapeInnerGuide.corner.bottomLeft = std::max(m_shapeOuterGuide.corner.bottomLeft - std::max(bw, lw), 0.0f);
 
-        m_shapeInnerGuide.rect = m_shapeOuterGuide.rect.makeDeflate(m_borderStyle.borderThickness);
+        if (m_borderEnabled)
+            m_shapeInnerGuide.rect = m_shapeOuterGuide.rect.makeDeflate(m_borderStyle.borderThickness);
+        else
+            m_shapeInnerGuide.rect = m_shapeOuterGuide.rect;
+
+        ajustGuidelineCorners(&m_shapeInnerGuide);
     }
 
     if (m_borderEnabled) {
@@ -2835,6 +2842,24 @@ void BoxElementShapeBuilder3::build()
 
     ComponentSet shapeOuterComponentSet;
     makeBaseOuterPointsAndBorderComponent(m_shapeOuterGuide, 1.0f, &shapeOuterComponentSet);
+
+    if (m_backgroundEnabled)
+    {
+        auto* path = beginOutlinePath(OutlinePathType::Convex);
+        for (int id = shapeOuterComponentSet.beginIds(); id < shapeOuterComponentSet.endIds(); id++) {
+            addOutlineIndex(id);
+            outlinePoint(id).color = m_backgroundStyle.color;
+        }
+        endOutlinePath(path);
+
+
+        if (m_shapeAAEnabled) {
+            // Border が無ければ、Background の色を使って外周に AA を作る
+            if (!m_borderEnabled) {
+                makeOutlineAntiAlias(path);
+            }
+        }
+    }
 
     if (m_borderEnabled) {
         ComponentSet shapeInnerComponentSet;
