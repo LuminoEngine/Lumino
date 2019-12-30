@@ -1275,6 +1275,8 @@ void BoxElementShapeBuilderCommon::setupGuideline()
             }
         }
 
+        m_shapeOuterGuide.corner = m_baseStyle.cornerRadius;
+
         // Radius をサイズ内に収まるように調整する
         ajustGuidelineCorners(&m_shapeOuterGuide);
     }
@@ -1319,20 +1321,28 @@ void BoxElementShapeBuilderCommon::setupGuideline()
     {
         const float hw = m_shadowStyle.shadowBlur / 2;
 
-        // NearGuide は Blur が大きい場合、ShapeOuter よりも小さい矩形となることがある
-        const float near = m_shadowStyle.shadowWidth - hw;
-        m_outerShadowNearGuide.rect = m_shapeOuterGuide.rect.makeInflate(Thickness(near));
-        m_outerShadowNearGuide.corner.topLeft = m_shapeOuterGuide.corner.topLeft + near;
-        m_outerShadowNearGuide.corner.topRight = m_shapeOuterGuide.corner.topRight + near;
-        m_outerShadowNearGuide.corner.bottomRight = m_shapeOuterGuide.corner.bottomRight + near;
-        m_outerShadowNearGuide.corner.bottomLeft = m_shapeOuterGuide.corner.bottomLeft + near;
+        GuideArea baseGuide;
+        baseGuide.rect = m_shapeOuterGuide.rect.makeInflate(Thickness(m_shadowStyle.shadowWidth));
+        baseGuide.corner = m_shapeOuterGuide.corner;
+        baseGuide.corner.topLeft += m_shadowStyle.shadowWidth;
+        baseGuide.corner.topRight += m_shadowStyle.shadowWidth;
+        baseGuide.corner.bottomRight += m_shadowStyle.shadowWidth;
+        baseGuide.corner.bottomLeft += m_shadowStyle.shadowWidth;
+        ajustGuidelineCorners(&baseGuide);
 
-        const float far = m_shadowStyle.shadowWidth + hw;
-        m_shapeInnerGuide.rect = m_shapeOuterGuide.rect.makeInflate(Thickness(far));
-        m_shapeInnerGuide.corner.topLeft = m_shapeOuterGuide.corner.topLeft + far;
-        m_shapeInnerGuide.corner.topRight = m_shapeOuterGuide.corner.topRight + far;
-        m_shapeInnerGuide.corner.bottomRight = m_shapeOuterGuide.corner.bottomRight + far;
-        m_shapeInnerGuide.corner.bottomLeft = m_shapeOuterGuide.corner.bottomLeft + far;
+        // NearGuide は Blur が大きい場合、ShapeOuter よりも小さい矩形となることがある
+        m_outerShadowNearGuide.rect = baseGuide.rect.makeDeflate(Thickness(hw));
+        //m_outerShadowNearGuide.corner = baseGuide.corner;
+        m_outerShadowNearGuide.corner.topLeft = std::max(baseGuide.corner.topLeft - hw, 0.0f);
+        m_outerShadowNearGuide.corner.topRight = std::max(baseGuide.corner.topRight - hw, 0.0f);
+        m_outerShadowNearGuide.corner.bottomRight = std::max(baseGuide.corner.bottomRight - hw, 0.0f);
+        m_outerShadowNearGuide.corner.bottomLeft = std::max(baseGuide.corner.bottomLeft - hw, 0.0f);
+
+        m_outerShadowFarGuide.rect = baseGuide.rect.makeInflate(Thickness(hw));
+        m_outerShadowFarGuide.corner.topLeft = baseGuide.corner.topLeft + hw;
+        m_outerShadowFarGuide.corner.topRight = baseGuide.corner.topRight + hw;
+        m_outerShadowFarGuide.corner.bottomRight = baseGuide.corner.bottomRight + hw;
+        m_outerShadowFarGuide.corner.bottomLeft = baseGuide.corner.bottomLeft + hw;
     }
 
     // Inner shadow
@@ -1590,9 +1600,14 @@ bool BoxElementShapeBuilderCommon::GuideArea::verify() const
     return
         (rect.width >= 0) &&
         (rect.height >= 0) &&
+        (corner.topLeft >= 0) &&
         (corner.topRight >= 0) &&
         (corner.bottomRight >= 0) &&
-        (corner.bottomLeft >= 0);
+        (corner.bottomLeft >= 0) &&
+        (corner.topLeft + corner.topRight <= rect.width) &&
+        (corner.bottomLeft + corner.bottomRight <= rect.width) &&
+        (corner.topLeft + corner.bottomLeft <= rect.height) &&
+        (corner.topRight + corner.bottomRight <= rect.height);
 }
 
 //==============================================================================
@@ -2524,10 +2539,25 @@ void BoxElementShapeBuilder3::build()
     setupGuideline();
 
     if (outerShadowEnabled()) {
-        m_shadowtess[TopLeft] = (int)Math::clamp(m_shapeOuterGuide.corner.topLeft / 2, 1, 8);
-        m_shadowtess[TopRight] = (int)Math::clamp(m_shapeOuterGuide.corner.topRight / 2, 1, 8);
-        m_shadowtess[BottomRight] = (int)Math::clamp(m_shapeOuterGuide.corner.bottomRight / 2, 1, 8);
-        m_shadowtess[BottomLeft] = (int)Math::clamp(m_shapeOuterGuide.corner.bottomLeft / 2, 1, 8);
+        if (m_shapeOuterGuide.corner.topLeft == 0.0f)
+            m_shadowtess[TopLeft] = (int)Math::clamp(m_outerShadowFarGuide.corner.topLeft / 2, 1, 8);
+        else
+            m_shadowtess[TopLeft] = (int)Math::clamp(m_shapeOuterGuide.corner.topLeft * 2, 1, 8);
+
+        if (m_shapeOuterGuide.corner.topRight == 0.0f)
+            m_shadowtess[TopRight] = (int)Math::clamp(m_outerShadowFarGuide.corner.topRight / 2, 1, 8);
+        else
+            m_shadowtess[TopRight] = (int)Math::clamp(m_shapeOuterGuide.corner.topRight * 2, 1, 8);
+
+        if (m_shapeOuterGuide.corner.bottomRight == 0.0f)
+            m_shadowtess[BottomRight] = (int)Math::clamp(m_outerShadowFarGuide.corner.bottomRight / 2, 1, 8);
+        else
+            m_shadowtess[BottomRight] = (int)Math::clamp(m_shapeOuterGuide.corner.bottomRight * 2, 1, 8);
+
+        if (m_shapeOuterGuide.corner.bottomLeft == 0.0f)
+            m_shadowtess[BottomLeft] = (int)Math::clamp(m_outerShadowFarGuide.corner.bottomLeft / 2, 1, 8);
+        else
+            m_shadowtess[BottomLeft] = (int)Math::clamp(m_shapeOuterGuide.corner.bottomLeft * 2, 1, 8);
     }
     else if (insetShadowEnabled()) {
         m_shadowtess[TopLeft] = (int)Math::clamp(m_innerShadowNearGuide.corner.topLeft / 2, 1, 8);
@@ -2540,27 +2570,124 @@ void BoxElementShapeBuilder3::build()
     if (outerShadowEnabled()) {
 
         PointIdRange shaprRange;
-        makeShadowoutlinePoints(m_shapeInnerGuide, 1.0f, &shaprRange);
+        makeShadowoutlinePoints(m_shapeOuterGuide, 1.0f, &shaprRange);
         applyColors(shaprRange, m_shadowStyle.shadowColor);
 
         PointIdRange nearRange;
         makeShadowoutlinePoints(m_outerShadowNearGuide, 1.0f, &nearRange);
-        applyColors(nearRange, m_shadowStyle.shadowColor);
+        applyColorsAndOffset(nearRange, m_shadowStyle.shadowColor, m_shadowStyle.shadowOffset);
 
 
-        assert(shaprRange.countId == nearRange.countId);
-        auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
-        path->stripeClosing = true;
-        for (int i = 0; i < nearRange.countId; i++) {
-            addOutlineIndex(nearRange.startId + i);
-            addOutlineIndex(shaprRange.startId + i);
+#if 1
+        for (int i = 0; i < shaprRange.countId; i++) {
+            const auto& vPt = outlinePoint(shaprRange.startId + i);
+            auto& nPt = outlinePoint(nearRange.startId + i);
+
+
+            float e = std::abs(Vector2::dot(Vector2::normalize(m_shadowStyle.shadowOffset), vPt.antiAliasDir[0]));//1.0f;//
+            Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.antiAliasDir[0], 0));
+            float d2 = plane.getDistanceToPoint(Vector3(nPt.pos, 0));
+            if (d2 < 0.0f) {
+
+                float d = std::abs(d2);  // 内側に入っているはずなのでマイナスを消す
+                float a = Math::clamp01(1.0f - d / m_shadowStyle.shadowBlur);
+
+                nPt.color.a = Math::lerp(nPt.color.a, a, e);
+                nPt.pos = vPt.pos;
+            }
+
+
         }
-        endOutlinePath(path);
+#else
+
+        const float hb = (m_shadowStyle.shadowBlur / 2);
+        for (int i = 0; i < shaprRange.countId; i++) {
+            const auto& vPt = outlinePoint(shaprRange.startId + i);
+            auto& nPt = outlinePoint(nearRange.startId + i);
+
+            //Plane plane(Vector3(nPt))
+
+#if 1
+            //float dx = std::abs(nPt.pos.x - vPt.pos.x);
+            //float dy = std::abs(nPt.pos.y - vPt.pos.y);
+
+            Vector2 org = nPt.pos;
+
+            //Vector2 dir;
+            Vector2 ratio = Vector2::Ones;
+            bool test = false;
+
+            if (nPt.cornerGroup == TopLeft || nPt.cornerGroup == BottomLeft) {
+                if (nPt.pos.x > vPt.pos.x) {
+                    //dir.x = nPt.pos.x - vPt.pos.x;
+                    nPt.pos.x = vPt.pos.x;
+                    ratio.x = nPt.antiAliasDir[0].x;
+                    test = true;
+                }
+            }
+            if (nPt.cornerGroup == TopRight || nPt.cornerGroup == BottomRight) {
+                if (nPt.pos.x < vPt.pos.x) {
+                    //dir.x = nPt.pos.x - vPt.pos.x;
+                    nPt.pos.x = vPt.pos.x;
+                    ratio.x = nPt.antiAliasDir[0].x;
+                    test = true;
+                }
+            }
+            if (nPt.cornerGroup == TopLeft || nPt.cornerGroup == TopRight) {
+                if (nPt.pos.y > vPt.pos.y) {
+                    //dir.y = nPt.pos.y - vPt.pos.y;
+                    nPt.pos.y = vPt.pos.y;
+                    ratio.y = nPt.antiAliasDir[0].y;
+                    test = true;
+                }
+            }
+            if (nPt.cornerGroup == BottomLeft || nPt.cornerGroup == BottomRight) {
+                if (nPt.pos.y < vPt.pos.y) {
+                    //dir.y = nPt.pos.y - vPt.pos.y;
+                    nPt.pos.y = vPt.pos.y;
+                    ratio.y = nPt.antiAliasDir[0].y;
+                    test = true;
+                }
+            }
+
+            //if (dir != Vector2::Zero) {
+            //    float d = dir.length();
+            //    float a = Math::clamp01(1.0f - (hb + d / hb));
+            //    nPt.color.a *= a;
+            //    //nPt.color = Color::Blue;
+            //}
+            //if (ratio != Vector2::Ones) {
+            //    float dx = std::abs(nPt.pos.x - org.x);
+            //    float dy = std::abs(nPt.pos.y - org.y);
+
+            //    float ax = Math::clamp01(1.0f - dx / hb);
+            //    float ay = Math::clamp01(1.0f - dy / hb);
+
+            //    float a = (ax * std::abs(ratio.x)) + (ay * std::abs(ratio.y));
+            //    nPt.color.a *= a;
+            //    //nPt.color = Color::Blue;
+            //}
+
+            if (test) {
+                float e =  std::abs(Vector2::dot(Vector2::normalize(m_shadowStyle.shadowOffset), vPt.antiAliasDir[0]));//1.0f;//
+                Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.antiAliasDir[0], 0));
+                float d = std::abs(plane.getDistanceToPoint(Vector3(org, 0)));  // 内側に入っているはずなのでマイナスを消す
+                float a = Math::clamp01(1.0f - d / m_shadowStyle.shadowBlur);
+
+                nPt.color.a = Math::lerp(nPt.color.a, a, e);
+                //nPt.color.a = a * e;
+            }
+#endif
+        }
+#endif
+
+        makeStripePath(nearRange, shaprRange);
 
         if (m_shadowStyle.shadowBlur > 0.0f) {
             PointIdRange farRange;
             makeShadowoutlinePoints(m_outerShadowFarGuide, 1.0f, &farRange);
-            applyColors(farRange, m_shadowStyle.shadowColor.withAlpha(0.0f));
+            applyColorsAndOffset(farRange, m_shadowStyle.shadowColor.withAlpha(0.0f), m_shadowStyle.shadowOffset);
+            makeStripePath(farRange, nearRange);
         }
     }
 
@@ -2575,21 +2702,6 @@ void BoxElementShapeBuilder3::build()
         PointIdRange nearRange;
         makeShadowoutlinePoints(m_innerShadowNearGuide, 1.0f, &nearRange);
         applyColors(nearRange, m_shadowStyle.shadowColor);
-
-        //static const std::function<bool(const OutlinePoint& iPt, const OutlinePoint& vPt)> checkOuterFuncs[4] = {
-        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x < vPt.pos.x || nPt.pos.y < vPt.pos.y; },   // TopLeft
-        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x > vPt.pos.x || nPt.pos.y < vPt.pos.y; },   // TopRight
-        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x > vPt.pos.x || nPt.pos.y > vPt.pos.y; },   // BottomRight
-        //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x < vPt.pos.x || nPt.pos.y > vPt.pos.y; },   // BottomLeft
-        //};
-        //for (int i = 0; i < innerRange.countId; i++) {
-        //    const auto& vPt = outlinePoint(innerRange.startId + i);
-        //    auto& nPt = outlinePoint(nearRange.startId + i);
-        //    if (checkOuterFuncs[nPt.cornerGroup](nPt, vPt)) {
-        //        float d = (vPt.pos - nPt.pos).length();
-        //        nPt.pos = vPt.pos;
-        //    }
-        //}
 
         for (int i = 0; i < shaprRange.countId; i++) {
             const auto& vPt = outlinePoint(shaprRange.startId + i);
@@ -2629,28 +2741,13 @@ void BoxElementShapeBuilder3::build()
             }
         }
 
-        assert(shaprRange.countId == nearRange.countId);
-        auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
-        path->stripeClosing = true;
-        for (int i = 0; i < shaprRange.countId; i++) {
-            addOutlineIndex(shaprRange.startId + i);
-            addOutlineIndex(nearRange.startId + i);
-        }
-        endOutlinePath(path);
+        makeStripePath(shaprRange, nearRange);
 
         if (m_shadowStyle.shadowBlur > 0.0f) {
             PointIdRange farRange;
             makeShadowoutlinePoints(m_innerShadowFarGuide, 1.0f, &farRange);
             applyColors(farRange, m_shadowStyle.shadowColor.withAlpha(0.0f));
-
-            assert(nearRange.countId == farRange.countId);
-            auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
-            path->stripeClosing = true;
-            for (int i = 0; i < nearRange.countId; i++) {
-                addOutlineIndex(nearRange.startId + i);
-                addOutlineIndex(farRange.startId + i);
-            }
-            endOutlinePath(path);
+            makeStripePath(nearRange, farRange);
         }
     }
 
@@ -2791,13 +2888,23 @@ void BoxElementShapeBuilder3::makeShadowoutlinePoints(const GuideArea& baseRect,
     auto addPointCallback_BR = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::BottomRight); };
     auto addPointCallback_BL = [this, dirSign](const Vector2& pos, const Vector2& infrateDir, float t) { addOutlinePoint(pos, dirSign * infrateDir, t, Corner::BottomLeft); };
 
+    //const float MagicOfs = 0.1;
+
     // TopLeft
     {
         if (tlRad <= 0.0f) {
-            const Vector2 dir = Vector2::normalize(Vector2(-1, -1));
+            //const Vector2 dir = Vector2::normalize(Vector2(-1, -1));
+            //int ps = m_outlinePointBuffer.getCount();
+            const float step = Math::PIDiv2 / m_shadowtess[TopLeft];
             for (int i = 0; i < m_shadowtess[TopLeft] + 1; i++) {   // 必ず要求されている数だけ作る. +1 は Utils_plotCornerPointsBezier2 と生成数を合わせるための調整
-                addOutlinePoint(lt[0], dir, 0.0f, Corner::TopLeft);
+                float r = Math::PI + (step * i);
+                float s, c;
+                Math::sinCos(r, &s, &c);
+                addOutlinePoint(lt[0], Vector2(c, s), 0.0f, Corner::TopLeft);
             }
+            //int pe = m_outlinePointBuffer.getCount();
+            //outlinePoint(ps).pos.x -= MagicOfs;
+            //outlinePoint(pe).pos.y -= MagicOfs;
         }
         else {
             Utils_plotCornerPointsBezier2(Vector2(lt[0].x, lt[1].y), Vector2(0, -1), Vector2(lt[1].x, lt[0].y), Vector2(-1, 0), 0.0f, 1.0f, lt[1], m_shadowtess[TopLeft], addPointCallback_TL);
@@ -2807,10 +2914,18 @@ void BoxElementShapeBuilder3::makeShadowoutlinePoints(const GuideArea& baseRect,
     // TopRight
     {
         if (trRad <= 0.0f) {
-            const Vector2 dir = Vector2::normalize(Vector2(1, -1));
-            for (int i = 0; i < m_shadowtess[TopRight] + 1; i++) { 
-                addOutlinePoint(rt[0], dir, 0.0f, Corner::TopRight);
+            //const Vector2 dir = Vector2::normalize(Vector2(1, -1));
+            //int ps = m_outlinePointBuffer.getCount();
+            const float step = Math::PIDiv2 / m_shadowtess[TopRight];
+            for (int i = 0; i < m_shadowtess[TopRight] + 1; i++) {
+                float r = (Math::PI + Math::PIDiv2) + (step * i);
+                float s, c;
+                Math::sinCos(r, &s, &c);
+                addOutlinePoint(rt[0], Vector2(c, s), 0.0f, Corner::TopRight);
             }
+            //int pe = m_outlinePointBuffer.getCount();
+            //outlinePoint(ps).pos.y -= MagicOfs;
+            //outlinePoint(pe).pos.x += MagicOfs;
         }
         else {
             Utils_plotCornerPointsBezier2(Vector2(rt[1].x, rt[0].y), Vector2(1, 0), Vector2(rt[0].x, rt[1].y), Vector2(0, -1), 0.0f, 1.0f, rt[1], m_shadowtess[TopRight], addPointCallback_TR);
@@ -2820,10 +2935,18 @@ void BoxElementShapeBuilder3::makeShadowoutlinePoints(const GuideArea& baseRect,
     // BottomRight
     {
         if (brRad <= 0.0f) {
-            const Vector2 dir = Vector2::normalize(Vector2(1, 1));
+            //const Vector2 dir = Vector2::normalize(Vector2(1, 1));
+            //int ps = m_outlinePointBuffer.getCount();
+            const float step = Math::PIDiv2 / m_shadowtess[BottomRight];
             for (int i = 0; i < m_shadowtess[BottomRight] + 1; i++) {
-                addOutlinePoint(rb[0], dir, 0.0f, Corner::BottomRight);
+                float r = (step * i);
+                float s, c;
+                Math::sinCos(r, &s, &c);
+                addOutlinePoint(rb[0], Vector2(c, s), 0.0f, Corner::BottomRight);
             }
+            //int pe = m_outlinePointBuffer.getCount();
+            //outlinePoint(ps).pos.x += MagicOfs;
+            //outlinePoint(pe).pos.y += MagicOfs;
         }
         else {
             Utils_plotCornerPointsBezier2(Vector2(rb[0].x, rb[1].y), Vector2(0, 1), Vector2(rb[1].x, rb[0].y), Vector2(1, 0), 0.0f, 1.0f, rb[1], m_shadowtess[BottomRight], addPointCallback_BR);
@@ -2833,10 +2956,18 @@ void BoxElementShapeBuilder3::makeShadowoutlinePoints(const GuideArea& baseRect,
     // BottomLeft
     {
         if (brRad <= 0.0f) {
-            const Vector2 dir = Vector2::normalize(Vector2(-1, 1));
+            //const Vector2 dir = Vector2::normalize(Vector2(-1, 1));
+            //int ps = m_outlinePointBuffer.getCount();
+            const float step = Math::PIDiv2 / m_shadowtess[BottomLeft];
             for (int i = 0; i < m_shadowtess[BottomLeft] + 1; i++) {
-                addOutlinePoint(lb[0], dir, 0.0f, Corner::BottomLeft);
+                float r = Math::PIDiv2 + (step * i);
+                float s, c;
+                Math::sinCos(r, &s, &c);
+                addOutlinePoint(lb[0], Vector2(c, s), 0.0f, Corner::BottomLeft);
             }
+            //int pe = m_outlinePointBuffer.getCount();
+            //outlinePoint(ps).pos.y += MagicOfs;
+            //outlinePoint(pe).pos.x -= MagicOfs;
         }
         else {
             Utils_plotCornerPointsBezier2(Vector2(lb[1].x, lb[0].y), Vector2(-1, 0), Vector2(lb[0].x, lb[1].y), Vector2(0, 1), 0.0f, 1.0f, rb[1], m_shadowtess[BottomLeft], addPointCallback_BL);
@@ -2844,6 +2975,18 @@ void BoxElementShapeBuilder3::makeShadowoutlinePoints(const GuideArea& baseRect,
     }
 
     outRange->countId = m_outlinePointBuffer.getCount() - outRange->startId;
+}
+
+void BoxElementShapeBuilder3::makeStripePath(const PointIdRange& outer, const PointIdRange& inner)
+{
+    assert(outer.countId == inner.countId);
+    auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
+    path->stripeClosing = true;
+    for (int i = 0; i < outer.countId; i++) {
+        addOutlineIndex(outer.startId + i);
+        addOutlineIndex(inner.startId + i);
+    }
+    endOutlinePath(path);
 }
 
 void BoxElementShapeBuilder3::applyColors(const PointIdRange& range, const Color& color)

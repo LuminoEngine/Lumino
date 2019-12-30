@@ -645,6 +645,8 @@ private:
     void makeBaseOuterPointsAndBorderComponent(const GuideArea& baseRect, float dirSign, ComponentSet* outSet);
     void makeShadowoutlinePoints(const GuideArea& baseRect, float dirSign, PointIdRange* outRange);
 
+    void makeStripePath(const PointIdRange& outer, const PointIdRange& inner);
+
     void applyColors(const PointIdRange& range, const Color& color);
     void applyColorsAndOffset(const PointIdRange& range, const Color& color, const Vector2& offset);
 
