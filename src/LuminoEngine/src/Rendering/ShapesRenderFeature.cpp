@@ -2575,16 +2575,104 @@ void BoxElementShapeBuilder3::build()
 
         PointIdRange nearRange;
         makeShadowoutlinePoints(m_outerShadowNearGuide, 1.0f, &nearRange);
-        applyColorsAndOffset(nearRange, m_shadowStyle.shadowColor, m_shadowStyle.shadowOffset);
 
 
 #if 1
+        applyColors(nearRange, m_shadowStyle.shadowColor);
+
+        const float hb = (m_shadowStyle.shadowBlur / 2);
         for (int i = 0; i < shaprRange.countId; i++) {
             const auto& vPt = outlinePoint(shaprRange.startId + i);
             auto& nPt = outlinePoint(nearRange.startId + i);
 
+            //Plane plane(Vector3(nPt))
 
-            float e = std::abs(Vector2::dot(Vector2::normalize(m_shadowStyle.shadowOffset), vPt.antiAliasDir[0]));//1.0f;//
+#if 1
+            //float dx = std::abs(nPt.pos.x - vPt.pos.x);
+            //float dy = std::abs(nPt.pos.y - vPt.pos.y);
+
+            Vector2 org = nPt.pos;
+
+            Vector2 dir;
+            Vector2 ratio = Vector2::Ones;
+            bool test = false;
+
+            if (nPt.cornerGroup == TopLeft || nPt.cornerGroup == BottomLeft) {
+                if (nPt.pos.x > vPt.pos.x) {
+                    dir.x = nPt.pos.x - vPt.pos.x;
+                    nPt.pos.x = vPt.pos.x;
+                    ratio.x = nPt.antiAliasDir[0].x;
+                    test = true;
+                }
+            }
+            if (nPt.cornerGroup == TopRight || nPt.cornerGroup == BottomRight) {
+                if (nPt.pos.x < vPt.pos.x) {
+                    dir.x = nPt.pos.x - vPt.pos.x;
+                    nPt.pos.x = vPt.pos.x;
+                    ratio.x = nPt.antiAliasDir[0].x;
+                    test = true;
+                }
+            }
+            if (nPt.cornerGroup == TopLeft || nPt.cornerGroup == TopRight) {
+                if (nPt.pos.y > vPt.pos.y) {
+                    dir.y = nPt.pos.y - vPt.pos.y;
+                    nPt.pos.y = vPt.pos.y;
+                    ratio.y = nPt.antiAliasDir[0].y;
+                    test = true;
+                }
+            }
+            if (nPt.cornerGroup == BottomLeft || nPt.cornerGroup == BottomRight) {
+                if (nPt.pos.y < vPt.pos.y) {
+                    dir.y = nPt.pos.y - vPt.pos.y;
+                    nPt.pos.y = vPt.pos.y;
+                    ratio.y = nPt.antiAliasDir[0].y;
+                    test = true;
+                }
+            }
+
+            if (dir != Vector2::Zero) {
+                float d = dir.length();
+                //float a = Math::clamp01(1.0f - (hb + d / hb));
+                float a = Math::clamp01(1.0f - d / m_shadowStyle.shadowBlur);
+                nPt.color.a *= a;
+                //nPt.color = Color::Blue;
+            }
+            //if (ratio != Vector2::Ones) {
+            //    float dx = std::abs(nPt.pos.x - org.x);
+            //    float dy = std::abs(nPt.pos.y - org.y);
+
+            //    float ax = Math::clamp01(1.0f - dx / hb);
+            //    float ay = Math::clamp01(1.0f - dy / hb);
+
+            //    float a = (ax * std::abs(ratio.x)) + (ay * std::abs(ratio.y));
+            //    nPt.color.a *= a;
+            //    //nPt.color = Color::Blue;
+            //}
+
+            //if (test) {
+            //    float e = std::abs(Vector2::dot(Vector2::normalize(m_shadowStyle.shadowOffset), vPt.antiAliasDir[0]));//1.0f;//
+            //    Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.antiAliasDir[0], 0));
+            //    float d = std::abs(plane.getDistanceToPoint(Vector3(org, 0)));  // 内側に入っているはずなのでマイナスを消す
+            //    float a = Math::clamp01(1.0f - d / m_shadowStyle.shadowBlur);
+
+            //    nPt.color.a = Math::lerp(nPt.color.a, a, e);
+            //    //nPt.color.a = a * e;
+            //}
+#endif
+        }
+
+        //applyColorsAndOffset(nearRange, m_shadowStyle.shadowColor, m_shadowStyle.shadowOffset);
+
+
+
+        for (int i = 0; i < shaprRange.countId; i++) {
+            const auto& vPt = outlinePoint(shaprRange.startId + i);
+            auto& nPt = outlinePoint(nearRange.startId + i);
+
+            nPt.pos += m_shadowStyle.shadowOffset;
+
+
+            float e = 1.0f;// std::abs(Vector2::dot(Vector2::normalize(m_shadowStyle.shadowOffset), vPt.antiAliasDir[0]));//1.0f;//
             Plane plane(Vector3(vPt.pos, 0), Vector3(vPt.antiAliasDir[0], 0));
             float d2 = plane.getDistanceToPoint(Vector3(nPt.pos, 0));
             if (d2 < 0.0f) {
