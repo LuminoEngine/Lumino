@@ -2539,7 +2539,7 @@ void BoxElementShapeBuilder3::build()
 
 
     // Inner shadow
-    // Note: inner shadow の offset はサポートしない。
+    // Note: inner shadow の offset はサポートしない。（alpha 計算のいい方法が見つかったら）
     if (insetShadowEnabled()) {
         PointIdRange innerRange;
         makeShadowoutlinePoints(m_shapeInnerGuide, 1.0f, &innerRange);
@@ -2547,8 +2547,7 @@ void BoxElementShapeBuilder3::build()
 
         PointIdRange nearRange;
         makeShadowoutlinePoints(m_innerShadowNearGuide, 1.0f, &nearRange);
-        applyColors(nearRange, m_shadowStyle.shadowColor);//Color::Green);//
-
+        applyColors(nearRange, m_shadowStyle.shadowColor);
 
         //static const std::function<bool(const OutlinePoint& iPt, const OutlinePoint& vPt)> checkOuterFuncs[4] = {
         //    [](const OutlinePoint& nPt, const OutlinePoint& vPt) { return nPt.pos.x < vPt.pos.x || nPt.pos.y < vPt.pos.y; },   // TopLeft
@@ -2559,16 +2558,49 @@ void BoxElementShapeBuilder3::build()
         //for (int i = 0; i < innerRange.countId; i++) {
         //    const auto& vPt = outlinePoint(innerRange.startId + i);
         //    auto& nPt = outlinePoint(nearRange.startId + i);
-        //    nPt.pos += m_shadowStyle.shadowOffset;
-
         //    if (checkOuterFuncs[nPt.cornerGroup](nPt, vPt)) {
         //        float d = (vPt.pos - nPt.pos).length();
-        //        float a = Math::clamp01(1.0f - (std::abs(d) / m_shadowStyle.shadowBlur));
-        //        nPt.color.a *= a;
         //        nPt.pos = vPt.pos;
         //    }
         //}
 
+        for (int i = 0; i < innerRange.countId; i++) {
+            const auto& vPt = outlinePoint(innerRange.startId + i);
+            auto& nPt = outlinePoint(nearRange.startId + i);
+
+            Vector2 dir;
+
+            if (nPt.cornerGroup == TopLeft || nPt.cornerGroup == BottomLeft) {
+                if (nPt.pos.x < vPt.pos.x) {
+                    dir.x = nPt.pos.x - vPt.pos.x;
+                    nPt.pos.x = vPt.pos.x;
+                }
+            }
+            if (nPt.cornerGroup == TopRight || nPt.cornerGroup == BottomRight) {
+                if (nPt.pos.x > vPt.pos.x) {
+                    dir.x = nPt.pos.x - vPt.pos.x;
+                    nPt.pos.x = vPt.pos.x;
+                }
+            }
+            if (nPt.cornerGroup == TopLeft || nPt.cornerGroup == TopRight) {
+                if (nPt.pos.y < vPt.pos.y) {
+                    dir.y = nPt.pos.y - vPt.pos.y;
+                    nPt.pos.y = vPt.pos.y;
+                }
+            }
+            if (nPt.cornerGroup == BottomLeft || nPt.cornerGroup == BottomRight) {
+                if (nPt.pos.y > vPt.pos.y) {
+                    dir.y = nPt.pos.y - vPt.pos.y;
+                    nPt.pos.y = vPt.pos.y;
+                }
+            }
+
+            if (dir != Vector2::Zero) {
+                float d = dir.length();
+                float a = Math::clamp01(1.0f - (d / m_shadowStyle.shadowBlur));
+                nPt.color.a *= a;
+            }
+        }
 
         assert(innerRange.countId == nearRange.countId);
         auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
@@ -2582,13 +2614,7 @@ void BoxElementShapeBuilder3::build()
         if (m_shadowStyle.shadowBlur > 0.0f) {
             PointIdRange farRange;
             makeShadowoutlinePoints(m_innerShadowFarGuide, 1.0f, &farRange);
-            applyColors(farRange, m_shadowStyle.shadowColor.withAlpha(0.0f));//Color::Blue);//
-
-
-            //for (int i = 0; i < farRange.countId; i++) {
-            //    auto& nPt = outlinePoint(farRange.startId + i);
-            //    nPt.pos += m_shadowStyle.shadowOffset;
-            //}
+            applyColors(farRange, m_shadowStyle.shadowColor.withAlpha(0.0f));
 
             assert(nearRange.countId == farRange.countId);
             auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);

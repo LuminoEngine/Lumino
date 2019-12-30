@@ -490,46 +490,40 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
             BoxElementShapeShadowStyle shadowStyle;
             shadowStyle.shadowInset = true;
 
-            //baseStyle.baseRect = Rect(0, 0, 80, 60);
-            //baseStyle.cornerRadius = CornerRadius(0);
-            //shadowStyle.shadowWidth = 10;
-            //shadowStyle.shadowBlur = 0;
-            //shadowStyle.shadowColor = Color::Red;
-            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
             baseStyle.baseRect = Rect(0, 0, 80, 60);
             baseStyle.cornerRadius = CornerRadius(0);
             shadowStyle.shadowWidth = 10;
-            shadowStyle.shadowBlur = 20;
-            shadowStyle.shadowColor = Color::Black;
-            shadowStyle.shadowOffset = Vector2(0, 10);
+            shadowStyle.shadowBlur = 0;
+            shadowStyle.shadowColor = Color::Red;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
+            // (blur/2) is less than width
+            baseStyle.baseRect = Rect(80, 0, 80, 60);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 10;
+            shadowStyle.shadowColor = Color::Green;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            //baseStyle.baseRect = Rect(80, 0, 80, 60);
-            //baseStyle.cornerRadius = CornerRadius(0);
-            //shadowStyle.shadowWidth = 10;
-            //shadowStyle.shadowBlur = 10;
-            //shadowStyle.shadowColor = Color::Green;
-            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+            // ぼかしと ShapeInner の境界が一致する場合
+            baseStyle.baseRect = Rect(0, 60, 80, 60);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowBlur = 20;
+            shadowStyle.shadowColor = Color::Blue;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
-            //// ぼかしと ShapeInner の境界が一致する場合
-            //baseStyle.baseRect = Rect(0, 60, 80, 60);
-            //baseStyle.cornerRadius = CornerRadius(0);
-            //shadowStyle.shadowWidth = 10;
-            //shadowStyle.shadowBlur = 20;
-            //shadowStyle.shadowColor = Color::Blue;
-            //context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
-
+            // (blur/2) is greater than width
             baseStyle.baseRect = Rect(80, 60, 80, 60);
             baseStyle.cornerRadius = CornerRadius(0);
-            shadowStyle.shadowWidth = 0;
+            shadowStyle.shadowWidth = 10;
             shadowStyle.shadowBlur = 30;
             shadowStyle.shadowColor = Color::Yellow;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowInset-1.png"));
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowInset-1.png"));
     }
 
     // inset-corner
@@ -542,28 +536,28 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
 
             baseStyle.baseRect = Rect(0, 0, 80, 60);
             baseStyle.cornerRadius = CornerRadius(30);
-            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowWidth = 5;
             shadowStyle.shadowBlur = 0;
             shadowStyle.shadowColor = Color::Red;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
             baseStyle.baseRect = Rect(80, 0, 80, 60);
             baseStyle.cornerRadius = CornerRadius(20);
-            shadowStyle.shadowWidth = 10;
+            shadowStyle.shadowWidth = 5;
             shadowStyle.shadowBlur = 5;
             shadowStyle.shadowColor = Color::Green;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
             baseStyle.baseRect = Rect(0, 60, 80, 60);
-            baseStyle.cornerRadius = CornerRadius(10);
-            shadowStyle.shadowWidth = 10;
+            baseStyle.cornerRadius = CornerRadius(20);
+            shadowStyle.shadowWidth = 5;
             shadowStyle.shadowBlur = 10;
             shadowStyle.shadowColor = Color::Blue;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
 
             baseStyle.baseRect = Rect(80, 60, 80, 60);
-            baseStyle.cornerRadius = CornerRadius(5);
-            shadowStyle.shadowWidth = 10;
+            baseStyle.cornerRadius = CornerRadius(20);
+            shadowStyle.shadowWidth = 5;
             shadowStyle.shadowBlur = 20;
             shadowStyle.shadowColor = Color::Yellow;
             context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
@@ -572,7 +566,6 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowInset-2.png"));
     }
-
 
     LN_TEST_CLEAN_SCENE;
 }
