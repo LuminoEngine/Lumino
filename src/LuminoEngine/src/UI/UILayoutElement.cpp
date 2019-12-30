@@ -147,11 +147,17 @@ void UILayoutElement::arrangeLayout(UILayoutContext* layoutContext, const Rect& 
 
 void UILayoutElement::updateFinalRects(UILayoutContext* layoutContext, const Matrix& parentCombinedRenderTransform)
 {
+    // Pixel snap (しておかないと、特に Corner などベジェ曲線が歪んで見える。高DPI環境ならいいが、一般的なデスクトップの等倍ディスプレイでは特に)
+    // TODO: DPI
+    auto pos = m_finalStyle->position + Vector3(m_localPosition.x, m_localPosition.y, 0);
+    pos.x = std::floor(pos.x);
+    pos.y = std::floor(pos.y);
+
 	m_localTransform = Matrix::makeTranslation(-m_finalStyle->centerPoint);
 	m_localTransform.scale(m_finalStyle->scale);
 	m_localTransform.rotateQuaternion(m_finalStyle->rotation);
 	m_localTransform.translate(m_finalStyle->position);
-	m_localTransform.translate(Vector3(m_localPosition.x, m_localPosition.y, 0));
+	m_localTransform.translate(pos);
     m_combinedFinalRenderTransform = parentCombinedRenderTransform * m_localTransform;
 
 	//Rect localRenderRect = getLayoutFinalLocalRect();

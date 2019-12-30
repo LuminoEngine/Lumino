@@ -1258,6 +1258,12 @@ void BoxElementShapeBuilderCommon::writeToBuffer(Vertex* vertexBuffer, uint16_t*
 
 void BoxElementShapeBuilderCommon::setupGuideline()
 {
+    //Rect actualBaseRect = m_baseStyle.baseRect;
+
+    //// ピクセルスナップを利かせないと、Corner が歪んで見得てしまうため、修正を入れる
+    //actualBaseRect.x = std::floor(actualBaseRect.x);
+    //actualBaseRect.y = std::floor(actualBaseRect.y);
+
     // Make shape outer rect
     // Shape の外周となる shape outer 矩形を確定する
     {
@@ -2856,7 +2862,7 @@ void BoxElementShapeBuilder3::build()
         if (m_shapeAAEnabled) {
             // Border が無ければ、Background の色を使って外周に AA を作る
             if (!m_borderEnabled) {
-                makeOutlineAntiAlias(path);
+               // makeOutlineAntiAlias(path);
             }
         }
     }
