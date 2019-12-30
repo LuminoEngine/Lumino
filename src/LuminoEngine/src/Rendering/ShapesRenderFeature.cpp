@@ -2536,14 +2536,41 @@ void BoxElementShapeBuilder3::build()
         m_shadowtess[BottomLeft] = (int)Math::clamp(m_innerShadowNearGuide.corner.bottomLeft / 2, 1, 8);
     }
 
+    // Outer shadow
+    if (outerShadowEnabled()) {
+
+        PointIdRange shaprRange;
+        makeShadowoutlinePoints(m_shapeInnerGuide, 1.0f, &shaprRange);
+        applyColors(shaprRange, m_shadowStyle.shadowColor);
+
+        PointIdRange nearRange;
+        makeShadowoutlinePoints(m_outerShadowNearGuide, 1.0f, &nearRange);
+        applyColors(nearRange, m_shadowStyle.shadowColor);
+
+
+        assert(shaprRange.countId == nearRange.countId);
+        auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
+        path->stripeClosing = true;
+        for (int i = 0; i < nearRange.countId; i++) {
+            addOutlineIndex(nearRange.startId + i);
+            addOutlineIndex(shaprRange.startId + i);
+        }
+        endOutlinePath(path);
+
+        if (m_shadowStyle.shadowBlur > 0.0f) {
+            PointIdRange farRange;
+            makeShadowoutlinePoints(m_outerShadowFarGuide, 1.0f, &farRange);
+            applyColors(farRange, m_shadowStyle.shadowColor.withAlpha(0.0f));
+        }
+    }
 
 
     // Inner shadow
     // Note: inner shadow の offset はサポートしない。（alpha 計算のいい方法が見つかったら）
     if (insetShadowEnabled()) {
-        PointIdRange innerRange;
-        makeShadowoutlinePoints(m_shapeInnerGuide, 1.0f, &innerRange);
-        applyColors(innerRange, m_shadowStyle.shadowColor);
+        PointIdRange shaprRange;
+        makeShadowoutlinePoints(m_shapeInnerGuide, 1.0f, &shaprRange);
+        applyColors(shaprRange, m_shadowStyle.shadowColor);
 
         PointIdRange nearRange;
         makeShadowoutlinePoints(m_innerShadowNearGuide, 1.0f, &nearRange);
@@ -2564,8 +2591,8 @@ void BoxElementShapeBuilder3::build()
         //    }
         //}
 
-        for (int i = 0; i < innerRange.countId; i++) {
-            const auto& vPt = outlinePoint(innerRange.startId + i);
+        for (int i = 0; i < shaprRange.countId; i++) {
+            const auto& vPt = outlinePoint(shaprRange.startId + i);
             auto& nPt = outlinePoint(nearRange.startId + i);
 
             Vector2 dir;
@@ -2602,11 +2629,11 @@ void BoxElementShapeBuilder3::build()
             }
         }
 
-        assert(innerRange.countId == nearRange.countId);
+        assert(shaprRange.countId == nearRange.countId);
         auto* path = beginOutlinePath(OutlinePathType::Stripe, PathWinding::CW);
         path->stripeClosing = true;
-        for (int i = 0; i < innerRange.countId; i++) {
-            addOutlineIndex(innerRange.startId + i);
+        for (int i = 0; i < shaprRange.countId; i++) {
+            addOutlineIndex(shaprRange.startId + i);
             addOutlineIndex(nearRange.startId + i);
         }
         endOutlinePath(path);

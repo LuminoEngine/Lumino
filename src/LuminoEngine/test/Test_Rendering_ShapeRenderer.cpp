@@ -374,7 +374,7 @@ TEST_F(Test_Rendering_BoxElement, ShadowOutset)
         };
 
         TestEnv::updateFrame();
-        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowOutset-1.png"));
+        ASSERT_SCREEN_S(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowOutset-1.png"));
     }
 
     // outset-corner
@@ -565,6 +565,34 @@ TEST_F(Test_Rendering_BoxElement, ShadowInset)
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowInset-2.png"));
+    }
+
+
+    // inset width 0
+    {
+        element1->render = [](UIRenderingContext* context)
+        {
+            BoxElementShapeBaseStyle baseStyle;
+            BoxElementShapeShadowStyle shadowStyle;
+            shadowStyle.shadowInset = true;
+
+            baseStyle.baseRect = Rect(0, 0, 80, 60);
+            baseStyle.cornerRadius = CornerRadius(0);
+            shadowStyle.shadowWidth = 0;
+            shadowStyle.shadowBlur = 10;
+            shadowStyle.shadowColor = Color::Red;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+
+            baseStyle.baseRect = Rect(80, 0, 80, 60);
+            baseStyle.cornerRadius = CornerRadius(40);
+            shadowStyle.shadowWidth = 0;
+            shadowStyle.shadowBlur = 20;
+            shadowStyle.shadowColor = Color::Green;
+            context->drawBoxElement(baseStyle, nullptr, nullptr, &shadowStyle);
+        };
+
+        TestEnv::updateFrame();
+        ASSERT_SCREEN(LN_ASSETFILE("Rendering/Expects/BoxElement-ShadowInset-3.png"));
     }
 
     LN_TEST_CLEAN_SCENE;
