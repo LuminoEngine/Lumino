@@ -214,6 +214,15 @@ void Scene::renderObjects(RenderingContext* context)
     }
 }
 
+void Scene::renderGizmos(RenderingContext* context)
+{
+    for (auto& obj : m_rootWorldObjectList) {
+        for (auto& c : *(obj->m_components)) {
+            c->renderGizmo(context);
+        }
+    }
+}
+
 void Scene::serialize(Archive& ar)
 {
     Object::serialize(ar);

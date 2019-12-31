@@ -35,6 +35,7 @@ protected:
     virtual void onUpdate(float elapsedSeconds);
     virtual void onPrepareRender(RenderingContext* context);
     virtual void onRender(RenderingContext* context);
+    virtual void onRenderGizmo(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:
 	Component();
@@ -46,6 +47,7 @@ public:
 
 private:
     virtual void render(RenderingContext* context);
+    void renderGizmo(RenderingContext* context);
 
     friend class Scene;
     friend class World;

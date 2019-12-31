@@ -145,6 +145,29 @@ void TilemapComponent::onRender(RenderingContext* context)
     m_tilemapModel->render(context, worldObject()->worldMatrix(), bounds);
 }
 
+void TilemapComponent::onRenderGizmo(RenderingContext* context)
+{
+    if (m_tilemapModel) {
+        Vector2 tileSize = m_tilemapModel->tileSize();
+        int w = m_tilemapModel->width();
+        int h = m_tilemapModel->height();
+        float l = 0;
+        float r = tileSize.x * (w + 1);
+        float t = tileSize.y * (h + 1);
+        float b = 0;
+
+        for (int y = 0; y <= h; y++) {
+            float p = tileSize.y * y;
+            context->drawLine(Vector3(l, p, 0), Color::Orange, Vector3(r, p, 0), Color::Orange);
+        }
+
+        for (int x = 0; x <= w; x++) {
+            float p = tileSize.x * x;
+            context->drawLine(Vector3(p, t, 0), Color::Orange, Vector3(p, b, 0), Color::Orange);
+        }
+    }
+}
+
 void TilemapComponent::serialize(Archive& ar)
 {
 	VisualComponent::serialize(ar);

@@ -69,6 +69,7 @@ public: // TODO: internal
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
     void renderObjects();  // call by WorldRenderView
+    void renderGizmos(RenderingContext* context);
 
     Ref<AnimationContext> m_animationContext;
     Ref<PhysicsWorld> m_physicsWorld;

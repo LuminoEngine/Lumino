@@ -59,6 +59,7 @@ public:	// TODO: Editor integration
     void updateObjectsWorldMatrix();
     virtual void onPreUpdate(float elapsedSeconds);
     void renderObjects(RenderingContext* context);
+    void renderGizmos(RenderingContext* context);
 
 protected:
 	LN_SERIALIZE_CLASS_VERSION(1);

@@ -204,12 +204,12 @@ void TilemapSceneEditor::addSelectedObject(ln::WorldObject* obj)
 
 void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
 {
-#if 0   // TODO: ui layout リファクタリング中
+#if 1   // TODO: ui layout リファクタリング中
     if (e->type() == ln::UIEvents::MouseDownEvent ||
         e->type() == ln::UIEvents::MouseUpEvent ||
         e->type() == ln::UIEvents::MouseMoveEvent) {
         auto me = static_cast<ln::UIMouseEventArgs*>(e);
-        auto pt = me->getPosition(m_mainWorldRenderView);
+        auto pt = me->getPosition(m_mainViewport);
         auto ray = m_mainCamera->screenToWorldRay(pt);
         ln::PointI tilePt;
         if (targetTilemapComponent()->intersectTile(ray, &tilePt)) {
