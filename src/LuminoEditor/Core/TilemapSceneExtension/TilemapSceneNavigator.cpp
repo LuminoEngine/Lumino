@@ -1,4 +1,4 @@
-
+ï»¿
 #include <Workspace.hpp>
 #include "../Project/Project.hpp"
 #include "../Project/AssetDatabase.hpp"
@@ -26,7 +26,7 @@ void TilemapSceneListPane::init()
     layout1->addChild(layout2);
     {
         auto caption = ln::UITextBlock::create(u"Scene");
-        caption->setMargin(ln::Thickness(8, 0));    // TODO: theme ‚©‚ç‚Æ‚è‚½‚¢
+        caption->setMargin(ln::Thickness(8, 0));    // TODO: theme ã‹ã‚‰ã¨ã‚ŠãŸã„
         caption->setVerticalAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 

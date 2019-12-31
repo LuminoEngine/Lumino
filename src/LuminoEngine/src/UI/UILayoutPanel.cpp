@@ -613,6 +613,8 @@ Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& f
             auto* child = getVisualChild(iChild);
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(cell.actualOffset, 0, cell.actualSize, finalSize.height);
+            if (iChild == childCount - 1)  // 最終 Cell は余りサイズをすべて使う
+                childRect.width = std::max(childRect.width, finalSize.width - cell.actualOffset);
             child->arrangeLayout(layoutContext, childRect);
         }
     }
@@ -621,6 +623,8 @@ Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& f
             auto* child = getVisualChild(iChild);
             auto& cell = m_cellDefinitions[iChild];
             Rect childRect(0, cell.actualOffset, finalSize.width, cell.actualSize);
+            if (iChild == childCount - 1) 
+                childRect.height = std::max(childRect.height, finalSize.height - cell.actualOffset);
             child->arrangeLayout(layoutContext, childRect);
         }
     }
@@ -697,6 +701,15 @@ void UIBoxLayout3::getLayoutMinMaxSize(int index, float* minSize, float* maxSize
         if (!Math::isNaN(child->m_finalStyle->maxHeight))
             *maxSize = child->m_finalStyle->maxHeight;
     }
+}
+
+//==============================================================================
+// UIVBoxLayout3
+
+void UIVBoxLayout3::init()
+{
+    UIBoxLayout3::init();
+    setOrientation(Orientation::Vertical);
 }
 
 //==============================================================================
@@ -824,28 +837,28 @@ Size UIFrameLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIEle
 
 
 //==============================================================================
-// UIStackLayout
+// UIStackLayout_Obsolete
 
-Ref<UIStackLayout> UIStackLayout::create()
+Ref<UIStackLayout_Obsolete> UIStackLayout_Obsolete::create()
 {
-    return makeObject<UIStackLayout>();
+    return makeObject<UIStackLayout_Obsolete>();
 }
 
-UIStackLayout::UIStackLayout()
+UIStackLayout_Obsolete::UIStackLayout_Obsolete()
     : m_orientation(Orientation::Vertical)
 {
 }
 
-UIStackLayout::~UIStackLayout()
+UIStackLayout_Obsolete::~UIStackLayout_Obsolete()
 {
 }
 
-void UIStackLayout::init()
+void UIStackLayout_Obsolete::init()
 {
     UILayoutPanel::init();
 }
 
-Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint)
+Size UIStackLayout_Obsolete::measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint)
 {
     Size size = constraint;
 
@@ -879,7 +892,7 @@ Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const IUIEle
     return desiredSize;
 }
 
-Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
+Size UIStackLayout_Obsolete::arrangeOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Rect& finalSlotRect)
 {
     Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
     //Size selfBounds(FLT_MAX, FLT_MAX);
@@ -941,14 +954,14 @@ Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const IUIEle
     return finalSlotRect.getSize();
 }
 
-//==============================================================================
-// UIVBoxLayout
-
-void UIVBoxLayout::init()
-{
-    UIStackLayout::init();
-    setOrientation(Orientation::Vertical);
-}
+////==============================================================================
+//// UIVBoxLayout
+//
+//void UIVBoxLayout::init()
+//{
+//    UIStackLayout_Obsolete::init();
+//    setOrientation(Orientation::Vertical);
+//}
 
 } // namespace ln
 

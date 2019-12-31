@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/ToolPanesArea.hpp"
 #include "../App/NavigatorManager.hpp"

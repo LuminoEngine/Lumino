@@ -103,6 +103,10 @@ class UIElement
 {
     LN_OBJECT;
 public:
+
+    void setName(const String& value) { m_name = value; }
+    const String& name() const { return m_name; }
+
     void setWidth(float value);
     float width() const;
 
@@ -469,6 +473,7 @@ public: // TODO: internal
     void handleDetachFromUITree();
 
     detail::UIManager* m_manager;
+    String m_name;
 	Flags<detail::ObjectManagementFlags> m_objectManagementFlags;
 	Flags<detail::UISpecialElementFlags> m_specialElementFlags;
     

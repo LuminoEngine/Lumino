@@ -468,7 +468,7 @@ int main(int argc, char** argv)
 	window1->addElement(tp1);
 #endif
 
- //   window1->setLayoutPanel(UIStackLayout::create());
+ //   window1->setLayoutPanel(UIStackLayout_Obsolete::create());
 
  //   auto text1 = UITextBlock::create();
  //   text1->setText(u"ABCDEFGabcdefg");

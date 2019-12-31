@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../App/ToolPanesArea.hpp"
 
 namespace lna {
@@ -8,7 +8,7 @@ class TilemapSceneModePane
     : public ln::EditorPane
 {
 public:
-	static const int DisplayTilesX = 8;	// ‰¡‚É 8 ŒÂ‚ğ 1 s‚Æ‚·‚é‚Ì‚Í View ‘¤‚Ì“s‡BModel ‘¤‚Æ‚µ‚Ä‚ÍAŒ³ƒeƒNƒXƒ`ƒƒ‚Í‚»‚¤‚¢‚¤ƒtƒH[ƒ}ƒbƒg‚©‚à‚µ‚ê‚È‚¢‚ªATileset ‚Í’P‚É id ó‚¯æ‚Á‚Ä tile •Ô‚·‚¾‚¯‚ÅA‰¡‚Ì”‚Í‹C‚É‚µ‚È‚¢
+	static const int DisplayTilesX = 8;	// æ¨ªã« 8 å€‹ã‚’ 1 è¡Œã¨ã™ã‚‹ã®ã¯ View å´ã®éƒ½åˆã€‚Model å´ã¨ã—ã¦ã¯ã€å…ƒãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯ãã†ã„ã†ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‹ã‚‚ã—ã‚Œãªã„ãŒã€Tileset ã¯å˜ã« id å—ã‘å–ã£ã¦ tile è¿”ã™ã ã‘ã§ã€æ¨ªã®æ•°ã¯æ°—ã«ã—ãªã„
 	static const float DisplayTileSize;
 
     void init(TilemapSceneEditorModel* model);

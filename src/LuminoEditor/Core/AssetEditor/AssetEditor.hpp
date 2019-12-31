@@ -32,11 +32,9 @@ enum class EditorPaneKind
     Note: 理想的には別途 Model の型から対応する View を生成する Factory を作るべきだが、かえって複雑になる（なった）ので、必要最小限で行ってみる。
 
     なお、AssetEditor の生成には、必ずしも Navigation が必要というわけではない。
-
-    TODO: ViewModel 継承にする。
 */
 class AssetEditor
-    : public ln::Object
+    : public ln::UIViewModel
 {
 public:
     AssetEditorViewType viewType() const { return AssetEditorViewType::Scene; }

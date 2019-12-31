@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/ToolPanesArea.hpp"
 #include "../App/NavigatorManager.hpp"
@@ -21,6 +21,10 @@ public:
 
 	ln::TilemapComponent* targetTilemapComponent() const { return m_tilemap->tilemapComponent(); }
 
+    void clearSelectedObjects();
+    void addSelectedObject(ln::WorldObject* obj);
+
+
 private:
 	void WorldRenderView_OnUIEvent(ln::UIEventArgs* e);
 	void handleTickEvent(ln::UITimerEventArgs* e);
@@ -34,7 +38,9 @@ private:
     Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
+    Ref<ln::UIVBoxLayout3> m_mainLayout;
 
+    // Tilemap
 	Ref<ln::UIActiveTimer> m_timer;
     Ref<ln::World> m_mainWorld;
 	Ref<ln::UIViewport> m_mainViewport;
@@ -43,6 +49,9 @@ private:
 	Ref<ln::Tilemap> m_tilemap;
 	Ref<ln::TilemapLayer> m_currentLayer;
     bool m_tilePutting = true;
+
+    // Editing
+    ln::List<ln::WorldObject*> m_selectedObjects;
 };
 
 class TilemapSceneEditorPloxy

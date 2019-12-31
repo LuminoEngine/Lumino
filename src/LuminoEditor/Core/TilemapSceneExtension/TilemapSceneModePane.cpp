@@ -1,4 +1,4 @@
-
+ï»¿
 #include "TilemapSceneEditorModel.hpp"
 #include "TilemapSceneModePane.hpp"
 
@@ -42,7 +42,7 @@ void TilemapSceneModePane::setTileset(ln::Tileset* tileset)
 
 void TilemapSceneModePane::onSourcePropertyChanged(ln::UINotifyPropertyChangedEventArgs* e)
 {
-	// ‚Æ‚è‚ ‚¦‚¸Ä•`‰æ
+	// ã¨ã‚Šã‚ãˆãšå†æç”»
 	invalidateVisual();
 }
 

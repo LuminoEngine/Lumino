@@ -277,6 +277,8 @@ LN_CONSTRUCT_ACCESS:
 // 指定方向に無限のサイズを想定する StackLayout と異なり、こちらは有限サイズでレイアウトを行う。
 // 特に末尾の要素を下揃えしたり、指定方向への Stratch をできるようにしたりする。
 // このため ListBox などの HostPanel には向かない。
+//
+// 例：2分割で、２つ目のセルを Stretch したい場合は、そこに配置する要素の Alignment を Stretch にする。
 class UIBoxLayout3
     : public UILayoutPanel2
 {
@@ -311,6 +313,14 @@ private:
 };
 
 
+class UIVBoxLayout3
+    : public UIBoxLayout3
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+    void init();
+};
 
 
 
@@ -400,11 +410,11 @@ private:
 
 // Orientation=H で大量アイテムを持つ ListView を配置すると、縦方向スクロールバーが表示される。
 // Orientation=V で大量アイテムを持つ ListView を配置すると、スクロールバーは表示されず、すべてのアイテムを包含するサイズが ListView の actualSize となる。（見切れる）
-class UIStackLayout
+class UIStackLayout_Obsolete
     : public UILayoutPanel
 {
 public:
-    static Ref<UIStackLayout> create();
+    static Ref<UIStackLayout_Obsolete> create();
 
     void setOrientation(Orientation orientation) { m_orientation = orientation; }
     Orientation getOrientation() const { return m_orientation; }
@@ -412,8 +422,8 @@ public:
     bool lastStretch = false;
 
 LN_CONSTRUCT_ACCESS:
-    UIStackLayout();
-    virtual ~UIStackLayout();
+    UIStackLayout_Obsolete();
+    virtual ~UIStackLayout_Obsolete();
     void init();
 
     virtual Size measureOverride(UILayoutContext* layoutContext, const IUIElementList* childElements, const Size& constraint) override;
@@ -423,14 +433,14 @@ private:
     Orientation m_orientation;
 };
 
-class UIVBoxLayout
-    : public UIStackLayout
-{
-public:
-
-LN_CONSTRUCT_ACCESS:
-    void init();
-};
+//class UIVBoxLayout
+//    : public UIStackLayout_Obsolete
+//{
+//public:
+//
+//LN_CONSTRUCT_ACCESS:
+//    void init();
+//};
 
 } // namespace ln
 
