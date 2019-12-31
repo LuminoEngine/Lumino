@@ -175,7 +175,7 @@ int TilemapModel::height() const
 	return m_layers.front()->getHeight();
 }
 
-bool TilemapModel::isValidTile(int x, int y) const
+bool TilemapModel::isValidTilePosition(int x, int y) const
 {
 	if (x < 0 || y < 0) return false;
 	for (auto& layer : m_layers) {
@@ -197,6 +197,16 @@ uint8_t TilemapModel::tilePassageFlags(int x, int y) const
 		return flags;
 	}
 	return 0;
+}
+
+TilemapLayer* TilemapModel::getValidFrontLayer(int x, int y) const
+{
+    for (int i = m_layers.size() - 1; i >= 0; i--) {
+        if (m_layers[i]->isValidTileId(x, y)) {
+            return m_layers[i];
+        }
+    }
+    return false;
 }
 
 void TilemapModel::render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds)

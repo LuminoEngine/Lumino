@@ -29,8 +29,9 @@ public:
 	const Size& tileSize() const;
 	int width() const;
 	int height() const;
-	bool isValidTile(int x, int y) const;
+	bool isValidTilePosition(int x, int y) const;
 	uint8_t tilePassageFlags(int x, int y) const;
+    TilemapLayer* getValidFrontLayer(int x, int y) const;
 
 public: // TODO: internal
     void render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds);
@@ -54,7 +55,7 @@ private:
     //};
 
     Ref<Tileset> m_tileset;
-    List<Ref<TilemapLayer>> m_layers;
+    List<Ref<TilemapLayer>> m_layers;   // インデックスの低い方が奥。
     int m_tilesetIdSpan;
 };
 

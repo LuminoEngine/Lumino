@@ -212,7 +212,8 @@ void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
         auto pt = me->getPosition(m_mainViewport);
         auto ray = m_mainCamera->screenToWorldRay(pt);
         ln::PointI tilePt;
-        if (targetTilemapComponent()->intersectTile(ray, &tilePt)) {
+        bool result = targetTilemapComponent()->intersectTile(ray, &tilePt);
+        if (result/* && targetTilemapComponent()->tilemapModel()->getValidFrontLayer(tilePt.x, tilePt.y) != nullptr*/) {
 
 
             if (me->getMouseButtons() == ln::MouseButtons::Left) {

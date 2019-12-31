@@ -70,7 +70,7 @@ bool TilemapComponent::intersectTile(const Ray& rayOnWorld, PointI* tilePoint)
 		// TODO: スケールを考慮したい
 		int x = static_cast<int>(pt.x);
 		int y = static_cast<int>(pt.y);
-		if (m_tilemapModel->isValidTile(x, y)) {
+		if (m_tilemapModel->isValidTilePosition(x, y)) {
 			if (tilePoint) {
 				tilePoint->x = x;
 				tilePoint->y = (layer->getHeight() - y) - 1;

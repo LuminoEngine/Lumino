@@ -151,7 +151,7 @@ void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
 	}
 }
 
-const AbstractMaterial* DrawElementListBuilder::material() const
+AbstractMaterial* DrawElementListBuilder::material() const
 {
     return primaryGeometryStageParameters().m_material;
 }

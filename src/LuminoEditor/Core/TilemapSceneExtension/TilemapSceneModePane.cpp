@@ -53,7 +53,18 @@ void TilemapSceneModePane::onRender(ln::UIRenderingContext* context)
 
 		if (m_model->tilemapBrush()->source() == TilemapBrushSource::Tileset) {
 			auto range = m_model->tilemapBrush()->range();
-			context->drawBoxBorderLine(ln::Rect(range.x * DisplayTileSize, range.y * DisplayTileSize, range.width * DisplayTileSize, range.height * DisplayTileSize), 2, ln::Color::Red, true);
+
+            ln::BoxElementShapeBaseStyle base;
+            base.baseRect = ln::Rect(range.x * DisplayTileSize, range.y * DisplayTileSize, range.width * DisplayTileSize, range.height * DisplayTileSize);
+
+            ln::BoxElementShapeBorderStyle border;
+            border.borderThickness = 2;
+            border.borderInset = true;
+            border.borderTopColor = border.borderLeftColor =  border.borderRightColor = border.borderBottomColor = ln::Color::Red;
+
+            context->drawBoxElement(base, nullptr, &border, nullptr);
+
+			//context->drawBoxBorderLine(ln::Rect(range.x * DisplayTileSize, range.y * DisplayTileSize, range.width * DisplayTileSize, range.height * DisplayTileSize), 2, ln::Color::Red, true);
 		}
     }
 }
