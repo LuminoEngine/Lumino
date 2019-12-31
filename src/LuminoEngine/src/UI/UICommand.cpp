@@ -30,6 +30,15 @@ void UICommand::init()
     Object::init();
 }
 
+void UICommand::addInputGesture(InputGesture* value)
+{
+    if (value->getType() != detail::InputBindingType::Keyboard) {
+        LN_NOTIMPLEMENTED();
+    }
+
+    m_inputGestures.add(value);
+}
+
 EventConnection UICommand::connectOnCanExecuteChanged(UIEventHandler handler)
 {
     return m_onCanExecuteChanged.connect(handler);
@@ -41,6 +50,30 @@ void UICommand::onCanExecuteChanged()
     m_onCanExecuteChanged.raise(args);
 }
 
+bool UICommand::testInputEvent(UIEventArgs* e)
+{
+    //if (e->type() == UIEvents::MouseDownEvent) {
+    //    auto* me = static_cast<UIMouseEventArgs*>(e);
+    //    for (auto& gesture : m_inputGestures) {
+    //        if (gesture->getType() == detail::InputBindingType::Mouse) {
+    //            auto* mg = static_cast<MouseGesture*>(gesture.get());
+
+    //        }
+    //    }
+    //}
+    if (e->type() == UIEvents::KeyDownEvent) {
+        auto* ke = static_cast<UIKeyEventArgs*>(e);
+        for (auto& gesture : m_inputGestures) {
+            if (gesture->getType() == detail::InputBindingType::Keyboard) {
+                auto* mg = static_cast<KeyGesture*>(gesture.get());
+                if (ke->getKey() == mg->getKey() && ke->getModifierKeys() == mg->getModifierKeys()) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 //==============================================================================
 // UIAction
@@ -98,26 +131,24 @@ void UIAction::onExecute()
 //==============================================================================
 // UICommandInternal
 
-bool detail::UICommandInternal::handleCommandRoutedEvent(UIEventArgs* e, const Ref<List<Ref<UIAction>>>& actions)
+bool detail::UICommandInternal::handleCommandRoutedEvent(UIEventArgs* e, const List<Ref<UIAction>>& actions)
 {
-    if (actions)
-    {
-        if (e->type() == UIEvents::CanExecuteCommandEvent ||
-            e->type() == UIEvents::ExecuteCommandEvent) {
-            auto* ce = static_cast<UICommandEventArgs*>(e);
-            auto action = actions->findIf([&](auto& x) { return x->command() == ce->command(); });
-            if (action) {
-                if ((*action)->canExecute()) {
-                    ce->setCanExecute(true);
-                    if (e->type() == UIEvents::ExecuteCommandEvent) {
-                        (*action)->execute();
-                    }
+    if (e->type() == UIEvents::CanExecuteCommandEvent ||
+        e->type() == UIEvents::ExecuteCommandEvent) {
+        auto* ce = static_cast<UICommandEventArgs*>(e);
+        auto action = actions.findIf([&](auto& x) { return x->command() == ce->command(); });
+        if (action) {
+            if ((*action)->canExecute()) {
+                ce->setCanExecute(true);
+                if (e->type() == UIEvents::ExecuteCommandEvent) {
+                    (*action)->execute();
                 }
-                e->handled = true;
-                return true;
             }
+            e->handled = true;
+            return true;
         }
     }
+
     return false;
 }
 

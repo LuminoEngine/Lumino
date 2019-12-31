@@ -5,6 +5,7 @@ namespace ln {
 namespace detail {
 class ApplicationHelper;
 }
+class UICommand;
 class UIAction;
 class UIEventArgs;
 
@@ -31,6 +32,7 @@ public:
 
 	virtual void onDestroy();
 
+    void addApplicationCommand(UICommand* command);
     void addAction(UIAction* action);
 
 LN_CONSTRUCT_ACCESS:
@@ -50,7 +52,8 @@ private:
 	void finalizeInternal();
 	void run();
 
-    Ref<List<Ref<UIAction>>> m_actions;
+    List<Ref<UICommand>> m_commands;
+    List<Ref<UIAction>> m_actions;
 
 	friend class detail::ApplicationHelper;
 };

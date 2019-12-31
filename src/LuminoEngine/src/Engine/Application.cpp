@@ -2,7 +2,9 @@
 #include "Internal.hpp"
 #include "EngineManager.hpp"
 #include <LuminoEngine/UI/UICommand.hpp>
+#include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
+#include "UI/UIManager.hpp"
 
 namespace ln {
 
@@ -48,16 +50,28 @@ void Application::onDestroy()
 {
 }
 
+void Application::addApplicationCommand(UICommand* command)
+{
+    m_commands.add(command);
+}
+
 void Application::addAction(UIAction* action)
 {
-    if (!m_actions) {
-        m_actions = ln::makeList<Ref<UIAction>>();
-    }
-    m_actions->add(action);
+    m_actions.add(action);
 }
 
 void Application::onRoutedEvent(UIEventArgs* e)
 {
+    // ショートカットキーの実装
+    for (auto& c : m_commands) {
+        if (c->testInputEvent(e)) {
+            e->handled = true;
+            UICommandEventArgs::raiseExecute(detail::EngineDomain::uiManager()->forcusedElement(), c);
+            return;
+        }
+    }
+
+
     if (detail::UICommandInternal::handleCommandRoutedEvent(e, m_actions)) {
         return;
     }

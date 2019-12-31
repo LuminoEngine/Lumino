@@ -1,7 +1,11 @@
 ﻿#pragma once
+#include "../Input/InputBinding.hpp"
 #include "UIEvents.hpp"
 
 namespace ln {
+
+
+
 
 /**	
 
@@ -9,11 +13,16 @@ namespace ln {
 
 */
 //  メニューやボタンの実行アクションの「名前」のようなもの。実行本体は UIAction
+// WPF の RoutedCommand 相当だが、実行ロジックは持たない。
 class UICommand
 	: public Object
 {
 public:
+    void addInputGesture(InputGesture* value);
+
     EventConnection connectOnCanExecuteChanged(UIEventHandler handler);
+
+    bool testInputEvent(UIEventArgs* e);
 
 protected:
     virtual void onCanExecuteChanged();
@@ -24,9 +33,11 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    List<Ref<InputGesture>> m_inputGestures;
     Event<UIEventHandler> m_onCanExecuteChanged;
 };
 
+// Note: WPF だと CommandBinding 相当。
 class UIAction
     : public Object
 {
@@ -56,7 +67,7 @@ private:
 namespace detail {
 struct UICommandInternal
 {
-    static bool handleCommandRoutedEvent(UIEventArgs* e, const Ref<List<Ref<UIAction>>>& actions);
+    static bool handleCommandRoutedEvent(UIEventArgs* e, const List<Ref<UIAction>>& actions);
 };
 } // namespace detail
 } // namespace ln

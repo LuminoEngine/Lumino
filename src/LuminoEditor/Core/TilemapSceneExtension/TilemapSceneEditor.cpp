@@ -118,6 +118,7 @@ ln::Result TilemapSceneEditor::init()
 
 void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
+    m_assetModel = asset;
     m_mainLayout = ln::makeObject<ln::UIVBoxLayout3>();
     //m_mainLayout->setName(u"---");
     frame->addElement(m_mainLayout);
@@ -172,6 +173,13 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 	m_timer = ln::makeObject<ln::UIActiveTimer>();
 	m_timer->connectOnTick(ln::bind(this, &TilemapSceneEditor::handleTickEvent));
 	m_mainViewport->registerActiveTimer(m_timer);
+
+
+    frame->addAction(ln::makeObject<ln::UIAction>(EditorApplication::SaveCommand, [this](ln::UICommandEventArgs* x) {
+        printf("");
+        this->editorContext()->assetDatabase()->saveAsset(this->m_assetModel);
+    }));
+
 }
 
 void TilemapSceneEditor::onClosed()

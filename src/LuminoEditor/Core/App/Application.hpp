@@ -10,6 +10,7 @@ class EditorApplication
 public:
     static Ref<ln::UICommand> NewCommand;
     static Ref<ln::UICommand> OpenCommand;
+    static Ref<ln::UICommand> SaveCommand;
 
 
     static EditorApplication* instance();

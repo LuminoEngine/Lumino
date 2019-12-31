@@ -331,7 +331,6 @@ public:
     void addChild(UIElement* child);
     void addChild(const String& child);
 
-    void addAction(UIAction* action);
 
     void invalidateStyle() { invalidate(detail::UIElementDirtyFlags::Style, true); }
 	void invalidateLayout() { invalidate(detail::UIElementDirtyFlags::Layout, true); }
@@ -487,7 +486,6 @@ public: // TODO: internal
 	Ref<List<Ref<UIElement>>> m_visualChildren;
 	Ref<List<UIElement*>> m_orderdVisualChildren;
     Ref<List<String>> m_classList;
-    Ref<List<Ref<UIAction>>> m_actions;
 	Ref<UIViewModel> m_viewModel;
     std::unique_ptr<detail::GridLayoutInfo> m_gridLayoutInfo;
 

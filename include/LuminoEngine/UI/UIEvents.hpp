@@ -363,6 +363,9 @@ public:
     bool canExecute() const { return m_canExecute; }
     void setCanExecute(bool value) { m_canExecute = value; }
 
+    // Utils
+    static void raiseExecute(UIElement* target, UICommand* command);
+
 LN_CONSTRUCT_ACCESS:
     UICommandEventArgs();
     virtual ~UICommandEventArgs() = default;

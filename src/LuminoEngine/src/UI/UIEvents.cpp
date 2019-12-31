@@ -430,6 +430,14 @@ void UICommandEventArgs::init(UIElement* sender, UIEventType type, UICommand* co
     m_canExecute = true;
 }
 
+void UICommandEventArgs::raiseExecute(UIElement* target, UICommand* command)
+{
+    if (LN_REQUIRE(target)) return;
+    if (LN_REQUIRE(command)) return;
+    auto args = UICommandEventArgs::create(target, UIEvents::ExecuteCommandEvent, command);
+    target->raiseEvent(args);
+}
+
 //==============================================================================
 // UINotifyPropertyChangedEventArgs
 

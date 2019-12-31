@@ -474,14 +474,6 @@ void UIElement::addChild(const String& child)
     addChild(textblock);
 }
 
-void UIElement::addAction(UIAction* action)
-{
-    if (!m_actions) {
-        m_actions = ln::makeList<Ref<UIAction>>();
-    }
-    m_actions->add(action);
-}
-
 void UIElement::activate()
 {
 	//if (m_focusable) {
@@ -934,10 +926,6 @@ void UIElement::onRoutedEvent(UIEventArgs* e)
 	if (e->type() == UIEvents::MouseDownEvent) {
 		activate();
 	}
-
-    if (detail::UICommandInternal::handleCommandRoutedEvent(e, m_actions)) {
-        return;
-    }
 }
 
 bool UIElement::onHitTest(const Point& frameClientPosition)

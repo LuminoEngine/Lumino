@@ -16,6 +16,12 @@ ln::Result Document::init()
 {
     Object::init();
     m_mainFrame = ln::makeObject<ln::UIContainerElement>();
+
+    // SaveCommand などは m_mainFrame にアタッチしたい。
+    // m_mainFrame が focus を持てるようにしておかないと、もし Document 内に Focusable な UIElement が１つも無いと、
+    // コマンドを実行できなくなる。
+    m_mainFrame->setFocusable(true);
+
     //m_mainFrame->getGridLayoutInfo()->layoutWeight = 1; // fill in box layout
     return true;
 }
@@ -126,6 +132,8 @@ void DocumentManager::setActiveDocument(Document* doc)
                 }
             }
         }
+
+        m_activeDocument->mainFrame()->focus();
     }
     else {
         LN_NOTIMPLEMENTED();
