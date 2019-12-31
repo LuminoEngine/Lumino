@@ -51,6 +51,10 @@ void AssetManager::addAssetDirectory(const StringRef& path)
 	m_requestedArchives.add(archive);
 	refreshActualArchives();
 
+    if (m_primaryLocalAssetDirectory.isEmpty()) {
+        m_primaryLocalAssetDirectory = Path(path);
+    }
+
     LN_LOG_INFO << "Asset directory added: " << path;
 }
 
@@ -147,6 +151,118 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const String& assetPath) const
     return nullptr;
 }
 
+Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath) const
+{
+    const Char* ext = AssetModel::AssetFileExtension.c_str();
+    auto assetPath = findAssetPath(filePath, &ext, 1);
+    if (assetPath) {
+        return loadAssetModelFromAssetPath(*assetPath);
+    }
+    else {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        return nullptr;
+    }
+}
+
+Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const String& assetPath) const
+{
+    auto stream = openStreamFromAssetPath(assetPath);
+    auto json = FileSystem::readAllText(stream);
+    auto asset = makeObject<AssetModel>();
+    JsonSerializer::deserialize(json, getParentAssetPath(assetPath), *asset);
+    asset->target()->setAssetPath(assetPath);
+    return asset;
+}
+
+void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& filePath) const
+{
+    if (LN_REQUIRE(asset)) return;
+    String localPath;
+    if (!filePath.isEmpty()) {
+        localPath = filePath;
+    }
+    else if (!asset->target()->assetPath().isEmpty()) {
+        localPath = assetPathToLocalFullPath(asset->target()->assetPath());
+    }
+    else {
+        LN_UNREACHABLE();
+        return;
+    }
+
+    auto assetPath = localFullPathToAssetPath(localPath);
+
+
+    auto json = JsonSerializer::serialize(*asset, getParentAssetPath(assetPath), JsonFormatting::Indented);
+    FileSystem::writeAllText(localPath, json);
+}
+
+String AssetManager::assetPathToLocalFullPath(const String& assetPath) const
+{
+    LN_CHECK(!m_primaryLocalAssetDirectory.isEmpty());
+
+    String archiveName;
+    Path localPath;
+    tryParseAssetPath(assetPath, &archiveName, &localPath);
+    return Path(m_primaryLocalAssetDirectory, localPath);
+}
+
+String AssetManager::localFullPathToAssetPath(const String& localFullPath) const
+{
+    // TODO: ちょっと手抜き
+    return AssetPathPrefix + u"/" + localFullPath;
+}
+
+String AssetManager::getParentAssetPath(const String& assetPath)
+{
+    String archiveName;
+    Path localPath;
+    tryParseAssetPath(assetPath, &archiveName, &localPath);
+
+    if (localPath.str().contains('/'))
+        localPath = localPath.parent();
+    else
+        localPath = u"";
+
+    return AssetPathPrefix + archiveName + u"/" + localPath.str();
+}
+
+String AssetManager::combineAssetPath(const String& assetFullBasePath, const String& localAssetPath)
+{
+    if (localAssetPath.indexOf(AssetPathPrefix) == 0) {
+        return localAssetPath;
+    }
+    else {
+        String archiveName;
+        Path localPath;
+        tryParseAssetPath(assetFullBasePath, &archiveName, &localPath);
+
+
+        return AssetPathPrefix + archiveName + canonicalizeAssetPath(u"/" + localPath.str() + u"/" + localAssetPath);
+    }
+}
+
+String AssetManager::makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath)
+{
+    LN_CHECK(assetFullBasePath.indexOf(AssetPathPrefix) == 0);
+    LN_CHECK(assetFullPath.indexOf(AssetPathPrefix) == 0);
+
+    String archiveName1, archiveName2;
+    Path localPath1, localPath2;
+    tryParseAssetPath(assetFullBasePath, &archiveName1, &localPath1);
+    tryParseAssetPath(assetFullPath, &archiveName2, &localPath2);
+
+    localPath1 = Path(u"/", localPath1);
+    localPath2 = Path(u"/", localPath2);
+    return localPath1.makeRelative(localPath2);
+}
+
+String AssetManager::canonicalizeAssetPath(const String& assetPath)
+{
+    std::vector<Char> tmpPath(assetPath.length() + 1);
+    int len = detail::PathTraits::canonicalizePath(assetPath.c_str(), assetPath.length(), tmpPath.data(), tmpPath.size());
+    return Path(StringRef(tmpPath.data(), len)).unify();
+}
+
 bool AssetManager::existsFile(const StringRef& filePath) const
 {
     auto unifiedFilePath = Path(filePath).unify();
@@ -238,7 +354,7 @@ Ref<Object> AssetManager::loadAsset(const StringRef& filePath)
 
     auto asset = ln::makeObject<ln::AssetModel>();
     JsonSerializer::deserialize(text, sourceFile.parent(), *asset);
-    asset->onSetAssetFilePath(sourceFile);
+    //asset->onSetAssetFilePath(sourceFile);
     return asset->target();
 }
 
@@ -374,14 +490,14 @@ void AssetManager::makeFindPaths(const StringRef& filePath, const Char** exts, i
 	}
 }
 
-bool AssetManager::tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outPath) const
+bool AssetManager::tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outLocalPath)
 {
     if (assetPath.indexOf(AssetPathPrefix) != 0) return false;
     int separate1 = assetPath.indexOf('/', AssetPathPrefix.length(), CaseSensitivity::CaseInsensitive);
     if (separate1 < 0) return false;
 
     *outArchiveName = assetPath.substr(AssetPathPrefix.length(), separate1 - AssetPathPrefix.length());
-    *outPath = Path(assetPath.substr(separate1 + 1));
+    *outLocalPath = Path(assetPath.substr(separate1 + 1));
     return true;
 }
 

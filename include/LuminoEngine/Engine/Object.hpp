@@ -94,10 +94,10 @@ public:
 
 	// TODO: internal
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
-    virtual void onSetAssetFilePath(const Path& filePath);
+    //virtual void onSetAssetFilePath(const Path& filePath);
 
-    void setAssetId(const Uuid& id) { m_assetId = id; }
-    const Uuid& assetId() const { return m_assetId; }
+    void setAssetPath(const String& value) { m_assetPath = value; }
+    const String& assetPath() const { return m_assetPath; }
 
 private:
 	virtual void onRetained() override;
@@ -109,7 +109,7 @@ private:
     detail::WeakRefInfo* m_weakRefInfo;
     std::mutex m_weakRefInfoMutex;
 	detail::ObjectRuntimeData* m_runtimeData;
-    Uuid m_assetId;
+    String m_assetPath;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;

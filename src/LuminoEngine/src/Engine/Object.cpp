@@ -70,9 +70,9 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
-void Object::onSetAssetFilePath(const Path& filePath)
-{
-}
+//void Object::onSetAssetFilePath(const Path& filePath)
+//{
+//}
 
 void Object::onRetained()
 {

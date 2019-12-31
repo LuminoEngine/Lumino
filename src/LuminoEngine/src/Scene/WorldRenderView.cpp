@@ -316,7 +316,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 }
             }
 
-            m_targetWorld->renderGizmos(renderingContext);
+            //m_targetWorld->renderGizmos(renderingContext);
 
             // test
             //renderingContext->pushState();

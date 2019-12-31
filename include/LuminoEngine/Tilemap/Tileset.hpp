@@ -43,7 +43,7 @@ public:
 
 public: // TODO: internal
     void drawTile(RenderingContext* context, int tileId, const Vector3& pos, const Size& tileSize);
-    virtual void onSetAssetFilePath(const Path& filePath) { m_assetFilePath = filePath; }
+    //virtual void onSetAssetFilePath(const Path& filePath) { m_assetFilePath = filePath; }
 
     Path m_assetFilePath;
 
