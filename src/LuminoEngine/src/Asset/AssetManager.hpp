@@ -36,19 +36,19 @@ public:
     // "asset://local/dir/file.txt"    => Unix 形式の絶対パス。 ファイルシステム上のファイルを指す。
     // "asset:///dir/file.txt"         => ローカルファイルパス。登録されているいずれかの AssetArchive 内のファイルを指す。
     // TODO: "asset://ArchiveName/" とかで AssetArchive を明示できるようにしてもいい気がする
-    Optional<String> findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const;
-	bool existsAsset(const String& assetPath) const;
-    Ref<Stream> openStreamFromAssetPath(const String& assetPath) const;
+    Optional<AssetPath> findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const;
+	bool existsAsset(const AssetPath& assetPath) const;
+    Ref<Stream> openStreamFromAssetPath(const AssetPath& assetPath) const;
 
     Ref<AssetModel> loadAssetModelFromLocalFile(const String& filePath) const;
-    Ref<AssetModel> loadAssetModelFromAssetPath(const String& assetPath) const;
+    Ref<AssetModel> loadAssetModelFromAssetPath(const AssetPath& assetPath) const;
     void saveAssetModelToLocalFile(AssetModel* asset, const String& filePath = String::Empty) const;  // 別名で保存するときは filePath を指定する
 
-    String assetPathToLocalFullPath(const String& assetPath) const;
-    String localFullPathToAssetPath(const String& localFullPath) const;
-    static String getParentAssetPath(const String& assetPath);  // 親フォルダ
-    static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
-    static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
+    String assetPathToLocalFullPath(const AssetPath& assetPath) const;
+    //String localFullPathToAssetPath(const String& localFullPath) const;
+    //static String getParentAssetPath(const String& assetPath);  // 親フォルダ
+    //static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
+    //static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
     static String canonicalizeAssetPath(const String& assetPath);
 
     [[deprecated]]
