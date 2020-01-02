@@ -45,6 +45,15 @@ const RectI RectI::Empty(0, 0, -1, -1);
 const Rect Rect::Zero(0, 0, 0, 0);
 const Rect Rect::Empty(0, 0, -1, -1);
 
+Rect Rect::makeInflate(const Thickness& thickness) const
+{
+	return Rect(
+		x - thickness.left,
+		y - thickness.top,
+		std::max(width + thickness.width(), 0.0f),
+		std::max(height + thickness.height(), 0.0f));
+}
+
 Rect Rect::makeDeflate(const Thickness& thickness) const
 {
     return Rect(
@@ -79,6 +88,8 @@ const Thickness Thickness::Zero(0, 0, 0, 0);
 
 //==============================================================================
 // CornerRadius
+
+const CornerRadius CornerRadius::Zero = CornerRadius(0, 0, 0, 0);
 
 CornerRadius::CornerRadius()
     : topLeft(0)

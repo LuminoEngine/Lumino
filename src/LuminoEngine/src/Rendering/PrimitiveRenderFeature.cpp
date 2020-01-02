@@ -141,70 +141,141 @@ void MeshGeneraterRenderFeature::init(RenderingManager* manager)
 {
 	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
-    m_internal = makeRef<InternalPrimitiveRenderer>();
-    m_internal->init(manager);
+	m_linearAllocator = makeRef<LinearAllocator>(m_manager->graphicsManager()->linearAllocatorPageManager());
+	prepareBuffers(512, 512 * 3);
+	m_vertexLayout = m_manager->standardVertexDeclaration();
+	resetBatchData();
 }
 
-//void PrimitiveRenderFeature::drawMeshGenerater(const MeshGenerater* generator)
-//{
-//    if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != generator->primitiveType()) {
-//        flush(m_manager->graphicsManager()->graphicsContext());
-//    }
-//        
-//    m_lastPrimitiveType = generator->primitiveType();
-//
-//
-//
-//    GraphicsManager* manager = m_manager->graphicsManager();
-//    LN_ENQUEUE_RENDER_COMMAND_2(
-//        PrimitiveRenderFeature_drawMeshGenerater, manager,
-//        InternalPrimitiveRenderer*, m_internal,
-//        InternalSpriteRenderer::State, m_state,
-//        {
-//            m_internal->setState(m_state);
-//        });
-//}
+RequestBatchResult MeshGeneraterRenderFeature::drawMeshGenerater(const MeshGenerater* generator)
+{
+	// Verify
+	if (m_batchData.indexCount == 0) {
+		m_batchData.topology = generator->primitiveType();
+	}
+	else {
+		// TODO: RequestBatchResult::submitted
+		if (LN_REQUIRE(m_batchData.topology == generator->primitiveType())) return RequestBatchResult::Staging;
+	}
 
-//void PrimitiveRenderFeature::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
-//{
-//    GraphicsManager* manager = m_manager->graphicsManager();
-//    LN_ENQUEUE_RENDER_COMMAND_2(
-//        SpriteRenderFeature_setState, manager,
-//        InternalSpriteRenderer*, m_internal,
-//        InternalSpriteRenderer::State, m_state,
-//        {
-//            m_internal->setState(m_state);
-//        });
-//
-//    if (m_lastPrimitiveType.hasValue() && m_lastPrimitiveType != PrimitiveType::LineList) {
-//        flush(m_manager->graphicsManager()->graphicsContext());
-//    }
-//
-//    m_lastPrimitiveType = PrimitiveType::LineList;
-//}
+	MeshGenerater* gen = generator->clone(m_linearAllocator);
+	m_generators.add(gen);
+
+	m_batchData.indexCount += gen->indexCount();
+
+	return RequestBatchResult::Staging;
+}
+
+void MeshGeneraterRenderFeature::endRendering()
+{
+    resetBatchData();
+}
 
 void MeshGeneraterRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
 {
-	GraphicsManager* manager = m_manager->graphicsManager();
-	ICommandList* c = GraphicsContextInternal::commitState(context);
-	LN_ENQUEUE_RENDER_COMMAND_2(
-		PrimitiveRenderFeature_flush, context,
-		InternalPrimitiveRenderer*, m_internal,
-		ICommandList*, c,
-		{
-			m_internal->flush(c);
-		});
+	// add Batch
+	auto batch = batchList->addNewBatch<Batch>(this);
+	batch->data = m_batchData;
 
-	//m_lastPrimitiveType = nullptr;
-
-	// TODO: add Batch
+	// next Batch
+	m_batchData.topology = m_batchData.topology;
+	m_batchData.indexOffset = m_batchData.indexOffset + m_batchData.indexCount;
+	m_batchData.indexCount = 0;
 }
 
 void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)
 {
-	LN_NOTIMPLEMENTED();
+	if (m_generators.isEmpty()) return;
+    auto localBatch = static_cast<Batch*>(batch);
+
+    // TODO: ↓ SceneRenderer から、一連の Batch 描画の開始タイミングを教えてもらってそこでやるほうがいいかも
+    if (localBatch->data.indexOffset == 0) {
+        // Prepare buffers
+        int vertexCount = 0;
+        int indexCount = 0;
+        for (MeshGenerater* gen : m_generators) {
+            vertexCount += gen->vertexCount();
+            indexCount += gen->indexCount();
+        }
+        prepareBuffers(vertexCount, indexCount);
+
+        // Create Vertex and Index buffers
+        Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->map(MapMode::Write);
+        uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map(MapMode::Write);
+        MeshGeneraterBuffer buffer;
+        size_t vertexOffset = 0;
+        size_t indexOffset = 0;
+        for (MeshGenerater* gen : m_generators) {
+            buffer.setBuffer(vertexBuffer + vertexOffset, indexBuffer + indexOffset, IndexBufferFormat::UInt16, vertexOffset);
+            buffer.generate(gen);
+            vertexOffset += gen->vertexCount();
+            indexOffset += gen->indexCount();
+        }
+        //context->unmap(m_vertexBuffer);
+        //context->unmap(m_indexBuffer);
+
+
+    }
+
+    int primitiveCount = 0;
+    switch (localBatch->data.topology)
+    {
+    case ln::PrimitiveTopology::TriangleList:
+        primitiveCount = localBatch->data.indexCount / 3;
+        break;
+    case ln::PrimitiveTopology::TriangleStrip:
+        LN_NOTIMPLEMENTED();
+        break;
+    case ln::PrimitiveTopology::TriangleFan:
+        LN_NOTIMPLEMENTED();
+        break;
+    case ln::PrimitiveTopology::LineList:
+        primitiveCount = localBatch->data.indexCount / 2;
+        break;
+    case ln::PrimitiveTopology::LineStrip:
+        LN_NOTIMPLEMENTED();
+        break;
+    case ln::PrimitiveTopology::PointList:
+        LN_NOTIMPLEMENTED();
+        break;
+    default:
+        LN_UNREACHABLE();
+        break;
+    }
+
+	// Render
+	context->setVertexLayout(m_vertexLayout);
+	context->setVertexBuffer(0, m_vertexBuffer);
+	context->setIndexBuffer(m_indexBuffer);
+	context->drawPrimitiveIndexed(localBatch->data.indexOffset, primitiveCount);
 }
 
+void MeshGeneraterRenderFeature::resetBatchData()
+{
+	m_generators.clear();
+	m_linearAllocator->cleanup();
+	m_batchData.indexOffset = 0;
+	m_batchData.indexCount = 0;
+}
+
+void MeshGeneraterRenderFeature::prepareBuffers(int vertexCount, int indexCount)
+{
+	if (vertexCount > UINT16_MAX) {
+		LN_NOTIMPLEMENTED();
+		return;
+	}
+
+	size_t vertexBufferSize = sizeof(Vertex) * vertexCount;
+	if (!m_vertexBuffer || m_vertexBuffer->size() < vertexBufferSize) {
+		m_vertexBuffer = makeObject<VertexBuffer>(vertexBufferSize, GraphicsResourceUsage::Dynamic);
+	}
+
+	size_t indexBufferSize = sizeof(uint16_t) * indexCount;
+	if (!m_indexBuffer || m_indexBuffer->bytesSize() < indexCount)
+	{
+		m_indexBuffer = makeObject<IndexBuffer>(vertexBufferSize, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
+	}
+}
 
 //==============================================================================
 // PrimitiveRenderFeature

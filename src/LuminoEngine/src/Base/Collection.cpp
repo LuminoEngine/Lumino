@@ -4,6 +4,9 @@
 
 namespace ln {
 
+//==============================================================================
+// CollectionObject
+
 CollectionObject::CollectionObject()
 {
 }

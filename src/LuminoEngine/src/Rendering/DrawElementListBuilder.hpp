@@ -49,7 +49,7 @@ public:
 
 	void setShadingModel(const Optional<ShadingModel>& value);
 	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
-    const AbstractMaterial* material() const;
+    AbstractMaterial* material() const;
 	void setTransfrom(const Matrix& value);
     void setBaseTransfrom(const Optional<Matrix>& value);
 	const Matrix& baseTransform() const;

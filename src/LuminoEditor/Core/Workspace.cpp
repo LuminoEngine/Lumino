@@ -1,8 +1,8 @@
 ﻿
 #include "EnvironmentSettings.hpp"
-#include "Project.hpp"
-#include "AssetDatabase.hpp"
-#include "PluginManager.hpp"
+#include "Project/Project.hpp"
+#include "Project/AssetDatabase.hpp"
+#include "Project/PluginManager.hpp"
 #include "Workspace.hpp"
 
 namespace lna {

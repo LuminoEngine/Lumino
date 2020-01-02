@@ -32,7 +32,19 @@ void SceneManager::init()
 {
     LN_LOG_DEBUG << "SceneManager Initialization started.";
 
-#ifdef LN_TEST_ATMOSPHERE
+
+	// ClusteredShadingDefault.lcfx.h
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/SkyFromAtmosphere.lcfx.inl"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		MemoryStream stream(data, size);
+		m_atmosphereShader = makeObject<Shader>(u"SkyFromAtmosphere", &stream);
+	}
+
+#if 0
     m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
 #endif
 

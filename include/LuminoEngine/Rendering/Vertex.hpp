@@ -14,6 +14,14 @@ struct Vertex
 	Color color;
 };
 
+struct VertexTangents
+{
+	static const VertexTangents Default;
+
+	Vector3 tangent;	// 接線ベクトル
+	Vector3 binormal;	// 従法線ベクトル
+};
+
 struct VertexBlendWeight
 {
     static const VertexBlendWeight Default;

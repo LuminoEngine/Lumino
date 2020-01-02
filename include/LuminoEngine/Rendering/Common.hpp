@@ -3,6 +3,8 @@
 #include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
 
+#define LN_BOX_ELEMENT_RENDER_FEATURE_TEST 1
+
 namespace ln {
 
 enum class ShadingModel : uint8_t
@@ -15,7 +17,7 @@ enum class ShadingModel : uint8_t
 enum class BlendMode : uint8_t
 {
 	Normal,			/**< 通常 */
-	Alpha,			/**< アルファブレンド */
+	Alpha,			/**< アルファブレンド (RGB をアルファブレンドし、A を加算合成) */
 	Add,			/**< 加算合成 */
 	Subtract,		/**< 減算合成 */
 	Multiply,		/**< 乗算合成 */
@@ -136,6 +138,44 @@ struct ClearInfo
     float depth;
     uint8_t stencil;
 };
+
+
+
+// 必須情報。border の情報が含まれているが、Shadow を正しく描画するために必要となる
+struct BoxElementShapeBaseStyle
+{
+    Matrix transform;
+    Rect baseRect;
+    CornerRadius cornerRadius;
+    bool aligndLineAntiAlias = false;	// 軸に平行な辺にも AA を適用するか (回転させたい場合に使用)
+};
+
+struct BoxElementShapeBackgroundStyle
+{
+    Color color;
+};
+
+struct BoxElementShapeBorderStyle
+{
+    Color borderLeftColor;
+    Color borderTopColor;
+    Color borderRightColor;
+    Color borderBottomColor;
+    Thickness borderThickness;
+    bool borderInset = false;
+};
+
+struct BoxElementShapeShadowStyle
+{
+	/** シャドウのオフセット距離です (シャドウの生成処理は、オフセットが BoxElement から大きく離れないことを前提として最適化されています。オフセットは shadowWidth を超えないようにしてください) */
+    Vector2 shadowOffset;
+
+    Color shadowColor;
+    float shadowWidth = 0.0f;
+    float shadowBlur = 0.0f;
+    bool shadowInset = false;
+};
+
 
 namespace detail {
 

@@ -91,8 +91,10 @@ void UIContext::setupDefaultStyle()
 				s->verticalContentAlignment = VAlignment::Center;
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
 				s->cornerRadius = CornerRadius(4);
-				s->shadowBlurRadius = 2;
-				s->shadowOffsetY = 2;
+				s->shadowBlurRadius = 4;
+                //s->shadowSpreadRadius = -1;
+				s->shadowOffsetY = 1;
+                s->shadowColor = Color(0, 0, 0, 0.5);
 			}
 			//// UIButton.test
 			//{

@@ -11,6 +11,15 @@ class MeshContainer;
 class StaticMeshModel;
 namespace detail {
 class MeshManager;
+
+enum MeshStandardVB
+{
+	MeshStandardVB_None = 0x00,
+	MeshStandardVB_Main = 0x01,
+	MeshStandardVB_Tangents = 0x02,
+	MeshStandardVB_Skinning = 0x04,
+};
+
 }
 
 struct MeshSection
@@ -201,6 +210,10 @@ LN_CONSTRUCT_ACCESS:
 	void init(const MeshView& meshView);
 
 private:
+	detail::MeshStandardVB getStandardElement(VertexElementUsage usage, int usageIndex) const;
+	VertexBuffer* acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
+	void resetVertexLayout();
+
 	struct VertexBufferAttribute
 	{
         VertexElementType type;
@@ -209,11 +222,16 @@ private:
 		Ref<VertexBuffer> buffer;
 	};
 
-	
-	List<VertexBufferAttribute> m_vertexBuffers;
+	Ref<VertexBuffer> m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
+	Ref<VertexBuffer> m_tangentsVertexBuffer;	// Tangent0, BiNormal0
+	Ref<VertexBuffer> m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
+	List<VertexBufferAttribute> m_extraVertexBuffers;
 	Ref<IndexBuffer> m_indexBuffer;
     Ref<VertexLayout> m_vertexLayout;
 	List<MeshSection2> m_sections;
+
+	int m_vertexCount;
+	int m_indexCount;
 };
 
 // ひとつのメッシュモデルデータ内にいくつかのメッシュノードが含まれているとき、それを名前検索するために使用する。

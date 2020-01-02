@@ -30,6 +30,7 @@
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
+#include <LuminoEngine/Scene/TransformControls.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -337,6 +338,7 @@ int main(int argc, char** argv)
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
     EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
+    EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
 	//return UISandboxMain();
@@ -430,12 +432,13 @@ int main(int argc, char** argv)
 	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
-    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
+    auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-    auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
-    mesh1->setBlendMode(BlendMode::Add);
-    mesh1->setScale(100);
-    mesh1->setColorScale(Color(0.3, 0.3, 0.3));
+    
+	//auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+ //   mesh1->setBlendMode(BlendMode::Add);
+ //   mesh1->setScale(100);
+ //   mesh1->setColorScale(Color(0.3, 0.3, 0.3));
     //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
     
     // MeshContainer 複数
@@ -444,6 +447,10 @@ int main(int argc, char** argv)
     //auto voxelmap1 = makeObject<VisualObject>();
     //auto voxelmapComponent1 = makeObject<VoxelmapComponent>();
     //voxelmap1->addComponent(voxelmapComponent1);
+
+	//auto tc1 = makeObject<TransformControls>();
+
+    Engine::mainRenderView()->transformControls()->setTarget(mesh1);
 
 #if 0
     auto window1 = UIWindow::create();
@@ -462,7 +469,7 @@ int main(int argc, char** argv)
 	window1->addElement(tp1);
 #endif
 
- //   window1->setLayoutPanel(UIStackLayout::create());
+ //   window1->setLayoutPanel(UIStackLayout_Obsolete::create());
 
  //   auto text1 = UITextBlock::create();
  //   text1->setText(u"ABCDEFGabcdefg");

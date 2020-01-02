@@ -1,7 +1,7 @@
 
 #include <Workspace.hpp>
-#include <Project.hpp>
-#include <AssetDatabase.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/AssetDatabase.hpp"
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
@@ -53,7 +53,7 @@ void TilesetEditor::onClosed()
 {
 }
 
-Ref<ln::List<Ref<ln::EditorPane>>> TilesetEditor::getEditorPanes(ln::EditorPaneKind kind)
+Ref<ln::List<Ref<ln::EditorPane>>> TilesetEditor::getEditorPanes(lna::EditorPaneKind kind)
 {
     return nullptr;
 }
@@ -61,7 +61,7 @@ Ref<ln::List<Ref<ln::EditorPane>>> TilesetEditor::getEditorPanes(ln::EditorPaneK
 //==============================================================================
 // TilesetEditorPloxy
 
-Ref<ln::AssetEditor> TilesetEditorPloxy::createEditor()
+Ref<lna::AssetEditor> TilesetEditorPloxy::createEditor()
 {
     return ln::makeObject<TilesetEditor>();
 }

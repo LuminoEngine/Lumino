@@ -34,6 +34,11 @@ void Component::render(RenderingContext* context)
     onRender(context);
 }
 
+void Component::renderGizmo(RenderingContext* context)
+{
+    onRenderGizmo(context);
+}
+
 void Component::onStart()
 {
 }
@@ -63,6 +68,10 @@ void Component::onPrepareRender(RenderingContext* context)
 }
 
 void Component::onRender(RenderingContext* context)
+{
+}
+
+void Component::onRenderGizmo(RenderingContext* context)
 {
 }
 

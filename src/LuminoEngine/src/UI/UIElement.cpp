@@ -474,14 +474,6 @@ void UIElement::addChild(const String& child)
     addChild(textblock);
 }
 
-void UIElement::addAction(UIAction* action)
-{
-    if (!m_actions) {
-        m_actions = ln::makeList<Ref<UIAction>>();
-    }
-    m_actions->add(action);
-}
-
 void UIElement::activate()
 {
 	//if (m_focusable) {
@@ -800,6 +792,8 @@ void UIElement::render(UIRenderingContext* context, const Matrix& parentTransfor
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Render);
 }
 
+// 内部的なこの描画関数は、Border の領域も含んで描画を要求する。
+// TODO: ユーザーに公開する onRender とかは、Border を含まない領域とするべき
 void UIElement::renderClient(UIRenderingContext* context, const Matrix& combinedTransform)
 {
 	context->pushState();
@@ -841,6 +835,49 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 	{
 		context->setMaterial(m_finalStyle->backgroundMaterial);
 
+#ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
+        BoxElementShapeBaseStyle baseStyle;
+        BoxElementShapeBackgroundStyle backgroundStyle;
+        BoxElementShapeBorderStyle borderStyle;
+        BoxElementShapeShadowStyle shadowStyle;
+
+        baseStyle.baseRect = Rect(0, 0, actualSize());// .makeDeflate(m_finalStyle->borderThickness);
+        baseStyle.baseRect.width -= m_finalStyle->borderThickness.width();
+        baseStyle.baseRect.height -= m_finalStyle->borderThickness.height();
+        baseStyle.cornerRadius = m_finalStyle->cornerRadius;
+
+        const BoxElementShapeBackgroundStyle* actualBackgroundStyle = nullptr;
+        if (m_finalStyle->backgroundColor.a > 0.0f) {
+            backgroundStyle.color = m_finalStyle->backgroundColor;
+            actualBackgroundStyle = &backgroundStyle;
+        }
+
+        const BoxElementShapeBorderStyle* actualBorderStyle = nullptr;
+        if (!m_finalStyle->borderThickness.isZero()) {
+            borderStyle.borderLeftColor = m_finalStyle->leftBorderColor;
+            borderStyle.borderTopColor = m_finalStyle->topBorderColor;
+            borderStyle.borderRightColor = m_finalStyle->rightBorderColor;
+            borderStyle.borderBottomColor = m_finalStyle->bottomBorderColor;
+            borderStyle.borderThickness = m_finalStyle->borderThickness;
+            borderStyle.borderInset = false;    // CSS default
+            actualBorderStyle = &borderStyle;
+        }
+
+        const BoxElementShapeShadowStyle* actualShadowStyle = nullptr;
+        if (m_finalStyle->shadowBlurRadius > 0.0f) {
+            shadowStyle.shadowOffset = Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY);
+            shadowStyle.shadowColor = m_finalStyle->shadowColor;
+            shadowStyle.shadowWidth = m_finalStyle->shadowSpreadRadius;
+            shadowStyle.shadowBlur = m_finalStyle->shadowBlurRadius;
+            shadowStyle.shadowInset = m_finalStyle->shadowInset;
+            actualShadowStyle = &shadowStyle;
+        }
+
+        if (actualBackgroundStyle || actualBorderStyle || actualShadowStyle) {
+            context->drawBoxElement(baseStyle, actualBackgroundStyle, actualBorderStyle, actualShadowStyle);
+        }
+#else
+
 		if (m_finalStyle->shadowBlurRadius > 0.0f)
 		{
 			context->drawBoxShadow(Rect(0, 0, actualSize()), m_finalStyle->cornerRadius, Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY), m_finalStyle->shadowColor, m_finalStyle->shadowBlurRadius, m_finalStyle->shadowSpreadRadius, m_finalStyle->shadowInset);
@@ -864,6 +901,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 		if (!m_finalStyle->borderThickness.isZero()) {
 			context->drawBoxBorderLine(rect, m_finalStyle->borderThickness, m_finalStyle->leftBorderColor, m_finalStyle->topBorderColor, m_finalStyle->rightBorderColor, m_finalStyle->bottomBorderColor, m_finalStyle->cornerRadius, false);
 		}
+#endif
 	}
 
 
@@ -892,10 +930,6 @@ void UIElement::onRoutedEvent(UIEventArgs* e)
 	if (e->type() == UIEvents::MouseDownEvent) {
 		activate();
 	}
-
-    if (detail::UICommandInternal::handleCommandRoutedEvent(e, m_actions)) {
-        return;
-    }
 }
 
 bool UIElement::onHitTest(const Point& frameClientPosition)

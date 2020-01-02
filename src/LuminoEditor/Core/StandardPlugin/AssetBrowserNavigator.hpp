@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoEditor/Plugin.hpp>
 #include "../UIExtension.hpp"
+#include "../AssetEditor/AssetEditor.hpp"
 
 class AssetBrowserNavigatorExtension;
 
@@ -82,7 +83,7 @@ private:
     Ref<AssetBrowserListView> m_listView;
 };
 
-class AssetBrowserEditor : public ln::AssetEditor
+class AssetBrowserEditor : public lna::AssetEditor
 {
 public:
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
@@ -98,7 +99,7 @@ public:
     virtual const ln::Char* id() const { return u"769E40B5-AB4D-45A0-94BC-21F84F958DE6"; }
     virtual const ln::Char* displayName() const { return u"AssetBrowserEditorExtension"; }
     virtual const ln::Char* typeKeyword() const { return nullptr; }
-    virtual ln::Ref<ln::AssetEditor> createEditor() override;
+    virtual ln::Ref<lna::AssetEditor> createEditor() override;
 
 private:
 };

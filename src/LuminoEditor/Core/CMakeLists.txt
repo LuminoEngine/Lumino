@@ -1,13 +1,19 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
-project(EditorCore)
+project(LuminoEditor)
 
 set(LN_ROOT_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../include)
 
 file(GLOB LOCAL_HEADERS ${LN_ROOT_INCLUDE_DIR}/LuminoEditor/*.hpp)
 source_group("Sources" FILES ${LOCAL_HEADERS})
 
-file(GLOB LN_SOURCES_EditorCore *.hpp *.cpp)
-source_group("Sources" FILES ${LN_SOURCES_EditorCore})
+file(GLOB LN_SOURCES_LuminoEditor *.hpp *.cpp)
+source_group("Sources" FILES ${LN_SOURCES_LuminoEditor})
+
+file(GLOB LN_SOURCES_Project Project/*.hpp Project/*.cpp)
+source_group("Project" FILES ${LN_SOURCES_Project})
+
+file(GLOB LN_SOURCES_AssetEditor AssetEditor/*.hpp AssetEditor/*.cpp)
+source_group("AssetEditor" FILES ${LN_SOURCES_AssetEditor})
 
 file(GLOB LN_SOURCES_StandardPlugin StandardPlugin/*.hpp StandardPlugin/*.cpp)
 source_group("StandardPlugin" FILES ${LN_SOURCES_StandardPlugin})
@@ -27,7 +33,9 @@ source_group("App" FILES ${LN_SOURCES_App})
 set(
 	LOCAL_SOURCES
 	${LOCAL_HEADERS}
-	${LN_SOURCES_EditorCore}
+	${LN_SOURCES_LuminoEditor}
+	${LN_SOURCES_Project}
+	${LN_SOURCES_AssetEditor}
 	${LN_SOURCES_StandardPlugin}
 	${LN_SOURCES_TilemapPlugin}
 	${LN_SOURCES_TilemapSceneExtension}

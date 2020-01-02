@@ -1,81 +1,81 @@
-/*
+﻿/*
 
 [2019/8/13] Panes
 ----------
 
-### ���[�hPane
-UE4�� mode pane �Ɠ����C���[�W�B
-�����A�v���n�u�̃u���E�U�����˂�B
+### モードPane
+UE4の mode pane と同じイメージ。
+ただ、プレハブのブラウザも兼ねる。
 
-���[�h�͂��܂̂Ƃ���
-�E�^�C���}�b�v�ҏW���[�h
-�E�I�u�W�F�N�g���[�h
+モードはいまのところ
+・タイルマップ編集モード
+・オブジェクトモード
 
-�^�C���}�b�v�ҏW���[�h�ł́A�����Ƀ^�C���Z�b�g���\�������B
+タイルマップ編集モードでは、ここにタイルセットが表示される。
 
-�I�u�W�F�N�g���[�h�ł́A�e��I�u�W�F�N�g��v���n�u��I�����A�V�[���ɔz�u�ł���BD&D�ł������ȁB�܂��A�ׂ������Ƃ͂��ƂŁB
-
-
-### ���C���[Pane
-Scene�̃��C���[��\���BTkoolXP�̎��̂悤�ȁA�^�C���}�b�v�̃��C���[�ł͂Ȃ��B
-���ۂɂ̓��C���[�̊ԂɃI�u�W�F�N�g���񂾂�A�^�C���̒P�Ȃ�3�����z��̃G�f�B�^�ɂ͂��Ȃ��ق��������Ǝv���B
-�� �ł�������Ղ炮����Ƃ�������Ƃ��͂��̎d�g�݂��������ق����悩�����񂾂�ȁE�E�B
-�� �悭�l���������ς�K�v�����B���Ƀ^�C�����u�����v���邽�߂ɕʂ̃^�C����u�������ꍇ�B
-    �����A�V�[���̃��C���[�ł͂Ȃ� tilemap �̓������C���[�Ƃ�������Ȉʒu�Â��ŁB
-
-���C���[���̂̓V�[���̃��[�g�I�u�W�F�N�g�B
-Tilemap ���C���[���I�����ꂽ��A���̂܂܂��� Tilemap �̕ҏW���[�h�ɓ���B
-Tilemap �̃I�u�W�F�N�g���[�h�ɖ߂����肷��ƁATilemap ���̂�Transform �Ƃ��������B
+オブジェクトモードでは、各種オブジェクトやプレハブを選択し、シーンに配置できる。D&Dでいいかな。まぁ、細かいことはあとで。
 
 
+### レイヤーPane
+Sceneのレイヤーを表す。TkoolXPの時のような、タイルマップのレイヤーではない。
+実際にはレイヤーの間にオブジェクト挟んだり、タイルの単なる3次元配列のエディタにはしないほうがいいと思う。
+→ でも謎解きぷらぐいんとか作ったときはこの仕組みがあったほうがよかったんだよな・・。
+→ よく考えたらやっぱり必要かも。特にタイルを「装飾」するために別のタイルを置きたい場合。
+    ただ、シーンのレイヤーではなく tilemap の内部レイヤーという特殊な位置づけで。
+
+レイヤー自体はシーンのルートオブジェクト。
+Tilemap レイヤーが選択されたら、そのまますぐ Tilemap の編集モードに入る。
+Tilemap のオブジェクトモードに戻ったりすると、Tilemap 自体のTransform とかいじれる。
 
 
-[2019/8/13] ���C���[�ɂ���
+
+
+[2019/8/13] レイヤーについて
 ----------
-�����������C���[�Ƃ����f�[�^�\���͕K�v�H�����������́H�Q�[���G���W���ɂ����ă��C���[�̓O���[�s���O�̈Ӗ��̕��������B
-�y�C���g�\�t�g�ł͉��ݒ肵���艺�w�̃C���[�W�Ƀt�B���^�t������Ɏg�����ǁH
-�E�ҏW�͈͂̐���E�E�E�^�C���}�b�v���C���[:Tilemap�����ώ킷�郂�[�h   �I�u�W�F�N�g���C���[:�I�u�W�F�N�g�̔z�u�����郂�[�h
-�E�O��֌W�̐���E�E�E�`�揇�ł͂Ȃ��O��֌W�B�Ȃ̂ŁAUE4 �� Office �̃O���[�v���̈Ӗ��������B
+そもそもレイヤーというデータ構造は必要？何がしたいの？ゲームエンジンにおいてレイヤーはグルーピングの意味の方が強い。
+ペイントソフトでは可視設定したり下層のイメージにフィルタ付けたりに使うけど？
+・編集範囲の制御・・・タイルマップレイヤー:Tilemapだけ変種するモード   オブジェクトレイヤー:オブジェクトの配置をするモード
+・前後関係の制御・・・描画順ではなく前後関係。なので、UE4 や Office のグループ化の意味が強い。
 
-�^�C���}�b�v�̉��Ɏq�I�u�W�F�N�g��u�����肵�����Ȃ��H
-�c�����������B
+タイルマップの下に子オブジェクトを置いたりしたくない？
+…したいかも。
 
-��������ƁA�A�E�g���C�i�őI�񂾃I�u�W�F�N�g�ɂ���ĕҏW���[�h�ς���ق��������H
-�E�E�E����ATilemap ���̂ɂ��A�I�u�W�F�N�g���[�h�ƕҏW���[�h�̔C�Ӑ؂�ւ����~�����E�E�E�B
+そうすると、アウトライナで選んだオブジェクトによって編集モード変えるほうがいい？
+・・・いや、Tilemap 自体にも、オブジェクトモードと編集モードの任意切り替えが欲しい・・・。
 
-### ��̓I�ɂǂ�ȃX�g�[���[�ŕҏW�������́H
-Tiled ���ȁB
-�����Ȃ�ƁATilemap ���ƂɕҏW���[�h�ؑցA�Ƃ������A�V�[���S�̂Ƃ��ẮA2D�ҏW���[�h������ς�ق����B
+### 具体的にどんなストーリーで編集したいの？
+Tiled かな。
+そうなると、Tilemap ごとに編集モード切替、というより、シーン全体としての、2D編集モードがやっぱりほしい。
 
-�����āA�����w��Tilemap���������Ƃ͓���Ȃ̂ŁA�ҏW�ΏۂƂȂ�I�u�W�F�N�g�̑I���Ƃ��ăO���[�v�����g�������B����Ƀ��C���[�I�ȍl������ꂽ���B
-�� UE4 �ł́A���̖�ڂ́u���C���[�vhttps://api.unrealengine.com/JPN/Engine/UI/LevelEditor/Layers/index.html
-
-
-### Scene�G�f�B�^�̊�{�@�\�Ƃ��āA�r���I�ȕҏW���b�N������Ƃ����̂��ȁH
-����I�u�W�F�N�g�̎q�c���[�����ҏW�ł���悤�Ȏd�g�݁B
-�����z�肵�Ă����ҏW���C���[�̑I���Ƃ͂܂�A���̋@�\�ŖړI�̃c���[�ȊO�̕ҏW���b�N��������Ƃ������ƁB
-����ɍ��킹�āA���b�N���ꂽ�I�u�W�F�N�g�͔������Ƃ��ɂ��Ă����������B
-
-###�u�A�E�g���C�����C���[�v�݂����Ȗ��O�ɂ��Ă�������
-����̎��Ԃ̓q�G�����L�[�ŏ�ʂ̃m�[�h�ł���B
-
-### UE4 �̃��[�h�ؑւ̃C���[�W���߂��H
-�ł��A���������h�X�P�[�v�������Ƃ��A���C���[�݂����� 2D �I�ȑO��֌W���A�E�g���C�i�Œ�������K�v������̂ŁA
-�����C���[�W���Ă������C���[�I�Ȏg�����Ƃ͂�����ƈႤ�c�B
-
-### �A�v���[�`�̘������Ђǂ��̂Ō�����c�̂܂��ɁA3D�G���W��������̃A�v���[�`�������Ɛ������Ă݂悤
-�E�E�E�ƌ����Ă��AUE4 �Ɠ����悤�ɂȂ邩�ȁB
-�ł��A�Q�w��tilemap�̊Ԃɋ��܂ꂽ�I�u�W�F�N�g��I���������Ƃ��ɁA�V�[���r���[�ォ��͑I���ł��Ȃ��̂����Ȃ�X�g���X�����B�i����������mouseHitTest���Ȃ��A�ł��������ǁj
-
-��͂�A�V�[���̍\���͋��ʂ����ǃA�v���[�`�̈قȂ�2�̃V�[���G�f�B�^�͂������ق��������C������B
+そして、複数層のTilemapを扱うことは日常なので、編集対象となるオブジェクトの選択としてグループ化を使いたい。それにレイヤー的な考えを入れたい。
+→ UE4 では、この役目は「レイヤー」https://api.unrealengine.com/JPN/Engine/UI/LevelEditor/Layers/index.html
 
 
-[2019/8/13] �^�C���}�b�v�ҏW���[�h�ƁA�C�x���g(�I�u�W�F�N�g) �ҏW���[�h�𕪂���H
+### Sceneエディタの基本機能として、排他的な編集ロックがあるといいのかな？
+あるオブジェクトの子ツリーだけ編集できるような仕組み。
+当初想定していた編集レイヤーの選択とはつまり、この機能で目的のツリー以外の編集ロックをかけるということ。
+それに合わせて、ロックされたオブジェクトは半透明とかにしてもいいかも。
+
+###「アウトラインレイヤー」みたいな名前にしておこうか
+これの実態はヒエラルキー最上位のノードである。
+
+### UE4 のモード切替のイメージが近い？
+でも、複数ランドスケープを扱うとき、レイヤーみたいに 2D 的な前後関係をアウトライナで調整する必要があるので、
+当初イメージしていたレイヤー的な使い方とはちょっと違う…。
+
+### アプローチの乖離がひどいので見送り…のまえに、3Dエンジン側からのアプローチをちゃんと整理してみよう
+・・・と言っても、UE4 と同じようになるかな。
+でも、２層のtilemapの間に挟まれたオブジェクトを選択したいときに、シーンビュー上からは選択できないのがかなりストレスかも。（透明部分はmouseHitTestしない、でもいいけど）
+
+やはり、シーンの構造は共通だけどアプローチの異なる2つのシーンエディタはあったほうがいい気がする。
+
+
+[2019/8/13] タイルマップ編集モードと、イベント(オブジェクト) 編集モードを分ける？
 ----------
-�������ق��������Ǝv���B
+分けたほうがいいと思う。
 
-PGMMV �ł͓�������Ă����ǁA�傫�ȃI�u�W�F�N�g������Ƃ��ɁA���̌��̃^�C����I���ł��Ȃ��B
-����Ō������Ă݂���A�ҏW���[�h�����̂�����������Â炢�����������c�B
+PGMMV では統合されてたけど、大きなオブジェクトがあるときに、その後ろのタイルを選択できない。
+※後で見直してみたら、編集モードがものすごく分かりづらいだけだった…。
 
 
 
@@ -83,9 +83,9 @@ PGMMV �ł͓�������Ă����ǁA�傫�ȃI�u�W�F�N�g������Ƃ��ɁA���̌��̃^�C����I
 */
 
 #include <Workspace.hpp>
-#include <Project.hpp>
-#include <AssetDatabase.hpp>
-#include <PluginManager.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/AssetDatabase.hpp"
+#include "../Project/PluginManager.hpp"
 #include "../UIExtension.hpp"
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
@@ -118,8 +118,20 @@ ln::Result TilemapSceneEditor::init()
 
 void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
+    m_assetModel = asset;
+    m_mainLayout = ln::makeObject<ln::UIVBoxLayout3>();
+    //m_mainLayout->setName(u"---");
+    frame->addElement(m_mainLayout);
+    {
+        auto t = ln::UITextBlock::create(u"test");
+        m_mainLayout->addChild(t);
+    }
+
+
 	m_mainViewport = ln::makeObject<ln::UIViewport>();
-    frame->addElement(m_mainViewport);
+    m_mainViewport->setVerticalAlignment(ln::VAlignment::Stretch);
+    m_mainLayout->addChild(m_mainViewport);
+    //frame->addElement(m_mainViewport);
     //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));
 
 
@@ -161,37 +173,55 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 	m_timer = ln::makeObject<ln::UIActiveTimer>();
 	m_timer->connectOnTick(ln::bind(this, &TilemapSceneEditor::handleTickEvent));
 	m_mainViewport->registerActiveTimer(m_timer);
+
+
+    frame->addAction(ln::makeObject<ln::UIAction>(EditorApplication::SaveCommand, [this](ln::UICommandEventArgs* x) {
+        printf("");
+        this->editorContext()->assetDatabase()->saveAsset(this->m_assetModel);
+    }));
+
 }
 
 void TilemapSceneEditor::onClosed()
 {
 }
 
-Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(ln::EditorPaneKind kind)
+Ref<ln::List<Ref<ln::EditorPane>>> TilemapSceneEditor::getEditorPanes(lna::EditorPaneKind kind)
 {
     switch (kind)
     {
-    case ln::EditorPaneKind::Mode:
+    case lna::EditorPaneKind::Mode:
         return m_modePanes;
-    case ln::EditorPaneKind::Inspector:
+    case lna::EditorPaneKind::Inspector:
         return m_inspectorPanes;
-    case ln::EditorPaneKind::Tool:
+    case lna::EditorPaneKind::Tool:
         return m_toolPanes;
     }
     return nullptr;
 }
 
+void TilemapSceneEditor::clearSelectedObjects()
+{
+    m_selectedObjects.clear();
+}
+
+void TilemapSceneEditor::addSelectedObject(ln::WorldObject* obj)
+{
+    m_selectedObjects.add(obj);
+}
+
 void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
 {
-#if 0   // TODO: ui layout ���t�@�N�^�����O��
+#if 1   // TODO: ui layout リファクタリング中
     if (e->type() == ln::UIEvents::MouseDownEvent ||
         e->type() == ln::UIEvents::MouseUpEvent ||
         e->type() == ln::UIEvents::MouseMoveEvent) {
         auto me = static_cast<ln::UIMouseEventArgs*>(e);
-        auto pt = me->getPosition(m_mainWorldRenderView);
+        auto pt = me->getPosition(m_mainViewport);
         auto ray = m_mainCamera->screenToWorldRay(pt);
         ln::PointI tilePt;
-        if (targetTilemapComponent()->intersectTile(ray, &tilePt)) {
+        bool result = targetTilemapComponent()->intersectTile(ray, &tilePt);
+        if (result/* && targetTilemapComponent()->tilemapModel()->getValidFrontLayer(tilePt.x, tilePt.y) != nullptr*/) {
 
 
             if (me->getMouseButtons() == ln::MouseButtons::Left) {
@@ -232,7 +262,7 @@ void TilemapSceneEditor::handleTickEvent(ln::UITimerEventArgs* e)
 //==============================================================================
 // TilemapSceneEditorPloxy
 
-Ref<ln::AssetEditor> TilemapSceneEditorPloxy::createEditor()
+Ref<lna::AssetEditor> TilemapSceneEditorPloxy::createEditor()
 {
     return ln::makeObject<TilemapSceneEditor>();
 }
@@ -274,7 +304,7 @@ void TilemapSceneListPane::init()
     layout1->addChild(layout2);
     {
         auto caption = ln::UITextBlock::create(u"Scene");
-        caption->setMargin(ln::Thickness(8, 0));    // TODO: theme ����Ƃ肽��
+        caption->setMargin(ln::Thickness(8, 0));    // TODO: theme からとりたい
         caption->setVerticalAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 

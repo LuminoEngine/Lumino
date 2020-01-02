@@ -1,6 +1,6 @@
 ﻿
-#include <Project.hpp>
-#include <PluginManager.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/PluginManager.hpp"
 #include <UIExtension.hpp>
 #include "Application.hpp"
 //#include "AssetBrowserNavigator.hpp"

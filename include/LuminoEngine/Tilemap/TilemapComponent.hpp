@@ -22,7 +22,8 @@ public:
 protected:
 	virtual void onStart() override;
 	virtual void onDetachedScene(Scene* oldOwner) override;
-    void onRender(RenderingContext* context);
+    virtual void onRender(RenderingContext* context) override;
+    virtual void onRenderGizmo(RenderingContext* context) override;
 
 	LN_SERIALIZE_CLASS_VERSION(1);
 	virtual void serialize(Archive& ar) override;

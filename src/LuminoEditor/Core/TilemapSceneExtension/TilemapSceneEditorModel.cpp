@@ -1,8 +1,8 @@
 
 #include <Workspace.hpp>
-#include <Project.hpp>
-#include <AssetDatabase.hpp>
-#include <PluginManager.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/AssetDatabase.hpp"
+#include "../Project/PluginManager.hpp"
 #include "../App/EditorContext.hpp"
 #include "TilemapSceneEditorModel.hpp"
 #include "TilemapSceneModePane.hpp"

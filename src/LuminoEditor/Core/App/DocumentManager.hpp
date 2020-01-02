@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace ln { class AssetEditor; }
+namespace lna { class AssetEditor; }
 class StartupView;
 class ToolPanesArea;
 class DocumentManager;
@@ -88,16 +88,16 @@ class AssetEditorDocument
 {
 public:
     AssetEditorDocument();
-    ln::Result init(ln::AssetModel* asset, ln::AssetEditor* editorModel);
+    ln::Result init(ln::AssetModel* asset, lna::AssetEditor* editorModel);
 
     const Ref<ln::AssetModel>& asset() const { return m_asset; }
-    const Ref<ln::AssetEditor>& editor() const { return m_editor; }
+    const Ref<lna::AssetEditor>& editor() const { return m_editor; }
 
 protected:
 
 private:
     Ref<ln::AssetModel> m_asset;
-    Ref<ln::AssetEditor> m_editor;
+    Ref<lna::AssetEditor> m_editor;
 };
 
 

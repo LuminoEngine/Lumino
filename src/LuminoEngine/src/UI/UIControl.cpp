@@ -4,6 +4,7 @@
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIControl.hpp>
 #include <LuminoEngine/UI/UIActiveTimer.hpp>
+#include <LuminoEngine/UI/UICommand.hpp>
 #include "UIManager.hpp"
 
 namespace ln {
@@ -190,6 +191,14 @@ void UIControl::unregisterActiveTimer(UIActiveTimer* timer)
 	detail::EngineDomain::uiManager()->unregisterActiveTimer(timer);
 }
 
+void UIControl::addAction(UIAction* action)
+{
+    if (!m_actions) {
+        m_actions = ln::makeList<Ref<UIAction>>();
+    }
+    m_actions->add(action);
+}
+
 void UIControl::onAddChild(UIElement* child)
 {
     addElement(child);
@@ -202,6 +211,12 @@ void UIControl::onRoutedEvent(UIEventArgs* e)
     }
     else if (e->type() == UIEvents::MouseLeaveEvent) {
         getVisualStateManager()->gotoState(UIVisualStates::Normal);
+    }
+
+    if (m_actions) {
+        if (detail::UICommandInternal::handleCommandRoutedEvent(e, *m_actions)) {
+            return;
+        }
     }
 
     UIElement::onRoutedEvent(e);

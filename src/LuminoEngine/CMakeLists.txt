@@ -263,42 +263,7 @@ set(LN_SOURCES_Visual
     src/Visual/VisualManager.hpp
 )
 
-set(LN_SOURCES_Scene
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Camera.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/CameraOrbitControlComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Component.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Light.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/OffscreenWorldRenderView.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/RigidBodyComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Scene.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SceneConductor.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/SkinnedMesh.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Sprite.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/StaticMesh.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/VisualObject.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/World.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldObject.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/WorldRenderView.hpp
-    src/Scene/Internal.hpp
-    src/Scene/Camera.cpp
-    src/Scene/CameraOrbitControlComponent.cpp
-    src/Scene/Component.cpp
-    src/Scene/Light.cpp
-    src/Scene/OffscreenWorldRenderView.cpp
-    src/Scene/RigidBodyComponent.cpp
-    src/Scene/Scene.cpp
-    src/Scene/SceneConductor.cpp
-    src/Scene/SceneManager.cpp
-    src/Scene/SceneManager.hpp
-    src/Scene/SkinnedMesh.cpp
-    src/Scene/Sprite.cpp
-    src/Scene/StaticMesh.cpp
-    src/Scene/VisualObject.cpp
-    src/Scene/World.cpp
-    src/Scene/WorldObject.cpp
-    src/Scene/WorldRenderView.cpp
-)
+file(GLOB LN_SOURCES_Scene ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/*.hpp src/Scene/*.cpp src/Scene/*.hpp)
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 

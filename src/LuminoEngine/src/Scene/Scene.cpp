@@ -204,12 +204,21 @@ void Scene::renderObjects(RenderingContext* context)
 {
     for (auto& obj : m_rootWorldObjectList)
     {
-        obj->render();
+        obj->render(context);
 
         for (auto& c : *(obj->m_components))
         {
             c->onPrepareRender(context); // TODO: 全体の前にした方がいいかも
             c->render(context);
+        }
+    }
+}
+
+void Scene::renderGizmos(RenderingContext* context)
+{
+    for (auto& obj : m_rootWorldObjectList) {
+        for (auto& c : *(obj->m_components)) {
+            c->renderGizmo(context);
         }
     }
 }

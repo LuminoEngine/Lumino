@@ -15,7 +15,7 @@ class GLTFImporter
     : public MeshImporter
 {
 public:
-    Ref<StaticMeshModel> import(AssetManager* assetManager, const String& assetPath, DiagnosticsManager* diag);
+    Ref<StaticMeshModel> import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 
 private:
     Ref<Material> readMaterial(const tinygltf::Material& material);
@@ -28,7 +28,7 @@ private:
 	static bool WriteWholeFile(std::string *err, const std::string &filepath, const std::vector<unsigned char> &contents, void *user_data);
 
 	AssetManager* m_assetManager;
-	String m_basedir;
+    AssetPath m_basedir;
 	tinygltf::Model* m_model;
     Ref<StaticMeshModel> m_meshModel;
 };

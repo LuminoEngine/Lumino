@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/ToolPanesArea.hpp"
 #include "../App/NavigatorManager.hpp"
+#include "../AssetEditor/AssetEditor.hpp"
 
 
 namespace lna {
@@ -10,15 +11,19 @@ class TilemapSceneEditorModel;
 class TilemapSceneModePane;
 
 class TilemapSceneEditor
-    : public ln::AssetEditor
+    : public lna::AssetEditor
 {
 public:
     ln::Result init();
     virtual void onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame) override;
     virtual void onClosed() override;
-    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(ln::EditorPaneKind kind) override;
+    virtual Ref<ln::List<Ref<ln::EditorPane>>> getEditorPanes(lna::EditorPaneKind kind) override;
 
 	ln::TilemapComponent* targetTilemapComponent() const { return m_tilemap->tilemapComponent(); }
+
+    void clearSelectedObjects();
+    void addSelectedObject(ln::WorldObject* obj);
+
 
 private:
 	void WorldRenderView_OnUIEvent(ln::UIEventArgs* e);
@@ -33,7 +38,9 @@ private:
     Ref<ln::List<Ref<ln::EditorPane>>> m_modePanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_inspectorPanes;
     Ref<ln::List<Ref<ln::EditorPane>>> m_toolPanes;
+    Ref<ln::UIVBoxLayout3> m_mainLayout;
 
+    // Tilemap
 	Ref<ln::UIActiveTimer> m_timer;
     Ref<ln::World> m_mainWorld;
 	Ref<ln::UIViewport> m_mainViewport;
@@ -42,6 +49,9 @@ private:
 	Ref<ln::Tilemap> m_tilemap;
 	Ref<ln::TilemapLayer> m_currentLayer;
     bool m_tilePutting = true;
+
+    // Editing
+    ln::List<ln::WorldObject*> m_selectedObjects;
 };
 
 class TilemapSceneEditorPloxy
@@ -49,7 +59,7 @@ class TilemapSceneEditorPloxy
 {
 public:
     virtual ln::String targetTypeName() override { return u"Scene"; }
-    virtual Ref<ln::AssetEditor> createEditor() override;
+    virtual Ref<lna::AssetEditor> createEditor() override;
 };
 
 class TilemapSceneEditorExtensionModule

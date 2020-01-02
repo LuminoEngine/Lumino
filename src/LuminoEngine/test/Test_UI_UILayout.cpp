@@ -30,7 +30,7 @@ TEST_F(Test_UI_UILayout, Basic)
         parent1->setHeight(60);
 		parent1->setHorizontalAlignment(HAlignment::Left);
 		parent1->setVerticalAlignment(VAlignment::Top);
-        //parent1->setLayoutPanel(UIStackLayout::create());
+        //parent1->setLayoutPanel(UIStackLayout_Obsolete::create());
 		Engine::mainUIView()->addElement(parent1);
 
         auto layout1 = makeObject<UIStackLayout2>();

@@ -150,6 +150,8 @@ public:
 	void registerActiveTimer(UIActiveTimer* timer);
 	void unregisterActiveTimer(UIActiveTimer* timer);
 
+    void addAction(UIAction* action);
+
 protected:
 	///** この要素内の子ビジュアル要素の数を取得します。 */
 	//virtual int getVisualChildrenCount() const;
@@ -173,6 +175,7 @@ protected:
     List<Ref<UIElement>> m_inlineElements;
 private:
 	List<Ref<UIActiveTimer>> m_activeTimers;
+    Ref<List<Ref<UIAction>>> m_actions;
 
     //Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less

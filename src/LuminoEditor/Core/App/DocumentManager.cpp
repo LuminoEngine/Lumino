@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEditor/Plugin.hpp>
+#include "AssetEditor/AssetEditor.hpp"
 #include "StartupView.hpp"
 #include "ToolPanesArea.hpp"
 #include "DocumentManager.hpp"
@@ -15,6 +16,12 @@ ln::Result Document::init()
 {
     Object::init();
     m_mainFrame = ln::makeObject<ln::UIContainerElement>();
+
+    // SaveCommand などは m_mainFrame にアタッチしたい。
+    // m_mainFrame が focus を持てるようにしておかないと、もし Document 内に Focusable な UIElement が１つも無いと、
+    // コマンドを実行できなくなる。
+    m_mainFrame->setFocusable(true);
+
     //m_mainFrame->getGridLayoutInfo()->layoutWeight = 1; // fill in box layout
     return true;
 }
@@ -106,25 +113,27 @@ void DocumentManager::setActiveDocument(Document* doc)
         m_switchLayout->setActive(doc->mainFrame());
 
         if (auto assetEditorDoc = dynamic_cast<AssetEditorDocument*>(doc)) {
-            auto list = assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Mode);
+            auto list = assetEditorDoc->editor()->getEditorPanes(lna::EditorPaneKind::Mode);
             if (list) {
                 for (auto& pane : list) {
                     m_modePanesArea->addPane(pane);
                 }
             }
-            list = assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Inspector);
+            list = assetEditorDoc->editor()->getEditorPanes(lna::EditorPaneKind::Inspector);
             if (list) {
                 for (auto& pane : list) {
                     m_inspectorPanesArea->addPane(pane);
                 }
             }
-            list = assetEditorDoc->editor()->getEditorPanes(ln::EditorPaneKind::Tool);
+            list = assetEditorDoc->editor()->getEditorPanes(lna::EditorPaneKind::Tool);
             if (list) {
                 for (auto& pane : list) {
                     m_toolPanesArea->addPane(pane);
                 }
             }
         }
+
+        m_activeDocument->mainFrame()->focus();
     }
     else {
         LN_NOTIMPLEMENTED();
@@ -160,7 +169,7 @@ AssetEditorDocument::AssetEditorDocument()
 {
 }
 
-ln::Result AssetEditorDocument::init(ln::AssetModel* asset, ln::AssetEditor* editorModel)
+ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditor* editorModel)
 {
     if (!Document::init()) return false;
     m_asset = asset;

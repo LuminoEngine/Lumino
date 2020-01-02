@@ -289,6 +289,9 @@ public:
         if (height < 0) height = 0;
     }
 
+	/** 指定した厚さだけ、この矩形から拡大した矩形を作成します。 */
+	Rect makeInflate(const Thickness& thickness) const;
+
     /** 指定した厚さだけ、この矩形から縮小した矩形を作成します。 */
     Rect makeDeflate(const Thickness& thickness) const;
 
@@ -366,6 +369,8 @@ public:
 struct CornerRadius
 {
 public:
+	static const CornerRadius Zero;
+
     /** 左上角の半径 */
     float topLeft;
 

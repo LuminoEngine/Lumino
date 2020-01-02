@@ -196,6 +196,14 @@ void World::renderObjects()
     m_renderingContext->popState();
 }
 
+void World::renderGizmos(RenderingContext* context)
+{
+    m_masterScene->renderGizmos(context);
+    for (auto& scene : m_sceneList) {
+        scene->renderGizmos(context);
+    }
+}
+
 //==============================================================================
 // WorldSceneGraphRenderingContext
 

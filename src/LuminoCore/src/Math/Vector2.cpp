@@ -66,6 +66,19 @@ Vector2 Vector2::normalize(const Vector2& vec)
 }
 
 // static
+Vector2 Vector2::safeNormalize(const Vector2& vec, const Vector2& alt)
+{
+	float len = Asm::sqrt(vec.x * vec.x + vec.y * vec.y);
+	if (len == 0.0) {
+		return alt;
+	}
+	float t = 1.0f / len;
+	return Vector2(
+		vec.x * t,
+		vec.y * t);
+}
+
+// static
 float Vector2::dot(const Vector2& vec1, const Vector2& vec2)
 {
     return (vec1.x * vec2.x) + (vec1.y * vec2.y);
@@ -130,6 +143,12 @@ Vector2 Vector2::catmullRom(const Vector2& vec1, const Vector2& vec2, const Vect
     return Vector2(
         Math::catmullRom(vec1.x, vec2.x, vec3.x, vec4.x, t),
         Math::catmullRom(vec1.y, vec2.y, vec3.y, vec4.y, t));
+}
+
+bool Vector2::nearEqual(const Vector2& value1, const Vector2& value2)
+{
+	return Math::nearEqual(value1.x, value2.x) &&
+		Math::nearEqual(value1.y, value2.y);
 }
 
 } // namespace ln

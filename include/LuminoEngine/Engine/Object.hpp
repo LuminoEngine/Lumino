@@ -11,7 +11,48 @@ class WeakRefInfo;
 class ObjectHelper;
 class ObjectRuntimeData;
 class EngineDomain;
-}
+
+class AssetPath
+{
+public:
+    // 相対パスの場合は Path::canonicalize() でフルパスに解決する。
+    // 絶対パスでも .. が含まれている場合は解決する。
+    static AssetPath makeFromLocalFilePath(const Path& filePath);
+
+    // "asset://MyArchive/file" など。Host の後ろの / は必須。
+    static bool tryParseAssetPath(const String& str, AssetPath* outPath);
+    static AssetPath parseAssetPath(const String& str);
+
+    // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
+    static AssetPath combineAssetPath(const AssetPath& basePath, const String& localAssetPath);
+
+    // basePath から見た assetPath を示す相対パスを返す。
+    static String makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath);
+
+    AssetPath();
+
+    const String& scheme() const { return m_components->scheme; }
+    const String& host() const { return m_components->host; }
+    const Path& path() const { return m_components->path; }
+
+    AssetPath getParentAssetPath() const;  // 親フォルダ
+    String toString() const;
+    bool isNull() const { return m_components == nullptr; }
+
+private:
+    struct Components
+    {
+        String scheme;    // e.g) "asset", "file"
+        String host;      // e.g) "", "MyAtchive"
+        Path path;        // fullpath. e.g) "C:/dir/file.txt", "/dir/file.txt"
+    };
+
+    static AssetPath makeEmpty();
+
+    std::shared_ptr<Components> m_components;
+};
+
+} // namespace detail
 
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
@@ -94,10 +135,10 @@ public:
 
 	// TODO: internal
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
-    virtual void onSetAssetFilePath(const Path& filePath);
+    //virtual void onSetAssetFilePath(const Path& filePath);
 
-    void setAssetId(const Uuid& id) { m_assetId = id; }
-    const Uuid& assetId() const { return m_assetId; }
+    void setAssetPath(const detail::AssetPath& value) { m_assetPath = value; }
+    const detail::AssetPath& assetPath() const { return m_assetPath; }
 
 private:
 	virtual void onRetained() override;
@@ -109,7 +150,7 @@ private:
     detail::WeakRefInfo* m_weakRefInfo;
     std::mutex m_weakRefInfoMutex;
 	detail::ObjectRuntimeData* m_runtimeData;
-    Uuid m_assetId;
+    detail::AssetPath m_assetPath;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;

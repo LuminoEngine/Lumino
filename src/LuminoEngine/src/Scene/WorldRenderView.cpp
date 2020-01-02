@@ -80,6 +80,8 @@ void WorldRenderView::init()
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
 	}
+
+    m_transformControls = makeObject<TransformControls>();
 }
 
 void WorldRenderView::setTargetWorld(World* world)
@@ -168,7 +170,6 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
 
-#ifdef LN_TEST_ATMOSPHERE
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
 
@@ -285,14 +286,14 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 				auto p3 = Vector3::normalize(p3r);
                 m_clearMaterial->setMatrix(u"_localWorld", rot);
                 m_clearMaterial->setMatrix(u"_scaleMatrix", ss);
-                printf("----\n");
-				camera.viewDirection.print();
-				rot.front().print();
-                p0.print();
-                p1.print();
-                p2.print();
-                p3.print();
-                printf("----\n");
+    //            printf("----\n");
+				//camera.viewDirection.print();
+				//rot.front().print();
+    //            p0.print();
+    //            p1.print();
+    //            p2.print();
+    //            p3.print();
+    //            printf("----\n");
                 //lookAt.print();
                 //rot.inverse();
                 renderingContext->pushState();
@@ -302,9 +303,6 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 //renderingContext->drawScreenRectangle();
 				renderingContext->drawMesh(m_skyProjectionPlane->meshContainers()[0]->meshResource(), 0);
                 renderingContext->popState();
-#else
-				LN_NOTIMPLEMENTED();
-#endif
 			}
 
             m_targetWorld->renderObjects();
@@ -318,6 +316,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 }
             }
 
+            //m_targetWorld->renderGizmos(renderingContext);
+
             // test
             //renderingContext->pushState();
             //renderingContext->setBlendMode(BlendMode::Alpha);
@@ -327,6 +327,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
             adjustGridPlane(m_viewPoint->viewFrustum, this);
             renderGridPlane(renderingContext, this);
+
+            m_transformControls->setViewInfo(m_viewPoint->viewPosition, m_viewPoint->viewMatrix, m_viewPoint->projMatrix, m_viewPoint->viewPixelSize);
+            m_transformControls->onRender(renderingContext);
 
             detail::EngineDomain::effectManager()->testDraw(renderingContext);
             //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
@@ -504,12 +507,15 @@ void WorldRenderView::adjustGridPlane(const ViewFrustum& viewFrustum, RenderView
     }
 }
 
-//void WorldRenderView::onRoutedEvent(UIEventArgs* e)
-//{
-//    if (m_camera)
-//    {
-//    }
-//}
+void WorldRenderView::onRoutedEvent(UIEventArgs* e)
+{
+    if (m_transformControls)
+    {
+        m_transformControls->onRoutedEvent(e);
+    }
+
+    RenderView::onRoutedEvent(e);
+}
 
 } // namespace ln
 

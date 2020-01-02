@@ -67,6 +67,9 @@ public:
     int getHeight() const { return m_height; }
     int getTileId(int x, int y) const;
 
+    // x, y 位置のタイルId が 0 でない場合 true. 範囲外は false.
+    bool isValidTileId(int x, int y) const { return getTileId(x, y) != 0; }
+
 	LN_SERIALIZE_CLASS_VERSION(1);
 	virtual void serialize(Archive& ar) override;
 

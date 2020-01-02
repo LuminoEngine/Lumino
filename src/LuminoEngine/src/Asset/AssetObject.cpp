@@ -12,10 +12,10 @@ LN_OBJECT_IMPLEMENT(AssetModel, Object) {}
 
 const String AssetModel::AssetFileExtension = u".lnasset";
 
-Ref<AssetModel> AssetModel::create(Object* target)
-{
-	return makeObject<AssetModel>(target);
-}
+//Ref<AssetModel> AssetModel::create(Object* target)
+//{
+//	return makeObject<AssetModel>(target);
+//}
 
 AssetModel::AssetModel()
     : m_target(nullptr)
@@ -36,37 +36,37 @@ void AssetModel::init(Object* target)
     m_assetType = TypeInfo::getTypeInfo(target)->name();
 }
 
-ln::Result AssetModel::loadInternal(const ln::Path& filePath)
-{
-    String json = FileSystem::readAllText(filePath);
-    JsonSerializer::deserialize(json, filePath.parent(), *this);
-    m_assetFilePath = filePath;
-    m_target->onSetAssetFilePath(m_assetFilePath);
-    return true;
-}
-
-ln::Result AssetModel::saveInternal(const ln::Path& filePath)
-{
-    String json = JsonSerializer::serialize(*this, JsonFormatting::Indented);
-    FileSystem::writeAllText(filePath, json);
-    return true;
-}
+//ln::Result AssetModel::loadInternal(const ln::Path& filePath)
+//{
+//    String json = FileSystem::readAllText(filePath);
+//    JsonSerializer::deserialize(json, filePath.parent(), *this);
+//    m_assetFilePath = filePath;
+//    //m_target->onSetAssetFilePath(m_assetFilePath);
+//    return true;
+//}
+//
+//ln::Result AssetModel::saveInternal(const ln::Path& filePath)
+//{
+//    String json = JsonSerializer::serialize(*this, JsonFormatting::Indented);
+//    FileSystem::writeAllText(filePath, json);
+//    return true;
+//}
 
 void AssetModel::serialize(Archive& ar)
 {
-    Uuid assetId;
-    if (ar.isSaving()) {
-        assetId = m_target->assetId();
-    }
-    ar & makeNVP(u"AssetId", assetId);
+    //String assetId;
+    //if (ar.isSaving()) {
+    //    assetId = m_target->assetPath();
+    //}
+    //ar & makeNVP(u"AssetId", assetId);
 
     ar & makeNVP(u"AssetType", m_assetType);
     ar & makeNVP(u"Object", m_target);
     //ar & makeNVP(u"Children", m_children);
 
-    if (ar.isLoading()) {
-        m_target->setAssetId(assetId);
-    }
+    //if (ar.isLoading()) {
+    //    m_target->setAssetPath(assetId);
+    //}
 }
 
 ln::Uuid AssetModel::readAssetId(const ln::Path& filePath)

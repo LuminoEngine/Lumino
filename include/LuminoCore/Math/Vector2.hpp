@@ -104,6 +104,8 @@ public:
      */
     static Vector2 normalize(const Vector2& vec);
 
+	static Vector2 safeNormalize(const Vector2& vec, const Vector2& alt);
+
     /**
      * 2つのベクトルの内積を計算します。
      * @param[in]   vec1    : 処理の基になるベクトル
@@ -182,6 +184,8 @@ public:
      * t は通常、0.0～1.0 を指定します。
      */
     static Vector2 catmullRom(const Vector2& vec1, const Vector2& vec2, const Vector2& vec3, const Vector2& vec4, float t);
+
+	static bool nearEqual(const Vector2& value1, const Vector2& value2);
 
 public:
     Vector2& operator+=(const Vector2& v);

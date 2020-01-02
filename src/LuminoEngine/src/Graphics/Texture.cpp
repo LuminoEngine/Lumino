@@ -281,18 +281,21 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
 void Texture2D::serialize(Archive& ar)
 {
     Texture::serialize(ar);
-	auto path = m_assetSourcePath;
+    String path;// =// m_assetSourcePath;
 	if (ar.isSaving()) {
 		// save to relative path.
-		path = Path(ar.basePath()).makeRelative(path);
+        // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
+        path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_assetSourcePath);//Path(ar.basePath()).makeRelative(path);
 	}
 	
 	ar & makeNVP(u"Source", path);
 
     if (ar.isLoading()) {
 		// convert relative path to full path.
-        m_assetSourcePath = Path(ar.basePath(), path);
-        auto stream = Assets::openFileStream(m_assetSourcePath);
+        //m_assetSourcePath = detail::AssetManager::combineAssetPath(ar.basePath(), path);//Path(ar.basePath(), path);
+        m_assetSourcePath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path);
+        auto stream = detail::EngineDomain::assetManager()->openStreamFromAssetPath(m_assetSourcePath);
+        //auto stream = Assets::openFileStream(m_assetSourcePath);
         init(stream);
     }
 }

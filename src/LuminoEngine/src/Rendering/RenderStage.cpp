@@ -289,7 +289,8 @@ void RenderStage::makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state)
 		state->destinationBlend = BlendFactor::InverseSourceAlpha;
 		state->blendOp = BlendOp::Add;
 		state->sourceBlendAlpha = BlendFactor::SourceAlpha;
-		state->destinationBlendAlpha = BlendFactor::InverseSourceAlpha;
+		//state->destinationBlendAlpha = BlendFactor::InverseSourceAlpha;
+        state->destinationBlendAlpha = BlendFactor::DestinationAlpha;
 		state->blendOpAlpha = BlendOp::Add;
 		break;
 	case BlendMode::Add:

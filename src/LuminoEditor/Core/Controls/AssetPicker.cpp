@@ -1,6 +1,6 @@
 ﻿
 #include <Workspace.hpp>
-#include <Project.hpp>
+#include "../Project/Project.hpp"
 #include "AssetPicker.hpp"
 
 namespace ln {

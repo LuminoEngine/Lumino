@@ -33,7 +33,7 @@ void UITreeItem::init()
 
 	addVisualChild(m_expanderButton);
 
-    auto layout = makeObject<UIStackLayout>();
+    auto layout = makeObject<UIStackLayout_Obsolete>();
     layout->setOrientation(Orientation::Vertical);
     m_itemsLayout = layout;
 }

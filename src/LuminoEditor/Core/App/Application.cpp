@@ -6,9 +6,10 @@
 #include <AppData.hpp>
 #include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>
-#include <Project.hpp>
-#include <AssetDatabase.hpp>
-#include <PluginManager.hpp>
+#include "../Project/Project.hpp"
+#include "../Project/AssetDatabase.hpp"
+#include "../Project/PluginManager.hpp"
+#include "AssetEditor/AssetEditor.hpp"
 #include "NavigatorManager.hpp"
 #include "DocumentManager.hpp"
 #include "MainWindow.hpp"
@@ -17,6 +18,7 @@
 
 Ref<ln::UICommand> EditorApplication::NewCommand;
 Ref<ln::UICommand> EditorApplication::OpenCommand;
+Ref<ln::UICommand> EditorApplication::SaveCommand;
 
 static EditorApplication* s_app = nullptr;
 
@@ -33,6 +35,10 @@ EditorApplication::EditorApplication()
 
     NewCommand = ln::makeObject<ln::UICommand>();
     OpenCommand = ln::makeObject<ln::UICommand>();
+
+    SaveCommand = ln::makeObject<ln::UICommand>();
+    SaveCommand->addInputGesture(ln::KeyGesture::create(ln::Keys::S, ln::ModifierKeys::Control));
+    addApplicationCommand(SaveCommand);
 
     addAction(ln::makeObject<ln::UIAction>(NewCommand, [this](ln::UICommandEventArgs* x){ handleNewProject(x); }));
     addAction(ln::makeObject<ln::UIAction>(OpenCommand, [this](ln::UICommandEventArgs* x) { handleOpenProject(x); }));

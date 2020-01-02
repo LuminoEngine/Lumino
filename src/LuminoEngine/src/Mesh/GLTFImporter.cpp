@@ -16,10 +16,10 @@
 namespace ln {
 namespace detail {
 
-Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const String& assetPath, DiagnosticsManager* diag)
+Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
 {
 	m_assetManager = assetManager;
-	m_basedir = ln::Path(assetPath).parent();
+    m_basedir = assetPath.getParentAssetPath();//ln::Path(assetPath).parent();
 	auto stream = assetManager->openStreamFromAssetPath(assetPath);
 	auto data = stream->readToEnd();
 
@@ -400,21 +400,22 @@ bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)
 {
 	auto self = reinterpret_cast<GLTFImporter*>(user_data);
 	auto assetPath = String::fromStdString(abs_filename);
-	return self->m_assetManager->existsAsset(assetPath);
+	return self->m_assetManager->existsAsset(AssetPath::combineAssetPath(self->m_basedir, assetPath));
 }
 
 std::string GLTFImporter::ExpandFilePath(const std::string &filepath, void *user_data)
 {
-	auto self = reinterpret_cast<GLTFImporter*>(user_data);
-	auto assetPath = String::concat(self->m_basedir, u"/", String::fromStdString(filepath));
-	return assetPath.toStdString();	// TODO: UTF-8
+    return filepath;
+	//auto self = reinterpret_cast<GLTFImporter*>(user_data);
+	//auto assetPath = String::concat(self->m_basedir, u"/", String::fromStdString(filepath));
+	//return assetPath.toStdString();	// TODO: UTF-8
 }
 
 bool GLTFImporter::ReadWholeFile(std::vector<unsigned char> *out, std::string *err, const std::string &filepath, void *user_data)
 {
 	auto self = reinterpret_cast<GLTFImporter*>(user_data);
 	auto assetPath = String::fromStdString(filepath);
-	auto stream = self->m_assetManager->openStreamFromAssetPath(assetPath);
+	auto stream = self->m_assetManager->openStreamFromAssetPath(AssetPath::combineAssetPath(self->m_basedir, assetPath));
 
 	if (!stream) {
 		if (err) {
