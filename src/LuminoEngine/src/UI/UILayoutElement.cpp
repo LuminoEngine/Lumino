@@ -156,7 +156,6 @@ void UILayoutElement::updateFinalRects(UILayoutContext* layoutContext, const Mat
 	m_localTransform = Matrix::makeTranslation(-m_finalStyle->centerPoint);
 	m_localTransform.scale(m_finalStyle->scale);
 	m_localTransform.rotateQuaternion(m_finalStyle->rotation);
-	m_localTransform.translate(m_finalStyle->position);
 	m_localTransform.translate(pos);
     m_combinedFinalRenderTransform = parentCombinedRenderTransform * m_localTransform;
 

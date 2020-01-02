@@ -792,6 +792,8 @@ void UIElement::render(UIRenderingContext* context, const Matrix& parentTransfor
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Render);
 }
 
+// 内部的なこの描画関数は、Border の領域も含んで描画を要求する。
+// TODO: ユーザーに公開する onRender とかは、Border を含まない領域とするべき
 void UIElement::renderClient(UIRenderingContext* context, const Matrix& combinedTransform)
 {
 	context->pushState();
@@ -839,7 +841,9 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
         BoxElementShapeBorderStyle borderStyle;
         BoxElementShapeShadowStyle shadowStyle;
 
-        baseStyle.baseRect = Rect(0, 0, actualSize());
+        baseStyle.baseRect = Rect(0, 0, actualSize());// .makeDeflate(m_finalStyle->borderThickness);
+        baseStyle.baseRect.width -= m_finalStyle->borderThickness.width();
+        baseStyle.baseRect.height -= m_finalStyle->borderThickness.height();
         baseStyle.cornerRadius = m_finalStyle->cornerRadius;
 
         const BoxElementShapeBackgroundStyle* actualBackgroundStyle = nullptr;
@@ -855,7 +859,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
             borderStyle.borderRightColor = m_finalStyle->rightBorderColor;
             borderStyle.borderBottomColor = m_finalStyle->bottomBorderColor;
             borderStyle.borderThickness = m_finalStyle->borderThickness;
-            borderStyle.borderInset = false;
+            borderStyle.borderInset = false;    // CSS default
             actualBorderStyle = &borderStyle;
         }
 

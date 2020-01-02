@@ -162,6 +162,7 @@ bool UnifiedShaderCompiler::compileSingleCodes(
         if (m_diag->hasError()) {
             return false;
         }
+        m_unifiedShader->setAttributes(passId, transpiler->attributes());
 		m_unifiedShader->addMergeDescriptorLayoutItem(passId, transpiler->descriptorLayout);
 		transpiler->passId = passId;
         m_transpilerMap[makeKey2(tech.name, pass.name, ShaderStage2_Vertex, pass.vertexShader)] = transpiler;

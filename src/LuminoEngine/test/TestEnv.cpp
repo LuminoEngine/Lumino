@@ -16,6 +16,7 @@ void TestEnv::setup()
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
     EngineSettings::setEngineFeatures(feature);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
+    EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
     detail::EngineDomain::engineManager()->init();
 
     if (feature == EngineFeature::Experimental)  // Experimental
@@ -198,8 +199,11 @@ bool TestEnv::checkScreenShot(const Char* filePath, RenderTargetTexture* renderT
 	}
 	else
 	{
-		saveScreenShot(LN_ASSETFILE("Result/0.png"), renderTarget);
-		return equalsScreenShot(filePath, renderTarget, passRate);
+        bool result = equalsScreenShot(filePath, renderTarget, passRate);
+        if (!result) {
+            saveScreenShot(LN_ASSETFILE("Result/0-latest-failer.png"), renderTarget);
+        }
+        return result;
 	}
 }
 

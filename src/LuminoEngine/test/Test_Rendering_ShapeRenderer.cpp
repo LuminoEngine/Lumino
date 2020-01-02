@@ -292,7 +292,7 @@ TEST_F(Test_Rendering_BoxElement, Border)
 			borderStyle.borderRightColor = Color::Blue;
 			borderStyle.borderBottomColor = Color::Yellow;
 
-			// Note: CSS はデフォルトで inset. Box のサイズは、Border の合計サイズよりも小さくすることはできない。(Style で width: 0px とかはできるが、表示時に調整される)
+			// Note: Box のサイズは、Border の合計サイズよりも小さくすることはできない。(Style で width: 0px とかはできるが、表示時に調整される)
 			// この時 Corner が Border のサイズを超えた場合の動作は未定義とする。(CSS でもなんかおかしくなる)
 
 			baseStyle.baseRect = Rect(0, 0, 0, 0);

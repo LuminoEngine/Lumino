@@ -17,7 +17,7 @@ enum class ShadingModel : uint8_t
 enum class BlendMode : uint8_t
 {
 	Normal,			/**< 通常 */
-	Alpha,			/**< アルファブレンド */
+	Alpha,			/**< アルファブレンド (RGB をアルファブレンドし、A を加算合成) */
 	Add,			/**< 加算合成 */
 	Subtract,		/**< 減算合成 */
 	Multiply,		/**< 乗算合成 */

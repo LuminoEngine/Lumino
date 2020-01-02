@@ -1258,6 +1258,17 @@ void BoxElementShapeBuilderCommon::writeToBuffer(Vertex* vertexBuffer, uint16_t*
 
 void BoxElementShapeBuilderCommon::setupGuideline()
 {
+    if (Math::nearEqual(m_baseStyle.cornerRadius.topLeft, 0.0f) &&
+        Math::nearEqual(m_baseStyle.cornerRadius.topRight, 0.0f) &&
+        Math::nearEqual(m_baseStyle.cornerRadius.bottomRight, 0.0f) &&
+        Math::nearEqual(m_baseStyle.cornerRadius.bottomLeft, 0.0f) &&
+        !m_baseStyle.aligndLineAntiAlias) {
+        m_shapeAAEnabled = false;	// Axis-Aligned な辺だけで外部から Anti-alias も要求されていないため、全体的に Anti-alias は不要
+    }
+    else {
+        m_shapeAAEnabled = true;
+    }
+
     //Rect actualBaseRect = m_baseStyle.baseRect;
 
     //// ピクセルスナップを利かせないと、Corner が歪んで見得てしまうため、修正を入れる
@@ -1272,7 +1283,7 @@ void BoxElementShapeBuilderCommon::setupGuideline()
         m_shapeOuterGuide.rect.height = std::max(0.0f, m_shapeOuterGuide.rect.height);
         if (m_borderEnabled) {
             if (m_borderStyle.borderInset) {
-                // Note: CSS はデフォルトで inset。 Box のサイズは、Border の合計サイズよりも小さくならない。
+                // Note: Box のサイズは、Border の合計サイズよりも小さくならない。
                 // (Style で width: 0px とかはできるが、表示時に調整される)
                 m_shapeOuterGuide.rect.width = std::max(m_shapeOuterGuide.rect.width, m_borderStyle.borderThickness.width());
                 m_shapeOuterGuide.rect.height = std::max(m_shapeOuterGuide.rect.height, m_borderStyle.borderThickness.height());
@@ -2846,13 +2857,20 @@ void BoxElementShapeBuilder3::build()
     }
 
 
-    ComponentSet shapeOuterComponentSet;
-    makeBaseOuterPointsAndBorderComponent(m_shapeOuterGuide, 1.0f, &shapeOuterComponentSet);
 
     if (m_backgroundEnabled)
     {
+        ComponentSet backgroundComponentSet;
+        if (m_borderEnabled) {
+            makeBaseOuterPointsAndBorderComponent(m_shapeInnerGuide, 1.0f, &backgroundComponentSet);
+        }
+        else {
+            makeBaseOuterPointsAndBorderComponent(m_shapeOuterGuide, 1.0f, &backgroundComponentSet);
+        }
+
+
         auto* path = beginOutlinePath(OutlinePathType::Convex);
-        for (int id = shapeOuterComponentSet.beginIds(); id < shapeOuterComponentSet.endIds(); id++) {
+        for (int id = backgroundComponentSet.beginIds(); id < backgroundComponentSet.endIds(); id++) {
             addOutlineIndex(id);
             outlinePoint(id).color = m_backgroundStyle.color;
         }
@@ -2868,6 +2886,10 @@ void BoxElementShapeBuilder3::build()
     }
 
     if (m_borderEnabled) {
+
+        ComponentSet shapeOuterComponentSet;
+        makeBaseOuterPointsAndBorderComponent(m_shapeOuterGuide, 1.0f, &shapeOuterComponentSet);
+
         ComponentSet shapeInnerComponentSet;
         makeBaseOuterPointsAndBorderComponent(m_shapeInnerGuide, -1.0f, &shapeInnerComponentSet);
 
