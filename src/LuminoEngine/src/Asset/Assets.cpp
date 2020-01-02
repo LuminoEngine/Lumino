@@ -10,7 +10,12 @@
 namespace ln {
 
 //=============================================================================
-// Asset
+// Assets
+
+void Assets::saveAssetToLocalFile(AssetModel* asset, const String& filePath)
+{
+    return detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset, filePath);
+}
 
 bool Assets::existsFile(const StringRef& filePath)
 {

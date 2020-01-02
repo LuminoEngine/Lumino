@@ -33,6 +33,7 @@ void SpriteFrame::init()
 
 void SpriteFrame::serialize(Archive& ar)
 {
+    Object::serialize(ar);
     ar & makeNVP(u"SourceRect", m_sourceRect);
     ar & makeNVP(u"AnchorPoint", m_anchorPoint);
 }

@@ -28,6 +28,9 @@
 #define LNI_HANDLE_TO_OBJECT(type, h)					static_cast<type*>((h) ? ::ln::Runtime::getObject(h) : nullptr)
 #define LNI_OBJECT_TO_HANDLE(obj)						::ln::Runtime::makeObjectWrap(obj, false)
 #define LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(obj)	::ln::Runtime::makeObjectWrap(obj, true)
+#define LNI_STRING_TO_STRPTR_UTF16(str)                 ::ln::Runtime::getUTF16StringPtr(str)
+#define LNI_STRING_TO_STRPTR_UTF8(str)                  ::ln::Runtime::getUTF8StringPtr(str)
+#define LNI_UTF8STRPTR_TO_STRING(str)                   ::ln::String::fromCString(str, -1, ln::TextEncoding::utf8Encoding())
 
 #define LNI_REFERENCE_RETAINED (1)
 #define LNI_REFERENCE_RELEASED (2)
@@ -105,6 +108,7 @@ LN_FLAT_API LnResult LnObject_Retain(LnHandle obj);
  *  @param[in]  obj	: オブジェクトハンドル
  */
 LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj);
+
 
 
 #ifdef __cplusplus

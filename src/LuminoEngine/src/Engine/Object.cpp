@@ -57,6 +57,13 @@ void Object::serialize(Archive& ar)
     for (auto& prop : props) {
         prop->accessor()->serializeMember(this, ar, prop->name());
     }
+
+    onSerialize(nullptr);
+}
+
+void Object::onSerialize(Serializer* ar)
+{
+
 }
 
 bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)

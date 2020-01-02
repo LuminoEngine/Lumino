@@ -50,13 +50,16 @@ ln::String Generator::makeFlatClassName(const TypeSymbol* type) const
 
 ln::String Generator::makeFlatTypeName2(const TypeSymbol* type) const
 {
-	if (type->isPrimitive()) {
+    if (type->isString()) {
+        return u"const char*";
+    }
+    else if (type->isPrimitive()) {
 		if (type == PredefinedTypes::boolType) return u"LnBool";
 		return type->shortName();
 	}
-	else if (type->isClass()) {
-		return u"LnHandle";
-	}
+    else if (type->isClass()) {
+        return u"LnHandle";
+    }
 	else {
 		return m_config->flatCOutputModuleName + type->shortName();
 	}

@@ -295,8 +295,9 @@ LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* n
 
 LN_FLAT_API LnResult LnSerializer_WriteBoolA(LnHandle serializer, const char* name, LnBool value)
 {
-    LnResult result = LnSerializer_WriteBool(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeBool(LNI_UTF8STRPTR_TO_STRING(name), LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -310,23 +311,25 @@ LN_FLAT_API LnResult LnSerializer_WriteInt(LnHandle serializer, const LnChar* na
 
 LN_FLAT_API LnResult LnSerializer_WriteIntA(LnHandle serializer, const char* name, int value)
 {
-    LnResult result = LnSerializer_WriteInt(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
-}
-
-
-LN_FLAT_API LnResult LnSerializer_WriteDouble(LnHandle serializer, const LnChar* name, double value)
-{
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeDouble(name, value));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeInt(LNI_UTF8STRPTR_TO_STRING(name), value));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnSerializer_WriteDoubleA(LnHandle serializer, const char* name, double value)
+LN_FLAT_API LnResult LnSerializer_WriteFloat(LnHandle serializer, const LnChar* name, float value)
 {
-    LnResult result = LnSerializer_WriteDouble(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeFloat(name, value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_WriteFloatA(LnHandle serializer, const char* name, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeFloat(LNI_UTF8STRPTR_TO_STRING(name), value));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -340,8 +343,9 @@ LN_FLAT_API LnResult LnSerializer_WriteString(LnHandle serializer, const LnChar*
 
 LN_FLAT_API LnResult LnSerializer_WriteStringA(LnHandle serializer, const char* name, const char* value)
 {
-    LnResult result = LnSerializer_WriteString(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(value, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeString(LNI_UTF8STRPTR_TO_STRING(name), LNI_UTF8STRPTR_TO_STRING(value)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -355,8 +359,9 @@ LN_FLAT_API LnResult LnSerializer_WriteObject(LnHandle serializer, const LnChar*
 
 LN_FLAT_API LnResult LnSerializer_WriteObjectA(LnHandle serializer, const char* name, LnHandle value)
 {
-    LnResult result = LnSerializer_WriteObject(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeObject(LNI_UTF8STRPTR_TO_STRING(name), LNI_HANDLE_TO_OBJECT(ln::Object, value)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -370,8 +375,9 @@ LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* na
 
 LN_FLAT_API LnResult LnSerializer_ReadBoolA(LnHandle serializer, const char* name, LnBool* outReturn)
 {
-    LnResult result = LnSerializer_ReadBool(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -385,40 +391,43 @@ LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* nam
 
 LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name, int* outReturn)
 {
-    LnResult result = LnSerializer_ReadInt(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
-}
-
-
-LN_FLAT_API LnResult LnSerializer_ReadDouble(LnHandle serializer, const LnChar* name, double* outReturn)
-{
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readDouble(name));
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnSerializer_ReadDoubleA(LnHandle serializer, const char* name, double* outReturn)
+LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* name, float* outReturn)
 {
-    LnResult result = LnSerializer_ReadDouble(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
-//LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn)
-//{
-//    LNI_FUNC_TRY_BEGIN;
-//    *outReturn = LNI_STRING_TO_STRPTR(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
-//    LNI_FUNC_TRY_END_RETURN;
-//}
-//
-//
-//LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* name, const char** outReturn)
-//{
-//    LnResult result = LnSerializer_ReadString(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(outReturn, -1, ln::TextEncoding::utf8Encoding()).c_str());
-//    return result;
-//}
-//
+LN_FLAT_API LnResult LnSerializer_ReadFloatA(LnHandle serializer, const char* name, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* name, const char** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* name, LnHandle* outReturn)
 {
@@ -430,24 +439,26 @@ LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* 
 
 LN_FLAT_API LnResult LnSerializer_ReadObjectA(LnHandle serializer, const char* name, LnHandle* outReturn)
 {
-    LnResult result = LnSerializer_ReadObject(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
-//LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn)
-//{
-//    LNI_FUNC_TRY_BEGIN;
-//    *outReturn = LNI_STRING_TO_STRPTR(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
-//    LNI_FUNC_TRY_END_RETURN;
-//}
-//
-//
-//LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePath, const char** outReturn)
-//{
-//    LnResult result = LnSerializer_Serialize(value, ln::String::fromCString(basePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(outReturn, -1, ln::TextEncoding::utf8Encoding()).c_str());
-//    return result;
-//}
+LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF16(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePath, const char** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF8(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
 
 
 LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* basePath, LnHandle* outReturn)
@@ -460,8 +471,9 @@ LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* b
 
 LN_FLAT_API LnResult LnSerializer_DeserializeA(const char* str, const char* basePath, LnHandle* outReturn)
 {
-    LnResult result = LnSerializer_Deserialize(ln::String::fromCString(str, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(basePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -496,8 +508,9 @@ LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title)
 
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title)
 {
-    LnResult result = LnEngineSettings_SetMainWindowTitle(ln::String::fromCString(title, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowTitle(LNI_UTF8STRPTR_TO_STRING(title)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -511,8 +524,9 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path)
 
 LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path)
 {
-    LnResult result = LnEngineSettings_AddAssetDirectory(ln::String::fromCString(path, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetDirectory(LNI_UTF8STRPTR_TO_STRING(path)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -526,8 +540,9 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath
 
 LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
 {
-    LnResult result = LnEngineSettings_AddAssetArchive(ln::String::fromCString(fileFullPath, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(password, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetArchive(LNI_UTF8STRPTR_TO_STRING(fileFullPath), LNI_UTF8STRPTR_TO_STRING(password)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -549,8 +564,9 @@ LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePat
 
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath)
 {
-    LnResult result = LnEngineSettings_SetEngineLogFilePath(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogFilePath(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -661,8 +677,9 @@ LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outRetur
 
 LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn)
 {
-    LnResult result = LnTexture2D_Load(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -692,8 +709,9 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextur
 
 LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTextureFormat format, LnHandle* outTexture2D)
 {
-    LnResult result = LnTexture2D_CreateFromFile(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), format, outTexture2D);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, LNI_UTF8STRPTR_TO_STRING(filePath), static_cast<ln::TextureFormat>(format));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -924,10 +942,10 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_
     return LN_SUCCESS;
 }
 
-LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture)
+LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, texture)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1123,8 +1141,9 @@ LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar*
 
 LN_FLAT_API LnResult LnUIButtonBase_SetTextA(LnHandle uibuttonbase, const char* text)
 {
-    LnResult result = LnUIButtonBase_SetText(uibuttonbase, ln::String::fromCString(text, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uibuttonbase)->setText(LNI_UTF8STRPTR_TO_STRING(text)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 

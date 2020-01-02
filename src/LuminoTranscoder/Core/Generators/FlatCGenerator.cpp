@@ -18,6 +18,13 @@ ln::String FlatCCommon::makeInstanceParamName(TypeSymbol* type)
 	return type->shortName().toLower();
 }
 
+ln::String FlatCCommon::makeCreateDelegateObjectFuncHeader(TypeSymbol* delegateSymbol) const
+{
+    auto funcPtrType = makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode);
+    auto flatClassName = makeFlatClassName(delegateSymbol);
+    return ln::String::format(u"LN_FLAT_API LnResult {0}_Create({1} callback, LnHandle* outDelegate)", flatClassName, funcPtrType);
+}
+
 //==============================================================================
 // FlatCHeaderGenerator
 
@@ -33,17 +40,7 @@ void FlatCHeaderGenerator::generate()
     // delegateObjects
     for (auto& delegateSymbol : db()->delegateObjects()) {
 		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
-
-        // make params
-        //OutputBuffer params;
-        //params.AppendCommad(u"LnHandle handle");
-        //for (auto& param : delegateSymbol->delegateDeclaration()->parameters()) {
-        //    params.AppendCommad("{0}", makeFlatCParamQualTypeName(nullptr, param, FlatCharset::Unicode));
-        //}
-        //delegatesText.AppendLine(u"typedef {0}(*{1})({2});",
-        //    delegateSymbol->delegateDeclaration()->returnType().type->shortName(),
-        //    makeDelegateCallbackFuncPtrName(delegateSymbol, FlatCharset::Unicode),
-        //    params.toString());
+        delegatesText.AppendLine(makeCreateDelegateObjectFuncHeader(delegateSymbol) + u";");
     }
 
 	// structs
@@ -254,7 +251,7 @@ void FlatCSourceGenerator::generate()
 	OutputBuffer structMemberFuncImplsText;
 	for (auto& structInfo : db()->structs()) {
 		for (auto& methodInfo : structInfo->publicMethods()) {
-			structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
+			structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo, FlatCharset::Unicode)).NewLine();
 		}
 	}
 
@@ -272,9 +269,9 @@ void FlatCSourceGenerator::generate()
 				classMemberFuncImplsText.AppendLines(makeEventConnectorFuncBody(classInfo, methodInfo)).NewLine();
 			}
 			else {
-				classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
+				classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo, FlatCharset::Unicode)).NewLine();
 				if (methodInfo->hasStringDecl()) {
-					classMemberFuncImplsText.AppendLines(makeCharsetWrapperFuncBody(classInfo, methodInfo, FlatCharset::Ascii)).NewLine();
+					classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo, FlatCharset::Ascii)).NewLine();
 				}
 			}
 		}
@@ -390,7 +387,7 @@ ln::String FlatCSourceGenerator::generateDelegateObjects() const
 		code.NewLine();
 
 		// Create
-		code.AppendLine(u"LN_FLAT_API LnResult {0}_Create({1} callback, LnHandle* outDelegate)", flatClassName, funcPtrType);
+        code.AppendLine(makeCreateDelegateObjectFuncHeader(delegateSymbol));
 		code.AppendLine(u"{");
 		code.IncreaseIndent();
 		{
@@ -511,10 +508,10 @@ ln::String FlatCSourceGenerator::makeFlatArgList(const MethodSymbol* method) con
 	return argList.toString();
 }
 
-ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo)
+ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)
 {
 	// function header
-	ln::String funcHeader = makeFuncHeader(methodInfo, FlatCharset::Unicode);
+	ln::String funcHeader = makeFuncHeader(methodInfo, charset);
 
 	//{
 	//	// 第1引数
@@ -569,22 +566,25 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			auto* type = paramInfo->type();
 			if (type->isObjectGroup())
 			{
-				args.AppendCommad("LNI_HANDLE_TO_OBJECT({0}, {1})", type->fullName(), paramInfo->name());
+				args.AppendCommad(u"LNI_HANDLE_TO_OBJECT({0}, {1})", type->fullName(), paramInfo->name());
 			}
 			else if (type->isStruct())
 			{
 				ln::String castTo = type->fullName();
 				if (paramInfo->isIn()) castTo = "const " + castTo;
-				args.AppendCommad("*reinterpret_cast<{0}*>({1})", castTo, paramInfo->name());
+				args.AppendCommad(u"*reinterpret_cast<{0}*>({1})", castTo, paramInfo->name());
 			}
 			else if (type->isEnum())
 			{
-				args.AppendCommad("static_cast<{0}>({1})", type->fullName(), paramInfo->name());
+				args.AppendCommad(u"static_cast<{0}>({1})", type->fullName(), paramInfo->name());
 			}
 			else if (type == PredefinedTypes::boolType)
 			{
-				args.AppendCommad("LNI_LNBOOL_TO_BOOL({0})", paramInfo->name());
+				args.AppendCommad(u"LNI_LNBOOL_TO_BOOL({0})", paramInfo->name());
 			}
+            else if (type->isString() && charset == FlatCharset::Ascii) {
+                args.AppendCommad(u"LNI_UTF8STRPTR_TO_STRING({0})", paramInfo->name());
+            }
 			else
 			{
 				args.AppendCommad(paramInfo->name());
@@ -604,7 +604,10 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			else if (methodInfo->returnType().type == PredefinedTypes::boolType)
 				body.append("*outReturn = LNI_BOOL_TO_LNBOOL");
 			else if (methodInfo->returnType().type->isString())
-				body.append("*outReturn = LNI_STRING_TO_STRPTR");
+                if (charset == FlatCharset::Unicode)
+				    body.append("*outReturn = LNI_STRING_TO_STRPTR_UTF16");
+                else
+                    body.append("*outReturn = LNI_STRING_TO_STRPTR_UTF8");
 			else
 				body.append("*outReturn = ");
 		}
@@ -669,30 +672,38 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 	return funcImpl.toString();
 }
 
-ln::String FlatCSourceGenerator::makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)
-{
-	OutputBuffer args;
-	for (auto& param : methodInfo->flatParameters()) {
-		if (param->type()->isString()) {
-			args.AppendCommad(u"ln::String::fromCString({0}, -1, ln::TextEncoding::utf8Encoding()).c_str()", param->name());
-		}
-		else {
-			args.AppendCommad(param->name());
-		}
-	}
-
-	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", makeFlatFullFuncName(methodInfo, FlatCharset::Unicode), args.toString());
-
-	OutputBuffer code;
-	code.AppendLine(makeFuncHeader(methodInfo, charset));
-	code.AppendLine(u"{");
-	code.IncreaseIndent();
-	code.AppendLine(callExpr);
-	code.AppendLine(u"return result;");
-	code.DecreaseIndent();
-	code.AppendLine(u"}");
-	return code.toString();
-}
+//ln::String FlatCSourceGenerator::makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset)
+//{
+//	OutputBuffer args;
+//    ln::String returnDecl;
+//    ln::String postCallExpr;
+//	for (auto& param : methodInfo->flatParameters()) {
+//        if (param->isReturn() && param->type()->isString()) {
+//            returnDecl = u"const LnChar* _ret;";
+//            args.AppendCommad(u"&_ret");
+//            postCallExpr = u"";
+//        }
+//		if (!param->isReturn() &&   // 
+//            param->type()->isString()) {
+//			args.AppendCommad(u"ln::String::fromCString({0}, -1, ln::TextEncoding::utf8Encoding()).c_str()", param->name());
+//		}
+//		else {
+//			args.AppendCommad(param->name());
+//		}
+//	}
+//
+//	auto callExpr = ln::String::format(u"LnResult result = {0}({1});", makeFlatFullFuncName(methodInfo, FlatCharset::Unicode), args.toString());
+//
+//	OutputBuffer code;
+//	code.AppendLine(makeFuncHeader(methodInfo, charset));
+//	code.AppendLine(u"{");
+//	code.IncreaseIndent();
+//	code.AppendLine(callExpr);
+//	code.AppendLine(u"return result;");
+//	code.DecreaseIndent();
+//	code.AppendLine(u"}");
+//	return code.toString();
+//}
 
 ln::String FlatCSourceGenerator::makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const
 {

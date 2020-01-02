@@ -10,6 +10,20 @@ class AssetModel;
 class Assets
 {
 public:
+
+    /** Internal */
+    static void saveAssetToLocalFile(AssetModel* asset, const String& filePath);
+
+
+
+
+
+
+
+
+
+
+
     static bool existsFile(const StringRef& filePath);
 
 	/**

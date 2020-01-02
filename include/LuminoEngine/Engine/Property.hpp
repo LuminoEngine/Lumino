@@ -455,6 +455,15 @@ class EngineContext : public RefObject
 public:
 	static EngineContext* current();
 
+    // TODO: 外部用。
+    template<class T>
+    void registerType() {
+        T::_lnref_registerTypeInfo(this);
+    }
+
+
+
+    // TODO: 内部用。コールバックから呼び出す
 	template<class TClassType>
 	void registerType(std::initializer_list<Ref<PropertyInfo>> propInfos)//(std::initializer_list<Ref<PropertyAccessor>> accessors)
 	{

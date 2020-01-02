@@ -31,6 +31,19 @@ inline LnBool LNRB_VALUE_TO_BOOL(VALUE v) { return (TYPE(v) == T_TRUE) ? LN_TRUE
 
 extern "C" void InitLuminoRubyRuntimeManager();
 
+extern "C" LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* name, LnBool value);
+extern "C" LN_FLAT_API LnResult LnSerializer_WriteInt(LnHandle serializer, const LnChar* name, int value);
+extern "C" LN_FLAT_API LnResult LnSerializer_WriteFloat(LnHandle serializer, const LnChar* name, float value);
+extern "C" LN_FLAT_API LnResult LnSerializer_WriteString(LnHandle serializer, const LnChar* name, const LnChar* value);
+extern "C" LN_FLAT_API LnResult LnSerializer_WriteObject(LnHandle serializer, const LnChar* name, LnHandle value);
+extern "C" LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* name, LnBool* outReturn);
+extern "C" LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* name, int* outReturn);
+extern "C" LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* name, float* outReturn);
+extern "C" LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn);
+extern "C" LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* name, LnHandle* outReturn);
+extern "C" LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn);
+extern "C" LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* basePath, LnHandle* outReturn);
+extern "C" LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
@@ -80,8 +93,9 @@ extern "C" LN_FLAT_API void LnWorldObject_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool value);
 extern "C" LN_FLAT_API LnResult LnVisualObject_IsVisible(LnHandle visualobject, LnBool* outReturn);
 extern "C" LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id);
-extern "C" LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture);
+extern "C" LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value);
 extern "C" LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float y, float width, float height);
+extern "C" LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback);
 extern "C" LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite);
 extern "C" LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn);
@@ -115,6 +129,7 @@ VALUE g_enum_TextureFormat;
 VALUE g_enum_DepthBufferFormat;
 
 VALUE g_rootModule;
+VALUE g_class_Serializer;
 VALUE g_class_EngineSettings;
 VALUE g_class_Engine;
 VALUE g_class_Application;
@@ -127,7 +142,6 @@ VALUE g_class_SpriteComponent;
 VALUE g_class_ComponentList;
 VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
-VALUE g_class_TestDelegate;
 VALUE g_class_Sprite;
 VALUE g_class_UIEventArgs;
 VALUE g_class_UILayoutElement;
@@ -146,17 +160,21 @@ void LnVector3_delete(LnVector3* obj)
 {
     free(obj);
 }
+
 VALUE LnVector3_allocate( VALUE klass )
 {
     VALUE obj;
     LnVector3* internalObj;
+
     internalObj = (LnVector3*)malloc(sizeof(LnVector3));
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVector3_allocate" );
     obj = Data_Wrap_Struct(klass, NULL, LnVector3_delete, internalObj);
     
     memset(internalObj, 0, sizeof(LnVector3));
+
     return obj;
 }
+
 //==============================================================================
 // ln::Quaternion
 
@@ -166,17 +184,314 @@ void LnQuaternion_delete(LnQuaternion* obj)
 {
     free(obj);
 }
+
 VALUE LnQuaternion_allocate( VALUE klass )
 {
     VALUE obj;
     LnQuaternion* internalObj;
+
     internalObj = (LnQuaternion*)malloc(sizeof(LnQuaternion));
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnQuaternion_allocate" );
     obj = Data_Wrap_Struct(klass, NULL, LnQuaternion_delete, internalObj);
     
     memset(internalObj, 0, sizeof(LnQuaternion));
+
     return obj;
 }
+
+//==============================================================================
+// ln::Serializer
+
+struct Wrap_Serializer
+    : public Wrap_Object
+{
+
+    Wrap_Serializer()
+    {}
+};
+
+static void LnSerializer_delete(Wrap_Serializer* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnSerializer_mark(Wrap_Serializer* obj)
+{
+	
+
+}
+
+static VALUE LnSerializer_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Serializer* internalObj;
+
+    internalObj = new Wrap_Serializer();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSerializer_allocate");
+    obj = Data_Wrap_Struct(klass, LnSerializer_mark, LnSerializer_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnSerializer_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Serializer* internalObj;
+
+    internalObj = new Wrap_Serializer();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSerializer_allocate");
+    obj = Data_Wrap_Struct(klass, LnSerializer_mark, LnSerializer_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnSerializer_WriteBool(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE name;
+        VALUE value;
+        rb_scan_args(argc, argv, "2", &name, &value);
+        if (LNRB_VALUE_IS_STRING(name) && LNRB_VALUE_IS_BOOL(value))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            LnBool _value = LNRB_VALUE_TO_BOOL(value);
+            LnResult errorCode = LnSerializer_WriteBoolA(selfObj->handle, _name, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::writeBool - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_WriteInt(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE name;
+        VALUE value;
+        rb_scan_args(argc, argv, "2", &name, &value);
+        if (LNRB_VALUE_IS_STRING(name) && LNRB_VALUE_IS_NUMBER(value))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            int _value = LNRB_VALUE_TO_NUMBER(value);
+            LnResult errorCode = LnSerializer_WriteIntA(selfObj->handle, _name, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::writeInt - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_WriteFloat(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE name;
+        VALUE value;
+        rb_scan_args(argc, argv, "2", &name, &value);
+        if (LNRB_VALUE_IS_STRING(name) && LNRB_VALUE_IS_FLOAT(value))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            LnResult errorCode = LnSerializer_WriteFloatA(selfObj->handle, _name, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::writeFloat - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_WriteString(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE name;
+        VALUE value;
+        rb_scan_args(argc, argv, "2", &name, &value);
+        if (LNRB_VALUE_IS_STRING(name) && LNRB_VALUE_IS_STRING(value))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            const char* _value = LNRB_VALUE_TO_STRING(value);
+            LnResult errorCode = LnSerializer_WriteStringA(selfObj->handle, _name, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::writeString - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_WriteObject(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE name;
+        VALUE value;
+        rb_scan_args(argc, argv, "2", &name, &value);
+        if (LNRB_VALUE_IS_STRING(name) && LNRB_VALUE_IS_OBJECT(value))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult errorCode = LnSerializer_WriteObjectA(selfObj->handle, _name, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::writeObject - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_ReadBool(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE name;
+        rb_scan_args(argc, argv, "1", &name);
+        if (LNRB_VALUE_IS_STRING(name))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            LnBool _outReturn;
+            LnResult errorCode = LnSerializer_ReadBoolA(selfObj->handle, _name, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::readBool - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_ReadInt(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE name;
+        rb_scan_args(argc, argv, "1", &name);
+        if (LNRB_VALUE_IS_STRING(name))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            int _outReturn;
+            LnResult errorCode = LnSerializer_ReadIntA(selfObj->handle, _name, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::readInt - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_ReadFloat(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE name;
+        rb_scan_args(argc, argv, "1", &name);
+        if (LNRB_VALUE_IS_STRING(name))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            float _outReturn;
+            LnResult errorCode = LnSerializer_ReadFloatA(selfObj->handle, _name, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::readFloat - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_ReadString(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE name;
+        rb_scan_args(argc, argv, "1", &name);
+        if (LNRB_VALUE_IS_STRING(name))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            const char* _outReturn;
+            LnResult errorCode = LnSerializer_ReadStringA(selfObj->handle, _name, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::readString - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_ReadObject(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Serializer* selfObj;
+    Data_Get_Struct(self, Wrap_Serializer, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE name;
+        rb_scan_args(argc, argv, "1", &name);
+        if (LNRB_VALUE_IS_STRING(name))
+        {
+            const char* _name = LNRB_VALUE_TO_STRING(name);
+            LnHandle _outReturn;
+            LnResult errorCode = LnSerializer_ReadObjectA(selfObj->handle, _name, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::readObject - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_Serialize(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE value;
+        VALUE basePath;
+        rb_scan_args(argc, argv, "2", &value, &basePath);
+        if (LNRB_VALUE_IS_OBJECT(value) && LNRB_VALUE_IS_STRING(basePath))
+        {
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            const char* _basePath = LNRB_VALUE_TO_STRING(basePath);
+            const char* _outReturn;
+            LnResult errorCode = LnSerializer_SerializeA(_value, _basePath, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::serialize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSerializer_Deserialize(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE str;
+        VALUE basePath;
+        rb_scan_args(argc, argv, "2", &str, &basePath);
+        if (LNRB_VALUE_IS_STRING(str) && LNRB_VALUE_IS_STRING(basePath))
+        {
+            const char* _str = LNRB_VALUE_TO_STRING(str);
+            const char* _basePath = LNRB_VALUE_TO_STRING(basePath);
+            LnHandle _outReturn;
+            LnResult errorCode = LnSerializer_DeserializeA(_str, _basePath, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Serializer::deserialize - wrong argument type.");
+    return Qnil;
+}
+
 //==============================================================================
 // ln::EngineSettings
 
@@ -325,7 +640,9 @@ struct Wrap_Engine
 static VALUE Wrap_LnEngine_Initialize(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
+
         {
+
             LnResult errorCode = LnEngine_Initialize();
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
@@ -338,7 +655,9 @@ static VALUE Wrap_LnEngine_Initialize(int argc, VALUE* argv, VALUE self)
 static VALUE Wrap_LnEngine_Finalize(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
+
         {
+
             LnResult errorCode = LnEngine_Finalize();
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
@@ -351,6 +670,7 @@ static VALUE Wrap_LnEngine_Finalize(int argc, VALUE* argv, VALUE self)
 static VALUE Wrap_LnEngine_Update(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
+
         {
             LnBool _outReturn;
             LnResult errorCode = LnEngine_Update(&_outReturn);
@@ -365,6 +685,7 @@ static VALUE Wrap_LnEngine_Update(int argc, VALUE* argv, VALUE self)
 static VALUE Wrap_LnEngine_MainUIView(int argc, VALUE* argv, VALUE self)
 {
     if (0 <= argc && argc <= 0) {
+
         {
             LnHandle _outReturn;
             LnResult errorCode = LnEngine_MainUIView(&_outReturn);
@@ -392,23 +713,30 @@ static void LnApplication_delete(Wrap_Application* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnApplication_mark(Wrap_Application* obj)
 {
 	
+
 }
+
 static VALUE LnApplication_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_Application* internalObj;
+
     internalObj = new Wrap_Application();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
     obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnApplication_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_Application* internalObj;
+
     internalObj = new Wrap_Application();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
     obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
@@ -416,12 +744,15 @@ static VALUE LnApplication_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnApplication_OnInit(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Application* selfObj;
     Data_Get_Struct(self, Wrap_Application, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
+
             LnResult errorCode = LnApplication_OnInit_CallOverrideBase(selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
@@ -436,7 +767,9 @@ static VALUE Wrap_LnApplication_OnUpdate(int argc, VALUE* argv, VALUE self)
     Wrap_Application* selfObj;
     Data_Get_Struct(self, Wrap_Application, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
+
             LnResult errorCode = LnApplication_OnUpdate_CallOverrideBase(selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
@@ -451,7 +784,9 @@ static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
     Wrap_Application* selfObj;
     Data_Get_Struct(self, Wrap_Application, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
+
             LnResult errorCode = LnApplication_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
@@ -490,23 +825,30 @@ static void LnGraphicsResource_delete(Wrap_GraphicsResource* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnGraphicsResource_mark(Wrap_GraphicsResource* obj)
 {
 	
+
 }
+
 static VALUE LnGraphicsResource_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_GraphicsResource* internalObj;
+
     internalObj = new Wrap_GraphicsResource();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnGraphicsResource_allocate");
     obj = Data_Wrap_Struct(klass, LnGraphicsResource_mark, LnGraphicsResource_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnGraphicsResource_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_GraphicsResource* internalObj;
+
     internalObj = new Wrap_GraphicsResource();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnGraphicsResource_allocate");
     obj = Data_Wrap_Struct(klass, LnGraphicsResource_mark, LnGraphicsResource_delete, internalObj);
@@ -514,6 +856,7 @@ static VALUE LnGraphicsResource_allocateForGetObject(VALUE klass, LnHandle handl
     internalObj->handle = handle;
     return obj;
 }
+
 //==============================================================================
 // ln::Texture
 
@@ -530,23 +873,30 @@ static void LnTexture_delete(Wrap_Texture* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnTexture_mark(Wrap_Texture* obj)
 {
 	
+
 }
+
 static VALUE LnTexture_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_Texture* internalObj;
+
     internalObj = new Wrap_Texture();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTexture_allocate");
     obj = Data_Wrap_Struct(klass, LnTexture_mark, LnTexture_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnTexture_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_Texture* internalObj;
+
     internalObj = new Wrap_Texture();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTexture_allocate");
     obj = Data_Wrap_Struct(klass, LnTexture_mark, LnTexture_delete, internalObj);
@@ -554,6 +904,7 @@ static VALUE LnTexture_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 //==============================================================================
 // ln::Texture2D
 
@@ -570,23 +921,30 @@ static void LnTexture2D_delete(Wrap_Texture2D* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnTexture2D_mark(Wrap_Texture2D* obj)
 {
 	
+
 }
+
 static VALUE LnTexture2D_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_Texture2D* internalObj;
+
     internalObj = new Wrap_Texture2D();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTexture2D_allocate");
     obj = Data_Wrap_Struct(klass, LnTexture2D_mark, LnTexture2D_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnTexture2D_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_Texture2D* internalObj;
+
     internalObj = new Wrap_Texture2D();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTexture2D_allocate");
     obj = Data_Wrap_Struct(klass, LnTexture2D_mark, LnTexture2D_delete, internalObj);
@@ -594,6 +952,7 @@ static VALUE LnTexture2D_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnTexture2D_Load(int argc, VALUE* argv, VALUE self)
 {
     if (1 <= argc && argc <= 1) {
@@ -680,23 +1039,30 @@ static void LnComponent_delete(Wrap_Component* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnComponent_mark(Wrap_Component* obj)
 {
 	
+
 }
+
 static VALUE LnComponent_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_Component* internalObj;
+
     internalObj = new Wrap_Component();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
     obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_Component* internalObj;
+
     internalObj = new Wrap_Component();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponent_allocate");
     obj = Data_Wrap_Struct(klass, LnComponent_mark, LnComponent_delete, internalObj);
@@ -704,6 +1070,7 @@ static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 //==============================================================================
 // ln::VisualComponent
 
@@ -720,23 +1087,30 @@ static void LnVisualComponent_delete(Wrap_VisualComponent* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnVisualComponent_mark(Wrap_VisualComponent* obj)
 {
 	
+
 }
+
 static VALUE LnVisualComponent_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_VisualComponent* internalObj;
+
     internalObj = new Wrap_VisualComponent();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVisualComponent_allocate");
     obj = Data_Wrap_Struct(klass, LnVisualComponent_mark, LnVisualComponent_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnVisualComponent_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_VisualComponent* internalObj;
+
     internalObj = new Wrap_VisualComponent();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVisualComponent_allocate");
     obj = Data_Wrap_Struct(klass, LnVisualComponent_mark, LnVisualComponent_delete, internalObj);
@@ -744,6 +1118,7 @@ static VALUE LnVisualComponent_allocateForGetObject(VALUE klass, LnHandle handle
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnVisualComponent_SetVisible(int argc, VALUE* argv, VALUE self)
 {
     Wrap_VisualComponent* selfObj;
@@ -768,6 +1143,7 @@ static VALUE Wrap_LnVisualComponent_IsVisible(int argc, VALUE* argv, VALUE self)
     Wrap_VisualComponent* selfObj;
     Data_Get_Struct(self, Wrap_VisualComponent, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnBool _outReturn;
             LnResult errorCode = LnVisualComponent_IsVisible(selfObj->handle, &_outReturn);
@@ -795,23 +1171,30 @@ static void LnSpriteComponent_delete(Wrap_SpriteComponent* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnSpriteComponent_mark(Wrap_SpriteComponent* obj)
 {
 	
+
 }
+
 static VALUE LnSpriteComponent_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_SpriteComponent* internalObj;
+
     internalObj = new Wrap_SpriteComponent();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSpriteComponent_allocate");
     obj = Data_Wrap_Struct(klass, LnSpriteComponent_mark, LnSpriteComponent_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnSpriteComponent_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_SpriteComponent* internalObj;
+
     internalObj = new Wrap_SpriteComponent();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSpriteComponent_allocate");
     obj = Data_Wrap_Struct(klass, LnSpriteComponent_mark, LnSpriteComponent_delete, internalObj);
@@ -819,6 +1202,7 @@ static VALUE LnSpriteComponent_allocateForGetObject(VALUE klass, LnHandle handle
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnSpriteComponent_SetTexture(int argc, VALUE* argv, VALUE self)
 {
     Wrap_SpriteComponent* selfObj;
@@ -845,6 +1229,7 @@ struct Wrap_ComponentList
     : public Wrap_Object
 {
     std::vector<VALUE> Items_AccessorCache;
+
     Wrap_ComponentList()
     {}
 };
@@ -854,23 +1239,31 @@ static void LnComponentList_delete(Wrap_ComponentList* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnComponentList_mark(Wrap_ComponentList* obj)
 {
 	for(VALUE& v : obj->Items_AccessorCache) rb_gc_mark(v);
+
+
 }
+
 static VALUE LnComponentList_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_ComponentList* internalObj;
+
     internalObj = new Wrap_ComponentList();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponentList_allocate");
     obj = Data_Wrap_Struct(klass, LnComponentList_mark, LnComponentList_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnComponentList_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_ComponentList* internalObj;
+
     internalObj = new Wrap_ComponentList();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnComponentList_allocate");
     obj = Data_Wrap_Struct(klass, LnComponentList_mark, LnComponentList_delete, internalObj);
@@ -878,11 +1271,13 @@ static VALUE LnComponentList_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnComponentList_GetLength(int argc, VALUE* argv, VALUE self)
 {
     Wrap_ComponentList* selfObj;
     Data_Get_Struct(self, Wrap_ComponentList, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             int _outReturn;
             LnResult errorCode = LnComponentList_GetLength(selfObj->handle, &_outReturn);
@@ -921,6 +1316,7 @@ struct Wrap_WorldObject
     : public Wrap_Object
 {
     VALUE LnWorldObject_GetComponents_AccessorCache = Qnil;
+
     Wrap_WorldObject()
     {}
 };
@@ -930,23 +1326,31 @@ static void LnWorldObject_delete(Wrap_WorldObject* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnWorldObject_mark(Wrap_WorldObject* obj)
 {
 	rb_gc_mark(obj->LnWorldObject_GetComponents_AccessorCache);
+
+
 }
+
 static VALUE LnWorldObject_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_WorldObject* internalObj;
+
     internalObj = new Wrap_WorldObject();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnWorldObject_allocate");
     obj = Data_Wrap_Struct(klass, LnWorldObject_mark, LnWorldObject_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnWorldObject_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_WorldObject* internalObj;
+
     internalObj = new Wrap_WorldObject();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnWorldObject_allocate");
     obj = Data_Wrap_Struct(klass, LnWorldObject_mark, LnWorldObject_delete, internalObj);
@@ -954,6 +1358,7 @@ static VALUE LnWorldObject_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnWorldObject_SetPosition(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
@@ -993,6 +1398,7 @@ static VALUE Wrap_LnWorldObject_GetPosition(int argc, VALUE* argv, VALUE self)
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnVector3 _outReturn;
             LnResult errorCode = LnWorldObject_GetPosition(selfObj->handle, &_outReturn);
@@ -1053,6 +1459,7 @@ static VALUE Wrap_LnWorldObject_GetRotation(int argc, VALUE* argv, VALUE self)
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnQuaternion _outReturn;
             LnResult errorCode = LnWorldObject_GetRotation(selfObj->handle, &_outReturn);
@@ -1116,6 +1523,7 @@ static VALUE Wrap_LnWorldObject_GetScale(int argc, VALUE* argv, VALUE self)
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnVector3 _outReturn;
             LnResult errorCode = LnWorldObject_GetScale(selfObj->handle, &_outReturn);
@@ -1168,6 +1576,7 @@ static VALUE Wrap_LnWorldObject_GetCenterPoint(int argc, VALUE* argv, VALUE self
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnVector3 _outReturn;
             LnResult errorCode = LnWorldObject_GetCenterPoint(selfObj->handle, &_outReturn);
@@ -1186,6 +1595,7 @@ static VALUE Wrap_LnWorldObject_GetComponents(int argc, VALUE* argv, VALUE self)
     Wrap_WorldObject* selfObj;
     Data_Get_Struct(self, Wrap_WorldObject, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnHandle _outReturn;
             LnResult errorCode = LnWorldObject_GetComponents(selfObj->handle, &_outReturn);
@@ -1238,23 +1648,30 @@ static void LnVisualObject_delete(Wrap_VisualObject* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnVisualObject_mark(Wrap_VisualObject* obj)
 {
 	
+
 }
+
 static VALUE LnVisualObject_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_VisualObject* internalObj;
+
     internalObj = new Wrap_VisualObject();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVisualObject_allocate");
     obj = Data_Wrap_Struct(klass, LnVisualObject_mark, LnVisualObject_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnVisualObject_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_VisualObject* internalObj;
+
     internalObj = new Wrap_VisualObject();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVisualObject_allocate");
     obj = Data_Wrap_Struct(klass, LnVisualObject_mark, LnVisualObject_delete, internalObj);
@@ -1262,6 +1679,7 @@ static VALUE LnVisualObject_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnVisualObject_SetVisible(int argc, VALUE* argv, VALUE self)
 {
     Wrap_VisualObject* selfObj;
@@ -1286,6 +1704,7 @@ static VALUE Wrap_LnVisualObject_IsVisible(int argc, VALUE* argv, VALUE self)
     Wrap_VisualObject* selfObj;
     Data_Get_Struct(self, Wrap_VisualObject, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnBool _outReturn;
             LnResult errorCode = LnVisualObject_IsVisible(selfObj->handle, &_outReturn);
@@ -1303,95 +1722,6 @@ LnResult Wrap_LnVisualObject_OnUpdate_OverrideCallback(LnHandle worldobject, flo
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
     return LN_SUCCESS;
 }
-
-
-
-//==============================================================================
-// ln::TestDelegate
-
-struct Wrap_TestDelegate
-    : public Wrap_Object
-{
-    VALUE m_callback;
-
-    Wrap_TestDelegate()
-    {}
-
-    static LnResult StaticCallback(LnHandle handle, int v1, int* outReturn)
-    {
-        printf("====StaticCallback s\n");
-        VALUE self = LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(handle);
-        Wrap_TestDelegate* selfObj;
-        Data_Get_Struct(self, Wrap_TestDelegate, selfObj);
-    
-        VALUE _v1 = LNI_TO_RUBY_VALUE(v1);
-        rb_funcall(selfObj->m_callback, rb_intern("call"), 1, _v1);
-        printf("====StaticCallback e\n");
-        *outReturn = v1 + 1;
-        return LN_SUCCESS;
-    }
-
-};
-
-static void LnTestDelegate_delete(Wrap_TestDelegate* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-static void LnTestDelegate_mark(Wrap_TestDelegate* obj)
-{
-	rb_gc_mark(obj->m_callback);
-}
-static VALUE LnTestDelegate_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_TestDelegate* internalObj;
-    internalObj = new Wrap_TestDelegate();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTestDelegate_allocate");
-    obj = Data_Wrap_Struct(klass, LnTestDelegate_mark, LnTestDelegate_delete, internalObj);
-    return obj;
-}
-static VALUE LnTestDelegate_allocateForGetObject(VALUE klass, LnHandle handle)
-{
-    VALUE obj;
-    Wrap_TestDelegate* internalObj;
-    internalObj = new Wrap_TestDelegate();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnTestDelegate_allocate");
-    obj = Data_Wrap_Struct(klass, LnTestDelegate_mark, LnTestDelegate_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-// https://qiita.com/lnznt/items/d2d18e45bcab48cf107d
-static VALUE Wrap_LnTestDelegate_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_TestDelegate* selfObj;
-    Data_Get_Struct(self, Wrap_TestDelegate, selfObj);
-    VALUE proc = rb_block_proc();  // https://www.ruby-forum.com/t/passing-blocks-around-in-a-c-extension/66602/2
-    // ↑ block が与えられていない場合 tried to create Proc object without a block (ArgumentError)
-    printf("Wrap_LnTestDelegate_Create, argc:%d %d\n", argc, proc);
-    //if (1 <= argc && argc <= 1) {
-        //VALUE proc;
-        //rb_scan_args(argc, argv, "1", &proc);
-        if (1)
-        {
-            selfObj->m_callback = proc;
-
-            LnResult errorCode = LnTestDelegate_Create(Wrap_TestDelegate::StaticCallback, &selfObj->handle);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-            return Qnil;
-        }
-    //}
-    //rb_raise(rb_eArgError, "ln::TestDelegate::init - wrong argument type.");
-    return Qnil;
-}
-
-
-
-
-
 //==============================================================================
 // ln::Sprite
 
@@ -1408,23 +1738,30 @@ static void LnSprite_delete(Wrap_Sprite* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnSprite_mark(Wrap_Sprite* obj)
 {
 	
+
 }
+
 static VALUE LnSprite_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_Sprite* internalObj;
+
     internalObj = new Wrap_Sprite();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSprite_allocate");
     obj = Data_Wrap_Struct(klass, LnSprite_mark, LnSprite_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnSprite_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_Sprite* internalObj;
+
     internalObj = new Wrap_Sprite();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSprite_allocate");
     obj = Data_Wrap_Struct(klass, LnSprite_mark, LnSprite_delete, internalObj);
@@ -1432,17 +1769,18 @@ static VALUE LnSprite_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnSprite_SetTexture(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Sprite* selfObj;
     Data_Get_Struct(self, Wrap_Sprite, selfObj);
     if (1 <= argc && argc <= 1) {
-        VALUE texture;
-        rb_scan_args(argc, argv, "1", &texture);
-        if (LNRB_VALUE_IS_OBJECT(texture))
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value))
         {
-            LnHandle _texture = LuminoRubyRuntimeManager::instance->getHandle(texture);
-            LnResult errorCode = LnSprite_SetTexture(selfObj->handle, _texture);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult errorCode = LnSprite_SetTexture(selfObj->handle, _value);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -1483,7 +1821,7 @@ static VALUE Wrap_LnSprite_SetCallerTest(int argc, VALUE* argv, VALUE self)
     if (1 <= argc && argc <= 1) {
         VALUE callback;
         rb_scan_args(argc, argv, "1", &callback);
-        if (1)
+        if (LNRB_VALUE_IS_OBJECT(callback))
         {
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
             LnResult errorCode = LnSprite_SetCallerTest(selfObj->handle, _callback);
@@ -1491,7 +1829,7 @@ static VALUE Wrap_LnSprite_SetCallerTest(int argc, VALUE* argv, VALUE self)
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::Sprite::setSourceRect - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::Sprite::setCallerTest - wrong argument type.");
     return Qnil;
 }
 
@@ -1541,23 +1879,30 @@ static void LnUIEventArgs_delete(Wrap_UIEventArgs* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnUIEventArgs_mark(Wrap_UIEventArgs* obj)
 {
 	
+
 }
+
 static VALUE LnUIEventArgs_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_UIEventArgs* internalObj;
+
     internalObj = new Wrap_UIEventArgs();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIEventArgs_allocate");
     obj = Data_Wrap_Struct(klass, LnUIEventArgs_mark, LnUIEventArgs_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnUIEventArgs_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_UIEventArgs* internalObj;
+
     internalObj = new Wrap_UIEventArgs();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIEventArgs_allocate");
     obj = Data_Wrap_Struct(klass, LnUIEventArgs_mark, LnUIEventArgs_delete, internalObj);
@@ -1565,11 +1910,13 @@ static VALUE LnUIEventArgs_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnUIEventArgs_Sender(int argc, VALUE* argv, VALUE self)
 {
     Wrap_UIEventArgs* selfObj;
     Data_Get_Struct(self, Wrap_UIEventArgs, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnHandle _outReturn;
             LnResult errorCode = LnUIEventArgs_Sender(selfObj->handle, &_outReturn);
@@ -1597,23 +1944,30 @@ static void LnUILayoutElement_delete(Wrap_UILayoutElement* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnUILayoutElement_mark(Wrap_UILayoutElement* obj)
 {
 	
+
 }
+
 static VALUE LnUILayoutElement_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_UILayoutElement* internalObj;
+
     internalObj = new Wrap_UILayoutElement();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUILayoutElement_allocate");
     obj = Data_Wrap_Struct(klass, LnUILayoutElement_mark, LnUILayoutElement_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnUILayoutElement_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_UILayoutElement* internalObj;
+
     internalObj = new Wrap_UILayoutElement();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUILayoutElement_allocate");
     obj = Data_Wrap_Struct(klass, LnUILayoutElement_mark, LnUILayoutElement_delete, internalObj);
@@ -1621,6 +1975,7 @@ static VALUE LnUILayoutElement_allocateForGetObject(VALUE klass, LnHandle handle
     internalObj->handle = handle;
     return obj;
 }
+
 //==============================================================================
 // ln::UIElement
 
@@ -1637,23 +1992,30 @@ static void LnUIElement_delete(Wrap_UIElement* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnUIElement_mark(Wrap_UIElement* obj)
 {
 	
+
 }
+
 static VALUE LnUIElement_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_UIElement* internalObj;
+
     internalObj = new Wrap_UIElement();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIElement_allocate");
     obj = Data_Wrap_Struct(klass, LnUIElement_mark, LnUIElement_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnUIElement_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_UIElement* internalObj;
+
     internalObj = new Wrap_UIElement();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIElement_allocate");
     obj = Data_Wrap_Struct(klass, LnUIElement_mark, LnUIElement_delete, internalObj);
@@ -1661,6 +2023,7 @@ static VALUE LnUIElement_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnUIElement_SetPosition(int argc, VALUE* argv, VALUE self)
 {
     Wrap_UIElement* selfObj;
@@ -1700,6 +2063,7 @@ static VALUE Wrap_LnUIElement_GetPosition(int argc, VALUE* argv, VALUE self)
     Wrap_UIElement* selfObj;
     Data_Get_Struct(self, Wrap_UIElement, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnVector3 _outReturn;
             LnResult errorCode = LnUIElement_GetPosition(selfObj->handle, &_outReturn);
@@ -1760,6 +2124,7 @@ static VALUE Wrap_LnUIElement_GetRotation(int argc, VALUE* argv, VALUE self)
     Wrap_UIElement* selfObj;
     Data_Get_Struct(self, Wrap_UIElement, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnQuaternion _outReturn;
             LnResult errorCode = LnUIElement_GetRotation(selfObj->handle, &_outReturn);
@@ -1821,6 +2186,7 @@ static VALUE Wrap_LnUIElement_GetScale(int argc, VALUE* argv, VALUE self)
     Wrap_UIElement* selfObj;
     Data_Get_Struct(self, Wrap_UIElement, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnVector3 _outReturn;
             LnResult errorCode = LnUIElement_GetScale(selfObj->handle, &_outReturn);
@@ -1873,6 +2239,7 @@ static VALUE Wrap_LnUIElement_GetCenterPoint(int argc, VALUE* argv, VALUE self)
     Wrap_UIElement* selfObj;
     Data_Get_Struct(self, Wrap_UIElement, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
             LnVector3 _outReturn;
             LnResult errorCode = LnUIElement_GetCenterPoint(selfObj->handle, &_outReturn);
@@ -1921,23 +2288,30 @@ static void LnUIControl_delete(Wrap_UIControl* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnUIControl_mark(Wrap_UIControl* obj)
 {
 	
+
 }
+
 static VALUE LnUIControl_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_UIControl* internalObj;
+
     internalObj = new Wrap_UIControl();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIControl_allocate");
     obj = Data_Wrap_Struct(klass, LnUIControl_mark, LnUIControl_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnUIControl_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_UIControl* internalObj;
+
     internalObj = new Wrap_UIControl();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIControl_allocate");
     obj = Data_Wrap_Struct(klass, LnUIControl_mark, LnUIControl_delete, internalObj);
@@ -1945,6 +2319,7 @@ static VALUE LnUIControl_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 //==============================================================================
 // ln::UIButtonBase
 
@@ -1961,23 +2336,30 @@ static void LnUIButtonBase_delete(Wrap_UIButtonBase* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnUIButtonBase_mark(Wrap_UIButtonBase* obj)
 {
 	
+
 }
+
 static VALUE LnUIButtonBase_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_UIButtonBase* internalObj;
+
     internalObj = new Wrap_UIButtonBase();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButtonBase_allocate");
     obj = Data_Wrap_Struct(klass, LnUIButtonBase_mark, LnUIButtonBase_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnUIButtonBase_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_UIButtonBase* internalObj;
+
     internalObj = new Wrap_UIButtonBase();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButtonBase_allocate");
     obj = Data_Wrap_Struct(klass, LnUIButtonBase_mark, LnUIButtonBase_delete, internalObj);
@@ -1985,6 +2367,7 @@ static VALUE LnUIButtonBase_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnUIButtonBase_SetText(int argc, VALUE* argv, VALUE self)
 {
     Wrap_UIButtonBase* selfObj;
@@ -2022,24 +2405,31 @@ static void LnUIButton_delete(Wrap_UIButton* obj)
     LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
     delete obj;
 }
+
 static void LnUIButton_mark(Wrap_UIButton* obj)
 {
 	
 rb_gc_mark(obj->connectOnClicked_Signal);
+
 }
+
 static VALUE LnUIButton_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_UIButton* internalObj;
+
     internalObj = new Wrap_UIButton();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButton_allocate");
     obj = Data_Wrap_Struct(klass, LnUIButton_mark, LnUIButton_delete, internalObj);
+
     return obj;
 }
+
 static VALUE LnUIButton_allocateForGetObject(VALUE klass, LnHandle handle)
 {
     VALUE obj;
     Wrap_UIButton* internalObj;
+
     internalObj = new Wrap_UIButton();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIButton_allocate");
     obj = Data_Wrap_Struct(klass, LnUIButton_mark, LnUIButton_delete, internalObj);
@@ -2047,12 +2437,15 @@ static VALUE LnUIButton_allocateForGetObject(VALUE klass, LnHandle handle)
     internalObj->handle = handle;
     return obj;
 }
+
 static VALUE Wrap_LnUIButton_Create(int argc, VALUE* argv, VALUE self)
 {
     Wrap_UIButton* selfObj;
     Data_Get_Struct(self, Wrap_UIButton, selfObj);
     if (0 <= argc && argc <= 0) {
+
         {
+
             LnResult errorCode = LnUIButton_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
@@ -2100,6 +2493,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_const(g_enum_PixelFormat, "RGBA8", INT2FIX(2)); 
     rb_define_const(g_enum_PixelFormat, "RGB8", INT2FIX(3)); 
     rb_define_const(g_enum_PixelFormat, "RGBA32F", INT2FIX(4)); 
+
     g_enum_TextureFormat = rb_define_module_under(g_rootModule, "TextureFormat");
     rb_define_const(g_enum_TextureFormat, "UNKNOWN", INT2FIX(0)); 
     rb_define_const(g_enum_TextureFormat, "RGBA8", INT2FIX(1)); 
@@ -2109,6 +2503,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_const(g_enum_TextureFormat, "R16F", INT2FIX(5)); 
     rb_define_const(g_enum_TextureFormat, "R32F", INT2FIX(6)); 
     rb_define_const(g_enum_TextureFormat, "R32U", INT2FIX(7)); 
+
     g_enum_DepthBufferFormat = rb_define_module_under(g_rootModule, "DepthBufferFormat");
     rb_define_const(g_enum_DepthBufferFormat, "D24S8", INT2FIX(0));
 
@@ -2117,6 +2512,22 @@ extern "C" void Init_Lumino_RubyExt()
 
     g_class_Quaternion = rb_define_class_under(g_rootModule, "Quaternion", rb_cObject);
     rb_define_alloc_func(g_class_Quaternion, LnQuaternion_allocate);
+
+    g_class_Serializer = rb_define_class_under(g_rootModule, "Serializer", rb_cObject);
+    rb_define_alloc_func(g_class_Serializer, LnSerializer_allocate);
+    rb_define_method(g_class_Serializer, "write_bool", LN_TO_RUBY_FUNC(Wrap_LnSerializer_WriteBool), -1);
+    rb_define_method(g_class_Serializer, "write_int", LN_TO_RUBY_FUNC(Wrap_LnSerializer_WriteInt), -1);
+    rb_define_method(g_class_Serializer, "write_float", LN_TO_RUBY_FUNC(Wrap_LnSerializer_WriteFloat), -1);
+    rb_define_method(g_class_Serializer, "write_string", LN_TO_RUBY_FUNC(Wrap_LnSerializer_WriteString), -1);
+    rb_define_method(g_class_Serializer, "write_object", LN_TO_RUBY_FUNC(Wrap_LnSerializer_WriteObject), -1);
+    rb_define_method(g_class_Serializer, "read_bool", LN_TO_RUBY_FUNC(Wrap_LnSerializer_ReadBool), -1);
+    rb_define_method(g_class_Serializer, "read_int", LN_TO_RUBY_FUNC(Wrap_LnSerializer_ReadInt), -1);
+    rb_define_method(g_class_Serializer, "read_float", LN_TO_RUBY_FUNC(Wrap_LnSerializer_ReadFloat), -1);
+    rb_define_method(g_class_Serializer, "read_string", LN_TO_RUBY_FUNC(Wrap_LnSerializer_ReadString), -1);
+    rb_define_method(g_class_Serializer, "read_object", LN_TO_RUBY_FUNC(Wrap_LnSerializer_ReadObject), -1);
+    rb_define_singleton_method(g_class_Serializer, "serialize", LN_TO_RUBY_FUNC(Wrap_LnSerializer_Serialize), -1);
+    rb_define_singleton_method(g_class_Serializer, "deserialize", LN_TO_RUBY_FUNC(Wrap_LnSerializer_Deserialize), -1);
+    LnSerializer_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Serializer, LnSerializer_allocateForGetObject));
 
     g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);
@@ -2199,11 +2610,6 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_VisualObject, "visible?", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_IsVisible), -1);
     LnVisualObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualObject, LnVisualObject_allocateForGetObject));
     LnVisualObject_OnUpdate_SetOverrideCallback(Wrap_LnVisualObject_OnUpdate_OverrideCallback);
-
-    g_class_TestDelegate = rb_define_class_under(g_rootModule, "TestDelegate", g_class_VisualObject);
-    rb_define_alloc_func(g_class_TestDelegate, LnTestDelegate_allocate);
-    rb_define_private_method(g_class_TestDelegate, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTestDelegate_Create), -1);
-    //LnTestDelegate_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_TestDelegate, LnTestDelegate_allocateForGetObject));
 
     g_class_Sprite = rb_define_class_under(g_rootModule, "Sprite", g_class_VisualObject);
     rb_define_alloc_func(g_class_Sprite, LnSprite_allocate);

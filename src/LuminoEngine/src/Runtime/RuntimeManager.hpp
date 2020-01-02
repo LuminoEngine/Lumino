@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <stack>
 #include <LuminoEngine/Runtime/Common.hpp>
+#include <LuminoEngine/Runtime/Runtime.hpp>
 
 namespace ln {
 namespace detail {
@@ -62,13 +63,14 @@ public:
 
 	LnResult processException(Exception* e);
 
-
+    RuntimeStringBuffer* requestCommonStringBuffer() { return &m_commonStringBuffer; }
 
 private:
 	List<ObjectEntry> m_objectEntryList;
 	std::stack<int> m_objectIndexStack;
 	bool m_systemAliving;
 	std::mutex m_mutex;
+    RuntimeStringBuffer m_commonStringBuffer;
 	static LnReferenceCountTrackerCallback m_referenceCountTracker;
     static LnRuntimeFinalizedCallback m_runtimeFinalizedCallback;
 };

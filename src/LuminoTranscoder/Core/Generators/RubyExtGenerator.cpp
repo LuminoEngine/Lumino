@@ -425,6 +425,10 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
     }
 	*/
 
+    //if (method->shortName() == u"readString") {
+    //    printf("");
+    //}
+
 	// 集計
 	int requiredArgsCount = 0;
 	int optionalArgsCount = 0;			// デフォルト引数の数
@@ -774,16 +778,16 @@ ln::String RubyExtGenerator::makeTypeCheckExpr(const TypeSymbol* type, const ln:
 	else if (type == PredefinedTypes::floatType) {
 		return ln::String::format(u"LNRB_VALUE_IS_FLOAT({0})", varName);
 	}
-	//else if (type == PredefinedTypes::doubleType) {
-	//	return ln::String::format(u"LNRB_VALUE_TO_DOUBLE({0})", varName);
-	//}
+	else if (type == PredefinedTypes::doubleType) {
+		return ln::String::format(u"LNRB_VALUE_IS_DOUBLE({0})", varName);
+	}
 	else if (type->isString()) {
 		return ln::String::format(u"LNRB_VALUE_IS_STRING({0})", varName);
 	}
 	else if (type->isEnum()) {
 		return ln::String::format(u"LNRB_VALUE_IS_NUMBER({0})", varName);
 	}
-	else if (type->isClass() || type->isStruct()) {
+	else if (type->isClass() || type->isStruct() || type->isDelegateObject()) {
 		return ln::String::format(u"LNRB_VALUE_IS_OBJECT({0})", varName);
 	}
 	else {
@@ -806,7 +810,7 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 		t = t + ln::String::format(u"{0}& {1} = *tmp_{1};", makeFlatClassName(type), varName);
 		return t;
 	}
-	else if (type->isClass()) {
+	else if (type->isClass() || type->isDelegateObject()) {
 		declExpr = ln::String::format(u"LnHandle {0}", varName);
 		castExpr = ln::String::format(u"LuminoRubyRuntimeManager::instance->getHandle({0})", param->name());
 	}

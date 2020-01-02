@@ -174,7 +174,12 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
     auto stream = openStreamFromAssetPath(assetPath);
     auto json = FileSystem::readAllText(stream);
     auto asset = makeObject<AssetModel>();
-    JsonSerializer::deserialize(json, assetPath.getParentAssetPath().toString(), *asset);
+
+    //JsonSerializer::deserialize(json, assetPath.getParentAssetPath().toString(), *asset);
+    JsonTextInputArchive ar(json);
+    ar.setBasePath(assetPath.getParentAssetPath().toString());
+    ar.load(*asset);
+
     asset->target()->setAssetPath(assetPath);
     return asset;
 }
@@ -197,7 +202,12 @@ void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& fi
     auto assetPath = AssetPath::makeFromLocalFilePath(localPath);
 
 
-    auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
+    //auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
+    JsonTextOutputArchive ar;
+    ar.setBasePath(assetPath.getParentAssetPath().toString());
+    ar.save(*asset);
+    auto json = ar.toString(JsonFormatting::Indented);
+
     FileSystem::writeAllText(localPath, json);
 }
 

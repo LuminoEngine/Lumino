@@ -6,6 +6,7 @@ class EngineContext;
 class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
+class Serializer;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
@@ -57,6 +58,7 @@ private:
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
     friend class ::ln::detail::EngineDomain; \
+    friend class ::ln::EngineContext; \
     static TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
 	static void _lnref_registerTypeInfo(EngineContext* context);
@@ -119,6 +121,10 @@ protected:
 
 	LN_SERIALIZE_CLASS_VERSION(1);
     virtual void serialize(Archive& ar);
+
+    /** onSerialize */
+    LN_METHOD()
+    virtual void onSerialize(Serializer* ar);
 
 public:
 	/**

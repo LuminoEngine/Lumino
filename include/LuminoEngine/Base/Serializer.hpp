@@ -23,7 +23,7 @@ public:
 
 	/** write */
 	LN_METHOD()
-	void writeDouble(const StringRef& name, double value);
+	void writeFloat(const StringRef& name, float value);
 
 	/** write */
 	LN_METHOD()
@@ -44,7 +44,7 @@ public:
 
 	/** read */
 	LN_METHOD()
-	double readDouble(const StringRef& name);
+	float readFloat(const StringRef& name);
 
 	/** read */
 	LN_METHOD()

@@ -121,6 +121,7 @@ typedef enum tagLnDepthBufferFormat
 typedef void(*LnUIEventHandlerCallback)(LnHandle __eventOwner, LnHandle p1);
 
 typedef LnResult(*LnTestDelegateCallback)(LnHandle, int p1, int* outReturn);
+LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
 
 
 /**
@@ -182,8 +183,8 @@ LN_FLAT_API LnResult LnSerializer_WriteIntA(LnHandle serializer, const char* nam
     @brief write
     @param[in] serializer : instance
 */
-LN_FLAT_API LnResult LnSerializer_WriteDouble(LnHandle serializer, const LnChar* name, double value);
-LN_FLAT_API LnResult LnSerializer_WriteDoubleA(LnHandle serializer, const char* name, double value);
+LN_FLAT_API LnResult LnSerializer_WriteFloat(LnHandle serializer, const LnChar* name, float value);
+LN_FLAT_API LnResult LnSerializer_WriteFloatA(LnHandle serializer, const char* name, float value);
 
 /**
     @brief write
@@ -220,8 +221,8 @@ LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name
     @param[in] serializer : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LnResult LnSerializer_ReadDouble(LnHandle serializer, const LnChar* name, double* outReturn);
-LN_FLAT_API LnResult LnSerializer_ReadDoubleA(LnHandle serializer, const char* name, double* outReturn);
+LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* name, float* outReturn);
+LN_FLAT_API LnResult LnSerializer_ReadFloatA(LnHandle serializer, const char* name, float* outReturn);
 
 /**
     @brief read
@@ -563,7 +564,7 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_CallOverrideBase(LnHandle worldobje
     @brief スプライトが表示するテクスチャを設定します。
     @param[in] sprite : instance
 */
-LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture);
+LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value);
 
 /**
     @brief 
