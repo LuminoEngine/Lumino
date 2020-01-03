@@ -11,7 +11,7 @@ ln::Ref<TypeSymbol>	PredefinedTypes::floatType;
 ln::Ref<TypeSymbol>	PredefinedTypes::doubleType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringRefType;
-ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
+//ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
 ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
@@ -403,7 +403,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 	if (m_ownerType->kind() == TypeKind::Delegate)
 	{
 		auto s = ln::makeRef<MethodParameterSymbol>(db());
-		if (!s->init(QualType{ PredefinedTypes::objectType }, u"__eventOwner")) return false;
+		if (!s->init(QualType{ db()->rootObjectClass() }, u"__eventOwner")) return false;
 		m_flatParameters.add(s);
 
         // documetation
@@ -627,6 +627,10 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 		m_declaredMethods.add(s);
 	}
 
+    if (isRootObjectClass()) {
+        db()->setRootObjectClass(this);
+    }
+
 	return true;
 }
 
@@ -682,7 +686,10 @@ ln::Result TypeSymbol::link()
 	}
 
 	if (m_piType) {
-		if (isClass() && !isStatic()) {
+        if (isRootObjectClass()) {
+            // No base class required.
+        }
+		else if (isClass() && !isStatic()) {
 			m_baseClass = db()->getTypeSymbol(m_piType->baseClassRawName);
 			if (!m_baseClass) {
 				LN_NOTIMPLEMENTED();
@@ -1030,7 +1037,7 @@ void SymbolDatabase::initPredefineds()
 
 	PredefinedTypes::stringRefType = addPredefined(u"ln::StringRef");
 
-	PredefinedTypes::objectType = addPredefined(u"ln::Object", TypeKind::Class);
+	//PredefinedTypes::objectType = addPredefined(u"ln::Object", TypeKind::Class);
 
 	PredefinedTypes::EventConnectionType = addPredefined(u"ln::EventConnection");
 }

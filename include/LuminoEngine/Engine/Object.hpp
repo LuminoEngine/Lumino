@@ -107,7 +107,8 @@ void placementNewObject(void* ptr, TArgs&&... args)
 	static_cast<T*>(ptr)->init(std::forward<TArgs>(args)...);
 }
 
-class LN_API Object
+LN_CLASS()
+class Object
 	: public RefObject
 {
 LN_CONSTRUCT_ACCESS:

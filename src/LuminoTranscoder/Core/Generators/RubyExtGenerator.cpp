@@ -134,7 +134,7 @@ void RubyExtGenerator::generate()
 
 	// classes
 	for (auto& classSymbol : db()->classes()) {
-		if (classSymbol == PredefinedTypes::objectType) {
+		if (classSymbol->isRootObjectClass()) {
 			// Object class is defined directly, so automatic generation is not required
 		}
 		else {
@@ -261,7 +261,7 @@ void RubyExtGenerator::generate()
 			typeVALUEDecls.AppendLine(u"VALUE {0};", classInfoVar);
 
 			// define class
-			auto baseClass = (!classSymbol->baseClass() || classSymbol->baseClass() == PredefinedTypes::objectType) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
+			auto baseClass = (!classSymbol->baseClass() || classSymbol->isRootObjectClass()) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
 			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", {2});", classInfoVar, classSymbol->shortName(), baseClass);
 			if (!classSymbol->isStatic()) {
 				moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(classSymbol));
@@ -1050,7 +1050,7 @@ void RubyYARDOCSourceGenerator::generate()
 		code.AppendLine(u"# " + classSymbol->document()->summary());
 		code.AppendLine(u"# ");
 		code.append(u"class " + makeRubyTypeFullName(classSymbol));
-		if (classSymbol->baseClass() && classSymbol->baseClass() != PredefinedTypes::objectType) {
+		if (classSymbol->baseClass() && classSymbol->isRootObjectClass()) {
 			code.append(u" < " + classSymbol->baseClass()->shortName());
 		}
 		code.NewLine();
@@ -1170,7 +1170,7 @@ ln::String RubyYARDOCSourceGenerator::makeRubyTypeFullName(const TypeSymbol* typ
 			{ PredefinedTypes::floatType, u"Float" },
 			{ PredefinedTypes::stringType, u"String" },
 			//{ PredefinedTypes::stringRefType, u"" },
-			{ PredefinedTypes::objectType, u"Object" },
+			//{ PredefinedTypes::objectType, u"Object" },
 			//{ PredefinedTypes::EventConnectionType, u"" },
 		};
 

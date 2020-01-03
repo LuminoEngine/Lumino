@@ -80,7 +80,7 @@ public:
 	static ln::Ref<TypeSymbol>	doubleType;
 	static ln::Ref<TypeSymbol>	stringType;
 	static ln::Ref<TypeSymbol>	stringRefType;
-	static ln::Ref<TypeSymbol>	objectType;
+	//static ln::Ref<TypeSymbol>	objectType;
 	static ln::Ref<TypeSymbol>	EventConnectionType;
 };
 
@@ -379,6 +379,9 @@ public:
 	bool isEnum() const { return kind() == TypeKind::Enum; }
 	bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }
 	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class
+
+
+    bool isRootObjectClass() const { return m_fullName == u"ln::Object"; }
 	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
 	bool isCollection() const { return metadata()->hasKey(u"Collection"); }
     bool isFlags() const { return metadata()->hasKey(u"Flags"); }
@@ -471,10 +474,12 @@ public:
 
 	//void verify(ln::DiagnosticsManager* diag);
 
+    TypeSymbol* rootObjectClass() const { return m_rootObjectClass; }
+    void setRootObjectClass(TypeSymbol* value) { m_rootObjectClass = value; }
 
 	stream::Stream<Ref<TypeSymbol>> enums() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Enum; }); }
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
-	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class && (x != PredefinedTypes::objectType); }); }
+	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class/* && (x->isRootObjectClass())*/; }); }
 	stream::Stream<Ref<TypeSymbol>> delegates() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegate(); }); }
     stream::Stream<Ref<TypeSymbol>> delegateObjects() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegateObject(); }); }
 
@@ -495,6 +500,7 @@ private:
 	ln::List<Ref<TypeSymbol>> m_allTypes;
 	//ln::List<Ref<DelegateSymbol>> m_delegates;
 	ln::DiagnosticsManager* m_diag;
+    TypeSymbol* m_rootObjectClass = nullptr;
 };
 
 

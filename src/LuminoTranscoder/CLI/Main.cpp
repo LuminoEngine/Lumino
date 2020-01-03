@@ -1,4 +1,4 @@
-
+﻿
 #include "../Core/CodeAnalyzer.hpp"
 #include "../Core/SymbolDatabase.hpp"
 #include "../Core/Generators/FlatCGenerator.hpp"
@@ -29,6 +29,7 @@ int main(int argc, char** argv)
 
 		ln::List<ln::Path> files_LuminoEngine =
 		{
+            TEST_ROOT "include/LuminoEngine/Engine/Object.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
@@ -65,7 +66,10 @@ int main(int argc, char** argv)
 			CompilationDatabase cdb;
 			cdb.inputFile = file;
 			cdb.includeDirectories.add(TEST_ROOT "include");
-			cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
+            if (file.fileName().str() == u"Object.hpp") // Object class が force include されるものと合わせて再定義扱いになりクラス名が取れなくなるため、特別扱いする
+                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
+            else
+                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
 			ca.inputs.add(cdb);
 		}
 
@@ -101,26 +105,26 @@ int main(int argc, char** argv)
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
 	{
-		RubyExtGenerator g;
+		FlatCHeaderGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}
 	{
-		RubyYARDOCSourceGenerator g;
+		FlatCSourceGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}
+	//{
+	//	RubyExtGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	RubyYARDOCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
     //{
     //    DotNetPInvokeGenerator g;
     //    g.setup(db, config);
