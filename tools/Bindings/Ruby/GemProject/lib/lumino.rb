@@ -20,4 +20,11 @@ module Lumino
       Lumino::Application.run_app_internal(self)
     end
   end
+
+  class Sprite
+    def self.inherited(subclass)
+      puts 'Sprite self.inherited'
+      Lumino::register_type(subclass)
+    end
+  end
 end

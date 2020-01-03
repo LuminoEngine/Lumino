@@ -471,7 +471,10 @@ public:
 
 		if (m_typeInfoSet.find(typeInfo->name()) == m_typeInfoSet.end())
 		{
-			typeInfo->m_factory = []() { return detail::makeObjectHelper<TClassType>(); };
+            typeInfo->m_id = m_typeInfos.size();
+            m_typeInfos.push_back(typeInfo);
+
+			typeInfo->m_factory = [](const TypeInfo*) { return detail::makeObjectHelper<TClassType>(); };
 
 			m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
 
@@ -493,9 +496,22 @@ public:
 		}
 	}
 
+    TypeInfo* findTypeInfo(int id) const
+    {
+        if (0 <= id && id < m_typeInfos.size()) {
+            return m_typeInfos[id];
+        }
+        else {
+            return nullptr;
+        }
+    }
+
+    TypeInfo* acquireTypeInfo(const StringRef& name);
+
 private:
 	//std::unordered_set<TypeInfo*> m_typeInfoSet;
 	std::unordered_map<String, TypeInfo*> m_typeInfoSet;
+    std::vector<Ref<TypeInfo>> m_typeInfos;
 	//List<TypeInfo*> m_typeInfos;
 };
 

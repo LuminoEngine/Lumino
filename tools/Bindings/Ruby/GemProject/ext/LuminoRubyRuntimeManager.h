@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <unordered_map>
 #include "FlatCommon.h"
 
 //#define LNRB_TRACE(...) printf(__VA_ARGS__)
@@ -47,6 +48,10 @@ public:
     void handleReferenceChanged(LnHandle handle, int method, int count);
 
     static void handleRuntimeFinalized();
+    static void handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle);
+
+    // TODO: internal
+    std::unordered_map<std::string, int> m_userDefinedClassTypeIdMap;
 
 private:
     struct ObjectReferenceItem

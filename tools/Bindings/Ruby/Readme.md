@@ -1,3 +1,5 @@
+https://docs.ruby-lang.org/en/2.1.0/README_EXT_ja.html
+
 
 set PATH=C:\Ruby26\bin;C:\Ruby26\msys32\mingw32\bin;C:\Ruby26\msys32\usr\bin;%PATH%
 set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%

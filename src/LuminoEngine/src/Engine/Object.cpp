@@ -77,6 +77,11 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
+void Object::setTypeInfoOverride(TypeInfo* value)
+{
+    LN_UNREACHABLE();
+}
+
 //void Object::onSetAssetFilePath(const Path& filePath)
 //{
 //}

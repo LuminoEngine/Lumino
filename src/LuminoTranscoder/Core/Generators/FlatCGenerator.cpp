@@ -116,6 +116,12 @@ void FlatCHeaderGenerator::generate()
 			}
 			classMemberFuncDeclsText.NewLine();
 		}
+
+        // type info
+        if (!classInfo->isStatic()) {
+            classMemberFuncDeclsText.AppendLine(makeGetTypeInfoIdFuncHeader(classInfo) + u";");
+            classMemberFuncDeclsText.NewLine();
+        }
 	}
 
 	// save C API Header
@@ -315,6 +321,17 @@ void FlatCSourceGenerator::generate()
 
 			classMemberFuncImplsText.AppendLine(funcImpl.toString());
 		}
+
+        // type info
+        if (!classInfo->isStatic()) {
+            classMemberFuncImplsText.AppendLine(makeGetTypeInfoIdFuncHeader(classInfo));
+            classMemberFuncImplsText.AppendLine(u"{");
+            classMemberFuncImplsText.IncreaseIndent();
+            classMemberFuncImplsText.AppendLine(u"return ln::TypeInfo::getTypeInfo<{0}>()->id();", classInfo->fullName());
+            classMemberFuncImplsText.DecreaseIndent();
+            classMemberFuncImplsText.AppendLine(u"}");
+            classMemberFuncImplsText.NewLine();
+        }
 	}
 
 	// save C API Source
@@ -458,6 +475,27 @@ ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
 				overrideMethod.AppendLine(u"}");
 			}
 		}
+
+
+        // TypeInfo
+        if (!classSymbol->isStatic()) {
+            ln::String baseClassName = u"Object";
+            if (classSymbol->baseClass()) baseClassName = classSymbol->baseClass()->shortName();
+            overrideCallbackDecl.AppendLine(u"ln::TypeInfo* m_typeInfoOverride = nullptr;");
+            overrideCallbackDecl.AppendLine(u"virtual void setTypeInfoOverride(ln::TypeInfo* value) override");
+            overrideCallbackDecl.AppendLine(u"{");
+            overrideCallbackDecl.AppendLine(u"    m_typeInfoOverride = value;");
+            overrideCallbackDecl.AppendLine(u"}");
+            overrideCallbackDecl.AppendLine(u"virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override");
+            overrideCallbackDecl.AppendLine(u"{");
+            overrideCallbackDecl.AppendLine(u"    if (m_typeInfoOverride)");
+            overrideCallbackDecl.AppendLine(u"        return m_typeInfoOverride;");
+            overrideCallbackDecl.AppendLine(u"    else");
+            overrideCallbackDecl.AppendLine(u"        return ln::TypeInfo::getTypeInfo<{0}>();", baseClassName);
+            overrideCallbackDecl.AppendLine(u"}");
+            overrideCallbackDecl.NewLine();
+        }
+
 
 		code.AppendLine(u"class {0} : public {1}", makeWrapSubclassName(classSymbol), classSymbol->fullName());
 		code.AppendLine(u"{");

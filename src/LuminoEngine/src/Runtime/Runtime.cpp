@@ -116,13 +116,97 @@ void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
     return ln::detail::RuntimeManager::setRuntimeFinalizedCallback(callback);
 }
 
+//void LnRuntime_SetRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback)
+//{
+//    return ln::detail::RuntimeManager::setRuntimeCreateInstanceCallback(callback);
+//}
+
+void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback)
+{
+    return ln::detail::RuntimeManager::setRuntimeGetTypeInfoIdCallback(callback);
+}
+
 void LnRuntime_RunAppInternal(LnHandle app)
 {
     ln::detail::ApplicationHelper::run(
         static_cast<ln::Application*>(ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(app)));
 }
 
-LN_FLAT_API LnResult LnObject_Release(LnHandle obj)
+//==============================================================================
+// LnTypeInfo
+
+LnResult LnTypeInfo_Acquire(const LnChar* typeName, int* outTypeInfoId)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
+    if (ln::TypeInfo* t = ln::EngineContext::current()->acquireTypeInfo(typeName)) {
+        *outTypeInfoId = t->id();
+        return LN_SUCCESS;
+    }
+    else {
+        return LN_ERROR_UNKNOWN;
+    }
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LnResult LnTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId)
+{
+    return LnTypeInfo_Acquire(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
+}
+
+LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
+{
+    LNI_FUNC_TRY_BEGIN;
+    ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId);
+    ln::TypeInfo* b = ln::EngineContext::current()->findTypeInfo(baseClassTypeInfoId);
+    if (t && b) {
+        t->m_baseType = b;
+        return LN_SUCCESS;
+    }
+    else {
+        return LN_ERROR_UNKNOWN;
+    }
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateInstanceCallback callback)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
+        t->m_factory = [callback](const ln::TypeInfo* typeInfo) -> ln::Ref<ln::Object> {
+            LnHandle handle = LN_NULL_HANDLE;
+            callback(typeInfo->id(), &handle);
+            if (handle == LN_NULL_HANDLE) {
+                LN_ERROR("Faild creation managed instance.");
+                return nullptr;
+            }
+            return ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(handle);
+        };
+        return LN_SUCCESS;
+    }
+    else {
+        return LN_ERROR_UNKNOWN;
+    }
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
+        *outManagedTypeInfoId = ln::detail::TypeInfoInternal::getManagedTypeInfoId(t);
+        return LN_SUCCESS;
+    }
+    else {
+        return LN_ERROR_UNKNOWN;
+    }
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+//==============================================================================
+// LnObject
+
+LnResult LnObject_Release(LnHandle obj)
 {
     if (auto m = ln::detail::EngineDomain::runtimeManager()) {
         m->releaseObjectExplicitly(obj);
@@ -130,18 +214,31 @@ LN_FLAT_API LnResult LnObject_Release(LnHandle obj)
 	return LN_SUCCESS;
 }
 
-LN_FLAT_API LnResult LnObject_Retain(LnHandle obj)
+LnResult LnObject_Retain(LnHandle obj)
 {
 	ln::detail::EngineDomain::runtimeManager()->retainObjectExplicitly(obj);
 	return LN_SUCCESS;
 }
 
-LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj)
+int32_t LnObject_GetReferenceCount(LnHandle obj)
 {
 	if (auto t = LNI_HANDLE_TO_OBJECT(ln::Object, obj))
 		return ln::RefObjectHelper::getReferenceCount(t);
 	else
 		return 0;
+}
+
+LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
+        LNI_HANDLE_TO_OBJECT(ln::Object, obj)->setTypeInfoOverride(t);
+        return LN_SUCCESS;
+    }
+    else {
+        return LN_ERROR_UNKNOWN;
+    }
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 #if 0

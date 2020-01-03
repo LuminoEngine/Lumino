@@ -60,6 +60,8 @@ public:
 	void onReleasedObject(Object* obj);
 
     static void setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
+    //static void setRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback);
+    static void setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 
 	LnResult processException(Exception* e);
 

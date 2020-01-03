@@ -2036,6 +2036,8 @@ static VALUE LnSprite_allocate(VALUE klass)
     VALUE obj;
     Wrap_Sprite* internalObj;
 
+
+
     internalObj = new Wrap_Sprite();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSprite_allocate");
     obj = Data_Wrap_Struct(klass, LnSprite_mark, LnSprite_delete, internalObj);

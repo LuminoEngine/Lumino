@@ -83,6 +83,14 @@ extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
 extern LN_FLAT_API void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
 extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
 
+typedef void(*LnTypeInfoCreateInstanceCallback)(int typeInfoId, LnHandle* outHandle);
+
+extern LN_FLAT_API LnResult LnTypeInfo_Acquire(const LnChar* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LnResult LnTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId);
+extern LN_FLAT_API LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateInstanceCallback callback);
+extern LN_FLAT_API LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId);
+
 //==============================================================================
 
 /**
@@ -110,6 +118,7 @@ LN_FLAT_API LnResult LnObject_Retain(LnHandle obj);
 LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj);
 
 
+LN_FLAT_API LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId);
 
 #ifdef __cplusplus
 } // extern "C"

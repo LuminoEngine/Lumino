@@ -24,6 +24,8 @@ public:
 	static ln::String makeInstanceParamName(TypeSymbol* type);	// this にあたる引数名
 
     ln::String makeCreateDelegateObjectFuncHeader(TypeSymbol* delegateSymbol) const;
+    ln::String makeGetTypeInfoIdFuncName(TypeSymbol* classType) const { return makeFlatClassName(classType) + u"_GetTypeInfoId"; }
+    ln::String makeGetTypeInfoIdFuncHeader(TypeSymbol* classType) const { return u"extern LN_API int " + makeGetTypeInfoIdFuncName(classType) + u"()"; }
 };
 
 // .h

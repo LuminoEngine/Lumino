@@ -228,6 +228,16 @@ void RuntimeManager::setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback call
     m_runtimeFinalizedCallback = callback;
 }
 
+//void RuntimeManager::setRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback)
+//{
+//    LN_NOTIMPLEMENTED();
+//}
+
+void RuntimeManager::setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback)
+{
+    LN_NOTIMPLEMENTED();
+}
+
 void RuntimeManager::setReferenceTrackEnabled(LnHandle handle)
 {
 	RefObjectInternal::setObjectFlag(m_objectEntryList[static_cast<int>(handle)].object, RefObjectFlags_ReferenceTracking, true);

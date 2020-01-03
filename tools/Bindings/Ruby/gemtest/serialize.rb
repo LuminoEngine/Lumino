@@ -14,6 +14,8 @@ class MySprite < Sprite
     end
 end
 
+p "a1===================="
+
 p "a===================="
 
 texture1 = Texture2D.load("logo.png")

@@ -147,6 +147,8 @@ public:
     void setAssetPath(const detail::AssetPath& value) { m_assetPath = value; }
     const detail::AssetPath& assetPath() const { return m_assetPath; }
 
+    virtual void setTypeInfoOverride(TypeInfo* value);
+
 private:
 	virtual void onRetained() override;
 	virtual void onReleased() override;
@@ -312,11 +314,19 @@ public:
 		, m_managedTypeInfoId(-1)
     {}
 
+    TypeInfo(const String& className)
+        : m_name(className)
+        , m_baseType(nullptr)
+        , m_managedTypeInfoId(-1)
+    {}
+
     /** クラス名を取得します。 */
     const String& name() const { return m_name; }
 
     /** ベースクラスの型情報を取得します。 */
     TypeInfo* baseType() const { return m_baseType; }
+
+    int id() const { return m_id; }
 
     void registerProperty(PropertyInfo* prop);
     const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
@@ -340,11 +350,12 @@ public:
     static void initializeObjectProperties(Object* obj);
 
 	// TODO: internal
-	std::function<Ref<Object>()> m_factory;
+	std::function<Ref<Object>(const TypeInfo* typeinfo)> m_factory;
+    TypeInfo* m_baseType;
+    int m_id = -1;
 
 private:
     String m_name;
-    TypeInfo* m_baseType;
     List<Ref<PropertyInfo>> m_properties;
 	int64_t m_managedTypeInfoId;
 
