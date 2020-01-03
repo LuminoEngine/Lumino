@@ -72,6 +72,7 @@ LN_CONSTRUCT_ACCESS:
     /** init */
     void init();
 
+    // TODO: テスト用の一時機能。Asset の作成は AssetDatabase を使わなけばならない
     /** init */
     LN_METHOD()
 	void init(Object* target);

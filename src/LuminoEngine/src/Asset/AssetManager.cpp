@@ -84,13 +84,14 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const
 
     String result;
     for (auto& path : paths) {
-        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-            auto localPath = path.canonicalize();
-            if (FileSystem::existsFile(localPath)) {
-                result = localPath;// String::concat(LocalhostPrefix, u"/", localPath.unify().str());
-            }
-        }
-        else {
+        //if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+        //    auto localPath = path.canonicalize();
+        //    if (FileSystem::existsFile(localPath)) {
+        //        result = localPath;// String::concat(LocalhostPrefix, u"/", localPath.unify().str());
+        //    }
+        //}
+        //else
+        {
             for (auto& archive : m_actualArchives) {
                 if (archive->existsFile(path)) {
                     result = path;
@@ -115,12 +116,13 @@ bool AssetManager::existsAsset(const AssetPath& assetPath) const
 	//String archiveName;
 	//Path path;
 	//if (tryParseAssetPath(assetPath, &archiveName, &path)) {
-		if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
-			if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-				return FileSystem::existsFile(assetPath.path());
-			}
-		}
-		else {
+		//if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
+		//	if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+		//		return FileSystem::existsFile(assetPath.path());
+		//	}
+		//}
+		//else
+        {
 			for (auto& archive : m_actualArchives) {
 				if (archive->existsFile(assetPath.path())) {
 					return true;
@@ -138,12 +140,13 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const AssetPath& assetPath) co
     //Path path;
     //if (tryParseAssetPath(assetPath, &archiveName, &path)) {
         //if (String::compare(archiveName, LocalhostPrefix, CaseSensitivity::CaseInsensitive) == 0) {
-		if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
-            if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-                return FileStream::create(assetPath.path(), FileOpenMode::Read);
-            }
-        }
-        else {
+		//if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
+  //          if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+  //              return FileStream::create(assetPath.path(), FileOpenMode::Read);
+  //          }
+  //      }
+  //      else
+        {
             for (auto& archive : m_actualArchives) {
                 auto stream = archive->openFileStream(assetPath.path());
                 if (stream) {
@@ -391,8 +394,6 @@ void AssetManager::refreshActualArchives()
 
 	switch (m_storageAccessPriority)
 	{
-    case AssetStorageAccessPriority::AllowLocalDirectory:
-        break;
 	case AssetStorageAccessPriority::DirectoryFirst:
 		for (auto& ac : m_requestedArchives) {
 			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
@@ -467,14 +468,15 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 
 	auto unifiedFilePath = Path(filePath).unify();
 	for (auto& path : paths) {
-        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-            path = path.canonicalize();
-            if (FileSystem::existsFile(path)) {
-                *outPath = path;
-                return FileStream::create(path, FileOpenMode::Read);
-            }
-        }
-        else {
+        //if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+        //    path = path.canonicalize();
+        //    if (FileSystem::existsFile(path)) {
+        //        *outPath = path;
+        //        return FileStream::create(path, FileOpenMode::Read);
+        //    }
+        //}
+        //else
+        {
             for (auto& archive : m_actualArchives) {
                 auto stream = archive->openFileStream(path);
                 if (stream) {

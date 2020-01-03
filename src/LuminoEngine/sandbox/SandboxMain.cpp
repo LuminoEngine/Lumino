@@ -338,7 +338,6 @@ int main(int argc, char** argv)
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
     EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-    EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
 	//return UISandboxMain();
@@ -353,6 +352,11 @@ int main(int argc, char** argv)
 
 	Engine::initialize();
 
+    auto texture1 = Texture2D::load(u"logo.png");
+    auto sprite1 = Sprite::create(texture1, 2, 2);
+    auto asset = makeObject<AssetModel>(sprite1);
+
+    Assets::saveAssetToLocalFile(asset, "test.json");
 
 	//{
 	//	auto ss = makeObject<ed::SceneAsset>();
