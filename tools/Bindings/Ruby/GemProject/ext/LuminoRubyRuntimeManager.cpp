@@ -14,7 +14,7 @@ static VALUE Wrap_LnRuntime_RunAppInternal(VALUE self, VALUE app)
     return Qnil;
 }
 
-static VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type)
+VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type)
 {
     printf("Wrap_LnRuntime_RegisterType %d %d\n", self, type);
 

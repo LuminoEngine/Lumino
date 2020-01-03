@@ -2811,6 +2811,14 @@ LnResult Wrap_LnUIButton_OnSerialize_OverrideCallback(LnHandle object, LnHandle 
     return LN_SUCCESS;
 }
 
+VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type);
+
+static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
+{
+    printf("Wrap_LnRuntime_inherited\n");
+    Wrap_LnRuntime_RegisterType(self, type);
+    return Qnil;
+}
 
 extern "C" void Init_Lumino_RubyExt()
 {
@@ -2978,6 +2986,8 @@ extern "C" void Init_Lumino_RubyExt()
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
     LnSprite_OnSerialize_SetOverrideCallback(Wrap_LnSprite_OnSerialize_OverrideCallback);
     LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);
+    rb_define_singleton_method(g_class_Sprite, "inherited", LN_TO_RUBY_FUNC(Wrap_LnRuntime_inherited), 1);
+
 
     g_class_UIEventArgs = rb_define_class_under(g_rootModule, "UIEventArgs", g_class_Object);
     rb_define_alloc_func(g_class_UIEventArgs, LnUIEventArgs_allocate);
