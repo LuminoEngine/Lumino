@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/Asset/AssetObject.hpp>
+#include <LuminoEngine/Asset/AssetModel.hpp>
 
 class Test_Asset_AssetObject : public ::testing::Test {};
 

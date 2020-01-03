@@ -31,6 +31,7 @@ inline LnBool LNRB_VALUE_TO_BOOL(VALUE v) { return (TYPE(v) == T_TRUE) ? LN_TRUE
 
 extern "C" void InitLuminoRubyRuntimeManager();
 
+extern "C" LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* name, LnBool value);
 extern "C" LN_FLAT_API LnResult LnSerializer_WriteInt(LnHandle serializer, const LnChar* name, int value);
 extern "C" LN_FLAT_API LnResult LnSerializer_WriteFloat(LnHandle serializer, const LnChar* name, float value);
@@ -44,6 +45,11 @@ extern "C" LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, con
 extern "C" LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn);
 extern "C" LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* basePath, LnHandle* outReturn);
 extern "C" LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn);
+extern "C" LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel);
+extern "C" LN_FLAT_API void LnAssetModel_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFile(LnHandle asset, const LnChar* filePath);
+extern "C" LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
@@ -129,7 +135,10 @@ VALUE g_enum_TextureFormat;
 VALUE g_enum_DepthBufferFormat;
 
 VALUE g_rootModule;
+VALUE g_class_Object;
 VALUE g_class_Serializer;
+VALUE g_class_AssetModel;
+VALUE g_class_Assets;
 VALUE g_class_EngineSettings;
 VALUE g_class_Engine;
 VALUE g_class_Application;
@@ -199,6 +208,79 @@ VALUE LnQuaternion_allocate( VALUE klass )
     return obj;
 }
 
+//==============================================================================
+// ln::Object
+
+struct Wrap_Object
+    : public Wrap_RubyObject
+{
+
+    Wrap_Object()
+    {}
+};
+
+static void LnObject_delete(Wrap_Object* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnObject_mark(Wrap_Object* obj)
+{
+	
+
+}
+
+static VALUE LnObject_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Object* internalObj;
+
+    internalObj = new Wrap_Object();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnObject_allocate");
+    obj = Data_Wrap_Struct(klass, LnObject_mark, LnObject_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnObject_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Object* internalObj;
+
+    internalObj = new Wrap_Object();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnObject_allocate");
+    obj = Data_Wrap_Struct(klass, LnObject_mark, LnObject_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnObject_OnSerialize(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Object* selfObj;
+    Data_Get_Struct(self, Wrap_Object, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE ar;
+        rb_scan_args(argc, argv, "1", &ar);
+        if (LNRB_VALUE_IS_OBJECT(ar))
+        {
+            LnHandle _ar = LuminoRubyRuntimeManager::instance->getHandle(ar);
+            LnResult errorCode = LnObject_OnSerialize_CallOverrideBase(selfObj->handle, _ar);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Object::onSerialize - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnObject_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::Serializer
 
@@ -489,6 +571,150 @@ static VALUE Wrap_LnSerializer_Deserialize(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Serializer::deserialize - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnSerializer_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
+//==============================================================================
+// ln::AssetModel
+
+struct Wrap_AssetModel
+    : public Wrap_Object
+{
+
+    Wrap_AssetModel()
+    {}
+};
+
+static void LnAssetModel_delete(Wrap_AssetModel* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnAssetModel_mark(Wrap_AssetModel* obj)
+{
+	
+
+}
+
+static VALUE LnAssetModel_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_AssetModel* internalObj;
+
+    internalObj = new Wrap_AssetModel();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnAssetModel_allocate");
+    obj = Data_Wrap_Struct(klass, LnAssetModel_mark, LnAssetModel_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnAssetModel_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_AssetModel* internalObj;
+
+    internalObj = new Wrap_AssetModel();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnAssetModel_allocate");
+    obj = Data_Wrap_Struct(klass, LnAssetModel_mark, LnAssetModel_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnAssetModel_Target(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_AssetModel* selfObj;
+    Data_Get_Struct(self, Wrap_AssetModel, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnAssetModel_Target(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::AssetModel::target - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnAssetModel_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_AssetModel* selfObj;
+    Data_Get_Struct(self, Wrap_AssetModel, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE target;
+        rb_scan_args(argc, argv, "1", &target);
+        if (LNRB_VALUE_IS_OBJECT(target))
+        {
+            LnHandle _target = LuminoRubyRuntimeManager::instance->getHandle(target);
+            LnResult errorCode = LnAssetModel_Create(_target, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::AssetModel::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnAssetModel_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
+//==============================================================================
+// ln::Assets
+
+struct Wrap_Assets
+{
+
+    Wrap_Assets()
+    {}
+};
+
+static VALUE Wrap_LnAssets_SaveAssetToLocalFile(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE asset;
+        VALUE filePath;
+        rb_scan_args(argc, argv, "2", &asset, &filePath);
+        if (LNRB_VALUE_IS_OBJECT(asset) && LNRB_VALUE_IS_STRING(filePath))
+        {
+            LnHandle _asset = LuminoRubyRuntimeManager::instance->getHandle(asset);
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LnResult errorCode = LnAssets_SaveAssetToLocalFileA(_asset, _filePath);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Assets::saveAssetToLocalFile - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnAssets_LoadAssetFromLocalFile(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (LNRB_VALUE_IS_STRING(filePath))
+        {
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LnHandle _outReturn;
+            LnResult errorCode = LnAssets_LoadAssetFromLocalFileA(_filePath, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Assets::loadAssetFromLocalFile - wrong argument type.");
     return Qnil;
 }
 
@@ -797,6 +1023,12 @@ static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnApplication_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 LnResult Wrap_LnApplication_OnInit_OverrideCallback(LnHandle application)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
@@ -857,6 +1089,12 @@ static VALUE LnGraphicsResource_allocateForGetObject(VALUE klass, LnHandle handl
     return obj;
 }
 
+LnResult Wrap_LnGraphicsResource_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::Texture
 
@@ -905,6 +1143,12 @@ static VALUE LnTexture_allocateForGetObject(VALUE klass, LnHandle handle)
     return obj;
 }
 
+LnResult Wrap_LnTexture_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::Texture2D
 
@@ -1023,6 +1267,12 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnTexture2D_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::Component
 
@@ -1071,6 +1321,12 @@ static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
     return obj;
 }
 
+LnResult Wrap_LnComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::VisualComponent
 
@@ -1155,6 +1411,12 @@ static VALUE Wrap_LnVisualComponent_IsVisible(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnVisualComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::SpriteComponent
 
@@ -1222,6 +1484,12 @@ static VALUE Wrap_LnSpriteComponent_SetTexture(int argc, VALUE* argv, VALUE self
     return Qnil;
 }
 
+LnResult Wrap_LnSpriteComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::ComponentList
 
@@ -1309,6 +1577,12 @@ static VALUE Wrap_LnComponentList_GetItem(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnComponentList_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::WorldObject
 
@@ -1626,6 +1900,12 @@ static VALUE Wrap_LnWorldObject_OnUpdate(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnWorldObject_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 LnResult Wrap_LnWorldObject_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
@@ -1716,6 +1996,12 @@ static VALUE Wrap_LnVisualObject_IsVisible(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnVisualObject_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 LnResult Wrap_LnVisualObject_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
@@ -1857,6 +2143,12 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnSprite_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 LnResult Wrap_LnSprite_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
@@ -1928,6 +2220,12 @@ static VALUE Wrap_LnUIEventArgs_Sender(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnUIEventArgs_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::UILayoutElement
 
@@ -1976,6 +2274,12 @@ static VALUE LnUILayoutElement_allocateForGetObject(VALUE klass, LnHandle handle
     return obj;
 }
 
+LnResult Wrap_LnUILayoutElement_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::UIElement
 
@@ -2272,6 +2576,12 @@ static VALUE Wrap_LnUIElement_AddChild(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnUIElement_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::UIControl
 
@@ -2320,6 +2630,12 @@ static VALUE LnUIControl_allocateForGetObject(VALUE klass, LnHandle handle)
     return obj;
 }
 
+LnResult Wrap_LnUIControl_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::UIButtonBase
 
@@ -2387,6 +2703,12 @@ static VALUE Wrap_LnUIButtonBase_SetText(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnUIButtonBase_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 //==============================================================================
 // ln::UIButton
 
@@ -2480,6 +2802,12 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+LnResult Wrap_LnUIButton_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    return LN_SUCCESS;
+}
 
 
 extern "C" void Init_Lumino_RubyExt()
@@ -2513,7 +2841,13 @@ extern "C" void Init_Lumino_RubyExt()
     g_class_Quaternion = rb_define_class_under(g_rootModule, "Quaternion", rb_cObject);
     rb_define_alloc_func(g_class_Quaternion, LnQuaternion_allocate);
 
-    g_class_Serializer = rb_define_class_under(g_rootModule, "Serializer", rb_cObject);
+    g_class_Object = rb_define_class_under(g_rootModule, "Object", rb_cObject);
+    rb_define_alloc_func(g_class_Object, LnObject_allocate);
+    rb_define_method(g_class_Object, "on_serialize", LN_TO_RUBY_FUNC(Wrap_LnObject_OnSerialize), -1);
+    LnObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Object, LnObject_allocateForGetObject));
+    LnObject_OnSerialize_SetOverrideCallback(Wrap_LnObject_OnSerialize_OverrideCallback);
+
+    g_class_Serializer = rb_define_class_under(g_rootModule, "Serializer", g_class_Object);
     rb_define_alloc_func(g_class_Serializer, LnSerializer_allocate);
     rb_define_method(g_class_Serializer, "write_bool", LN_TO_RUBY_FUNC(Wrap_LnSerializer_WriteBool), -1);
     rb_define_method(g_class_Serializer, "write_int", LN_TO_RUBY_FUNC(Wrap_LnSerializer_WriteInt), -1);
@@ -2528,6 +2862,18 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Serializer, "serialize", LN_TO_RUBY_FUNC(Wrap_LnSerializer_Serialize), -1);
     rb_define_singleton_method(g_class_Serializer, "deserialize", LN_TO_RUBY_FUNC(Wrap_LnSerializer_Deserialize), -1);
     LnSerializer_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Serializer, LnSerializer_allocateForGetObject));
+    LnSerializer_OnSerialize_SetOverrideCallback(Wrap_LnSerializer_OnSerialize_OverrideCallback);
+
+    g_class_AssetModel = rb_define_class_under(g_rootModule, "AssetModel", g_class_Object);
+    rb_define_alloc_func(g_class_AssetModel, LnAssetModel_allocate);
+    rb_define_method(g_class_AssetModel, "target", LN_TO_RUBY_FUNC(Wrap_LnAssetModel_Target), -1);
+    rb_define_private_method(g_class_AssetModel, "initialize", LN_TO_RUBY_FUNC(Wrap_LnAssetModel_Create), -1);
+    LnAssetModel_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_AssetModel, LnAssetModel_allocateForGetObject));
+    LnAssetModel_OnSerialize_SetOverrideCallback(Wrap_LnAssetModel_OnSerialize_OverrideCallback);
+
+    g_class_Assets = rb_define_class_under(g_rootModule, "Assets", rb_cObject);
+    rb_define_singleton_method(g_class_Assets, "save_asset_to_local_file", LN_TO_RUBY_FUNC(Wrap_LnAssets_SaveAssetToLocalFile), -1);
+    rb_define_singleton_method(g_class_Assets, "load_asset_from_local_file", LN_TO_RUBY_FUNC(Wrap_LnAssets_LoadAssetFromLocalFile), -1);
 
     g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);
@@ -2544,51 +2890,59 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "main_ui_view", LN_TO_RUBY_FUNC(Wrap_LnEngine_MainUIView), -1);
 
-    g_class_Application = rb_define_class_under(g_rootModule, "Application", rb_cObject);
+    g_class_Application = rb_define_class_under(g_rootModule, "Application", g_class_Object);
     rb_define_alloc_func(g_class_Application, LnApplication_allocate);
     rb_define_method(g_class_Application, "on_init", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnInit), -1);
     rb_define_method(g_class_Application, "on_update", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnUpdate), -1);
     rb_define_private_method(g_class_Application, "initialize", LN_TO_RUBY_FUNC(Wrap_LnApplication_Create), -1);
     LnApplication_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Application, LnApplication_allocateForGetObject));
+    LnApplication_OnSerialize_SetOverrideCallback(Wrap_LnApplication_OnSerialize_OverrideCallback);
     LnApplication_OnInit_SetOverrideCallback(Wrap_LnApplication_OnInit_OverrideCallback);
     LnApplication_OnUpdate_SetOverrideCallback(Wrap_LnApplication_OnUpdate_OverrideCallback);
 
-    g_class_GraphicsResource = rb_define_class_under(g_rootModule, "GraphicsResource", rb_cObject);
+    g_class_GraphicsResource = rb_define_class_under(g_rootModule, "GraphicsResource", g_class_Object);
     rb_define_alloc_func(g_class_GraphicsResource, LnGraphicsResource_allocate);
     LnGraphicsResource_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_GraphicsResource, LnGraphicsResource_allocateForGetObject));
+    LnGraphicsResource_OnSerialize_SetOverrideCallback(Wrap_LnGraphicsResource_OnSerialize_OverrideCallback);
 
     g_class_Texture = rb_define_class_under(g_rootModule, "Texture", g_class_GraphicsResource);
     rb_define_alloc_func(g_class_Texture, LnTexture_allocate);
     LnTexture_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture, LnTexture_allocateForGetObject));
+    LnTexture_OnSerialize_SetOverrideCallback(Wrap_LnTexture_OnSerialize_OverrideCallback);
 
     g_class_Texture2D = rb_define_class_under(g_rootModule, "Texture2D", g_class_Texture);
     rb_define_alloc_func(g_class_Texture2D, LnTexture2D_allocate);
     rb_define_singleton_method(g_class_Texture2D, "load", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Load), -1);
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Create), -1);
     LnTexture2D_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture2D, LnTexture2D_allocateForGetObject));
+    LnTexture2D_OnSerialize_SetOverrideCallback(Wrap_LnTexture2D_OnSerialize_OverrideCallback);
 
-    g_class_Component = rb_define_class_under(g_rootModule, "Component", rb_cObject);
+    g_class_Component = rb_define_class_under(g_rootModule, "Component", g_class_Object);
     rb_define_alloc_func(g_class_Component, LnComponent_allocate);
     LnComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Component, LnComponent_allocateForGetObject));
+    LnComponent_OnSerialize_SetOverrideCallback(Wrap_LnComponent_OnSerialize_OverrideCallback);
 
     g_class_VisualComponent = rb_define_class_under(g_rootModule, "VisualComponent", g_class_Component);
     rb_define_alloc_func(g_class_VisualComponent, LnVisualComponent_allocate);
     rb_define_method(g_class_VisualComponent, "visible=", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_SetVisible), -1);
     rb_define_method(g_class_VisualComponent, "visible?", LN_TO_RUBY_FUNC(Wrap_LnVisualComponent_IsVisible), -1);
     LnVisualComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualComponent, LnVisualComponent_allocateForGetObject));
+    LnVisualComponent_OnSerialize_SetOverrideCallback(Wrap_LnVisualComponent_OnSerialize_OverrideCallback);
 
     g_class_SpriteComponent = rb_define_class_under(g_rootModule, "SpriteComponent", g_class_VisualComponent);
     rb_define_alloc_func(g_class_SpriteComponent, LnSpriteComponent_allocate);
     rb_define_method(g_class_SpriteComponent, "texture=", LN_TO_RUBY_FUNC(Wrap_LnSpriteComponent_SetTexture), -1);
     LnSpriteComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_SpriteComponent, LnSpriteComponent_allocateForGetObject));
+    LnSpriteComponent_OnSerialize_SetOverrideCallback(Wrap_LnSpriteComponent_OnSerialize_OverrideCallback);
 
-    g_class_ComponentList = rb_define_class_under(g_rootModule, "ComponentList", rb_cObject);
+    g_class_ComponentList = rb_define_class_under(g_rootModule, "ComponentList", g_class_Object);
     rb_define_alloc_func(g_class_ComponentList, LnComponentList_allocate);
     rb_define_method(g_class_ComponentList, "get_length", LN_TO_RUBY_FUNC(Wrap_LnComponentList_GetLength), -1);
     rb_define_method(g_class_ComponentList, "get_item", LN_TO_RUBY_FUNC(Wrap_LnComponentList_GetItem), -1);
     LnComponentList_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ComponentList, LnComponentList_allocateForGetObject));
+    LnComponentList_OnSerialize_SetOverrideCallback(Wrap_LnComponentList_OnSerialize_OverrideCallback);
 
-    g_class_WorldObject = rb_define_class_under(g_rootModule, "WorldObject", rb_cObject);
+    g_class_WorldObject = rb_define_class_under(g_rootModule, "WorldObject", g_class_Object);
     rb_define_alloc_func(g_class_WorldObject, LnWorldObject_allocate);
     rb_define_method(g_class_WorldObject, "position=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetPosition), -1);
     rb_define_method(g_class_WorldObject, "position", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetPosition), -1);
@@ -2602,6 +2956,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_WorldObject, "components", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetComponents), -1);
     rb_define_method(g_class_WorldObject, "on_update", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_OnUpdate), -1);
     LnWorldObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_WorldObject, LnWorldObject_allocateForGetObject));
+    LnWorldObject_OnSerialize_SetOverrideCallback(Wrap_LnWorldObject_OnSerialize_OverrideCallback);
     LnWorldObject_OnUpdate_SetOverrideCallback(Wrap_LnWorldObject_OnUpdate_OverrideCallback);
 
     g_class_VisualObject = rb_define_class_under(g_rootModule, "VisualObject", g_class_WorldObject);
@@ -2609,6 +2964,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_VisualObject, "visible=", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_SetVisible), -1);
     rb_define_method(g_class_VisualObject, "visible?", LN_TO_RUBY_FUNC(Wrap_LnVisualObject_IsVisible), -1);
     LnVisualObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_VisualObject, LnVisualObject_allocateForGetObject));
+    LnVisualObject_OnSerialize_SetOverrideCallback(Wrap_LnVisualObject_OnSerialize_OverrideCallback);
     LnVisualObject_OnUpdate_SetOverrideCallback(Wrap_LnVisualObject_OnUpdate_OverrideCallback);
 
     g_class_Sprite = rb_define_class_under(g_rootModule, "Sprite", g_class_VisualObject);
@@ -2618,16 +2974,19 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_Sprite, "set_caller_test", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetCallerTest), -1);
     rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSprite_Create), -1);
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
+    LnSprite_OnSerialize_SetOverrideCallback(Wrap_LnSprite_OnSerialize_OverrideCallback);
     LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);
 
-    g_class_UIEventArgs = rb_define_class_under(g_rootModule, "UIEventArgs", rb_cObject);
+    g_class_UIEventArgs = rb_define_class_under(g_rootModule, "UIEventArgs", g_class_Object);
     rb_define_alloc_func(g_class_UIEventArgs, LnUIEventArgs_allocate);
     rb_define_method(g_class_UIEventArgs, "sender", LN_TO_RUBY_FUNC(Wrap_LnUIEventArgs_Sender), -1);
     LnUIEventArgs_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIEventArgs, LnUIEventArgs_allocateForGetObject));
+    LnUIEventArgs_OnSerialize_SetOverrideCallback(Wrap_LnUIEventArgs_OnSerialize_OverrideCallback);
 
-    g_class_UILayoutElement = rb_define_class_under(g_rootModule, "UILayoutElement", rb_cObject);
+    g_class_UILayoutElement = rb_define_class_under(g_rootModule, "UILayoutElement", g_class_Object);
     rb_define_alloc_func(g_class_UILayoutElement, LnUILayoutElement_allocate);
     LnUILayoutElement_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UILayoutElement, LnUILayoutElement_allocateForGetObject));
+    LnUILayoutElement_OnSerialize_SetOverrideCallback(Wrap_LnUILayoutElement_OnSerialize_OverrideCallback);
 
     g_class_UIElement = rb_define_class_under(g_rootModule, "UIElement", g_class_UILayoutElement);
     rb_define_alloc_func(g_class_UIElement, LnUIElement_allocate);
@@ -2642,21 +3001,25 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_UIElement, "center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetCenterPoint), -1);
     rb_define_method(g_class_UIElement, "add_child", LN_TO_RUBY_FUNC(Wrap_LnUIElement_AddChild), -1);
     LnUIElement_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIElement, LnUIElement_allocateForGetObject));
+    LnUIElement_OnSerialize_SetOverrideCallback(Wrap_LnUIElement_OnSerialize_OverrideCallback);
 
     g_class_UIControl = rb_define_class_under(g_rootModule, "UIControl", g_class_UIElement);
     rb_define_alloc_func(g_class_UIControl, LnUIControl_allocate);
     LnUIControl_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIControl, LnUIControl_allocateForGetObject));
+    LnUIControl_OnSerialize_SetOverrideCallback(Wrap_LnUIControl_OnSerialize_OverrideCallback);
 
     g_class_UIButtonBase = rb_define_class_under(g_rootModule, "UIButtonBase", g_class_UIControl);
     rb_define_alloc_func(g_class_UIButtonBase, LnUIButtonBase_allocate);
     rb_define_method(g_class_UIButtonBase, "set_text", LN_TO_RUBY_FUNC(Wrap_LnUIButtonBase_SetText), -1);
     LnUIButtonBase_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIButtonBase, LnUIButtonBase_allocateForGetObject));
+    LnUIButtonBase_OnSerialize_SetOverrideCallback(Wrap_LnUIButtonBase_OnSerialize_OverrideCallback);
 
     g_class_UIButton = rb_define_class_under(g_rootModule, "UIButton", g_class_UIButtonBase);
     rb_define_alloc_func(g_class_UIButton, LnUIButton_allocate);
     rb_define_private_method(g_class_UIButton, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUIButton_Create), -1);
     rb_define_method(g_class_UIButton, "connect_on_clicked", LN_TO_RUBY_FUNC(Wrap_LnUIButton_ConnectOnClicked), -1);
     LnUIButton_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIButton, LnUIButton_allocateForGetObject));
+    LnUIButton_OnSerialize_SetOverrideCallback(Wrap_LnUIButton_OnSerialize_OverrideCallback);
 
 }
 

@@ -40,6 +40,19 @@ end
 
 # 
 # 
+class Lumino::Object
+    # onSerialize
+    # @param [Lumino::Serializer] ar 
+    # 
+    def on_serialize(ar)
+    end
+
+
+
+end
+
+# 
+# 
 class Lumino::Serializer
     # write
     # @param [] name 
@@ -140,6 +153,47 @@ class Lumino::Serializer
     # @param [String] basePath 
     # 
     def deserialize(str, basePath)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::AssetModel
+    # target
+    def target()
+    end
+
+
+
+    # init
+    # @param [Lumino::Object] target 
+    # 
+    def initialize(target)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::Assets
+    # Internal
+    # @param [Lumino::AssetModel] asset 
+    # @param [String] filePath 
+    # 
+    def save_asset_to_local_file(asset, filePath)
+    end
+
+
+
+    # Internal
+    # @param [String] filePath 
+    # 
+    def load_asset_from_local_file(filePath)
     end
 
 
@@ -270,12 +324,12 @@ end
 
 # テクスチャのベースクラスです。
 # 
-class Lumino::Texture < GraphicsResource
+class Lumino::Texture
 end
 
 # 2D テクスチャのクラスです。
 # 
-class Lumino::Texture2D < Texture
+class Lumino::Texture2D
     # アセットからテクスチャを読み込みます。
     #   サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
     # @param [] filePath 
@@ -319,7 +373,7 @@ end
 
 # 
 # 
-class Lumino::VisualComponent < Component
+class Lumino::VisualComponent
     # 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
     # @param [Boolean] value 
     # 
@@ -338,7 +392,7 @@ end
 
 # 
 # 
-class Lumino::SpriteComponent < VisualComponent
+class Lumino::SpriteComponent
     # スプライトが表示するテクスチャを設定します。
     # @param [Lumino::Texture] texture 
     # 
@@ -485,7 +539,7 @@ end
 
 # VisualComponent がアタッチされた WorldObject のプレハブクラスです。
 # 
-class Lumino::VisualObject < WorldObject
+class Lumino::VisualObject
     # 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
     # @param [Boolean] value 
     # 
@@ -504,7 +558,7 @@ end
 
 # スプライトオブジェクトを表します。
 # 
-class Lumino::Sprite < VisualObject
+class Lumino::Sprite
     # スプライトが表示するテクスチャを設定します。
     # @param [Lumino::Texture] value 
     # 
@@ -562,7 +616,7 @@ end
 
 # 
 # 
-class Lumino::UIElement < UILayoutElement
+class Lumino::UIElement
     # このオブジェクトの位置を設定します。
     # @param [Lumino::Vector3] pos 
     # 
@@ -670,12 +724,12 @@ end
 
 # 視覚情報の表示やユーザー入力の処理を行う要素の基本クラスです。
 # 
-class Lumino::UIControl < UIElement
+class Lumino::UIControl
 end
 
 # 
 # 
-class Lumino::UIButtonBase < UIControl
+class Lumino::UIButtonBase
     # set text.
     # @param [] text 
     # 
@@ -688,7 +742,7 @@ end
 
 # 
 # 
-class Lumino::UIButton < UIButtonBase
+class Lumino::UIButton
     # init.
     def initialize()
     end

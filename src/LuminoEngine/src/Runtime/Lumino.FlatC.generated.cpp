@@ -69,6 +69,33 @@ public:
 LnSerializer_OnSerialize_OverrideCallback LNWS_ln_Serializer::s_LnSerializer_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_AssetModel : public ln::AssetModel
+{
+public:
+    static LnAssetModel_OnSerialize_OverrideCallback s_LnAssetModel_OnSerialize_OverrideCallback;
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnAssetModel_OnSerialize_OverrideCallback) s_LnAssetModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::AssetModel::onSerialize(ar);
+    }
+
+};
+LnAssetModel_OnSerialize_OverrideCallback LNWS_ln_AssetModel::s_LnAssetModel_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Assets : public ln::Assets
+{
+public:
+
+
+};
+
+
 class LNWS_ln_EngineSettings : public ln::EngineSettings
 {
 public:
@@ -727,6 +754,71 @@ LN_FLAT_API LnResult LnSerializer_OnSerialize_SetOverrideCallback(LnSerializer_O
     LNWS_ln_Serializer::s_LnSerializer_OnSerialize_OverrideCallback = callback;
     return LN_SUCCESS;
 }
+
+LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outAssetModel, LNWS_ln_AssetModel, init, LNI_HANDLE_TO_OBJECT(ln::Object, target));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API void LnAssetModel_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::AssetModel>(), id);
+}
+
+LN_FLAT_API LnResult LnAssetModel_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnAssetModel_OnSerialize_SetOverrideCallback(LnAssetModel_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_AssetModel::s_LnAssetModel_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFile(LnHandle asset, const LnChar* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Assets::saveAssetToLocalFile(LNI_HANDLE_TO_OBJECT(ln::AssetModel, asset), filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFileA(LnHandle asset, const char* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Assets::saveAssetToLocalFile(LNI_HANDLE_TO_OBJECT(ln::AssetModel, asset), LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
 {

@@ -69,7 +69,9 @@ void LuminoRubyRuntimeManager::init()
             &state);
         m_eventSignalClass = rb_eval_string("Lumino::EventSignal");
 
-        VALUE class_Application = rb_define_class_under(m_luminoModule, "Application", rb_cObject);
+        m_objectClass = rb_define_class_under(m_luminoModule, "Object", rb_cObject);
+
+        VALUE class_Application = rb_define_class_under(m_luminoModule, "Application", m_objectClass);
         rb_define_singleton_method(class_Application, "run_app_internal", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LnRuntime_RunAppInternal), 1);
     }
 
@@ -115,8 +117,8 @@ LnHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const
 	if (value == Qnil) {
 		return LN_NULL_HANDLE;
 	}
-	Wrap_Object* obj;
-	Data_Get_Struct(value, Wrap_Object, obj);
+	Wrap_RubyObject* obj;
+	Data_Get_Struct(value, Wrap_RubyObject, obj);
 	return obj->handle;
 }
 

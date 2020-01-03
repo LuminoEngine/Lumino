@@ -266,6 +266,42 @@ LN_FLAT_API LnResult LnSerializer_OnSerialize_SetOverrideCallback(LnSerializer_O
 LN_FLAT_API LnResult LnSerializer_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 //==============================================================================
+// ln::AssetModel
+
+/**
+    @brief target
+    @param[in] assetmodel : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn);
+
+/**
+    @brief init
+    @param[out] outAssetModel : instance.
+*/
+LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel);
+
+typedef LnResult(*LnAssetModel_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnAssetModel_OnSerialize_SetOverrideCallback(LnAssetModel_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnAssetModel_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+//==============================================================================
+// ln::Assets
+
+/**
+    @brief Internal
+*/
+LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFile(LnHandle asset, const LnChar* filePath);
+LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFileA(LnHandle asset, const char* filePath);
+
+/**
+    @brief Internal
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn);
+LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHandle* outReturn);
+
+//==============================================================================
 // ln::EngineSettings
 
 /**

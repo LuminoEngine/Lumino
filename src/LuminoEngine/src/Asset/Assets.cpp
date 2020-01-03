@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "AssetManager.hpp"
-#include <LuminoEngine/Asset/AssetObject.hpp>
+#include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 
 // TODO: for importer
@@ -14,7 +14,12 @@ namespace ln {
 
 void Assets::saveAssetToLocalFile(AssetModel* asset, const String& filePath)
 {
-    return detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset, filePath);
+    detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset, filePath);
+}
+
+Ref<AssetModel> Assets::loadAssetFromLocalFile(const String& filePath)
+{
+    return detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(filePath);
 }
 
 bool Assets::existsFile(const StringRef& filePath)

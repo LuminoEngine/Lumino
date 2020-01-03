@@ -3,7 +3,7 @@
 #include "../../LuminoCore/src/IO/PathHelper.hpp"
 //#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Asset/AssetObject.hpp>
+#include <LuminoEngine/Asset/AssetModel.hpp>
 #include "AssetArchive.hpp"
 #include "AssetManager.hpp"
 

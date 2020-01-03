@@ -7,14 +7,18 @@ class Shader;
 class Texture2D;
 class AssetModel;
 
+LN_CLASS(Static)
 class Assets
 {
 public:
 
     /** Internal */
+    LN_METHOD()
     static void saveAssetToLocalFile(AssetModel* asset, const String& filePath);
 
-
+    /** Internal */
+    LN_METHOD()
+    static Ref<AssetModel> loadAssetFromLocalFile(const String& filePath);
 
 
 

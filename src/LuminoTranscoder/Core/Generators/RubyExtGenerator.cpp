@@ -134,10 +134,11 @@ void RubyExtGenerator::generate()
 
 	// classes
 	for (auto& classSymbol : db()->classes()) {
-		if (classSymbol->isRootObjectClass()) {
-			// Object class is defined directly, so automatic generation is not required
-		}
-		else {
+		//if (classSymbol->isRootObjectClass()) {
+		//	// Object class is defined directly, so automatic generation is not required
+		//}
+		//else
+        {
 			OutputBuffer markExprs;
 
 			code.AppendLine("//==============================================================================");
@@ -162,6 +163,9 @@ void RubyExtGenerator::generate()
 				if (classSymbol->baseClass()) {  // 継承
 					wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
 				}
+                else if (classSymbol->isRootObjectClass()) {
+                    wrapStruct.AppendLine("    : public Wrap_RubyObject");
+                }
 				wrapStruct.AppendLine("{");
 				wrapStruct.IncreaseIndent();
 

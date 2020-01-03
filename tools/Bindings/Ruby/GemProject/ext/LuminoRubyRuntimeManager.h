@@ -16,10 +16,10 @@ struct TypeInfo
     ObjectFactoryFunc   factory;
 };
 
-struct Wrap_Object
+struct Wrap_RubyObject
 {
     LnHandle handle;
-    Wrap_Object() : handle(0) {}
+    Wrap_RubyObject() : handle(0) {}
 };
 
 // 複数の RubyBinding(.so) をまたいで唯一のインスタンス。
@@ -57,6 +57,7 @@ private:
 
     VALUE m_luminoModule;
     VALUE m_eventSignalClass;
+    VALUE m_objectClass;
     std::vector<TypeInfo> m_typeInfoList;
     std::vector<ObjectReferenceItem> m_objectList;
     std::stack<int> m_objectListIndexStack;
