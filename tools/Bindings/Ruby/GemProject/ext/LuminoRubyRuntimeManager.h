@@ -6,9 +6,8 @@
 #include <unordered_map>
 #include "FlatCommon.h"
 
-#define LNRB_TRACE(...) printf(__VA_ARGS__)
-#define LNRB_LOG_D(x) LnLog_WriteA(LN_LOG_LEVEL_DEBUG, "RubyRuntime", x)
-#define LNRB_LOG_I(x) LnLog_WriteA(LN_LOG_LEVEL_INFO, "RubyRuntime", x)
+#define LNRB_LOG_D(...) LnLog_PrintA(LN_LOG_LEVEL_DEBUG, "RubyRuntime", __VA_ARGS__)
+#define LNRB_LOG_I(...) LnLog_WriteA(LN_LOG_LEVEL_INFO, "RubyRuntime", __VA_ARGS__)
 
 typedef VALUE(*ObjectFactoryFunc)(VALUE klass, LnHandle handle);
 
@@ -33,6 +32,8 @@ public:
     static const int InitialListSize = 512;
 
     static LuminoRubyRuntimeManager* instance;
+    static LnLogLevel s_logLevel;
+
     void init();
     VALUE luminoModule() const { return m_luminoModule; }
     VALUE eventSignalClass() const { return m_eventSignalClass; }
@@ -51,7 +52,7 @@ public:
     static void handleRuntimeFinalized();
     static void handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle);
 
-    static std::string makeTypeInfoName(VALUE klass);
+
 
     // TODO: internal
     std::unordered_map<std::string, int> m_userDefinedClassTypeIdMap;
@@ -70,6 +71,13 @@ public: // TODO:
     std::vector<ObjectReferenceItem> m_objectList;
     std::stack<int> m_objectListIndexStack;
     bool m_runtimeAliving;
+};
+
+class RubyUtils
+{
+public:
+    static std::string getClassName(VALUE klass);
+    static std::string makeTypeInfoName(VALUE klass);
 };
 
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }

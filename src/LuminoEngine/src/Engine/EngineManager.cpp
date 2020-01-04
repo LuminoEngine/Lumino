@@ -822,6 +822,7 @@ void EngineManager::setDebugToolMode(DebugToolMode mode)
 //==============================================================================
 // EngineDomain
 
+RuntimeManager::Settings g_globalRuntimeManagerSettings;
 static RuntimeManager* g_runtimeManager = nullptr;
 static EngineManager* g_engineManager = nullptr;
 
@@ -842,9 +843,8 @@ void EngineDomain::release()
 RuntimeManager* EngineDomain::runtimeManager()
 {
     if (!g_runtimeManager) {
-        RuntimeManager::Settings settings;
         g_runtimeManager = LN_NEW RuntimeManager();
-        g_runtimeManager->init(settings);
+        g_runtimeManager->init(g_globalRuntimeManagerSettings);
     }
     return g_runtimeManager;
 }

@@ -31,6 +31,9 @@ class RuntimeManager
 public:
 	struct Settings
 	{
+        LnRuntimeFinalizedCallback runtimeFinalizedCallback = nullptr;
+        LnReferenceCountTrackerCallback referenceCountTrackerCallback = nullptr;
+        LnRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
 	};
 
 	RuntimeManager();
@@ -54,27 +57,28 @@ public:
 	int64_t getManagedObjectId(LnHandle handle);
 	int64_t getManagedTypeInfoId(LnHandle handle);
 	
-	static void setReferenceCountTracker(LnReferenceCountTrackerCallback callback);
+	//static void setReferenceCountTracker(LnReferenceCountTrackerCallback callback);
 	void setReferenceTrackEnabled(LnHandle handle);
 	void onRetainedObject(Object* obj);
 	void onReleasedObject(Object* obj);
 
-    static void setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
+    //static void setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
     //static void setRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback);
-    static void setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
+    //static void setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 
 	LnResult processException(Exception* e);
 
     RuntimeStringBuffer* requestCommonStringBuffer() { return &m_commonStringBuffer; }
 
 private:
+    Settings m_settings;
 	List<ObjectEntry> m_objectEntryList;
 	std::stack<int> m_objectIndexStack;
 	bool m_systemAliving;
 	std::mutex m_mutex;
     RuntimeStringBuffer m_commonStringBuffer;
-	static LnReferenceCountTrackerCallback m_referenceCountTracker;
-    static LnRuntimeFinalizedCallback m_runtimeFinalizedCallback;
+	//static LnReferenceCountTrackerCallback m_referenceCountTracker;
+ //   static LnRuntimeFinalizedCallback m_runtimeFinalizedCallback;
 };
 
 } // namespace detail

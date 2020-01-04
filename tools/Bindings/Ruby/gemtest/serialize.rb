@@ -1,6 +1,8 @@
-require 'lumino'
 
+$LUMINO_LOG_LEVEL = 2 # >= Debug
+require 'lumino'
 include Lumino
+
 
 Engine.initialize
 

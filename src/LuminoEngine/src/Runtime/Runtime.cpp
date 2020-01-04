@@ -76,13 +76,43 @@ const char* RuntimeStringBuffer::getUtf8()
     return m_str8.c_str();
 }
 
+static std::string std_string_vprintf(const char* format, std::va_list arg)
+{
+    std::string ret;
+    ret.resize(32);
+    auto n = static_cast<std::size_t>(vsnprintf(&ret[0], ret.size(), format, arg));
+
+//#if defined _MSC_VER
+//    if (n == static_cast<std::size_t>(-1))
+//    {
+//        n = _vscprintf(format, arg) + 1;
+//#else
+    if (n > ret.size())
+    {
+//#endif
+        ret.resize(n + 1);
+        n = vsnprintf(&ret[0], ret.size(), format, arg);
+    }
+    ret.resize(n);
+    return ret;
+}
+
+extern RuntimeManager::Settings g_globalRuntimeManagerSettings;
+
 } // namespace detail
 } // namespace ln
 
 extern "C" {
 
-void LnRuntime_Initialize()
+void LnRuntime_Initialize(const tagLnRuntimeSettings* settings)
 {
+    if (settings) {
+        auto& s = ln::detail::g_globalRuntimeManagerSettings;
+        s.runtimeFinalizedCallback = settings->runtimeFinalizedCallback;
+        s.referenceCountTrackerCallback = settings->referenceCountTrackerCallback;
+        s.runtimeGetTypeInfoIdCallback = settings->runtimeGetTypeInfoIdCallback;
+    }
+
     ln::detail::EngineDomain::runtimeManager();
     //auto manager = ln::detail::EngineDomain::engineManager();
     //manager->initializeRuntimeManager();
@@ -108,30 +138,30 @@ int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle)
 	return ln::detail::EngineDomain::runtimeManager()->getManagedTypeInfoId(handle);
 }
 
-void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback)
-{
-	return ln::detail::RuntimeManager::setReferenceCountTracker(callback);
-}
+//void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback)
+//{
+//	return ln::detail::RuntimeManager::setReferenceCountTracker(callback);
+//}
 
 void LnRuntime_SetReferenceTrackEnabled(LnHandle handle)
 {
 	return ln::detail::EngineDomain::runtimeManager()->setReferenceTrackEnabled(handle);
 }
 
-void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
-{
-    return ln::detail::RuntimeManager::setRuntimeFinalizedCallback(callback);
-}
+//void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
+//{
+//    return ln::detail::RuntimeManager::setRuntimeFinalizedCallback(callback);
+//}
 
 //void LnRuntime_SetRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback)
 //{
 //    return ln::detail::RuntimeManager::setRuntimeCreateInstanceCallback(callback);
 //}
 
-void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback)
-{
-    return ln::detail::RuntimeManager::setRuntimeGetTypeInfoIdCallback(callback);
-}
+//void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback)
+//{
+//    return ln::detail::RuntimeManager::setRuntimeGetTypeInfoIdCallback(callback);
+//}
 
 void LnRuntime_RunAppInternal(LnHandle app)
 {
@@ -300,34 +330,15 @@ void LnLog_WriteA(LnLogLevel level, const char* tag, const char* text)
     LN_LOG(static_cast<ln::LogLevel>(level), tag) << ln::String::fromCString(text);
 }
 
-static std::string std_string_vprintf(const char* format, std::va_list arg)
-{
-    std::string ret;
-    ret.resize(32);
-    auto n = static_cast<std::size_t>(vsnprintf(&ret[0], ret.size(), format, arg));
-
-#if defined _MSC_VER
-    if (n == static_cast<std::size_t>(-1))
-    {
-        n = _vscprintf(format, arg) + 1;
-#else
-    if (n > ret.size())
-    {
-#endif
-        ret.resize(n + 1);
-        n = vsnprintf(&ret[0], ret.size(), format, arg);
-    }
-    ret.resize(n);
-    return ret;
-}
-
 void LnLog_PrintA(LnLogLevel level, const char* tag, const char* format, ...)
 {
-    std::va_list arg;
-    va_start(arg, format);
-    auto str = std_string_vprintf(format, arg);
-    va_end(arg);
-    LnLog_WriteA(level, tag, str.c_str());
+    if (::ln::detail::LoggerInterface::getInstance()->checkLevel(static_cast<ln::LogLevel>(level))) {
+        std::va_list arg;
+        va_start(arg, format);
+        auto str = ln::detail::std_string_vprintf(format, arg);
+        va_end(arg);
+        LnLog_WriteA(level, tag, str.c_str());
+    }
 }
 
 #if 0

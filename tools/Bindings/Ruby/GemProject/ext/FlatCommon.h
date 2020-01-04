@@ -82,22 +82,29 @@ typedef enum tagLnLogLevel
 
 } LnLogLevel;
 
-typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
 typedef void(*LnRuntimeFinalizedCallback)();
-//typedef void(*LnRuntimeCreateInstanceCallback)(int managedTypeInfoId, LnHandle* outHandle);
+typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
 typedef void(*LnRuntimeGetTypeInfoIdCallback)(LnHandle handle, int* outTypeInfoId);
 
-extern LN_FLAT_API void LnRuntime_Initialize();
+typedef struct tagLnRuntimeSettings
+{
+    LnRuntimeFinalizedCallback runtimeFinalizedCallback;
+    LnReferenceCountTrackerCallback referenceCountTrackerCallback;
+    LnRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback;
+
+} LnRuntimeSettings;
+
+extern LN_FLAT_API void LnRuntime_Initialize(const tagLnRuntimeSettings* settings);
 extern LN_FLAT_API void LnRuntime_Finalize();
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
 extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
 extern LN_FLAT_API int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
 extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
-extern LN_FLAT_API void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback);
+//extern LN_FLAT_API void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback);
 extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
-extern LN_FLAT_API void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
+//extern LN_FLAT_API void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
 //extern LN_FLAT_API void LnRuntime_SetRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback);
-extern LN_FLAT_API void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
+//extern LN_FLAT_API void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
 
 

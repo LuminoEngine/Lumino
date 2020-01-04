@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = ['lumino-rb']#spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["ext", "lib"]
+  #spec.test_files    = spec.files.grep(%r{^(test|test_old|sample|testdata)/})
 
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
