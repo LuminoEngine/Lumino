@@ -69,13 +69,26 @@ typedef enum tagLnBool
 
 } LnBool;
 
+/** ログの通知レベル */
+typedef enum tagLnLogLevel
+{
+    LN_LOG_LEVEL_UNKNOWN = 0,
+    LN_LOG_LEVEL_VERBOSE,
+    LN_LOG_LEVEL_DEBUG,
+    LN_LOG_LEVEL_INFO,
+    LN_LOG_LEVEL_WARN,
+    LN_LOG_LEVEL_ERROR,
+    LN_LOG_LEVEL_FATAL,
+
+} LnLogLevel;
 
 typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
 typedef void(*LnRuntimeFinalizedCallback)();
 //typedef void(*LnRuntimeCreateInstanceCallback)(int managedTypeInfoId, LnHandle* outHandle);
 typedef void(*LnRuntimeGetTypeInfoIdCallback)(LnHandle handle, int* outTypeInfoId);
 
-extern void LnRuntime_Initialize();
+extern LN_FLAT_API void LnRuntime_Initialize();
+extern LN_FLAT_API void LnRuntime_Finalize();
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
 extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
 extern LN_FLAT_API int64_t LnRuntime_GetManagedObjectId(LnHandle handle);
@@ -130,6 +143,12 @@ LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj);
 // Managed 側で Engine のクラスを継承して新たな型を作ったとき、それを登録するために使用する。
 LN_FLAT_API LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId);
 
+//==============================================================================
+
+LN_FLAT_API void LnLog_SetLevel(LnLogLevel level);
+LN_FLAT_API void LnLog_Write(LnLogLevel level, const LnChar* tag, const LnChar* text);
+LN_FLAT_API void LnLog_WriteA(LnLogLevel level, const char* tag, const char* text);
+LN_FLAT_API void LnLog_PrintA(LnLogLevel level, const char* tag, const char* format, ...);
 
 #ifdef __cplusplus
 } // extern "C"

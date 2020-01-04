@@ -592,10 +592,6 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 	// make func body
 	OutputBuffer body;
 
-	if (methodInfo->isRuntimeInitializer()) {
-		body.AppendLine("LnRuntime_Initialize();");
-	}
-
 	{
 		// make call args
 		OutputBuffer args;

@@ -143,8 +143,9 @@ namespace detail {
 //==============================================================================
 // LogRecord
 
-LogRecord::LogRecord(LogLevel level, const char* file, const char* func, int line)
+LogRecord::LogRecord(LogLevel level, const char* tag, const char* file, const char* func, int line)
     : m_level(level)
+    , m_tag(tag)
     , m_file(file)
     , m_func(func)
     , m_line(line)
@@ -298,7 +299,7 @@ LoggerInterface::~LoggerInterface()
 
 bool LoggerInterface::checkLevel(LogLevel level)
 {
-    return level <= g_maxLevel;
+    return level >= g_maxLevel;
 }
 
 void LoggerInterface::operator+=(const LogRecord& record)
@@ -315,7 +316,15 @@ void LoggerInterface::operator+=(const LogRecord& record)
 		g_logSS << date << " ";
 		g_logSS << GetLogLevelString(record.GetLevel()) << " ";
 		g_logSS << "[" << record.getThreadId() << "]";
-		g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
+        // TODO: ログの量を圧迫するので一時封印。
+        // Assertion の機能はメッセージの一部として位置を記録するため、そちらは問題なし。
+        // LogFormat みたいな設定を増やしておく
+		//g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")]";
+        if (record.tag())
+            g_logSS << "[" << record.tag() << "] ";
+        else
+            g_logSS << " ";
+
 		g_logSS << record.getMessage() << std::endl;
 
 		auto str = g_logSS.str();

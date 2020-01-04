@@ -659,6 +659,8 @@ static VALUE Wrap_LnAssetModel_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnAssetModel_Create(_target, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }
@@ -1017,6 +1019,8 @@ static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnApplication_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }
@@ -1231,6 +1235,8 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnTexture2D_Create(_width, _height, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }
@@ -1247,6 +1253,8 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnTexture2D_CreateWithFormat(_width, _height, _format, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }
@@ -1261,6 +1269,8 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnTexture2D_CreateFromFileA(_filePath, _format, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }
@@ -2131,6 +2141,8 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnSprite_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }
@@ -2147,6 +2159,8 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnSprite_CreateWithTexture(_texture, _width, _height, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }
@@ -2782,6 +2796,8 @@ static VALUE Wrap_LnUIButton_Create(int argc, VALUE* argv, VALUE self)
             LnResult errorCode = LnUIButton_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
             return Qnil;
         }
     }

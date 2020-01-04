@@ -16,13 +16,13 @@
 #define LN_FUNC_MACRO __PRETTY_FUNCTION__
 #endif
 
-#define LN_LOG(level) !(::ln::detail::LoggerInterface::getInstance() && ::ln::detail::LoggerInterface::getInstance()->checkLevel(level)) ? (void)0 : (*::ln::detail::LoggerInterface::getInstance()) += ::ln::detail::LogRecord(level, __FILE__, LN_FUNC_MACRO, __LINE__)
-#define LN_LOG_FATAL LN_LOG(::ln::LogLevel::Fatal)
-#define LN_LOG_ERROR LN_LOG(::ln::LogLevel::Error)
-#define LN_LOG_WARNING LN_LOG(::ln::LogLevel::Warning)
-#define LN_LOG_INFO LN_LOG(::ln::LogLevel::Info)
-#define LN_LOG_DEBUG LN_LOG(::ln::LogLevel::Debug)
-#define LN_LOG_VERBOSE LN_LOG(::ln::LogLevel::Verbose)
+#define LN_LOG(level, tag) !(::ln::detail::LoggerInterface::getInstance() && ::ln::detail::LoggerInterface::getInstance()->checkLevel(level)) ? (void)0 : (*::ln::detail::LoggerInterface::getInstance()) += ::ln::detail::LogRecord(level, tag, __FILE__, LN_FUNC_MACRO, __LINE__)
+#define LN_LOG_FATAL LN_LOG(::ln::LogLevel::Fatal, nullptr)
+#define LN_LOG_ERROR LN_LOG(::ln::LogLevel::Error, nullptr)
+#define LN_LOG_WARNING LN_LOG(::ln::LogLevel::Warning, nullptr)
+#define LN_LOG_INFO LN_LOG(::ln::LogLevel::Info, nullptr)
+#define LN_LOG_DEBUG LN_LOG(::ln::LogLevel::Debug, nullptr)
+#define LN_LOG_VERBOSE LN_LOG(::ln::LogLevel::Verbose, nullptr)
 
 namespace ln {
 class StringRef;
@@ -30,15 +30,17 @@ class StringRef;
 /** ログの通知レベル */
 enum class LogLevel
 {
-	// Lumino のユーザーに対して通知したい情報
-    Fatal,
-    Error,
-    Warning,
-    Info,
+    Unknown,
 
-	// Lumino の開発として集めたい情報
-    Debug,
+    // Lumino の開発として集めたい情報
     Verbose,
+    Debug,
+
+	// Lumino のユーザーに対して通知したい情報
+    Info,
+    Warning,
+    Error,
+    Fatal,
 };
 
 /** グローバルなロギング機能をコントロールするためのクラスです。 */
@@ -92,9 +94,10 @@ struct LogTime
 class LogRecord
 {
 public:
-    LogRecord(LogLevel level, const char* file, const char* func, int line);
+    LogRecord(LogLevel level, const char* tag, const char* file, const char* func, int line);
     const LogTime& getTime() const { return m_time; }
     LogLevel GetLevel() const { return m_level; }
+    const char* tag() const { return m_tag; }
     const char* getMessage() const;
     const char* GetFile() const { return m_file; }
     const char* GetFunc() const { return m_func; }
@@ -113,6 +116,7 @@ public:
 private:
     LogTime m_time;
     LogLevel m_level;
+    const char* m_tag;
     const char* m_file;
     const char* m_func;
     int m_line;

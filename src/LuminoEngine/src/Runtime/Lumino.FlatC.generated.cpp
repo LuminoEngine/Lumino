@@ -1186,7 +1186,6 @@ LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath
 LN_FLAT_API LnResult LnEngine_Initialize()
 {
     LNI_FUNC_TRY_BEGIN;
-    LnRuntime_Initialize();
     (ln::Engine::initialize());
     LNI_FUNC_TRY_END_RETURN;
 }
@@ -1235,7 +1234,6 @@ LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
 LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
 {
     LNI_FUNC_TRY_BEGIN;
-    LnRuntime_Initialize();
     LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
     LNI_FUNC_TRY_END_RETURN;
 }

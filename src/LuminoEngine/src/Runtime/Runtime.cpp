@@ -1,4 +1,5 @@
 ﻿#include "Internal.hpp"
+#include <cstdarg>
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
 #include "../Engine/EngineManager.hpp"
@@ -82,8 +83,14 @@ extern "C" {
 
 void LnRuntime_Initialize()
 {
-    auto manager = ln::detail::EngineDomain::engineManager();
-    manager->initializeRuntimeManager();
+    ln::detail::EngineDomain::runtimeManager();
+    //auto manager = ln::detail::EngineDomain::engineManager();
+    //manager->initializeRuntimeManager();
+}
+
+void LnRuntime_Finalize()
+{
+    ln::detail::EngineDomain::release();
 }
 
 void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id)
@@ -274,6 +281,53 @@ LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId)
         return LN_ERROR_UNKNOWN;
     }
     LNI_FUNC_TRY_END_RETURN;
+}
+
+//==============================================================================
+
+void LnLog_SetLevel(LnLogLevel level)
+{
+    ln::GlobalLogger::setLevel(static_cast<ln::LogLevel>(level));
+}
+
+void LnLog_Write(LnLogLevel level, const LnChar* tag, const LnChar* text)
+{
+    LN_LOG(static_cast<ln::LogLevel>(level), ln::String(tag).toStdString().c_str()) << ln::String(text);
+}
+
+void LnLog_WriteA(LnLogLevel level, const char* tag, const char* text)
+{
+    LN_LOG(static_cast<ln::LogLevel>(level), tag) << ln::String::fromCString(text);
+}
+
+static std::string std_string_vprintf(const char* format, std::va_list arg)
+{
+    std::string ret;
+    ret.resize(32);
+    auto n = static_cast<std::size_t>(vsnprintf(&ret[0], ret.size(), format, arg));
+
+#if defined _MSC_VER
+    if (n == static_cast<std::size_t>(-1))
+    {
+        n = _vscprintf(format, arg) + 1;
+#else
+    if (n > ret.size())
+    {
+#endif
+        ret.resize(n + 1);
+        n = vsnprintf(&ret[0], ret.size(), format, arg);
+    }
+    ret.resize(n);
+    return ret;
+}
+
+void LnLog_PrintA(LnLogLevel level, const char* tag, const char* format, ...)
+{
+    std::va_list arg;
+    va_start(arg, format);
+    auto str = std_string_vprintf(format, arg);
+    va_end(arg);
+    LnLog_WriteA(level, tag, str.c_str());
 }
 
 #if 0

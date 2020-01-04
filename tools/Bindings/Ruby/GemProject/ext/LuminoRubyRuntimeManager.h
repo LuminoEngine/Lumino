@@ -6,8 +6,9 @@
 #include <unordered_map>
 #include "FlatCommon.h"
 
-//#define LNRB_TRACE(...) printf(__VA_ARGS__)
-#define LNRB_TRACE(...)
+#define LNRB_TRACE(...) printf(__VA_ARGS__)
+#define LNRB_LOG_D(x) LnLog_WriteA(LN_LOG_LEVEL_DEBUG, "RubyRuntime", x)
+#define LNRB_LOG_I(x) LnLog_WriteA(LN_LOG_LEVEL_INFO, "RubyRuntime", x)
 
 typedef VALUE(*ObjectFactoryFunc)(VALUE klass, LnHandle handle);
 

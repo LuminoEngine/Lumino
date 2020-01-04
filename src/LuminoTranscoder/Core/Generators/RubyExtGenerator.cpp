@@ -444,6 +444,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 	// API 1つの呼び出しの各引数について、宣言、実引数渡し、後処理、return文 を作っていく
 	OutputBuffer callerArgDecls;
 	OutputBuffer callerArgList;
+    OutputBuffer callerPostStmt;
 	OutputBuffer callerReturnStmt;
 
 	{
@@ -461,7 +462,7 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 					callerArgList.AppendCommad("&selfObj->handle");
 
 					// コンストラクトされた Object を register
-					callerReturnStmt.AppendLine("LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
+                    callerPostStmt.AppendLine("LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
 					callerReturnStmt.AppendLine("return Qnil;");
 				}
 				else {
@@ -527,6 +528,13 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 	code.AppendLine(callerArgDecls.toString().trim());
 	code.AppendLine("LnResult errorCode = {0}({1});", funcName, callerArgList.toString());
 	code.AppendLine(u"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LnRuntime_GetLastErrorMessage());");
+    if (!callerPostStmt.isEmpty()) {
+        code.AppendLine(callerPostStmt.toString());
+    }
+    if (method->isConstructor()) {
+        // call given block for cascade initializer.
+        code.AppendLine(u"if (rb_block_given_p()) rb_yield(self);");
+    }
 	code.AppendLine((callerReturnStmt.isEmpty()) ? u"return Qnil;" : callerReturnStmt.toString().trim());
 	code.DecreaseIndent();
 	code.AppendLine(u"}");

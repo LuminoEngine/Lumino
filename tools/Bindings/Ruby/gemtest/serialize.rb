@@ -16,13 +16,23 @@ end
 
 save = false
 
+texture1 = Texture2D.load("logo.png")
+
+sprite1 = Sprite.new do |s|
+    p "s init with block."
+    p s
+    p texture1
+    s.texture=texture1
+    p "init with block."
+end
+#p sprite1.texture
+
 if save
 
     p "a1===================="
 
     p "a===================="
 
-    texture1 = Texture2D.load("logo.png")
     p "a2===================="
     sprite1 = MySprite.new(texture1, 2, 2)
 
