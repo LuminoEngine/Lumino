@@ -72,6 +72,8 @@ typedef enum tagLnBool
 
 typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
 typedef void(*LnRuntimeFinalizedCallback)();
+//typedef void(*LnRuntimeCreateInstanceCallback)(int managedTypeInfoId, LnHandle* outHandle);
+typedef void(*LnRuntimeGetTypeInfoIdCallback)(LnHandle handle, int* outTypeInfoId);
 
 extern void LnRuntime_Initialize();
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
@@ -81,14 +83,20 @@ extern LN_FLAT_API int64_t LnRuntime_GetManagedTypeInfoId(LnHandle handle);
 extern LN_FLAT_API void LnRuntime_SetReferenceCountTracker(LnReferenceCountTrackerCallback callback);
 extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
 extern LN_FLAT_API void LnRuntime_SetRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback);
+//extern LN_FLAT_API void LnRuntime_SetRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback);
+extern LN_FLAT_API void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
+
 
 typedef void(*LnTypeInfoCreateInstanceCallback)(int typeInfoId, LnHandle* outHandle);
 
 extern LN_FLAT_API LnResult LnTypeInfo_Acquire(const LnChar* typeName, int* outTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LnResult LnTypeInfo_Find(const LnChar* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LnResult LnTypeInfo_FindA(const char* typeName, int* outTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateInstanceCallback callback);
+extern LN_FLAT_API LnResult LnTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId);
 
 //==============================================================================
@@ -117,8 +125,11 @@ LN_FLAT_API LnResult LnObject_Retain(LnHandle obj);
  */
 LN_FLAT_API int32_t LnObject_GetReferenceCount(LnHandle obj);
 
-
+// class LNWS_XXXX のインスタンスに対して set できる。
+// Engine 内部で new されたインスタンスに対して呼び出すことはできない。
+// Managed 側で Engine のクラスを継承して新たな型を作ったとき、それを登録するために使用する。
 LN_FLAT_API LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId);
+
 
 #ifdef __cplusplus
 } // extern "C"

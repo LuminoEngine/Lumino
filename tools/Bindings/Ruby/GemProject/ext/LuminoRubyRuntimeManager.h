@@ -50,10 +50,12 @@ public:
     static void handleRuntimeFinalized();
     static void handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle);
 
+    static std::string makeTypeInfoName(VALUE klass);
+
     // TODO: internal
     std::unordered_map<std::string, int> m_userDefinedClassTypeIdMap;
 
-private:
+public: // TODO:
     struct ObjectReferenceItem
     {
         VALUE weakRef;

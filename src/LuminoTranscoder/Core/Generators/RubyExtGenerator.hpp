@@ -52,6 +52,7 @@ private:
 	ln::String makeVALUEReturnExpr(const TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const;
 	ln::String makeTypeCheckExpr(const TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const;
+    ln::String makeNativeToVALUECastDecl(const MethodParameterSymbol* param) const;
 	ln::String makeConstandValue(const ConstantSymbol* constant) const;
 
 	ln::String makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classInfo) const;

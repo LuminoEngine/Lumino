@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "../../LuminoCore/src/IO/PathHelper.hpp"
 //#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include "AssetArchive.hpp"
@@ -179,11 +180,18 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
     auto asset = makeObject<AssetModel>();
 
     //JsonSerializer::deserialize(json, assetPath.getParentAssetPath().toString(), *asset);
+    auto serializer = makeObject<Serializer>(); // TODO: Pool
     JsonTextInputArchive ar(json);
+    ar.m_serializer = serializer;
     ar.setBasePath(assetPath.getParentAssetPath().toString());
     ar.load(*asset);
 
+
+    printf("[Engine] end load\n");
+
     asset->target()->setAssetPath(assetPath);
+    printf("[Engine] end loadAssetModelFromAssetPath\n");
+
     return asset;
 }
 
@@ -206,7 +214,9 @@ void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& fi
 
 
     //auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
+    auto serializer = makeObject<Serializer>(); // TODO: Pool
     JsonTextOutputArchive ar;
+    ar.m_serializer = serializer;
     ar.setBasePath(assetPath.getParentAssetPath().toString());
     ar.save(*asset);
     auto json = ar.toString(JsonFormatting::Indented);

@@ -92,8 +92,11 @@ typedef void(*LnTypeInfoCreateInstanceCallback)(int typeInfoId, LnHandle* outHan
 
 extern LN_FLAT_API LnResult LnTypeInfo_Acquire(const LnChar* typeName, int* outTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LnResult LnTypeInfo_Find(const LnChar* typeName, int* outTypeInfoId);
+extern LN_FLAT_API LnResult LnTypeInfo_FindA(const char* typeName, int* outTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateInstanceCallback callback);
+extern LN_FLAT_API LnResult LnTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId);
 
 //==============================================================================

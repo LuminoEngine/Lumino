@@ -326,6 +326,7 @@ public:
     /** ベースクラスの型情報を取得します。 */
     TypeInfo* baseType() const { return m_baseType; }
 
+    // 0 is invalid
     int id() const { return m_id; }
 
     void registerProperty(PropertyInfo* prop);
@@ -484,7 +485,10 @@ void serialize(Archive& ar, Ref<TValue>& value)
 				value = detail::makeObjectHelper<TValue>();
 			}
 			if (value) {
+
+                printf("[Engine] start ar.process [%p]\n", value.get());
 				ar.process(*value.get());
+                printf("[Engine] end ar.process [%p]\n", value.get());
 			}
 		}
 		else {

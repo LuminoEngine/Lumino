@@ -14,18 +14,29 @@ class MySprite < Sprite
     end
 end
 
-p "a1===================="
+save = false
 
-p "a===================="
+if save
 
-texture1 = Texture2D.load("logo.png")
-p "a2===================="
-sprite1 = MySprite.new(texture1, 2, 2)
+    p "a1===================="
 
-asset = AssetModel.new(sprite1)
+    p "a===================="
 
-Assets.save_asset_to_local_file(asset, "test.json")
+    texture1 = Texture2D.load("logo.png")
+    p "a2===================="
+    sprite1 = MySprite.new(texture1, 2, 2)
 
+    asset = AssetModel.new(sprite1)
+
+    Assets.save_asset_to_local_file(asset, "test.json")
+else
+    p "g===================="
+    asset = Assets.load_asset_from_local_file("test.json")
+    p "m===================="
+    p asset
+    p asset.target
+
+end
 
 p "b===================="
 Engine.update

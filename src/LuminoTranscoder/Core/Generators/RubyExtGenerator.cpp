@@ -860,6 +860,17 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	}
 }
 
+// ruby API コールに渡す引数用変数の宣言文を作成する。(C の型 を VALUE に変換する)
+ln::String RubyExtGenerator::makeNativeToVALUECastDecl(const MethodParameterSymbol* param) const
+{
+    if (param->type()->isClass()) {
+        return ln::String::format(u"LNRB_HANDLE_WRAP_TO_VALUE({0})", param->name());
+    }
+    else {
+        return ln::String::format(u"LNI_TO_RUBY_VALUE({0})", param->name());
+    }
+}
+
 ln::String RubyExtGenerator::makeConstandValue(const ConstantSymbol* constant) const
 {
 	if (constant->type()->isEnum()) {
@@ -897,7 +908,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 			// make args
 			OutputBuffer args;
 			for (int i = 1; i < method->flatParameters().size(); i++) {
-				args.AppendCommad(u"LNI_TO_RUBY_VALUE({0})", method->flatParameters()[i]->name());
+                args.AppendCommad(makeNativeToVALUECastDecl(method->flatParameters()[i]));
 			}
 
 			code.AppendLine(u"VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE({0});", method->flatParameters().front()->name());

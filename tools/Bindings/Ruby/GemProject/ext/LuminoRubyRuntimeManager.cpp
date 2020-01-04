@@ -30,16 +30,8 @@ VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type)
     std::string superclassName;
     {
         VALUE v1  = rb_funcall(type, rb_intern("superclass"), 0, 0);
-        VALUE v2  = rb_funcall(v1, rb_intern("name"), 0, 0);
-        printf("superclassName: %s\n", StringValuePtr(v2));
-        superclassName = StringValuePtr(v2);
 
-        // TODO: C++ 側が、LN_OBJECT_IMPLEMENT(Sprite) とか描いただけじゃ FullName で登録されない。
-        // 対策方法が見つかるまでとりあえず頭消しておく。
-        if (superclassName.find("Lumino::") == 0) {
-            superclassName = superclassName.substr(8);
-        }
-
+        superclassName = LuminoRubyRuntimeManager::makeTypeInfoName(v1);
         
         printf("superclassName(post): %s\n", superclassName.c_str());
     }
@@ -59,8 +51,40 @@ VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type)
     // ユーザー定義型として、あとでインスタンス生成時に型情報を関連付けるときに高速に検索できるように覚えておく
     LuminoRubyRuntimeManager::instance->m_userDefinedClassTypeIdMap[className] = typeInfoId;
 
-    LuminoRubyRuntimeManager::instance->registerTypeInfo(type, nullptr);
+    int managedTypeInfoId = LuminoRubyRuntimeManager::instance->registerTypeInfo(type, nullptr);
+    LnTypeInfo_SetManagedTypeInfoId(typeInfoId, managedTypeInfoId);
 #endif
+    return Qnil;
+}
+
+static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
+{
+    printf("Wrap_LnRuntime_inherited\n");
+
+
+    VALUE v  = rb_funcall(type, rb_intern("name"), 0, 0);
+    std::string name2 = StringValuePtr(v);
+    printf("name2: %s\n", name2.c_str());
+    if (name2.find("Lumino::") == 0) return Qnil;   // TODO: Engine::init 前は EngineContext が null なので使えない。ので逃げる
+
+    //if (LuminoRubyRuntimeManager::instance->m_runtimeAliving) {
+
+        auto name = LuminoRubyRuntimeManager::makeTypeInfoName(type);
+        int typeInfoId = 0;
+
+
+
+        printf("name: %s\n", name.c_str());
+        LnTypeInfo_FindA(name.c_str(), &typeInfoId);
+        printf("typeInfoId: %d\n", typeInfoId);
+
+        if (typeInfoId == 0) {
+            Wrap_LnRuntime_RegisterType(self, type);
+        }
+
+    //}
+
+
     return Qnil;
 }
 
@@ -119,6 +143,7 @@ void LuminoRubyRuntimeManager::init()
         m_eventSignalClass = rb_eval_string("Lumino::EventSignal");
 
         m_objectClass = rb_define_class_under(m_luminoModule, "Object", rb_cObject);
+        rb_define_singleton_method(m_objectClass, "inherited", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LnRuntime_inherited), 1);
 
         VALUE class_Application = rb_define_class_under(m_luminoModule, "Application", m_objectClass);
         rb_define_singleton_method(class_Application, "run_app_internal", reinterpret_cast<VALUE(__cdecl *)(...)>(Wrap_LnRuntime_RunAppInternal), 1);
@@ -145,6 +170,10 @@ VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retai
 {
     int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
     int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
+
+    
+    printf("wrapObjectForGetting: ManagedObjectId: %d, typeinfoIndex: %d\n", objectIndex, typeinfoIndex);
+
     if (objectIndex <= 0) {
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
         if (retain) {
@@ -184,6 +213,15 @@ int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc fa
 
 void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGetting)
 {
+    LnHandle handle = getHandle(obj);
+
+    int64_t id = LnRuntime_GetManagedObjectId(handle);
+    if (id > 0) {
+        // 登録済み
+        printf("registerWrapperObject: [Registerd] ManagedObjectId: %d\n", id);
+        return;
+    }
+
     // grow
 	if (m_objectListIndexStack.size() == 0)
 	{
@@ -201,7 +239,8 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
     if (forNativeGetting) {
         m_objectList[index].strongRef = obj;
     }
-    LnHandle handle = getHandle(obj);
+    
+    printf("registerWrapperObject: handle: %d, ManagedObjectId: %d\n", handle, index);
 	LnRuntime_SetManagedObjectId(handle, index);
 
 
@@ -294,7 +333,45 @@ void LuminoRubyRuntimeManager::handleRuntimeFinalized()
 
 void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle)
 {
-    printf("ERROR: NotImplemented. handleCreateInstanceCallback\n");
+    auto* manager = LuminoRubyRuntimeManager::instance;
+
+    printf("s handleCreateInstanceCallback\n");
+    printf("typeInfoId: %d\n", typeInfoId);
+    int managedTypeInfoId = -1;
+    LnTypeInfo_GetManagedTypeInfoId(typeInfoId, &managedTypeInfoId);
+
+    
+    printf("managedTypeInfoId: %d\n", managedTypeInfoId);
+
+    const auto& typeInfo = manager->m_typeInfoList[managedTypeInfoId];
+    printf("typeInfo.klass: %llu\n", typeInfo.klass);
+    VALUE obj = rb_funcall(typeInfo.klass, rb_intern("new"), 0, 0);
+
+    printf("obj: %llu\n", obj);
+    manager->registerWrapperObject(obj, false);
+
+
+    *outHandle = manager->getHandle(obj);
+    printf("outHandle: %d\n", *outHandle);
+    printf("e handleCreateInstanceCallback\n");
+
+    
+    printf("!!!! new Object. Handle:%d (%s)\n", *outHandle, LuminoRubyRuntimeManager::makeTypeInfoName(CLASS_OF(obj)).c_str());
+}
+
+std::string LuminoRubyRuntimeManager::makeTypeInfoName(VALUE klass)
+{
+    VALUE v  = rb_funcall(klass, rb_intern("name"), 0, 0);
+    //printf("superclassName: %s\n", StringValuePtr(v2));
+    std::string name = StringValuePtr(v);
+
+    // TODO: C++ 側が、LN_OBJECT_IMPLEMENT(Sprite) とか描いただけじゃ FullName で登録されない。
+    // 対策方法が見つかるまでとりあえず頭消しておく。
+    if (name.find("Lumino::") == 0) {
+        name = name.substr(8);
+    }
+
+    return name;
 }
 
 extern "C" void InitLuminoRubyRuntimeManager()

@@ -587,6 +587,10 @@ class Lumino::Sprite
 
 
     # init
+    def initialize()
+    end
+
+    # init
     # @param [Lumino::Texture] texture 
     # @param [Float] width 
     # @param [Float] height 

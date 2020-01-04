@@ -806,7 +806,7 @@ LN_FLAT_API LnResult LnObject_OnSerialize_SetOverrideCallback(LnObject_OnSeriali
     return LN_SUCCESS;
 }
 
-extern LN_API int LnObject_GetTypeInfoId()
+extern LN_FLAT_API int LnObject_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Object>()->id();
 }
@@ -1020,7 +1020,7 @@ LN_FLAT_API LnResult LnSerializer_OnSerialize_SetOverrideCallback(LnSerializer_O
     return LN_SUCCESS;
 }
 
-extern LN_API int LnSerializer_GetTypeInfoId()
+extern LN_FLAT_API int LnSerializer_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Serializer>()->id();
 }
@@ -1058,7 +1058,7 @@ LN_FLAT_API LnResult LnAssetModel_OnSerialize_SetOverrideCallback(LnAssetModel_O
     return LN_SUCCESS;
 }
 
-extern LN_API int LnAssetModel_GetTypeInfoId()
+extern LN_FLAT_API int LnAssetModel_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::AssetModel>()->id();
 }
@@ -1282,7 +1282,7 @@ LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_On
     return LN_SUCCESS;
 }
 
-extern LN_API int LnApplication_GetTypeInfoId()
+extern LN_FLAT_API int LnApplication_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Application>()->id();
 }
@@ -1304,7 +1304,7 @@ LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_SetOverrideCallback(LnGraphi
     return LN_SUCCESS;
 }
 
-extern LN_API int LnGraphicsResource_GetTypeInfoId()
+extern LN_FLAT_API int LnGraphicsResource_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::GraphicsResource>()->id();
 }
@@ -1326,7 +1326,7 @@ LN_FLAT_API LnResult LnTexture_OnSerialize_SetOverrideCallback(LnTexture_OnSeria
     return LN_SUCCESS;
 }
 
-extern LN_API int LnTexture_GetTypeInfoId()
+extern LN_FLAT_API int LnTexture_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Texture>()->id();
 }
@@ -1396,7 +1396,7 @@ LN_FLAT_API LnResult LnTexture2D_OnSerialize_SetOverrideCallback(LnTexture2D_OnS
     return LN_SUCCESS;
 }
 
-extern LN_API int LnTexture2D_GetTypeInfoId()
+extern LN_FLAT_API int LnTexture2D_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Texture2D>()->id();
 }
@@ -1418,7 +1418,7 @@ LN_FLAT_API LnResult LnComponent_OnSerialize_SetOverrideCallback(LnComponent_OnS
     return LN_SUCCESS;
 }
 
-extern LN_API int LnComponent_GetTypeInfoId()
+extern LN_FLAT_API int LnComponent_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Component>()->id();
 }
@@ -1456,7 +1456,7 @@ LN_FLAT_API LnResult LnVisualComponent_OnSerialize_SetOverrideCallback(LnVisualC
     return LN_SUCCESS;
 }
 
-extern LN_API int LnVisualComponent_GetTypeInfoId()
+extern LN_FLAT_API int LnVisualComponent_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::VisualComponent>()->id();
 }
@@ -1486,7 +1486,7 @@ LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_SetOverrideCallback(LnSpriteC
     return LN_SUCCESS;
 }
 
-extern LN_API int LnSpriteComponent_GetTypeInfoId()
+extern LN_FLAT_API int LnSpriteComponent_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::SpriteComponent>()->id();
 }
@@ -1524,7 +1524,7 @@ LN_FLAT_API LnResult LnComponentList_OnSerialize_SetOverrideCallback(LnComponent
     return LN_SUCCESS;
 }
 
-extern LN_API int LnComponentList_GetTypeInfoId()
+extern LN_FLAT_API int LnComponentList_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::ComponentList>()->id();
 }
@@ -1670,7 +1670,7 @@ LN_FLAT_API LnResult LnWorldObject_OnUpdate_SetOverrideCallback(LnWorldObject_On
     return LN_SUCCESS;
 }
 
-extern LN_API int LnWorldObject_GetTypeInfoId()
+extern LN_FLAT_API int LnWorldObject_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::WorldObject>()->id();
 }
@@ -1720,7 +1720,7 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_
     return LN_SUCCESS;
 }
 
-extern LN_API int LnVisualObject_GetTypeInfoId()
+extern LN_FLAT_API int LnVisualObject_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::VisualObject>()->id();
 }
@@ -1749,7 +1749,15 @@ LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback)
 }
 
 
-LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite)
+LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, float height, LnHandle* outSprite)
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture), width, height);
@@ -1786,7 +1794,7 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_Ove
     return LN_SUCCESS;
 }
 
-extern LN_API int LnSprite_GetTypeInfoId()
+extern LN_FLAT_API int LnSprite_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Sprite>()->id();
 }
@@ -1816,7 +1824,7 @@ LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_SetOverrideCallback(LnUIEventArgs
     return LN_SUCCESS;
 }
 
-extern LN_API int LnUIEventArgs_GetTypeInfoId()
+extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UIEventArgs>()->id();
 }
@@ -1838,7 +1846,7 @@ LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_SetOverrideCallback(LnUILayou
     return LN_SUCCESS;
 }
 
-extern LN_API int LnUILayoutElement_GetTypeInfoId()
+extern LN_FLAT_API int LnUILayoutElement_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UILayoutElement>()->id();
 }
@@ -1972,7 +1980,7 @@ LN_FLAT_API LnResult LnUIElement_OnSerialize_SetOverrideCallback(LnUIElement_OnS
     return LN_SUCCESS;
 }
 
-extern LN_API int LnUIElement_GetTypeInfoId()
+extern LN_FLAT_API int LnUIElement_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UIElement>()->id();
 }
@@ -1994,7 +2002,7 @@ LN_FLAT_API LnResult LnUIControl_OnSerialize_SetOverrideCallback(LnUIControl_OnS
     return LN_SUCCESS;
 }
 
-extern LN_API int LnUIControl_GetTypeInfoId()
+extern LN_FLAT_API int LnUIControl_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UIControl>()->id();
 }
@@ -2032,7 +2040,7 @@ LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_SetOverrideCallback(LnUIButtonBa
     return LN_SUCCESS;
 }
 
-extern LN_API int LnUIButtonBase_GetTypeInfoId()
+extern LN_FLAT_API int LnUIButtonBase_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UIButtonBase>()->id();
 }
@@ -2070,7 +2078,7 @@ LN_FLAT_API LnResult LnUIButton_OnSerialize_SetOverrideCallback(LnUIButton_OnSer
     return LN_SUCCESS;
 }
 
-extern LN_API int LnUIButton_GetTypeInfoId()
+extern LN_FLAT_API int LnUIButton_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UIButton>()->id();
 }

@@ -294,12 +294,14 @@ void Texture2D::serialize(Archive& ar)
 	ar & makeNVP(u"Source", path);
 
     if (ar.isLoading()) {
-		// convert relative path to full path.
-        //m_assetSourcePath = detail::AssetManager::combineAssetPath(ar.basePath(), path);//Path(ar.basePath(), path);
-        m_assetSourcePath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path);
-        auto stream = detail::EngineDomain::assetManager()->openStreamFromAssetPath(m_assetSourcePath);
-        //auto stream = Assets::openFileStream(m_assetSourcePath);
-        init(stream);
+        if (!path.isEmpty()) {
+            // convert relative path to full path.
+            //m_assetSourcePath = detail::AssetManager::combineAssetPath(ar.basePath(), path);//Path(ar.basePath(), path);
+            m_assetSourcePath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path);
+            auto stream = detail::EngineDomain::assetManager()->openStreamFromAssetPath(m_assetSourcePath);
+            //auto stream = Assets::openFileStream(m_assetSourcePath);
+            init(stream);
+        }
     }
 }
 

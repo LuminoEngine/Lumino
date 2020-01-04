@@ -154,6 +154,25 @@ LnResult LnTypeInfo_AcquireA(const char* typeName, int* outTypeInfoId)
     return LnTypeInfo_Acquire(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
 }
 
+LnResult LnTypeInfo_Find(const LnChar* typeName, int* outTypeInfoId)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (LN_REQUIRE(outTypeInfoId)) return LN_ERROR_UNKNOWN;
+    if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeName)) {
+        *outTypeInfoId = t->id();
+        return LN_SUCCESS;
+    }
+    else {
+        return LN_ERROR_UNKNOWN;
+    }
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LnResult LnTypeInfo_FindA(const char* typeName, int* outTypeInfoId)
+{
+    return LnTypeInfo_Find(ln::String::fromCString(typeName).c_str(), outTypeInfoId);
+}
+
 LnResult LnTypeInfo_SetBaseClass(int typeInfoId, int baseClassTypeInfoId)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -180,8 +199,24 @@ LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId, LnTypeInfoCreateIn
                 LN_ERROR("Faild creation managed instance.");
                 return nullptr;
             }
-            return ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(handle);
+            // TODO: 参照カウントこれでよい？
+            auto ref = ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(handle);
+            printf("[Engine] [%p] RefCount: %d\n", ref, ln::RefObjectHelper::getReferenceCount(ref));
+            return ref;
         };
+        return LN_SUCCESS;
+    }
+    else {
+        return LN_ERROR_UNKNOWN;
+    }
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+LnResult LnTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (ln::TypeInfo* t = ln::EngineContext::current()->findTypeInfo(typeInfoId)) {
+        ln::detail::TypeInfoInternal::setManagedTypeInfoId(t, managedTypeInfoId);
         return LN_SUCCESS;
     }
     else {

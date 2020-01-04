@@ -102,7 +102,8 @@ extern "C" LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value);
 extern "C" LN_FLAT_API LnResult LnSprite_SetSourceRectXYWH(LnHandle sprite, float x, float y, float width, float height);
 extern "C" LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback);
-extern "C" LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite);
+extern "C" LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite);
+extern "C" LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, float height, LnHandle* outSprite);
 extern "C" LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn);
 extern "C" LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id);
@@ -278,7 +279,7 @@ static VALUE Wrap_LnObject_OnSerialize(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnObject_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -577,7 +578,7 @@ static VALUE Wrap_LnSerializer_Deserialize(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnSerializer_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -668,7 +669,7 @@ static VALUE Wrap_LnAssetModel_Create(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnAssetModel_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1026,7 +1027,7 @@ static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnApplication_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 LnResult Wrap_LnApplication_OnInit_OverrideCallback(LnHandle application)
@@ -1092,7 +1093,7 @@ static VALUE LnGraphicsResource_allocateForGetObject(VALUE klass, LnHandle handl
 LnResult Wrap_LnGraphicsResource_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1146,7 +1147,7 @@ static VALUE LnTexture_allocateForGetObject(VALUE klass, LnHandle handle)
 LnResult Wrap_LnTexture_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1270,7 +1271,7 @@ static VALUE Wrap_LnTexture2D_Create(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnTexture2D_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1324,7 +1325,7 @@ static VALUE LnComponent_allocateForGetObject(VALUE klass, LnHandle handle)
 LnResult Wrap_LnComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1414,7 +1415,7 @@ static VALUE Wrap_LnVisualComponent_IsVisible(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnVisualComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1487,7 +1488,7 @@ static VALUE Wrap_LnSpriteComponent_SetTexture(int argc, VALUE* argv, VALUE self
 LnResult Wrap_LnSpriteComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1580,7 +1581,7 @@ static VALUE Wrap_LnComponentList_GetItem(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnComponentList_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -1903,7 +1904,7 @@ static VALUE Wrap_LnWorldObject_OnUpdate(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnWorldObject_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 LnResult Wrap_LnWorldObject_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
@@ -1999,7 +2000,7 @@ static VALUE Wrap_LnVisualObject_IsVisible(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnVisualObject_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 LnResult Wrap_LnVisualObject_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
@@ -2035,8 +2036,6 @@ static VALUE LnSprite_allocate(VALUE klass)
 {
     VALUE obj;
     Wrap_Sprite* internalObj;
-
-
 
     internalObj = new Wrap_Sprite();
     if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSprite_allocate");
@@ -2125,6 +2124,16 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Sprite* selfObj;
     Data_Get_Struct(self, Wrap_Sprite, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnSprite_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+            return Qnil;
+        }
+    }
     if (3 <= argc && argc <= 3) {
         VALUE texture;
         VALUE width;
@@ -2135,7 +2144,7 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
             LnHandle _texture = LuminoRubyRuntimeManager::instance->getHandle(texture);
             float _width = LNRB_VALUE_TO_FLOAT(width);
             float _height = LNRB_VALUE_TO_FLOAT(height);
-            LnResult errorCode = LnSprite_Create(_texture, _width, _height, &selfObj->handle);
+            LnResult errorCode = LnSprite_CreateWithTexture(_texture, _width, _height, &selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
             return Qnil;
@@ -2148,7 +2157,7 @@ static VALUE Wrap_LnSprite_Create(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnSprite_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 LnResult Wrap_LnSprite_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
@@ -2225,7 +2234,7 @@ static VALUE Wrap_LnUIEventArgs_Sender(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnUIEventArgs_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -2279,7 +2288,7 @@ static VALUE LnUILayoutElement_allocateForGetObject(VALUE klass, LnHandle handle
 LnResult Wrap_LnUILayoutElement_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -2581,7 +2590,7 @@ static VALUE Wrap_LnUIElement_AddChild(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnUIElement_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -2635,7 +2644,7 @@ static VALUE LnUIControl_allocateForGetObject(VALUE klass, LnHandle handle)
 LnResult Wrap_LnUIControl_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -2708,7 +2717,7 @@ static VALUE Wrap_LnUIButtonBase_SetText(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnUIButtonBase_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 //==============================================================================
@@ -2807,18 +2816,10 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
 LnResult Wrap_LnUIButton_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNI_TO_RUBY_VALUE(ar));
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
     return LN_SUCCESS;
 }
 
-VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type);
-
-static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
-{
-    printf("Wrap_LnRuntime_inherited\n");
-    Wrap_LnRuntime_RegisterType(self, type);
-    return Qnil;
-}
 
 extern "C" void Init_Lumino_RubyExt()
 {
@@ -2986,8 +2987,6 @@ extern "C" void Init_Lumino_RubyExt()
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
     LnSprite_OnSerialize_SetOverrideCallback(Wrap_LnSprite_OnSerialize_OverrideCallback);
     LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);
-    rb_define_singleton_method(g_class_Sprite, "inherited", LN_TO_RUBY_FUNC(Wrap_LnRuntime_inherited), 1);
-
 
     g_class_UIEventArgs = rb_define_class_under(g_rootModule, "UIEventArgs", g_class_Object);
     rb_define_alloc_func(g_class_UIEventArgs, LnUIEventArgs_allocate);

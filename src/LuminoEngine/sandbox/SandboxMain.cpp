@@ -352,11 +352,11 @@ int main(int argc, char** argv)
 
 	Engine::initialize();
 
-    auto texture1 = Texture2D::load(u"logo.png");
-    auto sprite1 = Sprite::create(texture1, 2, 2);
-    auto asset = makeObject<AssetModel>(sprite1);
-
-    Assets::saveAssetToLocalFile(asset, "test.json");
+    //auto texture1 = Texture2D::load(u"logo.png");
+    //auto sprite1 = Sprite::create(texture1, 2, 2);
+    //auto asset = makeObject<AssetModel>(sprite1);
+    //Assets::saveAssetToLocalFile(asset, "test.json");
+    auto asset = Assets::loadAssetFromLocalFile("test.json");
 
 	//{
 	//	auto ss = makeObject<ed::SceneAsset>();

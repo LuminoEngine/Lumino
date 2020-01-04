@@ -455,6 +455,8 @@ class EngineContext : public RefObject
 public:
 	static EngineContext* current();
 
+    EngineContext();
+
     // TODO: 外部用。
     template<class T>
     void registerType() {
