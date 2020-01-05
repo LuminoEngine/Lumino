@@ -11,19 +11,24 @@ struct Matrix;
 /**
  *  4次元のベクトルを定義します。
  */
+LN_STRUCT()
 struct LN_API Vector4
 {
 public:
     /** X 要素 */
+    LN_FIELD()
     float x;
 
     /** Y 要素 */
+    LN_FIELD()
     float y;
 
     /** Z 要素 */
+    LN_FIELD()
     float z;
 
     /** W 要素 */
+    LN_FIELD()
     float w;
 
     /** Vector4(0, 0, 0, 0) */
@@ -33,11 +38,13 @@ public:
     /**
      * すべての要素を 0.0 に設定してインスタンスを初期化します。
      */
+    LN_METHOD(OverloadPostfix = "Zeros")
 	constexpr Vector4() noexcept;
 
     /**
      * 指定した値を使用してインスタンスを初期化します。
      */
+    LN_METHOD()
 	constexpr Vector4(float x, float y, float z, float w) noexcept;
 
     /**

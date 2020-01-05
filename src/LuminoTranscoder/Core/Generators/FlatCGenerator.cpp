@@ -50,15 +50,20 @@ void FlatCHeaderGenerator::generate()
 	for (auto& structInfo : db()->structs())
 	{
 		structsText.AppendLine(makeDocumentComment(structInfo->document()));
-		structsText.AppendLine("struct {0}", makeFlatClassName(structInfo));
-		structsText.AppendLine("{");
+		structsText.AppendLine(u"struct {0}", makeFlatClassName(structInfo));
+		structsText.AppendLine(u"{");
 		structsText.IncreaseIndent();
 		for (auto& fieldInfo : structInfo->fields())
 		{
-			structsText.AppendLine("{0} {1};", fieldInfo->type()->shortName(), fieldInfo->name());
+			structsText.AppendLine(u"{0} {1};", makeFlatClassName(fieldInfo->type()), fieldInfo->name());
 		}
 		structsText.DecreaseIndent();
-		structsText.AppendLine("};");
+		structsText.AppendLine(u"};");
+        structsText.NewLine();
+
+        structMemberFuncDeclsText.AppendLine(u"//==============================================================================");
+        structMemberFuncDeclsText.AppendLine(u"// {0}", structInfo->fullName());
+        structMemberFuncDeclsText.NewLine();
 
 		// function decls
 		for (auto& methodInfo : structInfo->publicMethods())
@@ -82,8 +87,8 @@ void FlatCHeaderGenerator::generate()
 	//OutputBuffer classMemberFuncImplsText;
 	for (auto& classInfo : db()->classes())
 	{
-		classMemberFuncDeclsText.AppendLine("//==============================================================================");
-		classMemberFuncDeclsText.AppendLine("// {0}", classInfo->fullName());
+		classMemberFuncDeclsText.AppendLine(u"//==============================================================================");
+		classMemberFuncDeclsText.AppendLine(u"// {0}", classInfo->fullName());
 		classMemberFuncDeclsText.NewLine();
 
 		// function decls

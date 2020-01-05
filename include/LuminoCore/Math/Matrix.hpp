@@ -13,7 +13,7 @@ struct Plane;
 /**
  * 4x4 の行列を定義します。
  * 
- * 行列は数学的な定義とメモリレイアウト共に行優先です。
+ * 行列は数学的な定義とメモリレイアウト共に行優先 (column-major) です。
  * 
  * このクラスは似た機能の static 関数とインスタンス関数があります。
  * 例えば makeRotationX(static 関数) と rotateX(インスタンス関数) です。
@@ -35,6 +35,23 @@ LN_STRUCT()
 struct LN_API Matrix
 {
 public:
+#if defined(LUMINO_TRANSCODER)
+    /** row0 */
+    LN_FIELD()
+    Vector4 row0;
+    
+    /** row1 */
+    LN_FIELD()
+    Vector4 row1;
+    
+    /** row2 */
+    LN_FIELD()
+    Vector4 row2;
+    
+    /** row3 */
+    LN_FIELD()
+    Vector4 row3;
+#else
     union
     {
         struct
@@ -45,19 +62,19 @@ public:
             float m41, m42, m43, m44;
         };
         float m[4][4];
-
-        LN_FIELD()
-        float elements[16];
     };
+#endif
 
     /** 単位行列 */
     static const Matrix Identity;
 
 public:
     /** 単位行列を設定してインスタンスを初期化します。 */
+    LN_METHOD(OverloadPostfix = "Zeros")
     Matrix();
 
     /** 各要素を指定してインスタンスを初期化します。 */
+    LN_METHOD()
     Matrix(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44);
 
     /** 各列を指定してインスタンスを初期化します。 */
@@ -487,6 +504,7 @@ public:
 #endif
 };
 
+#if !defined(LUMINO_TRANSCODER)
 inline const Vector3& Matrix::right() const
 {
     return (Vector3&)m[0][0];
@@ -521,5 +539,6 @@ inline std::ostream& operator<<(std::ostream& s, const Matrix& v)
 {
 	return detail::MathHelper::outputStream(s, v.data(), 16);
 }
+#endif
 
 } // namespace ln

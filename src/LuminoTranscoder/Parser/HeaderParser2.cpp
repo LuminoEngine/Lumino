@@ -895,7 +895,8 @@ int HeaderParser2::parse(const ln::Path& filePath, PIDatabase* db, ln::Diagnosti
 		args.push_back(path.str().toStdString());
 	}
 
-	
+    args.push_back("-DLUMINO_TRANSCODER=1");
+    
 
 	
 	//args.push_back("-include");

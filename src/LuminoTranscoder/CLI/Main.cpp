@@ -21,10 +21,10 @@ int main(int argc, char** argv)
 		ln::List<ln::Path> files_LuminoCore =
 		{
 			//TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
-			TEST_ROOT "include/LuminoCore/Math/Vector42.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
-			TEST_ROOT "include/LuminoCore/Math/Matrix2.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
 		};
 
 		ln::List<ln::Path> files_LuminoEngine =
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 		};
 
 		CodeAnalyzer ca;
-		ca.parserExecutable = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), u"../../Parser/Debug/LuminoTranscoder-Parser.exe").canonicalize();
+		ca.parserExecutable = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), u"../../Parser/Release/LuminoTranscoder-Parser.exe").canonicalize();
 
 		for (auto& file : files_LuminoCore) {
 			CompilationDatabase cdb;
@@ -64,16 +64,16 @@ int main(int argc, char** argv)
 			ca.inputs.add(cdb);
 		}
 
-		//for (auto& file : files_LuminoEngine) {
-		//	CompilationDatabase cdb;
-		//	cdb.inputFile = file;
-		//	cdb.includeDirectories.add(TEST_ROOT "include");
-  //          if (file.fileName().str() == u"Object.hpp") // Object class が force include されるものと合わせて再定義扱いになりクラス名が取れなくなるため、特別扱いする
-  //              cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
-  //          else
-  //              cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
-		//	ca.inputs.add(cdb);
-		//}
+		for (auto& file : files_LuminoEngine) {
+			CompilationDatabase cdb;
+			cdb.inputFile = file;
+			cdb.includeDirectories.add(TEST_ROOT "include");
+            if (file.fileName().str() == u"Object.hpp") // Object class が force include されるものと合わせて再定義扱いになりクラス名が取れなくなるため、特別扱いする
+                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
+            else
+                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
+			ca.inputs.add(cdb);
+		}
 
 		ca.analyze(pidb, diag);
 
@@ -107,16 +107,16 @@ int main(int argc, char** argv)
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
-	//{
-	//	FlatCHeaderGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	FlatCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		FlatCHeaderGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		FlatCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	//{
 	//	RubyExtGenerator g;
 	//	g.setup(db, config);
