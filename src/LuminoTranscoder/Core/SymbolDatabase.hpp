@@ -263,7 +263,7 @@ public:
 public:
 	MethodSymbol(SymbolDatabase* db);
 	ln::Result init(PIMethod* pi, TypeSymbol* ownerType);
-	ln::Result init(TypeSymbol* ownerType, const ln::String& shortName, const QualType& returnType, /*TypeSymbol* returnType,*/ const ln::List<Ref<MethodParameterSymbol>>& params);
+	ln::Result init(TypeSymbol* ownerType, const ln::String& shortName, const QualType& returnType, const ln::List<Ref<MethodParameterSymbol>>& params);
 	ln::Result link();
 
 	AccessLevel accessLevel() const { return m_accessLevel; }
@@ -293,6 +293,9 @@ public:
 
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
+    bool isFieldAccessor() const { return m_linkedField != nullptr; }
+    FieldSymbol* linkedField() const { return m_linkedField; }
+
 private:
 	ln::Result makeFlatParameters();
 
@@ -307,6 +310,7 @@ private:
 	ln::List<Ref<MethodParameterSymbol>> m_flatParameters;	// FlatC-API としてのパラメータリスト。先頭が this だったり、末尾が return だったりする。
 	MethodOverloadInfo* m_overloadInfo = nullptr;		// このメソッドが属するオーバーロードグループ
 	PropertySymbol* m_ownerProperty = nullptr;
+    FieldSymbol* m_linkedField = nullptr;
 
 	bool m_isConst = false;
 	bool m_isStatic = false;

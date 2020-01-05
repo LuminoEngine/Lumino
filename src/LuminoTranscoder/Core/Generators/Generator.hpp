@@ -71,8 +71,8 @@ public:
 	// Utilities
 	static ln::String makeUpperSnakeName(const ln::String& name);	// PixelFormatA8 -> PIXEL_FORMAT_A8
 	static ln::String camelToPascal(const ln::String& name);		// worldObject -> WorldObject
-	ln::String makeFlatClassName(const TypeSymbol* type) const;						// e.g) -> "LnTexture2D"
-	ln::String makeFlatTypeName2(const TypeSymbol* type) const;						// e.g) -> "LnHandle", "LnBool", "int"...
+	ln::String makeFlatClassName(const TypeSymbol* type) const;						// e.g) -> "LnTexture2D" ※クラス名のみ対応
+	ln::String makeFlatTypeName2(const TypeSymbol* type) const;						// e.g) -> "LnHandle", "LnBool", "int", "LnVector3"...
 	ln::String makeFlatAPIName_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LnTexture2D_SetManagedTypeInfoId"
 	ln::String makeFlatAPIDecl_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)"
 	ln::String makeFlatAPIName_SetOverrideCallback(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;

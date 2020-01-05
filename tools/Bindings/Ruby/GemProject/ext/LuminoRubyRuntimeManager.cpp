@@ -88,7 +88,7 @@ void LuminoRubyRuntimeManager::init()
 
     // Initialize runtime.
     {
-        VALUE LUMINO_LOG_LEVEL = rb_eval_string("$LUMINO_LOG_LEVEL");
+        VALUE LUMINO_LOG_LEVEL = rb_eval_string_protect("$LUMINO_LOG_LEVEL", NULL);
         if (LUMINO_LOG_LEVEL != Qnil) {
             s_logLevel = (LnLogLevel)FIX2INT(LUMINO_LOG_LEVEL);
             LnLog_SetLevel(s_logLevel);
@@ -346,7 +346,7 @@ void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LnHa
 
 extern "C" void InitLuminoRubyRuntimeManager()
 {
-    VALUE manager = rb_eval_string("$lumino_ruby_runtime_manager");
+    VALUE manager = rb_eval_string_protect("defined? $lumino_ruby_runtime_manager", NULL);
     if (manager == Qnil) {
         // Create new LuminoRubyRuntimeManager.
         g_LuminoRubyRuntimeManagerClass = rb_define_class("LuminoRubyRuntimeManager", rb_cObject);

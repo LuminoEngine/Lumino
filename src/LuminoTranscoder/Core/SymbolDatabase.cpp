@@ -665,11 +665,38 @@ ln::Result TypeSymbol::link()
 		}
 	}
 
+    ln::List<Ref<MethodSymbol>> additionalMethods;
 	for (auto& i : m_fields) {
 		if (!i->link()) {
 			return false;
 		}
+
+        // getter と setter を作る。
+        // Ruby のようにスクリプトコードから直接フィールドにアクセスできない Binding 生成のために使用する。
+        {
+            auto fieldGetter = ln::makeRef<MethodSymbol>(db());
+            if (!fieldGetter->init(this, u"get" + i->name().toTitleCase(), { i->type(), false }, {})) {
+                return false;
+            }
+            fieldGetter->m_linkedField = i;
+            fieldGetter->metadata()->setValue(u"Property");
+            additionalMethods.add(fieldGetter);
+        }
+        {
+            auto p = ln::makeRef<MethodParameterSymbol>(db());
+            if (!p->init(QualType{ i->type() }, u"value")) return false;
+
+            auto fieldSetter = ln::makeRef<MethodSymbol>(db());
+            if (!fieldSetter->init(this, u"set" + i->name().toTitleCase(), { PredefinedTypes::voidType, false }, { p })) {
+                return false;
+            }
+            fieldSetter->m_linkedField = i;
+            fieldSetter->metadata()->setValue(u"Property");
+            additionalMethods.add(fieldSetter);
+        }
 	}
+    m_declaredMethods.insertRange(0, additionalMethods);
+
 	for (auto& i : m_constants) {
 		if (!i->link()) {
 			return false;

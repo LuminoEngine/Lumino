@@ -1,11 +1,21 @@
+require 'test/unit'
 
 $LUMINO_LOG_LEVEL = 2 # >= Debug
 require 'lumino'
 include Lumino
 
-Engine.initialize
+#Engine.initialize
 
 class Test_Struct < Test::Unit::TestCase
+
+  class << self
+    def startup
+      p :_startup
+    end
+    def shutdown
+      p :_shutdown
+    end
+  end
 
   def test_constructor_and_accessor
     v1 = Vector3.new    # zeros
@@ -25,10 +35,10 @@ class Test_Struct < Test::Unit::TestCase
     assert_equal(10.0, v2.y)
     assert_equal(100.0, v2.z)
   end
-  
+
 end
 
 
-Engine.update
-Engine.finalize
+#Engine.update
+#Engine.finalize
 

@@ -117,11 +117,11 @@ int main(int argc, char** argv)
 		g.setup(db, config);
 		g.generate();
 	}
-	//{
-	//	RubyExtGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
+	{
+		RubyExtGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
 	{
 		RubyYARDOCSourceGenerator g;
 		g.setup(db, config);

@@ -49,6 +49,7 @@ private:
 	ln::String makeAccessorCacheFieldMarks(const TypeSymbol* classSymbol) const;
 	ln::String makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const;
 	ln::String makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
+    ln::String makeWrapFuncCallBlock_FieldAccessor(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
 	ln::String makeVALUEReturnExpr(const TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const;
 	ln::String makeTypeCheckExpr(const TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const;

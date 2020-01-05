@@ -11,7 +11,7 @@ bundle install
 ### ドキュメントのビルド
 
 ```
-rake build
+rake yard
 ```
 
 確認は doc/index.html から。
@@ -19,6 +19,16 @@ rake build
 ### ビルド
 ```
 rake build
+```
+
+### ローカルインストール
+```
+gem install pkg/lumino-0.9.0.pre.gem
+```
+
+### テスト
+```
+rake test
 ```
 
 --------------------------------------------------

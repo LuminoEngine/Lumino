@@ -41,6 +41,51 @@ end
 # 3次元のベクトルを定義します。
 # 
 class Lumino::Vector3
+    # 
+    # @return [Float] 
+    def x(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def x=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def y(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def y=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def z(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def z=(*args)
+    end
+
+
+
     # 指定した値を使用してインスタンスを初期化します。
     # @overload initialize()
     #   すべての要素を 0.0 に設定してインスタンスを初期化します。
@@ -96,9 +141,149 @@ class Lumino::Vector3
 
 end
 
+# 4次元のベクトルを定義します。
+# 
+class Lumino::Vector4
+    # 
+    # @return [Float] 
+    def x(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def x=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def y(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def y=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def z(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def z=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def w(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def w=(*args)
+    end
+
+
+
+    # 指定した値を使用してインスタンスを初期化します。
+    # @overload initialize()
+    #   すべての要素を 0.0 に設定してインスタンスを初期化します。
+    # @overload initialize(x, y, z, w)
+    #   指定した値を使用してインスタンスを初期化します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   @param [Float] w 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
 # クォータニオンを定義します。
 # 
 class Lumino::Quaternion
+    # 
+    # @return [Float] 
+    def x(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def x=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def y(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def y=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def z(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def z=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def w(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def w=(*args)
+    end
+
+
+
     # 指定した値を使用してインスタンスを初期化します。
     # @overload initialize()
     #   単位クォータニオンを設定してインスタンスを初期化します。
@@ -114,6 +299,98 @@ class Lumino::Quaternion
     #     axis が単位ベクトルでなければ正規化してから計算を行います。
     #   @param [Lumino::Vector3] axis 
     #   @param [Float] r 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 4x4 の行列を定義します。
+# 
+class Lumino::Matrix
+    # 
+    # @return [Lumino::Vector4] 
+    def row_0(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::Vector4] value 
+    # 
+    def row_0=(*args)
+    end
+
+
+
+    # 
+    # @return [Lumino::Vector4] 
+    def row_1(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::Vector4] value 
+    # 
+    def row_1=(*args)
+    end
+
+
+
+    # 
+    # @return [Lumino::Vector4] 
+    def row_2(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::Vector4] value 
+    # 
+    def row_2=(*args)
+    end
+
+
+
+    # 
+    # @return [Lumino::Vector4] 
+    def row_3(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::Vector4] value 
+    # 
+    def row_3=(*args)
+    end
+
+
+
+    # 各要素を指定してインスタンスを初期化します。
+    # @overload initialize()
+    #   単位行列を設定してインスタンスを初期化します。
+    # @overload initialize(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44)
+    #   各要素を指定してインスタンスを初期化します。
+    #   @param [Float] m11 
+    #   @param [Float] m12 
+    #   @param [Float] m13 
+    #   @param [Float] m14 
+    #   @param [Float] m21 
+    #   @param [Float] m22 
+    #   @param [Float] m23 
+    #   @param [Float] m24 
+    #   @param [Float] m31 
+    #   @param [Float] m32 
+    #   @param [Float] m33 
+    #   @param [Float] m34 
+    #   @param [Float] m41 
+    #   @param [Float] m42 
+    #   @param [Float] m43 
+    #   @param [Float] m44 
     #   
     def initialize(*args)
     end

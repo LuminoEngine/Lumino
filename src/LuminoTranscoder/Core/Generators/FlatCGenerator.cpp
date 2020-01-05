@@ -55,7 +55,7 @@ void FlatCHeaderGenerator::generate()
 		structsText.IncreaseIndent();
 		for (auto& fieldInfo : structInfo->fields())
 		{
-			structsText.AppendLine(u"{0} {1};", makeFlatClassName(fieldInfo->type()), fieldInfo->name());
+			structsText.AppendLine(u"{0} {1};", makeFlatTypeName2(fieldInfo->type()), fieldInfo->name());
 		}
 		structsText.DecreaseIndent();
 		structsText.AppendLine(u"};");
@@ -68,11 +68,15 @@ void FlatCHeaderGenerator::generate()
 		// function decls
 		for (auto& methodInfo : structInfo->publicMethods())
 		{
-			// comment
-			structMemberFuncDeclsText.AppendLine(makeMethodDocumentComment(methodInfo));
+            if (methodInfo->isFieldAccessor()) {
+            }
+            else {
+                // comment
+                structMemberFuncDeclsText.AppendLine(makeMethodDocumentComment(methodInfo));
 
-			// decl
-			structMemberFuncDeclsText.AppendLine(makeFuncHeader(methodInfo, FlatCharset::Unicode) + u";").NewLine(2);
+                // decl
+                structMemberFuncDeclsText.AppendLine(makeFuncHeader(methodInfo, FlatCharset::Unicode) + u";").NewLine(2);
+            }
 		}
 
 		//// function impls
@@ -261,9 +265,14 @@ void FlatCSourceGenerator::generate()
 	OutputBuffer structsText;
 	OutputBuffer structMemberFuncImplsText;
 	for (auto& structInfo : db()->structs()) {
-		for (auto& methodInfo : structInfo->publicMethods()) {
-			structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo, FlatCharset::Unicode)).NewLine();
-		}
+        for (auto& methodInfo : structInfo->publicMethods()) {
+            if (methodInfo->isFieldAccessor()) {
+                printf("");
+            }
+            else {
+                structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo, FlatCharset::Unicode)).NewLine();
+            }
+        }
 	}
 
     //for (auto& delegateSymbol : db()->delegateObjects()) {

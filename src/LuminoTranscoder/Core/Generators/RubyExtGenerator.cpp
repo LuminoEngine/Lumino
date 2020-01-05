@@ -273,6 +273,10 @@ void RubyExtGenerator::generate()
 			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", rb_cObject);", classInfoVar, structSymbol->shortName());
 			moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(structSymbol));
 
+            for (auto& overload : structSymbol->overloads()) {
+                moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+            }
+
 			moduleInitializer.NewLine();
 		}
 		
@@ -423,7 +427,12 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol
 
 	// Body 作成。if () { ～ } までのオーバーロード呼び出し1つ分
 	for (auto& method : overloadInfo->methods()) {
-		code.AppendLine(makeWrapFuncCallBlock(classSymbol, method));
+        if (method->isFieldAccessor()) {
+            code.AppendLine(makeWrapFuncCallBlock_FieldAccessor(classSymbol, method));
+        }
+        else {
+            code.AppendLine(makeWrapFuncCallBlock(classSymbol, method));
+        }
 	}
 
 	// 関数終端まで到達してしまったら例外
@@ -576,194 +585,50 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 	code.append("}");
 
 	return code.toString();
+}
 
-#if 0
+ln::String RubyExtGenerator::makeWrapFuncCallBlock_FieldAccessor(const TypeSymbol* classSymbol, const MethodSymbol* method) const
+{
+    if (method->parameters().size() == 1) {
+        // setter
+        MethodParameterSymbol* param = method->parameters()[0];
 
-	var callBody = new OutputBuffer();
+        OutputBuffer code;
+        code.AppendLine(u"if (argc == 1) {");
+        code.IncreaseIndent();
+        {
+            code.AppendLine(u"VALUE value;");
+            code.AppendLine(u"rb_scan_args(argc, argv, \"1\", &value);");
+            code.AppendLine(u"if ({0}) {{", makeTypeCheckExpr(param->type(), u"value"));
+            code.IncreaseIndent();
+            {
+                code.AppendLine(makeVALUEToNativeCastDecl(param));
 
-	int normalArgsCount = 0;
-	int defaultArgsCount = 0;
-	var scan_args_Inits = new OutputBuffer();
-	var scan_args_Args = new OutputBuffer();
-	string typeCheckExp = "";
+                code.AppendLine("selfObj->{0} = _value;", method->linkedField()->name());
 
-	// API 1つの呼び出しの各引数について、宣言、実引数渡し、後処理、return文 を作っていく
-	var initStmt = new OutputBuffer();
-	var argsText = new OutputBuffer();
-	var postStmt = new OutputBuffer();
-	var returnStmt = new OutputBuffer();
+                code.AppendLine("return Qnil;");
+            }
+            code.DecreaseIndent();
+            code.AppendLine("}");
+        }
+        code.DecreaseIndent();
+        code.AppendLine("}");
+        return code.toString().trim();
+    }
+    else {
+        // getter
+        QualType returnType = method->returnType();
 
-	// オリジナルの全仮引数を見ていく
-	foreach(var param in method.FuncDecl.Params)
-	{
-		// コンストラクタの最後の引数は、WrapStruct::Handle への格納になる
-		if (method.IsRefObjectConstructor && param == method.FuncDecl.Params.Last())
-		{
-			argsText.AppendCommad("&selfObj->Handle");
-
-			// Handle がアタッチされたので Register
-			postStmt.AppendLine("Manager::RegisterWrapperObject(self);");
-		}
-		// 第1引数かつインスタンスメソッドの場合は特殊な実引数になる
-		else if (
-			!method.IsRefObjectConstructor &&
-			method.IsInstanceMethod &&
-			param == method.FuncDecl.Params.First())
-		{
-			var classType = param.Type as CLClass;
-			if (classType == null) throw new InvalidOperationException("インスタンスメソッドの第1引数が不正。");
-			if (classType.IsStruct)
-				argsText.AppendCommad("selfObj");
-			else
-				argsText.AppendCommad("selfObj->Handle");
-		}
-		// return として選択されている引数である場合
-		else if (param == method.ReturnParam)
-		{
-			var varName = "_" + param.Name;
-			// 宣言
-			initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
-			// API実引数
-			argsText.AppendCommad("&" + varName);
-
-			// getプロパティの場合はメンバにキャッシュする
-			if (method.IsGetterProperty && CLType.CheckRefObjectType(param.Type))
-			{
-				// variable に、キャッシュ先の変数名を作る
-				var propName = method.OwnerProperty.Name;
-				string variable;
-				if (method.IsStatic)
-					variable = string.Format("wrap{0}::{1}", method.OwnerClass.Name, propName);
-				else
-					variable = string.Format("selfObj->{0}", propName);
-
-				// post
-				postStmt.AppendLine("if (!checkEqualHandle({0}, {1})) {{", variable, varName);
-				postStmt.AppendLine("    {0} = Manager::GetWrapperObjectFromHandle({1});", variable, varName);
-				postStmt.AppendLine("}");
-				// return
-				returnStmt.AppendLine("return {0};", variable);
-			}
-			else
-			{
-				// return
-				RubyCommon.MakeReturnCastExpCToVALUE(param.Type, varName, returnStmt);
-			}
-		}
-		// 普通の in/out の引数はここに来る
-		else
-		{
-			/*
-				LNTexture2D_Create(w, h, format, mipmap) の例
-
-				if (2 <= argc && argc <= 4) {
-
-					// まず、実引数を取り出す必要がある
-					VALUE width;
-					VALUE height;
-					VALUE format;
-					VALUE mipmap;
-					rb_scan_args(argc, argv, "22", &width, &height, &format, &mipmap);
-
-					// 型チェック
-					if (isRbNumber(width) && isRbNumber(height) && isRbNumber(format) && isRbBool(mipmap)) {
-
-						// C言語の型へ変換する
-						int _width = FIX2INT(width);
-						int _height = FIX2INT(height);
-						LNTextureFormat _format = (format != Qnil) ? (LNTextureFormat)FIX2INT(format) : LN_FMT_A8R8G8B8;
-						LNBool _mipmap = (mipmap != Qnil) ? RbBooltoBool(mipmap) : LN_FALSE;
-
-						// API 呼び出し
-						LNResult errorCode = LNTexture2D_Create(_width, _height, _format, _mipmap, &selfObj->Handle);
-						if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-
-						return Qnil;
-					}
-			*/
-			// 通常引数とデフォルト引数のカウント
-			if (string.IsNullOrEmpty(param.OriginalDefaultValue))
-				normalArgsCount++;
-			else
-				defaultArgsCount++;
-
-			// out の場合は C++ 型で受け取るための変数を定義
-			if (param.IOModifier == IOModifier.Out)
-			{
-				// ruby は複数 out を扱えないためここに来ることはないはず
-				throw new InvalidOperationException();
-			}
-			// 入力引数 (in とinout)
-			else
-			{
-				// rb_scan_args の格納先 VALUE 宣言
-				scan_args_Inits.AppendLine("VALUE {0};", param.Name);
-				// rb_scan_args の引数
-				scan_args_Args.AppendCommad("&{0}", param.Name);
-				// 型チェック条件式
-				if (!string.IsNullOrEmpty(typeCheckExp))
-					typeCheckExp += " && ";
-				typeCheckExp += RubyCommon.GetTypeCheckExp(param.Type, param.Name);
-				// C変数宣言 & 初期化代入
-				initStmt.AppendLine(RubyCommon.GetDeclCastExpVALUEtoC(param.Type, "_" + param.Name, param.Name, param.OriginalDefaultValue));
-				// API実引数
-				if (param.Type is CLClass &&
-					((CLClass)param.Type).IsStruct)
-					argsText.AppendCommad("&_" + param.Name);   // struct は 参照渡し
-				else
-					argsText.AppendCommad("_" + param.Name);
-
-
-				if (method.IsSetterProperty && CLType.CheckRefObjectType(param.Type))
-				{
-					// post
-					var propName = method.OwnerProperty.Name;
-					postStmt.AppendLine("selfObj->{0} = {1};", propName, param.Name);
-				}
-			}
-		}
-	}
-
-	// rb_scan_args の呼び出し
-	string rb_scan_args_Text = "";
-	if (!scan_args_Args.IsEmpty)
-		rb_scan_args_Text = string.Format(@"rb_scan_args(argc, argv, ""{0} {1}"", { 2 }); ", normalArgsCount, (defaultArgsCount > 0) ? defaultArgsCount.ToString() : "", scan_args_Args);
-
-		// 型チェック式が空なら true にしておく
-		if (string.IsNullOrEmpty(typeCheckExp))
-			typeCheckExp = "true";
-
-	// エラーコードと throw
-	string preErrorStmt = "";
-	string postErrorStmt = "";
-	if (method.FuncDecl.ReturnType.IsResultCodeType)
-	{
-		preErrorStmt = "LNResult errorCode = ";
-		postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""Lumino error. (%d)\n%s"", errorCode, LNGetLastErrorMessage()); " + OutputBuffer.NewLineCode;
-	}
-
-	// API 呼び出し
-	var apiCall = string.Format("{0}({1});", method.FuncDecl.OriginalFullName, argsText.ToString());
-
-	// オーバーロードひとつ分の塊を作成する
-	callBody.AppendWithIndent("if ({0} <= argc && argc <= {1}) {{", normalArgsCount.ToString(), (normalArgsCount + defaultArgsCount).ToString()).NewLine();
-	callBody.IncreaseIndent();
-	callBody.AppendWithIndent(scan_args_Inits.ToString());
-	callBody.AppendWithIndent(rb_scan_args_Text).NewLine();
-	callBody.AppendWithIndent("if ({0}) {{", typeCheckExp).NewLine();
-	callBody.IncreaseIndent();
-	callBody.AppendWithIndent(initStmt.ToString());
-	callBody.AppendWithIndent(preErrorStmt + apiCall + OutputBuffer.NewLineCode);
-	callBody.AppendWithIndent(postErrorStmt);
-	callBody.AppendWithIndent(postStmt.ToString());
-	callBody.AppendLine((returnStmt.IsEmpty) ? "return Qnil;" : returnStmt.ToString());
-	callBody.DecreaseIndent();
-	callBody.AppendWithIndent("}").NewLine();
-	callBody.DecreaseIndent();
-	callBody.AppendWithIndent("}").NewLine();
-
-	funcBody.AppendWithIndent(callBody.ToString());
-#endif
+        OutputBuffer code;
+        code.AppendLine(u"if (argc == 0) {");
+        code.IncreaseIndent();
+        {
+            code.AppendLine(makeVALUEReturnExpr(returnType.type, method, u"selfObj->" + method->linkedField()->name()));
+        }
+        code.DecreaseIndent();
+        code.AppendLine("}");
+        return code.toString().trim();
+    }
 }
 
 // C言語変数 → VALUE 変換式の作成 (return 用)

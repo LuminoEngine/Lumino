@@ -185,6 +185,90 @@ VALUE LnVector3_allocate( VALUE klass )
     return obj;
 }
 
+static VALUE Wrap_LnVector3_GetX(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->x);
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::getX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_SetX(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->x = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::setX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_GetY(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->y);
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::getY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_SetY(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->y = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::setY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_GetZ(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->z);
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::getZ - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_SetZ(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->z = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::setZ - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE Wrap_LnVector3_Set(int argc, VALUE* argv, VALUE self)
 {
     LnVector3* selfObj;
@@ -309,6 +393,178 @@ static VALUE Wrap_LnVector3_Normalize(int argc, VALUE* argv, VALUE self)
 }
 
 //==============================================================================
+// ln::Vector4
+
+VALUE g_class_Vector4;
+
+void LnVector4_delete(LnVector4* obj)
+{
+    free(obj);
+}
+
+VALUE LnVector4_allocate( VALUE klass )
+{
+    VALUE obj;
+    LnVector4* internalObj;
+
+    internalObj = (LnVector4*)malloc(sizeof(LnVector4));
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnVector4_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LnVector4_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LnVector4));
+
+    return obj;
+}
+
+static VALUE Wrap_LnVector4_GetX(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->x);
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::getX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_SetX(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->x = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::setX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_GetY(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->y);
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::getY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_SetY(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->y = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::setY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_GetZ(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->z);
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::getZ - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_SetZ(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->z = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::setZ - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_GetW(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->w);
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::getW - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_SetW(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->w = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::setW - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector4_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnVector4* selfObj;
+    Data_Get_Struct(self, LnVector4, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnVector4_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (4 <= argc && argc <= 4) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        VALUE w;
+        rb_scan_args(argc, argv, "4", &x, &y, &z, &w);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z) && LNRB_VALUE_IS_FLOAT(w))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _z = LNRB_VALUE_TO_FLOAT(z);
+            float _w = LNRB_VALUE_TO_FLOAT(w);
+            LnResult errorCode = LnVector4_Set(selfObj, _x, _y, _z, _w);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector4::Vector4 - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
 // ln::Quaternion
 
 VALUE g_class_Quaternion;
@@ -330,6 +586,118 @@ VALUE LnQuaternion_allocate( VALUE klass )
     memset(internalObj, 0, sizeof(LnQuaternion));
 
     return obj;
+}
+
+static VALUE Wrap_LnQuaternion_GetX(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->x);
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::getX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnQuaternion_SetX(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->x = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::setX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnQuaternion_GetY(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->y);
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::getY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnQuaternion_SetY(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->y = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::setY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnQuaternion_GetZ(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->z);
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::getZ - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnQuaternion_SetZ(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->z = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::setZ - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnQuaternion_GetW(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->w);
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::getW - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnQuaternion_SetW(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->w = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::setW - wrong argument type.");
+    return Qnil;
 }
 
 static VALUE Wrap_LnQuaternion_Set(int argc, VALUE* argv, VALUE self)
@@ -379,6 +747,214 @@ static VALUE Wrap_LnQuaternion_Set(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Quaternion::Quaternion - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::Matrix
+
+VALUE g_class_Matrix;
+
+void LnMatrix_delete(LnMatrix* obj)
+{
+    free(obj);
+}
+
+VALUE LnMatrix_allocate( VALUE klass )
+{
+    VALUE obj;
+    LnMatrix* internalObj;
+
+    internalObj = (LnMatrix*)malloc(sizeof(LnMatrix));
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnMatrix_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LnMatrix_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LnMatrix));
+
+    return obj;
+}
+
+static VALUE Wrap_LnMatrix_GetRow0(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 0) {
+        VALUE retObj = LnVector4_allocate(g_class_Vector4);
+        *((LnVector4*)DATA_PTR(retObj)) = selfObj->row0;
+        return retObj;
+
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::getRow0 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_SetRow0(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value)) {
+            LnVector4* tmp__value; Data_Get_Struct(value, LnVector4, tmp__value);LnVector4& _value = *tmp__value;
+            selfObj->row0 = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::setRow0 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_GetRow1(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 0) {
+        VALUE retObj = LnVector4_allocate(g_class_Vector4);
+        *((LnVector4*)DATA_PTR(retObj)) = selfObj->row1;
+        return retObj;
+
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::getRow1 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_SetRow1(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value)) {
+            LnVector4* tmp__value; Data_Get_Struct(value, LnVector4, tmp__value);LnVector4& _value = *tmp__value;
+            selfObj->row1 = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::setRow1 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_GetRow2(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 0) {
+        VALUE retObj = LnVector4_allocate(g_class_Vector4);
+        *((LnVector4*)DATA_PTR(retObj)) = selfObj->row2;
+        return retObj;
+
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::getRow2 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_SetRow2(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value)) {
+            LnVector4* tmp__value; Data_Get_Struct(value, LnVector4, tmp__value);LnVector4& _value = *tmp__value;
+            selfObj->row2 = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::setRow2 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_GetRow3(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 0) {
+        VALUE retObj = LnVector4_allocate(g_class_Vector4);
+        *((LnVector4*)DATA_PTR(retObj)) = selfObj->row3;
+        return retObj;
+
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::getRow3 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_SetRow3(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value)) {
+            LnVector4* tmp__value; Data_Get_Struct(value, LnVector4, tmp__value);LnVector4& _value = *tmp__value;
+            selfObj->row3 = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::setRow3 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMatrix_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnMatrix* selfObj;
+    Data_Get_Struct(self, LnMatrix, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnMatrix_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (16 <= argc && argc <= 16) {
+        VALUE m11;
+        VALUE m12;
+        VALUE m13;
+        VALUE m14;
+        VALUE m21;
+        VALUE m22;
+        VALUE m23;
+        VALUE m24;
+        VALUE m31;
+        VALUE m32;
+        VALUE m33;
+        VALUE m34;
+        VALUE m41;
+        VALUE m42;
+        VALUE m43;
+        VALUE m44;
+        rb_scan_args(argc, argv, "16", &m11, &m12, &m13, &m14, &m21, &m22, &m23, &m24, &m31, &m32, &m33, &m34, &m41, &m42, &m43, &m44);
+        if (LNRB_VALUE_IS_FLOAT(m11) && LNRB_VALUE_IS_FLOAT(m12) && LNRB_VALUE_IS_FLOAT(m13) && LNRB_VALUE_IS_FLOAT(m14) && LNRB_VALUE_IS_FLOAT(m21) && LNRB_VALUE_IS_FLOAT(m22) && LNRB_VALUE_IS_FLOAT(m23) && LNRB_VALUE_IS_FLOAT(m24) && LNRB_VALUE_IS_FLOAT(m31) && LNRB_VALUE_IS_FLOAT(m32) && LNRB_VALUE_IS_FLOAT(m33) && LNRB_VALUE_IS_FLOAT(m34) && LNRB_VALUE_IS_FLOAT(m41) && LNRB_VALUE_IS_FLOAT(m42) && LNRB_VALUE_IS_FLOAT(m43) && LNRB_VALUE_IS_FLOAT(m44))
+        {
+            float _m11 = LNRB_VALUE_TO_FLOAT(m11);
+            float _m12 = LNRB_VALUE_TO_FLOAT(m12);
+            float _m13 = LNRB_VALUE_TO_FLOAT(m13);
+            float _m14 = LNRB_VALUE_TO_FLOAT(m14);
+            float _m21 = LNRB_VALUE_TO_FLOAT(m21);
+            float _m22 = LNRB_VALUE_TO_FLOAT(m22);
+            float _m23 = LNRB_VALUE_TO_FLOAT(m23);
+            float _m24 = LNRB_VALUE_TO_FLOAT(m24);
+            float _m31 = LNRB_VALUE_TO_FLOAT(m31);
+            float _m32 = LNRB_VALUE_TO_FLOAT(m32);
+            float _m33 = LNRB_VALUE_TO_FLOAT(m33);
+            float _m34 = LNRB_VALUE_TO_FLOAT(m34);
+            float _m41 = LNRB_VALUE_TO_FLOAT(m41);
+            float _m42 = LNRB_VALUE_TO_FLOAT(m42);
+            float _m43 = LNRB_VALUE_TO_FLOAT(m43);
+            float _m44 = LNRB_VALUE_TO_FLOAT(m44);
+            LnResult errorCode = LnMatrix_Set(selfObj, _m11, _m12, _m13, _m14, _m21, _m22, _m23, _m24, _m31, _m32, _m33, _m34, _m41, _m42, _m43, _m44);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Matrix::Matrix - wrong argument type.");
     return Qnil;
 }
 
@@ -3037,9 +3613,53 @@ extern "C" void Init_Lumino_RubyExt()
 
     g_class_Vector3 = rb_define_class_under(g_rootModule, "Vector3", rb_cObject);
     rb_define_alloc_func(g_class_Vector3, LnVector3_allocate);
+    rb_define_method(g_class_Vector3, "x", LN_TO_RUBY_FUNC(Wrap_LnVector3_GetX), -1);
+    rb_define_method(g_class_Vector3, "x=", LN_TO_RUBY_FUNC(Wrap_LnVector3_SetX), -1);
+    rb_define_method(g_class_Vector3, "y", LN_TO_RUBY_FUNC(Wrap_LnVector3_GetY), -1);
+    rb_define_method(g_class_Vector3, "y=", LN_TO_RUBY_FUNC(Wrap_LnVector3_SetY), -1);
+    rb_define_method(g_class_Vector3, "z", LN_TO_RUBY_FUNC(Wrap_LnVector3_GetZ), -1);
+    rb_define_method(g_class_Vector3, "z=", LN_TO_RUBY_FUNC(Wrap_LnVector3_SetZ), -1);
+    rb_define_method(g_class_Vector3, "initialize", LN_TO_RUBY_FUNC(Wrap_LnVector3_Set), -1);
+    rb_define_method(g_class_Vector3, "length", LN_TO_RUBY_FUNC(Wrap_LnVector3_Length), -1);
+    rb_define_method(g_class_Vector3, "length_squared", LN_TO_RUBY_FUNC(Wrap_LnVector3_LengthSquared), -1);
+    rb_define_method(g_class_Vector3, "mutating_normalize", LN_TO_RUBY_FUNC(Wrap_LnVector3_MutatingNormalize), -1);
+    rb_define_method(g_class_Vector3, "normalize", LN_TO_RUBY_FUNC(Wrap_LnVector3_Normalize), -1);
+
+    g_class_Vector4 = rb_define_class_under(g_rootModule, "Vector4", rb_cObject);
+    rb_define_alloc_func(g_class_Vector4, LnVector4_allocate);
+    rb_define_method(g_class_Vector4, "x", LN_TO_RUBY_FUNC(Wrap_LnVector4_GetX), -1);
+    rb_define_method(g_class_Vector4, "x=", LN_TO_RUBY_FUNC(Wrap_LnVector4_SetX), -1);
+    rb_define_method(g_class_Vector4, "y", LN_TO_RUBY_FUNC(Wrap_LnVector4_GetY), -1);
+    rb_define_method(g_class_Vector4, "y=", LN_TO_RUBY_FUNC(Wrap_LnVector4_SetY), -1);
+    rb_define_method(g_class_Vector4, "z", LN_TO_RUBY_FUNC(Wrap_LnVector4_GetZ), -1);
+    rb_define_method(g_class_Vector4, "z=", LN_TO_RUBY_FUNC(Wrap_LnVector4_SetZ), -1);
+    rb_define_method(g_class_Vector4, "w", LN_TO_RUBY_FUNC(Wrap_LnVector4_GetW), -1);
+    rb_define_method(g_class_Vector4, "w=", LN_TO_RUBY_FUNC(Wrap_LnVector4_SetW), -1);
+    rb_define_method(g_class_Vector4, "initialize", LN_TO_RUBY_FUNC(Wrap_LnVector4_Set), -1);
 
     g_class_Quaternion = rb_define_class_under(g_rootModule, "Quaternion", rb_cObject);
     rb_define_alloc_func(g_class_Quaternion, LnQuaternion_allocate);
+    rb_define_method(g_class_Quaternion, "x", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_GetX), -1);
+    rb_define_method(g_class_Quaternion, "x=", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_SetX), -1);
+    rb_define_method(g_class_Quaternion, "y", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_GetY), -1);
+    rb_define_method(g_class_Quaternion, "y=", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_SetY), -1);
+    rb_define_method(g_class_Quaternion, "z", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_GetZ), -1);
+    rb_define_method(g_class_Quaternion, "z=", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_SetZ), -1);
+    rb_define_method(g_class_Quaternion, "w", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_GetW), -1);
+    rb_define_method(g_class_Quaternion, "w=", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_SetW), -1);
+    rb_define_method(g_class_Quaternion, "initialize", LN_TO_RUBY_FUNC(Wrap_LnQuaternion_Set), -1);
+
+    g_class_Matrix = rb_define_class_under(g_rootModule, "Matrix", rb_cObject);
+    rb_define_alloc_func(g_class_Matrix, LnMatrix_allocate);
+    rb_define_method(g_class_Matrix, "row_0", LN_TO_RUBY_FUNC(Wrap_LnMatrix_GetRow0), -1);
+    rb_define_method(g_class_Matrix, "row_0=", LN_TO_RUBY_FUNC(Wrap_LnMatrix_SetRow0), -1);
+    rb_define_method(g_class_Matrix, "row_1", LN_TO_RUBY_FUNC(Wrap_LnMatrix_GetRow1), -1);
+    rb_define_method(g_class_Matrix, "row_1=", LN_TO_RUBY_FUNC(Wrap_LnMatrix_SetRow1), -1);
+    rb_define_method(g_class_Matrix, "row_2", LN_TO_RUBY_FUNC(Wrap_LnMatrix_GetRow2), -1);
+    rb_define_method(g_class_Matrix, "row_2=", LN_TO_RUBY_FUNC(Wrap_LnMatrix_SetRow2), -1);
+    rb_define_method(g_class_Matrix, "row_3", LN_TO_RUBY_FUNC(Wrap_LnMatrix_GetRow3), -1);
+    rb_define_method(g_class_Matrix, "row_3=", LN_TO_RUBY_FUNC(Wrap_LnMatrix_SetRow3), -1);
+    rb_define_method(g_class_Matrix, "initialize", LN_TO_RUBY_FUNC(Wrap_LnMatrix_Set), -1);
 
     g_class_Object = rb_define_class_under(g_rootModule, "Object", rb_cObject);
     rb_define_alloc_func(g_class_Object, LnObject_allocate);

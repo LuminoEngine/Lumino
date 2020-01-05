@@ -13,6 +13,18 @@ struct LnVector3
     float y;
     float z;
 };
+
+/**
+    @brief 4次元のベクトルを定義します。
+*/
+struct LnVector4
+{
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
 /**
     @brief クォータニオンを定義します。
     @details このクォータニオンクラスの乗算の順番は左から右です。つまり、q1 * q2 は、先に q1、次に q2 の回転を適用する事と同じです。
@@ -25,6 +37,23 @@ struct LnQuaternion
     float z;
     float w;
 };
+
+/**
+    @brief 4x4 の行列を定義します。
+    @details 行列は数学的な定義とメモリレイアウト共に行優先 (column-major) です。
+    このクラスは似た機能の static 関数とインスタンス関数があります。例えば makeRotationX(static 関数) と rotateX(インスタンス関数) です。前者は新しい行列を作成して返すのに対し、後者は現在の行列を変更します。例えば、以下の m1 と m2 は同じ結果になります。
+    ~~~Matrix m1 = Matrix::makeRotationX(0.1) * Matrix::makeRotationY(0.2) * Matrix::makeRotationZ(0.3);
+    Matrix m2;m2.rotateX(0.1);m2.rotateY(0.2);m2.rotateZ(0.3);~~~
+    なお、後者は行列の生成と乗算をまとめて行うように最適化されており、高速に動作します。
+*/
+struct LnMatrix
+{
+    LnVector4 row0;
+    LnVector4 row1;
+    LnVector4 row2;
+    LnVector4 row3;
+};
+
 
 
 /**
@@ -124,6 +153,9 @@ typedef LnResult(*LnTestDelegateCallback)(LnHandle, int p1, int* outReturn);
 LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
 
 
+//==============================================================================
+// ln::Vector3
+
 /**
     @brief すべての要素を 0.0 に設定してインスタンスを初期化します。
     @param[in] vector3 : instance
@@ -182,6 +214,26 @@ LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3
 LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outReturn);
 
 
+//==============================================================================
+// ln::Vector4
+
+/**
+    @brief すべての要素を 0.0 に設定してインスタンスを初期化します。
+    @param[in] vector4 : instance
+*/
+LN_FLAT_API LnResult LnVector4_SetZeros(LnVector4* vector4);
+
+
+/**
+    @brief 指定した値を使用してインスタンスを初期化します。
+    @param[in] vector4 : instance
+*/
+LN_FLAT_API LnResult LnVector4_Set(LnVector4* vector4, float x, float y, float z, float w);
+
+
+//==============================================================================
+// ln::Quaternion
+
 /**
     @brief 単位クォータニオンを設定してインスタンスを初期化します。
     @param[in] quaternion : instance
@@ -204,6 +256,23 @@ LN_FLAT_API LnResult LnQuaternion_Set(LnQuaternion* quaternion, float x, float y
     @details axis が単位ベクトルでなければ正規化してから計算を行います。
 */
 LN_FLAT_API LnResult LnQuaternion_SetFromAxis(LnQuaternion* quaternion, const LnVector3* axis, float r);
+
+
+//==============================================================================
+// ln::Matrix
+
+/**
+    @brief 単位行列を設定してインスタンスを初期化します。
+    @param[in] matrix : instance
+*/
+LN_FLAT_API LnResult LnMatrix_SetZeros(LnMatrix* matrix);
+
+
+/**
+    @brief 各要素を指定してインスタンスを初期化します。
+    @param[in] matrix : instance
+*/
+LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44);
 
 
 

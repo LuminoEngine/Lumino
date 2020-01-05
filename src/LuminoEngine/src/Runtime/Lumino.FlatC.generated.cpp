@@ -811,6 +811,22 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 }
 
 
+LN_FLAT_API LnResult LnVector4_SetZeros(LnVector4* vector4)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Vector4*>(vector4)) ln::Vector4();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnVector4_Set(LnVector4* vector4, float x, float y, float z, float w)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Vector4*>(vector4)) ln::Vector4(x, y, z, w);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnQuaternion_SetZeros(LnQuaternion* quaternion)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -831,6 +847,22 @@ LN_FLAT_API LnResult LnQuaternion_SetFromAxis(LnQuaternion* quaternion, const Ln
 {
     LNI_FUNC_TRY_BEGIN;
     new (reinterpret_cast<ln::Quaternion*>(quaternion)) ln::Quaternion(*reinterpret_cast<const ln::Vector3*>(axis), r);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMatrix_SetZeros(LnMatrix* matrix)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Matrix*>(matrix)) ln::Matrix();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Matrix*>(matrix)) ln::Matrix(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
     LNI_FUNC_TRY_END_RETURN;
 }
 
