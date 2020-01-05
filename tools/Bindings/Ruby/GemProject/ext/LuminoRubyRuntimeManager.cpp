@@ -53,7 +53,6 @@ static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
 {
     VALUE v  = rb_funcall(type, rb_intern("name"), 0, 0);
     std::string name2 = StringValuePtr(v);
-    printf("name2: %s\n", name2.c_str());
     if (name2.find("Lumino::") == 0) return Qnil;   // TODO: Engine::init 前は EngineContext が null なので使えない。ので逃げる
 
     auto name = RubyUtils::makeTypeInfoName(type);

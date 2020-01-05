@@ -503,8 +503,9 @@ enum RefObjectFlags
 	RefObjectFlags_ReferenceTracking = 0x02,
 };
 
-struct RefObjectInternal
+class RefObjectInternal
 {
+public:
 	// experimental
 	static void setValidObject(RefObject* obj, bool valid = true) { obj->setObjectFlag(RefObjectFlags_Valid, valid); }
 	static bool isValidObject(const RefObject* obj) { return obj->getObjectFlag(RefObjectFlags_Valid); }

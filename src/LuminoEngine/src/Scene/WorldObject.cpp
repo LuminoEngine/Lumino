@@ -132,10 +132,12 @@ void WorldObject::init()
 {
     Object::init();
 
-	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
-	if (activeWorld) {
-		activeWorld->addObject(this);
-	}
+    if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
+        World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+        if (activeWorld) {
+            activeWorld->addObject(this);
+        }
+    }
 }
 
 void WorldObject::onDispose(bool explicitDisposing)

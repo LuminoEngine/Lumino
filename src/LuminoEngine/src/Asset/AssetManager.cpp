@@ -83,7 +83,7 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const
     paths.reserve(extsCount);
     makeFindPaths(filePath, exts, extsCount, &paths);
 
-    String result;
+    AssetPath result;
     for (auto& path : paths) {
         //if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
         //    auto localPath = path.canonicalize();
@@ -95,18 +95,18 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const
         {
             for (auto& archive : m_actualArchives) {
                 if (archive->existsFile(path)) {
-                    result = path;
-                    //result = u"/" + path;
+                    result = AssetPath(archive->scheme(), archive->name(), path);
                     break;
                 }
             }
         }
-        if (!result.isEmpty()) break;
+        if (!result.isNull()) break;
     }
 
-    if (!result.isEmpty())
+    if (!result.isNull())
+        return result;
         // TODO: atchive 内のファイルには host もほしい
-        return AssetPath::makeFromLocalFilePath(result);
+        //return AssetPath::makeFromLocalFilePath(result);
         //return AssetPathPrefix + result;
     else
         return nullptr;

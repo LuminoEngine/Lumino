@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "AssetArchive.hpp"
+#include "AssetManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -161,6 +162,16 @@ CryptedAssetArchiveReader::~CryptedAssetArchiveReader()
     close();
 }
 
+const String& CryptedAssetArchiveReader::scheme() const
+{
+    return AssetPath::AssetSchemeName;
+}
+
+const String& CryptedAssetArchiveReader::name() const
+{
+    return m_name;
+}
+
 bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative)
 {
     LN_LOG_DEBUG << "Archive: " << filePath;
@@ -177,6 +188,7 @@ bool CryptedAssetArchiveReader::open(const StringRef& filePath, const StringRef&
 
 	ln::Path virtualDirFullPath = ln::Path(filePath).canonicalize().replaceExtension(u"");
 
+    m_name = virtualDirFullPath.fileName();
 	m_file = FileStream::create(filePath, FileOpenMode::Read);
 	m_reader = makeRef<BinaryReader>(m_file);
 
@@ -393,11 +405,24 @@ void CryptedArchiveFileStream::flush()
 
 FileSystemReader::FileSystemReader()
 {
+    m_scheme = AssetPath::FileSchemeName;
 }
 
 void FileSystemReader::setRootPath(const StringRef& path)
 {
 	m_rootPath = Path(path);
+    m_name = m_rootPath.fileName();
+    m_scheme = AssetPath::AssetSchemeName;
+}
+
+const String& FileSystemReader::scheme() const
+{
+    return m_scheme;
+}
+
+const String& FileSystemReader::name() const
+{
+    return m_name;
 }
 
 void FileSystemReader::close()

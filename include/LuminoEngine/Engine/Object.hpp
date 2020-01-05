@@ -16,6 +16,9 @@ class EngineDomain;
 class AssetPath
 {
 public:
+    static const String FileSchemeName;
+    static const String AssetSchemeName;
+
     // 相対パスの場合は Path::canonicalize() でフルパスに解決する。
     // 絶対パスでも .. が含まれている場合は解決する。
     static AssetPath makeFromLocalFilePath(const Path& filePath);
@@ -31,6 +34,7 @@ public:
     static String makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath);
 
     AssetPath();
+    AssetPath(const String& scheme, const String& host, const Path& path);
 
     const String& scheme() const { return m_components->scheme; }
     const String& host() const { return m_components->host; }
@@ -45,7 +49,19 @@ private:
     {
         String scheme;    // e.g) "asset", "file"
         String host;      // e.g) "", "MyAtchive"
-        Path path;        // fullpath. e.g) "C:/dir/file.txt", "/dir/file.txt"
+
+        // パス文字列 ("asset://MyArchive/file" など) からは、Unix 形式のフルパスかどうかを判断できない。
+        // scheme によって解釈を変える。
+        // asset の場合、path はアセットディレクトリまたはアーカイブ内の相対パスとする。
+        // file の場合、ファイルシステムの絶対パスとする。path が相対パスの場合は、先頭が / であると考える。
+        //   ※file scheme で相対パスを表すことはできない。
+        //   ※file scheme はローカルOSで使用できる形式が異なる。Windows 上では常にボリュームセパレータ付きを使用しなければならない。
+        //   ※Windowsではボリュームセパレータが入ったりと、OS間での互換性がないため、ファイルに保存するなど交換の可能性があるデータとして保存してはならない。
+        //   ※file://Assets/dir/file.txt のように、file と host 名を併用することは禁止とする。
+        //  Note: そもそも file scheme は次の目的で使用するものであり、リリースランタイムで使用するべきではない。
+        //  - Editor で、Assets フォルダ以外のローカルファイルを、インポートなどの目的で読み込む
+        //  - ローカルでのお試し動作でファイルのフルパスを指定する。
+        Path path;        // e.g) "C:/dir/file.txt", "dir/file.txt"
     };
 
     static AssetPath makeEmpty();

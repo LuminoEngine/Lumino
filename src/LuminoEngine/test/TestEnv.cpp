@@ -1,5 +1,6 @@
 ﻿#include "Common.hpp"
 #include "../src/Engine/EngineManager.hpp"
+#include "../src/Scene/SceneManager.hpp"
 #include "TestEnv.hpp"
 
 String TestEnv::LuminoCLI;
@@ -18,6 +19,8 @@ void TestEnv::setup()
 	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
     //EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
     detail::EngineDomain::engineManager()->init();
+    detail::EngineDomain::engineManager()->sceneManager()->autoAddingToActiveWorld = true;
+
 
     if (feature == EngineFeature::Experimental)  // Experimental
     {

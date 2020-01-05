@@ -22,6 +22,15 @@ public:
 
 
 
+    /**
+     * 指定したアセットファイルを読み込み、オブジェクト生成します。
+     *
+     * ファイルの拡張子は .lnasset です。ただし、filePath に指定する値は拡張子を省略可能です。
+     */
+    LN_METHOD()
+    static Ref<Object> loadAsset(const StringRef& filePath);
+
+
 
 
 
@@ -44,7 +53,6 @@ public:
     static Ref<Shader> loadShader(const StringRef& filePath);
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 
-    static Ref<Object> loadAsset(const StringRef& filePath);
 
     static Ref<Stream> openFileStream(const StringRef& filePath);
 
