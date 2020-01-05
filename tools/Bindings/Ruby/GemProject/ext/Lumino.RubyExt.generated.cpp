@@ -185,6 +185,129 @@ VALUE LnVector3_allocate( VALUE klass )
     return obj;
 }
 
+static VALUE Wrap_LnVector3_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnVector3_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (3 <= argc && argc <= 3) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        rb_scan_args(argc, argv, "3", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _z = LNRB_VALUE_TO_FLOAT(z);
+            LnResult errorCode = LnVector3_Set(selfObj, _x, _y, _z);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::Vector3 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_Length(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnVector3_Length(selfObj, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::length - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_LengthSquared(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnVector3_LengthSquared(selfObj, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::lengthSquared - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_MutatingNormalize(int argc, VALUE* argv, VALUE self)
+{
+    LnVector3* selfObj;
+    Data_Get_Struct(self, LnVector3, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnVector3_MutatingNormalize(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::mutatingNormalize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnVector3_Normalize(int argc, VALUE* argv, VALUE self)
+{
+    if (3 <= argc && argc <= 3) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        rb_scan_args(argc, argv, "3", &x, &y, &z);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _z = LNRB_VALUE_TO_FLOAT(z);
+            LnVector3 _outReturn;
+            LnResult errorCode = LnVector3_NormalizeXYZ(_x, _y, _z, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnVector3_allocate(g_class_Vector3);
+            *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    if (1 <= argc && argc <= 1) {
+        VALUE vec;
+        rb_scan_args(argc, argv, "1", &vec);
+        if (LNRB_VALUE_IS_OBJECT(vec))
+        {
+            LnVector3* tmp__vec; Data_Get_Struct(vec, LnVector3, tmp__vec);LnVector3& _vec = *tmp__vec;
+            LnVector3 _outReturn;
+            LnResult errorCode = LnVector3_Normalize(&_vec, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnVector3_allocate(g_class_Vector3);
+            *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Vector3::normalize - wrong argument type.");
+    return Qnil;
+}
+
 //==============================================================================
 // ln::Quaternion
 
@@ -207,6 +330,56 @@ VALUE LnQuaternion_allocate( VALUE klass )
     memset(internalObj, 0, sizeof(LnQuaternion));
 
     return obj;
+}
+
+static VALUE Wrap_LnQuaternion_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnQuaternion* selfObj;
+    Data_Get_Struct(self, LnQuaternion, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnQuaternion_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (4 <= argc && argc <= 4) {
+        VALUE x;
+        VALUE y;
+        VALUE z;
+        VALUE w;
+        rb_scan_args(argc, argv, "4", &x, &y, &z, &w);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(z) && LNRB_VALUE_IS_FLOAT(w))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _z = LNRB_VALUE_TO_FLOAT(z);
+            float _w = LNRB_VALUE_TO_FLOAT(w);
+            LnResult errorCode = LnQuaternion_Set(selfObj, _x, _y, _z, _w);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 2) {
+        VALUE axis;
+        VALUE r;
+        rb_scan_args(argc, argv, "2", &axis, &r);
+        if (LNRB_VALUE_IS_OBJECT(axis) && LNRB_VALUE_IS_FLOAT(r))
+        {
+            LnVector3* tmp__axis; Data_Get_Struct(axis, LnVector3, tmp__axis);LnVector3& _axis = *tmp__axis;
+            float _r = LNRB_VALUE_TO_FLOAT(r);
+            LnResult errorCode = LnQuaternion_SetFromAxis(selfObj, &_axis, _r);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Quaternion::Quaternion - wrong argument type.");
+    return Qnil;
 }
 
 //==============================================================================

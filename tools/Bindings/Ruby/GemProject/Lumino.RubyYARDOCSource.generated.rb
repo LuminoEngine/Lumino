@@ -38,13 +38,97 @@ module Lumino::DepthBufferFormat
     D24S8 = 0
 end
 
+# 3次元のベクトルを定義します。
+# 
+class Lumino::Vector3
+    # 指定した値を使用してインスタンスを初期化します。
+    # @overload initialize()
+    #   すべての要素を 0.0 に設定してインスタンスを初期化します。
+    # @overload initialize(x, y, z)
+    #   指定した値を使用してインスタンスを初期化します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def initialize(*args)
+    end
+
+
+
+    # ベクトルの長さを返します。
+    # @return [Float] 
+    def length(*args)
+    end
+
+
+
+    # ベクトルの長さの 2 乗を返します。
+    # @return [Float] 
+    def length_squared(*args)
+    end
+
+
+
+    # このベクトルを正規化します。
+    #   ベクトルの長さが 0 の場合は正規化を行いません。
+    def mutating_normalize(*args)
+    end
+
+
+
+    # 指定ベクトルを正規化したベクトルを返します。
+    # @overload normalize(x, y, z)
+    #   指定ベクトルを正規化したベクトルを返します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    #   @return [Lumino::Vector3] 正規化されたベクトル
+    # @overload normalize(vec)
+    #   指定ベクトルを正規化したベクトルを返します。
+    #   @param [Lumino::Vector3] vec 
+    #   
+    #   @return [Lumino::Vector3] 正規化されたベクトル
+    def normalize(*args)
+    end
+
+
+
+end
+
+# クォータニオンを定義します。
+# 
+class Lumino::Quaternion
+    # 指定した値を使用してインスタンスを初期化します。
+    # @overload initialize()
+    #   単位クォータニオンを設定してインスタンスを初期化します。
+    # @overload initialize(x, y, z, w)
+    #   指定した値を使用してインスタンスを初期化します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   @param [Float] w 
+    #   
+    # @overload initialize(axis, r)
+    #   回転軸と回転角度を指定してインスタンスを初期化します。
+    #     axis が単位ベクトルでなければ正規化してから計算を行います。
+    #   @param [Lumino::Vector3] axis 
+    #   @param [Float] r 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
 # 
 # 
 class Lumino::Object
     # onSerialize
     # @param [Lumino::Serializer] ar 
     # 
-    def on_serialize(ar)
+    def on_serialize(*args)
     end
 
 
@@ -58,7 +142,7 @@ class Lumino::Serializer
     # @param [] name 
     # @param [Boolean] value 
     # 
-    def write_bool(name, value)
+    def write_bool(*args)
     end
 
 
@@ -67,7 +151,7 @@ class Lumino::Serializer
     # @param [] name 
     # @param [Integer] value 
     # 
-    def write_int(name, value)
+    def write_int(*args)
     end
 
 
@@ -76,7 +160,7 @@ class Lumino::Serializer
     # @param [] name 
     # @param [Float] value 
     # 
-    def write_float(name, value)
+    def write_float(*args)
     end
 
 
@@ -85,7 +169,7 @@ class Lumino::Serializer
     # @param [] name 
     # @param [] value 
     # 
-    def write_string(name, value)
+    def write_string(*args)
     end
 
 
@@ -94,7 +178,7 @@ class Lumino::Serializer
     # @param [] name 
     # @param [Lumino::Object] value 
     # 
-    def write_object(name, value)
+    def write_object(*args)
     end
 
 
@@ -102,7 +186,8 @@ class Lumino::Serializer
     # read
     # @param [] name 
     # 
-    def read_bool(name)
+    # @return [Boolean] 
+    def read_bool(*args)
     end
 
 
@@ -110,7 +195,8 @@ class Lumino::Serializer
     # read
     # @param [] name 
     # 
-    def read_int(name)
+    # @return [Integer] 
+    def read_int(*args)
     end
 
 
@@ -118,7 +204,8 @@ class Lumino::Serializer
     # read
     # @param [] name 
     # 
-    def read_float(name)
+    # @return [Float] 
+    def read_float(*args)
     end
 
 
@@ -126,7 +213,8 @@ class Lumino::Serializer
     # read
     # @param [] name 
     # 
-    def read_string(name)
+    # @return [String] 
+    def read_string(*args)
     end
 
 
@@ -134,7 +222,8 @@ class Lumino::Serializer
     # read
     # @param [] name 
     # 
-    def read_object(name)
+    # @return [Lumino::Object] 
+    def read_object(*args)
     end
 
 
@@ -143,7 +232,8 @@ class Lumino::Serializer
     # @param [Lumino::Object] value 
     # @param [String] basePath 
     # 
-    def serialize(value, basePath)
+    # @return [String] 
+    def serialize(*args)
     end
 
 
@@ -152,7 +242,8 @@ class Lumino::Serializer
     # @param [String] str 
     # @param [String] basePath 
     # 
-    def deserialize(str, basePath)
+    # @return [Lumino::Object] 
+    def deserialize(*args)
     end
 
 
@@ -163,7 +254,8 @@ end
 # 
 class Lumino::AssetModel
     # target
-    def target()
+    # @return [Lumino::Object] 
+    def target(*args)
     end
 
 
@@ -171,7 +263,7 @@ class Lumino::AssetModel
     # init
     # @param [Lumino::Object] target 
     # 
-    def initialize(target)
+    def initialize(*args)
     end
 
 
@@ -185,7 +277,7 @@ class Lumino::Assets
     # @param [Lumino::AssetModel] asset 
     # @param [String] filePath 
     # 
-    def save_asset_to_local_file(asset, filePath)
+    def save_asset_to_local_file(*args)
     end
 
 
@@ -193,7 +285,8 @@ class Lumino::Assets
     # Internal
     # @param [String] filePath 
     # 
-    def load_asset_from_local_file(filePath)
+    # @return [Lumino::AssetModel] 
+    def load_asset_from_local_file(*args)
     end
 
 
@@ -207,7 +300,7 @@ class Lumino::EngineSettings
     # @param [Integer] width 
     # @param [Integer] height 
     # 
-    def set_main_window_size(width, height)
+    def set_main_window_size(*args)
     end
 
 
@@ -216,7 +309,7 @@ class Lumino::EngineSettings
     # @param [Integer] width 
     # @param [Integer] height 
     # 
-    def set_main_back_buffer_size(width, height)
+    def set_main_back_buffer_size(*args)
     end
 
 
@@ -224,7 +317,7 @@ class Lumino::EngineSettings
     # メインウィンドウのタイトル文字列を設定します。
     # @param [String] title 
     # 
-    def set_main_window_title(title)
+    def set_main_window_title(*args)
     end
 
 
@@ -232,7 +325,7 @@ class Lumino::EngineSettings
     # アセットが保存されているディレクトリを登録します。
     # @param [String] path 
     # 
-    def add_asset_directory(path)
+    def add_asset_directory(*args)
     end
 
 
@@ -241,7 +334,7 @@ class Lumino::EngineSettings
     # @param [String] fileFullPath 
     # @param [String] password 
     # 
-    def add_asset_archive(fileFullPath, password)
+    def add_asset_archive(*args)
     end
 
 
@@ -249,7 +342,7 @@ class Lumino::EngineSettings
     # デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
     # @param [Boolean] enabled 
     # 
-    def set_engine_log_enabled(enabled)
+    def set_engine_log_enabled(*args)
     end
 
 
@@ -257,7 +350,7 @@ class Lumino::EngineSettings
     # デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
     # @param [String] filePath 
     # 
-    def set_engine_log_file_path(filePath)
+    def set_engine_log_file_path(*args)
     end
 
 
@@ -268,26 +361,27 @@ end
 # 
 class Lumino::Engine
     # エンジンの初期化処理を行います。
-    def initialize()
+    def initialize(*args)
     end
 
 
 
     # エンジンの終了処理を行います。
-    def finalize()
+    def finalize(*args)
     end
 
 
 
     # 
     # @return [Boolean] アプリケーションの終了が要求されている場合は false を返します。
-    def update()
+    def update(*args)
     end
 
 
 
     # 。
-    def main_ui_view()
+    # @return [Lumino::UIControl] 
+    def main_ui_view(*args)
     end
 
 
@@ -298,19 +392,19 @@ end
 # 
 class Lumino::Application
     # エンジンの初期化処理が完了した後に呼び出されます。
-    def on_init()
+    def on_init(*args)
     end
 
 
 
     # 毎フレーム呼び出されます。
-    def on_update()
+    def on_update(*args)
     end
 
 
 
     # 
-    def initialize()
+    def initialize(*args)
     end
 
 
@@ -334,32 +428,31 @@ class Lumino::Texture2D
     #   サポートしているフォーマットは次の通りです。PNG(.png), JPG(.jpg), TGA(.tga), BMP(.bmp), GIF(.gif)
     # @param [] filePath 
     # 
-    def load(filePath)
+    # @return [Lumino::Texture2D] 
+    def load(*args)
     end
 
 
 
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
-    # @param [Integer] width 
-    # @param [Integer] height 
-    # 
-    # @return [] 作成されたテクスチャ
-    def initialize(width, height)
-    end
-
-    # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
-    # @param [Integer] width 
-    # @param [Integer] height 
-    # @param [Lumino::TextureFormat] format 
-    # 
-    def initialize(width, height, format)
-    end
-
-    # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
-    # @param [] filePath 
-    # @param [Lumino::TextureFormat] format 
-    # 
-    def initialize(filePath, format)
+    # @overload initialize(width, height)
+    #   テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
+    #   @param [Integer] width 
+    #   @param [Integer] height 
+    #   
+    # @overload initialize(width, height, format)
+    #   テクスチャを作成します。
+    #   @param [Integer] width 
+    #   @param [Integer] height 
+    #   @param [Lumino::TextureFormat] format 
+    #   
+    # @overload initialize(filePath, format)
+    #   ローカルのファイルを読み込み、テクスチャを作成します。
+    #     このメソッドは TextureImporter のユーティリティです。
+    #   @param [] filePath 
+    #   @param [Lumino::TextureFormat] format 
+    #   
+    def initialize(*args)
     end
 
 
@@ -377,13 +470,14 @@ class Lumino::VisualComponent
     # 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
     # @param [Boolean] value 
     # 
-    def visible=(value)
+    def visible=(*args)
     end
 
 
 
     # 可視状態を取得します。
-    def visible?()
+    # @return [Boolean] 
+    def visible?(*args)
     end
 
 
@@ -396,7 +490,7 @@ class Lumino::SpriteComponent
     # スプライトが表示するテクスチャを設定します。
     # @param [Lumino::Texture] texture 
     # 
-    def texture=(texture)
+    def texture=(*args)
     end
 
 
@@ -407,7 +501,8 @@ end
 # 
 class Lumino::ComponentList
     # 
-    def get_length()
+    # @return [Integer] 
+    def get_length(*args)
     end
 
 
@@ -415,7 +510,8 @@ class Lumino::ComponentList
     # 
     # @param [Integer] index 
     # 
-    def get_item(index)
+    # @return [Lumino::Component] 
+    def get_item(*args)
     end
 
 
@@ -426,23 +522,24 @@ end
 # 
 class Lumino::WorldObject
     # このオブジェクトの位置を設定します。
-    # @param [Lumino::Vector3] pos 
-    # 
-    def position=(pos)
-    end
-
-    # このオブジェクトの位置を設定します。
-    # @param [Float] x 
-    # @param [Float] y 
-    # @param [Float] z 
-    # 
-    def position=(x, y, z)
+    # @overload position=(pos)
+    #   このオブジェクトの位置を設定します。
+    #   @param [Lumino::Vector3] pos 
+    #   
+    # @overload position=(x, y, z)
+    #   このオブジェクトの位置を設定します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def position=(*args)
     end
 
 
 
     # このオブジェクトの位置を位置を取得します。
-    def position()
+    # @return [Lumino::Vector3] 
+    def position(*args)
     end
 
 
@@ -450,7 +547,7 @@ class Lumino::WorldObject
     # このオブジェクトの回転を設定します。
     # @param [Lumino::Quaternion] rot 
     # 
-    def rotation=(rot)
+    def rotation=(*args)
     end
 
 
@@ -460,69 +557,71 @@ class Lumino::WorldObject
     # @param [Float] y 
     # @param [Float] z 
     # 
-    def set_euler_angles(x, y, z)
+    def set_euler_angles(*args)
     end
 
 
 
     # このオブジェクトの回転を取得します。
-    def rotation()
+    # @return [Lumino::Quaternion] 
+    def rotation(*args)
     end
 
 
 
     # このオブジェクトの拡大率を設定します。
-    # @param [Lumino::Vector3] scale 
-    # 
-    def scale=(scale)
-    end
-
-    # このオブジェクトの拡大率を設定します。
-    # @param [Float] xyz 
-    # 
-    def scale=(xyz)
-    end
-
-    # このオブジェクトの拡大率を設定します。
-    # @param [Float] x 
-    # @param [Float] y 
-    # @param [Float] z 
-    # 
-    def scale=(x, y, z)
+    # @overload scale=(scale)
+    #   このオブジェクトの拡大率を設定します。
+    #   @param [Lumino::Vector3] scale 
+    #   
+    # @overload scale=(xyz)
+    #   このオブジェクトの拡大率を設定します。
+    #   @param [Float] xyz 
+    #   
+    # @overload scale=(x, y, z)
+    #   このオブジェクトの拡大率を設定します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def scale=(*args)
     end
 
 
 
     # このオブジェクトの拡大率を取得します。
-    def scale()
+    # @return [Lumino::Vector3] 
+    def scale(*args)
     end
 
 
 
     # このオブジェクトのローカルの中心位置を設定します。
-    # @param [Lumino::Vector3] value 
-    # 
-    def center_point=(value)
-    end
-
-    # このオブジェクトのローカルの中心位置を設定します。
-    # @param [Float] x 
-    # @param [Float] y 
-    # @param [Float] z 
-    # 
-    def center_point=(x, y, z)
+    # @overload center_point=(value)
+    #   このオブジェクトのローカルの中心位置を設定します。
+    #   @param [Lumino::Vector3] value 
+    #   
+    # @overload center_point=(x, y, z)
+    #   このオブジェクトのローカルの中心位置を設定します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def center_point=(*args)
     end
 
 
 
     # このオブジェクトのローカルの中心位置を取得します。
-    def center_point()
+    # @return [Lumino::Vector3] 
+    def center_point(*args)
     end
 
 
 
     # 
-    def components()
+    # @return [Lumino::ComponentList] 
+    def components(*args)
     end
 
 
@@ -530,7 +629,7 @@ class Lumino::WorldObject
     # フレーム更新
     # @param [Float] elapsedSeconds 
     # 
-    def on_update(elapsedSeconds)
+    def on_update(*args)
     end
 
 
@@ -543,13 +642,14 @@ class Lumino::VisualObject
     # 可視状態を設定します。false の場合、コンポーネントの描画は行われません。(default: true)
     # @param [Boolean] value 
     # 
-    def visible=(value)
+    def visible=(*args)
     end
 
 
 
     # 可視状態を取得します。
-    def visible?()
+    # @return [Boolean] 
+    def visible?(*args)
     end
 
 
@@ -562,7 +662,7 @@ class Lumino::Sprite
     # スプライトが表示するテクスチャを設定します。
     # @param [Lumino::Texture] value 
     # 
-    def texture=(value)
+    def texture=(*args)
     end
 
 
@@ -573,7 +673,7 @@ class Lumino::Sprite
     # @param [Float] width 
     # @param [Float] height 
     # 
-    def set_source_rect(x, y, width, height)
+    def set_source_rect(*args)
     end
 
 
@@ -581,21 +681,21 @@ class Lumino::Sprite
     # test
     # @param [Lumino::TestDelegate] callback 
     # 
-    def set_caller_test(callback)
+    def set_caller_test(*args)
     end
 
 
 
     # init
-    def initialize()
-    end
-
-    # init
-    # @param [Lumino::Texture] texture 
-    # @param [Float] width 
-    # @param [Float] height 
-    # 
-    def initialize(texture, width, height)
+    # @overload initialize()
+    #   init
+    # @overload initialize(texture, width, height)
+    #   init
+    #   @param [Lumino::Texture] texture 
+    #   @param [Float] width 
+    #   @param [Float] height 
+    #   
+    def initialize(*args)
     end
 
 
@@ -606,7 +706,8 @@ end
 # 
 class Lumino::UIEventArgs
     # イベントの発生元となった要素を取得します。
-    def sender()
+    # @return [Lumino::UIElement] 
+    def sender(*args)
     end
 
 
@@ -622,23 +723,24 @@ end
 # 
 class Lumino::UIElement
     # このオブジェクトの位置を設定します。
-    # @param [Lumino::Vector3] pos 
-    # 
-    def position=(pos)
-    end
-
-    # このオブジェクトの位置を設定します。
-    # @param [Float] x 
-    # @param [Float] y 
-    # @param [Float] z 
-    # 
-    def position=(x, y, z)
+    # @overload position=(pos)
+    #   このオブジェクトの位置を設定します。
+    #   @param [Lumino::Vector3] pos 
+    #   
+    # @overload position=(x, y, z)
+    #   このオブジェクトの位置を設定します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def position=(*args)
     end
 
 
 
     # このオブジェクトの位置を位置を取得します。
-    def position()
+    # @return [Lumino::Vector3] 
+    def position(*args)
     end
 
 
@@ -646,7 +748,7 @@ class Lumino::UIElement
     # このオブジェクトの回転を設定します。
     # @param [Lumino::Quaternion] rot 
     # 
-    def rotation=(rot)
+    def rotation=(*args)
     end
 
 
@@ -656,62 +758,63 @@ class Lumino::UIElement
     # @param [Float] y 
     # @param [Float] z 
     # 
-    def set_euler_angles(x, y, z)
+    def set_euler_angles(*args)
     end
 
 
 
     # このオブジェクトの回転を取得します。
-    def rotation()
+    # @return [Lumino::Quaternion] 
+    def rotation(*args)
     end
 
 
 
     # このオブジェクトの拡大率を設定します。
-    # @param [Lumino::Vector3] scale 
-    # 
-    def scale=(scale)
-    end
-
-    # このオブジェクトの拡大率を設定します。
-    # @param [Float] xyz 
-    # 
-    def scale=(xyz)
-    end
-
-    # このオブジェクトの拡大率を設定します。
-    # @param [Float] x 
-    # @param [Float] y 
-    # 
-    def scale=(x, y)
+    # @overload scale=(scale)
+    #   このオブジェクトの拡大率を設定します。
+    #   @param [Lumino::Vector3] scale 
+    #   
+    # @overload scale=(xyz)
+    #   このオブジェクトの拡大率を設定します。
+    #   @param [Float] xyz 
+    #   
+    # @overload scale=(x, y)
+    #   このオブジェクトの拡大率を設定します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   
+    def scale=(*args)
     end
 
 
 
     # このオブジェクトの拡大率を取得します。
-    def scale()
+    # @return [Lumino::Vector3] 
+    def scale(*args)
     end
 
 
 
     # このオブジェクトのローカルの中心位置を設定します。
-    # @param [Lumino::Vector3] value 
-    # 
-    def center_point=(value)
-    end
-
-    # このオブジェクトのローカルの中心位置を設定します。
-    # @param [Float] x 
-    # @param [Float] y 
-    # @param [Float] z 
-    # 
-    def center_point=(x, y, z)
+    # @overload center_point=(value)
+    #   このオブジェクトのローカルの中心位置を設定します。
+    #   @param [Lumino::Vector3] value 
+    #   
+    # @overload center_point=(x, y, z)
+    #   このオブジェクトのローカルの中心位置を設定します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def center_point=(*args)
     end
 
 
 
     # このオブジェクトのローカルの中心位置を取得します。
-    def center_point()
+    # @return [Lumino::Vector3] 
+    def center_point(*args)
     end
 
 
@@ -719,7 +822,7 @@ class Lumino::UIElement
     # Add element to container.
     # @param [Lumino::UIElement] child 
     # 
-    def add_child(child)
+    def add_child(*args)
     end
 
 
@@ -737,7 +840,7 @@ class Lumino::UIButtonBase
     # set text.
     # @param [] text 
     # 
-    def set_text(text)
+    def set_text(*args)
     end
 
 
@@ -748,7 +851,7 @@ end
 # 
 class Lumino::UIButton
     # init.
-    def initialize()
+    def initialize(*args)
     end
 
 
@@ -756,7 +859,8 @@ class Lumino::UIButton
     # Clicked イベントの通知を受け取るコールバックを登録します。
     # @param [Lumino::UIEventHandler] handler 
     # 
-    def connect_on_clicked(handler)
+    # @return [] 
+    def connect_on_clicked(*args)
     end
 
 

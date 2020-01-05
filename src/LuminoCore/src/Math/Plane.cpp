@@ -46,7 +46,7 @@ Plane::Plane(const Vector3& p1, const Vector3& normal)
 Plane::Plane(const Vector3& point1, const Vector3& point2, const Vector3& point3)
 {
     normal = Vector3::cross((point2 - point1), (point3 - point1));
-    normal.normalize();
+    normal.mutatingNormalize();
 
     distance = -Vector3::dot(point1, normal);
 }

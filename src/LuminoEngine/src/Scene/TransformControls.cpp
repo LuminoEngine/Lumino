@@ -415,7 +415,7 @@ Ray TransformControls::makeLocalRay(float x, float y) const
         ray.origin.transformCoord(gizmoInv);
         ray.direction.transformCoord(gizmoInv);
         ray.direction -= ray.origin;
-        ray.direction.normalize();
+        ray.direction.mutatingNormalize();
     }
 
     return ray;

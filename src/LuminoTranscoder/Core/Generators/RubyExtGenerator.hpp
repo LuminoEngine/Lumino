@@ -32,7 +32,7 @@ private:
 
 
 	ln::String makeRubyClassInfoVariableName(const TypeSymbol* type) const { return u"g_class_" + type->shortName(); }
-	ln::String makeWrapStructName(TypeSymbol* type) const { return u"Wrap_" + type->shortName(); }
+    ln::String makeWrapStructName(const TypeSymbol* type) const;    // e.g.) => Wrap_LnTexture2D, LnVector3
 	ln::String makeWrapFuncName(MethodSymbol* method) const { return u"Wrap_" + makeFlatFullFuncName(method, FlatCharset::Unicode); }
 	ln::String makeWrapFuncName_CallOverrideBase(MethodSymbol* method) const { return u"Wrap_" + makeFlatFullFuncName(method, FlatCharset::Unicode) + u"_CallOverrideBase"; }
 	ln::String makeSignalValueName(const MethodSymbol* eventConnectorMethod) const { return eventConnectorMethod->shortName() + u"_Signal"; }

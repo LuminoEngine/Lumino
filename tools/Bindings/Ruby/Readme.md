@@ -1,3 +1,33 @@
+
+
+----------
+
+### 準備
+
+```
+bundle install
+```
+
+### ドキュメントのビルド
+
+```
+rake build
+```
+
+確認は doc/index.html から。
+
+### ビルド
+```
+rake build
+```
+
+--------------------------------------------------
+
+
+
+
+
+
 https://docs.ruby-lang.org/en/2.1.0/README_EXT_ja.html
 
 

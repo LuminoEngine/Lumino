@@ -41,8 +41,12 @@ extern "C" {
 
 //------------------------------------------------------------------------------
 #include <stdint.h>
-typedef intptr_t LnHandle;
+
+/** Lumino のオブジェクトを識別するための値です。0 (LN_NULL_HANDLE) は無効値です。 */
+typedef uint32_t LnHandle;
+
 typedef void* LnUserData;
+
 typedef char16_t LnChar;
 
 #define LN_NULL_HANDLE 0

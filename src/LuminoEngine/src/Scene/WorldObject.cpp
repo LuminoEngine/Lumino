@@ -75,7 +75,7 @@ void WorldObjectTransform::lookAt(const Vector3& target, const Vector3& up)
         s = Vector3::cross(u2, f);
     }
 
-    s.normalize();
+    s.mutatingNormalize();
 
     Vector3 u = Vector3::cross(f, s);
     Matrix mat(

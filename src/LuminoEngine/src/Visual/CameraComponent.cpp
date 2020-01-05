@@ -115,7 +115,7 @@ void CameraComponent::updateMatrices()
 
 	    // 正面方向
 	    Vector3 d = lookAt - worldMatrix.position();
-	    d.normalize();
+	    d.mutatingNormalize();
 	    m_direction = Vector4(d, 0.0f);
 
         // ViewFrustum

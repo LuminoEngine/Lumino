@@ -106,7 +106,7 @@ static void computeSmoothingNormals(const tinyobj::attrib_t& attrib, const tinyo
 
     // Normalize the normals, that is, make them unit vectors
     for (iter = smoothVertexNormals.begin(); iter != smoothVertexNormals.end(); iter++) {
-        iter->second.normalize();
+        iter->second.mutatingNormalize();
     }
 }
 

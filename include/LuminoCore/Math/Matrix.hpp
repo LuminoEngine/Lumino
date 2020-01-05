@@ -31,6 +31,7 @@ struct Plane;
  * 
  * なお、後者は行列の生成と乗算をまとめて行うように最適化されており、高速に動作します。
  */
+LN_STRUCT()
 struct LN_API Matrix
 {
 public:
@@ -44,6 +45,9 @@ public:
             float m41, m42, m43, m44;
         };
         float m[4][4];
+
+        LN_FIELD()
+        float elements[16];
     };
 
     /** 単位行列 */

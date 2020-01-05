@@ -912,14 +912,14 @@ void CalculateAzimuthElevation(
 	}
 
 	// normalize() does nothing if the length of |sourceListener| is zero.
-	source_listener.normalize();
+	source_listener.mutatingNormalize();
 
 	// Align axes
 	Vector3 listener_right = Vector3::cross(listener_forward, listener_up);
-	listener_right.normalize();
+	listener_right.mutatingNormalize();
 
 	Vector3 listener_forward_norm = listener_forward;
-	listener_forward_norm.normalize();
+	listener_forward_norm.mutatingNormalize();
 
 	Vector3 up = Vector3::cross(listener_right, listener_forward_norm);
 

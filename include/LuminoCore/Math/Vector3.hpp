@@ -46,9 +46,11 @@ public:
 
 public:
     /** すべての要素を 0.0 に設定してインスタンスを初期化します。 */
+    LN_METHOD(OverloadPostfix = "Zeros")
     Vector3();
 
     /** 指定した値を使用してインスタンスを初期化します。 */
+    LN_METHOD()
     Vector3(float x, float y, float z);
 
     /** Vector2 と z 値を指定してインスタンスを初期化します。 */
@@ -90,7 +92,8 @@ public:
      * 
      * ベクトルの長さが 0 の場合は正規化を行いません。
      */
-    void normalize();
+    LN_METHOD()
+    void mutatingNormalize();
 
     /**
      * このベクトルを指定された最大値と最小値の範囲にクランプします。

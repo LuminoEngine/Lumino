@@ -125,6 +125,20 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
 
 
 /**
+    @brief すべての要素を 0.0 に設定してインスタンスを初期化します。
+    @param[in] vector3 : instance
+*/
+LN_FLAT_API LnResult LnVector3_SetZeros(LnVector3* vector3);
+
+
+/**
+    @brief 指定した値を使用してインスタンスを初期化します。
+    @param[in] vector3 : instance
+*/
+LN_FLAT_API LnResult LnVector3_Set(LnVector3* vector3, float x, float y, float z);
+
+
+/**
     @brief ベクトルの長さを返します。
     @param[in] vector3 : instance
     @param[out] outReturn : instance.
@@ -138,6 +152,14 @@ LN_FLAT_API LnResult LnVector3_Length(const LnVector3* vector3, float* outReturn
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnVector3_LengthSquared(const LnVector3* vector3, float* outReturn);
+
+
+/**
+    @brief このベクトルを正規化します。
+    @param[in] vector3 : instance
+    @details ベクトルの長さが 0 の場合は正規化を行いません。
+*/
+LN_FLAT_API LnResult LnVector3_MutatingNormalize(LnVector3* vector3);
 
 
 /**
@@ -158,6 +180,30 @@ LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3
     @return 正規化されたベクトル
 */
 LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outReturn);
+
+
+/**
+    @brief 単位クォータニオンを設定してインスタンスを初期化します。
+    @param[in] quaternion : instance
+*/
+LN_FLAT_API LnResult LnQuaternion_SetZeros(LnQuaternion* quaternion);
+
+
+/**
+    @brief 指定した値を使用してインスタンスを初期化します。
+    @param[in] quaternion : instance
+*/
+LN_FLAT_API LnResult LnQuaternion_Set(LnQuaternion* quaternion, float x, float y, float z, float w);
+
+
+/**
+    @brief 回転軸と回転角度を指定してインスタンスを初期化します。
+    @param[in] quaternion : instance
+    @param[in] axis : 回転軸
+    @param[in] r : 回転角度 (ラジアン単位)
+    @details axis が単位ベクトルでなければ正規化してから計算を行います。
+*/
+LN_FLAT_API LnResult LnQuaternion_SetFromAxis(LnQuaternion* quaternion, const LnVector3* axis, float r);
 
 
 

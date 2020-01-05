@@ -42,11 +42,13 @@ public:
     /**
      * 単位クォータニオンを設定してインスタンスを初期化します。
      */
+    LN_METHOD(OverloadPostfix = "Zeros")
     Quaternion();
 
     /**
      * 指定した値を使用してインスタンスを初期化します。
      */
+    LN_METHOD()
     Quaternion(float x, float y, float z, float w);
 
     /**
@@ -56,6 +58,7 @@ public:
      * 
      * axis が単位ベクトルでなければ正規化してから計算を行います。
      */
+    LN_METHOD(OverloadPostfix = "FromAxis")
     Quaternion(const Vector3& axis, float r);
 
 public:

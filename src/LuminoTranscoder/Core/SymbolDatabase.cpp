@@ -304,6 +304,8 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 		m_parameters.add(s);
 	}
 
+    m_isConstructor = pi->isConstructor;
+
 	if (!pi->isStatic && m_shortName == u"init") {
 		m_isConstructor = true;
 		m_accessLevel = AccessLevel::Public;
@@ -362,8 +364,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 	// static でなければ、第1引数は this などになる
 	if (!isStatic())
 	{
-		if (m_ownerType->kind() == TypeKind::Struct)
-		{
+        if (m_ownerType->kind() == TypeKind::Struct) {
             auto name = m_ownerType->shortName().toLower();
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
 			if (!s->init(QualType{ m_ownerType }, name)) return false;
@@ -376,12 +377,10 @@ ln::Result MethodSymbol::makeFlatParameters()
             if (!param->init(name, u"in", "instance")) return false;
             doc->m_flatParams.add(param);
 		}
-		else if (isConstructor())
-		{
+		else if (isConstructor()) {
 			// none
 		}
-		else if (m_ownerType->kind() == TypeKind::Class)
-		{
+        else if (m_ownerType->kind() == TypeKind::Class) {
             auto name = m_ownerType->shortName().toLower();
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
 			if (!s->init(QualType{ m_ownerType }, name)) return false;

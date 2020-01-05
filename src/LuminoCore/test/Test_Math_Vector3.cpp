@@ -55,7 +55,7 @@ TEST_F(Test_Vector3, Basic)
 	// this->normalize
 	{
 		Vector3 v1 = sample1;
-		v1.normalize();
+		v1.mutatingNormalize();
 		ASSERT_VEC3_NEAR(0.267261, 0.534522, 0.801784, v1);
 	}
 	// this->Clamp

@@ -118,7 +118,12 @@ ln::String Generator::makeFlatShortFuncName(const MethodSymbol* method, FlatChar
 {
 	ln::String funcName;
 	if (method->isConstructor()) {
-		funcName = u"Create";
+        if (method->ownerType()->isStruct()) {
+            funcName = u"Set";
+        }
+        else {
+            funcName = u"Create";
+        }
 	}
 	else if (method->isPropertyGetter()) {
 		// prefix を整える.
@@ -152,7 +157,7 @@ ln::String Generator::makeFlatFullFuncName(const MethodSymbol* method, FlatChars
 
 ln::String Generator::makeFlatFullFuncName(const TypeSymbol* classSymbol, const MethodSymbol* method, FlatCharset charset) const
 {
-	return ln::String::format(_T("{0}{1}_{2}"), m_config->flatCOutputModuleName, classSymbol->shortName(), makeFlatShortFuncName(method, charset));
+	return ln::String::format(u"{0}{1}_{2}", m_config->flatCOutputModuleName, classSymbol->shortName(), makeFlatShortFuncName(method, charset));
 }
 
 // 宣言文の作成。ドキュメンテーションコメントは含まない。
@@ -161,18 +166,15 @@ ln::String Generator::makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset
 	// make params
 	OutputBuffer params;
 	for (auto& paramInfo : methodInfo->flatParameters()) {
-		params.AppendCommad("{0} {1}", makeFlatCParamQualTypeName(methodInfo, paramInfo, charset), paramInfo->name());
+		params.AppendCommad(u"{0} {1}", makeFlatCParamQualTypeName(methodInfo, paramInfo, charset), paramInfo->name());
 	}
 
 	static const ln::String funcHeaderTemplate =
-		"LN_FLAT_API LnResult %%FuncName%%(%%ParamList%%)";
-
-
-	//ln::String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
+		u"LN_FLAT_API LnResult %%FuncName%%(%%ParamList%%)";
 
 	return funcHeaderTemplate
-		.replace("%%FuncName%%", makeFlatFullFuncName(methodInfo, charset))// + suffix)
-		.replace("%%ParamList%%", params.toString());
+		.replace(u"%%FuncName%%", makeFlatFullFuncName(methodInfo, charset))
+		.replace(u"%%ParamList%%", params.toString());
 }
 
 ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo, const MethodParameterSymbol* paramInfo, FlatCharset charset) const
@@ -185,7 +187,7 @@ ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo,
 		ln::String modifer;
 		if (paramInfo->isThis() && methodIsConst)
 			modifer = "const ";
-		if (!paramInfo->isThis() && !paramInfo->isOut())
+		if (!paramInfo->isThis() && !paramInfo->isOut() && !paramInfo->isReturn())
 			modifer = "const ";
 		return ln::String::format("{0}{1}{2}*", modifer, m_config->flatCOutputModuleName, typeInfo->shortName());
 	}

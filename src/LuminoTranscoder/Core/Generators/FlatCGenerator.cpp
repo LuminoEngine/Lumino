@@ -651,7 +651,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		if (typeInfo->isStruct())
 		{
 			if (methodInfo->isConstructor()) {
-				callExp = ln::String::format("new (reinterpret_cast<{0}*>({1})) {2}({3});", typeInfo->fullName(), typeInfo->shortName().toLower(), methodInfo->shortName(), args.toString());
+				callExp = ln::String::format("new (reinterpret_cast<{0}*>({1})) {2}({3});", typeInfo->fullName(), typeInfo->shortName().toLower(), typeInfo->fullName(), args.toString());
 			}
 			else if (methodInfo->isStatic()) {
 				body.append("({0}::{1}({2}));", typeInfo->fullName(), methodInfo->shortName(), args.toString());

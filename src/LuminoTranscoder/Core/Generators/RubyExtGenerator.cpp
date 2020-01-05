@@ -121,15 +121,35 @@ void RubyExtGenerator::generate()
 	// structs
 	for (auto& structSymbol : db()->structs()) {
 
-		code.AppendLine("//==============================================================================");
-		code.AppendLine("// {0}", structSymbol->fullName());
+		code.AppendLine(u"//==============================================================================");
+		code.AppendLine(u"// {0}", structSymbol->fullName());
 		code.NewLine();
+
+        //// wrap struct
+        //{
+        //    OutputBuffer wrapStruct;
+
+        //    wrapStruct.AppendLine(u"struct {0}", makeWrapStructName(structSymbol));
+        //    wrapStruct.AppendLine(u"{");
+        //    wrapStruct.IncreaseIndent();
+        //    {
+        //        wrapStruct.AppendLine(u"{0} value;", makeFlatClassName(structSymbol));
+        //    }
+        //    wrapStruct.DecreaseIndent();
+        //    wrapStruct.AppendLine(u"};");
+        //    wrapStruct.NewLine();
+        //    code.AppendLines(wrapStruct.toString());
+        //}
 
 		code.AppendLine(u"VALUE {0};", makeRubyClassInfoVariableName(structSymbol));
 		code.NewLine();
 
 		code.AppendLine(m_RubyRequiredStructMethodsTemplate
 			.replace(u"%%FlatStructName%%", makeFlatClassName(structSymbol)));
+
+        for (auto& overload : structSymbol->overloads()) {
+            code.append(makeWrapFuncImplement(structSymbol, overload));
+        }
 	}
 
 	// classes
@@ -141,13 +161,13 @@ void RubyExtGenerator::generate()
         {
 			OutputBuffer markExprs;
 
-			code.AppendLine("//==============================================================================");
-			code.AppendLine("// {0}", classSymbol->fullName());
+			code.AppendLine(u"//==============================================================================");
+			code.AppendLine(u"// {0}", classSymbol->fullName());
 			code.NewLine();
 
+			// クラスをラップする構造体
 			{
 				OutputBuffer wrapStruct;
-				// クラスをラップする構造体
 				/* 例:
 				struct Wrap_MyClass
 					: public Wrap_BaseClass
@@ -166,7 +186,7 @@ void RubyExtGenerator::generate()
                 else if (classSymbol->isRootObjectClass()) {
                     wrapStruct.AppendLine("    : public Wrap_RubyObject");
                 }
-				wrapStruct.AppendLine("{");
+				wrapStruct.AppendLine(u"{");
 				wrapStruct.IncreaseIndent();
 
 				// Accessor Cache
@@ -181,15 +201,15 @@ void RubyExtGenerator::generate()
 				}
 
 				// Constructor
-				wrapStruct.AppendLine("{0}()", makeWrapStructName(classSymbol));
+				wrapStruct.AppendLine(u"{0}()", makeWrapStructName(classSymbol));
 				//if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
 				//{
 				//	wrapStruct.Append("    : ");
 				//	wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMemberInit.ToString());
 				//}
-				wrapStruct.AppendLine("{}");
+				wrapStruct.AppendLine(u"{}");
 				wrapStruct.DecreaseIndent();
-				wrapStruct.AppendLine("};").NewLine();
+				wrapStruct.AppendLine(u"};").NewLine();
 				//wrapStruct.AppendLine(_currentClassInfo.AdditionalClassStaticVariables.ToString());
 
 
@@ -330,6 +350,15 @@ void RubyExtGenerator::generate()
 	}
 }
 
+ln::String RubyExtGenerator::makeWrapStructName(const TypeSymbol* type) const
+{
+    if (type->isStruct())
+        return makeFlatClassName(type);
+    else
+        return u"Wrap_" + type->shortName();
+}
+
+
 //ln::String RubyExtGenerator::makeEventSignalClassName(const TypeSymbol* delegateType) const
 //{
 //	for (auto& param : delegateType->delegateDeclaration()->parameters()) {
@@ -451,7 +480,10 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 		for (auto& param : method->flatParameters())
 		{
 			if (param->isThis()) {
-				callerArgList.AppendCommad("selfObj->handle");
+                if (classSymbol->isStruct())
+                    callerArgList.AppendCommad(u"selfObj");
+                else
+				    callerArgList.AppendCommad(u"selfObj->handle");
 			}
 			else if (param->isReturn())
 			{
@@ -459,11 +491,11 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 
 				// コンストラクタの最後の引数 (LNTexture_Create(x, y, &tex) の tex) は、WrapStruct::Handle へ格納する
 				if (method->isConstructor()) {
-					callerArgList.AppendCommad("&selfObj->handle");
+					callerArgList.AppendCommad(u"&selfObj->handle");
 
 					// コンストラクトされた Object を register
-                    callerPostStmt.AppendLine("LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
-					callerReturnStmt.AppendLine("return Qnil;");
+                    callerPostStmt.AppendLine(u"LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
+					callerReturnStmt.AppendLine(u"return Qnil;");
 				}
 				else {
 					auto localVarName = u"_" + param->name();
@@ -1069,6 +1101,23 @@ void RubyYARDOCSourceGenerator::generate()
 		code.NewLine();
 	}
 
+    for (auto& structSymbol : db()->structs()) {
+        code.AppendLine(u"# " + structSymbol->document()->summary());
+        code.AppendLine(u"# ");
+        code.append(u"class " + makeRubyTypeFullName(structSymbol));
+        code.NewLine();
+        code.IncreaseIndent();
+
+        for (auto& overload : structSymbol->overloads()) {
+            code.AppendLines(makeMethodDoc(overload));
+            code.NewLine();
+        }
+
+        code.DecreaseIndent();
+        code.AppendLine(u"end");
+        code.NewLine();
+    }
+
 	for (auto& classSymbol : db()->classes()) {
 		code.AppendLine(u"# " + classSymbol->document()->summary());
 		code.AppendLine(u"# ");
@@ -1092,7 +1141,7 @@ void RubyYARDOCSourceGenerator::generate()
 
 
 
-	ln::String fileName = ln::String::format("{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
+	ln::String fileName = ln::String::format("GemProject/{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
 	ln::String src = code.toString();
 	ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
 }
@@ -1103,35 +1152,6 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 
 	auto representative = overloadInfo->representative();
 	auto rubyMethodName = makeRubyMethodName(representative);
-
-#if 1	// @overload 無しで出力する（こっちの方がサマリーが見やすい）
-
-	for (auto& method : overloadInfo->methods()) {
-		auto paramNames = OutputBuffer();
-		auto params = OutputBuffer();
-		for (auto& param : method->parameters()) {
-			paramNames.AppendCommad(param->name());
-			params.AppendLine(u"@param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
-		}
-		auto returns = ln::String::Empty;
-		if (!method->document()->returns().isEmpty()) {
-			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType().type), method->document()->returns());
-		}
-
-		code.AppendLine(u"# " + translateText(representative->document()->summary()));
-		if (!representative->document()->details().isEmpty()) {
-			code.AppendLinesHeaderd(translateText(representative->document()->details()), u"#   ");
-		}
-
-		if (!params.isEmpty()) code.AppendLinesHeaderd(params.toString(), u"# ");
-		if (!returns.isEmpty()) code.AppendLine(u"# " + returns);
-
-		code.AppendLine(u"def {0}({1})", rubyMethodName, paramNames.toString());
-		code.AppendLine(u"end");
-		code.NewLine();
-	}
-
-#else	// @overload 付きで出力する
 
 	// Overall overview
 	code.AppendLine(u"# " + translateText(representative->document()->summary()));
@@ -1149,8 +1169,8 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 			params.AppendLine(u"@param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
 		}
 		auto returns = ln::String::Empty;
-		if (method->returnType() != PredefinedTypes::voidType) {
-			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType()),  method->document()->returns());
+		if (method->returnType().type != PredefinedTypes::voidType) {
+			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType().type),  method->document()->returns());
 		}
 		
 
@@ -1174,8 +1194,6 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 	code.AppendLine(u"def {0}(*args)", rubyMethodName);
 	code.AppendLine(u"end");
 	code.NewLine();
-#endif
-
 
 	return code.toString();
 }
