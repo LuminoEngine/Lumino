@@ -32,7 +32,10 @@ void AssetManager::init(const Settings& settings)
 
     m_storageAccessPriority = settings.assetStorageAccessPriority;
     if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
-        addAssetDirectory(Environment::currentDirectory());
+        auto archive = makeRef<FileSystemReader>();
+        m_requestedArchives.add(archive);
+        refreshActualArchives();
+        //addAssetDirectory(Environment::currentDirectory());
     }
 
     LN_LOG_DEBUG << "AssetManager Initialization ended.";
@@ -70,6 +73,13 @@ void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& p
 
     LN_LOG_INFO << "Asset archive added: " << filePath;
 }
+
+void AssetManager::removeAllAssetDirectory()
+{
+    m_requestedArchives.removeAllIf([](auto& x) { return x->storageKind() == AssetArchiveStorageKind::AssetDirectory; });
+    refreshActualArchives();
+}
+
 //
 //void AssetManager::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
 //{
@@ -198,19 +208,21 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
 void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& filePath) const
 {
     if (LN_REQUIRE(asset)) return;
+    AssetPath assetPath;
     String localPath;
     if (!filePath.isEmpty()) {
+        assetPath = AssetPath::makeFromLocalFilePath(localPath);
         localPath = filePath;
     }
     else if (!asset->target()->assetPath().isNull()) {
-        localPath = assetPathToLocalFullPath(asset->target()->assetPath());
+        assetPath = asset->target()->assetPath();
+        localPath = assetPathToLocalFullPath(assetPath);
     }
     else {
         LN_UNREACHABLE();
         return;
     }
 
-    auto assetPath = AssetPath::makeFromLocalFilePath(localPath);
 
 
     //auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
@@ -406,10 +418,15 @@ void AssetManager::refreshActualArchives()
 	{
 	case AssetStorageAccessPriority::DirectoryFirst:
 		for (auto& ac : m_requestedArchives) {
-			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
+			if (ac->storageKind() == AssetArchiveStorageKind::AssetDirectory) {
 				m_actualArchives.add(ac);
 			}
 		}
+        for (auto& ac : m_requestedArchives) {
+            if (ac->storageKind() == AssetArchiveStorageKind::LocalDirectory) {
+                m_actualArchives.add(ac);
+            }
+        }
 		for (auto& ac : m_requestedArchives) {
 			if (ac->storageKind() == AssetArchiveStorageKind::ArchiveFile) {
 				m_actualArchives.add(ac);
@@ -423,10 +440,15 @@ void AssetManager::refreshActualArchives()
 			}
 		}
 		for (auto& ac : m_requestedArchives) {
-			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
+			if (ac->storageKind() == AssetArchiveStorageKind::AssetDirectory) {
 				m_actualArchives.add(ac);
 			}
 		}
+        for (auto& ac : m_requestedArchives) {
+            if (ac->storageKind() == AssetArchiveStorageKind::LocalDirectory) {
+                m_actualArchives.add(ac);
+            }
+        }
 		break;
 	case AssetStorageAccessPriority::ArchiveOnly:
 		for (auto& ac : m_requestedArchives) {

@@ -73,7 +73,14 @@ ln::Result Workspace::openMainProject(const ln::Path& filePath)
 
 ln::Result Workspace::closeMainProject()
 {
-    m_mainProject = nullptr;
+    if (m_mainAssetDatabase) {
+        m_mainAssetDatabase->close();
+        m_mainAssetDatabase = nullptr;
+    }
+    if (m_mainProject) {
+        m_mainProject->close();
+        m_mainProject = nullptr;
+    }
 	return true;
 }
 

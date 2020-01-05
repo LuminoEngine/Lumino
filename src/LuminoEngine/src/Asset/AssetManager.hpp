@@ -28,6 +28,7 @@ public:
 
 	void addAssetDirectory(const StringRef& path);
     void addAssetArchive(const StringRef& filePath, const StringRef& password);
+    void removeAllAssetDirectory();
 	//void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
 
     // ファイルパスを入力として、そのファイルが存在する場合は内部表現のパス（セパレータ /）を返す。

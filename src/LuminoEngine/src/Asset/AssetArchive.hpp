@@ -7,8 +7,9 @@ namespace detail {
 
 enum class AssetArchiveStorageKind
 {
-	Directory,
 	ArchiveFile,
+    AssetDirectory,
+    LocalDirectory,
 };
 
 class AssetArchive
@@ -135,7 +136,7 @@ public:
 	virtual void close() override;
 	virtual bool existsFile(const Path& unifiedFilePath) const override;
 	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) override;
-	virtual AssetArchiveStorageKind storageKind() const override { return AssetArchiveStorageKind::Directory; }
+    virtual AssetArchiveStorageKind storageKind() const override;
 
 private:
 	Path m_rootPath;

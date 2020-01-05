@@ -23,6 +23,7 @@ public:
     ln::Result openProject2(const ln::Path& projectFile);
     ln::Result saveProject();
     ln::Result loadProject();
+    void close();
 	void restore();
 
 	const ln::Ref<ProjectProperties>& properties() const { return m_properties; }

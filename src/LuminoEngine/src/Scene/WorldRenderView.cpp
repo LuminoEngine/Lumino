@@ -26,6 +26,7 @@ namespace ln {
 WorldRenderView::WorldRenderView()
     : m_visibleGridPlane(true)
     , m_physicsDebugDrawEnabled(false)
+    , m_gizmoEnabled(false)
 {
 }
 
@@ -316,7 +317,9 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 }
             }
 
-            //m_targetWorld->renderGizmos(renderingContext);
+            if (m_gizmoEnabled) {
+                m_targetWorld->renderGizmos(renderingContext);
+            }
 
             // test
             //renderingContext->pushState();

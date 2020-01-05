@@ -31,6 +31,9 @@ public:
     void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
 	bool physicsDebugDrawEnabled() const { return m_physicsDebugDrawEnabled; }
 
+    void setGizmoEnabled(bool value) { m_gizmoEnabled = value; }
+    bool gizmoEnabled() const { return m_gizmoEnabled; }
+
     const Ref<TransformControls>& transformControls() const{ return m_transformControls; }
 
     // TODO: internal
@@ -60,6 +63,7 @@ private:
     Ref<StaticMeshModel> m_gridPlane;
     bool m_visibleGridPlane;
     bool m_physicsDebugDrawEnabled;
+    bool m_gizmoEnabled;
 
     Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
 };

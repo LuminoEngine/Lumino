@@ -137,6 +137,11 @@ ln::Result Project::loadProject()
 	return true;
 }
 
+void Project::close()
+{
+    
+}
+
 void Project::restore()
 {
 	m_context->restore();

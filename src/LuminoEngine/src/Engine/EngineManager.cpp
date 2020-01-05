@@ -172,6 +172,8 @@ void EngineManager::init()
             //m_mainDirectionalLight = makeObject<DirectionalLight>();
 
             m_mainCamera = makeObject<Camera>();
+            m_mainWorld->addObject(m_mainCamera);
+
             m_mainWorldRenderView = makeObject<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);
             m_mainWorldRenderView->setCamera(m_mainCamera);

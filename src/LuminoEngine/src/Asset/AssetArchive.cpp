@@ -444,6 +444,14 @@ Ref<Stream> FileSystemReader::openFileStream(const Path& unifiedFilePath)
 	}
 }
 
+AssetArchiveStorageKind FileSystemReader::storageKind() const
+{
+    if (m_name.isEmpty())
+        return AssetArchiveStorageKind::LocalDirectory;
+    else
+        return AssetArchiveStorageKind::AssetDirectory;
+}
+
 } // namespace detail
 } // namespace ln
 
