@@ -30,7 +30,7 @@ float Vector3::length() const
     return Asm::sqrt(x * x + y * y + z * z);
 }
 
-void Vector3::normalize()
+void Vector3::mutatingNormalize()
 {
     float t = 1.0f / Asm::sqrt(x * x + y * y + z * z);
     x *= t;

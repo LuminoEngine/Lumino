@@ -606,7 +606,7 @@ void Matrix::rotateAxis(const Vector3& axis_, float r)
 {
     Vector3 axis = axis_;
     if (axis.lengthSquared() != 1.0f) {
-        axis.normalize();
+        axis.mutatingNormalize();
     }
 
     float s, c;
@@ -1172,7 +1172,7 @@ Matrix Matrix::makeRotationAxis(const Vector3& axis_, float r)
 {
     Vector3 axis = axis_;
     if (axis.lengthSquared() != 1.0f) {
-        axis.normalize();
+        axis.mutatingNormalize();
     }
 
     float s, c;
@@ -1474,10 +1474,10 @@ Matrix Matrix::makeLookAtLH(const Vector3& position, const Vector3& lookAt, cons
     // 注視点からカメラ位置までのベクトルをZ軸とする
     zaxis = lookAt;
     zaxis -= position;
-    zaxis.normalize();
+    zaxis.mutatingNormalize();
     // Z軸と上方向のベクトルの外積をとるとX軸が分かる
     xaxis = Vector3::cross(up, zaxis);
-    xaxis.normalize();
+    xaxis.mutatingNormalize();
     // 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
     yaxis = Vector3::cross(zaxis, xaxis);
 
@@ -1498,10 +1498,10 @@ Matrix Matrix::makeLookAtRH(const Vector3& position, const Vector3& lookAt, cons
     // 注視点からカメラ位置までのベクトルをZ軸とする
     zaxis = position;
     zaxis -= lookAt;
-    zaxis.normalize();
+    zaxis.mutatingNormalize();
     // Z軸と上方向のベクトルの外積をとるとX軸が分かる
     xaxis = Vector3::cross(up, zaxis);
-    xaxis.normalize();
+    xaxis.mutatingNormalize();
     // 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
     yaxis = Vector3::cross(zaxis, xaxis);
 

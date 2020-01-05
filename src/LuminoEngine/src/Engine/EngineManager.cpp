@@ -19,6 +19,7 @@
 #include <LuminoEngine/Scene/Light.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 
+#include "../Runtime/RuntimeManager.hpp"
 #include "../Platform/PlatformManager.hpp"
 #include "../Animation/AnimationManager.hpp"
 #include "../Input/InputManager.hpp"
@@ -34,7 +35,6 @@
 #include "../Visual/VisualManager.hpp"
 #include "../Scene/SceneManager.hpp"
 #include "../UI/UIManager.hpp"
-#include "../Runtime/RuntimeManager.hpp"
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
@@ -172,6 +172,8 @@ void EngineManager::init()
             //m_mainDirectionalLight = makeObject<DirectionalLight>();
 
             m_mainCamera = makeObject<Camera>();
+            m_mainWorld->addObject(m_mainCamera);
+
             m_mainWorldRenderView = makeObject<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);
             m_mainWorldRenderView->setCamera(m_mainCamera);
@@ -269,7 +271,6 @@ void EngineManager::dispose()
     //    }
     //}
 
-	if (m_runtimeManager) m_runtimeManager->dispose();
     if (m_uiManager) m_uiManager->dispose();
     if (m_sceneManager) m_sceneManager->dispose();
     if (m_visualManager) m_visualManager->dispose();
@@ -302,7 +303,6 @@ void EngineManager::dispose()
 void EngineManager::initializeAllManagers()
 {
 	initializeCommon();
-    initializeRuntimeManager();
     initializeAssetManager();
 	initializePlatformManager();
 	initializeAnimationManager();
@@ -350,19 +350,6 @@ void EngineManager::initializeCommon()
         m_oleInitialized = true;
     }
 #endif
-}
-
-void EngineManager::initializeRuntimeManager()
-{
-    if (!m_runtimeManager)
-    {
-        initializeCommon();
-
-        RuntimeManager::Settings settings;
-
-        m_runtimeManager = makeRef<RuntimeManager>();
-        m_runtimeManager->init(settings);
-    }
 }
 
 void EngineManager::initializeAssetManager()
@@ -837,25 +824,39 @@ void EngineManager::setDebugToolMode(DebugToolMode mode)
 //==============================================================================
 // EngineDomain
 
+RuntimeManager::Settings g_globalRuntimeManagerSettings;
+static RuntimeManager* g_runtimeManager = nullptr;
 static EngineManager* g_engineManager = nullptr;
 
 void EngineDomain::release()
 {
-	if (g_engineManager)
-	{
+	if (g_engineManager) {
 		g_engineManager->dispose();
 		RefObjectHelper::release(g_engineManager);
 		g_engineManager = nullptr;
 	}
+    if (g_runtimeManager) {
+        g_runtimeManager->dispose();
+        RefObjectHelper::release(g_runtimeManager);
+        g_runtimeManager = nullptr;
+    }
+}
+
+RuntimeManager* EngineDomain::runtimeManager()
+{
+    if (!g_runtimeManager) {
+        g_runtimeManager = LN_NEW RuntimeManager();
+        g_runtimeManager->init(g_globalRuntimeManagerSettings);
+    }
+    return g_runtimeManager;
 }
 
 EngineManager* EngineDomain::engineManager()
 {
-	if (!g_engineManager)
-	{
+    EngineDomain::runtimeManager();
+	if (!g_engineManager) {
 		g_engineManager = LN_NEW EngineManager();
 	}
-
 	return g_engineManager;
 }
 
@@ -932,11 +933,6 @@ SceneManager* EngineDomain::sceneManager()
 UIManager* EngineDomain::uiManager()
 {
 	return engineManager()->uiManager();
-}
-
-RuntimeManager* EngineDomain::runtimeManager()
-{
-	return engineManager()->runtimeManager();
 }
 
 EngineContext* EngineDomain::engineContext()

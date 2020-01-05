@@ -1,4 +1,4 @@
-
+﻿
 #include "../Core/CodeAnalyzer.hpp"
 #include "../Core/SymbolDatabase.hpp"
 #include "../Core/Generators/FlatCGenerator.hpp"
@@ -22,15 +22,18 @@ int main(int argc, char** argv)
 		{
 			//TEST_ROOT "include/LuminoCore/Math/Vector2.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Vector3.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Vector4.hpp",
 			TEST_ROOT "include/LuminoCore/Math/Quaternion.hpp",
-			//TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
+			TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
 		};
 
 		ln::List<ln::Path> files_LuminoEngine =
 		{
+            TEST_ROOT "include/LuminoEngine/Engine/Object.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
+            TEST_ROOT "include/LuminoEngine/Asset/AssetModel.hpp",
+            TEST_ROOT "include/LuminoEngine/Asset/Assets.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
             TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
@@ -51,7 +54,7 @@ int main(int argc, char** argv)
 		};
 
 		CodeAnalyzer ca;
-		ca.parserExecutable = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), u"../../Parser/Debug/LuminoTranscoder-Parser.exe").canonicalize();
+		ca.parserExecutable = ln::Path(ln::Path(ln::Environment::executablePath()).parent(), u"../../Parser/Release/LuminoTranscoder-Parser.exe").canonicalize();
 
 		for (auto& file : files_LuminoCore) {
 			CompilationDatabase cdb;
@@ -65,7 +68,10 @@ int main(int argc, char** argv)
 			CompilationDatabase cdb;
 			cdb.inputFile = file;
 			cdb.includeDirectories.add(TEST_ROOT "include");
-			cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
+            if (file.fileName().str() == u"Object.hpp") // Object class が force include されるものと合わせて再定義扱いになりクラス名が取れなくなるため、特別扱いする
+                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
+            else
+                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
 			ca.inputs.add(cdb);
 		}
 
@@ -111,26 +117,26 @@ int main(int argc, char** argv)
 		g.setup(db, config);
 		g.generate();
 	}
-	//{
-	//	RubyExtGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-	//{
-	//	RubyYARDOCSourceGenerator g;
-	//	g.setup(db, config);
-	//	g.generate();
-	//}
-    {
-        DotNetPInvokeGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
-    {
-        DotnetClassGenerator g;
-        g.setup(db, config);
-        g.generate();
-    }
+	{
+		RubyExtGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		RubyYARDOCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+    //{
+    //    DotNetPInvokeGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
+    //{
+    //    DotnetClassGenerator g;
+    //    g.setup(db, config);
+    //    g.generate();
+    //}
 
 	return 0;
 }

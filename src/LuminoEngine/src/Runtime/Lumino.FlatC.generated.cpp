@@ -31,7 +31,103 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
     LNI_FUNC_TRY_END_RETURN;
 }
 
+class LNWS_ln_Object : public ln::Object
+{
+public:
+    static LnObject_OnSerialize_OverrideCallback s_LnObject_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnObject_OnSerialize_OverrideCallback) s_LnObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Object::onSerialize(ar);
+    }
+
+};
+LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_Serializer : public ln::Serializer
+{
+public:
+    static LnSerializer_OnSerialize_OverrideCallback s_LnSerializer_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSerializer_OnSerialize_OverrideCallback) s_LnSerializer_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Serializer::onSerialize(ar);
+    }
+
+};
+LnSerializer_OnSerialize_OverrideCallback LNWS_ln_Serializer::s_LnSerializer_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_AssetModel : public ln::AssetModel
+{
+public:
+    static LnAssetModel_OnSerialize_OverrideCallback s_LnAssetModel_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnAssetModel_OnSerialize_OverrideCallback) s_LnAssetModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::AssetModel::onSerialize(ar);
+    }
+
+};
+LnAssetModel_OnSerialize_OverrideCallback LNWS_ln_AssetModel::s_LnAssetModel_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Assets : public ln::Assets
 {
 public:
 
@@ -58,9 +154,32 @@ public:
 class LNWS_ln_Application : public ln::Application
 {
 public:
+    static LnApplication_OnSerialize_OverrideCallback s_LnApplication_OnSerialize_OverrideCallback;
     static LnApplication_OnInit_OverrideCallback s_LnApplication_OnInit_OverrideCallback;
     static LnApplication_OnUpdate_OverrideCallback s_LnApplication_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnApplication_OnSerialize_OverrideCallback) s_LnApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Application::onSerialize(ar);
+    }
     virtual void onInit() override
     {
         if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
@@ -81,6 +200,7 @@ public:
     }
 
 };
+LnApplication_OnSerialize_OverrideCallback LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = nullptr;
 LnApplication_OnInit_OverrideCallback LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = nullptr;
 LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = nullptr;
 
@@ -88,64 +208,255 @@ LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnU
 class LNWS_ln_GraphicsResource : public ln::GraphicsResource
 {
 public:
+    static LnGraphicsResource_OnSerialize_OverrideCallback s_LnGraphicsResource_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnGraphicsResource_OnSerialize_OverrideCallback) s_LnGraphicsResource_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::GraphicsResource::onSerialize(ar);
+    }
 
 };
+LnGraphicsResource_OnSerialize_OverrideCallback LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Texture : public ln::Texture
 {
 public:
+    static LnTexture_OnSerialize_OverrideCallback s_LnTexture_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<GraphicsResource>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnTexture_OnSerialize_OverrideCallback) s_LnTexture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Texture::onSerialize(ar);
+    }
 
 };
+LnTexture_OnSerialize_OverrideCallback LNWS_ln_Texture::s_LnTexture_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Texture2D : public ln::Texture2D
 {
 public:
+    static LnTexture2D_OnSerialize_OverrideCallback s_LnTexture2D_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Texture>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnTexture2D_OnSerialize_OverrideCallback) s_LnTexture2D_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Texture2D::onSerialize(ar);
+    }
 
 };
+LnTexture2D_OnSerialize_OverrideCallback LNWS_ln_Texture2D::s_LnTexture2D_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Component : public ln::Component
 {
 public:
+    static LnComponent_OnSerialize_OverrideCallback s_LnComponent_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnComponent_OnSerialize_OverrideCallback) s_LnComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Component::onSerialize(ar);
+    }
 
 };
+LnComponent_OnSerialize_OverrideCallback LNWS_ln_Component::s_LnComponent_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_VisualComponent : public ln::VisualComponent
 {
 public:
+    static LnVisualComponent_OnSerialize_OverrideCallback s_LnVisualComponent_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Component>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnVisualComponent_OnSerialize_OverrideCallback) s_LnVisualComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::VisualComponent::onSerialize(ar);
+    }
 
 };
+LnVisualComponent_OnSerialize_OverrideCallback LNWS_ln_VisualComponent::s_LnVisualComponent_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_SpriteComponent : public ln::SpriteComponent
 {
 public:
+    static LnSpriteComponent_OnSerialize_OverrideCallback s_LnSpriteComponent_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<VisualComponent>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSpriteComponent_OnSerialize_OverrideCallback) s_LnSpriteComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::SpriteComponent::onSerialize(ar);
+    }
 
 };
+LnSpriteComponent_OnSerialize_OverrideCallback LNWS_ln_SpriteComponent::s_LnSpriteComponent_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_ComponentList : public ln::ComponentList
 {
 public:
+    static LnComponentList_OnSerialize_OverrideCallback s_LnComponentList_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnComponentList_OnSerialize_OverrideCallback) s_LnComponentList_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::ComponentList::onSerialize(ar);
+    }
 
 };
+LnComponentList_OnSerialize_OverrideCallback LNWS_ln_ComponentList::s_LnComponentList_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_WorldObject : public ln::WorldObject
 {
 public:
+    static LnWorldObject_OnSerialize_OverrideCallback s_LnWorldObject_OnSerialize_OverrideCallback;
     static LnWorldObject_OnUpdate_OverrideCallback s_LnWorldObject_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnWorldObject_OnSerialize_OverrideCallback) s_LnWorldObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::WorldObject::onSerialize(ar);
+    }
     virtual void onUpdate(float elapsedSeconds) override
     {
         if (s_LnWorldObject_OnUpdate_OverrideCallback) s_LnWorldObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
@@ -157,14 +468,38 @@ public:
     }
 
 };
+LnWorldObject_OnSerialize_OverrideCallback LNWS_ln_WorldObject::s_LnWorldObject_OnSerialize_OverrideCallback = nullptr;
 LnWorldObject_OnUpdate_OverrideCallback LNWS_ln_WorldObject::s_LnWorldObject_OnUpdate_OverrideCallback = nullptr;
 
 
 class LNWS_ln_VisualObject : public ln::VisualObject
 {
 public:
+    static LnVisualObject_OnSerialize_OverrideCallback s_LnVisualObject_OnSerialize_OverrideCallback;
     static LnVisualObject_OnUpdate_OverrideCallback s_LnVisualObject_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<WorldObject>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnVisualObject_OnSerialize_OverrideCallback) s_LnVisualObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::VisualObject::onSerialize(ar);
+    }
     virtual void onUpdate(float elapsedSeconds) override
     {
         if (s_LnVisualObject_OnUpdate_OverrideCallback) s_LnVisualObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
@@ -176,14 +511,38 @@ public:
     }
 
 };
+LnVisualObject_OnSerialize_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_OnSerialize_OverrideCallback = nullptr;
 LnVisualObject_OnUpdate_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_OnUpdate_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Sprite : public ln::Sprite
 {
 public:
+    static LnSprite_OnSerialize_OverrideCallback s_LnSprite_OnSerialize_OverrideCallback;
     static LnSprite_OnUpdate_OverrideCallback s_LnSprite_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<VisualObject>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSprite_OnSerialize_OverrideCallback) s_LnSprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Sprite::onSerialize(ar);
+    }
     virtual void onUpdate(float elapsedSeconds) override
     {
         if (s_LnSprite_OnUpdate_OverrideCallback) s_LnSprite_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
@@ -195,61 +554,222 @@ public:
     }
 
 };
+LnSprite_OnSerialize_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnSerialize_OverrideCallback = nullptr;
 LnSprite_OnUpdate_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIEventArgs : public ln::UIEventArgs
 {
 public:
+    static LnUIEventArgs_OnSerialize_OverrideCallback s_LnUIEventArgs_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIEventArgs_OnSerialize_OverrideCallback) s_LnUIEventArgs_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIEventArgs::onSerialize(ar);
+    }
 
 };
+LnUIEventArgs_OnSerialize_OverrideCallback LNWS_ln_UIEventArgs::s_LnUIEventArgs_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UILayoutElement : public ln::UILayoutElement
 {
 public:
+    static LnUILayoutElement_OnSerialize_OverrideCallback s_LnUILayoutElement_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUILayoutElement_OnSerialize_OverrideCallback) s_LnUILayoutElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UILayoutElement::onSerialize(ar);
+    }
 
 };
+LnUILayoutElement_OnSerialize_OverrideCallback LNWS_ln_UILayoutElement::s_LnUILayoutElement_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIElement : public ln::UIElement
 {
 public:
+    static LnUIElement_OnSerialize_OverrideCallback s_LnUIElement_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UILayoutElement>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIElement_OnSerialize_OverrideCallback) s_LnUIElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIElement::onSerialize(ar);
+    }
 
 };
+LnUIElement_OnSerialize_OverrideCallback LNWS_ln_UIElement::s_LnUIElement_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIControl : public ln::UIControl
 {
 public:
+    static LnUIControl_OnSerialize_OverrideCallback s_LnUIControl_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIElement>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIControl_OnSerialize_OverrideCallback) s_LnUIControl_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIControl::onSerialize(ar);
+    }
 
 };
+LnUIControl_OnSerialize_OverrideCallback LNWS_ln_UIControl::s_LnUIControl_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIButtonBase : public ln::UIButtonBase
 {
 public:
+    static LnUIButtonBase_OnSerialize_OverrideCallback s_LnUIButtonBase_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIControl>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIButtonBase_OnSerialize_OverrideCallback) s_LnUIButtonBase_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIButtonBase::onSerialize(ar);
+    }
 
 };
+LnUIButtonBase_OnSerialize_OverrideCallback LNWS_ln_UIButtonBase::s_LnUIButtonBase_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIButton : public ln::UIButton
 {
 public:
+    static LnUIButton_OnSerialize_OverrideCallback s_LnUIButton_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIButtonBase>();
+    }
 
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIButton_OnSerialize_OverrideCallback) s_LnUIButton_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIButton::onSerialize(ar);
+    }
 
 };
+LnUIButton_OnSerialize_OverrideCallback LNWS_ln_UIButton::s_LnUIButton_OnSerialize_OverrideCallback = nullptr;
 
 
 
 
 extern "C"
 {
+
+LN_FLAT_API LnResult LnVector3_SetZeros(LnVector3* vector3)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Vector3*>(vector3)) ln::Vector3();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnVector3_Set(LnVector3* vector3, float x, float y, float z)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Vector3*>(vector3)) ln::Vector3(x, y, z);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnVector3_Length(const LnVector3* vector3, float* outReturn)
 {
@@ -263,6 +783,14 @@ LN_FLAT_API LnResult LnVector3_LengthSquared(const LnVector3* vector3, float* ou
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->lengthSquared());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnVector3_MutatingNormalize(LnVector3* vector3)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (reinterpret_cast<ln::Vector3*>(vector3)->mutatingNormalize());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -283,7 +811,85 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 }
 
 
+LN_FLAT_API LnResult LnVector4_SetZeros(LnVector4* vector4)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Vector4*>(vector4)) ln::Vector4();
+    LNI_FUNC_TRY_END_RETURN;
+}
 
+
+LN_FLAT_API LnResult LnVector4_Set(LnVector4* vector4, float x, float y, float z, float w)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Vector4*>(vector4)) ln::Vector4(x, y, z, w);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnQuaternion_SetZeros(LnQuaternion* quaternion)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Quaternion*>(quaternion)) ln::Quaternion();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnQuaternion_Set(LnQuaternion* quaternion, float x, float y, float z, float w)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Quaternion*>(quaternion)) ln::Quaternion(x, y, z, w);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnQuaternion_SetFromAxis(LnQuaternion* quaternion, const LnVector3* axis, float r)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Quaternion*>(quaternion)) ln::Quaternion(*reinterpret_cast<const ln::Vector3*>(axis), r);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMatrix_SetZeros(LnMatrix* matrix)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Matrix*>(matrix)) ln::Matrix();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Matrix*>(matrix)) ln::Matrix(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+
+
+LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Object>(), id);
+}
+
+LN_FLAT_API LnResult LnObject_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Object, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnObject_OnSerialize_SetOverrideCallback(LnObject_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Object::s_LnObject_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnObject_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Object>()->id();
+}
 
 LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* name, LnBool value)
 {
@@ -295,8 +901,9 @@ LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* n
 
 LN_FLAT_API LnResult LnSerializer_WriteBoolA(LnHandle serializer, const char* name, LnBool value)
 {
-    LnResult result = LnSerializer_WriteBool(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeBool(LNI_UTF8STRPTR_TO_STRING(name), LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -310,23 +917,25 @@ LN_FLAT_API LnResult LnSerializer_WriteInt(LnHandle serializer, const LnChar* na
 
 LN_FLAT_API LnResult LnSerializer_WriteIntA(LnHandle serializer, const char* name, int value)
 {
-    LnResult result = LnSerializer_WriteInt(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
-}
-
-
-LN_FLAT_API LnResult LnSerializer_WriteDouble(LnHandle serializer, const LnChar* name, double value)
-{
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeDouble(name, value));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeInt(LNI_UTF8STRPTR_TO_STRING(name), value));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnSerializer_WriteDoubleA(LnHandle serializer, const char* name, double value)
+LN_FLAT_API LnResult LnSerializer_WriteFloat(LnHandle serializer, const LnChar* name, float value)
 {
-    LnResult result = LnSerializer_WriteDouble(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeFloat(name, value));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_WriteFloatA(LnHandle serializer, const char* name, float value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeFloat(LNI_UTF8STRPTR_TO_STRING(name), value));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -340,8 +949,9 @@ LN_FLAT_API LnResult LnSerializer_WriteString(LnHandle serializer, const LnChar*
 
 LN_FLAT_API LnResult LnSerializer_WriteStringA(LnHandle serializer, const char* name, const char* value)
 {
-    LnResult result = LnSerializer_WriteString(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(value, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeString(LNI_UTF8STRPTR_TO_STRING(name), LNI_UTF8STRPTR_TO_STRING(value)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -355,8 +965,9 @@ LN_FLAT_API LnResult LnSerializer_WriteObject(LnHandle serializer, const LnChar*
 
 LN_FLAT_API LnResult LnSerializer_WriteObjectA(LnHandle serializer, const char* name, LnHandle value)
 {
-    LnResult result = LnSerializer_WriteObject(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), value);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->writeObject(LNI_UTF8STRPTR_TO_STRING(name), LNI_HANDLE_TO_OBJECT(ln::Object, value)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -370,8 +981,9 @@ LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* na
 
 LN_FLAT_API LnResult LnSerializer_ReadBoolA(LnHandle serializer, const char* name, LnBool* outReturn)
 {
-    LnResult result = LnSerializer_ReadBool(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -385,40 +997,43 @@ LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* nam
 
 LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name, int* outReturn)
 {
-    LnResult result = LnSerializer_ReadInt(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
-}
-
-
-LN_FLAT_API LnResult LnSerializer_ReadDouble(LnHandle serializer, const LnChar* name, double* outReturn)
-{
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readDouble(name));
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnSerializer_ReadDoubleA(LnHandle serializer, const char* name, double* outReturn)
+LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* name, float* outReturn)
 {
-    LnResult result = LnSerializer_ReadDouble(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
-//LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn)
-//{
-//    LNI_FUNC_TRY_BEGIN;
-//    *outReturn = LNI_STRING_TO_STRPTR(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
-//    LNI_FUNC_TRY_END_RETURN;
-//}
-//
-//
-//LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* name, const char** outReturn)
-//{
-//    LnResult result = LnSerializer_ReadString(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(outReturn, -1, ln::TextEncoding::utf8Encoding()).c_str());
-//    return result;
-//}
-//
+LN_FLAT_API LnResult LnSerializer_ReadFloatA(LnHandle serializer, const char* name, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* name, const char** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* name, LnHandle* outReturn)
 {
@@ -430,24 +1045,26 @@ LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* 
 
 LN_FLAT_API LnResult LnSerializer_ReadObjectA(LnHandle serializer, const char* name, LnHandle* outReturn)
 {
-    LnResult result = LnSerializer_ReadObject(serializer, ln::String::fromCString(name, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
-//LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn)
-//{
-//    LNI_FUNC_TRY_BEGIN;
-//    *outReturn = LNI_STRING_TO_STRPTR(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
-//    LNI_FUNC_TRY_END_RETURN;
-//}
-//
-//
-//LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePath, const char** outReturn)
-//{
-//    LnResult result = LnSerializer_Serialize(value, ln::String::fromCString(basePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(outReturn, -1, ln::TextEncoding::utf8Encoding()).c_str());
-//    return result;
-//}
+LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF16(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePath, const char** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF8(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
 
 
 LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* basePath, LnHandle* outReturn)
@@ -460,8 +1077,9 @@ LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* b
 
 LN_FLAT_API LnResult LnSerializer_DeserializeA(const char* str, const char* basePath, LnHandle* outReturn)
 {
-    LnResult result = LnSerializer_Deserialize(ln::String::fromCString(str, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(basePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -469,6 +1087,93 @@ LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Serializer>(), id);
 }
+
+LN_FLAT_API LnResult LnSerializer_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnSerializer_OnSerialize_SetOverrideCallback(LnSerializer_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Serializer::s_LnSerializer_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnSerializer_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Serializer>()->id();
+}
+
+LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetModel)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outAssetModel, LNWS_ln_AssetModel, init, LNI_HANDLE_TO_OBJECT(ln::Object, target));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API void LnAssetModel_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::AssetModel>(), id);
+}
+
+LN_FLAT_API LnResult LnAssetModel_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnAssetModel_OnSerialize_SetOverrideCallback(LnAssetModel_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_AssetModel::s_LnAssetModel_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnAssetModel_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::AssetModel>()->id();
+}
+
+LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFile(LnHandle asset, const LnChar* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Assets::saveAssetToLocalFile(LNI_HANDLE_TO_OBJECT(ln::AssetModel, asset), filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFileA(LnHandle asset, const char* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Assets::saveAssetToLocalFile(LNI_HANDLE_TO_OBJECT(ln::AssetModel, asset), LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
 {
@@ -496,8 +1201,9 @@ LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title)
 
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title)
 {
-    LnResult result = LnEngineSettings_SetMainWindowTitle(ln::String::fromCString(title, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowTitle(LNI_UTF8STRPTR_TO_STRING(title)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -511,8 +1217,9 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path)
 
 LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path)
 {
-    LnResult result = LnEngineSettings_AddAssetDirectory(ln::String::fromCString(path, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetDirectory(LNI_UTF8STRPTR_TO_STRING(path)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -526,8 +1233,9 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath
 
 LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
 {
-    LnResult result = LnEngineSettings_AddAssetArchive(ln::String::fromCString(fileFullPath, -1, ln::TextEncoding::utf8Encoding()).c_str(), ln::String::fromCString(password, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetArchive(LNI_UTF8STRPTR_TO_STRING(fileFullPath), LNI_UTF8STRPTR_TO_STRING(password)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -549,15 +1257,15 @@ LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePat
 
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath)
 {
-    LnResult result = LnEngineSettings_SetEngineLogFilePath(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogFilePath(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
 LN_FLAT_API LnResult LnEngine_Initialize()
 {
     LNI_FUNC_TRY_BEGIN;
-    LnRuntime_Initialize();
     (ln::Engine::initialize());
     LNI_FUNC_TRY_END_RETURN;
 }
@@ -606,7 +1314,6 @@ LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
 LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
 {
     LNI_FUNC_TRY_BEGIN;
-    LnRuntime_Initialize();
     LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
     LNI_FUNC_TRY_END_RETURN;
 }
@@ -615,6 +1322,18 @@ LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
 LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
+}
+
+LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
 }
 
 LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application)
@@ -641,14 +1360,53 @@ LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_On
     return LN_SUCCESS;
 }
 
+extern LN_FLAT_API int LnApplication_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Application>()->id();
+}
+
 LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::GraphicsResource>(), id);
 }
 
+LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_GraphicsResource, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_SetOverrideCallback(LnGraphicsResource_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnGraphicsResource_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::GraphicsResource>()->id();
+}
+
 LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture>(), id);
+}
+
+LN_FLAT_API LnResult LnTexture_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnTexture_OnSerialize_SetOverrideCallback(LnTexture_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Texture::s_LnTexture_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnTexture_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Texture>()->id();
 }
 
 LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn)
@@ -661,8 +1419,9 @@ LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outRetur
 
 LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn)
 {
-    LnResult result = LnTexture2D_Load(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), outReturn);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -692,8 +1451,9 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextur
 
 LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTextureFormat format, LnHandle* outTexture2D)
 {
-    LnResult result = LnTexture2D_CreateFromFile(ln::String::fromCString(filePath, -1, ln::TextEncoding::utf8Encoding()).c_str(), format, outTexture2D);
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, LNI_UTF8STRPTR_TO_STRING(filePath), static_cast<ln::TextureFormat>(format));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
@@ -702,9 +1462,43 @@ LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2D>(), id);
 }
 
+LN_FLAT_API LnResult LnTexture2D_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Texture2D, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnTexture2D_OnSerialize_SetOverrideCallback(LnTexture2D_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Texture2D::s_LnTexture2D_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnTexture2D_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Texture2D>()->id();
+}
+
 LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Component>(), id);
+}
+
+LN_FLAT_API LnResult LnComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Component, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnComponent_OnSerialize_SetOverrideCallback(LnComponent_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Component::s_LnComponent_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnComponent_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Component>()->id();
 }
 
 LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value)
@@ -728,6 +1522,23 @@ LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualComponent>(), id);
 }
 
+LN_FLAT_API LnResult LnVisualComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnVisualComponent_OnSerialize_SetOverrideCallback(LnVisualComponent_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_VisualComponent::s_LnVisualComponent_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnVisualComponent_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::VisualComponent>()->id();
+}
+
 LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -739,6 +1550,23 @@ LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHa
 LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SpriteComponent>(), id);
+}
+
+LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpriteComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_SetOverrideCallback(LnSpriteComponent_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_SpriteComponent::s_LnSpriteComponent_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnSpriteComponent_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::SpriteComponent>()->id();
 }
 
 LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn)
@@ -760,6 +1588,23 @@ LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, 
 LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ComponentList>(), id);
+}
+
+LN_FLAT_API LnResult LnComponentList_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnComponentList_OnSerialize_SetOverrideCallback(LnComponentList_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_ComponentList::s_LnComponentList_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnComponentList_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::ComponentList>()->id();
 }
 
 LN_FLAT_API LnResult LnWorldObject_SetPosition(LnHandle worldobject, const LnVector3* pos)
@@ -879,6 +1724,18 @@ LN_FLAT_API void LnWorldObject_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::WorldObject>(), id);
 }
 
+LN_FLAT_API LnResult LnWorldObject_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnWorldObject_OnSerialize_SetOverrideCallback(LnWorldObject_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_WorldObject::s_LnWorldObject_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
 LN_FLAT_API LnResult LnWorldObject_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -889,6 +1746,11 @@ LN_FLAT_API LnResult LnWorldObject_OnUpdate_SetOverrideCallback(LnWorldObject_On
 {
     LNWS_ln_WorldObject::s_LnWorldObject_OnUpdate_OverrideCallback = callback;
     return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnWorldObject_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::WorldObject>()->id();
 }
 
 LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool value)
@@ -912,6 +1774,18 @@ LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualObject>(), id);
 }
 
+LN_FLAT_API LnResult LnVisualObject_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnVisualObject_OnSerialize_SetOverrideCallback(LnVisualObject_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_VisualObject::s_LnVisualObject_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
 LN_FLAT_API LnResult LnVisualObject_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -924,10 +1798,15 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_
     return LN_SUCCESS;
 }
 
-LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle texture)
+extern LN_FLAT_API int LnVisualObject_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::VisualObject>()->id();
+}
+
+LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, texture)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, value)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -948,7 +1827,15 @@ LN_FLAT_API LnResult LnSprite_SetCallerTest(LnHandle sprite, LnHandle callback)
 }
 
 
-LN_FLAT_API LnResult LnSprite_Create(LnHandle texture, float width, float height, LnHandle* outSprite)
+LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, float height, LnHandle* outSprite)
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture), width, height);
@@ -961,6 +1848,18 @@ LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Sprite>(), id);
 }
 
+LN_FLAT_API LnResult LnSprite_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnSprite_OnSerialize_SetOverrideCallback(LnSprite_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Sprite::s_LnSprite_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
 LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -971,6 +1870,11 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_Ove
 {
     LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = callback;
     return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnSprite_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Sprite>()->id();
 }
 
 LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn)
@@ -986,9 +1890,43 @@ LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
 }
 
+LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_SetOverrideCallback(LnUIEventArgs_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIEventArgs::s_LnUIEventArgs_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIEventArgs>()->id();
+}
+
 LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UILayoutElement>(), id);
+}
+
+LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UILayoutElement, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_SetOverrideCallback(LnUILayoutElement_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UILayoutElement::s_LnUILayoutElement_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUILayoutElement_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UILayoutElement>()->id();
 }
 
 LN_FLAT_API LnResult LnUIElement_SetPosition(LnHandle uielement, const LnVector3* pos)
@@ -1108,9 +2046,43 @@ LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIElement>(), id);
 }
 
+LN_FLAT_API LnResult LnUIElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUIElement_OnSerialize_SetOverrideCallback(LnUIElement_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIElement::s_LnUIElement_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUIElement_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIElement>()->id();
+}
+
 LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIControl>(), id);
+}
+
+LN_FLAT_API LnResult LnUIControl_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIControl, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUIControl_OnSerialize_SetOverrideCallback(LnUIControl_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIControl::s_LnUIControl_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUIControl_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIControl>()->id();
 }
 
 LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar* text)
@@ -1123,14 +2095,32 @@ LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar*
 
 LN_FLAT_API LnResult LnUIButtonBase_SetTextA(LnHandle uibuttonbase, const char* text)
 {
-    LnResult result = LnUIButtonBase_SetText(uibuttonbase, ln::String::fromCString(text, -1, ln::TextEncoding::utf8Encoding()).c_str());
-    return result;
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, uibuttonbase)->setText(LNI_UTF8STRPTR_TO_STRING(text)));
+    LNI_FUNC_TRY_END_RETURN;
 }
 
 
 LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButtonBase>(), id);
+}
+
+LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButtonBase, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_SetOverrideCallback(LnUIButtonBase_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIButtonBase::s_LnUIButtonBase_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUIButtonBase_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIButtonBase>()->id();
 }
 
 LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton)
@@ -1152,6 +2142,23 @@ LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHan
 LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), id);
+}
+
+LN_FLAT_API LnResult LnUIButton_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUIButton_OnSerialize_SetOverrideCallback(LnUIButton_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UIButton::s_LnUIButton_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUIButton_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UIButton>()->id();
 }
 
 

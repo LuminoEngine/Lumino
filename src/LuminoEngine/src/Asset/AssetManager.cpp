@@ -2,8 +2,9 @@
 #include "Internal.hpp"
 #include "../../LuminoCore/src/IO/PathHelper.hpp"
 //#include <LuminoEngine/Graphics/Texture.hpp>
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
-#include <LuminoEngine/Asset/AssetObject.hpp>
+#include <LuminoEngine/Asset/AssetModel.hpp>
 #include "AssetArchive.hpp"
 #include "AssetManager.hpp"
 
@@ -31,7 +32,10 @@ void AssetManager::init(const Settings& settings)
 
     m_storageAccessPriority = settings.assetStorageAccessPriority;
     if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
-        addAssetDirectory(Environment::currentDirectory());
+        auto archive = makeRef<FileSystemReader>();
+        m_requestedArchives.add(archive);
+        refreshActualArchives();
+        //addAssetDirectory(Environment::currentDirectory());
     }
 
     LN_LOG_DEBUG << "AssetManager Initialization ended.";
@@ -69,6 +73,13 @@ void AssetManager::addAssetArchive(const StringRef& filePath, const StringRef& p
 
     LN_LOG_INFO << "Asset archive added: " << filePath;
 }
+
+void AssetManager::removeAllAssetDirectory()
+{
+    m_requestedArchives.removeAllIf([](auto& x) { return x->storageKind() == AssetArchiveStorageKind::AssetDirectory; });
+    refreshActualArchives();
+}
+
 //
 //void AssetManager::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
 //{
@@ -82,29 +93,30 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const
     paths.reserve(extsCount);
     makeFindPaths(filePath, exts, extsCount, &paths);
 
-    String result;
+    AssetPath result;
     for (auto& path : paths) {
-        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-            auto localPath = path.canonicalize();
-            if (FileSystem::existsFile(localPath)) {
-                result = localPath;// String::concat(LocalhostPrefix, u"/", localPath.unify().str());
-            }
-        }
-        else {
+        //if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+        //    auto localPath = path.canonicalize();
+        //    if (FileSystem::existsFile(localPath)) {
+        //        result = localPath;// String::concat(LocalhostPrefix, u"/", localPath.unify().str());
+        //    }
+        //}
+        //else
+        {
             for (auto& archive : m_actualArchives) {
                 if (archive->existsFile(path)) {
-                    result = path;
-                    //result = u"/" + path;
+                    result = AssetPath(archive->scheme(), archive->name(), path);
                     break;
                 }
             }
         }
-        if (!result.isEmpty()) break;
+        if (!result.isNull()) break;
     }
 
-    if (!result.isEmpty())
+    if (!result.isNull())
+        return result;
         // TODO: atchive 内のファイルには host もほしい
-        return AssetPath::makeFromLocalFilePath(result);
+        //return AssetPath::makeFromLocalFilePath(result);
         //return AssetPathPrefix + result;
     else
         return nullptr;
@@ -115,12 +127,13 @@ bool AssetManager::existsAsset(const AssetPath& assetPath) const
 	//String archiveName;
 	//Path path;
 	//if (tryParseAssetPath(assetPath, &archiveName, &path)) {
-		if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
-			if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-				return FileSystem::existsFile(assetPath.path());
-			}
-		}
-		else {
+		//if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
+		//	if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+		//		return FileSystem::existsFile(assetPath.path());
+		//	}
+		//}
+		//else
+        {
 			for (auto& archive : m_actualArchives) {
 				if (archive->existsFile(assetPath.path())) {
 					return true;
@@ -138,12 +151,13 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const AssetPath& assetPath) co
     //Path path;
     //if (tryParseAssetPath(assetPath, &archiveName, &path)) {
         //if (String::compare(archiveName, LocalhostPrefix, CaseSensitivity::CaseInsensitive) == 0) {
-		if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
-            if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-                return FileStream::create(assetPath.path(), FileOpenMode::Read);
-            }
-        }
-        else {
+		//if (String::compare(assetPath.scheme(), u"file", CaseSensitivity::CaseInsensitive) == 0) {
+  //          if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+  //              return FileStream::create(assetPath.path(), FileOpenMode::Read);
+  //          }
+  //      }
+  //      else
+        {
             for (auto& archive : m_actualArchives) {
                 auto stream = archive->openFileStream(assetPath.path());
                 if (stream) {
@@ -174,30 +188,51 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
     auto stream = openStreamFromAssetPath(assetPath);
     auto json = FileSystem::readAllText(stream);
     auto asset = makeObject<AssetModel>();
-    JsonSerializer::deserialize(json, assetPath.getParentAssetPath().toString(), *asset);
+
+    //JsonSerializer::deserialize(json, assetPath.getParentAssetPath().toString(), *asset);
+    auto serializer = makeObject<Serializer>(); // TODO: Pool
+    JsonTextInputArchive ar(json);
+    ar.m_serializer = serializer;
+    ar.setBasePath(assetPath.getParentAssetPath().toString());
+    ar.load(*asset);
+
+
+    printf("[Engine] end load\n");
+
     asset->target()->setAssetPath(assetPath);
+    printf("[Engine] end loadAssetModelFromAssetPath\n");
+
     return asset;
 }
 
 void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& filePath) const
 {
     if (LN_REQUIRE(asset)) return;
+    AssetPath assetPath;
     String localPath;
     if (!filePath.isEmpty()) {
+        assetPath = AssetPath::makeFromLocalFilePath(localPath);
         localPath = filePath;
     }
     else if (!asset->target()->assetPath().isNull()) {
-        localPath = assetPathToLocalFullPath(asset->target()->assetPath());
+        assetPath = asset->target()->assetPath();
+        localPath = assetPathToLocalFullPath(assetPath);
     }
     else {
         LN_UNREACHABLE();
         return;
     }
 
-    auto assetPath = AssetPath::makeFromLocalFilePath(localPath);
 
 
-    auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
+    //auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
+    auto serializer = makeObject<Serializer>(); // TODO: Pool
+    JsonTextOutputArchive ar;
+    ar.m_serializer = serializer;
+    ar.setBasePath(assetPath.getParentAssetPath().toString());
+    ar.save(*asset);
+    auto json = ar.toString(JsonFormatting::Indented);
+
     FileSystem::writeAllText(localPath, json);
 }
 
@@ -381,14 +416,17 @@ void AssetManager::refreshActualArchives()
 
 	switch (m_storageAccessPriority)
 	{
-    case AssetStorageAccessPriority::AllowLocalDirectory:
-        break;
 	case AssetStorageAccessPriority::DirectoryFirst:
 		for (auto& ac : m_requestedArchives) {
-			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
+			if (ac->storageKind() == AssetArchiveStorageKind::AssetDirectory) {
 				m_actualArchives.add(ac);
 			}
 		}
+        for (auto& ac : m_requestedArchives) {
+            if (ac->storageKind() == AssetArchiveStorageKind::LocalDirectory) {
+                m_actualArchives.add(ac);
+            }
+        }
 		for (auto& ac : m_requestedArchives) {
 			if (ac->storageKind() == AssetArchiveStorageKind::ArchiveFile) {
 				m_actualArchives.add(ac);
@@ -402,10 +440,15 @@ void AssetManager::refreshActualArchives()
 			}
 		}
 		for (auto& ac : m_requestedArchives) {
-			if (ac->storageKind() == AssetArchiveStorageKind::Directory) {
+			if (ac->storageKind() == AssetArchiveStorageKind::AssetDirectory) {
 				m_actualArchives.add(ac);
 			}
 		}
+        for (auto& ac : m_requestedArchives) {
+            if (ac->storageKind() == AssetArchiveStorageKind::LocalDirectory) {
+                m_actualArchives.add(ac);
+            }
+        }
 		break;
 	case AssetStorageAccessPriority::ArchiveOnly:
 		for (auto& ac : m_requestedArchives) {
@@ -457,14 +500,15 @@ Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, cons
 
 	auto unifiedFilePath = Path(filePath).unify();
 	for (auto& path : paths) {
-        if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
-            path = path.canonicalize();
-            if (FileSystem::existsFile(path)) {
-                *outPath = path;
-                return FileStream::create(path, FileOpenMode::Read);
-            }
-        }
-        else {
+        //if (m_storageAccessPriority == AssetStorageAccessPriority::AllowLocalDirectory) {
+        //    path = path.canonicalize();
+        //    if (FileSystem::existsFile(path)) {
+        //        *outPath = path;
+        //        return FileStream::create(path, FileOpenMode::Read);
+        //    }
+        //}
+        //else
+        {
             for (auto& archive : m_actualArchives) {
                 auto stream = archive->openFileStream(path);
                 if (stream) {

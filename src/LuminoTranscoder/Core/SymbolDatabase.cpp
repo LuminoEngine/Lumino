@@ -11,7 +11,7 @@ ln::Ref<TypeSymbol>	PredefinedTypes::floatType;
 ln::Ref<TypeSymbol>	PredefinedTypes::doubleType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringRefType;
-ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
+//ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
 ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
@@ -304,6 +304,8 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 		m_parameters.add(s);
 	}
 
+    m_isConstructor = pi->isConstructor;
+
 	if (!pi->isStatic && m_shortName == u"init") {
 		m_isConstructor = true;
 		m_accessLevel = AccessLevel::Public;
@@ -362,8 +364,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 	// static でなければ、第1引数は this などになる
 	if (!isStatic())
 	{
-		if (m_ownerType->kind() == TypeKind::Struct)
-		{
+        if (m_ownerType->kind() == TypeKind::Struct) {
             auto name = m_ownerType->shortName().toLower();
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
 			if (!s->init(QualType{ m_ownerType }, name)) return false;
@@ -376,12 +377,10 @@ ln::Result MethodSymbol::makeFlatParameters()
             if (!param->init(name, u"in", "instance")) return false;
             doc->m_flatParams.add(param);
 		}
-		else if (isConstructor())
-		{
+		else if (isConstructor()) {
 			// none
 		}
-		else if (m_ownerType->kind() == TypeKind::Class)
-		{
+        else if (m_ownerType->kind() == TypeKind::Class) {
             auto name = m_ownerType->shortName().toLower();
 			auto s = ln::makeRef<MethodParameterSymbol>(db());
 			if (!s->init(QualType{ m_ownerType }, name)) return false;
@@ -403,7 +402,7 @@ ln::Result MethodSymbol::makeFlatParameters()
 	if (m_ownerType->kind() == TypeKind::Delegate)
 	{
 		auto s = ln::makeRef<MethodParameterSymbol>(db());
-		if (!s->init(QualType{ PredefinedTypes::objectType }, u"__eventOwner")) return false;
+		if (!s->init(QualType{ db()->rootObjectClass() }, u"__eventOwner")) return false;
 		m_flatParameters.add(s);
 
         // documetation
@@ -627,6 +626,10 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 		m_declaredMethods.add(s);
 	}
 
+    if (isRootObjectClass()) {
+        db()->setRootObjectClass(this);
+    }
+
 	return true;
 }
 
@@ -662,11 +665,38 @@ ln::Result TypeSymbol::link()
 		}
 	}
 
+    ln::List<Ref<MethodSymbol>> additionalMethods;
 	for (auto& i : m_fields) {
 		if (!i->link()) {
 			return false;
 		}
+
+        // getter と setter を作る。
+        // Ruby のようにスクリプトコードから直接フィールドにアクセスできない Binding 生成のために使用する。
+        {
+            auto fieldGetter = ln::makeRef<MethodSymbol>(db());
+            if (!fieldGetter->init(this, u"get" + i->name().toTitleCase(), { i->type(), false }, {})) {
+                return false;
+            }
+            fieldGetter->m_linkedField = i;
+            fieldGetter->metadata()->setValue(u"Property");
+            additionalMethods.add(fieldGetter);
+        }
+        {
+            auto p = ln::makeRef<MethodParameterSymbol>(db());
+            if (!p->init(QualType{ i->type() }, u"value")) return false;
+
+            auto fieldSetter = ln::makeRef<MethodSymbol>(db());
+            if (!fieldSetter->init(this, u"set" + i->name().toTitleCase(), { PredefinedTypes::voidType, false }, { p })) {
+                return false;
+            }
+            fieldSetter->m_linkedField = i;
+            fieldSetter->metadata()->setValue(u"Property");
+            additionalMethods.add(fieldSetter);
+        }
 	}
+    m_declaredMethods.insertRange(0, additionalMethods);
+
 	for (auto& i : m_constants) {
 		if (!i->link()) {
 			return false;
@@ -682,7 +712,10 @@ ln::Result TypeSymbol::link()
 	}
 
 	if (m_piType) {
-		if (isClass() && !isStatic()) {
+        if (isRootObjectClass()) {
+            // No base class required.
+        }
+		else if (isClass() && !isStatic()) {
 			m_baseClass = db()->getTypeSymbol(m_piType->baseClassRawName);
 			if (!m_baseClass) {
 				LN_NOTIMPLEMENTED();
@@ -1030,7 +1063,7 @@ void SymbolDatabase::initPredefineds()
 
 	PredefinedTypes::stringRefType = addPredefined(u"ln::StringRef");
 
-	PredefinedTypes::objectType = addPredefined(u"ln::Object", TypeKind::Class);
+	//PredefinedTypes::objectType = addPredefined(u"ln::Object", TypeKind::Class);
 
 	PredefinedTypes::EventConnectionType = addPredefined(u"ln::EventConnection");
 }

@@ -7,9 +7,36 @@ class Shader;
 class Texture2D;
 class AssetModel;
 
+LN_CLASS(Static)
 class Assets
 {
 public:
+
+    /** Internal */
+    LN_METHOD()
+    static void saveAssetToLocalFile(AssetModel* asset, const String& filePath);
+
+    /** Internal */
+    LN_METHOD()
+    static Ref<AssetModel> loadAssetFromLocalFile(const String& filePath);
+
+
+
+    /**
+     * 指定したアセットファイルを読み込み、オブジェクト生成します。
+     *
+     * ファイルの拡張子は .lnasset です。ただし、filePath に指定する値は拡張子を省略可能です。
+     */
+    LN_METHOD()
+    static Ref<Object> loadAsset(const StringRef& filePath);
+
+
+
+
+
+
+
+
     static bool existsFile(const StringRef& filePath);
 
 	/**
@@ -26,7 +53,6 @@ public:
     static Ref<Shader> loadShader(const StringRef& filePath);
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 
-    static Ref<Object> loadAsset(const StringRef& filePath);
 
     static Ref<Stream> openFileStream(const StringRef& filePath);
 

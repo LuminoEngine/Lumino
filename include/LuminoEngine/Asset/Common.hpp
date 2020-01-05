@@ -6,10 +6,7 @@ namespace ln {
 /** アセットが保存されている場所へのアクセス優先度 */
 enum class AssetStorageAccessPriority
 {
-    /** 開発用。Assets フォルダの外側のローカルファイルへのアクセスを許可する */
-    AllowLocalDirectory,
-
-	/** ディレクトリ優先 */
+	/** ディレクトリ優先。Assets フォルダの外側のローカルファイルへのアクセスを許可する */
 	DirectoryFirst,
 
 	/** アーカイブファイル優先 */

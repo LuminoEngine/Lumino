@@ -34,6 +34,11 @@ public:
     World* activeWorld() const { return m_activeWorld; }
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
 
+    // テスト用の設定。
+    // 0.9.0 以降、WorldObject は World へ自動追加しないようにしたい。
+    // ただ、UnitTest が自動追加ありきで組まれているので、そちらの修正が終わるまでこの設定でカバーする。
+    bool autoAddingToActiveWorld = false;
+
 private:
 	void executeCommands();
 	void releaseAndTerminateAllRunningScenes();

@@ -14,6 +14,19 @@ AssetDatabase::AssetDatabase()
 {
 }
 
+ln::Result AssetDatabase::init(Project* owner)
+{
+    ln::detail::EngineDomain::assetManager()->buildAssetIndexFromLocalFiles(owner->assetsDir());
+    ln::detail::EngineDomain::assetManager()->addAssetDirectory(owner->assetsDir());
+    return true;
+}
+
+
+void AssetDatabase::close()
+{
+    ln::detail::EngineDomain::assetManager()->removeAllAssetDirectory();
+}
+
 Ref<ln::AssetModel> AssetDatabase::openAsset(const ln::Path& filePath)
 {
     return ln::detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(filePath);
@@ -80,13 +93,6 @@ bool AssetDatabase::isAssetFile(const ln::Path& file)
 bool AssetDatabase::isImportedAssetFile(const ln::Path& file)
 {
     return ln::FileSystem::existsFile(file.str() + ln::AssetModel::AssetFileExtension);
-}
-
-ln::Result AssetDatabase::init(Project* owner)
-{
-    ln::detail::EngineDomain::assetManager()->buildAssetIndexFromLocalFiles(owner->assetsDir());
-
-    return true;
 }
 
 } // namespace lna

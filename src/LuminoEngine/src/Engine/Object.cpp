@@ -57,6 +57,15 @@ void Object::serialize(Archive& ar)
     for (auto& prop : props) {
         prop->accessor()->serializeMember(this, ar, prop->name());
     }
+
+    onSerialize(ar.m_serializer);
+
+    printf("[Engine] end onSerialize\n");
+}
+
+void Object::onSerialize(Serializer* ar)
+{
+
 }
 
 bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
@@ -68,6 +77,11 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 		}
 	}
 	return false;
+}
+
+void Object::setTypeInfoOverride(TypeInfo* value)
+{
+    LN_UNREACHABLE();
 }
 
 //void Object::onSetAssetFilePath(const Path& filePath)

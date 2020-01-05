@@ -3,10 +3,11 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <unordered_map>
 #include "FlatCommon.h"
 
-//#define LNRB_TRACE(...) printf(__VA_ARGS__)
-#define LNRB_TRACE(...)
+#define LNRB_LOG_D(...) LnLog_PrintA(LN_LOG_LEVEL_DEBUG, "RubyRuntime", __VA_ARGS__)
+#define LNRB_LOG_I(...) LnLog_WriteA(LN_LOG_LEVEL_INFO, "RubyRuntime", __VA_ARGS__)
 
 typedef VALUE(*ObjectFactoryFunc)(VALUE klass, LnHandle handle);
 
@@ -16,10 +17,10 @@ struct TypeInfo
     ObjectFactoryFunc   factory;
 };
 
-struct Wrap_Object
+struct Wrap_RubyObject
 {
     LnHandle handle;
-    Wrap_Object() : handle(0) {}
+    Wrap_RubyObject() : handle(0) {}
 };
 
 // 複数の RubyBinding(.so) をまたいで唯一のインスタンス。
@@ -31,6 +32,8 @@ public:
     static const int InitialListSize = 512;
 
     static LuminoRubyRuntimeManager* instance;
+    static LnLogLevel s_logLevel;
+
     void init();
     VALUE luminoModule() const { return m_luminoModule; }
     VALUE eventSignalClass() const { return m_eventSignalClass; }
@@ -47,8 +50,14 @@ public:
     void handleReferenceChanged(LnHandle handle, int method, int count);
 
     static void handleRuntimeFinalized();
+    static void handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle);
 
-private:
+
+
+    // TODO: internal
+    std::unordered_map<std::string, int> m_userDefinedClassTypeIdMap;
+
+public: // TODO:
     struct ObjectReferenceItem
     {
         VALUE weakRef;
@@ -57,10 +66,18 @@ private:
 
     VALUE m_luminoModule;
     VALUE m_eventSignalClass;
+    VALUE m_objectClass;
     std::vector<TypeInfo> m_typeInfoList;
     std::vector<ObjectReferenceItem> m_objectList;
     std::stack<int> m_objectListIndexStack;
     bool m_runtimeAliving;
+};
+
+class RubyUtils
+{
+public:
+    static std::string getClassName(VALUE klass);
+    static std::string makeTypeInfoName(VALUE klass);
 };
 
 inline VALUE LNRB_HANDLE_WRAP_TO_VALUE(LnHandle handle) { return LuminoRubyRuntimeManager::instance->wrapObjectForGetting(handle); }

@@ -4,6 +4,7 @@
 class SymbolDatabase;
 
 class FlatCCommon
+    : public Generator
 {
 public:
 
@@ -21,11 +22,15 @@ public:
 	static ln::String makeCppQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeFlatCQualTypeName(TypeSymbol* typeInfo);
 	static ln::String makeInstanceParamName(TypeSymbol* type);	// this にあたる引数名
+
+    ln::String makeCreateDelegateObjectFuncHeader(TypeSymbol* delegateSymbol) const;
+    ln::String makeGetTypeInfoIdFuncName(TypeSymbol* classType) const { return makeFlatClassName(classType) + u"_GetTypeInfoId"; }
+    ln::String makeGetTypeInfoIdFuncHeader(TypeSymbol* classType) const { return u"extern LN_FLAT_API int " + makeGetTypeInfoIdFuncName(classType) + u"()"; }
 };
 
 // .h
 class FlatCHeaderGenerator
-	: public Generator
+	: public FlatCCommon
 {
 public:
 	void generate();
@@ -43,7 +48,7 @@ private:
 
 // .cpp
 class FlatCSourceGenerator
-	: public Generator
+	: public FlatCCommon
 {
 public:
 	void generate();
@@ -59,8 +64,8 @@ private:
 	ln::String makeNativeArgList(const MethodSymbol* method) const;
 	ln::String makeFlatArgList(const MethodSymbol* method) const;
 
-	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo);
-	ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
+	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
+	//ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
 	ln::String makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const;
 };
 

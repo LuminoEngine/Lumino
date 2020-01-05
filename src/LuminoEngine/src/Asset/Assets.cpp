@@ -1,7 +1,8 @@
 ﻿
 #include "Internal.hpp"
+#include "../../LuminoCore/src/IO/PathHelper.hpp"
 #include "AssetManager.hpp"
-#include <LuminoEngine/Asset/AssetObject.hpp>
+#include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 
 // TODO: for importer
@@ -10,7 +11,26 @@
 namespace ln {
 
 //=============================================================================
-// Asset
+// Assets
+
+void Assets::saveAssetToLocalFile(AssetModel* asset, const String& filePath)
+{
+    detail::EngineDomain::assetManager()->saveAssetModelToLocalFile(asset, filePath);
+}
+
+Ref<AssetModel> Assets::loadAssetFromLocalFile(const String& filePath)
+{
+    return detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(filePath);
+}
+
+Ref<Object> Assets::loadAsset(const StringRef& filePath)
+{
+    auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(filePath);
+    if (assetModel)
+        return assetModel->target();
+    else
+        return nullptr;
+}
 
 bool Assets::existsFile(const StringRef& filePath)
 {
@@ -30,11 +50,6 @@ Ref<Shader> Assets::loadShader(const StringRef& filePath)
 Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 {
 	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
-}
-
-Ref<Object> Assets::loadAsset(const StringRef& filePath)
-{
-    return detail::EngineDomain::assetManager()->loadAsset(filePath);
 }
 
 Ref<Stream> Assets::openFileStream(const StringRef& filePath)
@@ -113,6 +128,9 @@ Ref<AssetModel> AssetImporter::import(const ln::Path& sourceFilePath)
 
 namespace detail {
 
+const String AssetPath::FileSchemeName = u"file";
+const String AssetPath::AssetSchemeName = u"asset";
+
 AssetPath AssetPath::makeFromLocalFilePath(const Path& filePath)
 {
     AssetPath assetPath = makeEmpty();
@@ -134,7 +152,12 @@ bool AssetPath::tryParseAssetPath(const String& str, AssetPath* outPath)
     *outPath = makeEmpty();
     outPath->m_components->scheme = str.substr(0, separate0);
     outPath->m_components->host = str.substr(separate0 + 3, separate1 - (separate0 + 3));
-    outPath->m_components->path = Path(str.substr(separate1 + 1)).canonicalize().unify();
+    if (String::compare(outPath->m_components->scheme, AssetSchemeName, CaseSensitivity::CaseInsensitive) == 0) {
+        outPath->m_components->path = Path(str.substr(separate1 + 1));
+    }
+    else {
+        outPath->m_components->path = Path(str.substr(separate1 + 1)).canonicalize().unify();
+    }
     return true;
 }
 
@@ -161,7 +184,15 @@ AssetPath AssetPath::combineAssetPath(const AssetPath& basePath, const String& l
         result = makeEmpty();
         result.m_components->scheme = basePath.scheme();
         result.m_components->host = basePath.host();
-        result.m_components->path = Path(basePath.path(), localAssetPath).canonicalize().unify();
+        if (String::compare(result.m_components->scheme, AssetSchemeName, CaseSensitivity::CaseInsensitive) == 0) {
+            Path path = Path(basePath.path(), localAssetPath);
+            std::vector<Char> tmpPath(path.length() + 1);
+            int len = detail::PathTraits::canonicalizePath(path.c_str(), path.length(), tmpPath.data(), tmpPath.size());
+            result.m_components->path = Path(StringRef(tmpPath.data(), len)).unify();
+        }
+        else {
+            result.m_components->path = Path(basePath.path(), localAssetPath).canonicalize().unify();
+        }
         return result;
     }
 }
@@ -200,6 +231,16 @@ String AssetPath::toString() const
 
 AssetPath::AssetPath()
 {
+}
+
+AssetPath::AssetPath(const String& scheme, const String& host, const Path& path)
+    : m_components(std::make_shared<Components>())
+{
+    m_components->scheme = scheme;
+    m_components->host = host;
+    m_components->path = path;
+
+    //if (m_components->path.str()[0] != u'/') m_components->path = Path(u"/" + path.str());
 }
 
 AssetPath AssetPath::makeEmpty()

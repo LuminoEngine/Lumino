@@ -7,14 +7,17 @@ namespace detail {
 
 enum class AssetArchiveStorageKind
 {
-	Directory,
 	ArchiveFile,
+    AssetDirectory,
+    LocalDirectory,
 };
 
 class AssetArchive
     : public RefObject
 {
 public:
+    virtual const String& scheme() const = 0;
+    virtual const String& name() const = 0;
     virtual void close() = 0;
     virtual bool existsFile(const Path& unifiedFilePath) const = 0;
 	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) = 0;
@@ -69,6 +72,8 @@ public:
 	CryptedAssetArchiveReader();
     ~CryptedAssetArchiveReader();
 	bool open(const StringRef& filePath, const StringRef& password, bool pathAsRawRelative);
+    virtual const String& scheme() const;
+    virtual const String& name() const;
     virtual void close() override;
 	size_t read(byte_t* data, size_t count, size_t dataOffset, size_t dataSize, size_t seekPoint);
     virtual bool existsFile(const Path& unifiedFilePath) const override;
@@ -91,6 +96,7 @@ private:
 	bool checkSignature(BinaryReader* r, const char* sig);
 	std::string readString(BinaryReader* r);
 
+    String m_name;
 	uint32_t m_keys[3];
 	Ref<FileStream> m_file;
 	Ref<BinaryReader> m_reader;
@@ -125,13 +131,17 @@ class FileSystemReader
 public:
 	FileSystemReader();
 	void setRootPath(const StringRef& path);
+    virtual const String& scheme() const;
+    virtual const String& name() const;
 	virtual void close() override;
 	virtual bool existsFile(const Path& unifiedFilePath) const override;
 	virtual Ref<Stream> openFileStream(const Path& unifiedFilePath) override;
-	virtual AssetArchiveStorageKind storageKind() const override { return AssetArchiveStorageKind::Directory; }
+    virtual AssetArchiveStorageKind storageKind() const override;
 
 private:
 	Path m_rootPath;
+    String m_scheme;
+    String m_name;
 };
 
 } // namespace detail

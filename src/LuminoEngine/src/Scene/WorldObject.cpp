@@ -75,7 +75,7 @@ void WorldObjectTransform::lookAt(const Vector3& target, const Vector3& up)
         s = Vector3::cross(u2, f);
     }
 
-    s.normalize();
+    s.mutatingNormalize();
 
     Vector3 u = Vector3::cross(f, s);
     Matrix mat(
@@ -132,10 +132,12 @@ void WorldObject::init()
 {
     Object::init();
 
-	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
-	if (activeWorld) {
-		activeWorld->addObject(this);
-	}
+    if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
+        World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+        if (activeWorld) {
+            activeWorld->addObject(this);
+        }
+    }
 }
 
 void WorldObject::onDispose(bool explicitDisposing)

@@ -38,6 +38,7 @@ class EngineDomain
 {
 public:
 	static void release();
+	static RuntimeManager* runtimeManager();
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
     static AnimationManager* animationManager();
@@ -54,7 +55,6 @@ public:
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
-	static RuntimeManager* runtimeManager();
     static EngineContext* engineContext();
 
     static World* mainWorld();

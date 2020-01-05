@@ -31,6 +31,7 @@
 #include <LuminoEngine/UI/UIFlexMessageTextArea.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
+#include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -338,7 +339,6 @@ int main(int argc, char** argv)
     EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
     EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-    EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
 	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
 	//return UISandboxMain();
@@ -353,6 +353,14 @@ int main(int argc, char** argv)
 
 	Engine::initialize();
 
+
+    LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
+
+    //auto texture1 = Texture2D::load(u"logo.png");
+    //auto sprite1 = Sprite::create(texture1, 2, 2);
+    //auto asset = makeObject<AssetModel>(sprite1);
+    //Assets::saveAssetToLocalFile(asset, "test.json");
+    auto asset = Assets::loadAssetFromLocalFile("test.json");
 
 	//{
 	//	auto ss = makeObject<ed::SceneAsset>();

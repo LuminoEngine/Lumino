@@ -36,6 +36,7 @@ class AssetProperty;
 
     現時点では loadInternal とか持っているが、後で消す。
 */
+LN_CLASS()
 class AssetModel
     : public Object
 {
@@ -51,6 +52,8 @@ public:
 
     const ln::String& assetType() const { return m_assetType; }
 
+    /** target */
+    LN_METHOD()
     Object* target() const;
 
     Path assetFilePath() const { return  m_assetFilePath; }
@@ -65,7 +68,13 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     AssetModel();
+
+    /** init */
     void init();
+
+    // TODO: テスト用の一時機能。Asset の作成は AssetDatabase を使わなけばならない
+    /** init */
+    LN_METHOD()
 	void init(Object* target);
 
 private:

@@ -32,7 +32,7 @@ private:
 
 
 	ln::String makeRubyClassInfoVariableName(const TypeSymbol* type) const { return u"g_class_" + type->shortName(); }
-	ln::String makeWrapStructName(TypeSymbol* type) const { return u"Wrap_" + type->shortName(); }
+    ln::String makeWrapStructName(const TypeSymbol* type) const;    // e.g.) => Wrap_LnTexture2D, LnVector3
 	ln::String makeWrapFuncName(MethodSymbol* method) const { return u"Wrap_" + makeFlatFullFuncName(method, FlatCharset::Unicode); }
 	ln::String makeWrapFuncName_CallOverrideBase(MethodSymbol* method) const { return u"Wrap_" + makeFlatFullFuncName(method, FlatCharset::Unicode) + u"_CallOverrideBase"; }
 	ln::String makeSignalValueName(const MethodSymbol* eventConnectorMethod) const { return eventConnectorMethod->shortName() + u"_Signal"; }
@@ -49,9 +49,11 @@ private:
 	ln::String makeAccessorCacheFieldMarks(const TypeSymbol* classSymbol) const;
 	ln::String makeWrapFuncImplement(const TypeSymbol* classSymbol, const MethodOverloadInfo* overloadInfo) const;
 	ln::String makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
+    ln::String makeWrapFuncCallBlock_FieldAccessor(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
 	ln::String makeVALUEReturnExpr(const TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const;
 	ln::String makeTypeCheckExpr(const TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const;
+    ln::String makeNativeToVALUECastDecl(const MethodParameterSymbol* param) const;
 	ln::String makeConstandValue(const ConstantSymbol* constant) const;
 
 	ln::String makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classInfo) const;

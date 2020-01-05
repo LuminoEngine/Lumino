@@ -121,32 +121,53 @@ void RubyExtGenerator::generate()
 	// structs
 	for (auto& structSymbol : db()->structs()) {
 
-		code.AppendLine("//==============================================================================");
-		code.AppendLine("// {0}", structSymbol->fullName());
+		code.AppendLine(u"//==============================================================================");
+		code.AppendLine(u"// {0}", structSymbol->fullName());
 		code.NewLine();
+
+        //// wrap struct
+        //{
+        //    OutputBuffer wrapStruct;
+
+        //    wrapStruct.AppendLine(u"struct {0}", makeWrapStructName(structSymbol));
+        //    wrapStruct.AppendLine(u"{");
+        //    wrapStruct.IncreaseIndent();
+        //    {
+        //        wrapStruct.AppendLine(u"{0} value;", makeFlatClassName(structSymbol));
+        //    }
+        //    wrapStruct.DecreaseIndent();
+        //    wrapStruct.AppendLine(u"};");
+        //    wrapStruct.NewLine();
+        //    code.AppendLines(wrapStruct.toString());
+        //}
 
 		code.AppendLine(u"VALUE {0};", makeRubyClassInfoVariableName(structSymbol));
 		code.NewLine();
 
 		code.AppendLine(m_RubyRequiredStructMethodsTemplate
 			.replace(u"%%FlatStructName%%", makeFlatClassName(structSymbol)));
+
+        for (auto& overload : structSymbol->overloads()) {
+            code.append(makeWrapFuncImplement(structSymbol, overload));
+        }
 	}
 
 	// classes
 	for (auto& classSymbol : db()->classes()) {
-		if (classSymbol == PredefinedTypes::objectType) {
-			// Object class is defined directly, so automatic generation is not required
-		}
-		else {
+		//if (classSymbol->isRootObjectClass()) {
+		//	// Object class is defined directly, so automatic generation is not required
+		//}
+		//else
+        {
 			OutputBuffer markExprs;
 
-			code.AppendLine("//==============================================================================");
-			code.AppendLine("// {0}", classSymbol->fullName());
+			code.AppendLine(u"//==============================================================================");
+			code.AppendLine(u"// {0}", classSymbol->fullName());
 			code.NewLine();
 
+			// クラスをラップする構造体
 			{
 				OutputBuffer wrapStruct;
-				// クラスをラップする構造体
 				/* 例:
 				struct Wrap_MyClass
 					: public Wrap_BaseClass
@@ -162,7 +183,10 @@ void RubyExtGenerator::generate()
 				if (classSymbol->baseClass()) {  // 継承
 					wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
 				}
-				wrapStruct.AppendLine("{");
+                else if (classSymbol->isRootObjectClass()) {
+                    wrapStruct.AppendLine("    : public Wrap_RubyObject");
+                }
+				wrapStruct.AppendLine(u"{");
 				wrapStruct.IncreaseIndent();
 
 				// Accessor Cache
@@ -177,15 +201,15 @@ void RubyExtGenerator::generate()
 				}
 
 				// Constructor
-				wrapStruct.AppendLine("{0}()", makeWrapStructName(classSymbol));
+				wrapStruct.AppendLine(u"{0}()", makeWrapStructName(classSymbol));
 				//if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
 				//{
 				//	wrapStruct.Append("    : ");
 				//	wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMemberInit.ToString());
 				//}
-				wrapStruct.AppendLine("{}");
+				wrapStruct.AppendLine(u"{}");
 				wrapStruct.DecreaseIndent();
-				wrapStruct.AppendLine("};").NewLine();
+				wrapStruct.AppendLine(u"};").NewLine();
 				//wrapStruct.AppendLine(_currentClassInfo.AdditionalClassStaticVariables.ToString());
 
 
@@ -249,6 +273,10 @@ void RubyExtGenerator::generate()
 			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", rb_cObject);", classInfoVar, structSymbol->shortName());
 			moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(structSymbol));
 
+            for (auto& overload : structSymbol->overloads()) {
+                moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+            }
+
 			moduleInitializer.NewLine();
 		}
 		
@@ -261,7 +289,7 @@ void RubyExtGenerator::generate()
 			typeVALUEDecls.AppendLine(u"VALUE {0};", classInfoVar);
 
 			// define class
-			auto baseClass = (!classSymbol->baseClass() || classSymbol->baseClass() == PredefinedTypes::objectType) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
+			auto baseClass = (!classSymbol->baseClass() || classSymbol->isRootObjectClass()) ? ln::String(u"rb_cObject") : makeRubyClassInfoVariableName(classSymbol->baseClass());
 			moduleInitializer.AppendLine(u"{0} = rb_define_class_under(g_rootModule, \"{1}\", {2});", classInfoVar, classSymbol->shortName(), baseClass);
 			if (!classSymbol->isStatic()) {
 				moduleInitializer.AppendLine(u"rb_define_alloc_func({0}, {1}_allocate);", classInfoVar, makeFlatClassName(classSymbol));
@@ -325,6 +353,15 @@ void RubyExtGenerator::generate()
 		ln::FileSystem::writeAllText(ln::Path(outputDir, fileName), src);
 	}
 }
+
+ln::String RubyExtGenerator::makeWrapStructName(const TypeSymbol* type) const
+{
+    if (type->isStruct())
+        return makeFlatClassName(type);
+    else
+        return u"Wrap_" + type->shortName();
+}
+
 
 //ln::String RubyExtGenerator::makeEventSignalClassName(const TypeSymbol* delegateType) const
 //{
@@ -390,7 +427,12 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol
 
 	// Body 作成。if () { ～ } までのオーバーロード呼び出し1つ分
 	for (auto& method : overloadInfo->methods()) {
-		code.AppendLine(makeWrapFuncCallBlock(classSymbol, method));
+        if (method->isFieldAccessor()) {
+            code.AppendLine(makeWrapFuncCallBlock_FieldAccessor(classSymbol, method));
+        }
+        else {
+            code.AppendLine(makeWrapFuncCallBlock(classSymbol, method));
+        }
 	}
 
 	// 関数終端まで到達してしまったら例外
@@ -425,6 +467,10 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
     }
 	*/
 
+    //if (method->shortName() == u"readString") {
+    //    printf("");
+    //}
+
 	// 集計
 	int requiredArgsCount = 0;
 	int optionalArgsCount = 0;			// デフォルト引数の数
@@ -436,13 +482,17 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 	// API 1つの呼び出しの各引数について、宣言、実引数渡し、後処理、return文 を作っていく
 	OutputBuffer callerArgDecls;
 	OutputBuffer callerArgList;
+    OutputBuffer callerPostStmt;
 	OutputBuffer callerReturnStmt;
 
 	{
 		for (auto& param : method->flatParameters())
 		{
 			if (param->isThis()) {
-				callerArgList.AppendCommad("selfObj->handle");
+                if (classSymbol->isStruct())
+                    callerArgList.AppendCommad(u"selfObj");
+                else
+				    callerArgList.AppendCommad(u"selfObj->handle");
 			}
 			else if (param->isReturn())
 			{
@@ -450,11 +500,11 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 
 				// コンストラクタの最後の引数 (LNTexture_Create(x, y, &tex) の tex) は、WrapStruct::Handle へ格納する
 				if (method->isConstructor()) {
-					callerArgList.AppendCommad("&selfObj->handle");
+					callerArgList.AppendCommad(u"&selfObj->handle");
 
 					// コンストラクトされた Object を register
-					callerReturnStmt.AppendLine("LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
-					callerReturnStmt.AppendLine("return Qnil;");
+                    callerPostStmt.AppendLine(u"LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
+					callerReturnStmt.AppendLine(u"return Qnil;");
 				}
 				else {
 					auto localVarName = u"_" + param->name();
@@ -519,6 +569,13 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 	code.AppendLine(callerArgDecls.toString().trim());
 	code.AppendLine("LnResult errorCode = {0}({1});", funcName, callerArgList.toString());
 	code.AppendLine(u"if (errorCode < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", errorCode, LnRuntime_GetLastErrorMessage());");
+    if (!callerPostStmt.isEmpty()) {
+        code.AppendLine(callerPostStmt.toString());
+    }
+    if (method->isConstructor()) {
+        // call given block for cascade initializer.
+        code.AppendLine(u"if (rb_block_given_p()) rb_yield(self);");
+    }
 	code.AppendLine((callerReturnStmt.isEmpty()) ? u"return Qnil;" : callerReturnStmt.toString().trim());
 	code.DecreaseIndent();
 	code.AppendLine(u"}");
@@ -528,194 +585,50 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock(const TypeSymbol* classSymbol
 	code.append("}");
 
 	return code.toString();
+}
 
-#if 0
+ln::String RubyExtGenerator::makeWrapFuncCallBlock_FieldAccessor(const TypeSymbol* classSymbol, const MethodSymbol* method) const
+{
+    if (method->parameters().size() == 1) {
+        // setter
+        MethodParameterSymbol* param = method->parameters()[0];
 
-	var callBody = new OutputBuffer();
+        OutputBuffer code;
+        code.AppendLine(u"if (argc == 1) {");
+        code.IncreaseIndent();
+        {
+            code.AppendLine(u"VALUE value;");
+            code.AppendLine(u"rb_scan_args(argc, argv, \"1\", &value);");
+            code.AppendLine(u"if ({0}) {{", makeTypeCheckExpr(param->type(), u"value"));
+            code.IncreaseIndent();
+            {
+                code.AppendLine(makeVALUEToNativeCastDecl(param));
 
-	int normalArgsCount = 0;
-	int defaultArgsCount = 0;
-	var scan_args_Inits = new OutputBuffer();
-	var scan_args_Args = new OutputBuffer();
-	string typeCheckExp = "";
+                code.AppendLine("selfObj->{0} = _value;", method->linkedField()->name());
 
-	// API 1つの呼び出しの各引数について、宣言、実引数渡し、後処理、return文 を作っていく
-	var initStmt = new OutputBuffer();
-	var argsText = new OutputBuffer();
-	var postStmt = new OutputBuffer();
-	var returnStmt = new OutputBuffer();
+                code.AppendLine("return Qnil;");
+            }
+            code.DecreaseIndent();
+            code.AppendLine("}");
+        }
+        code.DecreaseIndent();
+        code.AppendLine("}");
+        return code.toString().trim();
+    }
+    else {
+        // getter
+        QualType returnType = method->returnType();
 
-	// オリジナルの全仮引数を見ていく
-	foreach(var param in method.FuncDecl.Params)
-	{
-		// コンストラクタの最後の引数は、WrapStruct::Handle への格納になる
-		if (method.IsRefObjectConstructor && param == method.FuncDecl.Params.Last())
-		{
-			argsText.AppendCommad("&selfObj->Handle");
-
-			// Handle がアタッチされたので Register
-			postStmt.AppendLine("Manager::RegisterWrapperObject(self);");
-		}
-		// 第1引数かつインスタンスメソッドの場合は特殊な実引数になる
-		else if (
-			!method.IsRefObjectConstructor &&
-			method.IsInstanceMethod &&
-			param == method.FuncDecl.Params.First())
-		{
-			var classType = param.Type as CLClass;
-			if (classType == null) throw new InvalidOperationException("インスタンスメソッドの第1引数が不正。");
-			if (classType.IsStruct)
-				argsText.AppendCommad("selfObj");
-			else
-				argsText.AppendCommad("selfObj->Handle");
-		}
-		// return として選択されている引数である場合
-		else if (param == method.ReturnParam)
-		{
-			var varName = "_" + param.Name;
-			// 宣言
-			initStmt.AppendLine("{0} {1};", CppCommon.ConvertTypeToCName(param.Type), varName);
-			// API実引数
-			argsText.AppendCommad("&" + varName);
-
-			// getプロパティの場合はメンバにキャッシュする
-			if (method.IsGetterProperty && CLType.CheckRefObjectType(param.Type))
-			{
-				// variable に、キャッシュ先の変数名を作る
-				var propName = method.OwnerProperty.Name;
-				string variable;
-				if (method.IsStatic)
-					variable = string.Format("wrap{0}::{1}", method.OwnerClass.Name, propName);
-				else
-					variable = string.Format("selfObj->{0}", propName);
-
-				// post
-				postStmt.AppendLine("if (!checkEqualHandle({0}, {1})) {{", variable, varName);
-				postStmt.AppendLine("    {0} = Manager::GetWrapperObjectFromHandle({1});", variable, varName);
-				postStmt.AppendLine("}");
-				// return
-				returnStmt.AppendLine("return {0};", variable);
-			}
-			else
-			{
-				// return
-				RubyCommon.MakeReturnCastExpCToVALUE(param.Type, varName, returnStmt);
-			}
-		}
-		// 普通の in/out の引数はここに来る
-		else
-		{
-			/*
-				LNTexture2D_Create(w, h, format, mipmap) の例
-
-				if (2 <= argc && argc <= 4) {
-
-					// まず、実引数を取り出す必要がある
-					VALUE width;
-					VALUE height;
-					VALUE format;
-					VALUE mipmap;
-					rb_scan_args(argc, argv, "22", &width, &height, &format, &mipmap);
-
-					// 型チェック
-					if (isRbNumber(width) && isRbNumber(height) && isRbNumber(format) && isRbBool(mipmap)) {
-
-						// C言語の型へ変換する
-						int _width = FIX2INT(width);
-						int _height = FIX2INT(height);
-						LNTextureFormat _format = (format != Qnil) ? (LNTextureFormat)FIX2INT(format) : LN_FMT_A8R8G8B8;
-						LNBool _mipmap = (mipmap != Qnil) ? RbBooltoBool(mipmap) : LN_FALSE;
-
-						// API 呼び出し
-						LNResult errorCode = LNTexture2D_Create(_width, _height, _format, _mipmap, &selfObj->Handle);
-						if (errorCode != LN_OK) rb_raise(g_luminoError, "Lumino error. (%d)\n%s", errorCode, LNGetLastErrorMessage());
-
-						return Qnil;
-					}
-			*/
-			// 通常引数とデフォルト引数のカウント
-			if (string.IsNullOrEmpty(param.OriginalDefaultValue))
-				normalArgsCount++;
-			else
-				defaultArgsCount++;
-
-			// out の場合は C++ 型で受け取るための変数を定義
-			if (param.IOModifier == IOModifier.Out)
-			{
-				// ruby は複数 out を扱えないためここに来ることはないはず
-				throw new InvalidOperationException();
-			}
-			// 入力引数 (in とinout)
-			else
-			{
-				// rb_scan_args の格納先 VALUE 宣言
-				scan_args_Inits.AppendLine("VALUE {0};", param.Name);
-				// rb_scan_args の引数
-				scan_args_Args.AppendCommad("&{0}", param.Name);
-				// 型チェック条件式
-				if (!string.IsNullOrEmpty(typeCheckExp))
-					typeCheckExp += " && ";
-				typeCheckExp += RubyCommon.GetTypeCheckExp(param.Type, param.Name);
-				// C変数宣言 & 初期化代入
-				initStmt.AppendLine(RubyCommon.GetDeclCastExpVALUEtoC(param.Type, "_" + param.Name, param.Name, param.OriginalDefaultValue));
-				// API実引数
-				if (param.Type is CLClass &&
-					((CLClass)param.Type).IsStruct)
-					argsText.AppendCommad("&_" + param.Name);   // struct は 参照渡し
-				else
-					argsText.AppendCommad("_" + param.Name);
-
-
-				if (method.IsSetterProperty && CLType.CheckRefObjectType(param.Type))
-				{
-					// post
-					var propName = method.OwnerProperty.Name;
-					postStmt.AppendLine("selfObj->{0} = {1};", propName, param.Name);
-				}
-			}
-		}
-	}
-
-	// rb_scan_args の呼び出し
-	string rb_scan_args_Text = "";
-	if (!scan_args_Args.IsEmpty)
-		rb_scan_args_Text = string.Format(@"rb_scan_args(argc, argv, ""{0} {1}"", { 2 }); ", normalArgsCount, (defaultArgsCount > 0) ? defaultArgsCount.ToString() : "", scan_args_Args);
-
-		// 型チェック式が空なら true にしておく
-		if (string.IsNullOrEmpty(typeCheckExp))
-			typeCheckExp = "true";
-
-	// エラーコードと throw
-	string preErrorStmt = "";
-	string postErrorStmt = "";
-	if (method.FuncDecl.ReturnType.IsResultCodeType)
-	{
-		preErrorStmt = "LNResult errorCode = ";
-		postErrorStmt = @"if (errorCode != LN_OK) rb_raise(g_luminoError, ""Lumino error. (%d)\n%s"", errorCode, LNGetLastErrorMessage()); " + OutputBuffer.NewLineCode;
-	}
-
-	// API 呼び出し
-	var apiCall = string.Format("{0}({1});", method.FuncDecl.OriginalFullName, argsText.ToString());
-
-	// オーバーロードひとつ分の塊を作成する
-	callBody.AppendWithIndent("if ({0} <= argc && argc <= {1}) {{", normalArgsCount.ToString(), (normalArgsCount + defaultArgsCount).ToString()).NewLine();
-	callBody.IncreaseIndent();
-	callBody.AppendWithIndent(scan_args_Inits.ToString());
-	callBody.AppendWithIndent(rb_scan_args_Text).NewLine();
-	callBody.AppendWithIndent("if ({0}) {{", typeCheckExp).NewLine();
-	callBody.IncreaseIndent();
-	callBody.AppendWithIndent(initStmt.ToString());
-	callBody.AppendWithIndent(preErrorStmt + apiCall + OutputBuffer.NewLineCode);
-	callBody.AppendWithIndent(postErrorStmt);
-	callBody.AppendWithIndent(postStmt.ToString());
-	callBody.AppendLine((returnStmt.IsEmpty) ? "return Qnil;" : returnStmt.ToString());
-	callBody.DecreaseIndent();
-	callBody.AppendWithIndent("}").NewLine();
-	callBody.DecreaseIndent();
-	callBody.AppendWithIndent("}").NewLine();
-
-	funcBody.AppendWithIndent(callBody.ToString());
-#endif
+        OutputBuffer code;
+        code.AppendLine(u"if (argc == 0) {");
+        code.IncreaseIndent();
+        {
+            code.AppendLine(makeVALUEReturnExpr(returnType.type, method, u"selfObj->" + method->linkedField()->name()));
+        }
+        code.DecreaseIndent();
+        code.AppendLine("}");
+        return code.toString().trim();
+    }
 }
 
 // C言語変数 → VALUE 変換式の作成 (return 用)
@@ -774,16 +687,16 @@ ln::String RubyExtGenerator::makeTypeCheckExpr(const TypeSymbol* type, const ln:
 	else if (type == PredefinedTypes::floatType) {
 		return ln::String::format(u"LNRB_VALUE_IS_FLOAT({0})", varName);
 	}
-	//else if (type == PredefinedTypes::doubleType) {
-	//	return ln::String::format(u"LNRB_VALUE_TO_DOUBLE({0})", varName);
-	//}
+	else if (type == PredefinedTypes::doubleType) {
+		return ln::String::format(u"LNRB_VALUE_IS_DOUBLE({0})", varName);
+	}
 	else if (type->isString()) {
 		return ln::String::format(u"LNRB_VALUE_IS_STRING({0})", varName);
 	}
 	else if (type->isEnum()) {
 		return ln::String::format(u"LNRB_VALUE_IS_NUMBER({0})", varName);
 	}
-	else if (type->isClass() || type->isStruct()) {
+	else if (type->isClass() || type->isStruct() || type->isDelegateObject()) {
 		return ln::String::format(u"LNRB_VALUE_IS_OBJECT({0})", varName);
 	}
 	else {
@@ -806,7 +719,7 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 		t = t + ln::String::format(u"{0}& {1} = *tmp_{1};", makeFlatClassName(type), varName);
 		return t;
 	}
-	else if (type->isClass()) {
+	else if (type->isClass() || type->isDelegateObject()) {
 		declExpr = ln::String::format(u"LnHandle {0}", varName);
 		castExpr = ln::String::format(u"LuminoRubyRuntimeManager::instance->getHandle({0})", param->name());
 	}
@@ -852,6 +765,17 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	}
 }
 
+// ruby API コールに渡す引数用変数の宣言文を作成する。(C の型 を VALUE に変換する)
+ln::String RubyExtGenerator::makeNativeToVALUECastDecl(const MethodParameterSymbol* param) const
+{
+    if (param->type()->isClass()) {
+        return ln::String::format(u"LNRB_HANDLE_WRAP_TO_VALUE({0})", param->name());
+    }
+    else {
+        return ln::String::format(u"LNI_TO_RUBY_VALUE({0})", param->name());
+    }
+}
+
 ln::String RubyExtGenerator::makeConstandValue(const ConstantSymbol* constant) const
 {
 	if (constant->type()->isEnum()) {
@@ -889,7 +813,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 			// make args
 			OutputBuffer args;
 			for (int i = 1; i < method->flatParameters().size(); i++) {
-				args.AppendCommad(u"LNI_TO_RUBY_VALUE({0})", method->flatParameters()[i]->name());
+                args.AppendCommad(makeNativeToVALUECastDecl(method->flatParameters()[i]));
 			}
 
 			code.AppendLine(u"VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE({0});", method->flatParameters().front()->name());
@@ -1042,11 +966,28 @@ void RubyYARDOCSourceGenerator::generate()
 		code.NewLine();
 	}
 
+    for (auto& structSymbol : db()->structs()) {
+        code.AppendLine(u"# " + structSymbol->document()->summary());
+        code.AppendLine(u"# ");
+        code.append(u"class " + makeRubyTypeFullName(structSymbol));
+        code.NewLine();
+        code.IncreaseIndent();
+
+        for (auto& overload : structSymbol->overloads()) {
+            code.AppendLines(makeMethodDoc(overload));
+            code.NewLine();
+        }
+
+        code.DecreaseIndent();
+        code.AppendLine(u"end");
+        code.NewLine();
+    }
+
 	for (auto& classSymbol : db()->classes()) {
 		code.AppendLine(u"# " + classSymbol->document()->summary());
 		code.AppendLine(u"# ");
 		code.append(u"class " + makeRubyTypeFullName(classSymbol));
-		if (classSymbol->baseClass() && classSymbol->baseClass() != PredefinedTypes::objectType) {
+		if (classSymbol->baseClass() && classSymbol->isRootObjectClass()) {
 			code.append(u" < " + classSymbol->baseClass()->shortName());
 		}
 		code.NewLine();
@@ -1065,7 +1006,7 @@ void RubyYARDOCSourceGenerator::generate()
 
 
 
-	ln::String fileName = ln::String::format("{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
+	ln::String fileName = ln::String::format("GemProject/{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
 	ln::String src = code.toString();
 	ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
 }
@@ -1076,35 +1017,6 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 
 	auto representative = overloadInfo->representative();
 	auto rubyMethodName = makeRubyMethodName(representative);
-
-#if 1	// @overload 無しで出力する（こっちの方がサマリーが見やすい）
-
-	for (auto& method : overloadInfo->methods()) {
-		auto paramNames = OutputBuffer();
-		auto params = OutputBuffer();
-		for (auto& param : method->parameters()) {
-			paramNames.AppendCommad(param->name());
-			params.AppendLine(u"@param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
-		}
-		auto returns = ln::String::Empty;
-		if (!method->document()->returns().isEmpty()) {
-			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType().type), method->document()->returns());
-		}
-
-		code.AppendLine(u"# " + translateText(representative->document()->summary()));
-		if (!representative->document()->details().isEmpty()) {
-			code.AppendLinesHeaderd(translateText(representative->document()->details()), u"#   ");
-		}
-
-		if (!params.isEmpty()) code.AppendLinesHeaderd(params.toString(), u"# ");
-		if (!returns.isEmpty()) code.AppendLine(u"# " + returns);
-
-		code.AppendLine(u"def {0}({1})", rubyMethodName, paramNames.toString());
-		code.AppendLine(u"end");
-		code.NewLine();
-	}
-
-#else	// @overload 付きで出力する
 
 	// Overall overview
 	code.AppendLine(u"# " + translateText(representative->document()->summary()));
@@ -1122,8 +1034,8 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 			params.AppendLine(u"@param [{0}] {1} {2}", makeRubyTypeFullName(param->type()), param->name(), translateText(param->document()->summary()));
 		}
 		auto returns = ln::String::Empty;
-		if (method->returnType() != PredefinedTypes::voidType) {
-			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType()),  method->document()->returns());
+		if (method->returnType().type != PredefinedTypes::voidType) {
+			returns = ln::String::format(u"@return [{0}] {1}", makeRubyTypeFullName(method->returnType().type),  method->document()->returns());
 		}
 		
 
@@ -1147,8 +1059,6 @@ ln::String RubyYARDOCSourceGenerator::makeMethodDoc(const MethodOverloadInfo* ov
 	code.AppendLine(u"def {0}(*args)", rubyMethodName);
 	code.AppendLine(u"end");
 	code.NewLine();
-#endif
-
 
 	return code.toString();
 }
@@ -1166,7 +1076,7 @@ ln::String RubyYARDOCSourceGenerator::makeRubyTypeFullName(const TypeSymbol* typ
 			{ PredefinedTypes::floatType, u"Float" },
 			{ PredefinedTypes::stringType, u"String" },
 			//{ PredefinedTypes::stringRefType, u"" },
-			{ PredefinedTypes::objectType, u"Object" },
+			//{ PredefinedTypes::objectType, u"Object" },
 			//{ PredefinedTypes::EventConnectionType, u"" },
 		};
 

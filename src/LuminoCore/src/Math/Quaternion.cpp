@@ -132,7 +132,7 @@ void Quaternion::toAxisAngle(Vector3* axis, float* angle) const
         axis->x = q.x;
         axis->y = q.y;
         axis->z = q.z;
-        axis->normalize();
+        axis->mutatingNormalize();
     }
     if (angle) {
         *angle = 2.0f * acosf(q.w);

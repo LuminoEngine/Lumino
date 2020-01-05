@@ -7,7 +7,7 @@ int main(int argc, const char** argv)
 	if (argc == 1) {
 		static const char* localArgv[] = {
 			argv[0],
-			"C:/Users/hldc0061/AppData/Local/Temp/lnCodeAnalyzerCDB-1",
+			"C:/Users/lriki/AppData/Local/Temp/lnCodeAnalyzerCDB-0",
 		};
 		argc = 2;
 		argv = localArgv;

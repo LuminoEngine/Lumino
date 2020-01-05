@@ -55,7 +55,7 @@ ln::Result EditorApplication::init()
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
 	ln::EngineSettings::setMainBackBufferSize(1600, 800);
-    ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
+    //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
     ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();

@@ -113,10 +113,13 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Sprite();
 
     Result init(const Builder& builder);
+
+    /** init */
+    LN_METHOD()
 	void init();
 
 	/** init */
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix = "WithTexture")
     void init(Texture* texture, float width, float height);
 
 	void init(SpriteFrameSet* frameSet);

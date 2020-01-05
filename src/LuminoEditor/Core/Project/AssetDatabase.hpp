@@ -30,6 +30,7 @@ public:// TODO:
    // LN_INTERNAL_NEW_OBJECT;
     AssetDatabase();
     ln::Result init(Project* owner);
+    void close();
 
     Project* m_ownerProject;
 };

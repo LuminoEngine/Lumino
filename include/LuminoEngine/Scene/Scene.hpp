@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "Common.hpp"
-#include "../Asset/AssetObject.hpp"
+#include "../Asset/AssetModel.hpp"
 
 template <class T>
 void staticFactory2();

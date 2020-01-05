@@ -10,6 +10,7 @@
 #include "ArchiveStore.hpp"
 
 namespace ln {
+class Serializer;   // LuminoEngine
 
 // non‐intrusive
 #define LN_SERIALIZE_CLASS_VERSION_NI(type, version) \
@@ -50,6 +51,8 @@ public:
 	static const String ClassNameKey;
 	static const String ClassVersionKey;
 	static const String ClassBaseKey;
+
+    Serializer* m_serializer;   // TODO:
 
 	Archive(ArchiveStore* store, ArchiveMode mode)
 		: Archive()
@@ -261,6 +264,7 @@ protected:
 		: m_store(nullptr)
 		, m_mode(ArchiveMode::Save)
 		, m_archiveVersion(0)
+        , m_serializer(nullptr)
 	{
 	}
 

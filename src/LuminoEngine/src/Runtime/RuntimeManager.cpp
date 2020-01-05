@@ -6,12 +6,21 @@ namespace detail {
 //==============================================================================
 // RuntimeManager
 
-LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
-LnRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
+//LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
+//LnRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
 
 RuntimeManager::RuntimeManager()
 	: m_systemAliving(false)
 {
+    // 特に Binding-module にて、Engine 初期化以前にいろいろ処理を行うが、
+    // そこのログを出力したいので他の設定より先に有効化しておく。
+    ln::GlobalLogger::addStdErrAdapter();
+#ifdef LN_OS_ANDROID
+    ln::GlobalLogger::addLogcatAdapter();
+#endif
+#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+    ln::GlobalLogger::addNLogAdapter();
+#endif
 }
 
 RuntimeManager::~RuntimeManager()
@@ -21,6 +30,8 @@ RuntimeManager::~RuntimeManager()
 void RuntimeManager::init(const Settings& settings)
 {
 	LN_LOG_DEBUG << "RuntimeManager Initialization started.";
+
+    m_settings = settings;
 
 	// オブジェクト管理配列
 	for (int i = 511; i >= 0; --i)
@@ -54,11 +65,11 @@ void RuntimeManager::dispose()
 	}
 
 	m_systemAliving = false;
-	m_referenceCountTracker = nullptr;
+    m_settings.referenceCountTrackerCallback = nullptr;
 
-    if (m_runtimeFinalizedCallback) {
-        m_runtimeFinalizedCallback();
-        m_runtimeFinalizedCallback = nullptr;
+    if (m_settings.runtimeFinalizedCallback) {
+        m_settings.runtimeFinalizedCallback();
+        m_settings.runtimeFinalizedCallback = nullptr;
     }
 
 	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
@@ -218,15 +229,25 @@ int64_t RuntimeManager::getManagedTypeInfoId(LnHandle handle)
 	return detail::TypeInfoInternal::getManagedTypeInfoId(typeInfo);
 }
 
-void RuntimeManager::setReferenceCountTracker(LnReferenceCountTrackerCallback callback)
-{
-	m_referenceCountTracker = callback;
-}
+//void RuntimeManager::setReferenceCountTracker(LnReferenceCountTrackerCallback callback)
+//{
+//	m_referenceCountTracker = callback;
+//}
+//
+//void RuntimeManager::setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
+//{
+//    m_runtimeFinalizedCallback = callback;
+//}
 
-void RuntimeManager::setRuntimeFinalizedCallback(LnRuntimeFinalizedCallback callback)
-{
-    m_runtimeFinalizedCallback = callback;
-}
+//void RuntimeManager::setRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback)
+//{
+//    LN_NOTIMPLEMENTED();
+//}
+//
+//void RuntimeManager::setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback)
+//{
+//    LN_NOTIMPLEMENTED();
+//}
 
 void RuntimeManager::setReferenceTrackEnabled(LnHandle handle)
 {
@@ -235,18 +256,18 @@ void RuntimeManager::setReferenceTrackEnabled(LnHandle handle)
 
 void RuntimeManager::onRetainedObject(Object* obj)
 {
-	if (m_referenceCountTracker) {
+	if (m_settings.referenceCountTrackerCallback) {
 		if (auto runtimeData = detail::ObjectHelper::getRuntimeData(obj)) {
-			m_referenceCountTracker(runtimeData->index, LNI_REFERENCE_RETAINED, RefObjectHelper::getReferenceCount(obj));
+            m_settings.referenceCountTrackerCallback(runtimeData->index, LNI_REFERENCE_RETAINED, RefObjectHelper::getReferenceCount(obj));
 		}
 	}
 }
 
 void RuntimeManager::onReleasedObject(Object* obj)
 {
-	if (m_referenceCountTracker) {
+	if (m_settings.referenceCountTrackerCallback) {
 		if (auto runtimeData = detail::ObjectHelper::getRuntimeData(obj)) {
-			m_referenceCountTracker(runtimeData->index, LNI_REFERENCE_RELEASED, RefObjectHelper::getReferenceCount(obj));
+            m_settings.referenceCountTrackerCallback(runtimeData->index, LNI_REFERENCE_RELEASED, RefObjectHelper::getReferenceCount(obj));
 		}
 	}
 }

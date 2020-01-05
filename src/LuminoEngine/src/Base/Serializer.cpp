@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
-#include <LuminoEngine/Asset/AssetObject.hpp>
+#include <LuminoEngine/Asset/AssetModel.hpp>
 
 
 namespace ln {
@@ -42,7 +42,7 @@ void Serializer::writeInt(const StringRef& name, int value)
 	(*m_archive) & ln::makeNVP(name, value);
 }
 
-void Serializer::writeDouble(const StringRef& name, double value)
+void Serializer::writeFloat(const StringRef& name, float value)
 {
 	(*m_archive) & ln::makeNVP(name, value);
 }
@@ -73,9 +73,9 @@ int Serializer::readInt(const StringRef& name)
 	return value;
 }
 
-double Serializer::readDouble(const StringRef& name)
+float Serializer::readFloat(const StringRef& name)
 {
-	double value = 0.0;
+    float value = 0.0;
 	(*m_archive) & ln::makeNVP(name, value);
 	return value;
 }

@@ -36,7 +36,7 @@ void TypeInfo::registerProperty(PropertyInfo* prop)
 
 Ref<Object> TypeInfo::createInstance() const
 {
-	return m_factory();
+	return m_factory(this);
 }
 
 Ref<Object> TypeInfo::createInstance(const String& typeName)
@@ -93,6 +93,26 @@ EngineContext* EngineContext::current()
 	return detail::EngineDomain::engineManager()->engineContext();
 }
 
+EngineContext::EngineContext()
+{
+    m_typeInfos.push_back(nullptr); // [0] is dummy
+}
+
+TypeInfo* EngineContext::acquireTypeInfo(const StringRef& name/*, TypeInfo* baseType, const std::function<Ref<Object>()>& factory*/)
+{
+    auto* r = findTypeInfo(name);
+    if (r) {
+        return r;
+    }
+    else {
+        auto typeInfo = makeRef<TypeInfo>(name);
+        //typeInfo->m_factory = factory;
+        typeInfo->m_id = m_typeInfos.size();
+        m_typeInfos.push_back(typeInfo);
+        m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+        return typeInfo;
+    }
+}
 
 //==============================================================================
 // PropertyPath
