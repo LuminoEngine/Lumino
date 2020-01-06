@@ -422,6 +422,14 @@ LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFileA(LnHandle asset, const char* 
 LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn);
 LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHandle* outReturn);
 
+/**
+    @brief 指定したアセットファイルを読み込み、オブジェクト生成します。
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+    @details ファイルの拡張子は .lnasset です。ただし、filePath に指定する値は拡張子を省略可能です。
+*/
+LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn);
+LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outReturn);
+
 //==============================================================================
 // ln::EngineSettings
 
@@ -489,6 +497,12 @@ LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
+
+/**
+    @brief デフォルトで作成されるメインの World です。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn);
 
 //==============================================================================
 // ln::Application
@@ -632,6 +646,21 @@ LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_SetOverrideCallback(LnSpriteC
 LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnSpriteComponent_GetTypeInfoId();
+
+//==============================================================================
+// ln::World
+
+/**
+    @brief オブジェクトを World に追加します。
+    @param[in] world : instance
+*/
+LN_FLAT_API LnResult LnWorld_Add(LnHandle world, LnHandle obj);
+
+typedef LnResult(*LnWorld_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnWorld_OnSerialize_SetOverrideCallback(LnWorld_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnWorld_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnWorld_GetTypeInfoId();
 
 //==============================================================================
 // ln::ComponentList

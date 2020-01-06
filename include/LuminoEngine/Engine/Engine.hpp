@@ -64,7 +64,11 @@ public:
 	LN_METHOD()
 	static UIControl* mainUIView();
     static Size mainViewSize();
-    static World* mainWorld();
+
+	/** デフォルトで作成されるメインの World です。 */
+	LN_METHOD(Property)
+    static World* world();
+
     static Camera* mainCamera();
     static AmbientLight* mainAmbientLight();
     static DirectionalLight* mainDirectionalLight();

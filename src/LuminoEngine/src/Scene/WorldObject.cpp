@@ -135,7 +135,7 @@ void WorldObject::init()
     if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
         World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
         if (activeWorld) {
-            activeWorld->addObject(this);
+            activeWorld->add(this);
         }
     }
 }

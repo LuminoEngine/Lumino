@@ -217,7 +217,7 @@ Size Engine::mainViewSize()
     return mainViewport()->actualViewboxSize();
 }
 
-World* Engine::mainWorld()
+World* Engine::world()
 {
     return detail::EngineDomain::engineManager()->mainWorld();
 }

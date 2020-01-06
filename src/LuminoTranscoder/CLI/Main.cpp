@@ -43,6 +43,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Scene/Component.hpp",
 			TEST_ROOT "include/LuminoEngine/Visual/VisualComponent.hpp",
 			TEST_ROOT "include/LuminoEngine/Visual/SpriteComponent.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/World.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/WorldObject.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/VisualObject.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Sprite.hpp",

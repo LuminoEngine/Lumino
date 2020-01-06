@@ -19,13 +19,15 @@ class DrawElementList;
 class WorldSceneGraphRenderingContext;
 }
 
+LN_CLASS()
 class World
 	: public Object
 {
     LN_OBJECT;
 public:
     /** オブジェクトを World に追加します。 */
-    void addObject(WorldObject* obj);
+	LN_METHOD()
+    void add(WorldObject* obj);
 
     /** この World に含まれている全てのオブジェクトを World から除外します。 */
     void removeAllObjects();

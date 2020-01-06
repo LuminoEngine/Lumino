@@ -60,7 +60,7 @@ void World::onDispose(bool explicitDisposing)
     Object::onDispose(explicitDisposing);
 }
 
-void World::addObject(WorldObject* obj)
+void World::add(WorldObject* obj)
 {
     masterScene()->addObject(obj);
 }

@@ -649,7 +649,7 @@ int main(int argc, char** argv)
 	//{
 
 	//	auto p2world = makeObject<PhysicsWorld2D>();
-    auto p2world = Engine::mainWorld()->physicsWorld2D();
+    auto p2world = Engine::world()->physicsWorld2D();
 	auto shape1 = makeObject<BoxCollisionShape2D>(Size(10, 2));
 	auto body1 = makeObject<RigidBody2D>();
 	body1->addCollisionShape(shape1);

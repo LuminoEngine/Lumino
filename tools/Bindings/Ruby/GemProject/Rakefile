@@ -3,17 +3,20 @@ require 'rake/testtask'
 require "rake/extensiontask"
 require 'yard'
 require 'yard/rake/yardoc_task'
+require "fileutils"
 task :default => :spec
 
-#task :default => :test
-#task :test => :compile
 Rake::TestTask.new do |t|
-  #t.libs << 'lib' << 'test'
   t.test_files = FileList['test/test_*.rb'].exclude('test/test_assoccoords.rb')
 end
 
 Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
-    ext.lib_dir = "lib/lumino"
+  lib = File.expand_path("../../../../../build/MSVC2017-x64-MT/src/LuminoEngine/Release/LuminoEngine.dll", __FILE__)
+  to = "ext/LuminoEngine.dll"
+  FileUtils.cp(lib, to)
+  p "Lib copy (" + lib + ", " + to + ")"
+
+  ext.lib_dir = "lib/lumino"
 end
 
 FILES = ['app/controllers/**/*.rb',
@@ -23,9 +26,8 @@ FILES = ['app/controllers/**/*.rb',
 OPTIONS = ['--debug', '--verbose']
 YARD::Rake::YardocTask.new do |t|
   t.files   = ['Lumino.RubyYARDOCSource.generated.rb']
-  #t.options = ['--debug', '--verbose']
-  #t.options << OPTIONS if $trace
   if Rake.application.options.trace
     t.options = ['--debug', '--verbose']
   end
 end
+

@@ -397,6 +397,38 @@ public:
 LnSpriteComponent_OnSerialize_OverrideCallback LNWS_ln_SpriteComponent::s_LnSpriteComponent_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_World : public ln::World
+{
+public:
+    static LnWorld_OnSerialize_OverrideCallback s_LnWorld_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnWorld_OnSerialize_OverrideCallback) s_LnWorld_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::World::onSerialize(ar);
+    }
+
+};
+LnWorld_OnSerialize_OverrideCallback LNWS_ln_World::s_LnWorld_OnSerialize_OverrideCallback = nullptr;
+
+
 class LNWS_ln_ComponentList : public ln::ComponentList
 {
 public:
@@ -1175,6 +1207,22 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHa
 }
 
 
+LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1291,6 +1339,14 @@ LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::mainUIView());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::world());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1567,6 +1623,36 @@ LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_SetOverrideCallback(LnSpriteC
 extern LN_FLAT_API int LnSpriteComponent_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::SpriteComponent>()->id();
+}
+
+LN_FLAT_API LnResult LnWorld_Add(LnHandle world, LnHandle obj)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_World, world)->add(LNI_HANDLE_TO_OBJECT(ln::WorldObject, obj)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API void LnWorld_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::World>(), id);
+}
+
+LN_FLAT_API LnResult LnWorld_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_World, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnWorld_OnSerialize_SetOverrideCallback(LnWorld_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_World::s_LnWorld_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnWorld_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::World>()->id();
 }
 
 LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn)
