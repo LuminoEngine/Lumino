@@ -87,6 +87,7 @@ EngineManager::EngineManager()
     , m_oleInitialized(false)
 #endif
 {
+	m_engineContext = makeRef<EngineContext>();
 }
 
 EngineManager::~EngineManager()
@@ -119,7 +120,6 @@ void EngineManager::init()
 #endif
     }
 	
-	m_engineContext = makeRef<EngineContext>();
 
 
 	{
@@ -172,7 +172,7 @@ void EngineManager::init()
             //m_mainDirectionalLight = makeObject<DirectionalLight>();
 
             m_mainCamera = makeObject<Camera>();
-            m_mainWorld->addObject(m_mainCamera);
+            m_mainWorld->add(m_mainCamera);
 
             m_mainWorldRenderView = makeObject<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);

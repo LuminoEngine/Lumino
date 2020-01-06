@@ -256,7 +256,7 @@ public:
 static LoggerInterface g_logger;
 static bool g_logEnabled = true;
 static std::string g_logFilePath = "LuminoLog.txt";
-static LogLevel g_maxLevel = LogLevel::Debug;
+static LogLevel g_maxLevel = LogLevel::Info;
 
 static const char* GetLogLevelString(LogLevel level)
 {

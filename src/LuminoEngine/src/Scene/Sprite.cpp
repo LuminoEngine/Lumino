@@ -30,7 +30,7 @@ Ref<Sprite> Sprite::Builder::build()
 Ref<Sprite> Sprite::Builder::buildInMainWorld()
 {
     auto ptr = build();
-    detail::EngineDomain::mainWorld()->addObject(ptr);
+    detail::EngineDomain::mainWorld()->add(ptr);
     return ptr;
 }
 

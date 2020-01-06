@@ -50,6 +50,7 @@ extern "C" LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* o
 extern "C" LN_FLAT_API void LnAssetModel_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFile(LnHandle asset, const LnChar* filePath);
 extern "C" LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn);
+extern "C" LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
 extern "C" LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
@@ -61,6 +62,7 @@ extern "C" LN_FLAT_API LnResult LnEngine_Initialize();
 extern "C" LN_FLAT_API LnResult LnEngine_Finalize();
 extern "C" LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
 extern "C" LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
+extern "C" LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn);
 extern "C" LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
 extern "C" LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
 extern "C" LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
@@ -78,6 +80,8 @@ extern "C" LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcompo
 extern "C" LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture);
 extern "C" LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id);
+extern "C" LN_FLAT_API LnResult LnWorld_Add(LnHandle world, LnHandle obj);
+extern "C" LN_FLAT_API void LnWorld_SetManagedTypeInfoId(int64_t id);
 extern "C" LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn);
 extern "C" LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn);
 extern "C" LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id);
@@ -149,6 +153,7 @@ VALUE g_class_Texture2D;
 VALUE g_class_Component;
 VALUE g_class_VisualComponent;
 VALUE g_class_SpriteComponent;
+VALUE g_class_World;
 VALUE g_class_ComponentList;
 VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
@@ -1470,6 +1475,24 @@ static VALUE Wrap_LnAssets_LoadAssetFromLocalFile(int argc, VALUE* argv, VALUE s
     return Qnil;
 }
 
+static VALUE Wrap_LnAssets_LoadAsset(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (LNRB_VALUE_IS_STRING(filePath))
+        {
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LnHandle _outReturn;
+            LnResult errorCode = LnAssets_LoadAssetA(_filePath, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Assets::loadAsset - wrong argument type.");
+    return Qnil;
+}
+
 //==============================================================================
 // ln::EngineSettings
 
@@ -1610,6 +1633,7 @@ static VALUE Wrap_LnEngineSettings_SetEngineLogFilePath(int argc, VALUE* argv, V
 
 struct Wrap_Engine
 {
+    VALUE LnEngine_GetWorld_AccessorCache = Qnil;
 
     Wrap_Engine()
     {}
@@ -1672,6 +1696,21 @@ static VALUE Wrap_LnEngine_MainUIView(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Engine::mainUIView - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngine_GetWorld(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnEngine_GetWorld(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::world - wrong argument type.");
     return Qnil;
 }
 
@@ -2245,6 +2284,79 @@ static VALUE Wrap_LnSpriteComponent_SetTexture(int argc, VALUE* argv, VALUE self
 }
 
 LnResult Wrap_LnSpriteComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+//==============================================================================
+// ln::World
+
+struct Wrap_World
+    : public Wrap_Object
+{
+
+    Wrap_World()
+    {}
+};
+
+static void LnWorld_delete(Wrap_World* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnWorld_mark(Wrap_World* obj)
+{
+	
+
+}
+
+static VALUE LnWorld_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_World* internalObj;
+
+    internalObj = new Wrap_World();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnWorld_allocate");
+    obj = Data_Wrap_Struct(klass, LnWorld_mark, LnWorld_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnWorld_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_World* internalObj;
+
+    internalObj = new Wrap_World();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnWorld_allocate");
+    obj = Data_Wrap_Struct(klass, LnWorld_mark, LnWorld_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+static VALUE Wrap_LnWorld_Add(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_World* selfObj;
+    Data_Get_Struct(self, Wrap_World, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE obj;
+        rb_scan_args(argc, argv, "1", &obj);
+        if (LNRB_VALUE_IS_OBJECT(obj))
+        {
+            LnHandle _obj = LuminoRubyRuntimeManager::instance->getHandle(obj);
+            LnResult errorCode = LnWorld_Add(selfObj->handle, _obj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::World::add - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnWorld_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
@@ -3694,6 +3806,7 @@ extern "C" void Init_Lumino_RubyExt()
     g_class_Assets = rb_define_class_under(g_rootModule, "Assets", rb_cObject);
     rb_define_singleton_method(g_class_Assets, "save_asset_to_local_file", LN_TO_RUBY_FUNC(Wrap_LnAssets_SaveAssetToLocalFile), -1);
     rb_define_singleton_method(g_class_Assets, "load_asset_from_local_file", LN_TO_RUBY_FUNC(Wrap_LnAssets_LoadAssetFromLocalFile), -1);
+    rb_define_singleton_method(g_class_Assets, "load_asset", LN_TO_RUBY_FUNC(Wrap_LnAssets_LoadAsset), -1);
 
     g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);
@@ -3709,6 +3822,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Finalize), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "main_ui_view", LN_TO_RUBY_FUNC(Wrap_LnEngine_MainUIView), -1);
+    rb_define_singleton_method(g_class_Engine, "world", LN_TO_RUBY_FUNC(Wrap_LnEngine_GetWorld), -1);
 
     g_class_Application = rb_define_class_under(g_rootModule, "Application", g_class_Object);
     rb_define_alloc_func(g_class_Application, LnApplication_allocate);
@@ -3754,6 +3868,12 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_SpriteComponent, "texture=", LN_TO_RUBY_FUNC(Wrap_LnSpriteComponent_SetTexture), -1);
     LnSpriteComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_SpriteComponent, LnSpriteComponent_allocateForGetObject));
     LnSpriteComponent_OnSerialize_SetOverrideCallback(Wrap_LnSpriteComponent_OnSerialize_OverrideCallback);
+
+    g_class_World = rb_define_class_under(g_rootModule, "World", g_class_Object);
+    rb_define_alloc_func(g_class_World, LnWorld_allocate);
+    rb_define_method(g_class_World, "add", LN_TO_RUBY_FUNC(Wrap_LnWorld_Add), -1);
+    LnWorld_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_World, LnWorld_allocateForGetObject));
+    LnWorld_OnSerialize_SetOverrideCallback(Wrap_LnWorld_OnSerialize_OverrideCallback);
 
     g_class_ComponentList = rb_define_class_under(g_rootModule, "ComponentList", g_class_Object);
     rb_define_alloc_func(g_class_ComponentList, LnComponentList_allocate);

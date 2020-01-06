@@ -658,7 +658,7 @@ ln::String RubyExtGenerator::makeVALUEReturnExpr(const TypeSymbol* type, const M
         if (method->returnType().strongReference) {
             return ln::String::format(u"return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN({0});", varName);
         }
-		else if (method->isPropertyGetter()) {
+		else if (method->isPropertyGetter() && !method->isStatic()) {
 			return ln::String::format(u"return LNRB_HANDLE_WRAP_TO_VALUE({0}, selfObj->{1});", varName, makeAccessorCacheName(method));
 		}
 		else if (method->isCollectionGetItem()) {

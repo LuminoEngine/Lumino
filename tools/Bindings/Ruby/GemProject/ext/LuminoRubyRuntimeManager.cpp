@@ -45,7 +45,7 @@ VALUE Wrap_LnRuntime_RegisterType(VALUE self, VALUE type)
     int managedTypeInfoId = LuminoRubyRuntimeManager::instance->registerTypeInfo(type, nullptr);
     LnTypeInfo_SetManagedTypeInfoId(typeInfoId, managedTypeInfoId);
     
-    LNRB_LOG_D("Usesr type registerd. (typeInfoId: %d, baseTypeInfoId: %s, managedTypeInfoId: %d)", typeInfoId, baseTypeInfoId, managedTypeInfoId);
+    LNRB_LOG_D("Usesr type registerd. (typeInfoId: %d, baseTypeInfoId: %d, managedTypeInfoId: %d)", typeInfoId, baseTypeInfoId, managedTypeInfoId);
     return Qnil;
 }
 
@@ -56,7 +56,7 @@ static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
     if (name2.find("Lumino::") == 0) return Qnil;   // TODO: Engine::init 前は EngineContext が null なので使えない。ので逃げる
 
     auto name = RubyUtils::makeTypeInfoName(type);
-    LNRB_LOG_D("Usesr type registering from self.inherited. (%s)", name.c_str());
+    LNRB_LOG_D("Usesr type registering from 'self.inherited.' (%s)", name.c_str());
 
     int typeInfoId = 0;
     LnTypeInfo_FindA(name.c_str(), &typeInfoId);
@@ -65,6 +65,7 @@ static VALUE Wrap_LnRuntime_inherited(VALUE self, VALUE type)
         Wrap_LnRuntime_RegisterType(self, type);
     }
 
+    LNRB_LOG_D("Usesr type registerd from 'self.inherited.' (%d)", typeInfoId);
     return Qnil;
 }
 

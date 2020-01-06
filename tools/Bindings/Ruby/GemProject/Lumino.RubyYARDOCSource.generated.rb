@@ -568,6 +568,16 @@ class Lumino::Assets
 
 
 
+    # 指定したアセットファイルを読み込み、オブジェクト生成します。
+    #   ファイルの拡張子は .lnasset です。ただし、filePath に指定する値は拡張子を省略可能です。
+    # @param [] filePath 
+    # 
+    # @return [Lumino::Object] 
+    def load_asset(*args)
+    end
+
+
+
 end
 
 # アプリケーション起動時に参照する初期化設定です。
@@ -659,6 +669,13 @@ class Lumino::Engine
     # 。
     # @return [Lumino::UIControl] 
     def main_ui_view(*args)
+    end
+
+
+
+    # デフォルトで作成されるメインの World です。
+    # @return [Lumino::World] 
+    def world(*args)
     end
 
 
@@ -768,6 +785,19 @@ class Lumino::SpriteComponent
     # @param [Lumino::Texture] texture 
     # 
     def texture=(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::World
+    # オブジェクトを World に追加します。
+    # @param [Lumino::WorldObject] obj 
+    # 
+    def add(*args)
     end
 
 

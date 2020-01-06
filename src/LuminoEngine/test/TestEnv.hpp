@@ -28,7 +28,7 @@ public:
 };
 
 #define LN_TEST_CLEAN_SCENE \
-    Engine::mainWorld()->removeAllObjects(); \
+    Engine::world()->removeAllObjects(); \
     Engine::mainUIView()->removeAllChildren(); \
 	Engine::mainCamera()->setPosition(0, 0, -10); \
 	Engine::mainCamera()->lookAt(Vector3(0, 0, 0)); \
