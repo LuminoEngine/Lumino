@@ -243,7 +243,27 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
 
 void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix& localTransform)
 {
-	LN_NOTIMPLEMENTED();
+	class DrawBox : public detail::RenderDrawElement
+	{
+	public:
+		detail::RegularBoxMeshFactory data;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	auto* element = m_builder->addNewDrawElement<DrawBox>(
+		m_manager->meshGeneraterRenderFeature(),
+		m_builder->meshGeneraterRenderFeatureStageParameters());
+	// TODO: box.center
+	element->data.m_size = Vector3(box.width, box.height, box.depth);
+	element->data.setColor(color);
+	element->data.setTransform(element->combinedWorldMatrix() * localTransform);
+
+	// TODO: bouding box
 }
 
 void RenderingContext::drawScreenRectangle()

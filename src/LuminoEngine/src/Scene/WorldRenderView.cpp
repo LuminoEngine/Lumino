@@ -16,6 +16,7 @@
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "SceneManager.hpp"
+#include "InternalSkyBox.hpp"
 #include "../Effect/EffectManager.hpp"  // TODO: test
 
 namespace ln {
@@ -81,6 +82,8 @@ void WorldRenderView::init()
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
 	}
+
+	m_internalSkyBox = makeObject<detail::InternalSkyBox>();
 
     m_transformControls = makeObject<TransformControls>();
 }
@@ -170,6 +173,10 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
+				renderingContext->clear(ClearFlags::Depth | ClearFlags::Stencil, Color(), 1.0f, 0x00);
+				m_internalSkyBox->render(renderingContext);
+			}
+			else if (clearMode() == RenderViewClearMode::Sky0) {
 
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);

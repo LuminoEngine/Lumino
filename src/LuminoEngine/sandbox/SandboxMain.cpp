@@ -346,7 +346,7 @@ int main(int argc, char** argv)
 
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
-	int div = 1;
+	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
 
@@ -440,14 +440,14 @@ int main(int argc, char** argv)
 	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
-    auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
+    //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
     
 	//auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   mesh1->setBlendMode(BlendMode::Add);
  //   mesh1->setScale(100);
  //   mesh1->setColorScale(Color(0.3, 0.3, 0.3));
-    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
     
     // MeshContainer 複数
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
@@ -458,7 +458,7 @@ int main(int argc, char** argv)
 
 	//auto tc1 = makeObject<TransformControls>();
 
-    Engine::mainRenderView()->transformControls()->setTarget(mesh1);
+    //Engine::mainRenderView()->transformControls()->setTarget(mesh1);
 
 #if 0
     auto window1 = UIWindow::create();

@@ -175,7 +175,7 @@ void Shader::init(const StringRef& filePath, ShaderCompilationProperties* proper
 
 		detail::UnifiedShaderCompiler compiler(m_manager, localDiag);
 		if (!compiler.compile(reinterpret_cast<char*>(buffer.data()), buffer.size(), includeDirs, definitions)) {
-			LN_ERROR();
+			LN_ERROR(localDiag->toString());
 			return;
 		}
 		if (!compiler.link()) {
