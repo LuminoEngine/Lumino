@@ -557,7 +557,18 @@ void Mesh::init(const MeshView& meshView)
                 }
             }
             else if (indexElementSize == 4) {
-                LN_NOTIMPLEMENTED();
+                if (section.indexElementSize == 4) {
+                    auto* b = static_cast<uint32_t*>(buf) + indexOffset;
+                    auto* s = static_cast<const uint32_t*>(section.indexData);
+                    for (int i = 0; i < section.indexCount; i++) {
+                        b[i] = beginVertexIndex + s[i];
+                        assert(b[i] < m_vertexCount);
+                    }
+                    flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
+                }
+                else {
+                    LN_NOTIMPLEMENTED();
+                }
             }
             else {
                 LN_NOTIMPLEMENTED();

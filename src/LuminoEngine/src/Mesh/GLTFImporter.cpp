@@ -348,7 +348,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
                 sectionView.indexElementSize = 2;
             }
             // 4byte
-            else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_SHORT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+            else if (indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_INT || indexAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT) {
                 sectionView.indexElementSize = 4;
             }
             else {
