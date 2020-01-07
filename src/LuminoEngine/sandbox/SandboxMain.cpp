@@ -354,13 +354,13 @@ int main(int argc, char** argv)
 	Engine::initialize();
 
 
-    LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
+    //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 
     //auto texture1 = Texture2D::load(u"logo.png");
     //auto sprite1 = Sprite::create(texture1, 2, 2);
     //auto asset = makeObject<AssetModel>(sprite1);
     //Assets::saveAssetToLocalFile(asset, "test.json");
-    auto asset = Assets::loadAssetFromLocalFile("test.json");
+    //auto asset = Assets::loadAssetFromLocalFile("test.json");
 
 	//{
 	//	auto ss = makeObject<ed::SceneAsset>();
@@ -374,7 +374,7 @@ int main(int argc, char** argv)
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
-	Engine::mainCamera()->setPosition(0, 1, -5);
+	//Engine::mainCamera()->setPosition(0, 1, -5);
 
 
     auto ft = Texture2D::create(512, 256);
@@ -442,12 +442,25 @@ int main(int argc, char** argv)
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
+    auto mesh1 = StaticMesh::create(u"D:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
+    mesh1->setScale(5);
+    Engine::world()->add(mesh1);
     
-	//auto mesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
- //   mesh1->setBlendMode(BlendMode::Add);
- //   mesh1->setScale(100);
+	auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+    skymesh1->setBlendMode(BlendMode::Add);
+    skymesh1->setScale(100);
+    skymesh1->setShadingModel(ShadingModel::UnLighting);
  //   mesh1->setColorScale(Color(0.3, 0.3, 0.3));
-    Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    Engine::world()->add(skymesh1);
+
+
+    auto mainAmbientLight = makeObject<AmbientLight>();
+    mainAmbientLight->setColor(Color::Purple);
+    Engine::world()->add(mainAmbientLight);
+
+    auto mainDirectionalLight = makeObject<DirectionalLight>();
+    Engine::world()->add(mainDirectionalLight);
     
     // MeshContainer 複数
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
@@ -624,7 +637,9 @@ int main(int argc, char** argv)
 			//sprite2->setPosition(x, 0, 0);
 			++x;
 			//sprite1->setEulerAngles(0, Engine::totalTime(), 0);
-			
+
+            //skymesh1->setPosition(Engine::mainCamera()->position());
+
 
 			//printf("--------------------------\n");
 			//float t = Engine::totalTime() / 2;
