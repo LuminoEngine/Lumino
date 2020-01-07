@@ -12,6 +12,7 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Mesh/MeshGenerater.hpp"
@@ -174,7 +175,14 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
 				renderingContext->clear(ClearFlags::Depth | ClearFlags::Stencil, Color(), 1.0f, 0x00);
-				m_internalSkyBox->render(renderingContext);
+
+                if (m_targetWorld->mainDirectionalLight()) {
+                    m_internalSkyBox->setLightDirection(-Vector3::normalize(m_targetWorld->mainDirectionalLight()->worldMatrix().front()));
+
+                }
+
+                m_internalSkyBox->render(renderingContext, m_viewPoint);
+
 			}
 			else if (clearMode() == RenderViewClearMode::Sky0) {
 

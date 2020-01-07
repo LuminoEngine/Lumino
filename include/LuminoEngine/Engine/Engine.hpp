@@ -70,8 +70,8 @@ public:
     static World* world();
 
     static Camera* mainCamera();
-    static AmbientLight* mainAmbientLight();
-    static DirectionalLight* mainDirectionalLight();
+    //static AmbientLight* mainAmbientLight();
+    //static DirectionalLight* mainDirectionalLight();
     static WorldRenderView* mainRenderView();
     static PhysicsWorld* mainPhysicsWorld();
     static PhysicsWorld2D* mainPhysicsWorld2D();

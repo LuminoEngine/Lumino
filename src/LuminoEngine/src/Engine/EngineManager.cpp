@@ -168,9 +168,6 @@ void EngineManager::init()
 
             m_mainScene = m_mainWorld->masterScene();
 
-            //m_mainAmbientLight = makeObject<AmbientLight>();
-            //m_mainDirectionalLight = makeObject<DirectionalLight>();
-
             m_mainCamera = makeObject<Camera>();
             m_mainWorld->add(m_mainCamera);
 
@@ -222,14 +219,6 @@ void EngineManager::dispose()
         if (m_mainWorldRenderView) {
             m_mainWorldRenderView->dispose();
             m_mainWorldRenderView = nullptr;
-        }
-        if (m_mainAmbientLight) {
-            m_mainAmbientLight->dispose();
-            m_mainAmbientLight = nullptr;
-        }
-        if (m_mainDirectionalLight) {
-            m_mainDirectionalLight->dispose();
-            m_mainDirectionalLight = nullptr;
         }
         if (m_mainCamera) {
             m_mainCamera->dispose();

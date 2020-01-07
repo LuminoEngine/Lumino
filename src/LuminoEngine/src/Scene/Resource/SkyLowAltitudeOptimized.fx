@@ -9,6 +9,7 @@ float rayleigh;
 float turbidity;
 float mieCoefficient;
 float3 up;
+const float3 cameraPos = float3( 0.0, 0.0, 0.0 );
 
 float luminance;
 float mieDirectionalG;
@@ -83,7 +84,7 @@ VSOutput VS_Main(LN_VSInput v)
 
 	//float4 worldPosition = modelMatrix * float4( position, 1.0 );
 	float4 worldPosition = ln_World * float4( v.Pos, 1.0 );
-	o.vWorldPosition = worldPosition.xyz;
+	o.vWorldPosition = v.Pos.xyz;
 
 	//gl_Position = projectionMatrix * modelViewMatrix * float4( position, 1.0 );
 	//gl_Position.z = gl_Position.w; // set z to camera.far
@@ -113,7 +114,6 @@ VSOutput VS_Main(LN_VSInput v)
 
 //------------------------------------------------------------------------------
 
-const float3 cameraPos = float3( 0.0, 0.0, 0.0 );
 
 const float n = 1.0003; // refractive index of air
 const float N = 2.545E25; // number of molecules per unit volume for air at 288.15K and 1013mb (sea level -45 celsius)

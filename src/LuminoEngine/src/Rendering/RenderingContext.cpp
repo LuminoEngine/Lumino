@@ -212,7 +212,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
         m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.size.set(width, depth);
     element->data.setColor(color);
-    element->data.setTransform(element->combinedWorldMatrix());
+    //element->data.setTransform(/*element->combinedWorldMatrix()*/);
 }
 
 void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
@@ -236,7 +236,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     element->data.m_slices = slices;
     element->data.m_stacks = stacks;
     element->data.setColor(color);
-    element->data.setTransform(element->combinedWorldMatrix() * localTransform);
+    element->data.setTransform(/*element->combinedWorldMatrix() * */localTransform);
 
 	// TODO: bouding box
 }
@@ -261,7 +261,7 @@ void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix&
 	// TODO: box.center
 	element->data.m_size = Vector3(box.width, box.height, box.depth);
 	element->data.setColor(color);
-	element->data.setTransform(element->combinedWorldMatrix() * localTransform);
+	element->data.setTransform(/*element->combinedWorldMatrix() **/ localTransform);
 
 	// TODO: bouding box
 }

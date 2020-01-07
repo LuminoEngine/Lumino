@@ -12,10 +12,12 @@ class InternalSkyBox
 public:
 	InternalSkyBox();
 	void init();
-	void render(RenderingContext* context);
+    void setLightDirection(const Vector3& value);
+	void render(RenderingContext* context, const RenderViewPoint* viewPoint);
 
 private:
 	Ref<Material> m_material;
+    Vector3 m_lightDirection;
 };
 
 } // namespace detail

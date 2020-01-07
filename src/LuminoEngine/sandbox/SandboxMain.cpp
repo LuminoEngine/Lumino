@@ -346,7 +346,7 @@ int main(int argc, char** argv)
 
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
-	int div = 2;
+	int div = 1;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
 
@@ -450,17 +450,19 @@ int main(int argc, char** argv)
     skymesh1->setBlendMode(BlendMode::Add);
     skymesh1->setScale(100);
     skymesh1->setShadingModel(ShadingModel::UnLighting);
- //   mesh1->setColorScale(Color(0.3, 0.3, 0.3));
-    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
-    Engine::world()->add(skymesh1);
+    skymesh1->setColorScale(Color(0.3, 0.3, 0.3));
+    //Engine::world()->add(skymesh1);
+    Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
 
 
-    auto mainAmbientLight = makeObject<AmbientLight>();
-    mainAmbientLight->setColor(Color::Purple);
-    Engine::world()->add(mainAmbientLight);
+    //auto mainAmbientLight = makeObject<AmbientLight>();
+    //mainAmbientLight->setColor(Color::Purple);
+    //Engine::world()->add(mainAmbientLight);
+    Engine::world()->mainAmbientLight()->setColor(Color::Purple);
+    Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -1, -1));
 
-    auto mainDirectionalLight = makeObject<DirectionalLight>();
-    Engine::world()->add(mainDirectionalLight);
+    //auto mainDirectionalLight = makeObject<DirectionalLight>();
+    //Engine::world()->add(mainDirectionalLight);
     
     // MeshContainer 複数
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Lantern/glTF/Lantern.gltf");
