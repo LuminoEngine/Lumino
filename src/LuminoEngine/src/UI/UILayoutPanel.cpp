@@ -566,7 +566,7 @@ Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& f
     else
         boundSize = childrenBoundSize.height;
 
-    // Fix size of 'Auto' and 'Direct', and count 'Ratio'
+    // Fix final size of 'Auto' and 'Direct', and count 'Ratio'
     float totalActualSize = 0.0f;
     float ratioCellCount = 0.0f;
     for (int iCell = 0; iCell < actualCellCount; iCell++) {

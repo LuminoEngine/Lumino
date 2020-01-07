@@ -43,6 +43,10 @@ struct GridLayoutInfo
     int		layoutRowSpan = 1;
     int		layoutColumnSpan = 1;
 
+	// 自動割り当て解決済みのインデックス
+	int actualLayoutRow = 0;
+	int actualLayoutColumn = 0;
+
     float   layoutWeight = 0;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
 };
 

@@ -48,6 +48,11 @@ struct GridDefinitionData
     {
         return (size == 0.0f) ? 1.0f : size;
     }
+
+	void adjustActualSize()
+	{
+		actualSize = Math::clamp(actualSize, minSize, maxSize);
+	}
 };
 
 } // namespace detail
