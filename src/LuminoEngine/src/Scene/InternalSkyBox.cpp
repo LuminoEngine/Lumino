@@ -37,8 +37,13 @@ void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* vi
 {
 	const float sunDistance = 400000;
 
-	m_material->setFloat(u"turbidity", 10.0f);
-	m_material->setFloat(u"rayleigh", 2.0f);
+    
+    //m_material->setVector(u"_RayleighColorScale", Vector4(0.1, 0.2, 0.6, 0.0));
+    m_material->setVector(u"_RayleighColorScale", Color(0.5, 0.2, 0.5).toVector4());
+	//m_material->setFloat(u"turbidity", 10.0f);
+    m_material->setFloat(u"turbidity", 1.0f);
+    //m_material->setFloat(u"rayleigh", 2.0f);
+	m_material->setFloat(u"rayleigh", 0.5f);
 	m_material->setFloat(u"mieCoefficient", 0.005f);
 	m_material->setFloat(u"mieDirectionalG", 0.8f);
 	m_material->setFloat(u"luminance", 1.0f);

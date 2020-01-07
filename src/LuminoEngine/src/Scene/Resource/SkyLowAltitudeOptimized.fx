@@ -2,7 +2,7 @@
 #include <Lumino.fxh>
 
 
-
+float3 _RayleighColorScale;
 
 float3 sunPosition;
 float rayleigh;
@@ -47,10 +47,11 @@ const float3 lambda = float3( 680E-9, 550E-9, 450E-9 );
 //const float3 lambda = float3( 550E-9, 550E-9, 550E-9 );
 // this pre-calcuation replaces older TotalRayleigh(float3 lambda) function:
 // (8.0 * pow(pi, 3.0) * pow(pow(n, 2.0) - 1.0, 2.0) * (6.0 + 3.0 * pn)) / (3.0 * N * pow(lambda, float3(4.0)) * (6.0 - 7.0 * pn))
-const float3 totalRayleigh = float3( 5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5 );
+//const float3 totalRayleigh = float3( 5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5 );
 //const float3 totalRayleigh = float3( 0.00000005, 0.00000005, 0.00000005);
 		//'const float3 totalRayleigh = float3( 0.000005, 0.000005, 0.000005);
 		//'const float3 totalRayleigh = float3( 0.00000005, 0.0000005, 0.0000005);
+const float3 totalRayleigh = float3( 0.0000001, 0.0000001, 0.0000001);// * (float3(1000.0) * _RayleighColorScale);
 
 // mie stuff
 // K coefficient for the primaries
@@ -103,7 +104,7 @@ VSOutput VS_Main(LN_VSInput v)
 
 // extinction (absorbtion + out scattering)
 // rayleigh coefficients
-	o.vBetaR = totalRayleigh * rayleighCoefficient;
+	o.vBetaR = (totalRayleigh * (float3(500.0, 500.0, 500.0) * _RayleighColorScale)) * rayleighCoefficient;
 
 // mie coefficients
 	o.vBetaM = totalMie( turbidity ) * mieCoefficient;

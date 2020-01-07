@@ -450,16 +450,21 @@ int main(int argc, char** argv)
     skymesh1->setBlendMode(BlendMode::Add);
     skymesh1->setScale(100);
     skymesh1->setShadingModel(ShadingModel::UnLighting);
-    skymesh1->setColorScale(Color(0.3, 0.3, 0.3));
-    //Engine::world()->add(skymesh1);
+    skymesh1->setColorScale(Color(0.4, 0.4, 0.4));
+    Engine::world()->add(skymesh1);
     Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+
+    auto vvv = Vector3(5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5);
+    auto vvv2 = Vector3(0.000005804542996261093f, 0.000013562911419845635, 0.000030265902468824876);
 
 
     //auto mainAmbientLight = makeObject<AmbientLight>();
     //mainAmbientLight->setColor(Color::Purple);
     //Engine::world()->add(mainAmbientLight);
     Engine::world()->mainAmbientLight()->setColor(Color::Purple);
-    Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -1, -1));
+    Engine::world()->mainAmbientLight()->setIntensity(1);
+    Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -0.25, -1));
+    Engine::world()->mainDirectionalLight()->setIntensity(5);
 
     //auto mainDirectionalLight = makeObject<DirectionalLight>();
     //Engine::world()->add(mainDirectionalLight);
@@ -640,7 +645,7 @@ int main(int argc, char** argv)
 			++x;
 			//sprite1->setEulerAngles(0, Engine::totalTime(), 0);
 
-            //skymesh1->setPosition(Engine::mainCamera()->position());
+            skymesh1->setPosition(Engine::mainCamera()->position());
 
 
 			//printf("--------------------------\n");
