@@ -128,8 +128,8 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
 
 
-
-        m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, &elementListManagers());
+        assert(elementListManagers().size() == 1);
+        m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, elementListManagers().front());
     }
 }
 

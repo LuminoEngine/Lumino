@@ -457,13 +457,33 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 	//InternalContext* context = m_manager->getInternalContext();
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
+#if 1
+    const auto& classifiedElements = m_renderingPipeline->elementListCollector()->classifiedElements(m_targetPhase);
+    for (RenderDrawElement* element : classifiedElements)
+    {
+#if 0		// TODO: 視錘台カリング
+        const Matrix& transform = element->getTransform(elementList);
 
-	for (auto& elementListManager : *m_renderingPipeline->elementListManagers())
+        Sphere boundingSphere = element->getLocalBoundingSphere();
+        boundingSphere.center += transform.getPosition();
+
+        if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+            cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+        {
+            // このノードは描画できる
+            m_renderingElementList.add(element);
+        }
+#else
+        m_renderingElementList.add(element);
+#endif
+    }
+#else
+	//for (auto& elementListManager : *m_renderingPipeline->elementListManagers())
 	{
 		// TODO: とりあえず Default
 		
 
-		for (auto& elementList : elementListManager->lists(/*RendringPhase::Default*/))
+		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
 		{
 			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
 			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
@@ -514,7 +534,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 			}
 		}
 	}
-
+#endif
 
 	for (auto& element : m_renderingElementList)
 	{

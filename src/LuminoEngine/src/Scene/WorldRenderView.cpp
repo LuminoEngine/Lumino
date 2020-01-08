@@ -354,8 +354,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         }
 
 
-
-		m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, &elementListManagers());
+        assert(elementListManagers().size() == 1);
+		m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, elementListManagers().front());
 	}
 }
 

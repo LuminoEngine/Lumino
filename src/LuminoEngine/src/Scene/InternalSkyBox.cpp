@@ -51,6 +51,7 @@ void InternalSkyBox::render(RenderingContext* context, const RenderViewPoint* vi
 	m_material->setVector(u"sunPosition", Vector4(m_lightDirection * sunDistance, 0));
 
 	context->pushState();
+    //context->setRenderPhase(RendringPhase::BackgroundSky);
     context->setDepthTestEnabled(false);
 	context->setDepthWriteEnabled(false);
     context->setBaseTransfrom(Matrix::makeTranslation(viewPoint->viewPosition));

@@ -22,14 +22,14 @@ public:
     const SizeI& renderingFrameBufferSize() const { return m_renderingFrameBufferSize; }
     //const Ref<detail::FrameBufferCache>& frameBufferCache() const { return m_frameBufferCache; }
 
-    const List<detail::DrawElementListCollector*>* elementListManagers() const { return m_elementListManagers; }
+    const detail::DrawElementListCollector* elementListCollector() const { return m_elementListCollector; }
 
 protected:
     void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
 
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
-    const List<detail::DrawElementListCollector*>* m_elementListManagers;
+    detail::DrawElementListCollector* m_elementListCollector;
     Ref<RenderPass> m_clearRenderPass;
 };
 
@@ -46,7 +46,7 @@ public:
 		RenderTargetTexture* renderTarget,
         //const ClearInfo& clearInfo,
         const detail::CameraInfo* mainCameraInfo,
-        const List<detail::DrawElementListCollector*>* elementListManagers);
+        detail::DrawElementListCollector* elementListCollector);
 
 
 private:
@@ -66,7 +66,7 @@ public:
         RenderTargetTexture* renderTarget,
         //const ClearInfo& clearInfo,
 		const detail::CameraInfo* mainCameraInfo,
-		const List<detail::DrawElementListCollector*>* elementListManagers);
+        detail::DrawElementListCollector* elementListCollector);
 
 private:
 	Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
