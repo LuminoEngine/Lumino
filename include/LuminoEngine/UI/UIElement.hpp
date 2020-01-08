@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Base/Builder.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Rendering/Drawing.hpp"
 #include "UILayoutElement.hpp"
@@ -34,6 +35,13 @@ class UIStyleInstance;
 //	UIFontStyle fontStyle;
 //};
 
+
+enum class UIHitTestMode
+{
+	Visible,
+	InvisibleControl,	// 子要素も含めて HitTest を無効にする
+	InvisiblePanel,		// 自身の HitTest を行わないが、子要素の HitTest には影響しない。 レイアウトなど描画やインタラクションを目的としない Element で使用する。
+};
 
 
 struct GridLayoutInfo
@@ -107,6 +115,25 @@ class UIElement
 {
     LN_OBJECT;
 public:
+	class Builder : public BuilderBase
+	{
+	public:
+		Builder();
+		Builder& height(float value);
+		Builder& backgroundColor(const Color& value);
+		Ref<UIElement> build();
+
+		class Details : public BuilderDetailsBase
+		{
+		public:
+			Optional<float> height;
+			Optional<Color> backgroundColor;
+			virtual Ref<Object> build() override;
+		};
+
+		Builder(Details* d);
+	};
+
 
     void setName(const String& value) { m_name = value; }
     const String& name() const { return m_name; }
@@ -467,7 +494,7 @@ public: // TODO: internal
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
     detail::GridLayoutInfo* getGridLayoutInfo();
     bool isRenderVisible() const;
-    bool isHitTestVisibleCore() const { return m_isHitTestVisible && isRenderVisible(); }
+    //bool isHitTestVisibleCore() const { return m_hitte && isRenderVisible(); }
 
 	void activateInternal();
 	//virtual void deactivateInternal();
@@ -499,7 +526,7 @@ public: // TODO: internal
 	Ref<detail::UIStyleInstance> m_finalStyle;
 	UIVisibility m_internalVisibility;
     int m_renderPriority;
-    bool m_isHitTestVisible;	// TODO: flags
+	detail::UIHitTestMode m_hitTestMode;
 	bool m_focusable;			// TODO: flags
     bool m_clipToBounds;			// TODO: flags
 

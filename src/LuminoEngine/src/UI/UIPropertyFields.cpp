@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIPropertyFields.hpp>
 
 namespace ln {
@@ -11,12 +12,17 @@ UISliderField::UISliderField()
 	: m_value(0.0f)
 	, m_minimum(0.0f)
 	, m_maximum(1.0f)
+	, m_dragging(false)
 {
 }
 
 void UISliderField::init()
 {
-	UIElement::init();
+	UIControl::init();
+
+	setBackgroundColor(Color::Black.withAlpha(0.5));
+	setBorderColor(Color::White);
+	setBorderThickness(1);
 }
 
 void UISliderField::setValue(float value)
@@ -71,6 +77,55 @@ void UISliderField::onMinimumChanged(float oldMinimum, float newMinimum)
 
 void UISliderField::onMaximumChanged(float oldMaximum, float newMaximum)
 {
+}
+
+void UISliderField::onRoutedEvent(UIEventArgs* e)
+{
+	if (e->type() == UIEvents::MouseDownEvent)
+	{
+		if (!m_dragging)
+		{
+			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
+			Point pos = mouseEvent->getPosition();
+
+			m_dragging = true;
+			retainCapture();
+			e->handled = true;
+			return;
+		}
+	}
+	else if (e->type() == UIEvents::MouseUpEvent)
+	{
+		if (m_dragging)
+		{
+			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
+			Point pos = mouseEvent->getPosition();
+
+			m_dragging = false;
+			releaseCapture();
+			e->handled = true;
+			return;
+		}
+	}
+	else if (e->type() == UIEvents::MouseMoveEvent)
+	{
+		if (m_dragging)
+		{
+			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
+			Point pos = mouseEvent->getPosition();
+
+			e->handled = true;
+			return;
+		}
+	}
+
+	UIElement::onRoutedEvent(e);
+}
+
+void UISliderField::onRender(UIRenderingContext* context)
+{
+	auto s = actualSize();
+	context->drawSolidRectangle(Rect(2, 2, 10, 10), Color::Red);
 }
 
 

@@ -4,6 +4,45 @@
 #include <LuminoEngine/UI/UIGridLayout.hpp>
 
 namespace ln {
+	
+//==============================================================================
+// UIGridLayout::Builder
+
+UIGridLayout::Builder::Builder()
+	: Builder(makeRef<Details>())
+{
+}
+
+UIGridLayout::Builder::Builder(Details* d)
+	: UIElement::Builder(d)
+{
+}
+
+UIGridLayout::Builder& UIGridLayout::Builder::columnCount(int value)
+{
+	detailsAs<Details>()->columnCount = value;
+	return *this;
+}
+
+UIGridLayout::Builder& UIGridLayout::Builder::add(const UIElement::Builder& value)
+{
+	detailsAs<Details>()->children.push_back(value);
+	return *this;
+}
+
+Ref<UIGridLayout> UIGridLayout::Builder::build()
+{
+	return buildAs<UIGridLayout>();
+}
+
+Ref<Object> UIGridLayout::Builder::Details::build()
+{
+	auto ptr = makeObject<UIGridLayout>();
+	ptr->setColumnCount(columnCount);
+	for (auto& b : children)
+		ptr->addChild(b.build());
+	return ptr;
+}
 
 //==============================================================================
 // UIGridLayout
@@ -31,15 +70,67 @@ Item 側で配置セルを指定する
 その他
 - Android http://ichitcltk.hustle.ne.jp/gudon2/index.php?pageType=file&id=Android061_TableLayout
 	- TableRow というクラスで行を表す
+
+
+Flow layout と Box layout
+----------
+↓こんな感じはどうだろう？
+
+### Flow
+WPF の StackPanel.
+指定方向にはサイズを固定しない。Cell 常に Auto で、子要素の総和に合わせる。＝子要素に依存する。
+Height 0 である子要素はすべて潰れる。
+主にコレクションの配置に使用する。
+なお Cell に 指定方向 Ratio は使用不可。
+
+### Box
+LayoutPanel の大きさは常に親要素のサイズに制限される。
+（大量の子要素を追加した結果はみ出しても、LayoutPanel の大きさは調整しない。＝子要素に依存しない。）
+Cell の Default は Ratio.
+主にコレクション以外の、一般的な要素の配置に使用する。
+
+
+
 */
 	
 UIGridLayout::UIGridLayout()
+	: m_rule(UILayoutRule::Box)
+	, m_columnCount(1)
 {
 }
 
 void UIGridLayout::init()
 {
-    UIElement::init();
+	UILayoutPanel2::init();
+	m_nextCellIndex = 0;
+}
+
+void UIGridLayout::setRule(UILayoutRule value)
+{
+	m_rule = value;
+}
+
+void UIGridLayout::setColumnCount(int value)
+{
+	m_columnCount = value;
+}
+
+void UIGridLayout::onAddChild(UIElement* child)
+{
+	//int childCount = getVisualChildrenCount();
+	//auto* info = child->getGridLayoutInfo();
+	//info->actualLayoutRow = childCount / actualColumnCount();
+	//info->actualLayoutColumn = childCount % actualColumnCount();
+
+	UILayoutPanel2::onAddChild(child);
+
+	auto* info = child->getGridLayoutInfo();
+	info->actualLayoutRow = m_nextCellIndex / actualColumnCount();
+	info->actualLayoutColumn = m_nextCellIndex % actualColumnCount();
+
+	int rowSpan = std::max(1, info->layoutRowSpan) - 1;
+	int colSpan = std::max(1, info->layoutColumnSpan);
+	m_nextCellIndex += colSpan + (rowSpan * actualColumnCount());
 }
 
 Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
@@ -59,10 +150,10 @@ Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& c
 
 	// Allocate definitions
 	while (m_rowDefinitions.size() < rowCount) {
-		m_rowDefinitions.add(detail::GridDefinitionData());
+		m_rowDefinitions.add(GridDefinitionData({ defaultRowLengthType() }));
 	}
 	while (m_columnDefinitions.size() < colCount) {
-		m_columnDefinitions.add(detail::GridDefinitionData());
+		m_columnDefinitions.add(GridDefinitionData({ defaultColumnLengthType() }));
 	}
 
 	// Measure desired sizes per cells.
@@ -71,7 +162,7 @@ Size UIGridLayout::measureOverride(UILayoutContext* layoutContext, const Size& c
 
 		const auto* info = child->getGridLayoutInfo();
 		auto& row = m_rowDefinitions[info->actualLayoutRow];
-		auto& col = m_rowDefinitions[info->actualLayoutColumn];
+		auto& col = m_columnDefinitions[info->actualLayoutColumn];
 
 		const auto& childDesiredSize = child->desiredSize();
 		if (row.type == UILayoutLengthType::Auto) {
@@ -190,6 +281,27 @@ Size UIGridLayout::arrangeOverride(UILayoutContext* layoutContext, const Size& f
 	}
 
 	return finalSize;
+}
+
+int UIGridLayout::actualColumnCount() const
+{
+	return std::max(1, m_columnCount);
+}
+
+UILayoutLengthType UIGridLayout::defaultRowLengthType() const
+{
+	if (m_rule == UILayoutRule::VerticalFlow)
+		return UILayoutLengthType::Auto;
+	else
+		return UILayoutLengthType::Ratio;
+}
+
+UILayoutLengthType UIGridLayout::defaultColumnLengthType() const
+{
+	if (m_rule == UILayoutRule::HorizontalFlow)
+		return UILayoutLengthType::Auto;
+	else
+		return UILayoutLengthType::Ratio;
 }
 
 } // namespace ln

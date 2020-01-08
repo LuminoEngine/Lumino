@@ -39,6 +39,9 @@ protected:
 	/** 指定可能な最大値が変更されたときに呼び出されます。*/
 	virtual void onMaximumChanged(float oldMaximum, float newMaximum);
 	
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual void onRender(UIRenderingContext* context) override;
+
 LN_CONSTRUCT_ACCESS:
 	UISliderField();
 	void init();
@@ -47,6 +50,7 @@ private:
 	float m_value;
 	float m_minimum;
 	float m_maximum;
+	bool m_dragging;
 };
 
 

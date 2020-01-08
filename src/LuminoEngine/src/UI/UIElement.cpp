@@ -53,6 +53,44 @@ void UIViewModel::notify(UINotifyPropertyChangedEventArgs* e)
 }
 
 //==============================================================================
+// UIElement::Builder
+
+UIElement::Builder::Builder()
+	: Builder(makeRef<Details>())
+{
+}
+
+UIElement::Builder::Builder(Details* d)
+	: BuilderBase(d)
+{
+}
+
+UIElement::Builder& UIElement::Builder::height(float value)
+{
+	detailsAs<Details>()->height = value;
+	return *this;
+}
+
+UIElement::Builder& UIElement::Builder::backgroundColor(const Color& value)
+{
+	detailsAs<Details>()->backgroundColor = value;
+	return *this;
+}
+
+Ref<UIElement> UIElement::Builder::build()
+{
+	return buildAs<UIElement>();
+}
+
+Ref<Object> UIElement::Builder::Details::build()
+{
+	auto ptr = makeObject<UIElement>();
+	if (height) ptr->setHeight(*height);
+	if (backgroundColor) ptr->setBackgroundColor(*backgroundColor);
+	return ptr;
+}
+
+//==============================================================================
 // UIElement
 
 LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {
@@ -69,7 +107,7 @@ UIElement::UIElement()
     , m_finalStyle(makeRef<detail::UIStyleInstance>())
 	, m_internalVisibility(UIVisibility::Visible)
     , m_renderPriority(0)
-    , m_isHitTestVisible(true)
+    , m_hitTestMode(detail::UIHitTestMode::Visible)
 	, m_focusable(false)
     , m_clipToBounds(false)
     , m_dirtyFlags(detail::UIElementDirtyFlags::None)
@@ -532,9 +570,11 @@ UIFrameRenderView* UIElement::getRenderView()
 
 UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 {
-    if (isHitTestVisibleCore())
-    {
-#if 1
+	if (!isRenderVisible()) return nullptr;
+
+	if (m_hitTestMode == detail::UIHitTestMode::Visible ||
+		m_hitTestMode == detail::UIHitTestMode::InvisiblePanel)
+	{
 		if (m_orderdVisualChildren) {
 			for (int i = m_orderdVisualChildren->size() - 1; i >= 0; i--) {
 				auto* e = static_cast<UIElement*>(m_orderdVisualChildren[i])->lookupMouseHoverElement(frameClientPosition);
@@ -543,6 +583,11 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 				}
 			}
 		}
+	}
+
+	if (m_hitTestMode == detail::UIHitTestMode::Visible)
+	{
+#if 1
 #else
         // 後ろからループする。後のモノが上に描画されるので、この方が自然。
         // TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
@@ -904,6 +949,10 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 #endif
 	}
 
+
+	Matrix tm = combinedTransform;
+	tm.translate(m_finalStyle->borderThickness.left, m_finalStyle->borderThickness.top, 0);
+	context->setBaseTransfrom(tm);
 
 	// TODO: setMaterial
 	onRender(context);

@@ -5,75 +5,110 @@
 //# Testing Test_UI_UIGridLayout
 class Test_UI_UIGridLayout : public LuminoSceneTest {};
 
-//------------------------------------------------------------------------------
-//## Basic
 TEST_F(Test_UI_UIGridLayout, Basic)
 {
-	auto layout1 = makeObject<UIGridLayout>();
-	Engine::mainUIView()->addElement(layout1);
-
-
-	auto child1 = makeObject<UIElement>();
-	child1->setWidth(32);
-	child1->setHeight(16);
-	child1->setHorizontalAlignment(HAlignment::Left);
-	child1->setBackgroundColor(Color::Green);
-	layout1->addChild(child1);
-
-	//auto child2 = makeObject<UIElement>();
-	//child2->setWidth(32);
-	//child2->setHeight(16);
-	//child2->setHorizontalAlignment(HAlignment::Left);
-	//child2->setBackgroundColor(Color::Blue);
-	////Engine::mainUIView()->addElement(child2);
-	//layout1->addChild(child2);
-
-	////- [ ] Default
-	//{
-	//	auto e1 = makeObject<UIElement>();
-	//	e1->setHorizontalAlignment(HAlignment::Left);
-	//	e1->setVerticalAlignment(VAlignment::Top);
-	//	e1->setBackgroundColor(Color::Red);
-	//	e1->setWidth(80);
-	//	e1->setHeight(60);
-	//	Engine::mainUIView()->addElement(e1);
-
-	//	TestEnv::updateFrame();
-	//	ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-Basic-1.png"));
-	//	LN_TEST_CLEAN_SCENE;
-	//}
-
+	//- [ ] Default. Filled screen.
 	{
-  //      auto parent1 = makeObject<UIContainerElement>();
-  //      parent1->setBackgroundColor(Color::Red);
-  //      parent1->setWidth(80);
-  //      parent1->setHeight(60);
-		//parent1->setHorizontalAlignment(HAlignment::Left);
-		//parent1->setVerticalAlignment(VAlignment::Top);
-  //      //parent1->setLayoutPanel(UIStackLayout_Obsolete::create());
-		//Engine::mainUIView()->addElement(parent1);
+		auto layout1 = makeObject<UIGridLayout>();
+		Engine::mainUIView()->addElement(layout1);
 
-  //      auto layout1 = makeObject<UIStackLayout2>();
-  //      parent1->addElement(layout1);
-  //      
-  //      auto child1 = makeObject<UIElement>();
-  //      child1->setWidth(32);
-  //      child1->setHeight(16);
+
+		auto child1 = makeObject<UIElement>();
+		//child1->setWidth(32);
+		//child1->setHeight(16);
 		//child1->setHorizontalAlignment(HAlignment::Left);
-  //      child1->setBackgroundColor(Color::Green);
-		////Engine::mainUIView()->addElement(child1);
-  //      layout1->addChild(child1);
+		child1->setBackgroundColor(Color::Green);
+		layout1->addChild(child1);
 
-  //      auto child2 = makeObject<UIElement>();
-  //      child2->setWidth(32);
-  //      child2->setHeight(16);
-  //      child2->setHorizontalAlignment(HAlignment::Left);
-  //      child2->setBackgroundColor(Color::Blue);
-		////Engine::mainUIView()->addElement(child2);
-  //      layout1->addChild(child2);
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIGridLayout-Basic-1.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
 
-        TestEnv::updateFrame();
-        ASSERT_SCREEN_S(LN_ASSETFILE("UI/Result/UIGridLayout-Basic-1.png"));
-        LN_TEST_CLEAN_SCENE;
+	//- [ ] 3 columns.
+	{
+		auto layout1 = makeObject<UIGridLayout>();
+		layout1->setColumnCount(3);
+		Engine::mainUIView()->addElement(layout1);
+
+		auto e1 = makeObject<UIElement>();
+		e1->setBackgroundColor(Color::Red);
+		layout1->addChild(e1);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setBackgroundColor(Color::Green);
+		layout1->addChild(e2);
+
+		auto e3 = makeObject<UIElement>();
+		e3->setBackgroundColor(Color::Blue);
+		layout1->addChild(e3);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIGridLayout-Basic-2.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+
+	//- [ ] 2x2 cells.
+	{
+		auto layout1 = makeDecl<UIGridLayout>()
+			.columnCount(2)
+			.children(
+			{
+				makeDecl<UIElement>()
+					.backgroundColor(Color::Red),
+				makeDecl<UIElement>()
+					.backgroundColor(Color::Green),
+				makeDecl<UIElement>()
+					.backgroundColor(Color::Blue),
+				makeDecl<UIElement>()
+					.backgroundColor(Color::Yellow)
+
+			}).build();
+		Engine::mainUIView()->addElement(layout1);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIGridLayout-Basic-3.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+}
+
+TEST_F(Test_UI_UIGridLayout, VerticalFlow)
+{
+	//- [ ] Basic form style.
+	{
+		auto layout1 = makeObject<UIGridLayout>();
+		layout1->setRule(UILayoutRule::VerticalFlow);
+		layout1->setColumnCount(2);
+		Engine::mainUIView()->addElement(layout1);
+
+		auto e1 = makeObject<UIElement>();
+		e1->setBackgroundColor(Color::Red);
+		e1->setHeight(20);
+		layout1->addChild(e1);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setBackgroundColor(Color::Green);
+		e2->setHeight(20);
+		layout1->addChild(e2);
+
+		auto s = makeObject<UIElement>();
+		s->setBackgroundColor(Color::White);
+		s->setHeight(20);
+		s->getGridLayoutInfo()->layoutColumnSpan = 2;
+		layout1->addChild(s);
+
+		auto e3 = makeObject<UIElement>();
+		e3->setBackgroundColor(Color::Blue);
+		e3->setHeight(20);
+		layout1->addChild(e3);
+
+		auto e4 = makeObject<UIElement>();
+		e4->setBackgroundColor(Color::Yellow);
+		e4->setHeight(20);
+		layout1->addChild(e4);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIGridLayout-Basic-4.png"));
+		LN_TEST_CLEAN_SCENE;
 	}
 }

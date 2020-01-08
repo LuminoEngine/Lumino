@@ -22,11 +22,18 @@ UIRenderingContext::UIRenderingContext()
 
 void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color)
 {
-    auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
-        m_manager->shapesRenderFeature(),
-        m_builder->shapesRenderFeatureStageParameters());
+	// TODO: drawBoxElement で代用しているが、ただ四角形描くのにこれはちょっと重い気がする
+	BoxElementShapeBaseStyle base;
+	base.baseRect = rect;
+	BoxElementShapeBackgroundStyle background;
+	background.color = color;
+	drawBoxElement(base, &background, nullptr, nullptr);
 
-    element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
+    //auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+    //    m_manager->shapesRenderFeature(),
+    //    m_builder->shapesRenderFeatureStageParameters());
+
+    //element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
 }
 
 void UIRenderingContext::drawImageBox(const Rect& rect, BrushImageDrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
