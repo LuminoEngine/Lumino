@@ -423,8 +423,16 @@ public:
 	void addDrawElementList(/*RendringPhase phase, */DrawElementList* list);
 	const List<DrawElementList*>& lists(/*RendringPhase phase*/) const;
 
+
+    void classify();
+    const List<RenderDrawElement*>& classifiedElements(RendringPhase phase) const { return m_classifiedElements[(int)phase]; };
+
 private:
     List<DrawElementList*> m_lists;// [(int)RendringPhase::_Count];
+
+    List<RenderDrawElement*> m_classifiedElements[(int)RendringPhase::_Count];
+
+    
 };
 
 } // namespace detail

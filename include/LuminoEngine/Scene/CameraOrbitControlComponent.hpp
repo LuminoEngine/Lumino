@@ -4,6 +4,7 @@
 
 namespace ln {
 class UIEventArgs;
+class UIElement;
 
 struct Spherical
 {
@@ -63,6 +64,7 @@ private:
 
 
     Camera* m_camera;
+    UIElement* m_capturdElement;
     State m_state;
 
     float m_rotateSpeed = 1.0f;

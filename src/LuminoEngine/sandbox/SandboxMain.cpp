@@ -347,7 +347,7 @@ int main(int argc, char** argv)
 
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
-	int div = 2;
+	int div = 1;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
 
@@ -438,21 +438,21 @@ int main(int argc, char** argv)
     //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
 
-	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-    //auto mesh1 = StaticMesh::create(u"D:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
+    auto mesh1 = StaticMesh::create(u"D:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
     //mesh1->setScale(5);
     Engine::world()->add(mesh1);
     
-	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
- //   skymesh1->setBlendMode(BlendMode::Add);
- //   skymesh1->setScale(100);
- //   skymesh1->setShadingModel(ShadingModel::UnLighting);
- //   skymesh1->setColorScale(Color(0.4, 0.4, 0.4));
- //   Engine::world()->add(skymesh1);
+	auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+    skymesh1->setBlendMode(BlendMode::Add);
+    skymesh1->setScale(100);
+    skymesh1->setShadingModel(ShadingModel::UnLighting);
+    skymesh1->setColorScale(Color(0.4, 0.4, 0.4));
+    Engine::world()->add(skymesh1);
 
     Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
 

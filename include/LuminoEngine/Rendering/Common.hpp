@@ -88,6 +88,8 @@ enum class RendringPhase
     // 不透明オブジェクト描画後・半透明オブジェクト描画前
     BeforeTransparencies,
 
+    BackgroundSky,
+
     ImageEffect,
 
     // https://docs.unity3d.com/ja/2017.4/ScriptReference/Rendering.CameraEvent.html

@@ -444,6 +444,21 @@ const List<DrawElementList*>& DrawElementListCollector::lists(/*RendringPhase ph
     return m_lists;// [(int)phase];
 }
 
+void DrawElementListCollector::classify()
+{
+    for (auto& list : m_classifiedElements) {
+        list.clear();
+    }
+
+    for (auto& elementList : m_lists) {
+        RenderDrawElement* element = elementList->headElement();
+        while (element) {
+            m_classifiedElements[static_cast<int>(element->targetPhase)].add(element);
+            element = element->next();
+        }
+    }
+}
+
 } // namespace detail
 } // namespace ln
 
