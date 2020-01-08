@@ -457,7 +457,16 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 	//InternalContext* context = m_manager->getInternalContext();
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
+
 #if 1
+    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
+    {
+        for (auto& light : elementList->dynamicLightInfoList())
+        {
+            onCollectLight(light);
+        }
+    }
+
     const auto& classifiedElements = m_renderingPipeline->elementListCollector()->classifiedElements(m_targetPhase);
     for (RenderDrawElement* element : classifiedElements)
     {

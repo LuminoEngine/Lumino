@@ -72,7 +72,7 @@ void SceneRenderingPipeline::render(
 
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
 
-    //m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BackgroundSky);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BackgroundSky);
 
 
     m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);
