@@ -451,7 +451,7 @@ int main(int argc, char** argv)
     skymesh1->setBlendMode(BlendMode::Add);
     skymesh1->setScale(100);
     skymesh1->setShadingModel(ShadingModel::UnLighting);
-    skymesh1->setColorScale(Color(0.4, 0.4, 0.4));
+    skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
     Engine::world()->add(skymesh1);
 
     Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
@@ -487,7 +487,12 @@ int main(int argc, char** argv)
 	field1->setName(u"test_field");
 	field1->setWidth(200);
 	field1->setHeight(30);
-	Engine::mainUIView()->addElement(field1);
+	//Engine::mainUIView()->addElement(field1);
+
+
+    //auto ToneLayer = ToneImageEffect::create();
+    //ToneLayer->play(ColorTone(0.7, 0.5, 0.2, 1.0), 1);
+    //Engine::mainViewport()->addImageEffect(ToneLayer);
 
 #if 0
     auto window1 = UIWindow::create();

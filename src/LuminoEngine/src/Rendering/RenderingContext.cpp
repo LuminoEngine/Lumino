@@ -344,9 +344,13 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 		}
 	};
 
-	// TODO: scoped_gurad
-	RenderTargetTexture* oldTarget = renderTarget(0);
-	setRenderTarget(0, destination);
+    // TODO: scoped_gurad
+    RenderTargetTexture* oldTarget = nullptr;
+    if (destination)
+    {
+        RenderTargetTexture* oldTarget = renderTarget(0);
+        setRenderTarget(0, destination);
+    }
 
 	m_builder->setMaterial(source);
 
@@ -358,7 +362,10 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 		m_builder->blitRenderFeatureStageParameters());
 	element->targetPhase = RendringPhase::ImageEffect;
 
-	setRenderTarget(0, oldTarget);
+    if (destination)
+    {
+        setRenderTarget(0, oldTarget);
+    }
 
 	m_builder->advanceFence();
 }

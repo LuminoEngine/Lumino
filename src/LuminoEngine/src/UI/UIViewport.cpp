@@ -152,6 +152,7 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     //detail::TextureInternal::readData(m_primaryTarget, graphicsContext)->save(u"test.png");
 
+    // TODO: blit 使う
     m_blitMaterial->setMainTexture(m_primaryTarget);
     context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
 
