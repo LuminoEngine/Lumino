@@ -47,6 +47,8 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+	void updateValue(const Point& pos);
+
 	float m_value;
 	float m_minimum;
 	float m_maximum;

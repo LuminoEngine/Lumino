@@ -462,6 +462,15 @@ public:	// TODO: internal protected
 	 */
 	//virtual UIElement* getVisualChild(int index) const;
 
+	/**
+	 * Note: Border は含まない描画領域をアクティブとしている。HTML5 とは異なり、WPF と同じ仕様。0,0はBorderと重なる。
+	 * - マウス座標系は、UIElement の境界座標系 (Border の外周) としたい。MouseEvent で、座標に負値が入ってくるのはちょっと良くない。HitTest するときに細工とか必要。
+	 *	- 実際のところ、onRender を実装することよりも MouseEvent を利用することの方が圧倒的に多い。（見た目のカスタマイズはほとんど style で足りる）
+	 * - 描画座標系は、UIElement の境界にするかコンテンツ矩形にするかは悩みどころだけど、実際にやってみたところ境界座標系に合わせる方が都合が良いことが多かった。
+	 *	- clientRect() や contentRect() と同じ座標系なので、「Padding を考慮したところに描画したい」といった指定が比較的楽。
+	 *	  - コンテンツ矩形とかにしてしまうと、clientRect() や contentRect() から領域を取り出すにしても一段計算を挟む必要がある。
+	 *  - (0,0) が Border の上に乗ってしまうことは最初「ん？」ってなるかもしれないけど、結果として実装がやりやすくなるので境界領域を使ってみる。
+	 */
 	virtual void onRender(UIRenderingContext* context);
 
     virtual void onRoutedEvent(UIEventArgs* e);

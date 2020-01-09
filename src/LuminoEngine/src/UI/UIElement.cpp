@@ -767,6 +767,8 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 
 	detail::UIStyleInstance::updateStyleDataHelper(/*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
 
+	m_finalStyle->theme = styleContext->mainTheme;
+
 	onUpdateStyle(styleContext, m_finalStyle);
 
 	// child elements
@@ -829,7 +831,7 @@ void UIElement::render(UIRenderingContext* context, const Matrix& parentTransfor
     {
 		Matrix combinedTransform = parentTransform * m_localTransform;
 
-
+		context->m_theme = m_finalStyle->theme;
 		renderClient(context, combinedTransform);
 
     }
@@ -837,8 +839,6 @@ void UIElement::render(UIRenderingContext* context, const Matrix& parentTransfor
     m_dirtyFlags.unset(detail::UIElementDirtyFlags::Render);
 }
 
-// 内部的なこの描画関数は、Border の領域も含んで描画を要求する。
-// TODO: ユーザーに公開する onRender とかは、Border を含まない領域とするべき
 void UIElement::renderClient(UIRenderingContext* context, const Matrix& combinedTransform)
 {
 	context->pushState();
@@ -875,6 +875,10 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 	context->setBaseBuiltinEffectData(data);
 	context->setBlendMode(blendMode());
 	context->setRenderPriority(m_renderPriority);
+
+	context->setFont(m_finalStyle->font);
+	context->setTextColor(m_finalStyle->textColor);
+		
 
 	// background
 	{
@@ -950,9 +954,9 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 	}
 
 
-	Matrix tm = combinedTransform;
-	tm.translate(m_finalStyle->borderThickness.left, m_finalStyle->borderThickness.top, 0);
-	context->setBaseTransfrom(tm);
+	//Matrix tm = combinedTransform;
+	//tm.translate(m_finalStyle->borderThickness.left, m_finalStyle->borderThickness.top, 0);
+	//context->setBaseTransfrom(tm);
 
 	// TODO: setMaterial
 	onRender(context);

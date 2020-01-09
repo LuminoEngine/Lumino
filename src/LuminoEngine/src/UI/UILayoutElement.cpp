@@ -50,6 +50,24 @@ void UILayoutElement::updateLayout(UILayoutContext* layoutContext, const Rect& p
 	arrangeLayout(layoutContext, parentFinalGlobalRect);
 }
 
+Rect UILayoutElement::clientRect() const
+{
+	return Rect(
+		m_finalStyle->borderThickness.left,
+		m_finalStyle->borderThickness.top,
+		m_actualSize.width - m_finalStyle->borderThickness.width(),
+		m_actualSize.height - m_finalStyle->borderThickness.height());
+}
+
+Rect UILayoutElement::contentRect() const
+{
+	return Rect(
+		m_finalStyle->borderThickness.left + m_finalStyle->padding.left,
+		m_finalStyle->borderThickness.top + m_finalStyle->padding.top,
+		std::max(0.0f, m_actualSize.width - m_finalStyle->borderThickness.width() - m_finalStyle->padding.width()),
+		std::max(0.0f, m_actualSize.height - m_finalStyle->borderThickness.height() - m_finalStyle->padding.height()));
+}
+
 void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& availableSize)
 {
 	Size outerSpace = m_finalStyle->actualOuterSpace();

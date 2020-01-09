@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIPropertyFields.hpp>
 
@@ -20,8 +21,8 @@ void UISliderField::init()
 {
 	UIControl::init();
 
-	setBackgroundColor(Color::Black.withAlpha(0.5));
-	setBorderColor(Color::White);
+	setBackgroundColor(Color::White.withAlpha(0.5));
+	setBorderColor(Color::Gray);
 	setBorderThickness(1);
 }
 
@@ -86,7 +87,7 @@ void UISliderField::onRoutedEvent(UIEventArgs* e)
 		if (!m_dragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			Point pos = mouseEvent->getPosition();
+			updateValue(mouseEvent->getPosition(this));
 
 			m_dragging = true;
 			retainCapture();
@@ -99,7 +100,6 @@ void UISliderField::onRoutedEvent(UIEventArgs* e)
 		if (m_dragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			Point pos = mouseEvent->getPosition();
 
 			m_dragging = false;
 			releaseCapture();
@@ -112,7 +112,7 @@ void UISliderField::onRoutedEvent(UIEventArgs* e)
 		if (m_dragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			Point pos = mouseEvent->getPosition();
+			updateValue(mouseEvent->getPosition(this));
 
 			e->handled = true;
 			return;
@@ -124,8 +124,22 @@ void UISliderField::onRoutedEvent(UIEventArgs* e)
 
 void UISliderField::onRender(UIRenderingContext* context)
 {
-	auto s = actualSize();
-	context->drawSolidRectangle(Rect(2, 2, 10, 10), Color::Red);
+	float r = (m_value - m_minimum) / (m_maximum - m_minimum);
+	auto cr = clientRect();
+	auto bar = cr.makeDeflate(2);
+	bar.width = bar.width * r;
+	context->drawSolidRectangle(bar, context->theme()->color(UIThemeConstantPalette::PrimaryMainColor));
+
+	context->drawText(u"0.000", cr, TextAlignment::Center);
+}
+
+void UISliderField::updateValue(const Point& pos)
+{
+	auto cr = clientRect();
+	//if (cr.contains(pos)) {
+		float r = (pos.x - cr.x) / cr.width;
+		m_value = Math::clamp(m_minimum + ((m_maximum - m_minimum) * r), m_minimum, m_maximum);
+	//}
 }
 
 

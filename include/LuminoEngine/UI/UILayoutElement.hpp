@@ -133,6 +133,20 @@ public:	// TODO: internal
 	// つまり、この要素を描画するために必要な領域を示す。
     const Size& actualSize() const { return m_actualSize; }
 
+	/**
+	 * 要素のクライアント領域を返します。座標は要素の境界領域内の相対座標です。
+	 *
+	 * クライアント領域は、境界領域に Border 幅を適用したものです。
+	 */
+	Rect clientRect() const;
+
+	/**
+	 * 要素のコンテンツ領域を返します。座標は要素の境界領域内の相対座標です。
+	 *
+	 * コンテンツ領域は、境界領域に Border 幅と Padding を適用したものです。
+	 */
+	Rect contentRect() const;
+
 	//const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
 
     // TODO: internal

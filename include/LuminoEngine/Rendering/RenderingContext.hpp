@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Common.hpp"
+#include "../Font/Common.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/GeometryStructs.hpp"
 #include "../Graphics/RenderState.hpp"
@@ -99,6 +100,10 @@ public:
     void setBlendColor(const Color& value);
     void setTone(const ColorTone& value);
 
+	// Text
+	void setFont(Font* value);
+	void setTextColor(const Color& value);
+
     void resetState();
     void pushState(bool reset = true);  // TODO: enum, scoped_guard
     void popState();
@@ -144,7 +149,7 @@ public:
     void drawMesh(Mesh* mesh, int sectionIndex);
 
     // font が nullptr の場合は defaultFont
-    void drawText(const StringRef& text, const Color& color, Font* font = nullptr);
+    void drawText(const StringRef& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward/*, const Color& color, Font* font = nullptr*/);
 	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr, const Matrix& transform = Matrix::Identity);
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);

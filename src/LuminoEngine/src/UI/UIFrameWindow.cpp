@@ -36,6 +36,8 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
 
     // キャプチャ中のコントロールがあればそちらに送る
     UIElement* sender = capturedElement();
+	printf("capturedElement %p\n", sender);
+
     if (sender)
     {
         auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, true);

@@ -4,6 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
 #include "../Rendering/FrameRectRenderFeature.hpp"
@@ -153,6 +154,12 @@ void UIRenderingContext::drawVisual(UIElement* element, const Matrix& transform)
 	//pushState();
 	element->renderClient(this, m_builder->baseTransform() * element->m_localTransform * transform);
 	//popState();
+}
+
+UITheme* UIRenderingContext::theme() const
+{
+	assert(m_theme);
+	return m_theme;
 }
 
 void UIRenderingContext::resetForBeginRendering()

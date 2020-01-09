@@ -347,7 +347,7 @@ int main(int argc, char** argv)
 
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
-	int div = 1;
+	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
 
@@ -443,16 +443,16 @@ int main(int argc, char** argv)
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-    auto mesh1 = StaticMesh::create(u"D:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
-    //mesh1->setScale(5);
-    Engine::world()->add(mesh1);
+    //auto mesh1 = StaticMesh::create(u"D:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
+    ////mesh1->setScale(5);
+    //Engine::world()->add(mesh1);
     
-	auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
-    skymesh1->setBlendMode(BlendMode::Add);
-    skymesh1->setScale(100);
-    skymesh1->setShadingModel(ShadingModel::UnLighting);
-    skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
-    Engine::world()->add(skymesh1);
+	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
+ //   skymesh1->setBlendMode(BlendMode::Add);
+ //   skymesh1->setScale(100);
+ //   skymesh1->setShadingModel(ShadingModel::UnLighting);
+ //   skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
+ //   Engine::world()->add(skymesh1);
 
     Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
 
@@ -487,7 +487,7 @@ int main(int argc, char** argv)
 	field1->setName(u"test_field");
 	field1->setWidth(200);
 	field1->setHeight(30);
-	//Engine::mainUIView()->addElement(field1);
+	Engine::mainUIView()->addElement(field1);
 
 
     //auto ToneLayer = ToneImageEffect::create();

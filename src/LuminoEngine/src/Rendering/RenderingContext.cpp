@@ -125,6 +125,16 @@ void RenderingContext::setTone(const ColorTone& value)
     m_builder->setTone(value);
 }
 
+void RenderingContext::setFont(Font* value)
+{
+	m_builder->setFont(value);
+}
+
+void RenderingContext::setTextColor(const Color& value)
+{
+	m_builder->setTextColor(value);
+}
+
 void RenderingContext::resetState()
 {
     m_builder->reset2();
@@ -562,14 +572,16 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
 
-void RenderingContext::drawText(const StringRef& text, const Color& color, Font* font)
+void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment, TextCrossAlignment crossAlignment/*, const Color& color, Font* font*/)
 {
 
     // TODO: cache
     auto formattedText = makeRef<detail::FormattedText>();
     formattedText->text = text;
-    formattedText->font = font;
-	formattedText->color = color;
+    formattedText->font = m_builder->font();
+	formattedText->color = m_builder->textColor();
+	formattedText->area = area;
+	formattedText->textAlignment = alignment;
 
     if (!formattedText->font) {
         formattedText->font = m_manager->fontManager()->defaultFont();

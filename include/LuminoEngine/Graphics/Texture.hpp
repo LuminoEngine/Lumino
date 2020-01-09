@@ -120,7 +120,7 @@ public:
     /** 別のテクスチャからこのテクスチャへ、ビットマップ転送を行います。 */
     void blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw, int sh);
 
-    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
+    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Forward);
 
     // TODO: internal
     //void setAssetSource(const Path& path) { m_assetSourcePath = path; }

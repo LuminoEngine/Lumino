@@ -42,7 +42,7 @@ RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchL
 	m_drawingFormattedText = text;
 	m_drawingTransform = transform;
 	beginLayout();
-	TextLayoutEngine::layout(m_currentFont, text->text.c_str(), text->text.length(), Rect(0, 0, text->area), 0, text->textAlignment);
+	TextLayoutEngine::layout(m_currentFont, text->text.c_str(), text->text.length(), text->area, 0, text->textAlignment);
 	auto result2 = resolveCache(batchList, context);
 	endLayout(context);
 

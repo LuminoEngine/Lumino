@@ -48,9 +48,9 @@ TEST_F(Test_Graphics_Texture, drawText)
 	//* [ ] 余白がある場合の配置テスト
 	{
 		auto texture = Texture2D::create(160, 120);
-		texture->drawText(u"Left", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Left);
+		texture->drawText(u"Left", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Forward);
 		texture->drawText(u"Center", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Center);
-		texture->drawText(u"Right", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Right);
+		texture->drawText(u"Right", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Backward);
 		texture->drawText(u"Justify", Rect(10, 50, 140, 100), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
 		sprite->setBlendMode(BlendMode::Alpha);
@@ -64,9 +64,9 @@ TEST_F(Test_Graphics_Texture, drawText)
 	//* [ ] 余白がない場合の配置テスト
 	{
 		auto texture = Texture2D::create(160, 120);
-		texture->drawText(u"Left", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Left);
+		texture->drawText(u"Left", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Forward);
 		texture->drawText(u"Center", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Center);
-		texture->drawText(u"Right", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Right);
+		texture->drawText(u"Right", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Backward);
 		texture->drawText(u"Justify", Rect(0, 30, 160, 160), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
 		sprite->setBlendMode(BlendMode::Alpha);

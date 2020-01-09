@@ -136,7 +136,7 @@ Size Font::measureRenderSize(const StringRef& text, float dpiScale)
 {
     detail::FontCore* font = resolveFontCore(dpiScale);
     detail::MeasureTextLayoutEngine measureLayout;
-    measureLayout.layout(font, text.data(), text.length(), Rect(), 0, TextAlignment::Left);
+    measureLayout.layout(font, text.data(), text.length(), Rect(), 0, TextAlignment::Forward);
     return measureLayout.areaSize;
 }
 

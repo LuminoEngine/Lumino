@@ -79,7 +79,7 @@ void UITextBlock::onRender(UIRenderingContext* context)
     //}
 
 
-    context->drawText(m_text, finalStyle()->textColor, finalStyle()->font);
+    context->drawText(m_text);
 }
 
 } // namespace ln
