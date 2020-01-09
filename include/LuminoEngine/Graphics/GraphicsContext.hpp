@@ -17,6 +17,7 @@ class SwapChain;
 namespace detail {
 class RenderingQueue;
 class IRenderPass;
+class CommandList;
 }
 
 /*
@@ -150,8 +151,7 @@ private:
     GraphicsContext();
     virtual ~GraphicsContext();
     void init(RenderingType renderingType);
-    //void init(detail::ICommandList* context);
-	void resetCommandList(detail::ICommandList* commandList);
+	void resetCommandList(detail::CommandList* commandList);
 
     void enterRenderState();
     void leaveRenderState();
@@ -206,7 +206,8 @@ private:
     };
 
     detail::GraphicsManager* m_manager;
-    Ref<detail::ICommandList> m_context;
+    Ref<detail::CommandList> m_commandList;
+    detail::ICommandList* m_rhiCommandList;
     Ref<detail::RenderingCommandList> m_recordingCommandList;
     Ref<detail::RenderingCommandList> m_executingCommandList;
     RenderingType m_renderingType;
@@ -226,13 +227,13 @@ namespace detail {
 class GraphicsContextInternal
 {
 public:
-	static void resetCommandList(GraphicsContext* self, detail::ICommandList* commandLsit) { self->resetCommandList(commandLsit); }
+	static void resetCommandList(GraphicsContext* self, detail::CommandList* commandLsit) { self->resetCommandList(commandLsit); }
     static RenderingType getRenderingType(GraphicsContext* self) { return self->renderingType(); }
     static detail::RenderingCommandList* getRenderingCommandList(GraphicsContext* self) { return self->renderingCommandList(); }
 	static void beginCommandRecoding(GraphicsContext* self) { self->beginCommandRecodingIfNeeded(); }
 	static void endCommandRecoding(GraphicsContext* self) { self->endCommandRecodingIfNeeded(); }
     static void flushCommandRecoding(GraphicsContext* self, RenderTargetTexture* affectRendreTarget) { self->flushCommandRecoding(affectRendreTarget); }
-	static const Ref<detail::ICommandList>& getCommandListForTransfer(GraphicsContext* self) { return self->m_context; }
+	static detail::ICommandList* getCommandListForTransfer(GraphicsContext* self) { return self->m_rhiCommandList; }
     static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
     static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
     static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }

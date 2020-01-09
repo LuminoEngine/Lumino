@@ -20,7 +20,8 @@ namespace ln {
 
 GraphicsContext::GraphicsContext()
     : m_manager(nullptr)
-    , m_context(nullptr)
+    , m_commandList(nullptr)
+    , m_rhiCommandList(nullptr)
     , m_renderingType(RenderingType::Immediate)
     , m_staging()
     , m_lastCommit()
@@ -58,17 +59,19 @@ void GraphicsContext::init(RenderingType renderingType)
 //    resetState();
 //}
 
-void GraphicsContext::resetCommandList(detail::ICommandList* commandList)
+void GraphicsContext::resetCommandList(detail::CommandList* commandList)
 {
 	if (commandList) {
 		// begin frame
-		if (LN_REQUIRE(!m_context)) return;
-		m_context = commandList;
+		if (LN_REQUIRE(!m_commandList)) return;
+        m_commandList = commandList;
+        m_rhiCommandList = m_commandList->rhiResource();
 	}
 	else {
 		// end frame
-		if (LN_REQUIRE(m_context)) return;
-		m_context = nullptr;
+		if (LN_REQUIRE(m_commandList)) return;
+        m_commandList = nullptr;
+        m_rhiCommandList = nullptr;
 	}
 }
 
@@ -76,9 +79,9 @@ void GraphicsContext::enterRenderState()
 {
     LN_ENQUEUE_RENDER_COMMAND_1(
         GraphicsContext_clear, this,
-        detail::ICommandList*, m_context,
+        detail::ICommandList*, m_rhiCommandList,
         {
-            m_context->enterRenderState();
+            m_rhiCommandList->enterRenderState();
         });
 }
 
@@ -86,9 +89,9 @@ void GraphicsContext::leaveRenderState()
 {
     LN_ENQUEUE_RENDER_COMMAND_1(
         GraphicsContext_clear, this,
-        detail::ICommandList*, m_context,
+        detail::ICommandList*, m_rhiCommandList,
         {
-            m_context->leaveRenderState();
+            m_rhiCommandList->leaveRenderState();
         });
 }
 
@@ -99,9 +102,9 @@ detail::RenderingCommandList* GraphicsContext::renderingCommandList()
 
 void GraphicsContext::onDispose(bool explicitDisposing)
 {
-    if (m_context) {
+    if (m_rhiCommandList) {
         endCommandRecodingIfNeeded();
-        m_context = nullptr;
+        m_rhiCommandList = nullptr;
     }
     m_lastCommit.reset();
     m_staging.reset();
@@ -338,10 +341,10 @@ void GraphicsContext::endRenderPass()
         if (m_currentRHIRenderPass) {
             LN_ENQUEUE_RENDER_COMMAND_2(
                 GraphicsContext_closeRenderPass, this,
-                detail::ICommandList*, m_context,
+                detail::ICommandList*, m_rhiCommandList,
                 detail::IRenderPass*, m_currentRHIRenderPass,
                 {
-                    m_context->endRenderPass(m_currentRHIRenderPass);
+                    m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
                 });
             m_currentRHIRenderPass = nullptr;
         }
@@ -359,12 +362,12 @@ void GraphicsContext::clear(ClearFlags flags, const Color& color, float z, uint8
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_5(
         GraphicsContext_clear, this,
-        detail::ICommandList*, m_context,
+        detail::ICommandList*, m_rhiCommandList,
         ClearFlags, flags,
         Color, color,
         float, z,
         uint8_t, stencil, {
-            m_context->clearBuffers(flags, color, z, stencil);
+            m_rhiCommandList->clearBuffers(flags, color, z, stencil);
         });
 }
 
@@ -375,11 +378,11 @@ void GraphicsContext::drawPrimitive(int startVertex, int primitiveCount)
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
-        detail::ICommandList*, m_context,
+        detail::ICommandList*, m_rhiCommandList,
         int, startVertex,
         int, primitiveCount,
         {
-            m_context->drawPrimitive(startVertex, primitiveCount);
+            m_rhiCommandList->drawPrimitive(startVertex, primitiveCount);
         });
 }
 
@@ -390,11 +393,11 @@ void GraphicsContext::drawPrimitiveIndexed(int startIndex, int primitiveCount)
     commitState();
     LN_ENQUEUE_RENDER_COMMAND_3(
         GraphicsContext_setIndexBuffer, this,
-        detail::ICommandList*, m_context,
+        detail::ICommandList*, m_rhiCommandList,
         int, startIndex,
         int, primitiveCount,
         {
-            m_context->drawPrimitiveIndexed(startIndex, primitiveCount);
+            m_rhiCommandList->drawPrimitiveIndexed(startIndex, primitiveCount);
         });
 }
 
@@ -404,10 +407,10 @@ void GraphicsContext::drawExtension(INativeGraphicsExtension* extension)
 	commitState();
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		GraphicsContext_setIndexBuffer, this,
-		detail::ICommandList*, m_context,
+		detail::ICommandList*, m_rhiCommandList,
 		INativeGraphicsExtension*, extension,
 		{
-			m_context->drawExtension(extension);
+            m_rhiCommandList->drawExtension(extension);
 		});
 }
 
@@ -416,10 +419,10 @@ void GraphicsContext::interruptCurrentRenderPassFromResolveRHI()
     if (m_renderPassStep == RenderPassStep::Active && m_currentRHIRenderPass) {
         LN_ENQUEUE_RENDER_COMMAND_2(
             GraphicsContext_closeRenderPass, this,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             detail::IRenderPass*, m_currentRHIRenderPass,
             {
-                m_context->endRenderPass(m_currentRHIRenderPass);
+                m_rhiCommandList->endRenderPass(m_currentRHIRenderPass);
             });
         m_currentRHIRenderPass = nullptr;
     }
@@ -430,9 +433,9 @@ void GraphicsContext::beginCommandRecodingIfNeeded()
     if (!m_recordingBegan) {
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, this,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             {
-                m_context->begin();
+                m_rhiCommandList->begin();
             });
 
         m_recordingBegan = true;
@@ -445,9 +448,9 @@ void GraphicsContext::endCommandRecodingIfNeeded()
 		//closeRenderPass();
         LN_ENQUEUE_RENDER_COMMAND_1(
             GraphicsContext_beginCommandRecodingIfNeeded, this,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             {
-                m_context->end();
+                m_rhiCommandList->end();
             });
         m_recordingBegan = false;
     }
@@ -464,10 +467,10 @@ void GraphicsContext::flushCommandRecoding(RenderTargetTexture* affectRendreTarg
         LN_ENQUEUE_RENDER_COMMAND_3(
             GraphicsContext_flushCommandRecoding, this,
 			detail::IGraphicsDevice*, device,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             detail::ITexture*, rhiObject,
             {
-				device->flushCommandBuffer(m_context, rhiObject);
+				device->flushCommandBuffer(m_rhiCommandList, rhiObject);
             });
     }
 }
@@ -531,10 +534,10 @@ detail::ICommandList* GraphicsContext::commitState()
         auto& blendState = m_staging.blendState;
         LN_ENQUEUE_RENDER_COMMAND_2(
             GraphicsContext_setPipelineState, this,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             BlendStateDesc, blendState,
             {
-                m_context->setBlendState(blendState);
+                m_rhiCommandList->setBlendState(blendState);
             });
 
         m_lastCommit.blendState = m_staging.blendState;
@@ -545,10 +548,10 @@ detail::ICommandList* GraphicsContext::commitState()
         auto& rasterizerState = m_staging.rasterizerState;
         LN_ENQUEUE_RENDER_COMMAND_2(
             GraphicsContext_setPipelineState, this,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             RasterizerStateDesc, rasterizerState,
             {
-                m_context->setRasterizerState(rasterizerState);
+                m_rhiCommandList->setRasterizerState(rasterizerState);
             });
 
         m_lastCommit.rasterizerState = m_staging.rasterizerState;
@@ -559,10 +562,10 @@ detail::ICommandList* GraphicsContext::commitState()
         auto& depthStencilState = m_staging.depthStencilState;
         LN_ENQUEUE_RENDER_COMMAND_2(
             GraphicsContext_setPipelineState, this,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             DepthStencilStateDesc, depthStencilState,
             {
-                m_context->setDepthStencilState(depthStencilState);
+                m_rhiCommandList->setDepthStencilState(depthStencilState);
             });
 
         m_lastCommit.depthStencilState = m_staging.depthStencilState;
@@ -620,12 +623,12 @@ detail::ICommandList* GraphicsContext::commitState()
 
         LN_ENQUEUE_RENDER_COMMAND_3(
             GraphicsContext_setDepthBuffer, this,
-            detail::ICommandList*, m_context,
+            detail::ICommandList*, m_rhiCommandList,
             RectI, viewportRect,
             RectI, scissorRect,
             {
-                m_context->setViewportRect(viewportRect);
-                m_context->setScissorRect(scissorRect);
+                m_rhiCommandList->setViewportRect(viewportRect);
+                m_rhiCommandList->setScissorRect(scissorRect);
             });
 
         m_lastCommit.viewportRect = m_staging.viewportRect;
@@ -641,12 +644,12 @@ detail::ICommandList* GraphicsContext::commitState()
         if ((m_dirtyFlags & DirtyFlags_PipelinePrimitiveState) != 0 || vertexLayoutModified) {
             LN_ENQUEUE_RENDER_COMMAND_3(
                 GraphicsContext_setPrimitiveBuffers, this,
-                detail::ICommandList*, m_context,
+                detail::ICommandList*, m_rhiCommandList,
                 PrimitiveTopology, topology,
                 detail::IVertexDeclaration*, vertexLayoutRHI,
                 {
-                    m_context->setPrimitiveTopology(topology);
-                    m_context->setVertexDeclaration(vertexLayoutRHI);
+                    m_rhiCommandList->setPrimitiveTopology(topology);
+                    m_rhiCommandList->setVertexDeclaration(vertexLayoutRHI);
                 });
 
             m_lastCommit.VertexLayout = m_staging.VertexLayout;
@@ -673,14 +676,14 @@ detail::ICommandList* GraphicsContext::commitState()
         if ((m_dirtyFlags & DirtyFlags_PrimitiveBuffers) != 0 || primitiveBufferModified) {
             LN_ENQUEUE_RENDER_COMMAND_3(
                 GraphicsContext_setPrimitiveBuffers, this,
-                detail::ICommandList*, m_context,
+                detail::ICommandList*, m_rhiCommandList,
                 VertexBufferArray, vertexBuffersRHI,
                 detail::IIndexBuffer*, indexBufferRHI,
                 {
                     for (int i = 0; i < detail::MaxVertexStreams; i++) {
-                        m_context->setVertexBuffer(i, vertexBuffersRHI[i]);
+                        m_rhiCommandList->setVertexBuffer(i, vertexBuffersRHI[i]);
                     }
-                    m_context->setIndexBuffer(indexBufferRHI);
+                    m_rhiCommandList->setIndexBuffer(indexBufferRHI);
                 });
 
             m_lastCommit.vertexBuffers = m_staging.vertexBuffers;
@@ -694,10 +697,10 @@ detail::ICommandList* GraphicsContext::commitState()
         if ((m_dirtyFlags & DirtyFlags_ShaderPass) != 0) {
             LN_ENQUEUE_RENDER_COMMAND_2(
                 GraphicsContext_setShaderPass, this,
-                detail::ICommandList*, m_context,
+                detail::ICommandList*, m_rhiCommandList,
                 detail::IShaderPass*, shaderPassRHI,
                 {
-                    m_context->setShaderPass(shaderPassRHI);
+                    m_rhiCommandList->setShaderPass(shaderPassRHI);
                 });
 
             m_lastCommit.shader = m_staging.shader;
@@ -723,10 +726,10 @@ detail::ICommandList* GraphicsContext::commitState()
             m_currentRHIRenderPass = newRenderPass;
             LN_ENQUEUE_RENDER_COMMAND_2(
                 GraphicsContext_closeRenderPass, this,
-                detail::ICommandList*, m_context,
+                detail::ICommandList*, m_rhiCommandList,
                 detail::IRenderPass*, m_currentRHIRenderPass,
                 {
-                    m_context->beginRenderPass(m_currentRHIRenderPass);
+                    m_rhiCommandList->beginRenderPass(m_currentRHIRenderPass);
                 });
         }
         //}
@@ -752,7 +755,7 @@ detail::ICommandList* GraphicsContext::commitState()
 
     //}
 
-    return m_context;
+    return m_rhiCommandList;
 }
 
 //void GraphicsContext::submitCommandList()

@@ -12,6 +12,27 @@
 namespace ln {
 
 //==============================================================================
+// CommandList
+namespace detail {
+CommandList::CommandList()
+{
+}
+
+void CommandList::init(IGraphicsDevice* device)
+{
+    m_rhiResource = device->createCommandList();
+}
+
+void CommandList::dispose()
+{
+    if (m_rhiResource) {
+        m_rhiResource = nullptr;
+    }
+}
+
+} // namespace detail
+
+//==============================================================================
 // SwapChain
 
 SwapChain::SwapChain()
@@ -37,6 +58,7 @@ void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize
 void SwapChain::onDispose(bool explicitDisposing)
 {
     m_rhiObject = nullptr;
+    for (auto& x : m_commandLists) x->dispose();
     m_commandLists.clear();
     m_depthBuffers.clear();
 	m_backbuffers.clear();
@@ -105,7 +127,8 @@ void SwapChain::resetRHIBackbuffers()
 		m_renderPasses[i] = renderPass;
 			
 		// CommandList
-		auto commandList = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createCommandList();
+        auto commandList = makeRef<detail::CommandList>();
+        commandList->init(detail::GraphicsResourceInternal::manager(this)->deviceContext());
 		m_commandLists[i] = commandList;
 	}
 
