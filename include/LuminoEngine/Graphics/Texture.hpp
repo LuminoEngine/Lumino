@@ -193,6 +193,8 @@ public:
 
     bool isBackbuffer() const { return m_ownerSwapchain != nullptr; }
 
+    bool m_cleared = false;
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;

@@ -112,7 +112,7 @@ public:
 	/** @name drawing */
 	/** @{ */
 
-	void clear(Flags<ClearFlags> flags, const Color& color, float z, uint8_t stencil);
+	void clear(Flags<ClearFlags> flags = ClearFlags::All, const Color& color = Color::Zero, float z = 1.0f, uint8_t stencil = 0x00);
 
     void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
     void drawPlane(float width, float depth, const Color& color = Color::White);

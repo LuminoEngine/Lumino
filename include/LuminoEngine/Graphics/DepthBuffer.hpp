@@ -31,6 +31,8 @@ public:
     /** 高さを取得します。 (ピクセル単位) */
     int height() const { return m_size.height; }
 
+    bool m_cleared = false;
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
