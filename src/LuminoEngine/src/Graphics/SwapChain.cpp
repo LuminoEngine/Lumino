@@ -8,6 +8,7 @@
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
 #include "OpenGLDeviceContext.hpp"
+#include "../Engine/LinearAllocator.hpp"
 
 namespace ln {
 
@@ -18,9 +19,10 @@ CommandList::CommandList()
 {
 }
 
-void CommandList::init(IGraphicsDevice* device)
+void CommandList::init(GraphicsManager* manager)
 {
-    m_rhiResource = device->createCommandList();
+    m_rhiResource = manager->deviceContext()->createCommandList();
+    m_allocator = makeRef<LinearAllocator>(manager->linearAllocatorPageManager());
 }
 
 void CommandList::dispose()
@@ -28,6 +30,11 @@ void CommandList::dispose()
     if (m_rhiResource) {
         m_rhiResource = nullptr;
     }
+}
+
+void CommandList::reset()
+{
+    m_allocator->cleanup();
 }
 
 } // namespace detail
@@ -128,7 +135,7 @@ void SwapChain::resetRHIBackbuffers()
 			
 		// CommandList
         auto commandList = makeRef<detail::CommandList>();
-        commandList->init(detail::GraphicsResourceInternal::manager(this)->deviceContext());
+        commandList->init(detail::GraphicsResourceInternal::manager(this));
 		m_commandLists[i] = commandList;
 	}
 

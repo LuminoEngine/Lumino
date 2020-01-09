@@ -65,6 +65,7 @@ void GraphicsContext::resetCommandList(detail::CommandList* commandList)
 		// begin frame
 		if (LN_REQUIRE(!m_commandList)) return;
         m_commandList = commandList;
+        m_commandList->reset();
         m_rhiCommandList = m_commandList->rhiResource();
 	}
 	else {

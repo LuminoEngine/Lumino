@@ -24,12 +24,15 @@ class CommandList : public RefObject
 {
 public:
     CommandList();
-    void init(IGraphicsDevice* device);
+    void init(GraphicsManager* manager);
     void dispose();
     const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
+    const Ref<LinearAllocator>& allocator() const { return m_allocator; }
+    void reset();
 
 private:
     Ref<detail::ICommandList> m_rhiResource;
+    Ref<LinearAllocator> m_allocator;
 };
 
 }

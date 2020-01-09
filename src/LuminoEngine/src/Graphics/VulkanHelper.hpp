@@ -554,29 +554,29 @@ private:
     bool m_loadOpClear;
 };
 
-// ColorBuffer と DepthBuffer の「種類」によって決まるので、FrameBuffer に比べてトータル数は少ない。
-// 基本的にこのクラスは直接使わず、VulkanFramebuffer が持っている RenderPass を使うこと。
-class VulkanRenderPassCache
-    : public HashedObjectCache<Ref<VulkanRenderPass>, VulkanRenderPassCache>
-{
-public:
-    struct FetchKey
-    {
-        const DeviceFramebufferState& state;
-        bool loadOpClear = false;
-    };
-
-    VulkanRenderPassCache();
-    Result init(VulkanDevice* deviceContext);
-    void dispose();
-    VulkanRenderPass* findOrCreate(const FetchKey& key);
-
-    void onInvalidate(const Ref<VulkanRenderPass>& value) { value->dispose(); }
-    static uint64_t computeHash(const FetchKey& key);
-
-private:
-    VulkanDevice* m_deviceContext;
-};
+//// ColorBuffer と DepthBuffer の「種類」によって決まるので、FrameBuffer に比べてトータル数は少ない。
+//// 基本的にこのクラスは直接使わず、VulkanFramebuffer が持っている RenderPass を使うこと。
+//class VulkanRenderPassCache
+//    : public HashedObjectCache<Ref<VulkanRenderPass>, VulkanRenderPassCache>
+//{
+//public:
+//    struct FetchKey
+//    {
+//        const DeviceFramebufferState& state;
+//        bool loadOpClear = false;
+//    };
+//
+//    VulkanRenderPassCache();
+//    Result init(VulkanDevice* deviceContext);
+//    void dispose();
+//    VulkanRenderPass* findOrCreate(const FetchKey& key);
+//
+//    void onInvalidate(const Ref<VulkanRenderPass>& value) { value->dispose(); }
+//    static uint64_t computeHash(const FetchKey& key);
+//
+//private:
+//    VulkanDevice* m_deviceContext;
+//};
 
 // Framebuffer は RenderPass の子オブジェクトな位置づけとなる。
 // VkFramebuffer と、そのレイアウト定義に相当する VkRenderPass をセットで持つ。

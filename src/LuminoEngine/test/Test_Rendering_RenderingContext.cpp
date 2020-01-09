@@ -18,7 +18,7 @@ public:
 //## Basic
 TEST_F(Test_Rendering_RenderingContext, Basic)
 {
-#if 0
+#if 1
     auto element1 = makeObject<TestElement>();
     element1->setHorizontalAlignment(HAlignment::Stretch);
     element1->setVerticalAlignment(VAlignment::Stretch);
@@ -45,13 +45,17 @@ TEST_F(Test_Rendering_RenderingContext, Basic)
 
         //context->blit(mat1, nullptr);
 
-        auto* rt = context->renderTarget(0);
-        context->setRenderTarget(0, tex2);
-        context->clear();
-        context->setRenderTarget(0, rt);
+        //context->blit(mat1, tex2);
+        //context->blit(mat2, nullptr);
+
+        //context->blit(mat1, tex2);
+        //context->blit(mat2, tex3);
+        //context->blit(mat3, nullptr);
 
         context->blit(mat1, tex2);
-        context->blit(mat2, nullptr);
+        context->blit(mat2, tex3);
+        context->blit(mat3, tex2);
+        //context->blit(mat2, nullptr);
     };
 
     TestEnv::updateFrame();

@@ -67,9 +67,9 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 		return false;
 	}
 
-	if (!m_renderPassCache.init(this)) {
-		return false;
-	}
+	//if (!m_renderPassCache.init(this)) {
+	//	return false;
+	//}
 	//if (!m_pipelineCache.init(this)) {
 	//	return false;
 	//}
@@ -101,7 +101,7 @@ void VulkanDevice::dispose()
 
     //m_pipelineCache.dispose();
     //m_framebufferCache.dispose();
-    m_renderPassCache.dispose();
+    //m_renderPassCache.dispose();
 
     if (m_commandPool) {
         vkDestroyCommandPool(m_device, m_commandPool, vulkanAllocator());
@@ -868,7 +868,7 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 
 	VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
 	uint32_t count = 0;
-	if (testFlag(renderPass->clearFlags(), ClearFlags::Color))
+	//if (testFlag(renderPass->clearFlags(), ClearFlags::Color))
 	{
 		auto& color = renderPass->clearColor();
 		for (uint32_t ii = 0; ii < framebuffer->renderTargets().size(); ii++) {
@@ -878,7 +878,8 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 			}
 		}
 	}
-	if ((testFlag(renderPass->clearFlags(), ClearFlags::Depth) || testFlag(renderPass->clearFlags(), ClearFlags::Stencil))) {
+	//if ((testFlag(renderPass->clearFlags(), ClearFlags::Depth) || testFlag(renderPass->clearFlags(), ClearFlags::Stencil)))
+    {
 		if (framebuffer->depthBuffer()) {
 			clearValues[count].depthStencil = { renderPass->clearDepth(), renderPass->clearStencil() };
 			count++;
@@ -1577,6 +1578,10 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 			}
 
 			attachmentRefs[i].attachment = attachmentCount;
+
+            // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL まはた GENERAL でなければならない。(https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkRenderPassCreateInfo-pAttachments-00836)
+            // = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ではダメ。
+            // 要するに、描画中のレンダーターゲットは書き込み可能なレイアウトにしておきなさい、ということ。
 			attachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 			attachmentCount++;
@@ -1646,6 +1651,11 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	if (!m_framebuffer->init(m_device, this, buffers)) {
 		return false;
 	}
+
+#ifdef LN_DEBUG
+    memcpy(m_attachmentDescs, attachmentDescs, sizeof(m_attachmentDescs));
+    memcpy(m_attachmentRefs, attachmentRefs, sizeof(m_attachmentRefs));
+#endif
 
 	return true;
 }

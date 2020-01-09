@@ -1754,58 +1754,58 @@ void VulkanRenderPass::dispose()
     }
 }
 
-//=============================================================================
-// VulkanRenderPassCache
-
-VulkanRenderPassCache::VulkanRenderPassCache()
-{
-}
-
-Result VulkanRenderPassCache::init(VulkanDevice* deviceContext)
-{
-    LN_DCHECK(deviceContext);
-    m_deviceContext = deviceContext;
-
-    return true;
-}
-
-void VulkanRenderPassCache::dispose()
-{
-    clear();
-}
-
-VulkanRenderPass* VulkanRenderPassCache::findOrCreate(const FetchKey& key)
-{
-    uint64_t hash = computeHash(key);
-    Ref<VulkanRenderPass> renderPass;
-    if (find(hash, &renderPass)) {
-        return renderPass;
-    }
-    else {
-        renderPass = makeRef<VulkanRenderPass>();
-        if (!renderPass->init(m_deviceContext, key.state, key.loadOpClear)) {
-            return nullptr;
-        }
-        add(hash, renderPass);
-        return renderPass;
-    }
-}
-
-uint64_t VulkanRenderPassCache::computeHash(const FetchKey& key)
-{
-    MixHash hash;
-    hash.add(key.state.renderTargets.size());
-    for (size_t i = 0; i < key.state.renderTargets.size(); i++) {
-        if (key.state.renderTargets[i]) {
-            hash.add(static_cast<VulkanTexture*>(key.state.renderTargets[i])->image()->vulkanFormat());
-        }
-    }
-    if (key.state.depthBuffer) {
-        hash.add(key.state.depthBuffer->format());
-    }
-    hash.add(key.loadOpClear);
-    return hash.value();
-}
+////=============================================================================
+//// VulkanRenderPassCache
+//
+//VulkanRenderPassCache::VulkanRenderPassCache()
+//{
+//}
+//
+//Result VulkanRenderPassCache::init(VulkanDevice* deviceContext)
+//{
+//    LN_DCHECK(deviceContext);
+//    m_deviceContext = deviceContext;
+//
+//    return true;
+//}
+//
+//void VulkanRenderPassCache::dispose()
+//{
+//    clear();
+//}
+//
+//VulkanRenderPass* VulkanRenderPassCache::findOrCreate(const FetchKey& key)
+//{
+//    uint64_t hash = computeHash(key);
+//    Ref<VulkanRenderPass> renderPass;
+//    if (find(hash, &renderPass)) {
+//        return renderPass;
+//    }
+//    else {
+//        renderPass = makeRef<VulkanRenderPass>();
+//        if (!renderPass->init(m_deviceContext, key.state, key.loadOpClear)) {
+//            return nullptr;
+//        }
+//        add(hash, renderPass);
+//        return renderPass;
+//    }
+//}
+//
+//uint64_t VulkanRenderPassCache::computeHash(const FetchKey& key)
+//{
+//    MixHash hash;
+//    hash.add(key.state.renderTargets.size());
+//    for (size_t i = 0; i < key.state.renderTargets.size(); i++) {
+//        if (key.state.renderTargets[i]) {
+//            hash.add(static_cast<VulkanTexture*>(key.state.renderTargets[i])->image()->vulkanFormat());
+//        }
+//    }
+//    if (key.state.depthBuffer) {
+//        hash.add(key.state.depthBuffer->format());
+//    }
+//    hash.add(key.loadOpClear);
+//    return hash.value();
+//}
 
 //=============================================================================
 // VulkanFramebuffer
