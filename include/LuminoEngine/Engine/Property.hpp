@@ -500,7 +500,7 @@ public:
 
     TypeInfo* findTypeInfo(int id) const
     {
-        if (0 <= id && id < m_typeInfos.size()) {
+        if (0 <= id && id < static_cast<int>(m_typeInfos.size())) {
             return m_typeInfos[id];
         }
         else {

@@ -374,6 +374,9 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.resizable = true;
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 
+		if (m_settings.graphicsAPI != GraphicsAPI::OpenGL)
+			settings.mainWindowSettings.glfwNoAPI = true;
+
 		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->init(settings);
 

@@ -22,18 +22,15 @@ Chocolatey をインストールしてください。
 - [Win + X] > [Windows PowerShell(管理者)]
 
 ```
+choco install -y git
 choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
 choco install -y nuget.commandline
 choco install -y docfx
 choco install -y doxygen.install
 choco install -y python3
 choco install -y wixtoolset
+choco install -y vulkan-sdk
 ```
-
-
-#### Vulkan SDK
-[LunarG website](https://vulkan.lunarg.com/) から Vulkan SDK のインストーラをダウンロードし、インストールしてください。
-
 
 ### macOS
 [dotnet](https://docs.microsoft.com/ja-jp/dotnet/core/macos-prerequisites?tabs=netcore2x) をインストールしてください。

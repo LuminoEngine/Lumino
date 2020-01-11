@@ -19,7 +19,7 @@ InternalSkyBox::InternalSkyBox()
 void InternalSkyBox::init()
 {
 	Object::init();
-	auto shader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.fx");
+	auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.fx");
 
 	m_material = makeObject<Material>();
 	m_material->setShader(shader);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 
 namespace LuminoBuild
 {
@@ -20,8 +21,9 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_MSVC", "MSVC2017-x64-MD" };
                 //args = new string[] { "MakeInstaller_Win32", "MSVC2017-x64-MD" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
-                //args = new string[] { "BuildExternalProjects", "Windows" };
-                args = new string[] { "MakePackage_Ruby" };
+                args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MD", "--enable-Effekseer" };
+                //args = new string[] { "MakePackage_Ruby" };
+                //args = new string[] { "MakePackage" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -42,8 +44,10 @@ namespace LuminoBuild
             builder.LuminoPackageSourceDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools/PackageSource"));
             builder.LuminoExternalDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "external"));
 
-            BuildEnvironment.Target = (args.Length > 1) ? args[1] : "";
-            BuildEnvironment.Configuration = (args.Length > 2) ? args[2] : "";
+            var positionalArgs = args.Where(x => !x.Contains("--")).ToList();
+
+            BuildEnvironment.Target = (positionalArgs.Count > 1) ? args[1] : "";
+            BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
             BuildEnvironment.Initialize(builder.LuminoRootDir);
 
 
