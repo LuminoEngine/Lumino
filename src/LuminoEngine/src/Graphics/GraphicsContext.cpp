@@ -501,9 +501,6 @@ detail::ICommandList* GraphicsContext::commitState()
     // 頂点バッファset > 描画 > 頂点バッファ更新 > 描画
     // といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
 
-
-
-
     bool resourceModified = false;
     detail::IShaderPass* shaderPassRHI = (m_staging.shaderPass) ? m_staging.shaderPass->resolveRHIObject(this, &resourceModified) : nullptr;
 

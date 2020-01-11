@@ -82,8 +82,6 @@ void SceneRenderer::render(
     const CameraInfo& mainCameraInfo,
     RendringPhase targetPhase)
 {
-	//if (LN_REQUIRE(m_defaultMaterial)) return;
-
     graphicsContext->resetState();
 
 	m_renderingPipeline = renderingPipeline;
@@ -222,7 +220,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     m_renderFeatureBatchList.renderTarget = renderTarget;
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
 
-
 	// Create batch list.
 	{
 		RenderPass* currentRenderPass = pass->renderPass();
@@ -238,7 +235,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			bool submitRequested = false;
 			RenderStage* stage = element->stage();
 			assert(stage->renderFeature);
-
+			
 			if (!stage->renderFeature->drawElementTransformNegate()) {
 				// バッチ機能を持たない RenderFeature であるので、毎回 flush する。
 				// 実際のところ Mesh とかを無理やりバッチ(Descripterを変更しないで連続描画)しようとしても、
@@ -252,9 +249,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 			}
 
+			RenderPass* renderPass = nullptr;
 			if (submitRequested) {
-				currentRenderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
+				renderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
                 clearInfo.flags = ClearFlags::None; // first only
+			}
+			else {
+				renderPass = currentRenderPass;
 			}
 
 			// ShaderDescripter
@@ -323,6 +324,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				currentFinalMaterial = finalMaterial;
 				currentSubsetInfo = subsetInfo;
 				currentStage = stage;
+				currentRenderPass = renderPass;
 				m_renderFeatureBatchList.setCurrentStage(currentStage);
 			}
 
@@ -337,7 +339,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
 			m_renderFeatureBatchList.lastBatch()->setRenderPass(m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
 		}
-
 	}
 
 	// Render batch-list.
@@ -356,7 +357,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
                     graphicsContext->beginRenderPass(currentRenderPass);
                 }
 			}
-
 
 			const RenderStage* stage = batch->stage();
 			const AbstractMaterial* finalMaterial = batch->finalMaterial();

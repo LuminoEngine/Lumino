@@ -176,6 +176,44 @@ public:
 		*pixelFormat = table[(int)format][1];
 		*elementType = table[(int)format][2];
 	}
+
+	static void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+	{
+		GLuint glflags = 0;
+
+		if (testFlag(flags, ClearFlags::Color))
+		{
+			GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+			GL_CHECK(glClearColor(color.r, color.g, color.b, color.a));
+			glflags |= GL_COLOR_BUFFER_BIT;
+		}
+
+		if (testFlag(flags, ClearFlags::Depth))
+		{
+			GL_CHECK(glDepthMask(GL_TRUE));
+			GL_CHECK(glClearDepth(z));
+			glflags |= GL_DEPTH_BUFFER_BIT;
+		}
+
+		if (testFlag(flags, ClearFlags::Stencil))
+		{
+			GL_CHECK(glClearStencil(stencil));
+			glflags |= GL_STENCIL_BUFFER_BIT;
+		}
+
+		if (glflags != 0) {
+			// Lumino の仕様としては、Viewport や Scissor の影響を受けないようにクリアしたい。
+			// しかし glClear は Scissor の影響を受けるので GL_SCISSOR_TEST を切っておく。
+			GL_CHECK(glDisable(GL_SCISSOR_TEST));
+
+			GL_CHECK(glClear(glflags));
+
+			//GLint c[] = { 255, 0, 0, 255 };
+			//GL_CHECK(glClearBufferiv(GL_COLOR, GL_DRAW_BUFFER0, c));
+			//GLuint c[] = { 255, 0, 0, 255 };
+			//GL_CHECK(glClearBufferuiv(GL_COLOR, GL_DRAW_BUFFER0, c));
+		}
+	}
 };
 
 // 外部の OpenGL Context に統合するときに使う
@@ -854,38 +892,7 @@ void GLGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, 
 
 void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	GLuint glflags = 0;
-
-	if (testFlag(flags, ClearFlags::Color))
-	{
-		GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
-		GL_CHECK(glClearColor(color.r, color.g, color.b, color.a));
-		glflags |= GL_COLOR_BUFFER_BIT;
-	}
-
-	if (testFlag(flags, ClearFlags::Depth))
-	{
-		GL_CHECK(glDepthMask(GL_TRUE));
-		GL_CHECK(glClearDepth(z));
-		glflags |= GL_DEPTH_BUFFER_BIT;
-	}
-
-	if (testFlag(flags, ClearFlags::Stencil))
-	{
-		GL_CHECK(glClearStencil(stencil));
-		glflags |= GL_STENCIL_BUFFER_BIT;
-	}
-
-	// Lumino の仕様としては、Viewport や Scissor の影響を受けないようにクリアしたい。
-	// しかし glClear は Scissor の影響を受けるので GL_SCISSOR_TEST を切っておく。
-	GL_CHECK(glDisable(GL_SCISSOR_TEST));
-
-	GL_CHECK(glClear(glflags));
-
-    //GLint c[] = { 255, 0, 0, 255 };
-    //GL_CHECK(glClearBufferiv(GL_COLOR, GL_DRAW_BUFFER0, c));
-    //GLuint c[] = { 255, 0, 0, 255 };
-    //GL_CHECK(glClearBufferuiv(GL_COLOR, GL_DRAW_BUFFER0, c));
+	OpenGLHelper::clearBuffers(flags, color, z, stencil);
 }
 
 void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount)
@@ -1080,13 +1087,7 @@ void GLSwapChain::present()
 		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO()));
 	}
 
-    //GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    //GL_CHECK(glClearColor(0, 0, 1, 1));
-    //glClear(GL_COLOR_BUFFER_BIT);
 	m_device->glContext()->swap(this);
-
-
-    //m_device->glContext()->swap(this);
 }
 
 //=============================================================================
@@ -1198,6 +1199,9 @@ void GLRenderPass::bind(GLGraphicsContext* context)
 	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
 		"glCheckFramebufferStatus failed 0x%08x",
 		glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+
+	OpenGLHelper::clearBuffers(m_clearFlags, m_clearColor, m_clearDepth, m_clearStencil);
 }
 
 //==============================================================================

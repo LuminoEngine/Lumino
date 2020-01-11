@@ -490,9 +490,9 @@ int main(int argc, char** argv)
 	Engine::mainUIView()->addElement(field1);
 
 
-    //auto ToneLayer = ToneImageEffect::create();
-    //ToneLayer->play(ColorTone(0.7, 0.5, 0.2, 1.0), 1);
-    //Engine::mainViewport()->addImageEffect(ToneLayer);
+    auto ToneLayer = ToneImageEffect::create();
+    ToneLayer->play(ColorTone(0.7, 0.5, 0.2, 1.0), 1);
+    Engine::mainViewport()->addImageEffect(ToneLayer);
 
 #if 0
     auto window1 = UIWindow::create();

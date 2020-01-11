@@ -98,6 +98,11 @@ public:
 	LN_METHOD()
     static Ref<Texture2D> load(const StringRef& filePath);
 
+
+    Texture2D* blackTexture();
+
+    Texture2D* whiteTexture();
+
 public:
     /** Mipmap の有無を設定します。(default: false) */
     void setMipmapEnabled(bool value);

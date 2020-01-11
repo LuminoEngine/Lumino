@@ -45,6 +45,12 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
 		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
 
+
+#if 0
+		m_imageEffects[0]->onRender(context, inout, primaryTarget);
+		m_copyMaterial->setMainTexture(primaryTarget);
+		context->blit(m_copyMaterial, inout);
+#else
         context->pushState(true);
         context->setDepthBuffer(nullptr);
 
@@ -65,7 +71,7 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
         context->blit(m_copyMaterial, inout);
 
         context->popState();
-
+#endif
 		RenderTargetTexture::releaseTemporary(secondaryTarget);
 		RenderTargetTexture::releaseTemporary(primaryTarget);
     }
