@@ -47,9 +47,14 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 
 
 #if 0
+		context->pushState(true);
+		context->setDepthBuffer(nullptr);
+		context->setDepthTestEnabled(false);
+		context->setDepthWriteEnabled(false);
 		m_imageEffects[0]->onRender(context, inout, primaryTarget);
 		m_copyMaterial->setMainTexture(primaryTarget);
 		context->blit(m_copyMaterial, inout);
+		context->popState();
 #else
         context->pushState(true);
         context->setDepthBuffer(nullptr);

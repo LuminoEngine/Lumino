@@ -58,6 +58,7 @@
 #include "LuminoEngine/ImageEffect/ImageEffect.hpp"
 #include "LuminoEngine/ImageEffect/ToneImageEffect.hpp"
 #include "LuminoEngine/ImageEffect/ScreenBlurImageEffect.hpp"
+#include "LuminoEngine/ImageEffect/BloomImageEffect.hpp"
 
 #include "LuminoEngine/Physics/CollisionShape.hpp"
 #include "LuminoEngine/Physics/PhysicsWorld.hpp"

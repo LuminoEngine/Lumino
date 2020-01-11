@@ -494,6 +494,9 @@ int main(int argc, char** argv)
     //ToneLayer->play(ColorTone(0.7, 0.5, 0.2, 1.0), 1);
     //Engine::mainViewport()->addImageEffect(ToneLayer);
 
+	auto bloomEffect = BloomImageEffect ::create();
+    Engine::mainViewport()->addImageEffect(bloomEffect);
+
 #if 0
     auto window1 = UIWindow::create();
     window1->setPosition(Vector3(8, 8, 0));
