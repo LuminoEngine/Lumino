@@ -37,6 +37,19 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
+void RenderDrawElement::calculateActualPriority()
+{
+	auto* material = m_stage->getMaterialFinal(nullptr, nullptr);
+	if (!material) {
+		m_actualPriority = priority;
+	}
+	else {
+		BlendMode blendMode = m_stage->getBlendModeFinal(material);
+		int factor = (blendMode == BlendMode::Normal) ? 1 : 2;
+		m_actualPriority = (factor << 32) | priority;
+	}
+}
+
 //void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
 //{
 //}

@@ -547,6 +547,8 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 
 	for (auto& element : m_renderingElementList)
 	{
+		element->calculateActualPriority();
+
 		auto& position = element->combinedWorldMatrix().position();
 
 		// calculate distance for ZSort
@@ -582,9 +584,9 @@ void SceneRenderer::prepare()
 		{
 			if (lhs->commandFence == rhs->commandFence)
 			{
-				if (lhs->priority == rhs->priority)
+				if (lhs->actualPriority() == rhs->actualPriority())
 					return lhs->zDistance > rhs->zDistance;
-				return lhs->priority < rhs->priority;
+				return lhs->actualPriority() < rhs->actualPriority();
 			}
 			else
 			{

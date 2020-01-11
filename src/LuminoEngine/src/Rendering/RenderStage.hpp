@@ -249,6 +249,8 @@ public:
 	float zDistance = 0;	//  TODO: internal
     int priority = 0;
 
+
+
     // 将来的に CommandBuffer をサポートするとき、次のような書き方をすることがある。
     //   buf->setRenderTarget(x);
     //   buf->clear(all);
@@ -273,10 +275,14 @@ public:
     // (結局、WorldMatrix など必須パラメータと同じ ConstantBuffer で送信する)
     BuiltinEffectData* builtinEffectData;
 
+	void calculateActualPriority();
+	int64_t actualPriority() const { return m_actualPriority; }
+
 private:
 	Matrix m_combinedWorldMatrix;
 	RenderStage* m_stage;
 	RenderDrawElement* m_next;
+	int64_t m_actualPriority;	// Zソートのためのキャッシュ。何回も計算を繰り返したくないので
 
 	friend class DrawElementList;
     friend class DrawElementListBuilder;
