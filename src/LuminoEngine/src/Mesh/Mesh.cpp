@@ -448,7 +448,7 @@ void Mesh::init(const MeshView& meshView)
 
 
 
-			// Flip Z position
+			// Flip Z (RH to LH)
             if (vertexBuffer == m_mainVertexBuffer && vbView.usage == VertexElementUsage::Position) {
                 if (vbView.type == VertexElementType::Float3) {
                     auto* p = reinterpret_cast<Vertex*>(rawbuf);
@@ -460,7 +460,18 @@ void Mesh::init(const MeshView& meshView)
                     LN_NOTIMPLEMENTED();
                     return;
                 }
-
+            }
+            else if (vertexBuffer == m_mainVertexBuffer && vbView.usage == VertexElementUsage::Normal) {
+                if (vbView.type == VertexElementType::Float3) {
+                    auto* p = reinterpret_cast<Vertex*>(rawbuf);
+                    for (int i = 0; i < vertexCountInSection; i++) {
+                        p[i].normal.z *= -1.0f;
+                    }
+                }
+                else {
+                    LN_NOTIMPLEMENTED();
+                    return;
+                }
             }
 
             // TODO: unmap 無いとめんどい以前に怖い
@@ -557,7 +568,18 @@ void Mesh::init(const MeshView& meshView)
                 }
             }
             else if (indexElementSize == 4) {
-                LN_NOTIMPLEMENTED();
+                if (section.indexElementSize == 4) {
+                    auto* b = static_cast<uint32_t*>(buf) + indexOffset;
+                    auto* s = static_cast<const uint32_t*>(section.indexData);
+                    for (int i = 0; i < section.indexCount; i++) {
+                        b[i] = beginVertexIndex + s[i];
+                        assert(b[i] < m_vertexCount);
+                    }
+                    flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
+                }
+                else {
+                    LN_NOTIMPLEMENTED();
+                }
             }
             else {
                 LN_NOTIMPLEMENTED();

@@ -4,6 +4,7 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
+#include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 
 namespace ln {
@@ -14,6 +15,7 @@ namespace ln {
 
 CameraOrbitControlComponent::CameraOrbitControlComponent()
     : m_camera(nullptr)
+    , m_capturdElement(nullptr)
     , m_state(State::None)
 {
 }
@@ -46,15 +48,21 @@ void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
         {
             case MouseButtons::Left:
                 startRotate(me->getPosition());
+                m_capturdElement = e->sender();
+                m_capturdElement->retainCapture();
                 e->handled = true;
                 break;
             case MouseButtons::Middle:
                 startDolly(me->getPosition());
-                e->handled = true;;
+                m_capturdElement = e->sender();
+                m_capturdElement->retainCapture();
+                e->handled = true;
                 break;
             case MouseButtons::Right:
                 startPan(me->getPosition());
-                e->handled = true;;
+                m_capturdElement = e->sender();
+                m_capturdElement->retainCapture();
+                e->handled = true;
                 break;
         }
     }
@@ -79,6 +87,10 @@ void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
     }
     else if (e->type() == UIEvents::MouseUpEvent)
     {
+        if (m_capturdElement) {
+            m_capturdElement->releaseCapture();
+            m_capturdElement = nullptr;
+        }
         m_state = State::None;
     }
     else if (e->type() == UIEvents::MouseWheelEvent)

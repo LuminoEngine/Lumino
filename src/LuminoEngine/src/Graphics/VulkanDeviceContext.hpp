@@ -18,6 +18,9 @@ struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
+
+    VkSurfaceTransformFlagBitsKHR preTransform;
+    VkCompositeAlphaFlagBitsKHR compositeAlpha;
 };
 
 namespace ln {
@@ -56,7 +59,7 @@ public:
      
     Result findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* outType);
 
-    VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
+    //VulkanRenderPassCache* renderPassCache() { return &m_renderPassCache; }
     //VulkanFramebufferCache* framebufferCache() { return &m_framebufferCache; }
     //VulkanPipelineCache* pipelineCache() { return &m_pipelineCache; }
 	//const Ref<VulkanGraphicsContext>& graphicsContext() const { return m_graphicsContext; }
@@ -123,7 +126,7 @@ public: // TODO:
     VkCommandPool m_commandPool;
     //VulkanAllocator m_allocator;
 
-    VulkanRenderPassCache m_renderPassCache;
+    //VulkanRenderPassCache m_renderPassCache;
     //VulkanFramebufferCache m_framebufferCache;
     //VulkanPipelineCache m_pipelineCache;
 
@@ -247,6 +250,10 @@ private:
 	Color m_clearColor;
 	float m_clearDepth;
 	uint8_t m_clearStencil;
+#ifdef LN_DEBUG
+    VkAttachmentDescription m_attachmentDescs[MaxMultiRenderTargets] = {};
+    VkAttachmentReference m_attachmentRefs[MaxMultiRenderTargets] = {};
+#endif
 };
 
 class VulkanFramebuffer2

@@ -168,9 +168,6 @@ void EngineManager::init()
 
             m_mainScene = m_mainWorld->masterScene();
 
-            //m_mainAmbientLight = makeObject<AmbientLight>();
-            //m_mainDirectionalLight = makeObject<DirectionalLight>();
-
             m_mainCamera = makeObject<Camera>();
             m_mainWorld->add(m_mainCamera);
 
@@ -187,7 +184,7 @@ void EngineManager::init()
             m_mainUIRoot = makeObject<UIControl>();
             m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
             m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
-			m_mainUIRoot->m_isHitTestVisible = false;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
+			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
             m_mainUIRenderView->setRootElement(m_mainUIRoot);
             m_uiManager->setPrimaryElement(m_mainUIRoot);
 
@@ -222,14 +219,6 @@ void EngineManager::dispose()
         if (m_mainWorldRenderView) {
             m_mainWorldRenderView->dispose();
             m_mainWorldRenderView = nullptr;
-        }
-        if (m_mainAmbientLight) {
-            m_mainAmbientLight->dispose();
-            m_mainAmbientLight = nullptr;
-        }
-        if (m_mainDirectionalLight) {
-            m_mainDirectionalLight->dispose();
-            m_mainDirectionalLight = nullptr;
         }
         if (m_mainCamera) {
             m_mainCamera->dispose();
@@ -384,6 +373,9 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.fullscreen = false;
 		settings.mainWindowSettings.resizable = true;
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
+
+		if (m_settings.graphicsAPI != GraphicsAPI::OpenGL)
+			settings.mainWindowSettings.glfwNoAPI = true;
 
 		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->init(settings);

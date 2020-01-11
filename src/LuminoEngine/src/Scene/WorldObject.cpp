@@ -84,6 +84,8 @@ void WorldObjectTransform::lookAt(const Vector3& target, const Vector3& up)
         f.x, f.y, f.z, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f);
     m_rotation = Quaternion::makeFromRotationMatrix(mat);
+
+    m_parent->notifyTransformChanged();
 }
 
 Matrix WorldObjectTransform::getLocalMatrix() const

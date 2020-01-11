@@ -729,7 +729,7 @@ inline String& String::operator+=(const StringRef& rhs)
 }
 inline String& String::operator+=(const Char* rhs)
 {
-    append(rhs, detail::UStringHelper::strlen(rhs));
+    append(rhs, static_cast<int>(detail::UStringHelper::strlen(rhs)));
     return *this;
 }
 inline String& String::operator+=(Char rhs)

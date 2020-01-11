@@ -125,6 +125,16 @@ void RenderingContext::setTone(const ColorTone& value)
     m_builder->setTone(value);
 }
 
+void RenderingContext::setFont(Font* value)
+{
+	m_builder->setFont(value);
+}
+
+void RenderingContext::setTextColor(const Color& value)
+{
+	m_builder->setTextColor(value);
+}
+
 void RenderingContext::resetState()
 {
     m_builder->reset2();
@@ -212,7 +222,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
         m_builder->meshGeneraterRenderFeatureStageParameters());
     element->data.size.set(width, depth);
     element->data.setColor(color);
-    element->data.setTransform(element->combinedWorldMatrix());
+    //element->data.setTransform(/*element->combinedWorldMatrix()*/);
 }
 
 void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
@@ -236,14 +246,34 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     element->data.m_slices = slices;
     element->data.m_stacks = stacks;
     element->data.setColor(color);
-    element->data.setTransform(element->combinedWorldMatrix() * localTransform);
+    element->data.setTransform(/*element->combinedWorldMatrix() * */localTransform);
 
 	// TODO: bouding box
 }
 
 void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix& localTransform)
 {
-	LN_NOTIMPLEMENTED();
+	class DrawBox : public detail::RenderDrawElement
+	{
+	public:
+		detail::RegularBoxMeshFactory data;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	auto* element = m_builder->addNewDrawElement<DrawBox>(
+		m_manager->meshGeneraterRenderFeature(),
+		m_builder->meshGeneraterRenderFeatureStageParameters());
+	// TODO: box.center
+	element->data.m_size = Vector3(box.width, box.height, box.depth);
+	element->data.setColor(color);
+	element->data.setTransform(/*element->combinedWorldMatrix() **/ localTransform);
+
+	// TODO: bouding box
 }
 
 void RenderingContext::drawScreenRectangle()
@@ -324,9 +354,13 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 		}
 	};
 
-	// TODO: scoped_gurad
-	RenderTargetTexture* oldTarget = renderTarget(0);
-	setRenderTarget(0, destination);
+    // TODO: scoped_gurad
+    RenderTargetTexture* oldTarget = nullptr;
+    if (destination)
+    {
+        RenderTargetTexture* oldTarget = renderTarget(0);
+        setRenderTarget(0, destination);
+    }
 
 	m_builder->setMaterial(source);
 
@@ -338,7 +372,10 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 		m_builder->blitRenderFeatureStageParameters());
 	element->targetPhase = RendringPhase::ImageEffect;
 
-	setRenderTarget(0, oldTarget);
+    if (destination)
+    {
+        setRenderTarget(0, oldTarget);
+    }
 
 	m_builder->advanceFence();
 }
@@ -535,14 +572,16 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
 
-void RenderingContext::drawText(const StringRef& text, const Color& color, Font* font)
+void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment, TextCrossAlignment crossAlignment/*, const Color& color, Font* font*/)
 {
 
     // TODO: cache
     auto formattedText = makeRef<detail::FormattedText>();
     formattedText->text = text;
-    formattedText->font = font;
-	formattedText->color = color;
+    formattedText->font = m_builder->font();
+	formattedText->color = m_builder->textColor();
+	formattedText->area = area;
+	formattedText->textAlignment = alignment;
 
     if (!formattedText->font) {
         formattedText->font = m_manager->fontManager()->defaultFont();

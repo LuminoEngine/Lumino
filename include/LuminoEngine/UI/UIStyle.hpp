@@ -6,6 +6,7 @@ class Shader;
 class Texture;
 class UIStyleContext;
 class UIStyleClass;
+class UITheme;
 namespace detail {
 class UIStyleInstance;
 class UIStyleClassInstance;
@@ -480,6 +481,8 @@ public:
 	// VisualState 以外を結合 (mainStyle のみ結合)
 	void combineStyle(UIStyle* style, const StringRef& elementName, const List<String>* classList) const;
 
+	Ref<UITheme> mainTheme;
+
 LN_CONSTRUCT_ACCESS:
     UIStyleContext();
     virtual ~UIStyleContext();
@@ -577,6 +580,8 @@ public:
     // commited cache
     Ref<Font> font;
     Ref<AbstractMaterial> backgroundMaterial;
+
+	UITheme* theme = nullptr;
 
     // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 
@@ -745,6 +750,25 @@ public:
     static const Color& get(UIColorHues hue, int shades = 5);
 };
 
+enum class UIThemeConstantPalette
+{
+	BackgroundColor,
+	DefaultMainColor,
+	DefaultTextColor,
+	PrimaryMainColor,
+	PrimaryTextColor,
+	SecondaryMainColor,
+	SecondaryTextColor,
+	ErrorMainColor,
+	ErrorTextColor,
+	WarningMainColor,
+	WarningTextColor,
+	InfoMainColor,
+	InfoTextColor,
+	SuccessMainColor,
+	SuccessTextColor,
+};
+
 class UITheme
     : public Object
 {
@@ -759,6 +783,9 @@ public:
     float spacing(float factor) const { return m_spacing * factor; }
 
 	float lineContentHeight() const { return spacing(4); }
+
+	void setColor(UIThemeConstantPalette palette, const Color& color) { m_constantPalette[static_cast<int>(palette)] = color; }
+	const Color& color(UIThemeConstantPalette palette) const { return m_constantPalette[static_cast<int>(palette)]; }
     
 LN_CONSTRUCT_ACCESS:
     UITheme();
@@ -767,6 +794,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     std::unordered_map<String, Color> m_colors;
     float m_spacing;
+	std::array<Color, 16> m_constantPalette;
 };
 
 class UIVisualStates

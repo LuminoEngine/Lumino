@@ -143,6 +143,7 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
 {
 	if (m_dirty) {
 		releaseRHI();
+        m_dirty = false;
 
 		detail::NativeRenderPassCache::FindKey key;
 		for (auto i = 0; i < m_renderTargets.size(); i++) {
@@ -154,6 +155,21 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
 		key.clearDepth = m_clearDepth;
 		key.clearStencil = m_clearStencil;
 
+        if (!m_renderTargets[0]->m_cleared && !testFlag(key.clearFlags, ClearFlags::Color)) {
+            key.clearFlags = Flags<ClearFlags>(key.clearFlags) | ClearFlags::Color;
+            m_dirty = true;
+        }
+        m_renderTargets[0]->m_cleared = true;
+
+        if (m_depthBuffer) {
+            if (!m_depthBuffer->m_cleared && !testFlag(key.clearFlags, Flags<ClearFlags>(ClearFlags::Depth | ClearFlags::Stencil).get())) {
+                key.clearFlags = Flags<ClearFlags>(key.clearFlags) | ClearFlags::Depth | ClearFlags::Stencil;
+                m_dirty = true;
+            }
+            m_depthBuffer->m_cleared = true;
+        }
+
+
 		auto device = detail::GraphicsResourceInternal::manager(this)->deviceContext();
 		m_rhiObject = device->renderPassCache()->findOrCreate(key);
 
@@ -163,7 +179,6 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
         key.clearStencil = 0x00;
         m_rhiObjectNoClear = device->renderPassCache()->findOrCreate(key);
 
-		m_dirty = false;
 	}
 	return m_rhiObject;
 }

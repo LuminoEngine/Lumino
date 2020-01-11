@@ -98,6 +98,11 @@ public:
 	LN_METHOD()
     static Ref<Texture2D> load(const StringRef& filePath);
 
+
+    Texture2D* blackTexture();
+
+    Texture2D* whiteTexture();
+
 public:
     /** Mipmap の有無を設定します。(default: false) */
     void setMipmapEnabled(bool value);
@@ -120,7 +125,7 @@ public:
     /** 別のテクスチャからこのテクスチャへ、ビットマップ転送を行います。 */
     void blit(int x, int y, Texture2D* srcTexture, int sx, int sy, int sw, int sh);
 
-    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Left);
+    void drawText(const StringRef& text, const Rect& rect, Font* font, const Color& color, TextAlignment alignment = TextAlignment::Forward);
 
     // TODO: internal
     //void setAssetSource(const Path& path) { m_assetSourcePath = path; }
@@ -192,6 +197,8 @@ public:
     static void releaseTemporary(RenderTargetTexture* renderTarget);
 
     bool isBackbuffer() const { return m_ownerSwapchain != nullptr; }
+
+    bool m_cleared = false;
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;

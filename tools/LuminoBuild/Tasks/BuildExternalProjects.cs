@@ -354,7 +354,7 @@ namespace LuminoBuild.Tasks
 
                     if (builder.Args.Contains("--enable-Effekseer"))
                     {
-                        BuildProjectMSVC(builder, "Effekseer", reposDir, targetName, targetFullName, configuration, $"{altRuntime} -DBUILD_VULKAN=ON");
+                        BuildProjectMSVC(builder, "Effekseer", reposDir, targetName, targetFullName, configuration, $"{altRuntime} -DBUILD_VIEWER=ON -DBUILD_EDITOR=ON -DBUILD_VULKAN=ON");
                     }
                 }
 

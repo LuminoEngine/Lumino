@@ -4,6 +4,7 @@
 
 namespace ln {
 class UIElement;
+class UITheme;
 
 // 従来の Brush 相当の塗りつぶしパラメータは Material。形状にかかわるものはそれ以外に分離(strokeSize など)
 // ただし、グラデーションなども Brush 相当のパラメータとは分離して考える。Web Canvas。
@@ -34,11 +35,14 @@ public:
 
 	void drawVisual(UIElement* element, const Matrix& transform);
 
+	UITheme* theme() const;
+
 public: // TODO: inernal
 	void resetForBeginRendering();
 
 	Ref<detail::DrawElementList> m_elementList;
     bool m_adornerRendering = false;
+	Ref<UITheme> m_theme;
 };
 
 } // namespace ln

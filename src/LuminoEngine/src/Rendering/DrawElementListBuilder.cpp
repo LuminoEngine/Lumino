@@ -236,6 +236,16 @@ void DrawElementListBuilder::setBaseBuiltinEffectData(const Optional<BuiltinEffe
     }
 }
 
+void DrawElementListBuilder::setFont(Font* value)
+{
+	primaryState()->font = value;
+}
+
+void DrawElementListBuilder::setTextColor(const Color& value)
+{
+	primaryState()->textColor = value;
+}
+
 void DrawElementListBuilder::setViewPoint(RenderViewPoint* value)
 {
     primaryState()->viewPoint = value;
@@ -396,6 +406,8 @@ void DrawElementListBuilder::State::reset()
     renderPriority = 0;
     baseTransform = nullptr;
     rendringPhase = RendringPhase::Default;
+	font = nullptr;
+	textColor = Color::Black;
 }
 
 void DrawElementListBuilder::State::copyFrom(const State* other)

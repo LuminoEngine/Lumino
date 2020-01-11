@@ -37,6 +37,19 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
+void RenderDrawElement::calculateActualPriority()
+{
+	auto* material = m_stage->getMaterialFinal(nullptr, nullptr);
+	if (!material) {
+		m_actualPriority = priority;
+	}
+	else {
+		BlendMode blendMode = m_stage->getBlendModeFinal(material);
+		int factor = (blendMode == BlendMode::Normal) ? 1 : 2;
+		m_actualPriority = (factor << 32) | priority;
+	}
+}
+
 //void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
 //{
 //}
@@ -442,6 +455,21 @@ void DrawElementListCollector::addDrawElementList(/*RendringPhase phase, */DrawE
 const List<DrawElementList*>& DrawElementListCollector::lists(/*RendringPhase phase*/) const
 {
     return m_lists;// [(int)phase];
+}
+
+void DrawElementListCollector::classify()
+{
+    for (auto& list : m_classifiedElements) {
+        list.clear();
+    }
+
+    for (auto& elementList : m_lists) {
+        RenderDrawElement* element = elementList->headElement();
+        while (element) {
+            m_classifiedElements[static_cast<int>(element->targetPhase)].add(element);
+            element = element->next();
+        }
+    }
 }
 
 } // namespace detail

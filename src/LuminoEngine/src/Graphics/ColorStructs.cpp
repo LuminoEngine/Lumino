@@ -106,6 +106,7 @@ ColorI ColorI::parse(const StringRef& str)
 //==============================================================================
 // Color
 
+const Color Color::Zero(0.0f, 0.0f, 0.0f, 0.0f);
 const Color Color::Transparency(0.0f, 0.0f, 0.0f, 0.0f);
 const Color Color::TransparencyWhite(1.0f, 1.0f, 1.0f, 0.0f);
 const Color Color::Red(1.0f, 0.0f, 0.0f);

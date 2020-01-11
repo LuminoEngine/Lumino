@@ -14,6 +14,7 @@ struct WindowCreationSettings
 
     intptr_t	userWindow = 0;
     uint32_t    win32IconResourceId = 0;
+    bool glfwNoAPI = false;
 };
 
 enum class EventProcessingMode

@@ -12,10 +12,12 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "SceneManager.hpp"
+#include "InternalSkyBox.hpp"
 #include "../Effect/EffectManager.hpp"  // TODO: test
 
 namespace ln {
@@ -81,6 +83,8 @@ void WorldRenderView::init()
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
 	}
+
+	m_internalSkyBox = makeObject<detail::InternalSkyBox>();
 
     m_transformControls = makeObject<TransformControls>();
 }
@@ -170,6 +174,17 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 				renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
 			}
 			else if (clearMode() == RenderViewClearMode::Sky) {
+				renderingContext->clear(ClearFlags::Depth | ClearFlags::Stencil, Color(), 1.0f, 0x00);
+
+                if (m_targetWorld->mainDirectionalLight()) {
+                    m_internalSkyBox->setLightDirection(-Vector3::normalize(m_targetWorld->mainDirectionalLight()->worldMatrix().front()));
+
+                }
+
+                m_internalSkyBox->render(renderingContext, m_viewPoint);
+
+			}
+			else if (clearMode() == RenderViewClearMode::Sky0) {
 
                 //renderingContext->setBaseTransfrom(Matrix::Identity);
                 //renderingContext->setTransfrom(Matrix::Identity);
@@ -339,8 +354,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         }
 
 
-
-		m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, &elementListManagers());
+        assert(elementListManagers().size() == 1);
+		m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, elementListManagers().front());
 	}
 }
 

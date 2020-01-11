@@ -17,7 +17,7 @@ TextLayoutEngine::TextLayoutEngine()
     , m_length(0)
     , m_pos(0)
     , m_targetArea()
-    , m_alignment(TextAlignment::Left)
+    , m_alignment(TextAlignment::Forward)
     , m_globalMetrics()
 {
 }
@@ -154,7 +154,7 @@ void TextLayoutEngine::calculateRenderAreaHorizontalOffset(LayoutLine* layoutLin
 	TextAlignment alignment = m_alignment;
 	if (alignment == TextAlignment::Justify) {
 		if (layoutLine->glyphs.size() == 0) {
-			alignment = TextAlignment::Left;
+			alignment = TextAlignment::Forward;
 		}
 		else if (layoutLine->glyphs.size() == 1) {
 			alignment = TextAlignment::Center;
@@ -163,13 +163,13 @@ void TextLayoutEngine::calculateRenderAreaHorizontalOffset(LayoutLine* layoutLin
 
 	switch (alignment)
 	{
-		case TextAlignment::Left:
+	case TextAlignment::Forward:
 			m_renderAreaOffset.x = 0;
 			break;
 		case TextAlignment::Center:
 			m_renderAreaOffset.x = (m_targetArea.width - m_renderAreaSize.width) / 2;
 			break;
-		case TextAlignment::Right:
+		case TextAlignment::Backward:
 			m_renderAreaOffset.x = m_targetArea.width - m_renderAreaSize.width;
 			break;
 		case TextAlignment::Justify:

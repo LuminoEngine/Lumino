@@ -26,7 +26,7 @@ void UIPopup::init()
     setHorizontalAlignment(HAlignment::Left);
     setVerticalAlignment(VAlignment::Top);
 
-	m_isHitTestVisible = false;
+	m_hitTestMode = detail::UIHitTestMode::InvisibleControl;
 }
 
 void UIPopup::setPlacementTarget(UIElement* target)
@@ -58,7 +58,7 @@ void UIPopup::open()
         }
 
 		activate();
-		m_isHitTestVisible = true;
+		m_hitTestMode = detail::UIHitTestMode::Visible;
         m_opend = true;
     }
 }
@@ -74,7 +74,7 @@ void UIPopup::close()
                 renderView->adornerLayer()->remove(m_adorner);
             }
         }
-		m_isHitTestVisible = false;
+		m_hitTestMode = detail::UIHitTestMode::Visible;
         m_opend = false;
     }
 }

@@ -63,6 +63,11 @@ public:
 	void setTone(const ColorTone& value);
     void setBaseBuiltinEffectData(const Optional<BuiltinEffectData>& value);
 
+	void setFont(Font* value);
+	const Ref<Font>& font() const { return primaryStateConst()->font; }
+	void setTextColor(const Color& value);
+	const Color& textColor() const { return primaryStateConst()->textColor; }
+
     void setViewPoint(RenderViewPoint* value);
     RenderViewPoint* viewPoint() const;
 
@@ -107,6 +112,8 @@ private:
         Optional<Matrix> baseTransform;
         int renderPriority;
         RendringPhase rendringPhase;
+		Ref<Font> font;
+		Color textColor;
 
         RenderViewPoint* viewPoint; // DrawElement には流れない、RenderingContext を使う人のための情報
 

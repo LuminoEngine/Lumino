@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Base/Builder.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Rendering/Drawing.hpp"
 #include "UILayoutElement.hpp"
@@ -35,6 +36,13 @@ class UIStyleInstance;
 //};
 
 
+enum class UIHitTestMode
+{
+	Visible,
+	InvisibleControl,	// 子要素も含めて HitTest を無効にする
+	InvisiblePanel,		// 自身の HitTest を行わないが、子要素の HitTest には影響しない。 レイアウトなど描画やインタラクションを目的としない Element で使用する。
+};
+
 
 struct GridLayoutInfo
 {
@@ -42,6 +50,10 @@ struct GridLayoutInfo
     int		layoutColumn = -1;
     int		layoutRowSpan = 1;
     int		layoutColumnSpan = 1;
+
+	// 自動割り当て解決済みのインデックス
+	int actualLayoutRow = 0;
+	int actualLayoutColumn = 0;
 
     float   layoutWeight = 0;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
 };
@@ -103,6 +115,25 @@ class UIElement
 {
     LN_OBJECT;
 public:
+	class Builder : public BuilderBase
+	{
+	public:
+		Builder();
+		Builder& height(float value);
+		Builder& backgroundColor(const Color& value);
+		Ref<UIElement> build();
+
+		class Details : public BuilderDetailsBase
+		{
+		public:
+			Optional<float> height;
+			Optional<Color> backgroundColor;
+			virtual Ref<Object> build() override;
+		};
+
+		Builder(Details* d);
+	};
+
 
     void setName(const String& value) { m_name = value; }
     const String& name() const { return m_name; }
@@ -431,6 +462,15 @@ public:	// TODO: internal protected
 	 */
 	//virtual UIElement* getVisualChild(int index) const;
 
+	/**
+	 * Note: Border は含まない描画領域をアクティブとしている。HTML5 とは異なり、WPF と同じ仕様。0,0はBorderと重なる。
+	 * - マウス座標系は、UIElement の境界座標系 (Border の外周) としたい。MouseEvent で、座標に負値が入ってくるのはちょっと良くない。HitTest するときに細工とか必要。
+	 *	- 実際のところ、onRender を実装することよりも MouseEvent を利用することの方が圧倒的に多い。（見た目のカスタマイズはほとんど style で足りる）
+	 * - 描画座標系は、UIElement の境界にするかコンテンツ矩形にするかは悩みどころだけど、実際にやってみたところ境界座標系に合わせる方が都合が良いことが多かった。
+	 *	- clientRect() や contentRect() と同じ座標系なので、「Padding を考慮したところに描画したい」といった指定が比較的楽。
+	 *	  - コンテンツ矩形とかにしてしまうと、clientRect() や contentRect() から領域を取り出すにしても一段計算を挟む必要がある。
+	 *  - (0,0) が Border の上に乗ってしまうことは最初「ん？」ってなるかもしれないけど、結果として実装がやりやすくなるので境界領域を使ってみる。
+	 */
 	virtual void onRender(UIRenderingContext* context);
 
     virtual void onRoutedEvent(UIEventArgs* e);
@@ -463,7 +503,7 @@ public: // TODO: internal
     virtual void invalidate(detail::UIElementDirtyFlags flags, bool toAncestor);
     detail::GridLayoutInfo* getGridLayoutInfo();
     bool isRenderVisible() const;
-    bool isHitTestVisibleCore() const { return m_isHitTestVisible && isRenderVisible(); }
+    //bool isHitTestVisibleCore() const { return m_hitte && isRenderVisible(); }
 
 	void activateInternal();
 	//virtual void deactivateInternal();
@@ -495,7 +535,7 @@ public: // TODO: internal
 	Ref<detail::UIStyleInstance> m_finalStyle;
 	UIVisibility m_internalVisibility;
     int m_renderPriority;
-    bool m_isHitTestVisible;	// TODO: flags
+	detail::UIHitTestMode m_hitTestMode;
 	bool m_focusable;			// TODO: flags
     bool m_clipToBounds;			// TODO: flags
 

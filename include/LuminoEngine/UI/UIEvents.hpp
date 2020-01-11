@@ -412,7 +412,7 @@ public:
 	/** UITimerEventArgs のインスタンスを作成します。*/
 	static Ref<UITimerEventArgs> create(UIElement* sender, UIEventType type, float elapsedSeconds, bool caching = true);
 
-	int elapsedSeconds() const { return m_elapsedSeconds; }
+	float elapsedSeconds() const { return m_elapsedSeconds; }
 
 LN_CONSTRUCT_ACCESS:
 	UITimerEventArgs();

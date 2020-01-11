@@ -11,8 +11,6 @@ foreach(LIB IN LISTS LN_EXTERNAL_LIBS)
     list(APPEND _LN_LINK_ONLY_LIBS "\$<LINK_ONLY:${LIB}>")
 endforeach()
 
-#message("_LN_LINK_ONLY_LIBS:${_LN_LINK_ONLY_LIBS}")
-
 # LuminoCore
 find_library(LuminoCore_LIBRARY_RELEASE NAMES LuminoCore libLuminoCore PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoCore/Release" NO_CMAKE_SYSTEM_PATH)
 find_library(LuminoCore_LIBRARY_DEBUG NAMES LuminoCored libLuminoCored PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoCore/Debug" NO_CMAKE_SYSTEM_PATH)
@@ -31,8 +29,8 @@ set_target_properties(LuminoEngine PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${_L
 set_target_properties(LuminoEngine PROPERTIES INTERFACE_LINK_LIBRARIES "LuminoCore;${_LN_LINK_ONLY_LIBS}")
 
 # LuminoEditor
-find_library(LuminoEditor_LIBRARY_RELEASE NAMES EditorCore libEditorCore PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEditor/Core/Release" NO_CMAKE_SYSTEM_PATH)
-find_library(LuminoEditor_LIBRARY_DEBUG NAMES EditorCored libEditorCored PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEditor/Core/Debug" NO_CMAKE_SYSTEM_PATH)
+find_library(LuminoEditor_LIBRARY_RELEASE NAMES LuminoEditor libLuminoEditor PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEditor/Core/Release" NO_CMAKE_SYSTEM_PATH)
+find_library(LuminoEditor_LIBRARY_DEBUG NAMES LuminoEditord libLuminoEditord PATHS "${_LN_CMAKE_BUILD_DIR}/src/LuminoEditor/Core/Debug" NO_CMAKE_SYSTEM_PATH)
 add_library(LuminoEditor STATIC IMPORTED)
 set_target_properties(LuminoEditor PROPERTIES IMPORTED_LOCATION_RELEASE "${LuminoEditor_LIBRARY_RELEASE}")
 set_target_properties(LuminoEditor PROPERTIES IMPORTED_LOCATION_DEBUG "${LuminoEditor_LIBRARY_DEBUG}")

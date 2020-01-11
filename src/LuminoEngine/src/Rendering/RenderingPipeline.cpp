@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
+#include "RenderStage.hpp"
 #include "RenderingPipeline.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "UnLigitingSceneRenderer.hpp"
@@ -60,14 +61,20 @@ void SceneRenderingPipeline::render(
 	RenderTargetTexture* renderTarget,
     //const ClearInfo& clearInfo,
     const detail::CameraInfo* mainCameraInfo,
-    const List<detail::DrawElementListCollector*>* elementListManagers)
+    detail::DrawElementListCollector* elementListCollector)
 {
-    m_elementListManagers = elementListManagers;
+    m_elementListCollector = elementListCollector;
+    m_elementListCollector->classify();
+
     m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
     //clear(graphicsContext, renderTarget, clearInfo);
 
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
+
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BackgroundSky);
+
+
     m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);
 
 
@@ -82,7 +89,7 @@ void SceneRenderingPipeline::render(
 
     // 誤用防止
     m_renderingFrameBufferSize = SizeI();
-    m_elementListManagers = nullptr;
+    m_elementListCollector = nullptr;
 }
 
 
@@ -111,9 +118,11 @@ void FlatRenderingPipeline::render(
 	RenderTargetTexture* renderTarget,
     //const ClearInfo& clearInfo,
 	const detail::CameraInfo* mainCameraInfo,
-	const List<detail::DrawElementListCollector*>* elementListManagers)
+    detail::DrawElementListCollector* elementListCollector)
 {
-	m_elementListManagers = elementListManagers;
+    m_elementListCollector = elementListCollector;
+    m_elementListCollector->classify();
+
 	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
     //clear(graphicsContext, renderTarget, clearInfo);
@@ -130,7 +139,7 @@ void FlatRenderingPipeline::render(
 
 	// 誤用防止
 	m_renderingFrameBufferSize = SizeI();
-	m_elementListManagers = nullptr;
+    m_elementListCollector = nullptr;
 }
 
 } // namespace detail

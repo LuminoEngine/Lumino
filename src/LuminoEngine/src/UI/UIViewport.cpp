@@ -36,6 +36,9 @@ void UIViewport::init()
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
 
+	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
+	//m_blitMaterial->setShader(shader);
+
 	//m_renderPass = makeObject<RenderPass>();
 }
 
@@ -152,8 +155,15 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     //detail::TextureInternal::readData(m_primaryTarget, graphicsContext)->save(u"test.png");
 
+
+	//auto tmp = Material::create(Texture2D::whiteTexture());
+	//context->blit(tmp, m_primaryTarget);
+
+
+    // TODO: blit 使う
     m_blitMaterial->setMainTexture(m_primaryTarget);
-    context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
+	context->blit(m_blitMaterial, nullptr);
+    //context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
 
     //RenderTargetTexture::releaseTemporary(primaryTarget);
 

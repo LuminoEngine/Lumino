@@ -4,6 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
+#include <LuminoEngine/UI/UIStyle.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
 #include "../Rendering/FrameRectRenderFeature.hpp"
@@ -22,11 +23,18 @@ UIRenderingContext::UIRenderingContext()
 
 void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color)
 {
-    auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
-        m_manager->shapesRenderFeature(),
-        m_builder->shapesRenderFeatureStageParameters());
+	// TODO: drawBoxElement で代用しているが、ただ四角形描くのにこれはちょっと重い気がする
+	BoxElementShapeBaseStyle base;
+	base.baseRect = rect;
+	BoxElementShapeBackgroundStyle background;
+	background.color = color;
+	drawBoxElement(base, &background, nullptr, nullptr);
 
-    element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
+    //auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
+    //    m_manager->shapesRenderFeature(),
+    //    m_builder->shapesRenderFeatureStageParameters());
+
+    //element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
 }
 
 void UIRenderingContext::drawImageBox(const Rect& rect, BrushImageDrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
@@ -146,6 +154,12 @@ void UIRenderingContext::drawVisual(UIElement* element, const Matrix& transform)
 	//pushState();
 	element->renderClient(this, m_builder->baseTransform() * element->m_localTransform * transform);
 	//popState();
+}
+
+UITheme* UIRenderingContext::theme() const
+{
+	assert(m_theme);
+	return m_theme;
 }
 
 void UIRenderingContext::resetForBeginRendering()

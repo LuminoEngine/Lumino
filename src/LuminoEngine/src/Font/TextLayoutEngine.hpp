@@ -22,8 +22,8 @@ public:
 	String text;
 	Ref<Font> font;
 	Color color;
-	Size area;
-	TextAlignment textAlignment = TextAlignment::Left;
+	Rect area;
+	TextAlignment textAlignment = TextAlignment::Forward;
 };
 
 

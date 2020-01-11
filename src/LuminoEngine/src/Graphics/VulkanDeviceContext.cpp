@@ -67,9 +67,9 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 		return false;
 	}
 
-	if (!m_renderPassCache.init(this)) {
-		return false;
-	}
+	//if (!m_renderPassCache.init(this)) {
+	//	return false;
+	//}
 	//if (!m_pipelineCache.init(this)) {
 	//	return false;
 	//}
@@ -101,7 +101,7 @@ void VulkanDevice::dispose()
 
     //m_pipelineCache.dispose();
     //m_framebufferCache.dispose();
-    m_renderPassCache.dispose();
+    //m_renderPassCache.dispose();
 
     if (m_commandPool) {
         vkDestroyCommandPool(m_device, m_commandPool, vulkanAllocator());
@@ -868,7 +868,7 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 
 	VkClearValue clearValues[MaxMultiRenderTargets + 1] = {};
 	uint32_t count = 0;
-	if (testFlag(renderPass->clearFlags(), ClearFlags::Color))
+	//if (testFlag(renderPass->clearFlags(), ClearFlags::Color))
 	{
 		auto& color = renderPass->clearColor();
 		for (uint32_t ii = 0; ii < framebuffer->renderTargets().size(); ii++) {
@@ -878,7 +878,8 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 			}
 		}
 	}
-	if ((testFlag(renderPass->clearFlags(), ClearFlags::Depth) || testFlag(renderPass->clearFlags(), ClearFlags::Stencil))) {
+	//if ((testFlag(renderPass->clearFlags(), ClearFlags::Depth) || testFlag(renderPass->clearFlags(), ClearFlags::Stencil)))
+    {
 		if (framebuffer->depthBuffer()) {
 			clearValues[count].depthStencil = { renderPass->clearDepth(), renderPass->clearStencil() };
 			count++;
@@ -1194,8 +1195,8 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
 
     VkSwapchainCreateInfoKHR createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    createInfo.pNext = nullptr;
     createInfo.surface = m_surface;
-
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = surfaceFormat.format;
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -1213,12 +1214,15 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
     }
     else {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        createInfo.queueFamilyIndexCount = 0;
+        createInfo.pQueueFamilyIndices = nullptr;
     }
 
-    createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    createInfo.preTransform = swapChainSupport.preTransform;
+    createInfo.compositeAlpha = swapChainSupport.compositeAlpha;
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
+    createInfo.oldSwapchain = VK_NULL_HANDLE;
 
 
     if (vkCreateSwapchainKHR(device, &createInfo, m_deviceContext->vulkanAllocator(), &m_swapchain) != VK_SUCCESS) {
@@ -1506,6 +1510,27 @@ SwapChainSupportDetails VulkanSwapChain::querySwapChainSupport(VkPhysicalDevice 
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
     }
 
+    if (details.capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
+        details.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    } else {
+        details.preTransform = details.capabilities.currentTransform;
+    }
+
+    // Find a supported composite alpha mode
+    details.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[4] = {
+        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+        VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+    };
+    for (uint32_t i = 0; i < sizeof(compositeAlphaFlags) / sizeof(compositeAlphaFlags[0]); i++) {
+        if (details.capabilities.supportedCompositeAlpha & compositeAlphaFlags[i]) {
+            details.compositeAlpha = compositeAlphaFlags[i];
+            break;
+        }
+    }
+
     return details;
 }
 
@@ -1577,6 +1602,10 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 			}
 
 			attachmentRefs[i].attachment = attachmentCount;
+
+            // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL まはた GENERAL でなければならない。(https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkRenderPassCreateInfo-pAttachments-00836)
+            // = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ではダメ。
+            // 要するに、描画中のレンダーターゲットは書き込み可能なレイアウトにしておきなさい、ということ。
 			attachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 			attachmentCount++;
@@ -1646,6 +1675,11 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	if (!m_framebuffer->init(m_device, this, buffers)) {
 		return false;
 	}
+
+#ifdef LN_DEBUG
+    memcpy(m_attachmentDescs, attachmentDescs, sizeof(m_attachmentDescs));
+    memcpy(m_attachmentRefs, attachmentRefs, sizeof(m_attachmentRefs));
+#endif
 
 	return true;
 }

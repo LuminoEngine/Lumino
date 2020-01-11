@@ -346,11 +346,14 @@ void UITextLayout::layoutHighlights()
 
 void UITextLayout::render(UIRenderingContext* context)
 {
+	context->setFont(m_baseFont);
+	context->setTextColor(m_baseTextColor);
+
     for (auto& physicalLine : m_physicalLines) {
         for (auto& block : physicalLine->m_runBlocks) {
             Matrix transform = Matrix::makeTranslation(block->m_offset.x , block->m_offset.y, 0);
             context->setTransfrom(transform);
-            context->drawText(block->str(), m_baseTextColor, m_baseFont);
+            context->drawText(block->str());
         }
 
 		for (auto& highlight : physicalLine->m_overlayHighlights) {

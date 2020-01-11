@@ -19,6 +19,22 @@ class GraphicsManager;
 class PlatformWindow;
 class ISwapChain;
 class SwapChainInternal;
+
+class CommandList : public RefObject
+{
+public:
+    CommandList();
+    void init(GraphicsManager* manager);
+    void dispose();
+    const Ref<detail::ICommandList>& rhiResource() const { return m_rhiResource; }
+    const Ref<LinearAllocator>& allocator() const { return m_allocator; }
+    void reset();
+
+private:
+    Ref<detail::ICommandList> m_rhiResource;
+    Ref<LinearAllocator> m_allocator;
+};
+
 }
 
 /** スワップチェーンのクラスです。 */
@@ -50,7 +66,7 @@ LN_CONSTRUCT_ACCESS:
     void init(detail::PlatformWindow* window, const SizeI& backbufferSize);
 
 private:
-	const Ref<detail::ICommandList>& currentCommandList() const { return m_commandLists[m_imageIndex]; }
+	const Ref<detail::CommandList>& currentCommandList() const { return m_commandLists[m_imageIndex]; }
     void resizeBackbuffer(int width, int height);
 	void resetRHIBackbuffers();
     void present(GraphicsContext* context);
@@ -61,7 +77,7 @@ private:
 	std::vector<Ref<RenderTargetTexture>> m_backbuffers;
 	std::vector<Ref<DepthBuffer>> m_depthBuffers;
 	std::vector<Ref<RenderPass>> m_renderPasses;
-	std::vector<Ref<detail::ICommandList>> m_commandLists;
+	std::vector<Ref<detail::CommandList>> m_commandLists;
 	Ref<GraphicsContext> m_graphicsContext;
     int m_imageIndex;
 
@@ -76,11 +92,11 @@ class SwapChainInternal
 public:
     static void setBackendBufferSize(SwapChain* swapChain, int width, int height);
     static void setOpenGLBackendFBO(SwapChain* swapChain, uint32_t id);
-    static const Ref<detail::ICommandList>& currentCommandList(SwapChain* swapChain) { return swapChain->currentCommandList(); }
+    static const Ref<detail::CommandList>& currentCommandList(SwapChain* swapChain) { return swapChain->currentCommandList(); }
     static void resizeBackbuffer(SwapChain* swapChain, int width, int height) { swapChain->resizeBackbuffer(width, height); }
     //static void present(SwapChain* swapChain, GraphicsContext* context) { swapChain->present(context); }
     static int imageIndex(SwapChain* swapChain) { return swapChain->imageIndex(); }
-    static int swapBufferCount(SwapChain* swapChain) { return swapChain->m_backbuffers.size(); }
+    static int swapBufferCount(SwapChain* swapChain) { return static_cast<int>(swapChain->m_backbuffers.size()); }
 };
 
 } // namespace detail

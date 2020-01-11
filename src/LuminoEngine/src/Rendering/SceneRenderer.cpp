@@ -82,8 +82,6 @@ void SceneRenderer::render(
     const CameraInfo& mainCameraInfo,
     RendringPhase targetPhase)
 {
-	//if (LN_REQUIRE(m_defaultMaterial)) return;
-
     graphicsContext->resetState();
 
 	m_renderingPipeline = renderingPipeline;
@@ -222,7 +220,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     m_renderFeatureBatchList.renderTarget = renderTarget;
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
 
-
 	// Create batch list.
 	{
 		RenderPass* currentRenderPass = pass->renderPass();
@@ -238,7 +235,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			bool submitRequested = false;
 			RenderStage* stage = element->stage();
 			assert(stage->renderFeature);
-
+			
 			if (!stage->renderFeature->drawElementTransformNegate()) {
 				// バッチ機能を持たない RenderFeature であるので、毎回 flush する。
 				// 実際のところ Mesh とかを無理やりバッチ(Descripterを変更しないで連続描画)しようとしても、
@@ -252,9 +249,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 			}
 
+			RenderPass* renderPass = nullptr;
 			if (submitRequested) {
-				currentRenderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
+				renderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
                 clearInfo.flags = ClearFlags::None; // first only
+			}
+			else {
+				renderPass = currentRenderPass;
 			}
 
 			// ShaderDescripter
@@ -323,6 +324,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				currentFinalMaterial = finalMaterial;
 				currentSubsetInfo = subsetInfo;
 				currentStage = stage;
+				currentRenderPass = renderPass;
 				m_renderFeatureBatchList.setCurrentStage(currentStage);
 			}
 
@@ -337,7 +339,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			m_renderFeatureBatchList.lastBatch()->setSubsetInfo(currentSubsetInfo);
 			m_renderFeatureBatchList.lastBatch()->setRenderPass(m_renderFeatureBatchList.lastBatch()->ensureRenderPassOutside ? nullptr : currentRenderPass);
 		}
-
 	}
 
 	// Render batch-list.
@@ -356,7 +357,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
                     graphicsContext->beginRenderPass(currentRenderPass);
                 }
 			}
-
 
 			const RenderStage* stage = batch->stage();
 			const AbstractMaterial* finalMaterial = batch->finalMaterial();
@@ -458,12 +458,41 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 
-	for (auto& elementListManager : *m_renderingPipeline->elementListManagers())
+#if 1
+    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
+    {
+        for (auto& light : elementList->dynamicLightInfoList())
+        {
+            onCollectLight(light);
+        }
+    }
+
+    const auto& classifiedElements = m_renderingPipeline->elementListCollector()->classifiedElements(m_targetPhase);
+    for (RenderDrawElement* element : classifiedElements)
+    {
+#if 0		// TODO: 視錘台カリング
+        const Matrix& transform = element->getTransform(elementList);
+
+        Sphere boundingSphere = element->getLocalBoundingSphere();
+        boundingSphere.center += transform.getPosition();
+
+        if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+            cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+        {
+            // このノードは描画できる
+            m_renderingElementList.add(element);
+        }
+#else
+        m_renderingElementList.add(element);
+#endif
+    }
+#else
+	//for (auto& elementListManager : *m_renderingPipeline->elementListManagers())
 	{
 		// TODO: とりあえず Default
 		
 
-		for (auto& elementList : elementListManager->lists(/*RendringPhase::Default*/))
+		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
 		{
 			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
 			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
@@ -514,10 +543,12 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 			}
 		}
 	}
-
+#endif
 
 	for (auto& element : m_renderingElementList)
 	{
+		element->calculateActualPriority();
+
 		auto& position = element->combinedWorldMatrix().position();
 
 		// calculate distance for ZSort
@@ -553,9 +584,9 @@ void SceneRenderer::prepare()
 		{
 			if (lhs->commandFence == rhs->commandFence)
 			{
-				if (lhs->priority == rhs->priority)
+				if (lhs->actualPriority() == rhs->actualPriority())
 					return lhs->zDistance > rhs->zDistance;
-				return lhs->priority < rhs->priority;
+				return lhs->actualPriority() < rhs->actualPriority();
 			}
 			else
 			{

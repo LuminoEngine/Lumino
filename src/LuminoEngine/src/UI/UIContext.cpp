@@ -74,6 +74,22 @@ void UIContext::setupDefaultStyle()
 	//Color containerBackground = UIColors::get(UIColorHues::Grey, 3);
 	//Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
+	theme->setColor(UIThemeConstantPalette::BackgroundColor, Color::White.withAlpha(0.5f));
+	theme->setColor(UIThemeConstantPalette::DefaultMainColor, UIColors::get(UIColorHues::Grey, 2));
+	theme->setColor(UIThemeConstantPalette::DefaultTextColor, Color::Black);
+	theme->setColor(UIThemeConstantPalette::PrimaryMainColor, UIColors::get(UIColorHues::LightGreen, 5));
+	theme->setColor(UIThemeConstantPalette::PrimaryTextColor, Color::White);
+	theme->setColor(UIThemeConstantPalette::SecondaryMainColor, UIColors::get(UIColorHues::Orange, 5));
+	theme->setColor(UIThemeConstantPalette::SecondaryTextColor, Color::White);
+	theme->setColor(UIThemeConstantPalette::ErrorMainColor, UIColors::get(UIColorHues::Red, 5));
+	theme->setColor(UIThemeConstantPalette::ErrorTextColor, Color::White);
+	theme->setColor(UIThemeConstantPalette::WarningMainColor, UIColors::get(UIColorHues::Orange, 3));
+	theme->setColor(UIThemeConstantPalette::WarningTextColor, Color::Black);
+	theme->setColor(UIThemeConstantPalette::InfoMainColor, UIColors::get(UIColorHues::Blue, 3));
+	theme->setColor(UIThemeConstantPalette::InfoTextColor, Color::White);
+	theme->setColor(UIThemeConstantPalette::SuccessMainColor, UIColors::get(UIColorHues::Green, 3));
+	theme->setColor(UIThemeConstantPalette::SuccessTextColor, Color::White);
+
     auto sheet = makeObject<UIStyleSheet>();
 
     {
@@ -333,6 +349,7 @@ void UIContext::setupDefaultStyle()
     }
 
     m_styleContext->addStyleSheet(sheet);
+	m_styleContext->mainTheme = theme;
     //m_styleContext->build();
 }
 

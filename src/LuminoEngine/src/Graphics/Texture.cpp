@@ -94,6 +94,16 @@ Ref<Texture2D> Texture2D::load(const StringRef& filePath)
     }
 }
 
+Texture2D* Texture2D::blackTexture()
+{
+	return detail::EngineDomain::graphicsManager()->blackTexture();
+}
+
+Texture2D* Texture2D::whiteTexture()
+{
+	return detail::EngineDomain::graphicsManager()->whiteTexture();
+}
+
 Texture2D::Texture2D()
     : m_rhiObject(nullptr)
     , m_usage(GraphicsResourceUsage::Static)

@@ -9,7 +9,7 @@ namespace ln {
 class Object;
 class RefObjectHelper;
 template<class T> class Ref;
-namespace detail { struct RefObjectInternal; }
+namespace detail { class RefObjectInternal; }
 
 // unitiliy to store b -> a
 #ifndef LN_REFOBJ_SET

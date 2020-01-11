@@ -12,6 +12,7 @@ class RenderingContext;
 class StaticMeshModel;
 namespace detail {
 class SceneRenderingPipeline;
+class InternalSkyBox;
 }
 
 /**
@@ -65,6 +66,7 @@ private:
     bool m_physicsDebugDrawEnabled;
     bool m_gizmoEnabled;
 
+	Ref<detail::InternalSkyBox> m_internalSkyBox;
     Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
 };
 

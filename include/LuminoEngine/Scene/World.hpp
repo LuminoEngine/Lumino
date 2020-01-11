@@ -6,6 +6,8 @@
 namespace ln {
 class Scene;
 class AnimationContext;
+class AmbientLight;
+class DirectionalLight;
 class WorldRenderView;
 class WorldObject;
 class Component;
@@ -37,6 +39,9 @@ public:
 
     void setTimeScale(float value) { m_timeScale = value; }
     float timeScale() const { return m_timeScale; }
+
+    const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
+    const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
 
 
     /** この World に含まれている WorldObject のうち、指定した型のコンポーネントを持っている最初の WorldObject を返します。 */
@@ -78,6 +83,9 @@ public: // TODO: internal
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
     Ref<EffectContext> m_effectContext;
     Ref<Scene> m_masterScene;
+
+    Ref<AmbientLight> m_mainAmbientLight;
+    Ref<DirectionalLight> m_mainDirectionalLight;
 
     Ref<List<Ref<Scene>>> m_sceneList;
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;

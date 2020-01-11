@@ -8,6 +8,7 @@
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 
 namespace ln {
@@ -42,12 +43,28 @@ void World::init()
 	m_physicsWorld2D = makeObject<PhysicsWorld2D>();
     m_effectContext = makeObject<EffectContext>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
+
+    m_mainAmbientLight = makeObject<AmbientLight>();
+    add(m_mainAmbientLight);
+
+    m_mainDirectionalLight = makeObject<DirectionalLight>();
+    add(m_mainDirectionalLight);
 }
 
 void World::onDispose(bool explicitDisposing)
 {
     removeAllObjects();
-    
+
+    if (m_mainAmbientLight) {
+        m_mainAmbientLight->dispose();
+        m_mainAmbientLight = nullptr;
+    }
+
+    if (m_mainDirectionalLight) {
+        m_mainDirectionalLight->dispose();
+        m_mainDirectionalLight = nullptr;
+    }
+
     if (m_effectContext) {
         m_effectContext->dispose();
         m_effectContext = nullptr;

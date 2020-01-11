@@ -68,6 +68,7 @@ enum class RenderViewClearMode
 	None,
 	ColorAndDepth,
 	Sky,
+	Sky0,
 };
 
 // 
@@ -86,6 +87,8 @@ enum class RendringPhase
 
     // 不透明オブジェクト描画後・半透明オブジェクト描画前
     BeforeTransparencies,
+
+    BackgroundSky,
 
     ImageEffect,
 
