@@ -17,6 +17,7 @@ TEST_F(Test_ImageEffect, Bloom)
 
 	TestEnv::updateFrame();
 	ASSERT_SCREEN(LN_ASSETFILE("ImageEffect/Expects/ImageEffect-Bloom-1.png"));
+	Engine::mainViewport()->removeImageEffect(bloomEffect);
 	LN_TEST_CLEAN_SCENE;
 }
 
