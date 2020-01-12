@@ -46,6 +46,7 @@ void BloomImageEffect::init()
 		materialH->setBlendMode(BlendMode::Normal);
 		materialH->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
 		materialH->setFloat(u"SIGMA", (float)kernelSizeArray[i]);
+		materialH->setVector(u"_Direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
 		m_separableBlurMaterialsH.add(materialH);
 
 		auto materialV = makeObject<Material>();
@@ -53,6 +54,7 @@ void BloomImageEffect::init()
 		materialV->setBlendMode(BlendMode::Normal);
 		materialV->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
 		materialV->setFloat(u"SIGMA", (float)kernelSizeArray[i]);
+		materialV->setVector(u"_Direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
 		m_separableBlurMaterialsV.add(materialV);
 	}
 
@@ -113,7 +115,7 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	for (int i = 0; i < MIPS; i++) {
 		m_separableBlurMaterialsH[i]->setMainTexture(inputRenderTarget);
 		//m_separableBlurMaterialsH[i]->setTexture(u"colorTexture", inputRenderTarget);
-		m_separableBlurMaterialsH[i]->setVector(u"_Direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
+		//m_separableBlurMaterialsH[i]->setVector(u"_Direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
 		//context->clear();
 		//if (i == 1) {//0) {//
 		//	context->blit(m_separableBlurMaterialsH[i], destination);
@@ -126,7 +128,7 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 
 		m_separableBlurMaterialsV[i]->setMainTexture(m_renderTargetsHorizontal[i]);
 		//m_separableBlurMaterialsV[i]->setTexture(u"colorTexture", m_renderTargetsHorizontal[i]);
-		m_separableBlurMaterialsV[i]->setVector(u"_Direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
+		//m_separableBlurMaterialsV[i]->setVector(u"_Direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
 		//context->clear();
 
 		//if (i == MIPS - 1) {//0) {//
@@ -142,9 +144,9 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	// Composite All the mips
 	m_compositeMaterial->setMainTexture(source);
 	Vector4 bloomTintColors[] = { Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1) };
-	m_compositeMaterial->setFloat(u"bloomStrength", m_bloomStrength);
-	m_compositeMaterial->setFloat(u"bloomRadius", m_bloomRadius);
-	m_compositeMaterial->setVectorArray(u"bloomTintColors", bloomTintColors, MIPS);
+	m_compositeMaterial->setFloat(u"_BloomStrength", m_bloomStrength);
+	m_compositeMaterial->setFloat(u"_BloomRadius", m_bloomRadius);
+	m_compositeMaterial->setVectorArray(u"_BloomTintColors", bloomTintColors, MIPS);
 	//m_compositeMaterial->setBlendMode(BlendMode::Add);
 	//m_compositeMaterial->setBlendMode(BlendMode::Alpha);
 	//context->clear();
@@ -182,14 +184,14 @@ void BloomImageEffect::resetResources(int resx, int resy)
 
 	// Composite material
 	float bloomFactors[] = { 1.0, 0.8, 0.6, 0.4, 0.2 };
-	m_compositeMaterial->setTexture(u"blurTexture1", m_renderTargetsVertical[0]);
-	m_compositeMaterial->setTexture(u"blurTexture2", m_renderTargetsVertical[1]);
-	m_compositeMaterial->setTexture(u"blurTexture3", m_renderTargetsVertical[2]);
-	m_compositeMaterial->setTexture(u"blurTexture4", m_renderTargetsVertical[3]);
-	m_compositeMaterial->setTexture(u"blurTexture5", m_renderTargetsVertical[4]);
+	m_compositeMaterial->setTexture(u"_BlurTexture1", m_renderTargetsVertical[0]);
+	m_compositeMaterial->setTexture(u"_BlurTexture2", m_renderTargetsVertical[1]);
+	m_compositeMaterial->setTexture(u"_BlurTexture3", m_renderTargetsVertical[2]);
+	m_compositeMaterial->setTexture(u"_BlurTexture4", m_renderTargetsVertical[3]);
+	m_compositeMaterial->setTexture(u"_BlurTexture5", m_renderTargetsVertical[4]);
 	//m_compositeMaterial->setFloat(u"bloomStrength", strength);
 	//m_compositeMaterial->setFloat(u"bloomRadius", 0.1);
-	m_compositeMaterial->setFloatArray(u"bloomFactors", bloomFactors, MIPS);
+	m_compositeMaterial->setFloatArray(u"_BloomFactors", bloomFactors, MIPS);
 	//m_compositeMaterial->setVectorArray(u"bloomTintColors", bloomTintColors, MIPS);
 
 	m_viewWidth = resx;

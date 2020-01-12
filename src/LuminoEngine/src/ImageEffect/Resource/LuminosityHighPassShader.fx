@@ -52,7 +52,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
 }
 
 //==============================================================================
-// technique
+// Technique
 
 technique Forward_Geometry_UnLighting
 {

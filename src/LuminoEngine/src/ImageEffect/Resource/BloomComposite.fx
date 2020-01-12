@@ -1,49 +1,72 @@
 
-
 #include <Lumino.fxh>
 
 #define NUM_MIPS 5
 
-sampler2D blurTexture1;
-sampler2D blurTexture2;
-sampler2D blurTexture3;
-sampler2D blurTexture4;
-sampler2D blurTexture5;
-sampler2D dirtTexture;
-float bloomStrength;
-float bloomRadius;
-float bloomFactors[NUM_MIPS];
-float3 bloomTintColors[NUM_MIPS];
+//==============================================================================
+// Uniforms
 
-LN_VSOutput_Common VS_Main(LN_VSInput input)
+sampler2D _BlurTexture1;
+sampler2D _BlurTexture2;
+sampler2D _BlurTexture3;
+sampler2D _BlurTexture4;
+sampler2D _BlurTexture5;
+float _BloomStrength;
+float _BloomRadius;
+float _BloomFactors[NUM_MIPS];
+float3 _BloomTintColors[NUM_MIPS];
+
+//==============================================================================
+// Vertex shader
+
+struct VS_Input
 {
-	LN_VSOutput_Common output = LN_ProcessVertex_Common(input);
-	output.svPos = float4(input.Pos, 1.0f);
-	return output;
+    float3 Pos : POSITION;
+    float2 UV : TEXCOORD0;
+};
+
+struct VS_Output
+{
+    float4 Pos : SV_POSITION;
+    float2 UV : TEXCOORD0;
+};
+
+VS_Output VS_Main(LN_VSInput input)
+{
+    VS_Output output;
+    output.Pos = float4(input.Pos, 1.0);
+    output.UV = input.UV;
+    return output;
 }
 
-float lerpBloomFactor(float factor)
+//==============================================================================
+// Pixel shader
+
+struct PS_Input
 {
-	float mirrorFactor = 1.2 - factor;
-	return lerp(factor, mirrorFactor, bloomRadius);
+    float2 UV : TEXCOORD0;
+};
+
+float LerpBloomFactor(float factor)
+{
+    float mirrorFactor = 1.2 - factor;
+    return lerp(factor, mirrorFactor, _BloomRadius);
 }
 
-float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
+float4 PS_Main(PS_Input input) : SV_TARGET
 {
-	float4 result = tex2D( ln_MaterialTexture, input.UV );
-
-	float4 c = bloomStrength * ( lerpBloomFactor(bloomFactors[0]) * float4(bloomTintColors[0], 1.0) * tex2D(blurTexture1, input.UV) +
-													 lerpBloomFactor(bloomFactors[1]) * float4(bloomTintColors[1], 1.0) * tex2D(blurTexture2, input.UV) +
-													 lerpBloomFactor(bloomFactors[2]) * float4(bloomTintColors[2], 1.0) * tex2D(blurTexture3, input.UV) +
-													 lerpBloomFactor(bloomFactors[3]) * float4(bloomTintColors[3], 1.0) * tex2D(blurTexture4, input.UV) +
-													 lerpBloomFactor(bloomFactors[4]) * float4(bloomTintColors[4], 1.0) * tex2D(blurTexture5, input.UV) );
-	//return c;
-
-	result.rgb += (c.rgb * c.r);
-	//c.a = 0.5;
-	return result;
-	//return float4(c.a, 0, 0, 1);
+    float4 result = tex2D(ln_MaterialTexture, input.UV);
+    float4 col = _BloomStrength * ( LerpBloomFactor(_BloomFactors[0]) * float4(_BloomTintColors[0], 1.0) * tex2D(_BlurTexture1, input.UV) +
+                                    LerpBloomFactor(_BloomFactors[1]) * float4(_BloomTintColors[1], 1.0) * tex2D(_BlurTexture2, input.UV) +
+                                    LerpBloomFactor(_BloomFactors[2]) * float4(_BloomTintColors[2], 1.0) * tex2D(_BlurTexture3, input.UV) +
+                                    LerpBloomFactor(_BloomFactors[3]) * float4(_BloomTintColors[3], 1.0) * tex2D(_BlurTexture4, input.UV) +
+                                    LerpBloomFactor(_BloomFactors[4]) * float4(_BloomTintColors[4], 1.0) * tex2D(_BlurTexture5, input.UV) );
+    result.rgb += (col.rgb * col.a);
+    return result;
 }
+
+//==============================================================================
+// Technique
 
 technique Forward_Geometry_UnLighting
 {
@@ -53,5 +76,3 @@ technique Forward_Geometry_UnLighting
         PixelShader = PS_Main;
     }
 }
-
-

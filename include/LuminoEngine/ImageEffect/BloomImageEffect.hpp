@@ -46,7 +46,6 @@ private:
 
 	int m_viewWidth;
 	int m_viewHeight;
-
 };
 
 } // namespace ln

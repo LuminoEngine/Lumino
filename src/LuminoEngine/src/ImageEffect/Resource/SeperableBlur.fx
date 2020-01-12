@@ -43,29 +43,29 @@ struct PS_Input
 
 float Gaussian(float x, float sigma)
 {
-	return 0.39894 * exp(-0.5 * x * x / (sigma * sigma)) / sigma;
+    return 0.39894 * exp(-0.5 * x * x / (sigma * sigma)) / sigma;
 }
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-	float2 invSize = 1.0 / _TexSize;
-	float fSigma = float(SIGMA);
-	float weightSum = Gaussian(0.0, fSigma);
-	float3 diffuseSum = tex2D(ln_MaterialTexture, input.UV).rgb * weightSum;
-	for( int i = 1; i < KERNEL_RADIUS; i ++ ) {
-		float x = float(i);
-		float w = Gaussian(x, fSigma);
-		float2 uvOffset = _Direction * invSize * x;
-		float3 sample1 = tex2D(ln_MaterialTexture, input.UV + uvOffset).rgb;
-		float3 sample2 = tex2D(ln_MaterialTexture, input.UV - uvOffset).rgb;
-		diffuseSum += (sample1 + sample2) * w;
-		weightSum += 2.0 * w;
-	}
-	return float4(diffuseSum / weightSum, 1.0);
+    float2 invSize = 1.0 / _TexSize;
+    float fSigma = float(SIGMA);
+    float weightSum = Gaussian(0.0, fSigma);
+    float3 diffuseSum = tex2D(ln_MaterialTexture, input.UV).rgb * weightSum;
+    for( int i = 1; i < KERNEL_RADIUS; i ++ ) {
+        float x = float(i);
+        float w = Gaussian(x, fSigma);
+        float2 uvOffset = _Direction * invSize * x;
+        float3 sample1 = tex2D(ln_MaterialTexture, input.UV + uvOffset).rgb;
+        float3 sample2 = tex2D(ln_MaterialTexture, input.UV - uvOffset).rgb;
+        diffuseSum += (sample1 + sample2) * w;
+        weightSum += 2.0 * w;
+    }
+    return float4(diffuseSum / weightSum, 1.0);
 }
 
 //==============================================================================
-// technique
+// Technique
 
 technique Forward_Geometry_UnLighting
 {
