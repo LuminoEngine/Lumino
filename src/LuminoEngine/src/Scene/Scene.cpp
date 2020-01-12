@@ -33,8 +33,12 @@ Scene::Scene()
 	, m_rootWorldObjectList(makeList<Ref<WorldObject>>())
 	, m_initialUpdate(true)
 {
-	m_sceneGlobalRenderParams.fogColor = Color::Gray;
-	m_sceneGlobalRenderParams.fogDensity = 1.0f / 10.0f;
+	m_sceneGlobalRenderParams.lowerHeight = -100.0f;
+	m_sceneGlobalRenderParams.upperHeight = 10.0f;
+	m_sceneGlobalRenderParams.startDistance = 20.0f;
+	m_sceneGlobalRenderParams.fogColor = Color(0.686, 0.678, 0.666);//Color::White;
+	m_sceneGlobalRenderParams.fogDensity = 1.0f / 50.0f;
+	m_sceneGlobalRenderParams.heightFogDensity = 1.0f / 10.0f;
 }
 
 Scene::~Scene()

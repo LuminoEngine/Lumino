@@ -425,8 +425,11 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* s
     if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
 
 	if (const auto* params = sceneGlobalParams()) {
-		v = ssm->getParameterBySemantics(BuiltinSemantics::FogParams);
+		v = ssm->getParameterBySemantics(BuiltinSemantics::FogColorAndDensity);
 		if (v) v->setVector(Vector4(params->fogColor.rgb() * params->fogColor.a, params->fogDensity));
+		
+		v = ssm->getParameterBySemantics(BuiltinSemantics::FogParams);
+		if (v) v->setVector(Vector4(params->startDistance, params->lowerHeight, params->upperHeight, params->heightFogDensity));
 	}
 
 #else

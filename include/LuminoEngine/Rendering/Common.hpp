@@ -311,8 +311,12 @@ struct SceneGlobalRenderParams
 	//Color ambientSkyColor;
 	//Color ambientGroundColor;
 
+	float lowerHeight;
+	float upperHeight;
+	float startDistance;
 	Color fogColor;
 	float fogDensity = 0.0f;
+	float heightFogDensity = 0.0f;
 };
 
 } // namespace detail

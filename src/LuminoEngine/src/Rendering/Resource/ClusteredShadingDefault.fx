@@ -15,9 +15,15 @@
 float4	ln_AmbientColor;
 float4	ln_AmbientSkyColor;
 float4	ln_AmbientGroundColor;
+float4	ln_FogColorAndDensity;
+
+// .x : Start distance (distance from camera)
+// .y : Lower height
+// .z : Upper height
+// .w : Height fog Density
 float4	ln_FogParams;
 
-
+float3 ln_CameraPosition;
 
 
 float _LN_CalcFogFactor(float depth)
@@ -28,13 +34,19 @@ float _LN_CalcFogFactor(float depth)
 }
 
 
+float smoothstep(float a, float b, float x)
+{
+  float t = saturate((x - a)/(b - a));
+  return t * t * (3.0 - (2.0 * t));
+}
+
 // return: fog density (0.0~)
 float _LN_CalcFogFactor2(float depth, float samplePointY)
 {
-	float lower = -30.0;
-	float upper = 0.0;
-	float lengthH = 5.0;	// 水平方向、どのあたりから Fog を生成するか
-	float fogDensity = 1.0 / 10.0;// 1.0;	// Fog の濃さ。1.0 の場合、2^(x*1.0) で、座標1進むと完全に Fog になる。
+	float lower = ln_FogParams.y;//-30.0;
+	float upper = ln_FogParams.z;//100.0;
+	float lengthH = ln_FogParams.x;//5.0;	// 水平方向、どのあたりから Fog を生成するか
+	float fogDensity = ln_FogColorAndDensity.a;//1.0 / 10.0;// 1.0;	// Fog の濃さ。1.0 の場合、2^(x*1.0) で、座標1進むと完全に Fog になる。
 								// 0.5 だと座標2、0.25だと座標4という具合に、逆数で入力すると距離を測ることができる。
 
 	// g(x)=-2^(x*x)+2
@@ -46,7 +58,7 @@ float _LN_CalcFogFactor2(float depth, float samplePointY)
 	//float d = 1.0 - (abs(samplePointY - center) / halfVolumeHeight);	// Fog volume 外側境界からどれだけ離れているか (0.0:上端または下端, 1.0:中央 1.0~)
 	float d = (halfVolumeHeight - abs(samplePointY - center));// / lengthH;
 	//d = saturate(d);
-	float densityV = exp2(d * fogDensity) - 1.0;
+	float densityV = exp2(d * ln_FogParams.w) - 1.0;
 	//return saturate(densityV);
 
 	// h(x)=2^((x+2)*0.5)
@@ -55,7 +67,19 @@ float _LN_CalcFogFactor2(float depth, float samplePointY)
 	
 	float densityH = exp2(f * fogDensity) - 1.0;
 
-	return saturate(densityH * densityV);
+	// Input-density が小さいと境界が少し不自然に明るくなるが、ほとんどのケースでは問題ないのでこのままとする。
+	// TODO: 何かいい補完方法思いついたら修正するかも。
+	return saturate(densityH) * saturate(densityV);
+
+	//float mu = saturate(densityH * densityV);
+	//return saturate(mu * saturate(densityV));
+
+	//return saturate(max(densityH, 0.0) * densityV);
+	//return saturate(smoothstep(0.1, 0.9, densityH) * densityV);
+	//return lerp(saturate(densityH * densityV), densityV, saturate(densityH));
+	//return saturate(densityH * densityV);
+
+	
 	//return saturate(densityH) * saturate(densityV);
 
 	//return saturate(densityH);
@@ -81,6 +105,7 @@ float4 _LN_PS_ClusteredForward_Default(
 	float3 vertexPos,
 	LN_SurfaceOutput surface)
 {
+	// ビュー平面からの水平距離。視点からの距離ではないので注意
 	float4 viewPos = mul(float4(worldPos, 1.0f), ln_View);
 	
 	// 頂点位置から視点位置へのベクトル
@@ -128,11 +153,15 @@ float4 _LN_PS_ClusteredForward_Default(
     //outgoingLight *= LN_CalculateShadow(posInLight);
 	
 	// Fog
+	float viewLength = length(ln_CameraPosition - worldPos);
 	//result.rgb = lerp(ln_FogParams.rgb, result.rgb, _LN_CalcFogFactor(viewPos.z));
 	//result.rgb = lerp(result.rgb, ln_FogParams.rgb, _LN_CalcFogFactor2(viewPos.z, worldPos.y));
-	result.rgb = lerp(result.rgb, ln_FogParams.rgb, _LN_CalcFogFactor2(length(worldPos), worldPos.y));
-	
+	result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(viewLength, worldPos.y));
+	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(length(worldPos), worldPos.y));
 
+	//result.r = _LN_CalcFogFactor2(viewLength, worldPos.y);
+	//result.g = 0;
+	//result.b = 0;
 	return float4(result.rgb, opacity);
 	
 	
@@ -291,7 +320,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
 	o.color0.a = surface.Albedo.a;
 	//o.color0 = float4(1, 0, 0, 1);
-	o.color0 = LN_GetBuiltinEffectColor(o.color0);
+	//o.color0 = LN_GetBuiltinEffectColor(o.color0);
 	
 	return o;
 }

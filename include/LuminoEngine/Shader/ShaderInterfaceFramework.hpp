@@ -75,6 +75,7 @@ enum class BuiltinSemantics
     NearClip2,
     FarClip2,
     CameraPosition2,
+	FogColorAndDensity,
     FogParams,
 
     _Count,

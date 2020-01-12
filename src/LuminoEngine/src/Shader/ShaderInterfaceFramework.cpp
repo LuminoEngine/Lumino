@@ -100,7 +100,8 @@ static BuiltinSemanticsNamePair g_builtinSemanticsNamePairMap[] =
         {_LT("ln_nearClip"), BuiltinSemantics::NearClip2},
         {_LT("ln_farClip"), BuiltinSemantics::FarClip2},
         {_LT("ln_cameraPos"), BuiltinSemantics::CameraPosition2},
-        {_LT("ln_FogParams"), BuiltinSemantics::FogParams},
+		{_LT("ln_FogColorAndDensity"), BuiltinSemantics::FogColorAndDensity},
+		{_LT("ln_FogParams"), BuiltinSemantics::FogParams},
 };
 
 ShaderSemanticsManager::ShaderSemanticsManager()
