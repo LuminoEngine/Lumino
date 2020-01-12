@@ -125,6 +125,34 @@ void RenderingManager::init(const Settings& settings)
     }
 #endif
 
+	// LuminosityHighPassShader
+	{
+		const unsigned char data[] =
+		{
+#include "../ImageEffect/Resource/LuminosityHighPassShader.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = makeObject<Shader>(u"LuminosityHighPassShader", &stream);
+	}
+	// SeperableBlur
+	{
+		const unsigned char data[] =
+		{
+#include "../ImageEffect/Resource/SeperableBlur.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::SeperableBlur] = makeObject<Shader>(u"SeperableBlur", &stream);
+	}
+	// BloomComposite
+	{
+		const unsigned char data[] =
+		{
+#include "../ImageEffect/Resource/BloomComposite.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject<Shader>(u"BloomComposite", &stream);
+	}
+
     //#if 0
     //	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
     //	m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");

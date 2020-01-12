@@ -5,6 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/ImageEffect/BloomImageEffect.hpp>
+#include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
 
@@ -32,13 +33,14 @@ BloomImageEffect::BloomImageEffect()
 void BloomImageEffect::init()
 {
     ImageEffect::init();
+	const auto* manager = detail::EngineDomain::renderingManager();
 
-    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/LuminosityHighPassShader.fx");
+	auto luminosityHighPassShader = manager->builtinShader(detail::BuiltinShader::LuminosityHighPassShader);
 	m_materialHighPassFilter = makeObject<Material>();
-	m_materialHighPassFilter->setShader(shader);
+	m_materialHighPassFilter->setShader(luminosityHighPassShader);
 	m_materialHighPassFilter->setBlendMode(BlendMode::Normal);
 
-	auto separableBlurShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SeperableBlur.fx");
+	auto separableBlurShader = manager->builtinShader(detail::BuiltinShader::SeperableBlur);
 	int kernelSizeArray[] = { 3, 5, 8, 13, 21 };
 	for (int i = 0; i < MIPS; i++) {
 		auto materialH = makeObject<Material>();
@@ -58,10 +60,10 @@ void BloomImageEffect::init()
 		m_separableBlurMaterialsV.add(materialV);
 	}
 
-	auto bloomImageEffectShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/BloomComposite.fx");
+	auto bloomCompositeShader = manager->builtinShader(detail::BuiltinShader::BloomComposite);
 	m_compositeMaterial = makeObject<Material>();
 	m_compositeMaterial->setBlendMode(BlendMode::Normal);
-	m_compositeMaterial->setShader(bloomImageEffectShader);
+	m_compositeMaterial->setShader(bloomCompositeShader);
 
 	m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 }
@@ -106,7 +108,6 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 		m_materialHighPassFilter->setFloat(u"_SmoothWidth", 0.01);
 
 		m_materialHighPassFilter->setMainTexture(source);
-		//context->clear();
 		context->blit(m_materialHighPassFilter, m_renderTargetBright);
 	}
 
@@ -114,29 +115,10 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	RenderTargetTexture* inputRenderTarget = m_renderTargetBright;
 	for (int i = 0; i < MIPS; i++) {
 		m_separableBlurMaterialsH[i]->setMainTexture(inputRenderTarget);
-		//m_separableBlurMaterialsH[i]->setTexture(u"colorTexture", inputRenderTarget);
-		//m_separableBlurMaterialsH[i]->setVector(u"_Direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
-		//context->clear();
-		//if (i == 1) {//0) {//
-		//	context->blit(m_separableBlurMaterialsH[i], destination);
-		//	return;
-		//}
-		//else
-			context->blit(m_separableBlurMaterialsH[i], m_renderTargetsHorizontal[i]);
-		//context->blit(m_separableBlurMaterialsH[i], destination);
-		//return;
+		context->blit(m_separableBlurMaterialsH[i], m_renderTargetsHorizontal[i]);
 
 		m_separableBlurMaterialsV[i]->setMainTexture(m_renderTargetsHorizontal[i]);
-		//m_separableBlurMaterialsV[i]->setTexture(u"colorTexture", m_renderTargetsHorizontal[i]);
-		//m_separableBlurMaterialsV[i]->setVector(u"_Direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
-		//context->clear();
-
-		//if (i == MIPS - 1) {//0) {//
-		//	context->blit(m_separableBlurMaterialsV[i], destination);
-		//	return;
-		//}
-		//else
-			context->blit(m_separableBlurMaterialsV[i], m_renderTargetsVertical[i]);
+		context->blit(m_separableBlurMaterialsV[i], m_renderTargetsVertical[i]);
 
 		inputRenderTarget = m_renderTargetsVertical[i];
 	}
@@ -147,9 +129,6 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	m_compositeMaterial->setFloat(u"_BloomStrength", m_bloomStrength);
 	m_compositeMaterial->setFloat(u"_BloomRadius", m_bloomRadius);
 	m_compositeMaterial->setVectorArray(u"_BloomTintColors", bloomTintColors, MIPS);
-	//m_compositeMaterial->setBlendMode(BlendMode::Add);
-	//m_compositeMaterial->setBlendMode(BlendMode::Alpha);
-	//context->clear();
 	context->blit(m_compositeMaterial, destination);
 }
 
@@ -160,8 +139,6 @@ void BloomImageEffect::resetResources(int resx, int resy)
 
 	m_renderTargetBright = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
 	m_renderTargetBright->setSamplerState(m_samplerState);
-	
-	//printf("  m_renderTargetBright = %p\n", m_renderTargetBright.get());
 
 	// Create render targets for down sampling.
 	auto rx = std::round(resx / 2);
@@ -170,17 +147,14 @@ void BloomImageEffect::resetResources(int resx, int resy)
 		auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
 		renderTargetHorizonal->setSamplerState(m_samplerState);
 		m_renderTargetsHorizontal.add(renderTargetHorizonal);
-		//printf("  m_renderTargetsHorizontal[%d] = %p\n", i, renderTargetHorizonal.get());
 
 		auto renderTargetVertical = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
 		renderTargetVertical->setSamplerState(m_samplerState);
 		m_renderTargetsVertical.add(renderTargetVertical);
-		//printf("  m_renderTargetsVertical[%d] = %p\n", i, renderTargetVertical.get());
 
 		rx = std::round(resx / 2);
 		ry = std::round(resy / 2);
 	}
-
 
 	// Composite material
 	float bloomFactors[] = { 1.0, 0.8, 0.6, 0.4, 0.2 };
@@ -189,10 +163,7 @@ void BloomImageEffect::resetResources(int resx, int resy)
 	m_compositeMaterial->setTexture(u"_BlurTexture3", m_renderTargetsVertical[2]);
 	m_compositeMaterial->setTexture(u"_BlurTexture4", m_renderTargetsVertical[3]);
 	m_compositeMaterial->setTexture(u"_BlurTexture5", m_renderTargetsVertical[4]);
-	//m_compositeMaterial->setFloat(u"bloomStrength", strength);
-	//m_compositeMaterial->setFloat(u"bloomRadius", 0.1);
 	m_compositeMaterial->setFloatArray(u"_BloomFactors", bloomFactors, MIPS);
-	//m_compositeMaterial->setVectorArray(u"bloomTintColors", bloomTintColors, MIPS);
 
 	m_viewWidth = resx;
 	m_viewHeight = resy;
