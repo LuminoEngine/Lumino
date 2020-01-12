@@ -5,8 +5,6 @@
 #define KERNEL_RADIUS 4
 #define SIGMA 0.35//0.125, 0.215, 0.35, 0.446, 0.526, 0.582
 
-float4 _Tone;
-
 sampler2D colorTexture;
 float2 texSize;
 float2 direction;
@@ -25,6 +23,7 @@ float gaussian(float x, float sigma)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
+	return tex2D(colorTexture, input.UV);
 	float2 invSize = 1.0 / texSize;
 	float fSigma = float(SIGMA);
 	float weightSum = gaussian(0.0, fSigma);

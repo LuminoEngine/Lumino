@@ -40,7 +40,9 @@ public:
 
 	void setInt(const StringRef& name, int value);
 	void setFloat(const StringRef& name, float value);
+	void setFloatArray(const StringRef& name, const float* values, int length);
 	void setVector(const StringRef& name, const Vector4& value);
+	void setVectorArray(const StringRef& name, const Vector4* values, int length);
 	void setMatrix(const StringRef& name, const Matrix& value);
 	void setTexture(const StringRef& name, Texture* value);
 	void setColor(const StringRef& name, const Color& value);

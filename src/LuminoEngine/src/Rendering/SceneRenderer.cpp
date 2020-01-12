@@ -221,6 +221,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
 
 	// Create batch list.
+	printf("Create batch list.\n");
 	{
 		RenderPass* currentRenderPass = pass->renderPass();
 		assert(currentRenderPass);
@@ -235,6 +236,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			bool submitRequested = false;
 			RenderStage* stage = element->stage();
 			assert(stage->renderFeature);
+
+
+			printf("  element:%p, RT[0]:%p\n", element, stage->frameBufferStageParameters->m_renderTargets[0].get());
 			
 			if (!stage->renderFeature->drawElementTransformNegate()) {
 				// バッチ機能を持たない RenderFeature であるので、毎回 flush する。
@@ -317,6 +321,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				submittedBatch->setFinalMaterial(currentFinalMaterial);
 				submittedBatch->setSubsetInfo(currentSubsetInfo);
 				submittedBatch->setRenderPass(submittedBatch->ensureRenderPassOutside ? nullptr : currentRenderPass);
+				printf("    submittedBatch:%p renderPass:%p RT[0]:%p\n", submittedBatch, currentRenderPass, currentRenderPass->renderTarget(0));
 			}
 
 			if (submitRequested) {
@@ -342,12 +347,15 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	}
 
 	// Render batch-list.
+	printf("Render batch-list.\n");
 	{
 		RenderPass* currentRenderPass = nullptr;
 		const RenderStage* currentStage = nullptr;
 		RenderFeatureBatch* batch = m_renderFeatureBatchList.firstBatch();
 		while (batch)
 		{
+			//printf("  ---- %p\n", batch);
+
 			if (currentRenderPass != batch->renderPass()) {
 				if (currentRenderPass) {
 					graphicsContext->endRenderPass();
@@ -356,7 +364,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
                 if (currentRenderPass) {
                     graphicsContext->beginRenderPass(currentRenderPass);
                 }
+				printf("  currentRenderPass %p\n", currentRenderPass);
 			}
+			printf("  batch:%p RT[0]:%p\n", batch, currentRenderPass->renderTarget(0));
 
 			const RenderStage* stage = batch->stage();
 			const AbstractMaterial* finalMaterial = batch->finalMaterial();

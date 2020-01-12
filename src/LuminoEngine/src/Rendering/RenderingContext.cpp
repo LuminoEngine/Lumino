@@ -374,6 +374,8 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 		m_builder->blitRenderFeatureStageParameters());
 	element->targetPhase = RendringPhase::ImageEffect;
 
+	printf("  Push blit element:%p, destination:%p\n", element, destination);
+
     if (destination)
     {
         setRenderTarget(0, oldTarget);

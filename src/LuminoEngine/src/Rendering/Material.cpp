@@ -53,10 +53,22 @@ void AbstractMaterial::setFloat(const StringRef& name, float value)
 	param->setFloat(value);
 }
 
+void AbstractMaterial::setFloatArray(const StringRef& name, const float* values, int length)
+{
+	detail::ShaderParameterValue* param = getValue(name);
+	param->setFloatArray(values, length);
+}
+
 void AbstractMaterial::setVector(const StringRef& name, const Vector4& value)
 {
     detail::ShaderParameterValue* param = getValue(name);
     param->setVector(value);
+}
+
+void AbstractMaterial::setVectorArray(const StringRef& name, const Vector4* values, int length)
+{
+	detail::ShaderParameterValue* param = getValue(name);
+	param->setVectorArray(values, length);
 }
 
 void AbstractMaterial::setMatrix(const StringRef& name, const Matrix& value)
@@ -67,7 +79,8 @@ void AbstractMaterial::setMatrix(const StringRef& name, const Matrix& value)
 
 void AbstractMaterial::setTexture(const StringRef& name, Texture* value)
 {
-	LN_NOTIMPLEMENTED();
+	detail::ShaderParameterValue* param = getValue(name);
+	param->setTexture(value);
 }
 
 void AbstractMaterial::setColor(const StringRef& name, const Color& value)

@@ -237,6 +237,7 @@ public:
     static ICommandList* commitState(GraphicsContext* self) { return self->commitState(); }
     static void enterRenderState(GraphicsContext* self) { self->enterRenderState(); }
     static void leaveRenderState(GraphicsContext* self) { self->leaveRenderState(); }
+	static const Ref<RenderPass>& currentRenderPass(GraphicsContext* self) { return self->m_currentRenderPass; }
 };
 }
 } // namespace ln
