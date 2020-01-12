@@ -21,9 +21,9 @@ Ref<BloomImageEffect> BloomImageEffect::create()
 }
 
 BloomImageEffect::BloomImageEffect()
-	: m_luminosityThreshold(0.95f)
-	, m_strength(1.5f)//(1.0f)//(0.1f)//
-	, m_bloomRadius(0.4f)//(0.1f)//
+	: m_luminosityThreshold(0.9f)
+	, m_bloomStrength(1.0f)//(1.0f)//(0.1f)//
+	, m_bloomRadius(1.0f)//(0.1f)//
 	, m_viewWidth(0)
 	, m_viewHeight(0)
 {
@@ -39,7 +39,7 @@ void BloomImageEffect::init()
 	m_materialHighPassFilter->setBlendMode(BlendMode::Normal);
 
 	auto separableBlurShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SeperableBlur.fx");
-	int kernelSizeArray[] = { 3, 5, 7, 9, 11 };
+	int kernelSizeArray[] = { 3, 5, 8, 13, 21 };
 	for (int i = 0; i < MIPS; i++) {
 		auto materialH = makeObject<Material>();
 		materialH->setShader(separableBlurShader);
@@ -62,6 +62,21 @@ void BloomImageEffect::init()
 	m_compositeMaterial->setShader(bloomImageEffectShader);
 
 	m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+}
+
+void BloomImageEffect::setThreshold(float value)
+{
+	m_luminosityThreshold = value;
+}
+
+void BloomImageEffect::setStrength(float value)
+{
+	m_bloomStrength = value;
+}
+
+void BloomImageEffect::setSize(float value)
+{
+	m_bloomRadius = value;
 }
 
 void BloomImageEffect::onUpdateFrame(float elapsedSeconds)
@@ -126,7 +141,7 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	// Composite All the mips
 	m_compositeMaterial->setMainTexture(source);
 	Vector4 bloomTintColors[] = { Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1) };
-	m_compositeMaterial->setFloat(u"bloomStrength", m_strength);
+	m_compositeMaterial->setFloat(u"bloomStrength", m_bloomStrength);
 	m_compositeMaterial->setFloat(u"bloomRadius", m_bloomRadius);
 	m_compositeMaterial->setVectorArray(u"bloomTintColors", bloomTintColors, MIPS);
 	//m_compositeMaterial->setBlendMode(BlendMode::Add);

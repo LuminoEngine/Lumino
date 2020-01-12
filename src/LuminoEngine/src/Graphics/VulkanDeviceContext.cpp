@@ -1661,6 +1661,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 
 	std::array<VkSubpassDependency, 2> dependencies;
 
+	// この RenderPass より前の RenderPass で内容が作られることを示す
 	dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependencies[0].dstSubpass = 0;
 	dependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
@@ -1669,6 +1670,7 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
+	// この RenderPass の後の RenderPass で内容が参照されることを示す
 	dependencies[1].srcSubpass = 0;
 	dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
 	dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
