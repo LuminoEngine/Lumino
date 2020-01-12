@@ -362,6 +362,8 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
         setRenderTarget(0, destination);
     }
 
+	//clear();
+
 	m_builder->setMaterial(source);
 
 	m_builder->advanceFence();

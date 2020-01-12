@@ -16,6 +16,15 @@ ShaderParameterValue::ShaderParameterValue()
 {
 }
 
+ShaderParameterValue::~ShaderParameterValue()
+{
+	if (m_type == ShaderVariableType::Texture) {
+		if (m_data.texture) {
+			RefObjectHelper::release(m_data.texture);
+		}
+	}
+}
+
 void ShaderParameterValue::reset(ShaderVariableType type, int elements)
 {
     switch (type) {

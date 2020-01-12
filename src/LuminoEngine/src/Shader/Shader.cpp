@@ -4,6 +4,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
+#include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Shader/Shader.hpp>
 #include "../Graphics/GraphicsDeviceContext.hpp"
 #include "../Graphics/GraphicsManager.hpp"
@@ -820,6 +821,18 @@ void ShaderPass::commitContantBuffers(GraphicsContext* graphicsContext, bool* ou
 			Texture* texture = m_textureParameters[i]->texture();
 
 			if (texture) {
+#ifdef LN_DEBUG	// 検証。描画先とサンプラに同時に同じテクスチャは使えない
+				{
+					const auto& renderPass = detail::GraphicsContextInternal::currentRenderPass(graphicsContext);
+					for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
+						if (renderPass->renderTarget(i) == texture) {
+							LN_ERROR();
+							return;
+						}
+					}
+				}
+#endif
+
 #if 1
 				SamplerState* sampler = nullptr;
 				if (texture && texture->samplerState()) {
