@@ -30,11 +30,19 @@ float lerpBloomFactor(float factor)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
-	return bloomStrength * ( lerpBloomFactor(bloomFactors[0]) * float4(bloomTintColors[0], 1.0) * tex2D(blurTexture1, input.UV) +
+	float4 result = tex2D( ln_MaterialTexture, input.UV );
+
+	float4 c = bloomStrength * ( lerpBloomFactor(bloomFactors[0]) * float4(bloomTintColors[0], 1.0) * tex2D(blurTexture1, input.UV) +
 													 lerpBloomFactor(bloomFactors[1]) * float4(bloomTintColors[1], 1.0) * tex2D(blurTexture2, input.UV) +
 													 lerpBloomFactor(bloomFactors[2]) * float4(bloomTintColors[2], 1.0) * tex2D(blurTexture3, input.UV) +
 													 lerpBloomFactor(bloomFactors[3]) * float4(bloomTintColors[3], 1.0) * tex2D(blurTexture4, input.UV) +
 													 lerpBloomFactor(bloomFactors[4]) * float4(bloomTintColors[4], 1.0) * tex2D(blurTexture5, input.UV) );
+	//return c;
+
+	result.rgb += (c.rgb * c.r);
+	//c.a = 0.5;
+	return result;
+	//return float4(c.a, 0, 0, 1);
 }
 
 technique Forward_Geometry_UnLighting

@@ -2,12 +2,15 @@
 
 #include <Lumino.fxh>
 
-#define KERNEL_RADIUS 4
-#define SIGMA 0.35//0.125, 0.215, 0.35, 0.446, 0.526, 0.582
+//#define KERNEL_RADIUS 4
+//#define SIGMA 4.0//0.35//0.125, 0.215, 0.35, 0.446, 0.526, 0.582
 
 sampler2D colorTexture;
 float2 texSize;
 float2 direction;
+
+int KERNEL_RADIUS;
+float SIGMA;
 
 LN_VSOutput_Common VS_Main(LN_VSInput input)
 {
@@ -23,7 +26,6 @@ float gaussian(float x, float sigma)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
-	return tex2D(colorTexture, input.UV);
 	float2 invSize = 1.0 / texSize;
 	float fSigma = float(SIGMA);
 	float weightSum = gaussian(0.0, fSigma);

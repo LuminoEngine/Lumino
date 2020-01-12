@@ -21,10 +21,13 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void resetResources(int resx, int resy);
 
+	float m_luminosityThreshold;
 	float m_strength;
+	float m_bloomRadius;
 
 	Ref<Material> m_materialHighPassFilter;
-	List<Ref<Material>> m_separableBlurMaterials;
+	List<Ref<Material>> m_separableBlurMaterialsH;
+	List<Ref<Material>> m_separableBlurMaterialsV;
 	Ref<Material> m_compositeMaterial;
 	Ref<SamplerState> m_samplerState;
 

@@ -44,7 +44,8 @@ Shader* AbstractMaterial::shader() const
 
 void AbstractMaterial::setInt(const StringRef& name, int value)
 {
-	LN_NOTIMPLEMENTED();
+	detail::ShaderParameterValue* param = getValue(name);
+	param->setInt(value);
 }
 
 void AbstractMaterial::setFloat(const StringRef& name, float value)

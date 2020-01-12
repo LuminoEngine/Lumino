@@ -21,7 +21,9 @@ Ref<BloomImageEffect> BloomImageEffect::create()
 }
 
 BloomImageEffect::BloomImageEffect()
-	: m_strength(1.0f)
+	: m_luminosityThreshold(0.95f)
+	, m_strength(1.5f)//(1.0f)//(0.1f)//
+	, m_bloomRadius(0.4f)//(0.1f)//
 	, m_viewWidth(0)
 	, m_viewHeight(0)
 {
@@ -34,19 +36,32 @@ void BloomImageEffect::init()
     auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/LuminosityHighPassShader.fx");
 	m_materialHighPassFilter = makeObject<Material>();
 	m_materialHighPassFilter->setShader(shader);
+	m_materialHighPassFilter->setBlendMode(BlendMode::Normal);
 
 	auto separableBlurShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SeperableBlur.fx");
+	int kernelSizeArray[] = { 3, 5, 7, 9, 11 };
 	for (int i = 0; i < MIPS; i++) {
-		auto material = makeObject<Material>();
-		material->setShader(separableBlurShader);
-		m_separableBlurMaterials.add(material);
+		auto materialH = makeObject<Material>();
+		materialH->setShader(separableBlurShader);
+		materialH->setBlendMode(BlendMode::Normal);
+		materialH->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
+		materialH->setFloat(u"SIGMA", (float)kernelSizeArray[i]);
+		m_separableBlurMaterialsH.add(materialH);
+
+		auto materialV = makeObject<Material>();
+		materialV->setShader(separableBlurShader);
+		materialV->setBlendMode(BlendMode::Normal);
+		materialV->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
+		materialV->setFloat(u"SIGMA", (float)kernelSizeArray[i]);
+		m_separableBlurMaterialsV.add(materialV);
 	}
 
 	auto bloomImageEffectShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/BloomImageEffect.fx");
 	m_compositeMaterial = makeObject<Material>();
+	m_compositeMaterial->setBlendMode(BlendMode::Normal);
 	m_compositeMaterial->setShader(bloomImageEffectShader);
 
-	m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear);
+	m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 }
 
 void BloomImageEffect::onUpdateFrame(float elapsedSeconds)
@@ -62,14 +77,15 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	}
 
 	for (int i = 0; i < MIPS; i++) {
-		m_separableBlurMaterials[i]->setVector(u"texSize", Vector4(resx, resy, 0.0f, 0.0f));
+		m_separableBlurMaterialsH[i]->setVector(u"texSize", Vector4(resx, resy, 0.0f, 0.0f));
+		m_separableBlurMaterialsV[i]->setVector(u"texSize", Vector4(resx, resy, 0.0f, 0.0f));
 	}
 
 	// Extract Bright Areas
 	{
 		m_materialHighPassFilter->setVector(u"defaultColor", Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 		m_materialHighPassFilter->setFloat(u"defaultOpacity", 0.0f);
-		m_materialHighPassFilter->setFloat(u"luminosityThreshold", 0.8f);
+		m_materialHighPassFilter->setFloat(u"luminosityThreshold", m_luminosityThreshold);
 		m_materialHighPassFilter->setFloat(u"smoothWidth", 0.01);
 
 		m_materialHighPassFilter->setMainTexture(source);
@@ -79,37 +95,42 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 
 	// Blur All the mips progressively
 	RenderTargetTexture* inputRenderTarget = m_renderTargetBright;
-	printf("  m_renderTargetBright = %p\n", m_renderTargetBright.get());
 	for (int i = 0; i < MIPS; i++) {
 		//m_separableBlurMaterials[i]->setMainTexture(inputRenderTarget);
-		m_separableBlurMaterials[i]->setTexture(u"colorTexture", inputRenderTarget);
-		m_separableBlurMaterials[i]->setVector(u"direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
+		m_separableBlurMaterialsH[i]->setTexture(u"colorTexture", inputRenderTarget);
+		m_separableBlurMaterialsH[i]->setVector(u"direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
 		//context->clear();
-		printf("  m_renderTargetsHorizontal[%d] = %p\n", i, m_renderTargetsHorizontal[i].get());
-		context->blit(m_separableBlurMaterials[i], m_renderTargetsHorizontal[i]);
-		//context->blit(m_separableBlurMaterials[i], destination);
+		//if (i == 1) {//0) {//
+		//	context->blit(m_separableBlurMaterialsH[i], destination);
+		//	return;
+		//}
+		//else
+			context->blit(m_separableBlurMaterialsH[i], m_renderTargetsHorizontal[i]);
+		//context->blit(m_separableBlurMaterialsH[i], destination);
 		//return;
 
-		m_separableBlurMaterials[i]->setTexture(u"colorTexture", m_renderTargetsHorizontal[i]);
-		m_separableBlurMaterials[i]->setVector(u"direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
+		m_separableBlurMaterialsV[i]->setTexture(u"colorTexture", m_renderTargetsHorizontal[i]);
+		m_separableBlurMaterialsV[i]->setVector(u"direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
 		//context->clear();
 
-		if (i == 0) {//MIPS - 1) {
-			printf("  destination = %p\n", destination);
-			context->blit(m_separableBlurMaterials[i], destination);
-			return;
-		}
-		else
-			context->blit(m_separableBlurMaterials[i], m_renderTargetsVertical[i]);
+		//if (i == MIPS - 1) {//0) {//
+		//	context->blit(m_separableBlurMaterialsV[i], destination);
+		//	return;
+		//}
+		//else
+			context->blit(m_separableBlurMaterialsV[i], m_renderTargetsVertical[i]);
 
 		inputRenderTarget = m_renderTargetsVertical[i];
 	}
 
 	// Composite All the mips
+	m_compositeMaterial->setMainTexture(source);
 	Vector4 bloomTintColors[] = { Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1) };
 	m_compositeMaterial->setFloat(u"bloomStrength", m_strength);
-	m_compositeMaterial->setFloat(u"bloomRadius", 0.1);
+	m_compositeMaterial->setFloat(u"bloomRadius", m_bloomRadius);
 	m_compositeMaterial->setVectorArray(u"bloomTintColors", bloomTintColors, MIPS);
+	//m_compositeMaterial->setBlendMode(BlendMode::Add);
+	//m_compositeMaterial->setBlendMode(BlendMode::Alpha);
 	//context->clear();
 	context->blit(m_compositeMaterial, destination);
 }
@@ -119,19 +140,21 @@ void BloomImageEffect::resetResources(int resx, int resy)
 	m_renderTargetsHorizontal.clear();
 	m_renderTargetsVertical.clear();
 
-	m_renderTargetBright = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8);
+	m_renderTargetBright = makeObject<RenderTargetTexture>(resx, resy, TextureFormat::RGBA8, false);
+	m_renderTargetBright->setSamplerState(m_samplerState);
+	
 	//printf("  m_renderTargetBright = %p\n", m_renderTargetBright.get());
 
 	// Create render targets for down sampling.
 	auto rx = std::round(resx / 2);
 	auto ry = std::round(resy / 2);
 	for (int i = 0; i < MIPS; i++) {
-		auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8);
+		auto renderTargetHorizonal = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
 		renderTargetHorizonal->setSamplerState(m_samplerState);
 		m_renderTargetsHorizontal.add(renderTargetHorizonal);
 		//printf("  m_renderTargetsHorizontal[%d] = %p\n", i, renderTargetHorizonal.get());
 
-		auto renderTargetVertical = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8);
+		auto renderTargetVertical = makeObject<RenderTargetTexture>(rx, ry, TextureFormat::RGBA8, false);
 		renderTargetVertical->setSamplerState(m_samplerState);
 		m_renderTargetsVertical.add(renderTargetVertical);
 		//printf("  m_renderTargetsVertical[%d] = %p\n", i, renderTargetVertical.get());
