@@ -31,6 +31,8 @@ class ShaderParameterValue
 {
 public:
     ShaderParameterValue();
+	~ShaderParameterValue();
+
 
     void reset(ShaderVariableType type, int elements);
 
