@@ -80,7 +80,8 @@ void SceneRenderer::render(
 	RenderTargetTexture* renderTarget,
     const ClearInfo& clearInfo,
     const CameraInfo& mainCameraInfo,
-    RendringPhase targetPhase)
+    RendringPhase targetPhase,
+	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
     graphicsContext->resetState();
 
@@ -89,6 +90,7 @@ void SceneRenderer::render(
     m_mainCameraInfo = mainCameraInfo;
     m_targetPhase = targetPhase;
     m_firstClearInfo = clearInfo;
+	m_sceneGlobalRenderParams = sceneGlobalParams;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();

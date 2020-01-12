@@ -8,11 +8,11 @@ class ClusteredShadingSceneRenderer;
 
 #if 1
 
-struct FogParams
-{
-	Color	color;
-	float	density = 0.0f;
-};
+//struct FogParams
+//{
+//	Color	color;
+//	float	density = 0.0f;
+//};
 
 class DepthPrepass
 	: public SceneRendererPass
@@ -118,7 +118,7 @@ public:
 	virtual ~ClusteredShadingSceneRenderer();
 	void init(RenderingManager* manager);
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
-	void setFogParams(const FogParams& params) { m_fogParams = params; }
+	//void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
 	const LightClusters& lightClusters() const { return m_lightClusters; }
 
@@ -133,7 +133,7 @@ protected:
 private:
 	LightClusters				m_lightClusters;
 	//SceneGlobalRenderSettings	m_renderSettings;
-	FogParams					m_fogParams;
+	//FogParams					m_fogParams;
 	Ref<DepthPrepass>			m_depthPrepass;
 };
 #endif

@@ -64,10 +64,13 @@ public:
 		RenderTargetTexture* renderTarget,
         const ClearInfo& clearInfo,
         const detail::CameraInfo& mainCameraInfo,
-        RendringPhase targetPhase);
+        RendringPhase targetPhase,
+		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
+	const detail::SceneGlobalRenderParams* sceneGlobalParams() const { return m_sceneGlobalRenderParams; }
     const detail::CameraInfo& mainCameraInfo() const { return m_mainCameraInfo; }
+
 
 protected:
 	SceneRenderer();
@@ -101,6 +104,8 @@ private:
 	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
+	const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
+
 	//const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
 	//Ref<AbstractMaterial> m_defaultMaterial;

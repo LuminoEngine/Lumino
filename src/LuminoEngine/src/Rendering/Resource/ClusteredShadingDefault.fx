@@ -28,8 +28,48 @@ float _LN_CalcFogFactor(float depth)
 }
 
 
+// return: fog density (0.0~)
+float _LN_CalcFogFactor2(float depth, float samplePointY)
+{
+	float lower = -30.0;
+	float upper = 0.0;
+	float lengthH = 5.0;	// 水平方向、どのあたりから Fog を生成するか
+	float fogDensity = 1.0 / 10.0;// 1.0;	// Fog の濃さ。1.0 の場合、2^(x*1.0) で、座標1進むと完全に Fog になる。
+								// 0.5 だと座標2、0.25だと座標4という具合に、逆数で入力すると距離を測ることができる。
+
+	// g(x)=-2^(x*x)+2
+	float halfVolumeHeight = (upper - lower) / 2;
+	float center = lower + halfVolumeHeight;
+	//float d = abs(samplePointY - center) / halfVolumeHeight;	// Fog volume 中央からどれだけ離れているか (0.0中央 1.0:上端または下端 1.0~:Fogの外)
+	//float density = -exp2(d * 0.5) + 2;
+	//float density = -exp2(d*d) + 2;
+	//float d = 1.0 - (abs(samplePointY - center) / halfVolumeHeight);	// Fog volume 外側境界からどれだけ離れているか (0.0:上端または下端, 1.0:中央 1.0~)
+	float d = (halfVolumeHeight - abs(samplePointY - center));// / lengthH;
+	//d = saturate(d);
+	float densityV = exp2(d * fogDensity) - 1.0;
+	//return saturate(densityV);
+
+	// h(x)=2^((x+2)*0.5)
+	float f = ((depth - lengthH));	// 0.0:視点位置, 1.0:フォグの出始め
+	//ln_FogParams.a * depth;
+	
+	float densityH = exp2(f * fogDensity) - 1.0;
+
+	return saturate(densityH * densityV);
+	//return saturate(densityH) * saturate(densityV);
+
+	//return saturate(densityH);
+
+	//return saturate(density);
 
 
+	//float lower = -5.0;
+	//float upper = 0.0;
+    //float d =  abs(height - lerp(upper, lower, 0.5));
+    //float f = 0.5 * d;
+	//return exp2(-f);
+	//return exp2(-f*f);
+}
 
 
 
@@ -80,14 +120,18 @@ float4 _LN_PS_ClusteredForward_Default(
 	float opacity = 1.0;
 	float3 outgoingLight = _LN_ComputePBRLocalLights(localLightContext, geometry, material);
 
-	return float4(surface.Emission + outgoingLight, opacity);
+	//return float4(surface.Emission + outgoingLight, opacity);
+	result.rgb = surface.Emission + outgoingLight;
 	
 	// Shadow
     //float4 posInLight = extra.vInLightPosition;
     //outgoingLight *= LN_CalculateShadow(posInLight);
 	
 	// Fog
-	result.rgb = lerp(ln_FogParams.rgb, outgoingLight, _LN_CalcFogFactor(viewPos.z));
+	//result.rgb = lerp(ln_FogParams.rgb, result.rgb, _LN_CalcFogFactor(viewPos.z));
+	//result.rgb = lerp(result.rgb, ln_FogParams.rgb, _LN_CalcFogFactor2(viewPos.z, worldPos.y));
+	result.rgb = lerp(result.rgb, ln_FogParams.rgb, _LN_CalcFogFactor2(length(worldPos), worldPos.y));
+	
 
 	return float4(result.rgb, opacity);
 	

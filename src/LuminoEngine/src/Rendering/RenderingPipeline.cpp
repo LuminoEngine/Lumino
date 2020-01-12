@@ -61,7 +61,8 @@ void SceneRenderingPipeline::render(
 	RenderTargetTexture* renderTarget,
     //const ClearInfo& clearInfo,
     const detail::CameraInfo* mainCameraInfo,
-    detail::DrawElementListCollector* elementListCollector)
+    detail::DrawElementListCollector* elementListCollector,
+	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
     m_elementListCollector = elementListCollector;
     m_elementListCollector->classify();
@@ -72,19 +73,19 @@ void SceneRenderingPipeline::render(
 
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
 
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BackgroundSky);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BackgroundSky, nullptr);
 
 
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default, sceneGlobalParams);
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BeforeTransparencies);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::BeforeTransparencies, nullptr);
 
     {
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RendringPhase::ImageEffect);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RendringPhase::ImageEffect, nullptr);
     }
 
     // 誤用防止
@@ -128,13 +129,13 @@ void FlatRenderingPipeline::render(
     //clear(graphicsContext, renderTarget, clearInfo);
 
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
-	m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default);
+	m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RendringPhase::Default, nullptr);
 
     {
         ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RendringPhase::ImageEffect);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RendringPhase::ImageEffect, nullptr);
     }
 
 	// 誤用防止

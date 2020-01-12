@@ -92,8 +92,7 @@ void RenderingManager::init(const Settings& settings)
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
-#if 1
-    // ClusteredShadingDefault.lcfx.h
+    // ClusteredShadingDefault
     {
         static const unsigned char data[] =
         {
@@ -103,7 +102,7 @@ void RenderingManager::init(const Settings& settings)
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = makeObject<Shader>(u"ClusteredShadingDefault", &stream);
     }
-    // DepthPrepass.lcfx.h
+    // DepthPrepass
     {
         static const unsigned char data[] =
         {
@@ -113,7 +112,7 @@ void RenderingManager::init(const Settings& settings)
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::DepthPrepass] = makeObject<Shader>(u"DepthPrepass", &stream);
     }
-    // Sprite.lcfx.h
+    // Sprite
     {
         static const unsigned char data[] =
         {
@@ -123,7 +122,6 @@ void RenderingManager::init(const Settings& settings)
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(u"Sprite", &stream);
     }
-#endif
 
 	// LuminosityHighPassShader
 	{
@@ -159,8 +157,8 @@ void RenderingManager::init(const Settings& settings)
     //	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.fx");
     //	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
     //#endif
-#if 0
-    m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
+#if 1
+    m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
     //m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
     //m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.fx");
     //m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");

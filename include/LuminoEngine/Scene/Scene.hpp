@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "../Rendering/Common.hpp"
 #include "../Asset/AssetModel.hpp"
 
 template <class T>
@@ -82,6 +83,9 @@ public: // TODO: internal
 	World* m_ownerWorld;
     Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
     List<WorldObject*> m_destroyList;
+
+	// TODO: Master-scene と Sub-scene の値を統合したうえで、SceneRenderer に流したい。
+	detail::SceneGlobalRenderParams m_sceneGlobalRenderParams;
 
 	// TODO: Editor integration
 	ln::Path m_filePath;

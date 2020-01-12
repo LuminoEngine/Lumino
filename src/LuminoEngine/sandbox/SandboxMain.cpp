@@ -443,9 +443,9 @@ int main(int argc, char** argv)
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
-    //auto mesh1 = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
-    //mesh1->setScale(5);
+	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
+    auto mesh1 = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
+    mesh1->setScale(50);
     Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
@@ -495,8 +495,8 @@ int main(int argc, char** argv)
     //ToneLayer->play(ColorTone(0.7, 0.5, 0.2, 1.0), 1);
     //Engine::mainViewport()->addImageEffect(ToneLayer);
 
-	auto bloomEffect = BloomImageEffect ::create();
-    Engine::mainViewport()->addImageEffect(bloomEffect);
+	//auto bloomEffect = BloomImageEffect ::create();
+ //   Engine::mainViewport()->addImageEffect(bloomEffect);
 
 #if 0
     auto window1 = UIWindow::create();

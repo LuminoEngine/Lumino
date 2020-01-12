@@ -305,5 +305,15 @@ struct DynamicLightInfo
 	}
 };
 
+struct SceneGlobalRenderParams
+{
+	//Color ambientColor;
+	//Color ambientSkyColor;
+	//Color ambientGroundColor;
+
+	Color fogColor;
+	float fogDensity = 0.0f;
+};
+
 } // namespace detail
 } // namespace ln
