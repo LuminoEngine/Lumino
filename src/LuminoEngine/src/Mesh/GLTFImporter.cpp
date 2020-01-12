@@ -300,6 +300,10 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
                 vbView.usage = VertexElementUsage::Tangent;
                 vbView.usageIndex = 0;
             }
+			else if (itr->first.compare("COLOR_0") == 0) {
+				vbView.usage = VertexElementUsage::Color;
+				vbView.usageIndex = 0;
+			}
 			else {
 				LN_UNREACHABLE();
 				return nullptr;

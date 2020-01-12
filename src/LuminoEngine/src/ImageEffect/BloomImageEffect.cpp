@@ -56,7 +56,7 @@ void BloomImageEffect::init()
 		m_separableBlurMaterialsV.add(materialV);
 	}
 
-	auto bloomImageEffectShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/BloomImageEffect.fx");
+	auto bloomImageEffectShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/BloomComposite.fx");
 	m_compositeMaterial = makeObject<Material>();
 	m_compositeMaterial->setBlendMode(BlendMode::Normal);
 	m_compositeMaterial->setShader(bloomImageEffectShader);
@@ -92,16 +92,16 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	}
 
 	for (int i = 0; i < MIPS; i++) {
-		m_separableBlurMaterialsH[i]->setVector(u"texSize", Vector4(resx, resy, 0.0f, 0.0f));
-		m_separableBlurMaterialsV[i]->setVector(u"texSize", Vector4(resx, resy, 0.0f, 0.0f));
+		m_separableBlurMaterialsH[i]->setVector(u"_TexSize", Vector4(resx, resy, 0.0f, 0.0f));
+		m_separableBlurMaterialsV[i]->setVector(u"_TexSize", Vector4(resx, resy, 0.0f, 0.0f));
 	}
 
 	// Extract Bright Areas
 	{
-		m_materialHighPassFilter->setVector(u"defaultColor", Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-		m_materialHighPassFilter->setFloat(u"defaultOpacity", 0.0f);
-		m_materialHighPassFilter->setFloat(u"luminosityThreshold", m_luminosityThreshold);
-		m_materialHighPassFilter->setFloat(u"smoothWidth", 0.01);
+		m_materialHighPassFilter->setVector(u"_Color", Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+		m_materialHighPassFilter->setFloat(u"_Opacity", 0.0f);
+		m_materialHighPassFilter->setFloat(u"_LuminosityThreshold", m_luminosityThreshold);
+		m_materialHighPassFilter->setFloat(u"_SmoothWidth", 0.01);
 
 		m_materialHighPassFilter->setMainTexture(source);
 		//context->clear();
@@ -111,9 +111,9 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 	// Blur All the mips progressively
 	RenderTargetTexture* inputRenderTarget = m_renderTargetBright;
 	for (int i = 0; i < MIPS; i++) {
-		//m_separableBlurMaterials[i]->setMainTexture(inputRenderTarget);
-		m_separableBlurMaterialsH[i]->setTexture(u"colorTexture", inputRenderTarget);
-		m_separableBlurMaterialsH[i]->setVector(u"direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
+		m_separableBlurMaterialsH[i]->setMainTexture(inputRenderTarget);
+		//m_separableBlurMaterialsH[i]->setTexture(u"colorTexture", inputRenderTarget);
+		m_separableBlurMaterialsH[i]->setVector(u"_Direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
 		//context->clear();
 		//if (i == 1) {//0) {//
 		//	context->blit(m_separableBlurMaterialsH[i], destination);
@@ -124,8 +124,9 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
 		//context->blit(m_separableBlurMaterialsH[i], destination);
 		//return;
 
-		m_separableBlurMaterialsV[i]->setTexture(u"colorTexture", m_renderTargetsHorizontal[i]);
-		m_separableBlurMaterialsV[i]->setVector(u"direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
+		m_separableBlurMaterialsV[i]->setMainTexture(m_renderTargetsHorizontal[i]);
+		//m_separableBlurMaterialsV[i]->setTexture(u"colorTexture", m_renderTargetsHorizontal[i]);
+		m_separableBlurMaterialsV[i]->setVector(u"_Direction", Vector4(BlurDirectionY, 0.0f, 0.0f));
 		//context->clear();
 
 		//if (i == MIPS - 1) {//0) {//

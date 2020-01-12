@@ -443,7 +443,8 @@ int main(int argc, char** argv)
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-    auto mesh1 = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
+	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
+    //auto mesh1 = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
     //mesh1->setScale(5);
     Engine::world()->add(mesh1);
     
