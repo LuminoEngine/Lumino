@@ -19,6 +19,7 @@ enum class MaterialType : uint8_t
 /**
 	@brief
 */
+// TODO: フレーム開始～描画に使われた後にパラメータを変更できないようにする。わかりにくい不具合のもとになる。
 class AbstractMaterial
 	: public Object
 {
