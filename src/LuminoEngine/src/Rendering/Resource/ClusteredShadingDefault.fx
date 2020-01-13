@@ -96,7 +96,9 @@ float _LN_CalcFogFactor2(float depth, float samplePointY)
 }
 
 
-const float turbidity = 10.0;
+const float3 _RayleighColorScale = float3(0.5, 0.2, 0.5);
+const float turbidity = 1.0;
+const float rayleigh = 0.5;
 const float mieCoefficient = 0.005;
 const float mieDirectionalG = 0.8;
 const float luminance = 1.0;
@@ -104,11 +106,16 @@ const float3 up = float3( 0, 1, 0 );
 
 const float e = 2.71828182845904523536028747135266249775724709369995957;
 
+
+const float3 totalRayleigh = float3( 0.0000001, 0.0000001, 0.0000001);
+
+
 const float3 lambda = float3( 680E-9, 550E-9, 450E-9 );
 const float v = 4.0;
 const float3 K = float3( 0.686, 0.678, 0.666 );
 const float3 MieConst = LN_PI * pow( ( 2.0 * LN_PI ) / lambda, float3( v - 2.0 ) ) * K;
 const float mieZenithLength = 1.25E3;
+const float rayleighZenithLength = 8.4E3;
 
 const float cutoffAngle = 1.6110731556870734;
 const float steepness = 1.5;
@@ -116,6 +123,12 @@ const float EE = 1000.0;
 float sunIntensity( float zenithAngleCos ) {
 	zenithAngleCos = clamp( zenithAngleCos, -1.0, 1.0 );
 	return EE * max( 0.0, 1.0 - pow( e, -( ( cutoffAngle - acos( zenithAngleCos ) ) / steepness ) ) );
+}
+
+// 3.0 / ( 16.0 * pi )
+const float THREE_OVER_SIXTEENPI = 0.05968310365946075;
+float rayleighPhase( float cosTheta ) {
+	return THREE_OVER_SIXTEENPI * ( 1.0 + pow( cosTheta, 2.0 ) );
 }
 
 float3 totalMie( float T ) {
@@ -151,21 +164,32 @@ float3 LN_FogColor(float3 vWorldPosition)
 
 	float vSunfade = 1.0 - clamp( 1.0 - exp( ( sunPosition.y / 450000.0 ) ), 0.0, 1.0 );
 	float vSunE = sunIntensity( dot( vSunDirection, up ) );
-	float vBetaR = 0.0;
+	float rayleighCoefficient = rayleigh - ( 1.0 * ( 1.0 - vSunfade ) );
+	float vBetaR = (totalRayleigh * (float3(500.0, 500.0, 500.0) * _RayleighColorScale)) * rayleighCoefficient;
 	float vBetaM = totalMie( turbidity ) * mieCoefficient;
 
 
 
+
+
+
+	//float zenithAngle = acos( max( 0.0, dot( up, normalize( vWorldPosition - cameraPos ) ) ) );
+	//float inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / LN_PI ), -1.253 ) );
+	//float sR = rayleighZenithLength * inverse;
+	//float sM = mieZenithLength * inverse;
 	float zenithAngle = acos( max( 0.0, dot( up, normalize( vWorldPosition - cameraPos ) ) ) );
 	float inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / LN_PI ), -1.253 ) );
+	float sR = rayleighZenithLength * inverse;
 	float sM = mieZenithLength * inverse;
 
-	float3 Fex = exp( -(vBetaM * sM ) );
+	//float3 Fex = exp( -(vBetaM * sM ) );
+	float3 Fex = exp( -( vBetaR * sR + vBetaM * sM ) );
 
 	// in scattering
 	float cosTheta = dot( normalize( vWorldPosition - cameraPos ), vSunDirection );
 
-	float3 betaRTheta = 0.0;
+	float rPhase = rayleighPhase( cosTheta * 0.5 + 0.5 );
+	float3 betaRTheta = vBetaR * rPhase;
 
 	float mPhase = hgPhase( cosTheta, mieDirectionalG );
 	float3 betaMTheta = vBetaM * mPhase;
@@ -265,6 +289,7 @@ float4 _LN_PS_ClusteredForward_Default(
 	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(length(worldPos), worldPos.y));
 	//result.rgb = lerp(result.rgb, LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
 	result.rgb = lerp(saturate(result.rgb), LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
+	//result.rgb = LN_FogColor(worldPos);
 
 	//result.r = _LN_CalcFogFactor2(viewLength, worldPos.y);
 	//result.g = 0;

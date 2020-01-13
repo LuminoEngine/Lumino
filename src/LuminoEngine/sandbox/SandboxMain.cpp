@@ -445,7 +445,7 @@ int main(int argc, char** argv)
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
 	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
     auto mesh1 = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
-    mesh1->setScale(10);
+    mesh1->setScale(1000);
     Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
