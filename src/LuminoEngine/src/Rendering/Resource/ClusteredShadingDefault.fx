@@ -287,8 +287,8 @@ float4 _LN_PS_ClusteredForward_Default(
 	//result.rgb = lerp(result.rgb, ln_FogParams.rgb, _LN_CalcFogFactor2(viewPos.z, worldPos.y));
 	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(viewLength, worldPos.y));
 	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(length(worldPos), worldPos.y));
-	//result.rgb = lerp(result.rgb, LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
-	result.rgb = lerp(saturate(result.rgb), LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
+	result.rgb = lerp(result.rgb, LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
+	//result.rgb = lerp(saturate(result.rgb), LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
 	//result.rgb = LN_FogColor(worldPos);
 
 	//result.r = _LN_CalcFogFactor2(viewLength, worldPos.y);
@@ -452,7 +452,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
 	o.color0.a = surface.Albedo.a;
 	//o.color0 = float4(1, 0, 0, 1);
-	//o.color0 = LN_GetBuiltinEffectColor(o.color0);
+	o.color0 = LN_GetBuiltinEffectColor(o.color0);
 	
 	return o;
 }

@@ -80,6 +80,15 @@ void TransformControls::onRender(RenderingContext* context)
     context->setMaterial((m_operationType == OperationType::Z) ? m_activeColorMaterial : m_zColorMaterial);
 	context->drawLine(Vector3(0, 0, 0), Color::White, Vector3(0, 0, 1), Color::White);
 
+
+
+	//const float i1 = RotationRingInner;
+	//const float o1 = RotationRingOuter;
+	//Color c;
+	//// Z
+	//c = (m_operationType == OperationType::Z) ? Color::White : Color(0, 0, 1, BaseOpacity);
+	//context->drawArc(0, Math::PI2, i1, o1, 32, c, Matrix::makeRotationX(Math::PIDiv2), m_tmat);
+
     context->popState();
 }
 

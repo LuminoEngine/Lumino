@@ -39,6 +39,13 @@ Scene::Scene()
 	m_sceneGlobalRenderParams.fogColor = Color(0.686, 0.678, 0.666);//Color::White;
 	m_sceneGlobalRenderParams.fogDensity = 1.0f / 50.0f;
 	m_sceneGlobalRenderParams.heightFogDensity = 1.0f / 10.0f;
+
+
+	m_sceneGlobalRenderParams.lowerHeight = -500.0f;
+	m_sceneGlobalRenderParams.upperHeight = 50.0f;
+	m_sceneGlobalRenderParams.fogDensity = 1.0f / 200.0f;
+	m_sceneGlobalRenderParams.heightFogDensity = 1.0f / 100.0f;
+
 }
 
 Scene::~Scene()

@@ -444,8 +444,9 @@ int main(int argc, char** argv)
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
 	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
-    auto mesh1 = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
-    mesh1->setScale(1000);
+    auto mesh1 = StaticMesh::create(u"D:/Programs/MagicaVoxel-0.99.4.2-alpha-win64/export/monu10.glb");
+	mesh1->setEulerAngles(Math::PI / 2, 0, 0);
+    mesh1->setScale(10);
     Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
@@ -482,7 +483,7 @@ int main(int argc, char** argv)
 	//auto tc1 = makeObject<TransformControls>();
 
     //Engine::mainRenderView()->transformControls()->setTarget(mesh1);
-
+	Engine::mainRenderView()->transformControls()->setTarget(Engine::world()->mainDirectionalLight());
 
 	auto field1 = makeObject<UISliderField>();
 	field1->setName(u"test_field");
