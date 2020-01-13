@@ -24,7 +24,7 @@ float4	ln_FogColorAndDensity;
 float4	ln_FogParams;
 
 float3 ln_CameraPosition;
-
+float3 ln_MainLightDirection;	// ライトの向き。Sun から地表へ向かう。ライトの正面方向
 
 float _LN_CalcFogFactor(float depth)
 {
@@ -96,6 +96,111 @@ float _LN_CalcFogFactor2(float depth, float samplePointY)
 }
 
 
+const float turbidity = 10.0;
+const float mieCoefficient = 0.005;
+const float mieDirectionalG = 0.8;
+const float luminance = 1.0;
+const float3 up = float3( 0, 1, 0 );
+
+const float e = 2.71828182845904523536028747135266249775724709369995957;
+
+const float3 lambda = float3( 680E-9, 550E-9, 450E-9 );
+const float v = 4.0;
+const float3 K = float3( 0.686, 0.678, 0.666 );
+const float3 MieConst = LN_PI * pow( ( 2.0 * LN_PI ) / lambda, float3( v - 2.0 ) ) * K;
+const float mieZenithLength = 1.25E3;
+
+const float cutoffAngle = 1.6110731556870734;
+const float steepness = 1.5;
+const float EE = 1000.0;
+float sunIntensity( float zenithAngleCos ) {
+	zenithAngleCos = clamp( zenithAngleCos, -1.0, 1.0 );
+	return EE * max( 0.0, 1.0 - pow( e, -( ( cutoffAngle - acos( zenithAngleCos ) ) / steepness ) ) );
+}
+
+float3 totalMie( float T ) {
+	float c = ( 0.2 * T ) * 10E-18;
+	return 0.434 * c * MieConst;
+}
+
+// 1.0 / ( 4.0 * pi )
+const float ONE_OVER_FOURPI = 0.07957747154594767;
+float hgPhase( float cosTheta, float g ) {
+	float g2 = pow( g, 2.0 );
+	float inverse = 1.0 / pow( 1.0 - 2.0 * g * cosTheta + g2, 1.5 );
+	return ONE_OVER_FOURPI * ( ( 1.0 - g2 ) * inverse );
+}
+
+// Filmic ToneMapping http://filmicgames.com/archives/75
+const float A = 0.15;
+const float B = 0.50;
+const float C = 0.10;
+const float D = 0.20;
+const float E = 0.02;
+const float F = 0.30;
+const float whiteScale = 1.0748724675633854; // 1.0 / Uncharted2Tonemap(1000.0)
+float3 Uncharted2Tonemap( float3 x ) {
+	return ( ( x * ( A * x + C * B ) + D * E ) / ( x * ( A * x + B ) + D * F ) ) - E / F;
+}
+
+float3 LN_FogColor(float3 vWorldPosition)
+{
+	float3 cameraPos = ln_CameraPosition;
+	float3 vSunDirection = -ln_MainLightDirection;
+	float3 sunPosition = vSunDirection * 400000.0;
+
+	float vSunfade = 1.0 - clamp( 1.0 - exp( ( sunPosition.y / 450000.0 ) ), 0.0, 1.0 );
+	float vSunE = sunIntensity( dot( vSunDirection, up ) );
+	float vBetaR = 0.0;
+	float vBetaM = totalMie( turbidity ) * mieCoefficient;
+
+
+
+	float zenithAngle = acos( max( 0.0, dot( up, normalize( vWorldPosition - cameraPos ) ) ) );
+	float inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / LN_PI ), -1.253 ) );
+	float sM = mieZenithLength * inverse;
+
+	float3 Fex = exp( -(vBetaM * sM ) );
+
+	// in scattering
+	float cosTheta = dot( normalize( vWorldPosition - cameraPos ), vSunDirection );
+
+	float3 betaRTheta = 0.0;
+
+	float mPhase = hgPhase( cosTheta, mieDirectionalG );
+	float3 betaMTheta = vBetaM * mPhase;
+
+	float3 Lin = pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * ( 1.0 - Fex ), float3( 1.5 ) );
+	Lin *= lerp( float3( 1.0 ), pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * Fex, float3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, vSunDirection ), 5.0 ), 0.0, 1.0 ) );
+
+
+
+
+	float3 texColor = ( Lin ) * 0.04;// + float3( 0.0, 0.0003, 0.00075 );
+
+	float3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );
+	float3 color = curr * whiteScale;
+
+	float3 retColor = pow( color, float3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );
+
+	return float4( retColor, 1.0 );
+
+
+
+
+
+
+
+
+	//return ln_FogColorAndDensity.rgb;
+	return ln_MainLightDirection;
+	return float3(1,0,0);
+	//float mPhase = hgPhase( cosTheta, mieDirectionalG );
+	//float3 betaMTheta = input.vBetaM * mPhase;
+
+	//float3 Lin = pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * ( 1.0 - Fex ), float3( 1.5 ) );
+	//Lin *= lerp( float3( 1.0 ), pow( input.vSunE * ( ( betaRTheta + betaMTheta ) / ( input.vBetaR + input.vBetaM ) ) * Fex, float3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, input.vSunDirection ), 5.0 ), 0.0, 1.0 ) );
+}
 
 
 
@@ -156,8 +261,10 @@ float4 _LN_PS_ClusteredForward_Default(
 	float viewLength = length(ln_CameraPosition - worldPos);
 	//result.rgb = lerp(ln_FogParams.rgb, result.rgb, _LN_CalcFogFactor(viewPos.z));
 	//result.rgb = lerp(result.rgb, ln_FogParams.rgb, _LN_CalcFogFactor2(viewPos.z, worldPos.y));
-	result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(viewLength, worldPos.y));
+	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(viewLength, worldPos.y));
 	//result.rgb = lerp(result.rgb, ln_FogColorAndDensity.rgb, _LN_CalcFogFactor2(length(worldPos), worldPos.y));
+	//result.rgb = lerp(result.rgb, LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
+	result.rgb = lerp(saturate(result.rgb), LN_FogColor(worldPos), _LN_CalcFogFactor2(viewLength, worldPos.y));
 
 	//result.r = _LN_CalcFogFactor2(viewLength, worldPos.y);
 	//result.g = 0;

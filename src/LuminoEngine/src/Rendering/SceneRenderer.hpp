@@ -70,6 +70,7 @@ public:
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
 	const detail::SceneGlobalRenderParams* sceneGlobalParams() const { return m_sceneGlobalRenderParams; }
     const detail::CameraInfo& mainCameraInfo() const { return m_mainCameraInfo; }
+	const detail::DynamicLightInfo* mainLightInfo() const { return m_mainLightInfo; }
 
 
 protected:
@@ -118,6 +119,7 @@ private:
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 
     CameraInfo m_mainCameraInfo;
+	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
     RendringPhase m_targetPhase;
 

@@ -248,6 +248,8 @@ struct DynamicLightInfo
 
 	//static const int MaxLights = 3;		// MMD based
 
+	bool mainLight = false;
+
 	static DynamicLightInfo makeAmbientLightInfo(const Color& color, float intensity)
 	{
 		DynamicLightInfo info;
@@ -267,13 +269,14 @@ struct DynamicLightInfo
 		return info;
 	}
 
-	static DynamicLightInfo makeDirectionalLightInfo(const Color& color, float intensity, const Vector3& direction)
+	static DynamicLightInfo makeDirectionalLightInfo(const Color& color, float intensity, const Vector3& direction, bool mainLight)
 	{
 		DynamicLightInfo info;
 		info.m_type = LightType::Directional;
 		info.m_color = color;
 		info.m_direction = direction;
 		info.m_intensity = intensity;
+		info.mainLight = mainLight;
 		return info;
 	}
 

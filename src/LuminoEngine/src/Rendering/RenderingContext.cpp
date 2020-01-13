@@ -674,9 +674,9 @@ void RenderingContext::addHemisphereLight(const Color& skyColor, const Color& gr
 	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeHemisphereLightInfo(skyColor, groundColor, intensity));
 }
 
-void RenderingContext::addDirectionalLight(const Color& color, float intensity, const Vector3& direction)
+void RenderingContext::addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight)
 {
-	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction));
+	m_builder->targetList()->addDynamicLightInfo(detail::DynamicLightInfo::makeDirectionalLightInfo(color, intensity, direction, mainLight));
 }
 
 void RenderingContext::addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation)

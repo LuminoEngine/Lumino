@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Visual/LightComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 //#include "../Rendering/ClusteredShadingSceneRenderer.h"
 
 namespace ln {
@@ -194,7 +196,7 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 	if (m_enabled)
 	{
         const Matrix& t = worldObject()->worldMatrix();
-		context->addDirectionalLight(m_color, m_intensity, t.front());
+		context->addDirectionalLight(m_color, m_intensity, t.front(), context->world->mainDirectionalLight()->getDirectionalLightComponent() == this);
 
 		//if (m_shadowCasterPass != nullptr)
 		//{

@@ -430,6 +430,11 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* s
 		
 		v = ssm->getParameterBySemantics(BuiltinSemantics::FogParams);
 		if (v) v->setVector(Vector4(params->startDistance, params->lowerHeight, params->upperHeight, params->heightFogDensity));
+	
+	
+
+		v = shader->findParameter(u"ln_MainLightDirection");
+		if (v) v->setVector(Vector4(mainLightInfo()->m_direction, 0.0f));
 	}
 
 #else

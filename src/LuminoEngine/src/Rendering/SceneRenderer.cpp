@@ -465,6 +465,9 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
     {
         for (auto& light : elementList->dynamicLightInfoList())
         {
+			if (light.mainLight) {
+				m_mainLightInfo = &light;
+			}
             onCollectLight(light);
         }
     }
