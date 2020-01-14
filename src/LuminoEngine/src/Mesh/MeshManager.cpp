@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoCore/Base/LinearAllocator.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
@@ -133,6 +134,8 @@ void MeshManager::init(const Settings& settings)
     LN_CREATE_MMD_TOON_TEXTURE(8, toon09Data, toon09DataLen);
     LN_CREATE_MMD_TOON_TEXTURE(9, toon10Data, toon10DataLen);
 #undef LN_CREATE_MMD_TOON_TEXTURE
+
+	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
     LN_LOG_DEBUG << "MeshManager Initialization ended.";
 }

@@ -56,6 +56,11 @@ void IndexBuffer::init(int indexCount, IndexBufferFormat format, const void* ini
     }
 }
 
+void IndexBuffer::init(int indexCount, GraphicsResourceUsage usage)
+{
+	init(indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(indexCount), usage);
+}
+
 void IndexBuffer::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();

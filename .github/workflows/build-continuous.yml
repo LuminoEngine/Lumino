@@ -1,0 +1,23 @@
+name: Verification
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  Native-MSVC2017-x64-MT:
+    runs-on: windows-2016 # for VS2017
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Build
+      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
+      run: dotnet run -- MakePackage_Ruby

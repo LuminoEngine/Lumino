@@ -42,6 +42,7 @@ public:
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     const Ref<Texture2D>& getMMDDefaultToonTexture(int index) const { return  m_mmdDefaultToonTexture[index]; }
+	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 
 	//const Ref<VertexLayout>& predefinedVertexLayout(PredefinedVertexLayout kind) const { return m_predefinedVertexLayouts[kind]; }
 
@@ -57,6 +58,8 @@ private:
 	//Ref<VertexLayout> m_predefinedVertexLayout_SdefInfo;
 
     std::array<Ref<Texture2D>, 10> m_mmdDefaultToonTexture;
+
+	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 };
 
 } // namespace detail
