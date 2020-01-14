@@ -254,6 +254,7 @@ private:
 	bool m_enabled;
 
 	Ref<Material> m_material;
+	Ref<Material> m_spriteMaterial;
 };
 
 /** ポイントライトのコンポーネントです。 */

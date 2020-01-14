@@ -177,6 +177,13 @@ void DirectionalLightComponent::init()
 	auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/LightDisc.fx");
 	m_material = makeObject<Material>();
 	m_material->setShader(shader);
+
+
+	auto tex2 = Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Flare1.png");
+	auto shader2 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/FlareSprite.fx");
+	m_spriteMaterial = makeObject<Material>();
+	m_spriteMaterial->setMainTexture(tex2);
+	m_spriteMaterial->setShader(shader2);
 }
 
 void DirectionalLightComponent::setShadowCast(bool enabled)
@@ -223,6 +230,10 @@ void DirectionalLightComponent::onRender(RenderingContext* context)
 	context->setMaterial(m_material);
 	context->drawBox(3);
 	context->lastRenderDrawElement()->elementType = detail::RenderDrawElementType::LightDisc;
+
+	context->setMaterial(m_spriteMaterial);
+	context->drawScreenRectangle();
+	//context->drawPlane(1, 1);
 }
 
 //==============================================================================

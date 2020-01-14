@@ -40,7 +40,7 @@ void SceneRendererPass::onEndRender(SceneRenderer* sceneRenderer)
 
 bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 {
-	return element->elementType == RenderDrawElementType::Geometry;
+	return element->elementType == RenderDrawElementType::Geometry || element->elementType == RenderDrawElementType::Clear;
 }
 
 //void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -203,6 +203,7 @@ void SceneRenderer::addPass(SceneRendererPass* pass)
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
+	printf("  ==== SceneRenderer::renderPass start(%p)\n", pass);
 	m_renderingElementList.clear();
 
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
@@ -232,6 +233,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	assert(defaultRenderPass);
 
 	// Create batch list.
+	printf("  Create batch list.\n");
+	printf("    defaultRenderPass:%p\n", defaultRenderPass);
+	printf("    default renderTarget:%p\n", renderTarget);
 	{
 		RenderPass* currentRenderPass = defaultRenderPass;
 		RenderStage* currentStage = nullptr;
@@ -241,6 +245,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
         //int count = 0;
 		for (RenderDrawElement* element : m_renderingElementList)
 		{
+			printf("    element: %p\n", element);
 			if (pass->filterElement(element)) {
 				bool submitRequested = false;
 				RenderStage* stage = element->stage();
@@ -259,14 +264,19 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					}
 				}
 
+				printf("      stage RT[0]:%p\n", stage->frameBufferStageParameters->m_renderTargets[0].get());
+				
+
 				RenderPass* renderPass = nullptr;
 				if (submitRequested) {
-					renderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
+					renderPass = getOrCreateRenderPass(currentRenderPass, stage, defaultRenderPass/*renderTarget, depthBuffer*//*, clearInfo*/);
 					clearInfo.flags = ClearFlags::None; // first only
 				}
 				else {
 					renderPass = currentRenderPass;
 				}
+				printf("    renderPass:%p\n", renderPass);
+				printf("      RT[0]:%p\n", renderPass->renderTarget(0));
 
 				// ShaderDescripter
 				SubsetInfo subsetInfo;
@@ -351,6 +361,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	}
 
 	// Render batch-list.
+	printf("  Render batch-list.\n");
 	{
 		RenderPass* currentRenderPass = nullptr;
 		const RenderStage* currentStage = nullptr;
@@ -459,6 +470,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	}
 
     m_renderPassPoolUsed = 0;
+
+	printf("  ==== SceneRenderer::renderPass end(%p)\n", pass);
 }
 
 void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)
@@ -615,22 +628,27 @@ void SceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
 }
 
-RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer/*, const ClearInfo& clearInfo*/)
+RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass/*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/)
 {
 	assert(currentRenderPass);
 	FrameBuffer fb;
 	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
-		if (i == 0)
-			fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i] ? stage->frameBufferStageParameters->m_renderTargets[i] : defaultRenderTarget;
-		else
+		//if (i == 0)
+		//	fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i] ? stage->frameBufferStageParameters->m_renderTargets[i] : defaultRenderTarget;
+		//else
 			fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i];
 	}
-	fb.depthBuffer = (stage->frameBufferStageParameters->m_depthBuffer) ? stage->frameBufferStageParameters->m_depthBuffer : defaultDepthBuffer;
+	//fb.depthBuffer = (stage->frameBufferStageParameters->m_depthBuffer) ? stage->frameBufferStageParameters->m_depthBuffer : defaultDepthBuffer;
+	fb.depthBuffer = stage->frameBufferStageParameters->m_depthBuffer;
 
     //bool equalsClearInfo = 
 
 	if (equalsFramebuffer(currentRenderPass, fb)) {
 		return currentRenderPass;
+	}
+
+	if (!fb.renderTarget[0]) {
+		return defaultRenderPass;
 	}
 
 	RenderPass* renderPass;

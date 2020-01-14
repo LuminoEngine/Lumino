@@ -117,7 +117,9 @@ void LightOcclusionPass::onBeginPass(GraphicsContext* context, RenderTargetTextu
 {
 	m_renderPass->setRenderTarget(0, m_lensflareOcclusionMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+	m_renderPass->setClearValues(ClearFlags::All, Color::Black, 1.0f, 0);
+	//m_renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+	printf("  LightOcclusionPass::m_renderPass(%p)\n", m_renderPass.get());
 }
 
 RenderPass* LightOcclusionPass::renderPass() const
@@ -397,8 +399,8 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 	//addPass(m_depthPrepass);
 
 
-	auto lightOcclusionPass = makeObject<LightOcclusionPass>();
-	addPass(lightOcclusionPass);
+	m_lightOcclusionPass = makeObject<LightOcclusionPass>();
+	addPass(m_lightOcclusionPass);
 
 	// pass "Geometry"
     auto geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
@@ -511,9 +513,17 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* s
 	
 	
 
+		// TODO: Test
 		v = shader->findParameter(u"ln_MainLightDirection");
 		if (v) v->setVector(Vector4(mainLightInfo()->m_direction, 0.0f));
 	}
+
+	// TODO: Test
+	v = shader->findParameter(u"_LensflareOcclusionMap");
+	if (v) {
+		v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
+	}
+	
 
 #else
     //static Shader* lastShader = nullptr;

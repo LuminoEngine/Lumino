@@ -163,6 +163,7 @@ private:
 	//SceneGlobalRenderSettings	m_renderSettings;
 	//FogParams					m_fogParams;
 	Ref<DepthPrepass>			m_depthPrepass;
+	Ref<LightOcclusionPass> m_lightOcclusionPass;
 };
 #endif
 
