@@ -203,7 +203,6 @@ void SceneRenderer::addPass(SceneRendererPass* pass)
 
 void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, SceneRendererPass* pass)
 {
-	printf("  ==== SceneRenderer::renderPass start(%p)\n", pass);
 	m_renderingElementList.clear();
 
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
@@ -233,9 +232,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	assert(defaultRenderPass);
 
 	// Create batch list.
-	printf("  Create batch list.\n");
-	printf("    defaultRenderPass:%p\n", defaultRenderPass);
-	printf("    default renderTarget:%p\n", renderTarget);
 	{
 		RenderPass* currentRenderPass = defaultRenderPass;
 		RenderStage* currentStage = nullptr;
@@ -245,7 +241,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
         //int count = 0;
 		for (RenderDrawElement* element : m_renderingElementList)
 		{
-			printf("    element: %p\n", element);
 			if (pass->filterElement(element)) {
 				bool submitRequested = false;
 				RenderStage* stage = element->stage();
@@ -262,10 +257,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					if (!currentStage || !currentStage->equals(stage)) {
 						submitRequested = true;
 					}
-				}
-
-				printf("      stage RT[0]:%p\n", stage->frameBufferStageParameters->m_renderTargets[0].get());
-				
+				}				
 
 				RenderPass* renderPass = nullptr;
 				if (submitRequested) {
@@ -275,8 +267,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				else {
 					renderPass = currentRenderPass;
 				}
-				printf("    renderPass:%p\n", renderPass);
-				printf("      RT[0]:%p\n", renderPass->renderTarget(0));
 
 				// ShaderDescripter
 				SubsetInfo subsetInfo;
@@ -361,7 +351,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	}
 
 	// Render batch-list.
-	printf("  Render batch-list.\n");
 	{
 		RenderPass* currentRenderPass = nullptr;
 		const RenderStage* currentStage = nullptr;
@@ -470,8 +459,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	}
 
     m_renderPassPoolUsed = 0;
-
-	printf("  ==== SceneRenderer::renderPass end(%p)\n", pass);
 }
 
 void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInfo& cameraInfo)

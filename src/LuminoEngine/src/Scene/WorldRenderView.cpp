@@ -119,7 +119,6 @@ void WorldRenderView::setCamera(Camera* camera)
 
 void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
 {
-	printf("WorldRenderView::render(%p) start ==========\n", this);
 	if (m_camera)
 	{
         //FrameBuffer fb;
@@ -358,7 +357,6 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         assert(elementListManagers().size() == 1);
 		m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, elementListManagers().front(), &m_targetWorld->masterScene()->m_sceneGlobalRenderParams);
 	}
-	printf("WorldRenderView::render(%p) end ==========\n", this);
 }
 
 void WorldRenderView::createGridPlane()

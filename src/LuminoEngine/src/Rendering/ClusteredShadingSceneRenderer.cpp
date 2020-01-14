@@ -119,7 +119,6 @@ void LightOcclusionPass::onBeginPass(GraphicsContext* context, RenderTargetTextu
 	m_renderPass->setDepthBuffer(m_depthBuffer);
 	m_renderPass->setClearValues(ClearFlags::All, Color::Black, 1.0f, 0);
 	//m_renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-	printf("  LightOcclusionPass::m_renderPass(%p)\n", m_renderPass.get());
 }
 
 RenderPass* LightOcclusionPass::renderPass() const
