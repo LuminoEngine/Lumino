@@ -7,6 +7,7 @@
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "RenderingPipeline.hpp"
+#include "RenderStage.hpp"
 
 namespace ln {
 namespace detail {
@@ -83,6 +84,74 @@ ShaderTechnique* DepthPrepass::selectShaderTechnique(
 }
 
 //==============================================================================
+// LightOcclusionPass
+
+LightOcclusionPass::LightOcclusionPass()
+{
+}
+
+void LightOcclusionPass::init()
+{
+	SceneRendererPass::init();
+	m_blackShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlackShader.fx");
+	m_blackShaderTechnique = m_blackShader->findTechnique(u"Default");
+	m_renderPass = makeObject<RenderPass>();
+}
+
+void LightOcclusionPass::onBeginRender(SceneRenderer* sceneRenderer)
+{
+	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
+	m_lensflareOcclusionMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
+}
+
+void LightOcclusionPass::onEndRender(SceneRenderer* sceneRenderer)
+{
+	RenderTargetTexture::releaseTemporary(m_lensflareOcclusionMap);
+	DepthBuffer::releaseTemporary(m_depthBuffer);
+	m_lensflareOcclusionMap = nullptr;
+	m_depthBuffer = nullptr;
+}
+
+void LightOcclusionPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	m_renderPass->setRenderTarget(0, m_lensflareOcclusionMap);
+	m_renderPass->setDepthBuffer(m_depthBuffer);
+	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+}
+
+RenderPass* LightOcclusionPass::renderPass() const
+{
+	return m_renderPass;
+}
+
+bool LightOcclusionPass::filterElement(RenderDrawElement* element) const
+{
+	return element->elementType == RenderDrawElementType::Geometry || element->elementType == RenderDrawElementType::LightDisc;
+}
+
+ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
+	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	Shader* requestedShader,
+	ShadingModel requestedShadingModel)
+{
+	if (!requestedShader)
+		return m_blackShaderTechnique;
+
+	ShaderTechniqueClass classSet;
+	classSet.defaultTechnique = false;
+	classSet.ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
+	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
+	classSet.meshProcess = requestedMeshProcess;
+	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
+	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
+	if (technique)
+		return technique;
+	else
+		return m_blackShaderTechnique;
+}
+
+//==============================================================================
 // ClusteredShadingGeometryRenderingPass
 
 static const String ClusteredShadingGeometryRenderingPass_TechniqueName = _T("Forward_Geometry");
@@ -147,6 +216,11 @@ RenderPass* ClusteredShadingGeometryRenderingPass::renderPass() const
 {
 	return m_renderPass;
 }
+
+//bool ClusteredShadingGeometryRenderingPass::filterElement(RenderDrawElement* element) const
+//{
+//	return element->elementType == RenderDrawElementType::LightDisc;
+//}
 
 ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -321,6 +395,10 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 
 	m_depthPrepass = makeObject<DepthPrepass>();
 	//addPass(m_depthPrepass);
+
+
+	auto lightOcclusionPass = makeObject<LightOcclusionPass>();
+	addPass(lightOcclusionPass);
 
 	// pass "Geometry"
     auto geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);

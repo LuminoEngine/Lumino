@@ -728,5 +728,10 @@ void RenderingContext::setViewPoint(RenderViewPoint* value)
     m_builder->setViewPoint(value);
 }
 
+detail::RenderDrawElement* RenderingContext::lastRenderDrawElement() const
+{
+	return m_builder->targetList()->lastElement();
+}
+
 } // namespace ln
 

@@ -45,6 +45,32 @@ public:	// TODO:
 	Ref<RenderPass> m_renderPass;
 };
 
+
+class LightOcclusionPass
+	: public SceneRendererPass
+{
+public:
+	LightOcclusionPass();
+	void init();
+
+	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
+	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual RenderPass* renderPass() const;
+	virtual bool filterElement(RenderDrawElement* element) const;
+	virtual ShaderTechnique* selectShaderTechnique(
+		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		Shader* requestedShader,
+		ShadingModel requestedShadingModel) override;
+
+public:
+	Ref<Shader> m_blackShader;
+	Ref<ShaderTechnique> m_blackShaderTechnique;
+	Ref<RenderTargetTexture> m_lensflareOcclusionMap;
+	Ref<DepthBuffer> m_depthBuffer;
+	Ref<RenderPass> m_renderPass;
+};
+
 class ClusteredShadingGeometryRenderingPass
 	: public SceneRendererPass
 {
@@ -56,6 +82,8 @@ public:
 	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
+
+	//virtual bool filterElement(RenderDrawElement* element) const override;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,

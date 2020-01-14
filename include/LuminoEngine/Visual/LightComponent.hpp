@@ -10,6 +10,7 @@
 namespace ln {
 //namespace detail { class ShadowCasterPass; }
 
+class Material;
 #if 0
 /** ライトのコンポーネントです。 */
 class LightComponent
@@ -240,6 +241,7 @@ public:
 
 protected:
 	virtual void onPrepareRender(RenderingContext* context) override;
+	virtual void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
 	DirectionalLightComponent();
@@ -250,6 +252,8 @@ private:
 	Color m_color;
 	float m_intensity;
 	bool m_enabled;
+
+	Ref<Material> m_material;
 };
 
 /** ポイントライトのコンポーネントです。 */

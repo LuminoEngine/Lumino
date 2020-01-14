@@ -415,6 +415,10 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
     {
         outClassSet->defaultTechnique = true;
     }
+	else if (String::compare(str, u"LightDisc", CaseSensitivity::CaseInsensitive) == 0)
+	{
+		outClassSet->ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
+	}
     else
     {
         // TODO: splitRef

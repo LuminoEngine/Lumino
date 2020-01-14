@@ -187,6 +187,7 @@ enum class RenderDrawElementType
 {
 	Geometry,	// Material を用いてポリゴンを描画する
 	Clear,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+	LightDisc,	// 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
 };
 
 

@@ -6,6 +6,10 @@
 #include <LuminoEngine/Scene/Light.hpp>
 //#include "../Rendering/ClusteredShadingSceneRenderer.h"
 
+#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include "../Rendering/RenderStage.hpp"
+
 namespace ln {
 
 #if 0
@@ -169,6 +173,10 @@ DirectionalLightComponent::~DirectionalLightComponent()
 void DirectionalLightComponent::init()
 {
 	VisualComponent::init();
+
+	auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/LightDisc.fx");
+	m_material = makeObject<Material>();
+	m_material->setShader(shader);
 }
 
 void DirectionalLightComponent::setShadowCast(bool enabled)
@@ -208,6 +216,13 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 		//		0.5f, 100.0f);	// TODO: clip range
 		//}
 	}
+}
+
+void DirectionalLightComponent::onRender(RenderingContext* context)
+{
+	context->setMaterial(m_material);
+	context->drawBox(3);
+	context->lastRenderDrawElement()->elementType = detail::RenderDrawElementType::LightDisc;
 }
 
 //==============================================================================

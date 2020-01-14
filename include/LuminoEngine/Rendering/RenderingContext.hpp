@@ -23,6 +23,7 @@ class RenderingManager;
 class DrawElementList;
 class DrawElementListBuilder;
 class BuiltinEffectData;
+class RenderDrawElement;
 } // namespace detail
 
 
@@ -197,6 +198,7 @@ public:
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
+	detail::RenderDrawElement* lastRenderDrawElement() const;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

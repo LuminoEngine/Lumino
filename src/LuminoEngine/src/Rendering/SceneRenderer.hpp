@@ -40,6 +40,8 @@ public:
 	// インスタンスは、このパスの実行側の onBeginPass() で作っておく。
 	virtual RenderPass* renderPass() const = 0;
 
+	virtual bool filterElement(RenderDrawElement* element) const;
+
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,

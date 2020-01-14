@@ -221,6 +221,7 @@ enum class ShaderTechniqueClass_Ligiting : uint8_t
 {
     Forward, // default
              // TODO: Differd
+	LightDisc,
 };
 
 enum class ShaderTechniqueClass_Phase : uint8_t
