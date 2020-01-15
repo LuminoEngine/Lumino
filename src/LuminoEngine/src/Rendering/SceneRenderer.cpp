@@ -40,7 +40,7 @@ void SceneRendererPass::onEndRender(SceneRenderer* sceneRenderer)
 
 bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 {
-	return element->elementType == RenderDrawElementType::Geometry || element->elementType == RenderDrawElementType::Clear;
+	return element->elementType == RenderDrawElementTypeFlags::Geometry || element->elementType == RenderDrawElementTypeFlags::Clear;
 }
 
 //void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -272,8 +272,8 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				SubsetInfo subsetInfo;
 				const Matrix* worldMatrix = nullptr;
 				AbstractMaterial* finalMaterial = nullptr;
-				if (element->elementType == RenderDrawElementType::Geometry ||
-					element->elementType == RenderDrawElementType::LightDisc) {
+				if (element->elementType == RenderDrawElementTypeFlags::Geometry ||
+					element->elementType == RenderDrawElementTypeFlags::LightDisc) {
 					if (stage->renderFeature->drawElementTransformNegate()) {
 						worldMatrix = nullptr;
 					}

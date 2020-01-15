@@ -183,12 +183,15 @@ struct BoxElementShapeShadowStyle
 namespace detail {
 
 
-enum class RenderDrawElementType
+enum class RenderDrawElementTypeFlags : uint8_t
 {
-	Geometry,	// Material を用いてポリゴンを描画する
-	Clear,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
-	LightDisc,	// 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
+	None = 0,
+	Geometry = 1 << 1,	// Material を用いてポリゴンを描画する
+	Clear = 1 << 2,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+	LightDisc = 1 << 3,	// 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
+	BackgroundSky = 1 << 4,
 };
+LN_FLAGS_OPERATORS(RenderDrawElementTypeFlags);
 
 
 enum class SpriteFlipFlags : uint8_t

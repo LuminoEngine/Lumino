@@ -267,7 +267,7 @@ public:
     // FIXME: Unity では CommandBuffer (を実行するメソッド) 単位で持つが・・・
     RendringPhase targetPhase = RendringPhase::Default;
 
-	RenderDrawElementType elementType = RenderDrawElementType::Geometry;
+	RenderDrawElementTypeFlags elementType = RenderDrawElementTypeFlags::Geometry;
 
     // Uniform 変数を変更するようなパラメータは RenderStage ではなく RenderDrawElement に持っておくことで、
     // opacity などが少しでも変わることで RenderStage がたくさん作られてしまう問題に対処する。

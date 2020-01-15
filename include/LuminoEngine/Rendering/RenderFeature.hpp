@@ -36,7 +36,7 @@ public:
 
 	RenderFeatureBatch* next() const { return m_next; }
 	const detail::RenderStage* stage() const { return m_stage; }
-	detail::RenderDrawElementType type() const { return m_type; }
+	detail::RenderDrawElementTypeFlags type() const { return m_type; }
 
 	void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
 	const Matrix* worldTransformPtr() const { return m_worldTransform; }
@@ -59,7 +59,7 @@ private:
 	RenderFeature* m_owner;
 	RenderFeatureBatch* m_next;
 	detail::RenderStage* m_stage;
-	detail::RenderDrawElementType m_type;
+	detail::RenderDrawElementTypeFlags m_type;
 
 	// DrawElement が持っている CombinedWorldTransform への参照。
 	// null の場合は Matrix::Identity とみなす。

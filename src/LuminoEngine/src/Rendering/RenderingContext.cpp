@@ -169,7 +169,7 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
     m_builder->advanceFence();
 
 	auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature(), nullptr);
-	element->elementType = detail::RenderDrawElementType::Clear;
+	element->elementType = detail::RenderDrawElementTypeFlags::Clear;
 	element->flags = flags;
 	element->color = color;
 	element->z = z;

@@ -20,7 +20,7 @@ RenderFeatureBatch::RenderFeatureBatch()
 	: m_owner(nullptr)
 	, m_next(nullptr)
 	, m_stage(nullptr)
-	, m_type(detail::RenderDrawElementType::Geometry)
+	, m_type(detail::RenderDrawElementTypeFlags::Geometry)
 	, m_worldTransform(nullptr)
 	, m_renderPass(nullptr)
 {
