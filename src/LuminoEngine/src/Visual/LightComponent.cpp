@@ -228,6 +228,7 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 
 void DirectionalLightComponent::onRender(RenderingContext* context)
 {
+#if 0
 	context->setMaterial(m_material);
 	context->drawBox(3);
 	context->lastRenderDrawElement()->elementType = detail::RenderDrawElementType::LightDisc;
@@ -245,12 +246,14 @@ void DirectionalLightComponent::onRender(RenderingContext* context)
 		f.x, f.y, f.z, 0.0f,
 		pos.x, pos.y, pos.z, 1.0f);
 	//context->setTransfrom(actualTransform);
-	//context->setBlendMode(BlendMode::Add);
-	context->setBlendMode(BlendMode::Alpha);
+	context->setBlendMode(BlendMode::Add);
+	context->setDepthWriteEnabled(false);
+	//context->setBlendMode(BlendMode::Alpha);
 	context->setBaseTransfrom(actualTransform);
 	context->setMaterial(m_spriteMaterial);
 	context->drawScreenRectangle();
 	//context->drawPlane(1, 1);
+#endif
 }
 
 //==============================================================================

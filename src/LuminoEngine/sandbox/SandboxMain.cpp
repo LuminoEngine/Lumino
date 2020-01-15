@@ -449,7 +449,7 @@ int main(int argc, char** argv)
 	//mesh1->setEulerAngles(Math::PI / 2, 0, 0);
  //   mesh1->setScale(10);
 	mesh1->setPosition(0, 5, 0);
-    //Engine::world()->add(mesh1);
+    Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   skymesh1->setBlendMode(BlendMode::Add);
@@ -485,7 +485,7 @@ int main(int argc, char** argv)
 	//auto tc1 = makeObject<TransformControls>();
 
     //Engine::mainRenderView()->transformControls()->setTarget(mesh1);
-	Engine::mainRenderView()->transformControls()->setTarget(Engine::world()->mainDirectionalLight());
+	//Engine::mainRenderView()->transformControls()->setTarget(Engine::world()->mainDirectionalLight());
 
 	auto field1 = makeObject<UISliderField>();
 	field1->setName(u"test_field");

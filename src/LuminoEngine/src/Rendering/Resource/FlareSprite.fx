@@ -3,11 +3,11 @@
 
 sampler2D _LensflareOcclusionMap;
 //const float _DiscRadius = 0.5;
-const float _DiscRadius = 5.0;
+const float _DiscRadius = 1.0;
 const float _FlareRadius = 0.25; // Against screen
-const float _FlareDistance = 0.0;
+const float _FlareDistance = 0.2;
 
-#define DEBUG_OCCLUSION 1
+//#define DEBUG_OCCLUSION 1
 
 //==============================================================================
 // Vertex shader
@@ -22,8 +22,7 @@ struct VS_Output
 {
     float4 Pos : SV_POSITION;
     float2 UV : TEXCOORD0;
-    //float Density : TEXCOORD1;
-    float4 Density : TEXCOORD1;
+    float Density : TEXCOORD1;
 };
 
 float2 screenToTex(float2 p)
@@ -44,10 +43,10 @@ VS_Output VS_Main(LN_VSInput input)
     float2 flareOffset = flareDir * _FlareDistance;
 
     VS_Output output;
-    output.Pos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
-    //output.Pos = float4(input.Pos.xy * _FlareRadius, 0, 1);
-    //output.Pos.x *= inverseAspect;
-    //output.Pos.xy += flareOffset;
+    //output.Pos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
+    output.Pos = float4(input.Pos.xy * _FlareRadius, 0, 1);
+    output.Pos.x *= inverseAspect;
+    output.Pos.xy += flareOffset;
 
     output.UV = input.UV;
 
@@ -69,16 +68,16 @@ VS_Output VS_Main(LN_VSInput input)
         float2 p5 = screenToTex(s5.xy / s5.w);
 
         // Disc の外周付近をサンプリングして、平均値から濃さを求める
-        //float4 color = tex2Dlod(_LensflareOcclusionMap, float4(p1, 0, 1));
-        //color += tex2Dlod(_LensflareOcclusionMap, float4(p2, 0, 1));
-        //color += tex2Dlod(_LensflareOcclusionMap, float4(p3, 0, 1));
-        //color += tex2Dlod(_LensflareOcclusionMap, float4(p4, 0, 1));
-        //color += tex2Dlod(_LensflareOcclusionMap, float4(p5, 0, 1));
-        //output.Density = color.r / 5.0;
+        float4 color = tex2Dlod(_LensflareOcclusionMap, float4(p1, 0, 1));
+        color += tex2Dlod(_LensflareOcclusionMap, float4(p2, 0, 1));
+        color += tex2Dlod(_LensflareOcclusionMap, float4(p3, 0, 1));
+        color += tex2Dlod(_LensflareOcclusionMap, float4(p4, 0, 1));
+        color += tex2Dlod(_LensflareOcclusionMap, float4(p5, 0, 1));
+        output.Density = color.r / 5.0;
 
         //output.Density = tex2Dlod(_LensflareOcclusionMap, float4(p5, 0, 0));
-        output.Density = tex2D(_LensflareOcclusionMap, p5);
-        output.Density = float4(p5, 0, 1);
+        //output.Density = tex2D(_LensflareOcclusionMap, p5);
+        //output.Density = float4(p5, 0, 1);
 
 #if DEBUG_OCCLUSION
         output.UV.x = lerp(p1.x, p2.x, input.UV.x);
@@ -104,16 +103,13 @@ VS_Output VS_Main(LN_VSInput input)
 struct PS_Input
 {
     float2 UV : TEXCOORD0;
-    //float Density : TEXCOORD1;
-    float4 Density : TEXCOORD1;
+    float Density : TEXCOORD1;
 };
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
 #if DEBUG_OCCLUSION
-    float4 color = tex2D(_LensflareOcclusionMap, input.Density.xy);
-    //float4 color = tex2D(_LensflareOcclusionMap, input.UV);
-    //color.rgb = input.Density.rgb;
+    float4 color = tex2D(_LensflareOcclusionMap, input.UV);
 #else
     float4 color = tex2D(ln_MaterialTexture, input.UV);
     color.a = input.Density;
