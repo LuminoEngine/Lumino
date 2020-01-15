@@ -67,6 +67,7 @@ public:
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
 
+	static bool checkVulkanSupported();
 
 private:
 	//struct ExtensionInfo

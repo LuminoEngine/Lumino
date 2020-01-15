@@ -274,6 +274,11 @@ void GraphicsManager::unregisterExtension(INativeGraphicsExtension* extension)
 	extension->onUnloaded(m_deviceContext->getNativeInterface());
 }
 
+bool GraphicsManager::checkVulkanSupported()
+{
+	return VulkanHelper::checkVulkanSupported();
+}
+
 void GraphicsManager::createOpenGLContext(const Settings& settings)
 {
 	OpenGLDevice::Settings openglSettings;

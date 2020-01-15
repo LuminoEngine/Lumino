@@ -467,6 +467,10 @@ VkFormat VulkanHelper::LNVertexElementTypeToVkFormat(VertexElementType value)
 
 bool VulkanHelper::initVulkanFunctions()
 {
+	static bool loaded = false;
+
+	if (loaded) return true;
+
 #if defined(LN_OS_WIN32)
     HMODULE hModule = ::LoadLibraryW(L"vulkan-1.dll");
     if (!hModule) return false;
@@ -670,7 +674,36 @@ bool VulkanHelper::initVulkanFunctions()
     vkGetPhysicalDeviceWin32PresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
 #endif
 
+	loaded = true;
     return true;
+}
+
+bool VulkanHelper::checkVulkanSupported()
+{
+	if (!VulkanHelper::initVulkanFunctions()) {
+		LN_LOG_WARNING << "Valid vulkan library not found.";
+		return false;
+	}
+
+	VkApplicationInfo appInfo = {};
+	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	appInfo.pApplicationName = "Lumino Application";
+	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.pEngineName = "Lumino Engine";
+	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.apiVersion = VK_MAKE_VERSION(1, 1, 0);
+
+	VkInstanceCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	createInfo.pApplicationInfo = &appInfo;
+
+	VkInstance instance = VK_NULL_HANDLE;
+	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
+	if (instance) {
+		vkDestroyInstance(instance, nullptr);
+	}
+
+	return result == VK_SUCCESS;
 }
 
 const char* VulkanHelper::getVkResultName(VkResult result)
