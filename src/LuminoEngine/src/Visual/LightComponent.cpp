@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Visual/LightComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -231,6 +232,22 @@ void DirectionalLightComponent::onRender(RenderingContext* context)
 	context->drawBox(3);
 	context->lastRenderDrawElement()->elementType = detail::RenderDrawElementType::LightDisc;
 
+
+	
+	auto pos = worldObject()->position();
+	float d = Vector3::dot(pos - context->viewPoint()->viewPosition, context->viewPoint()->viewDirection);
+	Vector3 f = Vector3::normalize(context->viewPoint()->viewDirection * d);
+	Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+	Vector3 u = Vector3::cross(f, r);
+	auto actualTransform = Matrix(
+		r.x, r.y, r.z, 0.0f,
+		u.x, u.y, u.z, 0.0f,
+		f.x, f.y, f.z, 0.0f,
+		pos.x, pos.y, pos.z, 1.0f);
+	//context->setTransfrom(actualTransform);
+	//context->setBlendMode(BlendMode::Add);
+	context->setBlendMode(BlendMode::Alpha);
+	context->setBaseTransfrom(actualTransform);
 	context->setMaterial(m_spriteMaterial);
 	context->drawScreenRectangle();
 	//context->drawPlane(1, 1);

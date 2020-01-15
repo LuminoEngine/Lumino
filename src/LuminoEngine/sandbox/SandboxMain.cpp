@@ -438,7 +438,7 @@ int main(int argc, char** argv)
     //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
 
-	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
@@ -448,7 +448,7 @@ int main(int argc, char** argv)
  //   auto mesh1 = StaticMesh::create(u"D:/Programs/MagicaVoxel-0.99.4.2-alpha-win64/export/monu10.glb");
 	//mesh1->setEulerAngles(Math::PI / 2, 0, 0);
  //   mesh1->setScale(10);
-
+	mesh1->setPosition(0, 5, 0);
     //Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
