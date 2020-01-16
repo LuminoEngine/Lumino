@@ -71,7 +71,7 @@ ln::Result EditorApplication::init()
     m_editorContext->m_mainWindow = mainWindow();
 
     // TODO: test
-    openProject(u"D:/Proj/LN/PrivateProjects/HC0/HC0.lnproj");
+    openProject(u"C:/Proj/LN/PrivateProjects/HC0/HC0.lnproj");
 
     return true;
 }
