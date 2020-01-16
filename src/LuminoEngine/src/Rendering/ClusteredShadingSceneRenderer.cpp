@@ -128,7 +128,10 @@ RenderPass* LightOcclusionPass::renderPass() const
 
 bool LightOcclusionPass::filterElement(RenderDrawElement* element) const
 {
-	return element->elementType == RenderDrawElementTypeFlags::Geometry || element->elementType == RenderDrawElementTypeFlags::LightDisc;
+	return (element->flags() & (
+		RenderDrawElementTypeFlags::Opaque |
+		RenderDrawElementTypeFlags::Transparent |
+		RenderDrawElementTypeFlags::LightDisc)) != RenderDrawElementTypeFlags::None;
 }
 
 ShaderTechnique* LightOcclusionPass::selectShaderTechnique(

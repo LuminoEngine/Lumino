@@ -54,7 +54,8 @@ public:
     void setBaseTransfrom(const Optional<Matrix>& value);
 	const Matrix& baseTransform() const;
     void setRenderPriority(int value);
-    void setRenderPhase(RendringPhase value);
+    void setRenderPhase(RenderPhaseClass value);
+	void setAdditionalElementFlags(RenderDrawElementTypeFlags value);
 
 	// BuiltinEffectData
 	void setOpacity(float value);
@@ -92,8 +93,8 @@ public:
 		RenderStage* stage = prepareRenderStage(renderFeature, params);
 		if (LN_ENSURE(stage)) return nullptr;
 		TElement* element = m_targetList->newFrameData<TElement>();
-        prepareRenderDrawElement(element, m_targetList->lastElement());
 		m_targetList->addElement(stage, element);
+        prepareRenderDrawElement(element, m_targetList->lastElement(), stage);
 		return element;
 	}
 
@@ -111,7 +112,8 @@ private:
         Matrix transform;
         Optional<Matrix> baseTransform;
         int renderPriority;
-        RendringPhase rendringPhase;
+        RenderPhaseClass rendringPhase;
+		RenderDrawElementTypeFlags additionalElementFlags;
 		Ref<Font> font;
 		Color textColor;
 
@@ -129,7 +131,7 @@ private:
     };
 
 	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
-    void prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement);
+    void prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement, RenderStage* stage);
     const Ref<State>& primaryState() { return m_aliveStateStack.front(); }
     const Ref<State>& primaryStateConst() const { return m_aliveStateStack.front(); }
     FrameBufferStageParameters& primaryFrameBufferStageParameters() { return m_aliveStateStack.front()->frameBufferStageParameters; }

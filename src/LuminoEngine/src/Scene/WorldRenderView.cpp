@@ -93,7 +93,7 @@ void WorldRenderView::setTargetWorld(World* world)
 {
     m_targetWorld = world;
 
-    m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_targetWorld->m_renderingContext->m_elementList);
+    m_drawElementListCollector->addDrawElementList(/*RenderPhaseClass::Default, */m_targetWorld->m_renderingContext->m_elementList);
 
     addDrawElementListManager(m_drawElementListCollector);
 }
@@ -436,12 +436,12 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
 
         
 
-        renderingContext->setRenderPhase(RendringPhase::BeforeTransparencies);
+        renderingContext->setRenderPhase(RenderPhaseClass::Gizmo);
         //renderingContext->setBlendMode(BlendMode::Alpha);
         //renderingContext->setDepthWriteEnabled(false);
         renderingContext->setMaterial(m_gridPlane->materials()[0]);
         renderingContext->drawMesh(m_gridPlane->meshContainers()[0]->meshResource(), 0);
-        //renderingContext->setRenderPhase(RendringPhase::Default);
+        //renderingContext->setRenderPhase(RenderPhaseClass::Default);
 
         renderingContext->popState();
 

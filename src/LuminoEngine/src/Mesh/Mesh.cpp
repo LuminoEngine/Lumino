@@ -695,7 +695,8 @@ VertexBuffer* Mesh::acquireVertexBuffer(InterleavedVertexGroup group)
 	{
 		case InterleavedVertexGroup::Undefined:
 		{
-			break;
+			LN_UNREACHABLE();
+			return nullptr;
 		}
 		case InterleavedVertexGroup::Main:
 			if (!m_mainVertexBuffer) {

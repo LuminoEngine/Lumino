@@ -71,28 +71,19 @@ enum class RenderViewClearMode
 	Sky0,
 };
 
-// 
-// https://docs.unity3d.com/ja/current/Manual/GraphicsCommandBuffers.html
-// の各〇に相当する。
-// ただし、Default は特殊扱い。DrawElementList が投入された SceneRenderer の中でフィルタリングがかかる。
-// 例えば(今後実装するかもしれない Deferred Shading では)、
-//  - Default の半透明オブジェクトは ForwardSceneRenderer でのみ描画される。
-//  - Default の不透明オブジェクトは DeferredSceneRenderer でのみ描画される。
-//  - Default のオブジェクトは AfterImageEffects などでは描画されない。
-// などなど。
-// 一方 Default 以外のものはブレンド有無などの RenderState にかかわらず必ずそのタイミングで描画される。そのへんはユーザー責任で考える。
-enum class RendringPhase
+// DrawElement の大分類。SceneRenderer に投入する DrawElement を決める。
+// SceneRenderer 内の各 RenderPass は、さらに小項目を RenderDrawElementTypeFlags で識別し、描画するかどうかを決定する。
+enum class RenderPhaseClass
 {
-    Default = 0,
+	// 通常のオブジェクトの他、BackgroundSky, LightDisc もこれに含まれる。
+    Geometry = 0,
 
-    // 不透明オブジェクト描画後・半透明オブジェクト描画前
-    BeforeTransparencies,
+	// Geometry のライティングに関係せず、前面に描画されるもの。
+    Gizmo,
 
-    BackgroundSky,
-
+	// スクリーン全体にオーバーレイ描画されるもの。Zソートなど一部の不要な工程が省略される。
     ImageEffect,
 
-    // https://docs.unity3d.com/ja/2017.4/ScriptReference/Rendering.CameraEvent.html
 
     _Count,
 };
@@ -186,8 +177,13 @@ namespace detail {
 enum class RenderDrawElementTypeFlags : uint8_t
 {
 	None = 0,
-	Geometry = 1 << 1,	// Material を用いてポリゴンを描画する
-	Clear = 1 << 2,		// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+
+	// 内部で自動決定
+	Clear = 1 << 1,			// clear など、ポリゴンを描画しないが、レンダーターゲットを変更する
+	Opaque = 1 << 2,		// 不透明
+	Transparent = 1 << 3,	// 半透明
+
+	// 外部指定
 	LightDisc = 1 << 3,	// 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
 	BackgroundSky = 1 << 4,
 };

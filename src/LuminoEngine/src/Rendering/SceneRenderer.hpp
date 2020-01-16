@@ -66,7 +66,7 @@ public:
 		RenderTargetTexture* renderTarget,
         const ClearInfo& clearInfo,
         const detail::CameraInfo& mainCameraInfo,
-        RendringPhase targetPhase,
+        RenderPhaseClass targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
@@ -123,7 +123,7 @@ private:
     CameraInfo m_mainCameraInfo;
 	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
-    RendringPhase m_targetPhase;
+    RenderPhaseClass m_targetPhase;
 
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;

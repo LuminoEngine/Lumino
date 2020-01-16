@@ -40,7 +40,10 @@ void SceneRendererPass::onEndRender(SceneRenderer* sceneRenderer)
 
 bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 {
-	return element->elementType == RenderDrawElementTypeFlags::Geometry || element->elementType == RenderDrawElementTypeFlags::Clear;
+	return (element->flags() & (
+		RenderDrawElementTypeFlags::Clear |
+		RenderDrawElementTypeFlags::Opaque |
+		RenderDrawElementTypeFlags::Transparent)) != RenderDrawElementTypeFlags::None;
 }
 
 //void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -85,7 +88,7 @@ void SceneRenderer::render(
 	RenderTargetTexture* renderTarget,
     const ClearInfo& clearInfo,
     const CameraInfo& mainCameraInfo,
-    RendringPhase targetPhase,
+    RenderPhaseClass targetPhase,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
     graphicsContext->resetState();
@@ -272,8 +275,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				SubsetInfo subsetInfo;
 				const Matrix* worldMatrix = nullptr;
 				AbstractMaterial* finalMaterial = nullptr;
-				if (element->elementType == RenderDrawElementTypeFlags::Geometry ||
-					element->elementType == RenderDrawElementTypeFlags::LightDisc) {
+				if (element->flags().hasFlag(RenderDrawElementTypeFlags::Clear)) {
+					subsetInfo.clear();
+				}
+				else {
 					if (stage->renderFeature->drawElementTransformNegate()) {
 						worldMatrix = nullptr;
 					}
@@ -291,9 +296,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					subsetInfo.colorScale = stage->getColorScaleFinal(element);
 					subsetInfo.blendColor = stage->getBlendColorFinal(element);
 					subsetInfo.tone = stage->getToneFinal(element);
-				}
-				else {
-					subsetInfo.clear();
 				}
 
 				// ShaderDescripter に関係するパラメータの変更チェック
@@ -468,7 +470,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 
 
 #if 1
-    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
+    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
     {
         for (auto& light : elementList->dynamicLightInfoList())
         {
@@ -504,7 +506,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 		// TODO: とりあえず Default
 		
 
-		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
+		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
 		{
 			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
 			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);

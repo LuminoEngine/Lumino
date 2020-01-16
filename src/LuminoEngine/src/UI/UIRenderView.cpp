@@ -31,7 +31,7 @@ void UIFrameRenderView::init()
 
     m_adornerLayer = makeObject<UIAdornerLayer>(this);
 
-    m_drawElementListCollector->addDrawElementList(/*RendringPhase::Default, */m_renderingContext->m_elementList);
+    m_drawElementListCollector->addDrawElementList(/*RenderPhaseClass::Default, */m_renderingContext->m_elementList);
     addDrawElementListManager(m_drawElementListCollector);
 }
 

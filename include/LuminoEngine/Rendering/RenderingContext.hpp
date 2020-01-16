@@ -92,7 +92,7 @@ public:
 
 
 
-    void setRenderPhase(RendringPhase value);
+    void setRenderPhase(RenderPhaseClass value);
 
     // BuiltinEffectData
     //void setTransfrom(const Matrix& value);

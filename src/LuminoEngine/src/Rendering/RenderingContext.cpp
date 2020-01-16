@@ -105,7 +105,7 @@ void RenderingContext::setMaterial(AbstractMaterial* material)
     m_builder->setMaterial(material);
 }
 
-void RenderingContext::setRenderPhase(RendringPhase value)
+void RenderingContext::setRenderPhase(RenderPhaseClass value)
 {
     m_builder->setRenderPhase(value);
 }
@@ -169,7 +169,7 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
     m_builder->advanceFence();
 
 	auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature(), nullptr);
-	element->elementType = detail::RenderDrawElementTypeFlags::Clear;
+	element->addFlags(detail::RenderDrawElementTypeFlags::Clear);
 	element->flags = flags;
 	element->color = color;
 	element->z = z;
@@ -293,7 +293,7 @@ void RenderingContext::drawScreenRectangle()
     auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(
         m_manager->blitRenderFeature(),
         m_builder->blitRenderFeatureStageParameters());
-    element->targetPhase = RendringPhase::Default;
+    element->targetPhase = RenderPhaseClass::Geometry;
 
     m_builder->advanceFence();
 
@@ -335,7 +335,7 @@ void RenderingContext::drawScreenRectangle()
 //    auto* element = m_builder->addNewDrawElement<Blit>(
 //        m_manager->blitRenderFeature(),
 //        m_builder->blitRenderFeatureStageParameters());
-//    element->targetPhase = RendringPhase::ImageEffect;
+//    element->targetPhase = RenderPhaseClass::ImageEffect;
 //    element->source = source;
 //
 //    setRenderTarget(0, oldTarget);
@@ -372,7 +372,7 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 	auto* element = m_builder->addNewDrawElement<Blit>(
 		m_manager->blitRenderFeature(),
 		m_builder->blitRenderFeatureStageParameters());
-	element->targetPhase = RendringPhase::ImageEffect;
+	element->targetPhase = RenderPhaseClass::ImageEffect;
 
     if (destination)
     {
