@@ -263,17 +263,21 @@ public:
     // 例えば上記の場合に mesh1と2 は clear(all) や blit() をまたいでZソートしてはならない。
     // commandFence はこれの境界を識別してZソートを制御するために用意されている。
     int commandFence = 0;
+	// TODO: ↑ flags 実装に伴い不要になりそう
 
-    // FIXME: Unity では CommandBuffer (を実行するメソッド) 単位で持つが・・・
-    RendringPhase targetPhase = RendringPhase::Default;
+    RenderPhaseClass targetPhase = RenderPhaseClass::Geometry;
 
-	RenderDrawElementType elementType = RenderDrawElementType::Geometry;
+
 
     // Uniform 変数を変更するようなパラメータは RenderStage ではなく RenderDrawElement に持っておくことで、
     // opacity などが少しでも変わることで RenderStage がたくさん作られてしまう問題に対処する。
     // RenderDrawElement の描画のたびに Uniform 変数を更新することになるが、RenderState 変更に比べれはコストは低い。
     // (結局、WorldMatrix など必須パラメータと同じ ConstantBuffer で送信する)
     BuiltinEffectData* builtinEffectData;
+
+	void fixFlags(RenderDrawElementTypeFlags additionalElementFlags);
+	const Flags<RenderDrawElementTypeFlags>& flags() const { return m_flags; }
+	void addFlags(RenderDrawElementTypeFlags flags) { m_flags |= flags; }
 
 	void calculateActualPriority();
 	int64_t actualPriority() const { return m_actualPriority; }
@@ -283,6 +287,8 @@ private:
 	RenderStage* m_stage;
 	RenderDrawElement* m_next;
 	int64_t m_actualPriority;	// Zソートのためのキャッシュ。何回も計算を繰り返したくないので
+	//RenderDrawElementTypeFlags m_elementType = RenderDrawElementTypeFlags::None;
+	Flags<RenderDrawElementTypeFlags> m_flags = RenderDrawElementTypeFlags::None;
 
 	friend class DrawElementList;
     friend class DrawElementListBuilder;
@@ -426,17 +432,17 @@ class DrawElementListCollector
 {
 public:
 	void clear();
-	void addDrawElementList(/*RendringPhase phase, */DrawElementList* list);
-	const List<DrawElementList*>& lists(/*RendringPhase phase*/) const;
+	void addDrawElementList(/*RenderPhaseClass phase, */DrawElementList* list);
+	const List<DrawElementList*>& lists(/*RenderPhaseClass phase*/) const;
 
 
     void classify();
-    const List<RenderDrawElement*>& classifiedElements(RendringPhase phase) const { return m_classifiedElements[(int)phase]; };
+    const List<RenderDrawElement*>& classifiedElements(RenderPhaseClass phase) const { return m_classifiedElements[(int)phase]; };
 
 private:
-    List<DrawElementList*> m_lists;// [(int)RendringPhase::_Count];
+    List<DrawElementList*> m_lists;// [(int)RenderPhaseClass::_Count];
 
-    List<RenderDrawElement*> m_classifiedElements[(int)RendringPhase::_Count];
+    List<RenderDrawElement*> m_classifiedElements[(int)RenderPhaseClass::_Count];
 
     
 };

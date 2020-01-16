@@ -32,6 +32,7 @@
 #include <LuminoEngine/UI/UIPropertyFields.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
+#include <LuminoEngine/ImageEffect/LightShaftImageEffect.hpp>
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 using namespace ln;
 
@@ -438,14 +439,17 @@ int main(int argc, char** argv)
     //Effect::emit(u"D:/LocalProj/Effekseer/EffekseerRuntime143b/RuntimeSample/release/test.efk", Matrix::makeTranslation(Vector3(1, 0, 0)));
 
 
-	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
+	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF/2CylinderEngine.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AntiqueCamera/glTF/AntiqueCamera.gltf");
     //auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/BrainStem/glTF/BrainStem.gltf");
-	auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
-    //auto mesh1 = StaticMesh::create(u"C:/Proj/LN/PrivateProjects/HC0/Assets/test2.glb");
-    //mesh1->setScale(5);
+	//auto mesh1 = StaticMesh::create(u"D:/Tech/Graphics/three.js/examples/models/gltf/PrimaryIonDrive.glb");
+
+ //   auto mesh1 = StaticMesh::create(u"D:/Programs/MagicaVoxel-0.99.4.2-alpha-win64/export/monu10.glb");
+	//mesh1->setEulerAngles(Math::PI / 2, 0, 0);
+ //   mesh1->setScale(10);
+	mesh1->setPosition(0, 5, 0);
     Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
@@ -482,21 +486,24 @@ int main(int argc, char** argv)
 	//auto tc1 = makeObject<TransformControls>();
 
     //Engine::mainRenderView()->transformControls()->setTarget(mesh1);
-
+	//Engine::mainRenderView()->transformControls()->setTarget(Engine::world()->mainDirectionalLight());
 
 	auto field1 = makeObject<UISliderField>();
 	field1->setName(u"test_field");
 	field1->setWidth(200);
 	field1->setHeight(30);
-	Engine::mainUIView()->addElement(field1);
+	//Engine::mainUIView()->addElement(field1);
 
 
     //auto ToneLayer = ToneImageEffect::create();
     //ToneLayer->play(ColorTone(0.7, 0.5, 0.2, 1.0), 1);
     //Engine::mainViewport()->addImageEffect(ToneLayer);
 
-	auto bloomEffect = BloomImageEffect ::create();
-    Engine::mainViewport()->addImageEffect(bloomEffect);
+	//auto bloomEffect = BloomImageEffect ::create();
+ //   Engine::mainViewport()->addImageEffect(bloomEffect);
+
+	auto lightShaft = LightShaftImageEffect::create();
+	Engine::mainRenderView()->addImageEffect(lightShaft);
 
 #if 0
     auto window1 = UIWindow::create();

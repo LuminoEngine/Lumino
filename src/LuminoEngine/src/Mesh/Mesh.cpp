@@ -342,6 +342,14 @@ Mesh::~Mesh()
 void Mesh::init()
 {
 	Object::init();
+	m_vertexLayout = makeObject<VertexLayout>();
+}
+
+void Mesh::init(int vertexCount, int indexCount)
+{
+	init();
+	m_vertexCount = vertexCount;
+	m_indexCount = indexCount;
 }
 
 template<class T>
@@ -356,8 +364,6 @@ void flipFaceIndex_Triangle(T* indices, int count)
 void Mesh::init(const MeshView& meshView)
 {
 	init();
-
-    m_vertexLayout = makeObject<VertexLayout>();
 
     // Validation and count vertices
 	m_vertexCount = 0;
@@ -638,50 +644,61 @@ void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLa
 	*outVBCount = count;
 }
 
-detail::MeshStandardVB Mesh::getStandardElement(VertexElementUsage usage, int usageIndex) const
+InterleavedVertexGroup Mesh::getStandardElement(VertexElementUsage usage, int usageIndex) const
 {
 	if (usageIndex == 0) {
 		if (usage == VertexElementUsage::Position ||
 			usage == VertexElementUsage::Normal ||
 			usage == VertexElementUsage::Color ||
 			usage == VertexElementUsage::TexCoord) {
-			return detail::MeshStandardVB_Main;
+			return InterleavedVertexGroup::Main;
 		}
 		if (usage == VertexElementUsage::Tangent ||
 			usage == VertexElementUsage::Binormal) {
-			return detail::MeshStandardVB_Tangents;
+			return InterleavedVertexGroup::Tangents;
 		}
 		if (usage == VertexElementUsage::BlendWeight ||
 			usage == VertexElementUsage::BlendIndices) {
-			return detail::MeshStandardVB_Skinning;
+			return InterleavedVertexGroup::Skinning;
 		}
 	}
-	return detail::MeshStandardVB_None;
+	return InterleavedVertexGroup::Undefined;
 }
 
 VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
-	switch (getStandardElement(usage, usageIndex))
-	{
-		case detail::MeshStandardVB_None:
-		{
-			VertexBuffer* vb = nullptr;
-			auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == usage && x.usageIndex == usageIndex; });
-			if (!r) {
-				if (r->type != type) {
-					LN_ERROR();
-					return nullptr;
-				}
-				auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, GraphicsResourceUsage::Static);
-				m_extraVertexBuffers.add({ type, usage, usageIndex, vb });
-				return vb;
+	auto group = getStandardElement(usage, usageIndex);
+	if (group == InterleavedVertexGroup::Undefined) {
+		VertexBuffer* vb = nullptr;
+		auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == usage && x.usageIndex == usageIndex; });
+		if (!r) {
+			if (r->type != type) {
+				LN_ERROR();
+				return nullptr;
 			}
-			else {
-				return r->buffer;
-			}
-			break;
+			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, GraphicsResourceUsage::Static);
+			m_extraVertexBuffers.add({ type, usage, usageIndex, vb });
+			return vb;
 		}
-		case detail::MeshStandardVB_Main:
+		else {
+			return r->buffer;
+		}
+	}
+	else {
+		return acquireVertexBuffer(group);
+	}
+}
+
+VertexBuffer* Mesh::acquireVertexBuffer(InterleavedVertexGroup group)
+{
+	switch (group)
+	{
+		case InterleavedVertexGroup::Undefined:
+		{
+			LN_UNREACHABLE();
+			return nullptr;
+		}
+		case InterleavedVertexGroup::Main:
 			if (!m_mainVertexBuffer) {
 				m_mainVertexBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, GraphicsResourceUsage::Static);
 
@@ -694,10 +711,10 @@ VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsa
 			}
 			return m_mainVertexBuffer;
 
-		case detail::MeshStandardVB_Tangents:
+		case InterleavedVertexGroup::Tangents:
 			if (!m_tangentsVertexBuffer) {
 				m_tangentsVertexBuffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, GraphicsResourceUsage::Static);
-				
+
 				// set default
 				auto* buf = static_cast<VertexTangents*>(m_mainVertexBuffer->map(MapMode::Write));
 				for (int i = 0; i < m_vertexCount; i++) {
@@ -706,7 +723,7 @@ VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsa
 			}
 			return m_tangentsVertexBuffer;
 
-		case detail::MeshStandardVB_Skinning:
+		case InterleavedVertexGroup::Skinning:
 			if (!m_skinningVertexBuffer) {
 				m_skinningVertexBuffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, GraphicsResourceUsage::Static);
 			}
@@ -716,6 +733,14 @@ VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsa
 			LN_UNREACHABLE();
 			return nullptr;
 	}
+}
+
+IndexBuffer* Mesh::acquireIndexBuffer()
+{
+	if (!m_indexBuffer) {
+		m_indexBuffer = makeObject<IndexBuffer>(m_indexCount, GraphicsResourceUsage::Static);
+	}
+	return m_indexBuffer;
 }
 
 void Mesh::resetVertexLayout()

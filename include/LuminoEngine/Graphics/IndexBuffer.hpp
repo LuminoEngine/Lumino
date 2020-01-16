@@ -45,6 +45,8 @@ public:
     /** インデックスバッファが保持するデータにアクセスします。このバッファが次の描画に使用されるとき、自動的に unmap されます。 */
     void* map(MapMode mode);
 
+	void unmap() {}	// TODO: 直接転送
+
     /** インデックスバッファをクリアします。 */
     void clear();
 
@@ -79,6 +81,8 @@ LN_CONSTRUCT_ACCESS:
 
     /** @copydoc create(int, IndexBufferFormat, const void*, GraphicsResourceUsage) */
     void init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage);
+
+	void init(int indexCount, GraphicsResourceUsage usage);
 
 private:
     int getIndexStride() const;

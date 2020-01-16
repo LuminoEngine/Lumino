@@ -1,8 +1,15 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Visual/LightComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/Light.hpp>
 //#include "../Rendering/ClusteredShadingSceneRenderer.h"
+
+#include <LuminoEngine/Shader/Shader.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include "../Rendering/RenderStage.hpp"
 
 namespace ln {
 
@@ -167,6 +174,17 @@ DirectionalLightComponent::~DirectionalLightComponent()
 void DirectionalLightComponent::init()
 {
 	VisualComponent::init();
+
+	auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/LightDisc.fx");
+	m_material = makeObject<Material>();
+	m_material->setShader(shader);
+
+
+	auto tex2 = Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Flare1.png");
+	auto shader2 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/FlareSprite.fx");
+	m_spriteMaterial = makeObject<Material>();
+	m_spriteMaterial->setMainTexture(tex2);
+	m_spriteMaterial->setShader(shader2);
 }
 
 void DirectionalLightComponent::setShadowCast(bool enabled)
@@ -194,7 +212,7 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 	if (m_enabled)
 	{
         const Matrix& t = worldObject()->worldMatrix();
-		context->addDirectionalLight(m_color, m_intensity, t.front());
+		context->addDirectionalLight(m_color, m_intensity, t.front(), context->world->mainDirectionalLight()->getDirectionalLightComponent() == this);
 
 		//if (m_shadowCasterPass != nullptr)
 		//{
@@ -206,6 +224,37 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 		//		0.5f, 100.0f);	// TODO: clip range
 		//}
 	}
+}
+
+void DirectionalLightComponent::onRender(RenderingContext* context)
+{
+
+#if 0
+
+	context->setAdditionalElementFlags(detail::RenderDrawElementTypeFlags::LightDisc);
+	context->setMaterial(m_material);
+	context->drawBox(3);
+	//context->lastRenderDrawElement()->elementType = detail::RenderDrawElementType::LightDisc;
+	
+	auto pos = worldObject()->position();
+	float d = Vector3::dot(pos - context->viewPoint()->viewPosition, context->viewPoint()->viewDirection);
+	Vector3 f = Vector3::normalize(context->viewPoint()->viewDirection * d);
+	Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+	Vector3 u = Vector3::cross(f, r);
+	auto actualTransform = Matrix(
+		r.x, r.y, r.z, 0.0f,
+		u.x, u.y, u.z, 0.0f,
+		f.x, f.y, f.z, 0.0f,
+		pos.x, pos.y, pos.z, 1.0f);
+	//context->setTransfrom(actualTransform);
+	context->setBlendMode(BlendMode::Add);
+	context->setDepthWriteEnabled(false);
+	//context->setBlendMode(BlendMode::Alpha);
+	context->setBaseTransfrom(actualTransform);
+	context->setMaterial(m_spriteMaterial);
+	context->drawScreenRectangle();
+	//context->drawPlane(1, 1);
+#endif
 }
 
 //==============================================================================

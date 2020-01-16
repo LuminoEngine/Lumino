@@ -40,6 +40,8 @@ public:
 	// インスタンスは、このパスの実行側の onBeginPass() で作っておく。
 	virtual RenderPass* renderPass() const = 0;
 
+	virtual bool filterElement(RenderDrawElement* element) const;
+
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -64,10 +66,14 @@ public:
 		RenderTargetTexture* renderTarget,
         const ClearInfo& clearInfo,
         const detail::CameraInfo& mainCameraInfo,
-        RendringPhase targetPhase);
+        RenderPhaseClass targetPhase,
+		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
+	const detail::SceneGlobalRenderParams* sceneGlobalParams() const { return m_sceneGlobalRenderParams; }
     const detail::CameraInfo& mainCameraInfo() const { return m_mainCameraInfo; }
+	const detail::DynamicLightInfo* mainLightInfo() const { return m_mainLightInfo; }
+
 
 protected:
 	SceneRenderer();
@@ -93,7 +99,7 @@ protected:
 
 
 private:
-	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer/*, const ClearInfo& clearInfo*/);
+	RenderPass* getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass /*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/);
 	static bool equalsFramebuffer(RenderPass* currentRenderPass, const FrameBuffer& fb);
 
 	detail::RenderingManager* m_manager;
@@ -101,6 +107,8 @@ private:
 	RenderFeatureBatchList m_renderFeatureBatchList;
 
     RenderingPipeline* m_renderingPipeline;
+	const detail::SceneGlobalRenderParams* m_sceneGlobalRenderParams;
+
 	//const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
 	//Ref<AbstractMaterial> m_defaultMaterial;
@@ -113,8 +121,9 @@ private:
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 
     CameraInfo m_mainCameraInfo;
+	const DynamicLightInfo* m_mainLightInfo = nullptr;
 
-    RendringPhase m_targetPhase;
+    RenderPhaseClass m_targetPhase;
 
 	// build by collect().
 	List<RenderDrawElement*> m_renderingElementList;

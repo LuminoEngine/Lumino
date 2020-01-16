@@ -23,6 +23,7 @@ class RenderingManager;
 class DrawElementList;
 class DrawElementListBuilder;
 class BuiltinEffectData;
+class RenderDrawElement;
 } // namespace detail
 
 
@@ -91,7 +92,7 @@ public:
 
 
 
-    void setRenderPhase(RendringPhase value);
+    void setRenderPhase(RenderPhaseClass value);
 
     // BuiltinEffectData
     //void setTransfrom(const Matrix& value);
@@ -172,7 +173,7 @@ public:
 
 	void addHemisphereLight(const Color& skyColor, const Color& groundColor, float intensity);
 
-	void addDirectionalLight(const Color& color, float intensity, const Vector3& direction);
+	void addDirectionalLight(const Color& color, float intensity, const Vector3& direction, bool mainLight);
 
 	void addPointLight(const Color& color, float intensity, const Vector3& position, float range, float attenuation);
 
@@ -188,6 +189,7 @@ public:
 
 
     RenderViewPoint* viewPoint() const;
+	World* world = nullptr;
 
 
     // TODO: internal
@@ -196,6 +198,8 @@ public:
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
+	//detail::RenderDrawElement* lastRenderDrawElement() const;
+	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

@@ -373,9 +373,13 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.fullscreen = false;
 		settings.mainWindowSettings.resizable = true;
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
-
-		if (m_settings.graphicsAPI != GraphicsAPI::OpenGL)
+		
+		if (m_settings.graphicsAPI == GraphicsAPI::Vulkan && GraphicsManager::checkVulkanSupported()) {
 			settings.mainWindowSettings.glfwNoAPI = true;
+		}
+		else {
+			settings.mainWindowSettings.glfwNoAPI = false; 
+		}
 
 		m_platformManager = ln::makeRef<PlatformManager>();
 		m_platformManager->init(settings);

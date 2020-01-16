@@ -69,6 +69,18 @@ void UnLigitingSceneRenderer::init(RenderingManager* manager)
 	addPass(pass);
 }
 
+void UnLigitingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
+{
+	ShaderParameter* v;
+	detail::ShaderSemanticsManager* ssm = detail::ShaderHelper::semanticsManager(shader);
+
+	// TODO: Test
+	v = shader->findParameter(u"_LensflareOcclusionMap");
+	if (v) {
+		v->setTexture(lightOcclusionMap);
+	}
+}
+
 } // namespace detail
 } // namespace ln
 

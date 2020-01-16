@@ -46,7 +46,8 @@ public:
 		RenderTargetTexture* renderTarget,
         //const ClearInfo& clearInfo,
         const detail::CameraInfo* mainCameraInfo,
-        detail::DrawElementListCollector* elementListCollector);
+        detail::DrawElementListCollector* elementListCollector,
+		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
 
 private:

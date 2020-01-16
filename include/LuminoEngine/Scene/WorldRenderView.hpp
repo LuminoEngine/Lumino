@@ -10,7 +10,9 @@ class World;
 class Camera;
 class RenderingContext;
 class StaticMeshModel;
+class ImageEffect;
 namespace detail {
+class ImageEffectRenderer;
 class SceneRenderingPipeline;
 class InternalSkyBox;
 }
@@ -25,6 +27,10 @@ class WorldRenderView
 public:
     void setTargetWorld(World* world);
 	void setCamera(Camera* camera);
+
+	void addImageEffect(ImageEffect* effect);
+	void removeImageEffect(ImageEffect* effect);
+
 
 	void setDebugGridEnabled(bool value) { m_visibleGridPlane = value; }
 	bool debugGridEnabled() const { return m_visibleGridPlane; }
@@ -41,6 +47,7 @@ public:
     virtual void render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget) override;
 
 protected:
+	virtual void onUpdateFrame(float elapsedSeconds) override;
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -58,6 +65,8 @@ private:
     Ref<World> m_targetWorld;
 	Ref<Camera> m_camera;
     Ref<RenderViewPoint> m_viewPoint;
+	Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
+
     Ref<Material> m_clearMaterial;
 	Ref<StaticMeshModel> m_skyProjectionPlane;
 

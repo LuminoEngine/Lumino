@@ -9,18 +9,21 @@ class IndexBuffer;
 class AbstractMaterial;
 class MeshContainer;
 class StaticMeshModel;
+class MeshGeometryBuilder;
 namespace detail {
 class MeshManager;
 
-enum MeshStandardVB
-{
-	MeshStandardVB_None = 0x00,
-	MeshStandardVB_Main = 0x01,
-	MeshStandardVB_Tangents = 0x02,
-	MeshStandardVB_Skinning = 0x04,
-};
 
 }
+
+
+enum class InterleavedVertexGroup
+{
+	Main,		// struct Vertex
+	Tangents,	// struct VertexTangents
+	Skinning,	// struct VertexBlendWeight
+	Undefined,
+};
 
 struct MeshSection
 {
@@ -207,11 +210,14 @@ LN_CONSTRUCT_ACCESS:
 	Mesh();
 	virtual ~Mesh();
 	void init();
+	void init(int vertexCount, int indexCount);
 	void init(const MeshView& meshView);
 
 private:
-	detail::MeshStandardVB getStandardElement(VertexElementUsage usage, int usageIndex) const;
+	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
 	VertexBuffer* acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
+	VertexBuffer* acquireVertexBuffer(InterleavedVertexGroup group);
+	IndexBuffer* acquireIndexBuffer();
 	void resetVertexLayout();
 
 	struct VertexBufferAttribute
@@ -232,6 +238,8 @@ private:
 
 	int m_vertexCount;
 	int m_indexCount;
+
+	friend class MeshGeometryBuilder;
 };
 
 // ひとつのメッシュモデルデータ内にいくつかのメッシュノードが含まれているとき、それを名前検索するために使用する。

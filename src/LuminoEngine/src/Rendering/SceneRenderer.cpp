@@ -38,6 +38,16 @@ void SceneRendererPass::onEndRender(SceneRenderer* sceneRenderer)
 {
 }
 
+bool SceneRendererPass::filterElement(RenderDrawElement* element) const
+{
+	if (element->flags().hasFlag(RenderDrawElementTypeFlags::LightDisc)) return false;
+
+	return (element->flags() & (
+		RenderDrawElementTypeFlags::Clear |
+		RenderDrawElementTypeFlags::Opaque |
+		RenderDrawElementTypeFlags::Transparent)) != RenderDrawElementTypeFlags::None;
+}
+
 //void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
 void SceneRendererPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
@@ -80,7 +90,8 @@ void SceneRenderer::render(
 	RenderTargetTexture* renderTarget,
     const ClearInfo& clearInfo,
     const CameraInfo& mainCameraInfo,
-    RendringPhase targetPhase)
+    RenderPhaseClass targetPhase,
+	const detail::SceneGlobalRenderParams* sceneGlobalParams)
 {
     graphicsContext->resetState();
 
@@ -89,6 +100,7 @@ void SceneRenderer::render(
     m_mainCameraInfo = mainCameraInfo;
     m_targetPhase = targetPhase;
     m_firstClearInfo = clearInfo;
+	m_sceneGlobalRenderParams = sceneGlobalParams;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	//coreRenderer->begin();
@@ -220,11 +232,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     m_renderFeatureBatchList.renderTarget = renderTarget;
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
 
+
+	RenderPass* defaultRenderPass = pass->renderPass();
+	assert(defaultRenderPass);
+
 	// Create batch list.
 	{
-		RenderPass* currentRenderPass = pass->renderPass();
-		assert(currentRenderPass);
-
+		RenderPass* currentRenderPass = defaultRenderPass;
 		RenderStage* currentStage = nullptr;
 		const Matrix* currentWorldMatrix = nullptr;
 		AbstractMaterial* currentFinalMaterial = nullptr;
@@ -232,104 +246,103 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
         //int count = 0;
 		for (RenderDrawElement* element : m_renderingElementList)
 		{
-			bool submitRequested = false;
-			RenderStage* stage = element->stage();
-			assert(stage->renderFeature);
-			
-			if (!stage->renderFeature->drawElementTransformNegate()) {
-				// バッチ機能を持たない RenderFeature であるので、毎回 flush する。
-				// 実際のところ Mesh とかを無理やりバッチ(Descripterを変更しないで連続描画)しようとしても、
-				// ほとんどの場合は WorldMatrix の変更が必要なので頑張ってやってもあまり恩恵がない。
-				submitRequested = true;
-			}
-			else {
-				// ステートの変わり目チェック
-				if (!currentStage || !currentStage->equals(stage)) {
+			if (pass->filterElement(element)) {
+				bool submitRequested = false;
+				RenderStage* stage = element->stage();
+				assert(stage->renderFeature);
+
+				if (!stage->renderFeature->drawElementTransformNegate()) {
+					// バッチ機能を持たない RenderFeature であるので、毎回 flush する。
+					// 実際のところ Mesh とかを無理やりバッチ(Descripterを変更しないで連続描画)しようとしても、
+					// ほとんどの場合は WorldMatrix の変更が必要なので頑張ってやってもあまり恩恵がない。
 					submitRequested = true;
 				}
-			}
+				else {
+					// ステートの変わり目チェック
+					if (!currentStage || !currentStage->equals(stage)) {
+						submitRequested = true;
+					}
+				}				
 
-			RenderPass* renderPass = nullptr;
-			if (submitRequested) {
-				renderPass = getOrCreateRenderPass(currentRenderPass, stage, renderTarget, depthBuffer/*, clearInfo*/);
-                clearInfo.flags = ClearFlags::None; // first only
-			}
-			else {
-				renderPass = currentRenderPass;
-			}
-
-			// ShaderDescripter
-			SubsetInfo subsetInfo;
-			const Matrix* worldMatrix = nullptr;
-			AbstractMaterial* finalMaterial = nullptr;
-			if (element->elementType == RenderDrawElementType::Geometry) {
-				if (stage->renderFeature->drawElementTransformNegate()) {
-					worldMatrix = nullptr;
+				RenderPass* renderPass = nullptr;
+				if (submitRequested) {
+					renderPass = getOrCreateRenderPass(currentRenderPass, stage, defaultRenderPass/*renderTarget, depthBuffer*//*, clearInfo*/);
+					clearInfo.flags = ClearFlags::None; // first only
 				}
 				else {
-					worldMatrix = &element->combinedWorldMatrix();
+					renderPass = currentRenderPass;
 				}
 
-				finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
-
-				if (finalMaterial)
-					subsetInfo.materialTexture = finalMaterial->mainTexture();
-				else
-					subsetInfo.materialTexture = nullptr;
-				subsetInfo.opacity = stage->getOpacityFinal(element);
-				subsetInfo.colorScale = stage->getColorScaleFinal(element);
-				subsetInfo.blendColor = stage->getBlendColorFinal(element);
-				subsetInfo.tone = stage->getToneFinal(element);
-			}
-			else {
-				subsetInfo.clear();
-			}
-
-			// ShaderDescripter に関係するパラメータの変更チェック
-			if (!submitRequested && m_renderFeatureBatchList.lastBatch() && !SubsetInfo::equals(currentSubsetInfo, subsetInfo)) {
-				submitRequested = true;
-			}
-
-			// Batch 確定
-			RenderFeatureBatch* submittedBatch = nullptr;
-			if (submitRequested) {
-				if (!currentStage) {
-					// 初回. 1つも draw 仕様としていないので submit は不要.
+				// ShaderDescripter
+				SubsetInfo subsetInfo;
+				const Matrix* worldMatrix = nullptr;
+				AbstractMaterial* finalMaterial = nullptr;
+				if (element->flags().hasFlag(RenderDrawElementTypeFlags::Clear)) {
+					subsetInfo.clear();
 				}
 				else {
-					currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
+					if (stage->renderFeature->drawElementTransformNegate()) {
+						worldMatrix = nullptr;
+					}
+					else {
+						worldMatrix = &element->combinedWorldMatrix();
+					}
+
+					finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
+
+					if (finalMaterial)
+						subsetInfo.materialTexture = finalMaterial->mainTexture();
+					else
+						subsetInfo.materialTexture = nullptr;
+					subsetInfo.opacity = stage->getOpacityFinal(element);
+					subsetInfo.colorScale = stage->getColorScaleFinal(element);
+					subsetInfo.blendColor = stage->getBlendColorFinal(element);
+					subsetInfo.tone = stage->getToneFinal(element);
+				}
+
+				// ShaderDescripter に関係するパラメータの変更チェック
+				if (!submitRequested && m_renderFeatureBatchList.lastBatch() && !SubsetInfo::equals(currentSubsetInfo, subsetInfo)) {
+					submitRequested = true;
+				}
+
+				// Batch 確定
+				RenderFeatureBatch* submittedBatch = nullptr;
+				if (submitRequested) {
+					if (!currentStage) {
+						// 初回. 1つも draw 仕様としていないので submit は不要.
+					}
+					else {
+						currentStage->renderFeature->submitBatch(graphicsContext, &m_renderFeatureBatchList);
+						submittedBatch = m_renderFeatureBatchList.lastBatch();
+					}
+				}
+
+				auto result = element->onRequestBatch(&m_renderFeatureBatchList, graphicsContext, stage->renderFeature, &subsetInfo);
+				if (result == RequestBatchResult::Submitted) {
+					if (submittedBatch) {
+						// もし↑の submitBatch() でも新しい Batch が作られたなら、onRequestBatch では新しい Batch を作ってはならない
+						// (実際空なので意味はなく、もし作ってしまうと↓でいろいろ set しているものが submitBatch の Batch に掛からなくなってしまう)
+						LN_CHECK(submittedBatch == m_renderFeatureBatchList.lastBatch());
+					}
 					submittedBatch = m_renderFeatureBatchList.lastBatch();
 				}
-			}
 
-			auto result = element->onRequestBatch(&m_renderFeatureBatchList, graphicsContext, stage->renderFeature, &subsetInfo);
-			if (result == RequestBatchResult::Submitted) {
 				if (submittedBatch) {
-					// もし↑の submitBatch() でも新しい Batch が作られたなら、onRequestBatch では新しい Batch を作ってはならない
-					// (実際空なので意味はなく、もし作ってしまうと↓でいろいろ set しているものが submitBatch の Batch に掛からなくなってしまう)
-					LN_CHECK(submittedBatch == m_renderFeatureBatchList.lastBatch());
+					submittedBatch->setWorldTransformPtr(currentWorldMatrix);
+					submittedBatch->setFinalMaterial(currentFinalMaterial);
+					submittedBatch->setSubsetInfo(currentSubsetInfo);
+					submittedBatch->setRenderPass(submittedBatch->ensureRenderPassOutside ? nullptr : currentRenderPass);
 				}
-				submittedBatch = m_renderFeatureBatchList.lastBatch();
-			}
 
-			if (submittedBatch) {
-				submittedBatch->setWorldTransformPtr(currentWorldMatrix);
-				submittedBatch->setFinalMaterial(currentFinalMaterial);
-				submittedBatch->setSubsetInfo(currentSubsetInfo);
-				submittedBatch->setRenderPass(submittedBatch->ensureRenderPassOutside ? nullptr : currentRenderPass);
+				if (submitRequested) {
+					currentWorldMatrix = worldMatrix;
+					currentFinalMaterial = finalMaterial;
+					currentSubsetInfo = subsetInfo;
+					currentStage = stage;
+					currentRenderPass = renderPass;
+					m_renderFeatureBatchList.setCurrentStage(currentStage);
+				}
 			}
-
-			if (submitRequested) {
-				currentWorldMatrix = worldMatrix;
-				currentFinalMaterial = finalMaterial;
-				currentSubsetInfo = subsetInfo;
-				currentStage = stage;
-				currentRenderPass = renderPass;
-				m_renderFeatureBatchList.setCurrentStage(currentStage);
-			}
-
-            //if (count == 14) break;
-            //count++;
 		}
 
 		if (currentStage) {
@@ -459,10 +472,13 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 
 
 #if 1
-    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
+    for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
     {
         for (auto& light : elementList->dynamicLightInfoList())
         {
+			if (light.mainLight) {
+				m_mainLightInfo = &light;
+			}
             onCollectLight(light);
         }
     }
@@ -492,7 +508,7 @@ void SceneRenderer::collect(/*SceneRendererPass* pass, */const detail::CameraInf
 		// TODO: とりあえず Default
 		
 
-		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RendringPhase::Default*/))
+		for (auto& elementList : m_renderingPipeline->elementListCollector()->lists(/*RenderPhaseClass::Default*/))
 		{
 			//elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
 			//elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
@@ -603,22 +619,27 @@ void SceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
 }
 
-RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer/*, const ClearInfo& clearInfo*/)
+RenderPass* SceneRenderer::getOrCreateRenderPass(RenderPass* currentRenderPass, RenderStage* stage, RenderPass* defaultRenderPass/*RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer*//*, const ClearInfo& clearInfo*/)
 {
 	assert(currentRenderPass);
 	FrameBuffer fb;
 	for (int i = 0; i < GraphicsContext::MaxMultiRenderTargets; i++) {
-		if (i == 0)
-			fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i] ? stage->frameBufferStageParameters->m_renderTargets[i] : defaultRenderTarget;
-		else
+		//if (i == 0)
+		//	fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i] ? stage->frameBufferStageParameters->m_renderTargets[i] : defaultRenderTarget;
+		//else
 			fb.renderTarget[i] = stage->frameBufferStageParameters->m_renderTargets[i];
 	}
-	fb.depthBuffer = (stage->frameBufferStageParameters->m_depthBuffer) ? stage->frameBufferStageParameters->m_depthBuffer : defaultDepthBuffer;
+	//fb.depthBuffer = (stage->frameBufferStageParameters->m_depthBuffer) ? stage->frameBufferStageParameters->m_depthBuffer : defaultDepthBuffer;
+	fb.depthBuffer = stage->frameBufferStageParameters->m_depthBuffer;
 
     //bool equalsClearInfo = 
 
 	if (equalsFramebuffer(currentRenderPass, fb)) {
 		return currentRenderPass;
+	}
+
+	if (!fb.renderTarget[0]) {
+		return defaultRenderPass;
 	}
 
 	RenderPass* renderPass;

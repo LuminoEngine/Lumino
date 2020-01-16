@@ -7,6 +7,7 @@
 #include "RenderingManager.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "RenderingPipeline.hpp"
+#include "RenderStage.hpp"
 
 namespace ln {
 namespace detail {
@@ -83,6 +84,96 @@ ShaderTechnique* DepthPrepass::selectShaderTechnique(
 }
 
 //==============================================================================
+// LightOcclusionPass
+
+LightOcclusionPass::LightOcclusionPass()
+{
+}
+
+void LightOcclusionPass::init()
+{
+	SceneRendererPass::init();
+	m_blackShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlackShader.fx");
+	m_blackShaderTechnique = m_blackShader->findTechnique(u"Default");
+	m_renderPass = makeObject<RenderPass>();
+}
+
+void LightOcclusionPass::onBeginRender(SceneRenderer* sceneRenderer)
+{
+	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
+	acquireBuffers(size.width, size.height);
+	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
+}
+
+void LightOcclusionPass::onEndRender(SceneRenderer* sceneRenderer)
+{
+	//RenderTargetTexture::releaseTemporary(m_lensflareOcclusionMap);
+	DepthBuffer::releaseTemporary(m_depthBuffer);
+	//m_lensflareOcclusionMap = nullptr;
+	m_depthBuffer = nullptr;
+}
+
+void LightOcclusionPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	m_renderPass->setRenderTarget(0, m_lensflareOcclusionMap);
+	m_renderPass->setDepthBuffer(m_depthBuffer);
+	m_renderPass->setClearValues(ClearFlags::All, Color::Black, 1.0f, 0);
+	//m_renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+}
+
+RenderPass* LightOcclusionPass::renderPass() const
+{
+	return m_renderPass;
+}
+
+bool LightOcclusionPass::filterElement(RenderDrawElement* element) const
+{
+	//return true;
+	//return SceneRendererPass::filterElement(element);
+	if (element->flags().hasFlag(RenderDrawElementTypeFlags::BackgroundSky)) return false;
+
+	return (element->flags() & (
+		RenderDrawElementTypeFlags::Opaque |
+		RenderDrawElementTypeFlags::Transparent |
+		RenderDrawElementTypeFlags::LightDisc)) != RenderDrawElementTypeFlags::None;
+}
+
+ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
+	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	Shader* requestedShader,
+	ShadingModel requestedShadingModel)
+{
+	if (!requestedShader)
+		return m_blackShaderTechnique;
+
+	ShaderTechniqueClass classSet;
+	classSet.defaultTechnique = false;
+	classSet.ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
+	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
+	classSet.meshProcess = requestedMeshProcess;
+	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
+	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
+	if (technique)
+		return technique;
+	else
+		return m_blackShaderTechnique;
+}
+
+void LightOcclusionPass::acquireBuffers(int width, int height)
+{
+	// TODO: getTemporary() 使った方がいいかも？
+	// ただ、SceneRenderer をまたいでポストエフェクトで使いたいので、get/releaseのスコープを Pipeline単位にしたりする必要がある。
+
+	if (!m_lensflareOcclusionMap || (m_lensflareOcclusionMap->width() != width || m_lensflareOcclusionMap->height() != height)) {
+		m_lensflareOcclusionMap = makeObject< RenderTargetTexture>(width, height, TextureFormat::RGBA8, false);
+	}
+
+	//if (!m_depthBuffer || (m_depthBuffer->width() != width || m_depthBuffer->height() != height)) {
+	//	m_depthBuffer = DepthBuffer::getTemporary(width, height);
+	//}
+}
+
+//==============================================================================
 // ClusteredShadingGeometryRenderingPass
 
 static const String ClusteredShadingGeometryRenderingPass_TechniqueName = _T("Forward_Geometry");
@@ -147,6 +238,11 @@ RenderPass* ClusteredShadingGeometryRenderingPass::renderPass() const
 {
 	return m_renderPass;
 }
+
+//bool ClusteredShadingGeometryRenderingPass::filterElement(RenderDrawElement* element) const
+//{
+//	return element->elementType == RenderDrawElementType::LightDisc;
+//}
 
 ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -322,6 +418,10 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 	m_depthPrepass = makeObject<DepthPrepass>();
 	//addPass(m_depthPrepass);
 
+
+	m_lightOcclusionPass = makeObject<LightOcclusionPass>();
+	addPass(m_lightOcclusionPass);
+
 	// pass "Geometry"
     auto geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
 	addPass(geometryPass);
@@ -424,8 +524,27 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* s
     v = ssm->getParameterBySemantics(BuiltinSemantics::CameraPosition2);
     if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
 
-    v = ssm->getParameterBySemantics(BuiltinSemantics::FogParams);
-    if (v) v->setVector(Vector4(m_fogParams.color.rgb() * m_fogParams.color.a, m_fogParams.density));
+	if (const auto* params = sceneGlobalParams()) {
+		v = ssm->getParameterBySemantics(BuiltinSemantics::FogColorAndDensity);
+		if (v) v->setVector(Vector4(params->fogColor.rgb() * params->fogColor.a, params->fogDensity));
+		
+		v = ssm->getParameterBySemantics(BuiltinSemantics::FogParams);
+		if (v) v->setVector(Vector4(params->startDistance, params->lowerHeight, params->upperHeight, params->heightFogDensity));
+	
+	
+
+		// TODO: Test
+		v = shader->findParameter(u"ln_MainLightDirection");
+		if (v) v->setVector(Vector4(mainLightInfo()->m_direction, 0.0f));
+	}
+
+	// TODO: Test
+	v = shader->findParameter(u"_LensflareOcclusionMap");
+	if (v) {
+		v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
+	}
+	
+
 #else
     //static Shader* lastShader = nullptr;
     //if (lastShader == shader) return;

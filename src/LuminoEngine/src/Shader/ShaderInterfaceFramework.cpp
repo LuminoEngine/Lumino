@@ -100,7 +100,8 @@ static BuiltinSemanticsNamePair g_builtinSemanticsNamePairMap[] =
         {_LT("ln_nearClip"), BuiltinSemantics::NearClip2},
         {_LT("ln_farClip"), BuiltinSemantics::FarClip2},
         {_LT("ln_cameraPos"), BuiltinSemantics::CameraPosition2},
-        {_LT("ln_FogParams"), BuiltinSemantics::FogParams},
+		{_LT("ln_FogColorAndDensity"), BuiltinSemantics::FogColorAndDensity},
+		{_LT("ln_FogParams"), BuiltinSemantics::FogParams},
 };
 
 ShaderSemanticsManager::ShaderSemanticsManager()
@@ -414,6 +415,10 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
     {
         outClassSet->defaultTechnique = true;
     }
+	else if (String::compare(str, u"LightDisc", CaseSensitivity::CaseInsensitive) == 0)
+	{
+		outClassSet->ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
+	}
     else
     {
         // TODO: splitRef

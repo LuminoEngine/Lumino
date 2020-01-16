@@ -203,12 +203,13 @@ detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* v
 
 void World::renderObjects()
 {
+	m_renderingContext->world = this;
     m_masterScene->renderObjects(m_renderingContext);
     for (auto& scene : m_sceneList) {
         scene->renderObjects(m_renderingContext);
     }
 
-    m_renderingContext->pushState(true);
+	m_renderingContext->pushState(true);
     m_effectContext->render(m_renderingContext);
     m_renderingContext->popState();
 }

@@ -8,11 +8,11 @@ class ClusteredShadingSceneRenderer;
 
 #if 1
 
-struct FogParams
-{
-	Color	color;
-	float	density = 0.0f;
-};
+//struct FogParams
+//{
+//	Color	color;
+//	float	density = 0.0f;
+//};
 
 class DepthPrepass
 	: public SceneRendererPass
@@ -45,6 +45,36 @@ public:	// TODO:
 	Ref<RenderPass> m_renderPass;
 };
 
+
+class LightOcclusionPass
+	: public SceneRendererPass
+{
+public:
+	LightOcclusionPass();
+	void init();
+
+	const Ref<RenderTargetTexture>& lightOcclusionMap() const { return m_lensflareOcclusionMap; }
+
+	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
+	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
+	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual RenderPass* renderPass() const;
+	virtual bool filterElement(RenderDrawElement* element) const;
+	virtual ShaderTechnique* selectShaderTechnique(
+		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		Shader* requestedShader,
+		ShadingModel requestedShadingModel) override;
+
+public:
+	void acquireBuffers(int width, int height);
+
+	Ref<Shader> m_blackShader;
+	Ref<ShaderTechnique> m_blackShaderTechnique;
+	Ref<RenderTargetTexture> m_lensflareOcclusionMap;
+	Ref<DepthBuffer> m_depthBuffer;
+	Ref<RenderPass> m_renderPass;
+};
+
 class ClusteredShadingGeometryRenderingPass
 	: public SceneRendererPass
 {
@@ -56,6 +86,8 @@ public:
 	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
+
+	//virtual bool filterElement(RenderDrawElement* element) const override;
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
@@ -118,8 +150,10 @@ public:
 	virtual ~ClusteredShadingSceneRenderer();
 	void init(RenderingManager* manager);
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
-	void setFogParams(const FogParams& params) { m_fogParams = params; }
+	//void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
+	const Ref<LightOcclusionPass>& lightOcclusionPass() const { return m_lightOcclusionPass; }
+
 	const LightClusters& lightClusters() const { return m_lightClusters; }
 
 protected:
@@ -133,8 +167,9 @@ protected:
 private:
 	LightClusters				m_lightClusters;
 	//SceneGlobalRenderSettings	m_renderSettings;
-	FogParams					m_fogParams;
+	//FogParams					m_fogParams;
 	Ref<DepthPrepass>			m_depthPrepass;
+	Ref<LightOcclusionPass> m_lightOcclusionPass;
 };
 #endif
 

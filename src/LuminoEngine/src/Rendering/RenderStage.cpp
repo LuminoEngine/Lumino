@@ -37,17 +37,42 @@ RenderDrawElement::~RenderDrawElement()
 {
 }
 
-void RenderDrawElement::calculateActualPriority()
+void RenderDrawElement::fixFlags(RenderDrawElementTypeFlags additionalElementFlags)
 {
+	m_flags = RenderDrawElementTypeFlags::None;
+
 	auto* material = m_stage->getMaterialFinal(nullptr, nullptr);
 	if (!material) {
-		m_actualPriority = priority;
+		BlendMode blendMode = m_stage->getBlendModeFinal(material);
+		if (blendMode == BlendMode::Normal)
+			m_flags |= RenderDrawElementTypeFlags::Opaque;
+		else
+			m_flags |= RenderDrawElementTypeFlags::Transparent;
 	}
 	else {
-		BlendMode blendMode = m_stage->getBlendModeFinal(material);
-		int factor = (blendMode == BlendMode::Normal) ? 1 : 2;
-		m_actualPriority = (factor << 32) | priority;
+		m_flags |= RenderDrawElementTypeFlags::Opaque;
 	}
+
+	m_flags |= additionalElementFlags;
+}
+
+void RenderDrawElement::calculateActualPriority()
+{
+	uint64_t base = 0;
+	if (m_flags.hasFlag(RenderDrawElementTypeFlags::Opaque))
+		base |= 2000;
+	else if (m_flags.hasFlag(RenderDrawElementTypeFlags::BackgroundSky))
+		base |= 3000;
+	else if (m_flags.hasFlag(RenderDrawElementTypeFlags::Transparent))
+		base |= 4000;
+
+	uint64_t user = 0;
+	auto* material = m_stage->getMaterialFinal(nullptr, nullptr);
+	if (!material) {
+		user = priority;
+	}
+	
+	m_actualPriority = (base << 32) | priority;
 }
 
 //void RenderDrawElement::onElementInfoOverride(ElementInfo* elementInfo, ShaderTechniqueClass_MeshProcess* meshProcess)
@@ -446,13 +471,13 @@ void DrawElementListCollector::clear()
 	//}
 }
 
-void DrawElementListCollector::addDrawElementList(/*RendringPhase phase, */DrawElementList* list)
+void DrawElementListCollector::addDrawElementList(/*RenderPhaseClass phase, */DrawElementList* list)
 {
     m_lists.add(list);
 	//m_lists[(int)phase].add(list);
 }
 
-const List<DrawElementList*>& DrawElementListCollector::lists(/*RendringPhase phase*/) const
+const List<DrawElementList*>& DrawElementListCollector::lists(/*RenderPhaseClass phase*/) const
 {
     return m_lists;// [(int)phase];
 }

@@ -180,9 +180,14 @@ void DrawElementListBuilder::setRenderPriority(int value)
     primaryState()->renderPriority = value;
 }
 
-void DrawElementListBuilder::setRenderPhase(RendringPhase value)
+void DrawElementListBuilder::setRenderPhase(RenderPhaseClass value)
 {
     primaryState()->rendringPhase = value;
+}
+
+void DrawElementListBuilder::setAdditionalElementFlags(RenderDrawElementTypeFlags value)
+{
+	primaryState()->additionalElementFlags = value;
 }
 
 void DrawElementListBuilder::setOpacity(float value)
@@ -357,7 +362,7 @@ RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFea
 	}
 }
 
-void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement)
+void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement, RenderStage* stage)
 {
     // newElement が持つべき BuiltinEffectData を決定する
     BuiltinEffectData* data = nullptr;
@@ -392,6 +397,7 @@ void DrawElementListBuilder::prepareRenderDrawElement(RenderDrawElement* newElem
 
     newElement->priority = primaryState()->renderPriority;
     newElement->targetPhase = primaryState()->rendringPhase;
+	newElement->fixFlags(primaryState()->additionalElementFlags);
     newElement->commandFence = m_currentCommandFence;
 }
 
@@ -405,7 +411,8 @@ void DrawElementListBuilder::State::reset()
     transform = Matrix::Identity;
     renderPriority = 0;
     baseTransform = nullptr;
-    rendringPhase = RendringPhase::Default;
+    rendringPhase = RenderPhaseClass::Geometry;
+	additionalElementFlags = RenderDrawElementTypeFlags::None;
 	font = nullptr;
 	textColor = Color::Black;
 }
@@ -420,6 +427,7 @@ void DrawElementListBuilder::State::copyFrom(const State* other)
     renderPriority = other->renderPriority;
     baseTransform = other->baseTransform;
     rendringPhase = other->rendringPhase;
+	additionalElementFlags = other->additionalElementFlags;
 }
 
 } // namespace detail

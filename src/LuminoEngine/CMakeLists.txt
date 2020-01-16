@@ -205,16 +205,7 @@ file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/M
 
 file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp)
 
-set(LN_SOURCES_ImageEffect
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/ImageEffect.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/ScreenBlurImageEffect.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/ToneImageEffect.hpp
-    src/ImageEffect/ImageEffect.cpp
-    src/ImageEffect/ImageEffectRenderer.cpp
-    src/ImageEffect/ImageEffectRenderer.hpp
-    src/ImageEffect/ScreenBlurImageEffect.cpp
-    src/ImageEffect/ToneImageEffect.cpp
-)
+file(GLOB LN_SOURCES_ImageEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/*.hpp src/ImageEffect/*.cpp src/ImageEffect/*.hpp)
 
 file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp)
 
