@@ -16,6 +16,7 @@
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Mesh/MeshGenerater.hpp"
+#include "../ImageEffect/ImageEffectRenderer.hpp"
 #include "SceneManager.hpp"
 #include "InternalSkyBox.hpp"
 #include "../Effect/EffectManager.hpp"  // TODO: test
@@ -116,6 +117,20 @@ void WorldRenderView::setCamera(Camera* camera)
     }
 }
 
+void WorldRenderView::addImageEffect(ImageEffect* effect)
+{
+	if (!m_imageEffectRenderer) {
+		m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
+	}
+	m_imageEffectRenderer->addImageEffect(effect);
+}
+
+void WorldRenderView::removeImageEffect(ImageEffect* effect)
+{
+	if (m_imageEffectRenderer) {
+		m_imageEffectRenderer->removeImageEffect(effect);
+	}
+}
 
 void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget)
 {
@@ -351,7 +366,13 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
             detail::EngineDomain::effectManager()->testDraw(renderingContext);
             //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
+
+
+			if (m_imageEffectRenderer) {
+				m_imageEffectRenderer->render(renderingContext, renderTarget);
+			}
         }
+
 
 
         assert(elementListManagers().size() == 1);
@@ -523,6 +544,13 @@ void WorldRenderView::adjustGridPlane(const ViewFrustum& viewFrustum, RenderView
         //mesh->setVertex(2, Vertex{ Vector3(-1, -1, 1), Vector3::UnitY, Vector2(-1.0f, -1.0f), Color::White });
         //mesh->setVertex(3, Vertex{ Vector3(1, -1, 1), Vector3::UnitY, Vector2(1.0f, -1.0f), Color::White });
     }
+}
+
+void WorldRenderView::onUpdateFrame(float elapsedSeconds)
+{
+	if (m_imageEffectRenderer) {
+		m_imageEffectRenderer->updateFrame(elapsedSeconds);
+	}
 }
 
 void WorldRenderView::onRoutedEvent(UIEventArgs* e)

@@ -198,7 +198,8 @@ public:
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
-	detail::RenderDrawElement* lastRenderDrawElement() const;
+	//detail::RenderDrawElement* lastRenderDrawElement() const;
+	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

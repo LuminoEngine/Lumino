@@ -20,6 +20,7 @@ public:
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) override;
 
+
 private:
 	Ref<Shader> m_defaultShader;
 	Ref<RenderPass> m_renderPass;
@@ -31,7 +32,14 @@ class UnLigitingSceneRenderer
 public:
 	void init(RenderingManager* manager);
 
+	virtual void onSetAdditionalShaderPassVariables(Shader* shader) override;
+
+	const Ref<UnLigitingSceneRendererPass>& rendererPass() const { return m_rendererPass; }
+
+	RenderTargetTexture* lightOcclusionMap = nullptr;
+
 private:
+	Ref<UnLigitingSceneRendererPass> m_rendererPass;
 };
 
 } // namespace detail

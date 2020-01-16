@@ -32,6 +32,7 @@
 #include <LuminoEngine/UI/UIPropertyFields.hpp>
 #include <LuminoEngine/Tilemap/Voxel.hpp>
 #include <LuminoEngine/Scene/TransformControls.hpp>
+#include <LuminoEngine/ImageEffect/LightShaftImageEffect.hpp>
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 using namespace ln;
 
@@ -500,6 +501,9 @@ int main(int argc, char** argv)
 
 	//auto bloomEffect = BloomImageEffect ::create();
  //   Engine::mainViewport()->addImageEffect(bloomEffect);
+
+	auto lightShaft = LightShaftImageEffect::create();
+	Engine::mainRenderView()->addImageEffect(lightShaft);
 
 #if 0
     auto window1 = UIWindow::create();

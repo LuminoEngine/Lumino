@@ -53,6 +53,8 @@ public:
 	LightOcclusionPass();
 	void init();
 
+	const Ref<RenderTargetTexture>& lightOcclusionMap() const { return m_lensflareOcclusionMap; }
+
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
 	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
@@ -64,6 +66,8 @@ public:
 		ShadingModel requestedShadingModel) override;
 
 public:
+	void acquireBuffers(int width, int height);
+
 	Ref<Shader> m_blackShader;
 	Ref<ShaderTechnique> m_blackShaderTechnique;
 	Ref<RenderTargetTexture> m_lensflareOcclusionMap;
@@ -148,6 +152,8 @@ public:
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	//void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
+	const Ref<LightOcclusionPass>& lightOcclusionPass() const { return m_lightOcclusionPass; }
+
 	const LightClusters& lightClusters() const { return m_lightClusters; }
 
 protected:

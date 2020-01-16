@@ -184,8 +184,8 @@ enum class RenderDrawElementTypeFlags : uint8_t
 	Transparent = 1 << 3,	// 半透明
 
 	// 外部指定
-	LightDisc = 1 << 3,	// 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
-	BackgroundSky = 1 << 4,
+	LightDisc = 1 << 4,	// 半透明オブジェクトの後ろにあるライトもレイ引いたりレンズフレアかけたりしたいので、ElementList に含め、Zソートなどの対象として描画する
+	BackgroundSky = 1 << 5,
 };
 LN_FLAGS_OPERATORS(RenderDrawElementTypeFlags);
 

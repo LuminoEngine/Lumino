@@ -228,11 +228,12 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 
 void DirectionalLightComponent::onRender(RenderingContext* context)
 {
-#if 0
+	context->setAdditionalElementFlags(detail::RenderDrawElementTypeFlags::LightDisc);
 	context->setMaterial(m_material);
 	context->drawBox(3);
-	context->lastRenderDrawElement()->elementType = detail::RenderDrawElementType::LightDisc;
+	//context->lastRenderDrawElement()->elementType = detail::RenderDrawElementType::LightDisc;
 
+#if 0
 
 	
 	auto pos = worldObject()->position();

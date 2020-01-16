@@ -40,6 +40,8 @@ void SceneRendererPass::onEndRender(SceneRenderer* sceneRenderer)
 
 bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 {
+	if (element->flags().hasFlag(RenderDrawElementTypeFlags::LightDisc)) return false;
+
 	return (element->flags() & (
 		RenderDrawElementTypeFlags::Clear |
 		RenderDrawElementTypeFlags::Opaque |

@@ -101,15 +101,15 @@ void LightOcclusionPass::init()
 void LightOcclusionPass::onBeginRender(SceneRenderer* sceneRenderer)
 {
 	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
-	m_lensflareOcclusionMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+	acquireBuffers(size.width, size.height);
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 }
 
 void LightOcclusionPass::onEndRender(SceneRenderer* sceneRenderer)
 {
-	RenderTargetTexture::releaseTemporary(m_lensflareOcclusionMap);
+	//RenderTargetTexture::releaseTemporary(m_lensflareOcclusionMap);
 	DepthBuffer::releaseTemporary(m_depthBuffer);
-	m_lensflareOcclusionMap = nullptr;
+	//m_lensflareOcclusionMap = nullptr;
 	m_depthBuffer = nullptr;
 }
 
@@ -128,6 +128,10 @@ RenderPass* LightOcclusionPass::renderPass() const
 
 bool LightOcclusionPass::filterElement(RenderDrawElement* element) const
 {
+	//return true;
+	//return SceneRendererPass::filterElement(element);
+	if (element->flags().hasFlag(RenderDrawElementTypeFlags::BackgroundSky)) return false;
+
 	return (element->flags() & (
 		RenderDrawElementTypeFlags::Opaque |
 		RenderDrawElementTypeFlags::Transparent |
@@ -153,6 +157,20 @@ ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 		return technique;
 	else
 		return m_blackShaderTechnique;
+}
+
+void LightOcclusionPass::acquireBuffers(int width, int height)
+{
+	// TODO: getTemporary() 使った方がいいかも？
+	// ただ、SceneRenderer をまたいでポストエフェクトで使いたいので、get/releaseのスコープを Pipeline単位にしたりする必要がある。
+
+	if (!m_lensflareOcclusionMap || (m_lensflareOcclusionMap->width() != width || m_lensflareOcclusionMap->height() != height)) {
+		m_lensflareOcclusionMap = makeObject< RenderTargetTexture>(width, height, TextureFormat::RGBA8, false);
+	}
+
+	//if (!m_depthBuffer || (m_depthBuffer->width() != width || m_depthBuffer->height() != height)) {
+	//	m_depthBuffer = DepthBuffer::getTemporary(width, height);
+	//}
 }
 
 //==============================================================================
