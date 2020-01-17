@@ -165,27 +165,22 @@ void UIViewport::onRender(UIRenderingContext* context)
 
 	//
 
+	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
+	// 現状、RenderPhaseClass::ImageEffect を使っている blit を利用する必要がある。
+	// なお、現時点では blit は スクリーン全体への転送を想定しているため、View Proj Matrix を受け取らないようになっている。
+	// その調整のため、ここでいろいろ変換行列を計算している。
+	// 後々、UIVew 描画の RT キャッシュとかも考えているので、blitImage(Rect, Matrial) とかにまとめたい。
 	auto* vp = context->viewPoint();
 	Matrix t;
 	t.scale(1.0f, -1.0f, 0);
 	t.translate(1, 1, 0);
 	t.scale((viewSize.width * 0.5),  (viewSize.height * 0.5), 0);
-	//Matrix t = Matrix::makePerspective2DLH(vp->viewPixelSize.width, vp->viewPixelSize.height, 0, 1);
 	t *= context->baseTransform();
 	t *= vp->viewProjMatrix;
 	context->setBaseTransfrom(t);
-	//context->setTransfrom(t);
-	
-
-	//context->pushState();
 	context->setCullingMode(CullMode::None);
-	//context->setDepthTestEnabled(false);
-	//context->setBaseTransfrom(Matrix::Identity);
-	//context->setBlendMode(BlendMode::Normal);
     m_blitMaterial->setMainTexture(m_primaryTarget);
 	context->blit(m_blitMaterial, nullptr);
-	//context->popState();
-
 
 	//context->drawSolidRectangle(Rect(0, 0, 100, 100), Color::Blue);
 
