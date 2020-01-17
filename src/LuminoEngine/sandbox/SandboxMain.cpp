@@ -268,12 +268,13 @@ private:
 void Example_MessageWindow();
 void Example_Navigator();
 void Example_UIControls();
+void Example_Tilemap();
 
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
-    if (0) {
+    if (1) {
         GlobalLogger::addStdErrAdapter();
         EngineSettings::setEngineFeatures(EngineFeature::Experimental);
         EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
@@ -282,7 +283,8 @@ int main(int argc, char** argv)
 
         //Example_MessageWindow();
         //Example_Navigator();
-        Example_UIControls();
+        //Example_UIControls();
+		Example_Tilemap();
         return 0;
     }
 
