@@ -194,6 +194,7 @@ public:
 
     // TODO: internal
     void setBaseTransfrom(const Optional<Matrix>& value);
+	const Matrix& baseTransform() const;
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);

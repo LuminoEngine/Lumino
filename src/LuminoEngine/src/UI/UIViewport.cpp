@@ -145,11 +145,12 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//graphicsContext->beginRenderPass(m_renderPass);
  //   graphicsContext->clear(ClearFlags::All, Color::Gray);	// TODO: renderPass の clear でカバー
 
+	//context->pushState();
     for (auto& view : m_renderViews) {
         view->render(graphicsContext, m_primaryTarget);
     }
     m_imageEffectRenderer->render(context, m_primaryTarget);
-
+	//context->popState();
 
     //context->blit(primaryTarget, renderTarget);
 
@@ -160,10 +161,33 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//context->blit(tmp, m_primaryTarget);
 
 
-    // TODO: blit 使う
+	
+
+	//
+
+	auto* vp = context->viewPoint();
+	Matrix t;
+	t.scale(1.0f, -1.0f, 0);
+	t.translate(1, 1, 0);
+	t.scale((viewSize.width * 0.5),  (viewSize.height * 0.5), 0);
+	//Matrix t = Matrix::makePerspective2DLH(vp->viewPixelSize.width, vp->viewPixelSize.height, 0, 1);
+	t *= context->baseTransform();
+	t *= vp->viewProjMatrix;
+	context->setBaseTransfrom(t);
+	//context->setTransfrom(t);
+	
+
+	//context->pushState();
+	context->setCullingMode(CullMode::None);
+	//context->setDepthTestEnabled(false);
+	//context->setBaseTransfrom(Matrix::Identity);
+	//context->setBlendMode(BlendMode::Normal);
     m_blitMaterial->setMainTexture(m_primaryTarget);
 	context->blit(m_blitMaterial, nullptr);
-    //context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
+	//context->popState();
+
+
+	//context->drawSolidRectangle(Rect(0, 0, 100, 100), Color::Blue);
 
     //RenderTargetTexture::releaseTemporary(primaryTarget);
 

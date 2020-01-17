@@ -1549,14 +1549,20 @@ Matrix Matrix::makeOrthoRH(float width, float height, float nearZ, float farZ)
 Matrix Matrix::makePerspective2DLH(float width, float height, float nearZ, float farZ)
 {
     return Matrix(
-        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f / (farZ - nearZ), 0.0f, -1.0f, 1.0f, -nearZ / (nearZ - farZ) + 1.0f, 1.0f);
+        2.0f / width, 0.0f, 0.0f, 0.0f,
+		0.0f, -2.0f / height, 0.0f, 0.0f,
+		0.0f, 0.0f, -1.0f / (farZ - nearZ), 0.0f,
+		-1.0f, 1.0f, -nearZ / (nearZ - farZ) + 1.0f, 1.0f);
 }
 
 // static
 Matrix Matrix::makePerspective2DRH(float width, float height, float nearZ, float farZ)
 {
     return Matrix(
-        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f / (nearZ - farZ), 0.0f, -1.0f, 1.0f, nearZ / (nearZ - farZ) + 1.0f, 1.0f);
+        2.0f / width,0.0f, 0.0f, 0.0f,
+		0.0f, -2.0f / height, 0.0f, 0.0f,
+		0.0f, 0.0f, -1.0f / (nearZ - farZ), 0.0f,
+		-1.0f, 1.0f, nearZ / (nearZ - farZ) + 1.0f, 1.0f);
 }
 
 // static
