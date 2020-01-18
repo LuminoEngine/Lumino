@@ -18,19 +18,29 @@ class App_Example_Tilemap : public Application
 		auto tileset = ln::makeObject<ln::Tileset>();
 		tileset->reset(tilesetMaterial, 16, 16);
 
+		auto autotileset = ln::makeObject<ln::AutoTileset>();
+		auto autotilesetTexture = ln::Texture2D::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/AutoTileTest-1.png");
+		auto autotilesetMaterial = ln::Material::create(autotilesetTexture);
+		autotileset->material = autotilesetMaterial;
+		tileset->addAutoTileset(autotileset);
 
 		auto tilemap = ln::makeObject<ln::Tilemap>();
 		tilemap->setShadingModel(ln::ShadingModel::UnLighting);
-		//scene->addObject(tilemap);
 
 		auto layer = ln::makeObject<ln::TilemapLayer>();
 		layer->resize(60, 30);
 		layer->setTileSize(ln::Size(1, 1));
-		layer->setTileId(0, 0, 1);
-		layer->setTileId(1, 1, 1);
-		for (auto x = 0; x < layer->getWidth(); x++) {
-			layer->setTileId(x, layer->getHeight() - 1, 1);
-		}
+		//for (auto x = 0; x < layer->getWidth(); x++) {
+		//	layer->setTileId(x, layer->getHeight() - 1, 1);
+		//}
+
+		layer->setTileId(0, layer->getHeight() - 1, 16384);
+		layer->setTileId(1, layer->getHeight() - 1, 16385);
+		layer->setTileId(2, layer->getHeight() - 1, 16386);
+		layer->setTileId(3, layer->getHeight() - 1, 16387);
+		layer->putAutoTile(1, layer->getHeight() - 2, 0);
+		layer->putAutoTile(1, layer->getHeight() - 3, 0);
+
 		auto tilemapModel = ln::makeObject<ln::TilemapModel>();
 		tilemapModel->setTileset(tileset);
 		tilemapModel->addLayer(layer);

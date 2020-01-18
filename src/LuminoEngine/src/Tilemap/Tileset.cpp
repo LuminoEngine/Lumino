@@ -7,6 +7,78 @@
 #include "../Rendering/SpriteRenderFeature.hpp"
 
 namespace ln {
+namespace detail {
+
+AutoTileInfo g_AutoTileTable[Tileset::AutoTileUnitStride] =
+{
+	// Block tiles.
+	/*[0]*/  {1,1,1,1},{2,1,1,1},{3,3,1,1},{1,2,1,1}, {2,2,1,1},{4,1,4,1},{5,3,4,1},{4,2,4,1},
+	/*[8]*/  {1,4,1,4},{2,4,1,4},{3,5,1,4},{4,4,4,4}, {5,5,4,4},{1,1,2,1},{2,1,2,1},{3,3,2,1},
+	/*[16]*/ {1,2,2,1},{2,2,2,1},{4,3,4,1},{1,4,2,4}, {2,4,2,4},{3,5,2,4},{1,1,3,3},{2,1,3,3},
+	/*[24]*/ {3,3,3,3},{1,2,3,3},{2,2,3,3},{4,1,5,3}, {5,3,5,3},{4,2,5,3},{1,4,3,5},{2,4,3,5},
+	/*[32]*/ {3,5,3,5},{4,4,5,5},{5,5,5,5},{1,1,1,2}, {2,1,1,2},{3,3,1,2},{1,2,1,2},{2,2,1,2},
+	/*[40]*/ {4,1,4,2},{5,3,4,2},{4,2,4,2},{1,1,2,2}, {2,1,2,2},{3,3,2,2},{1,2,2,2},{2,2,2,2},
+
+	// Slope tiles.
+	/*[48]*/ {6,1,1,1},{1,6,1,1},{4,6,4,1},{6,4,1,4}, {1,1,6,1},{3,3,6,1},{1,6,6,1},{1,1,2,6},
+	/*[56]*/ {1,2,6,1},{1,4,6,4},{3,5,6,4},{6,1,3,3}, {1,6,3,3},{4,6,5,3},{6,4,3,5},{1,1,1,6},
+	/*[64]*/ {6,1,1,6},{6,1,1,2},{2,1,1,6},{3,3,1,6}, {4,1,4,6},{5,3,4,6},{0,0,0,0},{0,0,0,0},
+
+	// Half-Slope tiles.
+	/*[72]*/ {7,1,1,1},{8,1,1,1},{1,7,1,1},{1,8,1,1}, {4,8,4,1},{8,4,1,4},{1,1,7,1},{1,1,8,1},
+	/*[80]*/ {3,3,7,1},{1,7,2,1},{1,8,2,1},{1,2,7,1}, {1,2,8,1},{1,4,8,4},{7,1,3,3},{1,7,3,3},
+	/*[88]*/ {1,1,1,7},{1,1,1,8},{7,1,1,2},{8,1,1,2}, {2,1,1,7},{2,1,1,8},{3,3,1,7},{4,1,4,8},
+
+	/*[96]*/ {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
+	/*[104]*/{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
+	/*[112]*/{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
+	/*[120]*/{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
+};
+
+float g_AutoTileSourcePosTable_StandardFormat[4][8] =
+{
+	// [top-left]
+	{ 25, 2, 17, 24, 0, 44, 12, 57 },
+
+	// [top-right]
+	{ 26, 3, 18, 27, 1, 45, 15, 58 },
+
+	// [bottom-left]
+	{ 33, 10, 41, 32, 8, 46, 20, 53 },
+
+	// [bottom-light]
+	{ 34, 11, 42, 35, 9, 47, 23, 54 },
+};
+
+} // namespace detail
+
+//==============================================================================
+// AutoTileset
+
+AutoTileset::AutoTileset()
+{
+}
+
+void AutoTileset::init()
+{
+	Object::init();
+}
+
+Rect AutoTileset::getSourceRectUV(int autotileId, int component) const
+{
+	if (LN_REQUIRE(autotileId < Tileset::AutoTileUnitStride)) return Rect();
+
+	uint8_t subtile = detail::g_AutoTileTable[autotileId].subtiles[component];
+	if (LN_REQUIRE(subtile > 0)) return Rect();
+
+	float ti = detail::g_AutoTileSourcePosTable_StandardFormat[component][subtile - 1];
+	float tx = std::fmod(ti, 8.0f);
+	float ty = std::floor(ti / 8.0f);
+
+	// TODO: とりあえず 8x8px 固定
+	float sz = 8.0f;
+	return Rect(tx * sz, ty * sz, sz, sz);
+}
 
 //==============================================================================
 // Tileset
@@ -73,6 +145,17 @@ void Tileset::setTileImageRect(int tileId, int x, int y, int width, int height)
     m_tiles[tileId].sourceRect.set(x, y, width, height);
 }
 
+uint8_t Tileset::tilePassageFlags(int tileId) const
+{
+	if (tileId < AutoTileOffset) {
+		return m_tiles[tileId].passageFlags;
+	}
+	else {
+		// TODO:
+		return 0x00;
+	}
+}
+
 Material* Tileset::material() const
 {
     return m_material;
@@ -84,30 +167,72 @@ void Tileset::setMaterial(Material* material)
     resetInfo();
 }
 
+void Tileset::addAutoTileset(AutoTileset* autoTileset)
+{
+	if (LN_REQUIRE(m_autoTilesets.size() < MaxAutoTilests)) return;
+	m_autoTilesets.add(autoTileset);
+}
+
 void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos, const Size& tileSize)
 {
     if (!m_material) return;
-    if (tileId <= 0 || m_tiles.size() <= tileId) return;
 
-    Texture* texture = m_material->mainTexture();
-    if (!texture) return;
+	int autoTilesetIndex = autoTileIndex(tileId);
+	if (autoTilesetIndex >= 0) {
+		int localTileId = autoTileLocalId(tileId);
+		const auto& autotile = detail::g_AutoTileTable[localTileId];
+		const auto& autotilest = m_autoTilesets[autoTilesetIndex];
 
-    //float sx = m_tileUVSize.width * (tileId % m_horizontalTileCount);
-    //float sy = m_tileUVSize.height * (tileId / m_horizontalTileCount);
-    
-    const auto& tile = m_tiles[tileId];
+		Size hsz(tileSize.width / 2, tileSize.height / 2);
+		//float w1 = m_tilePixelWidth / 2;
+		//float h1 = m_tilePixelHeight / 2;
+		Vector3 points[] = {
+			{pos.x, pos.y + hsz.height, 0},
+			{pos.x + hsz.width, pos.y + hsz.height, 0},
+			{pos.x, pos.y, 0},
+			{pos.x + hsz.width, pos.y, 0},
+		};
+		for (int i = 0; i < 4; i++) {
+			Rect sourceRect = autotilest->getSourceRectUV(localTileId, i);
 
-    //Size worldSize(tile.sourceRect.width * m_tileScale.x, tile.sourceRect.height * m_tileScale.y);
-    Size renderSize;
-    Rect renderSourceRect;
-    detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
-        texture, tileSize, tile.sourceRect, &renderSize, &renderSourceRect);
+			Texture* texture = autotilest->material->mainTexture();
 
-    context->drawSprite(
-        Matrix::makeTranslation(pos), tileSize, Vector2::Zero,
-        renderSourceRect, Color::White,
-        SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
-        m_material);
+			Size renderSize;
+			Rect renderSourceRect;
+			detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+				texture, tileSize, sourceRect, &renderSize, &renderSourceRect);
+
+			context->drawSprite(
+				Matrix::makeTranslation(points[i]), hsz, Vector2::Zero,
+				renderSourceRect, Color::White,
+				SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
+				autotilest->material);
+		}
+
+	}
+	else {
+		if (tileId <= 0 || m_tiles.size() <= tileId) return;
+
+		Texture* texture = m_material->mainTexture();
+		if (!texture) return;
+
+		//float sx = m_tileUVSize.width * (tileId % m_horizontalTileCount);
+		//float sy = m_tileUVSize.height * (tileId / m_horizontalTileCount);
+
+		const auto& tile = m_tiles[tileId];
+
+		//Size worldSize(tile.sourceRect.width * m_tileScale.x, tile.sourceRect.height * m_tileScale.y);
+		Size renderSize;
+		Rect renderSourceRect;
+		detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+			texture, tileSize, tile.sourceRect, &renderSize, &renderSourceRect);
+
+		context->drawSprite(
+			Matrix::makeTranslation(pos), tileSize, Vector2::Zero,
+			renderSourceRect, Color::White,
+			SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
+			m_material);
+	}
 }
 
 void Tileset::serialize(Archive& ar)

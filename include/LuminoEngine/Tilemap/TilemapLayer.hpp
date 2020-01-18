@@ -66,9 +66,17 @@ public:
     int getWidth() const { return m_width; }	// TODO: これらも model 側に持たせる。全体で共通。
     int getHeight() const { return m_height; }
     int getTileId(int x, int y) const;
+	int isOutOfRange(int x, int y) const { return (x < 0 || m_width <= x) || (y < 0 || m_height <= y); }
+	int isValidRange(int x, int y) const { return !isOutOfRange(x, y); }
 
     // x, y 位置のタイルId が 0 でない場合 true. 範囲外は false.
     bool isValidTileId(int x, int y) const { return getTileId(x, y) != 0; }
+
+
+
+	// 周辺にも適用する
+	// autoTilesetId: 0~
+	void putAutoTile(int x, int y, int autoTilesetId);
 
 	LN_SERIALIZE_CLASS_VERSION(1);
 	virtual void serialize(Archive& ar) override;
@@ -83,6 +91,8 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height);
 
 private:
+	void refreshAutoTile(int x, int y);
+
 	Size m_tileSize;
 	TilemapOrientation m_orientation;
 	int m_width;

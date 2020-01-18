@@ -1,10 +1,10 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "Tileset.hpp"
 
 namespace ln {
 class RenderingContext;
-class Tileset;
 class TilemapLayer;
 
 // 基本タイルは、横8タイル、縦最大 ‭8191‬ タイルまで。最大 ID は 65535.
@@ -19,6 +19,8 @@ class TilemapModel
 {
     LN_OBJECT;
 public:
+
+
     static Ref<TilemapModel> create();
 
     Tileset* tileset() const;
@@ -32,6 +34,7 @@ public:
 	bool isValidTilePosition(int x, int y) const;
 	uint8_t tilePassageFlags(int x, int y) const;
     TilemapLayer* getValidFrontLayer(int x, int y) const;
+
 
 public: // TODO: internal
     void render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds);

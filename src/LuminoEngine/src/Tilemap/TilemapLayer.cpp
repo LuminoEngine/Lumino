@@ -253,6 +253,84 @@ int TilemapLayer::getTileId(int x, int y) const
     return m_data[y * m_width + x];
 }
 
+void TilemapLayer::putAutoTile(int x, int y, int autoTilesetId)
+{
+	// 仮で設定して、
+	setTileId(x, y, Tileset::AutoTileOffset + Tileset::AutoTileSetStride * autoTilesetId);
+
+	// 周辺を含めて更新する
+	PointI points[9] = {
+		{ x - 1, y - 1 }, { x, y - 1 }, { x + 1, y - 1 },
+		{ x - 1, y }, { x, y }, { x + 1, y  },
+		{ x - 1, y + 1 }, { x, y + 1 }, { x + 1, y + 1 },
+	};
+	for (int i = 0; i < 9; i++) {
+		if (isValidRange(points[i].x, points[i].y)) {
+			refreshAutoTile(points[i].x, points[i].y);
+		}
+	}
+}
+
+void TilemapLayer::refreshAutoTile(int x, int y)
+{
+	int autoTilesetId = Tileset::autoTileIndex(getTileId(x, y));
+	if (autoTilesetId < 0) return;
+
+	PointI points[9] = {
+		{ x - 1, y - 1 }, { x, y - 1 }, { x + 1, y - 1 },
+		{ x - 1, y }, { x, y }, { x + 1, y  },
+		{ x - 1, y + 1 }, { x, y + 1 }, { x + 1, y + 1 },
+	};
+
+	// 周囲のタイルが同一種類かを調べる
+	bool ids[9];
+	for (int i = 0; i < 9; i++) {
+		int placedAutoTilesetId = -1;
+		if (isOutOfRange(points[i].x, points[i].y)) {
+			// Out range is same Id.
+			ids[i] = true;
+		}
+		else {
+			placedAutoTilesetId = Tileset::autoTileIndex(getTileId(points[i].x, points[i].y));
+			ids[i] = (placedAutoTilesetId == autoTilesetId);
+		}
+	}
+
+	// 四隅の種類を確定する
+	int subtiles[4] = { 0, 0, 0, 0 };
+	const int checkIdxs[4][3] = { { 0, 3, 1 }, { 2, 5, 1 }, { 6, 3, 7 }, { 8, 5, 7 }, };	// [対角,横,縦]
+	for (int i = 0; i < 4; i++) {
+		const int* checkIdx = checkIdxs[i];
+		if (!ids[checkIdx[1]] || !ids[checkIdx[2]]) {
+			if (!ids[checkIdx[1]] && !ids[checkIdx[2]])
+				subtiles[i] = 5;
+			else if (ids[checkIdx[2]])
+				subtiles[i] = 4;
+			else
+				subtiles[i] = 3;
+		}
+		else if (!ids[checkIdx[0]])
+			subtiles[i] = 2;
+		else
+			subtiles[i] = 1;
+	}
+
+	// subtiles が一致するものを線形で検索
+	int localTileId = -1;
+	for (int i = 0; i < Tileset::AutoTileUnitStride; i++) {
+		const auto& info = detail::g_AutoTileTable[i];
+		if (info.subtiles[0] == subtiles[0] &&
+			info.subtiles[1] == subtiles[1] &&
+			info.subtiles[2] == subtiles[2] &&
+			info.subtiles[3] == subtiles[3]) {
+			localTileId = i;
+		}
+	}
+	if (LN_REQUIRE(localTileId >= 0)) return;
+
+	setTileId(x, y, Tileset::AutoTileOffset + (Tileset::AutoTileSetStride * autoTilesetId) + localTileId);
+}
+
 // bounds: Y+ を上方向とした、ローカル空間上の描画範囲
 void TilemapLayer::render(TilemapModel* model, RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds)
 {

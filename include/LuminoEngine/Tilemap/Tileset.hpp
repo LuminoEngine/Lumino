@@ -13,6 +13,20 @@ enum class TileCollisionType : uint8_t
 	PassageFlags = 0,
 };
 
+class AutoTileset
+	: public Object
+{
+public:
+	Ref<Material> material;
+
+	// autotileId: 0~AutoTileUnitStride
+	// component: [top-left][top-right][bottom-left][bottom-light]
+	Rect getSourceRectUV(int autotileId, int component) const;
+	
+LN_CONSTRUCT_ACCESS:
+    AutoTileset();
+	void init();
+};
 
 // 単純にテクスチャの転送元領域を管理するのではなく、
 // タイル ID を受け取って「どのように描くか？」を担当する。
@@ -21,6 +35,11 @@ class Tileset
 {
     LN_OBJECT;
 public:
+	static const int AutoTileOffset = 16384;
+	static const int AutoTileSetStride = 1024;
+	static const int AutoTileUnitStride = 128;
+	static const int MaxAutoTilests = AutoTileOffset / AutoTileSetStride;
+
     static Ref<Tileset> create();
 
     // util
@@ -33,13 +52,20 @@ public:
 
 	TileCollisionType tileCollisionType(int tileId) const { return m_tiles[tileId].collisionType; }
 	void setTilePassageFlags(int tileId, uint8_t value) { m_tiles[tileId].passageFlags = value; }
-	uint8_t tilePassageFlags(int tileId) const { return m_tiles[tileId].passageFlags; }
+	uint8_t tilePassageFlags(int tileId) const;
 
     int tilePixelWidth() const { return m_tilePixelWidth; }
     int tilePixelHeight() const { return m_tilePixelHeight; }
     Material* material() const;
 
     void setMaterial(Material* material);
+
+	static int autoTileIndex(int tileId) { return (tileId < Tileset::AutoTileOffset) ? -1 : ((tileId - Tileset::AutoTileOffset) / Tileset::AutoTileSetStride); }
+	static int autoTileLocalId(int tileId) { return tileId % Tileset::AutoTileUnitStride; }
+
+
+	void addAutoTileset(AutoTileset* autoTileset);
+
 
 public: // TODO: internal
     void drawTile(RenderingContext* context, int tileId, const Vector3& pos, const Size& tileSize);
@@ -68,19 +94,32 @@ private:
 
         Rect sourceRect;    // unit: px
 
-
         void serialize(Archive& ar);
     };
 
-    void resetInfo();
 
-    int m_tilePixelWidth;
+
+    void resetInfo();
+	//const Ref<AutoTileset>& getAutoTileset(int tileId) const { return  }
+
+    int m_tilePixelWidth;	// TODO: float にしていいかも。描画でしかつかわないので
     int m_tilePixelHeight;
     //int m_horizontalTileCount;
     //Size m_tileUVSize;
     Vector2 m_tileScale;
     Ref<Material> m_material;
     List<Tile> m_tiles;
+	List<Ref<AutoTileset>> m_autoTilesets;
 };
 
+namespace detail {
+
+struct AutoTileInfo
+{
+	uint8_t subtiles[4];	// [top-left][top-right][bottom-left][bottom-light]
+};
+
+extern AutoTileInfo g_AutoTileTable[Tileset::AutoTileUnitStride];
+
+} // namespace detail
 } // namespace ln
