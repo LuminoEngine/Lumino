@@ -120,6 +120,9 @@ private:
 		int tileIds[9];
 		int localAutoTileIds[9];
 		bool equals[9];
+
+		// [9][TL, TR, BL, BR]
+		int halfSlopeTipWeights[9][4];
 	};
 
 	void makeAutoTileNearbyInfo(int x, int y, int autoTilesetId, AutoTileNearbyInfo* outInfo) const;

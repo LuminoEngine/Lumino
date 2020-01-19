@@ -48,6 +48,7 @@ class App_Example_Tilemap : public Application
 		//layer->putAutoTileDirect(2, layer->getHeight() - 3, 0, 96);
 		layer->putAutoTileSlope(2, layer->getHeight() - 2, 0);
 		layer->putAutoTileSlope(3, layer->getHeight() - 2, 0);
+		layer->putAutoTile(1, layer->getHeight() - 3, 0);
 
 		auto tilemapModel = ln::makeObject<ln::TilemapModel>();
 		tilemapModel->setTileset(tileset);

@@ -358,6 +358,42 @@ void TilemapLayer::makeAutoTileNearbyInfo(int x, int y, int autoTilesetId, AutoT
 			outInfo->localAutoTileIds[i] = Tileset::autoTileLocalId(tileId);
 		}
 	}
+
+	{
+		memset(&(outInfo->halfSlopeTipWeights), 0, sizeof(outInfo->halfSlopeTipWeights));
+		if (outInfo->localAutoTileIds[7] == 107) {
+			outInfo->halfSlopeTipWeights[7][Corner_BL] = 1;
+			outInfo->halfSlopeTipWeights[7][Corner_BR] = 2;
+		}
+		if (outInfo->localAutoTileIds[7] == 111) {
+			outInfo->halfSlopeTipWeights[7][Corner_BL] = 2;
+			outInfo->halfSlopeTipWeights[7][Corner_BR] = 1;
+		}
+		if (outInfo->localAutoTileIds[3] == 113) {
+			outInfo->halfSlopeTipWeights[3][Corner_TL] = 1;
+			outInfo->halfSlopeTipWeights[3][Corner_BL] = 2;
+		}
+		if (outInfo->localAutoTileIds[3] == 117) {
+			outInfo->halfSlopeTipWeights[3][Corner_TL] = 2;
+			outInfo->halfSlopeTipWeights[3][Corner_BL] = 1;
+		}
+		if (outInfo->localAutoTileIds[5] == 115) {
+			outInfo->halfSlopeTipWeights[5][Corner_TR] = 1;
+			outInfo->halfSlopeTipWeights[5][Corner_BR] = 2;
+		}
+		if (outInfo->localAutoTileIds[5] == 119) {
+			outInfo->halfSlopeTipWeights[5][Corner_TR] = 2;
+			outInfo->halfSlopeTipWeights[5][Corner_BR] = 1;
+		}
+		if (outInfo->localAutoTileIds[1] == 104) {
+			outInfo->halfSlopeTipWeights[1][Corner_TL] = 1;
+			outInfo->halfSlopeTipWeights[1][Corner_TR] = 2;
+		}
+		if (outInfo->localAutoTileIds[1] == 109) {
+			outInfo->halfSlopeTipWeights[1][Corner_TL] = 2;
+			outInfo->halfSlopeTipWeights[1][Corner_TR] = 1;
+		}
+	}
 }
 
 void TilemapLayer::refreshAutoTile(int x, int y)
@@ -385,6 +421,26 @@ void TilemapLayer::refreshAutoTile(int x, int y)
 					subtiles[i] = 4;
 				else
 					subtiles[i] = 3;
+			}
+			else if (Tileset::isSlopeAutoTile(nearbyInfo.localAutoTileIds[checkIdx[1]]) && Tileset::isSlopeAutoTile(nearbyInfo.localAutoTileIds[checkIdx[2]]))
+				subtiles[i] = 6;
+			else if (Tileset::isTipHalfSlopeAutoTile(nearbyInfo.localAutoTileIds[checkIdx[1]])) {
+				if (nearbyInfo.halfSlopeTipWeights[checkIdx[1]][i] == 2)
+					subtiles[i] = 9;
+				else if (nearbyInfo.halfSlopeTipWeights[checkIdx[1]][i] == 1)
+					subtiles[i] = 10;
+				else {
+					LN_UNREACHABLE();
+				}
+			}
+			else if (Tileset::isTipHalfSlopeAutoTile(nearbyInfo.localAutoTileIds[checkIdx[2]])) {
+				if (nearbyInfo.halfSlopeTipWeights[checkIdx[2]][i] == 2)
+					subtiles[i] = 8;
+				else if (nearbyInfo.halfSlopeTipWeights[checkIdx[2]][i] == 1)
+					subtiles[i] = 7;
+				else {
+					LN_UNREACHABLE();
+				}
 			}
 			else if (!ids[checkIdx[0]])
 				subtiles[i] = 2;
