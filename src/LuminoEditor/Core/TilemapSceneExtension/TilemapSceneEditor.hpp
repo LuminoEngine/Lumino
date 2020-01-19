@@ -2,7 +2,7 @@
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/ToolPanesArea.hpp"
 #include "../App/NavigatorManager.hpp"
-#include "../AssetEditor/AssetEditor.hpp"
+#include "../AssetEditor/AssetEditorModel.hpp"
 
 
 namespace lna {
@@ -11,7 +11,7 @@ class TilemapSceneEditorModel;
 class TilemapSceneModePane;
 
 class TilemapSceneEditor
-    : public lna::AssetEditor
+    : public lna::AssetEditorModel
 {
 public:
     ln::Result init();
@@ -55,11 +55,11 @@ private:
 };
 
 class TilemapSceneEditorPloxy
-    : public ln::AssetEditorPloxy
+    : public ln::AssetEditorModelFactory
 {
 public:
     virtual ln::String targetTypeName() override { return u"Scene"; }
-    virtual Ref<lna::AssetEditor> createEditor() override;
+    virtual Ref<lna::AssetEditorModel> createAssetEditorModel() override;
 };
 
 class TilemapSceneEditorExtensionModule

@@ -1,7 +1,7 @@
 #pragma once
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/NavigatorManager.hpp"
-#include "../AssetEditor/AssetEditor.hpp"
+#include "../AssetEditor/AssetEditorModel.hpp"
 
 namespace lna {
 
@@ -19,7 +19,7 @@ private:
 };
 
 class TilesetEditor
-    : public lna::AssetEditor
+    : public lna::AssetEditorModel
 {
 public:
     ln::Result init();
@@ -32,11 +32,11 @@ private:
 };
 
 class TilesetEditorPloxy
-    : public ln::AssetEditorPloxy
+    : public ln::AssetEditorModelFactory
 {
 public:
     virtual ln::String targetTypeName() override { return u"Tileset"; }
-    virtual Ref<lna::AssetEditor> createEditor() override;
+    virtual Ref<lna::AssetEditorModel> createAssetEditorModel() override;
 };
 
 } // namespace lna

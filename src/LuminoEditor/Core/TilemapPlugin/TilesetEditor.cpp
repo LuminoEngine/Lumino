@@ -61,7 +61,7 @@ Ref<ln::List<Ref<ln::EditorPane>>> TilesetEditor::getEditorPanes(lna::EditorPane
 //==============================================================================
 // TilesetEditorPloxy
 
-Ref<lna::AssetEditor> TilesetEditorPloxy::createEditor()
+Ref<lna::AssetEditorModel> TilesetEditorPloxy::createAssetEditorModel()
 {
     return ln::makeObject<TilesetEditor>();
 }

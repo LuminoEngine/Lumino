@@ -1,6 +1,6 @@
 ﻿
 #include <LuminoEditor/Plugin.hpp>
-#include "AssetEditor/AssetEditor.hpp"
+#include "AssetEditor/AssetEditorModel.hpp"
 #include "StartupView.hpp"
 #include "ToolPanesArea.hpp"
 #include "DocumentManager.hpp"
@@ -169,7 +169,7 @@ AssetEditorDocument::AssetEditorDocument()
 {
 }
 
-ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditor* editorModel)
+ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditorModel* editorModel)
 {
     if (!Document::init()) return false;
     m_asset = asset;

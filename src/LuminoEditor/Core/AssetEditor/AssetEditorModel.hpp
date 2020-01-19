@@ -33,7 +33,7 @@ enum class EditorPaneKind
 
     なお、AssetEditor の生成には、必ずしも Navigation が必要というわけではない。
 */
-class AssetEditor
+class AssetEditorModel
     : public ln::UIViewModel
 {
 public:
@@ -52,7 +52,7 @@ public:
     EditorContext* editorContext() const { return m_editorContext; }
 
 protected:
-    AssetEditor();
+    AssetEditorModel();
 
 public: // TODO: internal
     EditorContext* m_editorContext;

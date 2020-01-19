@@ -9,7 +9,7 @@
 #include "../Project/Project.hpp"
 #include "../Project/AssetDatabase.hpp"
 #include "../Project/PluginManager.hpp"
-#include "AssetEditor/AssetEditor.hpp"
+#include "AssetEditor/AssetEditorModel.hpp"
 #include "NavigatorManager.hpp"
 #include "DocumentManager.hpp"
 #include "MainWindow.hpp"
@@ -141,7 +141,7 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
             return;
         }
 
-        auto editor = proxies[0]->createEditor();
+        auto editor = proxies[0]->createAssetEditorModel();
         editor->m_editorContext = m_editorContext;
         mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
     }

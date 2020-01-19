@@ -21,7 +21,7 @@ void TilesetExtensionModule::onActivate(lna::EditorContext* context)
     context->mainWindow()->navigatorManager()->addNavigator(m_navigator);
 
     m_editorPloxy = ln::makeObject<TilesetEditorPloxy>();
-    context->pluginManager()->addAssetEditorPloxy(m_editorPloxy);
+    context->pluginManager()->registerAssetEditorFactory(m_editorPloxy);
 }
 
 void TilesetExtensionModule::onDeactivate(lna::EditorContext* context)
