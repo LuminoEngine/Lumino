@@ -39,6 +39,7 @@ public:
 	static const int AutoTileSetStride = 1024;
 	static const int AutoTileUnitStride = 128;
 	static const int MaxAutoTilests = AutoTileOffset / AutoTileSetStride;
+	static const int LocalAutoTileIdSlopeOffset = 96;
 
     static Ref<Tileset> create();
 
@@ -61,8 +62,12 @@ public:
     void setMaterial(Material* material);
 
 	static int autoTileIndex(int tileId) { return (tileId < Tileset::AutoTileOffset) ? -1 : ((tileId - Tileset::AutoTileOffset) / Tileset::AutoTileSetStride); }
-	static int autoTileLocalId(int tileId) { return tileId % Tileset::AutoTileUnitStride; }
-
+	static int autoTileLocalId(int tileId) { return (tileId < Tileset::AutoTileOffset) ? -1 : tileId % Tileset::AutoTileUnitStride; }
+	static int isBlockAutoTile(int localAutoTileId) { return 0 <= localAutoTileId && localAutoTileId < 96; }
+	static int isSlopeAutoTile(int localAutoTileId) { return LocalAutoTileIdSlopeOffset <= localAutoTileId && localAutoTileId < 104; }
+	static int isHalfSlopeAutoTile(int localAutoTileId) { return 104 <= localAutoTileId && localAutoTileId < 112; }
+	static int isRootHalfSlopeAutoTile(int localAutoTileId) { return isHalfSlopeAutoTile(localAutoTileId) && (localAutoTileId & 1) == 0; }
+	static int isTipHalfSlopeAutoTile(int localAutoTileId) { return isHalfSlopeAutoTile(localAutoTileId) && (localAutoTileId & 1) == 1; }
 
 	void addAutoTileset(AutoTileset* autoTileset);
 

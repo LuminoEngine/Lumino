@@ -78,6 +78,11 @@ public:
 	// autoTilesetId: 0~
 	void putAutoTile(int x, int y, int autoTilesetId);
 
+	void putAutoTileDirect(int x, int y, int autoTilesetId, int localAutoTileId);
+
+	// 配置できないこともある。undo 対応のため戻り値で返す。
+	bool putAutoTileSlope(int x, int y, int autoTilesetId);
+
 	LN_SERIALIZE_CLASS_VERSION(1);
 	virtual void serialize(Archive& ar) override;
 
@@ -91,6 +96,33 @@ LN_CONSTRUCT_ACCESS:
     void init(int width, int height);
 
 private:
+	enum Corner
+	{
+		Corner_TL = 0,	// top-left
+		Corner_TR = 1,	// top-right
+		Corner_BL = 2,	// bottom-left
+		Corner_BR = 3,	// bottom-right
+		Corner_Invalid = -1,
+	};
+
+	enum Edge
+	{
+		Edge_L = 0,	// left
+		Edge_R = 1,	// right
+		Edge_T = 2,	// top
+		Edge_B = 3,	// bottom
+		Edge_Invalid = -1,
+	};
+
+	struct AutoTileNearbyInfo
+	{
+		PointI points[9];
+		int tileIds[9];
+		int localAutoTileIds[9];
+		bool equals[9];
+	};
+
+	void makeAutoTileNearbyInfo(int x, int y, int autoTilesetId, AutoTileNearbyInfo* outInfo) const;
 	void refreshAutoTile(int x, int y);
 
 	Size m_tileSize;

@@ -9,6 +9,7 @@
 namespace ln {
 namespace detail {
 
+// LocalAutoTileId => SubTileIds
 AutoTileInfo g_AutoTileTable[Tileset::AutoTileUnitStride] =
 {
 	// Block tiles.
@@ -19,35 +20,43 @@ AutoTileInfo g_AutoTileTable[Tileset::AutoTileUnitStride] =
 	/*[32]*/ {3,5,3,5},{4,4,5,5},{5,5,5,5},{1,1,1,2}, {2,1,1,2},{3,3,1,2},{1,2,1,2},{2,2,1,2},
 	/*[40]*/ {4,1,4,2},{5,3,4,2},{4,2,4,2},{1,1,2,2}, {2,1,2,2},{3,3,2,2},{1,2,2,2},{2,2,2,2},
 
-	// Slope tiles.
+	// Slope corner tiles.
 	/*[48]*/ {6,1,1,1},{1,6,1,1},{4,6,4,1},{6,4,1,4}, {1,1,6,1},{3,3,6,1},{1,6,6,1},{1,1,2,6},
 	/*[56]*/ {1,2,6,1},{1,4,6,4},{3,5,6,4},{6,1,3,3}, {1,6,3,3},{4,6,5,3},{6,4,3,5},{1,1,1,6},
 	/*[64]*/ {6,1,1,6},{6,1,1,2},{2,1,1,6},{3,3,1,6}, {4,1,4,6},{5,3,4,6},{0,0,0,0},{0,0,0,0},
 
-	// Half-Slope tiles.
+	// Half-Slope corner tiles.
 	/*[72]*/ {7,1,1,1},{8,1,1,1},{1,7,1,1},{1,8,1,1}, {4,8,4,1},{8,4,1,4},{1,1,7,1},{1,1,8,1},
 	/*[80]*/ {3,3,7,1},{1,7,2,1},{1,8,2,1},{1,2,7,1}, {1,2,8,1},{1,4,8,4},{7,1,3,3},{1,7,3,3},
 	/*[88]*/ {1,1,1,7},{1,1,1,8},{7,1,1,2},{8,1,1,2}, {2,1,1,7},{2,1,1,8},{3,3,1,7},{4,1,4,8},
 
-	/*[96]*/ {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
-	/*[104]*/{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
-	/*[112]*/{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
+	// Slope tiles.														14~17 not used. (reserved) ※Slope の内側にBlockTileの角があるパターン
+	/*[96]*/ {10,10,10,10},{11,11,11,11},{12,12,12,12},{13,13,13,13,}, {14,14,14,14},{15,15,15,15},{16,16,16,16},{17,17,17,17},
+
+	// Half-Slope tiles.
+	/*[104]*/{18,18,18,18},{19,19,19,19}, {20,20,20,20},{21,21,21,21}, {22,22,22,22},{23,23,23,23}, {24,24,24,24},{25,25,25,25},
+	/*[112]*/{26,26,26,26},{27,27,27,27}, {28,28,28,28},{29,29,29,29}, {30,30,30,30},{31,31,31,31}, {32,32,32,32},{33,33,33,33},
+	///*[104]*/{14,14,14,14},{15,15,15,15}, {16,16,16,16},{17,17,17,17}, {18,18,18,18},{19,19,19,19}, {20,20,20,20},{21,21,21,21},
+	///*[112]*/{22,22,22,22},{23,23,23,23}, {24,24,24,24},{25,25,25,25}, {26,26,26,26},{27,27,27,27}, {28,28,28,28},{29,29,29,29},
+
+	// Reserved.
 	/*[120]*/{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}, {0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},
 };
 
-float g_AutoTileSourcePosTable_StandardFormat[4][8] =
+// SubTileId => PhysicalTileIndex
+float g_AutoTileSourcePosTable_StandardFormat[4][34] =
 {
-	// [top-left]
-	{ 25, 2, 17, 24, 0, 44, 12, 57 },
+	// [top-left]                normal <- | -> slope                     <- | -> half-slope
+	{ 25, 2, 17, 24, 0, 44, 12, 57, -1,  /*|*/ -1, 37, 46, 39, 0, 0, 0, 0, /*|*/ 4, -1, 20, 28, 6, -1, 22, 30, 48, -1, 50, 51, 52, -1, 54, 55, },
 
 	// [top-right]
-	{ 26, 3, 18, 27, 1, 45, 15, 58 },
+	{ 26, 3, 18, 27, 1, 45, 15, 58, -1,  /*|*/ 36, -1, 38, 47, 0, 0, 0, 0, /*|*/ 5, -1, 21, 29, 7, -1, 23, 31, 49, 48, 51, -1, 53, 52, 55, -1, },
 
 	// [bottom-left]
-	{ 33, 10, 41, 32, 8, 46, 20, 53 },
+	{ 33, 10, 41, 32, 8, 46, 20, 53, -1, /*|*/ 36, 45, -1, 47, 0, 0, 0, 0, /*|*/ 12, 4, 28, -1, 14, 6, 30, -1, 56, -1, 58, 59, 60, -1, 62, 63, },
 
 	// [bottom-light]
-	{ 34, 11, 42, 35, 9, 47, 23, 54 },
+	{ 34, 11, 42, 35, 9, 47, 23, 54, -1, /*|*/ 44, 37, 46, -1, 0, 0, 0, 0, /*|*/ 13, 5, 29, -1, 15, 7, 31, -1, 57, 56, 59, -1, 61, 60, 63, -1, },
 };
 
 } // namespace detail
@@ -72,6 +81,8 @@ Rect AutoTileset::getSourceRectUV(int autotileId, int component) const
 	if (LN_REQUIRE(subtile > 0)) return Rect();
 
 	float ti = detail::g_AutoTileSourcePosTable_StandardFormat[component][subtile - 1];
+	if (ti < 0.0f) return Rect::Empty;
+
 	float tx = std::fmod(ti, 8.0f);
 	float ty = std::floor(ti / 8.0f);
 
@@ -194,19 +205,20 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 		};
 		for (int i = 0; i < 4; i++) {
 			Rect sourceRect = autotilest->getSourceRectUV(localTileId, i);
+			if (!sourceRect.isEmpty()) {
+				Texture* texture = autotilest->material->mainTexture();
 
-			Texture* texture = autotilest->material->mainTexture();
+				Size renderSize;
+				Rect renderSourceRect;
+				detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+					texture, tileSize, sourceRect, &renderSize, &renderSourceRect);
 
-			Size renderSize;
-			Rect renderSourceRect;
-			detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
-				texture, tileSize, sourceRect, &renderSize, &renderSourceRect);
-
-			context->drawSprite(
-				Matrix::makeTranslation(points[i]), hsz, Vector2::Zero,
-				renderSourceRect, Color::White,
-				SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
-				autotilest->material);
+				context->drawSprite(
+					Matrix::makeTranslation(points[i]), hsz, Vector2::Zero,
+					renderSourceRect, Color::White,
+					SpriteBaseDirection::ZMinus, BillboardType::None, detail::SpriteFlipFlags::None,
+					autotilest->material);
+			}
 		}
 
 	}

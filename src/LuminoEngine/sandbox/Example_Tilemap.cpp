@@ -26,6 +26,7 @@ class App_Example_Tilemap : public Application
 
 		auto tilemap = ln::makeObject<ln::Tilemap>();
 		tilemap->setShadingModel(ln::ShadingModel::UnLighting);
+		tilemap->setBlendMode(ln::BlendMode::Alpha);	// TODO: AlphaTest でカバーしたい
 
 		auto layer = ln::makeObject<ln::TilemapLayer>();
 		layer->resize(60, 30);
@@ -34,12 +35,19 @@ class App_Example_Tilemap : public Application
 		//	layer->setTileId(x, layer->getHeight() - 1, 1);
 		//}
 
-		layer->setTileId(0, layer->getHeight() - 1, 16384);
-		layer->setTileId(1, layer->getHeight() - 1, 16385);
-		layer->setTileId(2, layer->getHeight() - 1, 16386);
-		layer->setTileId(3, layer->getHeight() - 1, 16387);
+		//layer->setTileId(0, layer->getHeight() - 1, 16384);
+		//layer->setTileId(1, layer->getHeight() - 1, 16385);
+		//layer->setTileId(2, layer->getHeight() - 1, 16386);
+		//layer->setTileId(3, layer->getHeight() - 1, 16387);
+		layer->putAutoTile(0, layer->getHeight() - 1, 0);
+		layer->putAutoTile(1, layer->getHeight() - 1, 0);
+		layer->putAutoTile(2, layer->getHeight() - 1, 0);
+		layer->putAutoTile(3, layer->getHeight() - 1, 0);
+		layer->putAutoTile(4, layer->getHeight() - 1, 0);
 		layer->putAutoTile(1, layer->getHeight() - 2, 0);
-		layer->putAutoTile(1, layer->getHeight() - 3, 0);
+		//layer->putAutoTileDirect(2, layer->getHeight() - 3, 0, 96);
+		layer->putAutoTileSlope(2, layer->getHeight() - 2, 0);
+		layer->putAutoTileSlope(3, layer->getHeight() - 2, 0);
 
 		auto tilemapModel = ln::makeObject<ln::TilemapModel>();
 		tilemapModel->setTileset(tileset);
