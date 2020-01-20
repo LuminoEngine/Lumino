@@ -6,6 +6,26 @@
 namespace ln {
 
 //==============================================================================
+// UILayoutPanel2::Builder
+
+LN_BUILDER_IMPLEMENT(UILayoutPanel2, UIElement);
+
+UILayoutPanel2::Builder& UILayoutPanel2::Builder::children(std::initializer_list<UIElement::Builder> list)
+{
+	for (auto& p : list)
+		detailsAs<Details>()->children.add(p);
+	return *this;
+}
+
+Ref<Object> UILayoutPanel2::Builder::Details::build()
+{
+	auto ptr = makeObject<UILayoutPanel2>();
+	for (auto& b : children)
+		ptr->addChild(b.build());
+	return ptr;
+}
+
+//==============================================================================
 // UILayoutPanel2
 
 UILayoutPanel2::UILayoutPanel2()
@@ -278,24 +298,24 @@ Size UIFrameLayout2::staticArrangeOverride(UILayoutContext* layoutContext, UIEle
 }
 
 //==============================================================================
-// UIStackLayout2
+// UIStackLayout2_Obsolete
 
-Ref<UIStackLayout2> UIStackLayout2::create()
+Ref<UIStackLayout2_Obsolete> UIStackLayout2_Obsolete::create()
 {
-    return makeObject<UIStackLayout2>();
+    return makeObject<UIStackLayout2_Obsolete>();
 }
 
-UIStackLayout2::UIStackLayout2()
+UIStackLayout2_Obsolete::UIStackLayout2_Obsolete()
     : m_orientation(Orientation::Vertical)
 {
 }
 
-void UIStackLayout2::init()
+void UIStackLayout2_Obsolete::init()
 {
     UILayoutPanel2::init();
 }
 
-void UIStackLayout2::addChild(UIElement* element, UILayoutLengthType type)
+void UIStackLayout2_Obsolete::addChild(UIElement* element, UILayoutLengthType type)
 {
     UILayoutPanel2::addChild(element);
     CellDefinition cell;
@@ -303,7 +323,7 @@ void UIStackLayout2::addChild(UIElement* element, UILayoutLengthType type)
     m_cellDefinitions.add(cell);
 }
 
-Size UIStackLayout2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+Size UIStackLayout2_Obsolete::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     int childCount = getVisualChildrenCount();
 
@@ -349,7 +369,7 @@ Size UIStackLayout2::measureOverride(UILayoutContext* layoutContext, const Size&
     return desiredSize;
 }
 
-Size UIStackLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIStackLayout2_Obsolete::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -485,7 +505,7 @@ Size UIStackLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size&
 
 void UIHBoxLayout2::init()
 {
-    UIStackLayout2::init();
+    UIStackLayout2_Obsolete::init();
     setOrientation(Orientation::Horizontal);
 }
 
@@ -494,7 +514,7 @@ void UIHBoxLayout2::init()
 
 void UIVBoxLayout2::init()
 {
-    UIStackLayout2::init();
+    UIStackLayout2_Obsolete::init();
     setOrientation(Orientation::Vertical);
 }
 

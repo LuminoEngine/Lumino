@@ -27,7 +27,7 @@ void MainWindow::onLoaded()
 
     m_documentManager = ln::makeObject<DocumentManager>();
 
-	auto layout1 = ln::makeObject<ln::UIStackLayout2>();
+	auto layout1 = ln::makeObject<ln::UIStackLayout2_Obsolete>();
 	layout1->setOrientation(ln::Orientation::Horizontal);
     addElement(layout1);
 

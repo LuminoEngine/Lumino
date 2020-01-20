@@ -32,11 +32,11 @@ UIGridLayout::Builder& UIGridLayout::Builder::columnCount(int value)
 	return *this;
 }
 
-UIGridLayout::Builder& UIGridLayout::Builder::add(const UIElement::Builder& value)
-{
-	detailsAs<Details>()->children.push_back(value);
-	return *this;
-}
+//UIGridLayout::Builder& UIGridLayout::Builder::add(const UIElement::Builder& value)
+//{
+//	detailsAs<Details>()->children.push_back(value);
+//	return *this;
+//}
 
 //Ref<UIGridLayout> UIGridLayout::Builder::build()
 //{
@@ -96,8 +96,6 @@ LayoutPanel の大きさは常に親要素のサイズに制限される。
 （大量の子要素を追加した結果はみ出しても、LayoutPanel の大きさは調整しない。＝子要素に依存しない。）
 Cell の Default は Ratio.
 主にコレクション以外の、一般的な要素の配置に使用する。
-
-
 
 */
 	
