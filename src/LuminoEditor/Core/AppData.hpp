@@ -11,7 +11,7 @@ public:
     void addRecentProjectFile(const ln::Path& filePath);
 
 public:
-    static AppData* instance();
+    static AppData* current();
 	void load();
     void save();
 

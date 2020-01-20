@@ -4,21 +4,9 @@
 #include "../AssetEditor/AssetEditorModel.hpp"
 
 namespace lna {
+class TilesetView;
 
-class TilesetView
-    : public ln::UIControl
-{
-public:
-    void setTileset(ln::Tileset* tileset);
-
-protected:
-    virtual void onRender(ln::UIRenderingContext* context) override;
-
-private:
-    Ref<ln::Tileset> m_tileset;
-};
-
-class TilesetEditor
+class TilesetEditorModel
     : public lna::AssetEditorModel
 {
 public:
@@ -29,14 +17,6 @@ public:
 
 private:
     Ref<TilesetView> m_tilesetView;
-};
-
-class TilesetEditorPloxy
-    : public ln::AssetEditorModelFactory
-{
-public:
-    virtual ln::String targetTypeName() override { return u"Tileset"; }
-    virtual Ref<lna::AssetEditorModel> createAssetEditorModel() override;
 };
 
 } // namespace lna

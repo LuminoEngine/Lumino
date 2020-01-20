@@ -6,34 +6,16 @@
 #include "../App/Application.hpp"
 #include "../App/MainWindow.hpp"
 #include "TilesetNavigator.hpp"
-#include "TilesetEditor.hpp"
+#include "TilesetEditorView.hpp"
+#include "TilesetEditorModel.hpp"
 
 
 namespace lna {
 
 //==============================================================================
-// TilesetView
+// TilesetEditorModel
 
-void TilesetView::setTileset(ln::Tileset* tileset)
-{
-    m_tileset = tileset;
-}
-
-void TilesetView::onRender(ln::UIRenderingContext* context)
-{
-    if (m_tileset && m_tileset->material()) {
-        auto material = m_tileset->material();
-        auto texture = material->mainTexture();
-        if (texture) {
-            context->drawImage(ln::Rect(0, 0, texture->width(), texture->height()), material);
-        }
-    }
-}
-
-//==============================================================================
-// TilesetEditor
-
-ln::Result TilesetEditor::init()
+ln::Result TilesetEditorModel::init()
 {
     m_tilesetView = ln::makeObject<TilesetView>();
     m_tilesetView->setHorizontalAlignment(ln::HAlignment::Stretch);
@@ -41,7 +23,7 @@ ln::Result TilesetEditor::init()
     return true;
 }
 
-void TilesetEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
+void TilesetEditorModel::onOpened(ln::AssetModel* asset, ln::UIContainerElement* frame)
 {
     frame->addElement(m_tilesetView);
 
@@ -49,21 +31,13 @@ void TilesetEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement* fram
     m_tilesetView->setTileset(tileset);
 }
 
-void TilesetEditor::onClosed()
+void TilesetEditorModel::onClosed()
 {
 }
 
-Ref<ln::List<Ref<ln::EditorPane>>> TilesetEditor::getEditorPanes(lna::EditorPaneKind kind)
+Ref<ln::List<Ref<ln::EditorPane>>> TilesetEditorModel::getEditorPanes(lna::EditorPaneKind kind)
 {
     return nullptr;
-}
-
-//==============================================================================
-// TilesetEditorPloxy
-
-Ref<lna::AssetEditorModel> TilesetEditorPloxy::createAssetEditorModel()
-{
-    return ln::makeObject<TilesetEditor>();
 }
 
 } // namespace lna

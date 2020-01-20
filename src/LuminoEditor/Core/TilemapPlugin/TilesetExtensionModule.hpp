@@ -3,7 +3,7 @@
 
 namespace lna {
 class TilesetNavigator;
-class TilesetEditorPloxy;
+class TilesetEditorModelFactory;
 
 class TilesetExtensionModule
     : public ln::Object
@@ -17,7 +17,15 @@ public:
 
 private:
     Ref<TilesetNavigator> m_navigator;
-    Ref<TilesetEditorPloxy> m_editorPloxy;
+    Ref<TilesetEditorModelFactory> m_editorModelFactory;
+};
+
+class TilesetEditorModelFactory
+	: public ln::AssetEditorModelFactory
+{
+public:
+	virtual ln::String targetTypeName() override { return u"Tileset"; }
+	virtual Ref<lna::AssetEditorModel> createAssetEditorModel() override;
 };
 
 } // namespace lna

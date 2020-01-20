@@ -51,7 +51,7 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
-    lna::AppData::instance()->load();
+    lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
 	ln::EngineSettings::setMainBackBufferSize(1600, 800);
@@ -78,8 +78,8 @@ ln::Result EditorApplication::init()
 
 void EditorApplication::dispose()
 {
+    lna::AppData::current()->save();
     ln::detail::EngineDomain::release();
-    lna::AppData::instance()->save();
 }
 
 void EditorApplication::run()
@@ -183,7 +183,7 @@ void EditorApplication::openProject(const ln::Path& filePath)
 {
     //closeProject();
 
-    lna::AppData::instance()->addRecentProjectFile(filePath);
+    lna::AppData::current()->addRecentProjectFile(filePath);
 
     m_workspace->openMainProject(filePath);
 	postProjectLoaded();
