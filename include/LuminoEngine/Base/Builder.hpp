@@ -39,3 +39,14 @@ private:
 
 
 } // namespace ln
+
+#define LN_BUILDER(type) \
+	class Details; \
+	Builder(); \
+	Builder(Details* d); \
+	Ref<UIGridLayout> build() { return buildAs<UIGridLayout>(); }
+
+#define LN_BUILDER_IMPLEMENT(type, base) \
+	type::Builder::Builder() : Builder(makeRef<Details>()) {} \
+	type::Builder::Builder(Details* d) : base::Builder(d) {}
+	

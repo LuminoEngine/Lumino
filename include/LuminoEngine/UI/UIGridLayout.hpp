@@ -29,13 +29,13 @@ class UIGridLayout
     : public UILayoutPanel2
 {
 public:
-	class Builder : public UIElement::Builder
+	class Builder : public UILayoutPanel2::Builder
 	{
 	public:
-		Builder();
+		LN_BUILDER(UIGridLayout);
+
 		Builder& columnCount(int value);
 		Builder& add(const UIElement::Builder& value);
-		Ref<UIGridLayout> build();
 
 		Builder& children(std::initializer_list<UIElement::Builder> list)
 		{
@@ -80,7 +80,6 @@ public:
 			virtual Ref<Object> build() override;
 		};
 
-		Builder(Details* d);
 	};
 
 	void setRule(UILayoutRule value);

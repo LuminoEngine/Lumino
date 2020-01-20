@@ -8,15 +8,23 @@ namespace ln {
 //==============================================================================
 // UIGridLayout::Builder
 
-UIGridLayout::Builder::Builder()
-	: Builder(makeRef<Details>())
-{
-}
+LN_BUILDER_IMPLEMENT(UIGridLayout, UILayoutPanel2);
 
-UIGridLayout::Builder::Builder(Details* d)
-	: UIElement::Builder(d)
-{
-}
+//UIGridLayout::Builder::Builder() : Builder(makeRef<Details>()) {}
+//	UIGridLayout::Builder::Builder(Details* d) : base::Builder(d) {}
+//
+	//type::Builder() : Builder(makeRef<type::Builder::Details>()) {} \
+	//	type::Builder(type::Builder::Details* d) : base::Builder(d) {}
+
+//UIGridLayout::Builder::Builder()
+//	: Builder(makeRef<Details>())
+//{
+//}
+//
+//UIGridLayout::Builder::Builder(Details* d)
+//	: UIElement::Builder(d)
+//{
+//}
 
 UIGridLayout::Builder& UIGridLayout::Builder::columnCount(int value)
 {
@@ -30,10 +38,10 @@ UIGridLayout::Builder& UIGridLayout::Builder::add(const UIElement::Builder& valu
 	return *this;
 }
 
-Ref<UIGridLayout> UIGridLayout::Builder::build()
-{
-	return buildAs<UIGridLayout>();
-}
+//Ref<UIGridLayout> UIGridLayout::Builder::build()
+//{
+//	return buildAs<UIGridLayout>();
+//}
 
 Ref<Object> UIGridLayout::Builder::Details::build()
 {
