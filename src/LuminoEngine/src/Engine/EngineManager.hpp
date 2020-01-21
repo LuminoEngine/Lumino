@@ -24,6 +24,7 @@ class Camera;
 class AmbientLight;
 class DirectionalLight;
 class UIEventArgs;
+class Dispatcher;
 
 namespace detail {
 class PlatformManager;
@@ -140,6 +141,7 @@ public:
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
+	const Ref<Dispatcher>& mainThreadTaskDispatcher() const { return m_mainThreadTaskDispatcher; }
     const FpsController& fpsController() const { return m_fpsController; }
 	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
@@ -196,6 +198,7 @@ private:
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
     FpsController m_fpsController;
+	Ref<Dispatcher> m_mainThreadTaskDispatcher;
 
 	Ref<DiagnosticsManager> m_activeDiagnostics;
 

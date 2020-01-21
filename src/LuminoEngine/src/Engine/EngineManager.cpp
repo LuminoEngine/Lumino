@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
+#include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -276,6 +277,12 @@ void EngineManager::dispose()
 	if (m_platformManager) m_platformManager->dispose();
     if (m_assetManager) m_assetManager->dispose();
 
+	if (m_mainThreadTaskDispatcher) {
+		m_mainThreadTaskDispatcher->dispose();
+		m_mainThreadTaskDispatcher = nullptr;
+	}
+	TaskScheduler::finalize();
+
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {
         ::OleUninitialize();
@@ -339,6 +346,9 @@ void EngineManager::initializeCommon()
         m_oleInitialized = true;
     }
 #endif
+
+	TaskScheduler::init();
+	m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 }
 
 void EngineManager::initializeAssetManager()
@@ -598,6 +608,10 @@ void EngineManager::updateFrame()
 	}
 	if (m_uiManager) {
 		m_uiManager->dispatchPostedEvents();
+	}
+
+	if (m_mainThreadTaskDispatcher) {
+		m_mainThreadTaskDispatcher->executeTasks(1);
 	}
 
     //------------------------------------------------

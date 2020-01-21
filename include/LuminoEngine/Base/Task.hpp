@@ -128,13 +128,15 @@ class Dispatcher
     : public RefObject
 {
 public:
-    static Dispatcher* mainThread();
+    //static Dispatcher* mainThread();
 
     void post(Task* task);
     void post(const std::function<void()>& action);
 
 	// これを、Task を実行したいスレッドで呼び出す。
     void executeTasks(uint32_t maxCount = UINT32_MAX);
+
+	void dispose();
 
 private:
     std::deque<Ref<Task>> m_taskQueue;
@@ -145,24 +147,27 @@ class TaskScheduler
     : public RefObject
 {
 public:
-    static TaskScheduler* getDefault();
+	static void init();
+	static void finalize();
+    static TaskScheduler* get();
 
-    /** この TaskScheduler が同時に並列実行できる Task の数を取得します。*/
+    // この TaskScheduler が同時に並列実行できる Task の数を取得します。
     int maxConcurrencyLevel() const;
 
 private:
-
     TaskScheduler(int threadCount);
     ~TaskScheduler();
 
     void queueTask(Task* task);
     void executeThread();
 
-    List<std::shared_ptr<std::thread>>	m_threadList;
-    std::deque<Ref<Task>>		m_taskQueue;
-    detail::semaphore				m_semaphore;
+    List<std::shared_ptr<std::thread>> m_threadList;
+    std::deque<Ref<Task>> m_taskQueue;
+    detail::semaphore m_semaphore;
     std::mutex m_taskQueueMutex;
-    std::atomic<bool>			m_endRequested;
+    std::atomic<bool> m_endRequested;
+
+	static TaskScheduler* s_instance;
 
     friend class Task;
 };
