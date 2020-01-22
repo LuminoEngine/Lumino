@@ -103,6 +103,8 @@ void UIContext::setupDefaultStyle()
                 s->minHeight = theme->lineContentHeight();
                 s->margin = Thickness(8);   // TODO: spacing?
                 s->padding = theme->spacing(1);
+				s->horizontalAlignment = HAlignment::Center;
+				s->verticalAlignment = VAlignment::Center;
 				s->horizontalContentAlignment = HAlignment::Center;
 				s->verticalContentAlignment = VAlignment::Center;
 				s->backgroundColor = UIColors::get(UIColorHues::Grey, 3);
@@ -334,7 +336,7 @@ void UIContext::setupDefaultStyle()
             }
         }
         //--------------------------------
-        // UITextField
+        // UIPopup
         {
             if (auto s = sheet->obtainStyle(u"UIPopup")) {
                 s->minWidth = 8;
@@ -346,6 +348,19 @@ void UIContext::setupDefaultStyle()
                 s->shadowOffsetY = 2;
             }
         }
+		//--------------------------------
+		// UIDialog
+		{
+			if (auto s = sheet->obtainStyle(u"UIDialog")) {
+				s->minWidth = 100;
+				s->minHeight = 100;
+				s->padding = theme->spacing(1);
+				s->backgroundColor = UIColors::get(UIColorHues::White);
+				s->cornerRadius = CornerRadius(4);
+				s->shadowBlurRadius = 4;
+				s->shadowOffsetY = 2;
+			}
+		}
     }
 
     m_styleContext->addStyleSheet(sheet);

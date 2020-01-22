@@ -309,6 +309,39 @@ TEST_F(Test_UI_UILayout, BoxLayout)
 		LN_TEST_CLEAN_SCENE;
 	}
 
+	// Horizontal -> Vertical
+	{
+		auto l1 = makeObject<UIBoxLayout3>();
+		l1->setOrientation(Orientation::Horizontal);
+		Engine::mainUIView()->addElement(l1);
+
+		auto e1 = makeObject<UIElement>();
+		e1->setBackgroundColor(Color::Red);
+		e1->setHorizontalAlignment(HAlignment::Stretch);
+		e1->setVerticalAlignment(VAlignment::Stretch);
+		l1->addChild(e1);
+
+		auto l2 = makeObject<UIBoxLayout3>();
+		l2->setOrientation(Orientation::Vertical);
+		l1->addChild(l2);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setBackgroundColor(Color::Green);
+		e2->setHorizontalAlignment(HAlignment::Stretch);
+		e2->setVerticalAlignment(VAlignment::Stretch);
+		l2->addChild(e2);
+
+		auto e3 = makeObject<UIElement>();
+		e3->setBackgroundColor(Color::Blue);
+		e3->setHorizontalAlignment(HAlignment::Stretch);
+		e3->setVerticalAlignment(VAlignment::Stretch);
+		l2->addChild(e3);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/BoxLayout-3.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+
 #if 0 // TODO:
 	//- [ ] Horizontal
 	{

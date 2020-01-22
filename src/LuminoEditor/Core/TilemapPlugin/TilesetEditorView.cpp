@@ -12,6 +12,30 @@
 namespace lna {
 
 //==============================================================================
+// DialogHostButton
+
+DialogHostButton::DialogHostButton(ln::UIDialog* dialog)
+	: m_dialog(dialog)
+{
+	addChild(m_dialog);
+}
+
+void DialogHostButton::onClick(ln::UIEventArgs* e)
+{
+	ln::UIButton::onClick(e);
+	if (m_dialog) {
+		m_dialog->open();
+	}
+}
+
+//==============================================================================
+// TextureAssetSelectDialog
+
+TextureAssetSelectDialog::TextureAssetSelectDialog()
+{
+}
+
+//==============================================================================
 // AutoTilesetControl
 
 void AutoTilesetControl::setTileset(ln::Tileset* tileset)
@@ -35,6 +59,36 @@ void AutoTilesetControl::onRender(ln::UIRenderingContext* context)
 
 TilesetFormControl::TilesetFormControl(TilesetView* parent)
 {
+	auto grid = ln::makeObject<ln::UIGridLayout>();
+	grid->setRule(ln::UILayoutRule::VerticalFlow);
+	grid->setColumnCount(1);
+	addElement(grid);
+
+	{
+		auto dialog = ln::makeObject<TextureAssetSelectDialog>();
+
+		auto icon = ln::makeObject<ln::UIIcon>();
+		icon->setIconName(u"ellipsis-h");
+		//icon->setHorizontalAlignment(ln::HAlignment::Center);
+		//icon->setMargin(ln::Thickness(0, 0, 0, 4));
+
+		auto button = ln::makeObject2<DialogHostButton>(dialog);
+		button->setWidth(200);
+		button->addInlineElement(icon, ln::UIInlineLayout::Right);
+		grid->addChild(button);
+	}
+
+	{
+		auto icon = ln::makeObject<ln::UIIcon>();
+		icon->setIconName(u"ellipsis-h");
+		//icon->setHorizontalAlignment(ln::HAlignment::Center);
+		//icon->setMargin(ln::Thickness(0, 0, 0, 4));
+
+		auto button = ln::makeObject<ln::UIButton>();
+		button->setWidth(200);
+		button->addInlineElement(icon, ln::UIInlineLayout::Right);
+		grid->addChild(button);
+	}
 }
 
 //==============================================================================
@@ -60,8 +114,8 @@ void TilesetControl::setTileset(ln::Tileset* tileset)
 		m_displayTileScale.x = m_displayTileSize / tileSize.width;
 		m_displayTileScale.y = m_displayTileSize / tileSize.height;
 
-		setWidth(m_displayTileScale.x * texture->width());
-		setHeight(m_displayTileScale.y * texture->height());
+		//setWidth(m_displayTileScale.x * texture->width());
+		//setHeight(m_displayTileScale.y * texture->height());
 	}
 }
 
@@ -94,11 +148,15 @@ TilesetView::TilesetView()
 	m_layout1->addChild(m_layout2);
 
 	m_autoTilesetControl = ln::makeObject<AutoTilesetControl>();
-	m_autoTilesetControl->setHeight(64);
+	//m_autoTilesetControl->setHeight(64);
 	m_autoTilesetControl->setBackgroundColor(ln::Color::Blue);
+	m_autoTilesetControl->setHorizontalAlignment(ln::HAlignment::Stretch);
+	m_autoTilesetControl->setVerticalAlignment(ln::VAlignment::Stretch);
 	m_layout2->addChild(m_autoTilesetControl);
 
 	m_tilesetControl = ln::makeObject<TilesetControl>();
+	m_tilesetControl->setHorizontalAlignment(ln::HAlignment::Stretch);
+	m_tilesetControl->setVerticalAlignment(ln::VAlignment::Stretch);
 	m_layout2->addChild(m_tilesetControl);
 }
 

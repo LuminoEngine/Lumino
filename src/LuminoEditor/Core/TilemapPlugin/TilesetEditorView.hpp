@@ -6,6 +6,31 @@
 namespace lna {
 class TilesetView;
 
+
+class DialogHostButton : public ln::UIButton
+{
+public:
+	DialogHostButton(ln::UIDialog* dialog);
+
+protected:
+	virtual void onClick(ln::UIEventArgs* e) override;
+
+private:
+	Ref<ln::UIDialog> m_dialog;
+};
+
+class TextureAssetSelectDialog : public ln::UIDialog
+{
+public:
+	TextureAssetSelectDialog();
+
+protected:
+
+private:
+};
+
+
+
 class AutoTilesetControl
 	: public ln::UIControl
 {
