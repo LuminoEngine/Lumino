@@ -40,6 +40,8 @@ private:
 
 } // namespace ln
 
+// TODO: build() に、作成するオブジェクトのコンストラクタに渡す引数を渡せるようにしたい。
+
 #define LN_BUILDER(type) \
 	public: \
 	class Details; \

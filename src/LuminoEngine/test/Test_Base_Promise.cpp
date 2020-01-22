@@ -22,7 +22,5 @@ TEST_F(Test_Base_Promise, Basic)
 		});
 
 	while (!result) TestEnv::updateFrame();
-
-	printf("");
 }
 

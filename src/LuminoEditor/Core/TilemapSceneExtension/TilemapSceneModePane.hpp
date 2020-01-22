@@ -24,7 +24,7 @@ private:
     Ref<ln::Tileset> m_tileset;
     Ref<ln::Material> m_material;
 	ln::Size m_tileSize;
-	ln::Vector2 m_displayScale;
+	ln::Vector2 m_displayTileScale;
 };
 
 } // namespace lna

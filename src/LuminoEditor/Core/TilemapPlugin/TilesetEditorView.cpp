@@ -12,23 +12,105 @@
 namespace lna {
 
 //==============================================================================
-// TilesetView
+// AutoTilesetControl
 
-void TilesetView::setTileset(ln::Tileset* tileset)
+void AutoTilesetControl::setTileset(ln::Tileset* tileset)
 {
-    m_tileset = tileset;
+	m_tileset = tileset;
 }
 
-void TilesetView::onRender(ln::UIRenderingContext* context)
+void AutoTilesetControl::onRender(ln::UIRenderingContext* context)
+{
+	if (m_tileset && m_tileset->material()) {
+		auto material = m_tileset->material();
+		auto texture = material->mainTexture();
+		if (texture) {
+			context->drawImage(ln::Rect(0, 0, texture->width(), texture->height()), material);
+		}
+	}
+}
+
+//==============================================================================
+// TilesetFormControl
+
+TilesetFormControl::TilesetFormControl(TilesetView* parent)
+{
+}
+
+//==============================================================================
+// TilesetControl
+
+TilesetControl::TilesetControl()
+	: m_displayTileSize(32)
+	, m_displayTileCountH(8)
+{
+	setBorderThickness(1);
+	setBorderColor(ln::Color::Gray);
+}
+
+void TilesetControl::setTileset(ln::Tileset* tileset)
+{
+    m_tileset = tileset;
+
+	auto texture = m_tileset->material()->mainTexture();
+	if (texture) {
+		ln::Size tileSize;
+		tileSize.width = texture->width() / m_displayTileCountH;
+		tileSize.height = tileSize.width;
+		m_displayTileScale.x = m_displayTileSize / tileSize.width;
+		m_displayTileScale.y = m_displayTileSize / tileSize.height;
+
+		setWidth(m_displayTileScale.x * texture->width());
+		setHeight(m_displayTileScale.y * texture->height());
+	}
+}
+
+void TilesetControl::onRender(ln::UIRenderingContext* context)
 {
     if (m_tileset && m_tileset->material()) {
         auto material = m_tileset->material();
         auto texture = material->mainTexture();
         if (texture) {
-            context->drawImage(ln::Rect(0, 0, texture->width(), texture->height()), material);
+            context->drawImage(ln::Rect(0, 0, m_displayTileScale.x * texture->width(), m_displayTileScale.y * texture->height()), material);
         }
     }
 }
+
+//==============================================================================
+// TilesetView
+
+TilesetView::TilesetView()
+{
+	m_layout = ln::makeObject<ln::UIVBoxLayout3>();
+	addElement(m_layout);
+
+	m_tilesetFormControl = ln::makeObject2<TilesetFormControl>(this);
+	m_tilesetFormControl->setWidth(64);
+	m_tilesetFormControl->setHeight(64);
+	m_tilesetFormControl->setBackgroundColor(ln::Color::Red);
+	m_layout->addChild(m_tilesetFormControl);
+
+	m_autoTilesetControl = ln::makeObject<AutoTilesetControl>();
+	m_autoTilesetControl->setHeight(64);
+	m_autoTilesetControl->setBackgroundColor(ln::Color::Blue);
+	m_layout->addChild(m_autoTilesetControl);
+
+	m_tilesetControl = ln::makeObject<TilesetControl>();
+	m_layout->addChild(m_tilesetControl);
+}
+
+void TilesetView::setTileset(ln::Tileset* tileset)
+{
+	m_tileset = tileset;
+	m_autoTilesetControl->setTileset(m_tileset);
+	m_tilesetControl->setTileset(m_tileset);
+}
+
+//Ref<ln::UIVBoxLayout3> TilesetView::layout()
+//{
+//	return m_layout;
+//}
+
 
 } // namespace lna
 

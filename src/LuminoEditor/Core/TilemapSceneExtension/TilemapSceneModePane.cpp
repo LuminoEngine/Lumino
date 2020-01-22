@@ -19,7 +19,7 @@ void TilemapSceneModePane::init(TilemapSceneEditorModel* model)
 	setViewModel(m_model);
 
     m_material = ln::makeObject<ln::Material>();
-	m_displayScale = ln::Vector2(1, 1);
+	m_displayTileScale = ln::Vector2(1, 1);
 }
 
 void TilemapSceneModePane::setTileset(ln::Tileset* tileset)
@@ -32,11 +32,11 @@ void TilemapSceneModePane::setTileset(ln::Tileset* tileset)
 
 		m_tileSize.width = texture->width() / 8;
         m_tileSize.height = m_tileSize.width;
-		m_displayScale.x = DisplayTileSize / m_tileSize.width;
-		m_displayScale.y = DisplayTileSize / m_tileSize.height;
+		m_displayTileScale.x = DisplayTileSize / m_tileSize.width;
+		m_displayTileScale.y = DisplayTileSize / m_tileSize.height;
 
-        setWidth(m_displayScale.x * texture->width());
-        setHeight(m_displayScale.y * texture->height());
+        setWidth(m_displayTileScale.x * texture->width());
+        setHeight(m_displayTileScale.y * texture->height());
     }
 }
 
@@ -49,7 +49,7 @@ void TilemapSceneModePane::onSourcePropertyChanged(ln::UINotifyPropertyChangedEv
 void TilemapSceneModePane::onRender(ln::UIRenderingContext* context)
 {
     if (m_material && m_material->mainTexture()) {
-        context->drawImage(ln::Rect(0, 0, m_displayScale.x * m_material->mainTexture()->width(), m_displayScale.x * m_material->mainTexture()->height()), m_material);
+        context->drawImage(ln::Rect(0, 0, m_displayTileScale.x * m_material->mainTexture()->width(), m_displayTileScale.x * m_material->mainTexture()->height()), m_material);
 
 		if (m_model->tilemapBrush()->source() == TilemapBrushSource::Tileset) {
 			auto range = m_model->tilemapBrush()->range();
