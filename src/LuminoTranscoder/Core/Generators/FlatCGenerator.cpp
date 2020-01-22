@@ -37,12 +37,6 @@ void FlatCHeaderGenerator::generate()
 	}
     delegatesText.NewLine();
 
-    // delegateObjects
-    for (auto& delegateSymbol : db()->delegateObjects()) {
-		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
-        delegatesText.AppendLine(makeCreateDelegateObjectFuncHeader(delegateSymbol) + u";");
-    }
-
 	// structs
 	OutputBuffer structsText;
 	OutputBuffer structMemberFuncDeclsText;
@@ -84,6 +78,16 @@ void FlatCHeaderGenerator::generate()
 		//{
 		//	structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
 		//}
+	}
+
+	// delegateObjects
+	for (auto& delegateSymbol : db()->delegateObjects()) {
+		delegatesText.AppendLine(u"//==============================================================================");
+		delegatesText.AppendLine(u"// {0}", delegateSymbol->fullName());
+		delegatesText.NewLine();
+
+		delegatesText.AppendLine(makeDelegateFuncPtrDecl(delegateSymbol));
+		delegatesText.AppendLine(makeCreateDelegateObjectFuncHeader(delegateSymbol) + u";");
 	}
 
 	// classes
@@ -392,10 +396,16 @@ ln::String FlatCSourceGenerator::generateDelegateObjects() const
 			code.AppendLine(u"{");
 			code.IncreaseIndent();
 			{
-				code.AppendLine(nativeReturnType + u" ret = {};");
-				code.AppendLine(u"auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), {0}, &ret);", makeFlatArgList(delegateSymbol->delegateDeclaration()));
-				code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
-				code.AppendLine(u"return ret;");
+				if (delegateSymbol->delegateDeclaration()->returnType().type == PredefinedTypes::voidType) {
+					code.AppendLine(u"auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), {0});", makeFlatArgList(delegateSymbol->delegateDeclaration()));
+					code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+				}
+				else {
+					code.AppendLine(nativeReturnType + u" ret = {};");
+					code.AppendLine(u"auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), {0}, &ret);", makeFlatArgList(delegateSymbol->delegateDeclaration()));
+					code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
+					code.AppendLine(u"return ret;");
+				}
 			}
 			code.DecreaseIndent();
 			code.AppendLine(u"})");
@@ -553,7 +563,10 @@ ln::String FlatCSourceGenerator::makeFlatArgList(const MethodSymbol* method) con
 	OutputBuffer argList;
 	for (auto& param : method->parameters()) {
 		if (param->type()->isObjectGroup())
-			argList.AppendCommad(u"LNI_HANDLE_TO_OBJECT({0}, {1})", param->type()->fullName(), param->name());
+			if (param->qualType().strongReference)
+		argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE({0})", param->name());
+			else
+				argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE({0})", param->name());
 		else
 			argList.AppendCommad(param->name());
 	}

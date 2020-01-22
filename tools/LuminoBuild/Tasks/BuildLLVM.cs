@@ -31,8 +31,9 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(reposDir);
             */
             var repoRoot = Path.Combine(reposDir, "llvm-project", "llvm");
-            var installDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MD", "BuildToolsInstall", "llvm");
-            BuildProject(repoRoot, Path.Combine(reposDir, "llvm-project", "_Build_MSVC2017-x64-MD"), installDir);
+            var buildDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MT", "llvm-build");
+            var installDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MT", "BuildToolsInstall", "llvm");
+            BuildProject(repoRoot, buildDir, installDir);
         }
 
         public void BuildProject(string cmakeHomeDir, string buildDir, string installDir)
@@ -81,6 +82,10 @@ namespace LuminoBuild.Tasks
                 //$"-DLLVM_INCLUDE_UTILS=OFF",
                 //$"-DLLVM_POLLY_BUILD=OFF",
                 //$"-DLLVM_POLLY_LINK_INTO_TOOLS=OFF",
+                $"-DLLVM_USE_CRT_DEBUG=MTd",
+                $"-DLLVM_USE_CRT_RELEASE=MT",
+                $"-DLLVM_USE_CRT_MINSIZEREL=MT",
+                $"-DLLVM_USE_CRT_RELWITHDEBINFO=MT",
             };
 
             Utils.CallProcess("cmake", string.Join(' ', args));

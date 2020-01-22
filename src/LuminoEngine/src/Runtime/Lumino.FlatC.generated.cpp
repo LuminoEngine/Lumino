@@ -2,7 +2,85 @@
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 
 #include <LuminoEngine.hpp>
+#include "BindingValidation.hpp"
 
+class LNWS_ln_ZVTestDelegate1 : public ln::ZVTestDelegate1
+{
+public:
+    LnZVTestDelegate1Callback m_callback;
+
+    LNWS_ln_ZVTestDelegate1() : ln::ZVTestDelegate1([this](int p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), p1);
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate1Callback"); }
+    })
+    {}
+
+    void init(LnZVTestDelegate1Callback callback)
+    {
+        ln::ZVTestDelegate1::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate1, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+class LNWS_ln_ZVTestDelegate2 : public ln::ZVTestDelegate2
+{
+public:
+    LnZVTestDelegate2Callback m_callback;
+
+    LNWS_ln_ZVTestDelegate2() : ln::ZVTestDelegate2([this](int p1, int p2) -> int
+    {
+        int ret = {};
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), p1, p2, &ret);
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate2Callback"); }
+        return ret;
+    })
+    {}
+
+    void init(LnZVTestDelegate2Callback callback)
+    {
+        ln::ZVTestDelegate2::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate2, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+class LNWS_ln_ZVTestDelegate3 : public ln::ZVTestDelegate3
+{
+public:
+    LnZVTestDelegate3Callback m_callback;
+
+    LNWS_ln_ZVTestDelegate3() : ln::ZVTestDelegate3([this](ln::ZVTestClass1* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate3Callback"); }
+    })
+    {}
+
+    void init(LnZVTestDelegate3Callback callback)
+    {
+        ln::ZVTestDelegate3::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate3, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 class LNWS_ln_TestDelegate : public ln::TestDelegate
 {
 public:
@@ -30,6 +108,38 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+
+class LNWS_ln_ZVTestClass1 : public ln::ZVTestClass1
+{
+public:
+    static LnZVTestClass1_OnSerialize_OverrideCallback s_LnZVTestClass1_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnZVTestClass1_OnSerialize_OverrideCallback) s_LnZVTestClass1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::ZVTestClass1::onSerialize(ar);
+    }
+
+};
+LnZVTestClass1_OnSerialize_OverrideCallback LNWS_ln_ZVTestClass1::s_LnZVTestClass1_OnSerialize_OverrideCallback = nullptr;
+
 
 class LNWS_ln_Object : public ln::Object
 {
@@ -900,6 +1010,84 @@ LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float 
 
 
 
+
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate1(LnHandle zvtestclass1, LnHandle value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->setTestDelegate1(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate1, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate2(LnHandle zvtestclass1, LnHandle value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->setTestDelegate2(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate2, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate3(LnHandle zvtestclass1, LnHandle value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->setTestDelegate3(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate3, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate1(LnHandle zvtestclass1, int a)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate1(a));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate2(LnHandle zvtestclass1, int a, int b, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate2(a, b));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate3(LnHandle zvtestclass1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate3());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outZVTestClass1, LNWS_ln_ZVTestClass1, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestClass1>(), id);
+}
+
+LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_SetOverrideCallback(LnZVTestClass1_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_ZVTestClass1::s_LnZVTestClass1_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnZVTestClass1_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::ZVTestClass1>()->id();
+}
 
 LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
 {

@@ -6,7 +6,7 @@
 #include "../Core/Generators/DotNetPInvokeGenerator.hpp"
 #include "../Core/Generators/DotnetClassGenerator.hpp"
 
-#define TEST_ROOT u"D:/Proj/LN/Lumino/"
+#define TEST_ROOT u"C:/Proj/LN/Lumino/"
 
 int main(int argc, char** argv)
 {
@@ -27,8 +27,10 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoCore/Math/Matrix.hpp",
 		};
 
+
 		ln::List<ln::Path> files_LuminoEngine =
 		{
+			TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
             TEST_ROOT "include/LuminoEngine/Engine/Object.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
@@ -86,8 +88,6 @@ int main(int argc, char** argv)
 	}
 
 
-
-
 	auto db = ln::makeRef<SymbolDatabase>(diag);
 	db->initTypes(pidb);
 	db->linkTypes();
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 	config->targetNamespace = u"ln";
 	config->flatCOutputModuleName = u"Ln";
 	config->flatCCommonHeader = LN_LOCALFILE("../../../include/LuminoEngine/Runtime/FlatCommon.h");
-	config->flatCHeaderString = u"#include <LuminoEngine.hpp>";
+	config->flatCHeaderString = u"#include <LuminoEngine.hpp>\n#include \"BindingValidation.hpp\"";
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
@@ -118,16 +118,16 @@ int main(int argc, char** argv)
 		g.setup(db, config);
 		g.generate();
 	}
-	{
-		RubyExtGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		RubyYARDOCSourceGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
+	//{
+	//	RubyExtGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	RubyYARDOCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
     //{
     //    DotNetPInvokeGenerator g;
     //    g.setup(db, config);

@@ -39,6 +39,7 @@
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
+#include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
 
 namespace ln {
@@ -133,6 +134,7 @@ void EngineManager::init()
     {
         EngineDomain::registerType<Application>();
 		EngineDomain::registerType<Serializer>();
+		EngineDomain::registerType<ZVTestClass1>();
     }
 
 	initializeAllManagers();

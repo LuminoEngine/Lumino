@@ -149,6 +149,24 @@ typedef enum tagLnDepthBufferFormat
 
 typedef void(*LnUIEventHandlerCallback)(LnHandle __eventOwner, LnHandle p1);
 
+//==============================================================================
+// ln::ZVTestDelegate1
+
+typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle, int p1);
+LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback, LnHandle* outDelegate);
+//==============================================================================
+// ln::ZVTestDelegate2
+
+typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle, int p1, int p2, int* outReturn);
+LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback, LnHandle* outDelegate);
+//==============================================================================
+// ln::ZVTestDelegate3
+
+typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle, LnHandle p1);
+LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate);
+//==============================================================================
+// ln::TestDelegate
+
 typedef LnResult(*LnTestDelegateCallback)(LnHandle, int p1, int* outReturn);
 LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
 
@@ -276,6 +294,58 @@ LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float 
 
 
 
+
+//==============================================================================
+// ln::ZVTestClass1
+
+/**
+    @brief setTestDelegate1 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate1(LnHandle zvtestclass1, LnHandle value);
+
+/**
+    @brief setTestDelegate2 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate2(LnHandle zvtestclass1, LnHandle value);
+
+/**
+    @brief setTestDelegate3 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate3(LnHandle zvtestclass1, LnHandle value);
+
+/**
+    @brief callTestDelegate1 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate1(LnHandle zvtestclass1, int a);
+
+/**
+    @brief callTestDelegate2 method.
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate2(LnHandle zvtestclass1, int a, int b, int* outReturn);
+
+/**
+    @brief callTestDelegate3 method. (create object in internal)
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate3(LnHandle zvtestclass1);
+
+/**
+    @brief init method.
+    @param[out] outZVTestClass1 : instance.
+*/
+LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1);
+
+typedef LnResult(*LnZVTestClass1_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_SetOverrideCallback(LnZVTestClass1_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnZVTestClass1_GetTypeInfoId();
 
 //==============================================================================
 // ln::Object
