@@ -66,6 +66,7 @@ TilesetFormControl::TilesetFormControl(TilesetView* parent)
 
 	{
 		auto dialog = ln::makeObject<TextureAssetSelectDialog>();
+		dialog->setupDialogButtons(ln::UIDialogButtons::OKCancel);
 
 		auto icon = ln::makeObject<ln::UIIcon>();
 		icon->setIconName(u"ellipsis-h");

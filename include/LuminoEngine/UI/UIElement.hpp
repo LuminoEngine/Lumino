@@ -429,7 +429,7 @@ public:	// TODO: internal protected
 		通常、padding と border を加算したサイズを返すように実装します。
 		border については、inset または outset の場合分けが必要です。
 
-        Note: レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は NaN や Inf が含まれることがある。
+        Note: レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は Inf が含まれることがある。
     */
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 

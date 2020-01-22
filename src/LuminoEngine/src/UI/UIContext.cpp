@@ -352,8 +352,8 @@ void UIContext::setupDefaultStyle()
 		// UIDialog
 		{
 			if (auto s = sheet->obtainStyle(u"UIDialog")) {
-				s->minWidth = 100;
-				s->minHeight = 100;
+				s->minWidth = 200;
+				s->minHeight = 200;
 				s->padding = theme->spacing(1);
 				s->backgroundColor = UIColors::get(UIColorHues::White);
 				s->cornerRadius = CornerRadius(4);
