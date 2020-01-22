@@ -542,14 +542,14 @@ Size UIBoxLayout3::measureOverride(UILayoutContext* layoutContext, const Size& c
 
     Size size = constraint;
 
-    if (m_orientation == Orientation::Horizontal) {
-        // 横に並べる場合、幅の制限を設けない
-        size.width = std::numeric_limits<float>::infinity();
-    }
-    else {
-        // 縦に並べる場合、高さの制限を設けない
-        size.height = std::numeric_limits<float>::infinity();
-    }
+    //if (m_orientation == Orientation::Horizontal) {
+    //    // 横に並べる場合、幅の制限を設けない
+    //    size.width = std::numeric_limits<float>::infinity();
+    //}
+    //else {
+    //    // 縦に並べる場合、高さの制限を設けない
+    //    size.height = std::numeric_limits<float>::infinity();
+    //}
 
     Size desiredSize;
     for (int i = 0; i < childCount; i++)
@@ -671,7 +671,7 @@ UILayoutLengthType UIBoxLayout3::layoutType(int index) const
 
     auto& info = child->m_gridLayoutInfo;
     if (!info)
-        return UILayoutLengthType::Auto;
+        return UILayoutLengthType::Ratio;
     if (info->layoutWeight <= 0.0)
         return UILayoutLengthType::Auto;
     else
@@ -684,7 +684,7 @@ float UIBoxLayout3::layoutWeight(int index) const
     if (child->m_gridLayoutInfo)
         return child->m_gridLayoutInfo->layoutWeight;
     else
-        return 0.0f;
+        return 1.0f;
 }
 
 float UIBoxLayout3::layoutDirectSize(int index) const
@@ -721,6 +721,15 @@ void UIBoxLayout3::getLayoutMinMaxSize(int index, float* minSize, float* maxSize
         if (!Math::isNaN(child->m_finalStyle->maxHeight))
             *maxSize = child->m_finalStyle->maxHeight;
     }
+}
+
+//==============================================================================
+// UIHBoxLayout3
+
+void UIHBoxLayout3::init()
+{
+	UIBoxLayout3::init();
+	setOrientation(Orientation::Horizontal);
 }
 
 //==============================================================================

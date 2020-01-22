@@ -292,6 +292,15 @@ private:
     List<CellDefinition> m_cellDefinitions;
 };
 
+class UIHBoxLayout3
+    : public UIBoxLayout3
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+    void init();
+};
+
 
 class UIVBoxLayout3
     : public UIBoxLayout3

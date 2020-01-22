@@ -81,22 +81,25 @@ void TilesetControl::onRender(ln::UIRenderingContext* context)
 
 TilesetView::TilesetView()
 {
-	m_layout = ln::makeObject<ln::UIVBoxLayout3>();
-	addElement(m_layout);
+	m_layout1 = ln::makeObject<ln::UIHBoxLayout3>();
+	addElement(m_layout1);
 
 	m_tilesetFormControl = ln::makeObject2<TilesetFormControl>(this);
-	m_tilesetFormControl->setWidth(64);
-	m_tilesetFormControl->setHeight(64);
-	m_tilesetFormControl->setBackgroundColor(ln::Color::Red);
-	m_layout->addChild(m_tilesetFormControl);
+	m_tilesetFormControl->setHorizontalAlignment(ln::HAlignment::Stretch);
+	m_tilesetFormControl->setVerticalAlignment(ln::VAlignment::Stretch);
+	m_tilesetFormControl->setBackgroundColor(ln::Color::Coral);
+	m_layout1->addChild(m_tilesetFormControl);
+
+	m_layout2 = ln::makeObject<ln::UIVBoxLayout3>();
+	m_layout1->addChild(m_layout2);
 
 	m_autoTilesetControl = ln::makeObject<AutoTilesetControl>();
 	m_autoTilesetControl->setHeight(64);
 	m_autoTilesetControl->setBackgroundColor(ln::Color::Blue);
-	m_layout->addChild(m_autoTilesetControl);
+	m_layout2->addChild(m_autoTilesetControl);
 
 	m_tilesetControl = ln::makeObject<TilesetControl>();
-	m_layout->addChild(m_tilesetControl);
+	m_layout2->addChild(m_tilesetControl);
 }
 
 void TilesetView::setTileset(ln::Tileset* tileset)

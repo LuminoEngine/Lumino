@@ -60,7 +60,8 @@ public:
 protected:
 
 private:
-	Ref<ln::UIVBoxLayout3> m_layout;
+	Ref<ln::UIHBoxLayout3> m_layout1;
+	Ref<ln::UIVBoxLayout3> m_layout2;
 	Ref<TilesetFormControl> m_tilesetFormControl;
 	Ref<AutoTilesetControl> m_autoTilesetControl;
 	Ref<TilesetControl> m_tilesetControl;
