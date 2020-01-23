@@ -567,7 +567,7 @@ public:
 									methodInfo->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
 									methodInfo->accessLevel = u"Public";
 									methodInfo->isStatic = true;
-									typeInfo->methods.add(methodInfo);
+									typeInfo->delegateProtoType = methodInfo;
 
 									for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
 										QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
@@ -611,26 +611,25 @@ public:
 									typeInfo->document = parseDocument(decl);
 									m_parser->getDB()->types.add(typeInfo);
 
-									for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
-										QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
-										SplitQualType paramTypeSplit = paramType.split();
+									//for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
+									//	QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
+									//	SplitQualType paramTypeSplit = paramType.split();
 
-										auto templateArg = ln::makeRef<PITemplateArgument>();
-										templateArg->typeRawName = getRawTypeFullName(paramType);
-										templateArg->isConst = paramType.getQualifiers().hasConst();
-										templateArg->isPointer = paramTypeSplit.Ty->isPointerType();
-										typeInfo->templateArguments.add(templateArg);
-									}
+									//	auto templateArg = ln::makeRef<PITemplateArgument>();
+									//	templateArg->typeRawName = getRawTypeFullName(paramType);
+									//	templateArg->isConst = paramType.getQualifiers().hasConst();
+									//	templateArg->isPointer = paramTypeSplit.Ty->isPointerType();
+									//	typeInfo->templateArguments.add(templateArg);
+									//}
 
-									// TODO: Core 側で、テンプレート実引数から生成するようにしたい
+									//// TODO: Core 側で、テンプレート実引数から生成するようにしたい
 									{
 										auto methodInfo = ln::makeRef<PIMethod>();
 										methodInfo->document = parseDocument(decl);
 										methodInfo->name = ln::String::fromStdString(decl->getNameAsString());
 										methodInfo->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
 										methodInfo->accessLevel = u"Public";
-										methodInfo->isStatic = true;
-										typeInfo->methods.add(methodInfo);
+										typeInfo->delegateProtoType = methodInfo;
 
 										for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
 											QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"

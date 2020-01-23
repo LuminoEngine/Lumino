@@ -188,10 +188,12 @@ public:
 	ln::String baseClassRawName;
     Ref<PIDocument> document;
     Ref<PIMetadata> metadata;
+	Ref<PIMethod> delegateProtoType;
 	ln::List<Ref<PITemplateArgument>> templateArguments;
 	ln::List<Ref<PIField>> fields;
 	ln::List<Ref<PIConstant>> constants;
 	ln::List<Ref<PIMethod>> methods;
+	
 
 protected:
 	LN_SERIALIZE_CLASS_VERSION(1);
@@ -202,6 +204,7 @@ protected:
 		ar & LN_NVP(baseClassRawName);
 		ar & LN_NVP(document);
 		ar & LN_NVP(metadata);
+		ar & LN_NVP(delegateProtoType);
 		ar & LN_NVP(templateArguments);
 		ar & LN_NVP(fields);
 		ar & LN_NVP(constants);

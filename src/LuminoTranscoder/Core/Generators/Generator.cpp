@@ -163,18 +163,12 @@ ln::String Generator::makeFlatFullFuncName(const TypeSymbol* classSymbol, const 
 // 宣言文の作成。ドキュメンテーションコメントは含まない。
 ln::String Generator::makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset charset) const
 {
-	// make params
-	OutputBuffer params;
-	for (auto& paramInfo : methodInfo->flatParameters()) {
-		params.AppendCommad(u"{0} {1}", makeFlatCParamQualTypeName(methodInfo, paramInfo, charset), paramInfo->name());
-	}
-
 	static const ln::String funcHeaderTemplate =
 		u"LN_FLAT_API LnResult %%FuncName%%(%%ParamList%%)";
 
 	return funcHeaderTemplate
 		.replace(u"%%FuncName%%", makeFlatFullFuncName(methodInfo, charset))
-		.replace(u"%%ParamList%%", params.toString());
+		.replace(u"%%ParamList%%", makeFlatParamList(methodInfo, charset));
 }
 
 ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo, const MethodParameterSymbol* paramInfo, FlatCharset charset) const
@@ -253,4 +247,30 @@ ln::String Generator::makeFlatCharTypeName(FlatCharset charset) const
 		return u"LnChar";
 	else
 		return u"char";
+}
+
+ln::String Generator::makeFlatParamList(const MethodSymbol* method, FlatCharset charset) const
+{
+	// make params
+	OutputBuffer params;
+	for (auto& paramInfo : method->flatParameters()) {
+		params.AppendCommad(u"{0} {1}", makeFlatCParamQualTypeName(method, paramInfo, charset), paramInfo->name());
+	}
+	return params.toString();
+}
+
+// Native -> FlatC への呼び出し実引数リストを作成する。Native のコールバックから、FlatC のコールバックを呼び出すときなどに使用する。 
+ln::String Generator::makeFlatArgList(const MethodSymbol* method) const
+{
+	OutputBuffer argList;
+	for (auto& param : method->parameters()) {
+		if (param->type()->isObjectGroup())
+			if (param->qualType().strongReference)
+				argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE({0})", param->name());
+			else
+				argList.AppendCommad(u"LNI_OBJECT_TO_HANDLE({0})", param->name());
+		else
+			argList.AppendCommad(param->name());
+	}
+	return argList.toString();
 }

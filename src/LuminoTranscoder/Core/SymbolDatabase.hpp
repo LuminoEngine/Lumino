@@ -273,6 +273,8 @@ public:
 	const ln::String& fullName() const { return m_fullName; }
 	const ln::List<Ref<MethodParameterSymbol>>& parameters() const { return m_parameters; }
 	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
+	MethodParameterSymbol* flatThisParam() const { return !isStatic() ? m_flatParameters.front() : nullptr; }
+	MethodParameterSymbol* flatReturnParam() const { return hasReturnType() ? m_flatParameters.back() : nullptr; }
 	const MethodParameterSymbol* findFlatParameter(const ln::StringRef& name) const;
 	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
 	PropertySymbol* ownerProperty() const { return m_ownerProperty; }
@@ -291,6 +293,7 @@ public:
 	bool isCollectionGetItem() const { return metadata()->hasKey(u"Collection_GetItem"); }	// AccessorCache を使うときにインデックス指定するものであるかどうか
     bool isRuntimeInitializer() const { return metadata()->hasKey(u"RuntimeInitializer"); }
 
+	bool hasReturnType() const { return m_returnType.type != PredefinedTypes::voidType; }
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
     bool isFieldAccessor() const { return m_linkedField != nullptr; }
@@ -376,7 +379,7 @@ public:
 	const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
-	MethodSymbol* delegateDeclaration() const { return m_declaredMethods[0]; }
+	MethodSymbol* delegateProtoType() const { return m_delegateProtoType; }
 
 	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
 	bool isClass() const { return kind() == TypeKind::Class; }
@@ -406,6 +409,7 @@ private:
 	TypeClass m_typeClass = TypeClass::None;
 	ln::String m_fullName;
 	ln::String m_shortName;
+	Ref<MethodSymbol> m_delegateProtoType;
 	ln::List<Ref<FieldSymbol>> m_fields;
 	ln::List<Ref<ConstantSymbol>> m_constants;
 	ln::List<Ref<MethodSymbol>> m_publicMethods;

@@ -1011,11 +1011,6 @@ LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float 
 
 
 
-LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Object>(), id);
-}
-
 LN_FLAT_API LnResult LnObject_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1031,6 +1026,26 @@ LN_FLAT_API LnResult LnObject_OnSerialize_SetOverrideCallback(LnObject_OnSeriali
 extern LN_FLAT_API int LnObject_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Object>()->id();
+}
+
+LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Object>(), id);
+}
+
+LN_FLAT_API void LnZVTestDelegate1_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate1>(), id);
+}
+
+LN_FLAT_API void LnZVTestDelegate2_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate2>(), id);
+}
+
+LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate3>(), id);
 }
 
 LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate1(LnHandle zvtestclass1, LnHandle value)
@@ -1089,11 +1104,6 @@ LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1)
 }
 
 
-LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestClass1>(), id);
-}
-
 LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1109,6 +1119,11 @@ LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_SetOverrideCallback(LnZVTestClas
 extern LN_FLAT_API int LnZVTestClass1_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::ZVTestClass1>()->id();
+}
+
+LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestClass1>(), id);
 }
 
 LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* name, LnBool value)
@@ -1303,11 +1318,6 @@ LN_FLAT_API LnResult LnSerializer_DeserializeA(const char* str, const char* base
 }
 
 
-LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Serializer>(), id);
-}
-
 LN_FLAT_API LnResult LnSerializer_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1323,6 +1333,11 @@ LN_FLAT_API LnResult LnSerializer_OnSerialize_SetOverrideCallback(LnSerializer_O
 extern LN_FLAT_API int LnSerializer_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Serializer>()->id();
+}
+
+LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Serializer>(), id);
 }
 
 LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn)
@@ -1341,11 +1356,6 @@ LN_FLAT_API LnResult LnAssetModel_Create(LnHandle target, LnHandle* outAssetMode
 }
 
 
-LN_FLAT_API void LnAssetModel_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::AssetModel>(), id);
-}
-
 LN_FLAT_API LnResult LnAssetModel_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1361,6 +1371,11 @@ LN_FLAT_API LnResult LnAssetModel_OnSerialize_SetOverrideCallback(LnAssetModel_O
 extern LN_FLAT_API int LnAssetModel_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::AssetModel>()->id();
+}
+
+LN_FLAT_API void LnAssetModel_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::AssetModel>(), id);
 }
 
 LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFile(LnHandle asset, const LnChar* filePath)
@@ -1563,11 +1578,6 @@ LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
 }
 
 
-LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
-}
-
 LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1609,9 +1619,9 @@ extern LN_FLAT_API int LnApplication_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::Application>()->id();
 }
 
-LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::GraphicsResource>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
 }
 
 LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -1631,9 +1641,9 @@ extern LN_FLAT_API int LnGraphicsResource_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::GraphicsResource>()->id();
 }
 
-LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::GraphicsResource>(), id);
 }
 
 LN_FLAT_API LnResult LnTexture_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -1651,6 +1661,11 @@ LN_FLAT_API LnResult LnTexture_OnSerialize_SetOverrideCallback(LnTexture_OnSeria
 extern LN_FLAT_API int LnTexture_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::Texture>()->id();
+}
+
+LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture>(), id);
 }
 
 LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn)
@@ -1701,11 +1716,6 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTexture
 }
 
 
-LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2D>(), id);
-}
-
 LN_FLAT_API LnResult LnTexture2D_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1723,9 +1733,9 @@ extern LN_FLAT_API int LnTexture2D_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::Texture2D>()->id();
 }
 
-LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Component>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2D>(), id);
 }
 
 LN_FLAT_API LnResult LnComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -1745,6 +1755,11 @@ extern LN_FLAT_API int LnComponent_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::Component>()->id();
 }
 
+LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Component>(), id);
+}
+
 LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBool value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1760,11 +1775,6 @@ LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBoo
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualComponent>(), id);
-}
 
 LN_FLAT_API LnResult LnVisualComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -1783,6 +1793,11 @@ extern LN_FLAT_API int LnVisualComponent_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::VisualComponent>()->id();
 }
 
+LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualComponent>(), id);
+}
+
 LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHandle texture)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1790,11 +1805,6 @@ LN_FLAT_API LnResult LnSpriteComponent_SetTexture(LnHandle spritecomponent, LnHa
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SpriteComponent>(), id);
-}
 
 LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -1813,6 +1823,11 @@ extern LN_FLAT_API int LnSpriteComponent_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::SpriteComponent>()->id();
 }
 
+LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SpriteComponent>(), id);
+}
+
 LN_FLAT_API LnResult LnWorld_Add(LnHandle world, LnHandle obj)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1820,11 +1835,6 @@ LN_FLAT_API LnResult LnWorld_Add(LnHandle world, LnHandle obj)
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API void LnWorld_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::World>(), id);
-}
 
 LN_FLAT_API LnResult LnWorld_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -1843,6 +1853,11 @@ extern LN_FLAT_API int LnWorld_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::World>()->id();
 }
 
+LN_FLAT_API void LnWorld_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::World>(), id);
+}
+
 LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1859,11 +1874,6 @@ LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, 
 }
 
 
-LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ComponentList>(), id);
-}
-
 LN_FLAT_API LnResult LnComponentList_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1879,6 +1889,11 @@ LN_FLAT_API LnResult LnComponentList_OnSerialize_SetOverrideCallback(LnComponent
 extern LN_FLAT_API int LnComponentList_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::ComponentList>()->id();
+}
+
+LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ComponentList>(), id);
 }
 
 LN_FLAT_API LnResult LnWorldObject_SetPosition(LnHandle worldobject, const LnVector3* pos)
@@ -1993,11 +2008,6 @@ LN_FLAT_API LnResult LnWorldObject_GetComponents(LnHandle worldobject, LnHandle*
 }
 
 
-LN_FLAT_API void LnWorldObject_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::WorldObject>(), id);
-}
-
 LN_FLAT_API LnResult LnWorldObject_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2027,6 +2037,11 @@ extern LN_FLAT_API int LnWorldObject_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::WorldObject>()->id();
 }
 
+LN_FLAT_API void LnWorldObject_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::WorldObject>(), id);
+}
+
 LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2042,11 +2057,6 @@ LN_FLAT_API LnResult LnVisualObject_IsVisible(LnHandle visualobject, LnBool* out
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualObject>(), id);
-}
 
 LN_FLAT_API LnResult LnVisualObject_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -2075,6 +2085,16 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_
 extern LN_FLAT_API int LnVisualObject_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::VisualObject>()->id();
+}
+
+LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualObject>(), id);
+}
+
+LN_FLAT_API void LnTestDelegate_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::TestDelegate>(), id);
 }
 
 LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value)
@@ -2117,11 +2137,6 @@ LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, f
 }
 
 
-LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Sprite>(), id);
-}
-
 LN_FLAT_API LnResult LnSprite_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2151,6 +2166,11 @@ extern LN_FLAT_API int LnSprite_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::Sprite>()->id();
 }
 
+LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Sprite>(), id);
+}
+
 LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2158,11 +2178,6 @@ LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outRet
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
-}
 
 LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -2181,9 +2196,9 @@ extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::UIEventArgs>()->id();
 }
 
-LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UILayoutElement>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
 }
 
 LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -2201,6 +2216,11 @@ LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_SetOverrideCallback(LnUILayou
 extern LN_FLAT_API int LnUILayoutElement_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UILayoutElement>()->id();
+}
+
+LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UILayoutElement>(), id);
 }
 
 LN_FLAT_API LnResult LnUIElement_SetPosition(LnHandle uielement, const LnVector3* pos)
@@ -2315,11 +2335,6 @@ LN_FLAT_API LnResult LnUIElement_AddChild(LnHandle uielement, LnHandle child)
 }
 
 
-LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIElement>(), id);
-}
-
 LN_FLAT_API LnResult LnUIElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2337,9 +2352,9 @@ extern LN_FLAT_API int LnUIElement_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::UIElement>()->id();
 }
 
-LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIControl>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIElement>(), id);
 }
 
 LN_FLAT_API LnResult LnUIControl_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -2359,6 +2374,11 @@ extern LN_FLAT_API int LnUIControl_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::UIControl>()->id();
 }
 
+LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIControl>(), id);
+}
+
 LN_FLAT_API LnResult LnUIButtonBase_SetText(LnHandle uibuttonbase, const LnChar* text)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2374,11 +2394,6 @@ LN_FLAT_API LnResult LnUIButtonBase_SetTextA(LnHandle uibuttonbase, const char* 
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButtonBase>(), id);
-}
 
 LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -2397,6 +2412,11 @@ extern LN_FLAT_API int LnUIButtonBase_GetTypeInfoId()
     return ln::TypeInfo::getTypeInfo<ln::UIButtonBase>()->id();
 }
 
+LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButtonBase>(), id);
+}
+
 LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2413,11 +2433,6 @@ LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHan
 }
 
 
-LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), id);
-}
-
 LN_FLAT_API LnResult LnUIButton_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2433,6 +2448,11 @@ LN_FLAT_API LnResult LnUIButton_OnSerialize_SetOverrideCallback(LnUIButton_OnSer
 extern LN_FLAT_API int LnUIButton_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::UIButton>()->id();
+}
+
+LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), id);
 }
 
 

@@ -306,11 +306,6 @@ ln::Result MethodSymbol::init(PIMethod* pi, TypeSymbol* ownerType)
 
     m_isConstructor = pi->isConstructor;
 
-	if (!pi->isStatic && m_shortName == u"init") {
-		m_isConstructor = true;
-		m_accessLevel = AccessLevel::Public;
-	}
-
 	m_isConst = m_pi->isConst;
 	m_isStatic = m_pi->isStatic;
 	m_isVirtual = m_pi->isVirtual;
@@ -331,6 +326,11 @@ ln::Result MethodSymbol::init(TypeSymbol* ownerType, const ln::String& shortName
 
 ln::Result MethodSymbol::link()
 {
+	if (!isStatic() && m_shortName == u"init") {
+		m_isConstructor = true;
+		m_accessLevel = AccessLevel::Public;
+	}
+
 	if (m_pi) {
 		m_returnType = db()->parseQualType(m_pi->returnTypeRawName);
 		if (!m_returnType.type) return false;
@@ -603,6 +603,13 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 	m_typeClass = classAsEnum(m_piType->kind);
 	setFullName(m_piType->rawFullName);
 
+	if (m_piType->delegateProtoType) {
+		m_delegateProtoType = ln::makeRef<MethodSymbol>(db());
+		if (!m_delegateProtoType->init(m_piType->delegateProtoType, this)) {
+			return false;
+		}
+	}
+
 	for (auto& i : m_piType->fields) {
 		auto s = ln::makeRef<FieldSymbol>(db());
 		if (!s->init(i)) {
@@ -665,6 +672,18 @@ ln::Result TypeSymbol::link()
 			s->metadata()->setValue(u"Collection_GetItem");
 			m_declaredMethods.add(s);
 		}
+	}
+
+	if (m_delegateProtoType) {
+		if (!m_delegateProtoType->link()) {
+			return false;
+		}
+	}
+
+	if (isDelegateObject()) {
+		auto s = ln::makeRef<MethodSymbol>(db());
+		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, {})) return false;
+		m_declaredMethods.add(s);
 	}
 
     ln::List<Ref<MethodSymbol>> additionalMethods;
@@ -734,7 +753,9 @@ ln::Result TypeSymbol::link()
 
 	if (!linkProperties()) return false;
 
-	collectVirtualMethods(&m_virtualMethods);
+	if (typeClass() == TypeClass::None) {
+		collectVirtualMethods(&m_virtualMethods);
+	}
 
 	for (auto& method : m_declaredMethods) {
 		if (method->isEventConnector()) {

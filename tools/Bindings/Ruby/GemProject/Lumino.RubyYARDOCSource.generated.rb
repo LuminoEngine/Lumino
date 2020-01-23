@@ -415,10 +415,8 @@ end
 # Test delegate 1.
 # 
 class Lumino::ZVTestDelegate1
-    # Test delegate 1.
-    # @param [Integer] p1 
     # 
-    def zv_test_delegate_1(*args)
+    def initialize(*args)
     end
 
 
@@ -428,12 +426,8 @@ end
 # Test delegate 2.
 # 
 class Lumino::ZVTestDelegate2
-    # Test delegate 2.
-    # @param [Integer] p1 
-    # @param [Integer] p2 
     # 
-    # @return [Integer] 
-    def zv_test_delegate_2(*args)
+    def initialize(*args)
     end
 
 
@@ -443,10 +437,8 @@ end
 # Test delegate 3.
 # 
 class Lumino::ZVTestDelegate3
-    # Test delegate 3.
-    # @param [Lumino::ZVTestClass1] p1 
     # 
-    def zv_test_delegate_3(*args)
+    def initialize(*args)
     end
 
 
@@ -1067,10 +1059,7 @@ end
 # 
 class Lumino::TestDelegate
     # 
-    # @param [Integer] p1 
-    # 
-    # @return [Integer] 
-    def test_delegate(*args)
+    def initialize(*args)
     end
 
 

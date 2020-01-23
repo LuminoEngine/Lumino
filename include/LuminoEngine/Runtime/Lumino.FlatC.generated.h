@@ -149,14 +149,10 @@ typedef enum tagLnDepthBufferFormat
 
 typedef void(*LnUIEventHandlerCallback)(LnHandle __eventOwner, LnHandle p1);
 
-typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle, int p1);
-LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback, LnHandle* outDelegate);
-typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle, int p1, int p2, int* outReturn);
-LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback, LnHandle* outDelegate);
-typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle, LnHandle p1);
-LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate);
-typedef LnResult(*LnTestDelegateCallback)(LnHandle, int p1, int* outReturn);
-LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
+typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
+typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn);
+typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle p1);
+typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
 
 
 //==============================================================================
@@ -296,14 +292,20 @@ LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id);
 //==============================================================================
 // ln::ZVTestDelegate1
 
+LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestDelegate1_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::ZVTestDelegate2
 
+LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestDelegate2_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::ZVTestDelegate3
 
+LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::ZVTestClass1
@@ -902,6 +904,8 @@ LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id);
 //==============================================================================
 // ln::TestDelegate
 
+LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnTestDelegate_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Sprite
