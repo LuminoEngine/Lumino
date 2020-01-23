@@ -412,6 +412,106 @@ class Lumino::Object
 
 end
 
+# Test delegate 1.
+# 
+class Lumino::ZVTestDelegate1
+    # Test delegate 1.
+    # @param [Integer] p1 
+    # 
+    def zv_test_delegate_1(*args)
+    end
+
+
+
+end
+
+# Test delegate 2.
+# 
+class Lumino::ZVTestDelegate2
+    # Test delegate 2.
+    # @param [Integer] p1 
+    # @param [Integer] p2 
+    # 
+    # @return [Integer] 
+    def zv_test_delegate_2(*args)
+    end
+
+
+
+end
+
+# Test delegate 3.
+# 
+class Lumino::ZVTestDelegate3
+    # Test delegate 3.
+    # @param [Lumino::ZVTestClass1] p1 
+    # 
+    def zv_test_delegate_3(*args)
+    end
+
+
+
+end
+
+# Test class.
+# 
+class Lumino::ZVTestClass1
+    # setTestDelegate1 method.
+    # @param [Lumino::ZVTestDelegate1] value 
+    # 
+    def set_test_delegate_1(*args)
+    end
+
+
+
+    # setTestDelegate2 method.
+    # @param [Lumino::ZVTestDelegate2] value 
+    # 
+    def set_test_delegate_2(*args)
+    end
+
+
+
+    # setTestDelegate3 method.
+    # @param [Lumino::ZVTestDelegate3] value 
+    # 
+    def set_test_delegate_3(*args)
+    end
+
+
+
+    # callTestDelegate1 method.
+    # @param [Integer] a 
+    # 
+    def call_test_delegate_1(*args)
+    end
+
+
+
+    # callTestDelegate2 method.
+    # @param [Integer] a 
+    # @param [Integer] b 
+    # 
+    # @return [Integer] 
+    def call_test_delegate_2(*args)
+    end
+
+
+
+    # callTestDelegate3 method. (create object in internal)
+    def call_test_delegate_3(*args)
+    end
+
+
+
+    # init method.
+    def initialize(*args)
+    end
+
+
+
+end
+
 # 
 # 
 class Lumino::Serializer
@@ -957,6 +1057,20 @@ class Lumino::VisualObject
     # 可視状態を取得します。
     # @return [Boolean] 
     def visible?(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::TestDelegate
+    # 
+    # @param [Integer] p1 
+    # 
+    # @return [Integer] 
+    def test_delegate(*args)
     end
 
 

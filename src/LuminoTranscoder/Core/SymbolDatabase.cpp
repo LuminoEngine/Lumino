@@ -600,6 +600,7 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 	LN_CHECK(piType);
 	m_piType = piType;
 	m_kind = kindAsEnum(m_piType->kind);
+	m_typeClass = classAsEnum(m_piType->kind);
 	setFullName(m_piType->rawFullName);
 
 	for (auto& i : m_piType->fields) {
@@ -633,9 +634,10 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 	return true;
 }
 
-ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind typeKind)
+ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass)
 {
 	m_kind = typeKind;
+	m_typeClass = typeClass;
 	setFullName(primitveRawFullName);
 	return true;
 }
@@ -716,10 +718,11 @@ ln::Result TypeSymbol::link()
             // No base class required.
         }
 		else if (isClass() && !isStatic()) {
-			m_baseClass = db()->getTypeSymbol(m_piType->baseClassRawName);
+			m_baseClass = db()->findTypeSymbol(m_piType->baseClassRawName);
 			if (!m_baseClass) {
-				LN_NOTIMPLEMENTED();
-				return false;
+				m_baseClass = db()->rootObjectClass();
+				//LN_NOTIMPLEMENTED();
+				//return false;
 			}
 		}
 	}
@@ -1038,7 +1041,7 @@ void SymbolDatabase::initPredefineds()
 {
 	auto addPredefined = [this](const ln::String& name, TypeKind kind = TypeKind::Primitive) {
 		auto t = ln::makeRef<TypeSymbol>(this);
-		t->init(name, kind);
+		t->init(name, kind, TypeClass::None);
 		m_allTypes.add(t);
 		return t;
 	};

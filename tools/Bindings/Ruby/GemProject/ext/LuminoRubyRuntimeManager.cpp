@@ -149,7 +149,6 @@ void LuminoRubyRuntimeManager::init()
     }
 
     m_runtimeAliving = true;
-
 }
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retain)

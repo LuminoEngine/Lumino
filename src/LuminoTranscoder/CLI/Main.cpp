@@ -30,8 +30,8 @@ int main(int argc, char** argv)
 
 		ln::List<ln::Path> files_LuminoEngine =
 		{
-			TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
             TEST_ROOT "include/LuminoEngine/Engine/Object.hpp",
+			TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
             TEST_ROOT "include/LuminoEngine/Asset/AssetModel.hpp",
@@ -108,26 +108,26 @@ int main(int argc, char** argv)
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
-	{
-		FlatCHeaderGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		FlatCSourceGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
 	//{
-	//	RubyExtGenerator g;
+	//	FlatCHeaderGenerator g;
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
 	//{
-	//	RubyYARDOCSourceGenerator g;
+	//	FlatCSourceGenerator g;
 	//	g.setup(db, config);
 	//	g.generate();
 	//}
+	{
+		RubyExtGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
+	{
+		RubyYARDOCSourceGenerator g;
+		g.setup(db, config);
+		g.generate();
+	}
     //{
     //    DotNetPInvokeGenerator g;
     //    g.setup(db, config);

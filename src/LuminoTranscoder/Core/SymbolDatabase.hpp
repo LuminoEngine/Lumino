@@ -360,10 +360,11 @@ class TypeSymbol : public Symbol
 public:
 	TypeSymbol(SymbolDatabase* db);
 	ln::Result init(PITypeInfo* piType);
-	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind);
+	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
 	ln::Result link();
 
 	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
+	TypeClass typeClass() const { return m_typeClass; }
 	const ln::String& fullName() const { return m_fullName; }
 	const ln::String& shortName() const { return m_shortName; }
 	const ln::List<Ref<FieldSymbol>>& fields() const { return m_fields; }
@@ -389,7 +390,7 @@ public:
 	bool isString() const { return this == PredefinedTypes::stringType || this == PredefinedTypes::stringRefType; }
 	bool isCollection() const { return metadata()->hasKey(u"Collection"); }
     bool isFlags() const { return metadata()->hasKey(u"Flags"); }
-    bool isDelegateObject() const { return kind() == TypeKind::DelegateObject; }
+    bool isDelegateObject() const { return typeClass() == TypeClass::DelegateObject; }
 
 	// LnHandle として扱うものかどうか
 	bool isObjectGroup() const { return isClass() || isDelegateObject(); }
@@ -402,6 +403,7 @@ private:
 
 	Ref<PITypeInfo> m_piType;
 	TypeKind m_kind = TypeKind::Primitive;
+	TypeClass m_typeClass = TypeClass::None;
 	ln::String m_fullName;
 	ln::String m_shortName;
 	ln::List<Ref<FieldSymbol>> m_fields;
@@ -485,7 +487,7 @@ public:
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
 	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class/* && (x->isRootObjectClass())*/; }); }
 	stream::Stream<Ref<TypeSymbol>> delegates() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegate(); }); }
-    stream::Stream<Ref<TypeSymbol>> delegateObjects() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegateObject(); }); }
+    //stream::Stream<Ref<TypeSymbol>> delegateObjects() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegateObject(); }); }
 
 	const Ref<PIDatabase>& pidb() const { return m_pidb; }
 	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
