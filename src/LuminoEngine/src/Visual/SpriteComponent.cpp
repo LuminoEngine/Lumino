@@ -11,13 +11,13 @@ namespace ln {
 //=============================================================================
 // SpriteFrame
 
-LN_OBJECT_IMPLEMENT(SpriteFrame, Object)
-{
-	context->registerType<SpriteFrame>({
-		makeRef<PropertyInfo>("SourceRect", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteFrame, Rect, sourceRect, setSourceRect)),
-		makeRef<PropertyInfo>("AnchorPoint", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteFrame, Vector2, anchorPoint, setAnchorPoint)),
-	});
-}
+LN_OBJECT_IMPLEMENT(SpriteFrame, Object) {}
+//{
+//	context->registerType<SpriteFrame>({
+//		makeRef<PropertyInfo>("SourceRect", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteFrame, Rect, sourceRect, setSourceRect)),
+//		makeRef<PropertyInfo>("AnchorPoint", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteFrame, Vector2, anchorPoint, setAnchorPoint)),
+//	});
+//}
 
 SpriteFrame::SpriteFrame()
 	: m_sourceRect()
@@ -50,11 +50,7 @@ void SpriteFrame::serialize(Archive& ar)
   - ピクセル指定は row を増やすことでのパターン追加に強い。
   SpriteFrameSet を使うのはドット絵がほとんど。どっちがよくある話かっていうと後者の方が圧倒的に多いだろう。
 */
-LN_OBJECT_IMPLEMENT(SpriteFrameSet, Object)
-{
-    // TODO: これ忘れがちなので省略できるようにしたい。
-    context->registerType<SpriteFrameSet>({});
-}
+LN_OBJECT_IMPLEMENT(SpriteFrameSet, Object) {}
 
 Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {

@@ -17,10 +17,7 @@ namespace ln {
 //==============================================================================
 // TilemapModel
 
-LN_OBJECT_IMPLEMENT(TilemapModel, Object)
-{
-    context->registerType<TilemapModel>({});
-}
+LN_OBJECT_IMPLEMENT(TilemapModel, Object) {}
 
 Ref<TilemapModel> TilemapModel::create()
 {

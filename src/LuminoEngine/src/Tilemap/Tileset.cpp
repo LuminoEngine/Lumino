@@ -97,10 +97,7 @@ Rect AutoTileset::getSourceRectUV(int autotileId, int component) const
 //==============================================================================
 // Tileset
 
-LN_OBJECT_IMPLEMENT(Tileset, Object)
-{
-    context->registerType<Tileset>({});
-}
+LN_OBJECT_IMPLEMENT(Tileset, Object) {}
 
 Ref<Tileset> Tileset::create()
 {

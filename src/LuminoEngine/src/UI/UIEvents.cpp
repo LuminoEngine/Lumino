@@ -79,11 +79,17 @@ UIEventArgs::~UIEventArgs()
 {
 }
 
-void UIEventArgs::init(UIElement* sender, UIEventType type)
+bool UIEventArgs::init()
 {
-    Object::init();
+	return Object::init();
+}
+
+bool UIEventArgs::init(UIElement* sender, UIEventType type)
+{
+	if (!init()) return false;
     m_sender = sender;
     m_type = type;
+	return true;
 }
 
 //==============================================================================
@@ -117,13 +123,19 @@ UIMouseEventArgs::~UIMouseEventArgs()
 {
 }
 
-void UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount)
+bool UIMouseEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
     m_button = button;
     m_position.x = x;
     m_position.y = y;
     m_clickCount = clickCount;
+	return true;
 }
 
 Point UIMouseEventArgs::getPosition(UIElement* relativeTo) const
@@ -175,13 +187,19 @@ UIKeyEventArgs::~UIKeyEventArgs()
 {
 }
 
-//------------------------------------------------------------------------------
-void UIKeyEventArgs::init(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode)
+bool UIKeyEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+//------------------------------------------------------------------------------
+bool UIKeyEventArgs::init(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
     m_keyCode = keyCode;
     m_modifierKeys = modifierKeys;
     m_charCode = charCode;
+	return true;
 }
 
 //==============================================================================
@@ -216,11 +234,17 @@ UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 {
 }
 
-//------------------------------------------------------------------------------
-void UIMouseWheelEventArgs::init(UIElement* sender, UIEventType type, int delta)
+bool UIMouseWheelEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+//------------------------------------------------------------------------------
+bool UIMouseWheelEventArgs::init(UIElement* sender, UIEventType type, int delta)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
     m_delta = delta;
+	return true;
 }
 
 //==============================================================================
@@ -251,11 +275,17 @@ UIDragDeltaEventArgs::~UIDragDeltaEventArgs()
 {
 }
 
-void UIDragDeltaEventArgs::init(UIElement* sender, UIEventType type, float offsetX, float offsetY)
+bool UIDragDeltaEventArgs::init()
 {
-	UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UIDragDeltaEventArgs::init(UIElement* sender, UIEventType type, float offsetX, float offsetY)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
 	m_offsetX = offsetX;
 	m_offsetY = offsetY;
+	return true;
 }
 
 
@@ -287,11 +317,17 @@ UIScrollEventArgs::~UIScrollEventArgs()
 {
 }
 
-void UIScrollEventArgs::init(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType)
+bool UIScrollEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UIScrollEventArgs::init(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
     m_newValue = newValue;
     m_scrollType = scrollType;
+	return true;
 }
 
 //==============================================================================
@@ -324,12 +360,18 @@ UIDragDropEventArgs::~UIDragDropEventArgs()
 {
 }
 
-void UIDragDropEventArgs::init(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect)
+bool UIDragDropEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
-    if (LN_REQUIRE(data)) return;
+	return UIEventArgs::init();
+}
+
+bool UIDragDropEventArgs::init(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
+    if (LN_REQUIRE(data)) return false;
     m_data = data;
     m_effect = effect;
+	return true;
 }
 
 //==============================================================================
@@ -361,10 +403,16 @@ UIClickEventArgs::~UIClickEventArgs()
 {
 }
 
-void UIClickEventArgs::init(UIElement* sender, UIEventType type, int clickCount)
+bool UIClickEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UIClickEventArgs::init(UIElement* sender, UIEventType type, int clickCount)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
     m_clickCount = clickCount;
+	return true;
 }
 
 
@@ -392,9 +440,14 @@ UISelectionChangedEventArgs::UISelectionChangedEventArgs()
 {
 }
 
-void UISelectionChangedEventArgs::init(UIElement* sender, UIEventType type)
+bool UISelectionChangedEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UISelectionChangedEventArgs::init(UIElement* sender, UIEventType type)
+{
+	return UIEventArgs::init(sender, type);
 }
 
 //==============================================================================
@@ -423,11 +476,17 @@ UICommandEventArgs::UICommandEventArgs()
 {
 }
 
-void UICommandEventArgs::init(UIElement* sender, UIEventType type, UICommand* command)
+bool UICommandEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UICommandEventArgs::init(UIElement* sender, UIEventType type, UICommand* command)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
     m_command = command;
     m_canExecute = true;
+	return true;
 }
 
 void UICommandEventArgs::raiseExecute(UIElement* target, UICommand* command)
@@ -474,22 +533,29 @@ UINotifyPropertyChangedEventArgs::UINotifyPropertyChangedEventArgs()
 {
 }
 
-void UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, const StringRef& propertyName)
+bool UINotifyPropertyChangedEventArgs::init()
 {
-    UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, const StringRef& propertyName)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
     m_action = UICollectionChangedAction::Reset;
     m_name = propertyName;
     m_startIndex = 0;
     m_count = 0;
+	return true;
 }
 
-void UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count)
+bool UINotifyPropertyChangedEventArgs::init(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count)
 {
-    UIEventArgs::init(sender, type);
+	if (!UIEventArgs::init(sender, type)) return false;
     m_action = action;
     m_name = String::Empty;
     m_startIndex = startIndex;
     m_count = count;
+	return true;
 }
 
 //==============================================================================
@@ -517,10 +583,16 @@ UITimerEventArgs::UITimerEventArgs()
 {
 }
 
-void UITimerEventArgs::init(UIElement* sender, UIEventType type, float elapsedSeconds)
+bool UITimerEventArgs::init()
 {
-	UIEventArgs::init(sender, type);
+	return UIEventArgs::init();
+}
+
+bool UITimerEventArgs::init(UIElement* sender, UIEventType type, float elapsedSeconds)
+{
+	if (!UIEventArgs::init(sender, type)) return false;
 	m_elapsedSeconds = elapsedSeconds;
+	return true;
 }
 
 } // namespace ln

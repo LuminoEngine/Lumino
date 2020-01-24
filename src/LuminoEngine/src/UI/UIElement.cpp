@@ -93,9 +93,7 @@ Ref<Object> UIElement::Builder::Details::build()
 //==============================================================================
 // UIElement
 
-LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {
-	context->registerType<UIElement>({});
-}
+LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {}
 
 UIElement::UIElement()
     : m_manager(nullptr)

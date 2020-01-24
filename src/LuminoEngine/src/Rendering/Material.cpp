@@ -181,10 +181,7 @@ void AbstractMaterial::updateShaderVariables(Shader* target) const
 // https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
 // https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
 
-LN_OBJECT_IMPLEMENT(Material, Object)
-{
-    context->registerType<Material>({});
-}
+LN_OBJECT_IMPLEMENT(Material, Object) {}
 
 static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;

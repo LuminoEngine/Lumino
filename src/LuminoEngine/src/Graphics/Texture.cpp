@@ -58,10 +58,7 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
-LN_OBJECT_IMPLEMENT(Texture2D, Texture)
-{
-    context->registerType<Texture2D>({});
-}
+LN_OBJECT_IMPLEMENT(Texture2D, Texture) {}
 
 Ref<Texture2D> Texture2D::create(int width, int height)
 {

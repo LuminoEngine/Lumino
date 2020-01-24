@@ -7,10 +7,7 @@ namespace ln {
 //==============================================================================
 // ZVTestClass1
 
-LN_OBJECT_IMPLEMENT(ZVTestClass1, Object)
-{
-    context->registerType<ZVTestClass1>({});
-}
+LN_OBJECT_IMPLEMENT(ZVTestClass1, Object) {}
 
 void ZVTestClass1::init()
 {

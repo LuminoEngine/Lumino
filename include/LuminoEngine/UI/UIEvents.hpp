@@ -130,7 +130,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIEventArgs();
 	virtual ~UIEventArgs();
-	void init(UIElement* sender, UIEventType type);
+	bool init();
+	bool init(UIElement* sender, UIEventType type);
 
 public:
     bool handled;
@@ -168,7 +169,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
 	virtual ~UIMouseEventArgs();
-	void init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount);
 
 private:
 	MouseButtons	m_button;
@@ -200,7 +202,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIKeyEventArgs();
 	virtual ~UIKeyEventArgs();
-	void init(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode);
 
 private:
 	Keys			m_keyCode;
@@ -226,7 +229,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMouseWheelEventArgs();
 	virtual ~UIMouseWheelEventArgs();
-	void init(UIElement* sender, UIEventType type, int delta);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, int delta);
 
 public:
 	int		m_delta;
@@ -249,7 +253,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIDragDeltaEventArgs();
 	virtual ~UIDragDeltaEventArgs();
-	void init(UIElement* sender, UIEventType type, float offsetX, float offsetY);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, float offsetX, float offsetY);
 
 public:
 	float m_offsetX;
@@ -273,7 +278,8 @@ public:
 LN_CONSTRUCT_ACCESS:
     UIScrollEventArgs();
     virtual ~UIScrollEventArgs();
-    void init(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, float newValue, ScrollEventType scrollType);
 
 public:
     float m_newValue;	
@@ -299,7 +305,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIDragDropEventArgs();
 	virtual ~UIDragDropEventArgs();
-	void init(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect);
 
 LN_INTERNAL_ACCESS:
 	static Ref<UIDragDropEventArgs> create(UIElement* sender, UIEventType type, DataObject* data, DragDropEffects effect, bool caching = true);
@@ -323,7 +330,8 @@ public:
 LN_CONSTRUCT_ACCESS:
     UIClickEventArgs();
     virtual ~UIClickEventArgs();
-    void init(UIElement* sender, UIEventType type, int clickCount);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, int clickCount);
 
 private:
     int m_clickCount;
@@ -343,7 +351,8 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     UISelectionChangedEventArgs();
-    void init(UIElement* sender, UIEventType type);
+	bool init();
+	bool init(UIElement* sender, UIEventType type);
 
 private:
 };
@@ -369,7 +378,8 @@ public:
 LN_CONSTRUCT_ACCESS:
     UICommandEventArgs();
     virtual ~UICommandEventArgs() = default;
-    void init(UIElement* sender, UIEventType type, UICommand* command);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, UICommand* command);
 
 public:
     UICommand* m_command;
@@ -393,8 +403,9 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     UINotifyPropertyChangedEventArgs();
-    void init(UIElement* sender, UIEventType type, const StringRef& propertyName);
-    void init(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, const StringRef& propertyName);
+	bool init(UIElement* sender, UIEventType type, UICollectionChangedAction action, int startIndex, int count);
 
 public:
     UICollectionChangedAction m_action;
@@ -417,7 +428,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UITimerEventArgs();
 	virtual ~UITimerEventArgs() = default;
-	void init(UIElement* sender, UIEventType type, float elapsedSeconds);
+	bool init();
+	bool init(UIElement* sender, UIEventType type, float elapsedSeconds);
 
 private:
 	float m_elapsedSeconds;

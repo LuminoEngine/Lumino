@@ -32,9 +32,10 @@ Object::~Object()
 	}
 }
 
-void Object::init()
+bool Object::init()
 {
     TypeInfo::initializeObjectProperties(this);
+	return true;
 }
 
 void Object::finalize()

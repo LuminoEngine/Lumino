@@ -6,9 +6,7 @@
 
 namespace ln {
 
-LN_OBJECT_IMPLEMENT(Serializer, Object) {
-	context->registerType<Serializer>({});   // TODO: これ必須なのはちょっと忘れやすい・・
-}
+LN_OBJECT_IMPLEMENT(Serializer, Object) {}
 
 Serializer::Serializer()
 {

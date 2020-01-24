@@ -196,10 +196,7 @@ namespace ln {
 //==============================================================================
 // TilemapLayer
 
-LN_OBJECT_IMPLEMENT(TilemapLayer, Object)
-{
-    context->registerType<TilemapLayer>({});
-}
+LN_OBJECT_IMPLEMENT(TilemapLayer, Object) {}
 
 Ref<TilemapLayer> TilemapLayer::create()
 {

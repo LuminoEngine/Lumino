@@ -71,13 +71,21 @@ private:
 
 } // namespace detail
 
+#if defined(__GNUC__) && !defined(COMPILER_ICC)
+# define LN_ATTRIBUTE_UNUSED_ __attribute__ ((unused))
+#else
+# define LN_ATTRIBUTE_UNUSED_
+#endif
+
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
     friend class ::ln::detail::EngineDomain; \
     friend class ::ln::EngineContext; \
     static ::ln::TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
-	static void _lnref_registerTypeInfo(::ln::EngineContext* context);
+	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_; \
+	static ::ln::TypeInfo* _lnref_registerTypeInfo(::ln::EngineContext* context); \
+	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
@@ -86,7 +94,16 @@ private:
         return &typeInfo; \
     } \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
-	void classType::_lnref_registerTypeInfo(::ln::EngineContext* context)
+	::ln::TypeInfo* const classType::_lnref_typeInfo = classType::_lnref_registerTypeInfo(nullptr); \
+	::ln::TypeInfo* classType::_lnref_registerTypeInfo(::ln::EngineContext* context) \
+	{ \
+		if (context) { \
+			context->registerType<classType>({}); \
+			_lnref_registerTypeInfoInitializer(context); \
+		} \
+		return _lnref_getTypeInfo(); \
+	} \
+	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context)
 
 #define LN_INTERNAL_NEW_OBJECT \
     template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
@@ -99,6 +116,9 @@ private:
 		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
+
+//#define LN_BASE_INIT(base, ...) \
+//	if (base::init(__VA_ARGS__)) return false;
 
 template<class T, typename... TArgs>
 Ref<T> makeObject(TArgs&&... args)
@@ -129,7 +149,7 @@ class Object
 {
 LN_CONSTRUCT_ACCESS:
 	Object();
-	void init();
+	bool init();
 
 protected:
 	virtual ~Object();

@@ -38,10 +38,17 @@ CollisionShape::~CollisionShape()
 	LN_SAFE_DELETE(m_shape);
 }
 
-//------------------------------------------------------------------------------
-void CollisionShape::init(btCollisionShape* shape)
+bool CollisionShape::init()
 {
+	return Object::init();
+}
+
+//------------------------------------------------------------------------------
+bool CollisionShape::init(btCollisionShape* shape)
+{
+	if (!init()) return false;
 	m_shape = shape;
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -77,10 +84,15 @@ PlaneCollisionShape::~PlaneCollisionShape()
 {
 }
 
-//------------------------------------------------------------------------------
-void PlaneCollisionShape::init(const Vector3& direction)
+bool PlaneCollisionShape::init()
 {
-	CollisionShape::init(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::normalize(direction)), 0.0f));
+	return CollisionShape::init();
+}
+
+//------------------------------------------------------------------------------
+bool PlaneCollisionShape::init(const Vector3& direction)
+{
+	return CollisionShape::init(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::normalize(direction)), 0.0f));
 }
 
 //==============================================================================
@@ -110,10 +122,15 @@ BoxCollisionShape::~BoxCollisionShape()
 {
 }
 
-//------------------------------------------------------------------------------
-void BoxCollisionShape::init(const Vector3& size)
+bool BoxCollisionShape::init()
 {
-	CollisionShape::init(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
+	return CollisionShape::init();
+}
+
+//------------------------------------------------------------------------------
+bool BoxCollisionShape::init(const Vector3& size)
+{
+	return CollisionShape::init(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
 	// ※PMD の剛体サイズは bullet のと同じなので注意
 }
 
@@ -138,10 +155,15 @@ SphereCollisionShape::~SphereCollisionShape()
 {
 }
 
-//------------------------------------------------------------------------------
-void SphereCollisionShape::init(float radius)
+bool SphereCollisionShape::init()
 {
-	CollisionShape::init(new btSphereShape(radius));
+	return CollisionShape::init();
+}
+
+//------------------------------------------------------------------------------
+bool SphereCollisionShape::init(float radius)
+{
+	return CollisionShape::init(new btSphereShape(radius));
 }
 
 //==============================================================================
@@ -165,10 +187,15 @@ CapsuleCollisionShape::~CapsuleCollisionShape()
 {
 }
 
-//------------------------------------------------------------------------------
-void CapsuleCollisionShape::init(float radius, float height)
+bool CapsuleCollisionShape::init()
 {
-	CollisionShape::init(new btCapsuleShape(radius, height));
+	return CollisionShape::init();
+}
+
+//------------------------------------------------------------------------------
+bool CapsuleCollisionShape::init(float radius, float height)
+{
+	return CollisionShape::init(new btCapsuleShape(radius, height));
 }
 
 //==============================================================================
@@ -194,11 +221,16 @@ MeshCollisionShape::~MeshCollisionShape()
 	LN_SAFE_DELETE(m_btMeshData);
 }
 
-//------------------------------------------------------------------------------
-void MeshCollisionShape::init(MeshResource* mesh)
+bool MeshCollisionShape::init()
 {
-	if (LN_REQUIRE(mesh != nullptr)) return;
-	if (LN_REQUIRE(m_btMeshData == nullptr)) return;
+	return CollisionShape::init();
+}
+
+//------------------------------------------------------------------------------
+bool MeshCollisionShape::init(MeshResource* mesh)
+{
+	if (LN_REQUIRE(mesh)) return false;
+	if (LN_REQUIRE(m_btMeshData)) return false;
 
 #if 1
     LN_NOTIMPLEMENTED();
@@ -225,6 +257,7 @@ void MeshCollisionShape::init(MeshResource* mesh)
 	
 	CollisionShape::init(new btBvhTriangleMeshShape(m_btMeshData, true));
 #endif
+	return true;
 }
 
 //==============================================================================

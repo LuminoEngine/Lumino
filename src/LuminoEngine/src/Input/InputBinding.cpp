@@ -152,21 +152,30 @@ static String getModifierKeysName(ModifierKeys modifierKeyss)
 //------------------------------------------------------------------------------
 Ref<KeyGesture> KeyGesture::create(Keys key, ModifierKeys modifierKeys)
 {
-	auto ptr = makeRef<KeyGesture>(key, modifierKeys);
-	// TODO: makeObject
-	return ptr;
+	return makeObject<KeyGesture>(key, modifierKeys);
 }
 
 //------------------------------------------------------------------------------
-KeyGesture::KeyGesture(Keys key, ModifierKeys modifierKeys)
-	: m_key(key)
-	, m_modifierKeys(modifierKeys)
-{
-}
+KeyGesture::KeyGesture()
+	: m_key(Keys::Unknown)
+	, m_modifierKeys(ModifierKeys::None)
+{}
 
 //------------------------------------------------------------------------------
 KeyGesture::~KeyGesture()
 {
+}
+
+void KeyGesture::init()
+{
+	InputGesture::init();
+}
+
+void KeyGesture::init(Keys key, ModifierKeys modifierKeys)
+{
+	InputGesture::init();
+	m_key = key;
+	m_modifierKeys = modifierKeys;
 }
 
 //------------------------------------------------------------------------------
@@ -225,20 +234,31 @@ static const String& getMouseActionName(MouseAction mouseAction)
 //------------------------------------------------------------------------------
 Ref<MouseGesture> MouseGesture::create(MouseAction mouseAction, ModifierKeys modifierKeys)
 {
-	auto ptr = makeRef<MouseGesture>(mouseAction, modifierKeys);
-	return ptr;
+	return makeObject<MouseGesture>(mouseAction, modifierKeys);
 }
 
 //------------------------------------------------------------------------------
-MouseGesture::MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys)
-	: m_mouseAction(mouseAction)
-	, m_modifierKeys(modifierKeys)
+MouseGesture::MouseGesture()
+	: m_mouseAction(MouseAction::None)
+	, m_modifierKeys(ModifierKeys::None)
 {
 }
 
 //------------------------------------------------------------------------------
 MouseGesture::~MouseGesture()
 {
+}
+
+void MouseGesture::init()
+{
+	InputGesture::init();
+}
+
+void MouseGesture::init(MouseAction mouseAction, ModifierKeys modifierKeys)
+{
+	InputGesture::init();
+	m_mouseAction = mouseAction;
+	m_modifierKeys = modifierKeys;
 }
 
 //------------------------------------------------------------------------------
@@ -330,20 +350,30 @@ static const String& getGamepadElementName(GamepadElement element)
 //------------------------------------------------------------------------------
 Ref<GamepadGesture> GamepadGesture::create(GamepadElement element)
 {
-	auto ptr = makeRef<GamepadGesture>(element);
-	return ptr;
+	return makeObject<GamepadGesture>(element);
 }
 
 //------------------------------------------------------------------------------
-GamepadGesture::GamepadGesture(GamepadElement element)
+GamepadGesture::GamepadGesture()
 	: m_padNumber(0)
-	, m_element(element)
+	, m_element(GamepadElement::None)
 {
 }
 
 //------------------------------------------------------------------------------
 GamepadGesture::~GamepadGesture()
 {
+}
+
+void GamepadGesture::init()
+{
+	InputGesture::init();
+}
+
+void GamepadGesture::init(GamepadElement element)
+{
+	InputGesture::init();
+	m_element = element;
 }
 
 //------------------------------------------------------------------------------

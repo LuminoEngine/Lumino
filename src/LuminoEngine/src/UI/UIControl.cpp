@@ -12,9 +12,7 @@ namespace ln {
 //==============================================================================
 // UIControl
 
-LN_OBJECT_IMPLEMENT(UIControl, UIElement) {
-	context->registerType<UIControl>({});
-}
+LN_OBJECT_IMPLEMENT(UIControl, UIElement) {}
 
 UIControl::UIControl()
     : m_enabledDirectChildrenContentAlignment(true)

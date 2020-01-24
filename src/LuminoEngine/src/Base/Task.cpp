@@ -183,7 +183,7 @@ TaskScheduler* TaskScheduler::s_instance = nullptr;
 void TaskScheduler::init()
 {
 	if (!s_instance) {
-		s_instance = Ref<TaskScheduler>(LN_NEW TaskScheduler(4));
+		s_instance = LN_NEW TaskScheduler(4);
 	}
 }
 

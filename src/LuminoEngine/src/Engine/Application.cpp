@@ -11,10 +11,7 @@ namespace ln {
 //==============================================================================
 // Application
 
-LN_OBJECT_IMPLEMENT(Application, Object)
-{
-    context->registerType<Application>({});
-}
+LN_OBJECT_IMPLEMENT(Application, Object) {}
 
 Application::Application()
 {

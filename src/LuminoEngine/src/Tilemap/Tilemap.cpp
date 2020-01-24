@@ -8,10 +8,7 @@ namespace ln {
 //==============================================================================
 // Tilemap
 
-LN_OBJECT_IMPLEMENT(Tilemap, Object)
-{
-    context->registerType<Tilemap>({});
-}
+LN_OBJECT_IMPLEMENT(Tilemap, Object) {}
 
 Ref<Tilemap> Tilemap::create()
 {

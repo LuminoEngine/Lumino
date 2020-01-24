@@ -20,10 +20,7 @@ namespace ln {
 //==============================================================================
 // TilemapComponent
 
-LN_OBJECT_IMPLEMENT(TilemapComponent, VisualComponent)
-{
-    context->registerType<TilemapComponent>({});
-}
+LN_OBJECT_IMPLEMENT(TilemapComponent, VisualComponent) {}
 
 TilemapComponent::TilemapComponent()
 {

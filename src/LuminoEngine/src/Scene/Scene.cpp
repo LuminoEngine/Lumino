@@ -23,10 +23,7 @@ namespace ln {
 //==============================================================================
 // Scene
 
-LN_OBJECT_IMPLEMENT(Scene, Object)
-{
-    context->registerType<Scene>({});
-}
+LN_OBJECT_IMPLEMENT(Scene, Object) {}
 
 Scene::Scene()
     : m_ownerWorld(nullptr)

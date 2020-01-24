@@ -50,7 +50,9 @@ public:
 
 	static int _lnref_registerTypeInfo(::ln::EngineContext* context)
 	{
-		context->registerType<Promise<TResult>>({});
+		if (context) {
+			context->registerType<Promise<TResult>>({});
+		}
 		return 10;
 	}
 	
@@ -61,7 +63,7 @@ public:
 
 	static Ref<Promise> run(const std::function<void(Promise<TResult>*)>& action)
 	{
-		auto p = Ref<Promise>(LN_NEW Promise(action));
+		auto p = Ref<Promise>(LN_NEW Promise(action), false);
 		PromiseBase::enqueueInvoke(p);
 		return p;
 	}

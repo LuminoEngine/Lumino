@@ -82,8 +82,6 @@ TEST_F(Test_Binding, Delegate)
 
 TEST_F(Test_Binding, Promise)
 {
-	//ZVTestPromise2::test_info_;
-
 	LnHandle delegate3;
 	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
 
