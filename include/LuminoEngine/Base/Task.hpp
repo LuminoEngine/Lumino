@@ -148,7 +148,7 @@ class TaskScheduler
 {
 public:
 	static void init();
-	static void finalize();
+	static void finalizeInternal();
     static TaskScheduler* get();
 
     // この TaskScheduler が同時に並列実行できる Task の数を取得します。

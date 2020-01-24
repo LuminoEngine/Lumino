@@ -894,7 +894,8 @@ ln::Result TypeSymbol::createSpecialSymbols()
 	}
 
 	if (isPromise()) {
-		// then()
+		// thenWith()
+		// Note: "then" だけだと言語によってはキーワードや組み込み関数と衝突する。例えば Ruby だと Object.then.
 		{
 			auto paramType = db()->parseQualType(m_piType->templateArguments[0]->typeRawName);
 			auto delegateType = db()->findDelegateObjectFromSigneture({ PredefinedTypes::voidType, false }, { paramType });
@@ -907,10 +908,10 @@ ln::Result TypeSymbol::createSpecialSymbols()
 			if (!p->init({ delegateType, false }, u"callback")) return false;
 
 			auto s = ln::makeRef<MethodSymbol>(db());
-			if (!s->init(this, u"then", { PredefinedTypes::voidType, false }, { p })) return false;
+			if (!s->init(this, u"thenWith", { PredefinedTypes::voidType, false }, { p })) return false;
 			m_declaredMethods.add(s);
 		}
-		// fail()
+		// catchWith()
 		{
 			auto delegateType = db()->findTypeSymbol(u"ln::PromiseFailureDelegate");
 
@@ -918,7 +919,7 @@ ln::Result TypeSymbol::createSpecialSymbols()
 			if (!p->init({ delegateType, false }, u"callback")) return false;
 
 			auto s = ln::makeRef<MethodSymbol>(db());
-			if (!s->init(this, u"fail", { PredefinedTypes::voidType, false }, { p })) return false;
+			if (!s->init(this, u"catchWith", { PredefinedTypes::voidType, false }, { p })) return false;
 			m_declaredMethods.add(s);
 		}
 	}

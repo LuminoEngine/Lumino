@@ -17,7 +17,7 @@ TEST_F(Test_Base_Promise, Basic)
 {
 	Ref<Object> result;
 	createObjectAsync()
-		->then([&](Ref<Object> value) {
+		->thenWith([&](Ref<Object> value) {
 			result = value;
 		});
 

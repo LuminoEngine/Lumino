@@ -198,6 +198,11 @@ void EngineManager::init()
         }
     }
 
+	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
+	if (m_mainUIContext) {
+		m_mainUIContext->updateStyleTree();
+		m_mainWindow->updateLayoutTree();
+	}
 
     LN_LOG_DEBUG << "EngineManager Initialization ended.";
 }
@@ -283,7 +288,7 @@ void EngineManager::dispose()
 		m_mainThreadTaskDispatcher->dispose();
 		m_mainThreadTaskDispatcher = nullptr;
 	}
-	TaskScheduler::finalize();
+	TaskScheduler::finalizeInternal();
 
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {

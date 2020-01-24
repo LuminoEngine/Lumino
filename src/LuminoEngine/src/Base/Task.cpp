@@ -187,7 +187,7 @@ void TaskScheduler::init()
 	}
 }
 
-void TaskScheduler::finalize()
+void TaskScheduler::finalizeInternal()
 {
 	if (s_instance) {
 		RefObjectHelper::release(s_instance);
@@ -239,7 +239,7 @@ void TaskScheduler::queueTask(Task* task)
     std::lock_guard<std::mutex> lock(m_taskQueueMutex);
     m_taskQueue.push_back(task);
 
-    m_semaphore.notify();	// キューに入れたので取り出したい人はどうぞ。
+    m_semaphore.notify();
 }
 
 void TaskScheduler::executeThread()

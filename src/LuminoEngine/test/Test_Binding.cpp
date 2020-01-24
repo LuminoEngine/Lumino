@@ -90,7 +90,7 @@ TEST_F(Test_Binding, Promise)
 
 	// Wait creation ending.
 	g_otherObject = LN_NULL_HANDLE;
-	LN_ZV_CHECK(LnZVTestPromise1_Then(promise1, delegate3));
+	LN_ZV_CHECK(LnZVTestPromise1_ThenWith(promise1, delegate3));
 	while (g_otherObject == LN_NULL_HANDLE) TestEnv::updateFrame();
 	LnHandle obj1 = g_otherObject;
 
@@ -120,8 +120,8 @@ TEST_F(Test_Binding, Promise_Failure)
 	// Create objects asynchronously.
 	LnHandle promise1;
 	LN_ZV_CHECK(LnZVTestClass1_LoadAsync(nullptr, &promise1));
-	LN_ZV_CHECK(LnZVTestPromise1_Then(promise1, delegate3));
-	LN_ZV_CHECK(LnZVTestPromise1_Fail(promise1, delegateFailure));
+	LN_ZV_CHECK(LnZVTestPromise1_ThenWith(promise1, delegate3));
+	LN_ZV_CHECK(LnZVTestPromise1_CatchWith(promise1, delegateFailure));
 
 	// Wait creation ending.
 	g_value = 0;

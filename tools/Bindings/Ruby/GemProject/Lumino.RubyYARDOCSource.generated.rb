@@ -462,7 +462,7 @@ class Lumino::ZVTestPromise1
     # 
     # @param [Lumino::ZVTestDelegate3] callback 
     # 
-    def then(*args)
+    def then_with(*args)
     end
 
 
@@ -470,7 +470,7 @@ class Lumino::ZVTestPromise1
     # 
     # @param [Lumino::PromiseFailureDelegate] callback 
     # 
-    def fail(*args)
+    def catch_with(*args)
     end
 
 
@@ -483,7 +483,7 @@ class Lumino::ZVTestPromise2
     # 
     # @param [Lumino::ZVTestDelegate1] callback 
     # 
-    def then(*args)
+    def then_with(*args)
     end
 
 
@@ -491,7 +491,7 @@ class Lumino::ZVTestPromise2
     # 
     # @param [Lumino::PromiseFailureDelegate] callback 
     # 
-    def fail(*args)
+    def catch_with(*args)
     end
 
 

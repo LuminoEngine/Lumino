@@ -75,18 +75,18 @@ private:
     friend class ::ln::TypeInfo; \
     friend class ::ln::detail::EngineDomain; \
     friend class ::ln::EngineContext; \
-    static TypeInfo* _lnref_getTypeInfo(); \
+    static ::ln::TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
-	static void _lnref_registerTypeInfo(EngineContext* context);
+	static void _lnref_registerTypeInfo(::ln::EngineContext* context);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
-    TypeInfo* classType::_lnref_getTypeInfo() \
+    ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
     { \
-        static TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
+        static ::ln::TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
         return &typeInfo; \
     } \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
-	void classType::_lnref_registerTypeInfo(EngineContext* context)
+	void classType::_lnref_registerTypeInfo(::ln::EngineContext* context)
 
 #define LN_INTERNAL_NEW_OBJECT \
     template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \

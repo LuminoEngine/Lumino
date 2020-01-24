@@ -321,13 +321,13 @@ LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id);
     @brief 
     @param[in] zvtestpromise1 : instance
 */
-LN_FLAT_API LnResult LnZVTestPromise1_Then(LnHandle zvtestpromise1, LnHandle callback);
+LN_FLAT_API LnResult LnZVTestPromise1_ThenWith(LnHandle zvtestpromise1, LnHandle callback);
 
 /**
     @brief 
     @param[in] zvtestpromise1 : instance
 */
-LN_FLAT_API LnResult LnZVTestPromise1_Fail(LnHandle zvtestpromise1, LnHandle callback);
+LN_FLAT_API LnResult LnZVTestPromise1_CatchWith(LnHandle zvtestpromise1, LnHandle callback);
 
 extern LN_FLAT_API int LnZVTestPromise1_GetTypeInfoId();
 LN_FLAT_API void LnZVTestPromise1_SetManagedTypeInfoId(int64_t id);
@@ -339,13 +339,13 @@ LN_FLAT_API void LnZVTestPromise1_SetManagedTypeInfoId(int64_t id);
     @brief 
     @param[in] zvtestpromise2 : instance
 */
-LN_FLAT_API LnResult LnZVTestPromise2_Then(LnHandle zvtestpromise2, LnHandle callback);
+LN_FLAT_API LnResult LnZVTestPromise2_ThenWith(LnHandle zvtestpromise2, LnHandle callback);
 
 /**
     @brief 
     @param[in] zvtestpromise2 : instance
 */
-LN_FLAT_API LnResult LnZVTestPromise2_Fail(LnHandle zvtestpromise2, LnHandle callback);
+LN_FLAT_API LnResult LnZVTestPromise2_CatchWith(LnHandle zvtestpromise2, LnHandle callback);
 
 extern LN_FLAT_API int LnZVTestPromise2_GetTypeInfoId();
 LN_FLAT_API void LnZVTestPromise2_SetManagedTypeInfoId(int64_t id);

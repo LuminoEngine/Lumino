@@ -4,16 +4,15 @@ $LUMINO_LOG_LEVEL = 2 # >= Debug
 require 'lumino'
 include Lumino
 
-Engine.initialize
 
 class Test_Engine < Test::Unit::TestCase
 
   class << self
     def startup
-      p :_startup
+      Engine.initialize
     end
     def shutdown
-      p :_shutdown
+      Engine.finalize
     end
   end
 
@@ -23,12 +22,12 @@ class Test_Engine < Test::Unit::TestCase
   end
 
   def callback2(a, b)
-    @value = a + b;
-    return @value;
+    @value = a + b
+    return @value
   end
 
   def callback3(internal_obj)
-    @value = internal_obj.class.name;
+    @value = internal_obj.class.name
   end
 
   def test_delegate_object
@@ -70,22 +69,20 @@ class Test_Engine < Test::Unit::TestCase
 
   def test_promise
     @value = nil
-    p "call ZVTestClass1.load_async"
     promise1 = ZVTestClass1.load_async("test")
-    p "ret ZVTestClass1.load_async"
-    promise1.then(ZVTestDelegate3.new do |obj|
+
+    promise1.then_with(ZVTestDelegate3.new do |obj|
       @value = obj
     end)
 
     while @value == nil do
       Engine.update
     end
+
+    assert_equal("Lumino::ZVTestClass1", @value.class.name)
   end
-  
 
 end
 
 
-Engine.update
-Engine.finalize
 

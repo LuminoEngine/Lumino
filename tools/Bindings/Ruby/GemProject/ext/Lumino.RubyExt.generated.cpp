@@ -1306,7 +1306,7 @@ static VALUE LnZVTestPromise1_allocateForGetObject(VALUE klass, LnHandle handle)
 }
 
 
-static VALUE Wrap_LnZVTestPromise1_Then(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LnZVTestPromise1_ThenWith(int argc, VALUE* argv, VALUE self)
 {
     Wrap_ZVTestPromise1* selfObj;
     Data_Get_Struct(self, Wrap_ZVTestPromise1, selfObj);
@@ -1316,16 +1316,16 @@ static VALUE Wrap_LnZVTestPromise1_Then(int argc, VALUE* argv, VALUE self)
         if (LNRB_VALUE_IS_OBJECT(callback))
         {
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
-            LnResult errorCode = LnZVTestPromise1_Then(selfObj->handle, _callback);
+            LnResult errorCode = LnZVTestPromise1_ThenWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::ZVTestPromise1::then - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::ZVTestPromise1::thenWith - wrong argument type.");
     return Qnil;
 }
 
-static VALUE Wrap_LnZVTestPromise1_Fail(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LnZVTestPromise1_CatchWith(int argc, VALUE* argv, VALUE self)
 {
     Wrap_ZVTestPromise1* selfObj;
     Data_Get_Struct(self, Wrap_ZVTestPromise1, selfObj);
@@ -1335,12 +1335,12 @@ static VALUE Wrap_LnZVTestPromise1_Fail(int argc, VALUE* argv, VALUE self)
         if (LNRB_VALUE_IS_OBJECT(callback))
         {
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
-            LnResult errorCode = LnZVTestPromise1_Fail(selfObj->handle, _callback);
+            LnResult errorCode = LnZVTestPromise1_CatchWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::ZVTestPromise1::fail - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::ZVTestPromise1::catchWith - wrong argument type.");
     return Qnil;
 }
 
@@ -1394,7 +1394,7 @@ static VALUE LnZVTestPromise2_allocateForGetObject(VALUE klass, LnHandle handle)
 }
 
 
-static VALUE Wrap_LnZVTestPromise2_Then(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LnZVTestPromise2_ThenWith(int argc, VALUE* argv, VALUE self)
 {
     Wrap_ZVTestPromise2* selfObj;
     Data_Get_Struct(self, Wrap_ZVTestPromise2, selfObj);
@@ -1404,16 +1404,16 @@ static VALUE Wrap_LnZVTestPromise2_Then(int argc, VALUE* argv, VALUE self)
         if (LNRB_VALUE_IS_OBJECT(callback))
         {
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
-            LnResult errorCode = LnZVTestPromise2_Then(selfObj->handle, _callback);
+            LnResult errorCode = LnZVTestPromise2_ThenWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::ZVTestPromise2::then - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::ZVTestPromise2::thenWith - wrong argument type.");
     return Qnil;
 }
 
-static VALUE Wrap_LnZVTestPromise2_Fail(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LnZVTestPromise2_CatchWith(int argc, VALUE* argv, VALUE self)
 {
     Wrap_ZVTestPromise2* selfObj;
     Data_Get_Struct(self, Wrap_ZVTestPromise2, selfObj);
@@ -1423,12 +1423,12 @@ static VALUE Wrap_LnZVTestPromise2_Fail(int argc, VALUE* argv, VALUE self)
         if (LNRB_VALUE_IS_OBJECT(callback))
         {
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
-            LnResult errorCode = LnZVTestPromise2_Fail(selfObj->handle, _callback);
+            LnResult errorCode = LnZVTestPromise2_CatchWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::ZVTestPromise2::fail - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::ZVTestPromise2::catchWith - wrong argument type.");
     return Qnil;
 }
 
@@ -4566,14 +4566,14 @@ extern "C" void Init_Lumino_RubyExt()
 
     g_class_ZVTestPromise1 = rb_define_class_under(g_rootModule, "ZVTestPromise1", g_class_Object);
     rb_define_alloc_func(g_class_ZVTestPromise1, LnZVTestPromise1_allocate);
-    rb_define_method(g_class_ZVTestPromise1, "then", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise1_Then), -1);
-    rb_define_method(g_class_ZVTestPromise1, "fail", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise1_Fail), -1);
+    rb_define_method(g_class_ZVTestPromise1, "then_with", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise1_ThenWith), -1);
+    rb_define_method(g_class_ZVTestPromise1, "catch_with", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise1_CatchWith), -1);
     LnZVTestPromise1_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ZVTestPromise1, LnZVTestPromise1_allocateForGetObject));
 
     g_class_ZVTestPromise2 = rb_define_class_under(g_rootModule, "ZVTestPromise2", g_class_Object);
     rb_define_alloc_func(g_class_ZVTestPromise2, LnZVTestPromise2_allocate);
-    rb_define_method(g_class_ZVTestPromise2, "then", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise2_Then), -1);
-    rb_define_method(g_class_ZVTestPromise2, "fail", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise2_Fail), -1);
+    rb_define_method(g_class_ZVTestPromise2, "then_with", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise2_ThenWith), -1);
+    rb_define_method(g_class_ZVTestPromise2, "catch_with", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise2_CatchWith), -1);
     LnZVTestPromise2_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ZVTestPromise2, LnZVTestPromise2_allocateForGetObject));
 
     g_class_ZVTestClass1 = rb_define_class_under(g_rootModule, "ZVTestClass1", g_class_Object);

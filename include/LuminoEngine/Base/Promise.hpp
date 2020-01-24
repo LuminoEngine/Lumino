@@ -36,7 +36,26 @@ template<class TResult>
 class Promise
 	: public PromiseBase
 {
+	//LN_OBJECT;
+	friend class ::ln::TypeInfo;
+	friend class ::ln::detail::EngineDomain;
+	friend class ::ln::EngineContext;
+	static ::ln::TypeInfo* _lnref_getTypeInfo()
+	{
+		static ::ln::TypeInfo typeInfo("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>());
+		return &typeInfo;
+	}
+	::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
+
+	static void _lnref_registerTypeInfo(::ln::EngineContext* context)
+	{
+		context->registerType<Promise<TResult>>({});
+	}
+
+
 public:
+
+
 	static Ref<Promise> run(const std::function<void(Promise<TResult>*)>& action)
 	{
 		auto p = Ref<Promise>(LN_NEW Promise(action));
@@ -56,17 +75,17 @@ public:
 
 	const TResult& result() const { return m_result; }
 
-	void then(Delegate<void(TResult value)>* action)
+	void thenWith(Delegate<void(TResult value)>* action)
 	{
 		m_thenAction = action;
 	}
 
-	void then(std::function<void(TResult value)> action)
+	void thenWith(std::function<void(TResult value)> action)
 	{
 		m_thenAction = makeObject<Delegate<void(Ref<Object>)>>(action);
 	}
 
-	void fail(PromiseFailureDelegate* action)
+	void catchWith(PromiseFailureDelegate* action)
 	{
 		m_failAction = action;
 	}
@@ -93,11 +112,16 @@ protected:
 		}
 	}
 
-private:
+LN_CONSTRUCT_ACCESS:
+	Promise()
+		: m_action()
+	{}
+
 	Promise(const std::function<void(Promise<TResult>*)>& action)
 		: m_action(action)
 	{}
 
+private:
 
 	std::function<void(Promise<TResult>*)> m_action;
 	TResult m_result;

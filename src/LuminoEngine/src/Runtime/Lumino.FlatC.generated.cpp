@@ -3,6 +3,7 @@
 
 #include <LuminoEngine.hpp>
 #include "BindingValidation.hpp"
+#include "../Engine/EngineDomain.hpp"
 
 class LNWS_ln_PromiseFailureDelegate : public ln::PromiseFailureDelegate
 {
@@ -168,7 +169,9 @@ LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_Ove
 
 class LNWS_ln_ZVTestPromise1 : public ln::ZVTestPromise1
 {
+	//LN_OBJECT;
 public:
+
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -185,7 +188,11 @@ public:
 
 
 };
-
+//LN_OBJECT_IMPLEMENT(LNWS_ln_ZVTestPromise1, ln::ZVTestPromise1)
+//{
+//	context->registerType<LNWS_ln_ZVTestPromise1>({});
+//}
+//
 
 class LNWS_ln_ZVTestPromise2 : public ln::ZVTestPromise2
 {
@@ -1120,18 +1127,18 @@ LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate3>(), id);
 }
 
-LN_FLAT_API LnResult LnZVTestPromise1_Then(LnHandle zvtestpromise1, LnHandle callback)
+LN_FLAT_API LnResult LnZVTestPromise1_ThenWith(LnHandle zvtestpromise1, LnHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->then(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate3, callback)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->thenWith(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate3, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnZVTestPromise1_Fail(LnHandle zvtestpromise1, LnHandle callback)
+LN_FLAT_API LnResult LnZVTestPromise1_CatchWith(LnHandle zvtestpromise1, LnHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->fail(LNI_HANDLE_TO_OBJECT(ln::PromiseFailureDelegate, callback)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->catchWith(LNI_HANDLE_TO_OBJECT(ln::PromiseFailureDelegate, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1146,18 +1153,18 @@ LN_FLAT_API void LnZVTestPromise1_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestPromise1>(), id);
 }
 
-LN_FLAT_API LnResult LnZVTestPromise2_Then(LnHandle zvtestpromise2, LnHandle callback)
+LN_FLAT_API LnResult LnZVTestPromise2_ThenWith(LnHandle zvtestpromise2, LnHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->then(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate1, callback)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->thenWith(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate1, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnZVTestPromise2_Fail(LnHandle zvtestpromise2, LnHandle callback)
+LN_FLAT_API LnResult LnZVTestPromise2_CatchWith(LnHandle zvtestpromise2, LnHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->fail(LNI_HANDLE_TO_OBJECT(ln::PromiseFailureDelegate, callback)));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->catchWith(LNI_HANDLE_TO_OBJECT(ln::PromiseFailureDelegate, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1682,6 +1689,8 @@ LN_FLAT_API LnResult LnEngine_Initialize()
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::Engine::initialize());
+	ln::detail::EngineDomain::registerType<ln::ZVTestPromise1>();
+	ln::detail::EngineDomain::registerType<ln::ZVTestPromise2>();
     LNI_FUNC_TRY_END_RETURN;
 }
 
