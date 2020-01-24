@@ -52,6 +52,7 @@ private:
 	ln::String makeWrapFuncCallBlock(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
     ln::String makeWrapFuncCallBlock_FieldAccessor(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
 	ln::String makeWrapFuncCallBlock_DelegateObjectConstructor(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
+	ln::String makeWrapFuncCallBlock_DelegateObjectSetter(const TypeSymbol* classSymbol, const MethodSymbol* method) const;
 	ln::String makeVALUEReturnExpr(const TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const;
 	ln::String makeTypeCheckExpr(const TypeSymbol* type, const ln::String& varName) const;
 	ln::String makeVALUEToNativeCastExpr(const MethodParameterSymbol* param, const ln::String& varName) const;

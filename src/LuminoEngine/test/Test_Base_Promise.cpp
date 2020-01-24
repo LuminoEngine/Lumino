@@ -15,6 +15,8 @@ static Ref<TestPromise1> createObjectAsync()
 
 TEST_F(Test_Base_Promise, Basic)
 {
+
+
 	Ref<Object> result;
 	createObjectAsync()
 		->thenWith([&](Ref<Object> value) {

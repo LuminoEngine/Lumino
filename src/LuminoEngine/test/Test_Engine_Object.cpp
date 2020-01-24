@@ -154,7 +154,7 @@ TEST_F(Test_Engine_Object, CreateFromTypeInfo)
 	String json = JsonSerializer::serialize(t1, JsonFormatting::None);
     ASSERT_EQ(u"{\"obj\":{\"_type\":\"CreateFromTypeInfo_ClassA\",\"value1\":100}}", json);
 
-	EngineContext::current()->registerType<CreateFromTypeInfo_ClassA>({});
+	//EngineContext::current()->registerType<CreateFromTypeInfo_ClassA>();
 
 
 	Test1 t2;
@@ -467,13 +467,13 @@ public:
 };
 
 
-void PropTestObjectA::registerType(EngineContext* context)
-{
-	context->registerType<PropTestObjectA>({
-		makeRef<PropertyInfo>("Int", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(PropTestObjectA, int, getInt, setInt)),
-		makeRef<PropertyInfo>("Float", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(PropTestObjectA, float, getFloat, setFloat)),
-		});
-}
+//void PropTestObjectA::registerType(EngineContext* context)
+//{
+//	context->registerType<PropTestObjectA>({
+//		makeRef<PropertyInfo>("Int", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(PropTestObjectA, int, getInt, setInt)),
+//		makeRef<PropertyInfo>("Float", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(PropTestObjectA, float, getFloat, setFloat)),
+//		});
+//}
 
 // - 型のプロパティ一覧を取得できること
 // - プロパティ名指定で Accessor を取得できること
@@ -484,7 +484,7 @@ void PropTestObjectA::registerType(EngineContext* context)
 //------------------------------------------------------------------------------
 TEST_F(Test_Engine_PropertySystem, Basic)
 {
-	PropTestObjectA::registerType(EngineContext::current());
+	//PropTestObjectA::registerType(EngineContext::current());
 	
 
 }

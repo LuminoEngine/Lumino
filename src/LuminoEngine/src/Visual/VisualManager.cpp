@@ -26,7 +26,8 @@ void VisualManager::init(const Settings& settings)
 
 	m_graphicsManager = settings.graphicsManager;
 
-	SpriteComponent::registerType(detail::EngineDomain::engineContext());
+	//SpriteComponent::registerType(detail::EngineDomain::engineContext());
+	EngineDomain::registerType<SpriteComponent>();
 	EngineDomain::registerType<SpriteFrame>();
     EngineDomain::registerType<SpriteFrameSet>();
 	EngineDomain::registerType<VisualComponent>();

@@ -116,13 +116,35 @@ detail::WeakRefInfo* Object::requestWeakRefInfo()
 
 TypeInfo* Object::_lnref_getTypeInfo()
 {
-    static TypeInfo typeInfo("Object", nullptr);
-    return &typeInfo;
+	return EngineContext::current()->objectTypeInfo();
+    //static TypeInfo typeInfo();
+    //return &typeInfo;
 }
 
 TypeInfo* Object::_lnref_getThisTypeInfo() const
 {
     return _lnref_getTypeInfo();
+}
+
+//==============================================================================
+// TypeInfo
+
+TypeInfo::TypeInfo(const char* className, TypeInfo* baseType)
+	: m_name(className)
+	, m_baseType(baseType)
+	, m_managedTypeInfoId(-1)
+{
+}
+
+TypeInfo::TypeInfo(const String& className)
+	: m_name(className)
+	, m_baseType(nullptr)
+	, m_managedTypeInfoId(-1)
+{
+}
+
+TypeInfo::~TypeInfo()
+{
 }
 
 //==============================================================================

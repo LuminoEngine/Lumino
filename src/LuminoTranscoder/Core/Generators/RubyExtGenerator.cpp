@@ -456,6 +456,10 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol
         else {
             code.AppendLine(makeWrapFuncCallBlock(classSymbol, method));
         }
+
+		if (method->parameters().size() == 1 && method->parameters().front()->type()->isDelegateObject()) {
+			code.AppendLine(makeWrapFuncCallBlock_DelegateObjectSetter(classSymbol, method));
+		}
 	}
 
 	// 関数終端まで到達してしまったら例外
@@ -667,10 +671,37 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectConstructor(con
 		code.AppendLine(u"LnResult result = {0}({1}, &selfObj->handle);", makeFlatFullFuncName(method, FlatCharset::Ascii), makeWrapFuncName_ProcCaller(classSymbol, classSymbol->delegateProtoType()));
 		code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
 		code.AppendLine(u"LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
-		code.AppendLine("return Qnil;");
+		code.AppendLine(u"return Qnil;");
 	}
 	code.DecreaseIndent();
-	code.AppendLine("}");
+	code.AppendLine(u"}");
+	return code.toString().trim();
+}
+
+ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectSetter(const TypeSymbol* classSymbol, const MethodSymbol* method) const
+{
+	auto& param = method->parameters().front();
+
+	OutputBuffer code;
+	code.AppendLine(u"if (argc == 0) {");
+	code.IncreaseIndent();
+	{
+		code.AppendLine(u"VALUE block;");
+		code.AppendLine(u"rb_scan_args(argc, argv, \"0&\", &block);");
+		code.AppendLine(u"if (block != Qnil) {");
+		code.IncreaseIndent();
+		{
+			code.AppendLine(u"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
+			code.AppendLine(u"LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
+			code.AppendLine(u"LnResult result = {0}(selfObj->handle, _value);", makeFlatFullFuncName(method, FlatCharset::Ascii));
+			code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+			code.AppendLine(u"return Qnil;");
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"}");
+	}
+	code.DecreaseIndent();
+	code.AppendLine(u"}");
 	return code.toString().trim();
 }
 

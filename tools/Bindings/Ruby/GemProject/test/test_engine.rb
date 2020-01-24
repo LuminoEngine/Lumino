@@ -71,9 +71,16 @@ class Test_Engine < Test::Unit::TestCase
     @value = nil
     promise1 = ZVTestClass1.load_async("test")
 
-    promise1.then_with(ZVTestDelegate3.new do |obj|
+    p promise1
+
+    d = ZVTestDelegate3.new do |obj|
       @value = obj
-    end)
+    end
+    p d
+
+    p "call then_with"
+    promise1.then_with(d)
+    p "ret then_with"
 
     while @value == nil do
       Engine.update

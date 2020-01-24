@@ -1321,6 +1321,17 @@ static VALUE Wrap_LnZVTestPromise1_ThenWith(int argc, VALUE* argv, VALUE self)
             return Qnil;
         }
     }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_ZVTestDelegate3, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnZVTestPromise1_ThenWith(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
     rb_raise(rb_eArgError, "ln::ZVTestPromise1::thenWith - wrong argument type.");
     return Qnil;
 }
@@ -1337,6 +1348,17 @@ static VALUE Wrap_LnZVTestPromise1_CatchWith(int argc, VALUE* argv, VALUE self)
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
             LnResult errorCode = LnZVTestPromise1_CatchWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_PromiseFailureDelegate, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnZVTestPromise1_CatchWith(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1404,8 +1426,20 @@ static VALUE Wrap_LnZVTestPromise2_ThenWith(int argc, VALUE* argv, VALUE self)
         if (LNRB_VALUE_IS_OBJECT(callback))
         {
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
+            printf("call LnZVTestPromise2_ThenWith\n");
             LnResult errorCode = LnZVTestPromise2_ThenWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_ZVTestDelegate1, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnZVTestPromise2_ThenWith(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1425,6 +1459,17 @@ static VALUE Wrap_LnZVTestPromise2_CatchWith(int argc, VALUE* argv, VALUE self)
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
             LnResult errorCode = LnZVTestPromise2_CatchWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_PromiseFailureDelegate, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnZVTestPromise2_CatchWith(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
@@ -1497,6 +1542,17 @@ static VALUE Wrap_LnZVTestClass1_SetTestDelegate1(int argc, VALUE* argv, VALUE s
             return Qnil;
         }
     }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_ZVTestDelegate1, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnZVTestClass1_SetTestDelegate1(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
     rb_raise(rb_eArgError, "ln::ZVTestClass1::setTestDelegate1 - wrong argument type.");
     return Qnil;
 }
@@ -1516,6 +1572,17 @@ static VALUE Wrap_LnZVTestClass1_SetTestDelegate2(int argc, VALUE* argv, VALUE s
             return Qnil;
         }
     }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_ZVTestDelegate2, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnZVTestClass1_SetTestDelegate2(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
     rb_raise(rb_eArgError, "ln::ZVTestClass1::setTestDelegate2 - wrong argument type.");
     return Qnil;
 }
@@ -1532,6 +1599,17 @@ static VALUE Wrap_LnZVTestClass1_SetTestDelegate3(int argc, VALUE* argv, VALUE s
             LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
             LnResult errorCode = LnZVTestClass1_SetTestDelegate3(selfObj->handle, _value);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_ZVTestDelegate3, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnZVTestClass1_SetTestDelegate3(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
@@ -3736,6 +3814,17 @@ static VALUE Wrap_LnSprite_SetCallerTest(int argc, VALUE* argv, VALUE self)
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
             LnResult errorCode = LnSprite_SetCallerTest(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (argc == 0) {
+        VALUE block;
+        rb_scan_args(argc, argv, "0&", &block);
+        if (block != Qnil) {
+            VALUE value = rb_funcall(g_class_TestDelegate, rb_intern("new"), 1, block);
+            LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
+            LnResult result = LnSprite_SetCallerTest(selfObj->handle, _value);
+            if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }

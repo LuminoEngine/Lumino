@@ -98,10 +98,16 @@ EngineContext::EngineContext()
 	internalInit();
 }
 
+EngineContext::~EngineContext()
+{
+	m_typeInfos.clear();
+}
+
 void EngineContext::internalInit()
 {
 	if (!m_init) {
 		m_typeInfos.push_back(nullptr); // [0] is dummy
+		m_objectTypeInfo = registerType<Object>("Object", nullptr, {});
 		m_init = true;
 	}
 }

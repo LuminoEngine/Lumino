@@ -90,17 +90,16 @@ private:
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
     { \
-        static ::ln::TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
-        return &typeInfo; \
+		return _lnref_typeInfo; \
     } \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
 	::ln::TypeInfo* const classType::_lnref_typeInfo = classType::_lnref_registerTypeInfo(); \
 	::ln::TypeInfo* classType::_lnref_registerTypeInfo() \
 	{ \
-		auto* context = ::ln::EngineContext::current(); \
-		context->registerType<classType>({}); \
+		::ln::EngineContext* context = ::ln::EngineContext::current(); \
+		::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
 		_lnref_registerTypeInfoInitializer(context); \
-		return _lnref_getTypeInfo(); \
+		return typeInfo; \
 	} \
 	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context)
 
@@ -343,17 +342,11 @@ class TypeInfo
     : public RefObject
 {
 public:
-    TypeInfo(const char* className, TypeInfo* baseType)
-        : m_name(className)
-        , m_baseType(baseType)
-		, m_managedTypeInfoId(-1)
-    {}
+	TypeInfo(const char* className, TypeInfo* baseType);
 
-    TypeInfo(const String& className)
-        : m_name(className)
-        , m_baseType(nullptr)
-        , m_managedTypeInfoId(-1)
-    {}
+	TypeInfo(const String& className);
+
+	virtual ~TypeInfo();
 
     /** クラス名を取得します。 */
     const String& name() const { return m_name; }

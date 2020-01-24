@@ -82,6 +82,11 @@ TEST_F(Test_Binding, Delegate)
 
 TEST_F(Test_Binding, Promise)
 {
+	auto t1 = TypeInfo::getTypeInfo<ZVTestPromise1>();
+	auto t2 = TypeInfo::getTypeInfo<ZVTestPromise2>();
+	ASSERT_NE(t1, t2);
+
+
 	LnHandle delegate3;
 	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
 

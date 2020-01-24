@@ -842,7 +842,20 @@ void EngineManager::setDebugToolMode(DebugToolMode mode)
 
 RuntimeManager::Settings g_globalRuntimeManagerSettings;
 
-static EngineContext* g_engineContext = nullptr;
+class EngineContextWrap
+{
+public:
+	// グローバル変数にすると、別のグローバル変数の初期化から EngineContext にアクセスするときに、まだ EngineContext のコンストラクタが呼ばれていないことが起こる。
+	// ローカルの static にしておくことで、アクセスした時点で初期化が走ることを保証する。
+	static EngineContext* getInstance() {
+		static EngineContext instance;
+		return &instance;
+	}
+};
+
+//static Ref<EngineContext> g_engineContext = nullptr;
+//static EngineContext* g_engineContext = nullptr;
+//static std::unique_ptr<EngineContext> g_engineContext = nullptr;
 static RuntimeManager* g_runtimeManager = nullptr;
 static EngineManager* g_engineManager = nullptr;
 
@@ -858,19 +871,22 @@ void EngineDomain::release()
         RefObjectHelper::release(g_runtimeManager);
         g_runtimeManager = nullptr;
     }
-	if (g_engineContext) {
-		RefObjectHelper::release(g_engineContext);
-		g_engineContext = nullptr;
-	}
+	//if (g_engineContext) {
+		//RefObjectHelper::release(g_engineContext);
+	//	g_engineContext = nullptr;
+	//}
 }
 
 EngineContext* EngineDomain::engineContext()
 {
-	if (!g_engineContext) {
-		g_engineContext = LN_NEW EngineContext();
+	//if (!g_engineContext) {
+	//	g_engineContext = std::make_unique<EngineContext>();
+		//g_engineContext = makeRef<EngineContext>();
+		//g_engineContext = LN_NEW EngineContext();
 		//g_engineContext->init(g_globalRuntimeManagerSettings);
-	}
-	return g_engineContext;
+	//}
+	//return g_engineContext.get();
+	return EngineContextWrap::getInstance();
 }
 
 RuntimeManager* EngineDomain::runtimeManager()

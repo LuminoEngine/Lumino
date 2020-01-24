@@ -166,12 +166,12 @@ void SpriteFrameSet::serialize(Archive& ar)
 
 LN_OBJECT_IMPLEMENT(SpriteComponent, VisualComponent) {}
 
-void SpriteComponent::registerType(EngineContext* context)
-{
-	context->registerType<SpriteComponent>({
-		makeRef<PropertyInfo>("FrameIndex", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, int, frameIndex, setFrameIndex)),
-	});
-}
+////void SpriteComponent::registerType(EngineContext* context)
+////{
+////	context->registerType<SpriteComponent>({
+////		makeRef<PropertyInfo>("FrameIndex", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, int, frameIndex, setFrameIndex)),
+////	});
+////}
 
 SpriteComponent::SpriteComponent()
     : m_material(nullptr)

@@ -47,14 +47,20 @@ void ZVTestClass1::callTestDelegate3()
 
 Ref<ZVTestPromise1> ZVTestClass1::loadAsync(const String& filePath)
 {
+	std::cout << "ZVTestClass1::loadAsync " << filePath << std::endl;
 	return ZVTestPromise1::run([filePath](ZVTestPromise1* p) {
+		std::cout << "ZVTestClass1::loadAsync lambda 1 " << p->m_rejected << std::endl;
 		Thread::sleep(2000);
+		std::cout << "ZVTestClass1::loadAsync lambda 2 " << p->m_rejected << std::endl;
 		if (filePath.isEmpty()) {
+			std::cout << "if reject " << p->m_rejected << std::endl;
 			p->reject();
 		}
 		else {
+			std::cout << "if resolve " << p->m_rejected << std::endl;
 			auto obj = makeObject<ZVTestClass1>();
 			obj->setFilePath(filePath);
+			std::cout << "if resolve " << p->m_rejected << std::endl;
 			p->resolve(obj);
 		}
 	});

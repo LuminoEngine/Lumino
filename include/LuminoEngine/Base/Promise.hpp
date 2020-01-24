@@ -43,19 +43,18 @@ public:
 	friend class ::ln::EngineContext;
 	static ::ln::TypeInfo* _lnref_getTypeInfo()
 	{
-		static ::ln::TypeInfo typeInfo("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>());
-		return &typeInfo;
+		//static ::ln::TypeInfo* _lnref_typeInfo = _lnref_registerTypeInfo();
+		return _lnref_typeInfo;
 	}
 	::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
-	static int _lnref_registerTypeInfo()
+	static ::ln::TypeInfo* _lnref_registerTypeInfo()
 	{
 		auto* context = ::ln::EngineContext::current();
-		context->registerType<Promise<TResult>>({});
-		return 10;
+		return context->registerType<Promise<TResult>>("__Promise", ::ln::TypeInfo::getTypeInfo<PromiseBase>() , {});
 	}
 	
-	static int const test_info_ /*GTEST_ATTRIBUTE_UNUSED_*/;
+	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_;
 
 
 
@@ -69,28 +68,42 @@ public:
 
 	void resolve(TResult value)
 	{
+		std::lock_guard<std::mutex> locl(m_mutex);
+		std::cout << "resolve 1 " << m_rejected << std::endl;
 		m_result = value;
+		std::cout << "resolve 2 " << m_rejected << std::endl;
 	}
 
 	void reject()
 	{
+		std::lock_guard<std::mutex> locl(m_mutex);
 		m_rejected = true;
+		std::cout << "reject 2" << std::endl;
 	}
 
 	const TResult& result() const { return m_result; }
 
 	void thenWith(Delegate<void(TResult value)>* action)
 	{
+		std::cout << "Promise(" << this << ") thenWith 1 " << m_rejected << std::endl;
+		std::lock_guard<std::mutex> locl(m_mutex);
+		std::cout << "xxxx" << std::endl;
+		std::cout << RefObjectHelper::getReferenceCount(this) << std::endl;
 		m_thenAction = action;
+		std::cout << "Promise(" << this << ") thenWith 1 " << m_rejected << std::endl;
 	}
 
 	void thenWith(std::function<void(TResult value)> action)
 	{
+		std::lock_guard<std::mutex> locl(m_mutex);
+		std::cout << "Promise(" << this << ") thenWith 2 " << m_rejected << std::endl;
 		m_thenAction = makeObject<Delegate<void(Ref<Object>)>>(action);
+		std::cout << "Promise(" << this << ") thenWith 2 " << m_rejected << std::endl;
 	}
 
 	void catchWith(PromiseFailureDelegate* action)
 	{
+		std::lock_guard<std::mutex> locl(m_mutex);
 		m_failAction = action;
 	}
 
@@ -98,7 +111,9 @@ protected:
 	// called task thread.
 	virtual void invoke() override
 	{
+		std::cout << "invoke 1 " << m_rejected << std::endl;
 		m_action(this);
+		std::cout << "invoke 2 " << m_rejected << std::endl;
 	}
 
 	virtual void callNext() override
@@ -119,24 +134,28 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Promise()
 		: m_action()
-	{}
+		, m_rejected(false)
+	{
+		std::cout << "Promise(" << this << ") cotr " << m_rejected << std::endl;
+	}
 
 	Promise(const std::function<void(Promise<TResult>*)>& action)
 		: m_action(action)
+		, m_rejected(false)
 	{
-		test_info_;
+		std::cout << "Promise(" << this << ") cotr " << m_rejected << std::endl;
 	}
 
-private:
-
+public:
 	std::function<void(Promise<TResult>*)> m_action;
 	TResult m_result;
-	bool m_rejected = false;
+	std::atomic<bool> m_rejected;
 	Ref<Delegate<void(TResult value)>> m_thenAction;
 	Ref<PromiseFailureDelegate> m_failAction;
+	std::mutex m_mutex;
 };
 
 template<class TResult>
-int const Promise<TResult>::test_info_ = Promise<TResult>::_lnref_registerTypeInfo();
+::ln::TypeInfo* const Promise<TResult>::_lnref_typeInfo = Promise<TResult>::_lnref_registerTypeInfo();
 
 } // namespace ln
