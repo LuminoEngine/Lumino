@@ -90,12 +90,20 @@ void PropertyInfo::notifyPropertyChanged(Object* ownerObject, PropertyBase* targ
 
 EngineContext* EngineContext::current()
 {
-	return detail::EngineDomain::engineManager()->engineContext();
+	return detail::EngineDomain::engineContext();
 }
 
 EngineContext::EngineContext()
 {
-    m_typeInfos.push_back(nullptr); // [0] is dummy
+	internalInit();
+}
+
+void EngineContext::internalInit()
+{
+	if (!m_init) {
+		m_typeInfos.push_back(nullptr); // [0] is dummy
+		m_init = true;
+	}
 }
 
 TypeInfo* EngineContext::acquireTypeInfo(const StringRef& name/*, TypeInfo* baseType, const std::function<Ref<Object>()>& factory*/)

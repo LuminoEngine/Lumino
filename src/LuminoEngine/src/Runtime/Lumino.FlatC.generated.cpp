@@ -1689,8 +1689,8 @@ LN_FLAT_API LnResult LnEngine_Initialize()
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::Engine::initialize());
-	ln::detail::EngineDomain::registerType<ln::ZVTestPromise1>();
-	ln::detail::EngineDomain::registerType<ln::ZVTestPromise2>();
+	//ln::detail::EngineDomain::registerType<ln::ZVTestPromise1>();
+	//ln::detail::EngineDomain::registerType<ln::ZVTestPromise2>();
     LNI_FUNC_TRY_END_RETURN;
 }
 

@@ -84,7 +84,7 @@ private:
     static ::ln::TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
 	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_; \
-	static ::ln::TypeInfo* _lnref_registerTypeInfo(::ln::EngineContext* context); \
+	static ::ln::TypeInfo* _lnref_registerTypeInfo(); \
 	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
@@ -94,13 +94,12 @@ private:
         return &typeInfo; \
     } \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
-	::ln::TypeInfo* const classType::_lnref_typeInfo = classType::_lnref_registerTypeInfo(nullptr); \
-	::ln::TypeInfo* classType::_lnref_registerTypeInfo(::ln::EngineContext* context) \
+	::ln::TypeInfo* const classType::_lnref_typeInfo = classType::_lnref_registerTypeInfo(); \
+	::ln::TypeInfo* classType::_lnref_registerTypeInfo() \
 	{ \
-		if (context) { \
-			context->registerType<classType>({}); \
-			_lnref_registerTypeInfoInitializer(context); \
-		} \
+		auto* context = ::ln::EngineContext::current(); \
+		context->registerType<classType>({}); \
+		_lnref_registerTypeInfoInitializer(context); \
 		return _lnref_getTypeInfo(); \
 	} \
 	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context)

@@ -456,11 +456,12 @@ public:
 	static EngineContext* current();
 
     EngineContext();
+	void internalInit();
 
     // TODO: 外部用。
     template<class T>
     void registerType() {
-        T::_lnref_registerTypeInfo(this);
+        T::_lnref_registerTypeInfo();
     }
 
 
@@ -515,6 +516,7 @@ private:
 	std::unordered_map<String, TypeInfo*> m_typeInfoSet;
     std::vector<Ref<TypeInfo>> m_typeInfos;
 	//List<TypeInfo*> m_typeInfos;
+	bool m_init = false;
 };
 
 

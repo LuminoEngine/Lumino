@@ -124,7 +124,6 @@ public:
 	void quit();
 
 	EngineSettings& settings() { return m_settings; }
-	const Ref<EngineContext>& engineContext() const { return m_engineContext; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
@@ -181,7 +180,6 @@ private:
 
 	EngineSettings m_settings;
 
-	Ref<EngineContext> m_engineContext;
     Ref<AssetManager> m_assetManager;
 	Ref<PlatformManager>				m_platformManager;
 	Ref<AnimationManager>			m_animationManager;

@@ -89,7 +89,6 @@ EngineManager::EngineManager()
     , m_oleInitialized(false)
 #endif
 {
-	m_engineContext = makeRef<EngineContext>();
 }
 
 EngineManager::~EngineManager()
@@ -842,6 +841,8 @@ void EngineManager::setDebugToolMode(DebugToolMode mode)
 // EngineDomain
 
 RuntimeManager::Settings g_globalRuntimeManagerSettings;
+
+static EngineContext* g_engineContext = nullptr;
 static RuntimeManager* g_runtimeManager = nullptr;
 static EngineManager* g_engineManager = nullptr;
 
@@ -857,6 +858,19 @@ void EngineDomain::release()
         RefObjectHelper::release(g_runtimeManager);
         g_runtimeManager = nullptr;
     }
+	if (g_engineContext) {
+		RefObjectHelper::release(g_engineContext);
+		g_engineContext = nullptr;
+	}
+}
+
+EngineContext* EngineDomain::engineContext()
+{
+	if (!g_engineContext) {
+		g_engineContext = LN_NEW EngineContext();
+		//g_engineContext->init(g_globalRuntimeManagerSettings);
+	}
+	return g_engineContext;
 }
 
 RuntimeManager* EngineDomain::runtimeManager()
@@ -950,11 +964,6 @@ SceneManager* EngineDomain::sceneManager()
 UIManager* EngineDomain::uiManager()
 {
 	return engineManager()->uiManager();
-}
-
-EngineContext* EngineDomain::engineContext()
-{
-    return engineManager()->engineContext();
 }
 
 World* EngineDomain::mainWorld()

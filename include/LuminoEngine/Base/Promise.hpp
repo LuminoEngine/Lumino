@@ -48,11 +48,10 @@ public:
 	}
 	::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
-	static int _lnref_registerTypeInfo(::ln::EngineContext* context)
+	static int _lnref_registerTypeInfo()
 	{
-		if (context) {
-			context->registerType<Promise<TResult>>({});
-		}
+		auto* context = ::ln::EngineContext::current();
+		context->registerType<Promise<TResult>>({});
 		return 10;
 	}
 	
@@ -138,6 +137,6 @@ private:
 };
 
 template<class TResult>
-int const Promise<TResult>::test_info_ = Promise<TResult>::_lnref_registerTypeInfo(0);
+int const Promise<TResult>::test_info_ = Promise<TResult>::_lnref_registerTypeInfo();
 
 } // namespace ln
