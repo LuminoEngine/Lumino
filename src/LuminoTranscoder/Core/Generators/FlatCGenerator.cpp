@@ -297,7 +297,9 @@ void FlatCSourceGenerator::generate()
 	// classes
 	OutputBuffer classMemberFuncImplsText;
 	for (auto& classInfo : db()->classes()) {
-		if (classInfo->typeClass() == TypeClass::None) {
+		if (classInfo->isDelegateObject()) {
+		}
+		else {
 			for (auto& methodInfo : classInfo->publicMethods()) {
 				if (methodInfo->isEventConnector()) {
 					classMemberFuncImplsText.AppendLines(makeEventConnectorFuncBody(classInfo, methodInfo)).NewLine();
@@ -374,7 +376,7 @@ void FlatCSourceGenerator::generate()
         auto src = ln::FileSystem::readAllText(makeTemplateFilePath(u"Source.cpp.template"))
 			.replace("%%IncludeDirective%%", includeDirective)
 			.replace("%%HeaderString%%", config()->flatCHeaderString)
-			.replace("%%WrapSubclassDecls%%", makeWrapSubclassDecls())
+			.replace("%%WrapSubclassDecls%%", generateWrapSubclassDecls())
 			.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString())
 			.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
@@ -456,14 +458,16 @@ ln::String FlatCSourceGenerator::generateDelegateObjects() const
 	return code.toString();
 }
 
-ln::String FlatCSourceGenerator::makeWrapSubclassDecls() const
+ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 {
 	OutputBuffer code;
 
 	code.AppendLines(generateDelegateObjects());
 
 	for (auto& classSymbol : db()->classes()) {
-		if (classSymbol->typeClass() == TypeClass::None) {
+		if (classSymbol->isDelegateObject()) {
+		}
+		else {
 			OutputBuffer overrideCallbackDecl;
 			OutputBuffer overrideCallbackImpl;
 			OutputBuffer overrideMethod;

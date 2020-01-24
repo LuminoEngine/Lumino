@@ -3,7 +3,12 @@
 #include "Delegate.hpp"
 
 namespace ln {
-
+	
+/**
+ * Promise failure.
+ */
+LN_DELEGATE()
+using PromiseFailureDelegate = Delegate<void(void)>;
 
 class PromiseBase
 	: public Object
@@ -46,7 +51,7 @@ public:
 
 	void reject()
 	{
-
+		m_rejected = true;
 	}
 
 	const TResult& result() const { return m_result; }
@@ -61,6 +66,10 @@ public:
 		m_thenAction = makeObject<Delegate<void(Ref<Object>)>>(action);
 	}
 
+	void fail(PromiseFailureDelegate* action)
+	{
+		m_failAction = action;
+	}
 
 protected:
 	// called task thread.
@@ -71,7 +80,17 @@ protected:
 
 	virtual void callNext() override
 	{
-		m_thenAction->call(m_result);
+		if (m_rejected) {
+			if (m_failAction) {
+				m_failAction->call();
+			}
+			else {
+				LN_ERROR(u"Promise rejected. (unhandling error)");
+			}
+		}
+		else if (m_thenAction) {
+			m_thenAction->call(m_result);
+		}
 	}
 
 private:
@@ -82,7 +101,9 @@ private:
 
 	std::function<void(Promise<TResult>*)> m_action;
 	TResult m_result;
+	bool m_rejected = false;
 	Ref<Delegate<void(TResult value)>> m_thenAction;
+	Ref<PromiseFailureDelegate> m_failAction;
 };
 
 } // namespace ln

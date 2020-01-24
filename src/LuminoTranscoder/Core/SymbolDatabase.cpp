@@ -651,40 +651,13 @@ ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind type
 
 ln::Result TypeSymbol::link()
 {
-	if (isCollection()) {
-		auto typeName = metadata()->getValue(u"Collection");
-		m_collectionItemType = db()->getTypeSymbol(typeName);
-		if (!m_collectionItemType) {
-			db()->diag()->reportError(u"undefined symbol: " + typeName);
-			return false;
-		}
-
-		{
-			auto s = ln::makeRef<MethodSymbol>(db());
-			if (!s->init(this, u"getLength", { PredefinedTypes::intType, false }, {})) return false;
-			m_declaredMethods.add(s);
-		}
-		{
-			auto p = ln::makeRef<MethodParameterSymbol>(db());
-			if (!p->init(QualType{ PredefinedTypes::intType }, u"index")) return false;
-			auto s = ln::makeRef<MethodSymbol>(db());
-			if (!s->init(this, u"getItem", { m_collectionItemType, false }, { p })) return false;
-			s->metadata()->setValue(u"Collection_GetItem");
-			m_declaredMethods.add(s);
-		}
-	}
-
 	if (m_delegateProtoType) {
 		if (!m_delegateProtoType->link()) {
 			return false;
 		}
 	}
 
-	if (isDelegateObject()) {
-		auto s = ln::makeRef<MethodSymbol>(db());
-		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, {})) return false;
-		m_declaredMethods.add(s);
-	}
+	createSpecialSymbols();
 
     ln::List<Ref<MethodSymbol>> additionalMethods;
 	for (auto& i : m_fields) {
@@ -740,8 +713,6 @@ ln::Result TypeSymbol::link()
 			m_baseClass = db()->findTypeSymbol(m_piType->baseClassRawName);
 			if (!m_baseClass) {
 				m_baseClass = db()->rootObjectClass();
-				//LN_NOTIMPLEMENTED();
-				//return false;
 			}
 		}
 	}
@@ -788,13 +759,6 @@ ln::Result TypeSymbol::linkOverload()
 		if (info) {
 			(*info)->m_methods.add(method1);
 			method1->m_overloadInfo = (*info);
-
-			//// verify: representative 以外は OverloadPostfix を持っていなければならない
-			//if (!method1->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr))
-			//{
-			//	LN_NOTIMPLEMENTED();
-			//	return false;
-			//}
 		}
 		else {
 			auto newInfo = ln::makeRef<MethodOverloadInfo>();
@@ -824,55 +788,6 @@ ln::Result TypeSymbol::linkOverload()
 			overload->m_representativeIndex = 0;
 		}
 	}
-
-
-#if 0
-	for (auto& method1 : m_methods)
-	{
-		if (!method1->m_overloadChildren.isEmpty() || method1->m_overloadParent)
-			continue;	// processed (method1 is child)
-
-		// find same names
-		ln::List<MethodSymbol*> sameNames;
-		for (auto& method2 : m_methods)
-		{
-			//if (isStruct() && method2->isConstructor() && method2->parameters().isEmpty())
-			//{
-			//	// 構造体の引数無しコンストラクタは Clear という別名にしたい。
-			//	continue;
-			//}
-
-			if (method1->name() == method2->name())
-			{
-				sameNames.add(method2);
-			}
-		}
-
-		// select parent
-		auto f = sameNames.findIf([](MethodSymbol* m) { return !m->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr); });
-		if (!f) {
-			LN_NOTIMPLEMENTED();
-			return false;
-		}
-		MethodSymbol* parent = *f;
-
-		// link
-		for (auto& method2 : sameNames)
-		{
-			if (method2 == parent) continue;
-
-			if (!method2->metadata()->hasKey(MetadataInfo::OverloadPostfixAttr))
-			{
-				//db->diag();
-				LN_NOTIMPLEMENTED();
-				return false;
-			}
-
-			parent->m_overloadChildren.add(method2);
-			method2->m_overloadParent = parent;
-		}
-	}
-#endif
 
 	return true;
 }
@@ -942,6 +857,56 @@ ln::Result TypeSymbol::linkProperties()
 	// create document
 	for (auto& prop : m_properties) {
 		prop->buildDocument();
+	}
+
+	return true;
+}
+
+ln::Result TypeSymbol::createSpecialSymbols()
+{
+	if (isCollection()) {
+		auto typeName = metadata()->getValue(u"Collection");
+		m_collectionItemType = db()->getTypeSymbol(typeName);
+		if (!m_collectionItemType) {
+			db()->diag()->reportError(u"undefined symbol: " + typeName);
+			return false;
+		}
+
+		{
+			auto s = ln::makeRef<MethodSymbol>(db());
+			if (!s->init(this, u"getLength", { PredefinedTypes::intType, false }, {})) return false;
+			m_declaredMethods.add(s);
+		}
+		{
+			auto p = ln::makeRef<MethodParameterSymbol>(db());
+			if (!p->init({ PredefinedTypes::intType }, u"index")) return false;
+			auto s = ln::makeRef<MethodSymbol>(db());
+			if (!s->init(this, u"getItem", { m_collectionItemType, false }, { p })) return false;
+			s->metadata()->setValue(u"Collection_GetItem");
+			m_declaredMethods.add(s);
+		}
+	}
+
+	if (isDelegateObject()) {
+		auto s = ln::makeRef<MethodSymbol>(db());
+		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, {})) return false;
+		m_declaredMethods.add(s);
+	}
+
+	if (isPromise()) {
+		auto paramType = db()->parseQualType(m_piType->templateArguments[0]->typeRawName);
+		auto delegateType = db()->findDelegateObjectFromSigneture({ PredefinedTypes::voidType, false }, { paramType });
+		if (!delegateType) {
+			db()->diag()->reportError(ln::String::format(u"Delegate required by Promise is not defined. ({0})", fullName()));
+			return false;
+		}
+
+		auto p = ln::makeRef<MethodParameterSymbol>(db());
+		if (!p->init({ delegateType, false }, u"callback")) return false;
+
+		auto s = ln::makeRef<MethodSymbol>(db());
+		if (!s->init(this, u"then", { PredefinedTypes::voidType, false }, { p })) return false;
+		m_declaredMethods.add(s);
 	}
 
 	return true;
@@ -1099,6 +1064,26 @@ TypeSymbol* SymbolDatabase::findTypeSymbol(const ln::String& typeFullName) const
 		return *type;
 	else
 		return nullptr;
+}
+
+TypeSymbol* SymbolDatabase::findDelegateObjectFromSigneture(const QualType& returnType, const ln::List<QualType>& paramTypes) const
+{
+	for (auto& d : delegateObjects()) {
+		if (QualType::equals(d->delegateProtoType()->returnType(), returnType) &&
+			d->delegateProtoType()->parameters().size() == paramTypes.size()) {
+			bool matched = true;
+			for (int i = 0; i < paramTypes.size(); i++) {
+				if (!QualType::equals(d->delegateProtoType()->parameters()[i]->qualType(), paramTypes[i])) {
+					matched = false;
+					break;
+				}
+			}
+			if (matched) {
+				return d;
+			}
+		}
+	}
+	return nullptr;
 }
 
 TypeSymbol* SymbolDatabase::getTypeSymbol(const ln::String& typeFullName) const

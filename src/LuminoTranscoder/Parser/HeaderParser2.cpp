@@ -649,7 +649,7 @@ public:
 					else if (templateDecl->getQualifiedNameAsString() == "ln::Promise") {
 						auto args = templateSpecializationType->template_arguments();
 						if (args.size() == 1) {
-							const TemplateArgument& templateArg = args[0];	// "void(UIEventArgs* e)"
+							const TemplateArgument& templateArg = args[0];	// "Ref<XXXX>"
 							if (templateArg.getKind() == TemplateArgument::Type) {
 								QualType argType = templateArg.getAsType();
 

@@ -141,6 +141,48 @@ public:
 LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_ZVTestPromise1 : public ln::ZVTestPromise1
+{
+public:
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+
+};
+
+
+class LNWS_ln_ZVTestPromise2 : public ln::ZVTestPromise2
+{
+public:
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+
+};
+
+
 class LNWS_ln_ZVTestClass1 : public ln::ZVTestClass1
 {
 public:
@@ -1048,6 +1090,42 @@ LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate3>(), id);
 }
 
+LN_FLAT_API LnResult LnZVTestPromise1_Then(LnHandle zvtestpromise1, LnHandle callback)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->then(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate3, callback)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+extern LN_FLAT_API int LnZVTestPromise1_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::ZVTestPromise1>()->id();
+}
+
+LN_FLAT_API void LnZVTestPromise1_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestPromise1>(), id);
+}
+
+LN_FLAT_API LnResult LnZVTestPromise2_Then(LnHandle zvtestpromise2, LnHandle callback)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->then(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate1, callback)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+extern LN_FLAT_API int LnZVTestPromise2_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::ZVTestPromise2>()->id();
+}
+
+LN_FLAT_API void LnZVTestPromise2_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestPromise2>(), id);
+}
+
 LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate1(LnHandle zvtestclass1, LnHandle value)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1092,6 +1170,46 @@ LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate3(LnHandle zvtestclass1)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate3());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_LoadAsync(const LnChar* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_LoadAsyncA(const char* filePath, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_ExecuteAsync(LnHandle zvtestclass1, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->executeAsync());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnChar** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_GetFilePathA(LnHandle zvtestclass1, const char** outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
     LNI_FUNC_TRY_END_RETURN;
 }
 

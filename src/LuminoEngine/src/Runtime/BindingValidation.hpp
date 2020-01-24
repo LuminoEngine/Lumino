@@ -32,8 +32,15 @@ using ZVTestDelegate3 = Delegate<void(Ref<ZVTestClass1> a)>;
 /**
  * Test promise.
  */
-//LN_PROMISE()
-//using ZVTestPromise1 = Promise<Ref<ZVTestClass1>>;
+LN_PROMISE()
+using ZVTestPromise1 = Promise<Ref<ZVTestClass1>>;
+
+/**
+ * Test promise.
+ */
+LN_PROMISE()
+using ZVTestPromise2 = Promise<int>;
+
 
 /**
  * Test class.
@@ -70,10 +77,22 @@ public:
 	void callTestDelegate3();
 
 	/**
-	 * Test method.
+	 * Promise test method. (static)
 	 */
-	//LN_METHOD();
-	//static Ref<ZVTestPromise1> loadAsync();
+	LN_METHOD()
+	static Ref<ZVTestPromise1> loadAsync(const String& filePath);
+
+	/**
+	 * Promise test method. (instance)
+	 */
+	LN_METHOD()
+	Ref<ZVTestPromise2> executeAsync();
+
+	/** Promise test method. */
+	LN_METHOD(Property)
+	const String& filePath() const { return m_filePath; }
+
+	void setFilePath(const String& value) { m_filePath = value; }
 	
 LN_CONSTRUCT_ACCESS:
     /** init method. */
@@ -84,6 +103,7 @@ private:
 	Ref<ZVTestDelegate1> m_testDelegate1;
 	Ref<ZVTestDelegate2> m_testDelegate2;
 	Ref<ZVTestDelegate3> m_testDelegate3;
+	String m_filePath;
 };
 
 } // namespace ln

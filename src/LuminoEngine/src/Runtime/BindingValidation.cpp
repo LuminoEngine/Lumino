@@ -48,12 +48,23 @@ void ZVTestClass1::callTestDelegate3()
 	m_testDelegate3->call(obj);
 }
 
-//Ref<ZVTestPromise1> ZVTestClass1::loadAsync()
-//{
-//	return ZVTestPromise1::run([](ZVTestPromise1* p) {
-//		p->resolve(makeObject<ZVTestClass1>());
-//	});
-//}
+Ref<ZVTestPromise1> ZVTestClass1::loadAsync(const String& filePath)
+{
+	return ZVTestPromise1::run([filePath](ZVTestPromise1* p) {
+		Thread::sleep(2000);
+		auto obj = makeObject<ZVTestClass1>();
+		obj->setFilePath(filePath);
+		p->resolve(obj);
+	});
+}
+
+Ref<ZVTestPromise2> ZVTestClass1::executeAsync()
+{
+	return ZVTestPromise2::run([](ZVTestPromise2* p) {
+		Thread::sleep(2000);
+		p->resolve(100);
+	});
+}
 
 } // namespace ln
 

@@ -16,6 +16,13 @@ struct QualType
 {
 	TypeSymbol* type = nullptr;
 	bool strongReference = false;
+
+	static bool equals(const QualType& hls, const QualType& rhs)
+	{
+		return
+			hls.type == rhs.type &&
+			hls.strongReference == rhs.strongReference;
+	}
 };
 
 class ParameterDocumentInfo : public ln::RefObject
@@ -394,6 +401,7 @@ public:
 	bool isCollection() const { return metadata()->hasKey(u"Collection"); }
     bool isFlags() const { return metadata()->hasKey(u"Flags"); }
     bool isDelegateObject() const { return typeClass() == TypeClass::DelegateObject; }
+	bool isPromise() const { return typeClass() == TypeClass::Promise; }
 
 	// LnHandle として扱うものかどうか
 	bool isObjectGroup() const { return isClass() || isDelegateObject(); }
@@ -402,6 +410,7 @@ private:
 	void setFullName(const ln::String& value);
 	ln::Result linkOverload();
 	ln::Result linkProperties();
+	ln::Result createSpecialSymbols();
 	void collectVirtualMethods(ln::List<Ref<MethodSymbol>>* virtualMethods);
 
 	Ref<PITypeInfo> m_piType;
@@ -491,7 +500,7 @@ public:
 	stream::Stream<Ref<TypeSymbol>> structs() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Struct; }); }
 	stream::Stream<Ref<TypeSymbol>> classes() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->kind() == TypeKind::Class/* && (x->isRootObjectClass())*/; }); }
 	stream::Stream<Ref<TypeSymbol>> delegates() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegate(); }); }
-    //stream::Stream<Ref<TypeSymbol>> delegateObjects() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegateObject(); }); }
+    stream::Stream<Ref<TypeSymbol>> delegateObjects() const { return stream::MakeStream::from(m_allTypes) | stream::op::filter([](auto x) { return x->isDelegateObject(); }); }
 
 	const Ref<PIDatabase>& pidb() const { return m_pidb; }
 	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
@@ -499,6 +508,7 @@ public:
 public:
 	void initPredefineds();
 	TypeSymbol* findTypeSymbol(const ln::String& typeFullName) const;
+	TypeSymbol* findDelegateObjectFromSigneture(const QualType& returnType, const ln::List<QualType>& paramTypes) const;
 
 	// 型検索。見つからない場合はエラーをレポートして nullptr を返す。
 	TypeSymbol* getTypeSymbol(const ln::String& typeFullName) const;

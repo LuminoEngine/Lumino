@@ -15,7 +15,7 @@ public:
 };
 
 static int g_value = 0;
-static LnHandle g_otherObject = LN_NULL_HANDLE;
+static volatile LnHandle g_otherObject = LN_NULL_HANDLE;
 
 static LnResult LnZVTestDelegate1_Callback(LnHandle selfDelegate, int a)
 {
@@ -77,4 +77,28 @@ TEST_F(Test_Binding, Delegate)
 	LnObject_Release(delegate3);
 	LnObject_Release(delegate2);
 	LnObject_Release(delegate1);
+}
+
+TEST_F(Test_Binding, Promise)
+{
+	LnHandle delegate3;
+	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
+
+	// Create objects asynchronously.
+	LnHandle promise1;
+	LN_ZV_CHECK(LnZVTestClass1_LoadAsync(u"test", &promise1));
+
+	// Wait creation ending.
+	g_otherObject = 0;
+	LN_ZV_CHECK(LnZVTestPromise1_Then(promise1, delegate3));
+	while (g_otherObject == LN_NULL_HANDLE) TestEnv::updateFrame();
+	LnHandle obj1 = g_otherObject;
+
+	const Char* filePath;
+	LN_ZV_CHECK(LnZVTestClass1_GetFilePath(obj1, &filePath));
+	ASSERT_EQ(u"test", String(filePath));
+
+	LnObject_Release(obj1);
+	LnObject_Release(promise1);
+	LnObject_Release(delegate3);
 }

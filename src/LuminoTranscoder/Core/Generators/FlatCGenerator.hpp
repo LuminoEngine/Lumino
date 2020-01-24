@@ -55,10 +55,10 @@ public:
 
 private:
 	ln::String generateDelegateObjects() const;
+	ln::String generateWrapSubclassDecls() const;
 
 	ln::String makeFlatFullName(const TypeSymbol* type) const { return type->fullName().replace(u"::", u"_"); }	// ln::Texture -> ln_Texture
 
-	ln::String makeWrapSubclassDecls() const;
 	ln::String makeWrapSubclassName(const TypeSymbol* type) const { return u"LNWS_" + makeFlatFullName(type); }
 	ln::String makeNativeParamList(const MethodSymbol* method) const;
 	ln::String makeNativeArgList(const MethodSymbol* method) const;
