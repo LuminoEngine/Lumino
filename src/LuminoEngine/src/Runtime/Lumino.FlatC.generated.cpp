@@ -4,6 +4,31 @@
 #include <LuminoEngine.hpp>
 #include "BindingValidation.hpp"
 
+class LNWS_ln_PromiseFailureDelegate : public ln::PromiseFailureDelegate
+{
+public:
+    LnPromiseFailureDelegateCallback m_callback;
+
+    LNWS_ln_PromiseFailureDelegate() : ln::PromiseFailureDelegate([this]() -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
+        if (r != LN_SUCCESS) { LN_ERROR("LnPromiseFailureDelegateCallback"); }
+    })
+    {}
+
+    void init(LnPromiseFailureDelegateCallback callback)
+    {
+        ln::PromiseFailureDelegate::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnPromiseFailureDelegate_Create(LnPromiseFailureDelegateCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_PromiseFailureDelegate, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 class LNWS_ln_ZVTestDelegate1 : public ln::ZVTestDelegate1
 {
 public:
@@ -1075,6 +1100,11 @@ LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Object>(), id);
 }
 
+LN_FLAT_API void LnPromiseFailureDelegate_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::PromiseFailureDelegate>(), id);
+}
+
 LN_FLAT_API void LnZVTestDelegate1_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate1>(), id);
@@ -1098,6 +1128,14 @@ LN_FLAT_API LnResult LnZVTestPromise1_Then(LnHandle zvtestpromise1, LnHandle cal
 }
 
 
+LN_FLAT_API LnResult LnZVTestPromise1_Fail(LnHandle zvtestpromise1, LnHandle callback)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise1, zvtestpromise1)->fail(LNI_HANDLE_TO_OBJECT(ln::PromiseFailureDelegate, callback)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 extern LN_FLAT_API int LnZVTestPromise1_GetTypeInfoId()
 {
     return ln::TypeInfo::getTypeInfo<ln::ZVTestPromise1>()->id();
@@ -1112,6 +1150,14 @@ LN_FLAT_API LnResult LnZVTestPromise2_Then(LnHandle zvtestpromise2, LnHandle cal
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->then(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate1, callback)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestPromise2_Fail(LnHandle zvtestpromise2, LnHandle callback)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestPromise2, zvtestpromise2)->fail(LNI_HANDLE_TO_OBJECT(ln::PromiseFailureDelegate, callback)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

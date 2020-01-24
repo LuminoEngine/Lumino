@@ -410,13 +410,19 @@ ln::String FlatCSourceGenerator::generateDelegateObjects() const
 				code.AppendLine(u"{");
 				code.IncreaseIndent();
 				{
+					OutputBuffer args;
+					args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(this)");
+					if (!delegateSymbol->delegateProtoType()->parameters().isEmpty())
+						args.AppendCommad(makeFlatArgList(delegateSymbol->delegateProtoType()));
+
 					if (delegateSymbol->delegateProtoType()->returnType().type == PredefinedTypes::voidType) {
-						code.AppendLine(u"auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), {0});", makeFlatArgList(delegateSymbol->delegateProtoType()));
+						code.AppendLine(u"auto r = m_callback({0});", args.toString());
 						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
 					}
 					else {
+						args.AppendCommad(u"&ret");
 						code.AppendLine(nativeReturnType + u" ret = {};");
-						code.AppendLine(u"auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), {0}, &ret);", makeFlatArgList(delegateSymbol->delegateProtoType()));
+						code.AppendLine(u"auto r = m_callback({0});", args.toString());
 						code.AppendLine(u"if (r != LN_SUCCESS) {{ LN_ERROR(\"{0}\"); }}", funcPtrType);
 						code.AppendLine(u"return ret;");
 					}

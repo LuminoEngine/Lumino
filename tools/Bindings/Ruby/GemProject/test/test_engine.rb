@@ -56,7 +56,6 @@ class Test_Engine < Test::Unit::TestCase
   end
 
   def test_delegate_object_block
-    
     delegate1 = ZVTestDelegate1.new do |a|
       @value = a + 10
     end
@@ -67,9 +66,21 @@ class Test_Engine < Test::Unit::TestCase
     @value = 0
     class1.call_test_delegate_1(5)
     assert_equal(15, @value)
-
   end
 
+  def test_promise
+    @value = nil
+    p "call ZVTestClass1.load_async"
+    promise1 = ZVTestClass1.load_async("test")
+    p "ret ZVTestClass1.load_async"
+    promise1.then(ZVTestDelegate3.new do |obj|
+      @value = obj
+    end)
+
+    while @value == nil do
+      Engine.update
+    end
+  end
   
 
 end

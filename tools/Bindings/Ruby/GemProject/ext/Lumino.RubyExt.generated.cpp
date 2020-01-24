@@ -39,9 +39,12 @@ VALUE g_enum_DepthBufferFormat;
 
 VALUE g_rootModule;
 VALUE g_class_Object;
+VALUE g_class_PromiseFailureDelegate;
 VALUE g_class_ZVTestDelegate1;
 VALUE g_class_ZVTestDelegate2;
 VALUE g_class_ZVTestDelegate3;
+VALUE g_class_ZVTestPromise1;
+VALUE g_class_ZVTestPromise2;
 VALUE g_class_ZVTestClass1;
 VALUE g_class_Serializer;
 VALUE g_class_AssetModel;
@@ -942,6 +945,84 @@ LnResult Wrap_LnObject_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar
 }
 
 //==============================================================================
+// ln::PromiseFailureDelegate
+
+struct Wrap_PromiseFailureDelegate
+    : public Wrap_Object
+{
+
+    VALUE m_proc = Qnil;
+    Wrap_PromiseFailureDelegate()
+    {}
+};
+
+static void LnPromiseFailureDelegate_delete(Wrap_PromiseFailureDelegate* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnPromiseFailureDelegate_mark(Wrap_PromiseFailureDelegate* obj)
+{
+	
+rb_gc_mark(obj->m_proc);
+
+}
+
+static VALUE LnPromiseFailureDelegate_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_PromiseFailureDelegate* internalObj;
+
+    internalObj = new Wrap_PromiseFailureDelegate();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnPromiseFailureDelegate_allocate");
+    obj = Data_Wrap_Struct(klass, LnPromiseFailureDelegate_mark, LnPromiseFailureDelegate_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnPromiseFailureDelegate_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_PromiseFailureDelegate* internalObj;
+
+    internalObj = new Wrap_PromiseFailureDelegate();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnPromiseFailureDelegate_allocate");
+    obj = Data_Wrap_Struct(klass, LnPromiseFailureDelegate_mark, LnPromiseFailureDelegate_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static LnResult Wrap_LnPromiseFailureDelegate_PromiseFailureDelegate_ProcCaller(LnHandle promisefailuredelegate)
+{
+    Wrap_PromiseFailureDelegate* selfObj;
+    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(promisefailuredelegate), Wrap_PromiseFailureDelegate, selfObj);
+    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 0, );
+    return LN_SUCCESS;	// TODO: error handling.
+}
+
+static VALUE Wrap_LnPromiseFailureDelegate_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PromiseFailureDelegate* selfObj;
+    Data_Get_Struct(self, Wrap_PromiseFailureDelegate, selfObj);
+    if (0 <= argc && argc <= 1) {
+        VALUE proc, block;
+        rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
+        if (proc != Qnil) selfObj->m_proc = proc;
+        if (block != Qnil) selfObj->m_proc = block;
+        LnResult result = LnPromiseFailureDelegate_Create(Wrap_LnPromiseFailureDelegate_PromiseFailureDelegate_ProcCaller, &selfObj->handle);
+        if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
+        LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+        return Qnil;
+    }
+    rb_raise(rb_eArgError, "ln::PromiseFailureDelegate::init - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
 // ln::ZVTestDelegate1
 
 struct Wrap_ZVTestDelegate1
@@ -1177,6 +1258,182 @@ static VALUE Wrap_LnZVTestDelegate3_Create(int argc, VALUE* argv, VALUE self)
 
 
 //==============================================================================
+// ln::ZVTestPromise1
+
+struct Wrap_ZVTestPromise1
+    : public Wrap_Object
+{
+
+    Wrap_ZVTestPromise1()
+    {}
+};
+
+static void LnZVTestPromise1_delete(Wrap_ZVTestPromise1* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnZVTestPromise1_mark(Wrap_ZVTestPromise1* obj)
+{
+	
+
+}
+
+static VALUE LnZVTestPromise1_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_ZVTestPromise1* internalObj;
+
+    internalObj = new Wrap_ZVTestPromise1();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnZVTestPromise1_allocate");
+    obj = Data_Wrap_Struct(klass, LnZVTestPromise1_mark, LnZVTestPromise1_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnZVTestPromise1_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_ZVTestPromise1* internalObj;
+
+    internalObj = new Wrap_ZVTestPromise1();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnZVTestPromise1_allocate");
+    obj = Data_Wrap_Struct(klass, LnZVTestPromise1_mark, LnZVTestPromise1_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnZVTestPromise1_Then(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ZVTestPromise1* selfObj;
+    Data_Get_Struct(self, Wrap_ZVTestPromise1, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE callback;
+        rb_scan_args(argc, argv, "1", &callback);
+        if (LNRB_VALUE_IS_OBJECT(callback))
+        {
+            LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
+            LnResult errorCode = LnZVTestPromise1_Then(selfObj->handle, _callback);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ZVTestPromise1::then - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnZVTestPromise1_Fail(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ZVTestPromise1* selfObj;
+    Data_Get_Struct(self, Wrap_ZVTestPromise1, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE callback;
+        rb_scan_args(argc, argv, "1", &callback);
+        if (LNRB_VALUE_IS_OBJECT(callback))
+        {
+            LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
+            LnResult errorCode = LnZVTestPromise1_Fail(selfObj->handle, _callback);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ZVTestPromise1::fail - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
+// ln::ZVTestPromise2
+
+struct Wrap_ZVTestPromise2
+    : public Wrap_Object
+{
+
+    Wrap_ZVTestPromise2()
+    {}
+};
+
+static void LnZVTestPromise2_delete(Wrap_ZVTestPromise2* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnZVTestPromise2_mark(Wrap_ZVTestPromise2* obj)
+{
+	
+
+}
+
+static VALUE LnZVTestPromise2_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_ZVTestPromise2* internalObj;
+
+    internalObj = new Wrap_ZVTestPromise2();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnZVTestPromise2_allocate");
+    obj = Data_Wrap_Struct(klass, LnZVTestPromise2_mark, LnZVTestPromise2_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnZVTestPromise2_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_ZVTestPromise2* internalObj;
+
+    internalObj = new Wrap_ZVTestPromise2();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnZVTestPromise2_allocate");
+    obj = Data_Wrap_Struct(klass, LnZVTestPromise2_mark, LnZVTestPromise2_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnZVTestPromise2_Then(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ZVTestPromise2* selfObj;
+    Data_Get_Struct(self, Wrap_ZVTestPromise2, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE callback;
+        rb_scan_args(argc, argv, "1", &callback);
+        if (LNRB_VALUE_IS_OBJECT(callback))
+        {
+            LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
+            LnResult errorCode = LnZVTestPromise2_Then(selfObj->handle, _callback);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ZVTestPromise2::then - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnZVTestPromise2_Fail(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ZVTestPromise2* selfObj;
+    Data_Get_Struct(self, Wrap_ZVTestPromise2, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE callback;
+        rb_scan_args(argc, argv, "1", &callback);
+        if (LNRB_VALUE_IS_OBJECT(callback))
+        {
+            LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
+            LnResult errorCode = LnZVTestPromise2_Fail(selfObj->handle, _callback);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ZVTestPromise2::fail - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
 // ln::ZVTestClass1
 
 struct Wrap_ZVTestClass1
@@ -1337,6 +1594,58 @@ static VALUE Wrap_LnZVTestClass1_CallTestDelegate3(int argc, VALUE* argv, VALUE 
         }
     }
     rb_raise(rb_eArgError, "ln::ZVTestClass1::callTestDelegate3 - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnZVTestClass1_LoadAsync(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (LNRB_VALUE_IS_STRING(filePath))
+        {
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LnHandle _outReturn;
+            LnResult errorCode = LnZVTestClass1_LoadAsyncA(_filePath, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ZVTestClass1::loadAsync - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnZVTestClass1_ExecuteAsync(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ZVTestClass1* selfObj;
+    Data_Get_Struct(self, Wrap_ZVTestClass1, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnZVTestClass1_ExecuteAsync(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ZVTestClass1::executeAsync - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnZVTestClass1_GetFilePath(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_ZVTestClass1* selfObj;
+    Data_Get_Struct(self, Wrap_ZVTestClass1, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            const char* _outReturn;
+            LnResult errorCode = LnZVTestClass1_GetFilePathA(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::ZVTestClass1::filePath - wrong argument type.");
     return Qnil;
 }
 
@@ -4235,6 +4544,11 @@ extern "C" void Init_Lumino_RubyExt()
     LnObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Object, LnObject_allocateForGetObject));
     LnObject_OnSerialize_SetOverrideCallback(Wrap_LnObject_OnSerialize_OverrideCallback);
 
+    g_class_PromiseFailureDelegate = rb_define_class_under(g_rootModule, "PromiseFailureDelegate", g_class_Object);
+    rb_define_alloc_func(g_class_PromiseFailureDelegate, LnPromiseFailureDelegate_allocate);
+    rb_define_private_method(g_class_PromiseFailureDelegate, "initialize", LN_TO_RUBY_FUNC(Wrap_LnPromiseFailureDelegate_Create), -1);
+    LnPromiseFailureDelegate_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_PromiseFailureDelegate, LnPromiseFailureDelegate_allocateForGetObject));
+
     g_class_ZVTestDelegate1 = rb_define_class_under(g_rootModule, "ZVTestDelegate1", g_class_Object);
     rb_define_alloc_func(g_class_ZVTestDelegate1, LnZVTestDelegate1_allocate);
     rb_define_private_method(g_class_ZVTestDelegate1, "initialize", LN_TO_RUBY_FUNC(Wrap_LnZVTestDelegate1_Create), -1);
@@ -4250,6 +4564,18 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_private_method(g_class_ZVTestDelegate3, "initialize", LN_TO_RUBY_FUNC(Wrap_LnZVTestDelegate3_Create), -1);
     LnZVTestDelegate3_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ZVTestDelegate3, LnZVTestDelegate3_allocateForGetObject));
 
+    g_class_ZVTestPromise1 = rb_define_class_under(g_rootModule, "ZVTestPromise1", g_class_Object);
+    rb_define_alloc_func(g_class_ZVTestPromise1, LnZVTestPromise1_allocate);
+    rb_define_method(g_class_ZVTestPromise1, "then", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise1_Then), -1);
+    rb_define_method(g_class_ZVTestPromise1, "fail", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise1_Fail), -1);
+    LnZVTestPromise1_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ZVTestPromise1, LnZVTestPromise1_allocateForGetObject));
+
+    g_class_ZVTestPromise2 = rb_define_class_under(g_rootModule, "ZVTestPromise2", g_class_Object);
+    rb_define_alloc_func(g_class_ZVTestPromise2, LnZVTestPromise2_allocate);
+    rb_define_method(g_class_ZVTestPromise2, "then", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise2_Then), -1);
+    rb_define_method(g_class_ZVTestPromise2, "fail", LN_TO_RUBY_FUNC(Wrap_LnZVTestPromise2_Fail), -1);
+    LnZVTestPromise2_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ZVTestPromise2, LnZVTestPromise2_allocateForGetObject));
+
     g_class_ZVTestClass1 = rb_define_class_under(g_rootModule, "ZVTestClass1", g_class_Object);
     rb_define_alloc_func(g_class_ZVTestClass1, LnZVTestClass1_allocate);
     rb_define_method(g_class_ZVTestClass1, "set_test_delegate_1", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_SetTestDelegate1), -1);
@@ -4258,6 +4584,9 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_ZVTestClass1, "call_test_delegate_1", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_CallTestDelegate1), -1);
     rb_define_method(g_class_ZVTestClass1, "call_test_delegate_2", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_CallTestDelegate2), -1);
     rb_define_method(g_class_ZVTestClass1, "call_test_delegate_3", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_CallTestDelegate3), -1);
+    rb_define_singleton_method(g_class_ZVTestClass1, "load_async", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_LoadAsync), -1);
+    rb_define_method(g_class_ZVTestClass1, "execute_async", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_ExecuteAsync), -1);
+    rb_define_method(g_class_ZVTestClass1, "file_path", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_GetFilePath), -1);
     rb_define_private_method(g_class_ZVTestClass1, "initialize", LN_TO_RUBY_FUNC(Wrap_LnZVTestClass1_Create), -1);
     LnZVTestClass1_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_ZVTestClass1, LnZVTestClass1_allocateForGetObject));
     LnZVTestClass1_OnSerialize_SetOverrideCallback(Wrap_LnZVTestClass1_OnSerialize_OverrideCallback);

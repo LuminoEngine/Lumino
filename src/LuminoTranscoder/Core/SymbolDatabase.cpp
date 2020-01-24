@@ -894,19 +894,33 @@ ln::Result TypeSymbol::createSpecialSymbols()
 	}
 
 	if (isPromise()) {
-		auto paramType = db()->parseQualType(m_piType->templateArguments[0]->typeRawName);
-		auto delegateType = db()->findDelegateObjectFromSigneture({ PredefinedTypes::voidType, false }, { paramType });
-		if (!delegateType) {
-			db()->diag()->reportError(ln::String::format(u"Delegate required by Promise is not defined. ({0})", fullName()));
-			return false;
+		// then()
+		{
+			auto paramType = db()->parseQualType(m_piType->templateArguments[0]->typeRawName);
+			auto delegateType = db()->findDelegateObjectFromSigneture({ PredefinedTypes::voidType, false }, { paramType });
+			if (!delegateType) {
+				db()->diag()->reportError(ln::String::format(u"Delegate required by Promise is not defined. ({0})", fullName()));
+				return false;
+			}
+
+			auto p = ln::makeRef<MethodParameterSymbol>(db());
+			if (!p->init({ delegateType, false }, u"callback")) return false;
+
+			auto s = ln::makeRef<MethodSymbol>(db());
+			if (!s->init(this, u"then", { PredefinedTypes::voidType, false }, { p })) return false;
+			m_declaredMethods.add(s);
 		}
+		// fail()
+		{
+			auto delegateType = db()->findTypeSymbol(u"ln::PromiseFailureDelegate");
 
-		auto p = ln::makeRef<MethodParameterSymbol>(db());
-		if (!p->init({ delegateType, false }, u"callback")) return false;
+			auto p = ln::makeRef<MethodParameterSymbol>(db());
+			if (!p->init({ delegateType, false }, u"callback")) return false;
 
-		auto s = ln::makeRef<MethodSymbol>(db());
-		if (!s->init(this, u"then", { PredefinedTypes::voidType, false }, { p })) return false;
-		m_declaredMethods.add(s);
+			auto s = ln::makeRef<MethodSymbol>(db());
+			if (!s->init(this, u"fail", { PredefinedTypes::voidType, false }, { p })) return false;
+			m_declaredMethods.add(s);
+		}
 	}
 
 	return true;

@@ -52,9 +52,14 @@ Ref<ZVTestPromise1> ZVTestClass1::loadAsync(const String& filePath)
 {
 	return ZVTestPromise1::run([filePath](ZVTestPromise1* p) {
 		Thread::sleep(2000);
-		auto obj = makeObject<ZVTestClass1>();
-		obj->setFilePath(filePath);
-		p->resolve(obj);
+		if (filePath.isEmpty()) {
+			p->reject();
+		}
+		else {
+			auto obj = makeObject<ZVTestClass1>();
+			obj->setFilePath(filePath);
+			p->resolve(obj);
+		}
 	});
 }
 

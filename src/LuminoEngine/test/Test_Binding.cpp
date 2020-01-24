@@ -14,7 +14,7 @@ class Test_Binding : public LuminoSceneTest
 public:
 };
 
-static int g_value = 0;
+static volatile int g_value = 0;
 static volatile LnHandle g_otherObject = LN_NULL_HANDLE;
 
 static LnResult LnZVTestDelegate1_Callback(LnHandle selfDelegate, int a)
@@ -89,7 +89,7 @@ TEST_F(Test_Binding, Promise)
 	LN_ZV_CHECK(LnZVTestClass1_LoadAsync(u"test", &promise1));
 
 	// Wait creation ending.
-	g_otherObject = 0;
+	g_otherObject = LN_NULL_HANDLE;
 	LN_ZV_CHECK(LnZVTestPromise1_Then(promise1, delegate3));
 	while (g_otherObject == LN_NULL_HANDLE) TestEnv::updateFrame();
 	LnHandle obj1 = g_otherObject;
@@ -102,3 +102,33 @@ TEST_F(Test_Binding, Promise)
 	LnObject_Release(promise1);
 	LnObject_Release(delegate3);
 }
+
+static LnResult LnZVPromiseFailureDelegate_Callback(LnHandle selfDelegate)
+{
+	g_value = -1;
+	return LN_SUCCESS;
+}
+
+TEST_F(Test_Binding, Promise_Failure)
+{
+	LnHandle delegate3;
+	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
+
+	LnHandle delegateFailure;
+	LN_ZV_CHECK(LnPromiseFailureDelegate_Create(LnZVPromiseFailureDelegate_Callback, &delegateFailure));
+
+	// Create objects asynchronously.
+	LnHandle promise1;
+	LN_ZV_CHECK(LnZVTestClass1_LoadAsync(nullptr, &promise1));
+	LN_ZV_CHECK(LnZVTestPromise1_Then(promise1, delegate3));
+	LN_ZV_CHECK(LnZVTestPromise1_Fail(promise1, delegateFailure));
+
+	// Wait creation ending.
+	g_value = 0;
+	while (g_value != -1) TestEnv::updateFrame();
+
+	LnObject_Release(promise1);
+	LnObject_Release(delegateFailure);
+	LnObject_Release(delegate3);
+}
+

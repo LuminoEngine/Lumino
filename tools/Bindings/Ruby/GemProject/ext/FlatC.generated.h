@@ -149,6 +149,7 @@ typedef enum tagLnDepthBufferFormat
 
 typedef void(*LnUIEventHandlerCallback)(LnHandle __eventOwner, LnHandle p1);
 
+typedef LnResult(*LnPromiseFailureDelegateCallback)(LnHandle promisefailuredelegate);
 typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
 typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn);
 typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle p1);
@@ -290,6 +291,12 @@ extern LN_FLAT_API int LnObject_GetTypeInfoId();
 LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
+// ln::PromiseFailureDelegate
+
+LN_FLAT_API LnResult LnPromiseFailureDelegate_Create(LnPromiseFailureDelegateCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnPromiseFailureDelegate_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
 // ln::ZVTestDelegate1
 
 LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback, LnHandle* outDelegate);
@@ -306,6 +313,42 @@ LN_FLAT_API void LnZVTestDelegate2_SetManagedTypeInfoId(int64_t id);
 
 LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate);
 LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestPromise1
+
+/**
+    @brief 
+    @param[in] zvtestpromise1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise1_Then(LnHandle zvtestpromise1, LnHandle callback);
+
+/**
+    @brief 
+    @param[in] zvtestpromise1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise1_Fail(LnHandle zvtestpromise1, LnHandle callback);
+
+extern LN_FLAT_API int LnZVTestPromise1_GetTypeInfoId();
+LN_FLAT_API void LnZVTestPromise1_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestPromise2
+
+/**
+    @brief 
+    @param[in] zvtestpromise2 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise2_Then(LnHandle zvtestpromise2, LnHandle callback);
+
+/**
+    @brief 
+    @param[in] zvtestpromise2 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise2_Fail(LnHandle zvtestpromise2, LnHandle callback);
+
+extern LN_FLAT_API int LnZVTestPromise2_GetTypeInfoId();
+LN_FLAT_API void LnZVTestPromise2_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::ZVTestClass1
@@ -346,6 +389,28 @@ LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate2(LnHandle zvtestclass1, int
     @param[in] zvtestclass1 : instance
 */
 LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate3(LnHandle zvtestclass1);
+
+/**
+    @brief Promise test method. (static)
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnZVTestClass1_LoadAsync(const LnChar* filePath, LnHandle* outReturn);
+LN_FLAT_API LnResult LnZVTestClass1_LoadAsyncA(const char* filePath, LnHandle* outReturn);
+
+/**
+    @brief Promise test method. (instance)
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnZVTestClass1_ExecuteAsync(LnHandle zvtestclass1, LnHandle* outReturn);
+
+/**
+    @brief Promise test method.
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnChar** outReturn);
+LN_FLAT_API LnResult LnZVTestClass1_GetFilePathA(LnHandle zvtestclass1, const char** outReturn);
 
 /**
     @brief init method.

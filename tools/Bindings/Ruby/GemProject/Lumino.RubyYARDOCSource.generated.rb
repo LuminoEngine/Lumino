@@ -412,6 +412,17 @@ class Lumino::Object
 
 end
 
+# Promise failure.
+# 
+class Lumino::PromiseFailureDelegate
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
 # Test delegate 1.
 # 
 class Lumino::ZVTestDelegate1
@@ -439,6 +450,48 @@ end
 class Lumino::ZVTestDelegate3
     # 
     def initialize(*args)
+    end
+
+
+
+end
+
+# Test promise.
+# 
+class Lumino::ZVTestPromise1
+    # 
+    # @param [Lumino::ZVTestDelegate3] callback 
+    # 
+    def then(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::PromiseFailureDelegate] callback 
+    # 
+    def fail(*args)
+    end
+
+
+
+end
+
+# Test promise.
+# 
+class Lumino::ZVTestPromise2
+    # 
+    # @param [Lumino::ZVTestDelegate1] callback 
+    # 
+    def then(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::PromiseFailureDelegate] callback 
+    # 
+    def fail(*args)
     end
 
 
@@ -492,6 +545,29 @@ class Lumino::ZVTestClass1
 
     # callTestDelegate3 method. (create object in internal)
     def call_test_delegate_3(*args)
+    end
+
+
+
+    # Promise test method. (static)
+    # @param [String] filePath 
+    # 
+    # @return [Lumino::ZVTestPromise1] 
+    def load_async(*args)
+    end
+
+
+
+    # Promise test method. (instance)
+    # @return [Lumino::ZVTestPromise2] 
+    def execute_async(*args)
+    end
+
+
+
+    # Promise test method.
+    # @return [String] 
+    def file_path(*args)
     end
 
 
