@@ -36,6 +36,7 @@ template<class TResult>
 class Promise
 	: public PromiseBase
 {
+public:
 	//LN_OBJECT;
 	friend class ::ln::TypeInfo;
 	friend class ::ln::detail::EngineDomain;
@@ -47,13 +48,15 @@ class Promise
 	}
 	::ln::TypeInfo* _lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); }
 
-	static void _lnref_registerTypeInfo(::ln::EngineContext* context)
+	static int _lnref_registerTypeInfo(::ln::EngineContext* context)
 	{
 		context->registerType<Promise<TResult>>({});
+		return 10;
 	}
+	
+	static int const test_info_ /*GTEST_ATTRIBUTE_UNUSED_*/;
 
 
-public:
 
 
 	static Ref<Promise> run(const std::function<void(Promise<TResult>*)>& action)
@@ -119,7 +122,9 @@ LN_CONSTRUCT_ACCESS:
 
 	Promise(const std::function<void(Promise<TResult>*)>& action)
 		: m_action(action)
-	{}
+	{
+		test_info_;
+	}
 
 private:
 
@@ -129,5 +134,8 @@ private:
 	Ref<Delegate<void(TResult value)>> m_thenAction;
 	Ref<PromiseFailureDelegate> m_failAction;
 };
+
+template<class TResult>
+int const Promise<TResult>::test_info_ = Promise<TResult>::_lnref_registerTypeInfo(0);
 
 } // namespace ln

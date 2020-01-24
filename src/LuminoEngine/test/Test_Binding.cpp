@@ -1,6 +1,7 @@
 ﻿#include "Common.hpp"
 #include <LuminoEngine/Runtime/Runtime.hpp>
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
+#include "../src/Runtime/BindingValidation.hpp"
 
 #define LN_ZV_CHECK(f) \
 { \
@@ -81,6 +82,8 @@ TEST_F(Test_Binding, Delegate)
 
 TEST_F(Test_Binding, Promise)
 {
+	//ZVTestPromise2::test_info_;
+
 	LnHandle delegate3;
 	LN_ZV_CHECK(LnZVTestDelegate3_Create(LnZVTestDelegate3_Callback, &delegate3));
 
