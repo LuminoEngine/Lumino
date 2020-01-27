@@ -119,6 +119,9 @@ void EngineManager::init()
 #else
         m_persistentDataPath = u""; // TODO:
 #endif
+		if (!m_settings.engineResourcesPath.isEmpty()) {
+			m_engineAssetsPath = m_settings.engineResourcesPath;
+		}
 
 		if (m_engineAssetsPath.isEmpty()) {
 			auto repo = ln::detail::EngineManager::findRepositoryRootForTesting();

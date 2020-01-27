@@ -92,6 +92,16 @@ Ref<Texture2D> Texture2D::load(const StringRef& filePath)
     }
 }
 
+Ref<Texture2D> Texture2D::loadEmoji(StringRef code)
+{
+	// TODO: String.toUTF32() 作ってもいいかも
+	String str = code;
+	std::vector<byte_t> bytes = TextEncoding::utf32Encoding()->encode(str);
+	if (LN_REQUIRE(bytes.size() == 4)) return nullptr;
+
+	return loadEmoji(*reinterpret_cast<const uint32_t*>(bytes.data()));
+}
+
 // Note: NotoColorEmoji は bitmap サイズ1種類固定で格納されているため、スケーリング不可能。
 // Bitmap として取得する場合は常に同じサイズとなる。
 Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
@@ -100,6 +110,7 @@ Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
 	if (font) {
 		detail::FontCore* core = detail::FontHelper::resolveFontCore(font, 1.0f);
 
+		// TODO: NotoColorEmoji に限っては bitmap をキャッシュしていい気がする。(すべてが同一サイズの bitmap である)
 		detail::BitmapGlyphInfo info;
 		info.loadColor = true;
 		core->lookupGlyphBitmap(codePoint, &info);

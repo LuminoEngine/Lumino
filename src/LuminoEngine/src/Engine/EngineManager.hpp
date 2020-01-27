@@ -64,6 +64,7 @@ struct EngineSettings
 
 	bool engineLogEnabled = false;
 	String engineLogFilePath;
+	String engineResourcesPath;
 
     intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;

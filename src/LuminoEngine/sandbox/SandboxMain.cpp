@@ -509,7 +509,13 @@ int main(int argc, char** argv)
 	//Engine::mainRenderView()->addImageEffect(lightShaft);
 
 	{
-		auto t = Texture2D::loadEmoji(U'👍');
+		//auto s = u'🐈';
+		//auto t = Texture2D::loadEmoji(U'🐈');
+		auto t = Texture2D::loadEmoji(u"🐈");
+
+		auto s2 = SamplerState::create(TextureFilterMode::Linear);
+		t->setSamplerState(s2);
+
 		auto s = Sprite::create(t, 1, 1);
 		//s->setBlendMode(BlendMode::Normal);
 		s->setShadingModel(ShadingModel::UnLighting);

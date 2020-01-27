@@ -715,6 +715,14 @@ LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outRetur
 LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn);
 
 /**
+    @brief loadEmoji
+    @param[in] code : xxxx
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outReturn);
+LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn);
+
+/**
     @brief テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     @param[in] width : 幅 (px 単位)
     @param[in] height : 高さ (px 単位)

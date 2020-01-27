@@ -169,6 +169,11 @@ void LnRuntime_RunAppInternal(LnHandle app)
         static_cast<ln::Application*>(ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(app)));
 }
 
+void LnInternalEngineSettings_SetEngineResourcesPathA(const char* path)
+{
+	ln::detail::EngineDomain::engineManager()->settings().engineResourcesPath = ln::String::fromCString(path);
+}
+
 //==============================================================================
 // LnTypeInfo
 

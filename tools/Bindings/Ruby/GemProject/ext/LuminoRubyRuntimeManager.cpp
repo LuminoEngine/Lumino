@@ -93,6 +93,13 @@ void LuminoRubyRuntimeManager::init()
             s_logLevel = (LnLogLevel)FIX2INT(LUMINO_LOG_LEVEL);
             LnLog_SetLevel(s_logLevel);
         }
+        
+        VALUE LUMINO_ENGINE_RESOURCES_DIR = rb_eval_string_protect("$LUMINO_ENGINE_RESOURCES_DIR", NULL);
+        if (LUMINO_ENGINE_RESOURCES_DIR != Qnil) {
+            const char* path = StringValuePtr(LUMINO_ENGINE_RESOURCES_DIR);
+            printf("path: %s\n", path);
+            LnInternalEngineSettings_SetEngineResourcesPathA(path);
+        }
 
         LnRuntimeSettings settings;
         settings.runtimeFinalizedCallback = handleRuntimeFinalized;

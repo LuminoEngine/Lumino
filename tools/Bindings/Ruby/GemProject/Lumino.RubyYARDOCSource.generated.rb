@@ -896,6 +896,15 @@ class Lumino::Texture2D
 
 
 
+    # loadEmoji
+    # @param [] code 
+    # 
+    # @return [Lumino::Texture2D] 
+    def load_emoji(*args)
+    end
+
+
+
     # テクスチャを作成します。ピクセルフォーマットは RGBA8 です。
     # @overload initialize(width, height)
     #   テクスチャを作成します。ピクセルフォーマットは RGBA8 です。

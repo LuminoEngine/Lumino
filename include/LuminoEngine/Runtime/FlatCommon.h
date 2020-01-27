@@ -86,6 +86,9 @@ typedef enum tagLnLogLevel
 
 } LnLogLevel;
 
+//==============================================================================
+// Internal API
+
 typedef void(*LnRuntimeFinalizedCallback)();
 typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
 typedef void(*LnRuntimeGetTypeInfoIdCallback)(LnHandle handle, int* outTypeInfoId);
@@ -111,6 +114,7 @@ extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
 //extern LN_FLAT_API void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
 
+extern LN_FLAT_API void LnInternalEngineSettings_SetEngineResourcesPathA(const char* path);
 
 typedef void(*LnTypeInfoCreateInstanceCallback)(int typeInfoId, LnHandle* outHandle);
 
