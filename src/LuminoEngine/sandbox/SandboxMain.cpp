@@ -511,7 +511,7 @@ int main(int argc, char** argv)
 	{
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
-		auto t = Texture2D::loadEmoji(u"🐈");
+		auto t = Texture2D::loadEmoji(u"🌱");
 
 		auto s2 = SamplerState::create(TextureFilterMode::Linear);
 		t->setSamplerState(s2);

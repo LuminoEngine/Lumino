@@ -81,14 +81,14 @@ namespace LuminoBuild.Tasks
                 if (string.IsNullOrEmpty(BuildEnvironment.Configuration) || BuildEnvironment.Configuration == "Debug")
                 {
                     Utils.CallProcess("cmake", $"--build . --config Debug");
-                    Utils.CallProcess("ctest", $"-C Debug --output-on-failure");
+                    Utils.CallProcess("ctest", $"-C Debug --output-on-failure --verbose");
                     Utils.CallProcess("cmake", $"--build . --config Debug --target INSTALL");
                 }
 
                 if (string.IsNullOrEmpty(BuildEnvironment.Configuration) || BuildEnvironment.Configuration == "Release")
                 {
                     Utils.CallProcess("cmake", $"--build . --config Release");
-                    Utils.CallProcess("ctest", $"-C Release --output-on-failure");
+                    Utils.CallProcess("ctest", $"-C Release --output-on-failure --verbose");
                     Utils.CallProcess("cmake", $"--build . --config Release --target INSTALL");
                 }
             }
