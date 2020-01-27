@@ -52,7 +52,6 @@ public:
 	const ln::Path& androidCMakeToolchain() const { return m_androidCMakeToolchain; }
 
 	static ln::Path findLocalPackageForTesting();
-	static ln::Path findRepositoryRootForTesting();
 
 private:
 	void setupPathesFromPackageRoot(const ln::Path& packageRoot);

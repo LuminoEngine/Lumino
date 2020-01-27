@@ -60,7 +60,7 @@ ln::Result EditorApplication::init()
     ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
     ln::detail::EngineDomain::engineManager()->init();
 
-	auto root = lna::BuildEnvironment::findRepositoryRootForTesting();
+	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));
 
     m_workspace = ln::makeObject<lna::Workspace>();

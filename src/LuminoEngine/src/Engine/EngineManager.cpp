@@ -119,6 +119,13 @@ void EngineManager::init()
 #else
         m_persistentDataPath = u""; // TODO:
 #endif
+
+		if (m_engineAssetsPath.isEmpty()) {
+			auto repo = ln::detail::EngineManager::findRepositoryRootForTesting();
+			m_engineAssetsPath = Path::combine(repo, u"tools", u"EngineAssets");
+		}
+
+		LN_LOG_DEBUG << "EngineAssetsPath: " << m_engineAssetsPath;
     }
 	
 
@@ -274,9 +281,9 @@ void EngineManager::dispose()
     if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
-	if (m_fontManager) m_fontManager->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
+	if (m_fontManager) m_fontManager->dispose();
 	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
@@ -456,6 +463,21 @@ void EngineManager::initializeShaderManager()
 	}
 }
 
+void EngineManager::initializeFontManager()
+{
+	if (!m_fontManager && m_settings.features.hasFlag(EngineFeature::Graphics))
+	{
+		initializeAssetManager();
+
+		FontManager::Settings settings;
+		settings.assetManager = m_assetManager;
+		settings.engineAssetPath = m_engineAssetsPath;
+
+		m_fontManager = ln::makeRef<FontManager>();
+		m_fontManager->init(settings);
+	}
+}
+
 void EngineManager::initializeGraphicsManager()
 {
 	if (!m_graphicsManager && m_settings.features.hasFlag(EngineFeature::Graphics))
@@ -470,20 +492,6 @@ void EngineManager::initializeGraphicsManager()
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->init(settings);
-	}
-}
-
-void EngineManager::initializeFontManager()
-{
-	if (!m_fontManager && m_settings.features.hasFlag(EngineFeature::Graphics))
-	{
-		initializeAssetManager();
-
-		FontManager::Settings settings;
-		settings.assetManager = m_assetManager;
-
-		m_fontManager = ln::makeRef<FontManager>();
-		m_fontManager->init(settings);
 	}
 }
 
@@ -715,6 +723,21 @@ void EngineManager::resetFrameDelay()
 void EngineManager::quit()
 {
 	m_exitRequested = true;
+}
+
+ln::Path EngineManager::findRepositoryRootForTesting()
+{
+	ln::Path path = ln::Environment::executablePath();
+	ln::Path luminoRepoRoot;
+	while (!path.isRoot())
+	{
+		if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
+			luminoRepoRoot = path;
+			break;
+		}
+		path = path.parent();
+	}
+	return luminoRepoRoot;
 }
 
 const Path& EngineManager::persistentDataPath() const

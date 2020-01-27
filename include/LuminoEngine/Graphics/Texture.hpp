@@ -98,7 +98,7 @@ public:
 	LN_METHOD()
     static Ref<Texture2D> load(const StringRef& filePath);
 
-	static Ref<Texture2D> loadEmoji(StringRef emoji);
+	static Ref<Texture2D> loadEmoji(uint32_t codePoint);
 
 	static Texture2D* blackTexture();
 

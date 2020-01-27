@@ -11,6 +11,7 @@
 #include <LuminoEngine/Asset/Assets.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "../Font/TextLayoutEngine.hpp"
+#include "../Font/FontManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 
 namespace ln {
@@ -91,19 +92,23 @@ Ref<Texture2D> Texture2D::load(const StringRef& filePath)
     }
 }
 
-Ref<Texture2D> Texture2D::loadEmoji(StringRef emoji)
+// Note: NotoColorEmoji は bitmap サイズ1種類固定で格納されているため、スケーリング不可能。
+// Bitmap として取得する場合は常に同じサイズとなる。
+Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
 {
-	Font::registerFontFromFile(u"D:/Proj/LN/noto-emoji/fonts/NotoColorEmoji.ttf");
-	auto font1 = Font::create(u"Noto Color Emoji", 20);
-	//auto font1 = Font::create(u"Arial", 20);
-	auto core = detail::FontHelper::resolveFontCore(font1, 1.0f);
+	Font* font = detail::EngineDomain::fontManager()->emojiFont();
+	if (font) {
+		detail::FontCore* core = detail::FontHelper::resolveFontCore(font, 1.0f);
 
-	detail::BitmapGlyphInfo info;
-	info.loadColor = true;
-	core->lookupGlyphBitmap(U'👍', &info);
+		detail::BitmapGlyphInfo info;
+		info.loadColor = true;
+		core->lookupGlyphBitmap(codePoint, &info);
 
-	return makeObject<Texture2D>(info.glyphBitmap->clone(), GraphicsHelper::translateToTextureFormat(info.glyphBitmap->format()));
-	
+		return makeObject<Texture2D>(info.glyphBitmap->clone(), GraphicsHelper::translateToTextureFormat(info.glyphBitmap->format()));
+	}
+	else {
+		return nullptr;
+	}
 }
 
 Texture2D* Texture2D::blackTexture()

@@ -105,8 +105,8 @@ public:
 	void initializeInputManager();
 	void initializeAudioManager();
 	void initializeShaderManager();
-	void initializeGraphicsManager();
 	void initializeFontManager();
+	void initializeGraphicsManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
 	void initializeEffectManager();
@@ -130,8 +130,8 @@ public:
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
 	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
-	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
+	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
     const Ref<EffectManager>& effectManager() const { return m_effectManager; }
@@ -144,6 +144,7 @@ public:
     const FpsController& fpsController() const { return m_fpsController; }
 	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
+	static ln::Path findRepositoryRootForTesting();
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
     //void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
@@ -186,8 +187,8 @@ private:
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;
 	Ref<ShaderManager> m_shaderManager;
-	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<FontManager> m_fontManager;
+	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
 	Ref<EffectManager>				m_effectManager;
@@ -202,6 +203,7 @@ private:
 
     //Application* m_application;
 	Path m_persistentDataPath;
+	Path m_engineAssetsPath;
 
     Ref<UIContext> m_mainUIContext;
 	Ref<UIMainWindow> m_mainWindow;
