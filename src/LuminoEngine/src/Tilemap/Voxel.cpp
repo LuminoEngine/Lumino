@@ -9,10 +9,7 @@ namespace ln {
 //==============================================================================
 // VoxelmapModel
 
-LN_OBJECT_IMPLEMENT(VoxelmapModel, Object)
-{
-    context->registerType<VoxelmapModel>({});
-}
+LN_OBJECT_IMPLEMENT(VoxelmapModel, Object) {}
 
 VoxelmapModel::VoxelmapModel()
 {
@@ -71,10 +68,7 @@ namespace ln {
 //==============================================================================
 // VoxelmapComponent
 
-LN_OBJECT_IMPLEMENT(VoxelmapComponent, VisualComponent)
-{
-    context->registerType<VoxelmapComponent>({});
-}
+LN_OBJECT_IMPLEMENT(VoxelmapComponent, VisualComponent) {}
 
 VoxelmapComponent::VoxelmapComponent()
 {

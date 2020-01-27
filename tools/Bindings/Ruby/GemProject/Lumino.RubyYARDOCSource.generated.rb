@@ -412,6 +412,174 @@ class Lumino::Object
 
 end
 
+# Promise failure.
+# 
+class Lumino::PromiseFailureDelegate
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# Test delegate 1.
+# 
+class Lumino::ZVTestDelegate1
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# Test delegate 2.
+# 
+class Lumino::ZVTestDelegate2
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# Test delegate 3.
+# 
+class Lumino::ZVTestDelegate3
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# Test promise.
+# 
+class Lumino::ZVTestPromise1
+    # 
+    # @param [Lumino::ZVTestDelegate3] callback 
+    # 
+    def then_with(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::PromiseFailureDelegate] callback 
+    # 
+    def catch_with(*args)
+    end
+
+
+
+end
+
+# Test promise.
+# 
+class Lumino::ZVTestPromise2
+    # 
+    # @param [Lumino::ZVTestDelegate1] callback 
+    # 
+    def then_with(*args)
+    end
+
+
+
+    # 
+    # @param [Lumino::PromiseFailureDelegate] callback 
+    # 
+    def catch_with(*args)
+    end
+
+
+
+end
+
+# Test class.
+# 
+class Lumino::ZVTestClass1
+    # setTestDelegate1 method.
+    # @param [Lumino::ZVTestDelegate1] value 
+    # 
+    def set_test_delegate_1(*args)
+    end
+
+
+
+    # setTestDelegate2 method.
+    # @param [Lumino::ZVTestDelegate2] value 
+    # 
+    def set_test_delegate_2(*args)
+    end
+
+
+
+    # setTestDelegate3 method.
+    # @param [Lumino::ZVTestDelegate3] value 
+    # 
+    def set_test_delegate_3(*args)
+    end
+
+
+
+    # callTestDelegate1 method.
+    # @param [Integer] a 
+    # 
+    def call_test_delegate_1(*args)
+    end
+
+
+
+    # callTestDelegate2 method.
+    # @param [Integer] a 
+    # @param [Integer] b 
+    # 
+    # @return [Integer] 
+    def call_test_delegate_2(*args)
+    end
+
+
+
+    # callTestDelegate3 method. (create object in internal)
+    def call_test_delegate_3(*args)
+    end
+
+
+
+    # Promise test method. (static)
+    # @param [String] filePath 
+    # 
+    # @return [Lumino::ZVTestPromise1] 
+    def load_async(*args)
+    end
+
+
+
+    # Promise test method. (instance)
+    # @return [Lumino::ZVTestPromise2] 
+    def execute_async(*args)
+    end
+
+
+
+    # Promise test method.
+    # @return [String] 
+    def file_path(*args)
+    end
+
+
+
+    # init method.
+    def initialize(*args)
+    end
+
+
+
+end
+
 # 
 # 
 class Lumino::Serializer
@@ -957,6 +1125,17 @@ class Lumino::VisualObject
     # 可視状態を取得します。
     # @return [Boolean] 
     def visible?(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::TestDelegate
+    # 
+    def initialize(*args)
     end
 
 

@@ -377,6 +377,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
         assert(elementListManagers().size() == 1);
 		m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, elementListManagers().front(), &m_targetWorld->masterScene()->m_sceneGlobalRenderParams);
+
+		//graphicsContext->resetState();
 	}
 }
 

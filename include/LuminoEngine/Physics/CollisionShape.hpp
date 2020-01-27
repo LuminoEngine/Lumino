@@ -39,7 +39,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	CollisionShape();
 	virtual ~CollisionShape();
-	void init(btCollisionShape* shape);
+	bool init();
+	bool init(btCollisionShape* shape);
 
 LN_INTERNAL_ACCESS:
 	btCollisionShape* getBtCollisionShape() const { return m_shape; }
@@ -69,7 +70,8 @@ public:
 LN_INTERNAL_ACCESS:
 	PlaneCollisionShape();
 	virtual ~PlaneCollisionShape();
-	void init(const Vector3& direction);
+	bool init();
+	bool init(const Vector3& direction);
 };
 
 /**
@@ -98,8 +100,10 @@ LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape();
 	virtual ~BoxCollisionShape();
 
+	bool init();
+
 	LN_METHOD()
-	void init(const Vector3& size);
+	bool init(const Vector3& size);
 };
 
 /**
@@ -120,7 +124,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	SphereCollisionShape();
 	virtual ~SphereCollisionShape();
-	void init(float radius);
+	bool init();
+	bool init(float radius);
 };
 
 /**
@@ -142,7 +147,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	CapsuleCollisionShape();
 	virtual ~CapsuleCollisionShape();
-	void init(float radius, float height);
+	bool init();
+	bool init(float radius, float height);
 };
 
 
@@ -163,7 +169,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	MeshCollisionShape();
 	virtual ~MeshCollisionShape();
-	void init(MeshResource* mesh);
+	bool init();
+	bool init(MeshResource* mesh);
 
 private:
 	btTriangleIndexVertexArray* m_btMeshData;

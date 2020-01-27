@@ -145,11 +145,12 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//graphicsContext->beginRenderPass(m_renderPass);
  //   graphicsContext->clear(ClearFlags::All, Color::Gray);	// TODO: renderPass の clear でカバー
 
+	//context->pushState();
     for (auto& view : m_renderViews) {
         view->render(graphicsContext, m_primaryTarget);
     }
     m_imageEffectRenderer->render(context, m_primaryTarget);
-
+	//context->popState();
 
     //context->blit(primaryTarget, renderTarget);
 
@@ -160,10 +161,28 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//context->blit(tmp, m_primaryTarget);
 
 
-    // TODO: blit 使う
+	
+
+	//
+
+	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
+	// 現状、RenderPhaseClass::ImageEffect を使っている blit を利用する必要がある。
+	// なお、現時点では blit は スクリーン全体への転送を想定しているため、View Proj Matrix を受け取らないようになっている。
+	// その調整のため、ここでいろいろ変換行列を計算している。
+	// 後々、UIVew 描画の RT キャッシュとかも考えているので、blitImage(Rect, Matrial) とかにまとめたい。
+	auto* vp = context->viewPoint();
+	Matrix t;
+	t.scale(1.0f, -1.0f, 0);
+	t.translate(1, 1, 0);
+	t.scale((viewSize.width * 0.5),  (viewSize.height * 0.5), 0);
+	t *= context->baseTransform();
+	t *= vp->viewProjMatrix;
+	context->setBaseTransfrom(t);
+	context->setCullingMode(CullMode::None);
     m_blitMaterial->setMainTexture(m_primaryTarget);
 	context->blit(m_blitMaterial, nullptr);
-    //context->drawImage(Rect(0, 0, viewSize), m_blitMaterial);
+
+	//context->drawSolidRectangle(Rect(0, 0, 100, 100), Color::Blue);
 
     //RenderTargetTexture::releaseTemporary(primaryTarget);
 

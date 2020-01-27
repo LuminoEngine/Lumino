@@ -48,10 +48,9 @@ Task::~Task()
 
 void Task::start()
 {
-	assert(0);	// TODO: ConditionEvent::lock の意味を逆にした。動作チェック
 	LN_SAFE_DELETE(m_exception);
 	m_waiting.lock();
-	TaskScheduler::getDefault()->queueTask(this);
+	TaskScheduler::get()->queueTask(this);
 }
 
 void Task::wait()
@@ -129,12 +128,12 @@ void Task::execute()
 //==============================================================================
 // Dispatcher
 
-Dispatcher* Dispatcher::mainThread()
-{
-    // TODO: ほんとは外部からもらった方がいい
-    static Dispatcher instance;
-    return &instance;
-}
+//Dispatcher* Dispatcher::mainThread()
+//{
+//    // TODO: ほんとは外部からもらった方がいい
+//    static Dispatcher instance;
+//    return &instance;
+//}
 
 void Dispatcher::post(Task* task)
 {
@@ -165,13 +164,40 @@ void Dispatcher::executeTasks(uint32_t maxCount)
     }
 }
 
+void Dispatcher::dispose()
+{
+	executeTasks();
+}
+
 //==============================================================================
 // TaskScheduler
 
-TaskScheduler* TaskScheduler::getDefault()
+//TaskScheduler* TaskScheduler::getDefault()
+//{
+//    static TaskScheduler instance(4);
+//    return &instance;
+//}
+
+TaskScheduler* TaskScheduler::s_instance = nullptr;
+
+void TaskScheduler::init()
 {
-    static TaskScheduler instance(4);
-    return &instance;
+	if (!s_instance) {
+		s_instance = LN_NEW TaskScheduler(4);
+	}
+}
+
+void TaskScheduler::finalizeInternal()
+{
+	if (s_instance) {
+		RefObjectHelper::release(s_instance);
+		s_instance = nullptr;
+	}
+}
+
+TaskScheduler* TaskScheduler::get()
+{
+	return s_instance;
 }
 
 TaskScheduler::TaskScheduler(int threadCount)
@@ -213,7 +239,7 @@ void TaskScheduler::queueTask(Task* task)
     std::lock_guard<std::mutex> lock(m_taskQueueMutex);
     m_taskQueue.push_back(task);
 
-    m_semaphore.notify();	// キューに入れたので取り出したい人はどうぞ。
+    m_semaphore.notify();
 }
 
 void TaskScheduler::executeThread()

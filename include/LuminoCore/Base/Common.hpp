@@ -304,3 +304,4 @@ using byte_t = unsigned char;
 #define LN_FIELD(...)
 #define LN_METHOD(...)
 #define LN_DELEGATE(...)
+#define LN_PROMISE(...)

@@ -713,6 +713,11 @@ void RenderingContext::setBaseTransfrom(const Optional<Matrix>& value)
     m_builder->setBaseTransfrom(value);
 }
 
+const Matrix& RenderingContext::baseTransform() const
+{
+	return m_builder->baseTransform();
+}
+
 void RenderingContext::setRenderPriority(int value)
 {
     m_builder->setRenderPriority(value);

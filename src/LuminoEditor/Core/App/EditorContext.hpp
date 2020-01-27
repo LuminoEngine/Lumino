@@ -6,6 +6,7 @@ class MainWindow;
 namespace lna {
 class Project;
 class AssetDatabase;
+class PluginManager;
 
 class EditorContext
     : public ln::Object

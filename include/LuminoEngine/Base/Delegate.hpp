@@ -30,6 +30,22 @@ public:
 		return m_function(std::forward<TArgs>(args)...);
 	}
 
+LN_CONSTRUCT_ACCESS:
+	Delegate()
+		: m_function()
+	{}
+
+	void init()
+	{
+		Object::init();
+	}
+
+	void init(const std::function<TReturn(TArgs...)>& function)
+	{
+		init();
+		m_function = function;
+	}
+
 private:
 	std::function<TReturn(TArgs...)> m_function;
 };

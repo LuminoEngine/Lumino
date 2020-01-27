@@ -149,8 +149,11 @@ typedef enum tagLnDepthBufferFormat
 
 typedef void(*LnUIEventHandlerCallback)(LnHandle __eventOwner, LnHandle p1);
 
-typedef LnResult(*LnTestDelegateCallback)(LnHandle, int p1, int* outReturn);
-LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
+typedef LnResult(*LnPromiseFailureDelegateCallback)(LnHandle promisefailuredelegate);
+typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
+typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn);
+typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle p1);
+typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
 
 
 //==============================================================================
@@ -285,6 +288,142 @@ LN_FLAT_API LnResult LnObject_OnSerialize_SetOverrideCallback(LnObject_OnSeriali
 LN_FLAT_API LnResult LnObject_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnObject_GetTypeInfoId();
+LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::PromiseFailureDelegate
+
+LN_FLAT_API LnResult LnPromiseFailureDelegate_Create(LnPromiseFailureDelegateCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnPromiseFailureDelegate_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestDelegate1
+
+LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestDelegate1_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestDelegate2
+
+LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestDelegate2_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestDelegate3
+
+LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestPromise1
+
+/**
+    @brief 
+    @param[in] zvtestpromise1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise1_ThenWith(LnHandle zvtestpromise1, LnHandle callback);
+
+/**
+    @brief 
+    @param[in] zvtestpromise1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise1_CatchWith(LnHandle zvtestpromise1, LnHandle callback);
+
+extern LN_FLAT_API int LnZVTestPromise1_GetTypeInfoId();
+LN_FLAT_API void LnZVTestPromise1_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestPromise2
+
+/**
+    @brief 
+    @param[in] zvtestpromise2 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise2_ThenWith(LnHandle zvtestpromise2, LnHandle callback);
+
+/**
+    @brief 
+    @param[in] zvtestpromise2 : instance
+*/
+LN_FLAT_API LnResult LnZVTestPromise2_CatchWith(LnHandle zvtestpromise2, LnHandle callback);
+
+extern LN_FLAT_API int LnZVTestPromise2_GetTypeInfoId();
+LN_FLAT_API void LnZVTestPromise2_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestClass1
+
+/**
+    @brief setTestDelegate1 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate1(LnHandle zvtestclass1, LnHandle value);
+
+/**
+    @brief setTestDelegate2 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate2(LnHandle zvtestclass1, LnHandle value);
+
+/**
+    @brief setTestDelegate3 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_SetTestDelegate3(LnHandle zvtestclass1, LnHandle value);
+
+/**
+    @brief callTestDelegate1 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate1(LnHandle zvtestclass1, int a);
+
+/**
+    @brief callTestDelegate2 method.
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate2(LnHandle zvtestclass1, int a, int b, int* outReturn);
+
+/**
+    @brief callTestDelegate3 method. (create object in internal)
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate3(LnHandle zvtestclass1);
+
+/**
+    @brief Promise test method. (static)
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnZVTestClass1_LoadAsync(const LnChar* filePath, LnHandle* outReturn);
+LN_FLAT_API LnResult LnZVTestClass1_LoadAsyncA(const char* filePath, LnHandle* outReturn);
+
+/**
+    @brief Promise test method. (instance)
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnZVTestClass1_ExecuteAsync(LnHandle zvtestclass1, LnHandle* outReturn);
+
+/**
+    @brief Promise test method.
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnChar** outReturn);
+LN_FLAT_API LnResult LnZVTestClass1_GetFilePathA(LnHandle zvtestclass1, const char** outReturn);
+
+/**
+    @brief init method.
+    @param[out] outZVTestClass1 : instance.
+*/
+LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1);
+
+typedef LnResult(*LnZVTestClass1_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_SetOverrideCallback(LnZVTestClass1_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnZVTestClass1_GetTypeInfoId();
+LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Serializer
@@ -383,6 +522,7 @@ LN_FLAT_API LnResult LnSerializer_OnSerialize_SetOverrideCallback(LnSerializer_O
 LN_FLAT_API LnResult LnSerializer_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnSerializer_GetTypeInfoId();
+LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::AssetModel
@@ -405,6 +545,7 @@ LN_FLAT_API LnResult LnAssetModel_OnSerialize_SetOverrideCallback(LnAssetModel_O
 LN_FLAT_API LnResult LnAssetModel_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnAssetModel_GetTypeInfoId();
+LN_FLAT_API void LnAssetModel_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Assets
@@ -429,6 +570,7 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHa
 */
 LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn);
 LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outReturn);
+
 
 //==============================================================================
 // ln::EngineSettings
@@ -472,6 +614,7 @@ LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath);
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath);
 
+
 //==============================================================================
 // ln::Engine
 
@@ -503,6 +646,7 @@ LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn);
+
 
 //==============================================================================
 // ln::Application
@@ -536,6 +680,7 @@ LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_On
 LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application);
 
 extern LN_FLAT_API int LnApplication_GetTypeInfoId();
+LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::GraphicsResource
@@ -545,6 +690,7 @@ LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_SetOverrideCallback(LnGraphi
 LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnGraphicsResource_GetTypeInfoId();
+LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Texture
@@ -554,6 +700,7 @@ LN_FLAT_API LnResult LnTexture_OnSerialize_SetOverrideCallback(LnTexture_OnSeria
 LN_FLAT_API LnResult LnTexture_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnTexture_GetTypeInfoId();
+LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Texture2D
@@ -600,6 +747,7 @@ LN_FLAT_API LnResult LnTexture2D_OnSerialize_SetOverrideCallback(LnTexture2D_OnS
 LN_FLAT_API LnResult LnTexture2D_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnTexture2D_GetTypeInfoId();
+LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Component
@@ -609,6 +757,7 @@ LN_FLAT_API LnResult LnComponent_OnSerialize_SetOverrideCallback(LnComponent_OnS
 LN_FLAT_API LnResult LnComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnComponent_GetTypeInfoId();
+LN_FLAT_API void LnComponent_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::VisualComponent
@@ -631,6 +780,7 @@ LN_FLAT_API LnResult LnVisualComponent_OnSerialize_SetOverrideCallback(LnVisualC
 LN_FLAT_API LnResult LnVisualComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnVisualComponent_GetTypeInfoId();
+LN_FLAT_API void LnVisualComponent_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::SpriteComponent
@@ -646,6 +796,7 @@ LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_SetOverrideCallback(LnSpriteC
 LN_FLAT_API LnResult LnSpriteComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnSpriteComponent_GetTypeInfoId();
+LN_FLAT_API void LnSpriteComponent_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::World
@@ -661,6 +812,7 @@ LN_FLAT_API LnResult LnWorld_OnSerialize_SetOverrideCallback(LnWorld_OnSerialize
 LN_FLAT_API LnResult LnWorld_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnWorld_GetTypeInfoId();
+LN_FLAT_API void LnWorld_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::ComponentList
@@ -684,6 +836,7 @@ LN_FLAT_API LnResult LnComponentList_OnSerialize_SetOverrideCallback(LnComponent
 LN_FLAT_API LnResult LnComponentList_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnComponentList_GetTypeInfoId();
+LN_FLAT_API void LnComponentList_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::WorldObject
@@ -785,6 +938,7 @@ LN_FLAT_API LnResult LnWorldObject_OnUpdate_SetOverrideCallback(LnWorldObject_On
 LN_FLAT_API LnResult LnWorldObject_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
 
 extern LN_FLAT_API int LnWorldObject_GetTypeInfoId();
+LN_FLAT_API void LnWorldObject_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::VisualObject
@@ -810,6 +964,13 @@ LN_FLAT_API LnResult LnVisualObject_OnUpdate_SetOverrideCallback(LnVisualObject_
 LN_FLAT_API LnResult LnVisualObject_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
 
 extern LN_FLAT_API int LnVisualObject_GetTypeInfoId();
+LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::TestDelegate
+
+LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnTestDelegate_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Sprite
@@ -852,6 +1013,7 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_SetOverrideCallback(LnSprite_OnUpdate_Ove
 LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
 
 extern LN_FLAT_API int LnSprite_GetTypeInfoId();
+LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UIEventArgs
@@ -868,6 +1030,7 @@ LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_SetOverrideCallback(LnUIEventArgs
 LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId();
+LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UILayoutElement
@@ -877,6 +1040,7 @@ LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_SetOverrideCallback(LnUILayou
 LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnUILayoutElement_GetTypeInfoId();
+LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UIElement
@@ -974,6 +1138,7 @@ LN_FLAT_API LnResult LnUIElement_OnSerialize_SetOverrideCallback(LnUIElement_OnS
 LN_FLAT_API LnResult LnUIElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnUIElement_GetTypeInfoId();
+LN_FLAT_API void LnUIElement_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UIControl
@@ -983,6 +1148,7 @@ LN_FLAT_API LnResult LnUIControl_OnSerialize_SetOverrideCallback(LnUIControl_OnS
 LN_FLAT_API LnResult LnUIControl_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnUIControl_GetTypeInfoId();
+LN_FLAT_API void LnUIControl_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UIButtonBase
@@ -999,6 +1165,7 @@ LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_SetOverrideCallback(LnUIButtonBa
 LN_FLAT_API LnResult LnUIButtonBase_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnUIButtonBase_GetTypeInfoId();
+LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UIButton
@@ -1020,6 +1187,7 @@ LN_FLAT_API LnResult LnUIButton_OnSerialize_SetOverrideCallback(LnUIButton_OnSer
 LN_FLAT_API LnResult LnUIButton_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
 
 extern LN_FLAT_API int LnUIButton_GetTypeInfoId();
+LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id);
 
 
 

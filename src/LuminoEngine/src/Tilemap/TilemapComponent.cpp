@@ -20,10 +20,7 @@ namespace ln {
 //==============================================================================
 // TilemapComponent
 
-LN_OBJECT_IMPLEMENT(TilemapComponent, VisualComponent)
-{
-    context->registerType<TilemapComponent>({});
-}
+LN_OBJECT_IMPLEMENT(TilemapComponent, VisualComponent) {}
 
 TilemapComponent::TilemapComponent()
 {
@@ -91,7 +88,9 @@ void TilemapComponent::onStart()
 void TilemapComponent::onDetachedScene(Scene* oldOwner)
 {
 	// TODO: onStop とか。
-	m_rigidBody->removeFromPhysicsWorld();
+	if (m_rigidBody) {
+		m_rigidBody->removeFromPhysicsWorld();
+	}
 }
 
 void TilemapComponent::onRender(RenderingContext* context)

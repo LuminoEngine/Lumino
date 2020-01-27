@@ -3,7 +3,7 @@
 #include "StandardPlugin/AssetBrowserNavigator.hpp"
 #include "StandardPlugin/StandardPluginModule.hpp"
 #include "TilemapPlugin/TilesetExtensionModule.hpp"
-#include "TilemapSceneExtension/TilemapSceneEditor.hpp"
+#include "TilemapSceneExtension/TilemapSceneEditorModule.hpp"
 
 namespace lna {
 
@@ -72,14 +72,14 @@ void PluginManager::deactivateAllExtensions(EditorContext* context)
     }
 }
 
-void PluginManager::addAssetEditorPloxy(ln::AssetEditorPloxy* ploxy)
+void PluginManager::registerAssetEditorFactory(ln::AssetEditorModelFactory* value)
 {
-    m_assetEditorPloxy.add(ploxy);
+    m_assetEditorFactories.add(value);
 }
 
-void PluginManager::removeAssetEditorPloxy(ln::AssetEditorPloxy* ploxy)
+void PluginManager::unregisterAssetEditorFactory(ln::AssetEditorModelFactory* value)
 {
-    m_assetEditorPloxy.remove(ploxy);
+    m_assetEditorFactories.remove(value);
 }
 
 ln::List<ln::IAssetNavigatorExtension*> PluginManager::getAssetNavigatorExtensions() const
@@ -116,9 +116,9 @@ ln::List<std::pair<ln::IAssetImporterEditorExtension*, Ref<ln::AssetImporter>>> 
     return result;
 } 
 
-ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditor>>> PluginManager::geAssetEditorExtensions(const ln::String& assetType) const
+ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditorModel>>> PluginManager::geAssetEditorExtensions(const ln::String& assetType) const
 {
-    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditor>>> result;
+    ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditorModel>>> result;
     for (auto& module : m_pluginModules) {
         int count = module->getEditorExtensionCount();
         for (int i = 0; i < count; i++) {
@@ -136,10 +136,10 @@ ln::List<std::pair<ln::IAssetEditorExtension*, Ref<lna::AssetEditor>>> PluginMan
     return result;
 }
 
-ln::List<ln::AssetEditorPloxy*> PluginManager::geAssetEditorPloxy(const ln::String& assetType) const
+ln::List<ln::AssetEditorModelFactory*> PluginManager::geAssetEditorPloxy(const ln::String& assetType) const
 {
-    ln::List<ln::AssetEditorPloxy*> result;
-    for (auto& ploxy : m_assetEditorPloxy) {
+    ln::List<ln::AssetEditorModelFactory*> result;
+    for (auto& ploxy : m_assetEditorFactories) {
         if (assetType == ploxy->targetTypeName()) {
             result.add(ploxy);
         }

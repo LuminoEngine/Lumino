@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Base/Serializer.hpp>
+#include <LuminoEngine/Base/Task.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -38,6 +39,7 @@
 #include "EngineManager.hpp"
 #include "EngineDomain.hpp"
 
+#include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
 
 namespace ln {
@@ -87,7 +89,6 @@ EngineManager::EngineManager()
     , m_oleInitialized(false)
 #endif
 {
-	m_engineContext = makeRef<EngineContext>();
 }
 
 EngineManager::~EngineManager()
@@ -132,6 +133,7 @@ void EngineManager::init()
     {
         EngineDomain::registerType<Application>();
 		EngineDomain::registerType<Serializer>();
+		EngineDomain::registerType<ZVTestClass1>();
     }
 
 	initializeAllManagers();
@@ -195,6 +197,11 @@ void EngineManager::init()
         }
     }
 
+	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
+	if (m_mainUIContext) {
+		m_mainUIContext->updateStyleTree();
+		m_mainWindow->updateLayoutTree();
+	}
 
     LN_LOG_DEBUG << "EngineManager Initialization ended.";
 }
@@ -276,6 +283,12 @@ void EngineManager::dispose()
 	if (m_platformManager) m_platformManager->dispose();
     if (m_assetManager) m_assetManager->dispose();
 
+	if (m_mainThreadTaskDispatcher) {
+		m_mainThreadTaskDispatcher->dispose();
+		m_mainThreadTaskDispatcher = nullptr;
+	}
+	TaskScheduler::finalizeInternal();
+
 #if defined(LN_OS_WIN32)
     if (m_oleInitialized) {
         ::OleUninitialize();
@@ -339,6 +352,9 @@ void EngineManager::initializeCommon()
         m_oleInitialized = true;
     }
 #endif
+
+	TaskScheduler::init();
+	m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 }
 
 void EngineManager::initializeAssetManager()
@@ -600,6 +616,10 @@ void EngineManager::updateFrame()
 		m_uiManager->dispatchPostedEvents();
 	}
 
+	if (m_mainThreadTaskDispatcher) {
+		m_mainThreadTaskDispatcher->executeTasks(1);
+	}
+
     //------------------------------------------------
     // Main update phase
 
@@ -821,6 +841,21 @@ void EngineManager::setDebugToolMode(DebugToolMode mode)
 // EngineDomain
 
 RuntimeManager::Settings g_globalRuntimeManagerSettings;
+
+class EngineContextWrap
+{
+public:
+	// グローバル変数にすると、別のグローバル変数の初期化から EngineContext にアクセスするときに、まだ EngineContext のコンストラクタが呼ばれていないことが起こる。
+	// ローカルの static にしておくことで、アクセスした時点で初期化が走ることを保証する。
+	static EngineContext* getInstance() {
+		static EngineContext instance;
+		return &instance;
+	}
+};
+
+//static Ref<EngineContext> g_engineContext = nullptr;
+//static EngineContext* g_engineContext = nullptr;
+//static std::unique_ptr<EngineContext> g_engineContext = nullptr;
 static RuntimeManager* g_runtimeManager = nullptr;
 static EngineManager* g_engineManager = nullptr;
 
@@ -836,6 +871,22 @@ void EngineDomain::release()
         RefObjectHelper::release(g_runtimeManager);
         g_runtimeManager = nullptr;
     }
+	//if (g_engineContext) {
+		//RefObjectHelper::release(g_engineContext);
+	//	g_engineContext = nullptr;
+	//}
+}
+
+EngineContext* EngineDomain::engineContext()
+{
+	//if (!g_engineContext) {
+	//	g_engineContext = std::make_unique<EngineContext>();
+		//g_engineContext = makeRef<EngineContext>();
+		//g_engineContext = LN_NEW EngineContext();
+		//g_engineContext->init(g_globalRuntimeManagerSettings);
+	//}
+	//return g_engineContext.get();
+	return EngineContextWrap::getInstance();
 }
 
 RuntimeManager* EngineDomain::runtimeManager()
@@ -929,11 +980,6 @@ SceneManager* EngineDomain::sceneManager()
 UIManager* EngineDomain::uiManager()
 {
 	return engineManager()->uiManager();
-}
-
-EngineContext* EngineDomain::engineContext()
-{
-    return engineManager()->engineContext();
 }
 
 World* EngineDomain::mainWorld()

@@ -6,6 +6,26 @@
 namespace ln {
 
 //==============================================================================
+// UILayoutPanel2::Builder
+
+LN_BUILDER_IMPLEMENT(UILayoutPanel2, UIElement);
+
+UILayoutPanel2::Builder& UILayoutPanel2::Builder::children(std::initializer_list<UIElement::Builder> list)
+{
+	for (auto& p : list)
+		detailsAs<Details>()->children.add(p);
+	return *this;
+}
+
+Ref<Object> UILayoutPanel2::Builder::Details::build()
+{
+	auto ptr = makeObject<UILayoutPanel2>();
+	for (auto& b : children)
+		ptr->addChild(b.build());
+	return ptr;
+}
+
+//==============================================================================
 // UILayoutPanel2
 
 UILayoutPanel2::UILayoutPanel2()
@@ -278,24 +298,24 @@ Size UIFrameLayout2::staticArrangeOverride(UILayoutContext* layoutContext, UIEle
 }
 
 //==============================================================================
-// UIStackLayout2
+// UIStackLayout2_Obsolete
 
-Ref<UIStackLayout2> UIStackLayout2::create()
+Ref<UIStackLayout2_Obsolete> UIStackLayout2_Obsolete::create()
 {
-    return makeObject<UIStackLayout2>();
+    return makeObject<UIStackLayout2_Obsolete>();
 }
 
-UIStackLayout2::UIStackLayout2()
+UIStackLayout2_Obsolete::UIStackLayout2_Obsolete()
     : m_orientation(Orientation::Vertical)
 {
 }
 
-void UIStackLayout2::init()
+void UIStackLayout2_Obsolete::init()
 {
     UILayoutPanel2::init();
 }
 
-void UIStackLayout2::addChild(UIElement* element, UILayoutLengthType type)
+void UIStackLayout2_Obsolete::addChild(UIElement* element, UILayoutLengthType type)
 {
     UILayoutPanel2::addChild(element);
     CellDefinition cell;
@@ -303,7 +323,7 @@ void UIStackLayout2::addChild(UIElement* element, UILayoutLengthType type)
     m_cellDefinitions.add(cell);
 }
 
-Size UIStackLayout2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+Size UIStackLayout2_Obsolete::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
     int childCount = getVisualChildrenCount();
 
@@ -349,7 +369,7 @@ Size UIStackLayout2::measureOverride(UILayoutContext* layoutContext, const Size&
     return desiredSize;
 }
 
-Size UIStackLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+Size UIStackLayout2_Obsolete::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     const Thickness& padding = finalStyle()->padding;
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
@@ -485,7 +505,7 @@ Size UIStackLayout2::arrangeOverride(UILayoutContext* layoutContext, const Size&
 
 void UIHBoxLayout2::init()
 {
-    UIStackLayout2::init();
+    UIStackLayout2_Obsolete::init();
     setOrientation(Orientation::Horizontal);
 }
 
@@ -494,7 +514,7 @@ void UIHBoxLayout2::init()
 
 void UIVBoxLayout2::init()
 {
-    UIStackLayout2::init();
+    UIStackLayout2_Obsolete::init();
     setOrientation(Orientation::Vertical);
 }
 
@@ -522,14 +542,14 @@ Size UIBoxLayout3::measureOverride(UILayoutContext* layoutContext, const Size& c
 
     Size size = constraint;
 
-    if (m_orientation == Orientation::Horizontal) {
-        // 横に並べる場合、幅の制限を設けない
-        size.width = std::numeric_limits<float>::infinity();
-    }
-    else {
-        // 縦に並べる場合、高さの制限を設けない
-        size.height = std::numeric_limits<float>::infinity();
-    }
+    //if (m_orientation == Orientation::Horizontal) {
+    //    // 横に並べる場合、幅の制限を設けない
+    //    size.width = std::numeric_limits<float>::infinity();
+    //}
+    //else {
+    //    // 縦に並べる場合、高さの制限を設けない
+    //    size.height = std::numeric_limits<float>::infinity();
+    //}
 
     Size desiredSize;
     for (int i = 0; i < childCount; i++)
@@ -651,7 +671,7 @@ UILayoutLengthType UIBoxLayout3::layoutType(int index) const
 
     auto& info = child->m_gridLayoutInfo;
     if (!info)
-        return UILayoutLengthType::Auto;
+        return UILayoutLengthType::Ratio;
     if (info->layoutWeight <= 0.0)
         return UILayoutLengthType::Auto;
     else
@@ -664,7 +684,7 @@ float UIBoxLayout3::layoutWeight(int index) const
     if (child->m_gridLayoutInfo)
         return child->m_gridLayoutInfo->layoutWeight;
     else
-        return 0.0f;
+        return 1.0f;
 }
 
 float UIBoxLayout3::layoutDirectSize(int index) const
@@ -701,6 +721,15 @@ void UIBoxLayout3::getLayoutMinMaxSize(int index, float* minSize, float* maxSize
         if (!Math::isNaN(child->m_finalStyle->maxHeight))
             *maxSize = child->m_finalStyle->maxHeight;
     }
+}
+
+//==============================================================================
+// UIHBoxLayout3
+
+void UIHBoxLayout3::init()
+{
+	UIBoxLayout3::init();
+	setOrientation(Orientation::Horizontal);
 }
 
 //==============================================================================

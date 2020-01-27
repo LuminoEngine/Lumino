@@ -31,7 +31,7 @@ void UIComboBox::init()
     UIItemsControl::init();
 	m_layoutItemsHostLayoutEnabled = false;
 
-	auto itemsHost = makeObject<UIStackLayout2>();
+	auto itemsHost = makeObject<UIStackLayout2_Obsolete>();
 	itemsHost->setOrientation(Orientation::Vertical);
 	m_itemsHost = itemsHost;
 	setItemsLayoutPanel(m_itemsHost, false);

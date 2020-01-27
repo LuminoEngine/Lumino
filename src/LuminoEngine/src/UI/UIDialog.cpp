@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIRenderView.hpp>
+#include <LuminoEngine/UI/UIButton.hpp>
+#include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/UIDialog.hpp>
 
@@ -55,6 +57,88 @@ void UIDialog::close()
         }
         m_opend = false;
     }
+}
+
+void UIDialog::setupDialogButtons(UIDialogButtons buttons)
+{
+	m_dialogButtons.clear();
+	switch (buttons)
+	{
+	case UIDialogButtons::OK:
+		addDialogButton(UIDialogButtonRole::Accept, u"OK");
+		break;
+	case UIDialogButtons::OKCancel:
+		addDialogButton(UIDialogButtonRole::Accept, u"OK");
+		addDialogButton(UIDialogButtonRole::Reject, u"Cancel");
+		break;
+	case UIDialogButtons::YesNo:
+		addDialogButton(UIDialogButtonRole::Accept, u"Yes");
+		addDialogButton(UIDialogButtonRole::Discard, u"No");
+		break;
+	case UIDialogButtons::YesNoCancel:
+		addDialogButton(UIDialogButtonRole::Accept, u"Yes");
+		addDialogButton(UIDialogButtonRole::Discard, u"No");
+		addDialogButton(UIDialogButtonRole::Reject, u"Cancel");
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
+void UIDialog::addDialogButton(UIDialogButtonRole role, const String& text)
+{
+	if (!m_dialogButtonsLayout) {
+		m_dialogButtonsLayout = ln::makeObject<UIBoxLayout3>();
+		m_dialogButtonsLayout->setOrientation(Orientation::Horizontal);
+		addVisualChild(m_dialogButtonsLayout);
+	}
+
+	auto button = ln::makeObject<ln::UIButton>();
+	button->setText(text);
+	button->connectOnClicked(bind(this, &UIDialog::handleDialogButtonClicked));
+	m_dialogButtonsLayout->addChild(button);
+}
+
+void UIDialog::handleDialogButtonClicked(UIEventArgs* e)
+{
+	close();
+}
+
+Size UIDialog::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+	Size baseSize = UIContainerElement::measureOverride(layoutContext, constraint);
+
+
+	if (m_dialogButtonsLayout) {
+		m_dialogButtonsLayout->measureLayout(layoutContext, constraint);
+		Size buttonsSize = m_dialogButtonsLayout->desiredSize();
+
+		return baseSize;
+		//return Size(
+		//	std::max(baseSize.width, buttonsSize.height),
+		//	baseSize.height + buttonsSize.height);
+	}
+	else {
+		return baseSize;
+	}
+}
+
+Size UIDialog::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+	Size baseSize = UIContainerElement::arrangeOverride(layoutContext, finalSize);
+
+	if (m_dialogButtonsLayout) {
+		Size buttonsSize = m_dialogButtonsLayout->desiredSize();
+		Rect buttonsRect(
+			std::max(0.0f, finalSize.width - buttonsSize.width),
+			std::max(0.0f, finalSize.height - buttonsSize.height),
+			std::min(buttonsSize.width, finalSize.width),
+			std::min(buttonsSize.height, finalSize.height));
+		m_dialogButtonsLayout->arrangeLayout(layoutContext, buttonsRect);
+	}
+
+	return baseSize;
 }
 
 //==============================================================================

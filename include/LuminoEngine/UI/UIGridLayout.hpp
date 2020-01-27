@@ -29,19 +29,19 @@ class UIGridLayout
     : public UILayoutPanel2
 {
 public:
-	class Builder : public UIElement::Builder
+	class Builder : public UILayoutPanel2::Builder
 	{
 	public:
-		Builder();
+		LN_BUILDER(UIGridLayout);
+
 		Builder& columnCount(int value);
 		Builder& add(const UIElement::Builder& value);
-		Ref<UIGridLayout> build();
 
-		Builder& children(std::initializer_list<UIElement::Builder> list)
-		{
-			for (auto& p : list) add(p);
-			return *this;
-		}
+		//Builder& children(std::initializer_list<UIElement::Builder> list)
+		//{
+		//	for (auto& p : list) add(p);
+		//	return *this;
+		//}
 
 		//template<class T>
 		//X fw(T const& t) { X x; f(x, t); return x; }
@@ -72,15 +72,14 @@ public:
 		//	return *this;
 		//}
 
-		class Details : public UIElement::Builder::Details
+		class Details : public UILayoutPanel2::Builder::Details
 		{
 		public:
 			int columnCount;
-			std::vector<UIElement::Builder> children;
+			//std::vector<UIElement::Builder> children;
 			virtual Ref<Object> build() override;
 		};
 
-		Builder(Details* d);
 	};
 
 	void setRule(UILayoutRule value);

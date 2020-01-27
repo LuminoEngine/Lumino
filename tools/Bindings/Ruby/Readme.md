@@ -5,6 +5,11 @@
 ### 準備
 
 ```
+choco install -y ruby
+choco install -y msys2
+choco install -y ruby2.devkit
+Update-SessionEnvironment
+ridk install 2 3
 bundle install
 ```
 
@@ -29,6 +34,7 @@ gem install pkg/lumino-0.9.0.pre.gem
 ### テスト
 ```
 rake test
+rake test TESTOPTS="-n'test_delegate_object_block'"
 ```
 
 --------------------------------------------------

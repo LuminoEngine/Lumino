@@ -123,6 +123,21 @@ class UILayoutPanel2
     , public IScrollInfo
 {
 public:
+	class Builder : public UIElement::Builder
+	{
+		LN_BUILDER(UILayoutPanel2);
+	public:
+		Builder& children(std::initializer_list<UIElement::Builder> list);
+
+	protected:
+		class Details : public UIElement::Builder::Details
+		{
+		public:
+			List<UIElement::Builder> children;
+			virtual Ref<Object> build() override;
+		};
+	};
+
     UILayoutPanel2();
     void init();
 
@@ -179,11 +194,11 @@ private:
 // TODO: 一方向の GridLayout は BoxLayout (UE4) にする。これは、指定方向のレイアウト領域を inf にしない。
 // 一方、WPF の StackPanel のように、細かい配置の調整はせずただ並べるだけのものは LinearLayout(Andorid) にしてみる。これは指定方向のレイアウト領域が inf になる。
 // おもに ListView など用。
-class UIStackLayout2
+class UIStackLayout2_Obsolete
     : public UILayoutPanel2
 {
 public:
-    static Ref<UIStackLayout2> create();
+    static Ref<UIStackLayout2_Obsolete> create();
 
     void setOrientation(Orientation orientation) { m_orientation = orientation; }
     Orientation getOrientation() const { return m_orientation; }
@@ -192,7 +207,7 @@ public:
     void addChild(UIElement* element, UILayoutLengthType type);
 
 LN_CONSTRUCT_ACCESS:
-    UIStackLayout2();
+    UIStackLayout2_Obsolete();
     void init();
 
     // UIElement interface
@@ -221,7 +236,7 @@ private:
 };
 
 class UIHBoxLayout2
-    : public UIStackLayout2
+    : public UIStackLayout2_Obsolete
 {
 public:
 
@@ -230,7 +245,7 @@ LN_CONSTRUCT_ACCESS:
 };
 
 class UIVBoxLayout2
-    : public UIStackLayout2
+    : public UIStackLayout2_Obsolete
 {
 public:
 
@@ -275,6 +290,15 @@ private:
 
     Orientation m_orientation;
     List<CellDefinition> m_cellDefinitions;
+};
+
+class UIHBoxLayout3
+    : public UIBoxLayout3
+{
+public:
+
+LN_CONSTRUCT_ACCESS:
+    void init();
 };
 
 

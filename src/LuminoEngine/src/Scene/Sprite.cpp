@@ -37,9 +37,7 @@ Ref<Sprite> Sprite::Builder::buildInMainWorld()
 //==============================================================================
 // Sprite
 
-LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {
-    context->registerType<Sprite>({});   // TODO: これ必須なのはちょっと忘れやすい・・
-}
+LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {}
 
 Ref<Sprite> Sprite::create(Texture* texture, float width, float height)
 {

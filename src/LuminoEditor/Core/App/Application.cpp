@@ -9,7 +9,7 @@
 #include "../Project/Project.hpp"
 #include "../Project/AssetDatabase.hpp"
 #include "../Project/PluginManager.hpp"
-#include "AssetEditor/AssetEditor.hpp"
+#include "AssetEditor/AssetEditorModel.hpp"
 #include "NavigatorManager.hpp"
 #include "DocumentManager.hpp"
 #include "MainWindow.hpp"
@@ -51,7 +51,7 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
-    lna::AppData::instance()->load();
+    lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
 	ln::EngineSettings::setMainBackBufferSize(1600, 800);
@@ -71,15 +71,15 @@ ln::Result EditorApplication::init()
     m_editorContext->m_mainWindow = mainWindow();
 
     // TODO: test
-    openProject(u"D:/Proj/LN/PrivateProjects/HC0/HC0.lnproj");
+    openProject(u"C:/Proj/LN/PrivateProjects/HC0/HC0.lnproj");
 
     return true;
 }
 
 void EditorApplication::dispose()
 {
+    lna::AppData::current()->save();
     ln::detail::EngineDomain::release();
-    lna::AppData::instance()->save();
 }
 
 void EditorApplication::run()
@@ -141,7 +141,7 @@ void EditorApplication::openAssetFile(const ln::Path& filePath)
             return;
         }
 
-        auto editor = proxies[0]->createEditor();
+        auto editor = proxies[0]->createAssetEditorModel();
         editor->m_editorContext = m_editorContext;
         mainWindow()->documentManager()->addDocument(ln::makeObject<AssetEditorDocument>(asset, editor));
     }
@@ -183,7 +183,7 @@ void EditorApplication::openProject(const ln::Path& filePath)
 {
     //closeProject();
 
-    lna::AppData::instance()->addRecentProjectFile(filePath);
+    lna::AppData::current()->addRecentProjectFile(filePath);
 
     m_workspace->openMainProject(filePath);
 	postProjectLoaded();

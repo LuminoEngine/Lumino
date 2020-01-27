@@ -17,8 +17,14 @@ enum class TypeKind
 	Class,
 	Enum,
 	Delegate,
+};
+
+enum class TypeClass
+{
+	None,
 	Collection,
-    DelegateObject,
+	DelegateObject,
+	Promise,
 };
 
 inline AccessLevel accessLevelAsEnum(const ln::String& accessLevel)
@@ -47,10 +53,35 @@ inline TypeKind kindAsEnum(const ln::String& kind)
 	if (ln::String::compare(kind, u"Delegate", ln::CaseSensitivity::CaseInsensitive) == 0)
 		return TypeKind::Delegate;
 	if (ln::String::compare(kind, u"Collection", ln::CaseSensitivity::CaseInsensitive) == 0)
-		return TypeKind::Collection;
+		return TypeKind::Class;
     if (ln::String::compare(kind, u"DelegateObject", ln::CaseSensitivity::CaseInsensitive) == 0)
-        return TypeKind::DelegateObject;
+        return TypeKind::Class;
+	if (ln::String::compare(kind, u"Promise", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeKind::Class;
 
 	LN_UNREACHABLE();
 	return TypeKind::Primitive;
+}
+
+inline TypeClass classAsEnum(const ln::String& kind)
+{
+	if (ln::String::compare(kind, u"Primitive", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::None;
+	if (ln::String::compare(kind, u"Enum", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::None;
+	if (ln::String::compare(kind, u"Struct", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::None;
+	if (ln::String::compare(kind, u"Class", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::None;
+	if (ln::String::compare(kind, u"Delegate", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::None;
+	if (ln::String::compare(kind, u"Collection", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::Collection;
+	if (ln::String::compare(kind, u"DelegateObject", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::DelegateObject;
+	if (ln::String::compare(kind, u"Promise", ln::CaseSensitivity::CaseInsensitive) == 0)
+		return TypeClass::Promise;
+
+	LN_UNREACHABLE();
+	return TypeClass::None;
 }

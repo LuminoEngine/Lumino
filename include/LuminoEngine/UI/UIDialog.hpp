@@ -3,7 +3,34 @@
 #include "UIAdorner.hpp"
 
 namespace ln {
+class UIButton;
 class UIDialogAdorner;
+class UIBoxLayout3;
+
+enum class UIDialogButtonRole
+{
+	None,
+
+	/** Clicking the button causes the dialog to be accepted. (e.g. OK, Yes) */
+	Accept,
+
+	/** Clicking the button causes the dialog to be rejected. (e.g. Cancel) */
+	Reject,
+
+	/** (e.g. No) */
+	Discard,
+
+	/** The button applies current changes. */
+	Apply,
+};
+
+enum class UIDialogButtons
+{
+	OK,
+	OKCancel,
+	YesNo,
+	YesNoCancel,
+};
 
 class UIDialog
     : public UIContainerElement
@@ -14,15 +41,30 @@ public:
     void open();
     void close();
 
+	void setupDialogButtons(UIDialogButtons buttons);
+
 protected:
     virtual const String& elementName() const  override { static String name = u"UIDialog"; return name; }
+	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIDialog();
     void init();
 
 private:
+	struct DialogButton
+	{
+		UIDialogButtonRole role;
+		Ref<UIButton> button;
+	};
+
+	void addDialogButton(UIDialogButtonRole role, const String& text);
+	void handleDialogButtonClicked(UIEventArgs* e);
+
     Ref<UIAdorner> m_adorner;
+	List<DialogButton> m_dialogButtons;
+	Ref<UIBoxLayout3> m_dialogButtonsLayout;
     bool m_opend;
 
     friend class UIDialogAdorner;

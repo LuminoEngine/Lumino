@@ -241,7 +241,7 @@ InputGesture* InputManager::getAnyActiveTriggered()
 		auto* g = m_inputDriver->getPressedAnyKey();
 		if (g != nullptr)
 		{
-			m_lasgAnyActiveTriggered = makeRef<KeyGesture>(g->getKey(), g->getModifierKeys());	// TODO: makeObject
+			m_lasgAnyActiveTriggered = makeObject<KeyGesture>(g->getKey(), g->getModifierKeys());	// TODO: makeObject
 			pressed = true;
 		}
 	}
@@ -250,7 +250,7 @@ InputGesture* InputManager::getAnyActiveTriggered()
 		auto* g = m_inputDriver->getPressedAnyMouseButton();
 		if (g != nullptr)
 		{
-			m_lasgAnyActiveTriggered = makeRef<MouseGesture>(g->getMouseAction(), g->getModifierKeys());	// TODO: makeObject
+			m_lasgAnyActiveTriggered = makeObject<MouseGesture>(g->getMouseAction(), g->getModifierKeys());	// TODO: makeObject
 			pressed = true;
 		}
 	}
@@ -259,7 +259,7 @@ InputGesture* InputManager::getAnyActiveTriggered()
 		auto* g = m_inputDriver->getPressedAnyGamepadElement();
 		if (g != nullptr)
 		{
-			m_lasgAnyActiveTriggered = makeRef<GamepadGesture>(g->getElement());	// TODO: makeObject
+			m_lasgAnyActiveTriggered = makeObject<GamepadGesture>(g->getElement());	// TODO: makeObject
 			pressed = true;
 		}
 	}

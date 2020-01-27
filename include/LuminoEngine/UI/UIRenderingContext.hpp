@@ -43,6 +43,9 @@ public: // TODO: inernal
 	Ref<detail::DrawElementList> m_elementList;
     bool m_adornerRendering = false;
 	Ref<UITheme> m_theme;
+
+	// onRender の中で、blit の位置調整のために使いたい
+	//Rect m_currentRenderTargetRect;
 };
 
 } // namespace ln

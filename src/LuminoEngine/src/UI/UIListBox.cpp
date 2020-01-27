@@ -33,7 +33,7 @@ void UIListBox::init()
 {
     UIItemsControl::init();
 
-    auto layout = makeObject<UIStackLayout2>();
+    auto layout = makeObject<UIStackLayout2_Obsolete>();
     layout->setOrientation(Orientation::Vertical);
     setItemsLayoutPanel(layout);
 }

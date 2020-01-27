@@ -567,7 +567,7 @@ public:
 									methodInfo->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
 									methodInfo->accessLevel = u"Public";
 									methodInfo->isStatic = true;
-									typeInfo->methods.add(methodInfo);
+									typeInfo->delegateProtoType = methodInfo;
 
 									for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
 										QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
@@ -587,9 +587,6 @@ public:
 				// ln::Delegate is TemplateSpecialization
 				else if (type->getTypeClass() == clang::Type::TypeClass::TemplateSpecialization) {
 					const TemplateSpecializationType* templateSpecializationType = llvm::cast<clang::TemplateSpecializationType, clang::Type const>(type);
-
-					templateSpecializationType->dump();
-
 					TemplateName templateName = templateSpecializationType->getTemplateName();	// "function"
 
 					TemplateDecl* templateDecl = templateName.getAsTemplateDecl();
@@ -614,25 +611,57 @@ public:
 									typeInfo->document = parseDocument(decl);
 									m_parser->getDB()->types.add(typeInfo);
 
-									auto methodInfo = ln::makeRef<PIMethod>();
-									methodInfo->document = parseDocument(decl);
-									methodInfo->name = ln::String::fromStdString(decl->getNameAsString());
-									methodInfo->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
-									methodInfo->accessLevel = u"Public";
-									methodInfo->isStatic = true;
-									typeInfo->methods.add(methodInfo);
+									//for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
+									//	QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
+									//	SplitQualType paramTypeSplit = paramType.split();
 
-									for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
-										QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
-										SplitQualType paramTypeSplit = paramType.split();
+									//	auto templateArg = ln::makeRef<PITemplateArgument>();
+									//	templateArg->typeRawName = getRawTypeFullName(paramType);
+									//	templateArg->isConst = paramType.getQualifiers().hasConst();
+									//	templateArg->isPointer = paramTypeSplit.Ty->isPointerType();
+									//	typeInfo->templateArguments.add(templateArg);
+									//}
 
-										auto paramInfo = ln::makeRef<PIMethodParameter>();
-										paramInfo->typeRawName = getRawTypeFullName(paramType);
-										paramInfo->isConst = paramType.getQualifiers().hasConst();
-										paramInfo->isPointer = paramTypeSplit.Ty->isPointerType();
-										methodInfo->parameters.add(paramInfo);
+									//// TODO: Core 側で、テンプレート実引数から生成するようにしたい
+									{
+										auto methodInfo = ln::makeRef<PIMethod>();
+										methodInfo->document = parseDocument(decl);
+										methodInfo->name = ln::String::fromStdString(decl->getNameAsString());
+										methodInfo->returnTypeRawName = getRawTypeFullName(functionProtoType->getReturnType());	// "void"
+										methodInfo->accessLevel = u"Public";
+										typeInfo->delegateProtoType = methodInfo;
+
+										for (unsigned i = 0, e = functionProtoType->getNumParams(); i != e; ++i) {
+											QualType paramType = functionProtoType->getParamType(i);	// "UIEventArgs*"
+											SplitQualType paramTypeSplit = paramType.split();
+
+											auto paramInfo = ln::makeRef<PIMethodParameter>();
+											paramInfo->typeRawName = getRawTypeFullName(paramType);
+											paramInfo->isConst = paramType.getQualifiers().hasConst();
+											paramInfo->isPointer = paramTypeSplit.Ty->isPointerType();
+											methodInfo->parameters.add(paramInfo);
+										}
 									}
 								}
+							}
+						}
+					}
+					else if (templateDecl->getQualifiedNameAsString() == "ln::Promise") {
+						auto args = templateSpecializationType->template_arguments();
+						if (args.size() == 1) {
+							const TemplateArgument& templateArg = args[0];	// "Ref<XXXX>"
+							if (templateArg.getKind() == TemplateArgument::Type) {
+								QualType argType = templateArg.getAsType();
+
+								auto typeInfo = ln::makeRef<PITypeInfo>();
+								typeInfo->kind = u"Promise";
+								typeInfo->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());	// e.g) ln::ZVTestPromise1
+								typeInfo->document = parseDocument(decl);
+								m_parser->getDB()->types.add(typeInfo);
+
+								auto templateArg = ln::makeRef<PITemplateArgument>();
+								templateArg->typeRawName = getRawTypeFullName(argType);
+								typeInfo->templateArguments.add(templateArg);
 							}
 						}
 					}
@@ -745,7 +774,8 @@ public:
 				name == "LN_FIELD" ||
 				name == "LN_METHOD" ||
 				name == "LN_ENUM" ||
-				name == "LN_DELEGATE")
+				name == "LN_DELEGATE" ||
+				name == "LN_PROMISE")
 			{
 				::HeaderParser2::AttrMacro attrMacro;
 				attrMacro.name = name;

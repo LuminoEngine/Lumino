@@ -90,6 +90,7 @@
 #include "LuminoEngine/UI/UISprite.hpp"
 #include "LuminoEngine/UI/UITextBlock.hpp"
 #include "LuminoEngine/UI/UILayoutPanel.hpp"
+#include "LuminoEngine/UI/UIGridLayout.hpp"
 #include "LuminoEngine/UI/UIWindow.hpp"
 #include "LuminoEngine/UI/UIButton.hpp"
 

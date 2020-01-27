@@ -24,6 +24,7 @@ class Camera;
 class AmbientLight;
 class DirectionalLight;
 class UIEventArgs;
+class Dispatcher;
 
 namespace detail {
 class PlatformManager;
@@ -123,7 +124,6 @@ public:
 	void quit();
 
 	EngineSettings& settings() { return m_settings; }
-	const Ref<EngineContext>& engineContext() const { return m_engineContext; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
@@ -140,6 +140,7 @@ public:
 	const Ref<SceneManager>& sceneManager() const { return m_sceneManager; }
     const Ref<UIManager>& uiManager() const { return m_uiManager; }
 
+	const Ref<Dispatcher>& mainThreadTaskDispatcher() const { return m_mainThreadTaskDispatcher; }
     const FpsController& fpsController() const { return m_fpsController; }
 	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
@@ -179,7 +180,6 @@ private:
 
 	EngineSettings m_settings;
 
-	Ref<EngineContext> m_engineContext;
     Ref<AssetManager> m_assetManager;
 	Ref<PlatformManager>				m_platformManager;
 	Ref<AnimationManager>			m_animationManager;
@@ -196,6 +196,7 @@ private:
     Ref<SceneManager>					m_sceneManager;
 	Ref<UIManager>					m_uiManager;
     FpsController m_fpsController;
+	Ref<Dispatcher> m_mainThreadTaskDispatcher;
 
 	Ref<DiagnosticsManager> m_activeDiagnostics;
 

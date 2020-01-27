@@ -138,7 +138,7 @@ public:
     void setPixelsParUnit(float value) { m_pixelsParUnit = value; }
 
 	// TODO: internal
-	static void registerType(EngineContext* context);
+	//static void registerType(EngineContext* context);
 
 protected:
     void onRender(RenderingContext* context);

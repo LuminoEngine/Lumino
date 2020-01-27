@@ -71,22 +71,37 @@ private:
 
 } // namespace detail
 
+#if defined(__GNUC__) && !defined(COMPILER_ICC)
+# define LN_ATTRIBUTE_UNUSED_ __attribute__ ((unused))
+#else
+# define LN_ATTRIBUTE_UNUSED_
+#endif
+
 #define LN_OBJECT \
     friend class ::ln::TypeInfo; \
     friend class ::ln::detail::EngineDomain; \
     friend class ::ln::EngineContext; \
-    static TypeInfo* _lnref_getTypeInfo(); \
+    static ::ln::TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
-	static void _lnref_registerTypeInfo(EngineContext* context);
+	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_; \
+	static ::ln::TypeInfo* _lnref_registerTypeInfo(); \
+	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
-    TypeInfo* classType::_lnref_getTypeInfo() \
+    ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
     { \
-        static TypeInfo typeInfo(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>()); \
-        return &typeInfo; \
+		return _lnref_typeInfo; \
     } \
     ::ln::TypeInfo* classType::_lnref_getThisTypeInfo() const { return _lnref_getTypeInfo(); } \
-	void classType::_lnref_registerTypeInfo(EngineContext* context)
+	::ln::TypeInfo* const classType::_lnref_typeInfo = classType::_lnref_registerTypeInfo(); \
+	::ln::TypeInfo* classType::_lnref_registerTypeInfo() \
+	{ \
+		::ln::EngineContext* context = ::ln::EngineContext::current(); \
+		::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
+		_lnref_registerTypeInfoInitializer(context); \
+		return typeInfo; \
+	} \
+	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context)
 
 #define LN_INTERNAL_NEW_OBJECT \
     template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
@@ -99,6 +114,9 @@ private:
 		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
+
+//#define LN_BASE_INIT(base, ...) \
+//	if (base::init(__VA_ARGS__)) return false;
 
 template<class T, typename... TArgs>
 Ref<T> makeObject(TArgs&&... args)
@@ -129,7 +147,7 @@ class Object
 {
 LN_CONSTRUCT_ACCESS:
 	Object();
-	void init();
+	bool init();
 
 protected:
 	virtual ~Object();
@@ -324,17 +342,11 @@ class TypeInfo
     : public RefObject
 {
 public:
-    TypeInfo(const char* className, TypeInfo* baseType)
-        : m_name(className)
-        , m_baseType(baseType)
-		, m_managedTypeInfoId(-1)
-    {}
+	TypeInfo(const char* className, TypeInfo* baseType);
 
-    TypeInfo(const String& className)
-        : m_name(className)
-        , m_baseType(nullptr)
-        , m_managedTypeInfoId(-1)
-    {}
+	TypeInfo(const String& className);
+
+	virtual ~TypeInfo();
 
     /** クラス名を取得します。 */
     const String& name() const { return m_name; }

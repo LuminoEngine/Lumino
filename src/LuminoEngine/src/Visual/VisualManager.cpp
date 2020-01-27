@@ -4,7 +4,6 @@
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Engine/Property.hpp>	// TODO:
-#include "../Engine/EngineManager.hpp"	// TODO:
 
 namespace ln {
 namespace detail {
@@ -27,7 +26,8 @@ void VisualManager::init(const Settings& settings)
 
 	m_graphicsManager = settings.graphicsManager;
 
-	SpriteComponent::registerType(detail::EngineDomain::engineManager()->engineContext());
+	//SpriteComponent::registerType(detail::EngineDomain::engineContext());
+	EngineDomain::registerType<SpriteComponent>();
 	EngineDomain::registerType<SpriteFrame>();
     EngineDomain::registerType<SpriteFrameSet>();
 	EngineDomain::registerType<VisualComponent>();

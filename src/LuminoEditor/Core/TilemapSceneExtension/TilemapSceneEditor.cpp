@@ -102,7 +102,7 @@ namespace lna {
 
 ln::Result TilemapSceneEditor::init()
 {
-    AssetEditor::init();
+    AssetEditorModel::init();
 	m_model = ln::makeObject<TilemapSceneEditorModel>();
 
     m_modePane = ln::makeObject<TilemapSceneModePane>(m_model);
@@ -258,31 +258,6 @@ void TilemapSceneEditor::WorldRenderView_OnUIEvent(ln::UIEventArgs* e)
 void TilemapSceneEditor::handleTickEvent(ln::UITimerEventArgs* e)
 {
 	m_mainWorld->updateFrame(e->elapsedSeconds());
-}
-
-//==============================================================================
-// TilemapSceneEditorPloxy
-
-Ref<lna::AssetEditor> TilemapSceneEditorPloxy::createEditor()
-{
-    return ln::makeObject<TilemapSceneEditor>();
-}
-
-//==============================================================================
-// TilemapSceneEditorExtensionModule
-
-void TilemapSceneEditorExtensionModule::onActivate(lna::EditorContext* context)
-{
-    m_navigator = ln::makeObject<TilemapSceneNavigator>();
-    context->mainWindow()->navigatorManager()->addNavigator(m_navigator);
-
-    m_editorPloxy = ln::makeObject<TilemapSceneEditorPloxy>();
-    context->pluginManager()->addAssetEditorPloxy(m_editorPloxy);
-}
-
-void TilemapSceneEditorExtensionModule::onDeactivate(lna::EditorContext* context)
-{
-    context->pluginManager()->removeAssetEditorPloxy(m_editorPloxy);
 }
 
 } // namespace lna

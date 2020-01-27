@@ -39,3 +39,18 @@ private:
 
 
 } // namespace ln
+
+// TODO: Editor 拡張とか、スポット的に作る Control に Bulder クラスを定義するのがめんどい。makeBuilder<>() とかで、new するインスタンスだけオーバーライドした Builder を作りたい。
+// TODO: build() に、作成するオブジェクトのコンストラクタに渡す引数を渡せるようにしたい。
+
+#define LN_BUILDER(type) \
+	public: \
+	class Details; \
+	Builder(); \
+	Builder(Details* d); \
+	Ref<type> build() { return buildAs<type>(); }
+
+#define LN_BUILDER_IMPLEMENT(type, base) \
+	type::Builder::Builder() : Builder(makeRef<Details>()) {} \
+	type::Builder::Builder(Details* d) : base::Builder(d) {}
+	

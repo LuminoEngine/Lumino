@@ -11,9 +11,7 @@ namespace ln {
 //==============================================================================
 // UIButtonBase
 
-LN_OBJECT_IMPLEMENT(UIButtonBase, UIControl) {
-	context->registerType<UIButtonBase>({});
-}
+LN_OBJECT_IMPLEMENT(UIButtonBase, UIControl) {}
 
 UIButtonBase::UIButtonBase()
     : m_isPressed(false)
@@ -92,9 +90,7 @@ void UIButtonBase::onRoutedEvent(UIEventArgs* e)
 //==============================================================================
 // UIButton
 
-LN_OBJECT_IMPLEMENT(UIButton, UIButtonBase) {
-	context->registerType<UIButton>({});
-}
+LN_OBJECT_IMPLEMENT(UIButton, UIButtonBase) {}
 
 Ref<UIButton> UIButton::create()
 {

@@ -2,22 +2,26 @@ PATH
   remote: .
   specs:
     lumino (0.9.0.pre)
+      thor
 
 GEM
   remote: https://rubygems.org/
   specs:
     rake (10.5.0)
-    rake-compiler (1.0.8)
+    rake-compiler (1.1.0)
       rake
+    thor (1.0.1)
+    yard (0.9.24)
 
 PLATFORMS
   x64-mingw32
 
 DEPENDENCIES
-  bundler (~> 1.17)
+  bundler (~> 2.1.4)
   lumino!
   rake (~> 10.0)
   rake-compiler
+  yard
 
 BUNDLED WITH
-   1.17.2
+   2.1.4

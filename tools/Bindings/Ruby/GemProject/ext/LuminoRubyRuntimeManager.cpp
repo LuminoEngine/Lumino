@@ -149,7 +149,6 @@ void LuminoRubyRuntimeManager::init()
     }
 
     m_runtimeAliving = true;
-
 }
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retain)
@@ -158,6 +157,7 @@ VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retai
     int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
 
     if (objectIndex <= 0) {
+        LNRB_LOG_D("New Ruby object from WrapObjectForGetting (typeinfoIndex:%d)", typeinfoIndex);
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
         if (retain) {
             registerWrapperObject(obj, true);

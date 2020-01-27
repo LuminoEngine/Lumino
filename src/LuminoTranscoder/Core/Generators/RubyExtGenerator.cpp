@@ -114,8 +114,8 @@ void RubyExtGenerator::generate()
 
 	OutputBuffer code;
 
-	ln::String m_RubyRequiredStructMethodsTemplate = ln::FileSystem::readAllText(makeTemplateFilePath(u"RubyRequiredStructMethods.template.cpp"));
-	ln::String m_RubyRequiredClassMethodsTemplate = ln::FileSystem::readAllText(makeTemplateFilePath(u"RubyRequiredClassMethods.template.cpp"));
+	m_RubyRequiredStructMethodsTemplate = ln::FileSystem::readAllText(makeTemplateFilePath(u"RubyRequiredStructMethods.template.cpp"));
+	m_RubyRequiredClassMethodsTemplate = ln::FileSystem::readAllText(makeTemplateFilePath(u"RubyRequiredClassMethods.template.cpp"));
 
 
 	// structs
@@ -154,96 +154,14 @@ void RubyExtGenerator::generate()
 
 	// classes
 	for (auto& classSymbol : db()->classes()) {
-		//if (classSymbol->isRootObjectClass()) {
-		//	// Object class is defined directly, so automatic generation is not required
-		//}
-		//else
-        {
-			OutputBuffer markExprs;
-
-			code.AppendLine(u"//==============================================================================");
-			code.AppendLine(u"// {0}", classSymbol->fullName());
-			code.NewLine();
-
-			// クラスをラップする構造体
-			{
-				OutputBuffer wrapStruct;
-				/* 例:
-				struct Wrap_MyClass
-					: public Wrap_BaseClass
-				{
-					VALUE Prop1;		// 特に get を公開する場合、Ruby オブジェクトが GC されないように保持しておく必要がある。
-										// また、別途 mark コールバックにて rb_gc_mark() する必要がある。
-					Wrap_MyClass()
-						: Prop1(Qnil), Layers(Qnil)
-					{}
-				};
-				*/
-				wrapStruct.AppendLine(u"struct {0}", makeWrapStructName(classSymbol));
-				if (classSymbol->baseClass()) {  // 継承
-					wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
-				}
-                else if (classSymbol->isRootObjectClass()) {
-                    wrapStruct.AppendLine("    : public Wrap_RubyObject");
-                }
-				wrapStruct.AppendLine(u"{");
-				wrapStruct.IncreaseIndent();
-
-				// Accessor Cache
-				wrapStruct.AppendLine(makeAccessorCacheFieldDecls(classSymbol));
-				markExprs.AppendLine(makeAccessorCacheFieldMarks(classSymbol));
-
-				// Signal and Connection
-				for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
-					wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
-					wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
-					markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
-				}
-
-				// Constructor
-				wrapStruct.AppendLine(u"{0}()", makeWrapStructName(classSymbol));
-				//if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
-				//{
-				//	wrapStruct.Append("    : ");
-				//	wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMemberInit.ToString());
-				//}
-				wrapStruct.AppendLine(u"{}");
-				wrapStruct.DecreaseIndent();
-				wrapStruct.AppendLine(u"};").NewLine();
-				//wrapStruct.AppendLine(_currentClassInfo.AdditionalClassStaticVariables.ToString());
-
-
-				code.append(wrapStruct);
-			}
-
-			// Ruby requierd methods (allocate, free, mark)
-			if (!classSymbol->isStatic()) {
-				code.AppendLine(m_RubyRequiredClassMethodsTemplate
-					.replace(u"%%FlatClassName%%", makeFlatClassName(classSymbol))
-					.replace(u"%%WrapStructName%%", makeWrapStructName(classSymbol))
-					.replace(u"%%MarkExprs%%", markExprs.toString()));
-			}
-
-			for (auto& overload : classSymbol->overloads()) {
-				if (overload->representative()->isEventConnector()) {
-					code.append(makeWrapFuncImplement_SignalCaller(overload->representative()));
-					code.append(makeWrapFuncImplement_EventConnector(overload->representative()));
-				}
-				else {
-					code.append(makeWrapFuncImplement(classSymbol, overload));
-				}
-			}
-
-			code.append(makeWrapFuncImplement_SetOverrideCallback(classSymbol));
-
-			for (auto& method : classSymbol->publicMethods()) {
-				allFlatCApiDecls.AppendLine(u"extern \"C\" " + makeFuncHeader(method, FlatCharset::Unicode) + u";");
-			}
-			if (!classSymbol->isStatic()) {
-				allFlatCApiDecls.AppendLine(u"extern \"C\" " + makeFlatAPIDecl_SetManagedTypeInfoId(classSymbol) + u";");
-			}
-		}
+		code.AppendLines(makeClassRequiredImplementation(classSymbol));
+		code.AppendLines(makeClassImplementation(classSymbol));
 	}
+
+	// delegateObjects
+	//for (auto& delegateSymbol : db()->delegateObjects()) {
+	//	code.AppendLines(makeClassRequiredImplementation(delegateSymbol));
+	//}
 
 
 	// Ruby クラス定義 (rb_define_XXXX 呼び出し)
@@ -370,6 +288,108 @@ ln::String RubyExtGenerator::makeWrapStructName(const TypeSymbol* type) const
 //	}
 //}
 
+// 普通の class や delegate など共通で定義する必要がある、Ruby Ext 必須定義 (Wrap struct, allocate, delete, mark)
+ln::String RubyExtGenerator::makeClassRequiredImplementation(const TypeSymbol* classSymbol) const
+{
+	OutputBuffer code;
+
+	OutputBuffer markExprs;
+
+	code.AppendLine(u"//==============================================================================");
+	code.AppendLine(u"// {0}", classSymbol->fullName());
+	code.NewLine();
+
+	// クラスをラップする構造体
+	{
+		OutputBuffer wrapStruct;
+		/* 例:
+		struct Wrap_MyClass
+			: public Wrap_BaseClass
+		{
+			VALUE Prop1;		// 特に get を公開する場合、Ruby オブジェクトが GC されないように保持しておく必要がある。
+								// また、別途 mark コールバックにて rb_gc_mark() する必要がある。
+			Wrap_MyClass()
+				: Prop1(Qnil), Layers(Qnil)
+			{}
+		};
+		*/
+		wrapStruct.AppendLine(u"struct {0}", makeWrapStructName(classSymbol));
+		if (classSymbol->baseClass()) {  // 継承
+			wrapStruct.AppendLine("    : public " + makeWrapStructName(classSymbol->baseClass()));
+		}
+		else if (classSymbol->isRootObjectClass()) {
+			wrapStruct.AppendLine("    : public Wrap_RubyObject");
+		}
+		wrapStruct.AppendLine(u"{");
+		wrapStruct.IncreaseIndent();
+
+		// Accessor Cache
+		wrapStruct.AppendLine(makeAccessorCacheFieldDecls(classSymbol));
+		markExprs.AppendLine(makeAccessorCacheFieldMarks(classSymbol));
+
+		if (classSymbol->isDelegateObject()) {
+			wrapStruct.AppendLine(u"VALUE m_proc = Qnil;");
+			markExprs.AppendLine(u"rb_gc_mark(obj->m_proc);");
+		}
+
+		// Signal and Connection
+		for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
+			wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
+			wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
+			markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
+		}
+
+		// Constructor
+		wrapStruct.AppendLine(u"{0}()", makeWrapStructName(classSymbol));
+		//if (!_currentClassInfo.AdditionalWrapStructMemberInit.IsEmpty)
+		//{
+		//	wrapStruct.Append("    : ");
+		//	wrapStruct.AppendLine(_currentClassInfo.AdditionalWrapStructMemberInit.ToString());
+		//}
+		wrapStruct.AppendLine(u"{}");
+		wrapStruct.DecreaseIndent();
+		wrapStruct.AppendLine(u"};").NewLine();
+		//wrapStruct.AppendLine(_currentClassInfo.AdditionalClassStaticVariables.ToString());
+
+
+		code.append(wrapStruct);
+	}
+
+	// Ruby requierd methods (allocate, free, mark)
+	if (!classSymbol->isStatic()) {
+		code.AppendLine(m_RubyRequiredClassMethodsTemplate
+			.replace(u"%%FlatClassName%%", makeFlatClassName(classSymbol))
+			.replace(u"%%WrapStructName%%", makeWrapStructName(classSymbol))
+			.replace(u"%%MarkExprs%%", markExprs.toString()));
+	}
+
+	return code.toString();
+}
+
+ln::String RubyExtGenerator::makeClassImplementation(const TypeSymbol* classSymbol) const
+{
+	OutputBuffer code;
+
+	for (auto& overload : classSymbol->overloads()) {
+		if (overload->representative()->isEventConnector()) {
+			code.append(makeWrapFuncImplement_SignalCaller(overload->representative()));
+			code.append(makeWrapFuncImplement_EventConnector(overload->representative()));
+		}
+		else if (classSymbol->isDelegateObject()) {
+			code.append(makeWrapFuncImplement_ProcCaller(classSymbol->delegateProtoType()));
+			//code.append(makeWrapFuncImplement_DelegateObjectConstructor(classSymbol));
+			code.append(makeWrapFuncImplement(classSymbol, overload));
+		}
+		else {
+			code.append(makeWrapFuncImplement(classSymbol, overload));
+		}
+	}
+
+	code.append(makeWrapFuncImplement_SetOverrideCallback(classSymbol));
+
+	return code.toString();
+}
+
 ln::String RubyExtGenerator::makeAccessorCacheFieldDecls(const TypeSymbol* classSymbol) const
 {
 	OutputBuffer code;
@@ -430,9 +450,16 @@ ln::String RubyExtGenerator::makeWrapFuncImplement(const TypeSymbol* classSymbol
         if (method->isFieldAccessor()) {
             code.AppendLine(makeWrapFuncCallBlock_FieldAccessor(classSymbol, method));
         }
+		else if (classSymbol->isDelegateObject() && method->isConstructor()) {
+			code.AppendLine(makeWrapFuncCallBlock_DelegateObjectConstructor(classSymbol, method));
+		}
         else {
             code.AppendLine(makeWrapFuncCallBlock(classSymbol, method));
         }
+
+		if (method->parameters().size() == 1 && method->parameters().front()->type()->isDelegateObject()) {
+			code.AppendLine(makeWrapFuncCallBlock_DelegateObjectSetter(classSymbol, method));
+		}
 	}
 
 	// 関数終端まで到達してしまったら例外
@@ -631,6 +658,53 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock_FieldAccessor(const TypeSymbo
     }
 }
 
+ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectConstructor(const TypeSymbol* classSymbol, const MethodSymbol* method) const
+{
+	OutputBuffer code;
+	code.AppendLine(u"if (0 <= argc && argc <= 1) {");
+	code.IncreaseIndent();
+	{
+		code.AppendLine(u"VALUE proc, block;");
+		code.AppendLine(u"rb_scan_args(argc, argv, \"01&\", &proc, &block); // (handler=nil, &block)");
+		code.AppendLine(u"if (proc != Qnil) selfObj->m_proc = proc;");
+		code.AppendLine(u"if (block != Qnil) selfObj->m_proc = block;");
+		code.AppendLine(u"LnResult result = {0}({1}, &selfObj->handle);", makeFlatFullFuncName(method, FlatCharset::Ascii), makeWrapFuncName_ProcCaller(classSymbol, classSymbol->delegateProtoType()));
+		code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+		code.AppendLine(u"LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);");
+		code.AppendLine(u"return Qnil;");
+	}
+	code.DecreaseIndent();
+	code.AppendLine(u"}");
+	return code.toString().trim();
+}
+
+ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectSetter(const TypeSymbol* classSymbol, const MethodSymbol* method) const
+{
+	auto& param = method->parameters().front();
+
+	OutputBuffer code;
+	code.AppendLine(u"if (argc == 0) {");
+	code.IncreaseIndent();
+	{
+		code.AppendLine(u"VALUE block;");
+		code.AppendLine(u"rb_scan_args(argc, argv, \"0&\", &block);");
+		code.AppendLine(u"if (block != Qnil) {");
+		code.IncreaseIndent();
+		{
+			code.AppendLine(u"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
+			code.AppendLine(u"LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
+			code.AppendLine(u"LnResult result = {0}(selfObj->handle, _value);", makeFlatFullFuncName(method, FlatCharset::Ascii));
+			code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+			code.AppendLine(u"return Qnil;");
+		}
+		code.DecreaseIndent();
+		code.AppendLine(u"}");
+	}
+	code.DecreaseIndent();
+	code.AppendLine(u"}");
+	return code.toString().trim();
+}
+
 // C言語変数 → VALUE 変換式の作成 (return 用)
 ln::String RubyExtGenerator::makeVALUEReturnExpr(const TypeSymbol* type, const MethodSymbol* method, const ln::String& varName) const
 {
@@ -705,6 +779,49 @@ ln::String RubyExtGenerator::makeTypeCheckExpr(const TypeSymbol* type, const ln:
 	}
 }
 
+ln::String RubyExtGenerator::makeVALUEToNativeCastExpr(const MethodParameterSymbol* param, const ln::String& varName) const
+{
+	auto type = param->type();
+	//auto varName = u"_" + param->name();
+	ln::String castExpr;
+
+	if (type->isStruct()) {
+		LN_NOTIMPLEMENTED();
+	}
+	else if (type->isClass() || type->isDelegateObject()) {
+		castExpr = ln::String::format(u"LuminoRubyRuntimeManager::instance->getHandle({0})", varName);
+	}
+	else if (type->isEnum()) {
+		castExpr = ln::String::format(u"({0})FIX2INT({1})", makeFlatClassName(type), varName);
+	}
+	else {
+		if (type == PredefinedTypes::boolType) {
+			castExpr = ln::String::format(u"LNRB_VALUE_TO_BOOL({0})", varName);
+		}
+		else if (
+			type == PredefinedTypes::intType ||
+			type == PredefinedTypes::int16Type ||
+			type == PredefinedTypes::uint32Type) {
+			castExpr = ln::String::format(u"LNRB_VALUE_TO_NUMBER({0})", varName);
+		}
+		else if (type == PredefinedTypes::floatType) {
+			castExpr = ln::String::format(u"LNRB_VALUE_TO_FLOAT({0})", varName);
+		}
+		else if (type->isString()) {
+			castExpr = ln::String::format(u"LNRB_VALUE_TO_STRING({0})", varName);
+		}
+		else if (type->isEnum()) {
+			castExpr = ln::String::format(u"LNRB_VALUE_TO_NUMBER({0})", varName);
+		}
+		else {
+			LN_NOTIMPLEMENTED();
+			return ln::String::Empty;
+		}
+	}
+
+	return castExpr;
+}
+
 // Flat API コールに渡す引数用変数の宣言文を作成する。(VALUE を C の型に変換する)
 ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymbol* param) const
 {
@@ -712,44 +829,39 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	auto varName = u"_" + param->name();
 
 	ln::String declExpr;
-	ln::String castExpr;
 
 	if (type->isStruct()) {
 		auto t = ln::String::format(u"{0}* tmp_{1}; Data_Get_Struct({2}, {0}, tmp_{1});", makeFlatClassName(type), varName, param->name());
 		t = t + ln::String::format(u"{0}& {1} = *tmp_{1};", makeFlatClassName(type), varName);
 		return t;
 	}
-	else if (type->isClass() || type->isDelegateObject()) {
+
+	ln::String castExpr = makeVALUEToNativeCastExpr(param, param->name());
+
+	if (type->isClass() || type->isDelegateObject()) {
 		declExpr = ln::String::format(u"LnHandle {0}", varName);
-		castExpr = ln::String::format(u"LuminoRubyRuntimeManager::instance->getHandle({0})", param->name());
 	}
 	else if (type->isEnum()) {
 		declExpr = ln::String::format(u"{0} {1}", makeFlatClassName(type), varName);
-		castExpr = ln::String::format(u"({0})FIX2INT({1})", makeFlatClassName(type), param->name());
 	}
 	else {
 		if (type == PredefinedTypes::boolType) {
 			declExpr = u"LnBool " + varName;
-			castExpr = ln::String::format(u"LNRB_VALUE_TO_BOOL({0})", param->name());
 		}
 		else if (
 			type == PredefinedTypes::intType ||
 			type == PredefinedTypes::int16Type ||
 			type == PredefinedTypes::uint32Type) {
 			declExpr = ln::String::format(u"{0} {1}", type->shortName(), varName);
-			castExpr = ln::String::format(u"LNRB_VALUE_TO_NUMBER({0})", param->name());
 		}
 		else if (type == PredefinedTypes::floatType) {
 			declExpr = ln::String::format(u"{0} {1}", type->shortName(), varName);
-			castExpr = ln::String::format(u"LNRB_VALUE_TO_FLOAT({0})", param->name());
 		}
 		else if (type->isString()) {
 			declExpr = u"const char* " + varName;
-			castExpr = ln::String::format(u"LNRB_VALUE_TO_STRING({0})", param->name());
 		}
 		else if (type->isEnum()) {
 			declExpr = ln::String::format(u"{0} {1}", type->shortName(), varName);
-			castExpr = ln::String::format(u"LNRB_VALUE_TO_NUMBER({0})", param->name());
 		}
 		else {
 			LN_NOTIMPLEMENTED();
@@ -758,7 +870,7 @@ ln::String RubyExtGenerator::makeVALUEToNativeCastDecl(const MethodParameterSymb
 	}
 
 	if (param->defaultValue()) {
-		return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, makeConstandValue(param->defaultValue()));
+		return ln::String::format(u"{0} = ({1} != Qnil) ? {2} : {3};", declExpr, param->name(), castExpr, makeConstantValue(param->defaultValue()));
 	}
 	else {
 		return ln::String::format(u"{0} = {1};", declExpr, castExpr);
@@ -776,7 +888,7 @@ ln::String RubyExtGenerator::makeNativeToVALUECastDecl(const MethodParameterSymb
     }
 }
 
-ln::String RubyExtGenerator::makeConstandValue(const ConstantSymbol* constant) const
+ln::String RubyExtGenerator::makeConstantValue(const ConstantSymbol* constant) const
 {
 	if (constant->type()->isEnum()) {
 		return ln::String::format(u"({0}){1}", makeFlatClassName(constant->type()), ln::String::fromNumber(constant->value()->get<int>()));
@@ -787,6 +899,40 @@ ln::String RubyExtGenerator::makeConstandValue(const ConstantSymbol* constant) c
 	else {
 		return ln::String::fromNumber(constant->value()->get<int>());
 	}
+}
+
+// 
+ln::String RubyExtGenerator::makeWrapFuncImplement_ProcCaller(const MethodSymbol* delegateProtoType) const
+{
+	auto wrapStructName = makeWrapStructName(delegateProtoType->ownerType());
+	auto procCallerName = makeWrapFuncName_ProcCaller(delegateProtoType->ownerType(), delegateProtoType);
+	auto procValueName = u"m_proc";
+
+	OutputBuffer argList;
+	for (auto& param : delegateProtoType->parameters()) {
+		argList.AppendCommad(makeNativeToVALUECastDecl(param));
+	}
+
+	OutputBuffer code;
+	code.AppendLine(u"static LnResult {0}({1})", procCallerName, makeFlatParamList(delegateProtoType, FlatCharset::Ascii));
+	code.AppendLine("{");
+	code.IncreaseIndent();
+	{
+		code.AppendLine("{0}* selfObj;", wrapStructName);
+		code.AppendLine("Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE({0}), {1}, selfObj);", delegateProtoType->flatThisParam()->name(), wrapStructName);
+		code.AppendLine("VALUE retval = rb_funcall(selfObj->{0}, rb_intern(\"call\"), {1}, {2});", procValueName, delegateProtoType->parameters().size(), argList.toString());
+
+		if (delegateProtoType->hasReturnType()) {
+			code.AppendLine("*outReturn = {0};", makeVALUEToNativeCastExpr(delegateProtoType->flatReturnParam(), u"retval"));
+		}
+
+		code.AppendLine("return LN_SUCCESS;	// TODO: error handling.", wrapStructName);
+	}
+	code.DecreaseIndent();
+	code.AppendLine("}");
+	code.NewLine();
+	return code.toString();
+
 }
 
 // LnWorldObject_OnUpdate_SetOverrideCallback() などに登録するコールバック関数の生成
@@ -834,6 +980,7 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SetOverrideCallback(const Typ
 	return code.toString();
 }
 
+// TODO: makeWrapFuncImplement_ProcCaller を使ってもいいかも
 ln::String RubyExtGenerator::makeWrapFuncImplement_SignalCaller(const MethodSymbol* method) const
 {
 	auto wrapStructName = makeWrapStructName(method->ownerType());

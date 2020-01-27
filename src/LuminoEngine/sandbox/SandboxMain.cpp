@@ -268,6 +268,7 @@ private:
 void Example_MessageWindow();
 void Example_Navigator();
 void Example_UIControls();
+void Example_Tilemap();
 
 int main(int argc, char** argv)
 {
@@ -282,7 +283,8 @@ int main(int argc, char** argv)
 
         //Example_MessageWindow();
         //Example_Navigator();
-        Example_UIControls();
+        //Example_UIControls();
+		Example_Tilemap();
         return 0;
     }
 
@@ -372,6 +374,7 @@ int main(int argc, char** argv)
 	//}
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
+	GameAudio::playBGM(u"D:/Materials/Music/Shade BGM素材集/BGMdata_v1.2/BGM/1_MapBGM.wav");
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
@@ -502,8 +505,8 @@ int main(int argc, char** argv)
 	//auto bloomEffect = BloomImageEffect ::create();
  //   Engine::mainViewport()->addImageEffect(bloomEffect);
 
-	auto lightShaft = LightShaftImageEffect::create();
-	Engine::mainRenderView()->addImageEffect(lightShaft);
+	//auto lightShaft = LightShaftImageEffect::create();
+	//Engine::mainRenderView()->addImageEffect(lightShaft);
 
 #if 0
     auto window1 = UIWindow::create();

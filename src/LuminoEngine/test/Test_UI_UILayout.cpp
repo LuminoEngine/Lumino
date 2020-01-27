@@ -33,7 +33,7 @@ TEST_F(Test_UI_UILayout, Basic)
         //parent1->setLayoutPanel(UIStackLayout_Obsolete::create());
 		Engine::mainUIView()->addElement(parent1);
 
-        auto layout1 = makeObject<UIStackLayout2>();
+        auto layout1 = makeObject<UIStackLayout2_Obsolete>();
         parent1->addElement(layout1);
         
         auto child1 = makeObject<UIElement>();
@@ -182,7 +182,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 {
 	UIControl* uiRoot = Engine::mainUIView();
 
-	auto l1 = UIStackLayout2::create();
+	auto l1 = UIStackLayout2_Obsolete::create();
 	//uiRoot->setLayoutPanel(l1);
     Engine::mainUIView()->addElement(l1);
 
@@ -224,7 +224,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 	//- [ ] Horizontal
 	{
 
-		auto layout = UIStackLayout2::create();
+		auto layout = UIStackLayout2_Obsolete::create();
 		layout->setOrientation(Orientation::Horizontal);
 		uiRoot->setLayoutPanel(layout);
 
@@ -234,7 +234,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	//- [ ] ReverseVertical
 	{
-		auto layout = UIStackLayout2::create();
+		auto layout = UIStackLayout2_Obsolete::create();
 		layout->setOrientation(Orientation::ReverseVertical);
 		uiRoot->setLayoutPanel(layout);
 
@@ -245,7 +245,7 @@ TEST_F(Test_UI_UILayout, StackLayout)
 
 	//- [ ] ReverseHorizontal
 	{
-		auto layout = UIStackLayout2::create();
+		auto layout = UIStackLayout2_Obsolete::create();
 		layout->setOrientation(Orientation::ReverseHorizontal);
 		uiRoot->setLayoutPanel(layout);
 
@@ -254,6 +254,128 @@ TEST_F(Test_UI_UILayout, StackLayout)
 	}
 
     uiRoot->setLayoutPanel(nullptr);
+#endif
+
+	LN_TEST_CLEAN_SCENE;
+}
+
+TEST_F(Test_UI_UILayout, BoxLayout)
+{
+	UIControl* uiRoot = Engine::mainUIView();
+
+	// Horizontal
+	{
+		auto l1 = makeObject<UIBoxLayout3>();
+		l1->setOrientation(Orientation::Horizontal);
+		Engine::mainUIView()->addElement(l1);
+
+		auto e1 = makeObject<UIElement>();
+		e1->setBackgroundColor(Color::Red);
+		e1->setHorizontalAlignment(HAlignment::Stretch);
+		e1->setVerticalAlignment(VAlignment::Stretch);
+		l1->addChild(e1);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setBackgroundColor(Color::Green);
+		e2->setHorizontalAlignment(HAlignment::Stretch);
+		e2->setVerticalAlignment(VAlignment::Stretch);
+		l1->addChild(e2);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/BoxLayout-1.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+
+	// Vertical
+	{
+		auto l1 = makeObject<UIBoxLayout3>();
+		l1->setOrientation(Orientation::Vertical);
+		Engine::mainUIView()->addElement(l1);
+
+		auto e1 = makeObject<UIElement>();
+		e1->setBackgroundColor(Color::Red);
+		e1->setHorizontalAlignment(HAlignment::Stretch);
+		e1->setVerticalAlignment(VAlignment::Stretch);
+		l1->addChild(e1);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setBackgroundColor(Color::Green);
+		e2->setHorizontalAlignment(HAlignment::Stretch);
+		e2->setVerticalAlignment(VAlignment::Stretch);
+		l1->addChild(e2);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/BoxLayout-2.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+
+	// Horizontal -> Vertical
+	{
+		auto l1 = makeObject<UIBoxLayout3>();
+		l1->setOrientation(Orientation::Horizontal);
+		Engine::mainUIView()->addElement(l1);
+
+		auto e1 = makeObject<UIElement>();
+		e1->setBackgroundColor(Color::Red);
+		e1->setHorizontalAlignment(HAlignment::Stretch);
+		e1->setVerticalAlignment(VAlignment::Stretch);
+		l1->addChild(e1);
+
+		auto l2 = makeObject<UIBoxLayout3>();
+		l2->setOrientation(Orientation::Vertical);
+		l1->addChild(l2);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setBackgroundColor(Color::Green);
+		e2->setHorizontalAlignment(HAlignment::Stretch);
+		e2->setVerticalAlignment(VAlignment::Stretch);
+		l2->addChild(e2);
+
+		auto e3 = makeObject<UIElement>();
+		e3->setBackgroundColor(Color::Blue);
+		e3->setHorizontalAlignment(HAlignment::Stretch);
+		e3->setVerticalAlignment(VAlignment::Stretch);
+		l2->addChild(e3);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/BoxLayout-3.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+
+#if 0 // TODO:
+	//- [ ] Horizontal
+	{
+
+		auto layout = UIStackLayout2_Obsolete::create();
+		layout->setOrientation(Orientation::Horizontal);
+		uiRoot->setLayoutPanel(layout);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-2.png"));
+	}
+
+	//- [ ] ReverseVertical
+	{
+		auto layout = UIStackLayout2_Obsolete::create();
+		layout->setOrientation(Orientation::ReverseVertical);
+		uiRoot->setLayoutPanel(layout);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-3.png"));
+		Engine::mainUIView()->removeElement(layout);
+	}
+
+	//- [ ] ReverseHorizontal
+	{
+		auto layout = UIStackLayout2_Obsolete::create();
+		layout->setOrientation(Orientation::ReverseHorizontal);
+		uiRoot->setLayoutPanel(layout);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Result/Test_UI_UILayout-StackLayout-4.png"));
+	}
+
+	uiRoot->setLayoutPanel(nullptr);
 #endif
 
 	LN_TEST_CLEAN_SCENE;

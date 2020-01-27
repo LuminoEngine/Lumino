@@ -159,7 +159,27 @@ protected:
 	}
 };
 
+class PITemplateArgument : public ln::RefObject
+{
+public:
+	ln::String paramName;
+	ln::String typeRawName;
+	bool isConst = false;
+	bool isPointer = false;
+
+protected:
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(ln::Archive& ar)
+	{
+		ar & LN_NVP(paramName);
+		ar & LN_NVP(typeRawName);
+		ar & LN_NVP(isConst);
+		ar & LN_NVP(isPointer);
+	}
+};
+
 // 型情報 (struct, class, enum)
+// template についてはインスタンス化されたもののみ扱う
 class PITypeInfo : public ln::RefObject
 {
 public:
@@ -168,9 +188,12 @@ public:
 	ln::String baseClassRawName;
     Ref<PIDocument> document;
     Ref<PIMetadata> metadata;
+	Ref<PIMethod> delegateProtoType;
+	ln::List<Ref<PITemplateArgument>> templateArguments;
 	ln::List<Ref<PIField>> fields;
 	ln::List<Ref<PIConstant>> constants;
 	ln::List<Ref<PIMethod>> methods;
+	
 
 protected:
 	LN_SERIALIZE_CLASS_VERSION(1);
@@ -181,6 +204,8 @@ protected:
 		ar & LN_NVP(baseClassRawName);
 		ar & LN_NVP(document);
 		ar & LN_NVP(metadata);
+		ar & LN_NVP(delegateProtoType);
+		ar & LN_NVP(templateArguments);
 		ar & LN_NVP(fields);
 		ar & LN_NVP(constants);
 		ar & LN_NVP(methods);

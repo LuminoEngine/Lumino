@@ -1,5 +1,5 @@
 ﻿
-#include "AssetEditor.hpp"
+#include "AssetEditorModel.hpp"
 
 namespace lna {
 
@@ -7,7 +7,7 @@ namespace lna {
 //==============================================================================
 // AssetEditor
 
-AssetEditor::AssetEditor()
+AssetEditorModel::AssetEditorModel()
 {
 }
 

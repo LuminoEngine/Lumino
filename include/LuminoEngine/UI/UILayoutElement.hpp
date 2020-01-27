@@ -374,10 +374,12 @@ public:
 		for (int i = 0; i < elements->size(); i++)
 		{
 			auto& child = elements->at(i);
-			child->measureLayout(layoutContext, constraint);
-			const Size& desiredSize = child->desiredSize();
-			childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
-			childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+			if (layoutContext->testLayoutEnabled(child)) {
+				child->measureLayout(layoutContext, constraint);
+				const Size& desiredSize = child->desiredSize();
+				childMaxSize.width = std::max(childMaxSize.width, desiredSize.width);
+				childMaxSize.height = std::max(childMaxSize.height, desiredSize.height);
+			}
 		}
 		return childMaxSize;
 	}
@@ -388,11 +390,13 @@ public:
 		for (int i = 0; i < elements->size(); i++)
 		{
 			auto& child = elements->at(i);
+			if (layoutContext->testLayoutEnabled(child)) {
 
-			Rect slotRect;
-			detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
+				Rect slotRect;
+				detail::LayoutHelper::adjustAlignment(finalArea, child->desiredSize(), ownerElement->m_finalStyle->horizontalContentAlignment, ownerElement->m_finalStyle->verticalContentAlignment, &slotRect);
 
-			child->arrangeLayout(layoutContext, slotRect);
+				child->arrangeLayout(layoutContext, slotRect);
+			}
 		}
 		return finalArea.getSize();
 	}

@@ -16,11 +16,7 @@ namespace ln {
 //==============================================================================
 // World
 
-LN_OBJECT_IMPLEMENT(World, Object)
-{
-    context->registerType<World>({/*
-        makeRef<PropertyInfo>("TimeScale", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(World, float, timeScale, setTimeScale)),*/ });
-}
+LN_OBJECT_IMPLEMENT(World, Object) {}
 
 World::World()
 	: m_masterScene(makeObject<Scene>())

@@ -38,6 +38,7 @@ class EngineDomain
 {
 public:
 	static void release();
+	static EngineContext* engineContext();
 	static RuntimeManager* runtimeManager();
 	static EngineManager* engineManager();
 	static PlatformManager* platformManager();
@@ -55,13 +56,12 @@ public:
     static VisualManager* visualManager();
     static SceneManager* sceneManager();
 	static UIManager* uiManager();
-    static EngineContext* engineContext();
 
     static World* mainWorld();
 	
 	template<class T>
 	static void registerType() {
-		T::_lnref_registerTypeInfo(engineContext());
+		T::_lnref_registerTypeInfo();
 	}
 };
 

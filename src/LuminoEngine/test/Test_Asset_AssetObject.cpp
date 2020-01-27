@@ -15,10 +15,7 @@ public:
     int m_value;
 };
 
-LN_OBJECT_IMPLEMENT(Test_Asset_AssetObject_Test, SpriteFrame)
-{
-    context->registerType<Test_Asset_AssetObject_Test>({});
-}
+LN_OBJECT_IMPLEMENT(Test_Asset_AssetObject_Test, SpriteFrame) {}
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Asset_AssetObject, Basic)

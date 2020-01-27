@@ -2,7 +2,7 @@
 #include <LuminoEditor/Plugin.hpp>
 #include "../App/ToolPanesArea.hpp"
 #include "../App/NavigatorManager.hpp"
-#include "../AssetEditor/AssetEditor.hpp"
+#include "../AssetEditor/AssetEditorModel.hpp"
 
 
 namespace lna {
@@ -11,7 +11,7 @@ class TilemapSceneEditorModel;
 class TilemapSceneModePane;
 
 class TilemapSceneEditor
-    : public lna::AssetEditor
+    : public lna::AssetEditorModel
 {
 public:
     ln::Result init();
@@ -52,29 +52,6 @@ private:
 
     // Editing
     ln::List<ln::WorldObject*> m_selectedObjects;
-};
-
-class TilemapSceneEditorPloxy
-    : public ln::AssetEditorPloxy
-{
-public:
-    virtual ln::String targetTypeName() override { return u"Scene"; }
-    virtual Ref<lna::AssetEditor> createEditor() override;
-};
-
-class TilemapSceneEditorExtensionModule
-    : public ln::Object
-    , public ln::IPluginModule
-{
-public:
-    virtual const ln::Char* moduleId() const override { return u"2E276188-3034-4C29-BE7E-15FB30C5515A"; }
-    virtual const ln::Char* moduleDisplayName() const override { return u"TilemapSceneEditorExtensionModule"; }
-    virtual void onActivate(lna::EditorContext* context) override;
-    virtual void onDeactivate(lna::EditorContext* context) override;
-
-private:
-    Ref<TilemapSceneNavigator> m_navigator;
-    Ref<TilemapSceneEditorPloxy> m_editorPloxy;
 };
 
 } // namespace lna 

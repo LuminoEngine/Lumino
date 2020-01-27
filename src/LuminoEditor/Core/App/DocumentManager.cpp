@@ -1,6 +1,6 @@
 ﻿
 #include <LuminoEditor/Plugin.hpp>
-#include "AssetEditor/AssetEditor.hpp"
+#include "AssetEditor/AssetEditorModel.hpp"
 #include "StartupView.hpp"
 #include "ToolPanesArea.hpp"
 #include "DocumentManager.hpp"
@@ -55,9 +55,10 @@ ln::Result DocumentManager::init()
     m_documentTabBar = ln::makeObject<ln::UITabBar>();
     m_documentTabBar->setVerticalAlignment(ln::VAlignment::Top);
     m_documentTabBar->connectOnSelectionChanged(ln::bind(this, &DocumentManager::documentTabBar_SelectionChanged));
-    //m_documentTabBar->setBackgroundColor(ln::Color::Azure);
+    m_documentTabBar->setBackgroundColor(ln::Color::Azure);
     //m_documentTabBar->setHeight(30);
     //m_documentTabBar->setVisibility(ln::UIVisibility::Collapsed);
+	m_documentTabBar->getGridLayoutInfo()->layoutWeight = 0;	// 'auto'
     m_mainLayout->addChild(m_documentTabBar);
 
     m_switchLayout = ln::makeObject<ln::UISwitchLayout>();
@@ -169,7 +170,7 @@ AssetEditorDocument::AssetEditorDocument()
 {
 }
 
-ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditor* editorModel)
+ln::Result AssetEditorDocument::init(ln::AssetModel* asset, lna::AssetEditorModel* editorModel)
 {
     if (!Document::init()) return false;
     m_asset = asset;

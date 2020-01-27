@@ -3,7 +3,7 @@
 
 namespace lna {
 
-AppData* AppData::instance()
+AppData* AppData::current()
 {
     static AppData inst;
     return &inst;

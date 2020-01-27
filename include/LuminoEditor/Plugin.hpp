@@ -2,7 +2,7 @@
 
 namespace lna {
 class EditorContext;
-class AssetEditor;
+class AssetEditorModel;
 }
 
 namespace ln {
@@ -98,15 +98,16 @@ public:
     /** この DocumentEditor が編集対象とするオブジェクトの種別。asset ファイルに埋め込まれる種類。 */
     virtual const Char* typeKeyword() const = 0;
 
-    virtual Ref<lna::AssetEditor> createEditor() = 0;
+    virtual Ref<lna::AssetEditorModel> createEditor() = 0;
 };
 
-
-class AssetEditorPloxy : public ln::Object
+// 型名と、それを編集するための AssetEditorModel を生成するファクトリ
+class AssetEditorModelFactory
+	: public ln::Object
 {
 public:
     virtual ln::String targetTypeName() = 0;
-    virtual Ref<lna::AssetEditor> createEditor() = 0;
+    virtual Ref<lna::AssetEditorModel> createAssetEditorModel() = 0;
 };
 
 

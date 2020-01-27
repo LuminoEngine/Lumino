@@ -127,11 +127,15 @@ public:
 
     virtual String getDisplayName() const override;
 
-    LN_PROTECTED_INTERNAL_ACCESS : KeyGesture(Keys key, ModifierKeys modifierKeys);
+LN_PROTECTED_INTERNAL_ACCESS:
+	KeyGesture();
     virtual ~KeyGesture();
+	void init();
+	void init(Keys key, ModifierKeys modifierKeys);
     virtual detail::InputBindingType getType() const override;
 
-    LN_INTERNAL_ACCESS : void setKey(Keys key) { m_key = key; }
+LN_INTERNAL_ACCESS:
+	void setKey(Keys key) { m_key = key; }
 
 private:
     Keys m_key;
@@ -163,11 +167,15 @@ public:
 
     virtual String getDisplayName() const override;
 
-    LN_PROTECTED_INTERNAL_ACCESS : MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys);
+LN_PROTECTED_INTERNAL_ACCESS:
+	MouseGesture();
     virtual ~MouseGesture();
+	void init();
+	void init(MouseAction mouseAction, ModifierKeys modifierKeys);
     virtual detail::InputBindingType getType() const override;
 
-    LN_INTERNAL_ACCESS : void setMouseAction(MouseAction mouseAction) { m_mouseAction = mouseAction; }
+LN_INTERNAL_ACCESS:
+	void setMouseAction(MouseAction mouseAction) { m_mouseAction = mouseAction; }
 
 private:
     MouseAction m_mouseAction;
@@ -195,11 +203,15 @@ public:
 
     virtual String getDisplayName() const override;
 
-    LN_PROTECTED_INTERNAL_ACCESS : GamepadGesture(GamepadElement element);
+LN_PROTECTED_INTERNAL_ACCESS:
+	GamepadGesture();
     virtual ~GamepadGesture();
+	void init();
+	void init(GamepadElement element);
     virtual detail::InputBindingType getType() const override;
 
-    LN_INTERNAL_ACCESS : void setGamepadNumber(int number) { m_padNumber = number; }
+LN_INTERNAL_ACCESS:
+	void setGamepadNumber(int number) { m_padNumber = number; }
     int getGamepadNumber() const { return m_padNumber; }
     void setElement(GamepadElement element) { m_element = element; }
 

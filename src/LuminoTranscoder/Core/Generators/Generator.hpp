@@ -87,6 +87,8 @@ public:
 	ln::String makeFuncHeader(const MethodSymbol* methodInfo, FlatCharset charset) const;	// e.g) -> "LN_FLAT_API LnResult LnWorldObject_Seteulerangles(LnHandle worldobject, float x, float y, float z)"
 	ln::String makeFlatCParamQualTypeName(const MethodSymbol* methodInfo, const MethodParameterSymbol* paramInfo, FlatCharset charset) const;
 	ln::String makeFlatCharTypeName(FlatCharset charset) const;
+	ln::String makeFlatParamList(const MethodSymbol* method, FlatCharset charset) const;	// e.g) -> "int p1, int p2, int* outReturn"
+	ln::String makeFlatArgList(const MethodSymbol* method) const;
 
 private:
 	SymbolDatabase* m_database;
