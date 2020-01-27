@@ -1,18 +1,23 @@
+Web document
+==========
+
 This is the DocFX source for the Lumino website.
 
+Available commands
+----------
 
+### Build
 
-Note:
-
-Build
 ```
 docfx build
 ```
 
-Preview
+### Preview
+
 ```
 docfx --serve
 ```
+
 http://localhost:8080
 
 DocFX の markdown 拡張
