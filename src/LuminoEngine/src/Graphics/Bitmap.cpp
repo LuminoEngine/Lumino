@@ -431,6 +431,11 @@ void Bitmap2D::save(const StringRef& filePath)
     detail::IBitmapEncoder::save(file, m_buffer->data(), m_size, m_format);
 }
 
+Ref<Bitmap2D> Bitmap2D::clone() const
+{
+	return makeObject<Bitmap2D>(m_size.width, m_size.height, m_format, m_buffer->data());
+}
+
 Ref<Bitmap2D> Bitmap2D::transcodeTo(PixelFormat format, const ColorI& color) const
 {
 	auto dstBitmap = makeObject<Bitmap2D>(m_size.width, m_size.height, format);

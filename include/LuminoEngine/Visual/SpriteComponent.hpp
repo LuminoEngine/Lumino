@@ -141,7 +141,7 @@ public:
 	//static void registerType(EngineContext* context);
 
 protected:
-    void onRender(RenderingContext* context);
+    void onRender(RenderingContext* context) override;
 
     LN_SERIALIZE_CLASS_VERSION(1);
     virtual void serialize(Archive& ar) override;

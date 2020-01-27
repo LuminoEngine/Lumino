@@ -34,6 +34,7 @@
 #include <LuminoEngine/Scene/TransformControls.hpp>
 #include <LuminoEngine/ImageEffect/LightShaftImageEffect.hpp>
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
+#include <LuminoEngine/Visual/EmojiComponent.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -374,7 +375,6 @@ int main(int argc, char** argv)
 	//}
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
-	GameAudio::playBGM(u"D:/Materials/Music/Shade BGM素材集/BGMdata_v1.2/BGM/1_MapBGM.wav");
 
     Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
@@ -507,6 +507,20 @@ int main(int argc, char** argv)
 
 	//auto lightShaft = LightShaftImageEffect::create();
 	//Engine::mainRenderView()->addImageEffect(lightShaft);
+
+	{
+		auto t = Texture2D::loadEmoji(u"x");
+		auto s = Sprite::create(t, 1, 1);
+		//s->setBlendMode(BlendMode::Normal);
+		s->setShadingModel(ShadingModel::UnLighting);
+		Engine::world()->add(s);
+
+		//auto c = makeObject<EmojiComponent>();
+		//auto obj = makeObject<WorldObject>();
+		//obj->addComponent(c);
+		//c->setShadingModel(ShadingModel::UnLighting);
+		//Engine::world()->add(obj);
+	}
 
 #if 0
     auto window1 = UIWindow::create();

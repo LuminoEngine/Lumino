@@ -40,7 +40,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	Component();
 	virtual ~Component();
-	void init();
+	bool init();
 
 public:
     WorldObject* m_object;

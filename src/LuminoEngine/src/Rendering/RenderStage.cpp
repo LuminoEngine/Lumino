@@ -42,7 +42,7 @@ void RenderDrawElement::fixFlags(RenderDrawElementTypeFlags additionalElementFla
 	m_flags = RenderDrawElementTypeFlags::None;
 
 	auto* material = m_stage->getMaterialFinal(nullptr, nullptr);
-	if (!material) {
+	if (material) {
 		BlendMode blendMode = m_stage->getBlendModeFinal(material);
 		if (blendMode == BlendMode::Normal)
 			m_flags |= RenderDrawElementTypeFlags::Opaque;
@@ -59,10 +59,10 @@ void RenderDrawElement::fixFlags(RenderDrawElementTypeFlags additionalElementFla
 void RenderDrawElement::calculateActualPriority()
 {
 	uint64_t base = 0;
-	if (m_flags.hasFlag(RenderDrawElementTypeFlags::Opaque))
-		base |= 2000;
-	else if (m_flags.hasFlag(RenderDrawElementTypeFlags::BackgroundSky))
+	if (m_flags.hasFlag(RenderDrawElementTypeFlags::BackgroundSky))
 		base |= 3000;
+	else if (m_flags.hasFlag(RenderDrawElementTypeFlags::Opaque))
+		base |= 2000;
 	else if (m_flags.hasFlag(RenderDrawElementTypeFlags::Transparent))
 		base |= 4000;
 

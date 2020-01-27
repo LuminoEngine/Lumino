@@ -83,12 +83,27 @@ Ref<Texture2D> Texture2D::load(const StringRef& filePath)
     auto path = assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
     if (path) {
         auto stream = assetManager->openStreamFromAssetPath(*path);
-        return makeObject<Texture2D>(stream, TextureFormat::RGBA8);
+        return makeObject<Texture2D>(stream, TextureFormat::RGBA8);	// TODO: format
     }
     else {
         LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
         return nullptr;
     }
+}
+
+Ref<Texture2D> Texture2D::loadEmoji(StringRef emoji)
+{
+	Font::registerFontFromFile(u"D:/Proj/LN/noto-emoji/fonts/NotoColorEmoji.ttf");
+	auto font1 = Font::create(u"Noto Color Emoji", 20);
+	//auto font1 = Font::create(u"Arial", 20);
+	auto core = detail::FontHelper::resolveFontCore(font1, 1.0f);
+
+	detail::BitmapGlyphInfo info;
+	info.loadColor = true;
+	core->lookupGlyphBitmap(U'👍', &info);
+
+	return makeObject<Texture2D>(info.glyphBitmap->clone(), GraphicsHelper::translateToTextureFormat(info.glyphBitmap->format()));
+	
 }
 
 Texture2D* Texture2D::blackTexture()

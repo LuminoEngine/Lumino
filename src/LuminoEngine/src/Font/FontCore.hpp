@@ -58,6 +58,8 @@ struct BitmapGlyphInfo
 	//RawBitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
 	//int				OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。
 	SizeI size;	// [out] glyphBitmap に書き込まれた bitmap のピクセルサイズ。左上詰めで blit される。
+
+	bool loadColor = false;	// in
 };
 
 struct VectorGlyphInfo
