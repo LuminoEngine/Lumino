@@ -235,6 +235,8 @@ void EngineManager::init(const EngineSettings& settings)
 
 void EngineManager::dispose()
 {
+	LN_LOG_DEBUG << "EngineManager finalization started.";
+
     if (m_uiManager) {
         m_uiManager->setPrimaryElement(nullptr);
         m_uiManager->setMainContext(nullptr);
@@ -327,6 +329,8 @@ void EngineManager::dispose()
         m_comInitialized = false;
     }
 #endif
+
+	LN_LOG_DEBUG << "EngineManager finalization ended.";
 }
 
 void EngineManager::initializeAllManagers()

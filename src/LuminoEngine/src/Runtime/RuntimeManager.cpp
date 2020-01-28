@@ -55,7 +55,7 @@ void RuntimeManager::init(const Settings& settings)
 
 void RuntimeManager::dispose()
 {
-	LN_LOG_DEBUG << "RuntimeManager Initialization started.";
+	LN_LOG_DEBUG << "RuntimeManager finalization started.";
 
 	for (auto& e : m_objectEntryList) {
 		if (e.object) {
@@ -74,7 +74,7 @@ void RuntimeManager::dispose()
         m_settings.runtimeFinalizedCallback = nullptr;
     }
 
-	LN_LOG_DEBUG << "RuntimeManager Initialization finished.";
+	LN_LOG_DEBUG << "RuntimeManager finalization finished.";
 }
 
 LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)

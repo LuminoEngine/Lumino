@@ -322,6 +322,7 @@ void LuminoRubyRuntimeManager::handleRuntimeFinalized()
     if (instance) {
         instance->m_runtimeAliving = false;
     }
+    LNRB_LOG_D("Runtime finalized.");
 }
 
 void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle)

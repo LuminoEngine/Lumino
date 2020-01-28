@@ -45,6 +45,8 @@ void EngineContext::initializeEngineManager()
 {
 	initializeRuntimeManager();
 
+	printf("EngineContext::initializeEngineManager()\n");
+
 	if (!m_engineManager) {
 		m_engineManager = makeRef<detail::EngineManager>();
 		m_engineManager->init(detail::EngineManager::s_settings);

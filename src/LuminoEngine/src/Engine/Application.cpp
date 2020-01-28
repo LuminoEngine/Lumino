@@ -76,7 +76,7 @@ void Application::onRoutedEvent(UIEventArgs* e)
 
 void Application::initInternal()
 {
-	detail::EngineDomain::engineManager()->init(detail::EngineManager::s_settings);
+	EngineContext::current()->initializeEngineManager();
 	onInit();
 	onStart();
 }
