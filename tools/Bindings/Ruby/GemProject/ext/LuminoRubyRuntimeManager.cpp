@@ -270,7 +270,6 @@ static VALUE g_LuminoRubyRuntimeManager;
 static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj)
 {
     if (obj) {
-        LnEngine_Finalize();
         delete obj;
         LuminoRubyRuntimeManager::instance = nullptr;
     }

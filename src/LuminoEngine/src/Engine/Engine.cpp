@@ -134,10 +134,12 @@ void Engine::initialize()
 void Engine::finalize()
 {
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
-    if (manager->settings2().externalMainLoop) {
-        endFrame();
-    }
-	detail::EngineDomain::engineContext()->disposeEngineManager();
+	if (manager) {
+		if (manager->settings2().externalMainLoop) {
+			endFrame();
+		}
+		detail::EngineDomain::engineContext()->disposeEngineManager();
+	}
 }
 
 bool Engine::update()
