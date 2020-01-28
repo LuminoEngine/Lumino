@@ -275,12 +275,17 @@ int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+	GlobalLogger::addStdErrAdapter();
+	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
+	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
+
     if (0) {
-        GlobalLogger::addStdErrAdapter();
-        EngineSettings::setEngineFeatures(EngineFeature::Experimental);
-        EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
-        EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-        detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
         //Example_MessageWindow();
         //Example_Navigator();
@@ -337,14 +342,6 @@ int main(int argc, char** argv)
 	//	}
 	//}
 
-#ifdef _WIN32
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-	GlobalLogger::addStdErrAdapter();
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
-	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
 	//return UISandboxMain();
 
@@ -471,10 +468,10 @@ int main(int argc, char** argv)
     //auto mainAmbientLight = makeObject<AmbientLight>();
     //mainAmbientLight->setColor(Color::Purple);
     //Engine::world()->add(mainAmbientLight);
-    Engine::world()->mainAmbientLight()->setColor(Color::Purple);
-    Engine::world()->mainAmbientLight()->setIntensity(1);
-    Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -0.25, -1));
-    Engine::world()->mainDirectionalLight()->setIntensity(5);
+    //Engine::world()->mainAmbientLight()->setColor(Color::Purple);
+    //Engine::world()->mainAmbientLight()->setIntensity(1);
+    //Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -0.25, -1));
+    //Engine::world()->mainDirectionalLight()->setIntensity(5);
 
     //auto mainDirectionalLight = makeObject<DirectionalLight>();
     //Engine::world()->add(mainDirectionalLight);
@@ -508,7 +505,7 @@ int main(int argc, char** argv)
 	//auto lightShaft = LightShaftImageEffect::create();
 	//Engine::mainRenderView()->addImageEffect(lightShaft);
 
-#if 0
+#if 1
 	{
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
@@ -519,7 +516,7 @@ int main(int argc, char** argv)
 
 		auto s = Sprite::create(t, 1, 1);
 		//s->setBlendMode(BlendMode::Normal);
-		s->setShadingModel(ShadingModel::UnLighting);
+		//s->setShadingModel(ShadingModel::UnLighting);
 		Engine::world()->add(s);
 
 		//auto c = makeObject<EmojiComponent>();

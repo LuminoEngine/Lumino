@@ -160,6 +160,8 @@ void LuminoRubyRuntimeManager::init()
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retain)
 {
+    if (handle == LN_NULL_HANDLE) return Qnil;
+
     int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
     int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
 

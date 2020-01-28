@@ -581,9 +581,9 @@ LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outRetu
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
 
 /**
-    @brief メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等)
+    @brief メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等)
 */
-LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
+LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height);
 
 /**
     @brief メインウィンドウのタイトル文字列を設定します。

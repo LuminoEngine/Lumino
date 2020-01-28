@@ -106,7 +106,9 @@ Ref<Texture2D> Texture2D::loadEmoji(StringRef code)
 // Bitmap として取得する場合は常に同じサイズとなる。
 Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
 {
+	printf("Texture2D::loadEmoji %u\n", codePoint);
 	Font* font = detail::EngineDomain::fontManager()->emojiFont();
+	printf("Texture2D::loadEmoji font:%p\n", font);
 	if (font) {
 		detail::FontCore* core = detail::FontHelper::resolveFontCore(font, 1.0f);
 
@@ -118,6 +120,7 @@ Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
 		return makeObject<Texture2D>(info.glyphBitmap->clone(), GraphicsHelper::translateToTextureFormat(info.glyphBitmap->format()));
 	}
 	else {
+		LN_WARNING(u"Emoji font not loaded.\n");
 		return nullptr;
 	}
 }

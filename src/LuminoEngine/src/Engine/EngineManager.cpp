@@ -120,12 +120,12 @@ void EngineManager::init()
         m_persistentDataPath = u""; // TODO:
 #endif
 		if (!m_settings.engineResourcesPath.isEmpty()) {
-			m_engineAssetsPath = m_settings.engineResourcesPath;
+			m_engineAssetsPath = Path(m_settings.engineResourcesPath).canonicalize();
 		}
 
 		if (m_engineAssetsPath.isEmpty()) {
 			auto repo = ln::detail::EngineManager::findRepositoryRootForTesting();
-			m_engineAssetsPath = Path::combine(repo, u"tools", u"EngineAssets");
+			m_engineAssetsPath = Path::combine(repo, u"tools", u"EngineResources");
 		}
 
 		LN_LOG_DEBUG << "EngineAssetsPath: " << m_engineAssetsPath;
@@ -182,6 +182,18 @@ void EngineManager::init()
 
             m_mainCamera = makeObject<Camera>();
             m_mainWorld->add(m_mainCamera);
+
+			if (m_settings.createMainLights) {
+
+
+				auto mainAmbientLight = makeObject<AmbientLight>();
+				m_mainWorld->add(mainAmbientLight);
+				m_mainWorld->setMainAmbientLight(mainAmbientLight);
+
+				auto mainDirectionalLight = makeObject<DirectionalLight>();
+				m_mainWorld->add(mainDirectionalLight);
+				m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
+			}
 
             m_mainWorldRenderView = makeObject<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);

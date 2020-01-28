@@ -534,8 +534,10 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* s
 	
 
 		// TODO: Test
-		v = shader->findParameter(u"ln_MainLightDirection");
-		if (v) v->setVector(Vector4(mainLightInfo()->m_direction, 0.0f));
+		if (mainLightInfo()) {
+			v = shader->findParameter(u"ln_MainLightDirection");
+			if (v) v->setVector(Vector4(mainLightInfo()->m_direction, 0.0f));
+		}
 	}
 
 	// TODO: Test

@@ -760,11 +760,11 @@ class Lumino::EngineSettings
 
 
 
-    # メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等)
+    # メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等)
     # @param [Integer] width 
     # @param [Integer] height 
     # 
-    def set_main_back_buffer_size(*args)
+    def set_main_world_view_size(*args)
     end
 
 

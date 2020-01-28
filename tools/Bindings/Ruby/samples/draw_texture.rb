@@ -7,11 +7,11 @@ class App < Application
     def on_init
         p "🐈"
         texture = Texture2D.load_emoji("🐈")
+        p "fshgf"
         
-        @sprite1 = Sprite.new(@texture1, 2, 2)
-        @sprite1.texture = @texture1;
+        sprite1 = Sprite.new(texture, 2, 2)
 
-        Engine.world.add(@sprite1)
+        Engine.world.add(sprite1)
     end
 
     def on_update

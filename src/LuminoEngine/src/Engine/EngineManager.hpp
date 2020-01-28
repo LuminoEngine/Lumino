@@ -68,6 +68,7 @@ struct EngineSettings
 
     intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;
+	bool createMainLights = false;
 	int frameRate = 60;
 	bool debugToolEnabled = false;
 

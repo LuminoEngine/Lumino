@@ -1598,10 +1598,10 @@ LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
 }
 
 
-LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height)
+LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height)
 {
     LNI_FUNC_TRY_BEGIN;
-    //(ln::EngineSettings::setMainBackBufferSize(width, height));
+    (ln::EngineSettings::setMainWorldViewSize(width, height));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1858,6 +1858,7 @@ LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outRetu
 
 LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn)
 {
+	printf("LnTexture2D_LoadEmojiA\n");
     LNI_FUNC_TRY_BEGIN;
     *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
     LNI_FUNC_TRY_END_RETURN;

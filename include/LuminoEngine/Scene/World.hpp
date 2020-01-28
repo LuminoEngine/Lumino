@@ -40,7 +40,10 @@ public:
     void setTimeScale(float value) { m_timeScale = value; }
     float timeScale() const { return m_timeScale; }
 
+	void setMainAmbientLight(AmbientLight* value);
     const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
+
+	void setMainDirectionalLight(DirectionalLight* value);
     const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
 
 

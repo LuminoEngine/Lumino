@@ -17,10 +17,10 @@ Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
   FileUtils.cp(lib, to)
   p "Lib copy (" + lib + ", " + to + ")"
 
-  # copy assets
-  noto_emoji = File.expand_path("../../../../../tools/EngineAssets", __FILE__)
-  FileUtils.cp_r(noto_emoji, "ext")
-  p "Copied EngineAssets."
+  # copy resources
+  resources = File.expand_path("../../../../../tools/EngineResources", __FILE__)
+  FileUtils.cp_r(resources, "ext")
+  p "Copied EngineResources."
 
   ext.lib_dir = "lib/lumino"
 end
