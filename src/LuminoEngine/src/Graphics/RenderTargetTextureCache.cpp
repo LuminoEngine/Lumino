@@ -177,7 +177,7 @@ void DepthBufferCacheManager::releaseObject(DepthBuffer* rt)
 	releaseBase(key, rt);
 }
 
-uint16_t DepthBufferCacheManager::makeKey(const SizeI& size)
+uint64_t DepthBufferCacheManager::makeKey(const SizeI& size)
 {
 	uint64_t w = (uint64_t)size.width;
 	uint64_t h = (uint64_t)size.height;

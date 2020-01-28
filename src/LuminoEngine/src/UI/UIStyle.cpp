@@ -1323,12 +1323,7 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 				for (auto& group : m_groups) {
 					if (group.activeStateIndex >= 0) {
 						if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
-
-							//if (group.stateNames[group.activeStateIndex] == u"Pressed") {
-							//	std::cout << group.stateNames[group.activeStateIndex] << std::endl;
-							//}
 							style->mergeFrom(stateStyle);
-
 						}
 					}
 				}
@@ -1346,12 +1341,7 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 				for (auto& group : m_groups) {
 					if (group.activeStateIndex >= 0) {
 						if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
-
-							//if (group.stateNames[group.activeStateIndex] == u"Pressed") {
-							//	std::cout << group.stateNames[group.activeStateIndex] << std::endl;
-							//}
 							style->mergeFrom(stateStyle);
-
 						}
 					}
 				}

@@ -211,11 +211,6 @@ void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion*
     {
 		matrixesBuffer[i] = m_allBoneList[i]->m_data->getInitialTranstormInv() * m_allBoneList[i]->getCombinedMatrix();
         localQuaternionsBuffer[i] = Quaternion::makeFromRotationMatrix(matrixesBuffer[i]);
-
-
-        //if (abs(matrixesBuffer[i].position().z) >= 5) {
-        //    printf("a");
-        //}
     }
 }
 

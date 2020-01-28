@@ -1601,7 +1601,7 @@ LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
 LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainBackBufferSize(width, height));
+    //(ln::EngineSettings::setMainBackBufferSize(width, height));
     LNI_FUNC_TRY_END_RETURN;
 }
 

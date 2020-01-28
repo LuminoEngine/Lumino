@@ -63,7 +63,7 @@ public:
 	void releaseObject(DepthBuffer* rt);
 
 private:
-	uint16_t makeKey(const SizeI& size);
+	uint64_t makeKey(const SizeI& size);
 
 	GraphicsManager*	m_manager;
 };

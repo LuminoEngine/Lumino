@@ -320,7 +320,7 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("noto-emoji"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v2019-11-19-unicode12 https://github.com/googlefonts/noto-emoji.git noto-emoji");
+                Utils.CallProcess("git", "clone --depth 1 -b v2019-11-19-unicode12 https://github.com/googlefonts/noto-emoji.git noto-emoji");
                 File.Copy("noto-emoji/fonts/NotoColorEmoji.ttf", Path.Combine(builder.LuminoToolsDir, "EngineAssets", "NotoColorEmoji.ttf"), true);
             }
 

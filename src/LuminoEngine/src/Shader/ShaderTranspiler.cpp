@@ -488,11 +488,6 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			info.name = m_program->getUniformBlockName(i);
 			info.size = m_program->getUniformBlockSize(i);
 
-            //auto* tt = m_program->getUniformBlockTType(i);
-            //printf("★[%p]\n", tt);
-            //auto cs = tt->getCompleteString();
-            //tt->getQualifier();
-
             DescriptorLayoutItem item;
             item.name = info.name;
             item.stageFlags = stageFlags;
@@ -736,7 +731,6 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
     //    std::string name = (LN_CIS_PREFIX LN_TO_PREFIX) + glsl.get_name(remap.image_id) + LN_SO_PREFIX + glsl.get_name(remap.sampler_id);
     //    //glsl.set_name(remap.combined_id, name);
     //    //combinedImageSamplerNames.push_back(std::move(name));
-    //    printf("");
     //}
 
     return true;

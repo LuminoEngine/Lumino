@@ -19,6 +19,7 @@ namespace ln {
 
 UIViewport::UIViewport()
     : m_manager(detail::EngineDomain::uiManager())
+	, m_placement(UIViewportPlacement::ViewBox)
 {
 }
 
@@ -44,10 +45,10 @@ void UIViewport::init()
 
 void UIViewport::onDispose(bool explicitDisposing)
 {
-	if (m_primaryTarget) {
-		RenderTargetTexture::releaseTemporary(m_primaryTarget);
-		m_primaryTarget = nullptr;
-	}
+	//if (m_primaryTarget) {
+	//	RenderTargetTexture::releaseTemporary(m_primaryTarget);
+	//	m_primaryTarget = nullptr;
+	//}
 
     m_renderViews.clear();
 	UIContainerElement::onDispose(explicitDisposing);
@@ -100,11 +101,18 @@ void UIViewport::onUpdateStyle(const UIStyleContext* styleContext, const detail:
 
 Size UIViewport::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
+	if (isViewBoxRenderTargetAutoResize()) {
+		m_actualViewboxSize = finalSize;
+	}
+	else {
+		m_actualViewboxSize = m_viewBoxSize;
+	}
+
     // TODO: tmp
     for (auto& rv : m_renderViews) {
-        rv->setActualSize(finalSize);
+        rv->setActualSize(m_actualViewboxSize);
     }
-    m_actualViewboxSize = finalSize;
+
     return UIContainerElement::arrangeOverride(layoutContext, finalSize);
 }
 
@@ -131,19 +139,22 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     // TODO: dp -> px 変換
     Size viewSize = actualSize();
+	acquirePrimaryTarget(SizeI::fromFloatSize(m_actualViewboxSize));
 
 	// このスコープ終端で RenderTargetTexture::releaseTemporary() するわけにはいかない。
 	// この RenderTarget は context->drawImage() に乗ってこのスコープの外側でも使われるため、次回の描画までは再利用されないようにしたい。
-	if (m_primaryTarget) {
-		RenderTargetTexture::releaseTemporary(m_primaryTarget);
-	}
+	//if (m_primaryTarget) {
+	//	RenderTargetTexture::releaseTemporary(m_primaryTarget);
+	//}
 
-	m_primaryTarget = RenderTargetTexture::getTemporary(viewSize.width, viewSize.height, TextureFormat::RGBA8, false);
+	//m_primaryTarget = RenderTargetTexture::getTemporary(viewSize.width, viewSize.height, TextureFormat::RGBA8, false);
 
     //graphicsContext->setRenderTarget(0, primaryTarget);
 	//m_renderPass->setRenderTarget(0, primaryTarget);
 	//graphicsContext->beginRenderPass(m_renderPass);
- //   graphicsContext->clear(ClearFlags::All, Color::Gray);	// TODO: renderPass の clear でカバー
+
+	
+	//context->clear(ClearFlags::All, Color::Blue);	// TODO: renderPass の clear でカバー
 
 	//context->pushState();
     for (auto& view : m_renderViews) {
@@ -163,6 +174,9 @@ void UIViewport::onRender(UIRenderingContext* context)
 
 	
 
+
+	//context->setViewportRect(RectI(0, 0, SizeI::fromFloatSize(viewSize)));
+	//context->setScissorRect(RectI(0, 0, SizeI::fromFloatSize(viewSize)));
 	//
 
 	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
@@ -177,8 +191,16 @@ void UIViewport::onRender(UIRenderingContext* context)
 	t.scale((viewSize.width * 0.5),  (viewSize.height * 0.5), 0);
 	t *= context->baseTransform();
 	t *= vp->viewProjMatrix;
+
+	if (isViewBoxAspectScaling()) {
+		Matrix viewBoxMatrix;
+		makeViewBoxTransform(SizeI::fromFloatSize(viewSize), SizeI(m_primaryTarget->width(), m_primaryTarget->height()), &viewBoxMatrix);
+		t *= viewBoxMatrix;
+	}
+
 	context->setBaseTransfrom(t);
 	context->setCullingMode(CullMode::None);
+	context->setBlendMode(BlendMode::Normal);
     m_blitMaterial->setMainTexture(m_primaryTarget);
 	context->blit(m_blitMaterial, nullptr);
 
@@ -206,6 +228,71 @@ void UIViewport::onRoutedEvent(UIEventArgs* e)
     }
 
     UIContainerElement::onRoutedEvent(e);
+}
+
+void UIViewport::acquirePrimaryTarget(const SizeI& viewPixelSize)
+{
+	if (!m_primaryTarget || m_primaryTarget->width() != viewPixelSize.width || m_primaryTarget->height() != viewPixelSize.height) {
+		m_primaryTarget = makeObject<RenderTargetTexture>(viewPixelSize.width, viewPixelSize.height, TextureFormat::RGBA8, false);
+	}
+}
+
+void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat)
+{
+	float sw = static_cast<float>(srcSize.width);   // 転送元
+	float sh = static_cast<float>(srcSize.height);
+	float dw = static_cast<float>(dstSize.width);	// 転送先
+	float dh = static_cast<float>(dstSize.height);
+
+	float new_x, new_y;
+	float new_w, new_h;
+
+	float ratio_w;
+	float ratio_h;
+
+	// バックバッファサイズとスクリーンサイズが同じ場合
+	if (sw == dw && sh == dh)
+	{
+		// そのまま設定
+		new_x = 0;
+		new_y = 0;
+		new_w = sw;
+		new_h = sh;
+		ratio_w = 1.0f;
+		ratio_h = 1.0f;
+	}
+	else
+	{
+		// 現在のスクリーンサイズ(デフォルトビューポートのサイズ)と画面サイズの比率計算
+		ratio_w = dw / sw;
+		ratio_h = dh / sh;
+
+		// 縦方向に合わせる ( 左右が余る )
+		if (ratio_w > ratio_h)
+		{
+			new_w = static_cast<float>(sw * ratio_h);
+			new_h = static_cast<float>(dh);
+			new_x = static_cast<float>((dw / 2) - (new_w / 2));
+			new_y = 0;
+		}
+		//横方向にあわせる
+		else
+		{
+			new_w = static_cast<float>(dw);
+			new_h = static_cast<float>(sh * ratio_w);
+			new_x = 0;
+			new_y = static_cast<float>((dh / 2) - (new_h / 2));
+		}
+	}
+
+#if 0	// pxel based
+	* mat = Matrix::Identity;
+	mat->scale(new_w / sw, new_h / sh, 1.0f);
+	mat->translate(new_x, new_y, 0.0f);
+#else	// screen coord based
+	*mat = Matrix::Identity;
+	mat->scale(new_w / dw, new_h / dh, 1.0f);
+#endif
 }
 
 } // namespace ln

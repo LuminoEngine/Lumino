@@ -16,9 +16,9 @@ public:
 	LN_METHOD()
 	static void setMainWindowSize(int width, int height);
 
-	/** メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等) */
+	/** メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等) */
 	LN_METHOD()
-	static void setMainBackBufferSize(int width, int height);
+	static void setMainWorldViewSize(int width, int height);
 
 	/** メインウィンドウのタイトル文字列を設定します。*/
 	LN_METHOD()

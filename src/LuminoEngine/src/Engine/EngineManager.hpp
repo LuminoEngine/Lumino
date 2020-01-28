@@ -55,7 +55,7 @@ struct EngineSettings
     Flags<EngineFeature> features = EngineFeature::Experimental;
 	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
-	SizeI mainBackBufferSize = SizeI(0, 0);
+	SizeI mainWorldViewSize = SizeI(0, 0);
 	String mainWindowTitle = u"Lumino";
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;

@@ -28,9 +28,9 @@ void EngineSettings::setMainWindowSize(int width, int height)
 	detail::EngineDomain::engineManager()->settings().mainWindowSize.set(width, height);
 }
 
-void EngineSettings::setMainBackBufferSize(int width, int height)
+void EngineSettings::setMainWorldViewSize(int width, int height)
 {
-	detail::EngineDomain::engineManager()->settings().mainBackBufferSize.set(width, height);
+	detail::EngineDomain::engineManager()->settings().mainWorldViewSize.set(width, height);
 }
 
 void EngineSettings::setMainWindowTitle(const String& title)

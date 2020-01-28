@@ -192,6 +192,7 @@ void EngineManager::init()
 
             m_mainUIRenderView = makeObject<UIRenderView>();
             m_mainViewport->addRenderView(m_mainUIRenderView);
+			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
 
             m_mainUIRoot = makeObject<UIControl>();
             m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
@@ -756,7 +757,7 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	if (LN_REQUIRE(window)) return;
 	if (LN_REQUIRE(!m_mainWindow)) return;
 	m_mainWindow = window;
-	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), (m_settings.mainBackBufferSize.isAnyZero()) ? m_settings.mainWindowSize : m_settings.mainBackBufferSize);
+	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainWindowSize);
 	m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
 	// TODO: SwapChain だけでいいはず

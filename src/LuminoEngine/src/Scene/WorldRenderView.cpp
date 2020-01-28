@@ -317,16 +317,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 				auto p3 = Vector3::normalize(p3r);
                 m_clearMaterial->setMatrix(u"_localWorld", rot);
                 m_clearMaterial->setMatrix(u"_scaleMatrix", ss);
-    //            printf("----\n");
-				//camera.viewDirection.print();
-				//rot.front().print();
-    //            p0.print();
-    //            p1.print();
-    //            p2.print();
-    //            p3.print();
-    //            printf("----\n");
-                //lookAt.print();
-                //rot.inverse();
+
                 renderingContext->pushState();
                 renderingContext->setTransfrom(mm);
                 renderingContext->setDepthWriteEnabled(false);

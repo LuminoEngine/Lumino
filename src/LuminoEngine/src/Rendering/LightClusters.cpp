@@ -253,7 +253,6 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 
 						float czn = bias_x1(cn);
 						float czf = bias_x1(cf);
-						//printf("%f\n", czn);
 						if (vpZf > czn && vpZn < czf)
 						{
 							addClusterData(x, y, z, lightId);
@@ -326,7 +325,6 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 	else
 	{
         LN_LOG_WARNING << "The number of affect lights on clusters has exceeded 4.";
-		//printf("%d\n", clustersAddCount);
 	}
 }
 

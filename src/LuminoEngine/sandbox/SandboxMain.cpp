@@ -353,7 +353,7 @@ int main(int argc, char** argv)
 	//GlobalLogger::setLevel(LogLevel::Verbose);
 	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
-    EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
+    //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);
 
 
 	Engine::initialize();
@@ -453,7 +453,7 @@ int main(int argc, char** argv)
 	//mesh1->setEulerAngles(Math::PI / 2, 0, 0);
  //   mesh1->setScale(10);
 	mesh1->setPosition(0, 5, 0);
-    Engine::world()->add(mesh1);
+    //Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   skymesh1->setBlendMode(BlendMode::Add);
@@ -462,7 +462,7 @@ int main(int argc, char** argv)
  //   skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
  //   Engine::world()->add(skymesh1);
 
-    Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
 
     //auto vvv = Vector3(5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5);
     //auto vvv2 = Vector3(0.000005804542996261093f, 0.000013562911419845635, 0.000030265902468824876);
@@ -508,6 +508,7 @@ int main(int argc, char** argv)
 	//auto lightShaft = LightShaftImageEffect::create();
 	//Engine::mainRenderView()->addImageEffect(lightShaft);
 
+#if 0
 	{
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
@@ -527,6 +528,7 @@ int main(int argc, char** argv)
 		//c->setShadingModel(ShadingModel::UnLighting);
 		//Engine::world()->add(obj);
 	}
+#endif
 
 #if 0
     auto window1 = UIWindow::create();
