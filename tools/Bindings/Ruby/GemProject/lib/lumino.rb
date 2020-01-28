@@ -30,3 +30,7 @@ module Lumino
   #  end
   #end
 end
+
+unless $LUMINO_DISABLE_INCLUDE
+  include Lumino
+end

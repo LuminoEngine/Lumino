@@ -47,18 +47,18 @@ void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
         switch (me->getMouseButtons())
         {
             case MouseButtons::Left:
-                startRotate(me->getPosition());
-                m_capturdElement = e->sender();
-                m_capturdElement->retainCapture();
-                e->handled = true;
-                break;
-            case MouseButtons::Middle:
-                startDolly(me->getPosition());
-                m_capturdElement = e->sender();
-                m_capturdElement->retainCapture();
-                e->handled = true;
+				//startDolly(me->getPosition());
+				//m_capturdElement = e->sender();
+				//m_capturdElement->retainCapture();
+				//e->handled = true;
                 break;
             case MouseButtons::Right:
+				startRotate(me->getPosition());
+				m_capturdElement = e->sender();
+				m_capturdElement->retainCapture();
+				e->handled = true;
+                break;
+            case MouseButtons::Middle:
                 startPan(me->getPosition());
                 m_capturdElement = e->sender();
                 m_capturdElement->retainCapture();
@@ -170,10 +170,10 @@ void CameraOrbitControlComponent::handleMouseMovePan(const Vector2& mousePos)
 void CameraOrbitControlComponent::handleMouseWheel(int delta)
 {
     if (delta < 0) {
-        dollyOut(zoomScale());
+        dollyIn(zoomScale());
     }
     else if (delta > 0) {
-        dollyIn(zoomScale());
+        dollyOut(zoomScale());
     }
 
     update();

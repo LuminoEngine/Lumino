@@ -66,6 +66,7 @@ public:
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
 	const Ref<SamplerState>& defaultSamplerState() const { return m_defaultSamplerState; }
+	const Ref<SamplerState>& linearSamplerState() const { return m_linearSamplerState; }
 
 	static bool checkVulkanSupported();
 
@@ -96,6 +97,7 @@ private:
     Ref<Texture2D> m_blackTexture;
     Ref<Texture2D> m_whiteTexture;
 	Ref<SamplerState> m_defaultSamplerState;
+	Ref<SamplerState> m_linearSamplerState;
 };
 
 } // namespace detail

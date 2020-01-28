@@ -377,7 +377,9 @@ int main(int argc, char** argv)
     //Engine::mainCamera()->setPosition(0, 0, 25);
     Engine::mainCamera()->setBackgroundColor(Color::Gray);
 	//Engine::mainCamera()->setPosition(0, 1, -5);
-
+	Camera* camera = Engine::mainCamera();
+	camera->setProjectionMode(ProjectionMode::Orthographic);
+	camera->setOrthographicSize(16, 12);
 
     auto ft = Texture2D::create(512, 256);
     //Font::registerFontFromFile(u"meiryo.ttc");
