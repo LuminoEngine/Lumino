@@ -93,10 +93,12 @@ class EngineManager
 	, public IPlatforEventListener
 {
 public:
+	static EngineSettings s_settings;
+
 	EngineManager();
 	virtual ~EngineManager();
 
-	void init();
+	void init(const EngineSettings& settings);
 	void dispose();
 
 	void initializeAllManagers();
@@ -125,7 +127,7 @@ public:
 	bool isExitRequested() const { return m_exitRequested; }
 	void quit();
 
-	EngineSettings& settings() { return m_settings; }
+	EngineSettings& settings2() { return m_settings; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }

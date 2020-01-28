@@ -57,8 +57,8 @@ ln::Result EditorApplication::init()
 	//ln::EngineSettings::setMainBackBufferSize(1600, 800);
     //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
-    ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
-    ln::detail::EngineDomain::engineManager()->init();
+    ln::detail::EngineManager::s_settings.defaultObjectsCreation = false;
+	ln::detail::EngineDomain::engineContext()->initializeEngineManager();
 
 	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));

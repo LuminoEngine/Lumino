@@ -12,6 +12,7 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 
 set(LN_SOURCES_Engine
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/EngineContext.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Application.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Diagnostics.hpp
@@ -20,6 +21,7 @@ set(LN_SOURCES_Engine
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Object.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Property.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/RenderingCommandList.hpp
+    src/EngineContext.cpp
     src/Engine/Internal.hpp
     src/Engine/Application.cpp
     src/Engine/Diagnostics.cpp

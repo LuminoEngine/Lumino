@@ -6,6 +6,8 @@ namespace detail {
 //==============================================================================
 // RuntimeManager
 
+RuntimeManager::Settings RuntimeManager::s_globalSettings;
+
 //LnReferenceCountTrackerCallback RuntimeManager::m_referenceCountTracker = nullptr;
 //LnRuntimeFinalizedCallback RuntimeManager::m_runtimeFinalizedCallback = nullptr;
 

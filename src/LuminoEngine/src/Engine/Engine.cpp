@@ -25,87 +25,87 @@ namespace ln {
 /** メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480) */
 void EngineSettings::setMainWindowSize(int width, int height)
 {
-	detail::EngineDomain::engineManager()->settings().mainWindowSize.set(width, height);
+	detail::EngineManager::s_settings.mainWindowSize.set(width, height);
 }
 
 void EngineSettings::setMainWorldViewSize(int width, int height)
 {
-	detail::EngineDomain::engineManager()->settings().mainWorldViewSize.set(width, height);
+	detail::EngineManager::s_settings.mainWorldViewSize.set(width, height);
 }
 
 void EngineSettings::setMainWindowTitle(const String& title)
 {
-	detail::EngineDomain::engineManager()->settings().mainWindowTitle = title;
+	detail::EngineManager::s_settings.mainWindowTitle = title;
 }
 
 void EngineSettings::addAssetDirectory(const ln::String& path)
 {
-	detail::EngineDomain::engineManager()->settings().assetDirectories.add(path);
+	detail::EngineManager::s_settings.assetDirectories.add(path);
 }
 
 void EngineSettings::addAssetArchive(const ln::String& fileFullPath, const ln::String& password)
 {
-	detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
+	detail::EngineManager::s_settings.assetArchives.add({ fileFullPath, password });
 }
 
 void EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority value)
 {
-	detail::EngineDomain::engineManager()->settings().assetStorageAccessPriority = value;
+	detail::EngineManager::s_settings.assetStorageAccessPriority = value;
 }
 
 void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 {
-	detail::EngineDomain::engineManager()->settings().graphicsAPI = value;
+	detail::EngineManager::s_settings.graphicsAPI = value;
 }
 
 void EngineSettings::setEngineLogEnabled(bool enabled)
 {
-	detail::EngineDomain::engineManager()->settings().engineLogEnabled = enabled;
+	detail::EngineManager::s_settings.engineLogEnabled = enabled;
 }
 
 void EngineSettings::setEngineLogFilePath(const ln::String& filePath)
 {
-	detail::EngineDomain::engineManager()->settings().engineLogFilePath = filePath;
+	detail::EngineManager::s_settings.engineLogFilePath = filePath;
 }
 
 void EngineSettings::setUserMainWindow(intptr_t value)
 {
-    detail::EngineDomain::engineManager()->settings().userMainWindow = value;
+    detail::EngineManager::s_settings.userMainWindow = value;
 }
 
 void EngineSettings::setStandaloneFpsControl(bool enabled)
 {
-    detail::EngineDomain::engineManager()->settings().standaloneFpsControl = enabled;
+    detail::EngineManager::s_settings.standaloneFpsControl = enabled;
 }
 
 void EngineSettings::setEngineFeatures(Flags<EngineFeature> features)
 {
-    detail::EngineDomain::engineManager()->settings().features = features;
+    detail::EngineManager::s_settings.features = features;
 }
 
 void EngineSettings::setDefaultObjectsCreation(bool value)
 {
-    detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = value;
+    detail::EngineManager::s_settings.defaultObjectsCreation = value;
 }
 
 void EngineSettings::setUseGLFWWindowSystem(bool value)
 {
-    detail::EngineDomain::engineManager()->settings().useGLFWWindowSystem = value;
+    detail::EngineManager::s_settings.useGLFWWindowSystem = value;
 }
 
 void EngineSettings::setGraphicsContextManagement(bool value)
 {
-    detail::EngineDomain::engineManager()->settings().graphicsContextManagement = value;
+    detail::EngineManager::s_settings.graphicsContextManagement = value;
 }
 
 void EngineSettings::setExternalMainLoop(bool value)
 {
-    detail::EngineDomain::engineManager()->settings().externalMainLoop = value;
+    detail::EngineManager::s_settings.externalMainLoop = value;
 }
 
 void EngineSettings::setExternalRenderingManagement(bool value)
 {
-    detail::EngineDomain::engineManager()->settings().externalRenderingManagement = value;
+    detail::EngineManager::s_settings.externalRenderingManagement = value;
 }
 
 //==============================================================================
@@ -124,9 +124,9 @@ static void endFrame()
 
 void Engine::initialize()
 {
+	detail::EngineDomain::engineContext()->initializeEngineManager();
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
-    manager->init();
-    if (manager->settings().externalMainLoop) {
+    if (manager->settings2().externalMainLoop) {
         beginFrame();
     }
 }
@@ -134,17 +134,17 @@ void Engine::initialize()
 void Engine::finalize()
 {
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
-    if (manager->settings().externalMainLoop) {
+    if (manager->settings2().externalMainLoop) {
         endFrame();
     }
-	detail::EngineDomain::release();
+	detail::EngineDomain::engineContext()->disposeEngineManager();
 }
 
 bool Engine::update()
 {
 
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
-    if (manager->settings().externalMainLoop) {
+    if (manager->settings2().externalMainLoop) {
         endFrame();
         beginFrame();
     }

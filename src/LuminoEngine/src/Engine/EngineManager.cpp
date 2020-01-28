@@ -66,6 +66,8 @@ namespace detail {
 //==============================================================================
 // EngineManager
 
+EngineSettings EngineManager::s_settings;
+
 EngineManager::EngineManager()
 	: m_settings()
     , m_assetManager(nullptr)
@@ -95,9 +97,11 @@ EngineManager::~EngineManager()
 {
 }
 
-void EngineManager::init()
+void EngineManager::init(const EngineSettings& settings)
 {
     LN_LOG_DEBUG << "EngineManager Initialization started.";
+
+	m_settings = settings;
 
 	// check settings
 	{
@@ -879,7 +883,7 @@ void EngineManager::setDebugToolMode(DebugToolMode mode)
 //==============================================================================
 // EngineDomain
 
-RuntimeManager::Settings g_globalRuntimeManagerSettings;
+
 
 class EngineContextWrap
 {
@@ -892,24 +896,16 @@ public:
 	}
 };
 
-//static Ref<EngineContext> g_engineContext = nullptr;
-//static EngineContext* g_engineContext = nullptr;
-//static std::unique_ptr<EngineContext> g_engineContext = nullptr;
-static RuntimeManager* g_runtimeManager = nullptr;
-static EngineManager* g_engineManager = nullptr;
-
 void EngineDomain::release()
 {
-	if (g_engineManager) {
-		g_engineManager->dispose();
-		RefObjectHelper::release(g_engineManager);
-		g_engineManager = nullptr;
-	}
-    if (g_runtimeManager) {
-        g_runtimeManager->dispose();
-        RefObjectHelper::release(g_runtimeManager);
-        g_runtimeManager = nullptr;
-    }
+	EngineContextWrap::getInstance()->disposeEngineManager();
+	EngineContextWrap::getInstance()->disposeRuntimeManager();
+
+	//if (g_engineManager) {
+	//	g_engineManager->dispose();
+	//	RefObjectHelper::release(g_engineManager);
+	//	g_engineManager = nullptr;
+	//}
 	//if (g_engineContext) {
 		//RefObjectHelper::release(g_engineContext);
 	//	g_engineContext = nullptr;
@@ -930,20 +926,18 @@ EngineContext* EngineDomain::engineContext()
 
 RuntimeManager* EngineDomain::runtimeManager()
 {
-    if (!g_runtimeManager) {
-        g_runtimeManager = LN_NEW RuntimeManager();
-        g_runtimeManager->init(g_globalRuntimeManagerSettings);
-    }
-    return g_runtimeManager;
+    return engineContext()->runtimeManager();
 }
 
 EngineManager* EngineDomain::engineManager()
 {
-    EngineDomain::runtimeManager();
-	if (!g_engineManager) {
-		g_engineManager = LN_NEW EngineManager();
-	}
-	return g_engineManager;
+ //   EngineDomain::runtimeManager();
+	//if (!g_engineManager) {
+	//	g_engineManager = LN_NEW EngineManager();
+	//}
+	//return g_engineManager;
+
+	return engineContext()->engineManager();
 }
 
 PlatformManager* EngineDomain::platformManager()

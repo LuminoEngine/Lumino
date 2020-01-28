@@ -34,7 +34,7 @@ int Win32PlatformInterface::WinMain(Application* app)
 {
     g_app = app;
 
-    detail::EngineSettings& settings = detail::EngineDomain::engineManager()->settings();
+    detail::EngineSettings& settings = detail::EngineManager::s_settings;
     settings.standaloneFpsControl = true;
 
 	detail::ApplicationHelper::run(g_app);

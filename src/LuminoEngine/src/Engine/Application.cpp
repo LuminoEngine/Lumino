@@ -15,7 +15,7 @@ LN_OBJECT_IMPLEMENT(Application, Object) {}
 
 Application::Application()
 {
-    detail::EngineDomain::engineManager()->settings().application = this;
+    detail::EngineManager::s_settings.application = this;
 }
 
 void Application::init()
@@ -76,7 +76,7 @@ void Application::onRoutedEvent(UIEventArgs* e)
 
 void Application::initInternal()
 {
-	detail::EngineDomain::engineManager()->init();
+	detail::EngineDomain::engineManager()->init(detail::EngineManager::s_settings);
 	onInit();
 	onStart();
 }

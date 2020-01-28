@@ -35,6 +35,7 @@ public:
         LnReferenceCountTrackerCallback referenceCountTrackerCallback = nullptr;
         LnRuntimeGetTypeInfoIdCallback runtimeGetTypeInfoIdCallback = nullptr;
 	};
+	static Settings s_globalSettings;
 
 	RuntimeManager();
 	virtual ~RuntimeManager();
