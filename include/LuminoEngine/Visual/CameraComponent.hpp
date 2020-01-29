@@ -104,7 +104,9 @@ LN_INTERNAL_ACCESS:
 
 	//CameraWorld	m_cameraWorld;
 
-private:
+public:	// TODO: internal
+	Size actualOrthographicViewSize() const;
+
 	//CameraDirection		m_directionMode;
 	ProjectionMode		m_projectionMode;
 	Vector3				m_lookAt;
@@ -114,6 +116,7 @@ private:
 	float				m_nearClip;
 	float				m_farClip;
     Size				m_orthographicSize;
+	float				m_zoom;
 	//ZSortDistanceBase	m_zSortDistanceBase;
 	//CameraBehavior*		m_cameraBehavior;
 

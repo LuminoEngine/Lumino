@@ -132,7 +132,7 @@ void EngineManager::init(const EngineSettings& settings)
 			m_engineAssetsPath = Path::combine(repo, u"tools", u"EngineResources");
 		}
 
-		LN_LOG_DEBUG << "EngineAssetsPath: " << m_engineAssetsPath;
+		LN_LOG_INFO << "EngineAssetsPath: " << m_engineAssetsPath;
     }
 	
 

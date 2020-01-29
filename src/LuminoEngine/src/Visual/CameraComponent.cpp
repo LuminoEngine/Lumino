@@ -31,6 +31,7 @@ CameraComponent::CameraComponent()
     , m_nearClip(0.3f)			// Unity based.
     , m_farClip(1000.0f)
     , m_orthographicSize(0.0f, 10.0f)	// Unity based. ※ Unity は縦幅の "半分" だが、ちょっとイメージしづらいので Lumino では全体
+	, m_zoom(1.0f)
     , m_ownerRenderView(nullptr)
 //, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 //, m_cameraBehavior(nullptr)
@@ -68,10 +69,11 @@ void CameraComponent::updateMatrices()
     // ・Cameraオブジェクトとしての onUpdate
     // ・１度も update されない状態での描画に備える render
 
+	const Size& viewSize = m_ownerRenderView->actualSize();
+	if (LN_REQUIRE(!Math::isNaN(viewSize.width) && !Math::isNaN(viewSize.height))) return;
+	if (LN_REQUIRE(viewSize.width > 0 && viewSize.height > 0)) return;
+
     if (m_ownerRenderView) {
-        const Size& viewSize = m_ownerRenderView->actualSize();
-        if (LN_REQUIRE(!Math::isNaN(viewSize.width) && !Math::isNaN(viewSize.height))) return;
-        if (LN_REQUIRE(viewSize.width > 0 && viewSize.height > 0)) return;
 
         const Matrix& worldMatrix = worldObject()->worldMatrix();
 
@@ -99,16 +101,12 @@ void CameraComponent::updateMatrices()
 	    }
 	    else
 	    {
-            float width = m_orthographicSize.width;
-            float height = m_orthographicSize.height;
-            if (Math::nearEqual(width, 0.0f)) {
-                width = m_orthographicSize.height * (viewSize.width / viewSize.height);
-            }
-            if (Math::nearEqual(height, 0.0f)) {
-                height = m_orthographicSize.width * (viewSize.height / viewSize.width);
-            }
-
-            m_projMatrix = Matrix::makeOrthoLH(width, height, m_nearClip, m_farClip);
+			Size orthoSize = actualOrthographicViewSize();
+			//float scaleW = orthoSize.width / viewSize.width / m_zoom;
+			//float scaleH = orthoSize.height / viewSize.height / m_zoom;
+			float scaleW = m_zoom;
+			float scaleH = m_zoom;
+            m_projMatrix = Matrix::makeOrthoLH(orthoSize.width * scaleW, orthoSize.height * scaleH, m_nearClip, m_farClip);
 	    }
 
 	    m_viewProjMatrix = m_viewMatrix * m_projMatrix;
@@ -126,50 +124,23 @@ void CameraComponent::updateMatrices()
     }
 }
 
-//void CameraComponent::onUIEvent(UIEventArgs* e)
-//{
-//	if (e->getType() == UIEvents::MouseDownEvent)
-//	{
-//		if (getCameraBehavior() != nullptr)
-//		{
-//			auto* me = static_cast<UIMouseEventArgs*>(e);
-//			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
-//			getCameraBehavior()->injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
-//		}
-//	}
-//	else if (e->getType() == UIEvents::MouseUpEvent)
-//	{
-//		if (getCameraBehavior() != nullptr)
-//		{
-//			auto* me = static_cast<UIMouseEventArgs*>(e);
-//			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
-//			getCameraBehavior()->injectMouseButtonUp(me->getMouseButtons(), pos.x, pos.y);
-//		}
-//	}
-//	else if (e->getType() == UIEvents::MouseMoveEvent)
-//	{
-//		if (getCameraBehavior() != nullptr)
-//		{
-//			auto* me = static_cast<UIMouseEventArgs*>(e);
-//			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
-//			getCameraBehavior()->injectMouseMove(pos.x, pos.y);
-//		}
-//	}
-//	else if (e->getType() == UIEvents::MouseWheelEvent)
-//	{
-//		if (getCameraBehavior() != nullptr)
-//		{
-//			if (getCameraBehavior() != nullptr) {
-//				auto* me = static_cast<UIMouseWheelEventArgs*>(e);
-//				getCameraBehavior()->injectMouseWheel(me->getDelta());
-//			}
-//		}
-//	}
-//	else
-//	{
-//		Component::onUIEvent(e);
-//	}
-//}
+Size CameraComponent::actualOrthographicViewSize() const
+{
+	const Size& viewSize = m_ownerRenderView->actualSize();
+	if (LN_REQUIRE(!Math::isNaN(viewSize.width) && !Math::isNaN(viewSize.height))) return Size(1, 1);
+	if (LN_REQUIRE(viewSize.width > 0 && viewSize.height > 0)) return Size(1, 1);
+
+	float width = m_orthographicSize.width;
+	float height = m_orthographicSize.height;
+	if (Math::nearEqual(width, 0.0f)) {
+		width = m_orthographicSize.height * (viewSize.width / viewSize.height);
+	}
+	if (Math::nearEqual(height, 0.0f)) {
+		height = m_orthographicSize.width * (viewSize.height / viewSize.width);
+	}
+
+	return Size(width, height);
+}
 
 
 } // namespace ln

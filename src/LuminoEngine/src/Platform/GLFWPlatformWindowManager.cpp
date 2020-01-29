@@ -459,7 +459,7 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 void GLFWPlatformWindow::window_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
-    thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseWheelEvent(thisWindow, yoffset));
+    thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseWheelEvent(thisWindow, -1.0 * yoffset));
 }
 
 ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)

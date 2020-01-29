@@ -115,6 +115,8 @@ public:
     /** いずれかの要素が 0 かを判定します。*/
     bool isAnyZero() const { return (width == 0 || height == 0); }
 
+	bool isSquashed() const { return width <= 0.0f || height <= 0.0f; }
+
     static Size min(const Size& size1, const Size& size2)
     {
         return Size(
