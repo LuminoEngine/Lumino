@@ -321,7 +321,7 @@ namespace LuminoBuild.Tasks
             if (!Directory.Exists("noto-emoji"))
             {
                 Utils.CallProcess("git", "clone --depth 1 -b v2019-11-19-unicode12 https://github.com/googlefonts/noto-emoji.git noto-emoji");
-                File.Copy("noto-emoji/fonts/NotoColorEmoji.ttf", Path.Combine(builder.LuminoToolsDir, "EngineAssets", "NotoColorEmoji.ttf"), true);
+                File.Copy("noto-emoji/fonts/NotoColorEmoji.ttf", Path.Combine(builder.LuminoToolsDir, "EngineResources", "NotoColorEmoji.ttf"), true);
             }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
