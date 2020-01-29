@@ -349,7 +349,7 @@ int main(int argc, char** argv)
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
 	int div = 2;
-    EngineSettings::setMainWindowSize(640 / div, 480 / div);
+    //EngineSettings::setMainWindowSize(640 / div, 480 / div);
     //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);
 
 
@@ -519,9 +519,9 @@ int main(int argc, char** argv)
 		t->setSamplerState(s2);
 
 		auto s = Sprite::create(t, 1, 1);
-		//s->setPosition(0, 1, 0);
+		s->setPosition(0, 1.2, 0);
 		s->setScale(2);
-		s->setAnchorPoint(Vector2(0.5, 0));
+		//s->setAnchorPoint(Vector2(0.5, 0));
 		//s->setBlendMode(BlendMode::Normal);
 		//s->setShadingModel(ShadingModel::UnLighting);
 		Engine::world()->add(s);
@@ -535,8 +535,9 @@ int main(int argc, char** argv)
 		auto text1 = makeObject<Text>();
 		text1->setText(u"Hello, Lumino!");
 		text1->setColor(Color::Gray);
-		text1->setAnchorPoint(Vector2(0.5, 1));
-		//text1->setFontSize(20);
+		text1->setPosition(0, -0.5, 0);
+		//text1->setAnchorPoint(Vector2(0.5, 1));
+		text1->setFontSize(18);
 		Engine::world()->add(text1);
 
 		auto text2 = makeObject<UITextBlock>();

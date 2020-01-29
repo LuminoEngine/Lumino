@@ -21,6 +21,7 @@ struct FontGlobalMetrics
 	//int bitmapMaxHeight;
 	bool outlineSupported;
 
+	// descender-ascender のサイズを 1.0 に収めるためのスケール
 	float virutalSpaceFactor;
 };
 

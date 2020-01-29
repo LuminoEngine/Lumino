@@ -47,12 +47,16 @@ RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchL
 	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font, text->fontRequester, transform);
 
 	// 3D 空間に書く場合
-	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D)
+	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D && text->fontRequester)
 	{
 		FontGlobalMetrics metrix;
 		m_currentFont->getGlobalMetrics(&metrix);
 		//float h = std::abs(metrix.descender - metrix.ascender);
-		m_drawingTransform.scale(metrix.virutalSpaceFactor);
+
+		float s = metrix.virutalSpaceFactor * (static_cast<float>(text->fontRequester->size) / Font::DefaultSize);
+		m_drawingTransform.scale(s);
+
+		
 	}
 
 	beginLayout();
