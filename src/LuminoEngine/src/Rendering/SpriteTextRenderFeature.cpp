@@ -54,8 +54,10 @@ RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchL
 		//float h = std::abs(metrix.descender - metrix.ascender);
 
 		float s = metrix.virutalSpaceFactor * (static_cast<float>(text->fontRequester->size) / Font::DefaultSize);
-		m_drawingTransform.scale(s);
 
+		m_drawingTransform = transform.getRotationMatrix();
+		m_drawingTransform.scale(s);
+		m_drawingTransform.translate(transform.position());
 		
 	}
 
