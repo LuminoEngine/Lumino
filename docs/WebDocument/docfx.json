@@ -68,6 +68,7 @@
     "template": [
       "default",
       "template"  /* local template folder */
+      /*"templates/material"*/
     ],
     "postProcessors": [],
     "noLangKeyword": false,
