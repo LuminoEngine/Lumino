@@ -378,8 +378,8 @@ int main(int argc, char** argv)
     //Engine::mainCamera()->setPosition(0, 0, 25);
 	camera->setBackgroundColor(Color::Gray);
 	//Engine::mainCamera()->setPosition(0, 1, -5);
-	camera->setProjectionMode(ProjectionMode::Orthographic);
-	camera->setOrthographicSize(16, 12);
+	//camera->setProjectionMode(ProjectionMode::Orthographic);
+	//camera->setOrthographicSize(16, 12);
 
     auto ft = Texture2D::create(512, 256);
     //Font::registerFontFromFile(u"meiryo.ttc");
@@ -533,9 +533,10 @@ int main(int argc, char** argv)
 		//Engine::world()->add(obj);
 
 		auto text1 = makeObject<Text>();
-		text1->setText(u"ASDFGH");
-		text1->setColor(Color::Red);
-		//text1->setAnchorPoint(Vector2(0, 1));
+		text1->setText(u"Hello, Lumino!");
+		text1->setColor(Color::Gray);
+		text1->setAnchorPoint(Vector2(0.5, 1));
+		//text1->setFontSize(20);
 		Engine::world()->add(text1);
 
 		auto text2 = makeObject<UITextBlock>();
@@ -549,7 +550,7 @@ int main(int argc, char** argv)
 		text2->setVerticalAlignment(VAlignment::Center);
 		text2->setFontSize(20);
 		text2->setTextColor(Color::DimGray);
-		Engine::mainUIView()->addElement(text2);
+		//Engine::mainUIView()->addElement(text2);
 	}
 #endif
 

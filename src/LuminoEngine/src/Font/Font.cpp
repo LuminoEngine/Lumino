@@ -177,7 +177,7 @@ FontRequester::FontRequester()
 
 detail::FontCore* FontRequester::resolveFontCore(float scaleFactor)
 {
-	if (!m_rawFont) {
+	if (!m_rawFont || !Math::nearEqual(m_lastScaleFactor, scaleFactor)) {
 		FontDesc desc;
 		desc.Family = (font) ? font->family() : String::Empty;
 		desc.Size = size;
@@ -185,6 +185,7 @@ detail::FontCore* FontRequester::resolveFontCore(float scaleFactor)
 		desc.isItalic = isItalic;
 		desc.isAntiAlias = isAntiAlias;
 		m_rawFont = m_manager->lookupFontCore(desc, scaleFactor);
+		m_lastScaleFactor = scaleFactor;
 	}
 	return m_rawFont;
 }

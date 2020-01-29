@@ -108,6 +108,8 @@ public:
     RenderTargetTexture* renderTarget = nullptr;
     DepthBuffer* depthBuffer = nullptr;
 
+	const CameraInfo* m_mainCameraInfo;
+
 private:
 	void add(RenderFeatureBatch* batch, RenderFeature* owner);
 

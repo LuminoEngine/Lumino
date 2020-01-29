@@ -29,6 +29,14 @@ public:
 	/** 表示する文字列を取得します。 (default: nullptr) */
 	LN_METHOD(Property)
 	Font* font() const;
+	
+	/** フォントサイズを設定します。 (default: Font::DefaultSize) */
+	LN_METHOD(Property)
+	void setFontSize(int value);
+
+	/** フォントサイズを取得します。 (default:  Font::DefaultSize) */
+	LN_METHOD(Property)
+	int fontSize() const;
 
 	/** テキストの色を設定します。(default: Color::Black) */
 	LN_METHOD(Property)

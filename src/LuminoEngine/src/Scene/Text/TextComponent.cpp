@@ -37,9 +37,18 @@ Font* TextComponent::font() const
 	return m_font->font;
 }
 
+void TextComponent::setFontSize(int value)
+{
+	m_font->size = value;
+}
+
+int TextComponent::fontSize() const
+{
+	return m_font->size;
+}
+
 void TextComponent::onRender(RenderingContext* context)
 {
-	//context->setFont(m_font);
 	context->drawTextSprite(m_text, m_color, m_anchorPoint, SpriteBaseDirection::ZMinus, m_font);
 }
 

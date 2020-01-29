@@ -42,6 +42,16 @@ Font* Text::font() const
 	return m_component->font();
 }
 
+void Text::setFontSize(int value)
+{
+	m_component->setFontSize(value);
+}
+
+int Text::fontSize() const
+{
+	return m_component->fontSize();
+}
+
 void Text::setColor(const Color& value)
 {
 	m_component->setColor(value);

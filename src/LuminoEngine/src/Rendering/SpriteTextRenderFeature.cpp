@@ -44,7 +44,7 @@ RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchL
 	m_drawingBaseDirection = baseDirection;
 	m_drawingSamplerState = samplerState;
 
-	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font, text->fontRequester);
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font, text->fontRequester, transform);
 
 	// 3D 空間に書く場合
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D)
@@ -70,7 +70,7 @@ RequestBatchResult SpriteTextRenderFeature::drawChar(detail::RenderFeatureBatchL
 	m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
 	m_drawingSamplerState = nullptr;
 
-	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font, nullptr);
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font, nullptr, transform);
 
 	beginLayout();
 	addLayoutedGlyphItem(codePoint, Vector2::Zero, color, transform);
@@ -87,7 +87,7 @@ RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(detail::RenderFeatu
 	m_drawingBaseDirection = baseDirection;
 	m_drawingSamplerState = nullptr;
 
-	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font, nullptr);
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font, nullptr, transform);
 
 	beginLayout();
 	for (int i = 0; i < glyphRun->glyphCount; i++) {
@@ -202,12 +202,18 @@ void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int sprit
 	}
 }
 
-RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont, FontRequester* fontRequester)
+RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont, FontRequester* fontRequester, const Matrix& transform)
 {
 	float scale = 1.0f;	// TODO: DPI
-	//if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
-	//	scale = 5.0f;
-	//}
+
+	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
+		// View との距離からフォントサイズをスケーリングしてみる。
+		// TODO: Ortho だとうまく動かない
+		auto d = (batchList->m_mainCameraInfo->viewPosition - transform.position());
+		if (!Vector3::nearEqual(d, Vector3::Zero)) {
+			scale = std::floor(Math::lerp(5.0f, 1.0f, std::min(d.length() / 15.0f, 1.0f)));
+		}
+	}
 
 	auto result = RequestBatchResult::Staging;
 
@@ -273,9 +279,11 @@ void SpriteTextRenderFeature::endLayout(GraphicsContext* context)
 	Vector2 posOffset;
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
 		auto area = renderAreaSize();
-		posOffset = Vector2(area.width * m_drawingAnchor.x, area.height * m_drawingAnchor.y);
-		posOffset.x -= area.width;
-		posOffset.y -= area.height;
+		posOffset = Vector2(-area.width * (m_drawingAnchor.x), area.height * (1.0f - m_drawingAnchor.y));
+		//posOffset = Vector2(-area.width * 0.5f, -area.height * 0.5f);
+		//posOffset += Vector2(area.width * (m_drawingAnchor.x - 0.5f), area.height * (m_drawingAnchor.y - 0.5f));
+		//posOffset.x -= area.width * 0.5f;
+		//posOffset.y -= area.height * 0.5f;
 	}
 
 	auto srcTexture = m_cacheRequest.texture;

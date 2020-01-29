@@ -117,6 +117,7 @@ public:
 private:
 	detail::FontManager* m_manager;
 	Ref<detail::FontCore> m_rawFont;
+	float m_lastScaleFactor;
 };
 
 } // namespace detail

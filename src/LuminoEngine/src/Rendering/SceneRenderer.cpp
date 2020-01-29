@@ -231,7 +231,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     // TODO: とりいそぎ
     m_renderFeatureBatchList.renderTarget = renderTarget;
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
-
+	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainCameraInfo;
 
 	RenderPass* defaultRenderPass = pass->renderPass();
 	assert(defaultRenderPass);

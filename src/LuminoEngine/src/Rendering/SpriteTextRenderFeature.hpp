@@ -82,7 +82,7 @@ private:
 
 	// TODO: バッファの準備周りは spriteRenderer と同じ。共通化した方がいいかも
 	void prepareBuffers(GraphicsContext* context, int spriteCount);
-	RequestBatchResult updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont, FontRequester* fontRequester);
+	RequestBatchResult updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont, FontRequester* fontRequester, const Matrix& transform);
 	void beginLayout();
 	void addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform);
 	RequestBatchResult resolveCache(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
