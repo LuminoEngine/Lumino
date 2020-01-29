@@ -199,9 +199,9 @@ void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int sprit
 RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont)
 {
 	float scale = 1.0f;	// TODO: DPI
-	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
-		scale = 5.0f;
-	}
+	//if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
+	//	scale = 5.0f;
+	//}
 
 	auto result = RequestBatchResult::Staging;
 	auto font = FontHelper::resolveFontCore(newFont, scale);
@@ -257,9 +257,9 @@ void SpriteTextRenderFeature::endLayout(GraphicsContext* context)
 	Vector2 posOffset;
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
 		auto area = renderAreaSize();
-		posOffset = Vector2(area.width * m_drawingAnchor.x, area.width * m_drawingAnchor.y);
-		posOffset.x -= area.width * 0.5f;
-		posOffset.y -= area.height * 0.5f;
+		posOffset = Vector2(area.width * m_drawingAnchor.x, area.height * m_drawingAnchor.y);
+		posOffset.x -= area.width;
+		posOffset.y -= area.height;
 	}
 
 	auto srcTexture = m_cacheRequest.texture;

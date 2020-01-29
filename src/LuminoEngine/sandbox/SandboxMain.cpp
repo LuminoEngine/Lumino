@@ -532,19 +532,24 @@ int main(int argc, char** argv)
 		//c->setShadingModel(ShadingModel::UnLighting);
 		//Engine::world()->add(obj);
 
-
-		auto text1 = makeObject<UITextBlock>();
-		
-		//field1->setWidth(200);
-		//field1->setHeight(30);
-		//text1->setText(u"Hello, Lumino!");
+		auto text1 = makeObject<Text>();
 		text1->setText(u"ASDFGH");
-		text1->setPosition(0, 50, 0);
-		text1->setHorizontalAlignment(HAlignment::Center);
-		text1->setVerticalAlignment(VAlignment::Center);
-		text1->setFontSize(30);
-		text1->setTextColor(Color::DimGray);
-		Engine::mainUIView()->addElement(text1);
+		text1->setColor(Color::Red);
+		//text1->setAnchorPoint(Vector2(0, 1));
+		Engine::world()->add(text1);
+
+		//auto text1 = makeObject<UITextBlock>();
+		//
+		////field1->setWidth(200);
+		////field1->setHeight(30);
+		////text1->setText(u"Hello, Lumino!");
+		//text1->setText(u"ASDFGH");
+		//text1->setPosition(0, 50, 0);
+		//text1->setHorizontalAlignment(HAlignment::Center);
+		//text1->setVerticalAlignment(VAlignment::Center);
+		//text1->setFontSize(30);
+		//text1->setTextColor(Color::DimGray);
+		//Engine::mainUIView()->addElement(text1);
 	}
 #endif
 

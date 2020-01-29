@@ -78,6 +78,7 @@
 #include "LuminoEngine/Scene/CameraOrbitControlComponent.hpp"
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
+#include "LuminoEngine/Scene/Text/Text.hpp"
 #include "LuminoEngine/Scene/StaticMesh.hpp"
 #include "LuminoEngine/Scene/RigidBodyComponent.hpp"
 

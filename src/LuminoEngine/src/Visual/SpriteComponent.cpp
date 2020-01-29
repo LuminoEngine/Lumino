@@ -261,9 +261,6 @@ void SpriteComponent::onRender(RenderingContext* context)
     context->drawSprite(
         Matrix(), renderSize, anchorPoint, renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
-
-
-	context->drawTextSprite(u"ASDFGH", Vector2(0, 0), SpriteBaseDirection::ZMinus);
 }
 
 void SpriteComponent::serialize(Archive& ar)

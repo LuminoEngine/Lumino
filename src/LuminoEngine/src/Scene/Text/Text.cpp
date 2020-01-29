@@ -1,0 +1,56 @@
+﻿
+#include "Internal.hpp"
+#include <LuminoEngine/Scene/Text/TextComponent.hpp>
+#include <LuminoEngine/Scene/Text/Text.hpp>
+
+namespace ln {
+
+//==============================================================================
+// Text
+
+LN_OBJECT_IMPLEMENT(Text, VisualObject) {}
+
+Text::Text()
+{
+}
+
+void Text::init()
+{
+    VisualObject::init();
+    m_component = makeObject<TextComponent>();
+    addComponent(m_component);
+    setMainVisualComponent(m_component);
+}
+
+void Text::setText(StringRef value)
+{
+	m_component->setText(value);
+}
+
+const String& Text::text() const
+{
+	return m_component->text();
+}
+
+void Text::setColor(const Color& value)
+{
+	m_component->setColor(value);
+}
+
+const Color& Text::color() const
+{
+	return m_component->color();
+}
+
+void Text::setAnchorPoint(const Vector2& value)
+{
+    m_component->setAnchorPoint(value);
+}
+
+const Vector2& Text::anchorPoint() const
+{
+    return m_component->anchorPoint();
+}
+
+} // namespace ln
+

@@ -154,7 +154,7 @@ public:
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
     void drawMesh(Mesh* mesh, int sectionIndex);
 
-	void drawTextSprite(const StringRef& text, const Vector2& anchor, SpriteBaseDirection baseDirection);
+	void drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection);
 
 
     // font が nullptr の場合は defaultFont
