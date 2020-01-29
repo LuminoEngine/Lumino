@@ -574,7 +574,7 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
 
-void RenderingContext::drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection)
+void RenderingContext::drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
 {
 	if (text.isEmpty()) return;
 
@@ -585,6 +585,7 @@ void RenderingContext::drawTextSprite(const StringRef& text, const Color& color,
 	formattedText->color = color;	// TODO: m_builder->textColor(); の方がいいか？
 	formattedText->area = Rect();
 	formattedText->textAlignment = TextAlignment::Forward;
+	formattedText->fontRequester = font;
 
 	if (!formattedText->font) {
 		formattedText->font = m_manager->fontManager()->defaultFont();

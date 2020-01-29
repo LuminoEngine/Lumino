@@ -18,6 +18,7 @@ class Mesh;
 class MeshContainer;
 class RenderViewPoint;
 namespace detail {
+class FontRequester;
 class FlexGlyphRun;
 class RenderingManager;
 class DrawElementList;
@@ -154,7 +155,7 @@ public:
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
     void drawMesh(Mesh* mesh, int sectionIndex);
 
-	void drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection);
+	void drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font);
 
 
     // font が nullptr の場合は defaultFont

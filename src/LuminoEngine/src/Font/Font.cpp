@@ -158,5 +158,37 @@ detail::FontCore* Font::resolveFontCore(float dpiScale)
     return m_rawFont;
 }
 
+//detail::FontCore* Font::resolveFontCore(const detail::FontRequester& fontRequester)
+//{
+//	if (!m_rawFont) {
+//		m_rawFont = m_manager->(m_desc, dpiScale);
+//	}
+//	return m_rawFont;
+//}
+
+
+namespace detail {
+
+FontRequester::FontRequester()
+	: m_manager(EngineDomain::fontManager())
+	, size(Font::DefaultSize)
+{
+}
+
+detail::FontCore* FontRequester::resolveFontCore(float scaleFactor)
+{
+	if (!m_rawFont) {
+		FontDesc desc;
+		desc.Family = (font) ? font->family() : String::Empty;
+		desc.Size = size;
+		desc.isBold = isBold;
+		desc.isItalic = isItalic;
+		desc.isAntiAlias = isAntiAlias;
+		m_rawFont = m_manager->lookupFontCore(desc, scaleFactor);
+	}
+	return m_rawFont;
+}
+
+} // namespace detail
 } // namespace ln
 

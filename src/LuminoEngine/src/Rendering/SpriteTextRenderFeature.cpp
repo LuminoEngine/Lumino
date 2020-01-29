@@ -44,7 +44,7 @@ RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchL
 	m_drawingBaseDirection = baseDirection;
 	m_drawingSamplerState = samplerState;
 
-	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font);
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font, text->fontRequester);
 
 	// 3D 空間に書く場合
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D)
@@ -70,7 +70,7 @@ RequestBatchResult SpriteTextRenderFeature::drawChar(detail::RenderFeatureBatchL
 	m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
 	m_drawingSamplerState = nullptr;
 
-	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font, nullptr);
 
 	beginLayout();
 	addLayoutedGlyphItem(codePoint, Vector2::Zero, color, transform);
@@ -87,7 +87,7 @@ RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(detail::RenderFeatu
 	m_drawingBaseDirection = baseDirection;
 	m_drawingSamplerState = nullptr;
 
-	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font, nullptr);
 
 	beginLayout();
 	for (int i = 0; i < glyphRun->glyphCount; i++) {
@@ -202,7 +202,7 @@ void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int sprit
 	}
 }
 
-RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont)
+RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont, FontRequester* fontRequester)
 {
 	float scale = 1.0f;	// TODO: DPI
 	//if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
@@ -210,13 +210,23 @@ RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(de
 	//}
 
 	auto result = RequestBatchResult::Staging;
-	auto font = FontHelper::resolveFontCore(newFont, scale);
-	if (font != m_currentFont && m_batchData.spriteCount > 0) {
+
+	FontCore* newfontCore = nullptr;
+
+	if (fontRequester) {
+		newfontCore = fontRequester->resolveFontCore(scale);
+	}
+	else {
+		newfontCore = FontHelper::resolveFontCore(newFont, scale);
+	}
+
+	if (newfontCore != m_currentFont && m_batchData.spriteCount > 0) {
 		submitBatch(context, batchList);
 		result = RequestBatchResult::Submitted;
-        m_renderingFonts.push_back(font);
+		m_renderingFonts.push_back(newfontCore);
 	}
-	m_currentFont = font;
+	m_currentFont = newfontCore;
+
 	return result;
 }
 

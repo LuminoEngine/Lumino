@@ -30,11 +30,11 @@ public:
 	LN_METHOD(Property)
 	Font* font() const;
 
-	/** テキストの色を設定します。(default: Color::Gray) */
+	/** テキストの色を設定します。(default: Color::Black) */
 	LN_METHOD(Property)
 	void setColor(const Color& value);
 
-	/** テキストの色を取得します。 */
+	/** テキストの色を取得します。(default: Color::Black) */
 	LN_METHOD(Property)
 	const Color& color() const;
 

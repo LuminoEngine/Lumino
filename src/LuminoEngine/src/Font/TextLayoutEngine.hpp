@@ -6,6 +6,7 @@ class Font;
 namespace detail {
 class FontCore;
 class FlexText;
+class FontRequester;
 
 class TextRun
 	: public RefObject
@@ -20,10 +21,12 @@ class FormattedText
 {
 public:
 	String text;
-	Ref<Font> font;
+	Ref<Font> font;	// TODO: obsolete
 	Color color;
 	Rect area;
 	TextAlignment textAlignment = TextAlignment::Forward;
+
+	Ref<FontRequester> fontRequester;
 };
 
 
