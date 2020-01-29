@@ -516,7 +516,7 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
     // > なお、WPF と同じ結果にするには 72 を指定する。https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
     // > WPF は活版印刷の文化に合わせるよりも、自身が基準としている DPI(96) と合わせることを選択している。
     // > 先のリンクにもあるが、12pt に合わせるには FontSize=16 とする必要がある。
-	static const int resolution = 96;
+	static const int resolution = 72;
 
 	if (LN_REQUIRE(manager)) return false;
 	FontCore::init(manager);

@@ -524,7 +524,7 @@ int main(int argc, char** argv)
 		s->setAnchorPoint(Vector2(0.5, 0));
 		//s->setBlendMode(BlendMode::Normal);
 		//s->setShadingModel(ShadingModel::UnLighting);
-		Engine::world()->add(s);
+		//Engine::world()->add(s);
 
 		//auto c = makeObject<EmojiComponent>();
 		//auto obj = makeObject<WorldObject>();
@@ -536,20 +536,20 @@ int main(int argc, char** argv)
 		text1->setText(u"ASDFGH");
 		text1->setColor(Color::Red);
 		//text1->setAnchorPoint(Vector2(0, 1));
-		Engine::world()->add(text1);
+		//Engine::world()->add(text1);
 
-		//auto text1 = makeObject<UITextBlock>();
-		//
-		////field1->setWidth(200);
-		////field1->setHeight(30);
-		////text1->setText(u"Hello, Lumino!");
-		//text1->setText(u"ASDFGH");
-		//text1->setPosition(0, 50, 0);
-		//text1->setHorizontalAlignment(HAlignment::Center);
-		//text1->setVerticalAlignment(VAlignment::Center);
-		//text1->setFontSize(30);
-		//text1->setTextColor(Color::DimGray);
-		//Engine::mainUIView()->addElement(text1);
+		auto text2 = makeObject<UITextBlock>();
+		
+		//field1->setWidth(200);
+		//field1->setHeight(30);
+		//text1->setText(u"Hello, Lumino!");
+		text2->setText(u"Hello");
+		text2->setPosition(0, 50, 0);
+		text2->setHorizontalAlignment(HAlignment::Center);
+		text2->setVerticalAlignment(VAlignment::Center);
+		text2->setFontSize(20);
+		text2->setTextColor(Color::DimGray);
+		Engine::mainUIView()->addElement(text2);
 	}
 #endif
 

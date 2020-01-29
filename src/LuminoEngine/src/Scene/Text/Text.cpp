@@ -32,6 +32,16 @@ const String& Text::text() const
 	return m_component->text();
 }
 
+void Text::setFont(Font* value)
+{
+	m_component->setFont(value);
+}
+
+Font* Text::font() const
+{
+	return m_component->font();
+}
+
 void Text::setColor(const Color& value)
 {
 	m_component->setColor(value);

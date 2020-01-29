@@ -45,7 +45,7 @@ public:
 
 	
 
-	RequestBatchResult drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
+	RequestBatchResult drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform);
 	RequestBatchResult drawChar(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform);
 	RequestBatchResult drawFlexGlyphRun(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
 
@@ -114,6 +114,7 @@ private:
 	Matrix m_drawingTransform;
 	Vector2 m_drawingAnchor;
 	SpriteBaseDirection m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
+	SamplerState* m_drawingSamplerState = nullptr;
 
 	//Ref<InternalSpriteTextRender> m_internal;
 	//GraphicsContext* m_drawingGraphicsContext;
@@ -137,17 +138,7 @@ public:
 	detail::FlexGlyphRun* glyphRun = nullptr;	// TODO: RefObj
 	Vector2 anchor;
 	SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
-	//Ref<Font> font;
-
-	//virtual FontCore* getFontCore(float dpiScale) override
-	//{
-	//	if (glyphRun) {
-	//		return glyphRun->font;
-	//	}
-	//	else {
-	//		return FontHelper::resolveFontCore(formattedText->font, dpiScale);
-	//	}
-	//}
+	Ref<SamplerState> samplerState;
 
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 	{
@@ -155,7 +146,7 @@ public:
 			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, context, glyphRun->font, glyphRun, anchor, baseDirection, combinedWorldMatrix());
 		}
 		else {
-			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, context, formattedText, anchor, baseDirection, combinedWorldMatrix());
+			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, context, formattedText, anchor, baseDirection, samplerState, combinedWorldMatrix());
 		}
     }
 };

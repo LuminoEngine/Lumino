@@ -21,6 +21,14 @@ public:
 	/** 表示する文字列を取得します。 */
 	LN_METHOD(Property)
 	const String& text() const;
+	
+	/** 表示する文字列を設定します。 (default: nullptr) */
+	LN_METHOD(Property)
+	void setFont(Font* value);
+
+	/** 表示する文字列を取得します。 (default: nullptr) */
+	LN_METHOD(Property)
+	Font* font() const;
 
 	/** テキストの色を設定します。(default: Color::Gray) */
 	LN_METHOD(Property)

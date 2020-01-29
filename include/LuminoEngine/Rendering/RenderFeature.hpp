@@ -49,6 +49,7 @@ public:
 	
 	// SpriteText で使っている。 TODO: これは MaskTexture みたいな位置づけにしてもいいかも。
 	Texture* overrideTexture = nullptr;
+	SamplerState* overrideSamplerState = nullptr;	// 共通の FontCache を AA 有無で描画したいときの区別
 
     // Extension 用。RenderPass を開始しない。
     bool ensureRenderPassOutside = false;

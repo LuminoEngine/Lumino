@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
@@ -35,12 +36,13 @@ void SpriteTextRenderFeature::init(RenderingManager* manager)
 	m_batchData.spriteCount = 0;
 }
 
-RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform)
+RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Ref<SamplerState>& samplerState, const Matrix& transform)
 {
 	m_drawingFormattedText = text;
 	m_drawingTransform = transform;
 	m_drawingAnchor = anchor;
 	m_drawingBaseDirection = baseDirection;
+	m_drawingSamplerState = samplerState;
 
 	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font);
 
@@ -66,6 +68,7 @@ RequestBatchResult SpriteTextRenderFeature::drawChar(detail::RenderFeatureBatchL
 {
 	m_drawingAnchor = Vector2::Zero;
 	m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
+	m_drawingSamplerState = nullptr;
 
 	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
 
@@ -82,6 +85,7 @@ RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(detail::RenderFeatu
 {
 	m_drawingAnchor = anchor;
 	m_drawingBaseDirection = baseDirection;
+	m_drawingSamplerState = nullptr;
 
 	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
 
@@ -123,8 +127,10 @@ void SpriteTextRenderFeature::submitBatch(GraphicsContext* context, detail::Rend
 	auto batch = batchList->addNewBatch<Batch>(this);
 	batch->data = m_batchData;
 	batch->overrideTexture = m_cacheTexture;
-
-    //static_cast<Texture2D*>(m_cacheTexture)->clear(Color::Red);
+	if (m_drawingSamplerState)
+		batch->overrideSamplerState = m_drawingSamplerState;
+	else
+		batch->overrideSamplerState = detail::EngineDomain::graphicsManager()->defaultSamplerState();
 
 	m_batchData.spriteOffset = m_batchData.spriteOffset + m_batchData.spriteCount;
 	m_batchData.spriteCount = 0;

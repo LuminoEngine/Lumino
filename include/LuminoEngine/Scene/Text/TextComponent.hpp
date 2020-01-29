@@ -17,12 +17,20 @@ public:
 	/** 表示する文字列を取得します。 */
 	LN_METHOD(Property)
 	const String& text() const { return m_text; }
+	
+	/** 表示する文字列を設定します。 (default: nullptr) */
+	LN_METHOD(Property)
+	void setFont(Font* value);
 
-	/** テキストの色を設定します。(default: Color::Gray) */
+	/** 表示する文字列を取得します。 (default: nullptr) */
+	LN_METHOD(Property)
+	Font* font() const;
+
+	/** テキストの色を設定します。 (default: Color::Gray) */
 	LN_METHOD(Property)
 	void setColor(const Color& value) { m_color = value; }
 
-	/** テキストの色を取得します。 */
+	/** テキストの色を取得します。 (default: Color::Gray) */
 	LN_METHOD(Property)
 	const Color& color() const { return m_color; }
 
@@ -46,6 +54,7 @@ private:
 	String m_text;
 	Color m_color;
     Vector2 m_anchorPoint;
+	Ref<Font> m_font;
 };
 
 } // namespace ln

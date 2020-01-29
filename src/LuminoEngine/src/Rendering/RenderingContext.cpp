@@ -597,6 +597,11 @@ void RenderingContext::drawTextSprite(const StringRef& text, const Color& color,
 	element->formattedText = formattedText;
 	element->anchor = anchor;
 	element->baseDirection = baseDirection;
+
+	if (baseDirection != SpriteBaseDirection::Basic2D) {
+		// is 3D.
+		element->samplerState = detail::EngineDomain::graphicsManager()->linearSamplerState();
+	}
 }
 
 void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
