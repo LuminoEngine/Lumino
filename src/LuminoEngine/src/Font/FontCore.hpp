@@ -20,6 +20,8 @@ struct FontGlobalMetrics
 	//int bitmapMaxWidth;
 	//int bitmapMaxHeight;
 	bool outlineSupported;
+
+	float virutalSpaceFactor;
 };
 
 struct FontGlyphMetrics

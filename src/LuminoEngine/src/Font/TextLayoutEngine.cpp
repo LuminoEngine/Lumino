@@ -36,6 +36,7 @@ void TextLayoutEngine::layout(FontCore* font, const Char* text, size_t length, c
     m_alignment = alignment;
     m_layoutLines.clear();
     m_font->getGlobalMetrics(&m_globalMetrics);
+	m_renderAreaSize = Size::Zero;
 
 	resetStream();
     layoutTextHorizontal(LayoutMode::Measure);

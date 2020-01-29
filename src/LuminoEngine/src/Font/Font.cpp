@@ -9,6 +9,8 @@ namespace ln {
 //==============================================================================
 // Font
 
+const int Font::DefaultSize = 12.0f;
+
 Ref<Font> Font::create()
 {
     return makeObject<Font>();

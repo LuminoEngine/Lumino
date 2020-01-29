@@ -16,6 +16,8 @@ class Font
     : public Object
 {
 public:
+	static const int DefaultSize;
+
     /** デフォルトのスタイルに基づいてフォントを作成します。 */
     static Ref<Font> create();
 
@@ -93,5 +95,6 @@ public:
 	static bool equalsFontDesc(const Font* font, const FontDesc& desc) { return font->m_desc.equals(desc); }
     static const FontDesc& getFontDesc(const Font* font) { return font->m_desc; }
 };
+
 } // namespace detail
 } // namespace ln

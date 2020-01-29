@@ -35,12 +35,24 @@ void SpriteTextRenderFeature::init(RenderingManager* manager)
 	m_batchData.spriteCount = 0;
 }
 
-RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Matrix& transform)
+RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform)
 {
-	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font);
-
 	m_drawingFormattedText = text;
 	m_drawingTransform = transform;
+	m_drawingAnchor = anchor;
+	m_drawingBaseDirection = baseDirection;
+
+	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, text->font);
+
+	// 3D 空間に書く場合
+	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D)
+	{
+		FontGlobalMetrics metrix;
+		m_currentFont->getGlobalMetrics(&metrix);
+		//float h = std::abs(metrix.descender - metrix.ascender);
+		m_drawingTransform.scale(metrix.virutalSpaceFactor);
+	}
+
 	beginLayout();
 	TextLayoutEngine::layout(m_currentFont, text->text.c_str(), text->text.length(), text->area, 0, text->textAlignment);
 	auto result2 = resolveCache(batchList, context);
@@ -52,6 +64,9 @@ RequestBatchResult SpriteTextRenderFeature::drawText(detail::RenderFeatureBatchL
 
 RequestBatchResult SpriteTextRenderFeature::drawChar(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform)
 {
+	m_drawingAnchor = Vector2::Zero;
+	m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
+
 	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
 
 	beginLayout();
@@ -63,8 +78,11 @@ RequestBatchResult SpriteTextRenderFeature::drawChar(detail::RenderFeatureBatchL
 	return (result == RequestBatchResult::Submitted || result2 == RequestBatchResult::Submitted) ? RequestBatchResult::Submitted : RequestBatchResult::Staging;
 }
 
-RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Matrix& transform)
+RequestBatchResult SpriteTextRenderFeature::drawFlexGlyphRun(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform)
 {
+	m_drawingAnchor = anchor;
+	m_drawingBaseDirection = baseDirection;
+
 	auto result = updateCurrentFontAndFlushIfNeeded(batchList, context, font);
 
 	beginLayout();
@@ -180,8 +198,13 @@ void SpriteTextRenderFeature::prepareBuffers(GraphicsContext* context, int sprit
 
 RequestBatchResult SpriteTextRenderFeature::updateCurrentFontAndFlushIfNeeded(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* newFont)
 {
+	float scale = 1.0f;	// TODO: DPI
+	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
+		scale = 5.0f;
+	}
+
 	auto result = RequestBatchResult::Staging;
-	auto font = FontHelper::resolveFontCore(newFont, 1.0f);	// TODO: DPI
+	auto font = FontHelper::resolveFontCore(newFont, scale);
 	if (font != m_currentFont && m_batchData.spriteCount > 0) {
 		submitBatch(context, batchList);
 		result = RequestBatchResult::Submitted;
@@ -225,12 +248,19 @@ RequestBatchResult SpriteTextRenderFeature::resolveCache(detail::RenderFeatureBa
 
 void SpriteTextRenderFeature::endLayout(GraphicsContext* context)
 {
-
 	size_t spriteCount = m_batchData.spriteOffset + m_batchData.spriteCount;
 	size_t dataCount = m_glyphLayoutDataList.size();
 	prepareBuffers(context, spriteCount + dataCount);
 
 	m_mappedVertices = static_cast<Vertex*>(m_vertexBuffer->map(MapMode::Write));
+
+	Vector2 posOffset;
+	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
+		auto area = renderAreaSize();
+		posOffset = Vector2(area.width * m_drawingAnchor.x, area.width * m_drawingAnchor.y);
+		posOffset.x -= area.width * 0.5f;
+		posOffset.y -= area.height * 0.5f;
+	}
 
 	auto srcTexture = m_cacheRequest.texture;
 	Size texSizeInv(1.0f / srcTexture->width(), 1.0f / srcTexture->height());
@@ -247,16 +277,18 @@ void SpriteTextRenderFeature::endLayout(GraphicsContext* context)
 		uvSrcRect.y *= texSizeInv.height;
 		uvSrcRect.height *= texSizeInv.height;
 
-		Rect dstRect(data.position, (float)srcRect.width, (float)srcRect.height);
+		Rect dstRect(data.position + posOffset, (float)srcRect.width, (float)srcRect.height);
 		putRectangle(vertices, data.transform, dstRect, uvSrcRect, data.color);
 
 		m_batchData.spriteCount++;
 	}
 }
 
-void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color)
+void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color) const
 {
 	if (rect.isEmpty()) return;		// 矩形がつぶれているので書く必要はない
+
+	float signY = (m_drawingBaseDirection == SpriteBaseDirection::Basic2D) ? 1.0f : -1.0f;
 
 	float lu = srcUVRect.getLeft();
 	float tv = srcUVRect.getTop();
@@ -264,31 +296,31 @@ void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transfo
 	float bv = srcUVRect.getBottom();
 
 	buffer[0].color = color;
-	buffer[0].position.set(rect.getLeft(), rect.getTop(), 0);
+	buffer[0].position.set(rect.getLeft(), rect.getTop() * signY, 0);
 	buffer[0].position.transformCoord(transform);
 	buffer[0].uv.set(lu, tv);	// 左上
 	buffer[0].normal = Vector3::UnitZ;
 
 	buffer[1].color = color;
-	buffer[1].position.set(rect.getRight(), rect.getTop(), 0);
+	buffer[1].position.set(rect.getRight(), rect.getTop() * signY, 0);
 	buffer[1].position.transformCoord(transform);
 	buffer[1].uv.set(ru, tv);	// 右上
 	buffer[1].normal = Vector3::UnitZ;
 
 	buffer[2].color = color;
-	buffer[2].position.set(rect.getLeft(), rect.getBottom(), 0);
+	buffer[2].position.set(rect.getLeft(), rect.getBottom() * signY, 0);
 	buffer[2].position.transformCoord(transform);
 	buffer[2].uv.set(lu, bv);	// 左下
 	buffer[2].normal = Vector3::UnitZ;
 
 	buffer[3].color = color;
-	buffer[3].position.set(rect.getRight(), rect.getBottom(), 0);
+	buffer[3].position.set(rect.getRight(), rect.getBottom() * signY, 0);
 	buffer[3].position.transformCoord(transform);
 	buffer[3].uv.set(ru, bv);	// 右下
 	buffer[3].normal = Vector3::UnitZ;
 
 	// pixel snap
-	if (1) {
+	if (isPixelSnapEnabled()) {
 		for (int i = 0; i < 4; i++) {
 			buffer[i].position.x = std::round(buffer[i].position.x);
 			buffer[i].position.y = std::round(buffer[i].position.y);

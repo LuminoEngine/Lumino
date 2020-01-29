@@ -9,6 +9,7 @@
 #include FT_STROKER_H
 #include FT_SYNTHESIS_H
 #include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include "FontManager.hpp"
 #include "FreeTypeFont.hpp"
 
@@ -531,6 +532,14 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
 	if (m_face->num_fixed_sizes == 0) {
+		// For 3D space text drawing.
+		{
+			FT_F26Dot6 size = Font::DefaultSize * 64;
+			err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
+			getGlobalMetricsInternal(&m_engineDefaultGlobalMetrix, true);
+			if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+		}
+
 		// FT_Set_Char_Size() はポイントサイズと解像度をもとに m_face->size->metrics を作成する
 		float size = static_cast<float>(m_desc.Size) * 64.0f;
 		err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
@@ -587,31 +596,7 @@ void FreeTypeFont::dispose()
 
 void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
-	if (LN_REQUIRE(outMetrics)) return;
-	if (LN_REQUIRE(m_face)) return;
-
-    auto rawHeight = m_face->size->metrics.height;
-    auto rawBBoxHeight = m_face->bbox.yMax - m_face->bbox.yMin;
-
-    float height = static_cast<float>(m_face->size->metrics.height) / 64.0f;
-    float bboxHeight = static_cast<float>(rawBBoxHeight) / 64.0f;
-
-	float em_size = 1.0 * m_face->units_per_EM;
-    float x_scale = 1.0f;//m_face->size->metrics.x_ppem / em_size;
-	float y_scale = 1.0f;//m_face->size->metrics.y_ppem / em_size;
-    float xMin = std::floor(FLValueToFloatPx(m_face->bbox.xMin));//std::floor(x_scale * m_face->bbox.xMin);
-	float yMin = std::floor(FLValueToFloatPx(m_face->bbox.yMin)); //std::floor(y_scale * m_face->bbox.yMin);
-	float xMax = std::ceil(FLValueToFloatPx(m_face->bbox.xMax)); //std::ceil(x_scale * m_face->bbox.xMax);
-	float yMax = std::ceil(FLValueToFloatPx(m_face->bbox.yMax));//std::ceil(y_scale * m_face->bbox.yMax);
-/*
-    FT_FL
-    FT_FloorFix;
-    FT_MulFix;
-*/
-	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
-	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
-	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
-	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
+	getGlobalMetricsInternal(outMetrics, false);
 }
 
 void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
@@ -742,6 +727,44 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 void FreeTypeFont::decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo)
 {
 	LN_NOTIMPLEMENTED();
+}
+
+void FreeTypeFont::getGlobalMetricsInternal(FontGlobalMetrics* outMetrics, bool fromInit) const
+{
+	if (LN_REQUIRE(outMetrics)) return;
+	if (LN_REQUIRE(m_face)) return;
+
+	auto rawHeight = m_face->size->metrics.height;
+	auto rawBBoxHeight = m_face->bbox.yMax - m_face->bbox.yMin;
+
+	float height = static_cast<float>(m_face->size->metrics.height) / 64.0f;
+	float bboxHeight = static_cast<float>(rawBBoxHeight) / 64.0f;
+
+	float em_size = 1.0 * m_face->units_per_EM;
+	float x_scale = 1.0f;//m_face->size->metrics.x_ppem / em_size;
+	float y_scale = 1.0f;//m_face->size->metrics.y_ppem / em_size;
+	float xMin = std::floor(FLValueToFloatPx(m_face->bbox.xMin));//std::floor(x_scale * m_face->bbox.xMin);
+	float yMin = std::floor(FLValueToFloatPx(m_face->bbox.yMin)); //std::floor(y_scale * m_face->bbox.yMin);
+	float xMax = std::ceil(FLValueToFloatPx(m_face->bbox.xMax)); //std::ceil(x_scale * m_face->bbox.xMax);
+	float yMax = std::ceil(FLValueToFloatPx(m_face->bbox.yMax));//std::ceil(y_scale * m_face->bbox.yMax);
+/*
+	FT_FL
+	FT_FloorFix;
+	FT_MulFix;
+*/
+	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
+	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
+	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
+	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
+
+	if (fromInit) {
+		outMetrics->virutalSpaceFactor = 1.0f;
+	}
+	else {
+		float d1 = std::abs(m_engineDefaultGlobalMetrix.descender - m_engineDefaultGlobalMetrix.ascender);
+		float d2 = std::abs(outMetrics->descender - outMetrics->ascender);
+		outMetrics->virutalSpaceFactor = (1.0f / d1) * (d1 / d2);
+	}
 }
 
 bool FreeTypeFont::getOutlineTextMetrix()

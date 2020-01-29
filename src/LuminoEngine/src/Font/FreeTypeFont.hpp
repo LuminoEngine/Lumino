@@ -49,6 +49,7 @@ public:
 	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) override;
 
 private:
+	void getGlobalMetricsInternal(FontGlobalMetrics* outMetrics, bool fromInit) const;
 	bool getOutlineTextMetrix();
 	bool getBitmapTextMetrix();
 	Bitmap2D* FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap);
@@ -57,6 +58,7 @@ private:
 	FontDesc m_desc;
 	FT_Face m_face;
 	FT_Int32 m_loadFlags;
+	FontGlobalMetrics m_engineDefaultGlobalMetrix;
 	Ref<Bitmap2D> m_internalCacheBitmapGray;
 	Ref<Bitmap2D> m_internalCacheBitmapRGBA;
 };

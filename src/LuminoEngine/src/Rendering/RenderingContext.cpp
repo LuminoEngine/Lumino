@@ -574,7 +574,31 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
 
-void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment, TextCrossAlignment crossAlignment/*, const Color& color, Font* font*/)
+void RenderingContext::drawTextSprite(const StringRef& text, const Vector2& anchor, SpriteBaseDirection baseDirection)
+{
+
+	// TODO: cache
+	auto formattedText = makeRef<detail::FormattedText>();
+	formattedText->text = text;
+	formattedText->font = m_builder->font();
+	formattedText->color = m_builder->textColor();
+	formattedText->area = Rect();
+	formattedText->textAlignment = TextAlignment::Forward;
+
+	if (!formattedText->font) {
+		formattedText->font = m_manager->fontManager()->defaultFont();
+	}
+
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
+		m_manager->spriteTextRenderFeature(),
+		m_builder->spriteTextRenderFeatureStageParameters());
+	element->formattedText = formattedText;
+	element->anchor = anchor;
+	element->baseDirection = baseDirection;
+}
+
+void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
 {
 
     // TODO: cache
@@ -594,6 +618,7 @@ void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAli
         m_manager->spriteTextRenderFeature(),
         m_builder->spriteTextRenderFeatureStageParameters());
     element->formattedText = formattedText;
+	element->baseDirection = SpriteBaseDirection::Basic2D;
 
     // TODO
     //detail::Sphere sphere;

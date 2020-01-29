@@ -154,8 +154,11 @@ public:
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
     void drawMesh(Mesh* mesh, int sectionIndex);
 
+	void drawTextSprite(const StringRef& text, const Vector2& anchor, SpriteBaseDirection baseDirection);
+
+
     // font が nullptr の場合は defaultFont
-    void drawText(const StringRef& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward/*, const Color& color, Font* font = nullptr*/);
+    void drawText(const StringRef& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward/*, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward*//*, const Color& color, Font* font = nullptr*/);
 	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr, const Matrix& transform = Matrix::Identity);
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);

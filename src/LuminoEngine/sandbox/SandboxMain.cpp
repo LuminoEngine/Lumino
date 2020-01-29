@@ -373,11 +373,11 @@ int main(int argc, char** argv)
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
-    Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
-    //Engine::mainCamera()->setPosition(0, 0, 25);
-    Engine::mainCamera()->setBackgroundColor(Color::Gray);
-	//Engine::mainCamera()->setPosition(0, 1, -5);
 	Camera* camera = Engine::mainCamera();
+	camera->addComponent(makeObject<CameraOrbitControlComponent>());
+    //Engine::mainCamera()->setPosition(0, 0, 25);
+	camera->setBackgroundColor(Color::Gray);
+	//Engine::mainCamera()->setPosition(0, 1, -5);
 	camera->setProjectionMode(ProjectionMode::Orthographic);
 	camera->setOrthographicSize(16, 12);
 
@@ -509,6 +509,8 @@ int main(int argc, char** argv)
 
 #if 1
 	{
+		Engine::mainCamera()->setBackgroundColor(Color::White);
+
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
 		auto t = Texture2D::loadEmoji(u"🌱");
@@ -517,6 +519,9 @@ int main(int argc, char** argv)
 		t->setSamplerState(s2);
 
 		auto s = Sprite::create(t, 1, 1);
+		//s->setPosition(0, 1, 0);
+		s->setScale(2);
+		s->setAnchorPoint(Vector2(0.5, 0));
 		//s->setBlendMode(BlendMode::Normal);
 		//s->setShadingModel(ShadingModel::UnLighting);
 		Engine::world()->add(s);
@@ -526,6 +531,20 @@ int main(int argc, char** argv)
 		//obj->addComponent(c);
 		//c->setShadingModel(ShadingModel::UnLighting);
 		//Engine::world()->add(obj);
+
+
+		auto text1 = makeObject<UITextBlock>();
+		
+		//field1->setWidth(200);
+		//field1->setHeight(30);
+		//text1->setText(u"Hello, Lumino!");
+		text1->setText(u"ASDFGH");
+		text1->setPosition(0, 50, 0);
+		text1->setHorizontalAlignment(HAlignment::Center);
+		text1->setVerticalAlignment(VAlignment::Center);
+		text1->setFontSize(30);
+		text1->setTextColor(Color::DimGray);
+		Engine::mainUIView()->addElement(text1);
 	}
 #endif
 

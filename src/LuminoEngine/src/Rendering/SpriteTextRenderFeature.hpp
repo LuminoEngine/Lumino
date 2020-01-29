@@ -43,9 +43,11 @@ public:
 	SpriteTextRenderFeature();
 	void init(RenderingManager* manager);
 
-	RequestBatchResult drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Matrix& transform);
+	
+
+	RequestBatchResult drawText(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, const FormattedText* text, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
 	RequestBatchResult drawChar(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, uint32_t codePoint, const Color& color, const Matrix& transform);
-	RequestBatchResult drawFlexGlyphRun(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Matrix& transform);
+	RequestBatchResult drawFlexGlyphRun(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Font* font, const FlexGlyphRun* glyphRun, const Vector2& anchor, SpriteBaseDirection baseDirection, const Matrix& transform);
 
 protected:
 	// RenderFeature interface
@@ -85,7 +87,8 @@ private:
 	void addLayoutedGlyphItem(uint32_t codePoint, const Vector2& pos, const Color& color, const Matrix& transform);
 	RequestBatchResult resolveCache(detail::RenderFeatureBatchList* batchList, GraphicsContext* context);
 	void endLayout(GraphicsContext* context);
-	static void putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
+	void putRectangle(Vertex* buffer, const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color) const;
+	bool isPixelSnapEnabled() const { return m_drawingBaseDirection == SpriteBaseDirection::Basic2D; }
 
 	//
 	//void flushInternal(GraphicsContext* context, FontGlyphTextureCache* cache);
@@ -109,6 +112,8 @@ private:
 	// for onPlacementGlyph
 	const FormattedText* m_drawingFormattedText;
 	Matrix m_drawingTransform;
+	Vector2 m_drawingAnchor;
+	SpriteBaseDirection m_drawingBaseDirection = SpriteBaseDirection::Basic2D;
 
 	//Ref<InternalSpriteTextRender> m_internal;
 	//GraphicsContext* m_drawingGraphicsContext;
@@ -130,6 +135,8 @@ class DrawTextElement : public AbstractSpriteTextDrawElement
 public:
     Ref<detail::FormattedText> formattedText;
 	detail::FlexGlyphRun* glyphRun = nullptr;	// TODO: RefObj
+	Vector2 anchor;
+	SpriteBaseDirection baseDirection = SpriteBaseDirection::Basic2D;
 	//Ref<Font> font;
 
 	//virtual FontCore* getFontCore(float dpiScale) override
@@ -145,10 +152,10 @@ public:
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 	{
 		if (glyphRun) {
-			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, context, glyphRun->font, glyphRun, combinedWorldMatrix());
+			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawFlexGlyphRun(batchList, context, glyphRun->font, glyphRun, anchor, baseDirection, combinedWorldMatrix());
 		}
 		else {
-			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, context, formattedText, combinedWorldMatrix());
+			return static_cast<detail::SpriteTextRenderFeature*>(renderFeature)->drawText(batchList, context, formattedText, anchor, baseDirection, combinedWorldMatrix());
 		}
     }
 };
