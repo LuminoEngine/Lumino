@@ -67,7 +67,6 @@ class App_Example_Navigator : public Application
 void Example_Navigator()
 {
     App_Example_Navigator app;
-	detail::ApplicationHelper::init(&app);
 	detail::ApplicationHelper::run(&app);
 }
 

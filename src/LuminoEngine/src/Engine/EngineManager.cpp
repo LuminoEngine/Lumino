@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/Engine/Debug.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -221,6 +222,10 @@ void EngineManager::init(const EngineSettings& settings)
             m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
 
             m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+
+
+			m_debugInterface = makeObject<DebugInterface>();
+			m_mainWindow->m_debugInterface = m_debugInterface;
         }
     }
 
@@ -654,6 +659,10 @@ void EngineManager::updateFrame()
 
     //------------------------------------------------
     // Main update phase
+
+	if (m_debugInterface) {
+		m_debugInterface->update(elapsedSeconds);
+	}
 
     if (m_mainWindow) {
         m_mainWindow->updateFrame(elapsedSeconds);

@@ -37,6 +37,7 @@ protected:
 private:
     Ref<UIElement> m_rootElement;
     Ref<UIRenderingContext> m_renderingContext;
+	//Ref<UIRenderingContext> m_debugRenderingContext;
     Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
     Ref<detail::DrawElementListCollector> m_drawElementListCollector;
     Ref<RenderViewPoint> m_viewPoint;

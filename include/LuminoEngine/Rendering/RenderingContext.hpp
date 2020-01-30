@@ -130,7 +130,7 @@ public:
     //void blit(AbstractMaterial* material);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material);
-	void blit(AbstractMaterial* source, RenderTargetTexture* destination);
+	void blit(AbstractMaterial* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::ImageEffect);
 
 	/** スプライトを描画します。 */
 	void drawSprite(

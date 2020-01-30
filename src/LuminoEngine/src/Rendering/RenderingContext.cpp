@@ -343,7 +343,7 @@ void RenderingContext::drawScreenRectangle()
 //    m_builder->advanceFence();
 //}
 
-void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* destination)
+void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* destination, RenderPhaseClass phase)
 {
 	class Blit : public detail::RenderDrawElement
 	{
@@ -372,7 +372,7 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 	auto* element = m_builder->addNewDrawElement<Blit>(
 		m_manager->blitRenderFeature(),
 		m_builder->blitRenderFeatureStageParameters());
-	element->targetPhase = RenderPhaseClass::ImageEffect;
+	element->targetPhase = phase;
 
     if (destination)
     {

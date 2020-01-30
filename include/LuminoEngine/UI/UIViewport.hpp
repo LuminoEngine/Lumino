@@ -25,8 +25,8 @@ public:
     void addRenderView(RenderView* view);
     void removeRenderView(RenderView* view);
 
-    void addImageEffect(ImageEffect* effect);
-    void removeImageEffect(ImageEffect* effect);
+    //void addImageEffect(ImageEffect* effect);
+    //void removeImageEffect(ImageEffect* effect);
 
 
 
@@ -58,7 +58,7 @@ private:
 	static void makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
     detail::UIManager* m_manager;
-    Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
+    //Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
     List<Ref<RenderView>> m_renderViews;
 	//Ref<RenderPass> m_renderPass;
     Size m_actualViewboxSize;

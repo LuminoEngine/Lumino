@@ -65,7 +65,6 @@ class App_Example_Tilemap : public Application
 void Example_Tilemap()
 {
 	App_Example_Tilemap app;
-	detail::ApplicationHelper::init(&app);
 	detail::ApplicationHelper::run(&app);
 }
 

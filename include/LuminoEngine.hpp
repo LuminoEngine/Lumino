@@ -11,6 +11,7 @@
 #include "LuminoEngine/Engine/Engine.hpp"
 #include "LuminoEngine/Engine/Application.hpp"
 #include "LuminoEngine/Engine/Diagnostics.hpp"
+#include "LuminoEngine/Engine/Debug.hpp"
 
 #include "LuminoEngine/Animation/Common.hpp"
 #include "LuminoEngine/Animation/AnimationCurve.hpp"

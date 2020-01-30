@@ -42,6 +42,7 @@ class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
+class DebugInterface;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -164,6 +165,8 @@ public:
     const Ref<PhysicsWorld>& mainPhysicsWorld() const { return m_mainPhysicsWorld; }
     const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
 
+	const Ref<DebugInterface>& debugInterface() const { return m_debugInterface; }
+
 private:
 	enum class DebugToolMode
 	{
@@ -220,6 +223,7 @@ private:
     Ref<WorldRenderView> m_mainWorldRenderView;
     Ref<PhysicsWorld> m_mainPhysicsWorld;
     Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;
+	Ref<DebugInterface> m_debugInterface;
 
     float m_timeScale;
 	bool m_exitRequested;

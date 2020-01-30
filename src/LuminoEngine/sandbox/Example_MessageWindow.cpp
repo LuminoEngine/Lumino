@@ -104,7 +104,6 @@ class App_Example_MessageWindow : public Application
 void Example_MessageWindow()
 {
     App_Example_MessageWindow app;
-	detail::ApplicationHelper::init(&app);
 	detail::ApplicationHelper::run(&app);
 }
 

@@ -286,7 +286,7 @@ int main(int argc, char** argv)
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
-    if (0) {
+    if (1) {
 
         //Example_MessageWindow();
         //Example_Navigator();

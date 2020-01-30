@@ -94,6 +94,7 @@ public: // TODO: internal
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
 	//List<WorldObject*> m_destroyList;
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
+	//Ref<detail::WorldSceneGraphRenderingContext> m_debugRenderingContext;
     float m_timeScale;
 
     friend class WorldRenderView;

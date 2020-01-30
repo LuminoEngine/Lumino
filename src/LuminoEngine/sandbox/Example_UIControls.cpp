@@ -24,7 +24,6 @@ class App_Example_UIControls : public Application
 void Example_UIControls()
 {
     App_Example_UIControls app;
-	detail::ApplicationHelper::init(&app);
 	detail::ApplicationHelper::run(&app);
 }
 

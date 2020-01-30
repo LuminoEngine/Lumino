@@ -352,8 +352,8 @@ void SpriteTextRenderFeature::putRectangle(Vertex* buffer, const Matrix& transfo
 	// pixel snap
 	if (isPixelSnapEnabled()) {
 		for (int i = 0; i < 4; i++) {
-			buffer[i].position.x = std::round(buffer[i].position.x);
-			buffer[i].position.y = std::round(buffer[i].position.y);
+			buffer[i].position.x = std::round(buffer[i].position.x) + 0.0000f;
+			buffer[i].position.y = std::round(buffer[i].position.y) + 0.0000f;
 		}
 	}
 }

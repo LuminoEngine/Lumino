@@ -33,7 +33,7 @@ void UIViewport::init()
 	setHorizontalAlignment(HAlignment::Stretch);
 	setVerticalAlignment(VAlignment::Stretch);
 
-    m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
+    //m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
 
@@ -64,15 +64,15 @@ void UIViewport::removeRenderView(RenderView* view)
     m_renderViews.remove(view);
 }
 
-void UIViewport::addImageEffect(ImageEffect* effect)
-{
-    m_imageEffectRenderer->addImageEffect(effect);
-}
-
-void UIViewport::removeImageEffect(ImageEffect* effect)
-{
-    m_imageEffectRenderer->removeImageEffect(effect);
-}
+//void UIViewport::addImageEffect(ImageEffect* effect)
+//{
+//    m_imageEffectRenderer->addImageEffect(effect);
+//}
+//
+//void UIViewport::removeImageEffect(ImageEffect* effect)
+//{
+//    m_imageEffectRenderer->removeImageEffect(effect);
+//}
 
 UIElement* UIViewport::lookupMouseHoverElement(const Point& frameClientPosition)
 {
@@ -89,7 +89,7 @@ void UIViewport::onUpdateFrame(float elapsedTimer)
 		view->updateFrame(elapsedTimer);
 	}
 
-    m_imageEffectRenderer->updateFrame(elapsedTimer);
+    //m_imageEffectRenderer->updateFrame(elapsedTimer);
 }
 
 void UIViewport::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
@@ -132,6 +132,7 @@ void UIViewport::onUpdateLayout(UILayoutContext* layoutContext)
 
 void UIViewport::onRender(UIRenderingContext* context)
 {
+	//return;
 
     GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
     //auto* renderTarget = graphicsContext->renderTarget(0);
@@ -160,7 +161,7 @@ void UIViewport::onRender(UIRenderingContext* context)
     for (auto& view : m_renderViews) {
         view->render(graphicsContext, m_primaryTarget);
     }
-    m_imageEffectRenderer->render(context, m_primaryTarget);
+    //m_imageEffectRenderer->render(context, m_primaryTarget);
 	//context->popState();
 
     //context->blit(primaryTarget, renderTarget);
@@ -179,6 +180,16 @@ void UIViewport::onRender(UIRenderingContext* context)
 	//context->setScissorRect(RectI(0, 0, SizeI::fromFloatSize(viewSize)));
 	//
 
+#if 1
+	Matrix t;
+	t.scale((viewSize.width * 0.5), -(viewSize.height * 0.5), 0);
+	t.translate((viewSize.width * 0.5), (viewSize.height * 0.5), 0);
+	context->setBaseTransfrom(t);
+	context->setCullingMode(CullMode::None);
+	context->setBlendMode(BlendMode::Normal);
+	m_blitMaterial->setMainTexture(m_primaryTarget);
+	context->blit(m_blitMaterial, nullptr, RenderPhaseClass::Geometry);
+#else
 	// TODO: ポストプロセスの結果を転送したいので、Sprite 描画では描画できない。
 	// 現状、RenderPhaseClass::ImageEffect を使っている blit を利用する必要がある。
 	// なお、現時点では blit は スクリーン全体への転送を想定しているため、View Proj Matrix を受け取らないようになっている。
@@ -202,7 +213,8 @@ void UIViewport::onRender(UIRenderingContext* context)
 	context->setCullingMode(CullMode::None);
 	context->setBlendMode(BlendMode::Normal);
     m_blitMaterial->setMainTexture(m_primaryTarget);
-	context->blit(m_blitMaterial, nullptr);
+	context->blit(m_blitMaterial, nullptr, RenderPhaseClass::Geometry);
+#endif
 
 	//context->drawSolidRectangle(Rect(0, 0, 100, 100), Color::Blue);
 
