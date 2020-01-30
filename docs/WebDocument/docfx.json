@@ -33,7 +33,8 @@
         ],
         "exclude": [
           "obj/**",
-          "_site/**"
+          "_site/**",
+          "articles/documents/old-docs/**"
         ]
       }
     ],

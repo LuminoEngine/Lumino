@@ -73,6 +73,12 @@ void Sprite::init()
     setMainVisualComponent(m_component);
 }
 
+void Sprite::init(Texture* texture)
+{
+	init();
+	setTexture(texture);
+}
+
 void Sprite::init(Texture* texture, float width, float height)
 {
     init();

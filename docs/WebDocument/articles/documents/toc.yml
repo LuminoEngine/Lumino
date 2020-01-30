@@ -9,8 +9,9 @@
       href: getting-started/download.md
 
 - name: チュートリアル
-  - name: 画像を表示する
-    href: tutorial/display-sprites.md
+  items:
+  - name: Lumino の基本
+    href: first-tutorial/basic.md
 
 
 - name: プラットフォーム固有の情報

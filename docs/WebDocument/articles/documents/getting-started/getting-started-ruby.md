@@ -4,26 +4,28 @@ Ruby で Lumino をはじめる
 必要な環境
 ----------
 
-> [!WARNING]
-> 現在 Ruby パッケージは Windows でのみ利用できます。
+- Windows 10 64bit
+- Ruby 2.6+
+
+Ruby環境をセットアップする
+----------
 
 ### Windows
 
-[RubyInstaller] (https://rubyinstaller.org/) などで Ruby をインストールしてください。
+1. [RubyInstaller ダウンロードページ] (https://rubyinstaller.org/) にアクセスして、最新のRuby + Devkit 64ビットリリース（x64名前に含まれているもの）をダウンロードします。
 
-推奨バージョンは 2.6 以降です。
+2. インストーラーを実行します。インストールが完了したら、「Run 'ridk install'」オプションを選択したままにして、MSYS2と開発ツールチェーンをインストールします。
+
+3. コマンドラインで `ruby --version` を実行して、Ruby のバージョンが表示されることを確認します。
 
 
-インストール
+gem をインストールする
 ----------
 
-> [!WARNING]
-> 安定版はまだリリースされていません。
-
-[ダウンロードページの「現在開発中の最新ビルド」](download.md#現在開発中の最新ビルド) から「LuminoEngine-RubyGemPackage.zip」をダウンロードします。
+コマンドラインで次のコマンドを実行します。
 
 ```
-gem install lumino --pre
+gem install lumino
 ```
 
 
@@ -32,13 +34,15 @@ gem install lumino --pre
 
 ```ruby
 require 'lumino'
-include Lumino
 
-texture1 = Texture2D.load("画像.png")
-sprite1 = Sprite.new(texture1, 2, 2)
-
-while Engine.update do
-  
+class App < Application
+  def on_init
+    texture = Texture2D.load_emoji("🌱")
+    sprite1 = Sprite.new(texture)
+    self.world.add(sprite1)
+  end
 end
 
+App.new.run
 ```
+

@@ -35,6 +35,13 @@ public:
     void addApplicationCommand(UICommand* command);
     void addAction(UIAction* action);
 
+
+	
+	/** デフォルトで作成されるメインの World を取得します。 */
+    LN_METHOD()
+	World* world() const;
+
+
 LN_CONSTRUCT_ACCESS:
 	Application();
 	virtual ~Application();
@@ -52,6 +59,7 @@ private:
 	void finalizeInternal();
 	void run();
 
+	detail::EngineManager* m_manager;
     List<Ref<UICommand>> m_commands;
     List<Ref<UIAction>> m_actions;
 

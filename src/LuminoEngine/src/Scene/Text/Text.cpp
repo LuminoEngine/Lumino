@@ -10,16 +10,35 @@ namespace ln {
 
 LN_OBJECT_IMPLEMENT(Text, VisualObject) {}
 
+Ref<Text> Text::create()
+{
+	return makeObject<Text>();
+}
+
+Ref<Text> Text::create(StringRef text)
+{
+	return makeObject<Text>(text);
+}
+
 Text::Text()
+	: m_component(nullptr)
 {
 }
 
-void Text::init()
+bool Text::init()
 {
-    VisualObject::init();
+	if (!VisualObject::init()) return false;
     m_component = makeObject<TextComponent>();
     addComponent(m_component);
     setMainVisualComponent(m_component);
+	return true;
+}
+
+bool Text::init(StringRef text)
+{
+	if (!init()) return false;
+	setText(text);
+	return true;
 }
 
 void Text::setText(StringRef value)

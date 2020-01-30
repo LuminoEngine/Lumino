@@ -120,6 +120,10 @@ LN_CONSTRUCT_ACCESS:
 
 	/** init */
 	LN_METHOD(OverloadPostfix = "WithTexture")
+    void init(Texture* texture);
+	
+	/** init */
+	LN_METHOD(OverloadPostfix = "WithTextureAndSize")
     void init(Texture* texture, float width, float height);
 
 	void init(SpriteFrameSet* frameSet);

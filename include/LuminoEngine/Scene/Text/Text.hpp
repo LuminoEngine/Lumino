@@ -14,6 +14,13 @@ class Text
 {
 	LN_OBJECT;
 public:
+	/** Text オブジェクトを作成します。 */
+	static Ref<Text> create();
+
+	/** 表示文字列を指定して Text オブジェクトを作成します。 */
+	static Ref<Text> create(StringRef text);
+
+public:
 	/** 表示する文字列を設定します。 */
 	LN_METHOD(Property)
 	void setText(StringRef value);
@@ -58,9 +65,13 @@ LN_CONSTRUCT_ACCESS:
 	Text();
 	virtual ~Text() = default;
 
-    /** init */
+    /** @copydoc create() */
     LN_METHOD()
-	void init();
+	bool init();
+
+	/** @copydoc create(StringRef) */
+	LN_METHOD()
+	bool init(StringRef text);
 
 private:
     Ref<TextComponent> m_component;

@@ -270,6 +270,7 @@ void Example_MessageWindow();
 void Example_Navigator();
 void Example_UIControls();
 void Example_Tilemap();
+void Tutorial_Sandbox();
 
 int main(int argc, char** argv)
 {
@@ -290,7 +291,8 @@ int main(int argc, char** argv)
         //Example_MessageWindow();
         //Example_Navigator();
         //Example_UIControls();
-		Example_Tilemap();
+		//Example_Tilemap();
+		Tutorial_Sandbox();
         return 0;
     }
 
@@ -349,7 +351,7 @@ int main(int argc, char** argv)
     //GlobalLogger::addStdErrAdapter();
 	//GlobalLogger::setLevel(LogLevel::Verbose);
 	int div = 2;
-    //EngineSettings::setMainWindowSize(640 / div, 480 / div);
+    EngineSettings::setMainWindowSize(640 / div, 480 / div);
     //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);
 
 
@@ -524,7 +526,7 @@ int main(int argc, char** argv)
 		//s->setAnchorPoint(Vector2(0.5, 0));
 		//s->setBlendMode(BlendMode::Normal);
 		//s->setShadingModel(ShadingModel::UnLighting);
-		Engine::world()->add(s);
+		//Engine::world()->add(s);
 
 		//auto c = makeObject<EmojiComponent>();
 		//auto obj = makeObject<WorldObject>();
@@ -535,8 +537,8 @@ int main(int argc, char** argv)
 		auto text1 = makeObject<Text>();
 		text1->setText(u"Hello, Lumino!");
 		text1->setColor(Color::Gray);
-		text1->setPosition(0, -0.5, 0);
-		//text1->setAnchorPoint(Vector2(0.5, 1));
+		//text1->setPosition(0, -0.5, 0);
+		text1->setAnchorPoint(Vector2(0.5, 1));
 		text1->setFontSize(18);
 		Engine::world()->add(text1);
 

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "EngineManager.hpp"
+#include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -14,6 +15,7 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(Application, Object) {}
 
 Application::Application()
+	: m_manager(nullptr)
 {
     detail::EngineManager::s_settings.application = this;
 }
@@ -57,6 +59,11 @@ void Application::addAction(UIAction* action)
     m_actions.add(action);
 }
 
+World* Application::world() const
+{
+	return m_manager->mainWorld();
+}
+
 void Application::onRoutedEvent(UIEventArgs* e)
 {
     // ショートカットキーの実装
@@ -77,6 +84,7 @@ void Application::onRoutedEvent(UIEventArgs* e)
 void Application::initInternal()
 {
 	EngineContext::current()->initializeEngineManager();
+	m_manager = detail::EngineDomain::engineManager();
 	onInit();
 	onStart();
 }

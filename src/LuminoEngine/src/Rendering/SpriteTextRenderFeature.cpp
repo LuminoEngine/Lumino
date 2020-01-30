@@ -285,7 +285,7 @@ void SpriteTextRenderFeature::endLayout(GraphicsContext* context)
 	Vector2 posOffset;
 	if (m_drawingBaseDirection != SpriteBaseDirection::Basic2D) {
 		auto area = renderAreaSize();
-		posOffset = Vector2(-area.width * (m_drawingAnchor.x), area.height * (1.0f - m_drawingAnchor.y));
+		posOffset = Vector2(-area.width * (m_drawingAnchor.x), -area.height * (1.0f - m_drawingAnchor.y));
 		//posOffset = Vector2(-area.width * 0.5f, -area.height * 0.5f);
 		//posOffset += Vector2(area.width * (m_drawingAnchor.x - 0.5f), area.height * (m_drawingAnchor.y - 0.5f));
 		//posOffset.x -= area.width * 0.5f;
