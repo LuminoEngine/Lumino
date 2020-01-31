@@ -58,6 +58,11 @@ void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 	detail::EngineManager::s_settings.graphicsAPI = value;
 }
 
+void EngineSettings::setDebugToolEnabled(bool enabled)
+{
+	detail::EngineManager::s_settings.debugToolEnabled = enabled;
+}
+
 void EngineSettings::setEngineLogEnabled(bool enabled)
 {
 	detail::EngineManager::s_settings.engineLogEnabled = enabled;
@@ -168,7 +173,7 @@ void Engine::resetFrameDelay()
     detail::EngineDomain::engineManager()->resetFrameDelay();
 }
 
-double Engine::totalTime()
+double Engine::time()
 {
     return detail::EngineDomain::engineManager()->fpsController().getTotalGameTime();
 }

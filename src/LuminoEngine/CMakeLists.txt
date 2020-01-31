@@ -11,30 +11,11 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 
 file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 
+file(GLOB LN_SOURCES_Engine ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
 set(LN_SOURCES_Engine
+	${LN_SOURCES_Engine}
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/EngineContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Application.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Diagnostics.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Engine.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/EngineSettings.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Object.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Property.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/RenderingCommandList.hpp
     src/EngineContext.cpp
-    src/Engine/Internal.hpp
-    src/Engine/Application.cpp
-    src/Engine/Diagnostics.cpp
-    src/Engine/Engine.cpp
-    src/Engine/EngineDomain.hpp
-    src/Engine/EngineManager.cpp
-    src/Engine/EngineManager.hpp
-    src/Engine/FpsController.cpp
-    src/Engine/FpsController.hpp
-    src/Engine/LinearAllocator.hpp
-    src/Engine/RenderingCommandList.cpp
-    src/Engine/Object.cpp
-    src/Engine/Property.cpp
 )
 
 set(LN_SOURCES_Platform

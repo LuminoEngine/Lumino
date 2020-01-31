@@ -17,10 +17,10 @@ public:
     
 
     // 前回のフレームから経過したゲーム時間 (秒) を取得します。
-    float getElapsedGameTime() const { return m_elapsedGameTime; }
+    float getElapsedGameTime() const { return m_elapsedGameTimeCache; }
 
     // 開始からの総時間 (秒) を取得します。
-    double getTotalGameTime() const { return 0.001 * m_currentGameTime; }
+    double getTotalGameTime() const { return m_totalGameTimeCache; }
 
 
 
@@ -61,11 +61,13 @@ private:
     int m_frameRate;
     uint64_t m_frameTime;
 
-    ElapsedTimer m_timer;
-    uint64_t m_currentGameTime;
+    //ElapsedTimer m_timer;
+	//uint64_t m_currentGameTime;
+	uint64_t m_startTick;
+	uint64_t m_frameBeginTick;
     int m_frameCount;
-    float m_elapsedGameTime;
-    double m_totalGameTime;
+    float m_elapsedGameTimeCache;
+    double m_totalGameTimeCache;
 
     bool m_measureTimes;
     std::vector<uint64_t> m_frameTimes;

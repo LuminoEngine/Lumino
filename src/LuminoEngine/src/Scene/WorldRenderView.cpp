@@ -415,12 +415,12 @@ void WorldRenderView::createGridPlane()
 	gridTex->setResourceUsage(GraphicsResourceUsage::Dynamic);
     for (int x = 0; x < gridTexSize.width; ++x)
     {
-        gridTex->setPixel(x, 0, Color(0, 0, 0, 0.5));
+        gridTex->setPixel(x, 0, Color(0, 0, 0, 0.25));
         gridTex->setPixel(x, gridTexSize.width - 1, Color(0, 0, 0, 0.5));
     }
     for (int y = 0; y < gridTexSize.height; ++y)
     {
-        gridTex->setPixel(0, y, Color(0, 0, 0, 0.5));
+        gridTex->setPixel(0, y, Color(0, 0, 0, 0.25));
         gridTex->setPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
     }
     //gridTex->clear(Color::Green);
@@ -456,6 +456,11 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
         renderingContext->setMaterial(m_gridPlane->materials()[0]);
         renderingContext->drawMesh(m_gridPlane->meshContainers()[0]->meshResource(), 0);
         //renderingContext->setRenderPhase(RenderPhaseClass::Default);
+
+		renderingContext->setMaterial(nullptr);
+		renderingContext->drawLine(Vector3(0, 0, 0), Color::Red, Vector3(10, 0, 0), Color::Red);
+        renderingContext->drawLine(Vector3(0, 0, 0), Color::Green, Vector3(0, 10, 0), Color::Green);
+        renderingContext->drawLine(Vector3(0, 0, 0), Color::Blue, Vector3(0, 0, 10), Color::Blue);
 
         renderingContext->popState();
 

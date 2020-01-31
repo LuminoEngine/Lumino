@@ -61,7 +61,12 @@ public:
 //	/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
 //	static void setD3D9Device(void* device);
 //#endif
-
+	
+	/**
+	 * (default: Debug ビルドの場合true、それ以外は false)
+	 */
+	LN_METHOD()
+	static void setDebugToolEnabled(bool enabled);
 
 	/**
 	 * デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)

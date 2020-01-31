@@ -10,9 +10,34 @@ namespace ln {
 //==============================================================================
 // Debug
 
-void Debug::print(StringRef str, float time)
+/*
+Default duration?
+----------
+= 0 は毎フレーム出力したいケース。
+> 0 はイベントなどの確認。
+Debug::print() をデフォルトどっちにするか悩みどころ。両方のケースも良く使う。
+
+良くないのは、イベントデバッグ出力したくて間違えて 0 を使ってしまって、表示されたかどうかわからないケース。
+duration はデフォルト引数となっており通常は意識しないので、間違って使ってしまうことが多そう。
+
+毎フレーム Debug::print() するときにいちいち 0 を指定しないとならないのは煩わしいけど、
+それ以上に正しい情報を伝えられないリスクは大きいので、> 0 をデフォルトとしてみる。
+
+*/
+	
+void Debug::print(StringRef str)
 {
-	detail::EngineDomain::engineManager()->debugInterface()->print(str, time);
+	detail::EngineDomain::engineManager()->debugInterface()->print(2.0f, Color::Black, str);
+}
+
+void Debug::print(float time, StringRef str)
+{
+	detail::EngineDomain::engineManager()->debugInterface()->print(time, Color::Black, str);
+}
+
+void Debug::print(float time, const Color& color, StringRef str)
+{
+	detail::EngineDomain::engineManager()->debugInterface()->print(time, color, str);
 }
 
 //==============================================================================
@@ -36,16 +61,17 @@ bool DebugInterface::init()
 	return true;
 }
 
-void DebugInterface::print(StringRef str, float time)
+void DebugInterface::print(float time, const Color& color, StringRef str)
 {
 	if (Math::nearEqual(time, 0.0f)) {
-		m_adhocPrintStrings.push_back(str);
+		m_adhocPrintStrings.push_back({ color, str });
 	}
 	else {
 		Element e;
 		e.type = ElementType::PrintString;
 		e.lifeTime = time;
 		e.printString.str = LN_NEW String(str);
+		e.color = color;
 		e.pos.reset(Vector3(0, m_elements2D.size() * m_lineHeight, 0));
 		m_elements2D.push_back(e);
 	}
@@ -82,8 +108,8 @@ void DebugInterface::renderOnUI(UIRenderingContext* context)
 	auto pos = Vector2(8, 8);
 	for (auto& s : m_adhocPrintStrings) {
 		context->setTransfrom(Matrix::makeTranslation(pos.x, pos.y, 0));
-		context->setTextColor(Color::Black);
-		context->drawText(s);
+		context->setTextColor(s.color);
+		context->drawText(s.str);
 		pos.y += m_lineHeight;
 	}
 	m_adhocPrintStrings.clear();
@@ -96,7 +122,7 @@ void DebugInterface::renderOnUI(UIRenderingContext* context)
 
 		switch (e.type) {
 		case ElementType::PrintString:
-			context->setTextColor(Color::Black.withAlpha(alpha));
+			context->setTextColor(e.color.withAlpha(alpha));
 			context->drawText(*e.printString.str);
 			break;
 		default:

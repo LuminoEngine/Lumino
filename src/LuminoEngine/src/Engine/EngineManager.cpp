@@ -230,7 +230,7 @@ void EngineManager::init(const EngineSettings& settings)
     }
 
 	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
-	if (m_mainUIContext) {
+	if (m_mainUIContext && m_mainWindow) {
 		m_mainUIContext->updateStyleTree();
 		m_mainWindow->updateLayoutTree();
 	}

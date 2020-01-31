@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Animation/EasingFunctions.hpp"
+#include "../Graphics/ColorStructs.hpp"
 
 namespace ln {
 class Font;
@@ -10,7 +11,9 @@ LN_CLASS(Static)
 class Debug
 {
 public:
-	static void print(StringRef str, float time = 2.0f);
+	static void print(StringRef str);
+	static void print(float time, StringRef str);
+	static void print(float time, const Color& color, StringRef str);
 
 };
 
@@ -20,7 +23,7 @@ class DebugInterface
 	: public Object
 {
 public:
-	void print(StringRef str, float time);
+	void print(float time, const Color& color, StringRef str);
 
 	void update(float elapsedTimer);
 	void renderOnUI(UIRenderingContext* context);
@@ -43,6 +46,7 @@ private:
 		ElementType type;
 		float lifeTime;
 		EasingValue<Vector3> pos;
+		Color color;
 
 		union
 		{
@@ -53,9 +57,16 @@ private:
 		};
 	};
 
+
+	struct ColorString
+	{
+		Color color;
+		String str;
+	};
+
 	void disposeElement(Element& e);
 
-	std::vector<String> m_adhocPrintStrings;
+	std::vector<ColorString> m_adhocPrintStrings;
 	std::vector<Element> m_elements2D;
 	Ref<Font> m_font;
 	float m_lineHeight;
