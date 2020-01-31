@@ -42,6 +42,7 @@ class AssetManager;
 class VisualManager;
 class SceneManager;
 class UIManager;
+class DebugInterface;
 
 struct EngineSettingsAssetArchiveEntry
 {
@@ -55,7 +56,7 @@ struct EngineSettings
     Flags<EngineFeature> features = EngineFeature::Experimental;
 	String bundleIdentifier = u"lumino";
 	SizeI mainWindowSize = SizeI(640, 480);
-	SizeI mainBackBufferSize = SizeI(0, 0);
+	SizeI mainWorldViewSize = SizeI(0, 0);
 	String mainWindowTitle = u"Lumino";
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
@@ -64,9 +65,11 @@ struct EngineSettings
 
 	bool engineLogEnabled = false;
 	String engineLogFilePath;
+	String engineResourcesPath;
 
     intptr_t userMainWindow = 0;
 	bool standaloneFpsControl = false;
+	bool createMainLights = false;
 	int frameRate = 60;
 	bool debugToolEnabled = false;
 
@@ -91,10 +94,12 @@ class EngineManager
 	, public IPlatforEventListener
 {
 public:
+	static EngineSettings s_settings;
+
 	EngineManager();
 	virtual ~EngineManager();
 
-	void init();
+	void init(const EngineSettings& settings);
 	void dispose();
 
 	void initializeAllManagers();
@@ -105,8 +110,8 @@ public:
 	void initializeInputManager();
 	void initializeAudioManager();
 	void initializeShaderManager();
-	void initializeGraphicsManager();
 	void initializeFontManager();
+	void initializeGraphicsManager();
 	void initializeMeshManager();
 	void initializeRenderingManager();
 	void initializeEffectManager();
@@ -123,15 +128,15 @@ public:
 	bool isExitRequested() const { return m_exitRequested; }
 	void quit();
 
-	EngineSettings& settings() { return m_settings; }
+	EngineSettings& settings2() { return m_settings; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
 	const Ref<InputManager>& inputManager() const { return m_inputManager; }
 	const Ref<AudioManager>& audioManager() const { return m_audioManager; }
 	const Ref<ShaderManager>& shaderManager() const { return m_shaderManager; }
-	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<FontManager>& fontManager() const { return m_fontManager; }
+	const Ref<GraphicsManager>& graphicsManager() const { return m_graphicsManager; }
 	const Ref<MeshManager>& meshManager() const { return m_meshManager; }
 	const Ref<RenderingManager>& renderingManager() const { return m_renderingManager; }
     const Ref<EffectManager>& effectManager() const { return m_effectManager; }
@@ -144,6 +149,7 @@ public:
     const FpsController& fpsController() const { return m_fpsController; }
 	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
+	static ln::Path findRepositoryRootForTesting();
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
     //void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
@@ -158,6 +164,8 @@ public:
     const Ref<WorldRenderView>& mainRenderView() const { return m_mainWorldRenderView; }
     const Ref<PhysicsWorld>& mainPhysicsWorld() const { return m_mainPhysicsWorld; }
     const Ref<PhysicsWorld2D>& mainPhysicsWorld2D() const { return m_mainPhysicsWorld2D; }
+
+	const Ref<DebugInterface>& debugInterface() const { return m_debugInterface; }
 
 private:
 	enum class DebugToolMode
@@ -186,8 +194,8 @@ private:
 	Ref<InputManager>				m_inputManager;
 	Ref<AudioManager>				m_audioManager;
 	Ref<ShaderManager> m_shaderManager;
-	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<FontManager> m_fontManager;
+	Ref<GraphicsManager>			m_graphicsManager;
 	Ref<MeshManager>				m_meshManager;
 	Ref<RenderingManager>			m_renderingManager;
 	Ref<EffectManager>				m_effectManager;
@@ -202,6 +210,7 @@ private:
 
     //Application* m_application;
 	Path m_persistentDataPath;
+	Path m_engineAssetsPath;
 
     Ref<UIContext> m_mainUIContext;
 	Ref<UIMainWindow> m_mainWindow;
@@ -214,6 +223,7 @@ private:
     Ref<WorldRenderView> m_mainWorldRenderView;
     Ref<PhysicsWorld> m_mainPhysicsWorld;
     Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;
+	Ref<DebugInterface> m_debugInterface;
 
     float m_timeScale;
 	bool m_exitRequested;

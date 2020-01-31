@@ -208,6 +208,7 @@ public:
     void load(Stream* stream);   // TODO: 種類の指定
 	void save(const StringRef& filePath);
 
+	Ref<Bitmap2D> clone() const;
 	Ref<Bitmap2D> transcodeTo(PixelFormat format, const ColorI& color = ColorI::White) const;
 
     void blit(const RectI& destRect, const Bitmap2D* srcBitmap, const RectI& srcRect, const ColorI& color, BitmapBlitOptions options);

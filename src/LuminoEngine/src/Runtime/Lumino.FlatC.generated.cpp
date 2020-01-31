@@ -3,7 +3,6 @@
 
 #include <LuminoEngine.hpp>
 #include "BindingValidation.hpp"
-#include "../Engine/EngineDomain.hpp"
 
 class LNWS_ln_PromiseFailureDelegate : public ln::PromiseFailureDelegate
 {
@@ -169,9 +168,7 @@ LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_Ove
 
 class LNWS_ln_ZVTestPromise1 : public ln::ZVTestPromise1
 {
-	//LN_OBJECT;
 public:
-
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -188,11 +185,7 @@ public:
 
 
 };
-//LN_OBJECT_IMPLEMENT(LNWS_ln_ZVTestPromise1, ln::ZVTestPromise1)
-//{
-//	context->registerType<LNWS_ln_ZVTestPromise1>({});
-//}
-//
+
 
 class LNWS_ln_ZVTestPromise2 : public ln::ZVTestPromise2
 {
@@ -1605,10 +1598,10 @@ LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
 }
 
 
-LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height)
+LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height)
 {
     LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainBackBufferSize(width, height));
+    (ln::EngineSettings::setMainWorldViewSize(width, height));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1689,8 +1682,6 @@ LN_FLAT_API LnResult LnEngine_Initialize()
 {
     LNI_FUNC_TRY_BEGIN;
     (ln::Engine::initialize());
-	//ln::detail::EngineDomain::registerType<ln::ZVTestPromise1>();
-	//ln::detail::EngineDomain::registerType<ln::ZVTestPromise2>();
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1853,6 +1844,23 @@ LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(code));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn)
+{
+	printf("LnTexture2D_LoadEmojiA\n");
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

@@ -231,7 +231,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
     // TODO: とりいそぎ
     m_renderFeatureBatchList.renderTarget = renderTarget;
     m_renderFeatureBatchList.depthBuffer = depthBuffer;
-
+	m_renderFeatureBatchList.m_mainCameraInfo = &m_mainCameraInfo;
 
 	RenderPass* defaultRenderPass = pass->renderPass();
 	assert(defaultRenderPass);
@@ -413,6 +413,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				SubsetInfo localSubsetInfo = subsetInfo;
 				if (batch->overrideTexture) {
 					localSubsetInfo.materialTexture = batch->overrideTexture;
+
+					// TODO: テキスト描画でAAをサンプラーステートでやるために使っている。
+					// ただ、設定しっぱなしになってしまうためあまりよくないかも。今はテキストでしか使ってないからいいけど。
+					if (batch->overrideSamplerState) {
+						localSubsetInfo.materialTexture->setSamplerState(batch->overrideSamplerState);
+					}
+
 				}
 				if (!localSubsetInfo.materialTexture) {
 					localSubsetInfo.materialTexture = m_manager->graphicsManager()->whiteTexture();

@@ -534,9 +534,11 @@ public:
 	virtual void dispose() override;
 
 	GLuint id() const { return m_id; }
+	const SizeI& size() const { return m_size; }
 
 private:
 	GLuint m_id;
+	SizeI m_size;
 };
 
 class GLSamplerState

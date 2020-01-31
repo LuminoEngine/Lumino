@@ -18,6 +18,7 @@ class Mesh;
 class MeshContainer;
 class RenderViewPoint;
 namespace detail {
+class FontRequester;
 class FlexGlyphRun;
 class RenderingManager;
 class DrawElementList;
@@ -129,7 +130,7 @@ public:
     //void blit(AbstractMaterial* material);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material);
-	void blit(AbstractMaterial* source, RenderTargetTexture* destination);
+	void blit(AbstractMaterial* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::ImageEffect);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -154,8 +155,11 @@ public:
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
     void drawMesh(Mesh* mesh, int sectionIndex);
 
+	void drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font);
+
+
     // font が nullptr の場合は defaultFont
-    void drawText(const StringRef& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward/*, const Color& color, Font* font = nullptr*/);
+    void drawText(const StringRef& text, const Rect& area = Rect(), TextAlignment alignment = TextAlignment::Forward/*, TextCrossAlignment crossAlignment = TextCrossAlignment::Forward*//*, const Color& color, Font* font = nullptr*/);
 	void drawChar(uint32_t codePoint, const Color& color, Font* font = nullptr, const Matrix& transform = Matrix::Identity);
 
 	void drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun);

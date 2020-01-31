@@ -11,11 +11,11 @@ namespace detail {
 FpsController::FpsController()
     : m_frameRate(0)
     , m_frameTime(0)
-    , m_timer()
-    , m_currentGameTime(0)
+    //, m_timer()
+    //, m_currentGameTime(0)
     , m_frameCount(0)
-    , m_elapsedGameTime(0)
-    , m_totalGameTime(0)
+    , m_elapsedGameTimeCache(0)
+    , m_totalGameTimeCache(0)
     , m_measureTimes(true)
     , m_frameTimes()
     , m_externalTimes()
@@ -30,7 +30,9 @@ FpsController::FpsController()
     , m_maxTimePerSeconds(0)
 {
     setFrameRate(60);
-    m_timer.start();
+    //m_timer.start();
+	m_startTick = Environment::getTickCount();
+	m_frameBeginTick = m_startTick;
 }
 
 void FpsController::setFrameRate(int value)
@@ -43,11 +45,28 @@ void FpsController::setFrameRate(int value)
 
 void FpsController::process()
 {
+#if 1
+	uint64_t externalElapsedTick = Environment::getTickCount() - m_frameBeginTick;
+	m_term = m_frameTime - externalElapsedTick;
+
+	if (m_term > 0) {
+		Thread::sleep(m_term);
+	}
+
+	uint64_t currentTick = Environment::getTickCount();
+	uint64_t internalElapsedTick = currentTick - m_frameBeginTick;
+
+	measureTimes(externalElapsedTick, internalElapsedTick);
+
+	m_elapsedGameTimeCache = 0.001f * internalElapsedTick;
+	m_totalGameTimeCache = 0.001 * (currentTick - m_startTick);
+	m_frameCount = (++m_frameCount) % m_frameRate;
+	m_frameBeginTick = currentTick;
+#else
     uint64_t externalElapsedTime = m_timer.elapsedMilliseconds();
-
     m_currentGameTime += externalElapsedTime;
-
     m_term = m_frameTime - externalElapsedTime;
+
 
     if (m_term > 0) {
         Thread::sleep(m_term);
@@ -62,11 +81,23 @@ void FpsController::process()
 
     m_frameCount = (++m_frameCount) % m_frameRate;
 
+	//printf("%llu %f\n", m_currentGameTime, m_elapsedGameTime);
+
     m_timer.start();
+#endif
 }
 
 void FpsController::processForMeasure()
 {
+#if 1
+	uint64_t externalElapsedTick = Environment::getTickCount(); - m_frameBeginTick;
+
+	measureTimes(externalElapsedTick, externalElapsedTick);
+
+	uint64_t currentTick = Environment::getTickCount();
+	m_frameCount = (++m_frameCount) % m_frameRate;
+	m_frameBeginTick = currentTick;
+#else
     uint64_t externalElapsedTime = m_timer.elapsedMilliseconds();
     m_currentGameTime += externalElapsedTime;
 
@@ -75,11 +106,13 @@ void FpsController::processForMeasure()
     m_frameCount = (++m_frameCount) % m_frameRate;
 
     m_timer.start();
+#endif
 }
 
 void FpsController::refreshSystemDelay()
 {
-    m_timer.start();
+    //m_timer.start();
+	m_frameBeginTick = Environment::getTickCount();
     m_frameCount = 0;
 }
 

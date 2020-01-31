@@ -35,6 +35,7 @@ public:
 	struct Settings
 	{
         AssetManager* assetManager;
+		Path engineAssetPath;
 	};
 
     FontManager();
@@ -56,6 +57,7 @@ public:
     void setDefaultFont(Font* font);
     FontDesc defaultFontDesc() const;
     Font* defaultFont() const;
+	Font* emojiFont() const;
 	const Ref<GlyphIconFontManager>& glyphIconFontManager() const { return m_glyphIconFontManager; }
 
 	const FontFaceSource* lookupFontFaceSourceFromFamilyName(const String& name);
@@ -97,6 +99,7 @@ private:
 
     //FontDesc m_defaultFontDesc;
     Ref<Font> m_defaultFont;
+	Ref<Font> m_emojiFont;
 	Ref<GlyphIconFontManager> m_glyphIconFontManager;
 
 	List<FontFaceSource> m_famlyNameToFontFaceSourceMap;

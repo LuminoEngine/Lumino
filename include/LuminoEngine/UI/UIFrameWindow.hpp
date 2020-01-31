@@ -8,7 +8,11 @@
 #include "ImGuiIntegration.hpp"
 
 namespace ln {
-namespace detail { class PlatformWindow; class UIManager; }
+namespace detail {
+class PlatformWindow;
+class UIManager;
+class DebugInterface;
+}
 class RenderPass;
 class GraphicsContext;
 class SwapChain;
@@ -97,6 +101,7 @@ protected:
 	virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 	//virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
 	//virtual void onUpdateLayout(const Rect& finalGlobalRect) override;
+	virtual void render(UIRenderingContext* context, const Matrix& parentTransform) override;
     virtual void onRender(UIRenderingContext* context) override;
 
     // TODO: internal
@@ -124,6 +129,7 @@ public:  // TODO: internal
     Size m_clientSize;
 	UIFrameWindowUpdateMode m_updateMode;
 	detail::ImGuiContext m_imguiContext;
+	Ref<detail::DebugInterface> m_debugInterface;
 
 	Event<UIEventHandler> m_onClosed;
 	Event<UIEventHandler> m_onImGuiLayer;

@@ -548,9 +548,33 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 		auto& scissorRect = state.regionRects.scissorRect;
 		auto targetSize = m_currentRenderPass->viewSize();
 
+		////GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
+		//GL_CHECK(glEnable(GL_SCISSOR_TEST));
+
+		//int vrx = viewportRect.x;
+		//int vry = targetSize.height - (viewportRect.y + viewportRect.height);
+		//int vrw = viewportRect.width;
+		//int vrh = viewportRect.height;
+		//GL_CHECK(glViewport(vrx, vry, vrw, vrh));
+
+		//int srx = scissorRect.x;
+		//int sry = targetSize.height - (scissorRect.y + scissorRect.height);
+		//int srw = scissorRect.width;
+		//int srh = scissorRect.height;
+		//GL_CHECK(glScissor(srx, sry, srw, srh));
+		////GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
+
+
+
+		//printf("vr: %d %d %d %d\n", vrx, vry, vrw, vrh);
+		//printf("sr: %d %d %d %d\n", srx, sry, srw, srh);
+		//printf("targetSize: %d %d\n", targetSize.width, targetSize.height);
+		//printf("%d %d\n", viewportRect.height, scissorRect.height);
+
 		GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
 		GL_CHECK(glEnable(GL_SCISSOR_TEST));
 		GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
+
 	}
 
 #if 1
@@ -1066,6 +1090,7 @@ void GLSwapChain::present()
 		GL_CHECK(glScissor(0, 0, bufferSize.width, bufferSize.height));
 		GL_CHECK(glViewport(0, 0, bufferSize.width, bufferSize.height));
 
+		//printf("bufferSize: %d %d\n", bufferSize.width, bufferSize.height);
 		//// 現在のフレームバッファにアタッチされているカラーバッファのレンダーバッファ名を取得
 		//GLint colorBufferName = 0;
 		//GL_CHECK(glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &colorBufferName));
@@ -1167,6 +1192,8 @@ void GLRenderPass::bind(GLGraphicsContext* context)
 		GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
 	}
 
+	auto baseSize = viewSize();
+
 	// color buffers
 	int renderTargetsCount = m_renderTargets.size();
 	int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
@@ -1174,6 +1201,7 @@ void GLRenderPass::bind(GLGraphicsContext* context)
 	{
 		if (m_renderTargets[i])
 		{
+			LN_CHECK(m_renderTargets[i]->realSize() == baseSize);
 			GLuint id = static_cast<GLTextureBase*>(m_renderTargets[i])->id();
 			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
 		}
@@ -1186,6 +1214,7 @@ void GLRenderPass::bind(GLGraphicsContext* context)
 	// depth buffer
 	if (m_depthBuffer)
 	{
+		LN_CHECK(m_depthBuffer->size() == baseSize);
 		GLuint id = static_cast<GLDepthBuffer*>(m_depthBuffer)->id();
 		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id));
 		GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id));
@@ -1840,6 +1869,8 @@ void GLDepthBuffer::init(uint32_t width, uint32_t height)
 	GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, m_id));
 	GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));
 	GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+	m_size.width = width;
+	m_size.height = height;
 }
 
 void GLDepthBuffer::dispose()

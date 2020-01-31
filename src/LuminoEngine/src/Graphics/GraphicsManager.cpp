@@ -192,6 +192,9 @@ void GraphicsManager::init(const Settings& settings)
 
 		m_defaultSamplerState = makeObject<SamplerState>();
 		m_defaultSamplerState->setFrozen(true);
+
+		m_linearSamplerState = makeObject<SamplerState>(TextureFilterMode::Linear);
+		m_linearSamplerState->setFrozen(true);
 	}
 
 
@@ -209,7 +212,10 @@ void GraphicsManager::dispose()
 
 	// default objects
 	{
-		m_defaultSamplerState.reset();
+		m_linearSamplerState = nullptr;
+		m_defaultSamplerState = nullptr;
+		m_whiteTexture = nullptr;
+		m_blackTexture = nullptr;
 	}
 
 	List<GraphicsResource*> removeList = m_graphicsResources;

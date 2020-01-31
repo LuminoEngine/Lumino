@@ -9,6 +9,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
+#include <LuminoEngine/Engine/Debug.hpp>
 #include "UIManager.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Platform/PlatformManager.hpp"
@@ -36,7 +37,6 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
 
     // キャプチャ中のコントロールがあればそちらに送る
     UIElement* sender = capturedElement();
-	printf("capturedElement %p\n", sender);
 
     if (sender)
     {
@@ -404,6 +404,15 @@ Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& 
 	//}
 
 	//return UIElement::arrangeOverride(desiredSize());
+}
+
+void UIFrameWindow::render(UIRenderingContext* context, const Matrix& parentTransform)
+{
+	UIContainerElement::render(context, parentTransform);
+
+	if (m_debugInterface) {
+		m_debugInterface->renderOnUI(context);
+	}
 }
 
 void UIFrameWindow::onRender(UIRenderingContext* context)

@@ -132,8 +132,11 @@ void FlatRenderingPipeline::render(
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
 	m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Geometry, nullptr);
 
+	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
+	//m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
+
     {
-        ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
+        //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
         m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RenderPhaseClass::ImageEffect, nullptr);

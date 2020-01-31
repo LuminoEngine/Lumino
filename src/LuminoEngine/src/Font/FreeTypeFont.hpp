@@ -49,15 +49,18 @@ public:
 	virtual void decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo) override;
 
 private:
+	void getGlobalMetricsInternal(FontGlobalMetrics* outMetrics, bool fromInit) const;
 	bool getOutlineTextMetrix();
 	bool getBitmapTextMetrix();
-	void FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap);
+	Bitmap2D* FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap);
 	void FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const;
 
 	FontDesc m_desc;
 	FT_Face m_face;
 	FT_Int32 m_loadFlags;
-	Ref<Bitmap2D> m_internalCacheBitmap;
+	FontGlobalMetrics m_engineDefaultGlobalMetrix;
+	Ref<Bitmap2D> m_internalCacheBitmapGray;
+	Ref<Bitmap2D> m_internalCacheBitmapRGBA;
 };
 
 

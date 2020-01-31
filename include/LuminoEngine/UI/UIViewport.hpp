@@ -10,6 +10,14 @@ class UIManager;
 class ImageEffectRenderer;
 }
 
+/** Viewport の配置方法 */
+enum class UIViewportPlacement
+{
+	Stretch,		/**< 転送先領域全体に拡大または縮小する */
+	//AutoResize,		/**< 転送先領域と同じピクセルサイズになるよう自動的にリサイズする */
+	ViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する */
+};
+
 class UIViewport
 	: public UIContainerElement
 {
@@ -17,8 +25,13 @@ public:
     void addRenderView(RenderView* view);
     void removeRenderView(RenderView* view);
 
-    void addImageEffect(ImageEffect* effect);
-    void removeImageEffect(ImageEffect* effect);
+    //void addImageEffect(ImageEffect* effect);
+    //void removeImageEffect(ImageEffect* effect);
+
+
+
+	void setViewBoxSize(const Size& value) { m_viewBoxSize = value; }
+
 
     UIViewport();
     virtual ~UIViewport();
@@ -39,13 +52,20 @@ protected:
     virtual void onRoutedEvent(UIEventArgs* e) override;
 
 private:
+	bool isViewBoxRenderTargetAutoResize() const { return m_viewBoxSize.width <= 0.0f && m_viewBoxSize.height <= 0.0f; }
+	bool isViewBoxAspectScaling() const { return !isViewBoxRenderTargetAutoResize() && m_placement == UIViewportPlacement::ViewBox; }
+	void acquirePrimaryTarget(const SizeI& viewPixelSize);
+	static void makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
+
     detail::UIManager* m_manager;
-    Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
+    //Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
     List<Ref<RenderView>> m_renderViews;
 	//Ref<RenderPass> m_renderPass;
     Size m_actualViewboxSize;
     Ref<Material> m_blitMaterial;
 	Ref<RenderTargetTexture> m_primaryTarget;
+	UIViewportPlacement m_placement;
+	Size m_viewBoxSize;
 };
 
 } // namespace ln

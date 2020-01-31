@@ -34,6 +34,7 @@
 #include <LuminoEngine/Scene/TransformControls.hpp>
 #include <LuminoEngine/ImageEffect/LightShaftImageEffect.hpp>
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
+#include <LuminoEngine/Visual/EmojiComponent.hpp>
 using namespace ln;
 
 class TestProcessorNode : public AudioProcessorNode
@@ -269,22 +270,29 @@ void Example_MessageWindow();
 void Example_Navigator();
 void Example_UIControls();
 void Example_Tilemap();
+void Tutorial_Sandbox();
 
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
 
-    if (0) {
-        GlobalLogger::addStdErrAdapter();
-        EngineSettings::setEngineFeatures(EngineFeature::Experimental);
-        EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);
-        EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-        detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+	GlobalLogger::addStdErrAdapter();
+	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
+	detail::EngineManager::s_settings.standaloneFpsControl = true;
+	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
+
+    if (1) {
 
         //Example_MessageWindow();
         //Example_Navigator();
         //Example_UIControls();
-		Example_Tilemap();
+		//Example_Tilemap();
+		Tutorial_Sandbox();
         return 0;
     }
 
@@ -336,14 +344,6 @@ int main(int argc, char** argv)
 	//	}
 	//}
 
-#ifdef _WIN32
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-	GlobalLogger::addStdErrAdapter();
-    EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-    EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
-	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
-	detail::EngineDomain::engineManager()->settings().standaloneFpsControl = true;
 
 	//return UISandboxMain();
 
@@ -352,7 +352,7 @@ int main(int argc, char** argv)
 	//GlobalLogger::setLevel(LogLevel::Verbose);
 	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
-    EngineSettings::setMainBackBufferSize(640 / div, 480 / div);
+    //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);
 
 
 	Engine::initialize();
@@ -374,13 +374,14 @@ int main(int argc, char** argv)
 	//}
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
-	GameAudio::playBGM(u"D:/Materials/Music/Shade BGM素材集/BGMdata_v1.2/BGM/1_MapBGM.wav");
 
-    Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
+	Camera* camera = Engine::mainCamera();
+	camera->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
-    Engine::mainCamera()->setBackgroundColor(Color::Gray);
+	camera->setBackgroundColor(Color::Gray);
 	//Engine::mainCamera()->setPosition(0, 1, -5);
-
+	//camera->setProjectionMode(ProjectionMode::Orthographic);
+	//camera->setOrthographicSize(16, 12);
 
     auto ft = Texture2D::create(512, 256);
     //Font::registerFontFromFile(u"meiryo.ttc");
@@ -453,7 +454,7 @@ int main(int argc, char** argv)
 	//mesh1->setEulerAngles(Math::PI / 2, 0, 0);
  //   mesh1->setScale(10);
 	mesh1->setPosition(0, 5, 0);
-    Engine::world()->add(mesh1);
+    //Engine::world()->add(mesh1);
     
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   skymesh1->setBlendMode(BlendMode::Add);
@@ -462,7 +463,7 @@ int main(int argc, char** argv)
  //   skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
  //   Engine::world()->add(skymesh1);
 
-    Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
+    //Engine::mainRenderView()->setClearMode(RenderViewClearMode::Sky);
 
     //auto vvv = Vector3(5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5);
     //auto vvv2 = Vector3(0.000005804542996261093f, 0.000013562911419845635, 0.000030265902468824876);
@@ -471,10 +472,10 @@ int main(int argc, char** argv)
     //auto mainAmbientLight = makeObject<AmbientLight>();
     //mainAmbientLight->setColor(Color::Purple);
     //Engine::world()->add(mainAmbientLight);
-    Engine::world()->mainAmbientLight()->setColor(Color::Purple);
-    Engine::world()->mainAmbientLight()->setIntensity(1);
-    Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -0.25, -1));
-    Engine::world()->mainDirectionalLight()->setIntensity(5);
+    //Engine::world()->mainAmbientLight()->setColor(Color::Purple);
+    //Engine::world()->mainAmbientLight()->setIntensity(1);
+    //Engine::world()->mainDirectionalLight()->lookAt(Vector3(1, -0.25, -1));
+    //Engine::world()->mainDirectionalLight()->setIntensity(5);
 
     //auto mainDirectionalLight = makeObject<DirectionalLight>();
     //Engine::world()->add(mainDirectionalLight);
@@ -507,6 +508,54 @@ int main(int argc, char** argv)
 
 	//auto lightShaft = LightShaftImageEffect::create();
 	//Engine::mainRenderView()->addImageEffect(lightShaft);
+
+#if 1
+	{
+		Engine::mainCamera()->setBackgroundColor(Color::White);
+
+		//auto s = u'🐈';
+		//auto t = Texture2D::loadEmoji(U'🐈');
+		auto t = Texture2D::loadEmoji(u"🌱");
+
+		auto s2 = SamplerState::create(TextureFilterMode::Linear);
+		t->setSamplerState(s2);
+
+		auto s = Sprite::create(t, 1, 1);
+		s->setPosition(0, 1.2, 0);
+		s->setScale(2);
+		//s->setAnchorPoint(Vector2(0.5, 0));
+		//s->setBlendMode(BlendMode::Normal);
+		//s->setShadingModel(ShadingModel::UnLighting);
+		//Engine::world()->add(s);
+
+		//auto c = makeObject<EmojiComponent>();
+		//auto obj = makeObject<WorldObject>();
+		//obj->addComponent(c);
+		//c->setShadingModel(ShadingModel::UnLighting);
+		//Engine::world()->add(obj);
+
+		auto text1 = makeObject<Text>();
+		text1->setText(u"Hello, Lumino!");
+		text1->setColor(Color::Gray);
+		//text1->setPosition(0, -0.5, 0);
+		text1->setAnchorPoint(Vector2(0.5, 1));
+		text1->setFontSize(18);
+		Engine::world()->add(text1);
+
+		auto text2 = makeObject<UITextBlock>();
+		
+		//field1->setWidth(200);
+		//field1->setHeight(30);
+		//text1->setText(u"Hello, Lumino!");
+		text2->setText(u"Hello");
+		text2->setPosition(0, 50, 0);
+		text2->setHorizontalAlignment(HAlignment::Center);
+		text2->setVerticalAlignment(VAlignment::Center);
+		text2->setFontSize(20);
+		text2->setTextColor(Color::DimGray);
+		//Engine::mainUIView()->addElement(text2);
+	}
+#endif
 
 #if 0
     auto window1 = UIWindow::create();

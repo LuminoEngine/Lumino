@@ -93,6 +93,13 @@ void LuminoRubyRuntimeManager::init()
             s_logLevel = (LnLogLevel)FIX2INT(LUMINO_LOG_LEVEL);
             LnLog_SetLevel(s_logLevel);
         }
+        
+        VALUE LUMINO_ENGINE_RESOURCES_DIR = rb_eval_string_protect("$LUMINO_ENGINE_RESOURCES_DIR", NULL);
+        if (LUMINO_ENGINE_RESOURCES_DIR != Qnil) {
+            const char* path = StringValuePtr(LUMINO_ENGINE_RESOURCES_DIR);
+            printf("path: %s\n", path);
+            LnInternalEngineSettings_SetEngineResourcesPathA(path);
+        }
 
         LnRuntimeSettings settings;
         settings.runtimeFinalizedCallback = handleRuntimeFinalized;
@@ -153,6 +160,8 @@ void LuminoRubyRuntimeManager::init()
 
 VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retain)
 {
+    if (handle == LN_NULL_HANDLE) return Qnil;
+
     int objectIndex = (int)LnRuntime_GetManagedObjectId(handle);
     int typeinfoIndex = (int)LnRuntime_GetManagedTypeInfoId(handle);
 
@@ -261,7 +270,6 @@ static VALUE g_LuminoRubyRuntimeManager;
 static void LuminoRubyRuntimeManager_delete(LuminoRubyRuntimeManager* obj)
 {
     if (obj) {
-        LnEngine_Finalize();
         delete obj;
         LuminoRubyRuntimeManager::instance = nullptr;
     }
@@ -313,6 +321,7 @@ void LuminoRubyRuntimeManager::handleRuntimeFinalized()
     if (instance) {
         instance->m_runtimeAliving = false;
     }
+    LNRB_LOG_D("Runtime finalized.");
 }
 
 void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle)

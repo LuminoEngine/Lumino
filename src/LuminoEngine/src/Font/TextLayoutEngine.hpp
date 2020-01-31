@@ -6,6 +6,7 @@ class Font;
 namespace detail {
 class FontCore;
 class FlexText;
+class FontRequester;
 
 class TextRun
 	: public RefObject
@@ -20,10 +21,12 @@ class FormattedText
 {
 public:
 	String text;
-	Ref<Font> font;
+	Ref<Font> font;	// TODO: obsolete
 	Color color;
 	Rect area;
 	TextAlignment textAlignment = TextAlignment::Forward;
+
+	Ref<FontRequester> fontRequester;
 };
 
 
@@ -100,6 +103,8 @@ public:
     void layout(FontCore* font, const Char* text, size_t length, const Rect& targetArea, float strokeSize, TextAlignment alignment);
 
 protected:
+	const Size& renderAreaSize() const { return m_renderAreaSize; }
+
     // pos : upper left
 	// デフォルトは Font クラスから取得したメトリクスを直接使って測定する。もし RenderingContext 側でストロークサイズ(Pen)などを考慮したい場合、これをオーバーライドする。
 	// outSizeOffset : 元のサイズから、上下左右にどれだけ大きくなるか。通常はストロークサイズをそのまま指定する。

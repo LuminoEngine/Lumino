@@ -40,7 +40,10 @@ public:
     void setTimeScale(float value) { m_timeScale = value; }
     float timeScale() const { return m_timeScale; }
 
+	void setMainAmbientLight(AmbientLight* value);
     const Ref<AmbientLight>& mainAmbientLight() const { return m_mainAmbientLight; }
+
+	void setMainDirectionalLight(DirectionalLight* value);
     const Ref<DirectionalLight>& mainDirectionalLight() const { return m_mainDirectionalLight; }
 
 
@@ -91,6 +94,7 @@ public: // TODO: internal
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
 	//List<WorldObject*> m_destroyList;
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
+	//Ref<detail::WorldSceneGraphRenderingContext> m_debugRenderingContext;
     float m_timeScale;
 
     friend class WorldRenderView;

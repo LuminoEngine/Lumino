@@ -463,7 +463,10 @@ float4	ln_MaterialAmbient;	// TODO: とりあえず MMD モデル用のために
 float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 {
 	//return float4(0, 1, 0, 1);
-	return LN_GetBuiltinEffectColor(tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color);
+	float4 c = tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color;
+    clip(c.a - 0.0001);
+
+	return LN_GetBuiltinEffectColor(c);
 }
 
 //------------------------------------------------------------------------------

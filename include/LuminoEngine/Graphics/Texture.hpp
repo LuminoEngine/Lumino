@@ -98,6 +98,16 @@ public:
 	LN_METHOD()
     static Ref<Texture2D> load(const StringRef& filePath);
 
+    /**
+     * loadEmoji
+     *
+     * @param[in] code : xxxx
+     *
+     */
+	LN_METHOD()
+	static Ref<Texture2D> loadEmoji(StringRef code);
+
+	static Ref<Texture2D> loadEmoji(uint32_t codePoint);
 
 	static Texture2D* blackTexture();
 

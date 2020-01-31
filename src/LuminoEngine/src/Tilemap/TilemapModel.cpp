@@ -69,9 +69,6 @@ void TilemapModel::init()
                     const auto tiles = tileLayer.getTiles();
 
                     int gid = tiles[index].ID;
-
-                    printf("");
-
                 }
             }
         }

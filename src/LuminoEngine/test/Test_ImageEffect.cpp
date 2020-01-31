@@ -13,11 +13,11 @@ TEST_F(Test_ImageEffect, Bloom)
 	sprite1->setShadingModel(ShadingModel::UnLighting);
 
 	auto bloomEffect = BloomImageEffect::create();
-	Engine::mainViewport()->addImageEffect(bloomEffect);
+	Engine::mainRenderView()->addImageEffect(bloomEffect);
 
 	TestEnv::updateFrame();
 	ASSERT_SCREEN(LN_ASSETFILE("ImageEffect/Expects/ImageEffect-Bloom-1.png"));
-	Engine::mainViewport()->removeImageEffect(bloomEffect);
+	Engine::mainRenderView()->removeImageEffect(bloomEffect);
 	LN_TEST_CLEAN_SCENE;
 }
 

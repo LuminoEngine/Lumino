@@ -9,6 +9,7 @@
 #include FT_STROKER_H
 #include FT_SYNTHESIS_H
 #include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Font/Font.hpp>
 #include "FontManager.hpp"
 #include "FreeTypeFont.hpp"
 
@@ -505,17 +506,14 @@ void FreeTypeFontCached::FT_BitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitm
 FreeTypeFont::FreeTypeFont()
 	: m_desc()
 	, m_face(nullptr)
-	, m_internalCacheBitmap()
+	, m_internalCacheBitmapGray()
 {
 }
 
 Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 {
     // CSS (Web) のフォントポイントサイズに合わせる。
-    // > なお、WPF と同じ結果にするには 72 を指定する。https://docs.microsoft.com/ja-jp/windows/desktop/LearnWin32/dpi-and-device-independent-pixels
-    // > WPF は活版印刷の文化に合わせるよりも、自身が基準としている DPI(96) と合わせることを選択している。
-    // > 先のリンクにもあるが、12pt に合わせるには FontSize=16 とする必要がある。
-	static const int resolution = 96;
+	static const int resolution = 72;
 
 	if (LN_REQUIRE(manager)) return false;
 	FontCore::init(manager);
@@ -530,10 +528,35 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 	FT_Error err = FT_New_Memory_Face(manager->ftLibrary(), (const FT_Byte*)faceSource->buffer->data(), faceSource->buffer->size(), faceSource->faceIndex, &m_face);
 	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
 
-	// FT_Set_Char_Size() はポイントサイズと解像度をもとに m_face->size->metrics を作成する
-	float size = static_cast<float>(m_desc.Size) * 64.0f;
-	err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
-	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+	if (m_face->num_fixed_sizes == 0) {
+		// For 3D space text drawing.
+		{
+			FT_F26Dot6 size = Font::DefaultSize * 64;
+			err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
+			getGlobalMetricsInternal(&m_engineDefaultGlobalMetrix, true);
+			if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+		}
+
+		// FT_Set_Char_Size() はポイントサイズと解像度をもとに m_face->size->metrics を作成する
+		float size = static_cast<float>(m_desc.Size) * 64.0f;
+		err = FT_Set_Char_Size(m_face, size, size, resolution, resolution);
+		if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return false;
+	}
+	else {
+		LN_LOG_VERBOSE << "\"" << m_face->family_name << "\" is fixed size font.";
+
+		int bestMatch = 0;
+		int diff = std::abs(m_desc.Size - m_face->available_sizes[0].width);
+		for (int i = 1; i < m_face->num_fixed_sizes; ++i) {
+			int ndiff = std::abs(m_desc.Size - m_face->available_sizes[i].width);
+			if (ndiff < diff) {
+				bestMatch = i;
+				diff = ndiff;
+			}
+		}
+		err = FT_Select_Size(m_face, bestMatch);
+		if (LN_ENSURE(err == FT_Err_Ok, "failed FT_Select_Size : %d\n", err)) return false;
+	}
 
 	m_loadFlags = FT_LOAD_DEFAULT;
 
@@ -549,10 +572,10 @@ Result FreeTypeFont::init(FontManager* manager, const FontDesc& desc)
 
 	// lookupGlyphBitmap の結果を書き込むためのビットマップを作っておく
 	{
-		FontGlobalMetrics metrix;
-		getGlobalMetrics(&metrix);
+		//FontGlobalMetrics metrix;
+		//getGlobalMetrics(&metrix);
 
-		m_internalCacheBitmap = makeObject<Bitmap2D>(metrix.lineSpace, metrix.lineSpace, PixelFormat::A8);
+		//m_internalCacheBitmap = makeObject<Bitmap2D>(metrix.lineSpace, metrix.lineSpace, PixelFormat::A8);
 	}
 	
 	return false;
@@ -570,31 +593,7 @@ void FreeTypeFont::dispose()
 
 void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
-	if (LN_REQUIRE(outMetrics)) return;
-	if (LN_REQUIRE(m_face)) return;
-
-    auto rawHeight = m_face->size->metrics.height;
-    auto rawBBoxHeight = m_face->bbox.yMax - m_face->bbox.yMin;
-
-    float height = static_cast<float>(m_face->size->metrics.height) / 64.0f;
-    float bboxHeight = static_cast<float>(rawBBoxHeight) / 64.0f;
-
-	float em_size = 1.0 * m_face->units_per_EM;
-    float x_scale = 1.0f;//m_face->size->metrics.x_ppem / em_size;
-	float y_scale = 1.0f;//m_face->size->metrics.y_ppem / em_size;
-    float xMin = std::floor(FLValueToFloatPx(m_face->bbox.xMin));//std::floor(x_scale * m_face->bbox.xMin);
-	float yMin = std::floor(FLValueToFloatPx(m_face->bbox.yMin)); //std::floor(y_scale * m_face->bbox.yMin);
-	float xMax = std::ceil(FLValueToFloatPx(m_face->bbox.xMax)); //std::ceil(x_scale * m_face->bbox.xMax);
-	float yMax = std::ceil(FLValueToFloatPx(m_face->bbox.yMax));//std::ceil(y_scale * m_face->bbox.yMax);
-/*
-    FT_FL
-    FT_FloorFix;
-    FT_MulFix;
-*/
-	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
-	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
-	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
-	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
+	getGlobalMetricsInternal(outMetrics, false);
 }
 
 void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
@@ -680,8 +679,13 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 	{
 		const FT_UInt glyphIndex = ::FT_Get_Char_Index(m_face, utf32code);
 
+		FT_Int32 loadFlags = 0/*FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_FORCE_AUTOHINT*/;
+		if (outInfo->loadColor) {
+			loadFlags |= FT_LOAD_COLOR;
+		}
+
 		// load glyph info to GlyphSlot(m_face->glyph), for access to metrix.
-		err = FT_Load_Glyph(m_face, glyphIndex, 0/*FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_FORCE_AUTOHINT*/);
+		err = FT_Load_Glyph(m_face, glyphIndex, loadFlags);
 		if (LN_ENSURE(err == 0)) return;
 
 		if (m_desc.isBold) {
@@ -699,7 +703,7 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 
 	if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
 		// FT_LOAD_NO_BITMAP が OFF だとここに入ってくる
-		FTBitmapToInternalCacheBitmap(&glyph->bitmap);
+		outInfo->glyphBitmap = FTBitmapToInternalCacheBitmap(&glyph->bitmap);
 		outInfo->size.width = glyph->bitmap.width;
 		outInfo->size.height = glyph->bitmap.rows;
 	}
@@ -709,19 +713,55 @@ void FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, BitmapGlyphInfo* outInfo)
 		if (LN_ENSURE(err == 0)) return;
 
 		//FT_Bitmap* bitmap = &((FT_BitmapGlyph)glyph)->bitmap;
-		FTBitmapToInternalCacheBitmap(&glyph->bitmap);
+		outInfo->glyphBitmap = FTBitmapToInternalCacheBitmap(&glyph->bitmap);
 		outInfo->size.width = glyph->bitmap.width;
 		outInfo->size.height = glyph->bitmap.rows;
 
 		//LN_NOTIMPLEMENTED();
 	}
-
-	outInfo->glyphBitmap = m_internalCacheBitmap;
 }
 
 void FreeTypeFont::decomposeOutline(UTF32 utf32code, VectorGlyphInfo* outInfo)
 {
 	LN_NOTIMPLEMENTED();
+}
+
+void FreeTypeFont::getGlobalMetricsInternal(FontGlobalMetrics* outMetrics, bool fromInit) const
+{
+	if (LN_REQUIRE(outMetrics)) return;
+	if (LN_REQUIRE(m_face)) return;
+
+	auto rawHeight = m_face->size->metrics.height;
+	auto rawBBoxHeight = m_face->bbox.yMax - m_face->bbox.yMin;
+
+	float height = static_cast<float>(m_face->size->metrics.height) / 64.0f;
+	float bboxHeight = static_cast<float>(rawBBoxHeight) / 64.0f;
+
+	float em_size = 1.0 * m_face->units_per_EM;
+	float x_scale = 1.0f;//m_face->size->metrics.x_ppem / em_size;
+	float y_scale = 1.0f;//m_face->size->metrics.y_ppem / em_size;
+	float xMin = std::floor(FLValueToFloatPx(m_face->bbox.xMin));//std::floor(x_scale * m_face->bbox.xMin);
+	float yMin = std::floor(FLValueToFloatPx(m_face->bbox.yMin)); //std::floor(y_scale * m_face->bbox.yMin);
+	float xMax = std::ceil(FLValueToFloatPx(m_face->bbox.xMax)); //std::ceil(x_scale * m_face->bbox.xMax);
+	float yMax = std::ceil(FLValueToFloatPx(m_face->bbox.yMax));//std::ceil(y_scale * m_face->bbox.yMax);
+/*
+	FT_FL
+	FT_FloorFix;
+	FT_MulFix;
+*/
+	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
+	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
+	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
+	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
+
+	if (fromInit) {
+		outMetrics->virutalSpaceFactor = 1.0f;
+	}
+	else {
+		float d1 = std::abs(m_engineDefaultGlobalMetrix.descender - m_engineDefaultGlobalMetrix.ascender);
+		float d2 = std::abs(outMetrics->descender - outMetrics->ascender);
+		outMetrics->virutalSpaceFactor = (1.0f / d1) * (d1 / d2);
+	}
 }
 
 bool FreeTypeFont::getOutlineTextMetrix()
@@ -734,19 +774,43 @@ bool FreeTypeFont::getBitmapTextMetrix()
 	return true;
 }
 
-void FreeTypeFont::FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap)
+Bitmap2D* FreeTypeFont::FTBitmapToInternalCacheBitmap(FT_Bitmap* ftBitmap)
 {
-	if (m_internalCacheBitmap->width() < ftBitmap->width || m_internalCacheBitmap->height() < ftBitmap->rows) {
-		m_internalCacheBitmap->resize(ftBitmap->width, ftBitmap->rows);
+	Bitmap2D* bmp = nullptr;
+	if (ftBitmap->pixel_mode == FT_PIXEL_MODE_MONO ||
+		ftBitmap->pixel_mode == FT_PIXEL_MODE_GRAY) {
+
+		if (!m_internalCacheBitmapGray) {
+			m_internalCacheBitmapGray = makeObject<Bitmap2D>(ftBitmap->width, ftBitmap->rows, PixelFormat::A8);
+		}
+		else if (m_internalCacheBitmapGray->width() < ftBitmap->width || m_internalCacheBitmapGray->height() < ftBitmap->rows) {
+			m_internalCacheBitmapGray->resize(ftBitmap->width, ftBitmap->rows);
+		}
+
+		bmp = m_internalCacheBitmapGray;
 	}
-	FTBitmapToBitmap2D(ftBitmap, m_internalCacheBitmap);
+	else if (ftBitmap->pixel_mode == FT_PIXEL_MODE_BGRA) {
+
+		if (!m_internalCacheBitmapRGBA) {
+			m_internalCacheBitmapRGBA = makeObject<Bitmap2D>(ftBitmap->width, ftBitmap->rows, PixelFormat::RGBA8);
+		}
+		else if (m_internalCacheBitmapRGBA->width() < ftBitmap->width || m_internalCacheBitmapRGBA->height() < ftBitmap->rows) {
+			m_internalCacheBitmapRGBA->resize(ftBitmap->width, ftBitmap->rows);
+		}
+
+		bmp = m_internalCacheBitmapRGBA;
+	}
+
+	FTBitmapToBitmap2D(ftBitmap, bmp);
+
+	return bmp;
 }
 
 void FreeTypeFont::FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) const
 {
 	int width = ftBitmap->width;
 	int height = ftBitmap->rows;
-	if (LN_REQUIRE(bitmap->format() == PixelFormat::A8)) return;
+	//if (LN_REQUIRE(bitmap->format() == PixelFormat::A8)) return;
 	if (LN_REQUIRE(bitmap->width() >= width && bitmap->height() >= height)) return;
 	//if (LN_REQUIRE(bitmap->width() < width || bitmap->height() < height)) {
 	//	bitmap->resize(std::max(bitmap->width(), width), std::max(bitmap->height(), height));
@@ -785,6 +849,18 @@ void FreeTypeFont::FTBitmapToBitmap2D(FT_Bitmap* ftBitmap, Bitmap2D* bitmap) con
 			const byte_t* srcRow = ftBitmap->buffer + width * y;
 			byte_t* dstRow = (bitmap->data() + bitmap->width() * y);	// A8 format
 			memcpy(dstRow, srcRow, width);
+		}
+	}
+	else if (ftBitmap->pixel_mode == FT_PIXEL_MODE_BGRA) {
+		for (int y = 0; y < height; y++) {
+			const byte_t* srcRow = ftBitmap->buffer + sizeof(uint32_t) * width * y;
+			byte_t* dstRow = (bitmap->data() + sizeof(uint32_t) * bitmap->width() * y);
+			memcpy(dstRow, srcRow, sizeof(uint32_t) * width);
+
+			for (int x = 0; x < width; x++) {
+				byte_t* p = dstRow + x * 4;
+				std::swap(p[0], p[2]);
+			}
 		}
 	}
 	else {

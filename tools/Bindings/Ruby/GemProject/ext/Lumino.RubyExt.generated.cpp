@@ -1426,7 +1426,6 @@ static VALUE Wrap_LnZVTestPromise2_ThenWith(int argc, VALUE* argv, VALUE self)
         if (LNRB_VALUE_IS_OBJECT(callback))
         {
             LnHandle _callback = LuminoRubyRuntimeManager::instance->getHandle(callback);
-            printf("call LnZVTestPromise2_ThenWith\n");
             LnResult errorCode = LnZVTestPromise2_ThenWith(selfObj->handle, _callback);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
@@ -2247,7 +2246,7 @@ static VALUE Wrap_LnEngineSettings_SetMainWindowSize(int argc, VALUE* argv, VALU
     return Qnil;
 }
 
-static VALUE Wrap_LnEngineSettings_SetMainBackBufferSize(int argc, VALUE* argv, VALUE self)
+static VALUE Wrap_LnEngineSettings_SetMainWorldViewSize(int argc, VALUE* argv, VALUE self)
 {
     if (2 <= argc && argc <= 2) {
         VALUE width;
@@ -2257,12 +2256,12 @@ static VALUE Wrap_LnEngineSettings_SetMainBackBufferSize(int argc, VALUE* argv, 
         {
             int _width = LNRB_VALUE_TO_NUMBER(width);
             int _height = LNRB_VALUE_TO_NUMBER(height);
-            LnResult errorCode = LnEngineSettings_SetMainBackBufferSize(_width, _height);
+            LnResult errorCode = LnEngineSettings_SetMainWorldViewSize(_width, _height);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
     }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setMainBackBufferSize - wrong argument type.");
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWorldViewSize - wrong argument type.");
     return Qnil;
 }
 
@@ -2740,6 +2739,27 @@ static VALUE Wrap_LnTexture2D_Load(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Texture2D::load - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnTexture2D_LoadEmoji(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE code;
+        rb_scan_args(argc, argv, "1", &code);
+        if (LNRB_VALUE_IS_STRING(code))
+        {
+            const char* _code = LNRB_VALUE_TO_STRING(code);
+            LnHandle _outReturn;
+	printf("call LnTexture2D_LoadEmojiA\n");
+            LnResult errorCode = LnTexture2D_LoadEmojiA(_code, &_outReturn);
+	printf("ret LnTexture2D_LoadEmojiA\n");
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+	printf("Wrap_LnTexture2D_LoadEmoji 1\n");
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Texture2D::loadEmoji - wrong argument type.");
     return Qnil;
 }
 
@@ -4711,7 +4731,7 @@ extern "C" void Init_Lumino_RubyExt()
 
     g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_main_back_buffer_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainBackBufferSize), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_world_view_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWorldViewSize), -1);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_title", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowTitle), -1);
     rb_define_singleton_method(g_class_EngineSettings, "add_asset_directory", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetDirectory), -1);
     rb_define_singleton_method(g_class_EngineSettings, "add_asset_archive", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetArchive), -1);
@@ -4748,6 +4768,7 @@ extern "C" void Init_Lumino_RubyExt()
     g_class_Texture2D = rb_define_class_under(g_rootModule, "Texture2D", g_class_Texture);
     rb_define_alloc_func(g_class_Texture2D, LnTexture2D_allocate);
     rb_define_singleton_method(g_class_Texture2D, "load", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Load), -1);
+    rb_define_singleton_method(g_class_Texture2D, "load_emoji", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_LoadEmoji), -1);
     rb_define_private_method(g_class_Texture2D, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTexture2D_Create), -1);
     LnTexture2D_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture2D, LnTexture2D_allocateForGetObject));
     LnTexture2D_OnSerialize_SetOverrideCallback(Wrap_LnTexture2D_OnSerialize_OverrideCallback);

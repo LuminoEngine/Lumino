@@ -343,7 +343,7 @@ void RenderingContext::drawScreenRectangle()
 //    m_builder->advanceFence();
 //}
 
-void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* destination)
+void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* destination, RenderPhaseClass phase)
 {
 	class Blit : public detail::RenderDrawElement
 	{
@@ -372,7 +372,7 @@ void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* desti
 	auto* element = m_builder->addNewDrawElement<Blit>(
 		m_manager->blitRenderFeature(),
 		m_builder->blitRenderFeatureStageParameters());
-	element->targetPhase = RenderPhaseClass::ImageEffect;
+	element->targetPhase = phase;
 
     if (destination)
     {
@@ -574,7 +574,38 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
 //	//ptr->setLocalBoundingSphere(sphere);
 //}
 
-void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment, TextCrossAlignment crossAlignment/*, const Color& color, Font* font*/)
+void RenderingContext::drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
+{
+	if (text.isEmpty()) return;
+
+	// TODO: cache
+	auto formattedText = makeRef<detail::FormattedText>();
+	formattedText->text = text;
+	formattedText->font = m_builder->font();
+	formattedText->color = color;	// TODO: m_builder->textColor(); の方がいいか？
+	formattedText->area = Rect();
+	formattedText->textAlignment = TextAlignment::Forward;
+	formattedText->fontRequester = font;
+
+	if (!formattedText->font) {
+		formattedText->font = m_manager->fontManager()->defaultFont();
+	}
+
+	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
+		m_manager->spriteTextRenderFeature(),
+		m_builder->spriteTextRenderFeatureStageParameters());
+	element->formattedText = formattedText;
+	element->anchor = anchor;
+	element->baseDirection = baseDirection;
+
+	if (baseDirection != SpriteBaseDirection::Basic2D) {
+		// is 3D.
+		element->samplerState = detail::EngineDomain::graphicsManager()->linearSamplerState();
+	}
+}
+
+void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAlignment alignment/*, TextCrossAlignment crossAlignment*//*, const Color& color, Font* font*/)
 {
 
     // TODO: cache
@@ -594,6 +625,7 @@ void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAli
         m_manager->spriteTextRenderFeature(),
         m_builder->spriteTextRenderFeatureStageParameters());
     element->formattedText = formattedText;
+	element->baseDirection = SpriteBaseDirection::Basic2D;
 
     // TODO
     //detail::Sphere sphere;

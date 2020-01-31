@@ -42,7 +42,8 @@ public:
     static void resetFrameDelay();
 
     /** アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。 */
-    static double totalTime();
+	LN_METHOD()
+    static double time();
     
     /** アプリケーション全体のタイムスケールを設定します。 */
     static void setTimeScale(float value);

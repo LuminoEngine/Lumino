@@ -249,6 +249,13 @@ public:
         setTime(m_currentTime);
     }
 
+	void reset(const TValue& value)
+	{
+		m_startValue = value;
+		m_targetValue = value;
+		m_value = value;
+	}
+
     /** アニメーションの繰り返し方法を設定します。 */
     void setWrapMode(AnimationWrapMode mode)
     {

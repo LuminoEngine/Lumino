@@ -1,5 +1,7 @@
 ﻿
 #include "EnvironmentSettings.hpp"
+#include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
+#include "../../LuminoEngine/src/Engine/EngineManager.hpp"
 
 namespace lna {
 
@@ -65,7 +67,7 @@ void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
 			}
 			case EnvironmentPathBase::Repository:
 			{
-				m_luminoPackageRootDir = findRepositoryRootForTesting();
+				m_luminoPackageRootDir = ln::detail::EngineManager::findRepositoryRootForTesting();
 				setupPathesFromRepositoryRoot(m_luminoPackageRootDir);
 				break;
 			}
@@ -192,28 +194,13 @@ ln::Path BuildEnvironment::findLocalPackageForTesting()
 	{
 		CLI::info("Using debug mode build environment pathes.");
 
-		auto luminoRepoRoot = findRepositoryRootForTesting();
+		auto luminoRepoRoot = ln::detail::EngineManager::findRepositoryRootForTesting();
 		LN_LOG_DEBUG << luminoRepoRoot;
 
 		result = ln::Path::combine(luminoRepoRoot, u"build", u"LocalPackage");
 	}
 
 	return result;
-}
-
-ln::Path BuildEnvironment::findRepositoryRootForTesting()
-{
-	ln::Path path = ln::Environment::executablePath();
-	ln::Path luminoRepoRoot;
-	while (!path.isRoot())
-	{
-		if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
-			luminoRepoRoot = path;
-			break;
-		}
-		path = path.parent();
-	}
-	return luminoRepoRoot;
 }
 
 void BuildEnvironment::setupPathesFromPackageRoot(const ln::Path& packageRoot)

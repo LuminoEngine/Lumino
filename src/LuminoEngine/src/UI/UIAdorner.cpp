@@ -102,14 +102,12 @@ void UIAdornerLayer::render(UIRenderingContext* context, const Matrix& parentTra
 
 UIElement* UIAdornerLayer::lookupMouseHoverElement(const Point& frameClientPosition)
 {
-	//printf("---- UIAdornerLayer::lookupMouseHoverElement\n");
 	for (auto& adorner : m_adorners) {
 		UIElement* element = adorner->lookupMouseHoverElement(frameClientPosition);
 		if (element) {
 			return element;
 		}
 	}
-	//printf("----\n");
 	return nullptr;
 }
 

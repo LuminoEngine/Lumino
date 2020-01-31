@@ -12,6 +12,7 @@ class Test_Engine < Test::Unit::TestCase
       Engine.initialize
     end
     def shutdown
+      p "call Engine.finalize"
       Engine.finalize
     end
   end

@@ -54,13 +54,13 @@ ln::Result EditorApplication::init()
     lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
-	ln::EngineSettings::setMainBackBufferSize(1600, 800);
+	//ln::EngineSettings::setMainBackBufferSize(1600, 800);
     //ln::EngineSettings::setAssetStorageAccessPriority(ln::AssetStorageAccessPriority::AllowLocalDirectory);
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
-    ln::detail::EngineDomain::engineManager()->settings().defaultObjectsCreation = false;
-    ln::detail::EngineDomain::engineManager()->init();
+    ln::detail::EngineManager::s_settings.defaultObjectsCreation = false;
+	ln::detail::EngineDomain::engineContext()->initializeEngineManager();
 
-	auto root = lna::BuildEnvironment::findRepositoryRootForTesting();
+	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));
 
     m_workspace = ln::makeObject<lna::Workspace>();

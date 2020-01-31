@@ -7,6 +7,7 @@ namespace detail {
 class FontManager;
 class FontCore;
 class FontHelper;
+class FontRequester;
 }
 
 /*
@@ -16,6 +17,8 @@ class Font
     : public Object
 {
 public:
+	static const int DefaultSize;
+
     /** デフォルトのスタイルに基づいてフォントを作成します。 */
     static Ref<Font> create();
 
@@ -76,6 +79,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     detail::FontCore* resolveFontCore(float dpiScale);
+	//detail::FontCore* resolveFontCore(const detail::FontRequester& fontRequester);
 
     detail::FontManager* m_manager;
     detail::FontDesc m_desc;
@@ -90,8 +94,31 @@ class FontHelper
 {
 public:
     static detail::FontCore* resolveFontCore(Font* font, float dpiScale) { return font->resolveFontCore(dpiScale); }
+	//static detail::FontCore* resolveFontCore(const FontRequester& fontRequester) { return fontRequester.font->resolveFontCore(fontRequester); }
 	static bool equalsFontDesc(const Font* font, const FontDesc& desc) { return font->m_desc.equals(desc); }
     static const FontDesc& getFontDesc(const Font* font) { return font->m_desc; }
 };
+
+// TODO: 今の Font を FontFace, これを Font クラスにしてもいいかも。
+class FontRequester
+	: public RefObject
+{
+public:
+	FontRequester();
+
+	Ref<Font> font;
+	int size;
+	bool isBold = false;
+	bool isItalic = false;
+	bool isAntiAlias = false;
+
+	detail::FontCore* resolveFontCore(float scaleFactor);
+
+private:
+	detail::FontManager* m_manager;
+	Ref<detail::FontCore> m_rawFont;
+	float m_lastScaleFactor;
+};
+
 } // namespace detail
 } // namespace ln

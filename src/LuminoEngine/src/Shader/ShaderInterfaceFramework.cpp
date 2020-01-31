@@ -24,13 +24,6 @@ void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir,
     //zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
     nearClip = n;
     farClip = f;
-
-    //{
-    //	Vector3 pos(1, 1, -1);
-    //	Vector4 tt = Vector3::transform(pos, viewProjMatrix);
-    //	float d = tt.z / tt.w;
-    //	printf("");
-    //}
 }
 
 //==============================================================================

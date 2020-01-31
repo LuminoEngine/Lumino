@@ -318,6 +318,11 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --progress --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
             }
+            if (!Directory.Exists("noto-emoji"))
+            {
+                Utils.CallProcess("git", "clone --depth 1 -b v2019-11-19-unicode12 https://github.com/googlefonts/noto-emoji.git noto-emoji");
+                File.Copy("noto-emoji/fonts/NotoColorEmoji.ttf", Path.Combine(builder.LuminoToolsDir, "EngineResources", "NotoColorEmoji.ttf"), true);
+            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
@@ -331,6 +336,7 @@ namespace LuminoBuild.Tasks
                     var targetFullName = BuildEnvironment.TargetFullName;
                     var configuration = BuildEnvironment.Configuration;
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "zlib"));
+                    var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "ogg"));
                     var targetInfo = BuildEngine_MSVC.TargetInfoMap[targetName];
                     var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
@@ -343,7 +349,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectMSVC(builder, "glad", reposDir, targetName, targetFullName, configuration, $"-DGLAD_INSTALL=ON");
                     BuildProjectMSVC(builder, "openal-soft", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "SDL2", reposDir, targetName, targetFullName, configuration, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF ");
-                    BuildProjectMSVC(builder, "freetype2", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "freetype2", reposDir, targetName, targetFullName, configuration, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                     BuildProjectMSVC(builder, "ogg", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "vorbis", reposDir, targetName, targetFullName, configuration, $"-DOGG_ROOT={oggInstallDir}");
                     BuildProjectMSVC(builder, "bullet3", reposDir, targetName, targetFullName, configuration, $"{altRuntime} {bulletOptions}");
@@ -364,11 +370,12 @@ namespace LuminoBuild.Tasks
                     foreach (var target in BuildEngine_AndroidJNI.Targets)
                     {
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "zlib"));
+                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "ogg"));
 
                         BuildProjectAndroid(builder, "zlib", reposDir, target.ABI, target.BuildType);
                         BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, target.BuildType, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                        BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI, target.BuildType);
+                        BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI, target.BuildType, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                         BuildProjectAndroid(builder, "ogg", reposDir, target.ABI, target.BuildType);
                         BuildProjectAndroid(builder, "vorbis", reposDir, target.ABI, target.BuildType, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
                         BuildProjectAndroid(builder, "bullet3", reposDir, target.ABI, target.BuildType, bulletOptions);
@@ -384,12 +391,13 @@ namespace LuminoBuild.Tasks
                 {
                     var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
+                    var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "ogg"));
 
                     BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
                     BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectEm(builder, "glad", reposDir, "Emscripten", "-DGLAD_INSTALL=ON");
-                    BuildProjectEm(builder, "freetype2", reposDir, "Emscripten");
+                    BuildProjectEm(builder, "freetype2", reposDir, "Emscripten", $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                     BuildProjectEm(builder, "ogg", reposDir, "Emscripten");
                     BuildProjectEm(builder, "vorbis", reposDir, "Emscripten", $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
                     BuildProjectEm(builder, "bullet3", reposDir, "Emscripten", bulletOptions);
@@ -421,11 +429,12 @@ namespace LuminoBuild.Tasks
                         var generator = "Xcode";
                         
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "zlib"));
+                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "ogg"));
 
                         BuildProject(builder, "zlib", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
-                        BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF " + args);
+                        BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF -DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir} " + args);
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_DEVELOPER_ROOT={builder.LuminoBuildDir} " + args);
                         BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
@@ -450,6 +459,7 @@ namespace LuminoBuild.Tasks
                         var dirName = t.DirName;
                         var args = t.Args;
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "zlib"));
+                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "ogg"));
 
                         var generator = "Xcode";
@@ -459,7 +469,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "SPIRV-Cross", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "glfw", t.Config, reposDir, dirName, generator, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                         BuildProject(builder, "glad", t.Config, reposDir, dirName, generator, $"-DGLAD_INSTALL=ON " + args);
-                        BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF " + args);
+                        BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF -DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir} " + args);
                         BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
                         BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} " + args);
                         BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);

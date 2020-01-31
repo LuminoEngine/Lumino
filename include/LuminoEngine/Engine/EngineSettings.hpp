@@ -16,9 +16,9 @@ public:
 	LN_METHOD()
 	static void setMainWindowSize(int width, int height);
 
-	/** メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等) */
+	/** メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等) */
 	LN_METHOD()
-	static void setMainBackBufferSize(int width, int height);
+	static void setMainWorldViewSize(int width, int height);
 
 	/** メインウィンドウのタイトル文字列を設定します。*/
 	LN_METHOD()
@@ -61,7 +61,12 @@ public:
 //	/** 既に作成済みの IDirect3DDevice9 インターフェイスを利用する場合、そのポインタを指定します。*/
 //	static void setD3D9Device(void* device);
 //#endif
-
+	
+	/**
+	 * (default: Debug ビルドの場合true、それ以外は false)
+	 */
+	LN_METHOD()
+	static void setDebugToolEnabled(bool enabled);
 
 	/**
 	 * デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)

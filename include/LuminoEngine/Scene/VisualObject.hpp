@@ -95,7 +95,7 @@ public:
 LN_CONSTRUCT_ACCESS:
     VisualObject();
 	virtual ~VisualObject();
-	void init();
+	bool init();
 
 protected:
     void setMainVisualComponent(VisualComponent* component);

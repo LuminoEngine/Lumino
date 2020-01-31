@@ -227,11 +227,6 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 
 Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 {
-    //if (m_meshModel->meshContainers().size() == 66) {
-    //    printf("");
-    //}
-
-	//std::vector<Mesh::SectionView> sectionViews;
     Mesh::MeshView meshView;
 
     int indexBufferViewIndex = -1;

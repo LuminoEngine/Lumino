@@ -130,9 +130,9 @@ WorldObject::~WorldObject()
 {
 }
 
-void WorldObject::init()
+bool WorldObject::init()
 {
-    Object::init();
+	if (!Object::init()) return false;
 
     if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
         World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
@@ -140,6 +140,8 @@ void WorldObject::init()
             activeWorld->add(this);
         }
     }
+
+	return true;
 }
 
 void WorldObject::onDispose(bool explicitDisposing)

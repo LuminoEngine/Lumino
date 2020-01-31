@@ -97,7 +97,7 @@ static std::string std_string_vprintf(const char* format, std::va_list arg)
     return ret;
 }
 
-extern RuntimeManager::Settings g_globalRuntimeManagerSettings;
+//extern RuntimeManager::Settings g_globalRuntimeManagerSettings;
 
 } // namespace detail
 } // namespace ln
@@ -107,20 +107,21 @@ extern "C" {
 void LnRuntime_Initialize(const tagLnRuntimeSettings* settings)
 {
     if (settings) {
-        auto& s = ln::detail::g_globalRuntimeManagerSettings;
+        auto& s = ln::detail::RuntimeManager::s_globalSettings;
         s.runtimeFinalizedCallback = settings->runtimeFinalizedCallback;
         s.referenceCountTrackerCallback = settings->referenceCountTrackerCallback;
         s.runtimeGetTypeInfoIdCallback = settings->runtimeGetTypeInfoIdCallback;
     }
 
-    ln::detail::EngineDomain::runtimeManager();
+	ln::EngineContext::current()->initializeRuntimeManager();
+    //ln::detail::EngineDomain::runtimeManager();
     //auto manager = ln::detail::EngineDomain::engineManager();
     //manager->initializeRuntimeManager();
 }
 
 void LnRuntime_Finalize()
 {
-    ln::detail::EngineDomain::release();
+	ln::EngineContext::current()->disposeRuntimeManager();
 }
 
 void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id)
@@ -167,6 +168,11 @@ void LnRuntime_RunAppInternal(LnHandle app)
 {
     ln::detail::ApplicationHelper::run(
         static_cast<ln::Application*>(ln::detail::EngineDomain::runtimeManager()->getObjectFromHandle(app)));
+}
+
+void LnInternalEngineSettings_SetEngineResourcesPathA(const char* path)
+{
+	ln::detail::EngineManager::s_settings.engineResourcesPath = ln::String::fromCString(path);
 }
 
 //==============================================================================
@@ -282,14 +288,22 @@ LnResult LnObject_Release(LnHandle obj)
 {
     if (auto m = ln::detail::EngineDomain::runtimeManager()) {
         m->releaseObjectExplicitly(obj);
+		return LN_SUCCESS;
     }
-	return LN_SUCCESS;
+	else {
+		return LN_RUNTIME_UNINITIALIZED;
+	}
 }
 
 LnResult LnObject_Retain(LnHandle obj)
 {
-	ln::detail::EngineDomain::runtimeManager()->retainObjectExplicitly(obj);
-	return LN_SUCCESS;
+	if (auto m = ln::detail::EngineDomain::runtimeManager()) {
+		m->retainObjectExplicitly(obj);
+		return LN_SUCCESS;
+	}
+	else {
+		return LN_RUNTIME_UNINITIALIZED;
+	}
 }
 
 int32_t LnObject_GetReferenceCount(LnHandle obj)

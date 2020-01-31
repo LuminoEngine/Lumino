@@ -60,6 +60,9 @@ typedef enum tagLnResult
     /** 不明なエラー */
     LN_ERROR_UNKNOWN = -1,
 
+	/**  */
+	LN_RUNTIME_UNINITIALIZED = -2,
+
 } LnResult;
 
 /** 真偽値 */
@@ -86,6 +89,9 @@ typedef enum tagLnLogLevel
 
 } LnLogLevel;
 
+//==============================================================================
+// Internal API
+
 typedef void(*LnRuntimeFinalizedCallback)();
 typedef void(*LnReferenceCountTrackerCallback)(LnHandle handle, int method, int count);
 typedef void(*LnRuntimeGetTypeInfoIdCallback)(LnHandle handle, int* outTypeInfoId);
@@ -98,7 +104,7 @@ typedef struct tagLnRuntimeSettings
 
 } LnRuntimeSettings;
 
-extern LN_FLAT_API void LnRuntime_Initialize(const tagLnRuntimeSettings* settings);
+extern LN_FLAT_API void LnRuntime_Initialize(const LnRuntimeSettings* settings);
 extern LN_FLAT_API void LnRuntime_Finalize();
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
 extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);
@@ -111,6 +117,7 @@ extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
 //extern LN_FLAT_API void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
 
+extern LN_FLAT_API void LnInternalEngineSettings_SetEngineResourcesPathA(const char* path);
 
 typedef void(*LnTypeInfoCreateInstanceCallback)(int typeInfoId, LnHandle* outHandle);
 

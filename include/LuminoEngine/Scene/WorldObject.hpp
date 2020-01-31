@@ -200,7 +200,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
 	virtual ~WorldObject();
-	void init();
+	bool init();
 	virtual void onDispose(bool explicitDisposing) override;
 
 public: // TODO:

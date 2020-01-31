@@ -19,9 +19,9 @@ Component::~Component()
 {
 }
 
-void Component::init()
+bool Component::init()
 {
-    Object::init();
+    return Object::init();
 }
 
 detail::WorldObjectTransform* Component::transrom() const

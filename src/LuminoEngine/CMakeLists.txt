@@ -11,28 +11,11 @@ set(LN_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../include)
 
 file(GLOB LN_SOURCES_Base ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Base/*.hpp src/Base/*.cpp src/Base/*.hpp)
 
+file(GLOB LN_SOURCES_Engine ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/*.hpp src/Engine/*.cpp src/Engine/*.hpp)
 set(LN_SOURCES_Engine
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Application.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Diagnostics.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Engine.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/EngineSettings.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Object.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/Property.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Engine/RenderingCommandList.hpp
-    src/Engine/Internal.hpp
-    src/Engine/Application.cpp
-    src/Engine/Diagnostics.cpp
-    src/Engine/Engine.cpp
-    src/Engine/EngineDomain.hpp
-    src/Engine/EngineManager.cpp
-    src/Engine/EngineManager.hpp
-    src/Engine/FpsController.cpp
-    src/Engine/FpsController.hpp
-    src/Engine/LinearAllocator.hpp
-    src/Engine/RenderingCommandList.cpp
-    src/Engine/Object.cpp
-    src/Engine/Property.cpp
+	${LN_SOURCES_Engine}
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/EngineContext.hpp
+    src/EngineContext.cpp
 )
 
 set(LN_SOURCES_Platform
@@ -60,7 +43,7 @@ set(LN_SOURCES_Platform
     src/Platform/PlatformWindowManager.hpp
     src/Platform/TextInputMethodSystem.cpp
     src/Platform/TextInputMethodSystem.hpp
-	src/Platform/Win32PlatformDialogs.hpp
+    src/Platform/Win32PlatformDialogs.hpp
     src/Platform/Win32PlatformInterface.cpp
     src/Platform/Win32PlatformWindowManager.cpp
     src/Platform/Win32PlatformWindowManager.hpp
@@ -255,6 +238,8 @@ set(LN_SOURCES_Visual
 )
 
 file(GLOB LN_SOURCES_Scene ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/*.hpp src/Scene/*.cpp src/Scene/*.hpp)
+file(GLOB LN_SOURCES_Scene_Text ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Text/*.hpp src/Scene/Text/*.cpp src/Scene/Text/*.hpp)
+
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 
@@ -274,9 +259,9 @@ set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui)
 file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
 file(GLOB LN_SOURCES_Runtime
-	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
-	${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
-	src/Runtime/*.cpp
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.h
+    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Runtime/*.hpp
+    src/Runtime/*.cpp
     src/Runtime/*.hpp
     src/Runtime/*.h
 )
@@ -323,10 +308,11 @@ source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
 source_group("ImageEffect" FILES ${LN_SOURCES_ImageEffect})
 source_group("Effect"    FILES ${LN_SOURCES_Effect})
-source_group("Physics"	 FILES ${LN_SOURCES_Physics})
-source_group("Asset"	 FILES ${LN_SOURCES_Asset})
+source_group("Physics"     FILES ${LN_SOURCES_Physics})
+source_group("Asset"     FILES ${LN_SOURCES_Asset})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
+source_group("Scene\\Text"    FILES ${LN_SOURCES_Scene_Text})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
 source_group("Runtime"   FILES ${LN_SOURCES_Runtime})
@@ -342,9 +328,9 @@ set(LN_SOURCES
     ${LN_SOURCES_Grammar}
     ${LN_SOURCES_Animation}
     ${LN_SOURCES_Input}
-	${LN_SOURCES_Audio}
-	${LN_SOURCES_Audio_Decoder}
-	${LN_SOURCES_Audio_Device}
+    ${LN_SOURCES_Audio}
+    ${LN_SOURCES_Audio_Decoder}
+    ${LN_SOURCES_Audio_Device}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Font}
@@ -356,6 +342,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Asset}
     ${LN_SOURCES_Visual}
     ${LN_SOURCES_Scene}
+    ${LN_SOURCES_Scene_Text}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
     ${LN_SOURCES_Runtime}

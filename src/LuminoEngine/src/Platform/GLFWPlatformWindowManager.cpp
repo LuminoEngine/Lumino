@@ -245,7 +245,6 @@ Result GLFWPlatformWindow::init(const WindowCreationSettings& settings)
 	//glfwGetMonitorPhysicalSize(primary, &widthMM, &heightMM);
 	//const GLFWvidmode* mode = glfwGetVideoMode(primary);
 	//const double dpi = mode->width / (widthMM / 25.4);
-	//printf("a\n");
 	// 96dpi, 600ppi
 	// 1インチ (= 25.4 mm) 
 
@@ -460,7 +459,7 @@ void GLFWPlatformWindow::window_mousePos_callback(GLFWwindow* window, double xpo
 void GLFWPlatformWindow::window_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     GLFWPlatformWindow* thisWindow = (GLFWPlatformWindow*)glfwGetWindowUserPointer(window);
-    thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseWheelEvent(thisWindow, yoffset));
+    thisWindow->sendEventToAllListener(PlatformEventArgs::makeMouseWheelEvent(thisWindow, -1.0 * yoffset));
 }
 
 ModifierKeys GLFWPlatformWindow::glfwKeyModToLNKeyMod(int mods)

@@ -487,12 +487,6 @@ void SpriteParticleModel::simulateOneParticle(detail::ParticleData* data, double
 				}
 			}
 
-			//if (data->position == Vector3::Zero)
-			//{
-			//	printf("");
-			//}
-
-
 			float a = 1.0f;
 
 			float lifeSpan = data->endTime - data->spawnTime;

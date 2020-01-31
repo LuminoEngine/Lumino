@@ -581,9 +581,9 @@ LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outRetu
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
 
 /**
-    @brief メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: クライアント領域のサイズと同等)
+    @brief メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等)
 */
-LN_FLAT_API LnResult LnEngineSettings_SetMainBackBufferSize(int width, int height);
+LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height);
 
 /**
     @brief メインウィンドウのタイトル文字列を設定します。
@@ -713,6 +713,14 @@ LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id);
 */
 LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn);
 LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn);
+
+/**
+    @brief loadEmoji
+    @param[in] code : xxxx
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outReturn);
+LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn);
 
 /**
     @brief テクスチャを作成します。ピクセルフォーマットは RGBA8 です。

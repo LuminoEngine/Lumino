@@ -248,9 +248,11 @@ void SpriteComponent::onRender(RenderingContext* context)
 	}
 
     Size size = m_size;
-    if (m_pixelsParUnit > 0.0f && (sourceRect.width > 0.0f && sourceRect.height > 0.0f)/*m_size.width < 0 && m_size.height < 0*/) {
-        size.width = sourceRect.width / m_pixelsParUnit;
-        size.height = sourceRect.height / m_pixelsParUnit;
+    if (m_pixelsParUnit > 0.0f) {
+		if (sourceRect.width > 0.0f && sourceRect.height > 0.0f) {
+			size.width = sourceRect.width / m_pixelsParUnit;
+			size.height = sourceRect.height / m_pixelsParUnit;
+		}
     }
 
     Size renderSize;

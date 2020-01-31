@@ -2,6 +2,7 @@
 
 #include <LuminoCore.hpp>
 
+#include "LuminoEngine/EngineContext.hpp"
 #include "LuminoEngine/Base/Regex.hpp"
 #include "LuminoEngine/Base/Variant.hpp"
 #include "LuminoEngine/Base/Serializer.hpp"
@@ -10,6 +11,7 @@
 #include "LuminoEngine/Engine/Engine.hpp"
 #include "LuminoEngine/Engine/Application.hpp"
 #include "LuminoEngine/Engine/Diagnostics.hpp"
+#include "LuminoEngine/Engine/Debug.hpp"
 
 #include "LuminoEngine/Animation/Common.hpp"
 #include "LuminoEngine/Animation/AnimationCurve.hpp"
@@ -77,6 +79,7 @@
 #include "LuminoEngine/Scene/CameraOrbitControlComponent.hpp"
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
+#include "LuminoEngine/Scene/Text/Text.hpp"
 #include "LuminoEngine/Scene/StaticMesh.hpp"
 #include "LuminoEngine/Scene/RigidBodyComponent.hpp"
 

@@ -17,6 +17,8 @@ CameraOrbitControlComponent::CameraOrbitControlComponent()
     : m_camera(nullptr)
     , m_capturdElement(nullptr)
     , m_state(State::None)
+	, m_orthoMinZoom(0.0001f)
+	, m_orthoMaxZoom(std::numeric_limits<float>::infinity())
 {
 }
 
@@ -47,18 +49,18 @@ void CameraOrbitControlComponent::handleUIEvent(UIEventArgs* e)
         switch (me->getMouseButtons())
         {
             case MouseButtons::Left:
-                startRotate(me->getPosition());
-                m_capturdElement = e->sender();
-                m_capturdElement->retainCapture();
-                e->handled = true;
-                break;
-            case MouseButtons::Middle:
-                startDolly(me->getPosition());
-                m_capturdElement = e->sender();
-                m_capturdElement->retainCapture();
-                e->handled = true;
+				//startDolly(me->getPosition());
+				//m_capturdElement = e->sender();
+				//m_capturdElement->retainCapture();
+				//e->handled = true;
                 break;
             case MouseButtons::Right:
+				startRotate(me->getPosition());
+				m_capturdElement = e->sender();
+				m_capturdElement->retainCapture();
+				e->handled = true;
+                break;
+            case MouseButtons::Middle:
                 startPan(me->getPosition());
                 m_capturdElement = e->sender();
                 m_capturdElement->retainCapture();
@@ -170,10 +172,10 @@ void CameraOrbitControlComponent::handleMouseMovePan(const Vector2& mousePos)
 void CameraOrbitControlComponent::handleMouseWheel(int delta)
 {
     if (delta < 0) {
-        dollyOut(zoomScale());
+        dollyIn(zoomScale());
     }
     else if (delta > 0) {
-        dollyIn(zoomScale());
+        dollyOut(zoomScale());
     }
 
     update();
@@ -193,9 +195,11 @@ void CameraOrbitControlComponent::dollyIn(float dollyScale)
 {
     ProjectionMode mode = m_camera->cameraComponent()->projectionMode();
     if (mode == ProjectionMode::Perspective) {
-        m_scale /= dollyScale;
+        m_scale *= dollyScale;
     }
     else if (mode == ProjectionMode::Orthographic) {
+		m_camera->cameraComponent()->m_zoom = std::max(m_orthoMinZoom, std::min(m_orthoMaxZoom, m_camera->cameraComponent()->m_zoom * dollyScale));
+		m_zoomChanged = true;
     }
     else {
         LN_UNREACHABLE();
@@ -206,9 +210,11 @@ void CameraOrbitControlComponent::dollyOut(float dollyScale)
 {
     ProjectionMode mode = m_camera->cameraComponent()->projectionMode();
     if (mode == ProjectionMode::Perspective) {
-        m_scale *= dollyScale;
+        m_scale /= dollyScale;
     }
     else if (mode == ProjectionMode::Orthographic) {
+		m_camera->cameraComponent()->m_zoom = std::max(m_orthoMinZoom, std::min(m_orthoMaxZoom, m_camera->cameraComponent()->m_zoom / dollyScale));
+		m_zoomChanged = true;
     }
     else {
         LN_UNREACHABLE();
@@ -218,6 +224,8 @@ void CameraOrbitControlComponent::dollyOut(float dollyScale)
 void CameraOrbitControlComponent::pan(float deltaX, float deltaY)
 {
     Size clientSize = m_camera->renderView()->actualSize();
+	if (clientSize.isSquashed()) return;
+
     Matrix matrix = m_camera->worldMatrix();
 
     ProjectionMode mode = m_camera->cameraComponent()->projectionMode();
@@ -236,11 +244,15 @@ void CameraOrbitControlComponent::pan(float deltaX, float deltaY)
 
     }
     else if (mode == ProjectionMode::Orthographic) {
-        LN_NOTIMPLEMENTED();
+		auto viewSize = m_camera->cameraComponent()->ownerRenderView()->actualSize();
 
-        // orthographic
-        //panLeft(deltaX * (scope.object.right - scope.object.left) / scope.object.zoom / clientSize.width, scope.object.matrix);
-        //panUp(deltaY * (scope.object.top - scope.object.bottom) / scope.object.zoom / clientSize.height, scope.object.matrix);
+		Size orthoSize = m_camera->cameraComponent()->actualOrthographicViewSize();
+		float zoom = m_camera->cameraComponent()->m_zoom;
+
+		panLeft(deltaX * (orthoSize.width / clientSize.width) * zoom, matrix);
+		panUp(deltaY * (orthoSize.height / clientSize.height) * zoom, matrix);
+        //panLeft(deltaX * orthoSize.width / zoom / clientSize.width, matrix);
+        //panUp(deltaY * orthoSize.height / zoom / clientSize.height, matrix);
 
     }
     else {

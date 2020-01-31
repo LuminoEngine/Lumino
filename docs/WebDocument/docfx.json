@@ -33,7 +33,8 @@
         ],
         "exclude": [
           "obj/**",
-          "_site/**"
+          "_site/**",
+          "articles/documents/old-docs/**"
         ]
       }
     ],
@@ -68,6 +69,7 @@
     "template": [
       "default",
       "template"  /* local template folder */
+      /*"templates/material"*/
     ],
     "postProcessors": [],
     "noLangKeyword": false,

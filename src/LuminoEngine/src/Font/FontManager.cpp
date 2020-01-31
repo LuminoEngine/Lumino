@@ -22,7 +22,7 @@ namespace detail {
    
 FontDesc::FontDesc()
     : Family()
-    , Size(12)
+    , Size(Font::DefaultSize)
     , isBold(false)
     , isItalic(false)
     , isAntiAlias(true)
@@ -152,6 +152,15 @@ void FontManager::init(const Settings& settings)
 	if (!m_glyphIconFontManager->init(this)) {
 		return;
 	}
+
+	auto emojiFontPath = ln::Path(settings.engineAssetPath, u"NotoColorEmoji.ttf");
+	if (FileSystem::existsFile(emojiFontPath)) {
+		registerFontFromFile(emojiFontPath, false);
+		FontDesc desc;
+		desc.Family = u"Noto Color Emoji";
+		m_emojiFont = makeObject<Font>(desc);
+	}
+
 
     LN_LOG_DEBUG << "FontManager Initialization ended.";
 }
@@ -318,6 +327,11 @@ FontDesc FontManager::defaultFontDesc() const
 Font* FontManager::defaultFont() const
 {
     return m_defaultFont;
+}
+
+Font* FontManager::emojiFont() const
+{
+	return m_emojiFont;
 }
 
 const FontFaceSource* FontManager::lookupFontFaceSourceFromFamilyName(const String& name)

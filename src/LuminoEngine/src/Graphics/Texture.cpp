@@ -11,6 +11,7 @@
 #include <LuminoEngine/Asset/Assets.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "../Font/TextLayoutEngine.hpp"
+#include "../Font/FontManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 
 namespace ln {
@@ -83,12 +84,45 @@ Ref<Texture2D> Texture2D::load(const StringRef& filePath)
     auto path = assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
     if (path) {
         auto stream = assetManager->openStreamFromAssetPath(*path);
-        return makeObject<Texture2D>(stream, TextureFormat::RGBA8);
+        return makeObject<Texture2D>(stream, TextureFormat::RGBA8);	// TODO: format
     }
     else {
         LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
         return nullptr;
     }
+}
+
+Ref<Texture2D> Texture2D::loadEmoji(StringRef code)
+{
+	// TODO: String.toUTF32() 作ってもいいかも
+	String str = code;
+	std::vector<byte_t> bytes = TextEncoding::utf32Encoding()->encode(str);
+	if (LN_REQUIRE(bytes.size() == 4)) return nullptr;
+
+	return loadEmoji(*reinterpret_cast<const uint32_t*>(bytes.data()));
+}
+
+// Note: NotoColorEmoji は bitmap サイズ1種類固定で格納されているため、スケーリング不可能。
+// Bitmap として取得する場合は常に同じサイズとなる。
+Ref<Texture2D> Texture2D::loadEmoji(uint32_t codePoint)
+{
+	Font* font = detail::EngineDomain::fontManager()->emojiFont();
+	if (font) {
+		detail::FontCore* core = detail::FontHelper::resolveFontCore(font, 1.0f);
+
+		// TODO: NotoColorEmoji に限っては bitmap をキャッシュしていい気がする。(すべてが同一サイズの bitmap である)
+		detail::BitmapGlyphInfo info;
+		info.loadColor = true;
+		core->lookupGlyphBitmap(codePoint, &info);
+
+		auto texture = makeObject<Texture2D>(info.glyphBitmap->clone(), GraphicsHelper::translateToTextureFormat(info.glyphBitmap->format()));
+		texture->setSamplerState(detail::EngineDomain::graphicsManager()->linearSamplerState());
+		return texture;
+	}
+	else {
+		LN_WARNING(u"Emoji font not loaded.\n");
+		return nullptr;
+	}
 }
 
 Texture2D* Texture2D::blackTexture()

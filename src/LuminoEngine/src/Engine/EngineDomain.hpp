@@ -38,6 +38,7 @@ class EngineDomain
 {
 public:
 	static void release();
+
 	static EngineContext* engineContext();
 	static RuntimeManager* runtimeManager();
 	static EngineManager* engineManager();

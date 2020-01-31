@@ -256,7 +256,6 @@ TEST_F(Test_Graphics_HlslEffect, Sample)
 		float lr = 1.6;
 		Vector4 lightPos(0, cos(lr), sin(lr), 1);
 
-		printf("%f\n", r);
 
 		Vector4 cameraPos(0, r, 0, 1);
 		auto view = Matrix::makeLookAtLH(cameraPos.xyz(), cameraPos.xyz() + Vector3::normalize(-0.2, 0, 1), Vector3::UnitY);

@@ -105,6 +105,10 @@ private:
     bool m_enableDamping = false;
     float m_dampingFactor = 0.25;
 
+
+	float m_orthoMinZoom;
+	float m_orthoMaxZoom;
+
 };
 
 } // namespace ln

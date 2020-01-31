@@ -5,6 +5,7 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/Engine/Debug.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
@@ -66,6 +67,8 @@ namespace detail {
 //==============================================================================
 // EngineManager
 
+EngineSettings EngineManager::s_settings;
+
 EngineManager::EngineManager()
 	: m_settings()
     , m_assetManager(nullptr)
@@ -95,9 +98,11 @@ EngineManager::~EngineManager()
 {
 }
 
-void EngineManager::init()
+void EngineManager::init(const EngineSettings& settings)
 {
     LN_LOG_DEBUG << "EngineManager Initialization started.";
+
+	m_settings = settings;
 
 	// check settings
 	{
@@ -119,6 +124,16 @@ void EngineManager::init()
 #else
         m_persistentDataPath = u""; // TODO:
 #endif
+		if (!m_settings.engineResourcesPath.isEmpty()) {
+			m_engineAssetsPath = Path(m_settings.engineResourcesPath).canonicalize();
+		}
+
+		if (m_engineAssetsPath.isEmpty()) {
+			auto repo = ln::detail::EngineManager::findRepositoryRootForTesting();
+			m_engineAssetsPath = Path::combine(repo, u"tools", u"EngineResources");
+		}
+
+		LN_LOG_INFO << "EngineAssetsPath: " << m_engineAssetsPath;
     }
 	
 
@@ -173,6 +188,18 @@ void EngineManager::init()
             m_mainCamera = makeObject<Camera>();
             m_mainWorld->add(m_mainCamera);
 
+			if (m_settings.createMainLights) {
+
+
+				auto mainAmbientLight = makeObject<AmbientLight>();
+				m_mainWorld->add(mainAmbientLight);
+				m_mainWorld->setMainAmbientLight(mainAmbientLight);
+
+				auto mainDirectionalLight = makeObject<DirectionalLight>();
+				m_mainWorld->add(mainDirectionalLight);
+				m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
+			}
+
             m_mainWorldRenderView = makeObject<WorldRenderView>();
             m_mainWorldRenderView->setTargetWorld(m_mainWorld);
             m_mainWorldRenderView->setCamera(m_mainCamera);
@@ -182,6 +209,7 @@ void EngineManager::init()
 
             m_mainUIRenderView = makeObject<UIRenderView>();
             m_mainViewport->addRenderView(m_mainUIRenderView);
+			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
 
             m_mainUIRoot = makeObject<UIControl>();
             m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
@@ -194,11 +222,15 @@ void EngineManager::init()
             m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
 
             m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+
+
+			m_debugInterface = makeObject<DebugInterface>();
+			m_mainWindow->m_debugInterface = m_debugInterface;
         }
     }
 
 	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
-	if (m_mainUIContext) {
+	if (m_mainUIContext && m_mainWindow) {
 		m_mainUIContext->updateStyleTree();
 		m_mainWindow->updateLayoutTree();
 	}
@@ -208,6 +240,8 @@ void EngineManager::init()
 
 void EngineManager::dispose()
 {
+	LN_LOG_DEBUG << "EngineManager finalization started.";
+
     if (m_uiManager) {
         m_uiManager->setPrimaryElement(nullptr);
         m_uiManager->setMainContext(nullptr);
@@ -274,9 +308,9 @@ void EngineManager::dispose()
     if (m_effectManager) m_effectManager->dispose();
 	if (m_renderingManager) m_renderingManager->dispose();
 	if (m_meshManager) m_meshManager->dispose();
-	if (m_fontManager) m_fontManager->dispose();
 	if (m_shaderManager) m_shaderManager->dispose();
 	if (m_graphicsManager) m_graphicsManager->dispose();
+	if (m_fontManager) m_fontManager->dispose();
 	if (m_audioManager) m_audioManager->dispose();
 	if (m_inputManager) m_inputManager->dispose();
     if (m_animationManager) m_animationManager->dispose();
@@ -300,6 +334,8 @@ void EngineManager::dispose()
         m_comInitialized = false;
     }
 #endif
+
+	LN_LOG_DEBUG << "EngineManager finalization ended.";
 }
 
 void EngineManager::initializeAllManagers()
@@ -456,6 +492,21 @@ void EngineManager::initializeShaderManager()
 	}
 }
 
+void EngineManager::initializeFontManager()
+{
+	if (!m_fontManager && m_settings.features.hasFlag(EngineFeature::Graphics))
+	{
+		initializeAssetManager();
+
+		FontManager::Settings settings;
+		settings.assetManager = m_assetManager;
+		settings.engineAssetPath = m_engineAssetsPath;
+
+		m_fontManager = ln::makeRef<FontManager>();
+		m_fontManager->init(settings);
+	}
+}
+
 void EngineManager::initializeGraphicsManager()
 {
 	if (!m_graphicsManager && m_settings.features.hasFlag(EngineFeature::Graphics))
@@ -470,20 +521,6 @@ void EngineManager::initializeGraphicsManager()
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->init(settings);
-	}
-}
-
-void EngineManager::initializeFontManager()
-{
-	if (!m_fontManager && m_settings.features.hasFlag(EngineFeature::Graphics))
-	{
-		initializeAssetManager();
-
-		FontManager::Settings settings;
-		settings.assetManager = m_assetManager;
-
-		m_fontManager = ln::makeRef<FontManager>();
-		m_fontManager->init(settings);
 	}
 }
 
@@ -623,6 +660,10 @@ void EngineManager::updateFrame()
     //------------------------------------------------
     // Main update phase
 
+	if (m_debugInterface) {
+		m_debugInterface->update(elapsedSeconds);
+	}
+
     if (m_mainWindow) {
         m_mainWindow->updateFrame(elapsedSeconds);
     }
@@ -717,6 +758,21 @@ void EngineManager::quit()
 	m_exitRequested = true;
 }
 
+ln::Path EngineManager::findRepositoryRootForTesting()
+{
+	ln::Path path = ln::Environment::executablePath();
+	ln::Path luminoRepoRoot;
+	while (!path.isRoot())
+	{
+		if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
+			luminoRepoRoot = path;
+			break;
+		}
+		path = path.parent();
+	}
+	return luminoRepoRoot;
+}
+
 const Path& EngineManager::persistentDataPath() const
 {
 #if !defined(LN_OS_WIN32)
@@ -730,7 +786,7 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	if (LN_REQUIRE(window)) return;
 	if (LN_REQUIRE(!m_mainWindow)) return;
 	m_mainWindow = window;
-	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), (m_settings.mainBackBufferSize.isAnyZero()) ? m_settings.mainWindowSize : m_settings.mainBackBufferSize);
+	m_mainWindow->setupPlatformWindow(m_platformManager->mainWindow(), m_settings.mainWindowSize);
 	m_mainUIContext->setLayoutRootElement(m_mainWindow);
 
 	// TODO: SwapChain だけでいいはず
@@ -840,7 +896,7 @@ void EngineManager::setDebugToolMode(DebugToolMode mode)
 //==============================================================================
 // EngineDomain
 
-RuntimeManager::Settings g_globalRuntimeManagerSettings;
+
 
 class EngineContextWrap
 {
@@ -853,24 +909,16 @@ public:
 	}
 };
 
-//static Ref<EngineContext> g_engineContext = nullptr;
-//static EngineContext* g_engineContext = nullptr;
-//static std::unique_ptr<EngineContext> g_engineContext = nullptr;
-static RuntimeManager* g_runtimeManager = nullptr;
-static EngineManager* g_engineManager = nullptr;
-
 void EngineDomain::release()
 {
-	if (g_engineManager) {
-		g_engineManager->dispose();
-		RefObjectHelper::release(g_engineManager);
-		g_engineManager = nullptr;
-	}
-    if (g_runtimeManager) {
-        g_runtimeManager->dispose();
-        RefObjectHelper::release(g_runtimeManager);
-        g_runtimeManager = nullptr;
-    }
+	EngineContextWrap::getInstance()->disposeEngineManager();
+	EngineContextWrap::getInstance()->disposeRuntimeManager();
+
+	//if (g_engineManager) {
+	//	g_engineManager->dispose();
+	//	RefObjectHelper::release(g_engineManager);
+	//	g_engineManager = nullptr;
+	//}
 	//if (g_engineContext) {
 		//RefObjectHelper::release(g_engineContext);
 	//	g_engineContext = nullptr;
@@ -891,20 +939,18 @@ EngineContext* EngineDomain::engineContext()
 
 RuntimeManager* EngineDomain::runtimeManager()
 {
-    if (!g_runtimeManager) {
-        g_runtimeManager = LN_NEW RuntimeManager();
-        g_runtimeManager->init(g_globalRuntimeManagerSettings);
-    }
-    return g_runtimeManager;
+    return engineContext()->runtimeManager();
 }
 
 EngineManager* EngineDomain::engineManager()
 {
-    EngineDomain::runtimeManager();
-	if (!g_engineManager) {
-		g_engineManager = LN_NEW EngineManager();
-	}
-	return g_engineManager;
+ //   EngineDomain::runtimeManager();
+	//if (!g_engineManager) {
+	//	g_engineManager = LN_NEW EngineManager();
+	//}
+	//return g_engineManager;
+
+	return engineContext()->engineManager();
 }
 
 PlatformManager* EngineDomain::platformManager()

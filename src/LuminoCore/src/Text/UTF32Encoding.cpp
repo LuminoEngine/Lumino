@@ -22,9 +22,14 @@ UTF32Encoding::UTF32Encoding(bool bigEndian, bool byteOrderMark)
 
 byte_t* UTF32Encoding::preamble() const
 {
-    static byte_t bom[] = {0x00};
-    LN_NOTIMPLEMENTED();
-    return bom;
+	if (m_byteOrderMark) {
+		static byte_t bom[] = { 0x00 };
+		LN_NOTIMPLEMENTED();
+		return bom;
+	}
+	else {
+		return nullptr;
+	}
 }
 
 int UTF32Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
