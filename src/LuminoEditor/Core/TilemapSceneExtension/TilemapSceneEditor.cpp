@@ -120,16 +120,19 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
 {
     m_assetModel = asset;
     m_mainLayout = ln::makeObject<ln::UIVBoxLayout3>();
-    //m_mainLayout->setName(u"---");
+    m_mainLayout->setName(u"---");
     frame->addElement(m_mainLayout);
     {
         auto t = ln::UITextBlock::create(u"test");
+		t->getGridLayoutInfo()->layoutWeight = 0;
+		//t->setVerticalAlignment(ln::VAlignment::Center);
         m_mainLayout->addChild(t);
     }
 
 
 	m_mainViewport = ln::makeObject<ln::UIViewport>();
-    m_mainViewport->setVerticalAlignment(ln::VAlignment::Stretch);
+    //m_mainViewport->setVerticalAlignment(ln::VAlignment::Stretch);
+	m_mainViewport->getGridLayoutInfo()->layoutWeight = 1;
     m_mainLayout->addChild(m_mainViewport);
     //frame->addElement(m_mainViewport);
     //m_mainViewport->setBackgroundColor(ln::Color::Blue);// ln::Color(ln::Random::randFloat(), ln::Random::randFloat(), ln::Random::randFloat(), 1));

@@ -55,7 +55,10 @@ struct GridLayoutInfo
 	int actualLayoutRow = 0;
 	int actualLayoutColumn = 0;
 
-    float   layoutWeight = 0;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
+    float   layoutWeight = -1;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
+									// UIElement デフォルトではインスタンスがない。
+									// BoxLayout では、weight省略時はデフォルトで Ratio にしたい。
+									// -1 は Ratio というより、LayoutPanel のデフォルトに任せますよ、という意思表示。
 };
 
 }
