@@ -218,7 +218,6 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/MeshPrimitiveComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/ParticleEmitterComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SkinnedMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
@@ -227,7 +226,6 @@ set(LN_SOURCES_Visual
     src/Visual/Internal.hpp
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
-    src/Visual/MeshPrimitiveComponent.cpp
     src/Visual/ParticleEmitterComponent.cpp
     src/Visual/SkinnedMeshComponent.cpp
     src/Visual/SpriteComponent.cpp
@@ -239,6 +237,7 @@ set(LN_SOURCES_Visual
 
 file(GLOB LN_SOURCES_Scene ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/*.hpp src/Scene/*.cpp src/Scene/*.hpp)
 file(GLOB LN_SOURCES_Scene_Text ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Text/*.hpp src/Scene/Text/*.cpp src/Scene/Text/*.hpp)
+file(GLOB LN_SOURCES_Scene_Shapes ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Shapes/*.hpp src/Scene/Shapes/*.cpp src/Scene/Shapes/*.hpp)
 
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
@@ -313,6 +312,7 @@ source_group("Asset"     FILES ${LN_SOURCES_Asset})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("Scene\\Text"    FILES ${LN_SOURCES_Scene_Text})
+source_group("Scene\\Shapes"    FILES ${LN_SOURCES_Scene_Shapes})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
 source_group("Runtime"   FILES ${LN_SOURCES_Runtime})
@@ -343,6 +343,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Visual}
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_Scene_Text}
+    ${LN_SOURCES_Scene_Shapes}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
     ${LN_SOURCES_Runtime}

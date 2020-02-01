@@ -57,7 +57,7 @@ void InternalPrimitiveRenderer::flush(ICommandList* context)
     // Create Vertex and Index buffers
     Vertex* vertexBuffer = (Vertex*)context->map(m_vertexBuffer, 0, m_vertexBuffer->getBytesSize());
     uint16_t* indexBuffer = (uint16_t*)context->map(m_indexBuffer, 0, m_indexBuffer->getBytesSize());
-    MeshGeneraterBuffer buffer;
+    MeshGeneraterBuffer buffer(nullptr);
     size_t vertexOffset = 0;
     size_t indexOffset = 0;
     for (MeshGenerater* gen : m_generators) {
@@ -202,7 +202,7 @@ void MeshGeneraterRenderFeature::renderBatch(GraphicsContext* context, RenderFea
         // Create Vertex and Index buffers
         Vertex* vertexBuffer = (Vertex*)m_vertexBuffer->map(MapMode::Write);
         uint16_t* indexBuffer = (uint16_t*)m_indexBuffer->map(MapMode::Write);
-        MeshGeneraterBuffer buffer;
+        MeshGeneraterBuffer buffer(m_linearAllocator);
         size_t vertexOffset = 0;
         size_t indexOffset = 0;
         for (MeshGenerater* gen : m_generators) {

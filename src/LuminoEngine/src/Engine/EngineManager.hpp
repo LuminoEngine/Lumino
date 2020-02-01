@@ -224,6 +224,8 @@ private:
     Ref<PhysicsWorld> m_mainPhysicsWorld;
     Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;
 	Ref<DebugInterface> m_debugInterface;
+	Ref<Camera> m_debugCamera;
+	Ref<WorldRenderView> m_debugWorldRenderView;
 
     float m_timeScale;
 	bool m_exitRequested;

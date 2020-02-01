@@ -229,7 +229,7 @@ World* Engine::world()
     return detail::EngineDomain::engineManager()->mainWorld();
 }
 
-Camera* Engine::mainCamera()
+Camera* Engine::camera()
 {
     return detail::EngineDomain::engineManager()->mainCamera();
 }

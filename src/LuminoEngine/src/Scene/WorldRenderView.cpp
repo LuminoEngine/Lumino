@@ -68,7 +68,7 @@ void WorldRenderView::init()
 		meshResource->addSection(0, gen.indexCount() / 3, 0);
 
 
-		detail::MeshGeneraterBuffer buffer;
+		detail::MeshGeneraterBuffer buffer(nullptr);
 		auto vb = meshResource->requestVertexData(MeshResource::VBG_Basic);
 		IndexBufferFormat fmt;
 		auto ib = meshResource->requestIndexData(&fmt);

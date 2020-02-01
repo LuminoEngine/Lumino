@@ -1,5 +1,4 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
 
 #ifdef LN_UNIT_TEST_EXPERIMENTAL
 
@@ -16,7 +15,7 @@ TEST_F(Test_Rendering_ClusteredShading, Basic)
 		Engine::mainCamera()->lookAt(Vector3(0, 0, 0));
 
 		auto obj1 = makeObject<WorldObject>();
-		auto cmp1 = makeObject<PlaneComponent>();
+		auto cmp1 = makeObject<PlaneMeshComponent>();
 		cmp1->setSize(10, 10);
 		auto mat1 = Material::create();
 		obj1->addComponent(cmp1);

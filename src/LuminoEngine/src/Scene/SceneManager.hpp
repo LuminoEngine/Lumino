@@ -5,6 +5,7 @@
 
 namespace ln {
 class Shader;
+class Material;
 class World;
 
 namespace detail {
@@ -33,6 +34,8 @@ public:
     void setActiveWorld(World* world) { m_activeWorld = world; }
     World* activeWorld() const { return m_activeWorld; }
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
+
+	const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
     // テスト用の設定。
     // 0.9.0 以降、WorldObject は World へ自動追加しないようにしたい。
@@ -66,6 +69,8 @@ private:
 
     World* m_activeWorld;
     Ref<Shader> m_atmosphereShader;
+
+	Ref<Material> m_primitiveMeshDefaultMaterial;
 };
 
 } // namespace detail

@@ -70,7 +70,10 @@ public:
 	LN_METHOD(Property)
     static World* world();
 
-    static Camera* mainCamera();
+	/** デフォルトで作成されるメインの Camera です。 */
+	LN_METHOD(Property)
+    static Camera* camera();
+
     //static AmbientLight* mainAmbientLight();
     //static DirectionalLight* mainDirectionalLight();
     static WorldRenderView* mainRenderView();

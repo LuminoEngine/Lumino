@@ -149,7 +149,13 @@ public:
 	LN_METHOD(Property)
 	const Vector3& centerPoint() const { return m_transform->centerPoint(); }
 
-    void lookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+	LN_METHOD()
+	void lookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
+
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+	LN_METHOD(OverloadPostfix = "XYZ")
+    void lookAt(float x, float y, float z, const Vector3& up = Vector3::UnitY) { return lookAt(Vector3(x, y, z), up); }
 
     void addComponent(Component* component);
 

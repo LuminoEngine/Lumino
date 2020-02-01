@@ -7,23 +7,27 @@ class App : public Application
 {
 	virtual void onInit() override
 	{
-		//Debug::print(u"Hello, Lumino!");
+		Camera* camera = Engine::camera();
+		camera->addComponent(makeObject<CameraOrbitControlComponent>());
+		//Engine::camera()->setPosition(10, 10, -10);
+		//Engine::camera()->lookAt(0, 0, 0);
+		Engine::mainRenderView()->setDebugGridEnabled(true);
 
-		//Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
-		Engine::mainRenderView()->setDebugGridEnabled(false);
+		auto box = BoxMesh::create();
+		Engine::world()->add(box);
 	}
 
 	virtual void onUpdate() override
 	{
-		Debug::print(0, String::format(u"X: {0}", Mouse::position().x));
-		Debug::print(0, String::format(u"Y: {0}", Mouse::position().y));
+		//Debug::print(0, String::format(u"X: {0}", Mouse::position().x));
+		//Debug::print(0, String::format(u"Y: {0}", Mouse::position().y));
 	}
 };
 
 void Tutorial_Sandbox()
 {
     App app;
-	EngineSettings::setDebugToolEnabled(true);
+	EngineSettings::setDebugToolEnabled(false);
 	detail::ApplicationHelper::run(&app);
 }
 

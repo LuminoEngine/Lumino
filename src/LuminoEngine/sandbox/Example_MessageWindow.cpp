@@ -18,7 +18,7 @@ class App_Example_MessageWindow : public Application
 
     virtual void onInit() override
     {
-        Engine::mainCamera()->setBackgroundColor(Color::Gray);
+        Engine::camera()->setBackgroundColor(Color::Gray);
 
         auto windowSkin = Texture2D::load(u"Window1");
 

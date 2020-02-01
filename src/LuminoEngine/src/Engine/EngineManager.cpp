@@ -17,8 +17,9 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
+#include <LuminoEngine/Scene/Camera.hpp>
+#include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 
 #include "../Runtime/RuntimeManager.hpp"
@@ -226,6 +227,19 @@ void EngineManager::init(const EngineSettings& settings)
 
 			m_debugInterface = makeObject<DebugInterface>();
 			m_mainWindow->m_debugInterface = m_debugInterface;
+
+
+			//m_debugCamera = makeObject<Camera>();
+			////m_mainWorld->add(m_mainCamera);
+			////Ref<Camera> m_debugCamera;
+			//m_debugWorldRenderView = makeObject<WorldRenderView>();
+			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
+			//m_debugWorldRenderView->setCamera(m_debugCamera);
+			//m_debugWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
+			//m_mainViewport->addRenderView(m_debugWorldRenderView);
+			//m_debugCamera->setPosition(10, 10, -10);
+			//m_debugCamera->lookAt(Vector3(0, 0, 0));
         }
     }
 
@@ -241,6 +255,12 @@ void EngineManager::init(const EngineSettings& settings)
 void EngineManager::dispose()
 {
 	LN_LOG_DEBUG << "EngineManager finalization started.";
+
+	if (m_debugWorldRenderView) {
+		m_mainViewport->removeRenderView(m_debugWorldRenderView);
+		m_debugWorldRenderView = nullptr;
+	}
+	m_debugCamera = nullptr;
 
     if (m_uiManager) {
         m_uiManager->setPrimaryElement(nullptr);

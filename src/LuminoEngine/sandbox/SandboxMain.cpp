@@ -14,7 +14,6 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/SkinnedMesh.hpp>
@@ -375,7 +374,7 @@ int main(int argc, char** argv)
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
-	Camera* camera = Engine::mainCamera();
+	Camera* camera = Engine::camera();
 	camera->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
 	camera->setBackgroundColor(Color::Gray);
@@ -511,7 +510,7 @@ int main(int argc, char** argv)
 
 #if 1
 	{
-		Engine::mainCamera()->setBackgroundColor(Color::White);
+		Engine::camera()->setBackgroundColor(Color::White);
 
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
@@ -770,9 +769,9 @@ int main(int argc, char** argv)
 
 
     auto ctl = makeObject<CameraOrbitControlComponent>();
-    Engine::mainCamera()->addComponent(ctl);
-    Engine::mainCamera()->setPosition(0, 5, -10);
-    Engine::mainCamera()->setBackgroundColor(Color::Gray);
+    Engine::camera()->addComponent(ctl);
+    Engine::camera()->setPosition(0, 5, -10);
+    Engine::camera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor
@@ -929,7 +928,7 @@ int main(int argc, char** argv)
         for (int i = 0; i < 5; i++)
         {
             auto obj2 = makeObject<WorldObject>();
-            auto cmp2 = makeObject<SphereComponent>();
+            auto cmp2 = makeObject<SphereMeshComponent>();
             auto mat2 = Material::create();
             mat2->setMetallic(static_cast<float>(i) / 5);
             mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
@@ -942,7 +941,7 @@ int main(int argc, char** argv)
     }
 
     auto plane1 = makeObject<WorldObject>();
-    auto planecmp2 = makeObject<PlaneComponent>();
+    auto planecmp2 = makeObject<PlaneMeshComponent>();
     auto planemat2 = Material::create();
     //planemat2->setMetallic(0.1);
     //planemat2->setRoughness(0.1);
