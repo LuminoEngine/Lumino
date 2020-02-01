@@ -4,12 +4,23 @@
 #include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>
 #include <Project/Project.hpp>
+#include <Project/LanguageContext.hpp>
 #include "BuildCommand.hpp"
 #include "FxcCommand.hpp"
 
 int BuildCommand::execute(lna::Workspace* workspace, lna::Project* project)
 {
 	m_project = project;
+
+	if (target.isEmpty()) {
+		target = selectDefaultTarget();
+	}
+
+	if (!m_project->languageContext()->build(target)) {
+		return 1;
+	}
+
+#if 0
 
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0) {
 		if (!buildAssets()) {
@@ -46,8 +57,18 @@ int BuildCommand::execute(lna::Workspace* workspace, lna::Project* project)
 		CLI::error(ln::String::format(u"{0} is invalid target.", target));
 		return 1;
 	}
+#endif
 
     return 0;
+}
+
+ln::String BuildCommand::selectDefaultTarget() const
+{
+#if defined(LN_OS_WIN32)
+	return u"Windows";
+#else
+	return ln::String::Empty;
+#endif
 }
 
 ln::Result BuildCommand::buildWindowsTarget(lna::Workspace* workspace, bool debug)

@@ -103,7 +103,7 @@ LN_OBJECT_IMPLEMENT(AmbientLightComponent, VisualComponent) {}
 
 AmbientLightComponent::AmbientLightComponent()
 	: m_color(Color::White)
-	, m_intensity(0.5f)
+	, m_intensity(0.25f)
 	, m_enabled(true)
 {
 }

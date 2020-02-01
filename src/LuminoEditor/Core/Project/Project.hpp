@@ -31,6 +31,8 @@ public:
     //const ln::Ref<AssetDatabase>& assetDatabase() const { return m_assetDatabase; }
 
 	Workspace* workspace() const { return m_workspace; }
+	const ln::Ref<LanguageContext>& languageContext() const { return m_context; }
+
 	const ln::Path& engineDirPath() const { return m_engineDir; }
 	const ln::Path& rootDirPath() const { return m_rootDir; }
     const ln::Path& assetsDir() const { return m_assetsDir; }
@@ -38,7 +40,6 @@ public:
 	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
     const ln::Path& localPluginDir() const { return m_localPluginDir; } // プロジェクト固有のプラグインと、プロジェクトごとのエディタ拡張の保存場所
-
 	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
 	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
 	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }

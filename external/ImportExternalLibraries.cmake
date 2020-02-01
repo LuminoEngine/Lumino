@@ -5,14 +5,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
-message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-
-
-
-
-
-
 
 
 if (DEFINED EMSCRIPTEN)
@@ -28,7 +20,8 @@ endif()
 
 
 if (NOT DEFINED LN_BUILD_DIRECTORY)
-    set(LN_BUILD_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    # 外部プロジェクトからこの .cmake が呼ばれること備えて、CMAKE_CURRENT_BINARY_DIR は使わない
+    set(LN_BUILD_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../build/${LN_TARGET_ARCH})
 endif()
 
 
@@ -57,32 +50,32 @@ endmacro()
 
 #--------------------------------------
 # glfw
-if (LN_OS_DESKTOP)
-    ln_make_external_find_path(GLFW_ROOT glfw)
+ln_make_external_find_path(GLFW_ROOT glfw)
 
-    find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
-    find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
+find_library(GLFW_LIBRARY_RELEASE NAMES glfw3 libglfw3 PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
+find_library(GLFW_LIBRARY_DEBUG NAMES glfw3d libglfw3d PATHS ${GLFW_ROOT} PATH_SUFFIXES lib)
 
-    add_library(glfw STATIC IMPORTED)
-    set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")
-    set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_DEBUG "${GLFW_LIBRARY_DEBUG}")
-    set_target_properties(glfw PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${GLFW_ROOT}/include)
+add_library(glfw STATIC IMPORTED)
+set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_RELEASE "${GLFW_LIBRARY_RELEASE}")
+set_target_properties(glfw PROPERTIES IMPORTED_LOCATION_DEBUG "${GLFW_LIBRARY_DEBUG}")
+set_target_properties(glfw PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${GLFW_ROOT}/include)
+if (GLFW_LIBRARY_RELEASE)
     list(APPEND LN_EXTERNAL_LIBS glfw)
 endif()
 
 #--------------------------------------
 # glad
-if (LN_OS_DESKTOP)
-    ln_make_external_find_path(GLAD_ROOT glad)
+ln_make_external_find_path(GLAD_ROOT glad)
 
-    find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
-    find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+find_library(GLAD_LIBRARY_RELEASE NAMES glad libglad PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
+find_library(GLAD_LIBRARY_DEBUG NAMES gladd libgladd PATHS ${GLAD_ROOT} PATH_SUFFIXES lib)
 
-    set(LIB_NAME GLAD)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
+set(LIB_NAME GLAD)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${${LIB_NAME}_ROOT}/include)
+if(GLAD_LIBRARY_RELEASE)
     list(APPEND LN_EXTERNAL_LIBS GLAD)
 endif()
 
@@ -108,7 +101,7 @@ elseif (DEFINED EMSCRIPTEN OR LN_IOS)
     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_ROOT}/include)
     list(APPEND LN_EXTERNAL_LIBS ZLIB)
     
-elseif (LN_OS_DESKTOP)
+else()
     ln_make_external_find_path(ZLIB_ROOT zlib)
     find_library(ZLIB_LIBRARY_RELEASE NAMES zlib PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
     find_library(ZLIB_LIBRARY_DEBUG NAMES zlibd PATHS ${ZLIB_ROOT} PATH_SUFFIXES lib NO_DEFAULT_PATH)
@@ -129,7 +122,7 @@ elseif (LN_OS_DESKTOP)
 #    set_target_properties(ZLIB PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS})
 #    list(APPEND LN_EXTERNAL_LIBS ZLIB)
 
-else()
+#else()
 endif()
 
 #--------------------------------------
@@ -148,93 +141,96 @@ list(APPEND LN_EXTERNAL_LIBS PNG)
 
 #--------------------------------------
 # glslang
-if (LN_OS_DESKTOP)
 
-    ln_make_external_find_path(GLSLANG_ROOT glslang)
+ln_make_external_find_path(GLSLANG_ROOT glslang)
 
-    find_library(glslang_LIBRARY_RELEASE NAMES libglslang glslang PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(glslang_LIBRARY_DEBUG NAMES libglslangd glslangd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(HLSL_LIBRARY_RELEASE NAMES libHLSL HLSL PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(HLSL_LIBRARY_DEBUG NAMES libHLSLd HLSLd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(OGLCompiler_LIBRARY_RELEASE NAMES libOGLCompiler OGLCompiler PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(OGLCompiler_LIBRARY_DEBUG NAMES libOGLCompilerd OGLCompilerd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(OSDependent_LIBRARY_RELEASE NAMES libOSDependent OSDependent PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(OSDependent_LIBRARY_DEBUG NAMES libOSDependentd OSDependentd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(SPIRV_LIBRARY_RELEASE NAMES libSPIRV SPIRV PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(SPIRV_LIBRARY_DEBUG NAMES libSPIRVd SPIRVd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(SPVRemapper_LIBRARY_RELEASE NAMES libSPVRemapper SPVRemapper PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
-    find_library(SPVRemapper_LIBRARY_DEBUG NAMES libSPVRemapperd SPVRemapperd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(glslang_LIBRARY_RELEASE NAMES libglslang glslang PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(glslang_LIBRARY_DEBUG NAMES libglslangd glslangd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(HLSL_LIBRARY_RELEASE NAMES libHLSL HLSL PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(HLSL_LIBRARY_DEBUG NAMES libHLSLd HLSLd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(OGLCompiler_LIBRARY_RELEASE NAMES libOGLCompiler OGLCompiler PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(OGLCompiler_LIBRARY_DEBUG NAMES libOGLCompilerd OGLCompilerd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(OSDependent_LIBRARY_RELEASE NAMES libOSDependent OSDependent PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(OSDependent_LIBRARY_DEBUG NAMES libOSDependentd OSDependentd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(SPIRV_LIBRARY_RELEASE NAMES libSPIRV SPIRV PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(SPIRV_LIBRARY_DEBUG NAMES libSPIRVd SPIRVd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(SPVRemapper_LIBRARY_RELEASE NAMES libSPVRemapper SPVRemapper PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
+find_library(SPVRemapper_LIBRARY_DEBUG NAMES libSPVRemapperd SPVRemapperd PATHS ${GLSLANG_ROOT} PATH_SUFFIXES lib)
 
-    set(glslang_INCLUDE_DIRS "${GLSLANG_ROOT}/include")
+set(glslang_INCLUDE_DIRS "${GLSLANG_ROOT}/include")
 
-    set(LIB_NAME glslang)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+set(LIB_NAME glslang)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+
+set(LIB_NAME HLSL)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+
+set(LIB_NAME OGLCompiler)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+
+set(LIB_NAME OSDependent)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+
+set(LIB_NAME SPIRV)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+
+set(LIB_NAME SPVRemapper)
+add_library(${LIB_NAME} STATIC IMPORTED)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
+    
+if(glslang_LIBRARY_RELEASE)
     list(APPEND LN_EXTERNAL_LIBS glslang)
-
-    set(LIB_NAME HLSL)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
     list(APPEND LN_EXTERNAL_LIBS HLSL)
-
-    set(LIB_NAME OGLCompiler)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
     list(APPEND LN_EXTERNAL_LIBS OGLCompiler)
-
-    set(LIB_NAME OSDependent)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
     list(APPEND LN_EXTERNAL_LIBS OSDependent)
-
-    set(LIB_NAME SPIRV)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
     list(APPEND LN_EXTERNAL_LIBS SPIRV)
-
-    set(LIB_NAME SPVRemapper)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
-    set(glslang_LIBRARIES ${glslang_LIBRARIES} ${LIB_NAME})
     list(APPEND LN_EXTERNAL_LIBS SPVRemapper)
 endif()
 
 #--------------------------------------
 # SPIRV-Cross
-if (LN_OS_DESKTOP)
-    ln_make_external_find_path(SPIRV-Cross_ROOT SPIRV-Cross)
 
-    find_library(spirv-cross-core_LIBRARY_RELEASE NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
-    find_library(spirv-cross-core_LIBRARY_DEBUG NAMES spirv-cross-cored PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
-    find_library(spirv-cross-glsl_LIBRARY_RELEASE NAMES spirv-cross-glsl PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
-    find_library(spirv-cross-glsl_LIBRARY_DEBUG NAMES spirv-cross-glsld PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+ln_make_external_find_path(SPIRV-Cross_ROOT SPIRV-Cross)
 
-    set(LIB_NAME spirv-cross-core)
-    add_library(${LIB_NAME} STATIC IMPORTED)
-    #set_property(TARGET spirv-cross-core APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
-    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+find_library(spirv-cross-core_LIBRARY_RELEASE NAMES spirv-cross-core PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+find_library(spirv-cross-core_LIBRARY_DEBUG NAMES spirv-cross-cored PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+find_library(spirv-cross-glsl_LIBRARY_RELEASE NAMES spirv-cross-glsl PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+find_library(spirv-cross-glsl_LIBRARY_DEBUG NAMES spirv-cross-glsld PATHS ${SPIRV-Cross_ROOT} PATH_SUFFIXES lib)
+
+set(LIB_NAME spirv-cross-core)
+add_library(${LIB_NAME} STATIC IMPORTED)
+#set_property(TARGET spirv-cross-core APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_RELEASE "${${LIB_NAME}_LIBRARY_RELEASE}")
+set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${${LIB_NAME}_LIBRARY_DEBUG}")
+
+add_library(spirv-cross-glsl STATIC IMPORTED)
+#set_property(TARGET spirv-cross-glsl APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+set_target_properties(spirv-cross-glsl PROPERTIES IMPORTED_LOCATION_RELEASE "${spirv-cross-glsl_LIBRARY_RELEASE}")
+set_target_properties(spirv-cross-glsl PROPERTIES IMPORTED_LOCATION_DEBUG "${spirv-cross-glsl_LIBRARY_DEBUG}")
+
+set(spirv-cross_INCLUDE_DIRS "${SPIRV-Cross_ROOT}/include")
+set(spirv-cross_LIBRARIES spirv-cross-core spirv-cross-glsl)
+
+if(spirv-cross-core_LIBRARY_RELEASE)
     list(APPEND LN_EXTERNAL_LIBS spirv-cross-core)
-
-    add_library(spirv-cross-glsl STATIC IMPORTED)
-    #set_property(TARGET spirv-cross-glsl APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-    set_target_properties(spirv-cross-glsl PROPERTIES IMPORTED_LOCATION_RELEASE "${spirv-cross-glsl_LIBRARY_RELEASE}")
-    set_target_properties(spirv-cross-glsl PROPERTIES IMPORTED_LOCATION_DEBUG "${spirv-cross-glsl_LIBRARY_DEBUG}")
     list(APPEND LN_EXTERNAL_LIBS spirv-cross-glsl)
-
-    set(spirv-cross_INCLUDE_DIRS "${SPIRV-Cross_ROOT}/include")
-    set(spirv-cross_LIBRARIES spirv-cross-core spirv-cross-glsl)
 endif()
 
 #--------------------------------------

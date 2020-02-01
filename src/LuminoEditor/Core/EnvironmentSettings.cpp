@@ -44,6 +44,7 @@ void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
 					m_luminoPackageRootDir = *path;
 					setupPathesFromPackageRoot(m_luminoPackageRootDir);
 				}
+				m_actualPathBase = EnvironmentPathBase::EnvironmentVariable;
 				break;
 			}
 			case EnvironmentPathBase::LocalPackage:
@@ -63,12 +64,14 @@ void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
 				}
 #endif
 				setupPathesFromPackageRoot(m_luminoPackageRootDir);
+				m_actualPathBase = EnvironmentPathBase::LocalPackage;
 				break;
 			}
 			case EnvironmentPathBase::Repository:
 			{
 				m_luminoPackageRootDir = ln::detail::EngineManager::findRepositoryRootForTesting();
 				setupPathesFromRepositoryRoot(m_luminoPackageRootDir);
+				m_actualPathBase = EnvironmentPathBase::Repository;
 				break;
 			}
 			default:

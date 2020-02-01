@@ -21,7 +21,7 @@ class App : public Application
 		camera->addComponent(makeObject<CameraOrbitControlComponent>());
 
 
-		auto light = DirectionalLight::create();
+		//auto light = DirectionalLight::create();
 	}
 
 	virtual void onUpdate() override

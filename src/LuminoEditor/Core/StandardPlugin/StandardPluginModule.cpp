@@ -38,11 +38,11 @@ StandardPluginModule::StandardPluginModule()
     //    m_editorExtensionInstances.add(ext);
     //    m_editorExtensions.add(ext);
     //}
-    {
-        auto ext = ln::makeObject<AssetBrowserNavigatorExtension>();
-        m_editorExtensionInstances.add(ext);
-        m_editorExtensions.add(ext);
-    }
+    //{
+    //    auto ext = ln::makeObject<AssetBrowserNavigatorExtension>();
+    //    m_editorExtensionInstances.add(ext);
+    //    m_editorExtensions.add(ext);
+    //}
     //{
     //    auto ext = ln::makeObject<SceneNavigatorExtension>();
     //    m_editorExtensionInstances.add(ext);

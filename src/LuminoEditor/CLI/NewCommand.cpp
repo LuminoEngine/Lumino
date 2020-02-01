@@ -1,8 +1,8 @@
 ﻿
 #include <Project/Project.hpp>
-#include "InitCommand.hpp"
+#include "NewCommand.hpp"
 
-int InitCommand::execute(lna::Workspace* workspace)
+int NewCommand::execute(lna::Workspace* workspace)
 {
 	if (projectDirectory.isEmpty()) {
 		projectDirectory = ln::Environment::currentDirectory();

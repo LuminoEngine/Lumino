@@ -39,6 +39,12 @@ void World::init()
 	m_physicsWorld2D = makeObject<PhysicsWorld2D>();
     m_effectContext = makeObject<EffectContext>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
+
+
+	m_mainDirectionalLight = makeObject<DirectionalLight>();
+	add(m_mainDirectionalLight);
+	m_mainAmbientLight = makeObject<AmbientLight>();
+	add(m_mainAmbientLight);
 }
 
 void World::onDispose(bool explicitDisposing)

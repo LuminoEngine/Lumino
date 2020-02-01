@@ -51,89 +51,89 @@ ln::Result CppLanguageContext::applyTemplates(const ln::String& templateName)
 
 	CLI::info(u"Copying template...");
 
-    if (templateName.isEmpty())
-    {
-        CLI::info(u"Template: Default");
-        
+    //if (templateName.isEmpty())
+    //{
+    //    CLI::info(u"Template: Default");
+    //    
 
-        // TODO: v0.7.0 時点の動作。else 側に統一したい
+    //    // TODO: v0.7.0 時点の動作。else 側に統一したい
 
-        // Common
-        {
-            ln::String files[] = {
-                u".gitignore",
-                u"Sources/Application.cpp",
-                u"Sources/Application.h",
-            };
+    //    // Common
+    //    {
+    //        ln::String files[] = {
+    //            u".gitignore",
+    //            u"Sources/Application.cpp",
+    //            u"Sources/Application.h",
+    //        };
 
-            for (auto& file : files)
-            {
-                auto filePath = ln::Path(dstRoot, file);
-                auto dirPath = filePath.parent();
-                if (!ln::FileSystem::existsDirectory(dirPath)) {
-                    ln::FileSystem::createDirectory(dirPath);
-                }
+    //        for (auto& file : files)
+    //        {
+    //            auto filePath = ln::Path(dstRoot, file);
+    //            auto dirPath = filePath.parent();
+    //            if (!ln::FileSystem::existsDirectory(dirPath)) {
+    //                ln::FileSystem::createDirectory(dirPath);
+    //            }
 
-                ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
-            }
+    //            ln::FileSystem::copyFile(ln::Path(srcRoot, file), filePath, ln::FileCopyOption::Overwrite);
+    //        }
 
-            // Assets
-            ln::FileSystem::copyDirectory(ln::Path(srcRoot, u"Assets"), ln::Path(dstRoot, u"Assets"), true, true);
-        }
+    //        // Assets
+    //        ln::FileSystem::copyDirectory(ln::Path(srcRoot, u"Assets"), ln::Path(dstRoot, u"Assets"), true, true);
+    //    }
 
-        // Windows
-        {
-            ln::FileSystem::copyFile(
-                ln::Path(srcRoot, u"LuminoApp.sln"),
-                ln::Path(dstRoot, u"LuminoApp.sln"), ln::FileCopyOption::Overwrite);
+    //    // Windows
+    //    {
+    //        ln::FileSystem::copyFile(
+    //            ln::Path(srcRoot, u"LuminoApp.sln"),
+    //            ln::Path(dstRoot, u"LuminoApp.sln"), ln::FileCopyOption::Overwrite);
 
-            ln::FileSystem::copyDirectory(
-                ln::Path(srcRoot, u"Projects/LuminoApp.Windows"),
-                ln::Path(dstRoot, u"Projects/LuminoApp.Windows"),
-                true, true);
-        }
+    //        ln::FileSystem::copyDirectory(
+    //            ln::Path(srcRoot, u"Projects/LuminoApp.Windows"),
+    //            ln::Path(dstRoot, u"Projects/LuminoApp.Windows"),
+    //            true, true);
+    //    }
 
-        // macOS
-        {
-            ln::FileSystem::copyDirectory(
-                ln::Path(srcRoot, u"Projects/LuminoApp.macOS"),
-                ln::Path(dstRoot, u"Projects/LuminoApp.macOS"),
-                true, true);
+    //    // macOS
+    //    {
+    //        ln::FileSystem::copyDirectory(
+    //            ln::Path(srcRoot, u"Projects/LuminoApp.macOS"),
+    //            ln::Path(dstRoot, u"Projects/LuminoApp.macOS"),
+    //            true, true);
 
-            ln::FileSystem::writeAllText(
-                ln::Path(dstRoot, u"Projects/LuminoApp.macOS/LuminoApp.macOS/Config-generated.xcconfig"),
-                ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
-        }
+    //        ln::FileSystem::writeAllText(
+    //            ln::Path(dstRoot, u"Projects/LuminoApp.macOS/LuminoApp.macOS/Config-generated.xcconfig"),
+    //            ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
+    //    }
 
-        // Web
-        {
-            ln::FileSystem::copyDirectory(
-                ln::Path(srcRoot, u"Projects/LuminoApp.Web"),
-                ln::Path(dstRoot, u"Projects/LuminoApp.Web"),
-                true, true);
-        }
+    //    // Web
+    //    {
+    //        ln::FileSystem::copyDirectory(
+    //            ln::Path(srcRoot, u"Projects/LuminoApp.Web"),
+    //            ln::Path(dstRoot, u"Projects/LuminoApp.Web"),
+    //            true, true);
+    //    }
 
-        // iOS
-        {
-            ln::FileSystem::copyDirectory(
-                ln::Path(srcRoot, u"Projects/LuminoApp.iOS"),
-                ln::Path(dstRoot, u"Projects/LuminoApp.iOS"),
-                true, true);
+    //    // iOS
+    //    {
+    //        ln::FileSystem::copyDirectory(
+    //            ln::Path(srcRoot, u"Projects/LuminoApp.iOS"),
+    //            ln::Path(dstRoot, u"Projects/LuminoApp.iOS"),
+    //            true, true);
 
-            ln::FileSystem::writeAllText(
-                ln::Path(dstRoot, u"Projects/LuminoApp.iOS/LuminoApp.iOS/Config-generated.xcconfig"),
-                ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
-        }
+    //        ln::FileSystem::writeAllText(
+    //            ln::Path(dstRoot, u"Projects/LuminoApp.iOS/LuminoApp.iOS/Config-generated.xcconfig"),
+    //            ln::String::format(u"LUMINO_PATH=" + project()->workspace()->buildEnvironment()->luminoPackageRootDir().unify()));
+    //    }
 
-        // Android
-        {
-            ln::FileSystem::copyDirectory(
-                ln::Path(srcRoot, u"Projects/LuminoApp.Android"),
-                ln::Path(dstRoot, u"Projects/LuminoApp.Android"),
-                true, true);
-        }
-    }
-    else
+    //    // Android
+    //    {
+    //        ln::FileSystem::copyDirectory(
+    //            ln::Path(srcRoot, u"Projects/LuminoApp.Android"),
+    //            ln::Path(dstRoot, u"Projects/LuminoApp.Android"),
+    //            true, true);
+    //    }
+    //}
+    //else
     {
         CLI::info(u"Template: " + templateName);
 
@@ -218,6 +218,44 @@ ln::Result CppLanguageContext::applyEngine()
 void CppLanguageContext::restore()
 {
     applyEngine();
+}
+
+ln::Result CppLanguageContext::build(const ln::String& target)
+{
+	//ln::String arch = u"MSVC2019-x64-MT";
+	ln::String arch = u"MSVC2017-x64-MT";
+
+	ln::List<ln::String> args = {
+		project()->rootDirPath(),
+		u"-G \"Visual Studio 15 Win64\"",
+		u"-DLN_TARGET_ARCH=" + arch,
+		u"-DLN_MSVC_STATIC_RUNTIME=ON",
+		//u"-DLUMINO_ENGINE_ROOT=\"" + ln::Path(m_project->engineDirPath(), u"Native").str().replace("\\", "/") + u"\"",
+		//u"-DLN_TARGET_ARCH=Emscripten",
+		//cmakeSourceDir,
+	};
+
+	// for tool development and debuging.
+	auto& envSettings = project()->workspace()->buildEnvironment();
+	if (envSettings->actualPathBase() == EnvironmentPathBase::Repository) {
+		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->luminoPackageRootDir()));
+	}
+
+	auto buildDir = ln::Path(project()->buildDir(), arch);
+	ln::FileSystem::createDirectory(buildDir);
+
+	ln::Process cmake;
+	cmake.setProgram(u"cmake");
+	cmake.setArguments(args);
+	cmake.setWorkingDirectory(buildDir);
+	cmake.start();
+	cmake.wait();
+	if (cmake.exitCode() != 0) {
+		CLI::error(u"Failed cmake.");
+		return 1;
+	}
+
+	return true;
 }
 
 } // namespace lna

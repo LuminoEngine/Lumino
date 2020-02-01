@@ -27,6 +27,7 @@ public:
 	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
 
 	Language defaultLanguage() const { return m_defaultLanguage; }
+	EnvironmentPathBase actualPathBase() const { return m_actualPathBase; }
 
 	// Pathes
 	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
@@ -60,6 +61,7 @@ private:
 
 	ln::String m_defaultTargetName;
 	Language m_defaultLanguage;
+	EnvironmentPathBase m_actualPathBase;
 
 	ln::Path m_appDataDirPath;
 	ln::Path m_luminoPackageRootDir;

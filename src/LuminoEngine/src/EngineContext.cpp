@@ -15,6 +15,8 @@ EngineContext* EngineContext::current()
 }
 
 EngineContext::EngineContext()
+	: m_runtimeManager(makeRef<detail::RuntimeManager>())
+	, m_engineManager(makeRef<detail::EngineManager>())
 {
 	internalInit();
 }
@@ -35,22 +37,14 @@ void EngineContext::internalInit()
 
 void EngineContext::initializeRuntimeManager()
 {
-	if (!m_runtimeManager) {
-		m_runtimeManager = makeRef<detail::RuntimeManager>();
-		m_runtimeManager->init(detail::RuntimeManager::s_globalSettings);
-	}
+	m_runtimeManager->init(detail::RuntimeManager::s_globalSettings);
 }
 
 void EngineContext::initializeEngineManager()
 {
 	initializeRuntimeManager();
 
-	printf("EngineContext::initializeEngineManager()\n");
-
-	if (!m_engineManager) {
-		m_engineManager = makeRef<detail::EngineManager>();
-		m_engineManager->init(detail::EngineManager::s_settings);
-	}
+	m_engineManager->init(detail::EngineManager::s_settings);
 }
 
 void EngineContext::disposeRuntimeManager()
