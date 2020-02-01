@@ -7,14 +7,21 @@ class App : public Application
 {
 	virtual void onInit() override
 	{
-		Camera* camera = Engine::camera();
-		camera->addComponent(makeObject<CameraOrbitControlComponent>());
+		//Camera* camera = Engine::camera();
+		//camera->addComponent(makeObject<CameraOrbitControlComponent>());
 		//Engine::camera()->setPosition(10, 10, -10);
 		//Engine::camera()->lookAt(0, 0, 0);
-		Engine::mainRenderView()->setDebugGridEnabled(true);
+		Engine::mainRenderView()->setDebugGridEnabled(false);
 
 		auto box = BoxMesh::create();
-		Engine::world()->add(box);
+
+		auto camera = Engine::camera();
+		camera->setPosition(5, 5, -5);
+		camera->lookAt(0, 0, 0);
+		camera->addComponent(makeObject<CameraOrbitControlComponent>());
+
+
+		auto light = DirectionalLight::create();
 	}
 
 	virtual void onUpdate() override

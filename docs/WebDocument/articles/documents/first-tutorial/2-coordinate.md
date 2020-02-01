@@ -80,23 +80,12 @@ Lumino の 3D 空間は、X軸,Y軸,Z軸 からなる直交座標系によって
 ![](img/graphics-basic-3.png)
 
 
-オブジェクト (WorldObject)
+オブジェクトを作成する
 ----------
 
+オブジェクトは物体の形状を表すパラメータや、ワールド内の配置場所を示す座標などの情報をまとめたものです。
 
-
-
-
-
-
-
-
-
-Lumino は初期状態で空っぽのワールドに、ひとつのカメラが配置されています。
-
-このカメラを移動させてみましょう。
-
-カメラは `Engine::camera` で取得し、`setPosition` で 3D 位置を指定します。また、`lookAt` でワールドの原点を向くようにします。
+最初のオブジェクトととして、立方体を表示してみましょう。
 
 # [C++](#tab/lang-cpp)
 ```cpp
@@ -106,8 +95,7 @@ class App : public Application
 {
 	virtual void onInit() override
 	{
-		Engine::camera()->setPosition(10, 10, -10);
-		Engine::camera()->lookAt(0, 0, 0);
+		auto box = BoxMesh::create();
 	}
 };
 
@@ -119,8 +107,7 @@ require 'lumino'
 
 class App < Application
     def on_init
-		Engine.camera.set_position(10, 10, -10)
-		Engine.camera.lookAt(0, 0, 0)
+		box = BoxMesh.new
     end
 end
 
@@ -128,12 +115,23 @@ App.new.run
 ```
 ---
 
-![](img/basic-1.png)
+![](img/graphics-basic-4.png)
 
-しかしまだカメラが写すべきオブジェクトがワールドに配置されていないため
+ウィンドウ中央に四角形が表示されました。
 
 
+カメラを移動する
+----------
 
+今はちょうどカメラが立方体を正面から撮影している状態ですが、このままではこの四角形が立方体かどうかを判断できません。
+
+次はカメラを移動して、視点を変えてみましょう。
+
+Lumino の初期状態は、空っぽのワールドにひとつのカメラが配置されています。
+
+このカメラを移動させてみます。
+
+デフォルトのカメラは `Engine::camera` で取得し、`setPosition` で 3D 位置を指定します。また、位置を指定した後に `lookAt` でワールドの原点を向くようにします。
 
 # [C++](#tab/lang-cpp)
 ```cpp
@@ -143,9 +141,11 @@ class App : public Application
 {
 	virtual void onInit() override
 	{
-		Engine::camera()->setPosition(10, 10, -10);
-		Engine::camera()->lookAt(0, 0, 0);
-		Engine::renderView()->setDebugGridEnabled(true);
+		auto box = BoxMesh::create();
+
+		auto camera = Engine::camera();
+		camera->setPosition(5, 5, -5);
+		camera->lookAt(0, 0, 0);
 	}
 };
 
@@ -157,12 +157,73 @@ require 'lumino'
 
 class App < Application
     def on_init
-		Engine.camera.set_position(10, 10, -10)
-		Engine.camera.lookAt(0, 0, 0)
-		Engine.renderView.debug_grid_enabled = true;
+		box = BoxMesh.new
+
+		camera = Engine.camera
+		camera.set_position(5, 5, -5)
+		camera.lookAt(0, 0, 0)
     end
 end
 
 App.new.run
 ```
 ---
+
+![](img/graphics-basic-5.png)
+
+カメラを座標 (5, 5, -5) に移動し、原点 (0, 0, 0) を注視するようにしました。
+
+立方体を斜め上から見下ろす形になるため、六角形に見えるようになりました。
+
+
+ライトを配置する
+----------
+
+ライトを作成して立方体に陰影をつけ、立体的に見えるようにしましょう。
+
+ここでは最も一般的に使用される `DirectionalLight` を使用します。
+
+DirectionalLight は、太陽のように一定方向から均一に、ワールド全体を照らします。
+
+# [C++](#tab/lang-cpp)
+```cpp
+#include <Lumino.hpp>
+
+class App : public Application
+{
+	virtual void onInit() override
+	{
+		auto box = BoxMesh::create();
+
+		auto camera = Engine::camera();
+		camera->setPosition(5, 5, -5);
+		camera->lookAt(0, 0, 0);
+
+		auto light = DirectionalLight::create();
+	}
+};
+
+LUMINO_APP(App);
+```
+# [Ruby](#tab/lang-ruby)
+```ruby
+require 'lumino'
+
+class App < Application
+    def on_init
+		box = BoxMesh.new
+
+		camera = Engine.camera
+		camera.set_position(5, 5, -5)
+		camera.lookAt(0, 0, 0)
+
+		light = DirectionalLight.new;
+    end
+end
+
+App.new.run
+```
+---
+
+![](img/graphics-basic-6.png)
+

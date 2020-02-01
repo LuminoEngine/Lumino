@@ -173,6 +173,8 @@ public:
 	/** このオブジェクトを直ちに World から除外します。このメソッドは World のアップデートシーケンス中に呼び出してはなりません。 */
 	void removeFromScene();
 
+	//void addToWorld();
+
     const Matrix& worldMatrix();
 
 	Scene* scene() const { return m_scene; }

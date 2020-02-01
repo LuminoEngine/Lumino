@@ -162,7 +162,7 @@ LN_OBJECT_IMPLEMENT(DirectionalLightComponent, VisualComponent) {}
 
 DirectionalLightComponent::DirectionalLightComponent()
 	: m_color(Color::White)
-	, m_intensity(0.5f)
+	, m_intensity(1.0f)
 	, m_enabled(true)
 {
 }
@@ -211,8 +211,10 @@ void DirectionalLightComponent::onPrepareRender(RenderingContext* context)
 {
 	if (m_enabled)
 	{
-        const Matrix& t = worldObject()->worldMatrix();
-		context->addDirectionalLight(m_color, m_intensity, t.front(), context->world->mainDirectionalLight()->getDirectionalLightComponent() == this);
+		if (context->world->mainDirectionalLight()) {
+			const Matrix& t = worldObject()->worldMatrix();
+			context->addDirectionalLight(m_color, m_intensity, t.front(), context->world->mainDirectionalLight()->getDirectionalLightComponent() == this);
+		}
 
 		//if (m_shadowCasterPass != nullptr)
 		//{

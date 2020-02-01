@@ -125,7 +125,16 @@ void DirectionalLight::init()
 	m_component = makeObject<DirectionalLightComponent>();
 	addComponent(m_component);
     setPosition(0, 0, 0);
-    lookAt(Vector3(-1, -1, 1));
+	setEulerAngles(Math::degreesToRadians(50), Math::degreesToRadians(-30), 0);
+    //lookAt(Vector3(1, -1, 1));
+
+
+	if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
+		World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+		if (activeWorld && !activeWorld->mainDirectionalLight()) {
+			activeWorld->setMainDirectionalLight(this);
+		}
+	}
 }
 
 void DirectionalLight::init(const Color& color)
