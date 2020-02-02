@@ -5,6 +5,7 @@
 
 namespace ln {
 struct Size;
+class Texture;
 class Material;
 class RenderingContext;
 
@@ -42,6 +43,8 @@ public:
 	static const int LocalAutoTileIdSlopeOffset = 96;
 
     static Ref<Tileset> create();
+
+	static Ref<Tileset> create(Texture* texture, int tilePixelWidth, int tilePixelHeight);
 
     // util
     void reset(Material* material, int tilePixelWidth, int tilePixelHeight);

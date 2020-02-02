@@ -150,6 +150,7 @@ public:
 	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
 	static ln::Path findRepositoryRootForTesting();
+	static ln::Path findParentDirectoryContainingSpecifiedFile(StringRef file);
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
     //void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }

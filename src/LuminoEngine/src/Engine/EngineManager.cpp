@@ -780,14 +780,24 @@ void EngineManager::quit()
 
 ln::Path EngineManager::findRepositoryRootForTesting()
 {
-	ln::Path path = ln::Environment::executablePath();
+	return findParentDirectoryContainingSpecifiedFile(u"build.csproj");
+}
+
+ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringRef file)
+{
+	ln::Path path = ln::Path(ln::Environment::executablePath()).parent();
 	ln::Path luminoRepoRoot;
 	while (!path.isRoot())
 	{
-		if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
+		auto files = ln::FileSystem::getFiles(path, file);
+		if (!files.isEmpty()) {
 			luminoRepoRoot = path;
 			break;
 		}
+		//if (ln::FileSystem::existsFile(ln::Path(path, file))) {
+		//	luminoRepoRoot = path;
+		//	break;
+		//}
 		path = path.parent();
 	}
 	return luminoRepoRoot;

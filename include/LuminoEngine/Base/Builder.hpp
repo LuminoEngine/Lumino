@@ -44,8 +44,9 @@ private:
 // TODO: build() に、作成するオブジェクトのコンストラクタに渡す引数を渡せるようにしたい。
 
 #define LN_BUILDER(type) \
-	public: \
+	protected: \
 	class Details; \
+	public: \
 	Builder(); \
 	Builder(Details* d); \
 	Ref<type> build() { return buildAs<type>(); }

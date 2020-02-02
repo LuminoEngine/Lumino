@@ -561,7 +561,7 @@ int List<T>::indexOfIf(TPred pred, int startIndex) const
 
     const_iterator itr = std::find_if(m_data.begin() + startIndex, m_data.end(), pred);
     if (itr != m_data.end()) {
-        return itr - m_data.begin();
+        return static_cast<int>(itr - m_data.begin());
     }
     return -1;
 }

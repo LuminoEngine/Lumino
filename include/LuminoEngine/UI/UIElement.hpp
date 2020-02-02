@@ -126,6 +126,7 @@ public:
 		Builder& backgroundColor(const Color& value);
 		Ref<UIElement> build();
 
+	protected:
 		class Details : public BuilderDetailsBase
 		{
 		public:

@@ -104,6 +104,15 @@ Ref<Tileset> Tileset::create()
     return makeObject<Tileset>();
 }
 
+Ref<Tileset> Tileset::create(Texture* texture, int tilePixelWidth, int tilePixelHeight)
+{
+	auto material = makeObject<Material>();
+	material->setMainTexture(texture);
+	auto tileset = makeObject<Tileset>();
+	tileset->reset(material, tilePixelWidth, tilePixelHeight);
+	return tileset;
+}
+
 Tileset::Tileset()
     : m_tilePixelWidth(32)
     , m_tilePixelHeight(32)

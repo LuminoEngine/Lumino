@@ -23,6 +23,10 @@ public:
 
     static Ref<TilemapModel> create();
 
+	/** 指定したサイズとレイヤー数で、すべてのタイルを 0 で初期化する。 */
+	void reset(int width, int height, int layers);
+
+
     Tileset* tileset() const;
     void setTileset(Tileset* tileset);
     void addLayer(TilemapLayer* layer);

@@ -137,6 +137,16 @@ Tileset* TilemapModel::tileset() const
     return m_tileset;
 }
 
+void TilemapModel::reset(int width, int height, int layers)
+{
+	m_layers.clear();
+	for (int i = 0; i < layers; i++) {
+		auto layer = makeObject<TilemapLayer>();
+		layer->resize(width, height);
+		m_layers.add(layer);
+	}
+}
+
 void TilemapModel::setTileset(Tileset* tileset)
 {
     m_tileset = tileset;
