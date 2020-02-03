@@ -1467,8 +1467,10 @@ void UITheme::buildLumitelier()
 	m_defaultStyle = makeObject<UIStyle>();
 	m_defaultStyle->setupDefault();
 	m_defaultStyle->textColor = Color::White;
+	m_defaultStyle->fontSize = 14;
 
 	setSpacing(8);
+	m_lineSpacing = 22;
 
 	// Background
 	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
@@ -1490,6 +1492,10 @@ void UITheme::buildLumitelier()
 	setColor(UIThemeConstantPalette::SuccessMainColor, UIColors::get(UIColorHues::Green, 3));
 	setColor(UIThemeConstantPalette::SuccessTextColor, Color::White);
 
+	// Items
+	setColor(UIThemeConstantPalette::ItemHoverAction, Color::White.withAlpha(0.1));
+	setColor(UIThemeConstantPalette::ItemSelectedAction, Color::White.withAlpha(0.2));
+
 	// Divider
 	setColor(UIThemeConstantPalette::DefaultDivider, Color::White.withAlpha(0.3));
 
@@ -1498,16 +1504,32 @@ void UITheme::buildLumitelier()
 	//--------------------------------
 	// UIWindow
 	{
-		auto e = sheet->addStyleSet(u"UIWindow");
-		{
-			auto s = e->mainStyleClass()->mainStyle();
+		//auto e = sheet->addStyleSet(u"UIWindow");
+		//{
+		//	auto s = e->mainStyleClass()->mainStyle();
+
+		if (auto s = sheet->obtainStyle(u"UIWindow")) {
 			s->minWidth = 64;
 			s->minHeight = 64;
-			//s->padding = theme->spacing(1);
+			s->padding = spacing(1);
 			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor);
 			s->cornerRadius = CornerRadius(4);
 			s->borderThickness = 1;
 			s->setBorderColor(color(UIThemeConstantPalette::DefaultDivider));
+		}
+	}
+	//--------------------------------
+	// UIListBoxItem
+	{
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
+			s->padding = Thickness(spacing(1), 0);
+			s->minHeight = m_lineSpacing;
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
 		}
 	}
 

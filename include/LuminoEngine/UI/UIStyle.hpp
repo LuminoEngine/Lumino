@@ -779,6 +779,10 @@ enum class UIThemeConstantPalette
 	SuccessMainColor,
 	SuccessTextColor,
 
+	// Items
+	ItemHoverAction,
+	ItemSelectedAction,
+
 	// Divider
 	DefaultDivider,
 };
@@ -797,6 +801,9 @@ public:
     float spacing(float factor) const { return m_spacing * factor; }
 
 	float lineContentHeight() const { return spacing(4); }
+	
+	// 行と行の間。ListItem の高さ。
+	float lineSpacing() const { return m_lineSpacing; }
 
 	void setColor(UIThemeConstantPalette palette, const Color& color) { m_constantPalette[static_cast<int>(palette)] = color; }
 	const Color& color(UIThemeConstantPalette palette) const { return m_constantPalette[static_cast<int>(palette)]; }
@@ -814,6 +821,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     std::unordered_map<String, Color> m_colors;
     float m_spacing;
+	float m_lineSpacing;
 	std::array<Color, 20> m_constantPalette;
 	Ref<UIStyle> m_defaultStyle;
 	Ref<UIStyleSheet> m_styleSheet;

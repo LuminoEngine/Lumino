@@ -29,19 +29,6 @@ class App_Example_Navigator : public Application
 		m_navigator->addChild(layout1);
 
 
-        m_listbox1 = UIListBox::create();
-        m_listbox1->setHorizontalAlignment(HAlignment::Left);
-        m_listbox1->setVerticalAlignment(VAlignment::Top);
-        m_listbox1->setWidth(100);
-        m_listbox1->setHeight(300);
-        m_listbox1->addChild(u"item1");
-        m_listbox1->addChild(u"item2");
-        m_listbox1->addChild(u"item3");
-        m_listbox1->addChild(u"item4");
-		layout1->addChild(m_listbox1);
-       // m_navigator->addElement(m_listbox1);
-
-
         m_window1 = UIWindow::create();
         //m_window1->setPosition(10, 10);
         //m_window1->setWidth(50);
@@ -49,6 +36,21 @@ class App_Example_Navigator : public Application
 		m_window1->setMargin(8);
         //m_window1->setBackgroundColor(Color::Red);
 		layout1->addChild(m_window1);
+
+
+
+		m_listbox1 = UIListBox::create();
+		//m_listbox1->setHorizontalAlignment(HAlignment::Left);
+		//m_listbox1->setVerticalAlignment(VAlignment::Top);
+		m_listbox1->addChild(u"item1");
+		m_listbox1->addChild(u"item2");
+		m_listbox1->addChild(u"item3");
+		m_listbox1->addChild(u"item4");
+		m_window1->addChild(m_listbox1);
+		// m_navigator->addElement(m_listbox1);
+
+
+
 
         m_window2 = UIWindow::create();
 		m_window2->setMargin(8);
@@ -61,7 +63,7 @@ class App_Example_Navigator : public Application
 		//m_window2->setBackgroundImageBorder(8);
 		layout1->addChild(m_window2);
 
-        m_navigator->pushFocus(m_window2);
+        m_navigator->pushFocus(m_window1);
     }
 
     virtual void onUpdate() override
