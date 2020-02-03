@@ -41,11 +41,14 @@ public:
 	void popFocus();
 	void clearFocusHistory();
 
+	UIElement* focusedElement() const;
+
 LN_CONSTRUCT_ACCESS:
 	UIFocusNavigator();
 	void init();
 
 protected:
+	virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
 
 private:
     List<UIElement*> m_history;

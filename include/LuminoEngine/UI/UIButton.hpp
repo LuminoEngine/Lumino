@@ -59,7 +59,7 @@ public:
     EventConnection connectOnClicked(UIEventHandler handler);   // TODO: Click
 
 protected:
-    virtual const String& elementName() const  override { static String name = u"UIButton"; return name; }
+    virtual const String& elementName() const override { static String name = u"UIButton"; return name; }
     virtual void onClick(UIEventArgs* e) override;
 
 private:

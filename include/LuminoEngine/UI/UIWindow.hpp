@@ -15,6 +15,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 protected:
+	virtual const String& elementName() const override { static String name = u"UIWindow"; return name; }
 
 private:
 };

@@ -763,7 +763,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
     //    //resolvedStyle = sc->style();
     //}
 
-	detail::UIStyleInstance::updateStyleDataHelper(/*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
+	detail::UIStyleInstance::updateStyleDataHelper(styleContext, /*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
 
 	m_finalStyle->theme = styleContext->mainTheme;
 

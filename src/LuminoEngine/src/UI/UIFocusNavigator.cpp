@@ -42,5 +42,22 @@ void UIFocusNavigator::clearFocusHistory()
 {
 }
 
+UIElement* UIFocusNavigator::focusedElement() const
+{
+	if (m_history.isEmpty()) return nullptr;
+	return m_history.back();
+}
+
+UIElement* UIFocusNavigator::lookupMouseHoverElement(const Point& frameClientPosition)
+{
+	if (UIElement* focused = focusedElement()) {
+		if (UIElement* e = focused->lookupMouseHoverElement(frameClientPosition)) {
+			return e;
+		}
+	}
+
+	return nullptr;
+}
+
 } // namespace ln
 

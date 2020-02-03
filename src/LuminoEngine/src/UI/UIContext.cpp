@@ -21,14 +21,25 @@ void UIContext::init()
 {
     Object::init();
 
-	m_defaultStyle = makeObject<UIStyle>();
-	m_defaultStyle->setupDefault();
+	m_styleContext = makeObject<UIStyleContext>();
+	//m_defaultStyle = makeObject<UIStyle>();
+	//m_defaultStyle->setupDefault();
     //m_finalDefaultStyle->setupDefault();
-	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
-    detail::UIStyleInstance::updateStyleDataHelper(nullptr, m_defaultStyle, m_finalDefaultStyle);
 
-    m_styleContext = makeObject<UIStyleContext>();
-    setupDefaultStyle();
+
+	if (1) {
+		auto theme = makeObject<UITheme>();
+		theme->buildLumitelier();
+		m_styleContext->addStyleSheet(theme->styleSheet());
+		m_styleContext->mainTheme = theme;
+	}
+	else {
+		setupDefaultStyle();
+	}
+
+
+	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
+    detail::UIStyleInstance::updateStyleDataHelper(m_styleContext, nullptr, m_styleContext->mainTheme->defaultStyle(), m_finalDefaultStyle);
 }
 
 void UIContext::setLayoutRootElement(UIElement* element)
@@ -61,7 +72,12 @@ void UIContext::updateStyleTree()
 
 void UIContext::setupDefaultStyle()
 {
+	auto defaultStyle = makeObject<UIStyle>();
+	defaultStyle->setupDefault();
+
     auto theme = makeObject<UITheme>();
+	theme->setDefaultStyle(defaultStyle);
+
     theme->setSpacing(8); // MUI default
     theme->add(u"control.background", UIColors::get(UIColorHues::Grey, 2));
 	theme->add(u"collection.hoverBackground", UIColors::get(UIColorHues::LightGreen, 0));
@@ -74,7 +90,7 @@ void UIContext::setupDefaultStyle()
 	//Color containerBackground = UIColors::get(UIColorHues::Grey, 3);
 	//Color activeControlBackground = UIColors::get(UIColorHues::Grey, 0);
 
-	theme->setColor(UIThemeConstantPalette::BackgroundColor, Color::White.withAlpha(0.5f));
+	theme->setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::White.withAlpha(0.5f));
 	theme->setColor(UIThemeConstantPalette::DefaultMainColor, UIColors::get(UIColorHues::Grey, 2));
 	theme->setColor(UIThemeConstantPalette::DefaultTextColor, Color::Black);
 	theme->setColor(UIThemeConstantPalette::PrimaryMainColor, UIColors::get(UIColorHues::LightGreen, 5));
