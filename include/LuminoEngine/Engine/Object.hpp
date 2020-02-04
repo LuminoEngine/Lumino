@@ -7,6 +7,8 @@ class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
 class Serializer;
+class ViewProperty;
+class ViewPropertyInfo;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
@@ -85,7 +87,7 @@ private:
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
 	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_; \
 	static ::ln::TypeInfo* _lnref_registerTypeInfo(); \
-	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context);
+	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
@@ -98,10 +100,10 @@ private:
 	{ \
 		::ln::EngineContext* context = ::ln::EngineContext::current(); \
 		::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
-		_lnref_registerTypeInfoInitializer(context); \
+		_lnref_registerTypeInfoInitializer(context, typeInfo); \
 		return typeInfo; \
 	} \
-	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context)
+	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo)
 
 #define LN_INTERNAL_NEW_OBJECT \
     template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
@@ -360,6 +362,10 @@ public:
     void registerProperty(PropertyInfo* prop);
     const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
 
+	void registerViewProperty(ViewPropertyInfo* prop);
+	const List<Ref<ViewPropertyInfo>>& viewProperties() const { return m_viewProperties; }
+	ViewPropertyInfo* findViewProperty(const StringRef& name) const;
+
 	Ref<Object> createInstance() const;
 	static Ref<Object> createInstance(const String& typeName);	// TODO: EngineContext へ
 
@@ -385,7 +391,8 @@ public:
 
 private:
     String m_name;
-    List<Ref<PropertyInfo>> m_properties;
+    List<Ref<PropertyInfo>> m_properties;	// obsolete
+	List<Ref<ViewPropertyInfo>> m_viewProperties;
 	int64_t m_managedTypeInfoId;
 
 	friend struct detail::TypeInfoInternal;

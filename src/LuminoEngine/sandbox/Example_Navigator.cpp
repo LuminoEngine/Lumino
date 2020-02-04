@@ -5,6 +5,7 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/UI/UIListBox.hpp>
+#include <LuminoEngine/Engine/VMProperty.hpp>
 using namespace ln;
 
 class App_Example_Navigator : public Application
@@ -14,6 +15,8 @@ class App_Example_Navigator : public Application
 	Ref<UIListBox> m_listbox2;
     Ref<UIWindow> m_window1;
     Ref<UIWindow> m_window2;
+
+	ModelProperty<String> m_actorName;
 
     virtual void onInit() override
     {
@@ -62,6 +65,14 @@ class App_Example_Navigator : public Application
 		//m_window2->setBackgroundImage(windowSkin);
 		//m_window2->setBackgroundImageBorder(8);
 		layout1->addChild(m_window2);
+
+
+		auto text = UITextBlock::create(u"Test");
+		auto viewProp = text->getViewProperty(u"text");
+		viewProp->bind(&m_actorName);
+		m_window2->addChild(text);
+
+		m_actorName.set(u"Lumino");
 
         m_navigator->pushFocus(m_window1);
     }

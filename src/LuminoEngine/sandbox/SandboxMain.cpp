@@ -124,6 +124,8 @@ public:
 //#pragma comment(lib, "ws2_32.lib")
 
 
+
+#if 0
 class ObservablePropertyBase;
 
 // ObservableProperty 自体は new しなくても使えるようにしたいが、
@@ -255,11 +257,7 @@ private:
 	Ref<Variant> m_value;
 };
 
-
-
-
-
-
+#endif
 
 
 
@@ -295,7 +293,7 @@ int main(int argc, char** argv)
         return 0;
     }
 
-
+#if 0
 	{
 		ObservableProperty<int> v1(100);
 
@@ -314,7 +312,7 @@ int main(int argc, char** argv)
 
 		printf("");
 	}
-
+#endif
 
 	//UriUriA uri;
 	////const char * const uriString = "file:///home/user/song.mp3";
