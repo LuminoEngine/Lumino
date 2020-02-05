@@ -2,9 +2,33 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Object.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
+#include <LuminoEngine/Engine/VMProperty.hpp>
 #include "../Runtime/RuntimeManager.hpp"
 
 namespace ln {
+
+//==============================================================================
+// Object
+
+Ref<TypeInfo> PredefinedTypes::Bool;
+Ref<TypeInfo> PredefinedTypes::Char;
+
+Ref<TypeInfo> PredefinedTypes::Int8;
+Ref<TypeInfo> PredefinedTypes::Int16;
+Ref<TypeInfo> PredefinedTypes::Int32;
+Ref<TypeInfo> PredefinedTypes::Int64;
+
+Ref<TypeInfo> PredefinedTypes::UInt8;
+Ref<TypeInfo> PredefinedTypes::UInt16;
+Ref<TypeInfo> PredefinedTypes::UInt32;
+Ref<TypeInfo> PredefinedTypes::UInt64;
+
+Ref<TypeInfo> PredefinedTypes::Float;
+Ref<TypeInfo> PredefinedTypes::Double;
+
+Ref<TypeInfo> PredefinedTypes::String;
+Ref<TypeInfo> PredefinedTypes::Object;
+Ref<TypeInfo> PredefinedTypes::List;
 
 //==============================================================================
 // Object
@@ -14,6 +38,7 @@ Object::Object()
     : m_weakRefInfo(nullptr)
     , m_weakRefInfoMutex()
 	, m_runtimeData(nullptr)
+	, m_objectFlags(detail::ObjectFlags::None)
 {
 }
 
@@ -129,8 +154,9 @@ TypeInfo* Object::_lnref_getThisTypeInfo() const
 //==============================================================================
 // TypeInfo
 
-TypeInfo::TypeInfo(const char* className, TypeInfo* baseType)
+TypeInfo::TypeInfo(const char* className, TypeInfo* baseType, TypeInfoClass typeClass)
 	: m_name(className)
+	, m_typeClass(typeClass)
 	, m_baseType(baseType)
 	, m_managedTypeInfoId(-1)
 {
@@ -138,6 +164,7 @@ TypeInfo::TypeInfo(const char* className, TypeInfo* baseType)
 
 TypeInfo::TypeInfo(const String& className)
 	: m_name(className)
+	, m_typeClass(TypeInfoClass::Object)
 	, m_baseType(nullptr)
 	, m_managedTypeInfoId(-1)
 {

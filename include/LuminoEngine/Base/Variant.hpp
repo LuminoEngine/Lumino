@@ -123,6 +123,14 @@ public:
         return static_pointer_cast<TValue>(v_RefObject);
     }
 
+	/** Object として取得。Object ではない場合は nullptr */
+	template<typename TValue>
+	Ref<TValue> getAsObject() const
+	{
+		if (type() != VariantType::RefObject) return nullptr;
+		return static_pointer_cast<TValue>(v_RefObject);
+	}
+
 	/** utility *get<Ref<List<Variantl>>>() */
 	List<Ref<Variant>>& list();
 	const List<Ref<Variant>>& list() const;

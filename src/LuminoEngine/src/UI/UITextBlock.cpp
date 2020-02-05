@@ -22,7 +22,7 @@ namespace ln {
 //==============================================================================
 // UITextBlock
 LN_OBJECT_IMPLEMENT(UITextBlock, UIElement) {
-	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>("text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UITextBlock, String, text, setText)));
+	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UITextBlock, String, text, setText)));
 }
 
 
@@ -34,6 +34,7 @@ ViewProperty* UITextBlock::getViewProperty(StringRef name)
 		return (*itr);
 	else {
 		auto prop = makeRef<ViewProperty>();
+		prop->m_owner = this;
 		prop->m_info = info;
 		m_viewProperties.push_back(prop);
 		return prop;

@@ -7,6 +7,7 @@
 
 namespace ln {
 class Object;
+class TypeInfo;
 class RefObjectHelper;
 template<class T> class Ref;
 namespace detail { class RefObjectInternal; }
@@ -186,6 +187,11 @@ public:
     operator T*() const { return static_cast<T*>(m_ptr); } // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
 
 	RefObject* basePointer() const { return m_ptr; }
+
+	static TypeInfo* _lnref_getTypeInfo()
+	{
+		return TypeInfo::getTypeInfo<T>();
+	}
 
 protected:
     void safeAddRef()

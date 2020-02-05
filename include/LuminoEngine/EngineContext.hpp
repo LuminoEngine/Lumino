@@ -64,6 +64,14 @@ public:
 		}
 	}
 
+	void registerType(TypeInfo* typeInfo)
+	{
+		if (LN_REQUIRE(typeInfo)) return;
+		typeInfo->m_id = m_typeInfos.size();
+		m_typeInfos.push_back(typeInfo);
+		m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+	}
+
 	TypeInfo* findTypeInfo(const StringRef& name) const
 	{
 		auto itr = m_typeInfoSet.find(name);

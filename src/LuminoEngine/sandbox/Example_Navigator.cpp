@@ -16,7 +16,9 @@ class App_Example_Navigator : public Application
     Ref<UIWindow> m_window1;
     Ref<UIWindow> m_window2;
 
-	ModelProperty<String> m_actorName;
+	//ModelProperty<String> m_actorName;
+	ModelProperty<int> m_itemId;
+	ModelProperty<Ref<Collection<Ref<ModelProperty<String>>>>> m_items;
 
     virtual void onInit() override
     {
@@ -40,15 +42,20 @@ class App_Example_Navigator : public Application
         //m_window1->setBackgroundColor(Color::Red);
 		layout1->addChild(m_window1);
 
-
+		auto items = makeCollection<Ref<ModelProperty<String>>>();
+		items->add(makeProperty<String>(u"item1"));
+		items->add(makeProperty<String>(u"item2"));
+		items->add(makeProperty<String>(u"item3"));
+		m_items.set(items);
 
 		m_listbox1 = UIListBox::create();
 		//m_listbox1->setHorizontalAlignment(HAlignment::Left);
 		//m_listbox1->setVerticalAlignment(VAlignment::Top);
-		m_listbox1->addChild(u"item1");
-		m_listbox1->addChild(u"item2");
-		m_listbox1->addChild(u"item3");
-		m_listbox1->addChild(u"item4");
+		//m_listbox1->addChild(u"item1");
+		//m_listbox1->addChild(u"item2");
+		//m_listbox1->addChild(u"item3");
+		//m_listbox1->addChild(u"item4");
+		m_listbox1->bind(makeProperty<Ref<Collection<Ref<ModelProperty<String>>>>>(items));
 		m_window1->addChild(m_listbox1);
 		// m_navigator->addElement(m_listbox1);
 
@@ -67,12 +74,15 @@ class App_Example_Navigator : public Application
 		layout1->addChild(m_window2);
 
 
+
 		auto text = UITextBlock::create(u"Test");
 		auto viewProp = text->getViewProperty(u"text");
-		viewProp->bind(&m_actorName);
+		//viewProp->bind(&m_actorName, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return u"aaa"; }));
+		viewProp->bind(&m_itemId, ln::makeObject2<FunctionalPropertyValueConverter>([](Variant* v) { return makeVariant(u"aaa"); }));
 		m_window2->addChild(text);
 
-		m_actorName.set(u"Lumino");
+		//m_actorName.set(u"Lumino");
+		m_itemId.set(1);
 
         m_navigator->pushFocus(m_window1);
     }

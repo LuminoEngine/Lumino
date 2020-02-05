@@ -9,6 +9,7 @@ class ReflectionObjectVisitor;
 class Serializer;
 class ViewProperty;
 class ViewPropertyInfo;
+class ObservablePropertyBase;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
@@ -69,6 +70,12 @@ private:
     static AssetPath makeEmpty();
 
     std::shared_ptr<Components> m_components;
+};
+
+enum class ObjectFlags
+{
+	None = 0x0000,
+	Property = 0x0001,
 };
 
 } // namespace detail
@@ -196,6 +203,7 @@ private:
     std::mutex m_weakRefInfoMutex;
 	detail::ObjectRuntimeData* m_runtimeData;
     detail::AssetPath m_assetPath;
+	Flags<detail::ObjectFlags> m_objectFlags;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
@@ -221,6 +229,9 @@ public:
     static void destructObject(Object* obj) { obj->~Object(); }
 	static void setRuntimeData(Object* obj, ObjectRuntimeData* data) { obj->m_runtimeData = data; }
 	static ObjectRuntimeData* getRuntimeData(Object* obj) { return obj->m_runtimeData; }
+	static Flags<ObjectFlags> getObjectFlags(Object* obj) { return obj->m_objectFlags; }
+	static void setObjectFlags(Object* obj, Flags<ObjectFlags> value) { obj->m_objectFlags = value; }
+	static bool isObservableProperty(Object* obj) { return getObjectFlags(obj).hasFlag(ObjectFlags::Property); }
 };
 
 class WeakRefInfo final
@@ -340,11 +351,45 @@ private:
 };
 namespace detail { struct TypeInfoInternal; }
 
+class PredefinedTypes
+{
+public:
+	static Ref<TypeInfo> Bool;
+	static Ref<TypeInfo> Char;
+
+	static Ref<TypeInfo> Int8;
+	static Ref<TypeInfo> Int16;
+	static Ref<TypeInfo> Int32;
+	static Ref<TypeInfo> Int64;
+
+	static Ref<TypeInfo> UInt8;
+	static Ref<TypeInfo> UInt16;
+	static Ref<TypeInfo> UInt32;
+	static Ref<TypeInfo> UInt64;
+
+	static Ref<TypeInfo> Float;
+	static Ref<TypeInfo> Double;
+
+	static Ref<TypeInfo> String;
+	static Ref<TypeInfo> Object;
+	static Ref<TypeInfo> List;
+
+	//template<class T>
+	//static TypeInfo* getType() { return nullptr; }
+};
+
+enum class TypeInfoClass
+{
+	Primitive,
+	/*Struct,*/
+	Object,
+};
+
 class TypeInfo
     : public RefObject
 {
 public:
-	TypeInfo(const char* className, TypeInfo* baseType);
+	TypeInfo(const char* className, TypeInfo* baseType, TypeInfoClass typeClass = TypeInfoClass::Object);
 
 	TypeInfo(const String& className);
 
@@ -355,6 +400,9 @@ public:
 
     /** ベースクラスの型情報を取得します。 */
     TypeInfo* baseType() const { return m_baseType; }
+
+	TypeInfoClass typeClass() const { return m_typeClass; }
+
 
     // 0 is invalid
     int id() const { return m_id; }
@@ -377,6 +425,22 @@ public:
         return T::_lnref_getTypeInfo();
     }
 
+	//template<> template<class TValue> static TypeInfo* getTypeInfo<typename Ref<TValue>>() { return getTypeInfo<TValue>(); }
+	template<> static TypeInfo* getTypeInfo<bool>() { return PredefinedTypes::Bool; }
+	template<> static TypeInfo* getTypeInfo<ln::Char>() { return PredefinedTypes::Char; }
+	template<> static TypeInfo* getTypeInfo<int8_t>() { return PredefinedTypes::Int8; }
+	template<> static TypeInfo* getTypeInfo<int16_t>() { return PredefinedTypes::Int16; }
+	template<> static TypeInfo* getTypeInfo<int32_t>() { return PredefinedTypes::Int32; }
+	template<> static TypeInfo* getTypeInfo<int64_t>() { return PredefinedTypes::Int64; }
+	template<> static TypeInfo* getTypeInfo<uint8_t>() { return PredefinedTypes::UInt8; }
+	template<> static TypeInfo* getTypeInfo<uint16_t>() { return PredefinedTypes::UInt16; }
+	template<> static TypeInfo* getTypeInfo<uint32_t>() { return PredefinedTypes::UInt32; }
+	template<> static TypeInfo* getTypeInfo<uint64_t>() { return PredefinedTypes::UInt64; }
+	template<> static TypeInfo* getTypeInfo<float>() { return PredefinedTypes::Float; }
+	template<> static TypeInfo* getTypeInfo<double>() { return PredefinedTypes::Double; }
+	template<> static TypeInfo* getTypeInfo<ln::String>() { return PredefinedTypes::String; }
+	template<> static TypeInfo* getTypeInfo<ln::Object>() { return PredefinedTypes::Object; }
+
     static TypeInfo* getTypeInfo(const Object* obj)
     {
         return obj->_lnref_getThisTypeInfo();
@@ -391,6 +455,7 @@ public:
 
 private:
     String m_name;
+	TypeInfoClass m_typeClass;
     List<Ref<PropertyInfo>> m_properties;	// obsolete
 	List<Ref<ViewPropertyInfo>> m_viewProperties;
 	int64_t m_managedTypeInfoId;

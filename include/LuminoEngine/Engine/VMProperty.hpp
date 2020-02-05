@@ -47,6 +47,60 @@ class ViewPropertyAccessor;
 
 class ObservablePropertyBase;
 
+
+
+
+
+class ViewPropertyInfo : public RefObject
+{
+public:
+	ViewPropertyInfo(TypeInfo* type, const char* name, const Ref<ViewPropertyAccessor>& accessor)
+		: m_type(type)
+		, m_name(String::fromCString(name))
+		, m_accessor(accessor)
+		, m_registerd(false)
+	{}
+
+	TypeInfo* type() const { return m_type; }
+	const String& name() const { return m_name; }
+
+	const Ref<ViewPropertyAccessor>& accessor() const { return m_accessor; }
+
+private:
+	TypeInfo* m_type;
+	String m_name;
+	Ref<ViewPropertyAccessor> m_accessor;
+	bool m_registerd;
+
+	friend class TypeInfo;
+};
+
+class PropertyValueConverter : public Object
+{
+public:
+	virtual Ref<Variant> ToTarget(Variant* value)
+	{
+		return value;
+	}
+};
+
+class FunctionalPropertyValueConverter : public PropertyValueConverter
+{
+public:
+	FunctionalPropertyValueConverter(const std::function<Ref<Variant>(Variant* value)>& toTarget)
+		: m_toTarget(toTarget)
+	{
+	}
+
+	virtual Ref<Variant> ToTarget(Variant* value) override
+	{
+		return m_toTarget(value);
+	}
+
+private:
+	std::function<Ref<Variant>(Variant* value)> m_toTarget;
+};
+
 // ObservableProperty 自体は new しなくても使えるようにしたいが、
 // そうすると他で Ref で参照を持つことはできなくなるので、弱参照の仕組みを使う。
 class ObservablePropertyRef
@@ -87,7 +141,9 @@ public:
 	ObservablePropertyBase()
 		: m_bindingSource()
 		, m_syncing(false)
-	{}
+	{
+		detail::ObjectHelper::setObjectFlags(this, detail::ObjectFlags::Property);
+	}
 
 	~ObservablePropertyBase() {
 		if (auto s = m_bindingSource.resolve()) {
@@ -95,12 +151,17 @@ public:
 		}
 	}
 
+	virtual const TypeInfo* type() const = 0;
+	virtual Ref<Variant> getValue() = 0;
+
 	// bindingSource の変更を購読する
-	void bind(ObservablePropertyBase* bindingSource)
+	void bind(ObservablePropertyBase* bindingSource, PropertyValueConverter* converter = nullptr)
 	{
 		if (LN_REQUIRE(!bindingSource->m_changed)) return;
 		m_bindingSource = bindingSource;
 		bindingSource->m_changed = ln::bind(this, &ObservablePropertyBase::handleSourceChanged);
+		m_valueConverter = converter;
+		handleSourceChanged(bindingSource);	// first update.
 	}
 
 protected:
@@ -124,13 +185,21 @@ protected:
 		//}
 	}
 
-	void handleSourceChanged(const ObservablePropertyBase* value)
+	virtual void onSourceChanged(ObservablePropertyBase* source)
 	{
+
 	}
 
+	Ref<PropertyValueConverter> m_valueConverter = nullptr;
+
 private:
+	void handleSourceChanged(ObservablePropertyBase* source)
+	{
+		onSourceChanged(source);
+	}
+
 	ObservablePropertyRef m_bindingSource;
-	std::function<void(const ObservablePropertyBase*)> m_changed;
+	std::function<void(ObservablePropertyBase*)> m_changed;
 	bool m_syncing;
 };
 
@@ -159,6 +228,16 @@ public:
 		notifyChanged();
 	}
 
+	virtual const TypeInfo* type() const
+	{
+		return TypeInfo::getTypeInfo<TValue>();
+	}
+
+	virtual Ref<Variant> getValue() override
+	{
+		return m_value;
+	}
+
 	//virtual const Variant* getValue() const override
 	//{
 	//	return m_value;
@@ -176,35 +255,12 @@ private:
 	Ref<Variant> m_value;
 };
 
-
-class ViewProperty : public ObservablePropertyBase
+/** Ref<ModelProperty> を構築します。 */
+template<class T, typename... TArgs>
+inline Ref<ModelProperty<T>> makeProperty(TArgs&&... args)
 {
-public:
-	ViewPropertyInfo* m_info = nullptr;
-
-private:
-};
-
-class ViewPropertyInfo : public RefObject
-{
-public:
-	ViewPropertyInfo(const char* name, const Ref<ViewPropertyAccessor>& accessor)
-		: m_name(String::fromCString(name))
-		, m_accessor(accessor)
-		, m_registerd(false)
-	{}
-
-	const String& name() const { return m_name; }
-
-	const Ref<ViewPropertyAccessor>& accessor() const { return m_accessor; }
-
-private:
-	String m_name;
-	Ref<ViewPropertyAccessor> m_accessor;
-	bool m_registerd;
-
-	friend class TypeInfo;
-};
+	return makeObject2<ModelProperty<T>>(std::forward<TArgs>(args)...);
+}
 
 
 class ViewPropertyAccessor : public RefObject
@@ -244,6 +300,40 @@ private:
 	TGetFunction m_getFunction;
 	TSetFunction m_setFunction;
 };
+
+
+class ViewProperty : public ObservablePropertyBase
+{
+public:
+	Object* m_owner = nullptr;
+	ViewPropertyInfo* m_info = nullptr;
+
+	virtual const TypeInfo* type() const
+	{
+		return m_info->type();
+	}
+
+	virtual Ref<Variant> getValue()
+	{
+		Ref<Variant> value;
+		m_info->accessor()->getValue(m_owner, &value);
+		return value;
+	}
+
+private:
+	virtual void onSourceChanged(ObservablePropertyBase* source) override
+	{
+		if (LN_REQUIRE(m_info)) return;
+		if (m_valueConverter) {
+			m_info->accessor()->setValue(m_owner, m_valueConverter->ToTarget(source->getValue()));
+		}
+		else
+			m_info->accessor()->setValue(m_owner, source->getValue());
+	};
+};
+
+
+
 
 template<class TClassType, class TValue, class TGetFunction, class TSetFunction>
 Ref<ViewPropertyAccessor> makeViewPropertyAccessor(TGetFunction getFunction, TSetFunction setFunction)

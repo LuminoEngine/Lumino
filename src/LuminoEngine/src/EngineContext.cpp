@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "Runtime/RuntimeManager.hpp"
 #include "Engine/EngineManager.hpp"
+#include <LuminoEngine/Engine/VMProperty.hpp>
 #include <LuminoEngine/EngineContext.hpp>
 
 namespace ln {
@@ -30,7 +31,36 @@ void EngineContext::internalInit()
 {
 	if (!m_init) {
 		m_typeInfos.push_back(nullptr); // [0] is dummy
-		m_objectTypeInfo = registerType<Object>("Object", nullptr, {});
+		
+		PredefinedTypes::Bool = makeRef<TypeInfo>("Bool", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Char = makeRef<TypeInfo>("Char", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int8 = makeRef<TypeInfo>("Int8", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int16 = makeRef<TypeInfo>("Int16", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int32 = makeRef<TypeInfo>("Int32", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int64 = makeRef<TypeInfo>("Int64", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt8 = makeRef<TypeInfo>("UInt8", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt16 = makeRef<TypeInfo>("UInt16", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt32 = makeRef<TypeInfo>("UInt32", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt64 = makeRef<TypeInfo>("UInt64", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Float = makeRef<TypeInfo>("Float", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Double = makeRef<TypeInfo>("Double", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::String = makeRef<TypeInfo>("String", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Object = registerType<Object>("Object", nullptr, {});
+		PredefinedTypes::List = registerType<Object>("List", nullptr, {});
+		registerType(PredefinedTypes::Bool);
+		registerType(PredefinedTypes::Char);
+		registerType(PredefinedTypes::Int8);
+		registerType(PredefinedTypes::Int16);
+		registerType(PredefinedTypes::Int32);
+		registerType(PredefinedTypes::UInt8);
+		registerType(PredefinedTypes::UInt16);
+		registerType(PredefinedTypes::UInt32);
+		registerType(PredefinedTypes::UInt64);
+		registerType(PredefinedTypes::Float);
+		registerType(PredefinedTypes::Double);
+		registerType(PredefinedTypes::String);
+
+		m_objectTypeInfo = PredefinedTypes::Object;
 		m_init = true;
 	}
 }
