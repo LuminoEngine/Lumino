@@ -1141,6 +1141,7 @@ void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
 // VulkanSwapChain
 
 VulkanSwapChain::VulkanSwapChain()
+	: m_swapchain(nullptr)
 {
 }
 
@@ -1170,101 +1171,11 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
 
 
 
-    // この Swapchain と対応する Surface と互換性がある QueueFamily を選択する
-    uint32_t presentQueueFamily = 0;
-    if (m_deviceContext->findPresentQueueFamily(m_surface, &presentQueueFamily)) {
-        vkGetDeviceQueue(device, presentQueueFamily, 0, &m_presentQueue);
-        // TODO: ↑ここのqueueIndex は 0 ではなく、使ってないインデックスにした方が効率良いかも。今だとほとんどの場合、graphicsQueue と同じになる。
-    }
-    else {
-        LN_ERROR("PresentQueueFamily not found.");
-        return false;
-    }
 
 
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_deviceContext->vulkanPhysicalDevice(), m_surface);
-
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, backbufferSize.width, backbufferSize.height);
-
-    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-        imageCount = swapChainSupport.capabilities.maxImageCount;
-    }
-
-    VkSwapchainCreateInfoKHR createInfo = {};
-    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.pNext = nullptr;
-    createInfo.surface = m_surface;
-    createInfo.minImageCount = imageCount;
-    createInfo.imageFormat = surfaceFormat.format;
-    createInfo.imageColorSpace = surfaceFormat.colorSpace;
-    createInfo.imageExtent = extent;
-    createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;	// readData できるようにするため、VK_IMAGE_USAGE_TRANSFER_SRC_BIT も指定しておく
-
-    ///QueueFamilyIndices indices = m_deviceContext->findQueueFamilies(m_deviceContext->vulkanPhysicalDevice());
-    uint32_t queueFamilyIndices[] = { m_deviceContext->graphicsQueueFamilyIndex(), presentQueueFamily };
-
-    if (m_deviceContext->graphicsQueueFamilyIndex() != presentQueueFamily) {
-        createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-        createInfo.queueFamilyIndexCount = 2;
-        createInfo.pQueueFamilyIndices = queueFamilyIndices;
-    }
-    else {
-        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        createInfo.queueFamilyIndexCount = 0;
-        createInfo.pQueueFamilyIndices = nullptr;
-    }
-
-    createInfo.preTransform = swapChainSupport.preTransform;
-    createInfo.compositeAlpha = swapChainSupport.compositeAlpha;
-    createInfo.presentMode = presentMode;
-    createInfo.clipped = VK_TRUE;
-    createInfo.oldSwapchain = VK_NULL_HANDLE;
-
-
-    if (vkCreateSwapchainKHR(device, &createInfo, m_deviceContext->vulkanAllocator(), &m_swapchain) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create swap chain!");
-    }
-
-
-
-    std::vector<VkImage> swapChainImages;
-    {
-        vkGetSwapchainImagesKHR(device, m_swapchain, &imageCount, nullptr);
-        swapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(device, m_swapchain, &imageCount, swapChainImages.data());
-
-        m_swapchainImageFormat = surfaceFormat.format;
-        m_swapchainExtent = extent;
-    }
-
-    // 初期状態ではバックバッファのレイアウトは VK_IMAGE_LAYOUT_UNDEFINED となっている。
-    // Vulkan-Tutorial では、初回の VkAttachmentDescription::initialLayout
-    for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-        if (!m_deviceContext->transitionImageLayoutImmediately(swapChainImages[i], m_swapchainImageFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) {
-            return false;
-        }
-    }
-
-    {
-        m_swapChainImageViews.resize(swapChainImages.size());
-
-        for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-            if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, &m_swapChainImageViews[i])) {
-                return false;
-            }
-        }
-    }
-
-    m_swapchainRenderTargets.resize(swapChainImages.size());
-    for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-        auto target = makeRef<VulkanRenderTarget>();
-        target->init(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], m_swapChainImageViews[i]);
-        m_swapchainRenderTargets[i] = target;
-    }
+	if (!createNativeSwapchain(backbufferSize)) {
+		return false;
+	}
 
 
 
@@ -1314,7 +1225,12 @@ void VulkanSwapChain::dispose()
 {
     VkDevice device = m_deviceContext->vulkanDevice();
 
-    cleanup();
+	for (auto& x : m_imageAvailableSemaphores) {
+		vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
+	}
+	m_imageAvailableSemaphores.clear();
+
+    cleanupNativeSwapchain();
 
     //for (auto c : m_inFlightCommandBuffers) {
     //    if (c) {
@@ -1323,25 +1239,12 @@ void VulkanSwapChain::dispose()
     //}
     //m_inFlightCommandBuffers.clear();
 
-    for (auto& x : m_imageAvailableSemaphores) {
-        vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
-    }
-    m_imageAvailableSemaphores.clear();
 
     //for (auto& x : m_renderFinishedSemaphores) {
     //    vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
     //}
     //m_renderFinishedSemaphores.clear();
 
-    for (auto& x : m_swapchainRenderTargets) {
-        x->dispose();
-    }
-    m_swapchainRenderTargets.clear();
-
-    if (m_swapchain) {
-        vkDestroySwapchainKHR(device, m_swapchain, m_deviceContext->vulkanAllocator());
-        m_swapchain = VK_NULL_HANDLE;
-    }
 
     if (m_surface) {
         vkDestroySurfaceKHR(m_deviceContext->vulkanInstance(), m_surface, m_deviceContext->vulkanAllocator());
@@ -1351,21 +1254,132 @@ void VulkanSwapChain::dispose()
     ISwapChain::dispose();
 }
 
-void VulkanSwapChain::cleanup()
+bool VulkanSwapChain::createNativeSwapchain(const SizeI& backbufferSize)
 {
+	if (LN_REQUIRE(!m_swapchain)) return false;
+
+	VkDevice device = m_deviceContext->vulkanDevice();
+
+	// この Swapchain と対応する Surface と互換性がある QueueFamily を選択する
+	uint32_t presentQueueFamily = 0;
+	if (m_deviceContext->findPresentQueueFamily(m_surface, &presentQueueFamily)) {
+		vkGetDeviceQueue(device, presentQueueFamily, 0, &m_presentQueue);
+		// TODO: ↑ここのqueueIndex は 0 ではなく、使ってないインデックスにした方が効率良いかも。今だとほとんどの場合、graphicsQueue と同じになる。
+	}
+	else {
+		LN_ERROR("PresentQueueFamily not found.");
+		return false;
+	}
+
+	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(m_deviceContext->vulkanPhysicalDevice(), m_surface);
+
+	VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+	VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, backbufferSize.width, backbufferSize.height);
+
+	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
+		imageCount = swapChainSupport.capabilities.maxImageCount;
+	}
+
+	VkSwapchainCreateInfoKHR createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	createInfo.pNext = nullptr;
+	createInfo.surface = m_surface;
+	createInfo.minImageCount = imageCount;
+	createInfo.imageFormat = surfaceFormat.format;
+	createInfo.imageColorSpace = surfaceFormat.colorSpace;
+	createInfo.imageExtent = extent;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;	// readData できるようにするため、VK_IMAGE_USAGE_TRANSFER_SRC_BIT も指定しておく
+
+	///QueueFamilyIndices indices = m_deviceContext->findQueueFamilies(m_deviceContext->vulkanPhysicalDevice());
+	uint32_t queueFamilyIndices[] = { m_deviceContext->graphicsQueueFamilyIndex(), presentQueueFamily };
+
+	if (m_deviceContext->graphicsQueueFamilyIndex() != presentQueueFamily) {
+		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+		createInfo.queueFamilyIndexCount = 2;
+		createInfo.pQueueFamilyIndices = queueFamilyIndices;
+	}
+	else {
+		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		createInfo.queueFamilyIndexCount = 0;
+		createInfo.pQueueFamilyIndices = nullptr;
+	}
+
+	createInfo.preTransform = swapChainSupport.preTransform;
+	createInfo.compositeAlpha = swapChainSupport.compositeAlpha;
+	createInfo.presentMode = presentMode;
+	createInfo.clipped = VK_TRUE;
+	createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+
+	if (vkCreateSwapchainKHR(device, &createInfo, m_deviceContext->vulkanAllocator(), &m_swapchain) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create swap chain!");
+	}
+
+
+
+	std::vector<VkImage> swapChainImages;
+	{
+		vkGetSwapchainImagesKHR(device, m_swapchain, &imageCount, nullptr);
+		swapChainImages.resize(imageCount);
+		vkGetSwapchainImagesKHR(device, m_swapchain, &imageCount, swapChainImages.data());
+
+		m_swapchainImageFormat = surfaceFormat.format;
+		m_swapchainExtent = extent;
+	}
+
+	// 初期状態ではバックバッファのレイアウトは VK_IMAGE_LAYOUT_UNDEFINED となっている。
+	// Vulkan-Tutorial では、初回の VkAttachmentDescription::initialLayout
+	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+		if (!m_deviceContext->transitionImageLayoutImmediately(swapChainImages[i], m_swapchainImageFormat, 1, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) {
+			return false;
+		}
+	}
+
+	{
+		m_swapChainImageViews.resize(swapChainImages.size());
+
+		for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+			if (!VulkanHelper::createImageView(m_deviceContext, swapChainImages[i], m_swapchainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, &m_swapChainImageViews[i])) {
+				return false;
+			}
+		}
+	}
+
+	m_swapchainRenderTargets.resize(swapChainImages.size());
+	for (uint32_t i = 0; i < swapChainImages.size(); i++) {
+		auto target = makeRef<VulkanRenderTarget>();
+		target->init(m_deviceContext, m_swapchainExtent.width, m_swapchainExtent.height, m_swapchainImageFormat, swapChainImages[i], m_swapChainImageViews[i]);
+		m_swapchainRenderTargets[i] = target;
+	}
+
+	return true;
+}
+
+void VulkanSwapChain::cleanupNativeSwapchain()
+{
+	VkDevice device = m_deviceContext->vulkanDevice();
+
     for (auto& iv : m_swapChainImageViews) {
-        vkDestroyImageView(m_deviceContext->vulkanDevice(), iv, m_deviceContext->vulkanAllocator());
+        vkDestroyImageView(device, iv, m_deviceContext->vulkanAllocator());
     }
     m_swapChainImageViews.clear();
+
+	for (auto& x : m_swapchainRenderTargets) {
+		x->dispose();
+	}
+	m_swapchainRenderTargets.clear();
+
+	if (m_swapchain) {
+		vkDestroySwapchainKHR(device, m_swapchain, m_deviceContext->vulkanAllocator());
+		m_swapchain = VK_NULL_HANDLE;
+	}
 }
 
 void VulkanSwapChain::acquireNextImage(int* outIndex)
 {
-    //static bool tt = false;
-
-    //if (tt) return;
-    //tt = true;
-
     VkResult result = vkAcquireNextImageKHR(
         m_deviceContext->vulkanDevice(), vulkanSwapchain(),
         std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE, &m_imageIndex);
@@ -1391,7 +1405,14 @@ ITexture* VulkanSwapChain::getRenderTarget(int imageIndex) const
 
 Result VulkanSwapChain::resizeBackbuffer(uint32_t width, uint32_t height)
 {
-	LN_NOTIMPLEMENTED();
+	vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
+
+	cleanupNativeSwapchain();
+
+	if (!createNativeSwapchain(SizeI(width, height))) {
+		return false;
+	}
+
 	return true;
 }
 

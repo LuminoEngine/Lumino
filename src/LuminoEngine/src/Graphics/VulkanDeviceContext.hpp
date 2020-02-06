@@ -202,7 +202,8 @@ public:
     static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 private:
-    void cleanup();
+	bool createNativeSwapchain(const SizeI& backbufferSize);
+    void cleanupNativeSwapchain();
 
     VulkanDevice* m_deviceContext;
     VkSurfaceKHR m_surface;
