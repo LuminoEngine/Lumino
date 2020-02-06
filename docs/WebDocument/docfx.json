@@ -69,7 +69,7 @@
     "template": [
       "default",
       "template"  /* local template folder */
-      /*"templates/material"*/
+      //"templates/material"
     ],
     "postProcessors": [],
     "noLangKeyword": false,

@@ -10,10 +10,20 @@
 
 - name: チュートリアル
   items:
-  - name: Lumino の基本
-    href: first-tutorial/basic.md
-  - name: 座標の基本
-    href: first-tutorial/2-coordinate.md
+  - name: 1. Lumino の基本
+    href: first-tutorial/1-basic.md
+  - name: 2. グラフィックスの基本
+    href: first-tutorial/2-graphics-basic.md
+  - name: 3. 図形を描画する
+    href: first-tutorial/3-shapes.md
+  - name: 4. 画像を描画する
+    href: first-tutorial/4-texture.md
+  - name: 5. 入力を受け取る
+    href: first-tutorial/5-input.md
+  - name: 6. 音声を再生する
+    href: first-tutorial/6-audio.md
+  - name: 7. アプリをリリースする
+    href: first-tutorial/7-publish.md
 
 
 - name: プラットフォーム固有の情報
