@@ -286,10 +286,10 @@ int main(int argc, char** argv)
     if (1) {
 
         //Example_MessageWindow();
-        Example_Navigator();
+        //Example_Navigator();
         //Example_UIControls();
 		//Example_Tilemap();
-		//Tutorial_Sandbox();
+		Tutorial_Sandbox();
         return 0;
     }
 

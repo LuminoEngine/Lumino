@@ -4,6 +4,7 @@
 
 namespace ln {
 class BoxMeshComponent;
+class SphereMeshComponent;
 
 class BoxMesh
 	: public VisualObject
@@ -22,6 +23,24 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     Ref<BoxMeshComponent> m_component;
+};
+
+class SphereMesh
+	: public VisualObject
+{
+public:
+	static Ref<SphereMesh> create();
+
+	SphereMeshComponent* sphereMeshComponent() const;
+
+protected:
+
+LN_CONSTRUCT_ACCESS:
+	SphereMesh();
+	void init();
+
+private:
+	Ref<SphereMeshComponent> m_component;
 };
 
 } // namespace ln

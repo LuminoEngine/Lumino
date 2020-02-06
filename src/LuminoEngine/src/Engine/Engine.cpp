@@ -234,6 +234,16 @@ Camera* Engine::camera()
     return detail::EngineDomain::engineManager()->mainCamera();
 }
 
+DirectionalLight* Engine::light()
+{
+	return detail::EngineDomain::engineManager()->mainWorld()->mainDirectionalLight();
+}
+
+AmbientLight* Engine::ambientLight()
+{
+	return detail::EngineDomain::engineManager()->mainWorld()->mainAmbientLight();
+}
+
 //AmbientLight* Engine::mainAmbientLight()
 //{
 //    return detail::EngineDomain::engineManager()->mainAmbientLight();

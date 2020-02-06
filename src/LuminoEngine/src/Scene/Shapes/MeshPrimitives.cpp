@@ -41,5 +41,30 @@ BoxMeshComponent* BoxMesh::boxMeshComponent() const
     return m_component;
 }
 
+//==============================================================================
+// SphereMesh
+
+Ref<SphereMesh> SphereMesh::create()
+{
+	return makeObject<SphereMesh>();
+}
+
+SphereMesh::SphereMesh()
+{
+}
+
+void SphereMesh::init()
+{
+	VisualObject::init();
+	m_component = makeObject<SphereMeshComponent>();
+	addComponent(m_component);
+	setMainVisualComponent(m_component);
+}
+
+SphereMeshComponent* SphereMesh::sphereMeshComponent() const
+{
+	return m_component;
+}
+
 } // namespace ln
 

@@ -131,9 +131,8 @@ Lumino の初期状態は、空っぽのワールドにひとつのカメラが�
 
 このカメラを移動させてみます。
 
-デフォルトのカメラは `Engine::camera` で取得し、`setPosition` で 3D 位置を指定します。また、位置を指定した後に `lookAt` でワールドの原点を向くようにします。
-
 # [C++](#tab/lang-cpp)
+デフォルトのカメラは `Engine::camera` で取得し、`setPosition` で 3D 位置を指定します。また、位置を指定した後に `lookAt` でワールドの原点を向くようにします。
 ```cpp
 #include <Lumino.hpp>
 
@@ -152,6 +151,7 @@ class App : public Application
 LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
+デフォルトのカメラは `Engine.camera` で取得し、`set_position` で 3D 位置を指定します。また、位置を指定した後に `look_at` でワールドの原点を向くようにします。
 ```ruby
 require 'lumino'
 
@@ -161,7 +161,7 @@ class App < Application
 
 		camera = Engine.camera
 		camera.set_position(5, 5, -5)
-		camera.lookAt(0, 0, 0)
+		camera.look_at(0, 0, 0)
     end
 end
 
@@ -173,7 +173,7 @@ App.new.run
 
 カメラを座標 (5, 5, -5) に移動し、原点 (0, 0, 0) を注視するようにしました。
 
-立方体を斜め上から見下ろす形になるため、六角形に見えるようになりました。
+立方体を斜め上から見下ろす形になり、立体的に見えるようになりました。
 
 
 ライトを配置する
