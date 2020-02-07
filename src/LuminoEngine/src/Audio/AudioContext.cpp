@@ -3,7 +3,7 @@
 #include <LuminoEngine/Audio/AudioNode.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
-#include "CoreAudioNode.hpp"
+#include "Core/CoreAudioNode.hpp"
 #include "AudioManager.hpp"
 #include "DSoundAudioDevice.hpp"
 #include "ALAudioDevice.hpp"
@@ -46,7 +46,7 @@ void AudioContext::init()
     auto device = makeRef<detail::DSoundAudioDevice>();
     //auto device = makeRef<detail::ALAudioDevice>();
     bool noDevice = false;
-    device->init(detail::CoreAudioNode::ProcessingSizeInFrames, &noDevice);
+    device->init(detail::AudioNodeCore::ProcessingSizeInFrames, &noDevice);
     if (noDevice) {
         device->dispose();
     }
@@ -193,14 +193,14 @@ void AudioContext::commitGraphs(float elapsedSeconds)
 			switch (cmd.code)
 			{
 			case OperationCode::Connection:
-				detail::CoreAudioNode::connect(cmd.outputSide->coreNode(), cmd.inputSide->coreNode());
+				detail::AudioNodeCore::connect(cmd.outputSide->coreNode(), cmd.inputSide->coreNode());
 				break;
 			case OperationCode::Disconnection:
 				LN_NOTIMPLEMENTED();
 				break;
 			case OperationCode::DisconnectionAllAndDispose:
 			{
-				detail::CoreAudioNode* node = cmd.outputSide->coreNode();
+				detail::AudioNodeCore* node = cmd.outputSide->coreNode();
 				node->disconnectAllInputSide();
 				node->disconnectAllOutputSide();
 				node->dispose();

@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioProcessorNode.hpp>
-#include "CAProcessorNode.hpp"
+#include "Core/CAProcessorNode.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -28,7 +28,7 @@ void AudioProcessorNode::init(int numberOfInputChannels, int numberOfOutputChann
 	AudioNode::init();
 }
 
-detail::CoreAudioNode* AudioProcessorNode::coreNode()
+detail::AudioNodeCore* AudioProcessorNode::coreNode()
 {
 	return m_coreObject;
 }

@@ -129,14 +129,6 @@ set(LN_SOURCES_Audio
     src/Audio/AudioManager.hpp
     src/Audio/AudioNode.cpp
     src/Audio/AudioProcessorNode.cpp
-    src/Audio/CAGainNode.cpp
-    src/Audio/CAGainNode.hpp
-    src/Audio/CAProcessorNode.cpp
-    src/Audio/CAProcessorNode.hpp
-    src/Audio/ChromiumWebCore.cpp
-    src/Audio/ChromiumWebCore.hpp
-    src/Audio/CoreAudioNode.cpp
-    src/Audio/CoreAudioNode.hpp
     src/Audio/GameAudio.cpp
     src/Audio/GameAudioImpl.cpp
     src/Audio/GameAudioImpl.hpp
@@ -146,6 +138,7 @@ set(LN_SOURCES_Audio
 )
 
 file(GLOB LN_SOURCES_Audio_Decoder src/Audio/Decoder/*.cpp src/Audio/Decoder/*.hpp)
+file(GLOB LN_SOURCES_Audio_Core src/Audio/Core/*.cpp src/Audio/Core/*.hpp)
 
 set(LN_SOURCES_Audio_Device
     src/Audio/ALAudioDevice.cpp
@@ -293,6 +286,7 @@ source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio"     FILES ${LN_SOURCES_Audio})
 source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
 source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
+source_group("Audio\\Core" FILES ${LN_SOURCES_Audio_Core})
 source_group("Shader"    FILES ${LN_SOURCES_Shader})
 source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
 source_group("Font"      FILES ${LN_SOURCES_Font})
@@ -324,6 +318,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio}
     ${LN_SOURCES_Audio_Decoder}
     ${LN_SOURCES_Audio_Device}
+    ${LN_SOURCES_Audio_Core}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
     ${LN_SOURCES_Font}

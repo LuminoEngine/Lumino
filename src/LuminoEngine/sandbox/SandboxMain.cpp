@@ -264,6 +264,7 @@ private:
 
 void Example_MessageWindow();
 void Example_Navigator();
+void Example_SoundControl();
 void Example_UIControls();
 void Example_Tilemap();
 void Tutorial_Sandbox();
@@ -282,13 +283,14 @@ int main(int argc, char** argv)
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
-    if (0) {
+    if (1) {
 
         //Example_MessageWindow();
         //Example_Navigator();
+		Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
         return 0;
     }
 
@@ -353,8 +355,8 @@ int main(int argc, char** argv)
 
 	Engine::initialize();
 	//Engine::update();
-	Engine::finalize();
-	return 0;
+	//Engine::finalize();
+	//return 0;
 
     //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 

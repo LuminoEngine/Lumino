@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioGainNode.hpp>
-#include "CAGainNode.hpp"
+#include "Core/CAGainNode.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -35,7 +35,7 @@ void AudioGainNode::setGain(float value)
     m_gain = value;
 }
 
-detail::CoreAudioNode* AudioGainNode::coreNode()
+detail::AudioNodeCore* AudioGainNode::coreNode()
 {
 	return m_coreObject;
 }

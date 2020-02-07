@@ -32,7 +32,7 @@ void SDLAudioDevice::init()
 	Desired.freq = deviceSamplingRate();
 	Desired.format = AUDIO_S16LSB; /* 16-bit signed audio */
 	Desired.channels = 2;
-	Desired.samples = CoreAudioNode::ProcessingSizeInFrames/* / 2*/;//1024; /* Buffer size: 8K = 0.37 sec. */
+	Desired.samples = AudioNodeCore::ProcessingSizeInFrames/* / 2*/;//1024; /* Buffer size: 8K = 0.37 sec. */
 	Desired.callback = SDLAudioCallbackStatic;//nullptr;// 
 	Desired.userdata = this;
 	//SDL_OpenAudio(&Desired, &Obtained);
