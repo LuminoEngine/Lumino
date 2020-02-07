@@ -4,8 +4,8 @@
 #include "../Asset/AssetManager.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
-#include "AudioDecoder.hpp"
-#include "OggAudioDecoder.hpp"
+#include "Decoder/AudioDecoder.hpp"
+#include "Decoder/OggAudioDecoder.hpp"
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 

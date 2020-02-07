@@ -354,25 +354,25 @@ namespace detail { struct TypeInfoInternal; }
 class PredefinedTypes
 {
 public:
-	static Ref<TypeInfo> Bool;
-	static Ref<TypeInfo> Char;
+	static TypeInfo* Bool;
+	static TypeInfo* Char;
 
-	static Ref<TypeInfo> Int8;
-	static Ref<TypeInfo> Int16;
-	static Ref<TypeInfo> Int32;
-	static Ref<TypeInfo> Int64;
+	static TypeInfo* Int8;
+	static TypeInfo* Int16;
+	static TypeInfo* Int32;
+	static TypeInfo* Int64;
 
-	static Ref<TypeInfo> UInt8;
-	static Ref<TypeInfo> UInt16;
-	static Ref<TypeInfo> UInt32;
-	static Ref<TypeInfo> UInt64;
+	static TypeInfo* UInt8;
+	static TypeInfo* UInt16;
+	static TypeInfo* UInt32;
+	static TypeInfo* UInt64;
 
-	static Ref<TypeInfo> Float;
-	static Ref<TypeInfo> Double;
+	static TypeInfo* Float;
+	static TypeInfo* Double;
 
-	static Ref<TypeInfo> String;
-	static Ref<TypeInfo> Object;
-	static Ref<TypeInfo> List;
+	static TypeInfo* String;
+	static TypeInfo* Object;
+	static TypeInfo* List;
 
 	//template<class T>
 	//static TypeInfo* getType() { return nullptr; }

@@ -64,12 +64,13 @@ public:
 		}
 	}
 
-	void registerType(TypeInfo* typeInfo)
+	TypeInfo* registerType(const char* className, TypeInfo* baseType, TypeInfoClass typeClass)
 	{
-		if (LN_REQUIRE(typeInfo)) return;
+		auto typeInfo = makeRef<TypeInfo>(className, baseType, typeClass);
 		typeInfo->m_id = m_typeInfos.size();
 		m_typeInfos.push_back(typeInfo);
 		m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
+		return typeInfo;
 	}
 
 	TypeInfo* findTypeInfo(const StringRef& name) const

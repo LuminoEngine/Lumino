@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "AudioDevice.hpp"
-#include "AudioDecoder.hpp"
+#include "Decoder/AudioDecoder.hpp"
 
 namespace ln {
 namespace detail {

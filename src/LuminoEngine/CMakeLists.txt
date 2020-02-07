@@ -145,14 +145,7 @@ set(LN_SOURCES_Audio
     src/Audio/blink/VectorMath.h
 )
 
-set(LN_SOURCES_Audio_Decoder
-    src/Audio/AudioDecoder.cpp
-    src/Audio/AudioDecoder.hpp
-    src/Audio/Mp3AudioDecoder.cpp
-    src/Audio/Mp3AudioDecoder.hpp
-    src/Audio/OggAudioDecoder.cpp
-    src/Audio/OggAudioDecoder.hpp
-)
+file(GLOB LN_SOURCES_Audio_Decoder src/Audio/Decoder/*.cpp src/Audio/Decoder/*.hpp)
 
 set(LN_SOURCES_Audio_Device
     src/Audio/ALAudioDevice.cpp

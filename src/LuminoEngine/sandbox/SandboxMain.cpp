@@ -2,7 +2,6 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include "../src/Audio/AudioDecoder.hpp"
 #include "Common.hpp"
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Engine/EngineManager.hpp"
@@ -283,7 +282,7 @@ int main(int argc, char** argv)
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
-    if (1) {
+    if (0) {
 
         //Example_MessageWindow();
         //Example_Navigator();
@@ -353,7 +352,9 @@ int main(int argc, char** argv)
 
 
 	Engine::initialize();
-
+	//Engine::update();
+	Engine::finalize();
+	return 0;
 
     //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 

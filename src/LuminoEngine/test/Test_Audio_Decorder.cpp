@@ -1,10 +1,8 @@
 ﻿#include "Common.hpp"
-#include "../src/Audio/AudioDecoder.hpp"
-
-#ifdef LN_UNIT_TEST_EXPERIMENTAL
+#include "../src/Audio/Decoder/AudioDecoder.hpp"
+#include "../src/Audio/AudioManager.hpp"
 
 //==============================================================================
-//# AudioDecorder のテスト
 class Test_Audio_Decorder : public LuminoSceneTest {};
 
 static void saveSamples(const String& filePath, const std::vector<float>& samples)
@@ -15,10 +13,9 @@ static void saveSamples(const String& filePath, const std::vector<float>& sample
 	}
 }
 
-//------------------------------------------------------------------------------
-//## 
 TEST_F(Test_Audio_Decorder, WaveDecoder)
 {
+	// 最終判定用のデータではなくて、baseSamples がなんとなく sin になってるかを判断するための基準
     const float sinTable[] = {
         0,
         0.098392,
@@ -93,26 +90,33 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
         ASSERT_EQ(true, sinTable[i] - 0.1 < baseSamples[i] && baseSamples[i] < sinTable[i] + 0.1);
     }
 
-    const String files[] = {
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_1ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_2ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_32000_1ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_32000_2ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_44100_1ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_44100_2ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_48000_1ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_48000_2ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_1ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_2ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_1ch.wav"),
-        LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_2ch.wav"),
+	struct TP {
+		int index;
+		float value;
+	};
+	struct {
+		const String path;
+		TP tp[5];
+	} files[] = {
+		// 各ファイルに対して、サンプルするするポイント(5点) と、その地点の値を定義する
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_1ch.wav"), { { 0, 0.0 }, { 13, 0.8 }, { 25, 0.0 }, { 38, -0.8 }, { 50, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_2ch.wav"), { { 0, 0.0 }, { 13, 0.8 }, { 25, 0.0 }, { 38, -0.8 }, { 50, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_32000_1ch.wav"), { { 0, 0.0 }, { 18, 0.8 }, { 36, 0.0 }, { 55, -0.8 }, { 73, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_32000_2ch.wav"), { { 0, 0.0 }, { 18, 0.8 }, { 36, 0.0 }, { 55, -0.8 }, { 73, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_44100_1ch.wav"), { { 0, 0.0 }, { 25, 0.8 }, { 50, 0.0 }, { 75, -0.8 }, { 100, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_44100_2ch.wav"), { { 0, 0.0 }, { 25, 0.8 }, { 50, 0.0 }, { 75, -0.8 }, { 100, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_48000_1ch.wav"), { { 0, 0.0 }, { 27, 0.8 }, { 55, 0.0 }, { 82, -0.8 }, { 109, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_48000_2ch.wav"), { { 0, 0.0 }, { 27, 0.8 }, { 55, 0.0 }, { 82, -0.8 }, { 109, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_1ch.wav"), { { 0, 0.0 }, { 50, 0.8 }, { 100, 0.0 }, { 150, -0.8 }, { 200, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_2ch.wav"), { { 0, 0.0 }, { 50, 0.8 }, { 100, 0.0 }, { 150, -0.8 }, { 200, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_1ch.wav"), { { 0, 0.0 }, { 55, 0.8 }, { 109, 0.0 }, { 165, -0.8 }, { 218, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_2ch.wav"), { { 0, 0.0 }, { 55, 0.8 }, { 109, 0.0 }, { 165, -0.8 }, { 218, 0.0 } } },
     };
 
     const float thr = 0.2;
     for (int iFile = 0; iFile < LN_ARRAY_SIZE_OF(files); iFile++) {
-        auto stream2 = FileStream::create(files[iFile]);
         auto decorder2 = makeRef<detail::WaveDecoder>();
-        ASSERT_EQ(true, decorder2->init(stream2, diag));
+        ASSERT_EQ(true, decorder2->init(FileStream::create(files[iFile].path), diag));
         auto count = decorder2->audioDataInfo().totalFrameCount();
         std::vector<float> allSamples[6];
         for (int i = 0; i < count; i++) {
@@ -122,17 +126,81 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
                 allSamples[iCh].push_back(samples[iCh]);
             }
         }
-		//saveSamples(u"tmp2.txt", allSamples[0]);
+		////saveSamples(u"tmp2.txt", allSamples[0]);
 
-        for (int i = 0; i < count; i++) {
-            for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
-				float a = baseSamples[i];
-				float b = allSamples[iCh][i];
+
+		for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
+			for (int iTp = 0; iTp < 5; iTp++) {
+				float a = files[iFile].tp[iTp].value;
+				float b = allSamples[iCh][files[iFile].tp[iTp].index];
 				float diff = abs(a - b);
-                ASSERT_EQ(true, baseSamples[i] - thr < allSamples[iCh][i] && allSamples[iCh][i] < baseSamples[i] + thr);
-            }
-        }
+				ASSERT_EQ(true, diff < thr);
+			}
+		}
+
+
+  //      for (int i = 0; i < count; i++) {
+  //          for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
+		//		float a = baseSamples[i];
+		//		float b = allSamples[iCh][i];
+		//		float diff = abs(a - b);
+  //              ASSERT_EQ(true, baseSamples[i] - thr < allSamples[iCh][i] && allSamples[iCh][i] < baseSamples[i] + thr);
+  //          }
+  //      }
     }
+
+
 }
 
-#endif
+
+TEST_F(Test_Audio_Decorder, OggDecoder)
+{
+	struct TP {
+		int index;
+		float value;
+	};
+	struct {
+		const String path;
+		TP tp[5];
+	} files[] = {
+		// 各ファイルに対して、サンプルするするポイント(5点) と、その地点の値を定義する
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_1ch.ogg"), { { 0, 0.0 }, { 13, 0.8 }, { 25, 0.0 }, { 38, -0.8 }, { 50, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_22050_2ch.ogg"), { { 0, 0.0 }, { 13, 0.8 }, { 25, 0.0 }, { 38, -0.8 }, { 50, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_32000_1ch.ogg"), { { 0, 0.0 }, { 18, 0.8 }, { 36, 0.0 }, { 55, -0.8 }, { 73, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_32000_2ch.ogg"), { { 0, 0.0 }, { 18, 0.8 }, { 36, 0.0 }, { 55, -0.8 }, { 73, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_44100_1ch.ogg"), { { 0, 0.0 }, { 25, 0.8 }, { 50, 0.0 }, { 75, -0.8 }, { 100, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_44100_2ch.ogg"), { { 0, 0.0 }, { 25, 0.8 }, { 50, 0.0 }, { 75, -0.8 }, { 100, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_48000_1ch.ogg"), { { 0, 0.0 }, { 27, 0.8 }, { 55, 0.0 }, { 82, -0.8 }, { 109, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_48000_2ch.ogg"), { { 0, 0.0 }, { 27, 0.8 }, { 55, 0.0 }, { 82, -0.8 }, { 109, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_1ch.ogg"), { { 0, 0.0 }, { 50, 0.8 }, { 100, 0.0 }, { 150, -0.8 }, { 200, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_88200_2ch.ogg"), { { 0, 0.0 }, { 50, 0.8 }, { 100, 0.0 }, { 150, -0.8 }, { 200, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_1ch.ogg"), { { 0, 0.0 }, { 55, 0.8 }, { 109, 0.0 }, { 165, -0.8 }, { 218, 0.0 } } },
+		{ LN_ASSETFILE("Audio/sin_440_3s_S16L_96000_2ch.ogg"), { { 0, 0.0 }, { 55, 0.8 }, { 109, 0.0 }, { 165, -0.8 }, { 218, 0.0 } } },
+	};
+
+	const float thr = 0.2;
+	for (int iFile = 0; iFile < LN_ARRAY_SIZE_OF(files); iFile++) {
+		auto decorder2 = detail::EngineDomain::audioManager()->createAudioDecoder(files[iFile].path);
+		auto count = 500;	// 全部読むとものすごく時間がかかるので、テストで必要な分だけにする
+		std::vector<float> allSamples[6];
+		for (int i = 0; i < count; i++) {
+			float samples[6];
+			ASSERT_EQ(1, decorder2->read2(samples, 1));
+			for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
+				allSamples[iCh].push_back(samples[iCh]);
+			}
+		}
+
+		for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
+			for (int iTp = 0; iTp < 5; iTp++) {
+				float a = files[iFile].tp[iTp].value;
+				float b = allSamples[iCh][files[iFile].tp[iTp].index];
+				float diff = abs(a - b);
+				ASSERT_EQ(true, diff < thr);
+			}
+		}
+
+		detail::EngineDomain::audioManager()->releaseAudioDecoder(decorder2);
+	}
+}
+

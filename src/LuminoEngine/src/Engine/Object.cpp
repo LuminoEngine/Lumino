@@ -10,25 +10,25 @@ namespace ln {
 //==============================================================================
 // Object
 
-Ref<TypeInfo> PredefinedTypes::Bool;
-Ref<TypeInfo> PredefinedTypes::Char;
+TypeInfo* PredefinedTypes::Bool;
+TypeInfo* PredefinedTypes::Char;
 
-Ref<TypeInfo> PredefinedTypes::Int8;
-Ref<TypeInfo> PredefinedTypes::Int16;
-Ref<TypeInfo> PredefinedTypes::Int32;
-Ref<TypeInfo> PredefinedTypes::Int64;
+TypeInfo* PredefinedTypes::Int8;
+TypeInfo* PredefinedTypes::Int16;
+TypeInfo* PredefinedTypes::Int32;
+TypeInfo* PredefinedTypes::Int64;
 
-Ref<TypeInfo> PredefinedTypes::UInt8;
-Ref<TypeInfo> PredefinedTypes::UInt16;
-Ref<TypeInfo> PredefinedTypes::UInt32;
-Ref<TypeInfo> PredefinedTypes::UInt64;
+TypeInfo* PredefinedTypes::UInt8;
+TypeInfo* PredefinedTypes::UInt16;
+TypeInfo* PredefinedTypes::UInt32;
+TypeInfo* PredefinedTypes::UInt64;
 
-Ref<TypeInfo> PredefinedTypes::Float;
-Ref<TypeInfo> PredefinedTypes::Double;
+TypeInfo* PredefinedTypes::Float;
+TypeInfo* PredefinedTypes::Double;
 
-Ref<TypeInfo> PredefinedTypes::String;
-Ref<TypeInfo> PredefinedTypes::Object;
-Ref<TypeInfo> PredefinedTypes::List;
+TypeInfo* PredefinedTypes::String;
+TypeInfo* PredefinedTypes::Object;
+TypeInfo* PredefinedTypes::List;
 
 //==============================================================================
 // Object

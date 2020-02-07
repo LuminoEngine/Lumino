@@ -6,22 +6,21 @@
 
 GTEST_API_ int main(int argc, char **argv)
 {
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+	setlocale(LC_ALL, "");
+
     // CI 環境でテストをスキップする
     if (!ln::detail::checkGraphicsSupport()) {
         printf("Info: The driver does not appear to support Graphics. Skip LuminoEngine unit tests.\n");
         return 0;
     }
 
-
-#ifdef _WIN32
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-	setlocale(LC_ALL, "");
-
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_ImageEffect.*"
+		"--gtest_filter=Test_Audio_Decorder.OggDecoder"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
