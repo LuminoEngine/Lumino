@@ -19,24 +19,6 @@
 namespace ln {
 
 //==============================================================================
-// UILayoutContext
-
-UILayoutContext::UILayoutContext()
-    : m_dpiScale(1.0f)
-{
-}
-
-void UILayoutContext::init()
-{
-    Object::init();
-}
-
-bool UILayoutContext::testLayoutEnabled(UIElement* element) const
-{
-	return !element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
-}
-
-//==============================================================================
 // UIViewModel
 
 void UIViewModel::notify(const StringRef& propertyName)

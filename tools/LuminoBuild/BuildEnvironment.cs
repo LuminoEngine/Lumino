@@ -15,16 +15,8 @@ namespace LuminoBuild
         public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
 
         public const string EngineInstallDirName = "EngineInstall";
-        public const string emsdkVer = "sdk-1.38.12-64bit";
-        public const string emVer = "1.38.12";
 
         public static string BuildToolsDir { get; set; }
-
-        public static bool EmscriptenFound { get; set; }
-        public static string EmsdkDir { get; set; }
-        public static string EmscriptenDir { get; set; }
-        public static string emcmake { get; set; }
-
 
         public const string AndroidTargetPlatform = "android-26";
         public static bool AndroidStudioFound { get; set; }
@@ -66,11 +58,6 @@ namespace LuminoBuild
         {
             BuildToolsDir = Path.Combine(repoRootDir, "build", "BuildTools");
 
-            EmsdkDir = Path.Combine(BuildToolsDir, "emsdk");
-            EmscriptenDir = Path.Combine(EmsdkDir, "emscripten", emVer);
-            emcmake = Path.Combine(EmscriptenDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
-
-
             if (Utils.IsWin32)
             {
                 //string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -90,31 +77,6 @@ namespace LuminoBuild
         private static void InstallTools(string repoRootDir)
         {
             Directory.CreateDirectory(BuildToolsDir);
-
-            // Install emsdk
-            if (IsWebTarget && Utils.IsWin32)
-            {
-                if (!Directory.Exists(EmsdkDir))
-                {
-                    Directory.SetCurrentDirectory(BuildToolsDir);
-                    Utils.CallProcess("git", "clone https://github.com/juj/emsdk.git");
-                }
-                if (!Directory.Exists(EmscriptenDir))
-                {
-                    Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
-
-                    if (Utils.IsWin32)
-                        Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
-                    else
-                        Utils.CallProcess("emsdk", "install " + emsdkVer);
-
-                    Utils.CopyFile(
-                        Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
-                        Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
-                }
-
-                EmscriptenFound = true;
-            }
 
             // Install Android SDK
             if (IsAndroidTarget && Utils.IsWin32)

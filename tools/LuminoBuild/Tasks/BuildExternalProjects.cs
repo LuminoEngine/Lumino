@@ -87,7 +87,8 @@ namespace LuminoBuild.Tasks
         {
             var projectName = Path.GetFileName(projectDirName);
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectName);
-            var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectName));
+            //var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectName));
+            var installDir = Utils.ToUnixPath(Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, projectName));
             var cmakeSourceDir = Utils.ToUnixPath(Path.Combine(externalSourceDir, projectDirName));
 
             Logger.WriteLine($"BuildProjectEm ({projectDirName}) buildDir:{buildDir}");
@@ -97,12 +98,12 @@ namespace LuminoBuild.Tasks
             var script = Path.Combine(buildDir, "build.bat");
             using (var f = new StreamWriter(script))
             {
-                f.WriteLine($"cd /d \"{BuildEnvironment.EmsdkDir}\"");
-                f.WriteLine($"call emsdk activate {BuildEnvironment.emsdkVer}");
+                f.WriteLine($"cd /d \"{EmscriptenBuildEnv.EmsdkDir}\"");
+                f.WriteLine($"call emsdk activate {EmscriptenBuildEnv.emsdkVer}");
                 f.WriteLine($"call emsdk_env.bat");
                 f.WriteLine($"cd /d \"{Utils.ToWin32Path(buildDir)}\"");
                 f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} {additionalOptions} -G \"MinGW Makefiles\" {cmakeSourceDir}");
-                f.WriteLine($"call cmake --build .");
+                f.WriteLine($"call cmake --build . -j8");
                 f.WriteLine($"call cmake --build . --target install");
             }
 
@@ -389,10 +390,10 @@ namespace LuminoBuild.Tasks
                 // Emscripten
                 if (BuildEnvironment.IsWebTarget)
                 {
-                    var externalInstallDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall");
-                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "zlib"));
-                    var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
-                    var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "Emscripten", "ExternalInstall", "ogg"));
+                    var externalInstallDir = EmscriptenBuildEnv.EmscriptenSysRootLocal;
+                    var zlibInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "zlib"));
+                    var pngIncludeDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "libpng", "include"));
+                    var oggInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "ogg"));
 
                     BuildProjectEm(builder, "zlib", reposDir, "Emscripten");
                     BuildProjectEm(builder, "libpng", reposDir, "Emscripten", $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
@@ -404,7 +405,6 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectEm(builder, "Box2D/Box2D", reposDir, "Emscripten", "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
-                    BuildProjectEm(builder, "Vulkan-Headers", reposDir, "Vulkan-Headers");
                 }
 
             }

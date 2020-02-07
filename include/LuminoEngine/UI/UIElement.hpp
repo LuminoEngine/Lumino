@@ -93,23 +93,6 @@ private:
 };
 
 
-class UILayoutContext
-    : public Object
-{
-public:
-    float dpiScale() const { return m_dpiScale; }
-
-	bool testLayoutEnabled(UIElement* element) const;
-    
-LN_CONSTRUCT_ACCESS:
-    UILayoutContext();
-    void init();
-
-private:
-    float m_dpiScale;
-    friend class UIFrameWindow;
-};
-
 
 
 LN_CLASS()

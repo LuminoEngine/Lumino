@@ -204,6 +204,25 @@ private:
 	friend class detail::LayoutHelper;
 };
 
+
+
+class UILayoutContext
+	: public Object
+{
+public:
+	float dpiScale() const { return m_dpiScale; }
+
+	bool testLayoutEnabled(UIElement* element) const;
+
+LN_CONSTRUCT_ACCESS:
+	UILayoutContext();
+	void init();
+
+private:
+	float m_dpiScale;
+	friend class UIFrameWindow;
+};
+
 class ILayoutPanel
 {
 protected:

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <float.h>
 #include "FpsController.hpp"
 
 namespace ln {
@@ -90,7 +91,7 @@ void FpsController::process()
 void FpsController::processForMeasure()
 {
 #if 1
-	uint64_t externalElapsedTick = Environment::getTickCount(); - m_frameBeginTick;
+	uint64_t externalElapsedTick = Environment::getTickCount() - m_frameBeginTick;
 
 	measureTimes(externalElapsedTick, externalElapsedTick);
 

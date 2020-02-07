@@ -20,6 +20,7 @@
     <Compile Include="tools/LuminoBuild/Main.cs" />
     <Compile Include="tools/LuminoBuild/LuminoBuildTool.cs" />
     <Compile Include="tools/LuminoBuild/BuildEnvironment.cs" />
+    <Compile Include="tools/LuminoBuild/EmscriptenBuildEnv.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/SetupTools.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildEngine_MSVC.cs" />
     <Compile Include="tools/LuminoBuild/Tasks/BuildDocuments.cs" />

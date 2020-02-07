@@ -211,7 +211,7 @@ TilemapLayer* TilemapModel::getValidFrontLayer(int x, int y) const
             return m_layers[i];
         }
     }
-    return false;
+    return nullptr;
 }
 
 void TilemapModel::render(RenderingContext* context, const Matrix& transform, const detail::TilemapBounds& bounds)

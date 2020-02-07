@@ -5,11 +5,12 @@
 #include <LuminoEngine/Graphics/CommandQueue.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
 #include "OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
-#include "VulkanDeviceContext.hpp"
+#include "Vulkan/VulkanDeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
 
@@ -282,7 +283,11 @@ void GraphicsManager::unregisterExtension(INativeGraphicsExtension* extension)
 
 bool GraphicsManager::checkVulkanSupported()
 {
+#ifdef LN_USE_VULKAN
 	return VulkanHelper::checkVulkanSupported();
+#else
+	return false;
+#endif
 }
 
 void GraphicsManager::createOpenGLContext(const Settings& settings)

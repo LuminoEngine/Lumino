@@ -13,21 +13,23 @@ namespace LuminoBuild.Tasks
             var buildArchDir = "Emscripten";
 
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir);
-            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.EngineInstallDirName);
+            var installDir = EmscriptenBuildEnv.EmscriptenSysRootLocal;//Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.EngineInstallDirName);
             var cmakeSourceDir = builder.LuminoRootDir;
+            var dependenciesRoot = EmscriptenBuildEnv.EmscriptenSysRootLocal;
 
             Directory.CreateDirectory(buildDir);
 
             var script = Path.Combine(buildDir, "build.bat");
             using (var f = new StreamWriter(script))
             {
-                f.WriteLine($"cd /d \"{BuildEnvironment.EmsdkDir}\"");
-                f.WriteLine($"call emsdk activate {BuildEnvironment.emsdkVer}");
+                f.WriteLine($"cd /d \"{EmscriptenBuildEnv.EmsdkDir}\"");
+                f.WriteLine($"call emsdk activate {EmscriptenBuildEnv.emsdkVer}");
                 f.WriteLine($"call emsdk_env.bat");
                 f.WriteLine($"cd /d \"{Utils.ToWin32Path(buildDir)}\"");
-                f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} -DLN_BUILD_TESTS=OFF -DLN_BUILD_TOOLS=OFF -G \"MinGW Makefiles\" {cmakeSourceDir}");
-                f.WriteLine($"call cmake --build .");
-                f.WriteLine($"call cmake --build . --target install");
+                f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} -DLN_DEPENDENCIES_ROOT={dependenciesRoot} -DLN_BUILD_TESTS=OFF -DLN_BUILD_TOOLS=OFF -G \"MinGW Makefiles\" {cmakeSourceDir}");
+                //f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DLN_BUILD_TESTS=OFF -DLN_BUILD_TOOLS=OFF -G \"MinGW Makefiles\" {cmakeSourceDir}");
+                f.WriteLine($"call cmake --build . -j8");
+                //f.WriteLine($"call cmake --build . --target install");
             }
 
             Utils.CallProcess(script); // bat の中でエラーが発生すれば、例外に乗って出てくる

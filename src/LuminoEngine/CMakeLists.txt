@@ -25,7 +25,6 @@ set(LN_SOURCES_Platform
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
     src/Platform/AndroidPlatformInterface.cpp
     src/Platform/EmptyPlatformWindowManager.cpp
@@ -44,7 +43,6 @@ set(LN_SOURCES_Platform
     src/Platform/TextInputMethodSystem.cpp
     src/Platform/TextInputMethodSystem.hpp
     src/Platform/Win32PlatformDialogs.hpp
-    src/Platform/Win32PlatformInterface.cpp
     src/Platform/Win32PlatformWindowManager.cpp
     src/Platform/Win32PlatformWindowManager.hpp
 )
@@ -253,20 +251,18 @@ file(GLOB LN_SOURCES_Runtime
 
 if (LN_USE_VULKAN)
     if (WIN32)
-        set(LN_SOURCES_Graphics
-            ${LN_SOURCES_Graphics}
-            src/Graphics/VulkanDeviceContext.cpp
-            src/Graphics/VulkanDeviceContext.hpp
-            src/Graphics/VulkanHelper.cpp
-            src/Graphics/VulkanHelper.hpp
-        )
+        file(GLOB LN_SOURCES_Graphics_Vulkan src/Graphics/Vulkan/*.cpp src/Graphics/Vulkan/*.hpp)
         list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
     endif()
 endif()
 
 
 if (WIN32)
-
+    set(LN_SOURCES_Platform
+        ${LN_SOURCES_Platform}
+        ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
+        src/Platform/Win32PlatformInterface.cpp
+    )
 elseif (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
@@ -289,6 +285,7 @@ source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
 source_group("Audio\\Core" FILES ${LN_SOURCES_Audio_Core})
 source_group("Shader"    FILES ${LN_SOURCES_Shader})
 source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
+source_group("Graphics\\Vulkan"  FILES ${LN_SOURCES_Graphics_Vulkan})
 source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
@@ -321,6 +318,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio_Core}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
+    ${LN_SOURCES_Graphics_Vulkan}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}

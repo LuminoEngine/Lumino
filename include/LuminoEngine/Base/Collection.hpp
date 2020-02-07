@@ -421,8 +421,8 @@ private:
 	Ref<Variant> m_newItemCache;
 	Ref<Variant> m_oldItemCache;
 
-	template<class T> friend
-	Ref<Collection<T>> makeCollection();
+	template<class TItem> friend
+	Ref<Collection<TItem>> makeCollection();
 };
 
 /** Ref<Collection> を構築します。 */

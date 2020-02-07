@@ -75,6 +75,7 @@ private:
 	uint32_t getObjectFlag(uint32_t flag) const;
 	virtual void onRetained();
 	virtual void onReleased();
+	static ::ln::TypeInfo* _lnref_getTypeInfo() { return nullptr; }
 
     mutable std::atomic<int32_t> m_referenceCount;
 	mutable std::atomic<int32_t> m_internalReferenceCount;
@@ -190,7 +191,7 @@ public:
 
 	static TypeInfo* _lnref_getTypeInfo()
 	{
-		return TypeInfo::getTypeInfo<T>();
+		return T::_lnref_getTypeInfo();
 	}
 
 protected:

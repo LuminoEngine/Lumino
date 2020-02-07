@@ -3,6 +3,7 @@
 
 #if defined(LN_OS_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
+#define NOMINMAX
 #endif
 
 #define VK_NO_PROTOTYPES 1
@@ -12,8 +13,8 @@
 //#include <vulkan/vulkan_win32.h>
 //#endif
 
-#include "GraphicsDeviceContext.hpp"
-#include "MixHash.hpp"
+#include "../GraphicsDeviceContext.hpp"
+#include "../MixHash.hpp"
 #include <LuminoCore/Base/LinearAllocator.hpp>
 
 // VK_core

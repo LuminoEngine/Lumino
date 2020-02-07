@@ -705,7 +705,7 @@ float UIBoxLayout3::layoutDirectSize(int index) const
 void UIBoxLayout3::getLayoutMinMaxSize(int index, float* minSize, float* maxSize) const
 {
     *minSize = 0.0f;
-    *maxSize = FLT_MAX;
+    *maxSize = std::numeric_limits<float>::max();
 
     auto& child = m_logicalChildren[index];
     if (isHorizontal()) {

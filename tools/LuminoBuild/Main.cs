@@ -21,7 +21,9 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_MSVC", "MSVC2017-x64-MT" };
                 //args = new string[] { "MakeInstaller_Win32", "MSVC2017-x64-MD" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
-                args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
+                //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
+                //args = new string[] { "BuildExternalProjects", "Emscripten" };
+                args = new string[] { "BuildEngine_Emscripten" };
                 //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
             }
@@ -49,7 +51,7 @@ namespace LuminoBuild
             BuildEnvironment.Target = (positionalArgs.Count > 1) ? args[1] : "";
             BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
             BuildEnvironment.Initialize(builder.LuminoRootDir);
-
+            EmscriptenBuildEnv.Initialize(builder.LuminoRootDir);
 
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
 

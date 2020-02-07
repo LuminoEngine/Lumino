@@ -141,7 +141,7 @@ void RTRun::layout(RTLayoutContext* context)
         m_layoutingContext = context;
 
         detail::FontCore* fontCore = detail::FontHelper::resolveFontCore(finalFont(), context->layoutContext->dpiScale());
-        TextLayoutEngine::layout(fontCore, m_text.c_str(), m_text.length(), Rect(0, 0, FLT_MAX, FLT_MAX), 0, TextAlignment::Forward);
+        TextLayoutEngine::layout(fontCore, m_text.c_str(), m_text.length(), Rect(0, 0, std::numeric_limits<float>::max(), std::numeric_limits<float>::max()), 0, TextAlignment::Forward);
         //setExtentSize(m_layoutingSize);
 
         m_textDirty = false;

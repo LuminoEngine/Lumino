@@ -5,7 +5,9 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 #set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-
+if (DEFINED LN_DEPENDENCIES_ROOT)
+    message("LN_DEPENDENCIES_ROOT:${LN_DEPENDENCIES_ROOT}")
+endif()
 
 if (DEFINED EMSCRIPTEN)
 
@@ -35,7 +37,9 @@ endif()
 
 #-------------------------------------------------------------------------------
 macro(ln_make_external_find_path varName projectDirName)
-    if(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
+    if (DEFINED LN_DEPENDENCIES_ROOT)
+        set(${varName} ${LN_DEPENDENCIES_ROOT}/${projectDirName})
+    elseif(DEFINED LN_EXTERNAL_FIND_PATH_MODE)
         if (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "build")
             set(${varName} ${LN_BUILD_DIRECTORY}/ExternalInstall/${projectDirName})
         elseif (${LN_EXTERNAL_FIND_PATH_MODE} STREQUAL "config")

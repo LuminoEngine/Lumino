@@ -19,7 +19,7 @@ public:
 	void setOrientation(Orientation value);
 
 	/** セルサイズを計算するための情報を設定します。 */
-    void setCellDefinition(int index, UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = FLT_MAX);
+    void setCellDefinition(int index, UILayoutLengthType type = UILayoutLengthType::Ratio, float size = 1.0f, float minSize = 0.0f, float maxSize = std::numeric_limits<float>::max());
 
 	/** セルサイズの再計算を要求します。 */
     void resetCellSizes();
@@ -40,7 +40,7 @@ private:
 		UILayoutLengthType type = UILayoutLengthType::Ratio;
 		float size = 1.0f;
 		float minSize = 0.0f;
-		float maxSize = FLT_MAX;
+		float maxSize = std::numeric_limits<float>::max();
 
 		// working data
 		float desiredSize = Math::NaN;

@@ -10,6 +10,7 @@ namespace detail {
 
 void TextInputMethodSystem::SetInputScreenPos(intptr_t hwnd_, int clientX, int clientY)
 {
+#if defined(LN_WIN32)
     if (HWND hwnd = (HWND)hwnd_)
     {
         if (HIMC himc = ::ImmGetContext(hwnd))
@@ -22,6 +23,9 @@ void TextInputMethodSystem::SetInputScreenPos(intptr_t hwnd_, int clientX, int c
             ::ImmReleaseContext(hwnd, himc);
         }
     }
+#else
+    LN_NOTIMPLEMENTED();
+#endif
 }
 
 } // namespace detail

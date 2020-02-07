@@ -974,7 +974,8 @@ void String::assignFromCStr(const char* str, int length, bool* outUsedDefaultCha
         }
         unlockBuffer(len, &context);
     } else {
-        TextEncoding* actualEncoding = (encoding) ? encoding : TextEncoding::systemMultiByteEncoding();
+		TextEncoding* actualEncoding = encoding;
+		if (!actualEncoding) actualEncoding = TextEncoding::systemMultiByteEncoding();
 
         detail::StringLockContext context;
         size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len) / sizeof(Char);
@@ -1011,7 +1012,8 @@ void String::assignFromCStr(const wchar_t* str, int length, bool* outUsedDefault
         }
         unlockBuffer(len, &context);
     } else {
-        TextEncoding* actualEncoding = (encoding) ? encoding : TextEncoding::wideCharEncoding();
+		TextEncoding* actualEncoding = encoding;
+		if (!actualEncoding) actualEncoding = TextEncoding::wideCharEncoding();
 
         detail::StringLockContext context;
         size_t bufSize = TextEncoding::getConversionRequiredByteCount(actualEncoding, TextEncoding::tcharEncoding(), len * sizeof(wchar_t)) / sizeof(Char);

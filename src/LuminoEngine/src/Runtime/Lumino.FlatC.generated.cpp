@@ -1007,7 +1007,8 @@ LN_FLAT_API LnResult LnVector3_MutatingNormalize(LnVector3* vector3)
 LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(x, y, z));
+    //*outReturn = *reinterpret_cast<const LnVector3*>(&ln::Vector3::normalize(x, y, z));
+	*outReturn = ln::detail::convertStruct<LnVector3>(ln::Vector3::normalize(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1015,7 +1016,8 @@ LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3
 LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+    //*outReturn = *reinterpret_cast<const LnVector3*>(&ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+	*outReturn = ln::detail::convertStruct<LnVector3>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
