@@ -16,8 +16,8 @@ public:
 	Mp3AudioDecoder();
 	void init(Stream* stream, DiagnosticsManager* diag);
 	virtual const AudioDataInfo& audioDataInfo() const override;
-    virtual void seekToFrame(size_t frameNumber) override;
-	virtual uint32_t read2(float* buffer, uint32_t requestFrames) override;
+    //virtual void seekToFrame(size_t frameNumber) override;
+	virtual uint32_t read(size_t seekFrameNumber, float* buffer, uint32_t requestFrames) override;
 	virtual void reset() override;
 
 private:

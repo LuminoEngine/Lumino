@@ -15,8 +15,8 @@ public:
 	void init(Stream* stream, DiagnosticsManager* diag);
 	virtual const AudioDataInfo& audioDataInfo() const override;
 	//virtual void seekToSample(uint32_t sampleNumber) override;
-    virtual void seekToFrame(size_t frameNumber) override;
-	virtual uint32_t read2(float* buffer, uint32_t requestFrames) override;
+    //virtual void seekToFrame(size_t frameNumber) override;
+	virtual uint32_t read(size_t seekFrameNumber, float* buffer, uint32_t requestFrames) override;
 	virtual void reset() override;
 
 private:

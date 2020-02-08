@@ -150,9 +150,10 @@ void AudioSourceNodeCore::process()
             float* buf = m_readBuffer.data();
             do
             {
-                readFrames = m_decoder->read2(buf, requestLength);
+                readFrames = m_decoder->read(m_seekFrame, buf, requestLength);
+				m_seekFrame += readFrames;
                 if (readFrames < requestLength) {    // EOF
-                    m_decoder->seekToFrame(0);
+					m_seekFrame = 0;
                 }
                 requestLength -= readFrames;
                 buf += readFrames;
@@ -161,7 +162,8 @@ void AudioSourceNodeCore::process()
             readFrames = m_readFrames;
         }
         else {
-            readFrames = m_decoder->read2(m_readBuffer.data(), m_readFrames);
+            readFrames = m_decoder->read(m_seekFrame, m_readBuffer.data(), m_readFrames);
+			m_seekFrame += readFrames;
             if (readFrames == 0) {    // EOF
                 result->setSilentAndZero();
                 return;

@@ -79,7 +79,7 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
     for (int i = 0; i < count; i++)
     {
         float samples[2];
-        ASSERT_EQ(1, decorder->read2(samples, 1));
+        ASSERT_EQ(1, decorder->read(i, samples, 1));
 
         baseSamples[i] = samples[0];
     }
@@ -121,7 +121,7 @@ TEST_F(Test_Audio_Decorder, WaveDecoder)
         std::vector<float> allSamples[6];
         for (int i = 0; i < count; i++) {
             float samples[6];
-            ASSERT_EQ(1, decorder2->read2(samples, 1));
+            ASSERT_EQ(1, decorder2->read(i, samples, 1));
             for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
                 allSamples[iCh].push_back(samples[iCh]);
             }
@@ -185,7 +185,7 @@ TEST_F(Test_Audio_Decorder, OggDecoder)
 		std::vector<float> allSamples[6];
 		for (int i = 0; i < count; i++) {
 			float samples[6];
-			ASSERT_EQ(1, decorder2->read2(samples, 1));
+			ASSERT_EQ(1, decorder2->read(i, samples, 1));
 			for (int iCh = 0; iCh < decorder2->audioDataInfo().channelCount; iCh++) {
 				allSamples[iCh].push_back(samples[iCh]);
 			}

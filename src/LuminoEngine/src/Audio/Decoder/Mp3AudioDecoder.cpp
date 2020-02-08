@@ -39,12 +39,12 @@ const AudioDataInfo& Mp3AudioDecoder::audioDataInfo() const
 	return m_info;
 }
 
-void Mp3AudioDecoder::seekToFrame(size_t frameNumber)
-{
-    LN_NOTIMPLEMENTED();
-}
+//void Mp3AudioDecoder::seekToFrame(size_t frameNumber)
+//{
+//    LN_NOTIMPLEMENTED();
+//}
 
-uint32_t Mp3AudioDecoder::read2(float* buffer, uint32_t requestFrames)
+uint32_t Mp3AudioDecoder::read(size_t seekFrameNumber, float* buffer, uint32_t requestFrames)
 {
 	//m_stream->seek(m_dataOffset + seekPos, SeekOrigin::Begin);
 

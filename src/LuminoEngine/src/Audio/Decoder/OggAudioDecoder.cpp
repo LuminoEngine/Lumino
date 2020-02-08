@@ -109,17 +109,21 @@ const AudioDataInfo& OggAudioDecoder::audioDataInfo() const
 //	m_stream->seek(m_pcmDataOffset + (sampleNumber * m_info.byteParSample), SeekOrigin::Begin);
 //}
 
-void OggAudioDecoder::seekToFrame(size_t frameNumber)
-{
-    m_seekFrame = frameNumber;
-    //size_t frameBytes = m_info.byteParSample * m_info.channelCount;
-    //size_t newPos = frameBytes * frameNumber;
-    //if (LN_REQUIRE(newPos <= m_pcmDataLength)) return;
-    //m_pcmDataPos = newPos;
-}
+//void OggAudioDecoder::seekToFrame(size_t frameNumber)
+//{
+//    m_seekFrame = frameNumber;
+//    //size_t frameBytes = m_info.byteParSample * m_info.channelCount;
+//    //size_t newPos = frameBytes * frameNumber;
+//    //if (LN_REQUIRE(newPos <= m_pcmDataLength)) return;
+//    //m_pcmDataPos = newPos;
+//}
 
-uint32_t OggAudioDecoder::read2(float* buffer, uint32_t requestFrames)
+uint32_t OggAudioDecoder::read(size_t seekFrameNumber, float* buffer, uint32_t requestFrames)
 {
+	m_seekFrame = seekFrameNumber;
+
+
+
 	uint32_t requestSamples = requestFrames * m_info.channelCount;
 	size_t requestByteSize = requestSamples * m_info.byteParSample;
 

@@ -125,6 +125,7 @@ void AudioSourceNode::commit()
 		m_coreObject->stop();
 		break;
 	case  PlayingState::Play:
+		m_coreObject->reset();
 		m_coreObject->start();
 		break;
 	case  PlayingState::Pause:
