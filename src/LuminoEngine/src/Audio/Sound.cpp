@@ -51,7 +51,7 @@ void Sound::onDispose(bool explicitDisposing)
 {
     if (m_gainNode) {
         m_gainNode->disconnect();
-        m_sourceNode = nullptr;
+		m_gainNode = nullptr;
     }
     if (m_sourceNode) {
         m_sourceNode->disconnect();

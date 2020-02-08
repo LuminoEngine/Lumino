@@ -18,6 +18,14 @@ public:
 static volatile int g_value = 0;
 static volatile LnHandle g_otherObject = LN_NULL_HANDLE;
 
+TEST_F(Test_Binding, ReferenceCount)
+{
+	LnHandle obj1;
+	LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+	ASSERT_EQ(1, LnObject_GetReferenceCount(obj1));
+	LnObject_Release(obj1);
+}
+
 static LnResult LnZVTestDelegate1_Callback(LnHandle selfDelegate, int a)
 {
 	g_value = a;

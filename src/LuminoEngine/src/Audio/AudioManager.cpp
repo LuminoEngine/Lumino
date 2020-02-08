@@ -82,6 +82,10 @@ void AudioManager::dispose()
 
 void AudioManager::update(float elapsedSeconds)
 {
+	if (m_primaryContext) {
+		m_primaryContext->updateFrame();
+	}
+
 	if (!m_audioThread) {
 		// not thread processing.
 		if (m_primaryContext) {

@@ -71,11 +71,6 @@ void AudioContext::init()
 
 void AudioContext::dispose()
 {
-	//List<AudioNode*> removeList = m_allAudioNodes;
-	//m_allAudioNodes.clear();
-	//for (AudioNode* node : removeList) {
-	//	node->dispose();
-	//}
 
 	if (m_coreDestinationNode)
 	{
@@ -85,11 +80,24 @@ void AudioContext::dispose()
 
 	commitGraphs(0);
 
-	m_allAudioNodes.clear();
+
+	List<AudioNode*> removeList = m_allAudioNodes;
+	for (AudioNode* node : removeList) {
+		node->dispose();
+	}
 
 	if (m_audioDevice) {
 		m_audioDevice->dispose();
 		m_audioDevice = nullptr;
+	}
+}
+
+void AudioContext::updateFrame()
+{
+	for (int i = m_aliveNodes.size() - 1; i >= 0; i--) {
+		if (!m_aliveNodes[i]->m_alived) {
+			m_aliveNodes.removeAt(i);
+		}
 	}
 }
 
@@ -116,9 +124,9 @@ void AudioContext::process(float elapsedSeconds)
 		if (1/* GCEnabled */) {
 			for (int i = m_allAudioNodes.size() - 1; i >= 0; i--) {
 				if (auto* core = m_allAudioNodes[i]->coreNode()) {
-					if (RefObjectHelper::getReferenceCount(m_allAudioNodes[i]) == 1 && !core->m_marked) {
-						m_allAudioNodes.removeAt(i);
-					}
+					//if (RefObjectHelper::getReferenceCount(m_allAudioNodes[i]) == 1 && !core->m_marked) {
+					//	m_allAudioNodes.removeAt(i);
+					//}
 				}
 			}
 		}
@@ -154,6 +162,16 @@ void AudioContext::sendConnect(AudioNode* outputSide, AudioNode* inputSide)
 	if (LN_REQUIRE(inputSide)) return;
 	if (LN_REQUIRE(outputSide->context() == this)) return;
 	if (LN_REQUIRE(inputSide->context() == this)) return;
+
+	if (!inputSide->m_alived) {
+		inputSide->m_alived = true;
+		m_aliveNodes.add(inputSide);
+	}
+
+	if (!outputSide->m_alived) {
+		outputSide->m_alived = true;
+		m_aliveNodes.add(outputSide);
+	}
 
     detail::ScopedWriteLock lock(commitMutex());
 	m_connectionCommands.push_back({ OperationCode::Connection, outputSide, inputSide });
@@ -196,20 +214,30 @@ void AudioContext::addSound(Sound* sound)
 
 void AudioContext::addAudioNode(AudioNode* node)
 {
-    detail::ScopedWriteLock lock(commitMutex());
+	if (LN_REQUIRE(node)) return;
+    //detail::ScopedWriteLock lock(commitMutex());
 	m_allAudioNodes.add(node);
+	node->m_context = this;
 }
 
-void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
+void AudioContext::removeAudioNode(AudioNode* node)
 {
-	if (node->m_context) {
-		//node->m_context->sendDisconnectAll(node);
-		node->m_context = nullptr;
-
-        detail::ScopedWriteLock lock(commitMutex());
-		m_allAudioNodes.remove(node);
-	}
+	if (LN_REQUIRE(node)) return;
+	if (LN_REQUIRE(node->m_context == this)) return;
+	m_allAudioNodes.remove(node);
+	node->m_context = nullptr;
 }
+
+//void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
+//{
+//	if (node->m_context) {
+//		//node->m_context->sendDisconnectAll(node);
+//		node->m_context = nullptr;
+//
+//        detail::ScopedWriteLock lock(commitMutex());
+//		m_allAudioNodes.remove(node);
+//	}
+//}
 
 void AudioContext::commitGraphs(float elapsedSeconds)
 {
@@ -240,6 +268,9 @@ void AudioContext::commitGraphs(float elapsedSeconds)
 				detail::AudioNodeCore* node = cmd.outputSide->coreNode();
 				node->disconnectAllInputSide();
 				node->disconnectAllOutputSide();
+				//if (node->frontNode()) {
+				//	node->frontNode()->m_alived = false;
+				//}
 				//node->dispose();
 				break;
 			}
@@ -254,6 +285,12 @@ void AudioContext::commitGraphs(float elapsedSeconds)
 	for (AudioNode* node : m_allAudioNodes)
 	{
 		node->commit();
+
+		if (node != m_destinationNode) {
+			if (auto* core = node->coreNode()) {
+				node->m_alived = core->isInputConnected() || core->isOutputConnected();
+			}
+		}
 	}
 
     for (auto& ref : m_soundList)

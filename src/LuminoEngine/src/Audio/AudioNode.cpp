@@ -25,19 +25,26 @@ void AudioNode::init()
 	m_context->addAudioNode(this);
 }
 
-//void AudioNode::onDispose(bool explicitDisposing)
-//{
-//    // TODO: dispose は finalize からも呼ばれる。この時は this の参照カウントが 0 で、
-//    // dispose 終了後にデストラクタが呼ばれる。そのため、↓のようにして別の Ref に参照を持たせても
-//    // オブジェクトはデストラクトされてしまう。
-//    // 修正方針のひとつとして、dispose を参照カウント 0 の状態で呼び出さないようにするのもありかもしれない。・・・でも atomic になるように注意して調査すること。
-//	//if (m_context) {
-// //       LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
-//	//	m_context->disposeNodeOnGenericThread(this);
-//	//}
-//
-//	Object::onDispose(explicitDisposing);
-//}
+void AudioNode::onDispose(bool explicitDisposing)
+{
+	if (m_context) {
+		m_context->removeAudioNode(this);
+		m_context = nullptr;
+	}
+
+	//auto* core = coreNode();
+
+    // TODO: dispose は finalize からも呼ばれる。この時は this の参照カウントが 0 で、
+    // dispose 終了後にデストラクタが呼ばれる。そのため、↓のようにして別の Ref に参照を持たせても
+    // オブジェクトはデストラクトされてしまう。
+    // 修正方針のひとつとして、dispose を参照カウント 0 の状態で呼び出さないようにするのもありかもしれない。・・・でも atomic になるように注意して調査すること。
+	//if (m_context) {
+ //       LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
+	//	m_context->disposeNodeOnGenericThread(this);
+	//}
+
+	Object::onDispose(explicitDisposing);
+}
 
 void AudioNode::commit()
 {

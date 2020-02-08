@@ -11,7 +11,7 @@ class App_Example_SoundControl : public Application
     {
 		sound = makeObject<Sound>(u"D:/Music/momentum/02 - momentum.wav");
 		sound->play();
-		sound = nullptr;
+		//sound = nullptr;
     }
 
     virtual void onUpdate() override

@@ -178,6 +178,13 @@ void AudioNodeCore::pullInputs()
 void AudioNodeCore::processIfNeeded()
 {
 	m_marked = true;
+
+	//if (frontNode()) {
+	//	if (m_inputPins.isEmpty() && m_outputPins.isEmpty()) {
+	//		frontNode()->m_a
+	//	}
+	//}
+
 	pullInputs();
 	process();
 }

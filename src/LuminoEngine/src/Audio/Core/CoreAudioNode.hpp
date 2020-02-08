@@ -63,7 +63,7 @@ public:
 	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
 	void addLinkOutput(CoreAudioOutputPin* output);
 	void removeLinkOutput(CoreAudioOutputPin* output);
-	
+	bool isConnected() const { return !m_connectedOutputPins.isEmpty(); }
 
 	const List<Ref<CoreAudioOutputPin>>& connectedOutputPins() const { return m_connectedOutputPins; }
 	void disconnect(int index);
@@ -93,6 +93,7 @@ public:
 	void setOwnerNode(AudioNodeCore* node) { m_ownerNode = node; }
 	void addLinkInput(CoreAudioInputPin* input);
 	void removeLinkInput(CoreAudioInputPin* input);
+	bool isConnected() const { return !m_connectedInputPins.isEmpty(); }
 
 	const List<Ref<CoreAudioInputPin>>& connectedInputPins() const { return m_connectedInputPins; }
 	void disconnect(int index);
@@ -124,6 +125,8 @@ public:
 	AudioDevice* context() const { return m_context; }
 	AudioNode* frontNode() const { return m_frontNode; }
 
+	bool isInputConnected() const { return m_inputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue(); }
+	bool isOutputConnected() const { return m_outputPins.findIf([](auto& x) { return x->isConnected(); }).hasValue(); }
 	CoreAudioInputPin* inputPin(int index) const;
 	CoreAudioOutputPin* outputPin(int index) const;
 	void processIfNeeded();

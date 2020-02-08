@@ -23,7 +23,10 @@ class CoreAudioDestinationNode;
  * そのため AudioNode のフィールドを設定する、ユーザープログラムから呼ばれる setVolume() などの setter は、mutex を Write-lock する必要がある。
  * 一方 AudioNode::commit() では Read-lock する。
  *
- * インスタンスの削除は常に Audio-thread 上から行われる。インスタンス作成と同時に AudioContext の管理下に入り強参照される。
+ * × インスタンスの削除は常に Audio-thread 上から行われる。インスタンス作成と同時に AudioContext の管理下に入り強参照される。
+ * → Binding で公開するクラスなので、別スレッドからの削除は非常に危険。
+ * もともと Audio モジュールは Engine::update() 無しでも使いたいコンセプトだったけど、AudioGraph はかなり難しい。
+ * 「従来通り Sound クラスだけ使ってるなら Engine::update() は不要だけど、AudioGraph 使うなら必須だよ」 くらいの仕様にしたほうがよさそう。
  */
 class AudioNode
 	: public Object
@@ -38,9 +41,10 @@ public:
 	/** このノードをの全ての接続を解除します。 */
 	void disconnect();
 
-    //virtual void onDispose(bool explicitDisposing) override;
+	// onDispose の時点で、NodeCore はすべての接続が確実に破棄されている。
+    virtual void onDispose(bool explicitDisposing) override;
 
-	//bool m_alived = false;
+	std::atomic<bool> m_alived = false;
 
 protected:
 	AudioNode();

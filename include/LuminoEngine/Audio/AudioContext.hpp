@@ -22,6 +22,8 @@ public:
 	virtual ~AudioContext() = default;
 	void init();
 	virtual void dispose();
+	void updateFrame();
+
 	void process(float elapsedSeconds);
 
     /** この AudioContext 内でベースとして使われるサンプルレート(1秒あたりのサンプル数)を取得します。 */
@@ -47,8 +49,9 @@ LN_INTERNAL_ACCESS:
 	detail::AudioRWMutex& commitMutex() { return m_commitMutex; }
 
 	void addAudioNode(AudioNode* node);
-	void disposeNodeOnGenericThread(AudioNode* node);	// Audio Thread 以外での AudioNode::dispose
-	void tryRemoveAudioNode(AudioNode* node);
+	void removeAudioNode(AudioNode* node);
+	//void disposeNodeOnGenericThread(AudioNode* node);	// Audio Thread 以外での AudioNode::dispose
+	//void tryRemoveAudioNode(AudioNode* node);
 
 private:
 	enum class OperationCode
@@ -74,7 +77,8 @@ private:
 	Ref<detail::CoreAudioDestinationNode> m_coreDestinationNode;
 	Ref<AudioDestinationNode> m_destinationNode;
 
-	List<Ref<AudioNode>> m_allAudioNodes;
+	List<AudioNode*> m_allAudioNodes;
+	List<Ref<AudioNode>> m_aliveNodes;
 	//List<AudioNode*> m_markedNodes;
 	std::vector<ConnectionCommand> m_connectionCommands;
 
