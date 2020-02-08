@@ -5,7 +5,7 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
-#include "Decoder/AudioDecoder.hpp"
+#include "Decoder/WaveAudioDecoder.hpp"
 #include "Decoder/OggAudioDecoder.hpp"
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"

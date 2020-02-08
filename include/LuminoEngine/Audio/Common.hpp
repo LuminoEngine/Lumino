@@ -52,6 +52,7 @@ struct AudioConeParams
 
 class AudioSourceNodeCore;
 class CoreAudioDestinationNode;
+class CoreAudioPannerNode;
 
 } // namespace detail
 } // namespace ln

@@ -132,24 +132,5 @@ void AudioNode::disconnect()
 	}
 }
 
-//==============================================================================
-// AudioPannerNode
-
-AudioPannerNode::AudioPannerNode()
-{
-}
-
-void AudioPannerNode::init()
-{
-	AudioNode::init();
-	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject(), this);
-	m_coreObject->init();
-}
-
-detail::AudioNodeCore* AudioPannerNode::coreNode()
-{
-	return m_coreObject;
-}
-
 } // namespace ln
 

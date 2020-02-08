@@ -261,7 +261,7 @@ private:
 
 
 
-
+void Example_GameAudio();
 void Example_MessageWindow();
 void Example_Navigator();
 void Example_SoundControl();
@@ -284,10 +284,10 @@ int main(int argc, char** argv)
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
     if (1) {
-
+		Example_GameAudio();
         //Example_MessageWindow();
         //Example_Navigator();
-		Example_SoundControl();
+		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
 		//Tutorial_Sandbox();

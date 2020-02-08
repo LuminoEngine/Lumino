@@ -75,8 +75,7 @@ void Sound::setVolume(float volume)
 
 float Sound::getVolume() const
 {
-    LN_NOTIMPLEMENTED();
-    return 0;
+    return m_gainNode->gain();
 }
 
 void Sound::setPitch(float pitch)

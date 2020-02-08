@@ -8,7 +8,6 @@ class AudioContext;
 namespace detail {
 class AudioDecoder;
 class AudioNodeCore;
-class CoreAudioPannerNode;
 } // namespace detail
 
 /**
@@ -75,21 +74,6 @@ private:
     detail::AudioRWMutex m_propertyMutex;
 
 	friend class AudioContext;
-};
-
-class AudioPannerNode
-	: public AudioNode
-{
-public:
-
-LN_CONSTRUCT_ACCESS:
-	AudioPannerNode();
-	virtual ~AudioPannerNode() = default;
-	void init();
-	virtual detail::AudioNodeCore* coreNode() override;
-
-private:
-	Ref<detail::CoreAudioPannerNode> m_coreObject;
 };
 
 } // namespace ln

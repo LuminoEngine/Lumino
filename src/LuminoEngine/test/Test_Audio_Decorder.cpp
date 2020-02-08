@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include "../src/Audio/Decoder/AudioDecoder.hpp"
+#include "../src/Audio/Decoder/WaveAudioDecoder.hpp"
 #include "../src/Audio/AudioManager.hpp"
 
 //==============================================================================
