@@ -16,6 +16,7 @@ AudioSourceNode::AudioSourceNode()
 	m_commitState.playbackRate = 1.0f;
 	m_commitState.requestedState = PlayingState::NoChanged;
 	m_commitState.resetRequire = false;
+	m_commitState.loop = false;
 }
 
 void AudioSourceNode::setPlaybackRate(float rate)

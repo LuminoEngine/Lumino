@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <shared_mutex>
 #include "InternalSharedMutex.inc"
+#include "Common.hpp"
 
 namespace ln {
 class AudioContext;
@@ -8,7 +9,6 @@ namespace detail {
 class AudioDecoder;
 class AudioNodeCore;
 class CoreAudioPannerNode;
-class CoreAudioDestinationNode;
 } // namespace detail
 
 /**
@@ -90,19 +90,6 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<detail::CoreAudioPannerNode> m_coreObject;
-};
-
-class AudioDestinationNode
-	: public AudioNode
-{
-LN_CONSTRUCT_ACCESS:
-	AudioDestinationNode();
-	virtual ~AudioDestinationNode() = default;
-	void init(detail::CoreAudioDestinationNode* core);
-	virtual detail::AudioNodeCore* coreNode() override;
-
-private:
-	Ref<detail::CoreAudioDestinationNode> m_coreObject;
 };
 
 } // namespace ln

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/AudioDestinationNode.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
 #include "Core/CoreAudioNode.hpp"

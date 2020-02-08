@@ -278,8 +278,6 @@ void AudioSourceNodeCore::process()
 					break;
 			}
 		}
-
-        printf("");
 	}
 
 	//printf("writeIndex:%d\n", writeIndex);

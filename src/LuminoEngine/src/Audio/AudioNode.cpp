@@ -151,23 +151,5 @@ detail::AudioNodeCore* AudioPannerNode::coreNode()
 	return m_coreObject;
 }
 
-//==============================================================================
-// AudioDestinationNode
-
-AudioDestinationNode::AudioDestinationNode()
-{
-}
-
-void AudioDestinationNode::init(detail::CoreAudioDestinationNode* core)
-{
-	AudioNode::init();
-	m_coreObject = core;
-}
-
-detail::AudioNodeCore * AudioDestinationNode::coreNode()
-{
-	return m_coreObject;
-}
-
 } // namespace ln
 
