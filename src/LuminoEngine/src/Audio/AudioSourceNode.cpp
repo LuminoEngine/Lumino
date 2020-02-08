@@ -77,7 +77,7 @@ void AudioSourceNode::resume()
 
 void AudioSourceNode::init(detail::AudioDecoder* decoder)
 {
-	m_coreObject = makeRef<detail::AudioSourceNodeCore>(detail::EngineDomain::audioManager()->primaryContext()->coreObject());
+	m_coreObject = makeRef<detail::AudioSourceNodeCore>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
 	m_coreObject->init(decoder);
 
     AudioNode::init();

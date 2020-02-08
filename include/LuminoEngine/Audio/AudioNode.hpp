@@ -22,6 +22,8 @@ class CoreAudioDestinationNode;
  * AudioNode::commit() は Audio thread から呼び出される。
  * そのため AudioNode のフィールドを設定する、ユーザープログラムから呼ばれる setVolume() などの setter は、mutex を Write-lock する必要がある。
  * 一方 AudioNode::commit() では Read-lock する。
+ *
+ * インスタンスの削除は常に Audio-thread 上から行われる。インスタンス作成と同時に AudioContext の管理下に入り強参照される。
  */
 class AudioNode
 	: public Object
@@ -36,7 +38,10 @@ public:
 	/** このノードをの全ての接続を解除します。 */
 	void disconnect();
 
-    virtual void onDispose(bool explicitDisposing) override;
+    //virtual void onDispose(bool explicitDisposing) override;
+
+	//bool m_alived = false;
+
 protected:
 	AudioNode();
 	virtual ~AudioNode() = default;

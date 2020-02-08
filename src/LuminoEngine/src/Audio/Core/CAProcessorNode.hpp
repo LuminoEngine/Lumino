@@ -9,7 +9,7 @@ class CAProcessorNode
 	: public AudioNodeCore
 {
 public:
-    CAProcessorNode(AudioDevice* context, AudioProcessorNode* ownerNode);
+    CAProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode);
     void init(int numberOfInputChannels, int numberOfOutputChannels);
 
 protected:

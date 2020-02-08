@@ -9,9 +9,9 @@ namespace detail {
 //==============================================================================
 // CAProcessorNode
 
-CAProcessorNode::CAProcessorNode(AudioDevice* context, AudioProcessorNode* ownerNode)
-	: AudioNodeCore(context)
-    , m_ownerNode(ownerNode)
+CAProcessorNode::CAProcessorNode(AudioDevice* context, AudioProcessorNode* frontNode)
+	: AudioNodeCore(context, frontNode)
+    , m_ownerNode(frontNode)
 {
 }
 

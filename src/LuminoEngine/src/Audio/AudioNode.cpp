@@ -25,19 +25,19 @@ void AudioNode::init()
 	m_context->addAudioNode(this);
 }
 
-void AudioNode::onDispose(bool explicitDisposing)
-{
-    // TODO: dispose は finalize からも呼ばれる。この時は this の参照カウントが 0 で、
-    // dispose 終了後にデストラクタが呼ばれる。そのため、↓のようにして別の Ref に参照を持たせても
-    // オブジェクトはデストラクトされてしまう。
-    // 修正方針のひとつとして、dispose を参照カウント 0 の状態で呼び出さないようにするのもありかもしれない。・・・でも atomic になるように注意して調査すること。
-	if (m_context) {
-        LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
-		m_context->disposeNodeOnGenericThread(this);
-	}
-
-	Object::onDispose(explicitDisposing);
-}
+//void AudioNode::onDispose(bool explicitDisposing)
+//{
+//    // TODO: dispose は finalize からも呼ばれる。この時は this の参照カウントが 0 で、
+//    // dispose 終了後にデストラクタが呼ばれる。そのため、↓のようにして別の Ref に参照を持たせても
+//    // オブジェクトはデストラクトされてしまう。
+//    // 修正方針のひとつとして、dispose を参照カウント 0 の状態で呼び出さないようにするのもありかもしれない。・・・でも atomic になるように注意して調査すること。
+//	//if (m_context) {
+// //       LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
+//	//	m_context->disposeNodeOnGenericThread(this);
+//	//}
+//
+//	Object::onDispose(explicitDisposing);
+//}
 
 void AudioNode::commit()
 {
@@ -120,15 +120,7 @@ void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 
 void AudioNode::disconnect()
 {
-	LN_NOTIMPLEMENTED();
-	//for (auto& node : m_inputConnections) {
-	//	node->removeConnectionOutput(this);
-	//}
-	//for (auto& node : m_outputConnections) {
-	//	node->removeConnectionInput(this);
-	//}
-	//m_inputConnectionsDirty = false;
-	//m_outputConnectionsDirty = false;
+	context()->sendDisconnectAll(this);
 }
 
 //==============================================================================
@@ -141,7 +133,7 @@ AudioPannerNode::AudioPannerNode()
 void AudioPannerNode::init()
 {
 	AudioNode::init();
-	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject());
+	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject(), this);
 	m_coreObject->init();
 }
 

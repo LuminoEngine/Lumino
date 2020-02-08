@@ -22,7 +22,7 @@ public:
         Pausing,
     };
 
-	AudioSourceNodeCore(AudioDevice* context);
+	AudioSourceNodeCore(AudioDevice* context, AudioNode* frontNode);
 	virtual ~AudioSourceNodeCore() = default;
 	void init(const Ref<AudioDecoder>& decoder);
 

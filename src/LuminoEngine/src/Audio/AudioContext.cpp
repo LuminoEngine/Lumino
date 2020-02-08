@@ -60,7 +60,7 @@ void AudioContext::init()
         LN_LOG_INFO << "Use NullAudioDevice";
     }
         
-	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice);
+	m_coreDestinationNode = makeRef<detail::CoreAudioDestinationNode>(m_audioDevice, nullptr);
 	m_coreDestinationNode->init();
 	m_audioDevice->setRenderCallback(m_coreDestinationNode);
 
@@ -71,11 +71,11 @@ void AudioContext::init()
 
 void AudioContext::dispose()
 {
-	List<AudioNode*> removeList = m_allAudioNodes;
-	m_allAudioNodes.clear();
-	for (AudioNode* node : removeList) {
-		node->dispose();
-	}
+	//List<AudioNode*> removeList = m_allAudioNodes;
+	//m_allAudioNodes.clear();
+	//for (AudioNode* node : removeList) {
+	//	node->dispose();
+	//}
 
 	if (m_coreDestinationNode)
 	{
@@ -84,6 +84,8 @@ void AudioContext::dispose()
 	}
 
 	commitGraphs(0);
+
+	m_allAudioNodes.clear();
 
 	if (m_audioDevice) {
 		m_audioDevice->dispose();
@@ -96,11 +98,30 @@ void AudioContext::process(float elapsedSeconds)
 	if (m_audioDevice) {
         //ElapsedTimer timer;
 
+		//m_markedNodes.clear();
+		for (auto& node : m_allAudioNodes) {
+			if (auto* core = node->coreNode()) {
+				core->m_marked = false;
+			}
+		}
+		m_coreDestinationNode->m_marked = true;
 
 		commitGraphs(elapsedSeconds);
 		m_audioDevice->updateProcess();
 
 		m_audioDevice->run();
+
+
+		// sweep
+		if (1/* GCEnabled */) {
+			for (int i = m_allAudioNodes.size() - 1; i >= 0; i--) {
+				if (auto* core = m_allAudioNodes[i]->coreNode()) {
+					if (RefObjectHelper::getReferenceCount(m_allAudioNodes[i]) == 1 && !core->m_marked) {
+						m_allAudioNodes.removeAt(i);
+					}
+				}
+			}
+		}
 
         //std::cout << "time:" << timer.elapsedMilliseconds() << std::endl;
         
@@ -116,6 +137,11 @@ AudioDestinationNode* AudioContext::destination() const
 {
 	return m_destinationNode;
 }
+
+//void AudioContext::markGC(detail::AudioNodeCore* node)
+//{
+//	//m_markedNodes.add(node->frontNode());
+//}
 
 detail::AudioDevice* AudioContext::coreObject()
 {
@@ -144,13 +170,22 @@ void AudioContext::sendDisconnect(AudioNode* outputSide, AudioNode* inputSide)
 	m_connectionCommands.push_back({ OperationCode::Disconnection, outputSide, inputSide });
 }
 
-void AudioContext::sendDisconnectAllAndDispose(AudioNode* node)
+//void AudioContext::sendDisconnectAllAndDispose(AudioNode* node)
+//{
+//	if (LN_REQUIRE(node)) return;
+//	if (LN_REQUIRE(node->context() == this)) return;
+//
+//    detail::ScopedWriteLock lock(commitMutex());
+//	m_connectionCommands.push_back({ OperationCode::DisconnectionAllAndDispose, node });
+//}
+
+void AudioContext::sendDisconnectAll(AudioNode* node)
 {
 	if (LN_REQUIRE(node)) return;
 	if (LN_REQUIRE(node->context() == this)) return;
 
-    detail::ScopedWriteLock lock(commitMutex());
-	m_connectionCommands.push_back({ OperationCode::DisconnectionAllAndDispose, node });
+	detail::ScopedWriteLock lock(commitMutex());
+	m_connectionCommands.push_back({ OperationCode::DisconnectionAll, node });
 }
 
 void AudioContext::addSound(Sound* sound)
@@ -168,7 +203,7 @@ void AudioContext::addAudioNode(AudioNode* node)
 void AudioContext::disposeNodeOnGenericThread(AudioNode* node)
 {
 	if (node->m_context) {
-		node->m_context->sendDisconnectAllAndDispose(node);
+		//node->m_context->sendDisconnectAll(node);
 		node->m_context = nullptr;
 
         detail::ScopedWriteLock lock(commitMutex());
@@ -193,17 +228,19 @@ void AudioContext::commitGraphs(float elapsedSeconds)
 			switch (cmd.code)
 			{
 			case OperationCode::Connection:
+				//cmd.outputSide->m_alived = true;
+				//cmd.inputSide->m_alived = true;
 				detail::AudioNodeCore::connect(cmd.outputSide->coreNode(), cmd.inputSide->coreNode());
 				break;
 			case OperationCode::Disconnection:
 				LN_NOTIMPLEMENTED();
 				break;
-			case OperationCode::DisconnectionAllAndDispose:
+			case OperationCode::DisconnectionAll://AndDispose:
 			{
 				detail::AudioNodeCore* node = cmd.outputSide->coreNode();
 				node->disconnectAllInputSide();
 				node->disconnectAllOutputSide();
-				node->dispose();
+				//node->dispose();
 				break;
 			}
 			default:

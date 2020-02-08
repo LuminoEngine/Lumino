@@ -146,8 +146,9 @@ void CoreAudioOutputPin::disconnectAll()
 //==============================================================================
 // AudioNodeCore
 
-AudioNodeCore::AudioNodeCore(AudioDevice* context)
+AudioNodeCore::AudioNodeCore(AudioDevice* context, AudioNode* frontNode)
 	: m_context(context)
+	, m_frontNode(frontNode)
 {
 }
 
@@ -176,6 +177,7 @@ void AudioNodeCore::pullInputs()
 
 void AudioNodeCore::processIfNeeded()
 {
+	m_marked = true;
 	pullInputs();
 	process();
 }
@@ -219,8 +221,8 @@ CoreAudioOutputPin* AudioNodeCore::addOutputPin(int channels)
 //==============================================================================
 // CoreAudioPannerNode
 
-CoreAudioPannerNode::CoreAudioPannerNode(AudioDevice* context)
-	: AudioNodeCore(context)
+CoreAudioPannerNode::CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode)
+	: AudioNodeCore(context, frontNode)
 {
 }
 
@@ -303,8 +305,8 @@ float CoreAudioPannerNode::distanceConeGain()
 //==============================================================================
 // CoreAudioDestinationNode
 
-CoreAudioDestinationNode::CoreAudioDestinationNode(AudioDevice* context)
-	: AudioNodeCore(context)
+CoreAudioDestinationNode::CoreAudioDestinationNode(AudioDevice* context, AudioNode* frontNode)
+	: AudioNodeCore(context, frontNode)
 {
 }
 
@@ -316,7 +318,7 @@ void CoreAudioDestinationNode::init()
 
 void CoreAudioDestinationNode::render(float * outputBuffer, int length)
 {
-
+	m_marked = true;
 
     ////AudioChannel* ch1 = output->channel(0);
     ////AudioChannel* ch2 = output->channel(1);

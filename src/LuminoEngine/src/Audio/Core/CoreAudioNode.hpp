@@ -5,6 +5,8 @@
 #include <float.h>	// for FLT_EPSILON
 
 namespace ln {
+class AudioNode;
+
 namespace detail {
 class AudioNodeCore;
 class CoreAudioInputPin;
@@ -115,11 +117,12 @@ public:
 	// 値を小さくするほど (高レベルAPIとしての) 演奏開始から実際に音が鳴るまでの遅延が少なくなるが、process の回数 (ノードをたどる回数) が増えるので処理は重くなる。
 	static const int ProcessingSizeInFrames = 2048;
 
-	AudioNodeCore(AudioDevice* context);
+	AudioNodeCore(AudioDevice* context, AudioNode* frontNode);
 	virtual ~AudioNodeCore() = default;
 	void init();
 
 	AudioDevice* context() const { return m_context; }
+	AudioNode* frontNode() const { return m_frontNode; }
 
 	CoreAudioInputPin* inputPin(int index) const;
 	CoreAudioOutputPin* outputPin(int index) const;
@@ -130,6 +133,8 @@ public:
 
 	void disconnectAllInputSide();
 	void disconnectAllOutputSide();
+
+	bool m_marked = false;
 
 protected:
 	// Do not call after object initialzation.
@@ -145,7 +150,8 @@ protected:
 	virtual void process() = 0;
 
 private:
-	AudioDevice * m_context;
+	AudioDevice* m_context;
+	AudioNode* m_frontNode;
 	List<Ref<CoreAudioInputPin>> m_inputPins;
 	List<Ref<CoreAudioOutputPin>> m_outputPins;
 };
@@ -159,7 +165,7 @@ protected:
 	virtual void process() override;
 
 public:
-	CoreAudioPannerNode(AudioDevice* context);
+	CoreAudioPannerNode(AudioDevice* context, AudioNode* frontNode);
 	virtual ~CoreAudioPannerNode() = default;
 	void init();
 
@@ -179,7 +185,7 @@ class CoreAudioDestinationNode
 	, public IAudioDeviceRenderCallback
 {
 public:
-	CoreAudioDestinationNode(AudioDevice* context);
+	CoreAudioDestinationNode(AudioDevice* context, AudioNode* frontNode);
 	virtual ~CoreAudioDestinationNode() = default;
 	void init();
 

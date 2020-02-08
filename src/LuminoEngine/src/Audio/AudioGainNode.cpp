@@ -23,7 +23,7 @@ void AudioGainNode::init()
 {
     // TODO: AudioNode::init() の後にしたい。
     // detail::EngineDomain::audioManager()->primaryContext() じゃなくて context() にしたい
-    m_coreObject = makeRef<detail::CAGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject());
+    m_coreObject = makeRef<detail::CAGainNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject(), this);
     m_coreObject->init();
 
 	AudioNode::init();

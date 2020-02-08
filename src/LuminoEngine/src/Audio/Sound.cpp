@@ -50,11 +50,11 @@ void Sound::init(const StringRef& filePath)
 void Sound::onDispose(bool explicitDisposing)
 {
     if (m_gainNode) {
-        m_gainNode->dispose();
+        m_gainNode->disconnect();
         m_sourceNode = nullptr;
     }
     if (m_sourceNode) {
-        m_sourceNode->dispose();
+        m_sourceNode->disconnect();
         m_sourceNode = nullptr;
     }
     Object::onDispose(explicitDisposing);

@@ -10,8 +10,8 @@ namespace detail {
 //==============================================================================
 // AudioSourceNodeCore
 
-AudioSourceNodeCore::AudioSourceNodeCore(AudioDevice* context)
-	: AudioNodeCore(context)
+AudioSourceNodeCore::AudioSourceNodeCore(AudioDevice* context, AudioNode* frontNode)
+	: AudioNodeCore(context, frontNode)
 	, m_virtualReadIndex(0)
 	, m_playbackRate(1.0f)
 	, m_seekFrame(0)

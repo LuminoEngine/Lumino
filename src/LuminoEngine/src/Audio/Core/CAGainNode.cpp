@@ -8,8 +8,8 @@ namespace detail {
 //==============================================================================
 // CAGainNode
 
-CAGainNode::CAGainNode(AudioDevice* context)
-	: AudioNodeCore(context)
+CAGainNode::CAGainNode(AudioDevice* context, AudioNode* frontNode)
+	: AudioNodeCore(context, frontNode)
     , m_gain(1.0f)
 {
 }
