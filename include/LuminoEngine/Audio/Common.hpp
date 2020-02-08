@@ -7,6 +7,7 @@
 #endif
 
 namespace ln {
+class Sound;
 
 namespace detail {
 class internal_shared_mutex;

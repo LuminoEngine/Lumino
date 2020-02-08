@@ -37,6 +37,9 @@ public:
 	void createAudioDecoderAsync(const StringRef& filePath, const std::function<void(AudioDecoder* decoder)>& postAction);
 	void releaseAudioDecoder(AudioDecoder* decoder);
 
+	void addSoundManagement(Sound* value);
+	void removeSoundManagement(Sound* value);
+
 private:
     // processThread は少しでも遅れると音声に影響するので、できる限り Mixing に集中する。
     // 音声データの非同期ロードなどそれ以外は dispatheThread で行う。
@@ -46,6 +49,7 @@ private:
     AssetManager* m_assetManager;
 	Ref<AudioContext> m_primaryContext;
     Ref<GameAudioImpl> m_gameAudio;
+	List<Sound*> m_soundManagementList;
 	ObjectCache<String, AudioDecoder> m_decoderCache;
 	//Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
 	//Ref<RenderingCommandList> m_primaryRenderingCommandList;

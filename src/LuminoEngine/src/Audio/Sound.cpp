@@ -14,7 +14,8 @@ namespace ln {
 // Sound
 
 Sound::Sound()
-    : m_gameAudioFlags(0)
+    : m_manager(nullptr)
+	, m_gameAudioFlags(0)
     , m_fadeValue()
     , m_fadeBehavior(SoundFadeBehavior::Continue)
     , m_fading(false)
@@ -29,7 +30,8 @@ void Sound::init(const StringRef& filePath)
 {
     Object::init();
 
-    detail::AudioManager* manager = detail::EngineDomain::audioManager();
+	m_manager = detail::EngineDomain::audioManager();
+	m_manager->addSoundManagement(this);
 
     Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
     m_sourceNode = makeObject<AudioSourceNode>(decoder);
@@ -38,7 +40,7 @@ void Sound::init(const StringRef& filePath)
 
     //AudioNode::connect(m_sourceNode, manager->primaryContext()->destination());
     AudioNode::connect(m_sourceNode, m_gainNode);
-    AudioNode::connect(m_gainNode, manager->primaryContext()->destination());
+    AudioNode::connect(m_gainNode, m_manager->primaryContext()->destination());
 
     //auto panner = makeObject<AudioPannerNode>();
     //AudioNode::connect(source, panner);
@@ -57,6 +59,10 @@ void Sound::onDispose(bool explicitDisposing)
         m_sourceNode->disconnect();
         m_sourceNode = nullptr;
     }
+	if (m_manager) {
+		m_manager->removeSoundManagement(this);
+		m_manager = nullptr;
+	}
     Object::onDispose(explicitDisposing);
 }
 

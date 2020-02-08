@@ -127,7 +127,9 @@ void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 
 void AudioNode::disconnect()
 {
-	context()->sendDisconnectAll(this);
+	if (context()) {
+		context()->sendDisconnectAll(this);
+	}
 }
 
 //==============================================================================

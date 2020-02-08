@@ -4,6 +4,7 @@
 #include "../Asset/AssetManager.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
+#include <LuminoEngine/Audio/Sound.hpp>
 #include "Decoder/AudioDecoder.hpp"
 #include "Decoder/OggAudioDecoder.hpp"
 #include "GameAudioImpl.hpp"
@@ -56,6 +57,13 @@ void AudioManager::dispose()
         m_gameAudio->dispose();
         m_gameAudio = nullptr;
     }
+
+	{
+		auto disposeList = m_soundManagementList;
+		for (auto& value : disposeList) {
+			value->dispose();
+		}
+	}
 
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
@@ -156,6 +164,18 @@ void AudioManager::releaseAudioDecoder(AudioDecoder* decoder)
 	//if ()
 
 	m_decoderCache.releaseObject(decoder);
+}
+
+void AudioManager::addSoundManagement(Sound* value)
+{
+	if (LN_REQUIRE(value)) return;
+	m_soundManagementList.add(value);
+}
+
+void AudioManager::removeSoundManagement(Sound* value)
+{
+	if (LN_REQUIRE(value)) return;
+	m_soundManagementList.remove(value);
 }
 
 void AudioManager::processThread()
