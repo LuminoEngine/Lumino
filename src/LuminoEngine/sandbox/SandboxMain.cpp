@@ -284,13 +284,13 @@ int main(int argc, char** argv)
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
     if (1) {
-		Example_GameAudio();
+		//Example_GameAudio();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		//Tutorial_Sandbox();
+		Tutorial_Sandbox();
         return 0;
     }
 

@@ -77,6 +77,7 @@
 #include "LuminoEngine/Scene/WorldObject.hpp"
 #include "LuminoEngine/Scene/Camera.hpp"
 #include "LuminoEngine/Scene/CameraOrbitControlComponent.hpp"
+#include "LuminoEngine/Scene/Raycaster.hpp"
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"

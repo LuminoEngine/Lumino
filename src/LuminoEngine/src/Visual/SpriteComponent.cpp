@@ -39,7 +39,7 @@ void SpriteFrame::serialize(Archive& ar)
 }
 
 //=============================================================================
-// SpriteFrameSet
+// SpriteSheet
 /*
   グリッド分割は ピクセル指定？分割数指定？
   ----------
@@ -48,26 +48,26 @@ void SpriteFrame::serialize(Archive& ar)
   ポイントは変更の容易さだけど、
   - 分割数指定はテクスチャ解像度の変更に強い。
   - ピクセル指定は row を増やすことでのパターン追加に強い。
-  SpriteFrameSet を使うのはドット絵がほとんど。どっちがよくある話かっていうと後者の方が圧倒的に多いだろう。
+  SpriteSheet を使うのはドット絵がほとんど。どっちがよくある話かっていうと後者の方が圧倒的に多いだろう。
 */
-LN_OBJECT_IMPLEMENT(SpriteFrameSet, Object) {}
+LN_OBJECT_IMPLEMENT(SpriteSheet, Object) {}
 
-Ref<SpriteFrameSet> SpriteFrameSet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
+Ref<SpriteSheet> SpriteSheet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
-	return makeObject<SpriteFrameSet>(texture, frameWidth, frameHeight, anchorPoint);
+	return makeObject<SpriteSheet>(texture, frameWidth, frameHeight, anchorPoint);
 }
 
-SpriteFrameSet::SpriteFrameSet()
+SpriteSheet::SpriteSheet()
     : m_frames(makeList<Ref<SpriteFrame>>())
 {
 }
 
-void SpriteFrameSet::init()
+void SpriteSheet::init()
 {
 	Object::init();
 }
 
-void SpriteFrameSet::init(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
+void SpriteSheet::init(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
 	init();
 
@@ -82,12 +82,12 @@ void SpriteFrameSet::init(Texture* texture, int frameWidth, int frameHeight, con
     splitFrames();
 }
 
-Texture* SpriteFrameSet::texture() const
+Texture* SpriteSheet::texture() const
 {
     return m_texture;
 }
 
-SpriteFrame* SpriteFrameSet::frame(int index) const
+SpriteFrame* SpriteSheet::frame(int index) const
 {
 	if (0 <= index && index < m_frames->size()) {
 		return m_frames[index];
@@ -97,7 +97,7 @@ SpriteFrame* SpriteFrameSet::frame(int index) const
 	}
 }
 
-void SpriteFrameSet::clear()
+void SpriteSheet::clear()
 {
     m_frameWidth = 0;
     m_frameHeight = 0;
@@ -106,7 +106,7 @@ void SpriteFrameSet::clear()
     m_frames->clear();
 }
 
-void SpriteFrameSet::splitFrames()
+void SpriteSheet::splitFrames()
 {
     int cols = m_texture->width() / m_frameWidth;
     int rows = m_texture->height() / m_frameHeight;
@@ -124,7 +124,7 @@ void SpriteFrameSet::splitFrames()
     }
 }
 
-void SpriteFrameSet::serialize(Archive& ar)
+void SpriteSheet::serialize(Archive& ar)
 {
 
     if (ar.isSaving()) {
@@ -219,7 +219,7 @@ void SpriteComponent::setSourceRect(const Rect& rect)
     m_sourceRect = rect;
 }
 
-void SpriteComponent::setFrameSet(SpriteFrameSet* value)
+void SpriteComponent::setFrameSet(SpriteSheet* value)
 {
 	m_frameSet = value;
     m_material->setMainTexture(m_frameSet->texture());

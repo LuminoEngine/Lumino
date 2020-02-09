@@ -5,34 +5,30 @@ using namespace ln;
 
 class App : public Application
 {
+	Ref<BoxMesh> box;
+
 	virtual void onInit() override
 	{
-		//Camera* camera = Engine::camera();
-		//camera->addComponent(makeObject<CameraOrbitControlComponent>());
-		//Engine::camera()->setPosition(10, 10, -10);
-		//Engine::camera()->lookAt(0, 0, 0);
-		//Engine::mainRenderView()->setDebugGridEnabled(false);
-
-		//auto box = BoxMesh::create();
+		box = BoxMesh::create();
 
 		auto camera = Engine::camera();
 		camera->setPosition(5, 5, -5);
 		camera->lookAt(0, 0, 0);
-		camera->addComponent(makeObject<CameraOrbitControlComponent>());
 
-
-		Engine::light()->lookAt(0, -1, 0);
-
-		//auto light = DirectionalLight::create();
-
-
-		auto sphere = SphereMesh::create();
+		auto light = Engine::light();
+		light->lookAt(0, -1, 0);
 	}
 
 	virtual void onUpdate() override
 	{
 		//Debug::print(0, String::format(u"X: {0}", Mouse::position().x));
 		//Debug::print(0, String::format(u"Y: {0}", Mouse::position().y));
+
+		auto raycaster = Raycaster::from2DView(Engine::camera(), Mouse::position());
+		if (auto result = raycaster->intersectPlane(0, 1, 0)) {
+			box->setPosition(result->point());
+		}
+
 	}
 };
 

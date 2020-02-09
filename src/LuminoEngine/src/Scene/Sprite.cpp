@@ -44,7 +44,7 @@ Ref<Sprite> Sprite::create(Texture* texture, float width, float height)
     return makeObject<Sprite>(texture, width, height);
 }
 
-Ref<Sprite> Sprite::create(SpriteFrameSet* frameSet)
+Ref<Sprite> Sprite::create(SpriteSheet* frameSet)
 {
 	return makeObject<Sprite>(frameSet);
 }
@@ -86,7 +86,7 @@ void Sprite::init(Texture* texture, float width, float height)
     setTexture(texture);
 }
 
-void Sprite::init(SpriteFrameSet* frameSet)
+void Sprite::init(SpriteSheet* frameSet)
 {
 	init();
 	setFrameSet(frameSet);
@@ -117,7 +117,7 @@ void Sprite::setSourceRect(float x, float y, float width, float height)
     setSourceRect(Rect(x, y, width, height));
 }
 
-void Sprite::setFrameSet(SpriteFrameSet* value)
+void Sprite::setFrameSet(SpriteSheet* value)
 {
 	m_component->setFrameSet(value);
 }

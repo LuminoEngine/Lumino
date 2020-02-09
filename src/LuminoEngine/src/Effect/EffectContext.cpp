@@ -108,7 +108,7 @@ SpriteFrameEffectResource::~SpriteFrameEffectResource()
 {
 }
 
-void SpriteFrameEffectResource::init(const Size& spriteSize, SpriteFrameSet* spriteFrameSet, int startNumber, int lastNumber, float frameTime)
+void SpriteFrameEffectResource::init(const Size& spriteSize, SpriteSheet* spriteFrameSet, int startNumber, int lastNumber, float frameTime)
 {
     EffectResource::init();
     m_spriteSize = spriteSize;
