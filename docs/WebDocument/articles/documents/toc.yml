@@ -31,6 +31,11 @@
   - name: 10. アプリをリリースする
     href: first-tutorial/10-publish.md
 
+- name: TIPS
+  items:
+  - name: グラフィックスの基本仕様
+    href: tips/graphics-spec.md
+
 
 - name: プラットフォーム固有の情報
   items: 

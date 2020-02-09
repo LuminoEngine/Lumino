@@ -15,8 +15,8 @@ class App : public Application
 		camera->setPosition(5, 5, -5);
 		camera->lookAt(0, 0, 0);
 
-		auto light = Engine::light();
-		light->lookAt(0, -1, 0);
+		//auto light = Engine::light();
+		//light->lookAt(0, -1, 0);
 	}
 
 	virtual void onUpdate() override
@@ -24,7 +24,7 @@ class App : public Application
 		//Debug::print(0, String::format(u"X: {0}", Mouse::position().x));
 		//Debug::print(0, String::format(u"Y: {0}", Mouse::position().y));
 
-		auto raycaster = Raycaster::from2DView(Engine::camera(), Mouse::position());
+		auto raycaster = Raycaster::fromScreen(Mouse::position());
 		if (auto result = raycaster->intersectPlane(0, 1, 0)) {
 			box->setPosition(result->point());
 		}

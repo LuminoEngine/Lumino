@@ -12,21 +12,22 @@ public:
 	// 0.0 ~ view actual size
 	// インスタンス作成と setFrom2DView() のユーティリティ。
 	// グローバルなインスタンスを共有する。
-	static Ref<Raycaster> from2DView(Camera* camera, const Point& point);
+	static Raycaster* fromScreen(Camera* camera, const Point& point);
+	static Raycaster* fromScreen(const Point& point);
 
 	// -1.0~1.0
-	static Ref<Raycaster> fromViewport(Camera* camera, const Vector2& coords);
+	//static Raycaster* fromViewport(Camera* camera, const Vector2& coords);
 
 	void setFrom2DView(Camera* camera, const Point& point);
-	void setFromViewport(Camera* camera, const Point& point);
+	//void setFromViewport(Camera* camera, const Point& point);
 
 	//bool isHit() const { return m_isHit; }
 	//
 	///** ワールド座標上の交差点 */
 	//const Vector3& point() const { return m_point; }
 
-	//RaycastResult* intersectPlane(float normalX, float normalY, float normalZ) const { return intersectPlane(Plane(Vector3(normalX, normalY, normalZ), 0)); }
-	//RaycastResult* intersectPlane(const Plane& plane) const;
+	RaycastResult* intersectPlane(float normalX, float normalY, float normalZ) const { return intersectPlane(Plane(Vector3(normalX, normalY, normalZ), 0)); }
+	RaycastResult* intersectPlane(const Plane& plane) const;
 
 LN_CONSTRUCT_ACCESS:
 	Raycaster();

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "SceneManager.hpp"
+#include <LuminoEngine/Scene/Raycaster.hpp>
 
 // for registerType
 #include <LuminoEngine/Asset/Assets.hpp>
@@ -22,6 +23,7 @@ namespace detail {
 
 SceneManager::SceneManager()
     : m_activeWorld(nullptr)
+	, m_raycasterCache(makeObject<Raycaster>())
 {
 }
 

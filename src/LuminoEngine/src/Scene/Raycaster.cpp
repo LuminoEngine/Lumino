@@ -2,6 +2,8 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Raycaster.hpp>
+#include "../Engine/EngineManager.hpp"
+#include "SceneManager.hpp"
 
 namespace ln {
 
@@ -87,20 +89,25 @@ if (auto result = Raycaster::intersectFrom2DView(Mouse::position(), Vector3::Uni
  */
 
 	
-Ref<Raycaster> Raycaster::from2DView(Camera* camera, const Point& point)
+Raycaster* Raycaster::fromScreen(Camera* camera, const Point& point)
 {
-	auto ptr = makeObject<Raycaster>();	// TODO: pool
+	auto ptr = detail::EngineDomain::sceneManager()->raycasterCache();
 	ptr->setFrom2DView(camera, point);
 	return ptr;
 }
 
-Ref<Raycaster> Raycaster::fromViewport(Camera* camera, const Vector2& coords)
+Raycaster* Raycaster::fromScreen(const Point& point)
 {
-	auto ptr = makeObject<Raycaster>();
-	ptr->setFromViewport(camera, coords);
-	return ptr;
+	return fromScreen(detail::EngineDomain::engineManager()->mainCamera(), point);
 }
 
+//Raycaster* Raycaster::fromViewport(Camera* camera, const Vector2& coords)
+//{
+//	auto ptr = detail::EngineDomain::sceneManager()->raycasterCache();
+//	ptr->setFromViewport(camera, coords);
+//	return ptr;
+//}
+//
 Raycaster::Raycaster()
 	: m_result(makeObject<RaycastResult>())	// intersect の度に object 作って返すのが自然だと思うけど、Binding 作るときに pool が大変なのでこの仕様で行ってみる
 {
@@ -116,10 +123,10 @@ void Raycaster::setFrom2DView(Camera* camera, const Point& point)
 	m_ray = camera->screenToWorldRay(point);
 }
 
-void Raycaster::setFromViewport(Camera* camera, const Point& point)
-{
-	LN_NOTIMPLEMENTED();
-}
+//void Raycaster::setFromViewport(Camera* camera, const Point& point)
+//{
+//	LN_NOTIMPLEMENTED();
+//}
 
 RaycastResult* Raycaster::intersectPlane(const Plane& plane) const
 {

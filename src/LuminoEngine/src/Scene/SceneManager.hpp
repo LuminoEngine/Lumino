@@ -34,6 +34,7 @@ public:
     void setActiveWorld(World* world) { m_activeWorld = world; }
     World* activeWorld() const { return m_activeWorld; }
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
+	const Ref<Raycaster>& raycasterCache() const { return m_raycasterCache; }
 
 	const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
@@ -71,6 +72,7 @@ private:
 
     World* m_activeWorld;
     Ref<Shader> m_atmosphereShader;
+	Ref<Raycaster> m_raycasterCache;
 
 	Ref<Material> m_primitiveMeshDefaultMaterial;
 };
