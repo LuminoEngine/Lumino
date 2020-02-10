@@ -18,11 +18,11 @@
 
 class App : public Application
 {
-	virtual void onUpdate() override
-	{
-		Debug::print(0, String::format(u"X: {0}", Mouse::position().x));
-		Debug::print(0, String::format(u"Y: {0}", Mouse::position().y));
-	}
+    virtual void onUpdate() override
+    {
+        Debug::print(0, String::format(u"X: {0}", Mouse::position().x));
+        Debug::print(0, String::format(u"Y: {0}", Mouse::position().y));
+    }
 };
 
 LUMINO_APP(App);
@@ -93,10 +93,10 @@ Lumino の 3D 空間は、X軸,Y軸,Z軸 からなる直交座標系によって
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-		auto box = BoxMesh::create();
-	}
+    virtual void onInit() override
+    {
+        auto box = BoxMesh::create();
+    }
 };
 
 LUMINO_APP(App);
@@ -107,7 +107,7 @@ require 'lumino'
 
 class App < Application
     def on_init
-		box = BoxMesh.new
+        box = BoxMesh.new
     end
 end
 
@@ -138,14 +138,14 @@ Lumino の初期状態は、空っぽのワールドにひとつのカメラが�
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-		auto box = BoxMesh::create();
+    virtual void onInit() override
+    {
+        auto box = BoxMesh::create();
 
-		auto camera = Engine::camera();
-		camera->setPosition(5, 5, -5);
-		camera->lookAt(0, 0, 0);
-	}
+        auto camera = Engine::camera();
+        camera->setPosition(5, 5, -5);
+        camera->lookAt(0, 0, 0);
+    }
 };
 
 LUMINO_APP(App);
@@ -157,11 +157,11 @@ require 'lumino'
 
 class App < Application
     def on_init
-		box = BoxMesh.new
+        box = BoxMesh.new
 
-		camera = Engine.camera
-		camera.set_position(5, 5, -5)
-		camera.look_at(0, 0, 0)
+        camera = Engine.camera
+        camera.set_position(5, 5, -5)
+        camera.look_at(0, 0, 0)
     end
 end
 
@@ -193,17 +193,17 @@ App.new.run
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-		auto box = BoxMesh::create();
+    virtual void onInit() override
+    {
+        auto box = BoxMesh::create();
 
-		auto camera = Engine::camera();
-		camera->setPosition(5, 5, -5);
-		camera->lookAt(0, 0, 0);
+        auto camera = Engine::camera();
+        camera->setPosition(5, 5, -5);
+        camera->lookAt(0, 0, 0);
 
-		auto light = Engine::light();
-		light->lookAt(0, -1, 0);
-	}
+        auto light = Engine::light();
+        light->lookAt(0, -1, 0);
+    }
 };
 
 LUMINO_APP(App);
@@ -214,13 +214,13 @@ require 'lumino'
 
 class App < Application
     def on_init
-		box = BoxMesh.new
+        box = BoxMesh.new
 
-		camera = Engine.camera
-		camera.set_position(5, 5, -5)
-		camera.lookAt(0, 0, 0)
+        camera = Engine.camera
+        camera.set_position(5, 5, -5)
+        camera.lookAt(0, 0, 0)
 
-		light = DirectionalLight.new;
+        light = DirectionalLight.new;
     end
 end
 
@@ -237,6 +237,166 @@ App.new.run
 座標系を変換する (2D -> 3D)
 ----------
 
+マウスで指している位置にオブジェクトを表示したい場合、2D 座標から 3D 座標へ変換する必要があります。
+
+ただし、2D 座標から 3D 座標への変換では、直に 3D の一点を求めることはできません。
+
+カメラが写している 2D 画面上の "点" を 3D 空間で考えると、次のようにカメラから前方へ伸びる "線分" となります。
+
+![](img/graphics-basic-8.png)
+
+例えば地平面 (XZ平面) 上の点を求めたい場合、この線分と平面の交差判定を行わなければなりません。
+
+Lumino では線分を使った衝突判定をサポートする `Raycaster` が用意されていますので、これを使ってみます。
+
+> [!Note]
+> このような線分のことを `レイ (Ray)` と呼び、レイを使った衝突判定や物体検出を `レイキャスティング (Ray-casting)` と呼びます。
+
+# [C++](#tab/lang-cpp)
+```cpp
+#include <Lumino.hpp>
+
+class App : public Application
+{
+    Ref<BoxMesh> box;    // (1)
+
+    virtual void onInit() override
+    {
+        box = BoxMesh::create();
+
+        auto camera = Engine::camera();
+        camera->setPosition(5, 5, -5);
+        camera->lookAt(0, 0, 0);
+    }
+
+    virtual void onUpdate() override
+    {
+        auto raycaster = Raycaster::fromScreen(Mouse::position());  // (2)
+        if (auto result = raycaster->intersectPlane(0, 1, 0)) {     // (3)
+            box->setPosition(result->point());                      // (4)
+        }
+    }
+};
+
+LUMINO_APP(App);
+```
+
+1. `onInit()` で作成した box を `onUpdate()` で操作できるようにするため、これまで `auto box = ...;` と定義していたローカル変数ではなくメンバ変数として定義します。
+2. スクリーン上の、現在のマウス位置 `Mouse::position()` を起点としてレイキャスティングを行う `Raycaster` インスタンスを取得します。
+3. レイと平面との衝突判定を行います。 `intersectPlane()` の引数は面の表方向を表す x, y, z 値です。ここでは、Y+ 方向 （真上）を向く、つまるところ通常の `地平面` を指定しています。
+   衝突した場合、結果を返します。衝突しなければ nullptr で、if 内には入りません。
+4. `result->point()` で衝突した点を取得できます、これをカメラの時と同じようして `box->setPosition()` にセットすることで、Box を移動させます。
+
+> [!Note]
+> これまでは `auto` によって推論されコード上には現れませんでしたが、BoxMesh::create() の戻り値の型は `Ref<BoxMesh>` です。
+
+# [Ruby](#tab/lang-ruby)
+```ruby
+require 'lumino'
+
+class App < Application
+    def on_init
+        box = BoxMesh.new
+
+        camera = Engine.camera
+        camera.set_position(5, 5, -5)
+        camera.lookAt(0, 0, 0)
+
+        light = DirectionalLight.new;
+    end
+end
+
+App.new.run
+```
+---
+
+![](img/graphics-basic-9.gif)
+
+Great!
+
+これまでよりもずっと 3D 空間を触りやすくなりました！
 
 
+デバッグ
+----------
 
+最後に、ワールドのデバッグに使える便利機能を紹介します。
+
+オブジェクトが上手く表示されないようなケースでは、ワールドの状況を観察することが解決の助けになります。（例えば、配置する座標を間違えて、別のオブジェクトの後ろに隠れているだけかもしれません…）
+
+ここでは 3D 空間にグリッドを表示し、カメラをマウスで操作できるようにして、ワールドを俯瞰しやすくしてみます。
+
+# [C++](#tab/lang-cpp)
+```cpp
+#include <Lumino.hpp>
+
+class App : public Application
+{
+    Ref<BoxMesh> box;
+
+    virtual void onInit() override
+    {
+        Engine::renderView()->setGuideGridEnabled(true);
+        Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+
+        box = BoxMesh::create();
+    }
+
+    virtual void onUpdate() override
+    {
+        auto raycaster = Raycaster::fromScreen(Mouse::position());
+        if (auto result = raycaster->intersectPlane(0, 1, 0)) {
+            box->setPosition(result->point());
+        }
+    }
+};
+
+LUMINO_APP(App);
+```
+
+onInit() の先頭に2行の新しいコードが増えています。
+
+`Engine::renderView()->setGuideGridEnabled(true);` は、ワールド全体の地平面にグリッドを表示します。また、原点から各軸方向を示す赤、緑、青の線分を表示します。
+
+`Engine::camera()->addComponent(CameraOrbitControlComponent::create());` は、これまで使ってきたカメラに対して、マウスを使って操作できる機能を追加します。
+
+
+# [Ruby](#tab/lang-ruby)
+```ruby
+require 'lumino'
+
+class App < Application
+    def on_init
+        box = BoxMesh.new
+
+        camera = Engine.camera
+        camera.set_position(5, 5, -5)
+        camera.lookAt(0, 0, 0)
+
+        light = DirectionalLight.new;
+    end
+end
+
+App.new.run
+```
+---
+
+マウス操作は次の通りです。
+
+| マウス | 動作 |
+|---|---|
+| 右ボタンドラッグ | 回転 |
+| 中ボタンドラッグ | 平行移動 |
+| マウスホイール | 拡大・縮小 |
+
+![](img/graphics-basic-10.gif)
+
+> [!Note]
+> `RenderView` や `Component` など新しい言葉が登場していますが、これらは後のチュートリアルで説明します。
+> ここではあくまでデバッグ用としての紹介にとどめています。
+
+> [!Warning]
+> ここで紹介したグリッド表示とカメラ操作は実験的な機能です。
+>
+> 将来的には（機能が使えなくなるということはありませんが）クラスやメソッドの名前が変わる可能性があります。
+> Lumino をバージョンアップした際にコンパイルエラーなどが発生する場合は、最新のチュートリアルを参照してください。

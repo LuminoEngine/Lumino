@@ -82,9 +82,12 @@ public:
 	LN_METHOD(Property)
 	static AmbientLight* ambientLight();
 
+	/** デフォルトで作成されるメインの RenderView です。 */
+	LN_METHOD(Property)
+	static WorldRenderView* renderView();
+
     //static AmbientLight* mainAmbientLight();
     //static DirectionalLight* mainDirectionalLight();
-    static WorldRenderView* mainRenderView();
     static PhysicsWorld* mainPhysicsWorld();
     static PhysicsWorld2D* mainPhysicsWorld2D();
 

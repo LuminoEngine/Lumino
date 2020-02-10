@@ -32,8 +32,8 @@ public:
 	void removeImageEffect(ImageEffect* effect);
 
 
-	void setDebugGridEnabled(bool value) { m_visibleGridPlane = value; }
-	bool debugGridEnabled() const { return m_visibleGridPlane; }
+	void setGuideGridEnabled(bool value) { m_visibleGridPlane = value; }
+	bool guideGridEnabled() const { return m_visibleGridPlane; }
 
     void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }
 	bool physicsDebugDrawEnabled() const { return m_physicsDebugDrawEnabled; }

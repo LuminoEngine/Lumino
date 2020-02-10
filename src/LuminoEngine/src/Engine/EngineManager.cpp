@@ -860,9 +860,9 @@ void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 	if (ImGui::CollapsingHeader("RenderView debug"))
 	{
 		{
-			bool check = m_mainWorldRenderView->debugGridEnabled();
+			bool check = m_mainWorldRenderView->guideGridEnabled();
 			ImGui::Checkbox("Grid", &check);
-			m_mainWorldRenderView->setDebugGridEnabled(check);
+			m_mainWorldRenderView->setGuideGridEnabled(check);
 		}
 		{
 			bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();

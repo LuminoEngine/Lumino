@@ -254,7 +254,7 @@ AmbientLight* Engine::ambientLight()
 //    return detail::EngineDomain::engineManager()->mainDirectionalLight();
 //}
 
-WorldRenderView* Engine::mainRenderView()
+WorldRenderView* Engine::renderView()
 {
     return detail::EngineDomain::engineManager()->mainRenderView();
 }
