@@ -311,4 +311,12 @@ bool Vector3::nearEqual(const Vector3& value1, const Vector3& value2)
            Math::nearEqual(value1.z, value2.z);
 }
 
+Vector3 Vector3::sign(const Vector3& value)
+{
+	return Vector3(
+		(value.x < 0.0f) ? -1.0f : ((value.x > 0.0f) ? 1.0f : 0.0f),
+		(value.y < 0.0f) ? -1.0f : ((value.y > 0.0f) ? 1.0f : 0.0f),
+		(value.z < 0.0f) ? -1.0f : ((value.z > 0.0f) ? 1.0f : 0.0f));
+}
+
 } // namespace ln

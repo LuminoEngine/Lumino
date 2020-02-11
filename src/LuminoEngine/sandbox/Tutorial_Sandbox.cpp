@@ -13,6 +13,7 @@ class App : public Application
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
 		box = BoxMesh::create();
+		box->setColorScale(Color::Red);
 	}
 
 	virtual void onUpdate() override

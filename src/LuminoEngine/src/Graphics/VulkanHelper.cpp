@@ -199,6 +199,8 @@ PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
 PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR;
 #endif
 
+PFN_vkGetPhysicalDeviceProperties2 vkGetPhysicalDeviceProperties2;
+
 namespace ln {
 namespace detail {
 
@@ -673,6 +675,9 @@ bool VulkanHelper::initVulkanFunctions()
     vkCreateWin32SurfaceKHR = FUNC_PTR(PFN_vkCreateWin32SurfaceKHR, "vkCreateWin32SurfaceKHR");
     vkGetPhysicalDeviceWin32PresentationSupportKHR = FUNC_PTR(PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
 #endif
+
+	vkGetPhysicalDeviceProperties2 = FUNC_PTR(PFN_vkGetPhysicalDeviceProperties2, "vkGetPhysicalDeviceProperties2");
+	
 
 	loaded = true;
     return true;

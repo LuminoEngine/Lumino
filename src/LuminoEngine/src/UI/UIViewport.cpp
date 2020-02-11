@@ -132,7 +132,6 @@ void UIViewport::onUpdateLayout(UILayoutContext* layoutContext)
 
 void UIViewport::onRender(UIRenderingContext* context)
 {
-	//return;
 
     GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
     //auto* renderTarget = graphicsContext->renderTarget(0);

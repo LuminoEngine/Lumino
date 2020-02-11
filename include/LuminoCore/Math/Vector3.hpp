@@ -318,6 +318,8 @@ public:
 
     static bool nearEqual(const Vector3& value1, const Vector3& value2);
 
+    static Vector3 sign(const Vector3& value);
+
 public:
     Vector3& operator+=(const Vector3& v);
     Vector3& operator+=(float v);

@@ -394,8 +394,56 @@ Result VulkanDevice::pickPhysicalDevice()
             m_physicalDeviceInfos[i].device = gpuDevices[i];
             vkGetPhysicalDeviceMemoryProperties(gpuDevices[i], &m_physicalDeviceInfos[i].memoryProperty);
             vkGetPhysicalDeviceProperties(gpuDevices[i], &m_physicalDeviceInfos[i].deviceProperty);
+
+#if 0	// test
+			if (m_physicalDeviceInfos[i].deviceProperty.apiVersion >= VK_MAKE_VERSION(1, 1, 0))
+			{
+				/*
+					 *	vkGetPhysicalDeviceProperties2() を使う前には、
+					 *	事前にプロパティ構造体のチェーンを準備しておく必要がある
+					 */
+				VkPhysicalDeviceProperties2 dev_props2 = {};
+
+				//struct StructChainInfo {
+				//	VkStructureType sType;
+				//	uint32_t        mem_size;
+				//};
+
+				//struct StructChainInfo chain_info[] = {
+				//	{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT,
+				//	   sizeof(VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT) },
+				//	{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR,
+				//	   sizeof(VkPhysicalDevicePointClippingPropertiesKHR) },
+				//	{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR,
+				//	   sizeof(VkPhysicalDevicePushDescriptorPropertiesKHR) },
+				//	{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT,
+				//	   sizeof(VkPhysicalDeviceDiscardRectanglePropertiesEXT) },
+				//	{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR,
+				//	   sizeof(VkPhysicalDeviceMultiviewPropertiesKHR) } };
+
+				//uint32_t chain_info_len = LN_ARRAY_SIZE_OF(chain_info);
+
+				dev_props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+				dev_props2.pNext = nullptr;
+				//BuildStructChain((struct StructHeader *)&dev_props2, chain_info, chain_info_len);
+
+				VkPhysicalDeviceMaintenance3Properties m3props;
+				m3props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES;
+				m3props.pNext = nullptr;
+				dev_props2.pNext = &m3props;
+
+				vkGetPhysicalDeviceProperties2(gpuDevices[i],			/* [in ] Vulkan物理デバイスのハンドル */
+					&dev_props2);	/* [out] Vulkan物理デバイス情報が格納される */
+
+				printf("");
+				//VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT *pBlendOp = dev_props2.pNext;
+			}
+#endif
+
+
         }
     }
+
 
     // Select device
     // TODO:
@@ -2979,7 +3027,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 VkDescriptorBufferInfo info;
                 info.buffer = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
                 info.offset = 0;
-                info.range = item.size;
+                info.range = 1000000;//item.size;
                 m_bufferDescriptorBufferInfo.push_back(info);
                 
                 VkWriteDescriptorSet set;

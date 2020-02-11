@@ -14,14 +14,12 @@
     href: first-tutorial/1-basic.md
   - name: 2. グラフィックスの基本
     href: first-tutorial/2-graphics-basic.md
-  - name: 3. 衝突を判定する
-    href: first-tutorial/3-intersects.md
   - name: 4. 図形を描画する
     href: first-tutorial/4-shapes.md
   - name: 5. 画像を描画する
     href: first-tutorial/5-texture.md
   - name: 6. GUI を作る
-    href: first-tutorial/6-texture.md
+    href: first-tutorial/6-gui.md
   - name: 7. 入力を受け取る
     href: first-tutorial/7-input.md
   - name: 8. 音声を再生する
