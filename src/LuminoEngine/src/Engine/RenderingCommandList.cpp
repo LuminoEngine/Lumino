@@ -129,6 +129,8 @@ void RenderingQueue::submit(GraphicsContext* context)
     if (context->renderingType() == RenderingType::Immediate) {
         // 一時メモリのクリアはしておく
         context->m_executingCommandList->clear();
+		std::swap(context->m_recordingCommandList, context->m_executingCommandList);
+		//context->m_recordingCommandList->clear();
     }
     else {
         // もし前回発行した CommandList がまだ実行中であればここで待つ
