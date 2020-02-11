@@ -268,6 +268,7 @@ void Example_SoundControl();
 void Example_UIControls();
 void Example_Tilemap();
 void Tutorial_Sandbox();
+void Sandbox_Voxel();
 
 int main(int argc, char** argv)
 {
@@ -290,7 +291,8 @@ int main(int argc, char** argv)
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
+		Sandbox_Voxel();
         return 0;
     }
 
