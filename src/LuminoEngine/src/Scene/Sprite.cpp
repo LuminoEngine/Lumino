@@ -49,6 +49,21 @@ Ref<Sprite> Sprite::create(SpriteSheet* frameSet)
 	return makeObject<Sprite>(frameSet);
 }
 
+Ref<Sprite> Sprite::load(StringRef filePath)
+{
+	return makeObject<Sprite>(Texture2D::load(filePath));
+}
+
+Ref<Sprite> Sprite::loadEmoji(StringRef code)
+{
+	return makeObject<Sprite>(Texture2D::loadEmoji(code));
+}
+
+Ref<Sprite> Sprite::loadEmoji(uint32_t codePoint)
+{
+	return makeObject<Sprite>(Texture2D::loadEmoji(codePoint));
+}
+
 Sprite::Sprite()
 {
 }

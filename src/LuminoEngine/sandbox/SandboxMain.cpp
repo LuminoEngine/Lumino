@@ -291,8 +291,8 @@ int main(int argc, char** argv)
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		//Tutorial_Sandbox();
-		Sandbox_Voxel();
+		Tutorial_Sandbox();
+		//Sandbox_Voxel();
         return 0;
     }
 

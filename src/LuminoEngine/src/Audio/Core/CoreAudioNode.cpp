@@ -3,7 +3,7 @@
 #include "CoreAudioNode.hpp"
 #include "../Decoder/AudioDecoder.hpp"	// for AudioSourceNodeCore
 #include "ChromiumWebCore.hpp"
-#include "../blink/VectorMath.h"
+#include "../Core/VectorMath.h"
 
 namespace ln {
 namespace detail {

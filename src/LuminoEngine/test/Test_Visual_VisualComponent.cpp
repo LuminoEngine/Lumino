@@ -110,12 +110,12 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
     {
         auto sprite1 = Sprite::create(texture1, 5, 5);
         sprite1->setPosition(0, 0, 0);
-        sprite1->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite1->setRotation(0, -Math::PI / 4, 0);
         sprite1->setShadingModel(ShadingModel::UnLighting);
 
         auto sprite2 = Sprite::create(texture2, 5, 5);
         sprite2->setPosition(0, 0, 0);
-        sprite2->setEulerAngles(0, Math::PI / 4, 0);
+        sprite2->setRotation(0, Math::PI / 4, 0);
         sprite2->setShadingModel(ShadingModel::UnLighting);
 
         TestEnv::updateFrame();
@@ -127,12 +127,12 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
     {
         auto sprite1 = Sprite::create(texture1, 4, 4);
         sprite1->setPosition(0, 0, 0);
-        sprite1->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite1->setRotation(0, -Math::PI / 4, 0);
         sprite1->setShadingModel(ShadingModel::UnLighting);
 
         auto sprite2 = Sprite::create(texture2, 4, 4);
         sprite2->setPosition(0, 0, 0);
-        sprite2->setEulerAngles(0, Math::PI / 4, 0);
+        sprite2->setRotation(0, Math::PI / 4, 0);
         sprite2->setShadingModel(ShadingModel::UnLighting);
         sprite2->setDepthTestEnabled(false);
 
@@ -145,13 +145,13 @@ TEST_F(Test_Visual_VisualComponent, DepthTest)
     {
         auto sprite1 = Sprite::create(texture1, 4, 4);
         sprite1->setPosition(0, 0, 0);
-        sprite1->setEulerAngles(0, -Math::PI / 4, 0);
+        sprite1->setRotation(0, -Math::PI / 4, 0);
         sprite1->setShadingModel(ShadingModel::UnLighting);
         sprite1->setDepthWriteEnabled(false);
 
         auto sprite2 = Sprite::create(texture2, 4, 4);
         sprite2->setPosition(0, 0, 0);
-        sprite2->setEulerAngles(0, Math::PI / 4, 0);
+        sprite2->setRotation(0, Math::PI / 4, 0);
         sprite2->setShadingModel(ShadingModel::UnLighting);
 
         TestEnv::updateFrame();
@@ -189,7 +189,7 @@ TEST_F(Test_Visual_VisualComponent, CullMode)
         sprite4->setShadingModel(ShadingModel::UnLighting);
         sprite4->setPosition(1.5, 0, 0);
         sprite4->setCullMode(CullMode::Front);
-        sprite4->setEulerAngles(0, Math::PI, 0);
+        sprite4->setRotation(0, Math::PI, 0);
 
         // None, FrontFace -> Visible
         auto sprite5 = Sprite::create(texture1, 3, 3);
@@ -202,7 +202,7 @@ TEST_F(Test_Visual_VisualComponent, CullMode)
         sprite6->setShadingModel(ShadingModel::UnLighting);
         sprite6->setCullMode(CullMode::None);
         sprite6->setPosition(1.5, -3, 0);
-        sprite6->setEulerAngles(0, Math::PI, 0);
+        sprite6->setRotation(0, Math::PI, 0);
 
         TestEnv::updateFrame();
         ASSERT_SCREEN(LN_ASSETFILE("Visual/Result/Test_Visual_VisualComponent-CullMode-1.png"));

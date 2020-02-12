@@ -115,7 +115,7 @@ public:
 
 	/** このオブジェクトの回転をオイラー角から設定します。(radian) */
 	LN_METHOD()
-	void setEulerAngles(float x, float y, float z) { setRotation(Quaternion::makeFromEulerAngles(Vector3(x, y, z))); }
+	void setRotation(float x, float y, float z) { setRotation(Quaternion::makeFromEulerAngles(Vector3(x, y, z))); }
 
 	/** このオブジェクトの回転を取得します。 */
 	LN_METHOD(Property)

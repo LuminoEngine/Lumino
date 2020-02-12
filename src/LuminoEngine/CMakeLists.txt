@@ -105,38 +105,9 @@ set(LN_SOURCES_Input
     src/Input/Win32JoystickDriver.hpp
 )
 
-set(LN_SOURCES_Audio
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioBus.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioGainNode.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioProcessorNode.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/GameAudio.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/InternalSharedMutex.inc
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
-    src/Audio/Internal.hpp
-    src/Audio/AudioBus.cpp
-    src/Audio/AudioContext.cpp
-    src/Audio/AudioDevice.cpp
-    src/Audio/AudioDevice.hpp
-    src/Audio/AudioGainNode.cpp
-    src/Audio/AudioListener.cpp
-    src/Audio/AudioManager.cpp
-    src/Audio/AudioManager.hpp
-    src/Audio/AudioNode.cpp
-    src/Audio/AudioProcessorNode.cpp
-    src/Audio/GameAudio.cpp
-    src/Audio/GameAudioImpl.cpp
-    src/Audio/GameAudioImpl.hpp
-    src/Audio/Sound.cpp
-    src/Audio/blink/VectorMath.cpp
-    src/Audio/blink/VectorMath.h
-)
-
+file(GLOB LN_SOURCES_Audio ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/*.hpp src/Audio/*.cpp src/Audio/*.hpp)
 file(GLOB LN_SOURCES_Audio_Decoder src/Audio/Decoder/*.cpp src/Audio/Decoder/*.hpp)
-file(GLOB LN_SOURCES_Audio_Core src/Audio/Core/*.cpp src/Audio/Core/*.hpp)
+file(GLOB LN_SOURCES_Audio_Core src/Audio/Core/*.cpp src/Audio/Core/*.hpp src/Audio/Core/*.h)
 
 set(LN_SOURCES_Audio_Device
     src/Audio/ALAudioDevice.cpp

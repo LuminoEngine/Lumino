@@ -2114,7 +2114,7 @@ LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQua
 LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x, float y, float z)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setEulerAngles(x, y, z));
+    //(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setEulerAngles(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 

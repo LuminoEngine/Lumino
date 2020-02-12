@@ -246,6 +246,8 @@ public:
     /** 幅または高さを持たないかを判定します。*/
     bool isEmpty() const { return (width < 0 || height < 0); }
 
+	bool isSquashed() const { return width <= 0.0f || height <= 0.0f; }
+
     /** 要素がすべて 0 かを判定します。*/
     bool isZero() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
 

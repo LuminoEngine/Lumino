@@ -46,6 +46,11 @@ public:
 
     static Ref<Sprite> create(Texture* texture, float width, float height);
 	static Ref<Sprite> create(SpriteSheet* frameSet);
+	
+	// 画像ファイルまたは spritesheet をロード
+	static Ref<Sprite> load(StringRef filePath);
+	static Ref<Sprite> loadEmoji(StringRef code);
+	static Ref<Sprite> loadEmoji(uint32_t codePoint);
 
     /** スプライトが表示するテクスチャを設定します。 */
     LN_METHOD(Property)

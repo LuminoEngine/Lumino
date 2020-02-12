@@ -175,7 +175,7 @@ LN_OBJECT_IMPLEMENT(SpriteComponent, VisualComponent) {}
 
 SpriteComponent::SpriteComponent()
     : m_material(nullptr)
-    , m_size()
+    , m_size(-1.0f, -1.0f)
     , m_anchorPoint(0.5, 0.5)
 	, m_frameIndex(0)
     , m_flipFlags(detail::SpriteFlipFlags::None)
@@ -191,7 +191,7 @@ void SpriteComponent::init()
 {
     VisualComponent::init();
     m_sourceRect.set(0, 0, -1, -1);
-    setSize(Size(1, 1));
+    //setSize(Size(1, 1));
 
     m_material = makeObject<Material>();
     //m_material->setEmissive(Color(1,1,1,0.5));
@@ -232,6 +232,75 @@ void SpriteComponent::setFrameIndex(int index)
 
 void SpriteComponent::onRender(RenderingContext* context)
 {
+#if 1
+	// Find anchor and sourceRect. SpriteSheet priority.
+	Vector2 anchorPoint = m_anchorPoint;
+	Rect actualSourceRect = m_sourceRect;
+	Texture* actualTexture = texture();
+	if (m_frameSet) {
+		if (SpriteFrame* frame = m_frameSet->frame(m_frameIndex)) {
+			actualSourceRect = frame->sourceRect();
+			anchorPoint = frame->anchorPoint();
+			actualTexture = m_frameSet->texture();
+
+			anchorPoint.x = (Math::isNaN(anchorPoint.x)) ? m_anchorPoint.x : anchorPoint.x;
+			anchorPoint.y = (Math::isNaN(anchorPoint.y)) ? m_anchorPoint.y : anchorPoint.y;
+		}
+	}
+	Size actualTextureSize = (actualTexture) ? Size(actualTexture->width(), actualTexture->height()) : Size::Zero;
+	if (actualSourceRect.width < 0 && actualSourceRect.height < 0) {
+		// Source-rect undefined. use texture size.
+		actualSourceRect.width = actualTextureSize.width;
+		actualSourceRect.height = actualTextureSize.height;
+	}
+
+	if (actualSourceRect.isSquashed()) return;
+
+	// Calculate actual size.
+	Size actualSize = m_size;
+	{
+		if (actualSize.width < 0.0f && actualSize.height < 0.0f) {
+			// Both is undefined.
+			if (m_pixelsParUnit > 0.0f) {
+				actualSize.width = actualSourceRect.width / m_pixelsParUnit;
+				actualSize.height = actualSourceRect.height / m_pixelsParUnit;
+			}
+			else {
+				// Height=1, Width=aspect.
+				actualSize.height = 1.0f;
+				actualSize.width = (actualSourceRect.width / actualSourceRect.height);
+			}
+		}
+		else if (actualSize.width < 0.0f) {
+			// Width is undefined.
+			actualSize.width = actualSize.height * (actualSourceRect.width / actualSourceRect.height);
+		}
+		else {
+			// Height is undefined.
+			actualSize.height = actualSize.width * (actualSourceRect.height / actualSourceRect.width);
+		}
+
+		if (actualSize.width < 0.0f) {
+			actualSize.width = 1.0f;
+		}
+		if (actualSize.height < 0.0f) {
+			actualSize.height = 1.0f;
+		}
+
+		// be set 0 directly by user program.
+		if (actualSize.isSquashed()) return;
+	}
+
+	Rect uvRect(
+		actualSourceRect.x / actualTextureSize.width,
+		actualSourceRect.y / actualTextureSize.height,
+		actualSourceRect.width / actualTextureSize.width,
+		actualSourceRect.height / actualTextureSize.height);
+	context->drawSprite(
+		Matrix(), actualSize, anchorPoint, uvRect, Color::White,
+		SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
+
+#else
     Vector2 anchorPoint = m_anchorPoint;
 	Rect sourceRect = m_sourceRect;
     Texture* tex = texture();
@@ -263,6 +332,7 @@ void SpriteComponent::onRender(RenderingContext* context)
     context->drawSprite(
         Matrix(), renderSize, anchorPoint, renderSourceRect, Color::White,
         SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
+#endif
 }
 
 void SpriteComponent::serialize(Archive& ar)
