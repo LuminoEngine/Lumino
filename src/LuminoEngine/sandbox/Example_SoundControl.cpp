@@ -30,7 +30,7 @@ class App_Example_SoundControl : public Application
     {
 		auto size = Engine::mainWindow()->actualSize();
 
-		if (Mouse::isPressed(MouseButtons::Left)) {
+		if (Mouse::pressed(MouseButtons::Left)) {
 			float pitch = Mouse::position().x / size.width;
 			sound->setPitch(pitch + 0.5);
 		}

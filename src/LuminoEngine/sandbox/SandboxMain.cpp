@@ -1046,7 +1046,7 @@ int main(int argc, char** argv)
     int frameCount = 0;
     while (Engine::update())
     {
-        if (Input::isTriggered(InputButtons::Submit)) {
+        if (Input::triggered(InputButtons::Submit)) {
             GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");
@@ -1059,7 +1059,7 @@ int main(int argc, char** argv)
         //std::cout << track1->evaluate(time) << std::endl;
         time += 0.016;
 #if 0
-        if (Mouse::isPressed(MouseButtons::Left))
+        if (Mouse::pressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;
             float volume = (Mouse::position().y / 480);

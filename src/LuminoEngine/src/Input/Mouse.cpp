@@ -14,24 +14,24 @@ static detail::MouseInputDevice* Mouse_activeDevice()
 	return detail::EngineDomain::inputManager()->mouseInputDevice();
 }
 
-bool Mouse::isPressed(MouseButtons button)
+bool Mouse::pressed(MouseButtons button)
 {
-	return Mouse_activeDevice()->isPressed(button);
+	return Mouse_activeDevice()->pressed(button);
 }
 
-bool Mouse::isTriggered(MouseButtons button)
+bool Mouse::triggered(MouseButtons button)
 {
-	return Mouse_activeDevice()->isTriggered(button);
+	return Mouse_activeDevice()->triggered(button);
 }
 
-bool Mouse::isOffTriggered(MouseButtons button)
+bool Mouse::triggeredOff(MouseButtons button)
 {
-	return Mouse_activeDevice()->isOffTriggered(button);
+	return Mouse_activeDevice()->triggeredOff(button);
 }
 
-bool Mouse::isRepeated(MouseButtons button)
+bool Mouse::repeated(MouseButtons button)
 {
-	return Mouse_activeDevice()->isRepeated(button);
+	return Mouse_activeDevice()->repeated(button);
 }
 
 Point Mouse::position()
@@ -49,24 +49,24 @@ MouseInputDevice::MouseInputDevice()
 {
 }
 
-bool MouseInputDevice::isPressed(MouseButtons button) const
+bool MouseInputDevice::pressed(MouseButtons button) const
 {
-	return m_elements[MouseButtonToIndex(button)].isPressed();
+	return m_elements[MouseButtonToIndex(button)].pressed();
 }
 
-bool MouseInputDevice::isTriggered(MouseButtons button) const
+bool MouseInputDevice::triggered(MouseButtons button) const
 {
-	return m_elements[MouseButtonToIndex(button)].isTriggered();
+	return m_elements[MouseButtonToIndex(button)].triggered();
 }
 
-bool MouseInputDevice::isOffTriggered(MouseButtons button) const
+bool MouseInputDevice::triggeredOff(MouseButtons button) const
 {
-	return m_elements[MouseButtonToIndex(button)].isOffTriggered();
+	return m_elements[MouseButtonToIndex(button)].triggeredOff();
 }
 
-bool MouseInputDevice::isRepeated(MouseButtons button) const
+bool MouseInputDevice::repeated(MouseButtons button) const
 {
-	return m_elements[MouseButtonToIndex(button)].isRepeated(m_manager->repeatIntervalStartTime(), m_manager->repeatIntervalStepTime());
+	return m_elements[MouseButtonToIndex(button)].repeated(m_manager->repeatIntervalStartTime(), m_manager->repeatIntervalStepTime());
 }
 
 Point MouseInputDevice::position()

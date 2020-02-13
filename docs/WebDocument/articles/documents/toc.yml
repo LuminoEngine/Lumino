@@ -16,26 +16,26 @@
     href: first-tutorial/2-graphics-basic.md
   - name: 3. オブジェクトを動かす
     href: first-tutorial/3-object.md
-  - name: 3. 図形を描画する
-    href: first-tutorial/3-shapes.md
-  - name: 4. ライトを設定する
-    href: first-tutorial/4-light.md
-  - name: 5. 画像を描画する
-    href: first-tutorial/5-image.md
-  - name: 6. マテリアルを設定する
-    href: first-tutorial/6-material.md
-  - name: 7. GUI を作る
-    href: first-tutorial/7-gui.md
-  - name: 8. 入力を受け取る
-    href: first-tutorial/8-input.md
-  - name: 9. 音声を再生する
-    href: first-tutorial/9-audio.md
-  - name: 10. 物理演算を設定する
-    href: first-tutorial/10-physics.md
-  - name: 11. アセットを管理する
-    href: first-tutorial/11-assets.md
-  - name: 12. アプリをリリースする
-    href: first-tutorial/12-publish.md
+  - name: 4. 図形を描画する
+    href: first-tutorial/4-shapes.md
+  - name: 5. ライトを設定する
+    href: first-tutorial/5-light.md
+  - name: 6. 画像を描画する
+    href: first-tutorial/6-image.md
+  - name: 7. マテリアルを設定する (TBD)
+    href: first-tutorial/7-material.md
+  - name: 8. GUI を作る (TBD)
+    href: first-tutorial/8-gui.md
+  - name: 9. 入力を受け取る
+    href: first-tutorial/9-input.md
+  - name: 10. 音声を再生する (TBD)
+    href: first-tutorial/10-audio.md
+  - name: 11. 物理演算を設定する (TBD)
+    href: first-tutorial/11-physics.md
+  - name: 12. アセットを管理する (TBD)
+    href: first-tutorial/12-assets.md
+  - name: 13. アプリをリリースする (TBD)
+    href: first-tutorial/13-publish.md
 
 - name: TIPS
   items:

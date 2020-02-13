@@ -5,39 +5,19 @@ using namespace ln;
 
 class App : public Application
 {
-	Ref<BoxMesh> box;
-	float posX = 0;
-	float posY = 0;
-
-	virtual void onInit() override
-	{
-		box = BoxMesh::create();
-	}
-
 	virtual void onUpdate() override
 	{
-		if (Input::isPressed(u"left")) {
-			posX -= 0.1;
-		}
-
-		if (Input::isPressed(u"right")) {
-			posX += 0.1;
-		}
-
-		if (Input::isPressed(u"up")) {
-			posY += 0.1;
-		}
-
-		if (Input::isPressed(u"down")) {
-			posY -= 0.1;
-		}
-
-		if (Input::isTriggered(u"submit")) {
-			posX = 0;
-			posY = 0;
-		}
-
-		box->setPosition(posX, posY, 0);
+		if (Input::pressed(u"left")) Debug::print(0, u"left");
+		if (Input::pressed(u"right")) Debug::print(0, u"right");
+		if (Input::pressed(u"up")) Debug::print(0, u"up");
+		if (Input::pressed(u"down")) Debug::print(0, u"down");
+		if (Input::pressed(u"submit")) Debug::print(0, u"submit");
+		if (Input::pressed(u"cancel")) Debug::print(0, u"cancel");
+		if (Input::pressed(u"menu")) Debug::print(0, u"menu");
+		if (Input::pressed(u"shift")) Debug::print(0, u"shift");
+		if (Input::pressed(u"pageup")) Debug::print(0, u"pageup");
+		if (Input::pressed(u"pagedown")) Debug::print(0, u"pagedown");
+		if (Input::pressed(u"any")) Debug::print(0, u"any");
 	}
 };
 

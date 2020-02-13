@@ -55,7 +55,7 @@ public:
             }
         }
 
-        if (isPressed()) {
+        if (pressed()) {
             if (repeatTime < repeatIntervalStartTime + repeatIntervalStepTime) {
                 repeatTime += elapsedTime;
             } else {
@@ -66,10 +66,10 @@ public:
         }
     }
 
-    bool isPressed() const { return state > 0; }
-    bool isTriggered() const { return state == 1; }
-    bool isOffTriggered() const { return state < 0; }
-    bool isRepeated(float repeatIntervalStartTime, float repeatIntervalStepTime) const { return isTriggered() || repeatTime >= repeatIntervalStartTime + repeatIntervalStepTime; }
+    bool pressed() const { return state > 0; }
+    bool triggered() const { return state == 1; }
+    bool triggeredOff() const { return state < 0; }
+    bool repeated(float repeatIntervalStartTime, float repeatIntervalStepTime) const { return triggered() || repeatTime >= repeatIntervalStartTime + repeatIntervalStepTime; }
 };
 
 } // namespace detail

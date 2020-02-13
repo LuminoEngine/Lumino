@@ -89,10 +89,10 @@ class App_Example_Navigator : public Application
 
     virtual void onUpdate() override
     {
-        if (Input::isTriggered(InputButtons::Submit)) {
+        if (Input::triggered(InputButtons::Submit)) {
             m_navigator->pushFocus(m_window1);
         }
-        if (Input::isTriggered(InputButtons::Cancel)) {
+        if (Input::triggered(InputButtons::Cancel)) {
             m_navigator->popFocus();
         }
     }
