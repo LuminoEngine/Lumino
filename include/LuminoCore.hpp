@@ -9,7 +9,6 @@
 #include "LuminoCore/Base/EnumFlags.hpp"
 #include "LuminoCore/Base/ElapsedTimer.hpp"
 #include "LuminoCore/Base/Environment.hpp"
-#include "LuminoCore/Base/Event.hpp"
 #include "LuminoCore/Base/List.hpp"
 #include "LuminoCore/Base/Locale.hpp"
 #include "LuminoCore/Base/Logger.hpp"

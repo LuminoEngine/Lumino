@@ -50,7 +50,7 @@ public:
 	//const Point& actualScreenOffset() const { return m_actualScreenOffset; }
     const Size& actualSize() const { return m_actualSize; }
 
-    LN_METHOD(Event)
+    //LN_METHOD(Event)
     EventConnection connectOnUIEvent(UIEventHandler handler);
 
 public: // TODO: protected

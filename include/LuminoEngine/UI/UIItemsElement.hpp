@@ -17,7 +17,7 @@ public:
     Variant* data() const { return m_data; }
     
     /** Click イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
+    //LN_METHOD(Event)
     EventConnection connectOnClick(UIClickEventHandler handler);
 
 protected:
@@ -55,10 +55,10 @@ public:
 	UICollectionItem* selectedItem() const;
     
     /** ItemClick イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
+    //LN_METHOD(Event)
     EventConnection connectOnItemClick(UIClickEventHandler handler);
     
-    LN_METHOD(Event)
+    //LN_METHOD(Event)
     EventConnection connectOnSelectionChanged(UISelectionChangedEventHandler handler);
 
 protected:

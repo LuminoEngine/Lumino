@@ -9,7 +9,6 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Base/Result.hpp>
-#include <LuminoCore/Base/Event.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIIcon.hpp>

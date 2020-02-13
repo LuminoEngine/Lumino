@@ -40,6 +40,7 @@
 #pragma once
 
 #include "../Base/Variant.hpp"
+#include "../Base/Event.hpp"
 
 namespace ln {
 class TypeInfo;

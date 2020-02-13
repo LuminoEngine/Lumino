@@ -55,8 +55,8 @@ public:
     void init(const StringRef& text);
 
     /** Clicked イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnClicked(UIEventHandler handler);   // TODO: Click
+    //LN_METHOD(Event)
+    EventConnection connectOnClicked(UIEventHandler handler);
 
 protected:
     virtual const String& elementName() const override { static String name = u"UIButton"; return name; }
@@ -76,11 +76,11 @@ public:
 	
 
 	/** Checked イベントの通知を受け取るコールバックを登録します。*/
-	LN_METHOD(Event)
+	//LN_METHOD(Event)
 	EventConnection connectOnChecked(UIEventHandler handler);
 
 	/** Unchecked イベントの通知を受け取るコールバックを登録します。*/
-	LN_METHOD(Event)
+	//LN_METHOD(Event)
 	EventConnection connectOnUnchecked(UIEventHandler handler);
 
 LN_CONSTRUCT_ACCESS:

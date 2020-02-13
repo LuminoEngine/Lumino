@@ -10,7 +10,7 @@ class UIActiveTimer
 {
 public:
     /** Tick イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
+    //LN_METHOD(Event)
     EventConnection connectOnTick(UITimerEventHandler handler);
 
 protected:

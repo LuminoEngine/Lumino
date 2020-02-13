@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "Event.hpp"
 
 namespace ln {
 class UndoRedoStack;
