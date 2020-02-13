@@ -5,6 +5,7 @@
 #include <memory>
 #include <functional>
 #include "../Engine/Object.hpp"
+#include "Delegate.hpp"
 
 namespace ln {
 namespace detail {
@@ -22,9 +23,11 @@ struct EventInternalDataBase
 } // namespace detail
 
 /** イベントハンドラの状態を追跡します。必要に応じて、イベントから切断するために使用します。 */
+LN_CLASS()
 class EventConnection
 	: public Object
 {
+	LN_OBJECT;
 public:
     EventConnection()
         : m_internalData(nullptr)

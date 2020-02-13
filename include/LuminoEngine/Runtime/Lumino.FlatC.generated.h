@@ -154,6 +154,7 @@ typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
 typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn);
 typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle p1);
 typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
+typedef LnResult(*LnUIEventHandlerDelegateCallback)(LnHandle uieventhandlerdelegate, LnHandle p1);
 
 
 //==============================================================================
@@ -289,6 +290,16 @@ LN_FLAT_API LnResult LnObject_OnSerialize_CallOverrideBase(LnHandle object, LnHa
 
 extern LN_FLAT_API int LnObject_GetTypeInfoId();
 LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::EventConnection
+
+typedef LnResult(*LnEventConnection_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_SetOverrideCallback(LnEventConnection_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnEventConnection_GetTypeInfoId();
+LN_FLAT_API void LnEventConnection_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::PromiseFailureDelegate
@@ -604,6 +615,11 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath
 LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password);
 
 /**
+    @brief (default: Debug ビルドの場合true、それ以外は false)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled);
+
+/**
     @brief デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
 */
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
@@ -636,16 +652,10 @@ LN_FLAT_API LnResult LnEngine_Finalize();
 LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
 
 /**
-    @brief 。
+    @brief アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
-
-/**
-    @brief デフォルトで作成されるメインの World です。
-    @param[out] outReturn : instance.
-*/
-LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn);
+LN_FLAT_API LnResult LnEngine_Time(double* outReturn);
 
 
 //==============================================================================
@@ -662,6 +672,13 @@ LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
     @param[in] application : instance
 */
 LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
+
+/**
+    @brief デフォルトで作成されるメインの World を取得します。
+    @param[in] application : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn);
 
 /**
     @brief 
@@ -872,13 +889,13 @@ LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* 
     @brief このオブジェクトの回転を設定します。
     @param[in] worldobject : instance
 */
-LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQuaternion* rot);
+LN_FLAT_API LnResult LnWorldObject_SetRotationQuaternion(LnHandle worldobject, const LnQuaternion* rot);
 
 /**
     @brief このオブジェクトの回転をオイラー角から設定します。(radian)
     @param[in] worldobject : instance
 */
-LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x, float y, float z);
+LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, float x, float y, float z);
 
 /**
     @brief このオブジェクトの回転を取得します。
@@ -930,6 +947,18 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector3* outReturn);
+
+/**
+    @brief 指定した座標を向くように、オブジェクトを回転させます。
+    @param[in] worldobject : instance
+*/
+LN_FLAT_API LnResult LnWorldObject_LookAt(LnHandle worldobject, const LnVector3* target);
+
+/**
+    @brief 指定した座標を向くように、オブジェクトを回転させます。
+    @param[in] worldobject : instance
+*/
+LN_FLAT_API LnResult LnWorldObject_LookAtXYZ(LnHandle worldobject, float x, float y, float z);
 
 /**
     @brief 
@@ -1011,7 +1040,13 @@ LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite);
     @brief init
     @param[out] outSprite : instance.
 */
-LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, float height, LnHandle* outSprite);
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite);
+
+/**
+    @brief init
+    @param[out] outSprite : instance.
+*/
+LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite);
 
 typedef LnResult(*LnSprite_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnSprite_OnSerialize_SetOverrideCallback(LnSprite_OnSerialize_OverrideCallback callback);
@@ -1039,6 +1074,12 @@ LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_CallOverrideBase(LnHandle object,
 
 extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId();
 LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::UIEventHandlerDelegate
+
+LN_FLAT_API LnResult LnUIEventHandlerDelegate_Create(LnUIEventHandlerDelegateCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnUIEventHandlerDelegate_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UILayoutElement
@@ -1187,8 +1228,9 @@ LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton);
 /**
     @brief Clicked イベントの通知を受け取るコールバックを登録します。
     @param[in] uibutton : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
 */
-LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler);
+LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle handler, LnHandle* outReturn);
 
 typedef LnResult(*LnUIButton_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnUIButton_OnSerialize_SetOverrideCallback(LnUIButton_OnSerialize_OverrideCallback callback);

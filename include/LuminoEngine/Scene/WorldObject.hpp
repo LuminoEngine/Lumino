@@ -12,6 +12,7 @@ class WorldObject;
 class Component;
 class RenderingContext;
 
+/** ComponentList */
 LN_CLASS()
 class ComponentList : public Collection<Ref<Component>>
 {
@@ -110,7 +111,7 @@ public:
 	const Vector3& position() const { return m_transform->position(); }
 
 	/** このオブジェクトの回転を設定します。 */
-	LN_METHOD(Property)
+	LN_METHOD(OverloadPostfix = "Quaternion")
 	void setRotation(const Quaternion& rot) { m_transform->setRotation(rot); }
 
 	/** このオブジェクトの回転をオイラー角から設定します。(radian) */
@@ -151,11 +152,17 @@ public:
 
 	/** 指定した座標を向くように、オブジェクトを回転させます。 */
 	LN_METHOD()
-	void lookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
+	void lookAt(const Vector3& target) { lookAt(target, Vector3::UnitY); }
 
 	/** 指定した座標を向くように、オブジェクトを回転させます。 */
 	LN_METHOD(OverloadPostfix = "XYZ")
-    void lookAt(float x, float y, float z, const Vector3& up = Vector3::UnitY) { return lookAt(Vector3(x, y, z), up); }
+    void lookAt(float x, float y, float z) { return lookAt(Vector3(x, y, z), Vector3::UnitY); }
+
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+	void lookAt(const Vector3& target, const Vector3& up);
+
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+    void lookAt(float x, float y, float z, const Vector3& up) { return lookAt(Vector3(x, y, z), up); }
 
     void addComponent(Component* component);
 

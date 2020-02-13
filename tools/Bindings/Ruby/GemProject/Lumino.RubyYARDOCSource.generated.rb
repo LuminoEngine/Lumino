@@ -412,6 +412,11 @@ class Lumino::Object
 
 end
 
+# イベントハンドラの状態を追跡します。必要に応じて、イベントから切断するために使用します。
+# 
+class Lumino::EventConnection
+end
+
 # Promise failure.
 # 
 class Lumino::PromiseFailureDelegate
@@ -794,6 +799,14 @@ class Lumino::EngineSettings
 
 
 
+    # (default: Debug ビルドの場合true、それ以外は false)
+    # @param [Boolean] enabled 
+    # 
+    def set_debug_tool_enabled(*args)
+    end
+
+
+
     # デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
     # @param [Boolean] enabled 
     # 
@@ -834,16 +847,9 @@ class Lumino::Engine
 
 
 
-    # 。
-    # @return [Lumino::UIControl] 
-    def main_ui_view(*args)
-    end
-
-
-
-    # デフォルトで作成されるメインの World です。
-    # @return [Lumino::World] 
-    def world(*args)
+    # アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
+    # @return [] 
+    def time(*args)
     end
 
 
@@ -861,6 +867,13 @@ class Lumino::Application
 
     # 毎フレーム呼び出されます。
     def on_update(*args)
+    end
+
+
+
+    # デフォルトで作成されるメインの World を取得します。
+    # @return [Lumino::World] 
+    def world(*args)
     end
 
 
@@ -981,7 +994,7 @@ class Lumino::World
 
 end
 
-# 
+# ComponentList
 # 
 class Lumino::ComponentList
     # 
@@ -1028,20 +1041,18 @@ class Lumino::WorldObject
 
 
 
-    # このオブジェクトの回転を設定します。
-    # @param [Lumino::Quaternion] rot 
-    # 
-    def rotation=(*args)
-    end
-
-
-
     # このオブジェクトの回転をオイラー角から設定します。(radian)
-    # @param [Float] x 
-    # @param [Float] y 
-    # @param [Float] z 
-    # 
-    def set_euler_angles(*args)
+    # @overload set_rotation(rot)
+    #   このオブジェクトの回転を設定します。
+    #   @param [Lumino::Quaternion] rot 
+    #   
+    # @overload set_rotation(x, y, z)
+    #   このオブジェクトの回転をオイラー角から設定します。(radian)
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def set_rotation(*args)
     end
 
 
@@ -1099,6 +1110,22 @@ class Lumino::WorldObject
     # このオブジェクトのローカルの中心位置を取得します。
     # @return [Lumino::Vector3] 
     def center_point(*args)
+    end
+
+
+
+    # 指定した座標を向くように、オブジェクトを回転させます。
+    # @overload look_at(target)
+    #   指定した座標を向くように、オブジェクトを回転させます。
+    #   @param [Lumino::Vector3] target 
+    #   
+    # @overload look_at(x, y, z)
+    #   指定した座標を向くように、オブジェクトを回転させます。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] z 
+    #   
+    def look_at(*args)
     end
 
 
@@ -1184,6 +1211,10 @@ class Lumino::Sprite
     # init
     # @overload initialize()
     #   init
+    # @overload initialize(texture)
+    #   init
+    #   @param [Lumino::Texture] texture 
+    #   
     # @overload initialize(texture, width, height)
     #   init
     #   @param [Lumino::Texture] texture 
@@ -1203,6 +1234,17 @@ class Lumino::UIEventArgs
     # イベントの発生元となった要素を取得します。
     # @return [Lumino::UIElement] 
     def sender(*args)
+    end
+
+
+
+end
+
+# Test delegate 1.
+# 
+class Lumino::UIEventHandlerDelegate
+    # 
+    def initialize(*args)
     end
 
 
@@ -1352,9 +1394,9 @@ class Lumino::UIButton
 
 
     # Clicked イベントの通知を受け取るコールバックを登録します。
-    # @param [Lumino::UIEventHandler] handler 
+    # @param [Lumino::UIEventHandlerDelegate] handler 
     # 
-    # @return [] 
+    # @return [Lumino::EventConnection] 
     def connect_on_clicked(*args)
     end
 

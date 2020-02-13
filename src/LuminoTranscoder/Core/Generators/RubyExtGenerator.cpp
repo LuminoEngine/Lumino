@@ -333,11 +333,11 @@ ln::String RubyExtGenerator::makeClassRequiredImplementation(const TypeSymbol* c
 		}
 
 		// Signal and Connection
-		for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
-			wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
-			wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
-			markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
-		}
+		//for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
+		//	wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
+		//	wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
+		//	markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
+		//}
 
 		// Constructor
 		wrapStruct.AppendLine(u"{0}()", makeWrapStructName(classSymbol));
@@ -371,11 +371,11 @@ ln::String RubyExtGenerator::makeClassImplementation(const TypeSymbol* classSymb
 	OutputBuffer code;
 
 	for (auto& overload : classSymbol->overloads()) {
-		if (overload->representative()->isEventConnector()) {
+		/*if (overload->representative()->isEventConnector()) {
 			code.append(makeWrapFuncImplement_SignalCaller(overload->representative()));
 			code.append(makeWrapFuncImplement_EventConnector(overload->representative()));
 		}
-		else if (classSymbol->isDelegateObject()) {
+		else*/ if (classSymbol->isDelegateObject()) {
 			code.append(makeWrapFuncImplement_ProcCaller(classSymbol->delegateProtoType()));
 			//code.append(makeWrapFuncImplement_DelegateObjectConstructor(classSymbol));
 			code.append(makeWrapFuncImplement(classSymbol, overload));

@@ -442,6 +442,14 @@ LN_DELEGATE()
 using UIEventHandler = std::function<void(UIEventArgs* e)>;
 
 /**
+ * Test delegate 1.
+ *
+ * @param[in] a : param 1.
+ */
+LN_DELEGATE()
+using UIEventHandlerDelegate = Delegate<void(UIEventArgs* e)>;
+
+/**
 	@brief		マウス操作が関係する UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
 */

@@ -133,6 +133,31 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+class LNWS_ln_UIEventHandlerDelegate : public ln::UIEventHandlerDelegate
+{
+public:
+    LnUIEventHandlerDelegateCallback m_callback;
+
+    LNWS_ln_UIEventHandlerDelegate() : ln::UIEventHandlerDelegate([this](ln::UIEventArgs* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnUIEventHandlerDelegateCallback"); }
+    })
+    {}
+
+    void init(LnUIEventHandlerDelegateCallback callback)
+    {
+        ln::UIEventHandlerDelegate::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnUIEventHandlerDelegate_Create(LnUIEventHandlerDelegateCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIEventHandlerDelegate, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 
 class LNWS_ln_Object : public ln::Object
 {
@@ -164,6 +189,38 @@ public:
 
 };
 LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_EventConnection : public ln::EventConnection
+{
+public:
+    static LnEventConnection_OnSerialize_OverrideCallback s_LnEventConnection_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnEventConnection_OnSerialize_OverrideCallback) s_LnEventConnection_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::EventConnection::onSerialize(ar);
+    }
+
+};
+LnEventConnection_OnSerialize_OverrideCallback LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_ZVTestPromise1 : public ln::ZVTestPromise1
@@ -1007,8 +1064,7 @@ LN_FLAT_API LnResult LnVector3_MutatingNormalize(LnVector3* vector3)
 LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    //*outReturn = *reinterpret_cast<const LnVector3*>(&ln::Vector3::normalize(x, y, z));
-	*outReturn = ln::detail::convertStruct<LnVector3>(ln::Vector3::normalize(x, y, z));
+    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1016,8 +1072,7 @@ LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3
 LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    //*outReturn = *reinterpret_cast<const LnVector3*>(&ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
-	*outReturn = ln::detail::convertStruct<LnVector3>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1100,6 +1155,28 @@ extern LN_FLAT_API int LnObject_GetTypeInfoId()
 LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Object>(), id);
+}
+
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EventConnection, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_SetOverrideCallback(LnEventConnection_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnEventConnection_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::EventConnection>()->id();
+}
+
+LN_FLAT_API void LnEventConnection_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::EventConnection>(), id);
 }
 
 LN_FLAT_API void LnPromiseFailureDelegate_SetManagedTypeInfoId(int64_t id)
@@ -1656,6 +1733,14 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath,
 }
 
 
+LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setDebugToolEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1704,18 +1789,10 @@ LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
 }
 
 
-LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn)
+LN_FLAT_API LnResult LnEngine_Time(double* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::mainUIView());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::world());
+    *outReturn = (ln::Engine::time());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1732,6 +1809,14 @@ LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1860,7 +1945,6 @@ LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outRetu
 
 LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn)
 {
-	printf("LnTexture2D_LoadEmojiA\n");
     LNI_FUNC_TRY_BEGIN;
     *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
     LNI_FUNC_TRY_END_RETURN;
@@ -2103,7 +2187,7 @@ LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* 
 }
 
 
-LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQuaternion* rot)
+LN_FLAT_API LnResult LnWorldObject_SetRotationQuaternion(LnHandle worldobject, const LnQuaternion* rot)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(*reinterpret_cast<const ln::Quaternion*>(rot)));
@@ -2111,10 +2195,10 @@ LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQua
 }
 
 
-LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x, float y, float z)
+LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, float x, float y, float z)
 {
     LNI_FUNC_TRY_BEGIN;
-    //(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setEulerAngles(x, y, z));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2179,6 +2263,22 @@ LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector
 {
     LNI_FUNC_TRY_BEGIN;
     *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnWorldObject_LookAt(LnHandle worldobject, const LnVector3* target)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->lookAt(*reinterpret_cast<const ln::Vector3*>(target)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnWorldObject_LookAtXYZ(LnHandle worldobject, float x, float y, float z)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->lookAt(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2312,7 +2412,15 @@ LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite)
 }
 
 
-LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, float height, LnHandle* outSprite)
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite)
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture), width, height);
@@ -2382,6 +2490,11 @@ extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId()
 LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
+}
+
+LN_FLAT_API void LnUIEventHandlerDelegate_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventHandlerDelegate>(), id);
 }
 
 LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -2608,10 +2721,10 @@ LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton)
 }
 
 
-LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler)
+LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle handler, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked([=](ln::UIEventArgs* e) { handler(uibutton, LNI_OBJECT_TO_HANDLE(e)); }));
+    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandlerDelegate, handler)));
     LNI_FUNC_TRY_END_RETURN;
 }
 

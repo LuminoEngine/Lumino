@@ -117,9 +117,15 @@ void UIButton::init(const StringRef& text)
     setText(text);
 }
 
-Ref<EventConnection> UIButton::connectOnClicked(UIEventHandler handler)
+//Ref<EventConnection> UIButton::connectOnClicked(UIEventHandler handler)
+//{
+//    return m_onClicked.connect(handler);
+//}
+//
+Ref<EventConnection> UIButton::connectOnClicked(Ref<UIEventHandlerDelegate> handler)
 {
-    return m_onClicked.connect(handler);
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
 
 void UIButton::onClick(UIEventArgs* e)
