@@ -270,6 +270,7 @@ void Example_Tilemap();
 void Tutorial_Sandbox();
 void Sandbox_Voxel();
 
+
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
@@ -283,6 +284,7 @@ int main(int argc, char** argv)
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
+
 
     if (1) {
 		//Example_GameAudio();

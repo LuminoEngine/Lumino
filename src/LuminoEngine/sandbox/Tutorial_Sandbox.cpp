@@ -3,8 +3,27 @@
 #include <LuminoEngine/UI/UIComboBox.hpp>
 using namespace ln;
 
+using DelegateSetTestDelegate = Delegate<void(void)>;
+
+void DelegateSetTest(Ref<DelegateSetTestDelegate> callback)
+{
+	callback->call();
+}
+
+
+
 class App : public Application
 {
+	virtual void onInit() override
+	{
+		DelegateSetTest([]() { printf("aaa\n"); });
+		DelegateSetTest(makeDelegate(this, &App::handle));
+	}
+	void handle()
+	{
+		printf("bbb\n");
+	}
+
 	virtual void onUpdate() override
 	{
 		if (Input::pressed(u"left")) Debug::print(0, u"left");
