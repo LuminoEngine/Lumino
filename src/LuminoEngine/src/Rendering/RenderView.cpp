@@ -56,7 +56,7 @@ void RenderView::addDrawElementListManager(detail::DrawElementListCollector* ele
 	m_elementListManagers.add(elementListManager);
 }
 
-EventConnection RenderView::connectOnUIEvent(UIEventHandler handler)
+Ref<EventConnection> RenderView::connectOnUIEvent(UIEventHandler handler)
 {
     return m_onUIEvent.connect(handler);
 }

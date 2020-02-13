@@ -167,15 +167,15 @@ public:
 
     /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionEnter(Collision2DEventHandler handler);
+    Ref<EventConnection> connectOnCollisionEnter(Collision2DEventHandler handler);
 
     /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionLeave(Collision2DEventHandler handler);
+	Ref<EventConnection> connectOnCollisionLeave(Collision2DEventHandler handler);
 
     /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionStay(Collision2DEventHandler handler);
+	Ref<EventConnection> connectOnCollisionStay(Collision2DEventHandler handler);
 
 
 public: // TODO: internal

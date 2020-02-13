@@ -25,7 +25,7 @@ void UICollectionItem::init()
     vsm->gotoState(UIVisualStates::Unselected);
 }
 
-EventConnection UICollectionItem::connectOnClick(UIClickEventHandler handler)
+Ref<EventConnection> UICollectionItem::connectOnClick(UIClickEventHandler handler)
 {
     return m_onClick.connect(handler);
 }
@@ -187,12 +187,12 @@ void UIItemsControl::removeAllItems()
     m_logicalChildren->clear();
 }
 
-EventConnection UIItemsControl::connectOnItemClick(UIClickEventHandler handler)
+Ref<EventConnection> UIItemsControl::connectOnItemClick(UIClickEventHandler handler)
 {
     return m_onItemClick.connect(handler);
 }
 
-EventConnection UIItemsControl::connectOnSelectionChanged(UISelectionChangedEventHandler handler)
+Ref<EventConnection> UIItemsControl::connectOnSelectionChanged(UISelectionChangedEventHandler handler)
 {
     return m_onSelectionChanged.connect(handler);
 }

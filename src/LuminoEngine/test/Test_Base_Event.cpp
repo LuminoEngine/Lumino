@@ -4,7 +4,7 @@ static int g_Value = 0;
 
 //==============================================================================
 //# Event
-class Test_Base_EventConnection : public ::testing::Test
+class Test_Base_Event : public ::testing::Test
 {
 protected:
 	virtual void SetUp() {}
@@ -40,7 +40,7 @@ using EventHandler3 = std::function<void(int, int, int)>;
 using EventHandler4 = std::function<void(int, int, int, int)>;
 
 //## static function callback
-TEST_F(Test_Base_EventConnection, StaticFuncCallback)
+TEST_F(Test_Base_Event, StaticFuncCallback)
 {
 	//* [ ] can add static function by connect()
 	{
@@ -64,14 +64,14 @@ TEST_F(Test_Base_EventConnection, StaticFuncCallback)
 		Event<EventHandler> event1;
 		auto conn = event1.connect(StaticCallback01_1);
 		event1.raise(5);
-		conn.disconnect();
+		conn->disconnect();
 		event1.raise(5);
 		ASSERT_EQ(5, g_Value);
 	}
 }
 
 //## member function callback
-TEST_F(Test_Base_EventConnection, Basic)
+TEST_F(Test_Base_Event, Basic)
 {
 	Class1 c1, c2;
 	Event<EventHandler> ev01;
@@ -86,12 +86,12 @@ TEST_F(Test_Base_EventConnection, Basic)
 	}
 
 	//* [ ] can disconnect member function
-	EventConnection conn = ev01.connect(ln::bind(&c2, &Class1::Callback01_2));
+	Ref<EventConnection> conn = ev01.connect(ln::bind(&c2, &Class1::Callback01_2));
 	{
 		ev01.raise(5);
 		ASSERT_EQ(60, g_Value);
 
-		conn.disconnect();
+		conn->disconnect();
 
 		ev01.raise(5);
 		ASSERT_EQ(65, g_Value);
@@ -102,12 +102,12 @@ TEST_F(Test_Base_EventConnection, Basic)
 		ev01.clear();
 		ev01.raise(5);
 		ASSERT_EQ(65, g_Value);
-		conn.disconnect();	// 特に何も起こらない
+		conn->disconnect();	// 特に何も起こらない
 	}
 }
 
 //## multi arguments callback
-TEST_F(Test_Base_EventConnection, MultiArgs)
+TEST_F(Test_Base_Event, MultiArgs)
 {
 	Class1 c1;
 	g_Value = 0;
@@ -134,12 +134,12 @@ TEST_F(Test_Base_EventConnection, MultiArgs)
 }
 
 //## raise
-TEST_F(Test_Base_EventConnection, raise)
+TEST_F(Test_Base_Event, raise)
 {
 	g_Value = 0;
 	Class1 c1;
 	Event<EventHandler> ev01;
-	EventConnection conn;
+	Ref<EventConnection> conn;
 
 	//* [ ] 1つのイベントハンドラを呼び出せること。
 	{
@@ -157,7 +157,7 @@ TEST_F(Test_Base_EventConnection, raise)
 
 	//* [ ] イベントハンドラを1つ除外した後、残りを呼び出せること。
 	{
-		conn.disconnect();
+		conn->disconnect();
 		ev01.raise(2);
 		ASSERT_EQ(44, g_Value);
 	}

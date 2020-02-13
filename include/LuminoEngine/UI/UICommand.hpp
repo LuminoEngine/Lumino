@@ -20,7 +20,7 @@ class UICommand
 public:
     void addInputGesture(InputGesture* value);
 
-    EventConnection connectOnCanExecuteChanged(UIEventHandler handler);
+	Ref<EventConnection> connectOnCanExecuteChanged(UIEventHandler handler);
 
     bool testInputEvent(UIEventArgs* e);
 
@@ -43,8 +43,8 @@ class UIAction
 {
 public:
     UICommand* command() const { return m_command; }
-    EventConnection connectOnCanExecute(UICommandEventHandler handler);
-    EventConnection connectOnExecute(UICommandEventHandler handler);
+	Ref<EventConnection> connectOnCanExecute(UICommandEventHandler handler);
+	Ref<EventConnection> connectOnExecute(UICommandEventHandler handler);
 
     bool canExecute();
     void execute();

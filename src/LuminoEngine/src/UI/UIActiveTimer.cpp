@@ -21,7 +21,7 @@ void UIActiveTimer::init()
 	Object::init();
 }
 
-EventConnection UIActiveTimer::connectOnTick(UITimerEventHandler handler)
+Ref<EventConnection> UIActiveTimer::connectOnTick(UITimerEventHandler handler)
 {
 	return m_onTick.connect(handler);
 }

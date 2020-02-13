@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include "../Engine/Object.hpp"
 
 namespace ln {
 namespace detail {
@@ -22,6 +23,7 @@ struct EventInternalDataBase
 
 /** イベントハンドラの状態を追跡します。必要に応じて、イベントから切断するために使用します。 */
 class EventConnection
+	: public Object
 {
 public:
     EventConnection()
@@ -81,7 +83,7 @@ public:
     }
 
     /** このイベントからの通知を受けるコールバックを登録します。 */
-    EventConnection connect(const DelegateType& handler)
+	Ref<EventConnection> connect(const DelegateType& handler)
     {
         return connectInternal(handler);
     }
@@ -110,7 +112,7 @@ public:
     }
 
 	/** このイベントからの通知を受けるコールバックを登録します。 */
-    EventConnection operator+=(const DelegateType& handler)
+	Ref<EventConnection> operator+=(const DelegateType& handler)
     {
         return connectInternal(handler);
     }
@@ -145,11 +147,12 @@ private:
         }
     };
 
-    EventConnection connectInternal(const DelegateType& handler)
+    Ref<EventConnection> connectInternal(const DelegateType& handler)
     {
         auto connectionData = requestFreeConnectionData();
         connectionData->handler = handler;
-        return EventConnection(m_internalData, connectionData.get());
+
+        return Ref<EventConnection>(LN_NEW EventConnection(m_internalData, connectionData.get()), false);
     }
 
     std::shared_ptr<EventConnectionData> requestFreeConnectionData()

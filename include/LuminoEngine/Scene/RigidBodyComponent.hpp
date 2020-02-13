@@ -86,15 +86,15 @@ public:
 
     /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionEnter(CollisionEventHandler handler);
+	Ref<EventConnection> connectOnCollisionEnter(CollisionEventHandler handler);
 
     /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionLeave(CollisionEventHandler handler);
+	Ref<EventConnection> connectOnCollisionLeave(CollisionEventHandler handler);
 
     /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionStay(CollisionEventHandler handler);
+	Ref<EventConnection> connectOnCollisionStay(CollisionEventHandler handler);
 
 LN_CONSTRUCT_ACCESS:
 	RigidBody2DComponent();
@@ -134,15 +134,15 @@ public:
 
     /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionEnter(CollisionEventHandler handler);
+	Ref<EventConnection> connectOnCollisionEnter(CollisionEventHandler handler);
 
     /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionLeave(CollisionEventHandler handler);
+	Ref<EventConnection> connectOnCollisionLeave(CollisionEventHandler handler);
 
     /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    EventConnection connectOnCollisionStay(CollisionEventHandler handler);
+	Ref<EventConnection> connectOnCollisionStay(CollisionEventHandler handler);
 
 LN_CONSTRUCT_ACCESS:
     TriggerBody2DComponent();
