@@ -6,23 +6,38 @@ using namespace ln;
 class App : public Application
 {
 	Ref<BoxMesh> box;
+	float posX = 0;
+	float posY = 0;
 
 	virtual void onInit() override
 	{
-		Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->setPosition(5, 5, -5);
-		Engine::camera()->lookAt(0, 0, 0);
-
 		box = BoxMesh::create();
 	}
 
 	virtual void onUpdate() override
 	{
-		float s = Mouse::position().y / 100;
+		if (Input::isPressed(u"left")) {
+			posX -= 0.1;
+		}
 
-		box->setScale(s);
-		
-		Debug::printf(0, u"scale: {0}", s);
+		if (Input::isPressed(u"right")) {
+			posX += 0.1;
+		}
+
+		if (Input::isPressed(u"up")) {
+			posY += 0.1;
+		}
+
+		if (Input::isPressed(u"down")) {
+			posY -= 0.1;
+		}
+
+		if (Input::isTriggered(u"submit")) {
+			posX = 0;
+			posY = 0;
+		}
+
+		box->setPosition(posX, posY, 0);
 	}
 };
 
