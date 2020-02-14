@@ -74,7 +74,7 @@ Ref<ZVTestPromise2> ZVTestClass1::executeAsync()
 	});
 }
 
-Ref<EventConnection> ZVTestClass1::connectOnEvent1(Ref<ZVTestDelegate4> handler)
+Ref<EventConnection> ZVTestClass1::connectOnEvent1(Ref<ZVTestEventHandler1> handler)
 {
 	return m_event1.connect(handler);
 }
@@ -82,6 +82,17 @@ Ref<EventConnection> ZVTestClass1::connectOnEvent1(Ref<ZVTestDelegate4> handler)
 void ZVTestClass1::raiseEvent1()
 {
 	m_event1.raise();
+}
+
+Ref<EventConnection> ZVTestClass1::connectOnEvent2(Ref<ZVTestEventHandler2> handler)
+{
+	return m_event2.connect(handler);
+}
+
+void ZVTestClass1::raiseEvent2()
+{
+	auto e = makeObject<ZVTestEventArgs1>(1024);
+	m_event2.raise(e);
 }
 
 //==============================================================================

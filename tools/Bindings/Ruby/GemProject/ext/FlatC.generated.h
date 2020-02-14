@@ -152,7 +152,8 @@ typedef LnResult(*LnPromiseFailureDelegateCallback)(LnHandle promisefailuredeleg
 typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
 typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn);
 typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle p1);
-typedef LnResult(*LnZVTestDelegate4Callback)(LnHandle zvtestdelegate4);
+typedef LnResult(*LnZVTestEventHandler1Callback)(LnHandle zvtesteventhandler1);
+typedef LnResult(*LnZVTestEventHandler2Callback)(LnHandle zvtesteventhandler2, LnHandle p1);
 typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
 typedef LnResult(*LnUIEventHandlerCallback)(LnHandle uieventhandler, LnHandle p1);
 typedef LnResult(*LnUIEventHandlerDelegateCallback)(LnHandle uieventhandlerdelegate, LnHandle p1);
@@ -327,10 +328,16 @@ LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback
 LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
-// ln::ZVTestDelegate4
+// ln::ZVTestEventHandler1
 
-LN_FLAT_API LnResult LnZVTestDelegate4_Create(LnZVTestDelegate4Callback callback, LnHandle* outDelegate);
-LN_FLAT_API void LnZVTestDelegate4_SetManagedTypeInfoId(int64_t id);
+LN_FLAT_API LnResult LnZVTestEventHandler1_Create(LnZVTestEventHandler1Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestEventHandler1_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestEventHandler2
+
+LN_FLAT_API LnResult LnZVTestEventHandler2_Create(LnZVTestEventHandler2Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestEventHandler2_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::ZVTestPromise1
@@ -431,7 +438,7 @@ LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnC
 LN_FLAT_API LnResult LnZVTestClass1_GetFilePathA(LnHandle zvtestclass1, const char** outReturn);
 
 /**
-    @brief connectOnClicked method.
+    @brief connectOnEvent1 method.
     @param[in] zvtestclass1 : instance
     @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
 */
@@ -444,11 +451,23 @@ LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent1(LnHandle zvtestclass1, LnHan
 LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent1(LnHandle zvtestclass1);
 
 /**
+    @brief connectOnEvent2 method.
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent2(LnHandle zvtestclass1, LnHandle handler, LnHandle* outReturn);
+
+/**
+    @brief raiseEvent2 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent2(LnHandle zvtestclass1);
+
+/**
     @brief init method.
-    @param[out] outReturn : instance.
     @param[out] outZVTestClass1 : instance.
 */
-LN_FLAT_API LnResult LnZVTestClass1_Create(LnBool* outReturn, LnHandle* outZVTestClass1);
+LN_FLAT_API LnResult LnZVTestClass1_Create(LnHandle* outZVTestClass1);
 
 typedef LnResult(*LnZVTestClass1_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_SetOverrideCallback(LnZVTestClass1_OnSerialize_OverrideCallback callback);
@@ -465,21 +484,19 @@ LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id);
     @param[in] zvtesteventargs1 : instance
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LnResult LnZVTestEventArgs1_Value(LnHandle zvtesteventargs1, int* outReturn);
+LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn);
 
 /**
     @brief init method.
-    @param[out] outReturn : instance.
     @param[out] outZVTestEventArgs1 : instance.
 */
-LN_FLAT_API LnResult LnZVTestEventArgs1_Create(LnBool* outReturn, LnHandle* outZVTestEventArgs1);
+LN_FLAT_API LnResult LnZVTestEventArgs1_Create(LnHandle* outZVTestEventArgs1);
 
 /**
     @brief init method.
-    @param[out] outReturn : instance.
     @param[out] outZVTestEventArgs1 : instance.
 */
-LN_FLAT_API LnResult LnZVTestEventArgs1_CreateWithValue(int v, LnBool* outReturn, LnHandle* outZVTestEventArgs1);
+LN_FLAT_API LnResult LnZVTestEventArgs1_CreateWithValue(int v, LnHandle* outZVTestEventArgs1);
 
 typedef LnResult(*LnZVTestEventArgs1_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_SetOverrideCallback(LnZVTestEventArgs1_OnSerialize_OverrideCallback callback);

@@ -461,9 +461,20 @@ class Lumino::ZVTestDelegate3
 
 end
 
-# Test delegate 4.
+# Test ZVTestEventHandler1.
 # 
-class Lumino::ZVTestDelegate4
+class Lumino::ZVTestEventHandler1
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# Test ZVTestEventHandler2.
+# 
+class Lumino::ZVTestEventHandler2
     # 
     def initialize(*args)
     end
@@ -588,8 +599,8 @@ class Lumino::ZVTestClass1
 
 
 
-    # connectOnClicked method.
-    # @param [Lumino::ZVTestDelegate4] handler 
+    # connectOnEvent1 method.
+    # @param [Lumino::ZVTestEventHandler1] handler 
     # 
     # @return [Lumino::EventConnection] 
     def connect_on_event_1(*args)
@@ -603,8 +614,22 @@ class Lumino::ZVTestClass1
 
 
 
+    # connectOnEvent2 method.
+    # @param [Lumino::ZVTestEventHandler2] handler 
+    # 
+    # @return [Lumino::EventConnection] 
+    def connect_on_event_2(*args)
+    end
+
+
+
+    # raiseEvent2 method.
+    def raise_event_2(*args)
+    end
+
+
+
     # init method.
-    # @return [Boolean] 
     def initialize(*args)
     end
 
@@ -625,12 +650,10 @@ class Lumino::ZVTestEventArgs1
     # init method.
     # @overload initialize()
     #   init method.
-    #   @return [Boolean] 
     # @overload initialize(v)
     #   init method.
     #   @param [Integer] v 
     #   
-    #   @return [Boolean] 
     def initialize(*args)
     end
 

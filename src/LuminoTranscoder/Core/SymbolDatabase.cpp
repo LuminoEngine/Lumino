@@ -332,8 +332,13 @@ ln::Result MethodSymbol::link()
 	}
 
 	if (m_pi) {
-		m_returnType = db()->parseQualType(m_pi->returnTypeRawName);
-		if (!m_returnType.type) return false;
+		if (m_isConstructor) {
+			m_returnType = QualType{ PredefinedTypes::voidType };
+		}
+		else {
+			m_returnType = db()->parseQualType(m_pi->returnTypeRawName);
+			if (!m_returnType.type) return false;
+		}
 
 		// std::function の alias などでは引数名が取れないことがあるため、名前を作っておく
 		for (int i = 0; i < m_parameters.size(); i++) {

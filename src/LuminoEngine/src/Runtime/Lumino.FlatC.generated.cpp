@@ -106,29 +106,54 @@ LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate3, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
-class LNWS_ln_ZVTestDelegate4 : public ln::ZVTestDelegate4
+class LNWS_ln_ZVTestEventHandler1 : public ln::ZVTestEventHandler1
 {
 public:
-    LnZVTestDelegate4Callback m_callback;
+    LnZVTestEventHandler1Callback m_callback;
 
-    LNWS_ln_ZVTestDelegate4() : ln::ZVTestDelegate4([this]() -> void
+    LNWS_ln_ZVTestEventHandler1() : ln::ZVTestEventHandler1([this]() -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
-        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate4Callback"); }
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestEventHandler1Callback"); }
     })
     {}
 
-    void init(LnZVTestDelegate4Callback callback)
+    void init(LnZVTestEventHandler1Callback callback)
     {
-        ln::ZVTestDelegate4::init();
+        ln::ZVTestEventHandler1::init();
         m_callback = callback;
     }
 };
 
-LN_FLAT_API LnResult LnZVTestDelegate4_Create(LnZVTestDelegate4Callback callback, LnHandle* outDelegate)
+LN_FLAT_API LnResult LnZVTestEventHandler1_Create(LnZVTestEventHandler1Callback callback, LnHandle* outDelegate)
 {
     LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate4, init, callback);
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestEventHandler1, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+class LNWS_ln_ZVTestEventHandler2 : public ln::ZVTestEventHandler2
+{
+public:
+    LnZVTestEventHandler2Callback m_callback;
+
+    LNWS_ln_ZVTestEventHandler2() : ln::ZVTestEventHandler2([this](ln::ZVTestEventArgs1* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestEventHandler2Callback"); }
+    })
+    {}
+
+    void init(LnZVTestEventHandler2Callback callback)
+    {
+        ln::ZVTestEventHandler2::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnZVTestEventHandler2_Create(LnZVTestEventHandler2Callback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestEventHandler2, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
 class LNWS_ln_TestDelegate : public ln::TestDelegate
@@ -345,6 +370,38 @@ public:
 
 };
 LnZVTestClass1_OnSerialize_OverrideCallback LNWS_ln_ZVTestClass1::s_LnZVTestClass1_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_ZVTestEventArgs1 : public ln::ZVTestEventArgs1
+{
+public:
+    static LnZVTestEventArgs1_OnSerialize_OverrideCallback s_LnZVTestEventArgs1_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnZVTestEventArgs1_OnSerialize_OverrideCallback) s_LnZVTestEventArgs1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::ZVTestEventArgs1::onSerialize(ar);
+    }
+
+};
+LnZVTestEventArgs1_OnSerialize_OverrideCallback LNWS_ln_ZVTestEventArgs1::s_LnZVTestEventArgs1_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Serializer : public ln::Serializer
@@ -1273,9 +1330,14 @@ LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate3>(), id);
 }
 
-LN_FLAT_API void LnZVTestDelegate4_SetManagedTypeInfoId(int64_t id)
+LN_FLAT_API void LnZVTestEventHandler1_SetManagedTypeInfoId(int64_t id)
 {
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate4>(), id);
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestEventHandler1>(), id);
+}
+
+LN_FLAT_API void LnZVTestEventHandler2_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestEventHandler2>(), id);
 }
 
 LN_FLAT_API LnResult LnZVTestPromise1_ThenWith(LnHandle zvtestpromise1, LnHandle callback)
@@ -1458,10 +1520,10 @@ LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent1(LnHandle zvtestclass1, LnHan
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate4, handler)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler1, handler)));
     }
     else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate4, handler)));
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler1, handler)));
     }
 
     LNI_FUNC_TRY_END_RETURN;
@@ -1472,6 +1534,28 @@ LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent1(LnHandle zvtestclass1)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->raiseEvent1());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent2(LnHandle zvtestclass1, LnHandle handler, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent2(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler2, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent2(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler2, handler)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent2(LnHandle zvtestclass1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->raiseEvent2());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1504,6 +1588,58 @@ extern LN_FLAT_API int LnZVTestClass1_GetTypeInfoId()
 LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestClass1>(), id);
+}
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_Create(LnHandle* outZVTestEventArgs1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outZVTestEventArgs1, LNWS_ln_ZVTestEventArgs1, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_CreateWithValue(int v, LnHandle* outZVTestEventArgs1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outZVTestEventArgs1, LNWS_ln_ZVTestEventArgs1, init, v);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_SetOverrideCallback(LnZVTestEventArgs1_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_ZVTestEventArgs1::s_LnZVTestEventArgs1_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnZVTestEventArgs1_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::ZVTestEventArgs1>()->id();
+}
+
+LN_FLAT_API void LnZVTestEventArgs1_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestEventArgs1>(), id);
 }
 
 LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* name, LnBool value)
