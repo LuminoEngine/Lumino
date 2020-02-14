@@ -100,7 +100,7 @@ void UIDialog::addDialogButton(UIDialogButtonRole role, const String& text)
 	m_dialogButtonsLayout->addChild(button);
 }
 
-void UIDialog::handleDialogButtonClicked(UIEventArgs* e)
+void UIDialog::handleDialogButtonClicked()
 {
 	close();
 }

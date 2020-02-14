@@ -80,7 +80,7 @@ ln::Result StartupView::init()
     popupButton->setText(u"Popup");
     popupButton->setHorizontalContentAlignment(ln::HAlignment::Center);
     popupButton->setVerticalContentAlignment(ln::VAlignment::Center);
-    popupButton->connectOnClicked([popup](ln::UIEventArgs* e) { if (!popup->isOpend()) popup->open(); else popup->close(); });
+    popupButton->connectOnClicked([popup]() { if (!popup->isOpend()) popup->open(); else popup->close(); });
     layout->addChild(popupButton);
 
 

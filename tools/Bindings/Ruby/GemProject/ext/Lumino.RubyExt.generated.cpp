@@ -69,8 +69,8 @@ VALUE g_class_VisualObject;
 VALUE g_class_TestDelegate;
 VALUE g_class_Sprite;
 VALUE g_class_UIEventArgs;
+VALUE g_class_UIGeneralEventHandler;
 VALUE g_class_UIEventHandler;
-VALUE g_class_UIEventHandlerDelegate;
 VALUE g_class_UILayoutElement;
 VALUE g_class_UIElement;
 VALUE g_class_UIControl;
@@ -4453,6 +4453,84 @@ LnResult Wrap_LnUIEventArgs_OnSerialize_OverrideCallback(LnHandle object, LnHand
 }
 
 //==============================================================================
+// ln::UIGeneralEventHandler
+
+struct Wrap_UIGeneralEventHandler
+    : public Wrap_Object
+{
+
+    VALUE m_proc = Qnil;
+    Wrap_UIGeneralEventHandler()
+    {}
+};
+
+static void LnUIGeneralEventHandler_delete(Wrap_UIGeneralEventHandler* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnUIGeneralEventHandler_mark(Wrap_UIGeneralEventHandler* obj)
+{
+	
+rb_gc_mark(obj->m_proc);
+
+}
+
+static VALUE LnUIGeneralEventHandler_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UIGeneralEventHandler* internalObj;
+
+    internalObj = new Wrap_UIGeneralEventHandler();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIGeneralEventHandler_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIGeneralEventHandler_mark, LnUIGeneralEventHandler_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUIGeneralEventHandler_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UIGeneralEventHandler* internalObj;
+
+    internalObj = new Wrap_UIGeneralEventHandler();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIGeneralEventHandler_allocate");
+    obj = Data_Wrap_Struct(klass, LnUIGeneralEventHandler_mark, LnUIGeneralEventHandler_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static LnResult Wrap_LnUIGeneralEventHandler_UIGeneralEventHandler_ProcCaller(LnHandle uigeneraleventhandler, LnHandle p1)
+{
+    Wrap_UIGeneralEventHandler* selfObj;
+    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uigeneraleventhandler), Wrap_UIGeneralEventHandler, selfObj);
+    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
+    return LN_SUCCESS;	// TODO: error handling.
+}
+
+static VALUE Wrap_LnUIGeneralEventHandler_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIGeneralEventHandler* selfObj;
+    Data_Get_Struct(self, Wrap_UIGeneralEventHandler, selfObj);
+    if (0 <= argc && argc <= 1) {
+        VALUE proc, block;
+        rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
+        if (proc != Qnil) selfObj->m_proc = proc;
+        if (block != Qnil) selfObj->m_proc = block;
+        LnResult result = LnUIGeneralEventHandler_Create(Wrap_LnUIGeneralEventHandler_UIGeneralEventHandler_ProcCaller, &selfObj->handle);
+        if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
+        LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+        return Qnil;
+    }
+    rb_raise(rb_eArgError, "ln::UIGeneralEventHandler::init - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
 // ln::UIEventHandler
 
 struct Wrap_UIEventHandler
@@ -4503,11 +4581,11 @@ static VALUE LnUIEventHandler_allocateForGetObject(VALUE klass, LnHandle handle)
 }
 
 
-static LnResult Wrap_LnUIEventHandler_UIEventHandler_ProcCaller(LnHandle uieventhandler, LnHandle p1)
+static LnResult Wrap_LnUIEventHandler_UIEventHandler_ProcCaller(LnHandle uieventhandler)
 {
     Wrap_UIEventHandler* selfObj;
     Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uieventhandler), Wrap_UIEventHandler, selfObj);
-    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
+    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 0, );
     return LN_SUCCESS;	// TODO: error handling.
 }
 
@@ -4526,84 +4604,6 @@ static VALUE Wrap_LnUIEventHandler_Create(int argc, VALUE* argv, VALUE self)
         return Qnil;
     }
     rb_raise(rb_eArgError, "ln::UIEventHandler::init - wrong argument type.");
-    return Qnil;
-}
-
-
-//==============================================================================
-// ln::UIEventHandlerDelegate
-
-struct Wrap_UIEventHandlerDelegate
-    : public Wrap_Object
-{
-
-    VALUE m_proc = Qnil;
-    Wrap_UIEventHandlerDelegate()
-    {}
-};
-
-static void LnUIEventHandlerDelegate_delete(Wrap_UIEventHandlerDelegate* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LnUIEventHandlerDelegate_mark(Wrap_UIEventHandlerDelegate* obj)
-{
-	
-rb_gc_mark(obj->m_proc);
-
-}
-
-static VALUE LnUIEventHandlerDelegate_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_UIEventHandlerDelegate* internalObj;
-
-    internalObj = new Wrap_UIEventHandlerDelegate();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIEventHandlerDelegate_allocate");
-    obj = Data_Wrap_Struct(klass, LnUIEventHandlerDelegate_mark, LnUIEventHandlerDelegate_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LnUIEventHandlerDelegate_allocateForGetObject(VALUE klass, LnHandle handle)
-{
-    VALUE obj;
-    Wrap_UIEventHandlerDelegate* internalObj;
-
-    internalObj = new Wrap_UIEventHandlerDelegate();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUIEventHandlerDelegate_allocate");
-    obj = Data_Wrap_Struct(klass, LnUIEventHandlerDelegate_mark, LnUIEventHandlerDelegate_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static LnResult Wrap_LnUIEventHandlerDelegate_UIEventHandlerDelegate_ProcCaller(LnHandle uieventhandlerdelegate, LnHandle p1)
-{
-    Wrap_UIEventHandlerDelegate* selfObj;
-    Data_Get_Struct(LNRB_HANDLE_WRAP_TO_VALUE(uieventhandlerdelegate), Wrap_UIEventHandlerDelegate, selfObj);
-    VALUE retval = rb_funcall(selfObj->m_proc, rb_intern("call"), 1, LNRB_HANDLE_WRAP_TO_VALUE(p1));
-    return LN_SUCCESS;	// TODO: error handling.
-}
-
-static VALUE Wrap_LnUIEventHandlerDelegate_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_UIEventHandlerDelegate* selfObj;
-    Data_Get_Struct(self, Wrap_UIEventHandlerDelegate, selfObj);
-    if (0 <= argc && argc <= 1) {
-        VALUE proc, block;
-        rb_scan_args(argc, argv, "01&", &proc, &block); // (handler=nil, &block)
-        if (proc != Qnil) selfObj->m_proc = proc;
-        if (block != Qnil) selfObj->m_proc = block;
-        LnResult result = LnUIEventHandlerDelegate_Create(Wrap_LnUIEventHandlerDelegate_UIEventHandlerDelegate_ProcCaller, &selfObj->handle);
-        if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
-        LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-        return Qnil;
-    }
-    rb_raise(rb_eArgError, "ln::UIEventHandlerDelegate::init - wrong argument type.");
     return Qnil;
 }
 
@@ -5188,7 +5188,7 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
         VALUE block;
         rb_scan_args(argc, argv, "0&", &block);
         if (block != Qnil) {
-            VALUE value = rb_funcall(g_class_UIEventHandlerDelegate, rb_intern("new"), 1, block);
+            VALUE value = rb_funcall(g_class_UIEventHandler, rb_intern("new"), 1, block);
             LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
             LnResult result = LnUIButton_ConnectOnClicked(selfObj->handle, _value);
             if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
@@ -5513,15 +5513,15 @@ extern "C" void Init_Lumino_RubyExt()
     LnUIEventArgs_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIEventArgs, LnUIEventArgs_allocateForGetObject));
     LnUIEventArgs_OnSerialize_SetOverrideCallback(Wrap_LnUIEventArgs_OnSerialize_OverrideCallback);
 
+    g_class_UIGeneralEventHandler = rb_define_class_under(g_rootModule, "UIGeneralEventHandler", g_class_Object);
+    rb_define_alloc_func(g_class_UIGeneralEventHandler, LnUIGeneralEventHandler_allocate);
+    rb_define_private_method(g_class_UIGeneralEventHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUIGeneralEventHandler_Create), -1);
+    LnUIGeneralEventHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIGeneralEventHandler, LnUIGeneralEventHandler_allocateForGetObject));
+
     g_class_UIEventHandler = rb_define_class_under(g_rootModule, "UIEventHandler", g_class_Object);
     rb_define_alloc_func(g_class_UIEventHandler, LnUIEventHandler_allocate);
     rb_define_private_method(g_class_UIEventHandler, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUIEventHandler_Create), -1);
     LnUIEventHandler_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIEventHandler, LnUIEventHandler_allocateForGetObject));
-
-    g_class_UIEventHandlerDelegate = rb_define_class_under(g_rootModule, "UIEventHandlerDelegate", g_class_Object);
-    rb_define_alloc_func(g_class_UIEventHandlerDelegate, LnUIEventHandlerDelegate_allocate);
-    rb_define_private_method(g_class_UIEventHandlerDelegate, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUIEventHandlerDelegate_Create), -1);
-    LnUIEventHandlerDelegate_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIEventHandlerDelegate, LnUIEventHandlerDelegate_allocateForGetObject));
 
     g_class_UILayoutElement = rb_define_class_under(g_rootModule, "UILayoutElement", g_class_Object);
     rb_define_alloc_func(g_class_UILayoutElement, LnUILayoutElement_allocate);

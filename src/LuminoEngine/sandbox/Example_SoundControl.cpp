@@ -20,7 +20,7 @@ class App_Example_SoundControl : public Application
 
 
 		auto addButton = ln::UIButton::create(u"Add");
-		addButton->connectOnClicked([this](ln::UIEventArgs* e) {
+		addButton->connectOnClicked([this]() {
 			se->play();
 		});
 		Engine::mainUIView()->addChild(addButton);

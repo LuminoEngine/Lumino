@@ -20,7 +20,7 @@ class UICommand
 public:
     void addInputGesture(InputGesture* value);
 
-	Ref<EventConnection> connectOnCanExecuteChanged(Ref<UIEventHandler> handler);
+	Ref<EventConnection> connectOnCanExecuteChanged(Ref<UIGeneralEventHandler> handler);
 
     bool testInputEvent(UIEventArgs* e);
 
@@ -34,7 +34,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     List<Ref<InputGesture>> m_inputGestures;
-    Event<UIEventHandler> m_onCanExecuteChanged;
+    Event<UIGeneralEventHandler> m_onCanExecuteChanged;
 };
 
 // Note: WPF だと CommandBinding 相当。

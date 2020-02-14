@@ -56,11 +56,11 @@ public:
 
     /** Clicked イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-	//Ref<EventConnection> connectOnClicked(UIEventHandler handler);
+	//Ref<EventConnection> connectOnClicked(UIGeneralEventHandler handler);
 
 	/** Clicked イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	Ref<EventConnection> connectOnClicked(Ref<UIEventHandlerDelegate> handler);
+	Ref<EventConnection> connectOnClicked(Ref<UIEventHandler> handler);
 	
 
 protected:
@@ -82,11 +82,11 @@ public:
 
 	/** Checked イベントの通知を受け取るコールバックを登録します。*/
 	//LN_METHOD(Event)
-	Ref<EventConnection> connectOnChecked(Ref<UIEventHandler> handler);
+	Ref<EventConnection> connectOnChecked(Ref<UIGeneralEventHandler> handler);
 
 	/** Unchecked イベントの通知を受け取るコールバックを登録します。*/
 	//LN_METHOD(Event)
-	Ref<EventConnection> connectOnUnchecked(Ref<UIEventHandler> handler);
+	Ref<EventConnection> connectOnUnchecked(Ref<UIGeneralEventHandler> handler);
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
@@ -100,8 +100,8 @@ private:
 	void checkChanged();
 
 	UICheckState m_checkState;
-	Event<UIEventHandler> m_onChecked;
-	Event<UIEventHandler> m_onUnchecked;
+	Event<UIGeneralEventHandler> m_onChecked;
+	Event<UIGeneralEventHandler> m_onUnchecked;
 };
 
 } // namespace ln

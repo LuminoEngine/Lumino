@@ -163,7 +163,7 @@ ln::UIElement* AssetBrowserNavigatorExtension::getNavigationPane()
 	return m_splitter;
 }
 
-void AssetBrowserNavigatorExtension::onImport(ln::UIEventArgs* e)
+void AssetBrowserNavigatorExtension::onImport()
 {
     auto dlg = ln::PlatformOpenFileDialog::create();
     if (dlg->showDialog(EditorApplication::instance()->mainWindow()->platformWindow())) {

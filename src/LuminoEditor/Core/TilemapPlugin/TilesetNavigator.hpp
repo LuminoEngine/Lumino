@@ -20,7 +20,7 @@ public:
     void init();
 
 private:
-    void addButton_onClick(ln::UIEventArgs* e);
+    void addButton_onClick();
     void listView_onItemClick(ln::UIClickEventArgs* e);
 
     Ref<TilesetListModel> m_model;

@@ -51,7 +51,7 @@ void TilesetListPane::init()
     m_listview->setViewModel(m_model);
 }
 
-void TilesetListPane::addButton_onClick(ln::UIEventArgs* e)
+void TilesetListPane::addButton_onClick()
 {
 
 	auto tilesetTexture = ln::Texture2D::load(u"32066696-1621-4EED-820D-535BB2F22A9D");

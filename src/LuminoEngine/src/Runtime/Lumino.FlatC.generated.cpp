@@ -183,14 +183,39 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+class LNWS_ln_UIGeneralEventHandler : public ln::UIGeneralEventHandler
+{
+public:
+    LnUIGeneralEventHandlerCallback m_callback;
+
+    LNWS_ln_UIGeneralEventHandler() : ln::UIGeneralEventHandler([this](ln::UIEventArgs* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnUIGeneralEventHandlerCallback"); }
+    })
+    {}
+
+    void init(LnUIGeneralEventHandlerCallback callback)
+    {
+        ln::UIGeneralEventHandler::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnUIGeneralEventHandler_Create(LnUIGeneralEventHandlerCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIGeneralEventHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 class LNWS_ln_UIEventHandler : public ln::UIEventHandler
 {
 public:
     LnUIEventHandlerCallback m_callback;
 
-    LNWS_ln_UIEventHandler() : ln::UIEventHandler([this](ln::UIEventArgs* p1) -> void
+    LNWS_ln_UIEventHandler() : ln::UIEventHandler([this]() -> void
     {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
         if (r != LN_SUCCESS) { LN_ERROR("LnUIEventHandlerCallback"); }
     })
     {}
@@ -206,31 +231,6 @@ LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, 
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIEventHandler, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-class LNWS_ln_UIEventHandlerDelegate : public ln::UIEventHandlerDelegate
-{
-public:
-    LnUIEventHandlerDelegateCallback m_callback;
-
-    LNWS_ln_UIEventHandlerDelegate() : ln::UIEventHandlerDelegate([this](ln::UIEventArgs* p1) -> void
-    {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
-        if (r != LN_SUCCESS) { LN_ERROR("LnUIEventHandlerDelegateCallback"); }
-    })
-    {}
-
-    void init(LnUIEventHandlerDelegateCallback callback)
-    {
-        ln::UIEventHandlerDelegate::init();
-        m_callback = callback;
-    }
-};
-
-LN_FLAT_API LnResult LnUIEventHandlerDelegate_Create(LnUIEventHandlerDelegateCallback callback, LnHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIEventHandlerDelegate, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2981,14 +2981,14 @@ LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
 }
 
+LN_FLAT_API void LnUIGeneralEventHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIGeneralEventHandler>(), id);
+}
+
 LN_FLAT_API void LnUIEventHandler_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventHandler>(), id);
-}
-
-LN_FLAT_API void LnUIEventHandlerDelegate_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventHandlerDelegate>(), id);
 }
 
 LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -3243,10 +3243,10 @@ LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle han
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandlerDelegate, handler)));
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandler, handler)));
     }
     else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandlerDelegate, handler)));
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandler, handler)));
     }
 
     LNI_FUNC_TRY_END_RETURN;

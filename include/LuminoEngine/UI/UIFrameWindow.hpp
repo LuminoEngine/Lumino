@@ -131,8 +131,8 @@ public:  // TODO: internal
 	detail::ImGuiContext m_imguiContext;
 	Ref<detail::DebugInterface> m_debugInterface;
 
-	Event<UIEventHandler> m_onClosed;
-	Event<UIEventHandler> m_onImGuiLayer;
+	Event<UIGeneralEventHandler> m_onClosed;
+	Event<UIGeneralEventHandler> m_onImGuiLayer;
 	bool m_autoDisposePlatformWindow;
 	bool m_ImGuiLayerEnabled;
 

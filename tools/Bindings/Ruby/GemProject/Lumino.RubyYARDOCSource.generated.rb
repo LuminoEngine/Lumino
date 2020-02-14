@@ -1318,7 +1318,7 @@ end
 
 # 
 # 
-class Lumino::UIEventHandler
+class Lumino::UIGeneralEventHandler
     # 
     def initialize(*args)
     end
@@ -1329,7 +1329,7 @@ end
 
 # Test delegate 1.
 # 
-class Lumino::UIEventHandlerDelegate
+class Lumino::UIEventHandler
     # 
     def initialize(*args)
     end
@@ -1481,7 +1481,7 @@ class Lumino::UIButton
 
 
     # Clicked イベントの通知を受け取るコールバックを登録します。
-    # @param [Lumino::UIEventHandlerDelegate] handler 
+    # @param [Lumino::UIEventHandler] handler 
     # 
     # @return [Lumino::EventConnection] 
     def connect_on_clicked(*args)

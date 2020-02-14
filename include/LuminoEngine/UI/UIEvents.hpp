@@ -439,7 +439,7 @@ private:
 	@param[in]	e		: イベントのデータ
 */
 LN_DELEGATE()
-using UIEventHandler = Delegate<void(UIEventArgs* e)>;
+using UIGeneralEventHandler = Delegate<void(UIEventArgs* e)>;
 
 /**
  * Test delegate 1.
@@ -447,7 +447,7 @@ using UIEventHandler = Delegate<void(UIEventArgs* e)>;
  * @param[in] a : param 1.
  */
 LN_DELEGATE()
-using UIEventHandlerDelegate = Delegate<void(UIEventArgs* e)>;
+using UIEventHandler = Delegate<void(void)>;
 
 /**
 	@brief		マウス操作が関係する UIイベントを処理するハンドラです。

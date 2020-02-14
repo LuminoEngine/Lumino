@@ -53,7 +53,7 @@ void TilemapSceneListPane::init()
     m_listview->setViewModel(m_model);
 }
 
-void TilemapSceneListPane::addButton_onClick(ln::UIEventArgs* e)
+void TilemapSceneListPane::addButton_onClick()
 {
 	auto path = ln::Path::getUniqueFilePathInDirectory(m_assetRootDir, u"Scene-", ln::AssetModel::AssetFileExtension.c_str());
 	TilemapSceneEditorModel::createNewTilemapSceneAsset(EditorApplication::instance()->editorContext(), path);

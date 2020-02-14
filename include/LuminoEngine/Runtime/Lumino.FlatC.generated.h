@@ -155,8 +155,8 @@ typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle 
 typedef LnResult(*LnZVTestEventHandler1Callback)(LnHandle zvtesteventhandler1);
 typedef LnResult(*LnZVTestEventHandler2Callback)(LnHandle zvtesteventhandler2, LnHandle p1);
 typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
-typedef LnResult(*LnUIEventHandlerCallback)(LnHandle uieventhandler, LnHandle p1);
-typedef LnResult(*LnUIEventHandlerDelegateCallback)(LnHandle uieventhandlerdelegate, LnHandle p1);
+typedef LnResult(*LnUIGeneralEventHandlerCallback)(LnHandle uigeneraleventhandler, LnHandle p1);
+typedef LnResult(*LnUIEventHandlerCallback)(LnHandle uieventhandler);
 
 
 //==============================================================================
@@ -1145,16 +1145,16 @@ extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId();
 LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
+// ln::UIGeneralEventHandler
+
+LN_FLAT_API LnResult LnUIGeneralEventHandler_Create(LnUIGeneralEventHandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnUIGeneralEventHandler_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
 // ln::UIEventHandler
 
 LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, LnHandle* outDelegate);
 LN_FLAT_API void LnUIEventHandler_SetManagedTypeInfoId(int64_t id);
-
-//==============================================================================
-// ln::UIEventHandlerDelegate
-
-LN_FLAT_API LnResult LnUIEventHandlerDelegate_Create(LnUIEventHandlerDelegateCallback callback, LnHandle* outDelegate);
-LN_FLAT_API void LnUIEventHandlerDelegate_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UILayoutElement

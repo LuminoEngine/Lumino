@@ -39,7 +39,7 @@ void UICommand::addInputGesture(InputGesture* value)
     m_inputGestures.add(value);
 }
 
-Ref<EventConnection> UICommand::connectOnCanExecuteChanged(Ref<UIEventHandler> handler)
+Ref<EventConnection> UICommand::connectOnCanExecuteChanged(Ref<UIGeneralEventHandler> handler)
 {
     return m_onCanExecuteChanged.connect(handler);
 }

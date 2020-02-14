@@ -73,7 +73,7 @@ protected:
 	virtual ln::UIElement* getNavigationPane() override;
 
 private:
-    void onImport(ln::UIEventArgs* e);
+    void onImport();
 
     Ref<ln::NavigationMenuItem> m_navbarItemContent;
     Ref<ln::UISplitter> m_splitter;
