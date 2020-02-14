@@ -16,7 +16,7 @@ TEST_F(Test_UI_UIGridLayout, Basic)
 		auto child1 = makeObject<UIElement>();
 		//child1->setWidth(32);
 		//child1->setHeight(16);
-		//child1->setHorizontalAlignment(HAlignment::Left);
+		//child1->setHAlignment(HAlignment::Left);
 		child1->setBackgroundColor(Color::Green);
 		layout1->addChild(child1);
 

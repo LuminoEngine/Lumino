@@ -37,7 +37,7 @@ public:
 		//	button1->setWidth(200);
 		//	button1->setHeight(32);
 		//	button1->setText(u"Push button");
-		//	button1->setHorizontalAlignment(HAlignment::Right);
+		//	button1->setHAlignment(HAlignment::Right);
 		//	Engine::mainUIView()->addElement(button1);
 		//}
 
@@ -46,8 +46,8 @@ public:
 			button1->setWidth(200);
 			button1->setHeight(32);
 			button1->setText(u"Toggle button");
-			button1->setHorizontalAlignment(HAlignment::Right);
-			button1->setVerticalAlignment(VAlignment::Center);
+			button1->setHAlignment(HAlignment::Right);
+			button1->setVAlignment(VAlignment::Center);
 			Engine::mainUIView()->addElement(button1);
 		}
 

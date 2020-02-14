@@ -179,24 +179,30 @@ const Thickness& UIElement::padding() const
     return m_localStyle->mainStyle()->padding;
 }
 
-void UIElement::setHorizontalAlignment(HAlignment value)
+void UIElement::setHAlignment(HAlignment value)
 {
-	m_localStyle->mainStyle()->horizontalAlignment = value;
+	m_localStyle->mainStyle()->hAlignment = value;
 }
 
-HAlignment UIElement::horizontalAlignment() const
+HAlignment UIElement::hAlignment() const
 {
-	return m_localStyle->mainStyle()->horizontalAlignment;
+	return m_localStyle->mainStyle()->hAlignment;
 }
 
-void UIElement::setVerticalAlignment(VAlignment value)
+void UIElement::setVAlignment(VAlignment value)
 {
-	m_localStyle->mainStyle()->verticalAlignment = value;
+	m_localStyle->mainStyle()->vAlignment = value;
 }
 
-VAlignment UIElement::verticalAlignment() const
+VAlignment UIElement::vAlignment() const
 {
-	return m_localStyle->mainStyle()->verticalAlignment;
+	return m_localStyle->mainStyle()->vAlignment;
+}
+
+void UIElement::setAlignments(HAlignment halign, VAlignment valign)
+{
+	setHAlignment(halign);
+	setVAlignment(valign);
 }
 
 void UIElement::setPosition(const Vector3 & pos)

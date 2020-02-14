@@ -252,12 +252,12 @@ const Thickness& UILayoutElement::getLayoutPadding() const
 
 HAlignment UILayoutElement::getLayoutHAlignment() const
 {
-	return m_finalStyle->horizontalAlignment;
+	return m_finalStyle->hAlignment;
 }
 
 VAlignment UILayoutElement::getLayoutVAlignment() const
 {
-	return m_finalStyle->verticalAlignment;
+	return m_finalStyle->vAlignment;
 }
 
 void UILayoutElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const

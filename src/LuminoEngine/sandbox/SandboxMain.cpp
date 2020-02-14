@@ -287,7 +287,7 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		//Example_GameAudio();
+		Example_GameAudio();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
@@ -553,8 +553,8 @@ int main(int argc, char** argv)
 		//text1->setText(u"Hello, Lumino!");
 		text2->setText(u"Hello");
 		text2->setPosition(0, 50, 0);
-		text2->setHorizontalAlignment(HAlignment::Center);
-		text2->setVerticalAlignment(VAlignment::Center);
+		text2->setHAlignment(HAlignment::Center);
+		text2->setVAlignment(VAlignment::Center);
 		text2->setFontSize(20);
 		text2->setTextColor(Color::DimGray);
 		//Engine::mainUIView()->addElement(text2);

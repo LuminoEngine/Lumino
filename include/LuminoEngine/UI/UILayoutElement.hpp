@@ -64,8 +64,8 @@ class UIStyleInstance;
 //	// layout
 //	Thickness margin;
 //	Thickness padding;
-//	HAlignment horizontalAlignment;
-//	VAlignment verticalAlignment;
+//	HAlignment hAlignment;
+//	VAlignment vAlignment;
 //	float minWidth;
 //	float minHeight;
 //	float maxWidth;

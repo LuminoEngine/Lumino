@@ -18,8 +18,8 @@ namespace lna {
 ln::Result TilesetEditorModel::init()
 {
     m_tilesetView = ln::makeObject<TilesetView>();
-    m_tilesetView->setHorizontalAlignment(ln::HAlignment::Stretch);
-    m_tilesetView->setVerticalAlignment(ln::VAlignment::Stretch);
+    m_tilesetView->setHAlignment(ln::HAlignment::Stretch);
+    m_tilesetView->setVAlignment(ln::VAlignment::Stretch);
     return true;
 }
 
@@ -59,7 +59,7 @@ void TilesetList::init()
     {
         auto caption = ln::UITextBlock::create(u"Tileset");
         caption->setMargin(ln::Thickness(8, 0));    // TODO: theme ‚©‚ç‚Æ‚è‚½‚¢
-        caption->setVerticalAlignment(ln::VAlignment::Center);
+        caption->setVAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");

@@ -20,6 +20,11 @@ Ref<UISprite> UISprite::create(Texture* texture)
     return makeObject<UISprite>(texture);
 }
 
+Ref<UISprite> UISprite::load(StringRef filePath)
+{
+	return makeObject<UISprite>(Texture2D::load(filePath));
+}
+
 UISprite::UISprite()
 {
 }
@@ -27,6 +32,7 @@ UISprite::UISprite()
 void UISprite::init()
 {
     UIElement::init();
+	setAlignments(HAlignment::Center, VAlignment::Center);
     m_material = makeObject<Material>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
@@ -57,6 +63,23 @@ void UISprite::setSourceRect(float x, float y, float width, float height)
 const Rect & UISprite::sourceRect() const
 {
     return m_sourceRect;
+}
+
+Size UISprite::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+	Texture* texture = m_material->mainTexture();
+
+	Size size = m_sourceRect.getSize();
+	if (size.width < 0.0f) {
+		size.width = (texture) ? texture->width() : 0.0f;
+	}
+	if (size.height < 0.0f) {
+		size.height = (texture) ? texture->height() : 0.0f;
+	}
+
+	return Size::max(
+		UIElement::measureOverride(layoutContext, constraint),
+		size);
 }
 
 void UISprite::onRender(UIRenderingContext* context)

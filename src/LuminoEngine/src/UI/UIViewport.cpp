@@ -30,8 +30,8 @@ UIViewport::~UIViewport()
 void UIViewport::init()
 {
 	UIContainerElement::init();
-	setHorizontalAlignment(HAlignment::Stretch);
-	setVerticalAlignment(VAlignment::Stretch);
+	setHAlignment(HAlignment::Stretch);
+	setVAlignment(VAlignment::Stretch);
 
     //m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
     m_blitMaterial = makeObject<Material>();

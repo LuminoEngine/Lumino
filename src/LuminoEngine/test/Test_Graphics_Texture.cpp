@@ -14,6 +14,7 @@ TEST_F(Test_Graphics_Texture, clear)
         texture->clear(Color::Red);
 
         auto sprite = UISprite::create(texture);
+		sprite->setAlignments(HAlignment::Left, VAlignment::Top);
         sprite->setBlendMode(BlendMode::Alpha);
 		Engine::mainUIView()->addElement(sprite);
 
@@ -53,6 +54,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		texture->drawText(u"Right", Rect(10, 10, 140, 100), font, Color::White, TextAlignment::Backward);
 		texture->drawText(u"Justify", Rect(10, 50, 140, 100), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
+		sprite->setAlignments(HAlignment::Left, VAlignment::Top);
 		sprite->setBlendMode(BlendMode::Alpha);
 		Engine::mainUIView()->addElement(sprite);
 
@@ -69,6 +71,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 		texture->drawText(u"Right", Rect(0, 0, 160, 120), font, Color::White, TextAlignment::Backward);
 		texture->drawText(u"Justify", Rect(0, 30, 160, 160), font, Color::White, TextAlignment::Justify);
 		auto sprite = UISprite::create(texture);
+		sprite->setAlignments(HAlignment::Left, VAlignment::Top);
 		sprite->setBlendMode(BlendMode::Alpha);
 		Engine::mainUIView()->addElement(sprite);
 
@@ -88,6 +91,7 @@ TEST_F(Test_Graphics_Texture, setPixel)
 	tex1->setPixel(1, 1, Color::White);
 
 	auto sprite = UISprite::create(tex1);
+	sprite->setAlignments(HAlignment::Left, VAlignment::Top);
     sprite->setScale(20);
 	Engine::mainUIView()->addElement(sprite);
 
@@ -107,6 +111,7 @@ TEST_F(Test_Graphics_Texture, blit)
 	tex2->blit(20 * 3, 20 * 3, tex1, 8 * 3, 14 * 3, 8, 14);
 
     auto sprite = UISprite::create(tex2);
+	sprite->setAlignments(HAlignment::Left, VAlignment::Top);
 	sprite->setBlendMode(BlendMode::Alpha);
     TestEnv::updateFrame();
 	Engine::mainUIView()->addElement(sprite);
@@ -128,6 +133,7 @@ TEST_F(Test_Graphics_Texture, Issues)
         auto texture = Texture2D::create(160, 120);
         texture->drawText(_LT("Clear0"), Rect(60, 0, 160, 120), font, Color::White, TextAlignment::Left);
         auto sprite = UISprite::create(texture);
+		sprite->setAlignments(HAlignment::Left, VAlignment::Top);
         sprite->setBlendMode(BlendMode::Alpha);
 		Engine::mainUIView()->addElement(sprite);
 

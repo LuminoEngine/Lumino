@@ -510,12 +510,12 @@ void UIScrollBar::init()
     //m_lineUpButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineUpButton"));
     //m_lineDownButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineDownButton"));
 	// TODO: styleseet
-    m_track->setHorizontalAlignment(HAlignment::Stretch);
-    m_track->setVerticalAlignment(VAlignment::Stretch);
-    //m_lineUpButton->setHorizontalAlignment(HAlignment::Stretch);
-    //m_lineUpButton->setVerticalAlignment(VAlignment::Stretch);
-    //m_lineDownButton->setHorizontalAlignment(HAlignment::Stretch);
-    //m_lineDownButton->setVerticalAlignment(VAlignment::Stretch);
+    m_track->setHAlignment(HAlignment::Stretch);
+    m_track->setVAlignment(VAlignment::Stretch);
+    //m_lineUpButton->setHAlignment(HAlignment::Stretch);
+    //m_lineUpButton->setVAlignment(VAlignment::Stretch);
+    //m_lineDownButton->setHAlignment(HAlignment::Stretch);
+    //m_lineDownButton->setVAlignment(VAlignment::Stretch);
 
     //// TODO:
     //m_lineUpButton->setSize(Size(16, 16));
@@ -702,7 +702,7 @@ void UIScrollViewer::setHScrollbarVisible(bool value)
 			m_horizontalScrollBar = makeObject<UIScrollBar>();
 			m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
 			m_horizontalScrollBar->setWidth(16);	// TODO: style
-			m_horizontalScrollBar->setVerticalAlignment(VAlignment::Stretch);
+			m_horizontalScrollBar->setVAlignment(VAlignment::Stretch);
 			addVisualChild(m_horizontalScrollBar);
 		}
 	}
@@ -721,7 +721,7 @@ void UIScrollViewer::setVScrollbarVisible(bool value)
 			m_verticalScrollBar = makeObject<UIScrollBar>();
 			m_verticalScrollBar->setHeight(16);	// TODO: style
 			m_verticalScrollBar->setOrientation(Orientation::Vertical);
-			m_verticalScrollBar->setHorizontalAlignment(HAlignment::Stretch);
+			m_verticalScrollBar->setHAlignment(HAlignment::Stretch);
 			addVisualChild(m_verticalScrollBar);
 		}
 	}
@@ -747,7 +747,7 @@ void UIScrollViewer::init()
 
     ////m_verticalScrollBar->setHeight(16);
     //m_verticalScrollBar->setWidth(16);
-    //m_verticalScrollBar->setVerticalAlignment(VAlignment::Stretch);
+    //m_verticalScrollBar->setVAlignment(VAlignment::Stretch);
 }
 
 Size UIScrollViewer::measureOverride(UILayoutContext* layoutContext, const Size& constraint)

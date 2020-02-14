@@ -145,17 +145,19 @@ public:
     const Thickness& padding() const;
 
 	/** 要素の横方向の配置方法を設定します。 */
-	void setHorizontalAlignment(HAlignment value);
+	void setHAlignment(HAlignment value);
 
 	/** 要素の横方向の配置方法を取得します。 */
-	HAlignment horizontalAlignment() const;
+	HAlignment hAlignment() const;
 
 	/** 要素の縦方向の配置方法を設定します。 */
-	void setVerticalAlignment(VAlignment value);
+	void setVAlignment(VAlignment value);
 
 	/** 要素の縦方向の配置方法を取得します。 */
-	VAlignment verticalAlignment() const;
+	VAlignment vAlignment() const;
 
+	/** 要素の配置方法を設定します。 */
+	void setAlignments(HAlignment halign, VAlignment valign);
 
     
 	/** このオブジェクトの位置を設定します。 */

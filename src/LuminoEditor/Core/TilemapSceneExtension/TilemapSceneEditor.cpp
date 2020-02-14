@@ -125,13 +125,13 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     {
         auto t = ln::UITextBlock::create(u"test");
 		t->getGridLayoutInfo()->layoutWeight = 0;
-		//t->setVerticalAlignment(ln::VAlignment::Center);
+		//t->setVAlignment(ln::VAlignment::Center);
         m_mainLayout->addChild(t);
     }
 
 
 	m_mainViewport = ln::makeObject<ln::UIViewport>();
-    //m_mainViewport->setVerticalAlignment(ln::VAlignment::Stretch);
+    //m_mainViewport->setVAlignment(ln::VAlignment::Stretch);
 	m_mainViewport->getGridLayoutInfo()->layoutWeight = 1;
     m_mainLayout->addChild(m_mainViewport);
     //frame->addElement(m_mainViewport);
@@ -284,7 +284,7 @@ void TilemapSceneListPane::init()
     {
         auto caption = ln::UITextBlock::create(u"Scene");
         caption->setMargin(ln::Thickness(8, 0));    // TODO: theme からとりたい
-        caption->setVerticalAlignment(ln::VAlignment::Center);
+        caption->setVAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");

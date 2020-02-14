@@ -196,8 +196,8 @@ public:
 	//// layout
 	//Thickness margin;
 	//Thickness padding;
-	//HAlignment horizontalAlignment;
-	//VAlignment verticalAlignment;
+	//HAlignment hAlignment;
+	//VAlignment vAlignment;
 	//float minWidth;
 	//float minHeight;
 	//float maxWidth;
@@ -233,8 +233,8 @@ public:
     detail::UIStyleAttribute<float> height;
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
-	detail::UIStyleAttribute<HAlignment> horizontalAlignment;
-	detail::UIStyleAttribute<VAlignment> verticalAlignment;
+	detail::UIStyleAttribute<HAlignment> hAlignment;
+	detail::UIStyleAttribute<VAlignment> vAlignment;
     detail::UIStyleAttribute<HAlignment> horizontalContentAlignment;    // UILayoutPanel をどのように配置するか
     detail::UIStyleAttribute<VAlignment> verticalContentAlignment;
 	detail::UIStyleAttribute<float> minWidth;
@@ -521,8 +521,8 @@ public:
     float height;
     Thickness margin;
     Thickness padding;
-    HAlignment horizontalAlignment;
-    VAlignment verticalAlignment;
+    HAlignment hAlignment;
+    VAlignment vAlignment;
     HAlignment horizontalContentAlignment;
     VAlignment verticalContentAlignment;
     float minWidth;

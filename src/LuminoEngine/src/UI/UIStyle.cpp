@@ -207,8 +207,8 @@ void UIStyle::setupDefault()
     height = DefaultHeight;
 	margin = DefaultMargin;
 	padding = DefaultPadding;
-	horizontalAlignment = DefaultHorizontalAlignment;
-	verticalAlignment = DefaultVerticalAlignment;
+	hAlignment = DefaultHorizontalAlignment;
+	vAlignment = DefaultVerticalAlignment;
     horizontalContentAlignment = DefaultHorizontalContentAlignment;
     verticalContentAlignment = DefaultVerticalContentAlignment;
 	minWidth = DefaultMinWidth;
@@ -276,8 +276,8 @@ void UIStyle::reset()
     height.reset();
 	margin.reset();
 	padding.reset();
-	horizontalAlignment.reset();
-	verticalAlignment.reset();
+	hAlignment.reset();
+	vAlignment.reset();
 	horizontalContentAlignment.reset();
 	verticalContentAlignment.reset();
 	minWidth.reset();
@@ -347,8 +347,8 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->height.hasValue()) height = other->height.get();
     if (other->margin.hasValue()) margin = other->margin.get();
     if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
-    if (other->verticalAlignment.hasValue()) verticalAlignment = other->verticalAlignment.get();
+    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
+    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
     if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
     if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
@@ -420,8 +420,8 @@ void UIStyle::copyFrom(const UIStyle* other)
     height = other->height;
     margin = other->margin;
     padding = other->padding;
-    horizontalAlignment = other->horizontalAlignment;
-    verticalAlignment = other->verticalAlignment;
+    hAlignment = other->hAlignment;
+    vAlignment = other->vAlignment;
     horizontalContentAlignment = other->horizontalContentAlignment;
     verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
@@ -853,8 +853,8 @@ void UIStyleInstance::setupDefault()
 {
     margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
     padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-    horizontalAlignment = HAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
-    verticalAlignment = VAlignment::Stretch;
+    hAlignment = HAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
+    vAlignment = VAlignment::Stretch;
     horizontalContentAlignment = HAlignment::Stretch;
     verticalContentAlignment = VAlignment::Stretch;
     minWidth = Math::NaN;
@@ -902,8 +902,8 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->height.hasValue()) height = other->height.get();
     if (other->margin.hasValue()) margin = other->margin.get();
     if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
-    if (other->verticalAlignment.hasValue()) verticalAlignment = other->verticalAlignment.get();
+    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
+    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
     if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
     if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
@@ -975,8 +975,8 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     height = other->height;
     margin = other->margin;
     padding = other->padding;
-    horizontalAlignment = other->horizontalAlignment;
-    verticalAlignment = other->verticalAlignment;
+    hAlignment = other->hAlignment;
+    vAlignment = other->vAlignment;
     horizontalContentAlignment = other->horizontalContentAlignment;
     verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
@@ -1093,8 +1093,8 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
         outStyleData->height = (combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
 		outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
 		outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
-		outStyleData->horizontalAlignment = (combinedStyle->horizontalAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
-		outStyleData->verticalAlignment = (combinedStyle->verticalAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
+		outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
+		outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
         outStyleData->horizontalContentAlignment = (combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
         outStyleData->verticalContentAlignment = (combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
 		outStyleData->minWidth = (combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));

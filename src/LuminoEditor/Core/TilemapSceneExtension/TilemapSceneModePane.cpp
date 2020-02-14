@@ -12,8 +12,8 @@ const float TilemapSceneModePane::DisplayTileSize = 32.0f;
 void TilemapSceneModePane::init(TilemapSceneEditorModel* model)
 {
     EditorPane::init();
-	setHorizontalAlignment(ln::HAlignment::Left);
-	setVerticalAlignment(ln::VAlignment::Top);
+	setHAlignment(ln::HAlignment::Left);
+	setVAlignment(ln::VAlignment::Top);
 
 	m_model = model;
 	setViewModel(m_model);
