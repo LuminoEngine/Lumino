@@ -86,6 +86,8 @@ public:
 	//LN_METHOD(Property)
 	static WorldRenderView* renderView();
 
+	static UIControl* ui() { return mainUIView(); }
+
     //static AmbientLight* mainAmbientLight();
     //static DirectionalLight* mainDirectionalLight();
     static PhysicsWorld* mainPhysicsWorld();

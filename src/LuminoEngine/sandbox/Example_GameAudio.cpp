@@ -7,8 +7,10 @@ class App_Example_GameAudio : public Application
 {
     virtual void onInit() override
     {
-		auto sprite = UISprite::load("C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/picture1.jpg");
-		Engine::mainUIView()->addChild(sprite);
+		auto sprite = UISprite::load(u"picture1.jpg");
+		sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+		sprite->setPosition(100, 50);
+		Engine::ui()->add(sprite);
 
 
 
@@ -16,7 +18,7 @@ class App_Example_GameAudio : public Application
 		addButton->connectOnClicked([this]() {
 			GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
 		});
-		Engine::mainUIView()->addChild(addButton);
+		//Engine::mainUIView()->addChild(addButton);
 
 		addButton->setAlignments(HAlignment::Left, VAlignment::Top);
 		addButton->setPosition(0, 0);

@@ -10,7 +10,7 @@ public:
 TEST_F(Test_ImageEffect, Bloom)
 {
 	auto sprite1 = Sprite::create(Texture2D::whiteTexture(), 5, 5);
-	sprite1->setShadingModel(ShadingModel::UnLighting);
+	sprite1->setShadingModel(ShadingModel::Unlit);
 
 	auto bloomEffect = BloomImageEffect::create();
 	Engine::renderView()->addImageEffect(bloomEffect);

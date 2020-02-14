@@ -23,7 +23,7 @@ void InternalSkyBox::init()
 
 	m_material = makeObject<Material>();
 	m_material->setShader(shader);
-    m_material->shadingModel = ShadingModel::UnLighting;
+    m_material->shadingModel = ShadingModel::Unlit;
 
     m_lightDirection = Vector3::UnitY;
 }

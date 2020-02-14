@@ -52,7 +52,7 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
     auto scene = ln::makeObject<ln::Scene>();
 
 	auto tilemap = ln::makeObject<ln::Tilemap>();
-	tilemap->setShadingModel(ln::ShadingModel::UnLighting);
+	tilemap->setShadingModel(ln::ShadingModel::Unlit);
     scene->addObject(tilemap);
 
 	//tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));

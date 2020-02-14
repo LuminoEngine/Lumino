@@ -350,6 +350,7 @@ public:
 	LN_METHOD()
     void addChild(UIElement* child);
     void addChild(const String& child);
+	void add(UIElement* child) { addChild(child); }
 
 
     void invalidateStyle() { invalidate(detail::UIElementDirtyFlags::Style, true); }

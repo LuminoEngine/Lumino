@@ -287,7 +287,7 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		Example_GameAudio();
+		//Example_GameAudio();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
@@ -463,7 +463,7 @@ int main(int argc, char** argv)
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   skymesh1->setBlendMode(BlendMode::Add);
  //   skymesh1->setScale(100);
- //   skymesh1->setShadingModel(ShadingModel::UnLighting);
+ //   skymesh1->setShadingModel(ShadingModel::Unlit);
  //   skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
  //   Engine::world()->add(skymesh1);
 
@@ -529,13 +529,13 @@ int main(int argc, char** argv)
 		s->setScale(2);
 		//s->setAnchorPoint(Vector2(0.5, 0));
 		//s->setBlendMode(BlendMode::Normal);
-		//s->setShadingModel(ShadingModel::UnLighting);
+		//s->setShadingModel(ShadingModel::Unlit);
 		//Engine::world()->add(s);
 
 		//auto c = makeObject<EmojiComponent>();
 		//auto obj = makeObject<WorldObject>();
 		//obj->addComponent(c);
-		//c->setShadingModel(ShadingModel::UnLighting);
+		//c->setShadingModel(ShadingModel::Unlit);
 		//Engine::world()->add(obj);
 
 		auto text1 = makeObject<Text>();
@@ -843,7 +843,7 @@ int main(int argc, char** argv)
     //auto sprite = Sprite::create(3, 3, tex);
 
     //auto tilemap = makeObject<Tilemap>();
-    //tilemap->setShadingModel(ShadingModel::UnLighting);
+    //tilemap->setShadingModel(ShadingModel::Unlit);
 
 
 
@@ -881,7 +881,7 @@ int main(int argc, char** argv)
     //auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
     ////smesh1->setBlendMode(BlendMode::Alpha);
     ////smesh1->setEulerAngles(0, Math::PI, 0);
-    ////smesh1->setShadingModel(ShadingModel::UnLighting);
+    ////smesh1->setShadingModel(ShadingModel::Unlit);
 
     //smesh1->skinnedMeshComponent()->model()->animationController()->addClip(u"anim1", clip1);
     //smesh1->skinnedMeshComponent()->model()->animationController()->play(u"anim1");

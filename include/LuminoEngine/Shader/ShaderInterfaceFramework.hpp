@@ -242,7 +242,7 @@ enum class ShaderTechniqueClass_MeshProcess : uint8_t
 enum class ShaderTechniqueClass_ShadingModel : uint8_t
 {
     Default,
-    UnLighting,
+    Unlit,
 };
 
 // Rendering モジュールで、Pass が ShaderTechnique を検索するときに使うデータ

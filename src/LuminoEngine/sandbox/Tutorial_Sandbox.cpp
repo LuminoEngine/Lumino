@@ -16,27 +16,15 @@ class App : public Application
 {
 	virtual void onInit() override
 	{
-		DelegateSetTest([]() { printf("aaa\n"); });
-		DelegateSetTest(makeDelegate(this, &App::handle));
-	}
-	void handle()
-	{
-		printf("bbb\n");
+		auto button = UIButton::create(u"Button");
+		button->connectOnClicked([]() {
+			Debug::printf(u"Hello, UI!");
+		});
+		Engine::ui()->add(button);
 	}
 
 	virtual void onUpdate() override
 	{
-		if (Input::pressed(u"left")) Debug::print(0, u"left");
-		if (Input::pressed(u"right")) Debug::print(0, u"right");
-		if (Input::pressed(u"up")) Debug::print(0, u"up");
-		if (Input::pressed(u"down")) Debug::print(0, u"down");
-		if (Input::pressed(u"submit")) Debug::print(0, u"submit");
-		if (Input::pressed(u"cancel")) Debug::print(0, u"cancel");
-		if (Input::pressed(u"menu")) Debug::print(0, u"menu");
-		if (Input::pressed(u"shift")) Debug::print(0, u"shift");
-		if (Input::pressed(u"pageup")) Debug::print(0, u"pageup");
-		if (Input::pressed(u"pagedown")) Debug::print(0, u"pagedown");
-		if (Input::pressed(u"any")) Debug::print(0, u"any");
 	}
 };
 
@@ -55,7 +43,7 @@ class App : public Application
 //		sprite->setSize(Size(-1, 2));
 //
 //		s = SphereMesh::create();
-//		s->setShadingModel(ShadingModel::UnLighting);
+//		s->setShadingModel(ShadingModel::Unlit);
 //		s->setColorScale(Color::Yellow);
 //	}
 //

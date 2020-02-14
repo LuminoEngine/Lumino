@@ -25,7 +25,7 @@ class App_Example_Tilemap : public Application
 		tileset->addAutoTileset(autotileset);
 
 		auto tilemap = ln::makeObject<ln::Tilemap>();
-		tilemap->setShadingModel(ln::ShadingModel::UnLighting);
+		tilemap->setShadingModel(ln::ShadingModel::Unlit);
 		tilemap->setBlendMode(ln::BlendMode::Alpha);	// TODO: AlphaTest でカバーしたい
 
 		auto layer = ln::makeObject<ln::TilemapLayer>();

@@ -421,7 +421,7 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
                 outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::SkinnedMesh;
             }
             else if (String::compare(token, u"UnLighting", CaseSensitivity::CaseInsensitive) == 0) {
-                outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+                outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Unlit;
             }
         }
     }
