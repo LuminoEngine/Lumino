@@ -216,17 +216,17 @@ void PhysicsObject2D::removeFromPhysicsWorld()
 	}
 }
 
-Ref<EventConnection> PhysicsObject2D::connectOnCollisionEnter(Collision2DEventHandler handler)
+Ref<EventConnection> PhysicsObject2D::connectOnCollisionEnter(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionEnter.connect(handler);
 }
 
-Ref<EventConnection> PhysicsObject2D::connectOnCollisionLeave(Collision2DEventHandler handler)
+Ref<EventConnection> PhysicsObject2D::connectOnCollisionLeave(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionLeave.connect(handler);
 }
 
-Ref<EventConnection> PhysicsObject2D::connectOnCollisionStay(Collision2DEventHandler handler)
+Ref<EventConnection> PhysicsObject2D::connectOnCollisionStay(Ref<Collision2DEventHandler> handler)
 {
     return m_onCollisionStay.connect(handler);
 }

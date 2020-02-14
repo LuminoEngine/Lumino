@@ -82,11 +82,11 @@ public:
 
 	/** Checked イベントの通知を受け取るコールバックを登録します。*/
 	//LN_METHOD(Event)
-	Ref<EventConnection> connectOnChecked(UIEventHandler handler);
+	Ref<EventConnection> connectOnChecked(Ref<UIEventHandler> handler);
 
 	/** Unchecked イベントの通知を受け取るコールバックを登録します。*/
 	//LN_METHOD(Event)
-	Ref<EventConnection> connectOnUnchecked(UIEventHandler handler);
+	Ref<EventConnection> connectOnUnchecked(Ref<UIEventHandler> handler);
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();

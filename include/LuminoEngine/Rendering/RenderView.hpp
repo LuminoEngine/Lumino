@@ -51,7 +51,7 @@ public:
     const Size& actualSize() const { return m_actualSize; }
 
     //LN_METHOD(Event)
-	Ref<EventConnection> connectOnUIEvent(UIEventHandler handler);
+	Ref<EventConnection> connectOnUIEvent(Ref<UIEventHandler> handler);
 
 public: // TODO: protected
 	void updateFrame(float elapsedSeconds);

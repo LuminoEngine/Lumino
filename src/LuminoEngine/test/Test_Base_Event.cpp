@@ -34,10 +34,10 @@ static void StaticCallback01_1(int v)
 	g_Value += v;
 }
 
-using EventHandler = std::function<void(int)>;
-using EventHandler2 = std::function<void(int, int)>;
-using EventHandler3 = std::function<void(int, int, int)>;
-using EventHandler4 = std::function<void(int, int, int, int)>;
+using EventHandler = Delegate<void(int)>;
+using EventHandler2 = Delegate<void(int, int)>;
+using EventHandler3 = Delegate<void(int, int, int)>;
+using EventHandler4 = Delegate<void(int, int, int, int)>;
 
 //## static function callback
 TEST_F(Test_Base_Event, StaticFuncCallback)
@@ -161,4 +161,16 @@ TEST_F(Test_Base_Event, raise)
 		ev01.raise(2);
 		ASSERT_EQ(44, g_Value);
 	}
+}
+
+//==============================================================================
+class Test_Base_Delegate : public ::testing::Test
+{
+};
+
+TEST_F(Test_Base_Delegate, Basic)
+{
+	Ref<UIClickEventHandler> d1 = [](UIClickEventArgs* e) {};
+	Ref<UIClickEventHandler> d2 = d1;
+
 }

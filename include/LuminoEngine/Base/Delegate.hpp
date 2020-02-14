@@ -55,11 +55,6 @@ template<class TReturn, class... TArgs>
 class Ref<Delegate<TReturn(TArgs...)>>
 {
 public:
-	template<class TF>
-	Ref(TF&& function)
-		: m_ptr(LN_NEW Delegate<TReturn(TArgs...)>(function))
-	{}
-
 	constexpr Ref() noexcept;
 
 	constexpr Ref(std::nullptr_t) noexcept;
@@ -77,6 +72,17 @@ public:
 
 	template<class Y>
 	Ref(Ref<Y>&& ref) noexcept;
+
+
+	template<class TF>
+	Ref(TF function)
+		: m_ptr(LN_NEW Delegate<TReturn(TArgs...)>(function))
+	{}
+
+	//Ref(std::function<TReturn(TArgs...)> function)
+	//	: m_ptr(LN_NEW Delegate<TReturn(TArgs...)>(function))
+	//{}
+
 
 	~Ref();
 

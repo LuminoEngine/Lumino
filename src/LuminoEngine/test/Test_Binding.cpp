@@ -146,3 +146,50 @@ TEST_F(Test_Binding, Promise_Failure)
 	LnObject_Release(delegate3);
 }
 
+static LnResult LnZVTestDelegate4_Callback(LnHandle selfDelegate)
+{
+	g_value = 555;
+	return LN_SUCCESS;
+}
+
+TEST_F(Test_Binding, Event)
+{
+	// void(void)
+	{
+		LnHandle delegate4;
+		LN_ZV_CHECK(LnZVTestDelegate4_Create(LnZVTestDelegate4_Callback, &delegate4));
+
+		LnHandle obj1;
+		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+
+		LnHandle connection;
+		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent1(obj1, delegate4, &connection));
+
+		g_value = 0;
+		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent1(obj1));
+		ASSERT_EQ(555, g_value);
+
+		LnObject_Release(connection);
+		LnObject_Release(obj1);
+		LnObject_Release(delegate4);
+	}
+
+	// Omit connection
+	{
+		LnHandle delegate4;
+		LN_ZV_CHECK(LnZVTestDelegate4_Create(LnZVTestDelegate4_Callback, &delegate4));
+
+		LnHandle obj1;
+		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+
+		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent1(obj1, delegate4, nullptr));
+
+		g_value = 0;
+		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent1(obj1));
+		ASSERT_EQ(555, g_value);
+
+		LnObject_Release(obj1);
+		LnObject_Release(delegate4);
+	}
+
+}

@@ -461,6 +461,17 @@ class Lumino::ZVTestDelegate3
 
 end
 
+# Test delegate 4.
+# 
+class Lumino::ZVTestDelegate4
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
 # Test promise.
 # 
 class Lumino::ZVTestPromise1
@@ -577,7 +588,49 @@ class Lumino::ZVTestClass1
 
 
 
+    # connectOnClicked method.
+    # @param [Lumino::ZVTestDelegate4] handler 
+    # 
+    # @return [Lumino::EventConnection] 
+    def connect_on_event_1(*args)
+    end
+
+
+
+    # raiseEvent1 method.
+    def raise_event_1(*args)
+    end
+
+
+
     # init method.
+    # @return [Boolean] 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# Test class.
+# 
+class Lumino::ZVTestEventArgs1
+    # value method.
+    # @return [Integer] 
+    def value(*args)
+    end
+
+
+
+    # init method.
+    # @overload initialize()
+    #   init method.
+    #   @return [Boolean] 
+    # @overload initialize(v)
+    #   init method.
+    #   @param [Integer] v 
+    #   
+    #   @return [Boolean] 
     def initialize(*args)
     end
 
@@ -1234,6 +1287,17 @@ class Lumino::UIEventArgs
     # イベントの発生元となった要素を取得します。
     # @return [Lumino::UIElement] 
     def sender(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::UIEventHandler
+    # 
+    def initialize(*args)
     end
 
 

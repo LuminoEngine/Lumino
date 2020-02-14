@@ -70,10 +70,10 @@ class Event;
 
 /** イベントがトリガーされたときに通知を受け取るメソッドコールバックを登録するためのクラスです。 */
 template<class TReturn, class... TArgs>
-class Event< std::function<TReturn(TArgs...)> >
+class Event< Delegate<TReturn(TArgs...)> >
 {
 public:
-    using DelegateType = std::function<TReturn(TArgs...)>;
+    using DelegateType = Ref<Delegate<TReturn(TArgs...)>>;
 
     Event()
         : m_internalData(std::make_shared<EventInternalData>())
@@ -109,7 +109,7 @@ public:
         if (!isEmpty()) {
             for (auto& data : m_internalData->connectionDataList) {
                 if (data->m_active)
-                    data->handler(std::forward<TArgs>(args)...);
+                    data->handler->call(std::forward<TArgs>(args)...);
             }
         }
     }

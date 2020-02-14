@@ -1,9 +1,11 @@
 ﻿#pragma once
+#include <LuminoEngine/Base/Event.hpp>
 #include <LuminoEngine/Base/Promise.hpp>
 
 namespace ln {
 class ZVTestClass1;
-	
+class ZVTestEventArgs1;
+
 /**
  * Test delegate 1.
  *
@@ -30,6 +32,12 @@ LN_DELEGATE()
 using ZVTestDelegate3 = Delegate<void(Ref<ZVTestClass1> a)>;
 
 /**
+ * Test delegate 4.
+ */
+LN_DELEGATE()
+using ZVTestDelegate4 = Delegate<void(void)>;
+
+/**
  * Test promise.
  */
 LN_PROMISE()
@@ -40,7 +48,6 @@ using ZVTestPromise1 = Promise<Ref<ZVTestClass1>>;
  */
 LN_PROMISE()
 using ZVTestPromise2 = Promise<int>;
-
 
 /**
  * Test class.
@@ -93,17 +100,55 @@ public:
 	const String& filePath() const { return m_filePath; }
 
 	void setFilePath(const String& value) { m_filePath = value; }
+
+	//--------------------
+	// Event testing.
+	
+	/** connectOnClicked method. */
+	LN_METHOD(Event)
+	Ref<EventConnection> connectOnEvent1(Ref<ZVTestDelegate4> handler);
+
+	/** raiseEvent1 method. */
+	LN_METHOD()
+	void raiseEvent1();
 	
 LN_CONSTRUCT_ACCESS:
     /** init method. */
     LN_METHOD()
-	void init();
+	bool init();
 
 private:
 	Ref<ZVTestDelegate1> m_testDelegate1;
 	Ref<ZVTestDelegate2> m_testDelegate2;
 	Ref<ZVTestDelegate3> m_testDelegate3;
 	String m_filePath;
+	Event<ZVTestDelegate4> m_event1;
+};
+
+/**
+ * Test class.
+ */
+LN_CLASS()
+class ZVTestEventArgs1
+	: public Object
+{
+	LN_OBJECT;
+public:
+	/** value method. */
+	LN_METHOD()
+	int value() const { return m_value; }
+
+LN_CONSTRUCT_ACCESS:
+    /** init method. */
+    LN_METHOD()
+	bool init();
+
+    /** init method. */
+    LN_METHOD(OverloadPostfix = "WithValue")
+	bool init(int v);
+
+private:
+	int m_value;
 };
 
 } // namespace ln

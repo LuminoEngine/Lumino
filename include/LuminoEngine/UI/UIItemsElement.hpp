@@ -18,7 +18,7 @@ public:
     
     /** Click イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-    Ref<EventConnection> connectOnClick(UIClickEventHandler handler);
+    Ref<EventConnection> connectOnClick(Ref<UIClickEventHandler> handler);
 
 protected:
     virtual void onClick(UIMouseEventArgs* e);
@@ -56,10 +56,10 @@ public:
     
     /** ItemClick イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
-	Ref<EventConnection> connectOnItemClick(UIClickEventHandler handler);
+	Ref<EventConnection> connectOnItemClick(Ref<UIClickEventHandler> handler);
     
     //LN_METHOD(Event)
-	Ref<EventConnection> connectOnSelectionChanged(UISelectionChangedEventHandler handler);
+	Ref<EventConnection> connectOnSelectionChanged(Ref<UISelectionChangedEventHandler> handler);
 
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;

@@ -106,6 +106,31 @@ LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate3, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+class LNWS_ln_ZVTestDelegate4 : public ln::ZVTestDelegate4
+{
+public:
+    LnZVTestDelegate4Callback m_callback;
+
+    LNWS_ln_ZVTestDelegate4() : ln::ZVTestDelegate4([this]() -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate4Callback"); }
+    })
+    {}
+
+    void init(LnZVTestDelegate4Callback callback)
+    {
+        ln::ZVTestDelegate4::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnZVTestDelegate4_Create(LnZVTestDelegate4Callback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate4, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 class LNWS_ln_TestDelegate : public ln::TestDelegate
 {
 public:
@@ -131,6 +156,31 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+class LNWS_ln_UIEventHandler : public ln::UIEventHandler
+{
+public:
+    LnUIEventHandlerCallback m_callback;
+
+    LNWS_ln_UIEventHandler() : ln::UIEventHandler([this](ln::UIEventArgs* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnUIEventHandlerCallback"); }
+    })
+    {}
+
+    void init(LnUIEventHandlerCallback callback)
+    {
+        ln::UIEventHandler::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIEventHandler, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
 class LNWS_ln_UIEventHandlerDelegate : public ln::UIEventHandlerDelegate
@@ -1040,7 +1090,13 @@ LN_FLAT_API LnResult LnVector3_Set(LnVector3* vector3, float x, float y, float z
 LN_FLAT_API LnResult LnVector3_Length(const LnVector3* vector3, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->length());
+    if (outReturn) {
+        *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->length());
+    }
+    else {
+        (reinterpret_cast<const ln::Vector3*>(vector3)->length());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1048,7 +1104,13 @@ LN_FLAT_API LnResult LnVector3_Length(const LnVector3* vector3, float* outReturn
 LN_FLAT_API LnResult LnVector3_LengthSquared(const LnVector3* vector3, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->lengthSquared());
+    if (outReturn) {
+        *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->lengthSquared());
+    }
+    else {
+        (reinterpret_cast<const ln::Vector3*>(vector3)->lengthSquared());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1064,7 +1126,13 @@ LN_FLAT_API LnResult LnVector3_MutatingNormalize(LnVector3* vector3)
 LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(x, y, z));
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(x, y, z));
+    }
+    else {
+        (ln::Vector3::normalize(x, y, z));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1072,7 +1140,13 @@ LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3
 LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+    }
+    else {
+        (ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1199,6 +1273,11 @@ LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate3>(), id);
 }
 
+LN_FLAT_API void LnZVTestDelegate4_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate4>(), id);
+}
+
 LN_FLAT_API LnResult LnZVTestPromise1_ThenWith(LnHandle zvtestpromise1, LnHandle callback)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1286,7 +1365,13 @@ LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate1(LnHandle zvtestclass1, int
 LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate2(LnHandle zvtestclass1, int a, int b, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate2(a, b));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate2(a, b));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate2(a, b));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1302,7 +1387,13 @@ LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate3(LnHandle zvtestclass1)
 LN_FLAT_API LnResult LnZVTestClass1_LoadAsync(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(filePath));
+    }
+    else {
+        (ln::ZVTestClass1::loadAsync(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1310,7 +1401,13 @@ LN_FLAT_API LnResult LnZVTestClass1_LoadAsync(const LnChar* filePath, LnHandle* 
 LN_FLAT_API LnResult LnZVTestClass1_LoadAsyncA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1318,7 +1415,13 @@ LN_FLAT_API LnResult LnZVTestClass1_LoadAsyncA(const char* filePath, LnHandle* o
 LN_FLAT_API LnResult LnZVTestClass1_ExecuteAsync(LnHandle zvtestclass1, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->executeAsync());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->executeAsync());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->executeAsync());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1326,7 +1429,13 @@ LN_FLAT_API LnResult LnZVTestClass1_ExecuteAsync(LnHandle zvtestclass1, LnHandle
 LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnChar** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1334,7 +1443,35 @@ LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnC
 LN_FLAT_API LnResult LnZVTestClass1_GetFilePathA(LnHandle zvtestclass1, const char** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent1(LnHandle zvtestclass1, LnHandle handler, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate4, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestDelegate4, handler)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent1(LnHandle zvtestclass1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->raiseEvent1());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1452,7 +1589,13 @@ LN_FLAT_API LnResult LnSerializer_WriteObjectA(LnHandle serializer, const char* 
 LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* name, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(name));
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1460,7 +1603,13 @@ LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* na
 LN_FLAT_API LnResult LnSerializer_ReadBoolA(LnHandle serializer, const char* name, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1468,7 +1617,13 @@ LN_FLAT_API LnResult LnSerializer_ReadBoolA(LnHandle serializer, const char* nam
 LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* name, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(name));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1476,7 +1631,13 @@ LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* nam
 LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1484,7 +1645,13 @@ LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name
 LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* name, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1492,7 +1659,13 @@ LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* n
 LN_FLAT_API LnResult LnSerializer_ReadFloatA(LnHandle serializer, const char* name, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1500,7 +1673,13 @@ LN_FLAT_API LnResult LnSerializer_ReadFloatA(LnHandle serializer, const char* na
 LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1508,7 +1687,13 @@ LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* 
 LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* name, const char** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1516,7 +1701,13 @@ LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* n
 LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* name, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(name));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1524,7 +1715,13 @@ LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* 
 LN_FLAT_API LnResult LnSerializer_ReadObjectA(LnHandle serializer, const char* name, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1532,7 +1729,13 @@ LN_FLAT_API LnResult LnSerializer_ReadObjectA(LnHandle serializer, const char* n
 LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF16(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    }
+    else {
+        (ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1540,7 +1743,13 @@ LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePa
 LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePath, const char** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF8(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF8(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+    else {
+        (ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1548,7 +1757,13 @@ LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePat
 LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* basePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(str, basePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(str, basePath));
+    }
+    else {
+        (ln::Serializer::deserialize(str, basePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1556,7 +1771,13 @@ LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* b
 LN_FLAT_API LnResult LnSerializer_DeserializeA(const char* str, const char* basePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+    else {
+        (ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1586,7 +1807,13 @@ LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1640,7 +1867,13 @@ LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFileA(LnHandle asset, const char* 
 LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(filePath));
+    }
+    else {
+        (ln::Assets::loadAssetFromLocalFile(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1648,7 +1881,13 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnH
 LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1656,7 +1895,13 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHa
 LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(filePath));
+    }
+    else {
+        (ln::Assets::loadAsset(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1664,7 +1909,13 @@ LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outRet
 LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1784,7 +2035,13 @@ LN_FLAT_API LnResult LnEngine_Finalize()
 LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
+    }
+    else {
+        (ln::Engine::update());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1792,7 +2049,13 @@ LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
 LN_FLAT_API LnResult LnEngine_Time(double* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (ln::Engine::time());
+    if (outReturn) {
+        *outReturn = (ln::Engine::time());
+    }
+    else {
+        (ln::Engine::time());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1816,7 +2079,13 @@ LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
 LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1922,7 +2191,13 @@ LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(filePath));
+    }
+    else {
+        (ln::Texture2D::load(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1930,7 +2205,13 @@ LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outRetur
 LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1938,7 +2219,13 @@ LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn
 LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(code));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(code));
+    }
+    else {
+        (ln::Texture2D::loadEmoji(code));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1946,7 +2233,13 @@ LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outRetu
 LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+    }
+    else {
+        (ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2038,7 +2331,13 @@ LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBo
 LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->isVisible());
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->isVisible());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->isVisible());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2128,7 +2427,13 @@ LN_FLAT_API void LnWorld_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getLength());
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getLength());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getLength());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2136,7 +2441,13 @@ LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outR
 LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2182,7 +2493,13 @@ LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x,
 LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2206,7 +2523,13 @@ LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, float x, fl
 LN_FLAT_API LnResult LnWorldObject_GetRotation(LnHandle worldobject, LnQuaternion* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2238,7 +2561,13 @@ LN_FLAT_API LnResult LnWorldObject_SetScaleXYZ(LnHandle worldobject, float x, fl
 LN_FLAT_API LnResult LnWorldObject_GetScale(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2262,7 +2591,13 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
 LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2286,7 +2621,13 @@ LN_FLAT_API LnResult LnWorldObject_LookAtXYZ(LnHandle worldobject, float x, floa
 LN_FLAT_API LnResult LnWorldObject_GetComponents(LnHandle worldobject, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2336,7 +2677,13 @@ LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool val
 LN_FLAT_API LnResult LnVisualObject_IsVisible(LnHandle visualobject, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->isVisible());
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->isVisible());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->isVisible());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2465,7 +2812,13 @@ LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, uieventargs)->sender());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, uieventargs)->sender());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, uieventargs)->sender());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2490,6 +2843,11 @@ extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId()
 LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
+}
+
+LN_FLAT_API void LnUIEventHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventHandler>(), id);
 }
 
 LN_FLAT_API void LnUIEventHandlerDelegate_SetManagedTypeInfoId(int64_t id)
@@ -2538,7 +2896,13 @@ LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, flo
 LN_FLAT_API LnResult LnUIElement_GetPosition(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2562,7 +2926,13 @@ LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, flo
 LN_FLAT_API LnResult LnUIElement_GetRotation(LnHandle uielement, LnQuaternion* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2594,7 +2964,13 @@ LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y
 LN_FLAT_API LnResult LnUIElement_GetScale(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2618,7 +2994,13 @@ LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, 
 LN_FLAT_API LnResult LnUIElement_GetCenterPoint(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2724,7 +3106,13 @@ LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton)
 LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle handler, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandlerDelegate, handler)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandlerDelegate, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandlerDelegate, handler)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
