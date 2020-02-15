@@ -12,10 +12,10 @@ GTEST_API_ int main(int argc, char **argv)
 	setlocale(LC_ALL, "");
 
     // CI 環境でテストをスキップする
-    if (!ln::detail::checkGraphicsSupport()) {
-        printf("Info: The driver does not appear to support Graphics. Skip LuminoEngine unit tests.\n");
-        return 0;
-    }
+    //if (!ln::detail::checkGraphicsSupport()) {
+    //    printf("Info: The driver does not appear to support Graphics. Skip LuminoEngine unit tests.\n");
+    //    return 0;
+    //}
 
 	char* testArgs[] = {
 		argv[0],
