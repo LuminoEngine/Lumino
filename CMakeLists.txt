@@ -36,7 +36,10 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 option(LN_BUILD_BINDINGS "build language bindings." OFF)
 
 # build editor projects
-option(LN_BUILD_EDITOR "build editor projects." ON)
+option(LN_BUILD_EDITOR "build editor projects." OFF)
+
+# build shared library
+option(LN_BUILD_SHARED_LIBRARY "build shared library." OFF)
 
 # build only LuminoCore.
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)

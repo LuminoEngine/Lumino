@@ -43,7 +43,7 @@ public:
 	// onDispose の時点で、NodeCore はすべての接続が確実に破棄されている。
     virtual void onDispose(bool explicitDisposing) override;
 
-	std::atomic<bool> m_alived = false;
+	std::atomic<bool> m_alived;
 
 protected:
 	AudioNode();

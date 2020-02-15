@@ -5,7 +5,7 @@ project(Editor)
 # Files
 
 file(GLOB_RECURSE LOCAL_SOURCES *.h *.cpp)
-source_group("Sources" FILES ${LOCAL_SOURCES})
+source_group("src" FILES ${LOCAL_SOURCES})
 
 #--------------------
 # Projects

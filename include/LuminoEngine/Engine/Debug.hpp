@@ -29,7 +29,7 @@ public:
 	}
 
 	template<typename... TArgs>
-	static void printf(float time, const Color& color, TArgs&&... args)
+	static void printf(float time, const Color& color, StringRef format, TArgs&&... args)
 	{
 		print(time, color, String::format(format, std::forward<TArgs>(args)...));
 	}

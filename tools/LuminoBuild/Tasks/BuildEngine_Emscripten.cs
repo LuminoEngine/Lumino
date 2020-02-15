@@ -13,7 +13,7 @@ namespace LuminoBuild.Tasks
             var buildArchDir = "Emscripten";
 
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir);
-            var installDir = EmscriptenBuildEnv.EmscriptenSysRootLocal;//Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.EngineInstallDirName);
+            var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.EngineInstallDirName);
             var cmakeSourceDir = builder.LuminoRootDir;
             var dependenciesRoot = EmscriptenBuildEnv.EmscriptenSysRootLocal;
 
@@ -29,10 +29,14 @@ namespace LuminoBuild.Tasks
                 f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} -DLN_DEPENDENCIES_ROOT={dependenciesRoot} -DLN_BUILD_TESTS=OFF -DLN_BUILD_TOOLS=OFF -G \"MinGW Makefiles\" {cmakeSourceDir}");
                 //f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DLN_BUILD_TESTS=OFF -DLN_BUILD_TOOLS=OFF -G \"MinGW Makefiles\" {cmakeSourceDir}");
                 f.WriteLine($"call cmake --build . -j8");
-                //f.WriteLine($"call cmake --build . --target install");
+                f.WriteLine($"call cmake --build . --target install");
             }
 
             Utils.CallProcess(script); // bat の中でエラーが発生すれば、例外に乗って出てくる
+
+
+            // Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "Lumino");//
+
 
             // emcmake で find_library などを行う場合、Emscripten のシステムフォルダ以外は検索しないようにツールチェインファイルで封印されている。
             // Lumino 本体のビルド時にライブラリを探すことができるようにするため、システムフォルダに一式コピーしておく。

@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.1.0)
 project(Game)
 
-file(GLOB LOCAL_SOURCES "../../Sources/*.h" "../../Sources/*.cpp")
-source_group("Sources" FILES ${LOCAL_SOURCES})
+file(GLOB LOCAL_SOURCES "../../src/*.h" "../../src/*.cpp")
+source_group("src" FILES ${LOCAL_SOURCES})
 
 set(
 	LOCAL_SOURCES

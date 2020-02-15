@@ -7,7 +7,7 @@ set(
 	PCH.h
 	Main.Windows.cpp
 )
-source_group("Sources" FILES ${LOCAL_SOURCES})
+source_group("src" FILES ${LOCAL_SOURCES})
 
 add_executable(${PROJECT_NAME} ${LOCAL_SOURCES} "PCH.h" "PCH.cpp")
 target_include_directories(${PROJECT_NAME} PRIVATE .)

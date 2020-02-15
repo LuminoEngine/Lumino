@@ -23,7 +23,8 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
-                args = new string[] { "BuildEngine_Emscripten" };
+                args = new string[] { "MakeNativePackage", "--direct-task-execution" };
+                //args = new string[] { "BuildEngine_Emscripten" };
                 //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
             }
@@ -71,8 +72,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
-            builder.Tasks.Add(new Tasks.MakeReleasePackage());
-            builder.Tasks.Add(new Tasks.MakeReleasePackage2());
+            builder.Tasks.Add(new Tasks.MakeNativePackage());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Tasks.Add(new Tasks.MakePackage_Ruby());
             builder.Rules.Add(new Rules.MakePackage());

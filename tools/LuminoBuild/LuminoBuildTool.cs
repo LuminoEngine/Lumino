@@ -38,12 +38,13 @@ namespace LuminoBuild
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
         public string[] Args;
+        public bool DirectTaskExecution { get { return Args.Contains("--direct-task-execution"); } }
 
         public string LocalPackageName
         {
             get
             {
-                return "LocalPackage";
+                return "NativePackage";
             }
         }
         
@@ -93,7 +94,7 @@ namespace LuminoBuild
         {
             try
             {
-                Execute(new List<BuildTask>() { task });
+                ExecuteTask(task);
             }
             catch (Exception e)
             {
@@ -131,33 +132,36 @@ namespace LuminoBuild
         {
             var tasks = ResoleveDependencies(taskName);
 
-            Console.WriteLine("Task execution order:");
-            tasks.ForEach(x => Console.WriteLine("  " + x.CommandName));
-
-            Execute(tasks);
+            if (DirectTaskExecution)
+            {
+                ExecuteTask(tasks.Last());
+            }
+            else
+            {
+                Console.WriteLine("Task execution order:");
+                tasks.ForEach(x => Console.WriteLine("  " + x.CommandName));
+                tasks.ForEach(x => ExecuteTask(x));
+            }
         }
 
-        private void Execute(List<BuildTask> tasks)
+        private void ExecuteTask(BuildTask task)
         {
-            foreach (var task in tasks)
+            Logger.WriteLine("[{0}] Task started.", task.CommandName);
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
+            string oldCD = Directory.GetCurrentDirectory();
+            try
             {
-                Logger.WriteLine("[{0}] Task started.", task.CommandName);
-                var sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
-
-                string oldCD = Directory.GetCurrentDirectory();
-                try
-                {
-                    task.Build(this);
-                }
-                finally
-                {
-                    Directory.SetCurrentDirectory(oldCD);
-                }
-
-                sw.Stop();
-                Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
+                task.Build(this);
             }
+            finally
+            {
+                Directory.SetCurrentDirectory(oldCD);
+            }
+
+            sw.Stop();
+            Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
         }
 
         public bool HasFlagArgument(string name)
@@ -327,7 +331,7 @@ namespace LuminoBuild
         /// <param name="stSourcePath">St source path.</param>
         /// <param name="stDestPath">St destination path.</param>
         /// <param name="bOverwrite">If set to <c>true</c> b overwrite.</param>
-        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite = true, string pattern = "*")
+        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite = true, string pattern = "*", bool recursive = true)
         {
             // コピー先のディレクトリがなければ作成する
             if (!System.IO.Directory.Exists(stDestPath))
@@ -361,11 +365,13 @@ namespace LuminoBuild
                 }
             }
 
-            // コピー元のディレクトリをすべてコピーする (再帰)
-            foreach (string stCopyFrom in System.IO.Directory.GetDirectories(stSourcePath))
+            if (recursive)
             {
-                string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
-                CopyDirectory(stCopyFrom, stCopyTo, bOverwrite, pattern);
+                foreach (string stCopyFrom in System.IO.Directory.GetDirectories(stSourcePath))
+                {
+                    string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
+                    CopyDirectory(stCopyFrom, stCopyTo, bOverwrite, pattern);
+                }
             }
         }
 

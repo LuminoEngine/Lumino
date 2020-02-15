@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0.0)
-project(lumino-cli)
+project(lumino)
 
 set(CMAKE_CXX_STANDARD 14)
 

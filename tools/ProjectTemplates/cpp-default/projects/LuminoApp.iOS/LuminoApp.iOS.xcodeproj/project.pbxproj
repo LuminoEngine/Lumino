@@ -18,7 +18,7 @@
 		8C95E8D4213BC8B100772569 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D3213BC8B100772569 /* Assets.xcassets */; };
 		8C95E8D7213BC8B100772569 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C95E8D5213BC8B100772569 /* LaunchScreen.storyboard */; };
 		8C95E8DA213BC8B100772569 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C95E8D9213BC8B100772569 /* main.mm */; };
-		8C97636721760C0800839863 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C97636621760C0800839863 /* Application.cpp */; };
+		8C97636721760C0800839863 /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C97636621760C0800839863 /* App.cpp */; };
 		8CC44761216F8BF7002F20DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44760216F8BF7002F20DA /* UIKit.framework */; };
 		8CC44763216F8C24002F20DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44762216F8C24002F20DA /* Foundation.framework */; };
 		8CC44765216F8C6E002F20DA /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC44764216F8C6E002F20DA /* GLKit.framework */; };
@@ -44,8 +44,8 @@
 		8C95E8D6213BC8B100772569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8C95E8D8213BC8B100772569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8C95E8D9213BC8B100772569 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
-		8C97636521760C0800839863 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
-		8C97636621760C0800839863 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
+		8C97636521760C0800839863 /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
+		8C97636621760C0800839863 /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
 		8CC4475E216F8BBA002F20DA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8CC44760216F8BF7002F20DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8CC44762216F8C24002F20DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -116,11 +116,11 @@
 		8C97636421760C0800839863 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				8C97636521760C0800839863 /* Application.h */,
-				8C97636621760C0800839863 /* Application.cpp */,
+				8C97636521760C0800839863 /* App.h */,
+				8C97636621760C0800839863 /* App.cpp */,
 			);
-			name = Sources;
-			path = ../../Sources;
+			name = src;
+			path = ../../src;
 			sourceTree = "<group>";
 		};
 		8CC44757216F8B97002F20DA /* Frameworks */ = {
@@ -212,7 +212,7 @@
 			files = (
 				8C95E8DA213BC8B100772569 /* main.mm in Sources */,
 				8C95E8C9213BC8B100772569 /* Renderer.mm in Sources */,
-				8C97636721760C0800839863 /* Application.cpp in Sources */,
+				8C97636721760C0800839863 /* App.cpp in Sources */,
 				8C95E8CC213BC8B100772569 /* GameViewController.mm in Sources */,
 				8C95E8C6213BC8B100772569 /* AppDelegate.mm in Sources */,
 				8CDB756E21737735006F48BC /* RootGLKView.mm in Sources */,

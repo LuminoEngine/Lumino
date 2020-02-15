@@ -7,6 +7,7 @@ namespace LuminoBuild
     public class TargetInfo
     {
         public string Name { get; set; }
+        public string LibraryExt { get; set; }
         public bool PdbCopy { get; set; } = false;
     }
 
@@ -40,18 +41,18 @@ namespace LuminoBuild
 
         public static TargetInfo[] Targets = new TargetInfo[]
         {
-            new TargetInfo(){ Name = "MSVC2017-x86-MD", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x86-MT", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x64-MD", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x64-MT", PdbCopy = true },
-            new TargetInfo(){ Name = "Emscripten" },
-            new TargetInfo(){ Name = "Android-arm64-v8a" },
-            new TargetInfo(){ Name = "Android-armeabi-v7a" },
-            new TargetInfo(){ Name = "Android-x86"},
-            new TargetInfo(){ Name = "Android-x86_64" },
-            new TargetInfo(){ Name = "macOS" },
-            new TargetInfo(){ Name = "iOS-SIMULATOR64" },
-            new TargetInfo(){ Name = "iOS-OS" },
+            new TargetInfo(){ Name = "MSVC2017-x86-MD", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x86-MT", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x64-MD", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x64-MT", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "Emscripten", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "Android-arm64-v8a", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "Android-armeabi-v7a", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "Android-x86", LibraryExt = "*.a"},
+            new TargetInfo(){ Name = "Android-x86_64", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "macOS", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "iOS-SIMULATOR64", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "iOS-OS", LibraryExt = "*.a" },
         };
 
         public static void Initialize(string repoRootDir)

@@ -424,37 +424,40 @@ if (LN_BUILD_XCODE_FRAMEWORK)
     install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoEngine.hpp DESTINATION "LuminoEngine.framework/Headers")
 endif()
 
+if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+endif()
+
 # Unit test.
 if (LN_BUILD_TESTS)
     add_subdirectory(test)
     add_subdirectory(sandbox)
 endif()
 
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO" )
-
 # Shared library
-#add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
-add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib})
-target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-#target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
-target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1)
-target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
-#target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
-#ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+if (LN_BUILD_SHARED_LIBRARY)
+    #add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
+    add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib})
+    target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+    #target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
+    target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1)
+    target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
+    #target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+    set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
+    #ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-# Export symbols defined in another static library.
-if (MSVC)
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngine-staticd")
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine-static")
-else()
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "--no-whole-archive")
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "--no-whole-archive")
-endif()
-
-if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
-    target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    # Export symbols defined in another static library.
+    if (MSVC)
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngine-staticd")
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine-static")
+    else()
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "--no-whole-archive")
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "--no-whole-archive")
+    endif()
+    
+    if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+        target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    endif()
 endif()
 
 
@@ -488,8 +491,11 @@ install(
 #------------------------------------------------------------------------------
 # Install
 
-install(TARGETS LuminoEngine
-    EXPORT ${PROJECT_NAME}Targets
-    RUNTIME     DESTINATION bin
-    ARCHIVE     DESTINATION lib
-    LIBRARY     DESTINATION lib)
+# Shared library
+if (LN_BUILD_SHARED_LIBRARY)
+    install(TARGETS LuminoEngine
+        EXPORT ${PROJECT_NAME}Targets
+        RUNTIME     DESTINATION bin
+        ARCHIVE     DESTINATION lib
+        LIBRARY     DESTINATION lib)
+endif()

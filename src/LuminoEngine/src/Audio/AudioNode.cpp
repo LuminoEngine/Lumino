@@ -15,6 +15,7 @@ namespace ln {
 AudioNode::AudioNode()
 	//: m_inputConnectionsDirty(false)
 	//, m_outputConnectionsDirty(false)
+	: m_alived(false)
 {
 }
 

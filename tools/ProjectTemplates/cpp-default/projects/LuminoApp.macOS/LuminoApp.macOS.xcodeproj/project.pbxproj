@@ -18,7 +18,7 @@
 		8C83D8D2217628C800D072BA /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8D1217628C800D072BA /* CoreVideo.framework */; };
 		8C83D8D4217628D700D072BA /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8D3217628D700D072BA /* IOKit.framework */; };
 		8C83D8D6217628DE00D072BA /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8D5217628DE00D072BA /* OpenGL.framework */; };
-		8C83D9002176294D00D072BA /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C83D8FF2176294D00D072BA /* Application.cpp */; };
+		8C83D9002176294D00D072BA /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C83D8FF2176294D00D072BA /* App.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,8 +36,8 @@
 		8C83D8D1217628C800D072BA /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		8C83D8D3217628D700D072BA /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		8C83D8D5217628DE00D072BA /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		8C83D8FE2176294D00D072BA /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
-		8C83D8FF2176294D00D072BA /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
+		8C83D8FE2176294D00D072BA /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
+		8C83D8FF2176294D00D072BA /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
 		8C83D9012176296000D072BA /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,11 +108,11 @@
 		8C83D8FD2176294D00D072BA /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				8C83D8FE2176294D00D072BA /* Application.h */,
-				8C83D8FF2176294D00D072BA /* Application.cpp */,
+				8C83D8FE2176294D00D072BA /* App.h */,
+				8C83D8FF2176294D00D072BA /* App.cpp */,
 			);
-			name = Sources;
-			path = ../../Sources;
+			name = src;
+			path = ../../src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -185,7 +185,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C83D9002176294D00D072BA /* Application.cpp in Sources */,
+				8C83D9002176294D00D072BA /* App.cpp in Sources */,
 				8C83D8C32176278B00D072BA /* main.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
