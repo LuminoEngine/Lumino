@@ -1,0 +1,7 @@
+#pragma once
+#include <LuminoEngine.hpp>
+#include <LuminoEngine/Platform/iOSPlatformInterface.hpp>
+
+#ifndef __OBJC__
+using namespace ln;
+#endif

@@ -6,6 +6,7 @@ class BuildEnvironment;
 class Project;
 class PluginManager;
 class AssetDatabase;
+class ProjectTemplateManager;
 
 class Workspace
     : public ln::Object
@@ -24,6 +25,7 @@ public:
     const ln::Ref<Project>& mainProject() const { return m_mainProject; }
     const ln::Ref<PluginManager>& mainPluginManager() const { return m_mainPluginManager; }
     const ln::Ref<AssetDatabase>& mainAssetDatabase() const { return m_mainAssetDatabase; }
+	const ln::Ref<ProjectTemplateManager>& projectTemplateManager() const { return m_projectTemplateManager; }
 	const ln::Ref<BuildEnvironment>& buildEnvironment() const { return m_buildEnvironment; }
 
     ln::Result dev_installTools() const;
@@ -38,6 +40,7 @@ private:
 	ln::Ref<Project> m_mainProject;
     ln::Ref<PluginManager> m_mainPluginManager;
     ln::Ref<AssetDatabase> m_mainAssetDatabase;
+	ln::Ref<ProjectTemplateManager> m_projectTemplateManager;
 };
 
 } // namespace lna

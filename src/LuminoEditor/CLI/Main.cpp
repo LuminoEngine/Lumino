@@ -20,17 +20,17 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-        ::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test1");
+        ::SetCurrentDirectoryW(L"D:/LocalProj/LN");
 		//::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/Roguelike2");
         ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>",
 			
-			//"new", "Test1",
+			"new", "Test1",
             
 			//"build",
-			"build", "Web",
+			//"build", "Web",
 			
 			//"init", "RinoTutorial", "-t", "SimpleDesktop",
 			//"build", "-p", "Windows"

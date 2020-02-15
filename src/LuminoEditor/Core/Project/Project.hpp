@@ -40,7 +40,7 @@ public:
 	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
     const ln::Path& localPluginDir() const { return m_localPluginDir; } // プロジェクト固有のプラグインと、プロジェクトごとのエディタ拡張の保存場所
-	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"Projects"); }
+	ln::Path projectsDir() const { return ln::Path(rootDirPath(), u"projects"); }
 	ln::Path emscriptenProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Web"); }
 	ln::Path androidProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.Android"); }
 	ln::Path macOSProjectDir() const { return ln::Path(projectsDir(), u"LuminoApp.macOS");  }

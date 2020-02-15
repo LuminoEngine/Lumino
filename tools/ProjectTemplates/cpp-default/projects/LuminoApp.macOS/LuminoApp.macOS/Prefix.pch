@@ -1,0 +1,8 @@
+#pragma once
+#include <LuminoEngine.hpp>
+
+#ifndef __OBJC__
+using namespace ln;
+#endif
+
+

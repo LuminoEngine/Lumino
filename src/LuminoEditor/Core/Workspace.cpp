@@ -3,6 +3,7 @@
 #include "Project/Project.hpp"
 #include "Project/AssetDatabase.hpp"
 #include "Project/PluginManager.hpp"
+#include "Project/ProjectTemplateManager.hpp"
 #include "Workspace.hpp"
 
 namespace lna {
@@ -40,6 +41,9 @@ Workspace::Workspace()
 #else
 	m_buildEnvironment->setupPathes(EnvironmentPathBase::EnvironmentVariable);
 #endif
+
+	m_projectTemplateManager = ln::makeObject2<ProjectTemplateManager>();
+	m_projectTemplateManager->search();
 }
 
 Workspace::~Workspace()

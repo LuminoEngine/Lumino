@@ -160,14 +160,14 @@ bool Project::existsProjectFile(const ln::Path& dir)
 
 void Project::setupPathes()
 {
-	m_engineDir = ln::Path(m_rootDir, u"Engine");
-	m_sourcesDir = ln::Path(m_rootDir, u"Sources");
-	m_assetsDir = ln::Path(m_rootDir, u"Assets");
+	m_engineDir = ln::Path(m_rootDir, u"engine");
+	m_sourcesDir = ln::Path(m_rootDir, u"src");
+	m_assetsDir = ln::Path(m_rootDir, u"assets");
 	m_buildDir = ln::Path(m_rootDir, u".ln");
-	m_releaseDir = ln::Path(m_rootDir, u"Release");
+	m_releaseDir = ln::Path(m_rootDir, u"release");
 	
-	m_intermediateAssetsDir = ln::Path(m_buildDir, u"Assets");
-    m_localPluginDir = ln::Path(m_buildDir, u"Plugins");
+	m_intermediateAssetsDir = ln::Path(m_buildDir, u"assets");
+    m_localPluginDir = ln::Path(m_buildDir, u"plugins");
 
 	//auto files = ln::FileSystem::getFiles(m_rootDir, u"*" + ProjectFileExt);
 	//if (!files.isEmpty()) {
