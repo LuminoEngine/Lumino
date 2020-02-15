@@ -45,6 +45,8 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
 	*outIsDriverSupported = true;
     m_enableValidationLayers = settings.debugMode;
 
+	LN_LOG_DEBUG << "VulkanDevice initialization started.";
+
 	if (!VulkanHelper::initVulkanFunctions()) {
 		LN_LOG_WARNING << "Valid vulkan library not found.";
 		*outIsDriverSupported = false;
@@ -80,6 +82,8 @@ bool VulkanDevice::init(const Settings& settings, bool* outIsDriverSupported)
     //{
     //    vkGetPhysicalDeviceFormatProperties()
     //}
+
+	LN_LOG_DEBUG << "VulkanDevice initialization completed.";
 
 	return true;
 }

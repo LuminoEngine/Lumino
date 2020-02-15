@@ -456,6 +456,7 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
 		
 		if (m_settings.graphicsAPI == GraphicsAPI::Vulkan && GraphicsManager::checkVulkanSupported()) {
+			LN_LOG_INFO << u"Vulkan supported.";
 			settings.mainWindowSettings.glfwNoAPI = true;
 		}
 		else {
