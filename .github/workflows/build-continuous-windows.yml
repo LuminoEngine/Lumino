@@ -19,7 +19,10 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Install vulkan-sdk
-      run: choco install vulkan-sdk
+      run:  |
+        choco install vulkan-sdk
+        refreshenv
+        vkcubepp
 
     - name: Build
       run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
