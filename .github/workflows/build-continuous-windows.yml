@@ -22,7 +22,8 @@ jobs:
       run:  |
         choco install vulkan-sdk
         refreshenv
-        vkcubepp
+        cat C:\ProgramData\chocolatey\logs\chocolatey.log
+        C:\VulkanSDK\1.1.126.0\Bin\vkcubepp
 
     - name: Build
       run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
