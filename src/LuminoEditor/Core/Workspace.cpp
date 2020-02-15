@@ -36,11 +36,11 @@ Workspace::Workspace()
 {
     assert(!s_instance);
     s_instance = this;
-#ifdef LN_DEBUG
-	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
-#else
-	m_buildEnvironment->setupPathes(EnvironmentPathBase::EnvironmentVariable);
-#endif
+//#ifdef LN_DEBUG
+//	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
+//#else
+	m_buildEnvironment->setupPathes(EnvironmentPathBase::LocalPackage);
+//#endif
 
 	m_projectTemplateManager = ln::makeObject2<ProjectTemplateManager>();
 	m_projectTemplateManager->search();
@@ -102,7 +102,7 @@ ln::Result Workspace::runProject(const ln::String& target)
 		auto buildDir = ln::Path::combine(m_mainProject->buildDir(), u"Web").canonicalize();
 
 		ln::Process proc;
-		proc.setProgram(m_buildEnvironment->python2());
+		proc.setProgram(m_buildEnvironment->python());
 		proc.setArguments({u"-m", u"SimpleHTTPServer", u"8000"});
 		proc.setWorkingDirectory(buildDir);
 		proc.setUseShellExecute(false);

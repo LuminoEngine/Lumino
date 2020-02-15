@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-        ::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test1");
+        ::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test2");
 		//::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/Roguelike2");
         ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 			
 			//"new", "Test1", "-t", "cmake",
             
-			"build",
+			"build", "Web",
 			//"build", "Web",
 			
 			//"init", "RinoTutorial", "-t", "SimpleDesktop",

@@ -35,7 +35,7 @@ public:
 	virtual ln::Result build(const ln::String& target) override;
 
 private:
-	ln::Result build_WindowsTarget() const;
+	ln::Result build_NativeCMakeTarget() const;
 	ln::Result build_WebTarget() const;
 };
 

@@ -165,7 +165,7 @@ ln::Result CppLanguageContext::build(const ln::String& target)
 	}
 
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0) {
-		return build_WindowsTarget();
+		return build_NativeCMakeTarget();
 	}
 	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0) {
 		return build_WebTarget();
@@ -174,7 +174,7 @@ ln::Result CppLanguageContext::build(const ln::String& target)
 	return true;
 }
 
-ln::Result CppLanguageContext::build_WindowsTarget() const
+ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 {
 	//ln::String arch = u"MSVC2019-x64-MT";
 	ln::String arch = u"MSVC2017-x64-MT";
@@ -223,6 +223,7 @@ ln::Result CppLanguageContext::build_WebTarget() const
 	auto installDir = ln::Path::combine(buildDir, u"Release");
 	auto cmakeSourceDir = project()->emscriptenProjectDir();
 	auto script = ln::Path::combine(buildDir, u"build.bat");
+	auto engineRoot = ln::Path(workspace->buildEnvironment()->emscriptenSysRootLocalDir(), u"LuminoEngine");
 
 	ln::FileSystem::createDirectory(buildDir);
 
@@ -230,7 +231,7 @@ ln::Result CppLanguageContext::build_WebTarget() const
 		ln::List<ln::String> emcmakeArgs = {
 			u"-DCMAKE_BUILD_TYPE=Release",
 			u"-DCMAKE_INSTALL_PREFIX=" + installDir,
-			u"-DLUMINO_ENGINE_ROOT=\"" + ln::Path(project()->engineDirPath(), u"Native").str().replace("\\", "/") + u"\"",
+			u"-DLUMINO_ENGINE_ROOT=\"" + engineRoot.str().replace("\\", "/") + u"\"",
 			u"-DLN_TARGET_ARCH=Emscripten",
 			u"-G \"MinGW Makefiles\"",
 			cmakeSourceDir,

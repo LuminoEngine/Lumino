@@ -7,7 +7,7 @@ namespace lna {
 enum class EnvironmentPathBase
 {
 	// 環境変数 LUMINO_PATH を基準とする
-	EnvironmentVariable,
+	//EnvironmentVariable,
 
 	// 実行ファイルからフォルダをさかのぼり、パッケージのルートを検索する (インストールせずに使用する)
 	LocalPackage,
@@ -33,6 +33,7 @@ public:
 	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
 	const ln::Path& luminoPackageRootDir() const { return m_luminoPackageRootDir; }
 	const ln::Path& luminoPackageToolsDir() const { return m_luminoPackageToolsDir; }
+	const ln::Path& luminoPackageEngineDir() const { return m_luminoPackageEngineDir; }
 	
 	// Emscripten
 	const ln::Path& luminoEmscriptenSdkDirPath() const { return m_luminoEmscriptenSdkDirPath; }
@@ -40,7 +41,8 @@ public:
 	const ln::String& emsdkName() const { return m_emsdkName; }
 	const ln::Path& emsdkDirPath() const { return m_emsdkRootDir; }
 	const ln::Path& emscriptenDirPath() const { return m_emscriptenRootDir; }
-	const ln::Path& python2() const { return m_python2; }
+	const ln::Path& emscriptenSysRootLocalDir() const { return m_emscriptenSysRootLocal; }
+	const ln::Path& python() const { return m_python; }
 
 	// Visual Studio
 	const ln::Path& msbuild() const { return m_msbuild; }
@@ -55,9 +57,11 @@ public:
 	static ln::Path findLocalPackageForTesting();
 
 private:
-	void setupPathesFromPackageRoot(const ln::Path& packageRoot);
-	void setupPathesFromRepositoryRoot(const ln::Path& repoRoot);
+	//void setupPathesFromPackageRoot(const ln::Path& packageRoot);
+	//void setupPathesFromRepositoryRoot(const ln::Path& repoRoot);
 	static ln::Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
+	static ln::Path findNativePackageRootDir();
+	static ln::Path findRepositoryRootDir();
 
 	ln::String m_defaultTargetName;
 	Language m_defaultLanguage;
@@ -66,6 +70,7 @@ private:
 	ln::Path m_appDataDirPath;
 	ln::Path m_luminoPackageRootDir;
 	ln::Path m_luminoPackageToolsDir;
+	ln::Path m_luminoPackageEngineDir;
 	ln::Path m_luminoEmscriptenSdkDirPath;
 	ln::Path m_projectTemplatesDirPath;
 	ln::Path m_toolsDir;
@@ -74,7 +79,8 @@ private:
 	ln::String m_emsdkName;
 	ln::Path m_emsdkRootDir;
 	ln::Path m_emscriptenRootDir;
-	ln::Path m_python2;
+	ln::Path m_emscriptenSysRootLocal;
+	ln::Path m_python;
 
 	ln::Path m_msbuild;
 

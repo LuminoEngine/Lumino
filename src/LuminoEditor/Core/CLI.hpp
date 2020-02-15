@@ -13,6 +13,9 @@ public:
 	/** コマンドのメイン出力。stdout に出力される。 */
 	static void output(const ln::String& str);
 
+	/** verbose. stderr に出力される。 */
+	static void verbose(const ln::String& str);
+
 	/** 進捗状況やログの出力。stderr に出力される。 */
 	static void info(const ln::String& str);
 
