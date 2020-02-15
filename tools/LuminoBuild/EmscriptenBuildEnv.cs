@@ -33,9 +33,6 @@ namespace LuminoBuild
 
             Directory.CreateDirectory(targetBuildDir);
 
-            Console.WriteLine($"IsWebTarget: {BuildEnvironment.IsWebTarget}");
-            Console.WriteLine($"IsWin32: {Utils.IsWin32}");
-
             // Install emsdk
             if (BuildEnvironment.IsWebTarget && Utils.IsWin32)
             {

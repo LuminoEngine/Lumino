@@ -19,5 +19,5 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Build
-      run: dotnet run -- BuildEngine_Emscripten
+      run: dotnet run -- BuildEngine_Emscripten Emscripten
       
