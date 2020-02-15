@@ -1,0 +1,23 @@
+name: Verification
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  Web:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Build
+      run: dotnet run -- BuildEngine_Emscripten
+      
