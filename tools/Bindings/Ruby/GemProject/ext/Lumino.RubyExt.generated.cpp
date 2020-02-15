@@ -1966,9 +1966,10 @@ static VALUE Wrap_LnZVTestClass1_ConnectOnEvent1(int argc, VALUE* argv, VALUE se
         if (block != Qnil) {
             VALUE value = rb_funcall(g_class_ZVTestEventHandler1, rb_intern("new"), 1, block);
             LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
-            LnResult result = LnZVTestClass1_ConnectOnEvent1(selfObj->handle, _value);
+            LnHandle _outReturn;
+            LnResult result = LnZVTestClass1_ConnectOnEvent1(selfObj->handle, _value, &_outReturn);
             if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
-            return Qnil;
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
         }
     }
     rb_raise(rb_eArgError, "ln::ZVTestClass1::connectOnEvent1 - wrong argument type.");
@@ -2014,9 +2015,10 @@ static VALUE Wrap_LnZVTestClass1_ConnectOnEvent2(int argc, VALUE* argv, VALUE se
         if (block != Qnil) {
             VALUE value = rb_funcall(g_class_ZVTestEventHandler2, rb_intern("new"), 1, block);
             LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
-            LnResult result = LnZVTestClass1_ConnectOnEvent2(selfObj->handle, _value);
+            LnHandle _outReturn;
+            LnResult result = LnZVTestClass1_ConnectOnEvent2(selfObj->handle, _value, &_outReturn);
             if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
-            return Qnil;
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
         }
     }
     rb_raise(rb_eArgError, "ln::ZVTestClass1::connectOnEvent2 - wrong argument type.");
@@ -5190,9 +5192,10 @@ static VALUE Wrap_LnUIButton_ConnectOnClicked(int argc, VALUE* argv, VALUE self)
         if (block != Qnil) {
             VALUE value = rb_funcall(g_class_UIEventHandler, rb_intern("new"), 1, block);
             LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);
-            LnResult result = LnUIButton_ConnectOnClicked(selfObj->handle, _value);
+            LnHandle _outReturn;
+            LnResult result = LnUIButton_ConnectOnClicked(selfObj->handle, _value, &_outReturn);
             if (result < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", result, LnRuntime_GetLastErrorMessage());
-            return Qnil;
+            return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);
         }
     }
     rb_raise(rb_eArgError, "ln::UIButton::connectOnClicked - wrong argument type.");

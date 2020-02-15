@@ -64,14 +64,14 @@ private:
 	ln::String makeWrapFuncImplement_ProcCaller(const MethodSymbol* delegateProtoType) const;
 	ln::String makeWrapFuncImplement_SetOverrideCallback(const TypeSymbol* classInfo) const;
 	ln::String makeWrapFuncImplement_SignalCaller(const MethodSymbol* method) const;
-	ln::String makeWrapFuncImplement_EventConnector(const MethodSymbol* method) const;
+	//ln::String makeWrapFuncImplement_EventConnector(const MethodSymbol* method) const;
 
 
 	ln::String makeEnumTypeVALUEName(TypeSymbol* type) const { return u"g_enum_" + type->shortName(); }
 	ln::String makeEnumTypeVALUEVariableDecls() const;
 	ln::String makeEnumTypeRegisterCode() const;
 
-	ln::String makeEventSignalDefinition() const;
+	//ln::String makeEventSignalDefinition() const;
 
 	ln::String m_RubyRequiredStructMethodsTemplate;
 	ln::String m_RubyRequiredClassMethodsTemplate;

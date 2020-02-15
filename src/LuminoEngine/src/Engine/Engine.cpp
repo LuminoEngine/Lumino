@@ -144,6 +144,7 @@ void Engine::finalize()
 			endFrame();
 		}
 		detail::EngineDomain::engineContext()->disposeEngineManager();
+		detail::EngineDomain::engineContext()->disposeRuntimeManager();
 	}
 }
 
