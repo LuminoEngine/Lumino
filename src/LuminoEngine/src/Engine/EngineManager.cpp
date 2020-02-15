@@ -138,7 +138,6 @@ void EngineManager::init(const EngineSettings& settings)
     }
 	
 
-
 	{
 		m_activeDiagnostics = makeObject<DiagnosticsManager>();
 		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, u"RenderPass count");
@@ -151,6 +150,7 @@ void EngineManager::init(const EngineSettings& settings)
 		EngineDomain::registerType<Serializer>();
 		EngineDomain::registerType<ZVTestClass1>();
     }
+
 
 	initializeAllManagers();
 
@@ -380,6 +380,8 @@ void EngineManager::initializeAllManagers()
 
 void EngineManager::initializeCommon()
 {
+	LN_LOG_DEBUG << "EngineManager common initialization started.";
+
 #if defined(LN_OS_DESKTOP)
 	{
 		if (m_settings.engineLogEnabled) {
@@ -409,8 +411,15 @@ void EngineManager::initializeCommon()
     }
 #endif
 
+#ifdef __EMSCRIPTEN_PTHREADS__
+#else
+	LN_LOG_ERROR << "__EMSCRIPTEN_PTHREADS__ disabled.";
+#endif
+
 	TaskScheduler::init();
 	m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
+
+	LN_LOG_DEBUG << "EngineManager common initialization ended.";
 }
 
 void EngineManager::initializeAssetManager()

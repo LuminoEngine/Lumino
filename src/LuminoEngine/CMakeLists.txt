@@ -406,6 +406,9 @@ target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
 set_target_properties(LuminoEngine-static PROPERTIES FOLDER "Lumino")
 ln_add_pch(LuminoEngine-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
+if (LN_EMSCRIPTEN)
+    set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
+endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.

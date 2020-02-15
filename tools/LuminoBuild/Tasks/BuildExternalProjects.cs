@@ -90,6 +90,7 @@ namespace LuminoBuild.Tasks
             var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectName));
             //var installDir = Utils.ToUnixPath(Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, projectName));
             var cmakeSourceDir = Utils.ToUnixPath(Path.Combine(externalSourceDir, projectDirName));
+            var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
             Logger.WriteLine($"BuildProjectEm ({projectDirName}) buildDir:{buildDir}");
 
@@ -102,7 +103,7 @@ namespace LuminoBuild.Tasks
                 f.WriteLine($"call emsdk activate {EmscriptenBuildEnv.emsdkVer}");
                 f.WriteLine($"call emsdk_env.bat");
                 f.WriteLine($"cd /d \"{Utils.ToWin32Path(buildDir)}\"");
-                f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} {additionalOptions} -G \"MinGW Makefiles\" {cmakeSourceDir}");
+                f.WriteLine($"call emcmake cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={installDir} -DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov} {additionalOptions} -G \"MinGW Makefiles\" {cmakeSourceDir}");
                 f.WriteLine($"call cmake --build . -j8");
                 f.WriteLine($"call cmake --build . --target install");
             }

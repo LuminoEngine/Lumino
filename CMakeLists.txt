@@ -89,6 +89,9 @@ if (DEFINED EMSCRIPTEN)
 
     set(LN_USE_SDL ON)
 
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    #set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
+
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)
 
