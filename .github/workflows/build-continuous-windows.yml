@@ -19,11 +19,11 @@ jobs:
         dotnet-version: 2.2.108
 
     - uses: actions/cache@v1.0.3
-        with:
-          path: ./build/MSVC2017-x64-MT/ExternalInstall
-          key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('./tools/LuminoBuild/Tasks/BuildExternalProjects.cs') }}
-          restore-keys: |
-            ${{ env.cache-version }}-ExternalInstall-
+      with:
+        path: ./build/MSVC2017-x64-MT/ExternalInstall
+        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('./tools/LuminoBuild/Tasks/BuildExternalProjects.cs') }}
+        restore-keys: |
+          ${{ env.cache-version }}-ExternalInstall-
             
     - name: Build
       run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT

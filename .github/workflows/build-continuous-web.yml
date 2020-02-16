@@ -19,18 +19,18 @@ jobs:
         dotnet-version: 2.2.108
 
     - uses: actions/cache@v1.0.3
-        with:
-          path: ./build/Emscripten/emsdk
-          key: ${{ env.cache-version }}-emsdk-${{ hashFiles('./tools/LuminoBuild/EmscriptenBuildEnv.cs') }}
-          restore-keys: |
-            ${{ env.cache-version }}-emsdk-
+      with:
+        path: ./build/Emscripten/emsdk
+        key: ${{ env.cache-version }}-emsdk-${{ hashFiles('./tools/LuminoBuild/EmscriptenBuildEnv.cs') }}
+        restore-keys: |
+          ${{ env.cache-version }}-emsdk-
 
     - uses: actions/cache@v1.0.3
-        with:
-          path: ./build/Emscripten/ExternalInstall
-          key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('./tools/LuminoBuild/Tasks/BuildExternalProjects.cs') }}
-          restore-keys: |
-            ${{ env.cache-version }}-ExternalInstall-
+      with:
+        path: ./build/Emscripten/ExternalInstall
+        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('./tools/LuminoBuild/Tasks/BuildExternalProjects.cs') }}
+        restore-keys: |
+          ${{ env.cache-version }}-ExternalInstall-
 
     - name: Build
       run: dotnet run -- BuildEngine_Emscripten Emscripten
