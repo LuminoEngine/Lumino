@@ -5,6 +5,9 @@ on:
     branches:
     - master
 
+env:
+  cache-version: v1
+
 jobs:
   Web:
     runs-on: windows-latest

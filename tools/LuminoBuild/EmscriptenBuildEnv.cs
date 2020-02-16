@@ -26,7 +26,7 @@ namespace LuminoBuild
         public static void Initialize(Builder builder)
         {
             //var cloneParentDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools");
-            var cloneParentDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "Tools");
+            var cloneParentDir = Path.Combine(builder.LuminoBuildDir, "Emscripten");
             EmsdkDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "emsdk");
             //EmsdkDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools", "emsdk");
             EmscriptenRoot = Path.Combine(EmsdkDir, "upstream", "emscripten");
