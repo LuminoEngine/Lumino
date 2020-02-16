@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "Runtime/RuntimeManager.hpp"
 #include "Engine/EngineManager.hpp"
+#include <LuminoEngine/Engine/VMProperty.hpp>
 #include <LuminoEngine/EngineContext.hpp>
 
 namespace ln {
@@ -15,42 +16,51 @@ EngineContext* EngineContext::current()
 }
 
 EngineContext::EngineContext()
+	: m_runtimeManager(makeRef<detail::RuntimeManager>())
+	, m_engineManager(makeRef<detail::EngineManager>())
 {
 	internalInit();
 }
 
 EngineContext::~EngineContext()
 {
-	m_typeInfos.clear();
 }
 
 void EngineContext::internalInit()
 {
 	if (!m_init) {
 		m_typeInfos.push_back(nullptr); // [0] is dummy
-		m_objectTypeInfo = registerType<Object>("Object", nullptr, {});
+		
+		PredefinedTypes::Char = registerType("Char", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int8 = registerType("Int8", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int16 = registerType("Int16", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int32 = registerType("Int32", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Int64 = registerType("Int64", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt8 = registerType("UInt8", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt16 = registerType("UInt16", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt32 = registerType("UInt32", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::UInt64 = registerType("UInt64", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Float = registerType("Float", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Double = registerType("Double", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::String = registerType("String", nullptr, TypeInfoClass::Primitive);
+		PredefinedTypes::Object = registerType<Object>("Object", nullptr, {});
+		PredefinedTypes::List = registerType<Object>("List", nullptr, {});
+
+		m_objectTypeInfo = PredefinedTypes::Object;
 		m_init = true;
 	}
 }
 
 void EngineContext::initializeRuntimeManager()
 {
-	if (!m_runtimeManager) {
-		m_runtimeManager = makeRef<detail::RuntimeManager>();
-		m_runtimeManager->init(detail::RuntimeManager::s_globalSettings);
-	}
+	m_runtimeManager->init(detail::RuntimeManager::s_globalSettings);
 }
 
 void EngineContext::initializeEngineManager()
 {
 	initializeRuntimeManager();
 
-	printf("EngineContext::initializeEngineManager()\n");
-
-	if (!m_engineManager) {
-		m_engineManager = makeRef<detail::EngineManager>();
-		m_engineManager->init(detail::EngineManager::s_settings);
-	}
+	m_engineManager->init(detail::EngineManager::s_settings);
 }
 
 void EngineContext::disposeRuntimeManager()
@@ -61,6 +71,9 @@ void EngineContext::disposeRuntimeManager()
 		m_runtimeManager->dispose();
 		m_runtimeManager = nullptr;
 	}
+
+	m_typeInfos.clear();
+	m_typeInfoSet.clear();
 }
 
 void EngineContext::disposeEngineManager()

@@ -24,6 +24,7 @@ class CameraOrbitControlComponent
 	: public Component
 {
 public:
+	static Ref<CameraOrbitControlComponent> create();
 
 protected:
     virtual void onAttached(WorldObject* owner) override;

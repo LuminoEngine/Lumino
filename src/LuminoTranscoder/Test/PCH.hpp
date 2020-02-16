@@ -3,7 +3,7 @@
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoEngine.hpp>
 #include "gtest/gtest.h"
-#include "../../../build/ExternalSource/Streams/source/Stream.h"
+#include "../../../build/BuildCache/Streams/source/Stream.h"
 
 template<class T>
 using Ref = ln::Ref<T>;

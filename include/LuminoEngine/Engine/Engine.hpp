@@ -62,18 +62,34 @@ public:
     /** デフォルトで作成される UIViewport は、MainWindow の直接の子要素となっています。 */
     static UIViewport* mainViewport();
 	/** 。 */
-	LN_METHOD()
+	//LN_METHOD()
 	static UIControl* mainUIView();
     static Size mainViewSize();
 
 	/** デフォルトで作成されるメインの World です。 */
-	LN_METHOD(Property)
+	//LN_METHOD(Property)
     static World* world();
 
-    static Camera* mainCamera();
+	/** デフォルトで作成されるメインの Camera です。 */
+	//LN_METHOD(Property)
+    static Camera* camera();
+
+	/** デフォルトで作成されるメインの DirectionalLight です。 */
+	//LN_METHOD(Property)
+	static DirectionalLight* light();
+
+	/** デフォルトで作成されるメインの AmbientLight です。 */
+	//LN_METHOD(Property)
+	static AmbientLight* ambientLight();
+
+	/** デフォルトで作成されるメインの RenderView です。 */
+	//LN_METHOD(Property)
+	static WorldRenderView* renderView();
+
+	static UIControl* ui() { return mainUIView(); }
+
     //static AmbientLight* mainAmbientLight();
     //static DirectionalLight* mainDirectionalLight();
-    static WorldRenderView* mainRenderView();
     static PhysicsWorld* mainPhysicsWorld();
     static PhysicsWorld2D* mainPhysicsWorld2D();
 

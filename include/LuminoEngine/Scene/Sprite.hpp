@@ -5,7 +5,7 @@
 
 namespace ln {
 class Texture;
-class SpriteFrameSet;
+class SpriteSheet;
 class SpriteComponent;
 
 
@@ -45,7 +45,12 @@ public:
     };
 
     static Ref<Sprite> create(Texture* texture, float width, float height);
-	static Ref<Sprite> create(SpriteFrameSet* frameSet);
+	static Ref<Sprite> create(SpriteSheet* frameSet);
+	
+	// 画像ファイルまたは spritesheet をロード
+	static Ref<Sprite> load(StringRef filePath);
+	static Ref<Sprite> loadEmoji(StringRef code);
+	static Ref<Sprite> loadEmoji(uint32_t codePoint);
 
     /** スプライトが表示するテクスチャを設定します。 */
     LN_METHOD(Property)
@@ -66,10 +71,10 @@ public:
 	//LN_METHOD(Property)
 	const Rect& sourceRect() const;
 
-	/** SpriteFrameSet を設定します。 */
-	void setFrameSet(SpriteFrameSet* value);
+	/** SpriteSheet を設定します。 */
+	void setFrameSet(SpriteSheet* value);
 
-	/** SpriteFrameSet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
+	/** SpriteSheet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
 	void setFrameIndex(int index);
 
 
@@ -126,7 +131,7 @@ LN_CONSTRUCT_ACCESS:
 	LN_METHOD(OverloadPostfix = "WithTextureAndSize")
     void init(Texture* texture, float width, float height);
 
-	void init(SpriteFrameSet* frameSet);
+	void init(SpriteSheet* frameSet);
 
 private:
     Ref<SpriteComponent> m_component;

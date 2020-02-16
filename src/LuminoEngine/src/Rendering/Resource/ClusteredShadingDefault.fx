@@ -453,6 +453,8 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	o.color0.a = surface.Albedo.a;
 	//o.color0 = float4(1, 0, 0, 1);
 	o.color0 = LN_GetBuiltinEffectColor(o.color0);
+
+	//o.color0.r = ln_MaterialMetallic;
 	
 	return o;
 }

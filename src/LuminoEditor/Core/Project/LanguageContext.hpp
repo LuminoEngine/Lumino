@@ -14,10 +14,12 @@ public:
 	Project* project() const { return m_project; }
 
 	virtual ln::Result applyTemplates(const ln::String& templateName) = 0;
-    virtual ln::Result applyEngine() = 0;
 	virtual void restore() = 0;
+	virtual ln::Result build(const ln::String& target);
 
 private:
+	ln::Result buildAssets() const;
+
 	Project* m_project;
 };
 
@@ -29,10 +31,12 @@ public:
 	virtual ~CppLanguageContext();
 
 	virtual ln::Result applyTemplates(const ln::String& templateName) override;
-    virtual ln::Result applyEngine() override;
 	virtual void restore() override;
+	virtual ln::Result build(const ln::String& target) override;
 
 private:
+	ln::Result build_NativeCMakeTarget() const;
+	ln::Result build_WebTarget() const;
 };
 
 } // namespace lna

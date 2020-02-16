@@ -55,11 +55,16 @@ public:
     void init(const StringRef& text);
 
     /** Clicked イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnClicked(UIEventHandler handler);   // TODO: Click
+    //LN_METHOD(Event)
+	//Ref<EventConnection> connectOnClicked(UIGeneralEventHandler handler);
+
+	/** Clicked イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	Ref<EventConnection> connectOnClicked(Ref<UIEventHandler> handler);
+	
 
 protected:
-    virtual const String& elementName() const  override { static String name = u"UIButton"; return name; }
+    virtual const String& elementName() const override { static String name = u"UIButton"; return name; }
     virtual void onClick(UIEventArgs* e) override;
 
 private:
@@ -76,12 +81,12 @@ public:
 	
 
 	/** Checked イベントの通知を受け取るコールバックを登録します。*/
-	LN_METHOD(Event)
-	EventConnection connectOnChecked(UIEventHandler handler);
+	//LN_METHOD(Event)
+	Ref<EventConnection> connectOnChecked(Ref<UIGeneralEventHandler> handler);
 
 	/** Unchecked イベントの通知を受け取るコールバックを登録します。*/
-	LN_METHOD(Event)
-	EventConnection connectOnUnchecked(UIEventHandler handler);
+	//LN_METHOD(Event)
+	Ref<EventConnection> connectOnUnchecked(Ref<UIGeneralEventHandler> handler);
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
@@ -95,8 +100,8 @@ private:
 	void checkChanged();
 
 	UICheckState m_checkState;
-	Event<UIEventHandler> m_onChecked;
-	Event<UIEventHandler> m_onUnchecked;
+	Event<UIGeneralEventHandler> m_onChecked;
+	Event<UIGeneralEventHandler> m_onUnchecked;
 };
 
 } // namespace ln

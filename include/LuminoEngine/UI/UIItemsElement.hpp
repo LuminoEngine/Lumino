@@ -17,8 +17,8 @@ public:
     Variant* data() const { return m_data; }
     
     /** Click イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnClick(UIClickEventHandler handler);
+    //LN_METHOD(Event)
+    Ref<EventConnection> connectOnClick(Ref<UIClickEventHandler> handler);
 
 protected:
     virtual void onClick(UIMouseEventArgs* e);
@@ -55,11 +55,11 @@ public:
 	UICollectionItem* selectedItem() const;
     
     /** ItemClick イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnItemClick(UIClickEventHandler handler);
+    //LN_METHOD(Event)
+	Ref<EventConnection> connectOnItemClick(Ref<UIClickEventHandler> handler);
     
-    LN_METHOD(Event)
-    EventConnection connectOnSelectionChanged(UISelectionChangedEventHandler handler);
+    //LN_METHOD(Event)
+	Ref<EventConnection> connectOnSelectionChanged(Ref<UISelectionChangedEventHandler> handler);
 
 protected:
 	//virtual UIControl* generateItem(UIElement* content) = 0;

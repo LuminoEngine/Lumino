@@ -1,6 +1,8 @@
 
 set(_LN_REPO_ROOT ${CMAKE_CURRENT_LIST_DIR}/../..)
+set(LN_EXTERNAL_FIND_PATH_MODE "build")
 
+include("${_LN_REPO_ROOT}/src/CFlagOverrides.cmake")	# for msvc static runtime
 include("${_LN_REPO_ROOT}/external/ImportExternalLibraries.cmake")
 include("${_LN_REPO_ROOT}/src/LuminoCommon.cmake")	# for ln_add_pch
 

@@ -144,6 +144,7 @@ void Engine::finalize()
 			endFrame();
 		}
 		detail::EngineDomain::engineContext()->disposeEngineManager();
+		detail::EngineDomain::engineContext()->disposeRuntimeManager();
 	}
 }
 
@@ -229,9 +230,19 @@ World* Engine::world()
     return detail::EngineDomain::engineManager()->mainWorld();
 }
 
-Camera* Engine::mainCamera()
+Camera* Engine::camera()
 {
     return detail::EngineDomain::engineManager()->mainCamera();
+}
+
+DirectionalLight* Engine::light()
+{
+	return detail::EngineDomain::engineManager()->mainWorld()->mainDirectionalLight();
+}
+
+AmbientLight* Engine::ambientLight()
+{
+	return detail::EngineDomain::engineManager()->mainWorld()->mainAmbientLight();
 }
 
 //AmbientLight* Engine::mainAmbientLight()
@@ -244,7 +255,7 @@ Camera* Engine::mainCamera()
 //    return detail::EngineDomain::engineManager()->mainDirectionalLight();
 //}
 
-WorldRenderView* Engine::mainRenderView()
+WorldRenderView* Engine::renderView()
 {
     return detail::EngineDomain::engineManager()->mainRenderView();
 }

@@ -10,10 +10,10 @@ namespace ln {
 class Mouse
 {
 public:
-    static bool isPressed(MouseButtons button);
-    static bool isTriggered(MouseButtons button);
-    static bool isOffTriggered(MouseButtons button);
-    static bool isRepeated(MouseButtons button);
+    static bool pressed(MouseButtons button);
+    static bool triggered(MouseButtons button);
+    static bool triggeredOff(MouseButtons button);
+    static bool repeated(MouseButtons button);
     static Point position();
 
 private:
@@ -28,10 +28,10 @@ class MouseInputDevice
 public:
     MouseInputDevice();
 
-    bool isPressed(MouseButtons button) const;
-    bool isTriggered(MouseButtons button) const;
-    bool isOffTriggered(MouseButtons button) const;
-    bool isRepeated(MouseButtons button) const;
+    bool pressed(MouseButtons button) const;
+    bool triggered(MouseButtons button) const;
+    bool triggeredOff(MouseButtons button) const;
+    bool repeated(MouseButtons button) const;
     Point position();
 
     void updateFrame(float elapsedTime);

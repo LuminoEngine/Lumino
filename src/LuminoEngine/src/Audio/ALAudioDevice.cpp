@@ -2,7 +2,7 @@
 #ifdef LN_USE_OPENAL
 #include "Internal.hpp"
 #include "ALAudioDevice.hpp"
-#include "CoreAudioNode.hpp"
+#include "Core/CoreAudioNode.hpp"
 
 namespace ln {
 namespace detail {
@@ -21,8 +21,8 @@ ALAudioDevice::ALAudioDevice()
 
 void ALAudioDevice::init()
 {
-	AudioDevice::init(CoreAudioNode::ProcessingSizeInFrames, 2);
-	m_finalRenderdBuffer.resize(CoreAudioNode::ProcessingSizeInFrames * 2);
+	AudioDevice::init(AudioNodeCore::ProcessingSizeInFrames, 2);
+	m_finalRenderdBuffer.resize(AudioNodeCore::ProcessingSizeInFrames * 2);
 
 	m_alDevice = alcOpenDevice(nullptr);
 	m_alContext = alcCreateContext(m_alDevice, nullptr);

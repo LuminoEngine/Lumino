@@ -3,15 +3,15 @@
 #include "BindingValidation.hpp"
 
 namespace ln {
-	
+
 //==============================================================================
 // ZVTestClass1
 
 LN_OBJECT_IMPLEMENT(ZVTestClass1, Object) {}
 
-void ZVTestClass1::init()
+bool ZVTestClass1::init()
 {
-	Object::init();
+	return Object::init();
 }
 
 void ZVTestClass1::setTestDelegate1(ZVTestDelegate1* value)
@@ -72,6 +72,46 @@ Ref<ZVTestPromise2> ZVTestClass1::executeAsync()
 		Thread::sleep(2000);
 		p->resolve(100);
 	});
+}
+
+Ref<EventConnection> ZVTestClass1::connectOnEvent1(Ref<ZVTestEventHandler1> handler)
+{
+	return m_event1.connect(handler);
+}
+
+void ZVTestClass1::raiseEvent1()
+{
+	m_event1.raise();
+}
+
+Ref<EventConnection> ZVTestClass1::connectOnEvent2(Ref<ZVTestEventHandler2> handler)
+{
+	return m_event2.connect(handler);
+}
+
+void ZVTestClass1::raiseEvent2()
+{
+	auto e = makeObject<ZVTestEventArgs1>(1024);
+	m_event2.raise(e);
+}
+
+//==============================================================================
+// ZVTestEventArgs1
+
+LN_OBJECT_IMPLEMENT(ZVTestEventArgs1, Object) {}
+
+bool ZVTestEventArgs1::init(int v)
+{
+	if (!Object::init()) return false;
+	m_value = v;
+	return true;
+}
+
+bool ZVTestEventArgs1::init()
+{
+	if (!Object::init()) return false;
+	m_value = 0;
+	return true;
 }
 
 } // namespace ln

@@ -18,6 +18,14 @@ public:
 static volatile int g_value = 0;
 static volatile LnHandle g_otherObject = LN_NULL_HANDLE;
 
+TEST_F(Test_Binding, ReferenceCount)
+{
+	LnHandle obj1;
+	LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+	ASSERT_EQ(1, LnObject_GetReferenceCount(obj1));
+	LnObject_Release(obj1);
+}
+
 static LnResult LnZVTestDelegate1_Callback(LnHandle selfDelegate, int a)
 {
 	g_value = a;
@@ -138,3 +146,76 @@ TEST_F(Test_Binding, Promise_Failure)
 	LnObject_Release(delegate3);
 }
 
+static LnResult LnZVTestEventHandler1_Callback(LnHandle selfDelegate)
+{
+	g_value = 555;
+	return LN_SUCCESS;
+}
+
+static LnResult LnZVTestEventHandler2_Callback(LnHandle selfDelegate, LnHandle e)
+{
+	int v;
+	LnZVTestEventArgs1_GetValue(e, &v);
+	g_value = v;
+	return LN_SUCCESS;
+}
+
+TEST_F(Test_Binding, Event)
+{
+	// void(void)
+	{
+		LnHandle delegate4;
+		LN_ZV_CHECK(LnZVTestEventHandler1_Create(LnZVTestEventHandler1_Callback, &delegate4));
+
+		LnHandle obj1;
+		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+
+		LnHandle connection;
+		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent1(obj1, delegate4, &connection));
+
+		g_value = 0;
+		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent1(obj1));
+		ASSERT_EQ(555, g_value);
+
+		LnObject_Release(connection);
+		LnObject_Release(obj1);
+		LnObject_Release(delegate4);
+	}
+
+	// Omit connection
+	{
+		LnHandle delegate4;
+		LN_ZV_CHECK(LnZVTestEventHandler1_Create(LnZVTestEventHandler1_Callback, &delegate4));
+
+		LnHandle obj1;
+		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+
+		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent1(obj1, delegate4, nullptr));
+
+		g_value = 0;
+		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent1(obj1));
+		ASSERT_EQ(555, g_value);
+
+		LnObject_Release(obj1);
+		LnObject_Release(delegate4);
+	}
+
+	// void(ZVTestEventHandler2*)
+	{
+		LnHandle delegate1;
+		LN_ZV_CHECK(LnZVTestEventHandler2_Create(LnZVTestEventHandler2_Callback, &delegate1));
+
+		LnHandle obj1;
+		LN_ZV_CHECK(LnZVTestClass1_Create(&obj1));
+
+		LN_ZV_CHECK(LnZVTestClass1_ConnectOnEvent2(obj1, delegate1, nullptr));
+
+		g_value = 0;
+		LN_ZV_CHECK(LnZVTestClass1_RaiseEvent2(obj1));
+		ASSERT_EQ(1024, g_value);
+
+		LnObject_Release(obj1);
+		LnObject_Release(delegate1);
+	}
+
+}

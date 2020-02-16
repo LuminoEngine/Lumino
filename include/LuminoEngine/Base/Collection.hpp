@@ -204,8 +204,8 @@ class CollectionObject : public Object
 public:
 
 	// TODO: internal
-	//virtual int getItemCount() const = 0;
-	//virtual const Variant* getItemAsVariant(int index) = 0;	// この Variant は共有インスタンスでかまわない
+	virtual int getItemCount() const = 0;
+	virtual const Variant* getItemAsVariant(int index) = 0;	// この Variant は共有インスタンスでかまわない
 
 	void addNotifyCollectionChangedHandler(INotifyCollectionChangedHandler* handler);
 	void removeNotifyCollectionChangedHandler(INotifyCollectionChangedHandler* handler);
@@ -404,13 +404,25 @@ protected:
 		raiseCollectionChanged(&e);
 	}
 
+	virtual int getItemCount() const
+	{
+		return m_data.size();
+	}
+
+	virtual const Variant* getItemAsVariant(int index)
+	{
+		m_newItemCache->assign(m_data[index]);
+		return m_newItemCache;
+	}
+
+
 private:
 	std::vector<T> m_data;
 	Ref<Variant> m_newItemCache;
 	Ref<Variant> m_oldItemCache;
 
-	template<class T> friend
-	Ref<Collection<T>> makeCollection();
+	template<class TItem> friend
+	Ref<Collection<TItem>> makeCollection();
 };
 
 /** Ref<Collection> を構築します。 */

@@ -1,17 +1,32 @@
 ﻿#pragma once
 #include <shared_mutex>
 #include "InternalSharedMutex.inc"
+#include "Common.hpp"
 
 namespace ln {
 class AudioContext;
 namespace detail {
 class AudioDecoder;
-class CoreAudioNode;
-class CoreAudioSourceNode;
-class CoreAudioPannerNode;
-class CoreAudioDestinationNode;
+class AudioNodeCore;
 } // namespace detail
 
+/**
+ *
+ * @note
+ * Audio graph の実装のフロントエンド。Graph の実態は Core と呼んでおり、別スレッドで実行される。
+ * フロントエンドの実装の注意点として、状態変化は直接 Core に設定してはならない。
+ * 変更は必ず遅延設定で実装する。
+ * 変化は一度 AudioNode のフィールドに保持しておいて、AudioNode::commit() が呼ばれたときに、その内部から Core に変更を設定する。
+ *
+ * AudioNode::commit() は Audio thread から呼び出される。
+ * そのため AudioNode のフィールドを設定する、ユーザープログラムから呼ばれる setVolume() などの setter は、mutex を Write-lock する必要がある。
+ * 一方 AudioNode::commit() では Read-lock する。
+ *
+ * × インスタンスの削除は常に Audio-thread 上から行われる。インスタンス作成と同時に AudioContext の管理下に入り強参照される。
+ * → Binding で公開するクラスなので、別スレッドからの削除は非常に危険。
+ * もともと Audio モジュールは Engine::update() 無しでも使いたいコンセプトだったけど、AudioGraph はかなり難しい。
+ * 「従来通り Sound クラスだけ使ってるなら Engine::update() は不要だけど、AudioGraph 使うなら必須だよ」 くらいの仕様にしたほうがよさそう。
+ */
 class AudioNode
 	: public Object
 {
@@ -25,7 +40,11 @@ public:
 	/** このノードをの全ての接続を解除します。 */
 	void disconnect();
 
+	// onDispose の時点で、NodeCore はすべての接続が確実に破棄されている。
     virtual void onDispose(bool explicitDisposing) override;
+
+	std::atomic<bool> m_alived;
+
 protected:
 	AudioNode();
 	virtual ~AudioNode() = default;
@@ -35,7 +54,7 @@ protected:
     // onInitialize() はそういった事情を考慮して、セーフティなタイミングで初期化を行うためのコールバック。
     // 逆に言うと、AudioNode のサブクラスは他のモジュールのように init() は一切実装してはならない。
     //virtual void onInitialize() = 0;
-	virtual detail::CoreAudioNode* coreNode() = 0;
+	virtual detail::AudioNodeCore* coreNode() = 0;
 	virtual void commit();	// ロック済みの状態で呼ばれる
 
 	detail::AudioRWMutex& commitMutex();
@@ -55,78 +74,6 @@ private:
     detail::AudioRWMutex m_propertyMutex;
 
 	friend class AudioContext;
-};
-
-class AudioSourceNode
-	: public AudioNode
-{
-public:
-    enum class PlayingState
-    {
-        NoChanged,
-        Stop,
-        Play,
-        Pause,
-    };
-
-	void setPlaybackRate(float rate);
-
-    void setLoop(bool value);
-    bool loop() const;
-
-	void start();
-	void stop();
-	void pause();
-	void resume();
-    PlayingState playingState() const;
-
-LN_CONSTRUCT_ACCESS:
-	AudioSourceNode();
-	virtual ~AudioSourceNode() = default;
-	void init(detail::AudioDecoder* decoder);
-	virtual detail::CoreAudioNode* coreNode() override;
-	virtual void commit() override;
-
-private:
-
-	struct CommitState
-	{
-		float playbackRate;
-		PlayingState requestedState;
-        bool loop;
-		bool resetRequire;
-	};
-
-	Ref<detail::CoreAudioSourceNode> m_coreObject;
-	CommitState m_commitState;
-};
-
-class AudioPannerNode
-	: public AudioNode
-{
-public:
-
-LN_CONSTRUCT_ACCESS:
-	AudioPannerNode();
-	virtual ~AudioPannerNode() = default;
-	void init();
-	virtual detail::CoreAudioNode* coreNode() override;
-
-private:
-	Ref<detail::CoreAudioPannerNode> m_coreObject;
-};
-
-class AudioDestinationNode
-	: public AudioNode
-{
-LN_CONSTRUCT_ACCESS:
-	AudioDestinationNode();
-	virtual ~AudioDestinationNode() = default;
-	void init(detail::CoreAudioDestinationNode* core);
-	virtual detail::CoreAudioNode* coreNode() override;
-
-private:
-	Ref<detail::CoreAudioDestinationNode> m_coreObject;
 };
 
 } // namespace ln

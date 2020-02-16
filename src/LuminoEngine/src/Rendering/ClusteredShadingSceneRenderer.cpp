@@ -202,7 +202,7 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
 //	{
 //		static const byte_t data[] =
 //		{
-//#include "Resource/UnLighting.fx.h"
+//#include "Resource/Unlit.fx.h"
 //		};
 //		static const size_t size = LN_ARRAY_SIZE_OF(data);
 //		m_unLightingShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
@@ -254,8 +254,8 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 
 	// ライトがひとつもない場合はライティングなしを選択
 	if (!m_ownerRenderer->lightClusters().hasLight()) {
-		requestedShadingModel = ShadingModel::UnLighting;
-        // TODO: わざわざ UnLighting テクニック用意しないとならないので面倒というか忘れやすい
+		requestedShadingModel = ShadingModel::Unlit;
+        // TODO: わざわざ Unlit テクニック用意しないとならないので面倒というか忘れやすい
 	}
 
 	ShaderTechniqueClass classSet;
@@ -274,9 +274,9 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 //void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 //{
 //
-//	//if (stageData.shadingModel == ShadingModel::UnLighting)
+//	//if (stageData.shadingModel == ShadingModel::Unlit)
 //	//{
-//	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+//	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Unlit;
 //	//	outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
 //	//	if (!outPolicy->shaderTechnique)
 //	//	{

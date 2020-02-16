@@ -210,6 +210,7 @@ private:
     void pauseInternal();
     void setVolumeInternal(float volume);
 
+	detail::AudioManager* m_manager;
     Ref<AudioSourceNode> m_sourceNode;
     Ref<AudioGainNode> m_gainNode;
     uint32_t m_gameAudioFlags;
@@ -218,7 +219,8 @@ private:
     EasingValue<float> m_fadeValue;
     SoundFadeBehavior m_fadeBehavior;
     bool m_fading;
-
+	
+	friend class detail::AudioManager;
     friend class detail::GameAudioImpl;
     friend class AudioContext;
 };

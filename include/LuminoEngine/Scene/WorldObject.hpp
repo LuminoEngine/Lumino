@@ -12,6 +12,7 @@ class WorldObject;
 class Component;
 class RenderingContext;
 
+/** ComponentList */
 LN_CLASS()
 class ComponentList : public Collection<Ref<Component>>
 {
@@ -110,12 +111,12 @@ public:
 	const Vector3& position() const { return m_transform->position(); }
 
 	/** このオブジェクトの回転を設定します。 */
-	LN_METHOD(Property)
+	LN_METHOD(OverloadPostfix = "Quaternion")
 	void setRotation(const Quaternion& rot) { m_transform->setRotation(rot); }
 
 	/** このオブジェクトの回転をオイラー角から設定します。(radian) */
 	LN_METHOD()
-	void setEulerAngles(float x, float y, float z) { setRotation(Quaternion::makeFromEulerAngles(Vector3(x, y, z))); }
+	void setRotation(float x, float y, float z) { setRotation(Quaternion::makeFromEulerAngles(Vector3(x, y, z))); }
 
 	/** このオブジェクトの回転を取得します。 */
 	LN_METHOD(Property)
@@ -149,7 +150,19 @@ public:
 	LN_METHOD(Property)
 	const Vector3& centerPoint() const { return m_transform->centerPoint(); }
 
-    void lookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+	LN_METHOD()
+	void lookAt(const Vector3& target) { lookAt(target, Vector3::UnitY); }
+
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+	LN_METHOD(OverloadPostfix = "XYZ")
+    void lookAt(float x, float y, float z) { return lookAt(Vector3(x, y, z), Vector3::UnitY); }
+
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+	void lookAt(const Vector3& target, const Vector3& up);
+
+	/** 指定した座標を向くように、オブジェクトを回転させます。 */
+    void lookAt(float x, float y, float z, const Vector3& up) { return lookAt(Vector3(x, y, z), up); }
 
     void addComponent(Component* component);
 
@@ -166,6 +179,8 @@ public:
 
 	/** このオブジェクトを直ちに World から除外します。このメソッドは World のアップデートシーケンス中に呼び出してはなりません。 */
 	void removeFromScene();
+
+	//void addToWorld();
 
     const Matrix& worldMatrix();
 

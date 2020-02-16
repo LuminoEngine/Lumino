@@ -25,7 +25,7 @@ int CocoaPlatformInterface::Main()
 
 void CocoaPlatformInterface::addAssetArchive(const StringRef& fileFullPath, const StringRef& password)
 {
-    detail::EngineDomain::engineManager()->settings().assetArchives.add({ fileFullPath, password });
+    detail::EngineDomain::engineManager()->settings2().assetArchives.add({ fileFullPath, password });
 }
 
 } // namespace ln

@@ -286,7 +286,6 @@ void FlatCSourceGenerator::generate()
 	for (auto& structInfo : db()->structs()) {
         for (auto& methodInfo : structInfo->publicMethods()) {
             if (methodInfo->isFieldAccessor()) {
-                printf("");
             }
             else {
                 structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo, FlatCharset::Unicode)).NewLine();
@@ -301,10 +300,10 @@ void FlatCSourceGenerator::generate()
 		}
 		else {
 			for (auto& methodInfo : classInfo->publicMethods()) {
-				if (methodInfo->isEventConnector()) {
+				/*if (methodInfo->isEventConnector()) {
 					classMemberFuncImplsText.AppendLines(makeEventConnectorFuncBody(classInfo, methodInfo)).NewLine();
 				}
-				else {
+				else*/ {
 					classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo, FlatCharset::Unicode)).NewLine();
 					if (methodInfo->hasStringDecl()) {
 						classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo, FlatCharset::Ascii)).NewLine();
@@ -661,24 +660,25 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		}
 
 		// return output
+		OutputBuffer returnAssignmentExpr;
 		if (methodInfo->returnType().type != PredefinedTypes::voidType)
 		{
 			if (methodInfo->returnType().type->isStruct())
-				body.append("*outReturn = reinterpret_cast<const {0}&>", makeFlatClassName(methodInfo->returnType().type));
+				returnAssignmentExpr.append("*outReturn = ln::detail::convertStructForcedt<{0}>", makeFlatClassName(methodInfo->returnType().type));
 			else if (methodInfo->returnType().type->isClass())
 				if (methodInfo->returnType().strongReference)
-					body.append("*outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE");
+					returnAssignmentExpr.append("*outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE");
 				else
-					body.append("*outReturn = LNI_OBJECT_TO_HANDLE");
+					returnAssignmentExpr.append("*outReturn = LNI_OBJECT_TO_HANDLE");
 			else if (methodInfo->returnType().type == PredefinedTypes::boolType)
-				body.append("*outReturn = LNI_BOOL_TO_LNBOOL");
+				returnAssignmentExpr.append("*outReturn = LNI_BOOL_TO_LNBOOL");
 			else if (methodInfo->returnType().type->isString())
                 if (charset == FlatCharset::Unicode)
-				    body.append("*outReturn = LNI_STRING_TO_STRPTR_UTF16");
+					returnAssignmentExpr.append("*outReturn = LNI_STRING_TO_STRPTR_UTF16");
                 else
-                    body.append("*outReturn = LNI_STRING_TO_STRPTR_UTF8");
+					returnAssignmentExpr.append("*outReturn = LNI_STRING_TO_STRPTR_UTF8");
 			else
-				body.append("*outReturn = ");
+				returnAssignmentExpr.append("*outReturn = ");
 		}
 
 		// call expression
@@ -686,15 +686,16 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		if (typeInfo->isStruct())
 		{
 			if (methodInfo->isConstructor()) {
-				callExp = ln::String::format("new (reinterpret_cast<{0}*>({1})) {2}({3});", typeInfo->fullName(), typeInfo->shortName().toLower(), typeInfo->fullName(), args.toString());
+				callExp = ln::String::format(u"new (reinterpret_cast<{0}*>({1})) {2}({3});", typeInfo->fullName(), typeInfo->shortName().toLower(), typeInfo->fullName(), args.toString());
 			}
 			else if (methodInfo->isStatic()) {
-				body.append("({0}::{1}({2}));", typeInfo->fullName(), methodInfo->shortName(), args.toString());
+				//body.append("({0}::{1}({2}));", typeInfo->fullName(), methodInfo->shortName(), args.toString());
+				callExp = ln::String::format(u"({0}::{1}({2}));", typeInfo->fullName(), methodInfo->shortName(), args.toString());
 			}
 			else {
 				ln::String castTo = typeInfo->fullName();
-				if (methodInfo->isConst()) castTo = "const " + castTo;
-				callExp = ln::String::format("(reinterpret_cast<{0}*>({1})->{2}({3}));", castTo, typeInfo->shortName().toLower(), methodInfo->shortName(), args.toString());
+				if (methodInfo->isConst()) castTo = u"const " + castTo;
+				callExp = ln::String::format(u"(reinterpret_cast<{0}*>({1})->{2}({3}));", castTo, typeInfo->shortName().toLower(), methodInfo->shortName(), args.toString());
 			}
 		}
 		else
@@ -702,29 +703,44 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 			// static 関数
 			if (methodInfo->isStatic())
 			{
-				body.append("({0}::{1}({2}));", typeInfo->fullName(), methodInfo->shortName(), args.toString());
+				//body.append("({0}::{1}({2}));", typeInfo->fullName(), methodInfo->shortName(), args.toString());
+				callExp = ln::String::format(u"({0}::{1}({2}));", typeInfo->fullName(), methodInfo->shortName(), args.toString());
 			}
 			// コンストラクタ 関数
 			else if (methodInfo->isConstructor())
 			{
 				OutputBuffer macroArgs;
-				macroArgs.AppendCommad("out" + typeInfo->shortName());	// 格納する変数名
+				macroArgs.AppendCommad(u"out" + typeInfo->shortName());	// 格納する変数名
 				macroArgs.AppendCommad(makeWrapSubclassName(typeInfo));	// クラス名
 				macroArgs.AppendCommad(methodInfo->shortName());		// 初期化関数名
 				macroArgs.AppendCommad(args.toString());		// 引数
-				callExp = ln::String::format("LNI_CREATE_OBJECT({0});", macroArgs.toString());
+				callExp = ln::String::format(u"LNI_CREATE_OBJECT({0});", macroArgs.toString());
 			}
 			// 普通のインスタンス 関数
 			else
 			{
 				auto name = methodInfo->shortName();
 				if (methodInfo->isVirtual())
-					name = (makeWrapSubclassName(typeInfo) + "::" + name + "_CallBase");
-				callExp = ln::String::format("(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", makeWrapSubclassName(typeInfo), FlatCCommon::makeInstanceParamName(typeInfo), name, args.toString());
+					name = (makeWrapSubclassName(typeInfo) + u"::" + name + u"_CallBase");
+				callExp = ln::String::format(u"(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", makeWrapSubclassName(typeInfo), FlatCCommon::makeInstanceParamName(typeInfo), name, args.toString());
 			}
 		}
 
-		body.append(callExp);
+		if (!returnAssignmentExpr.isEmpty()) {
+			body.AppendLine(u"if (outReturn) {");
+			body.IncreaseIndent();
+			body.AppendLine(returnAssignmentExpr.toString() + callExp);
+			body.DecreaseIndent();
+			body.AppendLine(u"}");
+			body.AppendLine(u"else {");
+			body.IncreaseIndent();
+			body.AppendLine(callExp);
+			body.DecreaseIndent();
+			body.AppendLine(u"}");
+		}
+		else {
+			body.append(callExp);
+		}
 	}
 
 
@@ -774,35 +790,35 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 //	return code.toString();
 //}
 
-ln::String FlatCSourceGenerator::makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const
-{
-	auto delegateType = methodInfo->parameters().front()->type();
-	auto delegateDeclaration = delegateType->delegateProtoType();
-
-	// wrap callback
-	// Note: 今のところ引数ひとつしか想定しないので、引数名は e だけ.
-	OutputBuffer params;
-	OutputBuffer args;
-	args.AppendCommad(methodInfo->flatParameters().front()->name());
-	for (auto& param : delegateDeclaration->parameters()) {
-		params.AppendCommad(u"{0} e", param->getFullQualTypeName(), param->name());
-		if (param->type()->isClass()) {
-			args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(e)");
-		}
-		else {
-			args.AppendCommad(u"e");
-		}
-	}
-	auto callbackLambda = ln::String::format(u"[=]({0}) {{ handler({1}); }}", params.toString(), args.toString());
-
-	OutputBuffer funcImpl;
-	funcImpl.AppendLine(makeFuncHeader(methodInfo, FlatCharset::Unicode));
-	funcImpl.AppendLine(u"{");
-	funcImpl.IncreaseIndent();
-	funcImpl.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
-	funcImpl.AppendLine(u"(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", makeWrapSubclassName(classInfo), methodInfo->flatParameters()[0]->name(), methodInfo->shortName(), callbackLambda);
-	funcImpl.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
-	funcImpl.DecreaseIndent();
-	funcImpl.AppendLine(u"}");
-	return funcImpl.toString();
-}
+//ln::String FlatCSourceGenerator::makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const
+//{
+//	auto delegateType = methodInfo->parameters().front()->type();
+//	auto delegateDeclaration = delegateType->delegateProtoType();
+//
+//	// wrap callback
+//	// Note: 今のところ引数ひとつしか想定しないので、引数名は e だけ.
+//	OutputBuffer params;
+//	OutputBuffer args;
+//	args.AppendCommad(methodInfo->flatParameters().front()->name());
+//	for (auto& param : delegateDeclaration->parameters()) {
+//		params.AppendCommad(u"{0} e", param->getFullQualTypeName(), param->name());
+//		if (param->type()->isClass()) {
+//			args.AppendCommad(u"LNI_OBJECT_TO_HANDLE(e)");
+//		}
+//		else {
+//			args.AppendCommad(u"e");
+//		}
+//	}
+//	auto callbackLambda = ln::String::format(u"[=]({0}) {{ handler({1}); }}", params.toString(), args.toString());
+//
+//	OutputBuffer funcImpl;
+//	funcImpl.AppendLine(makeFuncHeader(methodInfo, FlatCharset::Unicode));
+//	funcImpl.AppendLine(u"{");
+//	funcImpl.IncreaseIndent();
+//	funcImpl.AppendLine(u"LNI_FUNC_TRY_BEGIN;");
+//	funcImpl.AppendLine(u"(LNI_HANDLE_TO_OBJECT({0}, {1})->{2}({3}));", makeWrapSubclassName(classInfo), methodInfo->flatParameters()[0]->name(), methodInfo->shortName(), callbackLambda);
+//	funcImpl.AppendLine(u"LNI_FUNC_TRY_END_RETURN;");
+//	funcImpl.DecreaseIndent();
+//	funcImpl.AppendLine(u"}");
+//	return funcImpl.toString();
+//}

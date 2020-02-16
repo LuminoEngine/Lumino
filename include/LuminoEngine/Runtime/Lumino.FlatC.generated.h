@@ -147,13 +147,16 @@ typedef enum tagLnDepthBufferFormat
 
 } LnDepthBufferFormat;
 
-typedef void(*LnUIEventHandlerCallback)(LnHandle __eventOwner, LnHandle p1);
 
 typedef LnResult(*LnPromiseFailureDelegateCallback)(LnHandle promisefailuredelegate);
 typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
 typedef LnResult(*LnZVTestDelegate2Callback)(LnHandle zvtestdelegate2, int p1, int p2, int* outReturn);
 typedef LnResult(*LnZVTestDelegate3Callback)(LnHandle zvtestdelegate3, LnHandle p1);
+typedef LnResult(*LnZVTestEventHandler1Callback)(LnHandle zvtesteventhandler1);
+typedef LnResult(*LnZVTestEventHandler2Callback)(LnHandle zvtesteventhandler2, LnHandle p1);
 typedef LnResult(*LnTestDelegateCallback)(LnHandle testdelegate, int p1, int* outReturn);
+typedef LnResult(*LnUIGeneralEventHandlerCallback)(LnHandle uigeneraleventhandler, LnHandle p1);
+typedef LnResult(*LnUIEventHandlerCallback)(LnHandle uieventhandler);
 
 
 //==============================================================================
@@ -291,6 +294,16 @@ extern LN_FLAT_API int LnObject_GetTypeInfoId();
 LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
+// ln::EventConnection
+
+typedef LnResult(*LnEventConnection_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_SetOverrideCallback(LnEventConnection_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnEventConnection_GetTypeInfoId();
+LN_FLAT_API void LnEventConnection_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
 // ln::PromiseFailureDelegate
 
 LN_FLAT_API LnResult LnPromiseFailureDelegate_Create(LnPromiseFailureDelegateCallback callback, LnHandle* outDelegate);
@@ -313,6 +326,18 @@ LN_FLAT_API void LnZVTestDelegate2_SetManagedTypeInfoId(int64_t id);
 
 LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate);
 LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestEventHandler1
+
+LN_FLAT_API LnResult LnZVTestEventHandler1_Create(LnZVTestEventHandler1Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestEventHandler1_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestEventHandler2
+
+LN_FLAT_API LnResult LnZVTestEventHandler2_Create(LnZVTestEventHandler2Callback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnZVTestEventHandler2_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::ZVTestPromise1
@@ -413,6 +438,32 @@ LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnC
 LN_FLAT_API LnResult LnZVTestClass1_GetFilePathA(LnHandle zvtestclass1, const char** outReturn);
 
 /**
+    @brief connectOnEvent1 method.
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent1(LnHandle zvtestclass1, LnHandle handler, LnHandle* outReturn);
+
+/**
+    @brief raiseEvent1 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent1(LnHandle zvtestclass1);
+
+/**
+    @brief connectOnEvent2 method.
+    @param[in] zvtestclass1 : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
+*/
+LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent2(LnHandle zvtestclass1, LnHandle handler, LnHandle* outReturn);
+
+/**
+    @brief raiseEvent2 method.
+    @param[in] zvtestclass1 : instance
+*/
+LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent2(LnHandle zvtestclass1);
+
+/**
     @brief init method.
     @param[out] outZVTestClass1 : instance.
 */
@@ -424,6 +475,35 @@ LN_FLAT_API LnResult LnZVTestClass1_OnSerialize_CallOverrideBase(LnHandle object
 
 extern LN_FLAT_API int LnZVTestClass1_GetTypeInfoId();
 LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::ZVTestEventArgs1
+
+/**
+    @brief value method.
+    @param[in] zvtesteventargs1 : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn);
+
+/**
+    @brief init method.
+    @param[out] outZVTestEventArgs1 : instance.
+*/
+LN_FLAT_API LnResult LnZVTestEventArgs1_Create(LnHandle* outZVTestEventArgs1);
+
+/**
+    @brief init method.
+    @param[out] outZVTestEventArgs1 : instance.
+*/
+LN_FLAT_API LnResult LnZVTestEventArgs1_CreateWithValue(int v, LnHandle* outZVTestEventArgs1);
+
+typedef LnResult(*LnZVTestEventArgs1_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_SetOverrideCallback(LnZVTestEventArgs1_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnZVTestEventArgs1_GetTypeInfoId();
+LN_FLAT_API void LnZVTestEventArgs1_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Serializer
@@ -604,6 +684,11 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath
 LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password);
 
 /**
+    @brief (default: Debug ビルドの場合true、それ以外は false)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled);
+
+/**
     @brief デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
 */
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
@@ -636,16 +721,10 @@ LN_FLAT_API LnResult LnEngine_Finalize();
 LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
 
 /**
-    @brief 。
+    @brief アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
     @param[out] outReturn : instance.
 */
-LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn);
-
-/**
-    @brief デフォルトで作成されるメインの World です。
-    @param[out] outReturn : instance.
-*/
-LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn);
+LN_FLAT_API LnResult LnEngine_Time(double* outReturn);
 
 
 //==============================================================================
@@ -662,6 +741,13 @@ LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
     @param[in] application : instance
 */
 LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
+
+/**
+    @brief デフォルトで作成されるメインの World を取得します。
+    @param[in] application : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn);
 
 /**
     @brief 
@@ -872,13 +958,13 @@ LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* 
     @brief このオブジェクトの回転を設定します。
     @param[in] worldobject : instance
 */
-LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQuaternion* rot);
+LN_FLAT_API LnResult LnWorldObject_SetRotationQuaternion(LnHandle worldobject, const LnQuaternion* rot);
 
 /**
     @brief このオブジェクトの回転をオイラー角から設定します。(radian)
     @param[in] worldobject : instance
 */
-LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x, float y, float z);
+LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, float x, float y, float z);
 
 /**
     @brief このオブジェクトの回転を取得します。
@@ -930,6 +1016,18 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector3* outReturn);
+
+/**
+    @brief 指定した座標を向くように、オブジェクトを回転させます。
+    @param[in] worldobject : instance
+*/
+LN_FLAT_API LnResult LnWorldObject_LookAt(LnHandle worldobject, const LnVector3* target);
+
+/**
+    @brief 指定した座標を向くように、オブジェクトを回転させます。
+    @param[in] worldobject : instance
+*/
+LN_FLAT_API LnResult LnWorldObject_LookAtXYZ(LnHandle worldobject, float x, float y, float z);
 
 /**
     @brief 
@@ -1011,7 +1109,13 @@ LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite);
     @brief init
     @param[out] outSprite : instance.
 */
-LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, float height, LnHandle* outSprite);
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite);
+
+/**
+    @brief init
+    @param[out] outSprite : instance.
+*/
+LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite);
 
 typedef LnResult(*LnSprite_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnSprite_OnSerialize_SetOverrideCallback(LnSprite_OnSerialize_OverrideCallback callback);
@@ -1039,6 +1143,18 @@ LN_FLAT_API LnResult LnUIEventArgs_OnSerialize_CallOverrideBase(LnHandle object,
 
 extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId();
 LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::UIGeneralEventHandler
+
+LN_FLAT_API LnResult LnUIGeneralEventHandler_Create(LnUIGeneralEventHandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnUIGeneralEventHandler_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::UIEventHandler
+
+LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, LnHandle* outDelegate);
+LN_FLAT_API void LnUIEventHandler_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UILayoutElement
@@ -1187,8 +1303,9 @@ LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton);
 /**
     @brief Clicked イベントの通知を受け取るコールバックを登録します。
     @param[in] uibutton : instance
+    @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
 */
-LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler);
+LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle handler, LnHandle* outReturn);
 
 typedef LnResult(*LnUIButton_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
 LN_FLAT_API LnResult LnUIButton_OnSerialize_SetOverrideCallback(LnUIButton_OnSerialize_OverrideCallback callback);

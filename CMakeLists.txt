@@ -36,7 +36,10 @@ option(LN_BUILD_TESTS "build unit test projects." ON)
 option(LN_BUILD_BINDINGS "build language bindings." OFF)
 
 # build editor projects
-option(LN_BUILD_EDITOR "build editor projects." ON)
+option(LN_BUILD_EDITOR "build editor projects." OFF)
+
+# build shared library
+option(LN_BUILD_SHARED_LIBRARY "build shared library." OFF)
 
 # build only LuminoCore.
 option(LN_BUILD_CORE_ONLY "build only LuminoCore." OFF)
@@ -85,6 +88,9 @@ if (DEFINED EMSCRIPTEN)
     #add_definitions(-DGLFW_INCLUDE_ES2) # glfw3.h 内で include するヘッダを制御する
 
     set(LN_USE_SDL ON)
+
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    #set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
 
 elseif (LN_ANDROID)
     add_definitions(-DLN_GRAPHICS_OPENGLES)

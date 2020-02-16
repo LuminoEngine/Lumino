@@ -6,7 +6,7 @@ namespace ln {
 class InputGesture;
 
 /**
- * ゲームパッドやキーボードなどの入力システムのインターフェイスです。
+ * ゲームパッドやキーボードなどの入力デバイスを透過的に扱うためのインターフェイスです。
  */
 LN_CLASS(Static)
 class Input
@@ -16,25 +16,25 @@ public:
      * ボタンが現在押されているかを判定します。
      */
     LN_METHOD()
-    static bool isPressed(const StringRef& buttonName);
+    static bool pressed(const StringRef& buttonName);
 
     /**
      * ボタンが新しく押された瞬間を判定します。
      */
     LN_METHOD()
-    static bool isTriggered(const StringRef& buttonName);
+    static bool triggered(const StringRef& buttonName);
 
     /**
      * ボタンが離された瞬間を判定します。
      */
     LN_METHOD()
-    static bool isOffTriggered(const StringRef& buttonName);
+    static bool triggeredOff(const StringRef& buttonName);
 
     /**
      * ボタンが新しく押された瞬間とリピート状態を判定します。     
      */
     LN_METHOD()
-    static bool isRepeated(const StringRef& buttonName);
+    static bool repeated(const StringRef& buttonName);
 
     /**
      * 指定した軸のアナログ値を取得します。      

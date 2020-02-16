@@ -196,8 +196,8 @@ public:
 	//// layout
 	//Thickness margin;
 	//Thickness padding;
-	//HAlignment horizontalAlignment;
-	//VAlignment verticalAlignment;
+	//HAlignment hAlignment;
+	//VAlignment vAlignment;
 	//float minWidth;
 	//float minHeight;
 	//float maxWidth;
@@ -233,8 +233,8 @@ public:
     detail::UIStyleAttribute<float> height;
     detail::UIStyleAttribute<Thickness> margin;
     detail::UIStyleAttribute<Thickness> padding;
-	detail::UIStyleAttribute<HAlignment> horizontalAlignment;
-	detail::UIStyleAttribute<VAlignment> verticalAlignment;
+	detail::UIStyleAttribute<HAlignment> hAlignment;
+	detail::UIStyleAttribute<VAlignment> vAlignment;
     detail::UIStyleAttribute<HAlignment> horizontalContentAlignment;    // UILayoutPanel をどのように配置するか
     detail::UIStyleAttribute<VAlignment> verticalContentAlignment;
 	detail::UIStyleAttribute<float> minWidth;
@@ -483,6 +483,13 @@ public:
 
 	Ref<UITheme> mainTheme;
 
+
+	//const Color& defaultTextColor() const { return Color::White; }
+	//const String& defaultFontFamily() const { return; }
+	//float defaultFontSize() const { return 12.0f; }
+	//UIFontWeight DefaultFontWeight() const { return UIFontWeight::Normal; }
+	//UIFontStyle DefaultFontStyle() const { return UIFontStyle::Normal; }
+
 LN_CONSTRUCT_ACCESS:
     UIStyleContext();
     virtual ~UIStyleContext();
@@ -514,8 +521,8 @@ public:
     float height;
     Thickness margin;
     Thickness padding;
-    HAlignment horizontalAlignment;
-    VAlignment verticalAlignment;
+    HAlignment hAlignment;
+    VAlignment vAlignment;
     HAlignment horizontalContentAlignment;
     VAlignment verticalContentAlignment;
     float minWidth;
@@ -592,7 +599,7 @@ public:
 
     void makeRenderObjects();
 
-    static void updateStyleDataHelper(const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
+    static void updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData);
 
 	Size actualOuterSpace() const
 	{
@@ -752,7 +759,11 @@ public:
 
 enum class UIThemeConstantPalette
 {
-	BackgroundColor,
+	// Background
+	DefaultBackgroundColor,
+	PaperBackgroundColor,
+
+	// Intentions
 	DefaultMainColor,
 	DefaultTextColor,
 	PrimaryMainColor,
@@ -767,6 +778,13 @@ enum class UIThemeConstantPalette
 	InfoTextColor,
 	SuccessMainColor,
 	SuccessTextColor,
+
+	// Items
+	ItemHoverAction,
+	ItemSelectedAction,
+
+	// Divider
+	DefaultDivider,
 };
 
 class UITheme
@@ -783,9 +801,18 @@ public:
     float spacing(float factor) const { return m_spacing * factor; }
 
 	float lineContentHeight() const { return spacing(4); }
+	
+	// 行と行の間。ListItem の高さ。
+	float lineSpacing() const { return m_lineSpacing; }
 
 	void setColor(UIThemeConstantPalette palette, const Color& color) { m_constantPalette[static_cast<int>(palette)] = color; }
 	const Color& color(UIThemeConstantPalette palette) const { return m_constantPalette[static_cast<int>(palette)]; }
+
+
+	void buildLumitelier();
+	void setDefaultStyle(UIStyle* value) { m_defaultStyle = value; }
+	const Ref<UIStyle>& defaultStyle() const { return m_defaultStyle; }
+	const Ref<UIStyleSheet>& styleSheet() const { return m_styleSheet; }
     
 LN_CONSTRUCT_ACCESS:
     UITheme();
@@ -794,7 +821,10 @@ LN_CONSTRUCT_ACCESS:
 private:
     std::unordered_map<String, Color> m_colors;
     float m_spacing;
-	std::array<Color, 16> m_constantPalette;
+	float m_lineSpacing;
+	std::array<Color, 20> m_constantPalette;
+	Ref<UIStyle> m_defaultStyle;
+	Ref<UIStyleSheet> m_styleSheet;
 };
 
 class UIVisualStates

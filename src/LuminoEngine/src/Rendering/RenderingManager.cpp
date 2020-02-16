@@ -186,8 +186,8 @@ void RenderingManager::init(const Settings& settings)
     }
     {
         auto material = Material::create();
-        material->shadingModel = ShadingModel::UnLighting;
-        m_builtinMaterials[(int)BuiltinMaterial::UnLighting] = material;
+        material->shadingModel = ShadingModel::Unlit;
+        m_builtinMaterials[(int)BuiltinMaterial::Unlit] = material;
     }
 
     LN_LOG_DEBUG << "RenderingManager Initialization ended.";

@@ -27,8 +27,8 @@ class LocalContactListener; // TODO: detail
 class ContactPoint2D;
 class WorldObject;
 
-using Collision2DEventHandler = std::function<void(PhysicsObject2D*, ContactPoint2D*)>;
-using Trigger2DEventHandler = std::function<void(PhysicsObject2D*)>;
+using Collision2DEventHandler = Delegate<void(PhysicsObject2D*, ContactPoint2D*)>;
+using Trigger2DEventHandler = Delegate<void(PhysicsObject2D*)>;
 
 /** 2D 物理演算用の衝突判定形状です。 */
 class CollisionShape2D
@@ -166,16 +166,16 @@ public:
 	void removeFromPhysicsWorld();
 
     /** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnCollisionEnter(Collision2DEventHandler handler);
+    //LN_METHOD(Event)
+    Ref<EventConnection> connectOnCollisionEnter(Ref<Collision2DEventHandler> handler);
 
     /** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnCollisionLeave(Collision2DEventHandler handler);
+    //LN_METHOD(Event)
+	Ref<EventConnection> connectOnCollisionLeave(Ref<Collision2DEventHandler> handler);
 
     /** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
-    LN_METHOD(Event)
-    EventConnection connectOnCollisionStay(Collision2DEventHandler handler);
+    //LN_METHOD(Event)
+	Ref<EventConnection> connectOnCollisionStay(Ref<Collision2DEventHandler> handler);
 
 
 public: // TODO: internal

@@ -7,6 +7,7 @@
 #endif
 
 namespace ln {
+class Sound;
 
 namespace detail {
 class internal_shared_mutex;
@@ -48,6 +49,10 @@ struct AudioConeParams
 
 	AudioConeParams();
 };
+
+class AudioSourceNodeCore;
+class CoreAudioDestinationNode;
+class CoreAudioPannerNode;
 
 } // namespace detail
 } // namespace ln

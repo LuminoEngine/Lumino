@@ -304,11 +304,11 @@ void UIFrameWindow::renderContents()
 		m_imguiContext.updateFrame(0.0166f);
 	}
 
-	m_renderingGraphicsContext = m_swapChain->beginFrame2();
 }
 
 void UIFrameWindow::present()
 {
+	m_renderingGraphicsContext = m_swapChain->beginFrame2();
     //ElapsedTimer t;
     //t.start();
 

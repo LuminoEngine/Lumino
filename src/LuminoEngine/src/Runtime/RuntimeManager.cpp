@@ -14,15 +14,15 @@ RuntimeManager::Settings RuntimeManager::s_globalSettings;
 RuntimeManager::RuntimeManager()
 	: m_systemAliving(false)
 {
-    // 特に Binding-module にて、Engine 初期化以前にいろいろ処理を行うが、
-    // そこのログを出力したいので他の設定より先に有効化しておく。
-    ln::GlobalLogger::addStdErrAdapter();
-#ifdef LN_OS_ANDROID
-    ln::GlobalLogger::addLogcatAdapter();
-#endif
-#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
-    ln::GlobalLogger::addNLogAdapter();
-#endif
+//    // 特に Binding-module にて、Engine 初期化以前にいろいろ処理を行うが、
+//    // そこのログを出力したいので他の設定より先に有効化しておく。
+//    ln::GlobalLogger::addStdErrAdapter();
+//#ifdef LN_OS_ANDROID
+//    ln::GlobalLogger::addLogcatAdapter();
+//#endif
+//#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
+//    ln::GlobalLogger::addNLogAdapter();
+//#endif
 }
 
 RuntimeManager::~RuntimeManager()

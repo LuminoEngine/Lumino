@@ -29,7 +29,7 @@ void VisualManager::init(const Settings& settings)
 	//SpriteComponent::registerType(detail::EngineDomain::engineContext());
 	EngineDomain::registerType<SpriteComponent>();
 	EngineDomain::registerType<SpriteFrame>();
-    EngineDomain::registerType<SpriteFrameSet>();
+    EngineDomain::registerType<SpriteSheet>();
 	EngineDomain::registerType<VisualComponent>();
 	EngineDomain::registerType<SpriteComponent>();
 

@@ -117,15 +117,20 @@ void UIButton::init(const StringRef& text)
     setText(text);
 }
 
-EventConnection UIButton::connectOnClicked(UIEventHandler handler)
+//Ref<EventConnection> UIButton::connectOnClicked(UIGeneralEventHandler handler)
+//{
+//    return m_onClicked.connect(handler);
+//}
+//
+Ref<EventConnection> UIButton::connectOnClicked(Ref<UIEventHandler> handler)
 {
-    return m_onClicked.connect(handler);
+	return m_onClicked.connect(handler);
 }
 
 void UIButton::onClick(UIEventArgs* e)
 {
     UIButtonBase::onClick(e);
-    m_onClicked.raise(UIEventArgs::create(this, UIEvents::UncheckedEvent, this));
+    m_onClicked.raise();
 }
 
 //==============================================================================
@@ -162,12 +167,12 @@ bool UIToggleButton::isChecked() const
 	return m_checkState != UICheckState::Unchecked;
 }
 
-EventConnection UIToggleButton::connectOnChecked(UIEventHandler handler)
+Ref<EventConnection> UIToggleButton::connectOnChecked(Ref<UIGeneralEventHandler> handler)
 {
 	return m_onChecked.connect(handler);
 }
 
-EventConnection UIToggleButton::connectOnUnchecked(UIEventHandler handler)
+Ref<EventConnection> UIToggleButton::connectOnUnchecked(Ref<UIGeneralEventHandler> handler)
 {
 	return m_onUnchecked.connect(handler);
 }

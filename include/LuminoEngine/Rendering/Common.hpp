@@ -10,7 +10,7 @@ namespace ln {
 enum class ShadingModel : uint8_t
 {
 	Default,
-	UnLighting,
+	Unlit,
 };
 
 /** 合成方法 */

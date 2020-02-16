@@ -2,7 +2,6 @@
 #define LN_MSVC_DISABLE_LIBRARY_LINK
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
-#include "../src/Audio/AudioDecoder.hpp"
 #include "Common.hpp"
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Engine/EngineManager.hpp"
@@ -14,7 +13,6 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Visual/MeshPrimitiveComponent.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/SkinnedMesh.hpp>
@@ -125,6 +123,8 @@ public:
 //#pragma comment(lib, "ws2_32.lib")
 
 
+
+#if 0
 class ObservablePropertyBase;
 
 // ObservableProperty 自体は new しなくても使えるようにしたいが、
@@ -256,21 +256,20 @@ private:
 	Ref<Variant> m_value;
 };
 
+#endif
 
 
 
 
-
-
-
-
-
-
+void Example_GameAudio();
 void Example_MessageWindow();
 void Example_Navigator();
+void Example_SoundControl();
 void Example_UIControls();
 void Example_Tilemap();
 void Tutorial_Sandbox();
+void Sandbox_Voxel();
+
 
 int main(int argc, char** argv)
 {
@@ -286,17 +285,20 @@ int main(int argc, char** argv)
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
-    if (1) {
 
+    if (1) {
+		//Example_GameAudio();
         //Example_MessageWindow();
         //Example_Navigator();
+		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
 		Tutorial_Sandbox();
+		//Sandbox_Voxel();
         return 0;
     }
 
-
+#if 0
 	{
 		ObservableProperty<int> v1(100);
 
@@ -315,7 +317,7 @@ int main(int argc, char** argv)
 
 		printf("");
 	}
-
+#endif
 
 	//UriUriA uri;
 	////const char * const uriString = "file:///home/user/song.mp3";
@@ -356,7 +358,9 @@ int main(int argc, char** argv)
 
 
 	Engine::initialize();
-
+	//Engine::update();
+	//Engine::finalize();
+	//return 0;
 
     //LnLog_PrintA(LN_LOG_LEVEL_INFO, "RubyRuntime", "Usesr type registering. (class: 20, typeInfoId: 16, baseTypeInfoId: 10)");
 
@@ -375,7 +379,7 @@ int main(int argc, char** argv)
     
     //GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav");
 
-	Camera* camera = Engine::mainCamera();
+	Camera* camera = Engine::camera();
 	camera->addComponent(makeObject<CameraOrbitControlComponent>());
     //Engine::mainCamera()->setPosition(0, 0, 25);
 	camera->setBackgroundColor(Color::Gray);
@@ -459,7 +463,7 @@ int main(int argc, char** argv)
 	//auto skymesh1 = StaticMesh::create(u"D:/Materials/UE4_Marketplace/GoodSky/SM_GoodSky_Hemisphere.glb");
  //   skymesh1->setBlendMode(BlendMode::Add);
  //   skymesh1->setScale(100);
- //   skymesh1->setShadingModel(ShadingModel::UnLighting);
+ //   skymesh1->setShadingModel(ShadingModel::Unlit);
  //   skymesh1->setColorScale(Color(0.5, 0.5, 0.5));
  //   Engine::world()->add(skymesh1);
 
@@ -511,7 +515,7 @@ int main(int argc, char** argv)
 
 #if 1
 	{
-		Engine::mainCamera()->setBackgroundColor(Color::White);
+		Engine::camera()->setBackgroundColor(Color::White);
 
 		//auto s = u'🐈';
 		//auto t = Texture2D::loadEmoji(U'🐈');
@@ -525,13 +529,13 @@ int main(int argc, char** argv)
 		s->setScale(2);
 		//s->setAnchorPoint(Vector2(0.5, 0));
 		//s->setBlendMode(BlendMode::Normal);
-		//s->setShadingModel(ShadingModel::UnLighting);
+		//s->setShadingModel(ShadingModel::Unlit);
 		//Engine::world()->add(s);
 
 		//auto c = makeObject<EmojiComponent>();
 		//auto obj = makeObject<WorldObject>();
 		//obj->addComponent(c);
-		//c->setShadingModel(ShadingModel::UnLighting);
+		//c->setShadingModel(ShadingModel::Unlit);
 		//Engine::world()->add(obj);
 
 		auto text1 = makeObject<Text>();
@@ -549,8 +553,8 @@ int main(int argc, char** argv)
 		//text1->setText(u"Hello, Lumino!");
 		text2->setText(u"Hello");
 		text2->setPosition(0, 50, 0);
-		text2->setHorizontalAlignment(HAlignment::Center);
-		text2->setVerticalAlignment(VAlignment::Center);
+		text2->setHAlignment(HAlignment::Center);
+		text2->setVAlignment(VAlignment::Center);
 		text2->setFontSize(20);
 		text2->setTextColor(Color::DimGray);
 		//Engine::mainUIView()->addElement(text2);
@@ -770,9 +774,9 @@ int main(int argc, char** argv)
 
 
     auto ctl = makeObject<CameraOrbitControlComponent>();
-    Engine::mainCamera()->addComponent(ctl);
-    Engine::mainCamera()->setPosition(0, 5, -10);
-    Engine::mainCamera()->setBackgroundColor(Color::Gray);
+    Engine::camera()->addComponent(ctl);
+    Engine::camera()->setPosition(0, 5, -10);
+    Engine::camera()->setBackgroundColor(Color::Gray);
 
 
     struct PosColor
@@ -839,7 +843,7 @@ int main(int argc, char** argv)
     //auto sprite = Sprite::create(3, 3, tex);
 
     //auto tilemap = makeObject<Tilemap>();
-    //tilemap->setShadingModel(ShadingModel::UnLighting);
+    //tilemap->setShadingModel(ShadingModel::Unlit);
 
 
 
@@ -877,7 +881,7 @@ int main(int argc, char** argv)
     //auto smesh1 = SkinnedMesh::create(u"D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku.pmx");
     ////smesh1->setBlendMode(BlendMode::Alpha);
     ////smesh1->setEulerAngles(0, Math::PI, 0);
-    ////smesh1->setShadingModel(ShadingModel::UnLighting);
+    ////smesh1->setShadingModel(ShadingModel::Unlit);
 
     //smesh1->skinnedMeshComponent()->model()->animationController()->addClip(u"anim1", clip1);
     //smesh1->skinnedMeshComponent()->model()->animationController()->play(u"anim1");
@@ -929,7 +933,7 @@ int main(int argc, char** argv)
         for (int i = 0; i < 5; i++)
         {
             auto obj2 = makeObject<WorldObject>();
-            auto cmp2 = makeObject<SphereComponent>();
+            auto cmp2 = makeObject<SphereMeshComponent>();
             auto mat2 = Material::create();
             mat2->setMetallic(static_cast<float>(i) / 5);
             mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
@@ -942,7 +946,7 @@ int main(int argc, char** argv)
     }
 
     auto plane1 = makeObject<WorldObject>();
-    auto planecmp2 = makeObject<PlaneComponent>();
+    auto planecmp2 = makeObject<PlaneMeshComponent>();
     auto planemat2 = Material::create();
     //planemat2->setMetallic(0.1);
     //planemat2->setRoughness(0.1);
@@ -1044,7 +1048,7 @@ int main(int argc, char** argv)
     int frameCount = 0;
     while (Engine::update())
     {
-        if (Input::isTriggered(InputButtons::Submit)) {
+        if (Input::triggered(InputButtons::Submit)) {
             GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/coin04_16bit_mono.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Assets/Data/Sound/SE/coin04.wav");
             //GameAudio::playSE(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Audio/sin_440_3s_48000_2ch.wav");
@@ -1057,7 +1061,7 @@ int main(int argc, char** argv)
         //std::cout << track1->evaluate(time) << std::endl;
         time += 0.016;
 #if 0
-        if (Mouse::isPressed(MouseButtons::Left))
+        if (Mouse::pressed(MouseButtons::Left))
         {
             float pitch = (Mouse::position().x / 640)  + 0.5;
             float volume = (Mouse::position().y / 480);

@@ -9,7 +9,6 @@ set(LN_SOURCES
 	Test_Base_ByteBuffer.cpp
 	Test_Base_EnumFlags.cpp
 	Test_Base_Environment.cpp
-	Test_Base_Event.cpp
 	Test_Base_Formatter.cpp
 	Test_Base_List.cpp
 	Test_Base_Logger.cpp

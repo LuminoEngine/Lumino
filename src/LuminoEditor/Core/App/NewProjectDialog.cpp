@@ -49,7 +49,7 @@ void NewProjectDialog::updateDefaultProjectName()
 	m_projectName->setText(u"Project1");
 }
 
-void NewProjectDialog::handleSelectFolder(ln::UIEventArgs* e)
+void NewProjectDialog::handleSelectFolder()
 {
 	auto dlg = ln::PlatformSelectFolderDialog::create();
 	if (dlg->showDialog(EditorApplication::instance()->mainWindow()->platformWindow())) {	// TODO: remove platformWindow
@@ -57,7 +57,7 @@ void NewProjectDialog::handleSelectFolder(ln::UIEventArgs* e)
 	}
 }
 
-void NewProjectDialog::handleCreate(ln::UIEventArgs* e)
+void NewProjectDialog::handleCreate()
 {
 	EditorApplication::instance()->newProject(m_projectFolder->text(), m_projectName->text());
 	close();

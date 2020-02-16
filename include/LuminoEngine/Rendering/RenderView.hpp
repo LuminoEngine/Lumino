@@ -50,8 +50,8 @@ public:
 	//const Point& actualScreenOffset() const { return m_actualScreenOffset; }
     const Size& actualSize() const { return m_actualSize; }
 
-    LN_METHOD(Event)
-    EventConnection connectOnUIEvent(UIEventHandler handler);
+    //LN_METHOD(Event)
+	Ref<EventConnection> connectOnUIEvent(Ref<UIGeneralEventHandler> handler);
 
 public: // TODO: protected
 	void updateFrame(float elapsedSeconds);
@@ -79,7 +79,7 @@ private:
 	Point m_actualScreenOffset;
     Size m_actualSize;
 
-    Event<UIEventHandler> m_onUIEvent;
+    Event<UIGeneralEventHandler> m_onUIEvent;
 };
 
 

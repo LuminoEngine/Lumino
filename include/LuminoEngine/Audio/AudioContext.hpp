@@ -6,6 +6,7 @@ namespace detail {
 class AudioManager;
 class AudioDevice;
 class CoreAudioDestinationNode;
+class AudioNodeCore;
 } // namespace detail
 class AudioNode;
 class AudioDestinationNode;
@@ -21,6 +22,8 @@ public:
 	virtual ~AudioContext() = default;
 	void init();
 	virtual void dispose();
+	void updateFrame();
+
 	void process(float elapsedSeconds);
 
     /** この AudioContext 内でベースとして使われるサンプルレート(1秒あたりのサンプル数)を取得します。 */
@@ -30,12 +33,14 @@ public:
 
 	// TODO: internal
 	detail::AudioManager* manager() const { return m_manager; }
+	//void markGC(detail::AudioNodeCore* node);	// call only audio thread.
 
 	detail::AudioDevice* coreObject();
 
 	void sendConnect(AudioNode* outputSide, AudioNode* inputSide);
 	void sendDisconnect(AudioNode* outputSide, AudioNode* inputSide);
-	void sendDisconnectAllAndDispose(AudioNode* node);
+	//void sendDisconnectAllAndDispose(AudioNode* node);
+	void sendDisconnectAll(AudioNode* node);
 
     void addSound(Sound* sound);
 
@@ -44,14 +49,17 @@ LN_INTERNAL_ACCESS:
 	detail::AudioRWMutex& commitMutex() { return m_commitMutex; }
 
 	void addAudioNode(AudioNode* node);
-	void disposeNodeOnGenericThread(AudioNode* node);	// Audio Thread 以外での AudioNode::dispose
+	void removeAudioNode(AudioNode* node);
+	//void disposeNodeOnGenericThread(AudioNode* node);	// Audio Thread 以外での AudioNode::dispose
+	//void tryRemoveAudioNode(AudioNode* node);
 
 private:
 	enum class OperationCode
 	{
 		Connection,
 		Disconnection,
-		DisconnectionAllAndDispose,
+		//DisconnectionAllAndDispose,
+		DisconnectionAll,
 	};
 
 	struct ConnectionCommand
@@ -70,6 +78,8 @@ private:
 	Ref<AudioDestinationNode> m_destinationNode;
 
 	List<AudioNode*> m_allAudioNodes;
+	List<Ref<AudioNode>> m_aliveNodes;
+	//List<AudioNode*> m_markedNodes;
 	std::vector<ConnectionCommand> m_connectionCommands;
 
 	// commitGraphs() 中、m_allAudioNodes の AudioNode のインスタンスが消えないように参照を持っておくための list

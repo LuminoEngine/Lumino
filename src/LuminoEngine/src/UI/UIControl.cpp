@@ -28,8 +28,8 @@ void UIControl::init()
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Disabled);
 
-	//setHorizontalAlignment(HAlignment::Stretch);
-	//setVerticalAlignment(VAlignment::Stretch);
+	//setHAlignment(HAlignment::Stretch);
+	//setVAlignment(VAlignment::Stretch);
 
     //setLayoutPanel(makeObject<UIFrameLayout>());
 }

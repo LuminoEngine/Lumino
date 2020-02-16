@@ -207,8 +207,8 @@ void UIStyle::setupDefault()
     height = DefaultHeight;
 	margin = DefaultMargin;
 	padding = DefaultPadding;
-	horizontalAlignment = DefaultHorizontalAlignment;
-	verticalAlignment = DefaultVerticalAlignment;
+	hAlignment = DefaultHorizontalAlignment;
+	vAlignment = DefaultVerticalAlignment;
     horizontalContentAlignment = DefaultHorizontalContentAlignment;
     verticalContentAlignment = DefaultVerticalContentAlignment;
 	minWidth = DefaultMinWidth;
@@ -276,8 +276,8 @@ void UIStyle::reset()
     height.reset();
 	margin.reset();
 	padding.reset();
-	horizontalAlignment.reset();
-	verticalAlignment.reset();
+	hAlignment.reset();
+	vAlignment.reset();
 	horizontalContentAlignment.reset();
 	verticalContentAlignment.reset();
 	minWidth.reset();
@@ -347,8 +347,8 @@ void UIStyle::mergeFrom(const UIStyle* other)
     if (other->height.hasValue()) height = other->height.get();
     if (other->margin.hasValue()) margin = other->margin.get();
     if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
-    if (other->verticalAlignment.hasValue()) verticalAlignment = other->verticalAlignment.get();
+    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
+    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
     if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
     if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
@@ -420,8 +420,8 @@ void UIStyle::copyFrom(const UIStyle* other)
     height = other->height;
     margin = other->margin;
     padding = other->padding;
-    horizontalAlignment = other->horizontalAlignment;
-    verticalAlignment = other->verticalAlignment;
+    hAlignment = other->hAlignment;
+    vAlignment = other->vAlignment;
     horizontalContentAlignment = other->horizontalContentAlignment;
     verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
@@ -853,8 +853,8 @@ void UIStyleInstance::setupDefault()
 {
     margin = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
     padding = Thickness(0.0f, 0.0f, 0.0f, 0.0f);
-    horizontalAlignment = HAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
-    verticalAlignment = VAlignment::Stretch;
+    hAlignment = HAlignment::Stretch;	// Alignment は HTML のデフォルトに合わせてみる
+    vAlignment = VAlignment::Stretch;
     horizontalContentAlignment = HAlignment::Stretch;
     verticalContentAlignment = VAlignment::Stretch;
     minWidth = Math::NaN;
@@ -902,8 +902,8 @@ void UIStyleInstance::mergeFrom(const UIStyle* other)
     if (other->height.hasValue()) height = other->height.get();
     if (other->margin.hasValue()) margin = other->margin.get();
     if (other->padding.hasValue()) padding = other->padding.get();
-    if (other->horizontalAlignment.hasValue()) horizontalAlignment = other->horizontalAlignment.get();
-    if (other->verticalAlignment.hasValue()) verticalAlignment = other->verticalAlignment.get();
+    if (other->hAlignment.hasValue()) hAlignment = other->hAlignment.get();
+    if (other->vAlignment.hasValue()) vAlignment = other->vAlignment.get();
     if (other->horizontalContentAlignment.hasValue()) horizontalContentAlignment = other->horizontalContentAlignment.get();
     if (other->verticalContentAlignment.hasValue()) verticalContentAlignment = other->verticalContentAlignment.get();
     if (other->minWidth.hasValue()) minWidth = other->minWidth.get();
@@ -975,8 +975,8 @@ void UIStyleInstance::copyFrom(const UIStyleInstance* other)
     height = other->height;
     margin = other->margin;
     padding = other->padding;
-    horizontalAlignment = other->horizontalAlignment;
-    verticalAlignment = other->verticalAlignment;
+    hAlignment = other->hAlignment;
+    vAlignment = other->vAlignment;
     horizontalContentAlignment = other->horizontalContentAlignment;
     verticalContentAlignment = other->verticalContentAlignment;
     minWidth = other->minWidth;
@@ -1044,7 +1044,7 @@ void UIStyleInstance::makeRenderObjects()
 
 }
 
-void UIStyleInstance::updateStyleDataHelper(const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
+void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
 {
 	//const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
 	//if (parentStyle)
@@ -1071,6 +1071,11 @@ void UIStyleInstance::updateStyleDataHelper(const detail::UIStyleInstance* paren
         }
         else {
             // for root default style
+			assert(combinedStyle->textColor.hasValue());
+			assert(combinedStyle->fontFamily.hasValue());
+			assert(combinedStyle->fontSize.hasValue());
+			assert(combinedStyle->fontWeight.hasValue());
+			assert(combinedStyle->fontStyle.hasValue());
             outStyleData->textColor = (combinedStyle->textColor.getOrDefault(UIStyle::DefaultTextColor));
             outStyleData->fontFamily = (combinedStyle->fontFamily.getOrDefault(UIStyle::DefaultFontFamily));
             outStyleData->fontSize = (combinedStyle->fontSize.getOrDefault(UIStyle::DefaultFontSize));
@@ -1088,8 +1093,8 @@ void UIStyleInstance::updateStyleDataHelper(const detail::UIStyleInstance* paren
         outStyleData->height = (combinedStyle->height.getOrDefault(UIStyle::DefaultHeight));
 		outStyleData->margin = (combinedStyle->margin.getOrDefault(UIStyle::DefaultMargin));
 		outStyleData->padding = (combinedStyle->padding.getOrDefault(UIStyle::DefaultPadding));
-		outStyleData->horizontalAlignment = (combinedStyle->horizontalAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
-		outStyleData->verticalAlignment = (combinedStyle->verticalAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
+		outStyleData->hAlignment = (combinedStyle->hAlignment.getOrDefault(UIStyle::DefaultHorizontalAlignment));
+		outStyleData->vAlignment = (combinedStyle->vAlignment.getOrDefault(UIStyle::DefaultVerticalAlignment));
         outStyleData->horizontalContentAlignment = (combinedStyle->horizontalContentAlignment.getOrDefault(UIStyle::DefaultHorizontalContentAlignment));
         outStyleData->verticalContentAlignment = (combinedStyle->verticalContentAlignment.getOrDefault(UIStyle::DefaultVerticalContentAlignment));
 		outStyleData->minWidth = (combinedStyle->minWidth.getOrDefault(UIStyle::DefaultMinWidth));
@@ -1455,6 +1460,80 @@ void UITheme::add(const StringRef& name, const Color& color)
 void UITheme::init()
 {
     Object::init();
+}
+
+void UITheme::buildLumitelier()
+{
+	m_defaultStyle = makeObject<UIStyle>();
+	m_defaultStyle->setupDefault();
+	m_defaultStyle->textColor = Color::White;
+	m_defaultStyle->fontSize = 14;
+
+	setSpacing(8);
+	m_lineSpacing = 22;
+
+	// Background
+	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
+	setColor(UIThemeConstantPalette::PaperBackgroundColor, Color::parse(u"#424242"));
+
+	// Intentions
+	setColor(UIThemeConstantPalette::DefaultMainColor, UIColors::get(UIColorHues::Grey, 2));
+	setColor(UIThemeConstantPalette::DefaultTextColor, Color::Black);
+	setColor(UIThemeConstantPalette::PrimaryMainColor, UIColors::get(UIColorHues::LightGreen, 5));
+	setColor(UIThemeConstantPalette::PrimaryTextColor, Color::White);
+	setColor(UIThemeConstantPalette::SecondaryMainColor, UIColors::get(UIColorHues::Orange, 5));
+	setColor(UIThemeConstantPalette::SecondaryTextColor, Color::White);
+	setColor(UIThemeConstantPalette::ErrorMainColor, UIColors::get(UIColorHues::Red, 5));
+	setColor(UIThemeConstantPalette::ErrorTextColor, Color::White);
+	setColor(UIThemeConstantPalette::WarningMainColor, UIColors::get(UIColorHues::Orange, 3));
+	setColor(UIThemeConstantPalette::WarningTextColor, Color::Black);
+	setColor(UIThemeConstantPalette::InfoMainColor, UIColors::get(UIColorHues::Blue, 3));
+	setColor(UIThemeConstantPalette::InfoTextColor, Color::White);
+	setColor(UIThemeConstantPalette::SuccessMainColor, UIColors::get(UIColorHues::Green, 3));
+	setColor(UIThemeConstantPalette::SuccessTextColor, Color::White);
+
+	// Items
+	setColor(UIThemeConstantPalette::ItemHoverAction, Color::White.withAlpha(0.1));
+	setColor(UIThemeConstantPalette::ItemSelectedAction, Color::White.withAlpha(0.2));
+
+	// Divider
+	setColor(UIThemeConstantPalette::DefaultDivider, Color::White.withAlpha(0.3));
+
+	auto sheet = makeObject<UIStyleSheet>();
+
+	//--------------------------------
+	// UIWindow
+	{
+		//auto e = sheet->addStyleSet(u"UIWindow");
+		//{
+		//	auto s = e->mainStyleClass()->mainStyle();
+
+		if (auto s = sheet->obtainStyle(u"UIWindow")) {
+			s->minWidth = 64;
+			s->minHeight = 64;
+			s->padding = spacing(1);
+			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor);
+			s->cornerRadius = CornerRadius(4);
+			s->borderThickness = 1;
+			s->setBorderColor(color(UIThemeConstantPalette::DefaultDivider));
+		}
+	}
+	//--------------------------------
+	// UIListBoxItem
+	{
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
+			s->padding = Thickness(spacing(1), 0);
+			s->minHeight = m_lineSpacing;
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+		}
+	}
+
+	m_styleSheet = sheet;
 }
 
 //==============================================================================

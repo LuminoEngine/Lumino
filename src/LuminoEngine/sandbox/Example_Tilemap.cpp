@@ -8,7 +8,7 @@ class App_Example_Tilemap : public Application
 
     virtual void onInit() override
     {
-		Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
+		Engine::camera()->addComponent(makeObject<CameraOrbitControlComponent>());
 
 
 		auto tilesetTexture = ln::Texture2D::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1.png");
@@ -25,7 +25,7 @@ class App_Example_Tilemap : public Application
 		tileset->addAutoTileset(autotileset);
 
 		auto tilemap = ln::makeObject<ln::Tilemap>();
-		tilemap->setShadingModel(ln::ShadingModel::UnLighting);
+		tilemap->setShadingModel(ln::ShadingModel::Unlit);
 		tilemap->setBlendMode(ln::BlendMode::Alpha);	// TODO: AlphaTest でカバーしたい
 
 		auto layer = ln::makeObject<ln::TilemapLayer>();

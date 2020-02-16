@@ -5,6 +5,7 @@
 namespace ln {
 namespace detail {
 
+#if 0
 template<typename T>
 class CacheBuffer
 {
@@ -18,7 +19,7 @@ public:
 
 	void clearAndReserve(int count)
 	{
-		m_buffer.resize(sizeof(T) * count, false);
+		m_buffer.resize(sizeof(T) * count);
 		m_capacity = count;
 		m_count = 0;
 	}
@@ -26,7 +27,7 @@ public:
 	void add(const T& value)
 	{
 		tryGlow(m_count + 1);
-		memcpy(&m_buffer[sizeof(T) * m_count], &value, sizeof(T));
+		memcpy(&(m_buffer.data()[sizeof(T) * m_count]), &value, sizeof(T));
 		m_count++;
 	}
 
@@ -63,6 +64,7 @@ private:
 	int			m_capacity;
 	int			m_count;
 };
+#endif
 
 } // namespace detail
 } // namespace ln

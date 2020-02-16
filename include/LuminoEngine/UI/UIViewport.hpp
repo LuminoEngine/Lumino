@@ -18,6 +18,9 @@ enum class UIViewportPlacement
 	ViewBox,		/**< 転送元領域のアスペクト比が維持されるように余白を挿入する */
 };
 
+// TODO: WPF にならって Viewport にしたけど、ViewBox とかのほうがいいかもしれない。
+// Graphics や Scene の Camera とかでも Viewport という言葉を使ってるし、
+// 言葉が便利な反面、乱用しかけているような気がする。
 class UIViewport
 	: public UIContainerElement
 {

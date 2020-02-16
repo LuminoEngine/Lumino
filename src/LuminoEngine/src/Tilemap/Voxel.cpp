@@ -19,7 +19,7 @@ void VoxelmapModel::init()
 {
     Object::init();
     resizeMap(16, 16, 16);
-    m_box = StaticMeshModel::load(u"D:/Proj/LN/PrivateProjects/HC0/Assets/AutoVolume1.glb");
+    m_box = StaticMeshModel::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/AutoVolume1.glb");
     m_mapBlocksMesh = makeObject<StaticMeshModel>();
 }
 

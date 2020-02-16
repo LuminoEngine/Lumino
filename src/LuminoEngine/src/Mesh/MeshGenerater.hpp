@@ -9,6 +9,11 @@ class MeshGenerater;
 class MeshGeneraterBuffer
 {
 public:
+	MeshGeneraterBuffer(LinearAllocator* allocator)
+		: m_allocator(allocator)
+	{
+	}
+
     void setBuffer(Vertex* vertexBuffer, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
 
     void generate(MeshGenerater* generator);
@@ -31,7 +36,14 @@ public:
             ((uint32_t*)m_indexBuffer)[index] = m_indexNumberOffset + i;
     }
 
+	void* newShortTimeData(size_t size)
+	{
+		LN_CHECK(m_allocator);
+		return m_allocator->allocate(size);
+	}
+
 private:
+	LinearAllocator* m_allocator;
     Vertex* m_vertexBuffer;
     void* m_indexBuffer;
     IndexBufferFormat m_indexFormat;
@@ -277,11 +289,11 @@ public:
     virtual int vertexCount() const override { return (m_slices + 1) * (m_stacks + 1); }
     virtual int indexCount() const override { return m_slices * m_stacks * 6; }
     virtual PrimitiveTopology primitiveType() const override { return PrimitiveTopology::TriangleList; }
-    virtual MeshGenerater* clone(LinearAllocator* allocator) const override
-    {
-        void* ptr = allocator->allocate(sizeof(RegularSphereMeshFactory));
-        return new (ptr)RegularSphereMeshFactory(*this);
-    }
+    //virtual MeshGenerater* clone(LinearAllocator* allocator) const override
+    //{
+    //    void* ptr = allocator->allocate(sizeof(RegularSphereMeshFactory));
+    //    return new (ptr)RegularSphereMeshFactory(*this);
+    //}
     void copyFrom(const RegularSphereMeshFactory* other)
     {
         MeshGenerater::copyFrom(other);
@@ -289,8 +301,9 @@ public:
         m_slices = other->m_slices;
         m_stacks = other->m_stacks;
     }
+	LN_MESHGENERATOR_CLONE_IMPLEMENT(RegularSphereMeshFactory);
 
-    struct sinCos
+    struct SinCos
     {
         float	sin;
         float	cos;
@@ -298,7 +311,7 @@ public:
 
     virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
-        makeSinCosTable();
+        makeSinCosTable(buf);
 
         uint32_t iV = 0;
         uint32_t iI = 0;
@@ -378,28 +391,26 @@ public:
         transform(buf->vertexBuffer(), vertexCount());
     }
 
-    void makeSinCosTable()
+    void makeSinCosTable(MeshGeneraterBuffer* buf)
     {
-        if (m_sincosTable.isEmpty())
+		m_sincosTable = (SinCos*)buf->newShortTimeData(sizeof(SinCos) * (m_slices + 1));
+
+        float phi_start = Math::PI / 2.0f;
+        float phi_step = -2.0f * Math::PI / m_slices;
+
+        float angle = phi_start;
+        for (int i = 0; i < m_slices; ++i)
         {
-            float phi_start = Math::PI / 2.0f;
-            float phi_step = -2.0f * Math::PI / m_slices;
-            m_sincosTable.resize(m_slices + 1);
-
-            float angle = phi_start;
-            for (int i = 0; i < m_slices; ++i)
-            {
-                m_sincosTable[i].sin = std::sinf(angle);
-                m_sincosTable[i].cos = std::cosf(angle);
-                angle -= phi_step;
-            }
-
-            m_sincosTable[m_slices] = m_sincosTable[0];
+            m_sincosTable[i].sin = std::sinf(angle);
+            m_sincosTable[i].cos = std::cosf(angle);
+            angle -= phi_step;
         }
+
+        m_sincosTable[m_slices] = m_sincosTable[0];
     }
 
 private:
-    List<sinCos> m_sincosTable;
+	SinCos* m_sincosTable;
 };
 
 

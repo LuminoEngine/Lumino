@@ -26,7 +26,7 @@ void TilesetListPane::init()
     {
         auto caption = ln::UITextBlock::create(u"Tileset");
         caption->setMargin(ln::Thickness(8, 0));    // TODO: theme ‚©‚ç‚Æ‚è‚½‚¢
-        caption->setVerticalAlignment(ln::VAlignment::Center);
+        caption->setVAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");
@@ -51,7 +51,7 @@ void TilesetListPane::init()
     m_listview->setViewModel(m_model);
 }
 
-void TilesetListPane::addButton_onClick(ln::UIEventArgs* e)
+void TilesetListPane::addButton_onClick()
 {
 
 	auto tilesetTexture = ln::Texture2D::load(u"32066696-1621-4EED-820D-535BB2F22A9D");
@@ -84,8 +84,8 @@ void TilesetNavigator::init()
 {
     m_navigationBarItem = ln::makeObject<ln::UIIcon>();
     m_navigationBarItem->setIconName(u"th");
-    m_navigationBarItem->setHorizontalAlignment(ln::HAlignment::Center);
-    m_navigationBarItem->setVerticalAlignment(ln::VAlignment::Center);
+    m_navigationBarItem->setHAlignment(ln::HAlignment::Center);
+    m_navigationBarItem->setVAlignment(ln::VAlignment::Center);
     m_navigationBarItem->setFontSize(24);
     
     m_tilesetListPane = ln::makeObject<TilesetListPane>();

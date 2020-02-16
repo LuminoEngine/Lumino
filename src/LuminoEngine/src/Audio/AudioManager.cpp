@@ -4,8 +4,9 @@
 #include "../Asset/AssetManager.hpp"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Audio/AudioContext.hpp>
-#include "AudioDecoder.hpp"
-#include "OggAudioDecoder.hpp"
+#include <LuminoEngine/Audio/Sound.hpp>
+#include "Decoder/WaveAudioDecoder.hpp"
+#include "Decoder/OggAudioDecoder.hpp"
 #include "GameAudioImpl.hpp"
 #include "AudioManager.hpp"
 
@@ -57,6 +58,13 @@ void AudioManager::dispose()
         m_gameAudio = nullptr;
     }
 
+	{
+		auto disposeList = m_soundManagementList;
+		for (auto& value : disposeList) {
+			value->dispose();
+		}
+	}
+
 #ifdef LN_AUDIO_THREAD_ENABLED
 	m_endRequested = true;
 	if (m_dispatheThread) {
@@ -82,6 +90,10 @@ void AudioManager::dispose()
 
 void AudioManager::update(float elapsedSeconds)
 {
+	if (m_primaryContext) {
+		m_primaryContext->updateFrame();
+	}
+
 	if (!m_audioThread) {
 		// not thread processing.
 		if (m_primaryContext) {
@@ -152,6 +164,18 @@ void AudioManager::releaseAudioDecoder(AudioDecoder* decoder)
 	//if ()
 
 	m_decoderCache.releaseObject(decoder);
+}
+
+void AudioManager::addSoundManagement(Sound* value)
+{
+	if (LN_REQUIRE(value)) return;
+	m_soundManagementList.add(value);
+}
+
+void AudioManager::removeSoundManagement(Sound* value)
+{
+	if (LN_REQUIRE(value)) return;
+	m_soundManagementList.remove(value);
 }
 
 void AudioManager::processThread()

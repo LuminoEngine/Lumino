@@ -70,7 +70,7 @@ TilesetFormControl::TilesetFormControl(TilesetView* parent)
 
 		auto icon = ln::makeObject<ln::UIIcon>();
 		icon->setIconName(u"ellipsis-h");
-		//icon->setHorizontalAlignment(ln::HAlignment::Center);
+		//icon->setHAlignment(ln::HAlignment::Center);
 		//icon->setMargin(ln::Thickness(0, 0, 0, 4));
 
 		auto button = ln::makeObject2<DialogHostButton>(dialog);
@@ -82,7 +82,7 @@ TilesetFormControl::TilesetFormControl(TilesetView* parent)
 	{
 		auto icon = ln::makeObject<ln::UIIcon>();
 		icon->setIconName(u"ellipsis-h");
-		//icon->setHorizontalAlignment(ln::HAlignment::Center);
+		//icon->setHAlignment(ln::HAlignment::Center);
 		//icon->setMargin(ln::Thickness(0, 0, 0, 4));
 
 		auto button = ln::makeObject<ln::UIButton>();
@@ -140,8 +140,8 @@ TilesetView::TilesetView()
 	addElement(m_layout1);
 
 	m_tilesetFormControl = ln::makeObject2<TilesetFormControl>(this);
-	m_tilesetFormControl->setHorizontalAlignment(ln::HAlignment::Stretch);
-	m_tilesetFormControl->setVerticalAlignment(ln::VAlignment::Stretch);
+	m_tilesetFormControl->setHAlignment(ln::HAlignment::Stretch);
+	m_tilesetFormControl->setVAlignment(ln::VAlignment::Stretch);
 	m_tilesetFormControl->setBackgroundColor(ln::Color::Coral);
 	m_layout1->addChild(m_tilesetFormControl);
 
@@ -151,13 +151,13 @@ TilesetView::TilesetView()
 	m_autoTilesetControl = ln::makeObject<AutoTilesetControl>();
 	//m_autoTilesetControl->setHeight(64);
 	m_autoTilesetControl->setBackgroundColor(ln::Color::Blue);
-	m_autoTilesetControl->setHorizontalAlignment(ln::HAlignment::Stretch);
-	m_autoTilesetControl->setVerticalAlignment(ln::VAlignment::Stretch);
+	m_autoTilesetControl->setHAlignment(ln::HAlignment::Stretch);
+	m_autoTilesetControl->setVAlignment(ln::VAlignment::Stretch);
 	m_layout2->addChild(m_autoTilesetControl);
 
 	m_tilesetControl = ln::makeObject<TilesetControl>();
-	m_tilesetControl->setHorizontalAlignment(ln::HAlignment::Stretch);
-	m_tilesetControl->setVerticalAlignment(ln::VAlignment::Stretch);
+	m_tilesetControl->setHAlignment(ln::HAlignment::Stretch);
+	m_tilesetControl->setVAlignment(ln::VAlignment::Stretch);
 	m_layout2->addChild(m_tilesetControl);
 }
 
@@ -193,7 +193,7 @@ void TilesetList::init()
     {
         auto caption = ln::UITextBlock::create(u"Tileset");
         caption->setMargin(ln::Thickness(8, 0));    // TODO: theme ‚©‚ç‚Æ‚è‚½‚¢
-        caption->setVerticalAlignment(ln::VAlignment::Center);
+        caption->setVAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");

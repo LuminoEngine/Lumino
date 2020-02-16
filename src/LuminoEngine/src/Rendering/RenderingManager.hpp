@@ -42,7 +42,7 @@ enum class BuiltinShader
 enum class BuiltinMaterial
 {
     Default,
-    UnLighting,
+    Unlit,
 };
 
 /* 

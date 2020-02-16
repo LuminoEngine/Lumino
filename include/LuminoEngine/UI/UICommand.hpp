@@ -20,7 +20,7 @@ class UICommand
 public:
     void addInputGesture(InputGesture* value);
 
-    EventConnection connectOnCanExecuteChanged(UIEventHandler handler);
+	Ref<EventConnection> connectOnCanExecuteChanged(Ref<UIGeneralEventHandler> handler);
 
     bool testInputEvent(UIEventArgs* e);
 
@@ -34,7 +34,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     List<Ref<InputGesture>> m_inputGestures;
-    Event<UIEventHandler> m_onCanExecuteChanged;
+    Event<UIGeneralEventHandler> m_onCanExecuteChanged;
 };
 
 // Note: WPF だと CommandBinding 相当。
@@ -43,8 +43,8 @@ class UIAction
 {
 public:
     UICommand* command() const { return m_command; }
-    EventConnection connectOnCanExecute(UICommandEventHandler handler);
-    EventConnection connectOnExecute(UICommandEventHandler handler);
+	Ref<EventConnection> connectOnCanExecute(Ref<UICommandEventHandler> handler);
+	Ref<EventConnection> connectOnExecute(Ref<UICommandEventHandler> handler);
 
     bool canExecute();
     void execute();
@@ -56,7 +56,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     UIAction();
     virtual ~UIAction() = default;
-    void init(UICommand* command, UICommandEventHandler onExecute);
+    void init(UICommand* command, Ref<UICommandEventHandler> onExecute);
 
 private:
     Ref<UICommand> m_command;

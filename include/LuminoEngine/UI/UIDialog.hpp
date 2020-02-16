@@ -60,7 +60,7 @@ private:
 	};
 
 	void addDialogButton(UIDialogButtonRole role, const String& text);
-	void handleDialogButtonClicked(UIEventArgs* e);
+	void handleDialogButtonClicked();
 
     Ref<UIAdorner> m_adorner;
 	List<DialogButton> m_dialogButtons;

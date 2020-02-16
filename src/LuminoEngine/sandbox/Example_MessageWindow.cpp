@@ -18,7 +18,7 @@ class App_Example_MessageWindow : public Application
 
     virtual void onInit() override
     {
-        Engine::mainCamera()->setBackgroundColor(Color::Gray);
+        Engine::camera()->setBackgroundColor(Color::Gray);
 
         auto windowSkin = Texture2D::load(u"Window1");
 
@@ -39,8 +39,8 @@ class App_Example_MessageWindow : public Application
 
         auto window2 = UIWindow::create();
         window2->setPosition(10, 10);
-        window2->setHorizontalAlignment(HAlignment::Left);
-        window2->setVerticalAlignment(VAlignment::Top);
+        window2->setHAlignment(HAlignment::Left);
+        window2->setVAlignment(VAlignment::Top);
         window2->setWidth(400);
         window2->setHeight(100);
         window2->setBackgroundImage(windowSkin);
@@ -55,8 +55,8 @@ class App_Example_MessageWindow : public Application
         m_message2->setBackgroundColor(Color::DarkCyan);
         m_message2->setText(
             u"window2->setPosition(10, 10);\n"
-            u"window2->setHorizontalAlignment(HAlignment::Left);\n"
-            u"window2->setVerticalAlignment(VAlignment::Top);\n"
+            u"window2->setHAlignment(HAlignment::Left);\n"
+            u"window2->setVAlignment(VAlignment::Top);\n"
             u"window2->setWidth(200);\n"
             u"window2->setHeight(100);\n"
             u"window2->setBackgroundImage(windowSkin);\n"
@@ -70,7 +70,7 @@ class App_Example_MessageWindow : public Application
 
     virtual void onUpdate() override
     {
-        if (Input::isTriggered(InputButtons::Submit)) {
+        if (Input::triggered(InputButtons::Submit)) {
 
             switch (m_step)
             {

@@ -20,8 +20,12 @@ public:
 
 	static StringType getExecutablePath()
 	{
+#if defined(LN_EMSCRIPTEN) || defined(LN_OS_ANDROID)
+		return "/";
+#else
 		LN_NOTIMPLEMENTED();
 		return StringType();
+#endif
 	}
 
 	static void setEnvironmentVariable(const StringRef& variableName, const StringRef& value)

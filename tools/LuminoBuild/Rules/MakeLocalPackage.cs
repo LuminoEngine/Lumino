@@ -29,7 +29,7 @@ namespace LuminoBuild.Rules
                 builder.DoTask("BuildEngine_iOS");
             }
 
-            if (BuildEnvironment.EmscriptenFound)
+            if (EmscriptenBuildEnv.EmscriptenFound)
             {
                 builder.DoTask("BuildEngine_Emscripten");
             }

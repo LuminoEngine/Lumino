@@ -1,0 +1,454 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8C02DA5722590176002501A0 /* Config-generated.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8C02DA5622590176002501A0 /* Config-generated.xcconfig */; };
+		8C11190C21C6644300D4B45B /* Assets.lca in Resources */ = {isa = PBXBuildFile; fileRef = 8C11190B21C6641100D4B45B /* Assets.lca */; };
+		8C11191021C664A300D4B45B /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C11190F21C664A300D4B45B /* OpenAL.framework */; };
+		8C83D8BD2176278B00D072BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C83D8BC2176278B00D072BA /* Assets.xcassets */; };
+		8C83D8C32176278B00D072BA /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8C83D8C22176278B00D072BA /* main.mm */; };
+		8C83D8CC217628A900D072BA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8CB217628A900D072BA /* Foundation.framework */; };
+		8C83D8CE217628B000D072BA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8CD217628B000D072BA /* Cocoa.framework */; };
+		8C83D8D0217628C100D072BA /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8CF217628C100D072BA /* CoreFoundation.framework */; };
+		8C83D8D2217628C800D072BA /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8D1217628C800D072BA /* CoreVideo.framework */; };
+		8C83D8D4217628D700D072BA /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8D3217628D700D072BA /* IOKit.framework */; };
+		8C83D8D6217628DE00D072BA /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C83D8D5217628DE00D072BA /* OpenGL.framework */; };
+		8C83D9002176294D00D072BA /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C83D8FF2176294D00D072BA /* App.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8C02DA5622590176002501A0 /* Config-generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Config-generated.xcconfig"; sourceTree = "<group>"; };
+		8C11190B21C6641100D4B45B /* Assets.lca */ = {isa = PBXFileReference; lastKnownFileType = file; path = Assets.lca; sourceTree = "<group>"; };
+		8C11190F21C664A300D4B45B /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		8C83D8AD2176278A00D072BA /* LuminoApp.macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuminoApp.macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8C83D8BC2176278B00D072BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8C83D8C12176278B00D072BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8C83D8C22176278B00D072BA /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		8C83D8C42176278B00D072BA /* LuminoApp_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LuminoApp_macOS.entitlements; sourceTree = "<group>"; };
+		8C83D8CB217628A900D072BA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		8C83D8CD217628B000D072BA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		8C83D8CF217628C100D072BA /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		8C83D8D1217628C800D072BA /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		8C83D8D3217628D700D072BA /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		8C83D8D5217628DE00D072BA /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		8C83D8FE2176294D00D072BA /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
+		8C83D8FF2176294D00D072BA /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
+		8C83D9012176296000D072BA /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8C83D8AA2176278A00D072BA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C11191021C664A300D4B45B /* OpenAL.framework in Frameworks */,
+				8C83D8D6217628DE00D072BA /* OpenGL.framework in Frameworks */,
+				8C83D8D4217628D700D072BA /* IOKit.framework in Frameworks */,
+				8C83D8D2217628C800D072BA /* CoreVideo.framework in Frameworks */,
+				8C83D8D0217628C100D072BA /* CoreFoundation.framework in Frameworks */,
+				8C83D8CE217628B000D072BA /* Cocoa.framework in Frameworks */,
+				8C83D8CC217628A900D072BA /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8C83D8A42176278A00D072BA = {
+			isa = PBXGroup;
+			children = (
+				8C83D8FD2176294D00D072BA /* Sources */,
+				8C83D8AF2176278A00D072BA /* LuminoApp.macOS */,
+				8C83D8AE2176278A00D072BA /* Products */,
+				8C83D8CA217628A900D072BA /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		8C83D8AE2176278A00D072BA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8C83D8AD2176278A00D072BA /* LuminoApp.macOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8C83D8AF2176278A00D072BA /* LuminoApp.macOS */ = {
+			isa = PBXGroup;
+			children = (
+				8C11190B21C6641100D4B45B /* Assets.lca */,
+				8C83D8BC2176278B00D072BA /* Assets.xcassets */,
+				8C83D8C12176278B00D072BA /* Info.plist */,
+				8C83D8C22176278B00D072BA /* main.mm */,
+				8C83D8C42176278B00D072BA /* LuminoApp_macOS.entitlements */,
+				8C02DA5622590176002501A0 /* Config-generated.xcconfig */,
+				8C83D9012176296000D072BA /* Prefix.pch */,
+			);
+			path = LuminoApp.macOS;
+			sourceTree = "<group>";
+		};
+		8C83D8CA217628A900D072BA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8C11190F21C664A300D4B45B /* OpenAL.framework */,
+				8C83D8D5217628DE00D072BA /* OpenGL.framework */,
+				8C83D8D3217628D700D072BA /* IOKit.framework */,
+				8C83D8D1217628C800D072BA /* CoreVideo.framework */,
+				8C83D8CF217628C100D072BA /* CoreFoundation.framework */,
+				8C83D8CD217628B000D072BA /* Cocoa.framework */,
+				8C83D8CB217628A900D072BA /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8C83D8FD2176294D00D072BA /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				8C83D8FE2176294D00D072BA /* App.h */,
+				8C83D8FF2176294D00D072BA /* App.cpp */,
+			);
+			name = src;
+			path = ../../src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8C83D8AC2176278A00D072BA /* LuminoApp.macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8C83D8C72176278B00D072BA /* Build configuration list for PBXNativeTarget "LuminoApp.macOS" */;
+			buildPhases = (
+				8C83D8A92176278A00D072BA /* Sources */,
+				8C83D8AA2176278A00D072BA /* Frameworks */,
+				8C83D8AB2176278A00D072BA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LuminoApp.macOS;
+			productName = LuminoApp.macOS;
+			productReference = 8C83D8AD2176278A00D072BA /* LuminoApp.macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8C83D8A52176278A00D072BA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1000;
+				ORGANIZATIONNAME = Lumino;
+				TargetAttributes = {
+					8C83D8AC2176278A00D072BA = {
+						CreatedOnToolsVersion = 10.0;
+					};
+				};
+			};
+			buildConfigurationList = 8C83D8A82176278A00D072BA /* Build configuration list for PBXProject "LuminoApp.macOS" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8C83D8A42176278A00D072BA;
+			productRefGroup = 8C83D8AE2176278A00D072BA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8C83D8AC2176278A00D072BA /* LuminoApp.macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8C83D8AB2176278A00D072BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C11190C21C6644300D4B45B /* Assets.lca in Resources */,
+				8C02DA5722590176002501A0 /* Config-generated.xcconfig in Resources */,
+				8C83D8BD2176278B00D072BA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8C83D8A92176278A00D072BA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C83D9002176294D00D072BA /* App.cpp in Sources */,
+				8C83D8C32176278B00D072BA /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8C83D8C52176278B00D072BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C02DA5622590176002501A0 /* Config-generated.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8C83D8C62176278B00D072BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8C02DA5622590176002501A0 /* Config-generated.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8C83D8C82176278B00D072BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LuminoApp.macOS/LuminoApp_macOS.entitlements;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = LuminoApp.macOS/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"LN_XCODE_PROJECT_DIR=\\\"\"$PROJECT_DIR\"\\\"",
+				);
+				HEADER_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/include";
+				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/lib/macOS-Debug";
+				OTHER_CFLAGS = "-I${LUMINO_PATH}/Engine/Native/include";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I${LUMINO_PATH}/Engine/Native/include",
+				);
+				OTHER_LDFLAGS = (
+					"-lBox2Dd",
+					"-lLuminoCored",
+					"-lLuminoEngined",
+					"-lBulletCollisiond",
+					"-lBulletDynamicsd",
+					"-lBulletInverseDynamicsd",
+					"-lBulletSoftBodyd",
+					"-lLinearMathd",
+					"-lfreetyped",
+					"-lgladd",
+					"-lSPIRVd",
+					"-lpng16d",
+					"-lOSDependentd",
+					"-lspirv-cross-hlsld",
+					"-lspirv-cross-cppd",
+					"-lspirv-cross-cored",
+					"-lspirv-cross-glsld",
+					"-lpcre2-16d",
+					"-lglfw3d",
+					"-lOGLCompilerd",
+					"-lvorbisfiled",
+					"-lvorbisd",
+					"-lglslangd",
+					"-lvorbisencd",
+					"-loggd",
+					"-ltmxlite-s-d",
+					"-lHLSLd",
+					"-lSPVRemapperd",
+					"-lzlibd",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-macOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8C83D8C92176278B00D072BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LuminoApp.macOS/LuminoApp_macOS.entitlements;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = LuminoApp.macOS/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				HEADER_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/include";
+				INFOPLIST_FILE = LuminoApp.macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(LUMINO_PATH)/Engine/Native/lib/macOS-Release";
+				OTHER_CFLAGS = "-I${LUMINO_PATH}/Engine/Native/include";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I${LUMINO_PATH}/Engine/Native/include",
+				);
+				OTHER_LDFLAGS = (
+					"-lBox2D",
+					"-lLuminoCore",
+					"-lLuminoEngine",
+					"-lBulletCollision",
+					"-lBulletDynamics",
+					"-lBulletInverseDynamics",
+					"-lBulletSoftBody",
+					"-lLinearMath",
+					"-lfreetype",
+					"-lglad",
+					"-lSPIRV",
+					"-lpng16",
+					"-lOSDependent",
+					"-lspirv-cross-hlsl",
+					"-lspirv-cross-cpp",
+					"-lspirv-cross-core",
+					"-lspirv-cross-glsl",
+					"-lpcre2-16",
+					"-lglfw3",
+					"-lOGLCompiler",
+					"-lvorbisfile",
+					"-lvorbis",
+					"-lglslang",
+					"-lvorbisenc",
+					"-logg",
+					"-ltmxlite-s",
+					"-lHLSL",
+					"-lSPVRemapper",
+					"-lzlib",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Lumino.LuminoApp-macOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8C83D8A82176278A00D072BA /* Build configuration list for PBXProject "LuminoApp.macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8C83D8C52176278B00D072BA /* Debug */,
+				8C83D8C62176278B00D072BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8C83D8C72176278B00D072BA /* Build configuration list for PBXNativeTarget "LuminoApp.macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8C83D8C82176278B00D072BA /* Debug */,
+				8C83D8C92176278B00D072BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8C83D8A52176278A00D072BA /* Project object */;
+}

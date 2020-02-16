@@ -28,7 +28,7 @@ ln::Result StartupView::init()
 
     auto layout = ln::makeObject<ln::UIVBoxLayout2>();
 
-    //layout->setVerticalAlignment(ln::VAlignment::Top);
+    //layout->setVAlignment(ln::VAlignment::Top);
     addElement(layout);
 
     m_newProjectButton = ln::makeObject<ln::UIButton>();
@@ -58,7 +58,7 @@ ln::Result StartupView::init()
 
     auto icon = ln::makeObject<ln::UIIcon>();
     icon->setIconName(u"file");
-    icon->setHorizontalAlignment(ln::HAlignment::Center);
+    icon->setHAlignment(ln::HAlignment::Center);
     icon->setMargin(ln::Thickness(0, 0, 0, 4));
     m_openProjectButton->addInlineElement(icon, ln::UIInlineLayout::Top);
 
@@ -80,7 +80,7 @@ ln::Result StartupView::init()
     popupButton->setText(u"Popup");
     popupButton->setHorizontalContentAlignment(ln::HAlignment::Center);
     popupButton->setVerticalContentAlignment(ln::VAlignment::Center);
-    popupButton->connectOnClicked([popup](ln::UIEventArgs* e) { if (!popup->isOpend()) popup->open(); else popup->close(); });
+    popupButton->connectOnClicked([popup]() { if (!popup->isOpend()) popup->open(); else popup->close(); });
     layout->addChild(popupButton);
 
 

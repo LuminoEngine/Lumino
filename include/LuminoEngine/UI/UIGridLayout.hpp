@@ -17,7 +17,7 @@ enum class UILayoutRule
 
 
 
-template<class T, class B = T::Builder, typename... TArgs>
+template<class T, class B = typename T::Builder, typename... TArgs>
 B makeDecl(TArgs&&... args)
 {
 	return T::Builder(std::forward<TArgs>(args)...);
@@ -72,6 +72,7 @@ public:
 		//	return *this;
 		//}
 
+	protected:
 		class Details : public UILayoutPanel2::Builder::Details
 		{
 		public:
@@ -101,7 +102,7 @@ private:
 		UILayoutLengthType	type = UILayoutLengthType::Ratio;//UILayoutLengthType::Ratio;
 		float			size = 0.0f;
 		float			minSize = 0.0f;
-		float			maxSize = FLT_MAX;
+		float			maxSize = std::numeric_limits<float>::max();
 
 		// working data
 		float			desiredSize = 0.0f;

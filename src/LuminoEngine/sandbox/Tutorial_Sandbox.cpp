@@ -3,27 +3,70 @@
 #include <LuminoEngine/UI/UIComboBox.hpp>
 using namespace ln;
 
+using DelegateSetTestDelegate = Delegate<void(void)>;
+
+void DelegateSetTest(Ref<DelegateSetTestDelegate> callback)
+{
+	callback->call();
+}
+
+
+
 class App : public Application
 {
 	virtual void onInit() override
 	{
-		//Debug::print(u"Hello, Lumino!");
-
-		Engine::mainCamera()->addComponent(makeObject<CameraOrbitControlComponent>());
-		Engine::mainRenderView()->setDebugGridEnabled(true);
+		auto button = UIButton::create(u"Button");
+		button->connectOnClicked([]() {
+			Debug::printf(u"Hello, UI!");
+		});
+		Engine::ui()->add(button);
 	}
 
 	virtual void onUpdate() override
 	{
-		Debug::print(0, String::format(u"X: {0}, Y:{1}", Mouse::position().x, Mouse::position().y));
 	}
 };
+
+//class App : public Application
+//{
+//	Ref<SphereMesh> s;
+//
+//	virtual void onInit() override
+//	{
+//		//Engine::renderView()->setGuideGridEnabled(true);
+//		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+//
+//		//auto texture = Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/picture1.jpg");
+//		//auto sprite = Sprite::create(texture, -1, 6);
+//		auto sprite = Sprite::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/picture1.jpg");
+//		sprite->setSize(Size(-1, 2));
+//
+//		s = SphereMesh::create();
+//		s->setShadingModel(ShadingModel::Unlit);
+//		s->setColorScale(Color::Yellow);
+//	}
+//
+//	virtual void onUpdate() override
+//	{
+//		auto light = Engine::light();
+//
+//		
+//		s->setPosition(-light->transform()->getFront() * 5);;
+//
+//		//float x, y;
+//		//Math::sinCos(Engine::time(), &x, &y);
+//		//light->lookAt(x, 0, y);
+//
+//		//s->setPosition(-Vector3(x, 0, y) * 5);
+//	}
+//};
 
 void Tutorial_Sandbox()
 {
     App app;
-	EngineSettings::setDebugToolEnabled(false);
-	detail::ApplicationHelper::run(&app);
+    EngineSettings::setDebugToolEnabled(false);
+    detail::ApplicationHelper::run(&app);
 }
 
 

@@ -38,7 +38,7 @@ InputController::~InputController()
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isPressed(const StringRef& bindingName) const
+bool InputController::pressed(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
@@ -46,7 +46,7 @@ bool InputController::isPressed(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isTriggered(const StringRef& bindingName) const
+bool InputController::triggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
@@ -54,7 +54,7 @@ bool InputController::isTriggered(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isOffTriggered(const StringRef& bindingName) const
+bool InputController::triggeredOff(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
@@ -62,7 +62,7 @@ bool InputController::isOffTriggered(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::isRepeated(const StringRef& bindingName) const
+bool InputController::repeated(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
@@ -225,7 +225,7 @@ int InputController::getJoyNumber() const
 //------------------------------------------------------------------------------
 const detail::InputDeviceElement* InputController::LockupState(const StringRef& bindingName) const
 {
-	if (bindingName.isEmpty())
+	if (bindingName.isEmpty() || String::compare(u"any", bindingName, CaseSensitivity::CaseInsensitive) == 0)
 	{
 		return m_inputStateForAny;
 	}

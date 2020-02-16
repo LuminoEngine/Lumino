@@ -4,27 +4,20 @@ using System.IO;
 
 namespace LuminoBuild
 {
-    public class TargetInfo
+    class TargetInfo
     {
         public string Name { get; set; }
+        public string LibraryExt { get; set; }
         public bool PdbCopy { get; set; } = false;
     }
 
-    public class BuildEnvironment
+    class BuildEnvironment
     {
         public const string VSWhereUrl = @"https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe";
 
         public const string EngineInstallDirName = "EngineInstall";
-        public const string emsdkVer = "sdk-1.38.12-64bit";
-        public const string emVer = "1.38.12";
 
         public static string BuildToolsDir { get; set; }
-
-        public static bool EmscriptenFound { get; set; }
-        public static string EmsdkDir { get; set; }
-        public static string EmscriptenDir { get; set; }
-        public static string emcmake { get; set; }
-
 
         public const string AndroidTargetPlatform = "android-26";
         public static bool AndroidStudioFound { get; set; }
@@ -48,28 +41,23 @@ namespace LuminoBuild
 
         public static TargetInfo[] Targets = new TargetInfo[]
         {
-            new TargetInfo(){ Name = "MSVC2017-x86-MD", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x86-MT", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x64-MD", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x64-MT", PdbCopy = true },
-            new TargetInfo(){ Name = "Emscripten" },
-            new TargetInfo(){ Name = "Android-arm64-v8a" },
-            new TargetInfo(){ Name = "Android-armeabi-v7a" },
-            new TargetInfo(){ Name = "Android-x86"},
-            new TargetInfo(){ Name = "Android-x86_64" },
-            new TargetInfo(){ Name = "macOS" },
-            new TargetInfo(){ Name = "iOS-SIMULATOR64" },
-            new TargetInfo(){ Name = "iOS-OS" },
+            new TargetInfo(){ Name = "MSVC2017-x86-MD", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x86-MT", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x64-MD", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2017-x64-MT", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "Emscripten", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "Android-arm64-v8a", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "Android-armeabi-v7a", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "Android-x86", LibraryExt = "*.a"},
+            new TargetInfo(){ Name = "Android-x86_64", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "macOS", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "iOS-SIMULATOR64", LibraryExt = "*.a" },
+            new TargetInfo(){ Name = "iOS-OS", LibraryExt = "*.a" },
         };
 
-        public static void Initialize(string repoRootDir)
+        public static void Initialize(Builder builder)
         {
-            BuildToolsDir = Path.Combine(repoRootDir, "build", "BuildTools");
-
-            EmsdkDir = Path.Combine(BuildToolsDir, "emsdk");
-            EmscriptenDir = Path.Combine(EmsdkDir, "emscripten", emVer);
-            emcmake = Path.Combine(EmscriptenDir, Utils.IsWin32 ? "emcmake.bat" : "emcmake");
-
+            BuildToolsDir = Path.Combine(builder.LuminoRootDir, "build", "BuildTools");
 
             if (Utils.IsWin32)
             {
@@ -84,37 +72,63 @@ namespace LuminoBuild
                 AndroidCMakeToolchain = Path.Combine(AndroidNdkRootDir, @"build\cmake\android.toolchain.cmake");
             }
 
-            InstallTools(repoRootDir);
+            InstallTools(builder);
         }
 
-        private static void InstallTools(string repoRootDir)
+        private static void InstallTools(Builder builder)
         {
-            Directory.CreateDirectory(BuildToolsDir);
-
-            // Install emsdk
-            if (IsWebTarget && Utils.IsWin32)
+            // BuildExternalProjects のものたちは cmake install などで、各 Target ごとの ExternalInstall に入り、このフォルダは CI によりキャッシュされる。
+            // しかし一部の、主に Header-only-library はリポジトリ内のファイルを直接参照するため、キャッシュされる別のフォルダに clone する。
+            // (ExternalSource フォルダは全体で 5GB を超えるため、GitHub Actions の cache size に引っかかる。そのため必要なものだけ別フォルダに逃がす)
+            string buildCacheDir = Path.Combine(builder.LuminoBuildDir, "BuildCache");
+            if (!builder.ExistsCache(buildCacheDir))
             {
-                if (!Directory.Exists(EmsdkDir))
+                Directory.CreateDirectory(buildCacheDir);
+                using (CurrentDir.Enter(buildCacheDir))
                 {
-                    Directory.SetCurrentDirectory(BuildToolsDir);
-                    Utils.CallProcess("git", "clone https://github.com/juj/emsdk.git");
+                    if (!Directory.Exists("stb"))
+                    {
+                        Utils.CallProcess("git", "clone https://github.com/nothings/stb.git stb");
+                        Utils.CallProcess("git", "-C stb checkout e6afb9cbae4064da8c3e69af3ff5c4629579c1d2");
+                    }
+
+                    if (!Directory.Exists("imgui"))
+                    {
+                        Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+                    }
+
+                    if (!Directory.Exists("Streams"))
+                    {
+                        Utils.CallProcess("git", "clone https://github.com/jscheiny/Streams.git Streams");
+
+                        using (CurrentDir.Enter("Streams"))
+                        {
+                            Utils.CallProcess("git", "checkout 8fc0657b977cfd8f075ad0afb4dca3800630b56c");
+                        }
+                    }
+
+                    if (!Directory.Exists("tinyobjloader"))
+                    {
+                        // v1.0.6 より後はタグが降られていないが、頂点カラーなどの対応が入っている。それを持ってくる。
+                        Utils.CallProcess("git", "clone https://github.com/syoyo/tinyobjloader.git tinyobjloader");
+
+                        using (CurrentDir.Enter("tinyobjloader"))
+                        {
+                            Utils.CallProcess("git", "checkout f37fed32f3eb0912cc10a970f78774cd98598ef6");
+                        }
+                    }
+
+                    if (!Directory.Exists("tinygltf"))
+                    {
+                        Utils.CallProcess("git", "clone --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
+                    }
                 }
-                if (!Directory.Exists(EmscriptenDir))
-                {
-                    Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
 
-                    if (Utils.IsWin32)
-                        Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
-                    else
-                        Utils.CallProcess("emsdk", "install " + emsdkVer);
-
-                    Utils.CopyFile(
-                        Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
-                        Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
-                }
-
-                EmscriptenFound = true;
+                builder.CommitCache(buildCacheDir);
             }
+
+
+            Directory.CreateDirectory(BuildToolsDir);
 
             // Install Android SDK
             if (IsAndroidTarget && Utils.IsWin32)

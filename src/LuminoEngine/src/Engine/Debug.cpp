@@ -81,6 +81,7 @@ void DebugInterface::update(float elapsedTimer)
 {
 	for (auto itr = m_elements2D.begin(); itr != m_elements2D.end(); ) {
 		if ((*itr).lifeTime < 0.0f) {
+			disposeElement(*itr);
 			itr = m_elements2D.erase(itr);
 		}
 		else {

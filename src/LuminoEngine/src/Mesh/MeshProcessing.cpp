@@ -72,7 +72,7 @@ Ref<Mesh> MeshGeometryBuilder::buildMesh()
 	int indexOffset = 0;
 	for (int i = s.startGenerator; i < s.startGenerator + s.generatorCount; i++) {
 		auto* g = m_generators[i];
-		detail::MeshGeneraterBuffer genBuffer;
+		detail::MeshGeneraterBuffer genBuffer(nullptr);	// TODO: allocator
 		genBuffer.setBuffer(static_cast<Vertex*>(mappedVB) + vertexOffset, mappedIB, indexBuffer->format(), indexOffset);
 		genBuffer.generate(g);
 		vertexOffset += g->vertexCount();

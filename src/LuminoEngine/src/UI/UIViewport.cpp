@@ -30,8 +30,8 @@ UIViewport::~UIViewport()
 void UIViewport::init()
 {
 	UIContainerElement::init();
-	setHorizontalAlignment(HAlignment::Stretch);
-	setVerticalAlignment(VAlignment::Stretch);
+	setHAlignment(HAlignment::Stretch);
+	setVAlignment(VAlignment::Stretch);
 
     //m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
     m_blitMaterial = makeObject<Material>();
@@ -132,7 +132,6 @@ void UIViewport::onUpdateLayout(UILayoutContext* layoutContext)
 
 void UIViewport::onRender(UIRenderingContext* context)
 {
-	//return;
 
     GraphicsContext* graphicsContext = context->m_frameWindowRenderingGraphicsContext;
     //auto* renderTarget = graphicsContext->renderTarget(0);
@@ -182,8 +181,12 @@ void UIViewport::onRender(UIRenderingContext* context)
 
 #if 1
 	Matrix t;
+	// -1~1 の rect である blit の Mesh をハックして使おうとしているので、先にスケーリングする必要がある
 	t.scale((viewSize.width * 0.5), -(viewSize.height * 0.5), 0);
+	t *= context->baseTransform();
 	t.translate((viewSize.width * 0.5), (viewSize.height * 0.5), 0);
+	
+
 	context->setBaseTransfrom(t);
 	context->setCullingMode(CullMode::None);
 	context->setBlendMode(BlendMode::Normal);

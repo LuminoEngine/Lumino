@@ -88,7 +88,7 @@ public:
 	static ln::Ref<TypeSymbol>	stringType;
 	static ln::Ref<TypeSymbol>	stringRefType;
 	//static ln::Ref<TypeSymbol>	objectType;
-	static ln::Ref<TypeSymbol>	EventConnectionType;
+	//static ln::Ref<TypeSymbol>	EventConnectionType;
 };
 
 // 属性マクロの ( ) 内に記述されたパラメータ
@@ -294,7 +294,7 @@ public:
 	bool isVirtual() const { return m_isVirtual; }
 	bool isConstructor() const { return m_isConstructor; }	// 名前が init であるインスタンスメソッド
 	bool isInstance() const { return !isStatic(); }			// instance method
-	bool isEventConnector() const { return metadata()->hasKey(MetadataInfo::EventAttr); }
+	//bool isEventConnector() const { return metadata()->hasKey(MetadataInfo::EventAttr); }
 	bool isPropertyGetter() const { return m_ownerProperty && m_parameters.isEmpty(); }
 	bool isPropertySetter() const { return m_ownerProperty && !m_parameters.isEmpty(); }
 	bool isCollectionGetItem() const { return metadata()->hasKey(u"Collection_GetItem"); }	// AccessorCache を使うときにインデックス指定するものであるかどうか
@@ -383,7 +383,7 @@ public:
 	const ln::List<Ref<MethodOverloadInfo>>& overloads() const { return m_overloads; }
 	const ln::List<Ref<PropertySymbol>>& properties() const { return m_properties; }
 	const ln::List<Ref<MethodSymbol>>& virtualMethods() const { return m_virtualMethods; }	// ベースクラスも含めた、すべての末端レベル virtual method
-	const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
+	//const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
 	MethodSymbol* delegateProtoType() const { return m_delegateProtoType; }
@@ -426,7 +426,7 @@ private:
 	ln::List<Ref<MethodOverloadInfo>> m_overloads;
 	ln::List<Ref<PropertySymbol>> m_properties;
 	ln::List<Ref<MethodSymbol>> m_virtualMethods;
-	ln::List<Ref<MethodSymbol>> m_eventMethods;
+	//ln::List<Ref<MethodSymbol>> m_eventMethods;
 	TypeSymbol* m_baseClass = nullptr;
 	TypeSymbol* m_collectionItemType = nullptr;
 

@@ -6,7 +6,7 @@
 
 namespace ln {
 class RenderingContext;
-class SpriteFrameSet;   // TODO:
+class SpriteSheet;   // TODO:
 class Material;   // TODO:
 
 class Effect
@@ -59,11 +59,11 @@ public: // TODO: internal
 LN_CONSTRUCT_ACCESS:
     SpriteFrameEffectResource();
     virtual ~SpriteFrameEffectResource();
-    void init(const Size& spriteSize, SpriteFrameSet* spriteFrameSet, int startNumber, int lastNumber, float frameTime);
+    void init(const Size& spriteSize, SpriteSheet* spriteFrameSet, int startNumber, int lastNumber, float frameTime);
 
 public: // TODO: private
     Size m_spriteSize;
-    Ref<SpriteFrameSet> m_spriteFrameSet;
+    Ref<SpriteSheet> m_spriteFrameSet;
     int m_startNumber;
     int m_lastNumber;
     float m_frameTime;

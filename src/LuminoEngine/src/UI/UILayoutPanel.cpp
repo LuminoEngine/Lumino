@@ -579,7 +579,6 @@ Size UIBoxLayout3::arrangeOverride(UILayoutContext* layoutContext, const Size& f
     Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
     int actualCellCount = m_logicalChildren.size();
 
-
     float boundSize = 0.0f;
     if (isHorizontal())
         boundSize = childrenBoundSize.width;
@@ -670,9 +669,9 @@ UILayoutLengthType UIBoxLayout3::layoutType(int index) const
     }
 
     auto& info = child->m_gridLayoutInfo;
-    if (!info)
-        return UILayoutLengthType::Ratio;
-    if (info->layoutWeight <= 0.0)
+    if (!info || info->layoutWeight < 0.0f)
+        return UILayoutLengthType::Ratio;	// default
+    if (info->layoutWeight == 0.0)
         return UILayoutLengthType::Auto;
     else
         return UILayoutLengthType::Ratio;
@@ -706,7 +705,7 @@ float UIBoxLayout3::layoutDirectSize(int index) const
 void UIBoxLayout3::getLayoutMinMaxSize(int index, float* minSize, float* maxSize) const
 {
     *minSize = 0.0f;
-    *maxSize = FLT_MAX;
+    *maxSize = std::numeric_limits<float>::max();
 
     auto& child = m_logicalChildren[index];
     if (isHorizontal()) {

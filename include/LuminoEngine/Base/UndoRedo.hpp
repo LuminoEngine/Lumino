@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "Event.hpp"
 
 namespace ln {
 class UndoRedoStack;
@@ -9,7 +10,7 @@ class UndoRedoStack;
 	@param[in]	e		: イベントのデータ
 */
 LN_DELEGATE()
-using UndoRedoStackEventHandler = std::function<void(UndoRedoStack* e)>;
+using UndoRedoStackEventHandler = Delegate<void(UndoRedoStack* e)>;
 
 class UndoRedoCommand
 	: public Object

@@ -7,6 +7,10 @@ class Material;
 class UICollectionModel;
 
 // row, column, parent を使って、Model 内のデータを一意に識別するためのキー
+// TODO: [2020/2/5] ViewModel 扱いじゃなくていいと思う。Qt だと Ploxy, Kivy は Adapter.
+// Adapter は ItemsSource や Generator(Template) 等を持つ。
+// ちなみに Unity は Adapter 相当のデータを内部に持っているみたい (コンストラクタで Generator とかを渡す)
+// https://docs.unity3d.com/ScriptReference/UIElements.ListView.html
 class UICollectionItemModel
 	: public UIViewModel
 {

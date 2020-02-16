@@ -41,5 +41,11 @@ private:
     bool m_translated;
 };
 
+template<class T1, class T2>
+inline T1 convertStructForced(const T2& v)
+{
+	return reinterpret_cast<const T1&>(v);
+}
+
 } // namespace detail
 } // namespace ln

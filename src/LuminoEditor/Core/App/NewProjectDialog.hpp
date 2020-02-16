@@ -10,8 +10,8 @@ protected:
 
 private:
 	void updateDefaultProjectName();
-	void handleSelectFolder(ln::UIEventArgs* e);
-	void handleCreate(ln::UIEventArgs* e);
+	void handleSelectFolder();
+	void handleCreate();
 
 	Ref<ln::UITextField> m_projectName;
 	Ref<ln::UITextField> m_projectFolder;

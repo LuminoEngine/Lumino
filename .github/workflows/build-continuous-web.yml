@@ -1,0 +1,40 @@
+name: Verification
+
+on:
+  pull_request:
+    branches:
+    - master
+
+env:
+  cache-version: v1
+
+jobs:
+  Web:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - uses: actions/cache@v1.0.3
+      with:
+        path: ./build/Emscripten/emsdk
+        key: ${{ env.cache-version }}-emsdk-${{ hashFiles(format('{0}{1}', github.workspace, '/tools/LuminoBuild/EmscriptenBuildEnv.cs')) }}
+        restore-keys: |
+          ${{ env.cache-version }}-emsdk-
+
+    - uses: actions/cache@v1.0.3
+      with:
+        path: ./build/Emscripten/ExternalInstall
+        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles(format('{0}{1}', github.workspace, '/tools/LuminoBuild/Tasks/BuildExternalProjects.cs')) }}
+        restore-keys: |
+          ${{ env.cache-version }}-ExternalInstall-
+
+    - name: Build
+      run: dotnet run -- BuildEngine_Emscripten Emscripten
+      

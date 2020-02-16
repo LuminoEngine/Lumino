@@ -1,8 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioBus.hpp>
-#include "ChromiumWebCore.hpp"
-#include "blink/VectorMath.h"
+#include "Core/ChromiumWebCore.hpp"
+#include "Core/VectorMath.h"
 
 namespace ln {
 

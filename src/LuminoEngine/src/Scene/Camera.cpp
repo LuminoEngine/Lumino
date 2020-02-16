@@ -29,7 +29,10 @@ void Camera::init()
 	WorldObject::init();
     m_component = makeObject<CameraComponent>();
     addComponent(m_component);
-    setPosition(0, 0, -10.0f);
+
+	// Note: 以前のデフォルトだった -10.0f とかの方が数字的なキリはいいのだが、
+	// チュートリアルや開発の初期段階で利用する XXXXMesh や Sprite のデフォルトサイズは 1.0 であり、-10.0f だとかなり小さく見えてしまう。
+    setPosition(0, 0, -5.0f);
 }
 
 const Matrix& Camera::viewMatrix() const

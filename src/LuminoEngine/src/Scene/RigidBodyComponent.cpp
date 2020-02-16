@@ -90,17 +90,17 @@ RigidBody2D* RigidBody2DComponent::rigidBody() const
     return m_body;
 }
 
-EventConnection RigidBody2DComponent::connectOnCollisionEnter(CollisionEventHandler handler)
+Ref<EventConnection> RigidBody2DComponent::connectOnCollisionEnter(Ref<CollisionEventHandler> handler)
 {
     return m_onCollisionEnter.connect(handler);
 }
 
-EventConnection RigidBody2DComponent::connectOnCollisionLeave(CollisionEventHandler handler)
+Ref<EventConnection> RigidBody2DComponent::connectOnCollisionLeave(Ref<CollisionEventHandler> handler)
 {
     return m_onCollisionLeave.connect(handler);
 }
 
-EventConnection RigidBody2DComponent::connectOnCollisionStay(CollisionEventHandler handler)
+Ref<EventConnection> RigidBody2DComponent::connectOnCollisionStay(Ref<CollisionEventHandler> handler)
 {
     return m_onCollisionStay.connect(handler);
 }
@@ -192,17 +192,17 @@ void TriggerBody2DComponent::onAfterStepSimulation()
 {
 }
 
-EventConnection TriggerBody2DComponent::connectOnCollisionEnter(CollisionEventHandler handler)
+Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionEnter(Ref<CollisionEventHandler> handler)
 {
     return m_onCollisionEnter.connect(handler);
 }
 
-EventConnection TriggerBody2DComponent::connectOnCollisionLeave(CollisionEventHandler handler)
+Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionLeave(Ref<CollisionEventHandler> handler)
 {
     return m_onCollisionLeave.connect(handler);
 }
 
-EventConnection TriggerBody2DComponent::connectOnCollisionStay(CollisionEventHandler handler)
+Ref<EventConnection> TriggerBody2DComponent::connectOnCollisionStay(Ref<CollisionEventHandler> handler)
 {
     return m_onCollisionStay.connect(handler);
 }

@@ -333,11 +333,11 @@ ln::String RubyExtGenerator::makeClassRequiredImplementation(const TypeSymbol* c
 		}
 
 		// Signal and Connection
-		for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
-			wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
-			wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
-			markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
-		}
+		//for (auto& eventConnectionMethod : classSymbol->eventMethods()) {
+		//	wrapStruct.AppendLine(u"VALUE {0};", makeSignalValueName(eventConnectionMethod));
+		//	wrapStruct.AppendLine(u"bool {0} = false;", makeEventConnectValueName(eventConnectionMethod));
+		//	markExprs.AppendLine(u"rb_gc_mark(obj->{0});", makeSignalValueName(eventConnectionMethod));
+		//}
 
 		// Constructor
 		wrapStruct.AppendLine(u"{0}()", makeWrapStructName(classSymbol));
@@ -371,11 +371,11 @@ ln::String RubyExtGenerator::makeClassImplementation(const TypeSymbol* classSymb
 	OutputBuffer code;
 
 	for (auto& overload : classSymbol->overloads()) {
-		if (overload->representative()->isEventConnector()) {
+		/*if (overload->representative()->isEventConnector()) {
 			code.append(makeWrapFuncImplement_SignalCaller(overload->representative()));
 			code.append(makeWrapFuncImplement_EventConnector(overload->representative()));
 		}
-		else if (classSymbol->isDelegateObject()) {
+		else*/ if (classSymbol->isDelegateObject()) {
 			code.append(makeWrapFuncImplement_ProcCaller(classSymbol->delegateProtoType()));
 			//code.append(makeWrapFuncImplement_DelegateObjectConstructor(classSymbol));
 			code.append(makeWrapFuncImplement(classSymbol, overload));
@@ -691,11 +691,22 @@ ln::String RubyExtGenerator::makeWrapFuncCallBlock_DelegateObjectSetter(const Ty
 		code.AppendLine(u"if (block != Qnil) {");
 		code.IncreaseIndent();
 		{
-			code.AppendLine(u"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
-			code.AppendLine(u"LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
-			code.AppendLine(u"LnResult result = {0}(selfObj->handle, _value);", makeFlatFullFuncName(method, FlatCharset::Ascii));
-			code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
-			code.AppendLine(u"return Qnil;");
+			if (method->hasReturnType()) {
+				// とりいそぎ、戻り値 EventConnection 固定
+				code.AppendLine(u"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
+				code.AppendLine(u"LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
+				code.AppendLine(u"LnHandle _outReturn;");
+				code.AppendLine(u"LnResult result = {0}(selfObj->handle, _value, &_outReturn);", makeFlatFullFuncName(method, FlatCharset::Ascii));
+				code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+				code.AppendLine(u"return LNRB_HANDLE_WRAP_TO_VALUE_NO_RETAIN(_outReturn);");
+			}
+			else {
+				code.AppendLine(u"VALUE value = rb_funcall({0}, rb_intern(\"new\"), 1, block);", makeRubyClassInfoVariableName(param->type()));
+				code.AppendLine(u"LnHandle _value = LuminoRubyRuntimeManager::instance->getHandle(value);");
+				code.AppendLine(u"LnResult result = {0}(selfObj->handle, _value);", makeFlatFullFuncName(method, FlatCharset::Ascii));
+				code.AppendLine(u"if (result < 0) rb_raise(rb_eRuntimeError, \"Lumino runtime error. (%d)\\n%s\", result, LnRuntime_GetLastErrorMessage());");
+				code.AppendLine(u"return Qnil;");
+			}
 		}
 		code.DecreaseIndent();
 		code.AppendLine(u"}");
@@ -1002,44 +1013,44 @@ ln::String RubyExtGenerator::makeWrapFuncImplement_SignalCaller(const MethodSymb
 	return code.toString();
 }
 
-ln::String RubyExtGenerator::makeWrapFuncImplement_EventConnector(const MethodSymbol* method) const
-{
-	auto wrapStructName = makeWrapStructName(method->ownerType());
-	auto signalCallerName = makeWrapFuncName_SignalCaller(method->ownerType(), method);
-	auto connectorName = makeFlatShortFuncName(method, FlatCharset::Ascii);	// e.g) ConnectOnClicked
-	auto signalValueName = makeSignalValueName(method);
-	auto eventConnectValueName = makeEventConnectValueName(method);
-	
-	OutputBuffer code;
-	code.AppendLine(u"static VALUE Wrap_LnUIButton_{0}(int argc, VALUE* argv, VALUE self)", connectorName);
-	code.AppendLine(u"{");
-	code.IncreaseIndent();
-	{
-		code.AppendLine(u"{0}* selfObj;", wrapStructName);
-		code.AppendLine(u"Data_Get_Struct(self, {0}, selfObj);", wrapStructName);
-
-		code.AppendLine(u"if (!selfObj->{0}) {{  // differed initialization.", eventConnectValueName);
-		code.IncreaseIndent();
-		{
-			code.AppendLine(u"selfObj->{0} = rb_funcall(LuminoRubyRuntimeManager::instance->eventSignalClass(), rb_intern(\"new\"), 0);", signalValueName);
-			code.AppendLine(u"{0}(selfObj->handle, {1});", makeFlatFullFuncName(method, FlatCharset::Ascii), signalCallerName);
-			code.AppendLine(u"selfObj->{0} = true;", eventConnectValueName);
-		}
-		code.DecreaseIndent();
-		code.AppendLine(u"}");
-		code.NewLine();
-
-		code.AppendLine(u"VALUE handler, block;");
-		code.AppendLine(u"rb_scan_args(argc, argv, \"01&\", &handler, &block);	// (handler=nil, &block)");
-		code.AppendLine(u"if (handler != Qnil) rb_funcall(selfObj->{0}, rb_intern(\"add\"), 1, handler);", signalValueName);
-		code.AppendLine(u"if (block != Qnil) rb_funcall(selfObj->{0}, rb_intern(\"add\"), 1, block);", signalValueName);
-		code.AppendLine(u"return Qnil;");
-	}
-	code.DecreaseIndent();
-	code.AppendLine(u"}");
-	code.NewLine();
-	return code.toString();
-}
+//ln::String RubyExtGenerator::makeWrapFuncImplement_EventConnector(const MethodSymbol* method) const
+//{
+//	auto wrapStructName = makeWrapStructName(method->ownerType());
+//	auto signalCallerName = makeWrapFuncName_SignalCaller(method->ownerType(), method);
+//	auto connectorName = makeFlatShortFuncName(method, FlatCharset::Ascii);	// e.g) ConnectOnClicked
+//	auto signalValueName = makeSignalValueName(method);
+//	auto eventConnectValueName = makeEventConnectValueName(method);
+//	
+//	OutputBuffer code;
+//	code.AppendLine(u"static VALUE Wrap_LnUIButton_{0}(int argc, VALUE* argv, VALUE self)", connectorName);
+//	code.AppendLine(u"{");
+//	code.IncreaseIndent();
+//	{
+//		code.AppendLine(u"{0}* selfObj;", wrapStructName);
+//		code.AppendLine(u"Data_Get_Struct(self, {0}, selfObj);", wrapStructName);
+//
+//		code.AppendLine(u"if (!selfObj->{0}) {{  // differed initialization.", eventConnectValueName);
+//		code.IncreaseIndent();
+//		{
+//			code.AppendLine(u"selfObj->{0} = rb_funcall(LuminoRubyRuntimeManager::instance->eventSignalClass(), rb_intern(\"new\"), 0);", signalValueName);
+//			code.AppendLine(u"{0}(selfObj->handle, {1});", makeFlatFullFuncName(method, FlatCharset::Ascii), signalCallerName);
+//			code.AppendLine(u"selfObj->{0} = true;", eventConnectValueName);
+//		}
+//		code.DecreaseIndent();
+//		code.AppendLine(u"}");
+//		code.NewLine();
+//
+//		code.AppendLine(u"VALUE handler, block;");
+//		code.AppendLine(u"rb_scan_args(argc, argv, \"01&\", &handler, &block);	// (handler=nil, &block)");
+//		code.AppendLine(u"if (handler != Qnil) rb_funcall(selfObj->{0}, rb_intern(\"add\"), 1, handler);", signalValueName);
+//		code.AppendLine(u"if (block != Qnil) rb_funcall(selfObj->{0}, rb_intern(\"add\"), 1, block);", signalValueName);
+//		code.AppendLine(u"return Qnil;");
+//	}
+//	code.DecreaseIndent();
+//	code.AppendLine(u"}");
+//	code.NewLine();
+//	return code.toString();
+//}
 
 ln::String RubyExtGenerator::makeEnumTypeVALUEVariableDecls() const
 {
@@ -1073,24 +1084,24 @@ ln::String RubyExtGenerator::makeEnumTypeRegisterCode() const
 	return code.toString().trim();
 }
 
-ln::String RubyExtGenerator::makeEventSignalDefinition() const
-{
-	OutputBuffer code;
-	code.AppendLine(u"int state = 0;");
-	code.AppendLine(u"rb_eval_string_protect(");
-	code.IncreaseIndent();
-
-	ln::StreamReader r(makeTemplateFilePath(u"RubyEventSignalClass.template.rb"));
-	ln::String line;
-	while (r.readLine(&line)) {
-		code.AppendLine(u"\"{0}\\n\"", line);
-	}
-	code.AppendLine(u",");
-	code.AppendLine(u"&state);");
-
-	code.DecreaseIndent();
-	return code.toString();
-}
+//ln::String RubyExtGenerator::makeEventSignalDefinition() const
+//{
+//	OutputBuffer code;
+//	code.AppendLine(u"int state = 0;");
+//	code.AppendLine(u"rb_eval_string_protect(");
+//	code.IncreaseIndent();
+//
+//	ln::StreamReader r(makeTemplateFilePath(u"RubyEventSignalClass.template.rb"));
+//	ln::String line;
+//	while (r.readLine(&line)) {
+//		code.AppendLine(u"\"{0}\\n\"", line);
+//	}
+//	code.AppendLine(u",");
+//	code.AppendLine(u"&state);");
+//
+//	code.DecreaseIndent();
+//	return code.toString();
+//}
 
 //==============================================================================
 // RubyYARDOCSourceGenerator

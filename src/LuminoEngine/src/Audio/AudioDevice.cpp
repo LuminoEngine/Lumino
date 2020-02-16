@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include "AudioDevice.hpp"
-#include "AudioDecoder.hpp"
+#include "Decoder/AudioDecoder.hpp"
 
 namespace ln {
 namespace detail {
@@ -19,7 +19,7 @@ AudioDevice::AudioDevice()
 
 void AudioDevice::init(int frames, int channels)
 {
-	//CoreAudioNode::ProcessingSizeInFrames
+	//AudioNodeCore::ProcessingSizeInFrames
 	m_masterChannels = channels;
 	m_renderdBuffer.resize(frames * m_masterChannels);
 

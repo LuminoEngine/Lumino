@@ -188,6 +188,13 @@ void WorldObject::removeFromScene()
 	}
 }
 
+//void WorldObject::addToWorld()
+//{
+//	World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
+//	if (LN_REQUIRE(activeWorld)) return;
+//	activeWorld->add(this);
+//}
+
 const Matrix& WorldObject::worldMatrix()
 {
     resolveWorldMatrix();

@@ -49,6 +49,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${LN_LINK_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 ln_add_pch(${PROJECT_NAME} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
 
+if (LN_EMSCRIPTEN)
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-pthread")
+endif()
+
 if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.
     set_target_properties(${PROJECT_NAME} PROPERTIES

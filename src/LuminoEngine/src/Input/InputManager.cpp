@@ -80,8 +80,11 @@ void InputManager::init(const Settings& settings)
 	pad->addBinding(InputButtons::Up,		KeyGesture::create(Keys::Up));
 	pad->addBinding(InputButtons::Down,		KeyGesture::create(Keys::Down));
 	pad->addBinding(InputButtons::Submit,	KeyGesture::create(Keys::Z));
+	pad->addBinding(InputButtons::Submit,	KeyGesture::create(Keys::Enter));
 	pad->addBinding(InputButtons::Cancel,	KeyGesture::create(Keys::X));
+	pad->addBinding(InputButtons::Cancel,	KeyGesture::create(Keys::Escape));
 	pad->addBinding(InputButtons::Menu,		KeyGesture::create(Keys::X));
+	pad->addBinding(InputButtons::Menu,		KeyGesture::create(Keys::Escape));
 	pad->addBinding(InputButtons::Shift,	KeyGesture::create(Keys::LShift));
 	pad->addBinding(InputButtons::Shift,	KeyGesture::create(Keys::RShift));
 	pad->addBinding(InputButtons::PageUp,	KeyGesture::create(Keys::Q));

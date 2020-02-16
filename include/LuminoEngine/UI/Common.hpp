@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "../Base/Event.hpp"
 #include "../Graphics/ColorStructs.hpp"
 #include "../Graphics/GeometryStructs.hpp"
 

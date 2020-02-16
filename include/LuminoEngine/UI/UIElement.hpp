@@ -55,7 +55,10 @@ struct GridLayoutInfo
 	int actualLayoutRow = 0;
 	int actualLayoutColumn = 0;
 
-    float   layoutWeight = 0;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
+    float   layoutWeight = -1;   // CSS FW (Materil-UI) や Android 参考。 0=Auto, 1~=star, finalStyle.width/height が nan でなければ direct 
+									// UIElement デフォルトではインスタンスがない。
+									// BoxLayout では、weight省略時はデフォルトで Ratio にしたい。
+									// -1 は Ratio というより、LayoutPanel のデフォルトに任せますよ、という意思表示。
 };
 
 }
@@ -90,23 +93,6 @@ private:
 };
 
 
-class UILayoutContext
-    : public Object
-{
-public:
-    float dpiScale() const { return m_dpiScale; }
-
-	bool testLayoutEnabled(UIElement* element) const;
-    
-LN_CONSTRUCT_ACCESS:
-    UILayoutContext();
-    void init();
-
-private:
-    float m_dpiScale;
-    friend class UIFrameWindow;
-};
-
 
 
 LN_CLASS()
@@ -123,6 +109,7 @@ public:
 		Builder& backgroundColor(const Color& value);
 		Ref<UIElement> build();
 
+	protected:
 		class Details : public BuilderDetailsBase
 		{
 		public:
@@ -158,17 +145,19 @@ public:
     const Thickness& padding() const;
 
 	/** 要素の横方向の配置方法を設定します。 */
-	void setHorizontalAlignment(HAlignment value);
+	void setHAlignment(HAlignment value);
 
 	/** 要素の横方向の配置方法を取得します。 */
-	HAlignment horizontalAlignment() const;
+	HAlignment hAlignment() const;
 
 	/** 要素の縦方向の配置方法を設定します。 */
-	void setVerticalAlignment(VAlignment value);
+	void setVAlignment(VAlignment value);
 
 	/** 要素の縦方向の配置方法を取得します。 */
-	VAlignment verticalAlignment() const;
+	VAlignment vAlignment() const;
 
+	/** 要素の配置方法を設定します。 */
+	void setAlignments(HAlignment halign, VAlignment valign);
 
     
 	/** このオブジェクトの位置を設定します。 */
@@ -361,6 +350,7 @@ public:
 	LN_METHOD()
     void addChild(UIElement* child);
     void addChild(const String& child);
+	void add(UIElement* child) { addChild(child); }
 
 
     void invalidateStyle() { invalidate(detail::UIElementDirtyFlags::Style, true); }

@@ -2,9 +2,9 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioNode.hpp>
-#include "AudioDecoder.hpp"
+#include "Decoder/AudioDecoder.hpp"
 #include "AudioManager.hpp"
-#include "CoreAudioNode.hpp"
+#include "Core/CoreAudioNode.hpp"
 #include <LuminoEngine/Engine/RenderingCommandList.hpp>
 
 namespace ln {
@@ -15,6 +15,7 @@ namespace ln {
 AudioNode::AudioNode()
 	//: m_inputConnectionsDirty(false)
 	//, m_outputConnectionsDirty(false)
+	: m_alived(false)
 {
 }
 
@@ -27,14 +28,21 @@ void AudioNode::init()
 
 void AudioNode::onDispose(bool explicitDisposing)
 {
+	if (m_context) {
+		m_context->removeAudioNode(this);
+		m_context = nullptr;
+	}
+
+	//auto* core = coreNode();
+
     // TODO: dispose は finalize からも呼ばれる。この時は this の参照カウントが 0 で、
     // dispose 終了後にデストラクタが呼ばれる。そのため、↓のようにして別の Ref に参照を持たせても
     // オブジェクトはデストラクトされてしまう。
     // 修正方針のひとつとして、dispose を参照カウント 0 の状態で呼び出さないようにするのもありかもしれない。・・・でも atomic になるように注意して調査すること。
-	if (m_context) {
-        LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
-		m_context->disposeNodeOnGenericThread(this);
-	}
+	//if (m_context) {
+ //       LN_CHECK(RefObjectHelper::getReferenceCount(this) > 0);
+	//	m_context->disposeNodeOnGenericThread(this);
+	//}
 
 	Object::onDispose(explicitDisposing);
 }
@@ -46,7 +54,7 @@ void AudioNode::commit()
 	//{
 	//	coreNode()->disconnectAllInputSide();
 	//	for (auto& node : m_inputConnections) {
-	//		detail::CoreAudioNode::connect(node->coreNode(), coreNode());
+	//		detail::AudioNodeCore::connect(node->coreNode(), coreNode());
 	//	}
 	//	m_inputConnectionsDirty = false;
 	//}
@@ -55,7 +63,7 @@ void AudioNode::commit()
 	//{
 	//	coreNode()->disconnectAllOutputSide();
 	//	for (auto& node : m_outputConnections) {
-	//		detail::CoreAudioNode::connect(coreNode(), node->coreNode());
+	//		detail::AudioNodeCore::connect(coreNode(), node->coreNode());
 	//	}
 	//	m_outputConnectionsDirty = false;
 	//}
@@ -120,182 +128,9 @@ void AudioNode::disconnect(AudioNode* outputSide, AudioNode* inputSide)
 
 void AudioNode::disconnect()
 {
-	LN_NOTIMPLEMENTED();
-	//for (auto& node : m_inputConnections) {
-	//	node->removeConnectionOutput(this);
-	//}
-	//for (auto& node : m_outputConnections) {
-	//	node->removeConnectionInput(this);
-	//}
-	//m_inputConnectionsDirty = false;
-	//m_outputConnectionsDirty = false;
-}
-
-//==============================================================================
-// AudioSourceNode
-
-AudioSourceNode::AudioSourceNode()
-{
-	m_commitState.playbackRate = 1.0f;
-	m_commitState.requestedState = PlayingState::NoChanged;
-	m_commitState.resetRequire = false;
-}
-
-void AudioSourceNode::setPlaybackRate(float rate)
-{
-    detail::ScopedWriteLock lock(propertyMutex());
-	m_commitState.playbackRate = rate;
-	//LN_ENQUEUE_RENDER_COMMAND_2(
-	//	start, context()->manager(),
-	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
-	//	float, rate,
-	//	{
-	//		m_coreObject->setPlaybackRate(rate);
-	//	});
-}
-
-void AudioSourceNode::setLoop(bool value)
-{
-    m_commitState.loop = value;
-}
-
-bool AudioSourceNode::loop() const
-{
-    return m_commitState.loop;
-}
-
-void AudioSourceNode::start()
-{
-	m_commitState.resetRequire = true;
-	m_commitState.requestedState = PlayingState::Play;
-	//LN_ENQUEUE_RENDER_COMMAND_1(
-	//	start, context()->manager(),
-	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
-	//	{
-	//		m_coreObject->start();
-	//	});
-}
-
-void AudioSourceNode::stop()
-{
-	m_commitState.resetRequire = true;
-	m_commitState.requestedState = PlayingState::Stop;
-	//LN_ENQUEUE_RENDER_COMMAND_1(
-	//	start, context()->manager(),
-	//	Ref<detail::CoreAudioSourceNode>, m_coreObject,
-	//	{
-	//		m_coreObject->stop();
-	//	});
-}
-
-void AudioSourceNode::pause()
-{
-	LN_NOTIMPLEMENTED();
-}
-
-void AudioSourceNode::resume()
-{
-	LN_NOTIMPLEMENTED();
-}
-
-void AudioSourceNode::init(detail::AudioDecoder* decoder)
-{
-	m_coreObject = makeRef<detail::CoreAudioSourceNode>(detail::EngineDomain::audioManager()->primaryContext()->coreObject());
-	m_coreObject->init(decoder);
-
-    AudioNode::init();
-}
-
-detail::CoreAudioNode * AudioSourceNode::coreNode()
-{
-	return m_coreObject;
-}
-
-AudioSourceNode::PlayingState AudioSourceNode::playingState() const
-{
-    switch (m_coreObject->playingState())
-    {
-    case detail::CoreAudioSourceNode::PlayingState::None:
-    case detail::CoreAudioSourceNode::PlayingState::Stopped:
-        return PlayingState::Stop;
-    case detail::CoreAudioSourceNode::PlayingState::Playing:
-        return PlayingState::Play;
-    case detail::CoreAudioSourceNode::PlayingState::Pausing:
-        return PlayingState::Pause;
-    default:
-        LN_UNREACHABLE();
-        return PlayingState::Stop;
-    }
-}
-
-void AudioSourceNode::commit()
-{
-	AudioNode::commit();
-
-    detail::ScopedReadLock lock(propertyMutex());
-
-	if (m_commitState.resetRequire) {
-		m_coreObject->reset();
-		m_commitState.resetRequire = false;
+	if (context()) {
+		context()->sendDisconnectAll(this);
 	}
-
-	switch (m_commitState.requestedState)
-	{
-	case PlayingState::NoChanged:
-		break;
-	case  PlayingState::Stop:
-		m_coreObject->stop();
-		break;
-	case  PlayingState::Play:
-		m_coreObject->start();
-		break;
-	case  PlayingState::Pause:
-		LN_NOTIMPLEMENTED();
-		break;
-	default:
-		break;
-	}
-	m_commitState.requestedState = PlayingState::NoChanged;
-
-	m_coreObject->setPlaybackRate(m_commitState.playbackRate);
-    m_coreObject->setLoop(m_commitState.loop);
-}
-
-//==============================================================================
-// AudioPannerNode
-
-AudioPannerNode::AudioPannerNode()
-{
-}
-
-void AudioPannerNode::init()
-{
-	AudioNode::init();
-	m_coreObject = makeRef<detail::CoreAudioPannerNode>(context()->coreObject());
-	m_coreObject->init();
-}
-
-detail::CoreAudioNode* AudioPannerNode::coreNode()
-{
-	return m_coreObject;
-}
-
-//==============================================================================
-// AudioDestinationNode
-
-AudioDestinationNode::AudioDestinationNode()
-{
-}
-
-void AudioDestinationNode::init(detail::CoreAudioDestinationNode* core)
-{
-	AudioNode::init();
-	m_coreObject = core;
-}
-
-detail::CoreAudioNode * AudioDestinationNode::coreNode()
-{
-	return m_coreObject;
 }
 
 } // namespace ln

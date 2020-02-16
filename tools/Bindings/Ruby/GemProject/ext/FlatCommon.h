@@ -60,6 +60,9 @@ typedef enum tagLnResult
     /** 不明なエラー */
     LN_ERROR_UNKNOWN = -1,
 
+	/**  */
+	LN_RUNTIME_UNINITIALIZED = -2,
+
 } LnResult;
 
 /** 真偽値 */
@@ -101,7 +104,7 @@ typedef struct tagLnRuntimeSettings
 
 } LnRuntimeSettings;
 
-extern LN_FLAT_API void LnRuntime_Initialize(const tagLnRuntimeSettings* settings);
+extern LN_FLAT_API void LnRuntime_Initialize(const LnRuntimeSettings* settings);
 extern LN_FLAT_API void LnRuntime_Finalize();
 inline const char* LnRuntime_GetLastErrorMessage() { return ""; }  // TODO:
 extern LN_FLAT_API void LnRuntime_SetManagedObjectId(LnHandle handle, int64_t id);

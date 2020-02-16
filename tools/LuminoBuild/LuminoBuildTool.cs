@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace LuminoBuild
 {
-	class Builder
+    class Builder
     {
         // リリースのたびに変更する必要がある情報
         public string InstallerProductGUID_MSVC2013 = "9695C499-D82F-4A79-BB8E-E1EE62E13DBC";
@@ -25,6 +25,7 @@ namespace LuminoBuild
 
         public string LuminoRootDir;
         public string LuminoBuildDir;
+        //public string LuminoBuildCacheDir;
         public string LuminoBindingsDir;
         public string LuminoLibDir;
         public string LuminoToolsDir;
@@ -38,12 +39,13 @@ namespace LuminoBuild
         public List<BuildTask> Tasks = new List<BuildTask>();
         public List<BuildRule> Rules = new List<BuildRule>();
         public string[] Args;
+        public bool DirectTaskExecution { get { return Args.Contains("--direct-task-execution"); } }
 
         public string LocalPackageName
         {
             get
             {
-                return "LocalPackage";
+                return "NativePackage";
             }
         }
         
@@ -60,6 +62,38 @@ namespace LuminoBuild
                 return $"Lumino-{VersionString}-{targetEnvName}";
             }
         }
+
+        public string GetExternalProjectBuildDir(string targetName, string externalProjectName)
+        {
+            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalBuild", externalProjectName));
+        }
+
+        public string GetExternalProjectInstallDir(string targetName, string externalProjectName)
+        {
+            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalInstall", externalProjectName));
+        }
+
+        public string GetExternalInstallDir(string targetName)
+        {
+            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalInstall"));
+        }
+
+        /// <summary>
+        /// ExternalProject など、ある単位がビルド完了していることをマークする。
+        /// CI 環境でのキャッシュのために用意したもの。
+        /// </summary>
+        /// <param name="name"></param>
+        public void CommitCache(string dirPath)
+        {
+            File.WriteAllText(Path.Combine(dirPath, "_lnCacheCommitted"), "");
+        }
+
+        public bool ExistsCache(string dirPath)
+        {
+            //if (!Directory.Exists(dirPath)) return false;
+            return File.Exists(Path.Combine(dirPath, "_lnCacheCommitted"));
+        }
+
 
 
         public void DoTaskOrRule(string name)
@@ -93,7 +127,7 @@ namespace LuminoBuild
         {
             try
             {
-                Execute(new List<BuildTask>() { task });
+                ExecuteTask(task);
             }
             catch (Exception e)
             {
@@ -131,33 +165,36 @@ namespace LuminoBuild
         {
             var tasks = ResoleveDependencies(taskName);
 
-            Console.WriteLine("Task execution order:");
-            tasks.ForEach(x => Console.WriteLine("  " + x.CommandName));
-
-            Execute(tasks);
+            if (DirectTaskExecution)
+            {
+                ExecuteTask(tasks.Last());
+            }
+            else
+            {
+                Console.WriteLine("Task execution order:");
+                tasks.ForEach(x => Console.WriteLine("  " + x.CommandName));
+                tasks.ForEach(x => ExecuteTask(x));
+            }
         }
 
-        private void Execute(List<BuildTask> tasks)
+        private void ExecuteTask(BuildTask task)
         {
-            foreach (var task in tasks)
+            Logger.WriteLine("[{0}] Task started.", task.CommandName);
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
+            string oldCD = Directory.GetCurrentDirectory();
+            try
             {
-                Logger.WriteLine("[{0}] Task started.", task.CommandName);
-                var sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
-
-                string oldCD = Directory.GetCurrentDirectory();
-                try
-                {
-                    task.Build(this);
-                }
-                finally
-                {
-                    Directory.SetCurrentDirectory(oldCD);
-                }
-
-                sw.Stop();
-                Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
+                task.Build(this);
             }
+            finally
+            {
+                Directory.SetCurrentDirectory(oldCD);
+            }
+
+            sw.Stop();
+            Logger.WriteLine("[{0}] Task succeeded. ({1})", task.CommandName, sw.Elapsed.ToString());
         }
 
         public bool HasFlagArgument(string name)
@@ -327,7 +364,7 @@ namespace LuminoBuild
         /// <param name="stSourcePath">St source path.</param>
         /// <param name="stDestPath">St destination path.</param>
         /// <param name="bOverwrite">If set to <c>true</c> b overwrite.</param>
-        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite = true, string pattern = "*")
+        public static void CopyDirectory(string stSourcePath, string stDestPath, bool bOverwrite = true, string pattern = "*", bool recursive = true)
         {
             // コピー先のディレクトリがなければ作成する
             if (!System.IO.Directory.Exists(stDestPath))
@@ -361,11 +398,13 @@ namespace LuminoBuild
                 }
             }
 
-            // コピー元のディレクトリをすべてコピーする (再帰)
-            foreach (string stCopyFrom in System.IO.Directory.GetDirectories(stSourcePath))
+            if (recursive)
             {
-                string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
-                CopyDirectory(stCopyFrom, stCopyTo, bOverwrite, pattern);
+                foreach (string stCopyFrom in System.IO.Directory.GetDirectories(stSourcePath))
+                {
+                    string stCopyTo = System.IO.Path.Combine(stDestPath, System.IO.Path.GetFileName(stCopyFrom));
+                    CopyDirectory(stCopyFrom, stCopyTo, bOverwrite, pattern);
+                }
             }
         }
 
@@ -539,21 +578,29 @@ namespace LuminoBuild
 
         public static void CallProcessShell(string program, string args = "")
         {
-            Logger.WriteLine($"{program} {args}");
-
-            using (Process p = new Process())
+            if (Utils.IsWin32)
             {
-                p.StartInfo.FileName = program;
-                p.StartInfo.Arguments = args;
-                p.StartInfo.UseShellExecute = true;
-
-                p.Start();
-
-                p.WaitForExit();
-
-                if (p.ExitCode != 0)
-                    throw new InvalidOperationException("Failed Process.");
+                CallProcess("cmd", $" /c {program} {args}");
             }
+            else
+            {
+                throw new NotImplementedException();
+            }
+            //Logger.WriteLine($"{program} {args}");
+
+            //using (Process p = new Process())
+            //{
+            //    p.StartInfo.FileName = program;
+            //    p.StartInfo.Arguments = args;
+            //    p.StartInfo.UseShellExecute = true;
+
+            //    p.Start();
+
+            //    p.WaitForExit();
+
+            //    if (p.ExitCode != 0)
+            //        throw new InvalidOperationException("Failed Process.");
+            //}
         }
 
         /// <summary>
@@ -656,4 +703,23 @@ namespace LuminoBuild
             S_IRGRP | S_IXGRP |
             S_IROTH | S_IXOTH;
 	}
+
+    class CurrentDir : IDisposable
+    {
+        private string _prev;
+
+        public static CurrentDir Enter(string path)
+        {
+            var c = new CurrentDir() { _prev = Directory.GetCurrentDirectory() };
+            Directory.SetCurrentDirectory(path);
+            Console.WriteLine("Enter CurrentDir: " + path);
+            return c;
+        }
+
+        public void Dispose()
+        {
+            Directory.SetCurrentDirectory(_prev);
+            Console.WriteLine("Leave CurrentDir: " + _prev);
+        }
+    }
 }

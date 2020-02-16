@@ -7,6 +7,13 @@ class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
 class Serializer;
+class ViewProperty;
+class ViewPropertyInfo;
+class ObservablePropertyBase;
+
+template<class T>
+class TypeInfoTraits;
+
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
@@ -69,6 +76,12 @@ private:
     std::shared_ptr<Components> m_components;
 };
 
+enum class ObjectFlags
+{
+	None = 0x0000,
+	Property = 0x0001,
+};
+
 } // namespace detail
 
 #if defined(__GNUC__) && !defined(COMPILER_ICC)
@@ -81,11 +94,12 @@ private:
     friend class ::ln::TypeInfo; \
     friend class ::ln::detail::EngineDomain; \
     friend class ::ln::EngineContext; \
+	template<class T> friend class TypeInfoTraits; \
     static ::ln::TypeInfo* _lnref_getTypeInfo(); \
     virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override; \
 	static ::ln::TypeInfo* const _lnref_typeInfo LN_ATTRIBUTE_UNUSED_; \
 	static ::ln::TypeInfo* _lnref_registerTypeInfo(); \
-	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context);
+	static void _lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo);
 
 #define LN_OBJECT_IMPLEMENT(classType, baseclassType) \
     ::ln::TypeInfo* classType::_lnref_getTypeInfo() \
@@ -98,10 +112,10 @@ private:
 	{ \
 		::ln::EngineContext* context = ::ln::EngineContext::current(); \
 		::ln::TypeInfo* typeInfo = context->registerType<classType>(#classType, ::ln::TypeInfo::getTypeInfo<baseclassType>(), {}); \
-		_lnref_registerTypeInfoInitializer(context); \
+		_lnref_registerTypeInfoInitializer(context, typeInfo); \
 		return typeInfo; \
 	} \
-	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context)
+	void classType::_lnref_registerTypeInfoInitializer(::ln::EngineContext* context, ::ln::TypeInfo* typeInfo)
 
 #define LN_INTERNAL_NEW_OBJECT \
     template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
@@ -109,9 +123,9 @@ private:
 
 #ifndef LN_CONSTRUCT_ACCESS
 #define LN_CONSTRUCT_ACCESS \
-		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject(TArgs&&... args); \
-		template<class T, typename... TArgs> friend ln::Ref<T> ln::makeObject2(TArgs&&... args); \
-		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
+		template<class T_, typename... TArgs_> friend ln::Ref<T_> ln::makeObject(TArgs_&&... args); \
+		template<class T_, typename... TArgs_> friend ln::Ref<T_> ln::makeObject2(TArgs_&&... args); \
+		template<class T_, typename... TArgs_> friend void ln::placementNewObject(void* ptr, TArgs_&&... args); \
 		protected
 #endif
 
@@ -194,9 +208,12 @@ private:
     std::mutex m_weakRefInfoMutex;
 	detail::ObjectRuntimeData* m_runtimeData;
     detail::AssetPath m_assetPath;
+	Flags<detail::ObjectFlags> m_objectFlags;
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
+	template<class U> friend class Ref;
+	template<class T> friend class TypeInfoTraits;
 };
 
 class ObjectHelper
@@ -219,6 +236,9 @@ public:
     static void destructObject(Object* obj) { obj->~Object(); }
 	static void setRuntimeData(Object* obj, ObjectRuntimeData* data) { obj->m_runtimeData = data; }
 	static ObjectRuntimeData* getRuntimeData(Object* obj) { return obj->m_runtimeData; }
+	static Flags<ObjectFlags> getObjectFlags(Object* obj) { return obj->m_objectFlags; }
+	static void setObjectFlags(Object* obj, Flags<ObjectFlags> value) { obj->m_objectFlags = value; }
+	static bool isObservableProperty(Object* obj) { return getObjectFlags(obj).hasFlag(ObjectFlags::Property); }
 };
 
 class WeakRefInfo final
@@ -338,11 +358,150 @@ private:
 };
 namespace detail { struct TypeInfoInternal; }
 
+class PredefinedTypes
+{
+public:
+	static TypeInfo* Bool;
+	static TypeInfo* Char;
+
+	static TypeInfo* Int8;
+	static TypeInfo* Int16;
+	static TypeInfo* Int32;
+	static TypeInfo* Int64;
+
+	static TypeInfo* UInt8;
+	static TypeInfo* UInt16;
+	static TypeInfo* UInt32;
+	static TypeInfo* UInt64;
+
+	static TypeInfo* Float;
+	static TypeInfo* Double;
+
+	static TypeInfo* String;
+	static TypeInfo* Object;
+	static TypeInfo* List;
+
+	//template<class T>
+	//static TypeInfo* getType() { return nullptr; }
+};
+
+enum class TypeInfoClass
+{
+	Primitive,
+	/*Struct,*/
+	Object,
+};
+
+template<class T>
+class TypeInfoTraits
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return T::_lnref_getTypeInfo(); }
+};
+
+template<>
+class TypeInfoTraits<bool>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Bool; }
+};
+
+template<>
+class TypeInfoTraits<ln::Char>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Char; }
+};
+
+template<>
+class TypeInfoTraits<int8_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Int8; }
+};
+
+template<>
+class TypeInfoTraits<int16_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Int16; }
+};
+
+template<>
+class TypeInfoTraits<int32_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Int32; }
+};
+
+template<>
+class TypeInfoTraits<int64_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Int64; }
+};
+
+template<>
+class TypeInfoTraits<uint8_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::UInt8; }
+};
+
+template<>
+class TypeInfoTraits<uint16_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::UInt16; }
+};
+
+template<>
+class TypeInfoTraits<uint32_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::UInt32; }
+};
+
+template<>
+class TypeInfoTraits<uint64_t>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::UInt64; }
+};
+
+template<>
+class TypeInfoTraits<float>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Float; }
+};
+
+template<>
+class TypeInfoTraits<double>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Double; }
+};
+
+template<>
+class TypeInfoTraits<ln::String>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::String; }
+};
+
+template<>
+class TypeInfoTraits<ln::Object>
+{
+public:
+	static TypeInfo* typeInfo() noexcept { return PredefinedTypes::Object; }
+};
+
 class TypeInfo
     : public RefObject
 {
 public:
-	TypeInfo(const char* className, TypeInfo* baseType);
+	TypeInfo(const char* className, TypeInfo* baseType, TypeInfoClass typeClass = TypeInfoClass::Object);
 
 	TypeInfo(const String& className);
 
@@ -354,11 +513,18 @@ public:
     /** ベースクラスの型情報を取得します。 */
     TypeInfo* baseType() const { return m_baseType; }
 
+	TypeInfoClass typeClass() const { return m_typeClass; }
+
+
     // 0 is invalid
     int id() const { return m_id; }
 
     void registerProperty(PropertyInfo* prop);
     const List<Ref<PropertyInfo>>& properties() const { return m_properties; }
+
+	void registerViewProperty(ViewPropertyInfo* prop);
+	const List<Ref<ViewPropertyInfo>>& viewProperties() const { return m_viewProperties; }
+	ViewPropertyInfo* findViewProperty(const StringRef& name) const;
 
 	Ref<Object> createInstance() const;
 	static Ref<Object> createInstance(const String& typeName);	// TODO: EngineContext へ
@@ -368,8 +534,11 @@ public:
     template<class T>
     static TypeInfo* getTypeInfo()
     {
-        return T::_lnref_getTypeInfo();
+		return TypeInfoTraits<T>::typeInfo();//T::_lnref_getTypeInfo();
     }
+
+	// ネストされた型の関数特殊化は不可能
+	//template<> template<class TValue> static TypeInfo* getTypeInfo<typename Ref<TValue>>() { return getTypeInfo<TValue>(); }
 
     static TypeInfo* getTypeInfo(const Object* obj)
     {
@@ -385,7 +554,9 @@ public:
 
 private:
     String m_name;
-    List<Ref<PropertyInfo>> m_properties;
+	TypeInfoClass m_typeClass;
+    List<Ref<PropertyInfo>> m_properties;	// obsolete
+	List<Ref<ViewPropertyInfo>> m_viewProperties;
 	int64_t m_managedTypeInfoId;
 
 	friend struct detail::TypeInfoInternal;

@@ -92,6 +92,10 @@ GraphicsContext* SwapChain::beginFrame2()
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, currentCommandList());
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
 	m_graphicsContext->resetState();
+
+	// TODO: ここでやるのが正しい。ウィンドウリサイズ時に警告が出なくなる。
+	// ただ、テスト側が見るフレームに細工入れているのでそっち直さないと警告が出る。
+	//m_rhiObject->acquireNextImage(&m_imageIndex);
 	return m_graphicsContext;
 }
 

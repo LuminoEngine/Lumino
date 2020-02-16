@@ -10,10 +10,41 @@
 
 - name: チュートリアル
   items:
-  - name: Lumino の基本
-    href: first-tutorial/basic.md
-  - name: 座標の基本
-    href: first-tutorial/2-coordinate.md
+  - name: 1. Lumino の基本
+    href: first-tutorial/1-basic.md
+  - name: 2. グラフィックスの基本
+    href: first-tutorial/2-graphics-basic.md
+  - name: 3. オブジェクトを動かす
+    href: first-tutorial/3-object.md
+  - name: 4. 図形を描画する
+    href: first-tutorial/4-shapes.md
+  - name: 5. ライトを設定する
+    href: first-tutorial/5-light.md
+  - name: 6. 画像を描画する
+    href: first-tutorial/6-image.md
+  - name: 7. マテリアルを設定する (TBD)
+    href: first-tutorial/7-material.md
+  - name: 8. GUI を作る
+    href: first-tutorial/8-gui.md
+  - name: 9. 文字列とフォントを扱う (TBD)
+    href: first-tutorial/9-font.md
+  - name: 10. 入力を受け取る
+    href: first-tutorial/10-input.md
+  - name: 11. 音声を再生する (TBD)
+    href: first-tutorial/11-audio.md
+  - name: 12. エフェクトを表示する (TBD)
+    href: first-tutorial/12-audio.md
+  - name: 13. 物理演算を設定する (TBD)
+    href: first-tutorial/13-physics.md
+  - name: 14. アセットを管理する (TBD)
+    href: first-tutorial/14-assets.md
+  - name: 15. アプリをリリースする (TBD)
+    href: first-tutorial/15-publish.md
+
+- name: TIPS
+  items:
+  - name: グラフィックスの基本仕様
+    href: tips/graphics-spec.md
 
 
 - name: プラットフォーム固有の情報

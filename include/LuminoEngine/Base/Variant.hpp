@@ -44,14 +44,6 @@ enum class VariantType
 	Int32 = Int,
 };
 
-template<typename... TArgs>
-Ref<Variant> makeVariant(TArgs&&... args)
-{
-	auto ptr = Ref<Variant>(new Variant(std::forward<TArgs>(args)...), false);
-	ptr->init();
-	return ptr;
-}
-
 void serialize(Archive& ar, Variant& value);
 
 class Variant : public Object
@@ -122,6 +114,14 @@ public:
         if (LN_REQUIRE(type() == VariantType::RefObject)) return nullptr;
         return static_pointer_cast<TValue>(v_RefObject);
     }
+
+	/** Object として取得。Object ではない場合は nullptr */
+	template<typename TValue>
+	Ref<TValue> getAsObject() const
+	{
+		if (type() != VariantType::RefObject) return nullptr;
+		return static_pointer_cast<TValue>(v_RefObject);
+	}
 
 	/** utility *get<Ref<List<Variantl>>>() */
 	List<Ref<Variant>>& list();
@@ -687,6 +687,16 @@ TValue Variant::get() const
 //		}
 //	}
 //}
+
+
+
+template<typename... TArgs>
+Ref<Variant> makeVariant(TArgs&&... args)
+{
+	auto ptr = Ref<Variant>(new Variant(std::forward<TArgs>(args)...), false);
+	ptr->init();
+	return ptr;
+}
 
 
 template<>

@@ -44,18 +44,18 @@ private:
 };
 
 // TODO: Effect でも使う。Material はこっちに持たせた方がいいかも
-class SpriteFrameSet
+class SpriteSheet
 	: public Object
 {
-	// テクスチャの優先順位は SpriteComponent > SpriteFrameSet > SpriteFrame
-	// 例えば SpriteFrameSet はメモリ削減のため共有しつつ、テクスチャだけ変えたい場合、
-	// 複数の SpriteComponent には同じ SpriteFrameSet をセットし、SpriteComponent::setTexture で異なるテクスチャをセットする。
+	// テクスチャの優先順位は SpriteComponent > SpriteSheet > SpriteFrame
+	// 例えば SpriteSheet はメモリ削減のため共有しつつ、テクスチャだけ変えたい場合、
+	// 複数の SpriteComponent には同じ SpriteSheet をセットし、SpriteComponent::setTexture で異なるテクスチャをセットする。
 	LN_OBJECT;
 public:
 	// frames, animation
 
 
-	static Ref<SpriteFrameSet> create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint = Vector2::NaN);
+	static Ref<SpriteSheet> create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint = Vector2::NaN);
 
     Texture* texture() const;
 
@@ -68,8 +68,8 @@ protected:
     virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
-	SpriteFrameSet();
-	virtual ~SpriteFrameSet() = default;
+	SpriteSheet();
+	virtual ~SpriteSheet() = default;
 	void init();
 	void init(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint = Vector2::NaN);
 
@@ -114,10 +114,10 @@ public:
 
     const Rect& sourceRect() const { return m_sourceRect; }
 
-	/** SpriteFrameSet を設定します。 */
-	void setFrameSet(SpriteFrameSet* value);
+	/** SpriteSheet を設定します。 */
+	void setFrameSet(SpriteSheet* value);
 
-	/** SpriteFrameSet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
+	/** SpriteSheet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
 	void setFrameIndex(int index);
 	int frameIndex() const { return m_frameIndex; }
 
@@ -157,7 +157,7 @@ private:
     Size m_size;
     Rect m_sourceRect;
     Vector2 m_anchorPoint;
-	Ref<SpriteFrameSet> m_frameSet;
+	Ref<SpriteSheet> m_frameSet;
 	int m_frameIndex;
     Flags<detail::SpriteFlipFlags> m_flipFlags;
     float m_pixelsParUnit;

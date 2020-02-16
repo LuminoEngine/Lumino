@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <functional>
 #include "Common.hpp"
-#include <LuminoCore/Base/Event.hpp>
 #include "../Platform/PlatformEvent.hpp"
 
 namespace ln {
@@ -440,26 +439,34 @@ private:
 	@param[in]	e		: イベントのデータ
 */
 LN_DELEGATE()
-using UIEventHandler = std::function<void(UIEventArgs* e)>;
+using UIGeneralEventHandler = Delegate<void(UIEventArgs* e)>;
+
+/**
+ * Test delegate 1.
+ *
+ * @param[in] a : param 1.
+ */
+LN_DELEGATE()
+using UIEventHandler = Delegate<void(void)>;
 
 /**
 	@brief		マウス操作が関係する UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
 */
-using UIMouseEventHandler = std::function<void(UIMouseEventArgs* e)>;
+using UIMouseEventHandler = Delegate<void(UIMouseEventArgs* e)>;
 
 /**
 	@brief		ドラッグアンドドロップ操作が関係する UIイベントを処理するハンドラです。
 	@param[in]	e		: イベントのデータ
 */
-using UIDragDropEventHandler = std::function<void(UIDragDropEventArgs* e)>;
+using UIDragDropEventHandler = Delegate<void(UIDragDropEventArgs* e)>;
 
-using UIClickEventHandler = std::function<void(UIClickEventArgs* e)>;
-using UISelectionChangedEventHandler = std::function<void(UISelectionChangedEventArgs* e)>;
+using UIClickEventHandler = Delegate<void(UIClickEventArgs* e)>;
+using UISelectionChangedEventHandler = Delegate<void(UISelectionChangedEventArgs* e)>;
 
-using UICommandEventHandler = std::function<void(UICommandEventArgs* e)>;
+using UICommandEventHandler = Delegate<void(UICommandEventArgs* e)>;
 
-using UITimerEventHandler = std::function<void(UITimerEventArgs* e)>;
+using UITimerEventHandler = Delegate<void(UITimerEventArgs* e)>;
 
 } // namespace ln
 

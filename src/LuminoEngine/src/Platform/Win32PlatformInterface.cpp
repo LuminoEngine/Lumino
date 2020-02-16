@@ -1,6 +1,4 @@
 ﻿
-// TODO: LuminoPlatformInterface.lib とかに分けたい。
-// 今は Engine.lib に含めているので、dll を作ろうとしたときに LuminoCreateApplicationInstance が未定義エラーになってしまう。
 #include "Internal.hpp"
 #include <Windows.h>
 #include <LuminoEngine/Engine/Application.hpp>
@@ -43,6 +41,11 @@ int Win32PlatformInterface::WinMain(Application* app)
 	g_app = nullptr;
 
 	return 0;
+}
+
+ln::Path Win32PlatformInterface::findParentDirectoryContainingSpecifiedFile(StringRef file)
+{
+	return detail::EngineManager::findParentDirectoryContainingSpecifiedFile(file);
 }
 
 } // namespace ln

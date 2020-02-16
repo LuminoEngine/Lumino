@@ -15,6 +15,29 @@ public:
 	static void print(float time, StringRef str);
 	static void print(float time, const Color& color, StringRef str);
 
+
+	template<typename... TArgs>
+	static void printf(StringRef format, TArgs&&... args)
+	{
+		print(String::format(format, std::forward<TArgs>(args)...));
+	}
+
+	template<typename... TArgs>
+	static void printf(float time, StringRef format, TArgs&&... args)
+	{
+		print(time, String::format(format, std::forward<TArgs>(args)...));
+	}
+
+	template<typename... TArgs>
+	static void printf(float time, const Color& color, StringRef format, TArgs&&... args)
+	{
+		print(time, color, String::format(format, std::forward<TArgs>(args)...));
+	}
+
+
+//private:
+//	static void printInternal(float time, const Color& color, StringRef str);
+
 };
 
 namespace detail {

@@ -16,7 +16,12 @@ public:
     static Ref<UITextBlock> create();
     static Ref<UITextBlock> create(const StringRef& text);
 
-    void setText(const StringRef& value) { m_text = value; }
+	void setText(const StringRef& value);
+	const String& text() const { return m_text; }
+
+
+	ViewProperty* getViewProperty(StringRef name);
+	std::vector<Ref<ViewProperty>> m_viewProperties;
 
 LN_CONSTRUCT_ACCESS:
     UITextBlock();

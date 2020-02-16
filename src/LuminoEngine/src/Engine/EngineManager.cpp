@@ -17,8 +17,9 @@
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
-#include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
+#include <LuminoEngine/Scene/Camera.hpp>
+#include <LuminoEngine/Scene/CameraOrbitControlComponent.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 
 #include "../Runtime/RuntimeManager.hpp"
@@ -137,7 +138,6 @@ void EngineManager::init(const EngineSettings& settings)
     }
 	
 
-
 	{
 		m_activeDiagnostics = makeObject<DiagnosticsManager>();
 		ProfilingItem::Graphics_RenderPassCount = makeObject<ProfilingItem>(ProfilingItemType::Counter, u"RenderPass count");
@@ -150,6 +150,7 @@ void EngineManager::init(const EngineSettings& settings)
 		EngineDomain::registerType<Serializer>();
 		EngineDomain::registerType<ZVTestClass1>();
     }
+
 
 	initializeAllManagers();
 
@@ -212,8 +213,8 @@ void EngineManager::init(const EngineSettings& settings)
 			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
 
             m_mainUIRoot = makeObject<UIControl>();
-            m_mainUIRoot->setHorizontalAlignment(HAlignment::Stretch);
-            m_mainUIRoot->setVerticalAlignment(VAlignment::Stretch);
+            m_mainUIRoot->setHAlignment(HAlignment::Stretch);
+            m_mainUIRoot->setVAlignment(VAlignment::Stretch);
 			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
             m_mainUIRenderView->setRootElement(m_mainUIRoot);
             m_uiManager->setPrimaryElement(m_mainUIRoot);
@@ -226,6 +227,19 @@ void EngineManager::init(const EngineSettings& settings)
 
 			m_debugInterface = makeObject<DebugInterface>();
 			m_mainWindow->m_debugInterface = m_debugInterface;
+
+
+			//m_debugCamera = makeObject<Camera>();
+			////m_mainWorld->add(m_mainCamera);
+			////Ref<Camera> m_debugCamera;
+			//m_debugWorldRenderView = makeObject<WorldRenderView>();
+			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
+			//m_debugWorldRenderView->setCamera(m_debugCamera);
+			//m_debugWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
+			//m_mainViewport->addRenderView(m_debugWorldRenderView);
+			//m_debugCamera->setPosition(10, 10, -10);
+			//m_debugCamera->lookAt(Vector3(0, 0, 0));
         }
     }
 
@@ -241,6 +255,12 @@ void EngineManager::init(const EngineSettings& settings)
 void EngineManager::dispose()
 {
 	LN_LOG_DEBUG << "EngineManager finalization started.";
+
+	if (m_debugWorldRenderView) {
+		m_mainViewport->removeRenderView(m_debugWorldRenderView);
+		m_debugWorldRenderView = nullptr;
+	}
+	m_debugCamera = nullptr;
 
     if (m_uiManager) {
         m_uiManager->setPrimaryElement(nullptr);
@@ -360,6 +380,8 @@ void EngineManager::initializeAllManagers()
 
 void EngineManager::initializeCommon()
 {
+	LN_LOG_DEBUG << "EngineManager common initialization started.";
+
 #if defined(LN_OS_DESKTOP)
 	{
 		if (m_settings.engineLogEnabled) {
@@ -389,8 +411,15 @@ void EngineManager::initializeCommon()
     }
 #endif
 
+#ifdef __EMSCRIPTEN_PTHREADS__
+#else
+	LN_LOG_ERROR << "__EMSCRIPTEN_PTHREADS__ disabled.";
+#endif
+
 	TaskScheduler::init();
 	m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
+
+	LN_LOG_DEBUG << "EngineManager common initialization ended.";
 }
 
 void EngineManager::initializeAssetManager()
@@ -760,11 +789,21 @@ void EngineManager::quit()
 
 ln::Path EngineManager::findRepositoryRootForTesting()
 {
-	ln::Path path = ln::Environment::executablePath();
+	return findParentDirectoryContainingSpecifiedFile(u"build.csproj");
+}
+
+ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringRef file)
+{
+	ln::Path path = ln::Path(ln::Environment::executablePath()).parent();
 	ln::Path luminoRepoRoot;
 	while (!path.isRoot())
 	{
-		if (ln::FileSystem::existsFile(ln::Path(path, u"build.csproj"))) {
+		auto files = ln::FileSystem::getFiles(path, file);
+		if (!files.isEmpty()) {
+			luminoRepoRoot = path;
+			break;
+		}
+		if (ln::FileSystem::existsFile(ln::Path(path, file))) {
 			luminoRepoRoot = path;
 			break;
 		}
@@ -830,9 +869,9 @@ void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 	if (ImGui::CollapsingHeader("RenderView debug"))
 	{
 		{
-			bool check = m_mainWorldRenderView->debugGridEnabled();
+			bool check = m_mainWorldRenderView->guideGridEnabled();
 			ImGui::Checkbox("Grid", &check);
-			m_mainWorldRenderView->setDebugGridEnabled(check);
+			m_mainWorldRenderView->setGuideGridEnabled(check);
 		}
 		{
 			bool check = m_mainWorldRenderView->physicsDebugDrawEnabled();

@@ -2,9 +2,11 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Audio/AudioContext.hpp>
 #include <LuminoEngine/Audio/AudioNode.hpp>
+#include <LuminoEngine/Audio/AudioSourceNode.hpp>
 #include <LuminoEngine/Audio/AudioGainNode.hpp>
+#include <LuminoEngine/Audio/AudioDestinationNode.hpp>
 #include <LuminoEngine/Audio/Sound.hpp>
-#include "AudioDecoder.hpp"
+#include "Decoder/AudioDecoder.hpp"
 #include "AudioManager.hpp"
 
 namespace ln {
@@ -13,7 +15,8 @@ namespace ln {
 // Sound
 
 Sound::Sound()
-    : m_gameAudioFlags(0)
+    : m_manager(nullptr)
+	, m_gameAudioFlags(0)
     , m_fadeValue()
     , m_fadeBehavior(SoundFadeBehavior::Continue)
     , m_fading(false)
@@ -28,7 +31,8 @@ void Sound::init(const StringRef& filePath)
 {
     Object::init();
 
-    detail::AudioManager* manager = detail::EngineDomain::audioManager();
+	m_manager = detail::EngineDomain::audioManager();
+	m_manager->addSoundManagement(this);
 
     Ref<detail::AudioDecoder> decoder = detail::EngineDomain::audioManager()->createAudioDecoder(filePath);
     m_sourceNode = makeObject<AudioSourceNode>(decoder);
@@ -37,7 +41,7 @@ void Sound::init(const StringRef& filePath)
 
     //AudioNode::connect(m_sourceNode, manager->primaryContext()->destination());
     AudioNode::connect(m_sourceNode, m_gainNode);
-    AudioNode::connect(m_gainNode, manager->primaryContext()->destination());
+    AudioNode::connect(m_gainNode, m_manager->primaryContext()->destination());
 
     //auto panner = makeObject<AudioPannerNode>();
     //AudioNode::connect(source, panner);
@@ -49,13 +53,17 @@ void Sound::init(const StringRef& filePath)
 void Sound::onDispose(bool explicitDisposing)
 {
     if (m_gainNode) {
-        m_gainNode->dispose();
-        m_sourceNode = nullptr;
+        m_gainNode->disconnect();
+		m_gainNode = nullptr;
     }
     if (m_sourceNode) {
-        m_sourceNode->dispose();
+        m_sourceNode->disconnect();
         m_sourceNode = nullptr;
     }
+	if (m_manager) {
+		m_manager->removeSoundManagement(this);
+		m_manager = nullptr;
+	}
     Object::onDispose(explicitDisposing);
 }
 
@@ -67,8 +75,7 @@ void Sound::setVolume(float volume)
 
 float Sound::getVolume() const
 {
-    LN_NOTIMPLEMENTED();
-    return 0;
+    return m_gainNode->gain();
 }
 
 void Sound::setPitch(float pitch)

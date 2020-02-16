@@ -5,6 +5,7 @@
 
 namespace ln {
 class Shader;
+class Material;
 class World;
 
 namespace detail {
@@ -33,11 +34,16 @@ public:
     void setActiveWorld(World* world) { m_activeWorld = world; }
     World* activeWorld() const { return m_activeWorld; }
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
+	const Ref<Raycaster>& raycasterCache() const { return m_raycasterCache; }
+
+	const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
     // テスト用の設定。
     // 0.9.0 以降、WorldObject は World へ自動追加しないようにしたい。
     // ただ、UnitTest が自動追加ありきで組まれているので、そちらの修正が終わるまでこの設定でカバーする。
-    bool autoAddingToActiveWorld = false;
+	// Note: [2020/2/1] 小規模なプログラム作るのにはやっぱり億劫。Lumino で大規模開発するかっていうとまだまだ微妙なところがあるので、
+	// のちのメジャーバージョンアップ時でいいだろう。まずは使い勝手重視で。
+    bool autoAddingToActiveWorld = true;
 
 private:
 	void executeCommands();
@@ -66,6 +72,9 @@ private:
 
     World* m_activeWorld;
     Ref<Shader> m_atmosphereShader;
+	Ref<Raycaster> m_raycasterCache;
+
+	Ref<Material> m_primitiveMeshDefaultMaterial;
 };
 
 } // namespace detail

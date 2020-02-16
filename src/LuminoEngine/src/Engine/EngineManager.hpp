@@ -150,6 +150,7 @@ public:
 	const Ref<DiagnosticsManager>& activeDiagnostics() const { return m_activeDiagnostics; }
 
 	static ln::Path findRepositoryRootForTesting();
+	static ln::Path findParentDirectoryContainingSpecifiedFile(StringRef file);
     const Path& persistentDataPath() const;
     void setTimeScale(float value) { m_timeScale = value; }
     //void setShowDebugFpsEnabled(bool value) { m_showDebugFpsEnabled = value; }
@@ -224,6 +225,8 @@ private:
     Ref<PhysicsWorld> m_mainPhysicsWorld;
     Ref<PhysicsWorld2D> m_mainPhysicsWorld2D;
 	Ref<DebugInterface> m_debugInterface;
+	Ref<Camera> m_debugCamera;
+	Ref<WorldRenderView> m_debugWorldRenderView;
 
     float m_timeScale;
 	bool m_exitRequested;

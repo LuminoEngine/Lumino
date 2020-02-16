@@ -7,6 +7,7 @@
 
 namespace ln {
 class Object;
+class TypeInfo;
 class RefObjectHelper;
 template<class T> class Ref;
 namespace detail { class RefObjectInternal; }
@@ -74,6 +75,7 @@ private:
 	uint32_t getObjectFlag(uint32_t flag) const;
 	virtual void onRetained();
 	virtual void onReleased();
+	static ::ln::TypeInfo* _lnref_getTypeInfo() { return nullptr; }
 
     mutable std::atomic<int32_t> m_referenceCount;
 	mutable std::atomic<int32_t> m_internalReferenceCount;
@@ -186,6 +188,11 @@ public:
     operator T*() const { return static_cast<T*>(m_ptr); } // ここでコンパイルエラーとなる場合、T の定義があるヘッダファイルを include しているか確認すること。
 
 	RefObject* basePointer() const { return m_ptr; }
+
+	static TypeInfo* _lnref_getTypeInfo()
+	{
+		return T::_lnref_getTypeInfo();
+	}
 
 protected:
     void safeAddRef()

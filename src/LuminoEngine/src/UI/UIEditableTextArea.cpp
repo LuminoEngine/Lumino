@@ -66,14 +66,15 @@ UILogicalRun::UILogicalRun(UILogicalLine* owner, const UITextRange& range)
 Vector2 UILogicalRun::measure(Font* defaultFont) const
 {
     // TODO: シングルラインであることを前提に計測を高速化する
-    Font* font = (m_font) ? m_font : defaultFont;
+	Font* font = m_font;//(//m_font) ? m_font : defaultFont;
+	if (!font) font = defaultFont;
     return font->measureRenderSize(m_ownerLine->m_text.substr(m_range.beginIndex, m_range.length()), 1.0f);  // TODO: dpi
 }
 
 Vector2 UILogicalRun::measure(const UITextRange& range) const
 {
     // TODO: シングルラインであることを前提に計測を高速化する
-    Font* font = (m_font) ? m_font : m_ownerLine->m_ownerLayout->m_baseFont;
+    auto font = (m_font) ? m_font : m_ownerLine->m_ownerLayout->m_baseFont;
     return font->measureRenderSize(substr(range), 1.0f);  // TODO: dpi
 }
 
@@ -134,7 +135,7 @@ UIScreenRange UIPhysicalBlock::getLocalScreenRange(const UITextRange& range) con
 UIScreenRange UIPhysicalLine::getLocalScreenRange(const UITextRange& range) const
 {
 	UIScreenRange screenRange;
-	screenRange.offset = FLT_MAX;
+	screenRange.offset = std::numeric_limits<float>::max();
 	screenRange.length = 0;
 
 	if (logicalRange.endIndex == range.beginIndex) {
@@ -155,7 +156,7 @@ UIScreenRange UIPhysicalLine::getLocalScreenRange(const UITextRange& range) cons
 		}
 	}
 
-	if (screenRange.offset == FLT_MAX)
+	if (screenRange.offset == std::numeric_limits<float>::max())
 		screenRange.offset = 0;
 	return screenRange;
 }

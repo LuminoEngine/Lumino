@@ -9,6 +9,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutElement.hpp>
+#include <LuminoEngine/UI/UIElement.hpp>
 
 namespace ln {
 
@@ -251,12 +252,12 @@ const Thickness& UILayoutElement::getLayoutPadding() const
 
 HAlignment UILayoutElement::getLayoutHAlignment() const
 {
-	return m_finalStyle->horizontalAlignment;
+	return m_finalStyle->hAlignment;
 }
 
 VAlignment UILayoutElement::getLayoutVAlignment() const
 {
-	return m_finalStyle->verticalAlignment;
+	return m_finalStyle->vAlignment;
 }
 
 void UILayoutElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const
@@ -265,6 +266,24 @@ void UILayoutElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const
 	outMin->height = m_finalStyle->minHeight;
 	outMax->width = m_finalStyle->maxWidth;
 	outMax->height = m_finalStyle->maxHeight;
+}
+
+//==============================================================================
+// UILayoutContext
+
+UILayoutContext::UILayoutContext()
+	: m_dpiScale(1.0f)
+{
+}
+
+void UILayoutContext::init()
+{
+	Object::init();
+}
+
+bool UILayoutContext::testLayoutEnabled(UIElement* element) const
+{
+	return !element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
 }
 
 //==============================================================================

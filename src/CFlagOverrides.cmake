@@ -17,3 +17,7 @@ if (MSVC AND LN_MSVC_STATIC_RUNTIME)
         endif()
     endforeach()
 endif()
+
+if (DEFINED EMSCRIPTEN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif()

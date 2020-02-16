@@ -25,7 +25,6 @@ set(LN_SOURCES_Platform
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformEvent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformSupport.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/PlatformWindow.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
     src/Platform/Internal.hpp
     src/Platform/AndroidPlatformInterface.cpp
     src/Platform/EmptyPlatformWindowManager.cpp
@@ -44,7 +43,6 @@ set(LN_SOURCES_Platform
     src/Platform/TextInputMethodSystem.cpp
     src/Platform/TextInputMethodSystem.hpp
     src/Platform/Win32PlatformDialogs.hpp
-    src/Platform/Win32PlatformInterface.cpp
     src/Platform/Win32PlatformWindowManager.cpp
     src/Platform/Win32PlatformWindowManager.hpp
 )
@@ -107,52 +105,9 @@ set(LN_SOURCES_Input
     src/Input/Win32JoystickDriver.hpp
 )
 
-set(LN_SOURCES_Audio
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioBus.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioGainNode.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioListener.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioNode.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/AudioProcessorNode.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/GameAudio.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/InternalSharedMutex.inc
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/Sound.hpp
-    src/Audio/Internal.hpp
-    src/Audio/AudioBus.cpp
-    src/Audio/AudioContext.cpp
-    src/Audio/AudioDevice.cpp
-    src/Audio/AudioDevice.hpp
-    src/Audio/AudioGainNode.cpp
-    src/Audio/AudioListener.cpp
-    src/Audio/AudioManager.cpp
-    src/Audio/AudioManager.hpp
-    src/Audio/AudioNode.cpp
-    src/Audio/AudioProcessorNode.cpp
-    src/Audio/CAGainNode.cpp
-    src/Audio/CAGainNode.hpp
-    src/Audio/CAProcessorNode.cpp
-    src/Audio/CAProcessorNode.hpp
-    src/Audio/ChromiumWebCore.cpp
-    src/Audio/ChromiumWebCore.hpp
-    src/Audio/CoreAudioNode.cpp
-    src/Audio/CoreAudioNode.hpp
-    src/Audio/GameAudio.cpp
-    src/Audio/GameAudioImpl.cpp
-    src/Audio/GameAudioImpl.hpp
-    src/Audio/Sound.cpp
-    src/Audio/blink/VectorMath.cpp
-    src/Audio/blink/VectorMath.h
-)
-
-set(LN_SOURCES_Audio_Decoder
-    src/Audio/AudioDecoder.cpp
-    src/Audio/AudioDecoder.hpp
-    src/Audio/Mp3AudioDecoder.cpp
-    src/Audio/Mp3AudioDecoder.hpp
-    src/Audio/OggAudioDecoder.cpp
-    src/Audio/OggAudioDecoder.hpp
-)
+file(GLOB LN_SOURCES_Audio ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Audio/*.hpp src/Audio/*.cpp src/Audio/*.hpp)
+file(GLOB LN_SOURCES_Audio_Decoder src/Audio/Decoder/*.cpp src/Audio/Decoder/*.hpp)
+file(GLOB LN_SOURCES_Audio_Core src/Audio/Core/*.cpp src/Audio/Core/*.hpp src/Audio/Core/*.h)
 
 set(LN_SOURCES_Audio_Device
     src/Audio/ALAudioDevice.cpp
@@ -218,7 +173,6 @@ set(LN_SOURCES_Visual
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/Common.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/CameraComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/LightComponent.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/MeshPrimitiveComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/ParticleEmitterComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SkinnedMeshComponent.hpp
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Visual/SpriteComponent.hpp
@@ -227,7 +181,6 @@ set(LN_SOURCES_Visual
     src/Visual/Internal.hpp
     src/Visual/CameraComponent.cpp
     src/Visual/LightComponent.cpp
-    src/Visual/MeshPrimitiveComponent.cpp
     src/Visual/ParticleEmitterComponent.cpp
     src/Visual/SkinnedMeshComponent.cpp
     src/Visual/SpriteComponent.cpp
@@ -239,23 +192,24 @@ set(LN_SOURCES_Visual
 
 file(GLOB LN_SOURCES_Scene ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/*.hpp src/Scene/*.cpp src/Scene/*.hpp)
 file(GLOB LN_SOURCES_Scene_Text ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Text/*.hpp src/Scene/Text/*.cpp src/Scene/Text/*.hpp)
+file(GLOB LN_SOURCES_Scene_Shapes ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Shapes/*.hpp src/Scene/Shapes/*.cpp src/Scene/Shapes/*.hpp)
 
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
 
 set(LN_SOURCES_UI
     ${LN_SOURCES_UI}
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imconfig.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.cpp
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_draw.cpp
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_internal.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_widgets.cpp
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_rectpack.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_textedit.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_truetype.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imconfig.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.cpp
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_draw.cpp
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_internal.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_widgets.cpp
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_rectpack.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_textedit.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_truetype.h
 )
-set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui)
+set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/BuildCache/imgui)
 file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
 file(GLOB LN_SOURCES_Runtime
@@ -268,20 +222,18 @@ file(GLOB LN_SOURCES_Runtime
 
 if (LN_USE_VULKAN)
     if (WIN32)
-        set(LN_SOURCES_Graphics
-            ${LN_SOURCES_Graphics}
-            src/Graphics/VulkanDeviceContext.cpp
-            src/Graphics/VulkanDeviceContext.hpp
-            src/Graphics/VulkanHelper.cpp
-            src/Graphics/VulkanHelper.hpp
-        )
+        file(GLOB LN_SOURCES_Graphics_Vulkan src/Graphics/Vulkan/*.cpp src/Graphics/Vulkan/*.hpp)
         list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_VULKAN=1)
     endif()
 endif()
 
 
 if (WIN32)
-
+    set(LN_SOURCES_Platform
+        ${LN_SOURCES_Platform}
+        ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Platform/Win32PlatformInterface.hpp
+        src/Platform/Win32PlatformInterface.cpp
+    )
 elseif (APPLE)
     set(LN_SOURCES_Platform
         ${LN_SOURCES_Platform}
@@ -301,8 +253,10 @@ source_group("Animation" FILES ${LN_SOURCES_Animation})
 source_group("Audio"     FILES ${LN_SOURCES_Audio})
 source_group("Audio\\Decoder" FILES ${LN_SOURCES_Audio_Decoder})
 source_group("Audio\\Device" FILES ${LN_SOURCES_Audio_Device})
+source_group("Audio\\Core" FILES ${LN_SOURCES_Audio_Core})
 source_group("Shader"    FILES ${LN_SOURCES_Shader})
 source_group("Graphics"  FILES ${LN_SOURCES_Graphics})
+source_group("Graphics\\Vulkan"  FILES ${LN_SOURCES_Graphics_Vulkan})
 source_group("Font"      FILES ${LN_SOURCES_Font})
 source_group("Mesh"      FILES ${LN_SOURCES_Mesh})
 source_group("Rendering" FILES ${LN_SOURCES_Rendering})
@@ -313,6 +267,7 @@ source_group("Asset"     FILES ${LN_SOURCES_Asset})
 source_group("Visual"    FILES ${LN_SOURCES_Visual})
 source_group("Scene"     FILES ${LN_SOURCES_Scene})
 source_group("Scene\\Text"    FILES ${LN_SOURCES_Scene_Text})
+source_group("Scene\\Shapes"    FILES ${LN_SOURCES_Scene_Shapes})
 source_group("UI"        FILES ${LN_SOURCES_UI})
 source_group("Tilemap"   FILES ${LN_SOURCES_Tilemap})
 source_group("Runtime"   FILES ${LN_SOURCES_Runtime})
@@ -331,8 +286,10 @@ set(LN_SOURCES
     ${LN_SOURCES_Audio}
     ${LN_SOURCES_Audio_Decoder}
     ${LN_SOURCES_Audio_Device}
+    ${LN_SOURCES_Audio_Core}
     ${LN_SOURCES_Shader}
     ${LN_SOURCES_Graphics}
+    ${LN_SOURCES_Graphics_Vulkan}
     ${LN_SOURCES_Font}
     ${LN_SOURCES_Mesh}
     ${LN_SOURCES_Rendering}
@@ -343,6 +300,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Visual}
     ${LN_SOURCES_Scene}
     ${LN_SOURCES_Scene_Text}
+    ${LN_SOURCES_Scene_Shapes}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
     ${LN_SOURCES_Runtime}
@@ -448,6 +406,9 @@ target_link_libraries(LuminoEngine-static PRIVATE ${_LN_ENGINE_LINK_LIBS})
 set_target_properties(LuminoEngine-static PROPERTIES FOLDER "Lumino")
 ln_add_pch(LuminoEngine-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
+if (LN_EMSCRIPTEN)
+    set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
+endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)
     # Build as framework.
@@ -466,37 +427,40 @@ if (LN_BUILD_XCODE_FRAMEWORK)
     install(FILES ${PROJECT_SOURCE_DIR}/include/LuminoEngine.hpp DESTINATION "LuminoEngine.framework/Headers")
 endif()
 
+if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+endif()
+
 # Unit test.
 if (LN_BUILD_TESTS)
     add_subdirectory(test)
     add_subdirectory(sandbox)
 endif()
 
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO" )
-
 # Shared library
-#add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
-add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib})
-target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
-#target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
-target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1)
-target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
-#target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
-set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
-#ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
+if (LN_BUILD_SHARED_LIBRARY)
+    #add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib} ${LN_SOURCES})
+    add_library(LuminoEngine SHARED ${LN_SOURCES_SharedLib})
+    target_include_directories(LuminoEngine PRIVATE ${LN_ENGINE_INCLUDE_DIR} "${LUMINO_INCLUDE_DIRECTORIES}" "src" ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${glslang_INCLUDE_DIRS} ${spirv-cross_INCLUDE_DIRS} ${LN_IMGUI_INCLUDE_DIRECTORY})
+    #target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1 ${LN_PLATFORM_DEFINITIONS})
+    target_compile_definitions(LuminoEngine PRIVATE LUMINO_BUILD_DLL=1)
+    target_link_libraries(LuminoEngine PRIVATE LuminoEngine-static)
+    #target_link_libraries(LuminoEngine PRIVATE ${_LN_ENGINE_LINK_LIBS} LuminoCore ${OPENGL_LIBRARY} ${glslang_LIBRARIES} ${spirv-cross_LIBRARIES})
+    set_target_properties(LuminoEngine PROPERTIES FOLDER "Lumino")
+    #ln_add_pch(LuminoEngine "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cpp")
 
-# Export symbols defined in another static library.
-if (MSVC)
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngine-staticd")
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine-static")
-else()
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "--no-whole-archive")
-    set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "--no-whole-archive")
-endif()
-
-if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
-    target_compile_definitions(LuminoEngine-static PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
-    target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    # Export symbols defined in another static library.
+    if (MSVC)
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "/WHOLEARCHIVE:LuminoEngine-staticd")
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "/WHOLEARCHIVE:LuminoEngine-static")
+    else()
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_DEBUG "--no-whole-archive")
+        set_target_properties(LuminoEngine PROPERTIES LINK_FLAGS_RELEASE "--no-whole-archive")
+    endif()
+    
+    if (LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER)
+        target_compile_definitions(LuminoEngine PRIVATE LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=1)
+    endif()
 endif()
 
 
@@ -530,8 +494,11 @@ install(
 #------------------------------------------------------------------------------
 # Install
 
-install(TARGETS LuminoEngine
-    EXPORT ${PROJECT_NAME}Targets
-    RUNTIME     DESTINATION bin
-    ARCHIVE     DESTINATION lib
-    LIBRARY     DESTINATION lib)
+# Shared library
+if (LN_BUILD_SHARED_LIBRARY)
+    install(TARGETS LuminoEngine
+        EXPORT ${PROJECT_NAME}Targets
+        RUNTIME     DESTINATION bin
+        ARCHIVE     DESTINATION lib
+        LIBRARY     DESTINATION lib)
+endif()

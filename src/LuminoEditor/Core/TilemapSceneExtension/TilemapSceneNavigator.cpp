@@ -27,7 +27,7 @@ void TilemapSceneListPane::init()
     {
         auto caption = ln::UITextBlock::create(u"Scene");
         caption->setMargin(ln::Thickness(8, 0));    // TODO: theme からとりたい
-        caption->setVerticalAlignment(ln::VAlignment::Center);
+        caption->setVAlignment(ln::VAlignment::Center);
         layout2->addChild(caption);
 
         auto addButton = ln::UIButton::create(u"Add");
@@ -53,7 +53,7 @@ void TilemapSceneListPane::init()
     m_listview->setViewModel(m_model);
 }
 
-void TilemapSceneListPane::addButton_onClick(ln::UIEventArgs* e)
+void TilemapSceneListPane::addButton_onClick()
 {
 	auto path = ln::Path::getUniqueFilePathInDirectory(m_assetRootDir, u"Scene-", ln::AssetModel::AssetFileExtension.c_str());
 	TilemapSceneEditorModel::createNewTilemapSceneAsset(EditorApplication::instance()->editorContext(), path);
@@ -84,8 +84,8 @@ void TilemapSceneNavigator::init()
 {
     m_navigationBarItem = ln::makeObject<ln::UIIcon>();
     m_navigationBarItem->setIconName(u"globe");
-    m_navigationBarItem->setHorizontalAlignment(ln::HAlignment::Center);
-    m_navigationBarItem->setVerticalAlignment(ln::VAlignment::Center);
+    m_navigationBarItem->setHAlignment(ln::HAlignment::Center);
+    m_navigationBarItem->setVAlignment(ln::VAlignment::Center);
     m_navigationBarItem->setFontSize(24);
     
     m_sceneListPane = ln::makeObject<TilemapSceneListPane>();

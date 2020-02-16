@@ -39,7 +39,7 @@ void UICommand::addInputGesture(InputGesture* value)
     m_inputGestures.add(value);
 }
 
-EventConnection UICommand::connectOnCanExecuteChanged(UIEventHandler handler)
+Ref<EventConnection> UICommand::connectOnCanExecuteChanged(Ref<UIGeneralEventHandler> handler)
 {
     return m_onCanExecuteChanged.connect(handler);
 }
@@ -82,21 +82,21 @@ UIAction::UIAction()
 {
 }
 
-void UIAction::init(UICommand* command, UICommandEventHandler onExecute)
+void UIAction::init(UICommand* command, Ref<UICommandEventHandler> onExecute)
 {
     Object::init();
     m_command = command;
     if (onExecute) {
-        connectOnExecute(onExecute);
+		connectOnExecute(onExecute);
     }
 }
 
-EventConnection UIAction::connectOnCanExecute(UICommandEventHandler handler)
+Ref<EventConnection> UIAction::connectOnCanExecute(Ref<UICommandEventHandler> handler)
 {
     return m_onCanExecuteEvent.connect(handler);
 }
 
-EventConnection UIAction::connectOnExecute(UICommandEventHandler handler)
+Ref<EventConnection> UIAction::connectOnExecute(Ref<UICommandEventHandler> handler)
 {
     return m_onExecuteEvent.connect(handler);
 }

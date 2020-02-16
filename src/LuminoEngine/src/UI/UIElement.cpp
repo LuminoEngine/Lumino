@@ -19,24 +19,6 @@
 namespace ln {
 
 //==============================================================================
-// UILayoutContext
-
-UILayoutContext::UILayoutContext()
-    : m_dpiScale(1.0f)
-{
-}
-
-void UILayoutContext::init()
-{
-    Object::init();
-}
-
-bool UILayoutContext::testLayoutEnabled(UIElement* element) const
-{
-	return !element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
-}
-
-//==============================================================================
 // UIViewModel
 
 void UIViewModel::notify(const StringRef& propertyName)
@@ -197,24 +179,30 @@ const Thickness& UIElement::padding() const
     return m_localStyle->mainStyle()->padding;
 }
 
-void UIElement::setHorizontalAlignment(HAlignment value)
+void UIElement::setHAlignment(HAlignment value)
 {
-	m_localStyle->mainStyle()->horizontalAlignment = value;
+	m_localStyle->mainStyle()->hAlignment = value;
 }
 
-HAlignment UIElement::horizontalAlignment() const
+HAlignment UIElement::hAlignment() const
 {
-	return m_localStyle->mainStyle()->horizontalAlignment;
+	return m_localStyle->mainStyle()->hAlignment;
 }
 
-void UIElement::setVerticalAlignment(VAlignment value)
+void UIElement::setVAlignment(VAlignment value)
 {
-	m_localStyle->mainStyle()->verticalAlignment = value;
+	m_localStyle->mainStyle()->vAlignment = value;
 }
 
-VAlignment UIElement::verticalAlignment() const
+VAlignment UIElement::vAlignment() const
 {
-	return m_localStyle->mainStyle()->verticalAlignment;
+	return m_localStyle->mainStyle()->vAlignment;
+}
+
+void UIElement::setAlignments(HAlignment halign, VAlignment valign)
+{
+	setHAlignment(halign);
+	setVAlignment(valign);
 }
 
 void UIElement::setPosition(const Vector3 & pos)
@@ -763,7 +751,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
     //    //resolvedStyle = sc->style();
     //}
 
-	detail::UIStyleInstance::updateStyleDataHelper(/*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
+	detail::UIStyleInstance::updateStyleDataHelper(styleContext, /*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
 
 	m_finalStyle->theme = styleContext->mainTheme;
 

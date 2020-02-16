@@ -275,7 +275,7 @@ protected:
     //-------------------------------------------------------------------------------
     // load
 
-    virtual void setupLoad()
+    virtual void setupLoad() override
     {
         m_current = m_localDoc->rootElement();
         m_mode = ArchiveMode::Load;

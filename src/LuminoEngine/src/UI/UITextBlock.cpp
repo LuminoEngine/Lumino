@@ -1,5 +1,7 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Engine/VMProperty.hpp>
+
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -19,7 +21,26 @@ namespace ln {
 
 //==============================================================================
 // UITextBlock
-LN_OBJECT_IMPLEMENT(UITextBlock, UIElement) {}
+LN_OBJECT_IMPLEMENT(UITextBlock, UIElement) {
+	 typeInfo->registerViewProperty(makeRef<ViewPropertyInfo>(TypeInfo::getTypeInfo<String>(), "text", LN_MAKE_VIEW_PROPERTY_ACCESSOR(UITextBlock, String, text, setText)));
+}
+
+
+ViewProperty* UITextBlock::getViewProperty(StringRef name)
+{
+	ViewPropertyInfo* info = TypeInfo::getTypeInfo(this)->findViewProperty(name);
+	auto itr = std::find_if(m_viewProperties.begin(), m_viewProperties.end(), [&](auto& x) { return x->m_info == info; });
+	if (itr != m_viewProperties.end())
+		return (*itr);
+	else {
+		auto prop = makeRef<ViewProperty>();
+		prop->m_owner = this;
+		prop->m_info = info;
+		m_viewProperties.push_back(prop);
+		return prop;
+	}
+}
+
 
 Ref<UITextBlock> UITextBlock::create()
 {
@@ -40,8 +61,8 @@ void UITextBlock::init()
     UIElement::init();
 
     // WPF default
-    setHorizontalAlignment(HAlignment::Left);
-    setVerticalAlignment(VAlignment::Top);
+    setHAlignment(HAlignment::Left);
+    setVAlignment(VAlignment::Top);
 
     setBlendMode(BlendMode::Alpha);
 }
@@ -50,6 +71,11 @@ void UITextBlock::init(const StringRef& text)
 {
     init();
     setText(text);
+}
+
+void UITextBlock::setText(const StringRef& value)
+{
+	m_text = value;
 }
 
 Size UITextBlock::measureOverride(UILayoutContext* layoutContext, const Size& constraint)

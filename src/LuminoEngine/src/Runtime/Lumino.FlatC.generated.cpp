@@ -106,6 +106,56 @@ LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate3, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+class LNWS_ln_ZVTestEventHandler1 : public ln::ZVTestEventHandler1
+{
+public:
+    LnZVTestEventHandler1Callback m_callback;
+
+    LNWS_ln_ZVTestEventHandler1() : ln::ZVTestEventHandler1([this]() -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestEventHandler1Callback"); }
+    })
+    {}
+
+    void init(LnZVTestEventHandler1Callback callback)
+    {
+        ln::ZVTestEventHandler1::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnZVTestEventHandler1_Create(LnZVTestEventHandler1Callback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestEventHandler1, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+class LNWS_ln_ZVTestEventHandler2 : public ln::ZVTestEventHandler2
+{
+public:
+    LnZVTestEventHandler2Callback m_callback;
+
+    LNWS_ln_ZVTestEventHandler2() : ln::ZVTestEventHandler2([this](ln::ZVTestEventArgs1* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnZVTestEventHandler2Callback"); }
+    })
+    {}
+
+    void init(LnZVTestEventHandler2Callback callback)
+    {
+        ln::ZVTestEventHandler2::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnZVTestEventHandler2_Create(LnZVTestEventHandler2Callback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestEventHandler2, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 class LNWS_ln_TestDelegate : public ln::TestDelegate
 {
 public:
@@ -131,6 +181,56 @@ LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHa
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+class LNWS_ln_UIGeneralEventHandler : public ln::UIGeneralEventHandler
+{
+public:
+    LnUIGeneralEventHandlerCallback m_callback;
+
+    LNWS_ln_UIGeneralEventHandler() : ln::UIGeneralEventHandler([this](ln::UIEventArgs* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnUIGeneralEventHandlerCallback"); }
+    })
+    {}
+
+    void init(LnUIGeneralEventHandlerCallback callback)
+    {
+        ln::UIGeneralEventHandler::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnUIGeneralEventHandler_Create(LnUIGeneralEventHandlerCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIGeneralEventHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+class LNWS_ln_UIEventHandler : public ln::UIEventHandler
+{
+public:
+    LnUIEventHandlerCallback m_callback;
+
+    LNWS_ln_UIEventHandler() : ln::UIEventHandler([this]() -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
+        if (r != LN_SUCCESS) { LN_ERROR("LnUIEventHandlerCallback"); }
+    })
+    {}
+
+    void init(LnUIEventHandlerCallback callback)
+    {
+        ln::UIEventHandler::init();
+        m_callback = callback;
+    }
+};
+
+LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIEventHandler, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -164,6 +264,38 @@ public:
 
 };
 LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_EventConnection : public ln::EventConnection
+{
+public:
+    static LnEventConnection_OnSerialize_OverrideCallback s_LnEventConnection_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnEventConnection_OnSerialize_OverrideCallback) s_LnEventConnection_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::EventConnection::onSerialize(ar);
+    }
+
+};
+LnEventConnection_OnSerialize_OverrideCallback LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_ZVTestPromise1 : public ln::ZVTestPromise1
@@ -238,6 +370,38 @@ public:
 
 };
 LnZVTestClass1_OnSerialize_OverrideCallback LNWS_ln_ZVTestClass1::s_LnZVTestClass1_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_ZVTestEventArgs1 : public ln::ZVTestEventArgs1
+{
+public:
+    static LnZVTestEventArgs1_OnSerialize_OverrideCallback s_LnZVTestEventArgs1_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnZVTestEventArgs1_OnSerialize_OverrideCallback) s_LnZVTestEventArgs1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::ZVTestEventArgs1::onSerialize(ar);
+    }
+
+};
+LnZVTestEventArgs1_OnSerialize_OverrideCallback LNWS_ln_ZVTestEventArgs1::s_LnZVTestEventArgs1_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Serializer : public ln::Serializer
@@ -983,7 +1147,13 @@ LN_FLAT_API LnResult LnVector3_Set(LnVector3* vector3, float x, float y, float z
 LN_FLAT_API LnResult LnVector3_Length(const LnVector3* vector3, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->length());
+    if (outReturn) {
+        *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->length());
+    }
+    else {
+        (reinterpret_cast<const ln::Vector3*>(vector3)->length());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -991,7 +1161,13 @@ LN_FLAT_API LnResult LnVector3_Length(const LnVector3* vector3, float* outReturn
 LN_FLAT_API LnResult LnVector3_LengthSquared(const LnVector3* vector3, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->lengthSquared());
+    if (outReturn) {
+        *outReturn = (reinterpret_cast<const ln::Vector3*>(vector3)->lengthSquared());
+    }
+    else {
+        (reinterpret_cast<const ln::Vector3*>(vector3)->lengthSquared());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1007,7 +1183,13 @@ LN_FLAT_API LnResult LnVector3_MutatingNormalize(LnVector3* vector3)
 LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(x, y, z));
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnVector3>(ln::Vector3::normalize(x, y, z));
+    }
+    else {
+        (ln::Vector3::normalize(x, y, z));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1015,7 +1197,15 @@ LN_FLAT_API LnResult LnVector3_NormalizeXYZ(float x, float y, float z, LnVector3
 LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+    if (outReturn) {
+        //*outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+		*outReturn = ln::detail::convertStructForced<LnVector3>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+		
+    }
+    else {
+        (ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1100,6 +1290,28 @@ LN_FLAT_API void LnObject_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Object>(), id);
 }
 
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_EventConnection, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnEventConnection_OnSerialize_SetOverrideCallback(LnEventConnection_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnEventConnection_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::EventConnection>()->id();
+}
+
+LN_FLAT_API void LnEventConnection_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::EventConnection>(), id);
+}
+
 LN_FLAT_API void LnPromiseFailureDelegate_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::PromiseFailureDelegate>(), id);
@@ -1118,6 +1330,16 @@ LN_FLAT_API void LnZVTestDelegate2_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API void LnZVTestDelegate3_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestDelegate3>(), id);
+}
+
+LN_FLAT_API void LnZVTestEventHandler1_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestEventHandler1>(), id);
+}
+
+LN_FLAT_API void LnZVTestEventHandler2_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestEventHandler2>(), id);
 }
 
 LN_FLAT_API LnResult LnZVTestPromise1_ThenWith(LnHandle zvtestpromise1, LnHandle callback)
@@ -1207,7 +1429,13 @@ LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate1(LnHandle zvtestclass1, int
 LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate2(LnHandle zvtestclass1, int a, int b, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate2(a, b));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate2(a, b));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->callTestDelegate2(a, b));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1223,7 +1451,13 @@ LN_FLAT_API LnResult LnZVTestClass1_CallTestDelegate3(LnHandle zvtestclass1)
 LN_FLAT_API LnResult LnZVTestClass1_LoadAsync(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(filePath));
+    }
+    else {
+        (ln::ZVTestClass1::loadAsync(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1231,7 +1465,13 @@ LN_FLAT_API LnResult LnZVTestClass1_LoadAsync(const LnChar* filePath, LnHandle* 
 LN_FLAT_API LnResult LnZVTestClass1_LoadAsyncA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::ZVTestClass1::loadAsync(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1239,7 +1479,13 @@ LN_FLAT_API LnResult LnZVTestClass1_LoadAsyncA(const char* filePath, LnHandle* o
 LN_FLAT_API LnResult LnZVTestClass1_ExecuteAsync(LnHandle zvtestclass1, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->executeAsync());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->executeAsync());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->executeAsync());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1247,7 +1493,13 @@ LN_FLAT_API LnResult LnZVTestClass1_ExecuteAsync(LnHandle zvtestclass1, LnHandle
 LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnChar** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1255,7 +1507,57 @@ LN_FLAT_API LnResult LnZVTestClass1_GetFilePath(LnHandle zvtestclass1, const LnC
 LN_FLAT_API LnResult LnZVTestClass1_GetFilePathA(LnHandle zvtestclass1, const char** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->filePath());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent1(LnHandle zvtestclass1, LnHandle handler, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler1, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent1(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler1, handler)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent1(LnHandle zvtestclass1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->raiseEvent1());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_ConnectOnEvent2(LnHandle zvtestclass1, LnHandle handler, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent2(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler2, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->connectOnEvent2(LNI_HANDLE_TO_OBJECT(ln::ZVTestEventHandler2, handler)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestClass1_RaiseEvent2(LnHandle zvtestclass1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestClass1, zvtestclass1)->raiseEvent2());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1288,6 +1590,58 @@ extern LN_FLAT_API int LnZVTestClass1_GetTypeInfoId()
 LN_FLAT_API void LnZVTestClass1_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestClass1>(), id);
+}
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_GetValue(LnHandle zvtesteventargs1, int* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, zvtesteventargs1)->value());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_Create(LnHandle* outZVTestEventArgs1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outZVTestEventArgs1, LNWS_ln_ZVTestEventArgs1, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_CreateWithValue(int v, LnHandle* outZVTestEventArgs1)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outZVTestEventArgs1, LNWS_ln_ZVTestEventArgs1, init, v);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_ZVTestEventArgs1, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnZVTestEventArgs1_OnSerialize_SetOverrideCallback(LnZVTestEventArgs1_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_ZVTestEventArgs1::s_LnZVTestEventArgs1_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnZVTestEventArgs1_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::ZVTestEventArgs1>()->id();
+}
+
+LN_FLAT_API void LnZVTestEventArgs1_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::ZVTestEventArgs1>(), id);
 }
 
 LN_FLAT_API LnResult LnSerializer_WriteBool(LnHandle serializer, const LnChar* name, LnBool value)
@@ -1373,7 +1727,13 @@ LN_FLAT_API LnResult LnSerializer_WriteObjectA(LnHandle serializer, const char* 
 LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* name, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(name));
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1381,7 +1741,13 @@ LN_FLAT_API LnResult LnSerializer_ReadBool(LnHandle serializer, const LnChar* na
 LN_FLAT_API LnResult LnSerializer_ReadBoolA(LnHandle serializer, const char* name, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readBool(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1389,7 +1755,13 @@ LN_FLAT_API LnResult LnSerializer_ReadBoolA(LnHandle serializer, const char* nam
 LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* name, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(name));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1397,7 +1769,13 @@ LN_FLAT_API LnResult LnSerializer_ReadInt(LnHandle serializer, const LnChar* nam
 LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readInt(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1405,7 +1783,13 @@ LN_FLAT_API LnResult LnSerializer_ReadIntA(LnHandle serializer, const char* name
 LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* name, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1413,7 +1797,13 @@ LN_FLAT_API LnResult LnSerializer_ReadFloat(LnHandle serializer, const LnChar* n
 LN_FLAT_API LnResult LnSerializer_ReadFloatA(LnHandle serializer, const char* name, float* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readFloat(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1421,7 +1811,13 @@ LN_FLAT_API LnResult LnSerializer_ReadFloatA(LnHandle serializer, const char* na
 LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* name, const LnChar** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1429,7 +1825,13 @@ LN_FLAT_API LnResult LnSerializer_ReadString(LnHandle serializer, const LnChar* 
 LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* name, const char** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF8(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readString(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1437,7 +1839,13 @@ LN_FLAT_API LnResult LnSerializer_ReadStringA(LnHandle serializer, const char* n
 LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* name, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(name));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(name));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(name));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1445,7 +1853,13 @@ LN_FLAT_API LnResult LnSerializer_ReadObject(LnHandle serializer, const LnChar* 
 LN_FLAT_API LnResult LnSerializer_ReadObjectA(LnHandle serializer, const char* name, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Serializer, serializer)->readObject(LNI_UTF8STRPTR_TO_STRING(name)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1453,7 +1867,13 @@ LN_FLAT_API LnResult LnSerializer_ReadObjectA(LnHandle serializer, const char* n
 LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePath, const LnChar** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF16(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF16(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    }
+    else {
+        (ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), basePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1461,7 +1881,13 @@ LN_FLAT_API LnResult LnSerializer_Serialize(LnHandle value, const LnChar* basePa
 LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePath, const char** outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_STRING_TO_STRPTR_UTF8(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    if (outReturn) {
+        *outReturn = LNI_STRING_TO_STRPTR_UTF8(ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+    else {
+        (ln::Serializer::serialize(LNI_HANDLE_TO_OBJECT(ln::Object, value), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1469,7 +1895,13 @@ LN_FLAT_API LnResult LnSerializer_SerializeA(LnHandle value, const char* basePat
 LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* basePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(str, basePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(str, basePath));
+    }
+    else {
+        (ln::Serializer::deserialize(str, basePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1477,7 +1909,13 @@ LN_FLAT_API LnResult LnSerializer_Deserialize(const LnChar* str, const LnChar* b
 LN_FLAT_API LnResult LnSerializer_DeserializeA(const char* str, const char* basePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+    else {
+        (ln::Serializer::deserialize(LNI_UTF8STRPTR_TO_STRING(str), LNI_UTF8STRPTR_TO_STRING(basePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1507,7 +1945,13 @@ LN_FLAT_API void LnSerializer_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnAssetModel_Target(LnHandle assetmodel, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_AssetModel, assetmodel)->target());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1561,7 +2005,13 @@ LN_FLAT_API LnResult LnAssets_SaveAssetToLocalFileA(LnHandle asset, const char* 
 LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(filePath));
+    }
+    else {
+        (ln::Assets::loadAssetFromLocalFile(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1569,7 +2019,13 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFile(const LnChar* filePath, LnH
 LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::Assets::loadAssetFromLocalFile(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1577,7 +2033,13 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHa
 LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(filePath));
+    }
+    else {
+        (ln::Assets::loadAsset(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1585,7 +2047,13 @@ LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outRet
 LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::Assets::loadAsset(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1654,6 +2122,14 @@ LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath,
 }
 
 
+LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setDebugToolEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -1697,23 +2173,27 @@ LN_FLAT_API LnResult LnEngine_Finalize()
 LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
+    }
+    else {
+        (ln::Engine::update());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnEngine_MainUIView(LnHandle* outReturn)
+LN_FLAT_API LnResult LnEngine_Time(double* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::mainUIView());
-    LNI_FUNC_TRY_END_RETURN;
-}
+    if (outReturn) {
+        *outReturn = (ln::Engine::time());
+    }
+    else {
+        (ln::Engine::time());
+    }
 
-
-LN_FLAT_API LnResult LnEngine_GetWorld(LnHandle* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::world());
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1730,6 +2210,20 @@ LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1835,7 +2329,13 @@ LN_FLAT_API void LnTexture_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(filePath));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(filePath));
+    }
+    else {
+        (ln::Texture2D::load(filePath));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1843,7 +2343,13 @@ LN_FLAT_API LnResult LnTexture2D_Load(const LnChar* filePath, LnHandle* outRetur
 LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+    else {
+        (ln::Texture2D::load(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1851,16 +2357,27 @@ LN_FLAT_API LnResult LnTexture2D_LoadA(const char* filePath, LnHandle* outReturn
 LN_FLAT_API LnResult LnTexture2D_LoadEmoji(const LnChar* code, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(code));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(code));
+    }
+    else {
+        (ln::Texture2D::loadEmoji(code));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
 LN_FLAT_API LnResult LnTexture2D_LoadEmojiA(const char* code, LnHandle* outReturn)
 {
-	printf("LnTexture2D_LoadEmojiA\n");
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+    }
+    else {
+        (ln::Texture2D::loadEmoji(LNI_UTF8STRPTR_TO_STRING(code)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -1952,7 +2469,13 @@ LN_FLAT_API LnResult LnVisualComponent_SetVisible(LnHandle visualcomponent, LnBo
 LN_FLAT_API LnResult LnVisualComponent_IsVisible(LnHandle visualcomponent, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->isVisible());
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->isVisible());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualComponent, visualcomponent)->isVisible());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2042,7 +2565,13 @@ LN_FLAT_API void LnWorld_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getLength());
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getLength());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getLength());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2050,7 +2579,13 @@ LN_FLAT_API LnResult LnComponentList_GetLength(LnHandle componentlist, int* outR
 LN_FLAT_API LnResult LnComponentList_GetItem(LnHandle componentlist, int index, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_ComponentList, componentlist)->getItem(index));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2096,12 +2631,18 @@ LN_FLAT_API LnResult LnWorldObject_SetPositionXYZ(LnHandle worldobject, float x,
 LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
 
-LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQuaternion* rot)
+LN_FLAT_API LnResult LnWorldObject_SetRotationQuaternion(LnHandle worldobject, const LnQuaternion* rot)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(*reinterpret_cast<const ln::Quaternion*>(rot)));
@@ -2109,10 +2650,10 @@ LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, const LnQua
 }
 
 
-LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x, float y, float z)
+LN_FLAT_API LnResult LnWorldObject_SetRotation(LnHandle worldobject, float x, float y, float z)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setEulerAngles(x, y, z));
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->setRotation(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2120,7 +2661,13 @@ LN_FLAT_API LnResult LnWorldObject_SetEulerAngles(LnHandle worldobject, float x,
 LN_FLAT_API LnResult LnWorldObject_GetRotation(LnHandle worldobject, LnQuaternion* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2152,7 +2699,13 @@ LN_FLAT_API LnResult LnWorldObject_SetScaleXYZ(LnHandle worldobject, float x, fl
 LN_FLAT_API LnResult LnWorldObject_GetScale(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2176,7 +2729,29 @@ LN_FLAT_API LnResult LnWorldObject_SetCenterPointXYZ(LnHandle worldobject, float
 LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnWorldObject_LookAt(LnHandle worldobject, const LnVector3* target)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->lookAt(*reinterpret_cast<const ln::Vector3*>(target)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnWorldObject_LookAtXYZ(LnHandle worldobject, float x, float y, float z)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->lookAt(x, y, z));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2184,7 +2759,13 @@ LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector
 LN_FLAT_API LnResult LnWorldObject_GetComponents(LnHandle worldobject, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->components());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2234,7 +2815,13 @@ LN_FLAT_API LnResult LnVisualObject_SetVisible(LnHandle visualobject, LnBool val
 LN_FLAT_API LnResult LnVisualObject_IsVisible(LnHandle visualobject, LnBool* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->isVisible());
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->isVisible());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_VisualObject, visualobject)->isVisible());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2310,7 +2897,15 @@ LN_FLAT_API LnResult LnSprite_Create(LnHandle* outSprite)
 }
 
 
-LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, float width, float height, LnHandle* outSprite)
+LN_FLAT_API LnResult LnSprite_CreateWithTexture(LnHandle texture, LnHandle* outSprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_CreateWithTextureAndSize(LnHandle texture, float width, float height, LnHandle* outSprite)
 {
     LNI_FUNC_TRY_BEGIN;
     LNI_CREATE_OBJECT(outSprite, LNWS_ln_Sprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture), width, height);
@@ -2355,7 +2950,13 @@ LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id)
 LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, uieventargs)->sender());
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, uieventargs)->sender());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIEventArgs, uieventargs)->sender());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2380,6 +2981,16 @@ extern LN_FLAT_API int LnUIEventArgs_GetTypeInfoId()
 LN_FLAT_API void LnUIEventArgs_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventArgs>(), id);
+}
+
+LN_FLAT_API void LnUIGeneralEventHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIGeneralEventHandler>(), id);
+}
+
+LN_FLAT_API void LnUIEventHandler_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIEventHandler>(), id);
 }
 
 LN_FLAT_API LnResult LnUILayoutElement_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -2423,7 +3034,13 @@ LN_FLAT_API LnResult LnUIElement_SetPositionXYZ(LnHandle uielement, float x, flo
 LN_FLAT_API LnResult LnUIElement_GetPosition(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2447,7 +3064,13 @@ LN_FLAT_API LnResult LnUIElement_SetEulerAngles(LnHandle uielement, float x, flo
 LN_FLAT_API LnResult LnUIElement_GetRotation(LnHandle uielement, LnQuaternion* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2479,7 +3102,13 @@ LN_FLAT_API LnResult LnUIElement_SetScaleXY(LnHandle uielement, float x, float y
 LN_FLAT_API LnResult LnUIElement_GetScale(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2503,7 +3132,13 @@ LN_FLAT_API LnResult LnUIElement_SetCenterPointXYZ(LnHandle uielement, float x, 
 LN_FLAT_API LnResult LnUIElement_GetCenterPoint(LnHandle uielement, LnVector3* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+    if (outReturn) {
+        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2606,10 +3241,16 @@ LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton)
 }
 
 
-LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnUIEventHandlerCallback handler)
+LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle handler, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked([=](ln::UIEventArgs* e) { handler(uibutton, LNI_OBJECT_TO_HANDLE(e)); }));
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandler, handler)));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIButton, uibutton)->connectOnClicked(LNI_HANDLE_TO_OBJECT(ln::UIEventHandler, handler)));
+    }
+
     LNI_FUNC_TRY_END_RETURN;
 }
 

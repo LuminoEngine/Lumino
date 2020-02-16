@@ -223,7 +223,7 @@ private:
         UILayoutLengthType type = UILayoutLengthType::Auto;
         float size = 1.0f;
         float minSize = 0.0f;
-        float maxSize = FLT_MAX;
+        float maxSize = std::numeric_limits<float>::max();
 
         // working data
         float desiredSize = Math::NaN;

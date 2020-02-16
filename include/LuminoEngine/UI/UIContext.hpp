@@ -21,7 +21,7 @@ public:
 public: // TODO: internal
     void setLayoutRootElement(UIElement* element);	// 通常は MainWindow。もし１つのウィンドウ内に複数の Context を含める場合は
     void addElement(UIElement* element);
-	const Ref<UIStyle>& defaultStyle() const { return m_defaultStyle; }
+	//const Ref<UIStyle>& defaultStyle() const { return m_defaultStyle; }
     const Ref<UIStyleContext>& styleContext() const { return m_styleContext; }
     const Ref<detail::UIStyleInstance>& finalDefaultStyle() const { return m_finalDefaultStyle; }
 
@@ -41,7 +41,7 @@ private:
     void setupDefaultStyle();
 
     Ref<UIElement> m_layoutRootElement;
-	Ref<UIStyle> m_defaultStyle;
+	//Ref<UIStyle> m_defaultStyle;
     Ref<UIStyleContext> m_styleContext;
 	Ref<detail::UIStyleInstance> m_finalDefaultStyle;
 };

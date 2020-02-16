@@ -1,15 +1,24 @@
 ﻿
-#include "../../LuminoEngine/src/Asset/AssetArchive.hpp"
-#include "../../LuminoEngine/src/Shader/UnifiedShader.hpp"
 #include <EnvironmentSettings.hpp>
 #include <Workspace.hpp>
 #include <Project/Project.hpp>
+#include <Project/LanguageContext.hpp>
 #include "BuildCommand.hpp"
 #include "FxcCommand.hpp"
 
 int BuildCommand::execute(lna::Workspace* workspace, lna::Project* project)
 {
 	m_project = project;
+
+	if (target.isEmpty()) {
+		target = selectDefaultTarget();
+	}
+
+	if (!m_project->languageContext()->build(target)) {
+		return 1;
+	}
+
+#if 0
 
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0) {
 		if (!buildAssets()) {
@@ -46,8 +55,18 @@ int BuildCommand::execute(lna::Workspace* workspace, lna::Project* project)
 		CLI::error(ln::String::format(u"{0} is invalid target.", target));
 		return 1;
 	}
+#endif
 
     return 0;
+}
+
+ln::String BuildCommand::selectDefaultTarget() const
+{
+#if defined(LN_OS_WIN32)
+	return u"Windows";
+#else
+	return ln::String::Empty;
+#endif
 }
 
 ln::Result BuildCommand::buildWindowsTarget(lna::Workspace* workspace, bool debug)
@@ -90,40 +109,7 @@ ln::Result BuildCommand::buildWindowsPackage(lna::Project* project)
 	return true;
 }
 
-ln::Result BuildCommand::buildWebTarget(lna::Workspace* workspace)
-{
-	// emsdk がなければインストールする
-	workspace->buildEnvironment()->prepareEmscriptenSdk();
 
-	auto buildDir = ln::Path::combine(m_project->buildDir(), u"Web").canonicalize();
-	auto installDir = ln::Path::combine(buildDir, u"Release");
-	auto cmakeSourceDir = m_project->emscriptenProjectDir();
-	auto script = ln::Path::combine(buildDir, u"build.bat");
-
-	ln::FileSystem::createDirectory(buildDir);
-
-	{
-		ln::List<ln::String> emcmakeArgs = {
-			u"-DCMAKE_BUILD_TYPE=Release",
-			u"-DCMAKE_INSTALL_PREFIX=" + installDir,
-			u"-DLUMINO_ENGINE_ROOT=\"" + ln::Path(m_project->engineDirPath(), u"Native").str().replace("\\", "/") + u"\"",
-			u"-DLN_TARGET_ARCH=Emscripten",
-			u"-G \"MinGW Makefiles\"",
-			cmakeSourceDir,
-		};
-
-		ln::StreamWriter sw(script);
-		sw.writeLineFormat(u"cd /d \"{0}\"", workspace->buildEnvironment()->emsdkDirPath());
-		sw.writeLineFormat(u"call emsdk activate " + workspace->buildEnvironment()->emsdkName());
-		sw.writeLineFormat(u"call emsdk_env.bat");
-		sw.writeLineFormat(u"cd /d \"{0}\"", buildDir);
-		sw.writeLineFormat(u"call emcmake cmake " + ln::String::join(emcmakeArgs, u" "));
-		sw.writeLineFormat(u"call cmake --build .");
-	}
-
-	ln::Process::execute(script);
-	return true;
-}
 
 ln::Result BuildCommand::buildAndroidTarget()
 {
@@ -172,100 +158,5 @@ ln::Result BuildCommand::buildAndroidTarget()
 #endif
 	}
 #endif
-	return true;
-}
-
-ln::Result BuildCommand::buildAssets()
-{
-	ln::detail::CryptedAssetArchiveWriter writer;
-	auto outputFilePath = ln::Path(m_project->buildDir(), u"Assets.lca");
-	writer.open(outputFilePath, ln::detail::CryptedArchiveHelper::DefaultPassword);
-
-	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
-		if (file.hasExtension(".fx")) {
-
-			ln::Path outputFile;
-			if (!buildAsset_Shader(file, &outputFile)) {
-				return false;
-			}
-
-			writer.addFile(outputFile, m_project->assetsDir().makeRelative(file).replaceExtension(ln::detail::UnifiedShader::FileExt));
-			CLI::info(file);
-		}
-		else {
-			writer.addFile(file, m_project->assetsDir().makeRelative(file));
-			CLI::info(file);
-		}
-	}
-
-	writer.close();
-
-	// Android
-	{
-        if (ln::FileSystem::existsDirectory(m_project->androidProjectDir())) {
-            auto dst = ln::Path::combine(m_project->androidProjectDir(), u"app", u"src", u"main", u"assets", u"Assets.lca");
-            ln::FileSystem::createDirectory(dst.parent());
-            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-            CLI::info(u"Copy to " + dst);
-        }
-	}
-
-	// macOS
-	{
-        if (ln::FileSystem::existsDirectory(m_project->macOSProjectDir())) {
-            auto dst = ln::Path::combine(m_project->macOSProjectDir(), u"LuminoApp.macOS", u"Assets.lca");
-            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-            CLI::info(u"Copy to " + dst);
-        }
-	}
-
-	// iOS
-	{
-        if (ln::FileSystem::existsDirectory(m_project->iOSProjectDir())) {
-            auto dst = ln::Path::combine(m_project->iOSProjectDir(), u"LuminoApp.iOS", u"Assets.lca");
-            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-            CLI::info(u"Copy to " + dst);
-        }
-	}
-
-	// Windows
-	{
-        if (ln::FileSystem::existsDirectory(m_project->windowsProjectDir())) {
-            auto dst = ln::Path::combine(m_project->windowsProjectDir(), u"Assets.lca");
-            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-            CLI::info(u"Copy to " + dst);
-        }
-	}
-
-	// Web
-	{
-        if (ln::FileSystem::existsDirectory(m_project->buildDir())) {
-            auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
-            ln::FileSystem::createDirectory(dstDir);
-
-            auto dst = ln::Path::combine(dstDir, u"Assets.lca");
-            ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-            CLI::info(u"Copy to " + dst);
-        }
-	}
-
-	CLI::info(u"Compilation succeeded.");
-
-	return true;
-}
-
-ln::Result BuildCommand::buildAsset_Shader(const ln::Path& inputFile, ln::Path* outputFile)
-{
-	auto rel = m_project->assetsDir().makeRelative(inputFile);
-	auto workFile = ln::Path::combine(m_project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
-	ln::FileSystem::createDirectory(workFile.parent());
-
-	FxcCommand cmd;
-	cmd.outputFile = workFile;
-	if (cmd.execute(inputFile) != 0) {
-		return false;
-	}
-
-	*outputFile = workFile;
 	return true;
 }

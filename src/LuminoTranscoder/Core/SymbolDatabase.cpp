@@ -12,7 +12,7 @@ ln::Ref<TypeSymbol>	PredefinedTypes::doubleType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringType;
 ln::Ref<TypeSymbol>	PredefinedTypes::stringRefType;
 //ln::Ref<TypeSymbol>	PredefinedTypes::objectType;
-ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
+//ln::Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
 // DocumentInfo
@@ -332,8 +332,13 @@ ln::Result MethodSymbol::link()
 	}
 
 	if (m_pi) {
-		m_returnType = db()->parseQualType(m_pi->returnTypeRawName);
-		if (!m_returnType.type) return false;
+		if (m_isConstructor) {
+			m_returnType = QualType{ PredefinedTypes::voidType };
+		}
+		else {
+			m_returnType = db()->parseQualType(m_pi->returnTypeRawName);
+			if (!m_returnType.type) return false;
+		}
 
 		// std::function の alias などでは引数名が取れないことがあるため、名前を作っておく
 		for (int i = 0; i < m_parameters.size(); i++) {
@@ -420,7 +425,7 @@ ln::Result MethodSymbol::makeFlatParameters()
     }
 
 	// return value
-	if (m_returnType.type == PredefinedTypes::voidType || m_returnType.type == PredefinedTypes::EventConnectionType)
+	if (m_returnType.type == PredefinedTypes::voidType/* || m_returnType.type == PredefinedTypes::EventConnectionType*/)
 	{
 		// "void", "EventConnection" は戻り値扱いしない
 	}
@@ -728,11 +733,11 @@ ln::Result TypeSymbol::link()
 		collectVirtualMethods(&m_virtualMethods);
 	}
 
-	for (auto& method : m_declaredMethods) {
-		if (method->isEventConnector()) {
-			m_eventMethods.add(method);
-		}
-	}
+	//for (auto& method : m_declaredMethods) {
+	//	if (method->isEventConnector()) {
+	//		m_eventMethods.add(method);
+	//	}
+	//}
 
 	return true;
 }
@@ -1069,7 +1074,7 @@ void SymbolDatabase::initPredefineds()
 
 	//PredefinedTypes::objectType = addPredefined(u"ln::Object", TypeKind::Class);
 
-	PredefinedTypes::EventConnectionType = addPredefined(u"ln::EventConnection");
+	//PredefinedTypes::EventConnectionType = addPredefined(u"ln::EventConnection");
 }
 
 TypeSymbol* SymbolDatabase::findTypeSymbol(const ln::String& typeFullName) const

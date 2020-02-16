@@ -5,6 +5,7 @@
 namespace ln {
 namespace detail {
 
+#if 0
 template<typename T>
 class CacheBuffer
 {
@@ -63,6 +64,7 @@ private:
 	int			m_capacity;
 	int			m_count;
 };
+#endif
 
 } // namespace detail
 } // namespace ln
