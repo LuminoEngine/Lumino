@@ -9,6 +9,7 @@ env:
   cache-version: v1
 
 jobs:
+  #==============================================================================
   Native-MSVC2017-x64-MT:
     runs-on: windows-2016 # for VS2017
 
@@ -35,3 +36,27 @@ jobs:
       with:
         name: LuminoEngine-MSVC2017-x64-MT
         path: ./build/MSVC2017-x64-MT/EngineInstall
+  
+  #==============================================================================
+  Ruby:
+    needs: Native-MSVC2017-x64-MT
+    runs-on: windows-2016
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+        architecture: 'x64'
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: LuminoEngine-MSVC2017-x64-MT
+        path: ./build/MSVC2017-x64-MT/EngineInstall
+
+    - name: Build and test with Rake
+      run: dotnet run -- MakePackage_Ruby
+
