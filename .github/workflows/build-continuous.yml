@@ -27,16 +27,12 @@ jobs:
       with:
         path: ./build/MSVC2017-x64-MT/BuildCache
         key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
-        restore-keys: |
-          ${{ env.cache-version }}-BuildCache-
             
     - name: Cache (build/MSVC2017-x64-MT/ExternalInstall)
       uses: actions/cache@v1.0.3
       with:
         path: ./build/MSVC2017-x64-MT/ExternalInstall
         key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('**/BuildExternalProjects.cs') }}
-        restore-keys: |
-          ${{ env.cache-version }}-ExternalInstall-
             
     - name: Build
       run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
@@ -67,5 +63,7 @@ jobs:
         path: ./build/MSVC2017-x64-MT/EngineInstall
 
     - name: Build and test with Rake
-      run: dotnet run -- MakePackage_Ruby
+      run: |
+        gem install bundler
+        dotnet run -- MakePackage_Ruby
 
