@@ -15,6 +15,10 @@ namespace LuminoBuild.Tasks
             {
                 var gemprojDir = Path.Combine(builder.LuminoToolsDir, "Bindings", "Ruby", "GemProject");
 
+                File.Copy(
+                    Path.Combine(builder.LuminoRootDir, "build/MSVC2017-x64-MT/EngineInstall/bin/LuminoEngine.dll"),
+                    Path.Combine(gemprojDir, "ext", "LuminoEngine.dll"));
+
                 using (CurrentDir.Enter(gemprojDir))
                 {
                     Utils.CallProcessShell("bundle", "install");    // bundle.cmd

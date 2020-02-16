@@ -23,13 +23,13 @@ jobs:
         dotnet-version: 2.2.108
 
     - name: Cache (build/BuildCache)
-      uses: actions/cache@v1.0.3
+      uses: actions/cache@v1
       with:
         path: ./build/MSVC2017-x64-MT/BuildCache
         key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
             
     - name: Cache (build/MSVC2017-x64-MT/ExternalInstall)
-      uses: actions/cache@v1.0.3
+      uses: actions/cache@v1
       with:
         path: ./build/MSVC2017-x64-MT/ExternalInstall
         key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('**/BuildExternalProjects.cs') }}
