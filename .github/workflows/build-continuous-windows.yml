@@ -31,3 +31,7 @@ jobs:
     - name: Build
       run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
       
+    - uses: actions/upload-artifact@v1
+      with:
+        name: LuminoEngine-MSVC2017-x64-MT
+        path: ./build/MSVC2017-x64-MT/EngineInstall
