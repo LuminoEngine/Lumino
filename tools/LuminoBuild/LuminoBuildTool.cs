@@ -90,6 +90,7 @@ namespace LuminoBuild
 
         public bool ExistsCache(string dirPath)
         {
+            //if (!Directory.Exists(dirPath)) return false;
             return File.Exists(Path.Combine(dirPath, "_lnCacheCommitted"));
         }
 

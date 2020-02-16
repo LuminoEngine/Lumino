@@ -83,6 +83,7 @@ namespace LuminoBuild
             string buildCacheDir = Path.Combine(builder.LuminoBuildDir, "BuildCache");
             if (!builder.ExistsCache(buildCacheDir))
             {
+                Directory.CreateDirectory(buildCacheDir);
                 using (CurrentDir.Enter(buildCacheDir))
                 {
                     if (!Directory.Exists("stb"))
