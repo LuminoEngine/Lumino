@@ -52,7 +52,7 @@ namespace LuminoBuild
 
             BuildEnvironment.Target = (positionalArgs.Count > 1) ? args[1] : "";
             BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
-            BuildEnvironment.Initialize(builder.LuminoRootDir);
+            BuildEnvironment.Initialize(builder);
             EmscriptenBuildEnv.Initialize(builder);
 
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);

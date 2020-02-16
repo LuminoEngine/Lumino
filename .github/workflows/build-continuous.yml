@@ -26,7 +26,7 @@ jobs:
       uses: actions/cache@v1.0.3
       with:
         path: ./build/MSVC2017-x64-MT/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles(format('tools/LuminoBuild/Tasks/BuildExternalProjects.cs')) }}
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('tools/LuminoBuild/Tasks/BuildExternalProjects.cs') }}
         restore-keys: |
           ${{ env.cache-version }}-BuildCache-
             
@@ -34,7 +34,7 @@ jobs:
       uses: actions/cache@v1.0.3
       with:
         path: ./build/MSVC2017-x64-MT/ExternalInstall
-        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles(format('{0}{1}', github.workspace, '/tools/LuminoBuild/Tasks/BuildExternalProjects.cs')) }}
+        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('tools/LuminoBuild/Tasks/BuildExternalProjects.cs') }}
         restore-keys: |
           ${{ env.cache-version }}-ExternalInstall-
             

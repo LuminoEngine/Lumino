@@ -306,46 +306,6 @@ namespace LuminoBuild.Tasks
                 Directory.SetCurrentDirectory(reposDir);
             }
 
-            // ↑ のものたちは cmake install などで、各 Target ごとの ExternalInstall に入り、このフォルダは CI によりキャッシュされる。
-            // しかし一部の、主に Header-only-library はリポジトリ内のファイルを直接参照するため、キャッシュされる別のフォルダに clone する。
-            // (ExternalSource フォルダは全体で 5GB を超えるため、GitHub Actions の cache size に引っかかる。そのため必要なものだけ別フォルダに逃がす)
-            {
-                using (CurrentDir.Enter(Path.Combine(builder.LuminoBuildDir, "BuildCache")))
-                {
-                    if (!Directory.Exists("stb"))
-                    {
-                        Utils.CallProcess("git", "clone https://github.com/nothings/stb.git stb");
-                        Utils.CallProcess("git", "-C stb checkout e6afb9cbae4064da8c3e69af3ff5c4629579c1d2");
-                    }
-
-                    if (!Directory.Exists("imgui"))
-                    {
-                        Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
-                    }
-
-                    if (!Directory.Exists("Streams"))
-                    {
-                        Utils.CallProcess("git", "clone https://github.com/jscheiny/Streams.git Streams");
-                        Directory.SetCurrentDirectory("Streams");
-                        Utils.CallProcess("git", "checkout 8fc0657b977cfd8f075ad0afb4dca3800630b56c");
-                        Directory.SetCurrentDirectory(reposDir);
-                    }
-
-                    if (!Directory.Exists("tinyobjloader"))
-                    {
-                        // v1.0.6 より後はタグが降られていないが、頂点カラーなどの対応が入っている。それを持ってくる。
-                        Utils.CallProcess("git", "clone https://github.com/syoyo/tinyobjloader.git tinyobjloader");
-                        Directory.SetCurrentDirectory("tinyobjloader");
-                        Utils.CallProcess("git", "checkout f37fed32f3eb0912cc10a970f78774cd98598ef6");
-                        Directory.SetCurrentDirectory(reposDir);
-                    }
-
-                    if (!Directory.Exists("tinygltf"))
-                    {
-                        Utils.CallProcess("git", "clone --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
-                    }
-                }
-            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
