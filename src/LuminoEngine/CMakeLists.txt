@@ -199,17 +199,17 @@ file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.
 
 set(LN_SOURCES_UI
     ${LN_SOURCES_UI}
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imconfig.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.cpp
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_draw.cpp
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_internal.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imgui_widgets.cpp
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_rectpack.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_textedit.h
-    ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui/imstb_truetype.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imconfig.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.cpp
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_draw.cpp
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_internal.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imgui_widgets.cpp
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_rectpack.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_textedit.h
+    ${LUMINO_ROOT_PATH}/build/BuildCache/imgui/imstb_truetype.h
 )
-set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/ExternalSource/imgui)
+set(LN_IMGUI_INCLUDE_DIRECTORY ${LUMINO_ROOT_PATH}/build/BuildCache/imgui)
 file(GLOB LN_SOURCES_Tilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Tilemap/*.hpp src/Tilemap/*.cpp src/Tilemap/*.hpp)
 
 file(GLOB LN_SOURCES_Runtime

@@ -3,4 +3,4 @@
 #include <LuminoEngine.hpp>
 #include <LuminoCore/Testing/TestHelper.hpp>
 #include <LuminoCore/Base/Result.hpp>
-#include "../../../build/ExternalSource/Streams/source/Stream.h"
+#include "../../../build/BuildCache/Streams/source/Stream.h"

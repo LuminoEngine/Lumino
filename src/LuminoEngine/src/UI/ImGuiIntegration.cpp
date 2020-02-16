@@ -12,7 +12,7 @@
 #include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/UI/ImGuiIntegration.hpp>
 #include "../Rendering/RenderingManager.hpp"
-#include "../../../build/ExternalSource/imgui/imgui.h"
+#include "../../../build/BuildCache/imgui/imgui.h"
 
 namespace ln {
 namespace detail {

@@ -3,7 +3,7 @@
 #define TINYGLTF_IMPLEMENTATION
 //#define TINYGLTF_NO_FS
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../../../build/ExternalSource/tinygltf/tiny_gltf.h"
+#include "../../../build/BuildCache/tinygltf/tiny_gltf.h"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>

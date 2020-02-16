@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #define TINYOBJLOADER_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../../../build/ExternalSource/tinyobjloader/tiny_obj_loader.h"
+#include "../../../build/BuildCache/tinyobjloader/tiny_obj_loader.h"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
