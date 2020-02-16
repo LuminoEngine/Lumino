@@ -701,13 +701,16 @@ namespace LuminoBuild
 
         public static CurrentDir Enter(string path)
         {
+            var c = new CurrentDir() { _prev = Directory.GetCurrentDirectory() };
             Directory.SetCurrentDirectory(path);
-            return new CurrentDir() { _prev = path };
+            Console.WriteLine("Enter CurrentDir: " + path);
+            return c;
         }
 
         public void Dispose()
         {
             Directory.SetCurrentDirectory(_prev);
+            Console.WriteLine("Leave CurrentDir: " + _prev);
         }
     }
 }

@@ -21,14 +21,14 @@ jobs:
     - uses: actions/cache@v1.0.3
       with:
         path: ./build/Emscripten/emsdk
-        key: ${{ env.cache-version }}-emsdk-${{ hashFiles('**/EmscriptenBuildEnv.cs') }}
+        key: ${{ env.cache-version }}-emsdk-${{ hashFiles(format('{0}{1}', github.workspace, '/tools/LuminoBuild/EmscriptenBuildEnv.cs')) }}
         restore-keys: |
           ${{ env.cache-version }}-emsdk-
 
     - uses: actions/cache@v1.0.3
       with:
         path: ./build/Emscripten/ExternalInstall
-        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('**/BuildExternalProjects.cs') }}
+        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles(format('{0}{1}', github.workspace, '/tools/LuminoBuild/BuildExternalProjects.cs')) }}
         restore-keys: |
           ${{ env.cache-version }}-ExternalInstall-
 
