@@ -25,9 +25,10 @@ namespace LuminoBuild
 
         public static void Initialize(Builder builder)
         {
-            var cloneParentDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools");
-            //EmsdkDir = Path.Combine(targetBuildDir, "emsdk");
-            EmsdkDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools", "emsdk");
+            //var cloneParentDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools");
+            var cloneParentDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "Tools");
+            EmsdkDir = Path.Combine(builder.LuminoBuildDir, "Emscripten", "emsdk");
+            //EmsdkDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools", "emsdk");
             EmscriptenRoot = Path.Combine(EmsdkDir, "upstream", "emscripten");
             EmscriptenSysRootLocal = Path.Combine(EmscriptenRoot, "system", "local");
 
@@ -36,7 +37,7 @@ namespace LuminoBuild
             // Install emsdk
             if (BuildEnvironment.IsWebTarget && Utils.IsWin32)
             {
-                if (!builder.ExistsCache("BuildEnv-emsdk"))
+                if (!builder.ExistsCache(EmsdkDir))
                 {
                     if (!Directory.Exists(EmsdkDir))
                     {
@@ -61,7 +62,7 @@ namespace LuminoBuild
                         }
                     }
 
-                    builder.CommitCache("BuildEnv-emsdk");
+                    builder.CommitCache(EmsdkDir);
                 }
             }
 

@@ -25,7 +25,7 @@ namespace LuminoBuild
 
         public string LuminoRootDir;
         public string LuminoBuildDir;
-        public string LuminoBuildCacheDir;
+        //public string LuminoBuildCacheDir;
         public string LuminoBindingsDir;
         public string LuminoLibDir;
         public string LuminoToolsDir;
@@ -63,14 +63,19 @@ namespace LuminoBuild
             }
         }
 
-        public string GetExternalBuildDir(string targetName, string externalProjectName)
+        public string GetExternalProjectBuildDir(string targetName, string externalProjectName)
         {
             return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalBuild", externalProjectName));
         }
 
-        public string GetExternalInstallDir(string targetName, string externalProjectName)
+        public string GetExternalProjectInstallDir(string targetName, string externalProjectName)
         {
             return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalInstall", externalProjectName));
+        }
+
+        public string GetExternalInstallDir(string targetName)
+        {
+            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalInstall"));
         }
 
         /// <summary>
@@ -78,14 +83,14 @@ namespace LuminoBuild
         /// CI 環境でのキャッシュのために用意したもの。
         /// </summary>
         /// <param name="name"></param>
-        public void CommitCache(string name)
+        public void CommitCache(string dirPath)
         {
-            File.WriteAllText(Path.Combine(LuminoBuildCacheDir, name), "");
+            File.WriteAllText(Path.Combine(dirPath, "_lnCacheCommitted"), "");
         }
 
-        public bool ExistsCache(string name)
+        public bool ExistsCache(string dirPath)
         {
-            return File.Exists(Path.Combine(LuminoBuildCacheDir, name));
+            return File.Exists(Path.Combine(dirPath, "_lnCacheCommitted"));
         }
 
 

@@ -21,8 +21,8 @@ namespace LuminoBuild.Tasks
         {
             var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
             var targetName = buildArch + "-" + buildType;
-            var buildDir = builder.GetExternalBuildDir(targetName, projectName);
-            var installDir = builder.GetExternalInstallDir(targetName, projectName);
+            var buildDir = builder.GetExternalProjectBuildDir(targetName, projectName);
+            var installDir = builder.GetExternalProjectInstallDir(targetName, projectName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -48,8 +48,8 @@ namespace LuminoBuild.Tasks
         private void BuildProjectMSVC(Builder builder, string projectDirName, string externalSourceDir, string targetName, string targetFullName, string configuration, string additionalOptions = "")
         {
             var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
-            var buildDir = builder.GetExternalBuildDir(targetFullName, projectName);
-            var installDir = builder.GetExternalInstallDir(targetFullName, projectName);
+            var buildDir = builder.GetExternalProjectBuildDir(targetFullName, projectName);
+            var installDir = builder.GetExternalProjectInstallDir(targetFullName, projectName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -87,8 +87,8 @@ namespace LuminoBuild.Tasks
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
         {
             var projectName = Path.GetFileName(projectDirName);
-            var buildDir = builder.GetExternalBuildDir(buildArchDir, projectName);
-            var installDir = builder.GetExternalInstallDir(buildArchDir, projectName);
+            var buildDir = builder.GetExternalProjectBuildDir(buildArchDir, projectName);
+            var installDir = builder.GetExternalProjectInstallDir(buildArchDir, projectName);
             //var installDir = Utils.ToUnixPath(Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, projectName));
             var cmakeSourceDir = Utils.ToUnixPath(Path.Combine(externalSourceDir, projectDirName));
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
@@ -124,8 +124,8 @@ namespace LuminoBuild.Tasks
             string platform = BuildEnvironment.AndroidTargetPlatform;
             
             var targetName = $"Android-{abi}-{buildType}";
-            var buildDir = builder.GetExternalBuildDir(targetName, projectName);
-            var installDir = builder.GetExternalInstallDir(targetName, projectName);
+            var buildDir = builder.GetExternalProjectBuildDir(targetName, projectName);
+            var installDir = builder.GetExternalProjectInstallDir(targetName, projectName);
 
             var args = new string[]
             {
@@ -154,7 +154,7 @@ namespace LuminoBuild.Tasks
 
         public override void Build(Builder builder)
         {
-            if (builder.ExistsCache("ExternalProjects-" + BuildEnvironment.Target))
+            if (builder.ExistsCache(builder.GetExternalInstallDir(BuildEnvironment.Target)))
             {
                 Logger.WriteLine("BuildExternalProjects has cache.");
                 return;
@@ -333,11 +333,6 @@ namespace LuminoBuild.Tasks
             {
                 Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
             }
-            if (!Directory.Exists("noto-emoji"))
-            {
-                Utils.CallProcess("git", "clone --depth 1 -b v2019-11-19-unicode12 https://github.com/googlefonts/noto-emoji.git noto-emoji");
-                File.Copy("noto-emoji/fonts/NotoColorEmoji.ttf", Path.Combine(builder.LuminoToolsDir, "EngineResources", "NotoColorEmoji.ttf"), true);
-            }
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
 
@@ -495,7 +490,7 @@ namespace LuminoBuild.Tasks
                 }
             }
 
-            builder.CommitCache("ExternalProjects-" + BuildEnvironment.Target);
+            builder.CommitCache(builder.GetExternalInstallDir(BuildEnvironment.Target));
         }
     }
 }

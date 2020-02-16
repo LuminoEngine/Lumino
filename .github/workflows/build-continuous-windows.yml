@@ -18,13 +18,13 @@ jobs:
       with:
         dotnet-version: 2.2.108
 
-    - name: Install vulkan-sdk
-      run:  |
-        choco install vulkan-sdk
-        refreshenv
-        cat C:\ProgramData\chocolatey\logs\chocolatey.log
-        C:\VulkanSDK\1.1.126.0\Bin\vkcubepp
-
+    - uses: actions/cache@v1.0.3
+        with:
+          path: ./build/MSVC2017-x64-MT/ExternalInstall
+          key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('./tools/LuminoBuild/Tasks/BuildExternalProjects.cs') }}
+          restore-keys: |
+            ${{ env.cache-version }}-ExternalInstall-
+            
     - name: Build
       run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
       
