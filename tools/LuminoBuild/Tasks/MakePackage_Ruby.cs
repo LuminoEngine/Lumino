@@ -15,9 +15,12 @@ namespace LuminoBuild.Tasks
             {
                 var gemprojDir = Path.Combine(builder.LuminoToolsDir, "Bindings", "Ruby", "GemProject");
 
-                Directory.SetCurrentDirectory(gemprojDir);
-                Utils.CallProcessShell("bundle", "install");    // bundle.cmd
-                Utils.CallProcessShell("rake", "build");
+                using (CurrentDir.Enter(gemprojDir))
+                {
+                    Utils.CallProcessShell("bundle", "install");    // bundle.cmd
+                    Utils.CallProcessShell("rake", "build");
+                    Utils.CallProcessShell("gem", "install " + Directory.EnumerateFiles("pkg", "*.gem").First());
+                }
             }
         }
 

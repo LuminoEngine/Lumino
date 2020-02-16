@@ -577,21 +577,29 @@ namespace LuminoBuild
 
         public static void CallProcessShell(string program, string args = "")
         {
-            Logger.WriteLine($"{program} {args}");
-
-            using (Process p = new Process())
+            if (Utils.IsWin32)
             {
-                p.StartInfo.FileName = program;
-                p.StartInfo.Arguments = args;
-                p.StartInfo.UseShellExecute = true;
-
-                p.Start();
-
-                p.WaitForExit();
-
-                if (p.ExitCode != 0)
-                    throw new InvalidOperationException("Failed Process.");
+                CallProcess("cmd", $" /c {program} {args}");
             }
+            else
+            {
+                throw new NotImplementedException();
+            }
+            //Logger.WriteLine($"{program} {args}");
+
+            //using (Process p = new Process())
+            //{
+            //    p.StartInfo.FileName = program;
+            //    p.StartInfo.Arguments = args;
+            //    p.StartInfo.UseShellExecute = true;
+
+            //    p.Start();
+
+            //    p.WaitForExit();
+
+            //    if (p.ExitCode != 0)
+            //        throw new InvalidOperationException("Failed Process.");
+            //}
         }
 
         /// <summary>
