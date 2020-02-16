@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace LuminoBuild
 {
-	class Builder
+    class Builder
     {
         // リリースのたびに変更する必要がある情報
         public string InstallerProductGUID_MSVC2013 = "9695C499-D82F-4A79-BB8E-E1EE62E13DBC";
@@ -25,6 +25,7 @@ namespace LuminoBuild
 
         public string LuminoRootDir;
         public string LuminoBuildDir;
+        public string LuminoBuildCacheDir;
         public string LuminoBindingsDir;
         public string LuminoLibDir;
         public string LuminoToolsDir;
@@ -61,6 +62,32 @@ namespace LuminoBuild
                 return $"Lumino-{VersionString}-{targetEnvName}";
             }
         }
+
+        public string GetExternalBuildDir(string targetName, string externalProjectName)
+        {
+            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalBuild", externalProjectName));
+        }
+
+        public string GetExternalInstallDir(string targetName, string externalProjectName)
+        {
+            return Utils.ToUnixPath(Path.Combine(LuminoBuildDir, targetName, "ExternalInstall", externalProjectName));
+        }
+
+        /// <summary>
+        /// ExternalProject など、ある単位がビルド完了していることをマークする。
+        /// CI 環境でのキャッシュのために用意したもの。
+        /// </summary>
+        /// <param name="name"></param>
+        public void CommitCache(string name)
+        {
+            File.WriteAllText(Path.Combine(LuminoBuildCacheDir, name), "");
+        }
+
+        public bool ExistsCache(string name)
+        {
+            return File.Exists(Path.Combine(LuminoBuildCacheDir, name));
+        }
+
 
 
         public void DoTaskOrRule(string name)

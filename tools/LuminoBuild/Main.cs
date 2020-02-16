@@ -37,6 +37,7 @@ namespace LuminoBuild
 
             builder.LuminoRootDir = Path.GetFullPath(Path.Combine(exeDir, "../../../../../../")) + "/";
             builder.LuminoBuildDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "build"));
+            builder.LuminoBuildCacheDir = Path.GetFullPath(Path.Combine(builder.LuminoBuildDir, "BuildCache"));
             builder.LuminoBindingsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "bindings"));
             builder.LuminoLibDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "lib"));
             builder.LuminoToolsDir = Path.GetFullPath(Path.Combine(builder.LuminoRootDir, "tools"));
@@ -52,7 +53,7 @@ namespace LuminoBuild
             BuildEnvironment.Target = (positionalArgs.Count > 1) ? args[1] : "";
             BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
             BuildEnvironment.Initialize(builder.LuminoRootDir);
-            EmscriptenBuildEnv.Initialize(builder.LuminoRootDir);
+            EmscriptenBuildEnv.Initialize(builder);
 
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
 

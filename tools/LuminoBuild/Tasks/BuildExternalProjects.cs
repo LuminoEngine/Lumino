@@ -21,8 +21,8 @@ namespace LuminoBuild.Tasks
         {
             var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
             var targetName = buildArch + "-" + buildType;
-            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectName));
-            var installDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectName);
+            var buildDir = builder.GetExternalBuildDir(targetName, projectName);
+            var installDir = builder.GetExternalInstallDir(targetName, projectName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -44,11 +44,12 @@ namespace LuminoBuild.Tasks
             Utils.CallProcess("cmake", $"--build . --config {buildType}");
             Utils.CallProcess("cmake", $"--build . --config {buildType} --target install");
         }
+
         private void BuildProjectMSVC(Builder builder, string projectDirName, string externalSourceDir, string targetName, string targetFullName, string configuration, string additionalOptions = "")
         {
             var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
-            var buildDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, targetFullName, "ExternalBuild", projectName));
-            var installDir = Path.Combine(builder.LuminoBuildDir, targetFullName, "ExternalInstall", projectName);
+            var buildDir = builder.GetExternalBuildDir(targetFullName, projectName);
+            var installDir = builder.GetExternalInstallDir(targetFullName, projectName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -86,8 +87,8 @@ namespace LuminoBuild.Tasks
         private void BuildProjectEm(Builder builder, string projectDirName, string externalSourceDir, string buildArchDir, string additionalOptions = "")
         {
             var projectName = Path.GetFileName(projectDirName);
-            var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalBuild", projectName);
-            var installDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, buildArchDir, "ExternalInstall", projectName));
+            var buildDir = builder.GetExternalBuildDir(buildArchDir, projectName);
+            var installDir = builder.GetExternalInstallDir(buildArchDir, projectName);
             //var installDir = Utils.ToUnixPath(Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, projectName));
             var cmakeSourceDir = Utils.ToUnixPath(Path.Combine(externalSourceDir, projectDirName));
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
@@ -123,15 +124,15 @@ namespace LuminoBuild.Tasks
             string platform = BuildEnvironment.AndroidTargetPlatform;
             
             var targetName = $"Android-{abi}-{buildType}";
-            var cmakeBuildDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalBuild", projectName);
-            var cmakeInstallDir = Path.Combine(builder.LuminoBuildDir, targetName, "ExternalInstall", projectName);
+            var buildDir = builder.GetExternalBuildDir(targetName, projectName);
+            var installDir = builder.GetExternalInstallDir(targetName, projectName);
 
             var args = new string[]
             {
                 $"-H{cmakeHomeDir}",
-                $"-B{cmakeBuildDir}",
+                $"-B{buildDir}",
                 $"-DLN_TARGET_ARCH_NAME={targetName}",
-                $"-DCMAKE_INSTALL_PREFIX={cmakeInstallDir}",
+                $"-DCMAKE_INSTALL_PREFIX={installDir}",
                 $"-DCMAKE_DEBUG_POSTFIX=d",
                 $"-DANDROID_ABI={abi}",
                 $"-DANDROID_PLATFORM={platform}",
@@ -147,33 +148,39 @@ namespace LuminoBuild.Tasks
             };
 
             Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, string.Join(' ', args));
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir);
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
+            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + buildDir);
+            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + buildDir + " --target install");
         }
 
         public override void Build(Builder builder)
         {
+            if (builder.ExistsCache("ExternalProjects-" + BuildEnvironment.Target))
+            {
+                Logger.WriteLine("BuildExternalProjects has cache.");
+                return;
+            }
+
             var reposDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
             Directory.CreateDirectory(reposDir);
             Directory.SetCurrentDirectory(reposDir);
 
             if (!Directory.Exists("googletest"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b release-1.8.1 https://github.com/google/googletest.git googletest");
+                Utils.CallProcess("git", "clone --depth 1 -b release-1.8.1 https://github.com/google/googletest.git googletest");
             }
             if (!Directory.Exists("ios-cmake"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b 3.0.1 https://github.com/leetal/ios-cmake.git ios-cmake");
+                Utils.CallProcess("git", "clone --depth 1 -b 3.0.1 https://github.com/leetal/ios-cmake.git ios-cmake");
             }
             if (!Directory.Exists("zlib"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
+                Utils.CallProcess("git", "clone --depth 1 -b v1.2.11 https://github.com/madler/zlib.git zlib");
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "zlib", "CMakeLists.txt"), "zlib");
             }
             if (!Directory.Exists("libpng"))
             {
-                //Utils.CallProcess("git", "clone --progress --depth 1 -b v1.6.9 git://git.code.sf.net/p/libpng/code libpng");
-                Utils.CallProcess("git", "clone --progress --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
+                //Utils.CallProcess("git", "clone --depth 1 -b v1.6.9 git://git.code.sf.net/p/libpng/code libpng");
+                Utils.CallProcess("git", "clone --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
 
 #if false
                 var zip = Path.Combine(reposDir, "lpng1635.zip");
@@ -184,17 +191,17 @@ namespace LuminoBuild.Tasks
                 Directory.Move(Path.Combine(dir, "lpng1635"), Path.Combine(reposDir, "libpng"));
                 //Directory.Move(dir, Path.Combine(reposDir, "libpng"));
 
-                //Utils.CallProcess("git", "clone --progress --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
+                //Utils.CallProcess("git", "clone --depth 1 -b libpng17 https://github.com/glennrp/libpng.git libpng");
 #endif
                 Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "libpng", "CMakeLists.txt"), "libpng");
             }
             if (!Directory.Exists("glslang"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b 7.11.3113 https://github.com/KhronosGroup/glslang.git glslang");
+                Utils.CallProcess("git", "clone --depth 1 -b 7.11.3113 https://github.com/KhronosGroup/glslang.git glslang");
             }
             if (!Directory.Exists("SPIRV-Cross"))
             {
-                Utils.CallProcess("git", "clone --progress https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
+                Utils.CallProcess("git", "clone https://github.com/KhronosGroup/SPIRV-Cross.git SPIRV-Cross");
                 Directory.SetCurrentDirectory("SPIRV-Cross");
                 Utils.CallProcess("git", "checkout be7425ef70231ab82930331959ab487d605d0482");
                 Directory.SetCurrentDirectory(reposDir);
@@ -205,28 +212,29 @@ namespace LuminoBuild.Tasks
                 // 3.3 リリース後、そのタグで clone するようにしておく。
                 if (Utils.IsMac)
                 {
-                    Utils.CallProcess("git", "clone --progress https://github.com/glfw/glfw.git glfw");
+                    Utils.CallProcess("git", "clone https://github.com/glfw/glfw.git glfw");
                     Directory.SetCurrentDirectory("glfw");
                     Utils.CallProcess("git", "checkout 5afcd0981bf2fe9b9550f24ba298857aac6c35c2");
                     Directory.SetCurrentDirectory(reposDir);
                 }
                 else
                 {
-                    Utils.CallProcess("git", "clone --progress --depth 1 -b 3.2.1 https://github.com/glfw/glfw.git glfw");
+                    Utils.CallProcess("git", "clone --depth 1 -b 3.2.1 https://github.com/glfw/glfw.git glfw");
                 }
             }
             if (!Directory.Exists("glad"))
             {
                 Utils.CopyDirectory(Path.Combine(builder.LuminoExternalDir, "glad"), "glad");
-                //Utils.CallProcess("git", "clone --progress --depth 1 -b v0.1.26 https://github.com/Dav1dde/glad.git glad");
+                //Utils.CallProcess("git", "clone --depth 1 -b v0.1.26 https://github.com/Dav1dde/glad.git glad");
             }
             if (!Directory.Exists("openal-soft"))
             {
-                // https://github.com/kcat/openal-soft/issues/183 の問題の修正後、まだタグが降られていない。そのため latest を取得
-                Utils.CallProcess("git", "clone --progress https://github.com/kcat/openal-soft.git openal-soft");
-                Directory.SetCurrentDirectory("openal-soft");
-                Utils.CallProcess("git", "checkout 7d76cbddd6fbdb52eaa917845435b95ae89efced");
-                Directory.SetCurrentDirectory(reposDir);
+                Utils.CallProcess("git", "clone --depth 1 -b openal-soft-1.20.1 https://github.com/kcat/openal-soft.git");
+                //// https://github.com/kcat/openal-soft/issues/183 の問題の修正後、まだタグが降られていない。そのため latest を取得
+                //Utils.CallProcess("git", "clone https://github.com/kcat/openal-soft.git openal-soft");
+                //Directory.SetCurrentDirectory("openal-soft");
+                //Utils.CallProcess("git", "checkout 7d76cbddd6fbdb52eaa917845435b95ae89efced");
+                //Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("SDL2"))
             {
@@ -242,7 +250,7 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("freetype2"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b VER-2-7-1 git://git.sv.nongnu.org/freetype/freetype2.git freetype2");
+                Utils.CallProcess("git", "clone --depth 1 -b VER-2-7-1 git://git.sv.nongnu.org/freetype/freetype2.git freetype2");
                 
                 // freetype2 の CMakeList.txt は iOS ツールチェインを独自で持っているが、
                 // 2018/11/19 時点では master のサポートでもビルドを通すことができない。
@@ -251,20 +259,20 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("ogg"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.3.3 https://github.com/xiph/ogg.git ogg");
+                Utils.CallProcess("git", "clone --depth 1 -b v1.3.3 https://github.com/xiph/ogg.git ogg");
             }
             if (!Directory.Exists("vorbis"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.3.6-lumino https://github.com/lriki/vorbis.git vorbis");
+                Utils.CallProcess("git", "clone --depth 1 -b v1.3.6-lumino https://github.com/lriki/vorbis.git vorbis");
             }
             if (!Directory.Exists("bullet3"))
             {
-                //Utils.CallProcess("git", "clone --progress --depth 1 -b 2.87 https://github.com/bulletphysics/bullet3.git bullet3");
+                //Utils.CallProcess("git", "clone --depth 1 -b 2.87 https://github.com/bulletphysics/bullet3.git bullet3");
 
                 // 2.87 時点では Android ターゲットのビルドができない。
                 // - ルートの CMakeLists.txt が python を探しに行く、{} 初期化リストで暗黙変換を使っている。など。
                 // 2018/12/29 時点の master では対策されていたのでこれを使用する。
-                Utils.CallProcess("git", "clone --progress https://github.com/bulletphysics/bullet3.git bullet3");
+                Utils.CallProcess("git", "clone https://github.com/bulletphysics/bullet3.git bullet3");
                 Directory.SetCurrentDirectory("bullet3");
                 Utils.CallProcess("git", "checkout 8bc1c8e01b1b2b9284df08385da0e03241f4e6aa");
                 Directory.SetCurrentDirectory(reposDir);
@@ -272,14 +280,14 @@ namespace LuminoBuild.Tasks
             if (!Directory.Exists("tinyobjloader"))
             {
                 // v1.0.6 より後はタグが降られていないが、頂点カラーなどの対応が入っている。それを持ってくる。
-                Utils.CallProcess("git", "clone --progress https://github.com/syoyo/tinyobjloader.git tinyobjloader");
+                Utils.CallProcess("git", "clone https://github.com/syoyo/tinyobjloader.git tinyobjloader");
                 Directory.SetCurrentDirectory("tinyobjloader");
                 Utils.CallProcess("git", "checkout f37fed32f3eb0912cc10a970f78774cd98598ef6");
                 Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("Streams"))
             {
-                Utils.CallProcess("git", "clone --progress https://github.com/jscheiny/Streams.git Streams");
+                Utils.CallProcess("git", "clone https://github.com/jscheiny/Streams.git Streams");
                 Directory.SetCurrentDirectory("Streams");
                 Utils.CallProcess("git", "checkout 8fc0657b977cfd8f075ad0afb4dca3800630b56c");
                 Directory.SetCurrentDirectory(reposDir);
@@ -292,38 +300,38 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("tmxlite"))
             {
-                Utils.CallProcess("git", "clone --progress https://github.com/fallahn/tmxlite.git tmxlite");
+                Utils.CallProcess("git", "clone https://github.com/fallahn/tmxlite.git tmxlite");
                 Directory.SetCurrentDirectory("tmxlite");
                 Utils.CallProcess("git", "checkout 8ed41071fe0774947fc7f7c6ece77de3061a5239");
                 Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("stb"))
             {
-                Utils.CallProcess("git", "clone --progress https://github.com/nothings/stb.git stb");
+                Utils.CallProcess("git", "clone https://github.com/nothings/stb.git stb");
                 Utils.CallProcess("git", "-C stb checkout e6afb9cbae4064da8c3e69af3ff5c4629579c1d2");
             }
             if (!Directory.Exists("Box2D"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v2.3.1 https://github.com/erincatto/Box2D.git Box2D");
+                Utils.CallProcess("git", "clone --depth 1 -b v2.3.1 https://github.com/erincatto/Box2D.git Box2D");
             }
             if (!Directory.Exists("Vulkan-Headers"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.1.105 https://github.com/KhronosGroup/Vulkan-Headers.git Vulkan-Headers");
+                Utils.CallProcess("git", "clone --depth 1 -b v1.1.105 https://github.com/KhronosGroup/Vulkan-Headers.git Vulkan-Headers");
             }
             if (!Directory.Exists("Effekseer"))
             {
-                Utils.CallProcess("git", "clone --progress https://github.com/effekseer/Effekseer Effekseer");
+                Utils.CallProcess("git", "clone https://github.com/effekseer/Effekseer Effekseer");
                 Directory.SetCurrentDirectory("Effekseer");
                 Utils.CallProcess("git", "submodule update --init");
                 Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("tinygltf"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
+                Utils.CallProcess("git", "clone --depth 1 -b v2.2.0 https://github.com/syoyo/tinygltf.git tinygltf");
             }
             if (!Directory.Exists("imgui"))
             {
-                Utils.CallProcess("git", "clone --progress --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
+                Utils.CallProcess("git", "clone --depth 1 -b v1.72 https://github.com/ocornut/imgui.git imgui");
             }
             if (!Directory.Exists("noto-emoji"))
             {
@@ -486,6 +494,8 @@ namespace LuminoBuild.Tasks
                     }
                 }
             }
+
+            builder.CommitCache("ExternalProjects-" + BuildEnvironment.Target);
         }
     }
 }

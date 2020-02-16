@@ -30,6 +30,7 @@ choco install -y doxygen.install
 choco install -y python3
 choco install -y wixtoolset
 choco install -y vulkan-sdk
+choco install -y mingw
 ```
 
 ### macOS

@@ -4,8 +4,7 @@ using System.IO;
 
 namespace LuminoBuild
 {
-
-    public class EmscriptenBuildEnv
+    class EmscriptenBuildEnv
     {
         public const string emsdkVer = "1.39.7";
         public const string emVer = "1.39.7";
@@ -24,43 +23,53 @@ namespace LuminoBuild
         /// </summary>
         public static string EmscriptenSysRootLocal { get; set; }
 
-        public static void Initialize(string repoRootDir)
+        public static void Initialize(Builder builder)
         {
-            var targetBuildDir = Path.Combine(repoRootDir, "build", "Emscripten");
-            EmsdkDir = Path.Combine(targetBuildDir, "emsdk");
+            var cloneParentDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools");
+            //EmsdkDir = Path.Combine(targetBuildDir, "emsdk");
+            EmsdkDir = Path.Combine(builder.LuminoBuildCacheDir, "Tools", "emsdk");
             EmscriptenRoot = Path.Combine(EmsdkDir, "upstream", "emscripten");
             EmscriptenSysRootLocal = Path.Combine(EmscriptenRoot, "system", "local");
 
-            Directory.CreateDirectory(targetBuildDir);
+
 
             // Install emsdk
             if (BuildEnvironment.IsWebTarget && Utils.IsWin32)
             {
-                if (!Directory.Exists(EmsdkDir))
+                if (!builder.ExistsCache("BuildEnv-emsdk"))
                 {
-                    using (var cd = CurrentDir.Enter(targetBuildDir))
+                    if (!Directory.Exists(EmsdkDir))
                     {
-                        Utils.CallProcess("git", "clone https://github.com/juj/emsdk.git");
-
-                        //if (!Directory.Exists(EmscriptenDir))
+                        Directory.CreateDirectory(cloneParentDir);
+                        using (var cd = CurrentDir.Enter(cloneParentDir))
                         {
-                            Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
+                            Utils.CallProcess("git", "clone https://github.com/juj/emsdk.git");
 
-                            if (Utils.IsWin32)
-                                Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
-                            else
-                                Utils.CallProcess("emsdk", "install " + emsdkVer);
+                            //if (!Directory.Exists(EmscriptenDir))
+                            {
+                                Directory.SetCurrentDirectory(Path.GetFullPath(EmsdkDir));
 
-                            //Utils.CopyFile(
-                            //    Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
-                            //    Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
+                                if (Utils.IsWin32)
+                                    Utils.CallProcess("emsdk.bat", "install " + emsdkVer);
+                                else
+                                    Utils.CallProcess("emsdk", "install " + emsdkVer);
+
+                                //Utils.CopyFile(
+                                //    Path.Combine(repoRootDir, "external", "emscripten", "Emscripten.cmake"),
+                                //    Path.Combine(EmscriptenDir, "cmake", "Modules", "Platform"));
+                            }
                         }
                     }
-                }
 
-                EmscriptenFound = true;
+                    builder.CommitCache("BuildEnv-emsdk");
+                }
             }
 
+
+            if (Directory.Exists(EmsdkDir))
+            {
+                EmscriptenFound = true;
+            }
         }
     }
 }

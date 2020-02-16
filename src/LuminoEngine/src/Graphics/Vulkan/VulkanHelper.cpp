@@ -708,8 +708,6 @@ bool VulkanHelper::checkVulkanSupported()
 		vkDestroyInstance(instance, nullptr);
 	}
 
-	LN_LOG_DEBUG << u"vkCreateInstance: " << (int)result;
-
 	return result == VK_SUCCESS;
 }
 
