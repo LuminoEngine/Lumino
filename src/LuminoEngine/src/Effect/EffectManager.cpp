@@ -26,7 +26,6 @@
 #include <Vulkan/LLGI.TextureVulkan.h>
 #include <LLGI.Platform.h>
 #pragma comment(lib, "d3dcompiler.lib")
-//#pragma comment(lib, "C:/VulkanSDK/1.1.101.0/Lib32/vulkan-1.lib")
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtensionVulkan.hpp>
 #endif

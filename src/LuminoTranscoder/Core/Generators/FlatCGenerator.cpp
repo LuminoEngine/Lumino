@@ -664,7 +664,7 @@ ln::String FlatCSourceGenerator::makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::
 		if (methodInfo->returnType().type != PredefinedTypes::voidType)
 		{
 			if (methodInfo->returnType().type->isStruct())
-				returnAssignmentExpr.append("*outReturn = ln::detail::convertStructForcedt<{0}>", makeFlatClassName(methodInfo->returnType().type));
+				returnAssignmentExpr.append("*outReturn = ln::detail::convertStructForced<{0}>", makeFlatClassName(methodInfo->returnType().type));
 			else if (methodInfo->returnType().type->isClass())
 				if (methodInfo->returnType().strongReference)
 					returnAssignmentExpr.append("*outReturn = LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE");

@@ -21,11 +21,11 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_MSVC", "MSVC2017-x64-MT" };
                 //args = new string[] { "MakeInstaller_Win32", "MSVC2017-x64-MD" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
-                //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
+                args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
                 //args = new string[] { "MakeNativePackage", "--direct-task-execution" };
                 //args = new string[] { "BuildEngine_Emscripten" };
-                args = new string[] { "MakePackage_Ruby" };
+                //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
             }
 

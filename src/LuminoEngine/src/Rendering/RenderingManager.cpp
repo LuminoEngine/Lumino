@@ -92,6 +92,16 @@ void RenderingManager::init(const Settings& settings)
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
+	// Sprite
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/Sprite.lcfx.inl"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		MemoryStream stream(data, size);
+		m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(u"Sprite", &stream);
+	}
     // ClusteredShadingDefault
     {
         static const unsigned char data[] =
@@ -112,16 +122,15 @@ void RenderingManager::init(const Settings& settings)
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::DepthPrepass] = makeObject<Shader>(u"DepthPrepass", &stream);
     }
-    // Sprite
-    {
-        static const unsigned char data[] =
-        {
-#include "Resource/Sprite.lcfx.inl"
-        };
-        static const size_t size = LN_ARRAY_SIZE_OF(data);
-        MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(u"Sprite", &stream);
-    }
+	// BlackShader
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/BlackShader.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::BlackShader] = makeObject<Shader>(u"BlackShader", &stream);
+	}
 
 	// LuminosityHighPassShader
 	{
@@ -149,6 +158,15 @@ void RenderingManager::init(const Settings& settings)
 		};
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject<Shader>(u"BloomComposite", &stream);
+	}
+	// RadialBlur
+	{
+		const unsigned char data[] =
+		{
+#include "../ImageEffect/Resource/RadialBlur.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::RadialBlur] = makeObject<Shader>(u"RadialBlur", &stream);
 	}
 
     //#if 0

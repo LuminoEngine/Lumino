@@ -1,3 +1,6 @@
+// Copyright (c) 2020+ lriki. Distributed under the MIT license.
+
+// For render object black color filled.
 
 #include <Lumino.fxh>
 

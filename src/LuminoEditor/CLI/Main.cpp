@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 			
 			//"new", "Test1", "-t", "cmake",
             
-			"build", "Web",
+			//"build", "Web",
 			//"build", "Web",
 			
 			//"init", "RinoTutorial", "-t", "SimpleDesktop",
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 
             //"fxc", "Assets/LineWave.fx",
             //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
-            //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
+            "fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/RadialBlur.fx",
 
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
@@ -205,13 +205,13 @@ static int processCommands(int argc, char** argv)
 
 	if (parser.process(argc, argv))
 	{
-		auto workspace = ln::makeObject<lna::Workspace>();
-		auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
-
 		//--------------------------------------------------------------------------------
 		// new command
 		if (parser.has(newCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			NewCommand cmd;
 			if (newCommand_nameOption->hasValue()) {
 				cmd.projectName = newCommand_nameOption->value();
@@ -231,6 +231,9 @@ static int processCommands(int argc, char** argv)
 		// build command
 		else if (parser.has(buildCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			ln::String target = workspace->buildEnvironment()->defaultTargetName();
 			if (burildTargetArg->hasValue()) {
 				target = burildTargetArg->value();
@@ -249,6 +252,9 @@ static int processCommands(int argc, char** argv)
 		// run command
 		else if (parser.has(runCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			ln::String target = workspace->buildEnvironment()->defaultTargetName();
 			if (runCommand_targetArg->hasValue()) {
 				target = runCommand_targetArg->value();
@@ -273,6 +279,9 @@ static int processCommands(int argc, char** argv)
 		// restore command
 		else if (parser.has(restoreCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			if (!workspace->openMainProject(projectFile)) {
 				return 1;
 			}
@@ -299,19 +308,19 @@ static int processCommands(int argc, char** argv)
 		//    return cmd.execute(workspace->project());
 		//}
 		//--------------------------------------------------------------------------------
-		else if (parser.has(dev_installTools))
-		{
-			if (!workspace->dev_installTools()) {
-				return 1;
-			}
-		}
-		else if (parser.has(dev_openide))
-		{
-			if (!workspace->openMainProject(projectFile)) {
-				return 1;
-			}
-			workspace->dev_openIde(dev_openide_targetArg->value());
-		}
+		//else if (parser.has(dev_installTools))
+		//{
+		//	if (!workspace->dev_installTools()) {
+		//		return 1;
+		//	}
+		//}
+		//else if (parser.has(dev_openide))
+		//{
+		//	if (!workspace->openMainProject(projectFile)) {
+		//		return 1;
+		//	}
+		//	workspace->dev_openIde(dev_openide_targetArg->value());
+		//}
 		else
 		{
 			parser.printHelp();

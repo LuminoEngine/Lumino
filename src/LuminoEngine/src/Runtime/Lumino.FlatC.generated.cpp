@@ -1198,9 +1198,7 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        //*outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
-		*outReturn = ln::detail::convertStructForced<LnVector3>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
-		
+        *outReturn = ln::detail::convertStructForced<LnVector3>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
     }
     else {
         (ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
@@ -2632,7 +2630,7 @@ LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* 
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
@@ -2662,7 +2660,7 @@ LN_FLAT_API LnResult LnWorldObject_GetRotation(LnHandle worldobject, LnQuaternio
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+        *outReturn = ln::detail::convertStructForced<LnQuaternion>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
@@ -2700,7 +2698,7 @@ LN_FLAT_API LnResult LnWorldObject_GetScale(LnHandle worldobject, LnVector3* out
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
@@ -2730,7 +2728,7 @@ LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
@@ -3035,7 +3033,7 @@ LN_FLAT_API LnResult LnUIElement_GetPosition(LnHandle uielement, LnVector3* outR
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
@@ -3065,7 +3063,7 @@ LN_FLAT_API LnResult LnUIElement_GetRotation(LnHandle uielement, LnQuaternion* o
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+        *outReturn = ln::detail::convertStructForced<LnQuaternion>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
@@ -3103,7 +3101,7 @@ LN_FLAT_API LnResult LnUIElement_GetScale(LnHandle uielement, LnVector3* outRetu
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
@@ -3133,7 +3131,7 @@ LN_FLAT_API LnResult LnUIElement_GetCenterPoint(LnHandle uielement, LnVector3* o
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());

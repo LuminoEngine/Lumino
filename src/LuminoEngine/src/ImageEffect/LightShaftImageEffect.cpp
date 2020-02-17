@@ -24,10 +24,8 @@ LightShaftImageEffect::LightShaftImageEffect()
 void LightShaftImageEffect::init()
 {
     ImageEffect::init();
-
-	auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/RadialBlur.fx");
 	m_radialBlur = makeObject<Material>();
-	m_radialBlur->setShader(shader);
+	m_radialBlur->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::RadialBlur));
 }
 
 void LightShaftImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
