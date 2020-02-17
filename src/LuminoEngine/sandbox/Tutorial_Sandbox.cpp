@@ -3,28 +3,18 @@
 #include <LuminoEngine/UI/UIComboBox.hpp>
 using namespace ln;
 
-using DelegateSetTestDelegate = Delegate<void(void)>;
-
-void DelegateSetTest(Ref<DelegateSetTestDelegate> callback)
-{
-	callback->call();
-}
-
-
 
 class App : public Application
 {
 	virtual void onInit() override
 	{
-		auto button = UIButton::create(u"Button");
-		button->connectOnClicked([]() {
-			Debug::printf(u"Hello, UI!");
-		});
-		Engine::ui()->add(button);
-	}
+		//Engine::renderView()->setGuideGridEnabled(true);
+		//Engine::camera()->setPosition(3, 3, -3);
+		//Engine::camera()->lookAt(0, 0, 0);
 
-	virtual void onUpdate() override
-	{
+		auto texture = Texture2D::load(u"picture1.jpg");
+		auto sprite = Sprite::create(texture);
+		sprite->setSize(3, 3);
 	}
 };
 

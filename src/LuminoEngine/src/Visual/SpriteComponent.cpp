@@ -166,13 +166,6 @@ void SpriteSheet::serialize(Archive& ar)
 
 LN_OBJECT_IMPLEMENT(SpriteComponent, VisualComponent) {}
 
-////void SpriteComponent::registerType(EngineContext* context)
-////{
-////	context->registerType<SpriteComponent>({
-////		makeRef<PropertyInfo>("FrameIndex", LN_MAKE_GET_SET_PROPERTY_ACCESSOR(SpriteComponent, int, frameIndex, setFrameIndex)),
-////	});
-////}
-
 SpriteComponent::SpriteComponent()
     : m_material(nullptr)
     , m_size(-1.0f, -1.0f)
@@ -197,6 +190,7 @@ void SpriteComponent::init()
     //m_material->setEmissive(Color(1,1,1,0.5));
     setBlendMode(BlendMode::Alpha);
     setCullMode(CullMode::None);
+	setShadingModel(ShadingModel::Unlit);
 }
 
 void SpriteComponent::setTexture(Texture* texture)
@@ -275,7 +269,7 @@ void SpriteComponent::onRender(RenderingContext* context)
 			// Width is undefined.
 			actualSize.width = actualSize.height * (actualSourceRect.width / actualSourceRect.height);
 		}
-		else {
+		else if (actualSize.height < 0.0f) {
 			// Height is undefined.
 			actualSize.height = actualSize.width * (actualSourceRect.height / actualSourceRect.width);
 		}

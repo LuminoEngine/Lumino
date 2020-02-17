@@ -175,6 +175,7 @@ void DirectionalLightComponent::init()
 {
 	VisualComponent::init();
 
+#if 0
 	auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/LightDisc.fx");
 	m_material = makeObject<Material>();
 	m_material->setShader(shader);
@@ -185,6 +186,7 @@ void DirectionalLightComponent::init()
 	m_spriteMaterial = makeObject<Material>();
 	m_spriteMaterial->setMainTexture(tex2);
 	m_spriteMaterial->setShader(shader2);
+#endif
 }
 
 void DirectionalLightComponent::setShadowCast(bool enabled)

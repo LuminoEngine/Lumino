@@ -33,6 +33,9 @@ enum class BuiltinShader
 
 	BlackShader,
 
+	// for Sky
+	SkyLowAltitudeOptimized,
+
     ScreenBlurImageEffect,
     ToneImageEffect,
 
@@ -208,7 +211,7 @@ private:
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
-	std::array<Ref<Shader>, 11> m_builtinShaders;
+	std::array<Ref<Shader>, 12> m_builtinShaders;
     std::array<Ref<Material>, 2> m_builtinMaterials;
 };
 
