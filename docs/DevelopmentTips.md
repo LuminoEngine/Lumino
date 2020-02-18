@@ -1,6 +1,67 @@
 Development Tips
 ==========
 
+
+Web
+----------
+
+```
+dotnet run -- BuildExternalProjects Emscripten
+dotnet run -- BuildEngine_Emscripten
+dotnet run -- MakeNativePackage
+```
+
+```
+cp build/Emscripten/EngineInstall/lib/libLuminoEngine-static.a build/NativePackage/Engine/Emscripten/lib/libLuminoEngine-static.a
+```
+
+```
+python -m http.server 8000
+```
+
+### 起動できない場合…
+
+Conosle:
+
+```
+(index):1 wasm streaming compile failed: TypeError: Failed to execute 'compile' on 'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'.
+```
+↓こんなかんじの MIME type つけてあげる。ブラウザは Shift+F5 でリロード。
+```
+# -*- coding: utf-8 -*-
+#test on python 3.4 ,python of lower version  has different module organization.
+import http.server
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import socketserver
+
+PORT = 8000
+
+Handler = http.server.SimpleHTTPRequestHandler
+Handler.extensions_map={
+    '.wasm': 'application/wasm',
+    '.manifest': 'text/cache-manifest',
+    '.html': 'text/html',
+    '.png': 'image/png',
+    '.jpg': 'image/jpg',
+    '.svg':	'image/svg+xml',
+    '.css':	'text/css',
+    '.js': 'application/x-javascript',
+    '': 'application/octet-stream', # Default
+}
+httpd = socketserver.TCPServer(("", PORT), Handler)
+
+print("serving at port", PORT)
+httpd.serve_forever()
+```
+
+
+```
+(index):1 Cannot enlarge memory arrays to size 17014784 bytes (OOM). Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value 16777216, (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 
+```
+↓
+
+
+
 Windows
 ----------
 

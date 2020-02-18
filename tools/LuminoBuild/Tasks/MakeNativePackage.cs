@@ -9,7 +9,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeNativePackage";
 
-        public override List<string> Dependencies => new List<string>() { "BuildEngine_MSVC" };
+        //public override List<string> Dependencies => new List<string>() { "BuildEngine_MSVC" };
 
         public bool fileMoving = false;
 

@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
 			
 
-			//"run", "Web", //"Windows",
+			"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 
             //"fxc", "Assets/LineWave.fx",
             //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
-            "fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
+            //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
 
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
