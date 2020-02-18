@@ -75,7 +75,7 @@ class App : public Application
     {
         auto texture = Texture2D::load(u"picture1.jpg");
         auto sprite = Sprite::load(texture);
-		sprite->setSize(3, 3);
+        sprite->setSize(3, 3);
     }
 };
 
@@ -91,6 +91,34 @@ LUMINO_APP(App);
 
 絵文字を描画する
 ----------
+
+サンプルをカスタマイズしたりテストコードを描くとき、すぐに使える画像として絵文字を利用できます。
+
+絵文字はテクスチャとして作成し、スプライトにセットすることで表示できます。
+
+# [C++](#tab/lang-cpp)
+```cpp
+#include <Lumino.hpp>
+
+class App : public Application
+{
+    virtual void onInit() override
+    {
+        auto texture = Texture2D::loadEmoji(u"🌱");
+        auto sprite = Sprite::load(texture);
+        sprite->setSize(3, 3);
+    }
+};
+
+LUMINO_APP(App);
+```
+# [Ruby](#tab/lang-ruby)
+```ruby
+
+```
+---
+
+
 
 上下・左右を反転して描画する
 ----------

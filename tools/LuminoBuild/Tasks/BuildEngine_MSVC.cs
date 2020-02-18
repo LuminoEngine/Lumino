@@ -19,7 +19,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_MSVC";
 
-        public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
+        //public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
 
         public class MSVCTargetInfo
         {
@@ -30,18 +30,33 @@ namespace LuminoBuild.Tasks
 
         public static Dictionary<string, MSVCTargetInfo> TargetInfoMap = new Dictionary<string, MSVCTargetInfo>()
         {
-            { "MSVC2017-x86-MD", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "OFF" } },
-            { "MSVC2017-x86-MT", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "ON" } },
-            { "MSVC2017-x64-MD", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Platform="x64", StaticRuntime = "OFF" } },
+            //{ "MSVC2017-x86-MD", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "OFF" } },
+            //{ "MSVC2017-x86-MT", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "ON" } },
+            //{ "MSVC2017-x64-MD", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Platform="x64", StaticRuntime = "OFF" } },
             { "MSVC2017-x64-MT", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Platform="x64", StaticRuntime = "ON" } },
         };
 
         public override void Build(Builder builder)
         {
-            var fileMoving = false;
-            var targetInfo = TargetInfoMap[BuildEnvironment.Target];
+            if (string.IsNullOrEmpty(BuildEnvironment.Target))
+            {
+                foreach (var i in TargetInfoMap)
+                {
+                    BuildTarget(builder, i.Key, i.Value);
+                }
+            }
+            else
+            {
+                // Run mainly from CI
+                var targetInfo = TargetInfoMap[BuildEnvironment.Target];
+                BuildTarget(builder, BuildEnvironment.Target, targetInfo);
+            }
+        }
 
-            var targetName = BuildEnvironment.TargetFullName;
+        private void BuildTarget(Builder builder, string targetName, MSVCTargetInfo targetInfo)
+        {
+            var fileMoving = false;
+
             var targetBuildDir = Path.Combine(builder.LuminoBuildDir, targetName);
             var installDir = Path.Combine(builder.LuminoRootDir, "build", targetName, BuildEnvironment.EngineInstallDirName);
 
@@ -67,7 +82,7 @@ namespace LuminoBuild.Tasks
                     $"-DLN_BUILD_TOOLS=ON",
                     $"-DLN_BUILD_SHARED_LIBRARY=ON",
                     $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
-                    $"-DLN_TARGET_ARCH:STRING={BuildEnvironment.Target}",
+                    $"-DLN_TARGET_ARCH:STRING={targetName}",
                     additional,
                     $" ../..",
                 };

@@ -8,7 +8,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_Emscripten";
 
-        public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
+        //public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
 
         public override void Build(Builder builder)
         {

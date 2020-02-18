@@ -4,11 +4,14 @@ using System.IO;
 
 namespace LuminoBuild.Tasks
 {
+    /// <summary>
+    /// Archive "build\NativePackage" as an installer.
+    /// </summary>
     class MakeInstaller_Win32 : BuildTask
     {
         public override string CommandName => "MakeInstaller_Win32";
 
-        public override List<string> Dependencies => new List<string>() { "BuildDocuments", "BuildEngine_MSVC" };
+        //public override List<string> Dependencies => new List<string>() { "BuildDocuments", "BuildEngine_MSVC" };
 
         public override void Build(Builder builder)
         {
