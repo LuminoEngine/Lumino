@@ -1,7 +1,11 @@
 ﻿#pragma once
 
 #ifdef LN_USE_SDL
+#ifdef __EMSCRIPTEN__
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
 #include "AudioDevice.hpp"
 
 namespace ln {

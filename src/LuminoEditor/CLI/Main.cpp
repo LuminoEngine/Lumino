@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 			
 			//"new", "Test2"//, "-t", "cmake",
             
-			"build", "Web",
+			//"build", "Web",
 			//"build", "Web",
 			
 			//"build", "-p", "Windows"
@@ -47,10 +47,10 @@ int main(int argc, char** argv)
 			//"restore",
 
             //"fxc", "Assets/LineWave.fx",
-            //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
+            //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
 
-            //"build", "assets",
+            "build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
             //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimpleConstantBuffer.fx"
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Graphics/Resource/VulkanSampleDeviceContext_26_shader_depth.fx",

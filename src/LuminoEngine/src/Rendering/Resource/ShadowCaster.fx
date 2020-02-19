@@ -39,9 +39,10 @@ technique Main
 {
 	pass ShadowCaster
 	{
-		ZEnable = FALSE;
-		ZWRITEENABLE = FALSE;
-		VertexShader = compile vs_3_0 VS_ShadowCaster();
-		PixelShader	 = compile ps_3_0 PS_ShadowCaster();
+		VertexShader = VS_ShadowCaster();
+		PixelShader	 = PS_ShadowCaster();
 	}
 }
+
+//		ZEnable = FALSE;
+//		ZWRITEENABLE = FALSE;

@@ -364,6 +364,7 @@ if (LN_USE_OPENAL)
     list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_OPENAL=1)
 endif()
 
+
 #------------------------------------------------------------------------------
 # Targets
 
@@ -408,6 +409,7 @@ ln_add_pch(LuminoEngine-static "src/LuminoEngine.PCH.h" "src/LuminoEngine.PCH.cp
 
 if (LN_EMSCRIPTEN)
     set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
+    set_target_properties(LuminoEngine-static PROPERTIES LINK_FLAGS "-s USE_SDL=2")
 endif()
 
 if (LN_BUILD_XCODE_FRAMEWORK)

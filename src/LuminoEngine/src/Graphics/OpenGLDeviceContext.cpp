@@ -1965,23 +1965,16 @@ GLSLShader::~GLSLShader()
 
 bool GLSLShader::create(const byte_t* code, int length, GLenum type, ShaderCompilationDiag* diag)
 {
-	// GL_VERTEX_SHADER, GL_FRAGMENT_SHADER
 	m_type = type;
 
 	m_shader = glCreateShader(m_type);
 	if (LN_ENSURE(m_shader != 0, "Failed to create shader.")) return false;
 
-    //const char* extcode =
-    //    "vec4 xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-    //    "#define texture(s, uv) xxTexture(s#_IsRT, s, uv)\n";
-
     const GLchar* codes[] = {
-        //extcode,
         (const GLchar*)code,
     };
 
 	GLint codeSize[] = {
-        //strlen(extcode),
         length,
     };
 	GL_CHECK(glShaderSource(m_shader, LN_ARRAY_SIZE_OF(codeSize), codes, codeSize));

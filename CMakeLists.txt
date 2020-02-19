@@ -89,7 +89,7 @@ if (DEFINED EMSCRIPTEN)
 
     set(LN_USE_SDL ON)
 
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
     #set_target_properties(LuminoEngine-static PROPERTIES COMPILE_FLAGS "-pthread")
 
 elseif (LN_ANDROID)
@@ -110,13 +110,12 @@ elseif(WIN32 OR APPLE OR UNIX)
 endif()
 
 
-if (MSVC AND LN_MSVC_USE_SDL)
-    set(LN_USE_SDL ON)
-else()
-    set(LN_USE_SDL OFF)
-endif()
-
 if (MSVC)
+    if (LN_MSVC_USE_SDL)
+        set(LN_USE_SDL ON)
+    else()
+        set(LN_USE_SDL OFF)
+    endif()
     add_definitions("/MP")
 endif()
 

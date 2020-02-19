@@ -16,12 +16,6 @@ elseif(WIN32 OR APPLE OR UNIX)
 
 endif()
 
-if (MSVC AND LN_MSVC_USE_SDL)
-    set(LN_USE_SDL ON)
-else()
-    set(LN_USE_SDL OFF)
-endif()
-
 #------------------------------------------------------------------------------
 
 

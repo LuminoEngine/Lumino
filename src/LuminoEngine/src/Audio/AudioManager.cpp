@@ -41,6 +41,7 @@ void AudioManager::init(const Settings& settings)
 	//m_primaryRenderingCommandList = makeRef<RenderingCommandList>(m_linearAllocatorPageManager);
 
 #ifdef LN_AUDIO_THREAD_ENABLED
+	LN_LOG_DEBUG << "Audio thread enabled.";
 	m_endRequested = false;
 	m_audioThread = std::make_unique<std::thread>(std::bind(&AudioManager::processThread, this));
     m_dispatheThread = std::make_unique<std::thread>(std::bind(&AudioManager::dispatheThread, this));
@@ -180,6 +181,7 @@ void AudioManager::removeSoundManagement(Sound* value)
 
 void AudioManager::processThread()
 {
+	LN_LOG_DEBUG << "Audio thread started.";
 	try
 	{
 		while (!m_endRequested)
@@ -196,6 +198,7 @@ void AudioManager::processThread()
 		m_audioThreadException.reset(e.copy());
         LN_LOG_ERROR << m_audioThreadException->getMessage();
 	}
+	LN_LOG_DEBUG << "Audio thread ended.";
 }
 
 void AudioManager::dispatheThread()
