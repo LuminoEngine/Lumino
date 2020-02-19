@@ -8,6 +8,7 @@
 
 namespace lna {
 
+bool Workspace::developMode = false;
 static Workspace* s_instance = nullptr;
 
 Workspace* Workspace::instance()
@@ -39,7 +40,7 @@ Workspace::Workspace()
 //#ifdef LN_DEBUG
 //	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
 //#else
-	m_buildEnvironment->setupPathes(EnvironmentPathBase::LocalPackage);
+	m_buildEnvironment->setupPathes(developMode);
 //#endif
 
 	m_projectTemplateManager = ln::makeObject2<ProjectTemplateManager>();

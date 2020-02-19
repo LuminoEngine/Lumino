@@ -25,21 +25,20 @@ int main(int argc, char** argv)
         ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
-			"<program>",
+			"<program>", "-d",
 			
-			//"new", "Test1", "-t", "cmake",
+			//"new", "Test2"//, "-t", "cmake",
             
-			//"build", "Web",
+			"build", "Web",
 			//"build", "Web",
 			
-			//"init", "RinoTutorial", "-t", "SimpleDesktop",
 			//"build", "-p", "Windows"
 
 			//"<program>", "dev-install-tools",
 
 			
 
-			"run", "Web", //"Windows",
+			//"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
@@ -159,7 +158,7 @@ static int processCommands(int argc, char** argv)
 	parser.addHelpOption();
 
 	//auto langOption = parser.addNamedValueOption(u"l", u"lang", u"language.", { u"cpp", u"rb" });
-
+	auto devOption = parser.addFlagOption(u"d", u"dev", u"Development mode.");
 
 	//--------------------------------------------------------------------------------
 	// new command
@@ -205,6 +204,11 @@ static int processCommands(int argc, char** argv)
 
 	if (parser.process(argc, argv))
 	{
+		if (devOption->isSet()) {
+			lna::Workspace::developMode = true;
+			CLI::info(u"Running on develop-mode.");
+		}
+
 		//--------------------------------------------------------------------------------
 		// new command
 		if (parser.has(newCommand))

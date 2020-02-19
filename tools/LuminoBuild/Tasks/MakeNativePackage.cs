@@ -25,6 +25,8 @@ namespace LuminoBuild.Tasks
                 string sourceBuildDir = Path.Combine(builder.LuminoBuildDir, target.Name);
                 if (Directory.Exists(sourceBuildDir))
                 {
+                    Console.WriteLine($"{target.Name}...");
+
                     string destinationEngineRoot = Path.Combine(destinationRootDir, "Engine", target.Name);
                     string destinationEngineIncludeDir = Path.Combine(destinationEngineRoot, "include");
                     string destinationEngineLibDir = Path.Combine(destinationEngineRoot, "lib");
@@ -43,18 +45,6 @@ namespace LuminoBuild.Tasks
 
                     // Engine libs
                     {
-                        Console.WriteLine($"Engine libs...");
-
-                        var srcDir = Path.Combine(engineInstallDir, "lib");
-                        Utils.CopyDirectory(srcDir, destinationEngineLibDir, recursive: false);
-                        if (fileMoving)
-                            Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
-                    }
-
-                    // Engine libs
-                    {
-                        Console.WriteLine($"Engine libs...");
-
                         var srcDir = Path.Combine(engineInstallDir, "lib");
                         Utils.CopyDirectory(srcDir, destinationEngineLibDir, recursive: false);
                         if (fileMoving)
@@ -78,6 +68,19 @@ namespace LuminoBuild.Tasks
                                     File.Copy(lib, Path.Combine(destinationEngineLibDir, Path.GetFileName(lib)), true);
                             }
                         }
+                    }
+
+                    // cmake
+                    {
+                        File.Copy(
+                            Path.Combine(builder.LuminoRootDir, "src", "LuminoConfig.cmake"),
+                            Path.Combine(destinationEngineRoot, "LuminoConfig.cmake"), true);
+                        File.Copy(
+                            Path.Combine(builder.LuminoRootDir, "src", "LuminoCommon.cmake"),
+                            Path.Combine(destinationEngineRoot, "LuminoCommon.cmake"), true);
+                        File.Copy(
+                            Path.Combine(builder.LuminoRootDir, "external", "ImportExternalLibraries.cmake"),
+                            Path.Combine(destinationEngineRoot, "ImportExternalLibraries.cmake"), true);
                     }
                 }
             }

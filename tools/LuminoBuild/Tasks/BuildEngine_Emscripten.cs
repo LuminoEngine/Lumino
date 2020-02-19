@@ -17,7 +17,7 @@ namespace LuminoBuild.Tasks
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir);
             var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.EngineInstallDirName);
             var cmakeSourceDir = builder.LuminoRootDir;
-            var dependenciesRoot = EmscriptenBuildEnv.EmscriptenSysRootLocal;
+            var dependenciesRoot = Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall");
 
             Directory.CreateDirectory(buildDir);
 

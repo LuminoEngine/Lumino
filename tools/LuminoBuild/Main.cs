@@ -19,12 +19,12 @@ namespace LuminoBuild
             if (args.Length == 0)
             {
                 //args = new string[] { "BuildEngine_MSVC" };
-                //args = new string[] { "MakeInstaller_Win32" };
+                args = new string[] { "MakeInstaller_Win32" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
                 //args = new string[] { "MakeNativePackage", "--direct-task-execution" };
-                args = new string[] { "BuildEngine_Emscripten" };
+                //args = new string[] { "BuildEngine_Emscripten" };
                 //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
             }

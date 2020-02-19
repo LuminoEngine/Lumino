@@ -111,11 +111,9 @@ namespace LuminoBuild.Tasks
 
             Utils.CallProcess(script); // bat の中でエラーが発生すれば、例外に乗って出てくる
 
-
             // emcmake で find_library などを行う場合、Emscripten のシステムフォルダ以外は検索しないようにツールチェインファイルで封印されている。
             // Lumino 本体のビルド時にライブラリを探すことができるようにするため、システムフォルダに一式コピーしておく。
-            //Directory.CreateDirectory()
-            Utils.CopyDirectory(installDir, Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, projectName));
+            Utils.CopyDirectory(installDir, Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall", projectName));
         }
 
         private void BuildProjectAndroid(Builder builder, string projectDirName, string externalSourceDir, string abi, string buildType, string additionalOptions = "")
@@ -373,7 +371,7 @@ namespace LuminoBuild.Tasks
                 // Emscripten
                 if (BuildEnvironment.IsWebTarget)
                 {
-                    var externalInstallDir = EmscriptenBuildEnv.EmscriptenSysRootLocal;
+                    var externalInstallDir = Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall");
                     var zlibInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "zlib"));
                     var pngIncludeDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "libpng", "include"));
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(externalInstallDir, "ogg"));

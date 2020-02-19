@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Lumino.Core</id>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
     <authors>lriki</authors>
     <owners>lriki</owners>
     <licenseUrl>https://github.com/lriki/Lumino/blob/master/LICENSE</licenseUrl>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Portable C++ class library</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2019 lriki</copyright>
+    <copyright>Copyright 2020 lriki</copyright>
     <tags>C++</tags>
   </metadata>
 </package>

@@ -12,6 +12,7 @@ class Workspace
     : public ln::Object
 {
 public:
+	static bool developMode;
     static Workspace* instance();
 	Workspace();
 	virtual ~Workspace();

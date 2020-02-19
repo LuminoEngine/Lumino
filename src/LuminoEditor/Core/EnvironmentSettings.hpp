@@ -4,30 +4,30 @@
 namespace lna {
 
 // プロジェクトテンプレートなどの検索パスの基準
-enum class EnvironmentPathBase
-{
-	// 環境変数 LUMINO_PATH を基準とする
-	//EnvironmentVariable,
-
-	// 実行ファイルからフォルダをさかのぼり、パッケージのルートを検索する (インストールせずに使用する)
-	LocalPackage,
-
-	// 実行ファイルからフォルダをさかのぼり、リポジトリのルートを検索する (主にツールのデバッグで使用する)
-	Repository,
-};
+//enum class EnvironmentPathBase
+//{
+//	// 環境変数 LUMINO_PATH を基準とする
+//	//EnvironmentVariable,
+//
+//	// 実行ファイルからフォルダをさかのぼり、パッケージのルートを検索する (インストールせずに使用する)
+//	LocalPackage,
+//
+//	// 実行ファイルからフォルダをさかのぼり、リポジトリのルートを検索する (主にツールのデバッグで使用する)
+//	Repository,
+//};
 
 class BuildEnvironment
 	: public ln::RefObject
 {
 public:
 	BuildEnvironment();
-	void setupPathes(EnvironmentPathBase pathBase);
+	void setupPathes(bool developMode);
 	ln::Result prepareEmscriptenSdk();
 
 	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
 
 	Language defaultLanguage() const { return m_defaultLanguage; }
-	EnvironmentPathBase actualPathBase() const { return m_actualPathBase; }
+	//EnvironmentPathBase actualPathBase() const { return m_actualPathBase; }
 
 	// Pathes
 	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
@@ -54,6 +54,8 @@ public:
 	const ln::Path& androidNdkRootDir() const { return m_androidNdkRootDir; }
 	const ln::Path& androidCMakeToolchain() const { return m_androidCMakeToolchain; }
 
+	bool engineDevelopmentMode() const { return !m_engineDevelopmentRepoRootDir.isEmpty(); }
+
 	static ln::Path findLocalPackageForTesting();
 
 private:
@@ -65,7 +67,7 @@ private:
 
 	ln::String m_defaultTargetName;
 	Language m_defaultLanguage;
-	EnvironmentPathBase m_actualPathBase;
+	//EnvironmentPathBase m_actualPathBase;
 
 	ln::Path m_appDataDirPath;
 	ln::Path m_luminoPackageRootDir;
@@ -89,6 +91,9 @@ private:
 	ln::Path m_androidSdkNinja;
 	ln::Path m_androidNdkRootDir;
 	ln::Path m_androidCMakeToolchain;
+
+	ln::Path m_engineDevelopmentRepoRootDir;
+	//bool m_engineDevelopmentMode;
 };
 
 } // namespace lna

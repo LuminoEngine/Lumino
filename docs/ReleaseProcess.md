@@ -4,15 +4,19 @@
 バージョン番号の修正
 ----------
 
-* src/LuminoCore/NuGet/Lumino.Core.nuspec
-* tools/LuminoBuild/LuminoBuildTool.cs
+- src/LuminoCore/NuGet/Lumino.Core.nuspec
+- tools/LuminoBuild/LuminoBuildTool.cs
+    - GUID も修正する。`powershell -Command "[Guid]::NewGuid()"` で打ち出せる。
+
+
+
 
 
 ビルド
 ----------
 ### Windows
 
-[Developer Command Prompt for VS2017] で以下を実行する。
+[Developer Command Prompt] で以下を実行する。
 
 ```
 dotnet run
