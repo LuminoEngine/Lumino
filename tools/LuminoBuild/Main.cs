@@ -19,12 +19,14 @@ namespace LuminoBuild
             if (args.Length == 0)
             {
                 //args = new string[] { "BuildEngine_MSVC" };
-                args = new string[] { "MakeInstaller_Win32" };
+                //args = new string[] { "MakeInstaller_Win32" };
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
+                //args = new string[] { "BuildExternalProjects", "Android-x86_64" };
                 //args = new string[] { "MakeNativePackage", "--direct-task-execution" };
                 //args = new string[] { "BuildEngine_Emscripten" };
+                args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
             }
@@ -54,6 +56,7 @@ namespace LuminoBuild
             BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
             BuildEnvironment.Initialize(builder);
             EmscriptenBuildEnv.Initialize(builder);
+            AndoridBuildEnv.Initialize(builder);
 
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
 
@@ -71,7 +74,7 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.CompressPackage());
             builder.Tasks.Add(new Tasks.CopyEngineLibsToRepoRoot());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
-            builder.Tasks.Add(new Tasks.BuildEngine_AndroidJNI());
+            builder.Tasks.Add(new Tasks.BuildEngine_Android());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
             builder.Tasks.Add(new Tasks.MakeNativePackage());
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());

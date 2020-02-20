@@ -30,7 +30,7 @@ namespace LuminoBuild.Rules
                 builder.DoTask("BuildEngine_Emscripten");
             }
 
-            if (BuildEnvironment.AndroidStudioFound)
+            if (AndoridBuildEnv.AndroidStudioFound)
             {
                 builder.DoTask("BuildEngine_AndroidJNI");
             }

@@ -36,5 +36,7 @@ jobs:
           ${{ env.cache-version }}-ExternalInstall-
 
     - name: Build
-      run: dotnet run -- BuildEngine_Emscripten Emscripten
+      run: |
+        dotnet run -- BuildExternalProjects Emscripten
+        dotnet run -- BuildEngine_Emscripten Emscripten
       

@@ -2,7 +2,7 @@
 
 if (DEFINED EMSCRIPTEN)
     set(LN_EMSCRIPTEN ON)
-    set(LN_USE_SDL ON)
+    #set(LN_USE_SDL ON)
 
 elseif (LN_ANDROID)
 

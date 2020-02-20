@@ -26,7 +26,6 @@ if (NOT DEFINED LN_BUILD_DIRECTORY)
     set(LN_BUILD_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../build/${LN_TARGET_ARCH})
 endif()
 
-
 #-------------------------------------------------------------------------------
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

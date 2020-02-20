@@ -1,6 +1,17 @@
 Development Tips
 ==========
 
+Android
+----------
+
+```
+dotnet run -- BuildExternalProjects Android-x86_64
+dotnet run -- BuildExternalProjects Android-x86
+dotnet run -- BuildExternalProjects Android-arm64-v8a
+dotnet run -- BuildExternalProjects Android-armeabi-v7a
+
+```
+
 
 Web
 ----------
@@ -13,6 +24,9 @@ dotnet run -- MakeNativePackage
 
 ```
 cp build/Emscripten/EngineInstall/lib/libLuminoEngine-static.a build/NativePackage/Engine/Emscripten/lib/libLuminoEngine-static.a
+or
+cp build/Emscripten/src/LuminoCore/libLuminoCore.a build/Emscripten/emsdk/upstream/emscripten/system/local/LuminoEngine/lib/libLuminoCore.a
+cp build/Emscripten/src/LuminoEngine/libLuminoEngine-static.a build/Emscripten/emsdk/upstream/emscripten/system/local/LuminoEngine/lib/libLuminoEngine-static.a
 ```
 
 ```

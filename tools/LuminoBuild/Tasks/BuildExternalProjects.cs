@@ -116,39 +116,42 @@ namespace LuminoBuild.Tasks
             Utils.CopyDirectory(installDir, Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall", projectName));
         }
 
-        private void BuildProjectAndroid(Builder builder, string projectDirName, string externalSourceDir, string abi, string buildType, string additionalOptions = "")
+        private void BuildProjectAndroid(Builder builder, string projectDirName, string externalSourceDir, string targetName, string additionalOptions = "")
         {
             var projectName = Path.GetFileName(projectDirName);
             string cmakeHomeDir = Path.Combine(externalSourceDir, projectDirName);//builder.LuminoRootDir;
-            string platform = BuildEnvironment.AndroidTargetPlatform;
-            
-            var targetName = $"Android-{abi}-{buildType}";
-            var buildDir = builder.GetExternalProjectBuildDir(targetName, projectName);
+            string platform = AndoridBuildEnv.AndroidTargetPlatform;
             var installDir = builder.GetExternalProjectInstallDir(targetName, projectName);
 
-            var args = new string[]
+            foreach (var config in new string[] { "Debug", "Release" })
             {
-                $"-H{cmakeHomeDir}",
-                $"-B{buildDir}",
-                $"-DLN_TARGET_ARCH_NAME={targetName}",
-                $"-DCMAKE_INSTALL_PREFIX={installDir}",
-                $"-DCMAKE_DEBUG_POSTFIX=d",
-                $"-DANDROID_ABI={abi}",
-                $"-DANDROID_PLATFORM={platform}",
-                $"-DCMAKE_BUILD_TYPE={buildType}",
-                $"-DANDROID_NDK={BuildEnvironment.AndroidNdkRootDir}",
-                $"-DCMAKE_CXX_FLAGS=-std=c++14",
-                $"-DANDROID_STL=c++_shared",
-                $"-DCMAKE_TOOLCHAIN_FILE={BuildEnvironment.AndroidCMakeToolchain}",
-                $"-DCMAKE_MAKE_PROGRAM={BuildEnvironment.AndroidSdkNinja}",
-                $"-DANDROID_NATIVE_API_LEVEL=26",
-                additionalOptions,
-                $"-G\"Android Gradle - Ninja\"",
-            };
+                //var targetName = $"Android-{abi}-{buildType}";
+                var buildDir = Path.Combine(builder.GetExternalProjectBuildDir(targetName, projectName), config);
 
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, string.Join(' ', args));
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + buildDir);
-            Utils.CallProcess(BuildEnvironment.AndroidSdkCMake, "--build " + buildDir + " --target install");
+                var args = new string[]
+                {
+                    $"-H{cmakeHomeDir}",
+                    $"-B{buildDir}",
+                    $"-DLN_TARGET_ARCH={targetName}",
+                    $"-DCMAKE_INSTALL_PREFIX={installDir}",
+                    $"-DCMAKE_DEBUG_POSTFIX=d",
+                    $"-DANDROID_ABI={AndoridBuildEnv.GetABIFromTargetName(targetName)}",
+                    $"-DANDROID_PLATFORM={platform}",
+                    $"-DCMAKE_BUILD_TYPE={config}",
+                    $"-DANDROID_NDK={AndoridBuildEnv.AndroidNdkRootDir}",
+                    $"-DCMAKE_CXX_FLAGS=-std=c++14",
+                    $"-DANDROID_STL=c++_shared",
+                    $"-DCMAKE_TOOLCHAIN_FILE={AndoridBuildEnv.AndroidCMakeToolchain}",
+                    $"-DCMAKE_MAKE_PROGRAM={AndoridBuildEnv.AndroidSdkNinja}",
+                    $"-DANDROID_NATIVE_API_LEVEL=26",
+                    additionalOptions,
+                    $"-G\"Android Gradle - Ninja\"",
+                };
+
+                Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, string.Join(' ', args));
+                Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, $"--build {buildDir} ");
+                Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, $"--build {buildDir} --target install");
+            }
         }
 
         public override void Build(Builder builder)
@@ -347,24 +350,26 @@ namespace LuminoBuild.Tasks
                 }
 
                 // Android
-                if (BuildEnvironment.AndroidStudioFound && BuildEnvironment.IsAndroidTarget)
+                if (LuminoBuild.AndoridBuildEnv.AndroidStudioFound && BuildEnvironment.IsAndroidTarget)
                 {
-                    foreach (var target in BuildEngine_AndroidJNI.Targets)
+                    //foreach (var target in BuildEngine_AndroidJNI.Targets)
                     {
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "zlib"));
-                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
-                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"Android-{target.ABI}-{target.BuildType}", "ExternalInstall", "ogg"));
+                        var targetName = BuildEnvironment.Target;
 
-                        BuildProjectAndroid(builder, "zlib", reposDir, target.ABI, target.BuildType);
-                        BuildProjectAndroid(builder, "libpng", reposDir, target.ABI, target.BuildType, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
-                        BuildProjectAndroid(builder, "freetype2", reposDir, target.ABI, target.BuildType, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
-                        BuildProjectAndroid(builder, "ogg", reposDir, target.ABI, target.BuildType);
-                        BuildProjectAndroid(builder, "vorbis", reposDir, target.ABI, target.BuildType, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
-                        BuildProjectAndroid(builder, "bullet3", reposDir, target.ABI, target.BuildType, bulletOptions);
-                        BuildProjectAndroid(builder, "pcre", reposDir, target.ABI, target.BuildType, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
-                        BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir, target.ABI, target.BuildType, "-DTMXLITE_STATIC_LIB=ON");
-                        BuildProjectAndroid(builder, "Box2D/Box2D", reposDir, target.ABI, target.BuildType, "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
-                        BuildProjectAndroid(builder, "Vulkan-Headers", reposDir, target.ABI, target.BuildType);
+                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{targetName}", "ExternalInstall", "zlib"));
+                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
+                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{targetName}", "ExternalInstall", "ogg"));
+
+                        BuildProjectAndroid(builder, "zlib", reposDir,targetName);
+                        BuildProjectAndroid(builder, "libpng", reposDir,targetName, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                        BuildProjectAndroid(builder, "freetype2", reposDir,targetName, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
+                        BuildProjectAndroid(builder, "ogg", reposDir,targetName);
+                        BuildProjectAndroid(builder, "vorbis", reposDir,targetName, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");
+                        BuildProjectAndroid(builder, "bullet3", reposDir,targetName, bulletOptions);
+                        BuildProjectAndroid(builder, "pcre", reposDir,targetName, "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
+                        BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir,targetName, "-DTMXLITE_STATIC_LIB=ON");
+                        BuildProjectAndroid(builder, "Box2D/Box2D", reposDir,targetName, "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
+                        BuildProjectAndroid(builder, "Vulkan-Headers", reposDir,targetName);
                     }
                 }
 

@@ -327,6 +327,17 @@ namespace LuminoBuild
         /// </summary>
         /// <param name="pattern">Pattern.</param>
         /// <param name="distDir">Dist dir.</param>
+        public static void CopyFile2(string src, string dst)
+        {
+            File.Copy(src, dst, true);
+            Console.WriteLine($"Copy: {src} to {dst}");
+        }
+        
+        /// <summary>
+        /// ファイルを別のフォルダへコピーする (ファイル名は変更しない)
+        /// </summary>
+        /// <param name="pattern">Pattern.</param>
+        /// <param name="distDir">Dist dir.</param>
         public static void CopyFile(string srcFile, string dstDir)
         {
             File.Copy(srcFile, dstDir + "/" + Path.GetFileName(srcFile), true);
@@ -412,6 +423,8 @@ namespace LuminoBuild
         /// <param name="fileName"></param>
         public static void DownloadFile(string url, string fileName)
         {
+            Console.WriteLine($"Download: {url} to {fileName}");
+
             var request = System.Net.WebRequest.Create(url);
             var response = request.GetResponse();
             var stream = response.GetResponseStream();
@@ -443,6 +456,7 @@ namespace LuminoBuild
         {
             if (!Directory.Exists(dirPath) || force)
             {
+                Console.WriteLine($"Extract: {zipFilePath} to {dirPath}");
                 ZipFile.ExtractToDirectory(zipFilePath, dirPath);
             }
         }

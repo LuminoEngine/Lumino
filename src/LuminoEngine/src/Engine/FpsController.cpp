@@ -124,7 +124,9 @@ void FpsController::measureTimes(uint64_t externalElapsedTime, uint64_t frameEla
         m_externalTimes[m_frameCount] = externalElapsedTime;
         m_frameTimes[m_frameCount] = frameElapsedTime;
 
-        m_minTime = std::max(std::min(m_minTime, frameElapsedTime), 0ULL);
+        //m_minTime = std::max(std::min(m_minTime, frameElapsedTime), (uint64_t)0);
+		//if (frameElapsedTime < m_minTime) m_minTime = 
+		m_minTime = std::min(m_minTime, frameElapsedTime);
         m_maxTime = std::max(m_maxTime, frameElapsedTime);
 
         if (m_frameCount == m_frameTimes.size() - 1) {

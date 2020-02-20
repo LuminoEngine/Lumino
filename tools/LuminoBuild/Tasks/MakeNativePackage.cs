@@ -72,15 +72,15 @@ namespace LuminoBuild.Tasks
 
                     // cmake
                     {
-                        File.Copy(
+                        Utils.CopyFile2(
                             Path.Combine(builder.LuminoRootDir, "src", "LuminoConfig.cmake"),
-                            Path.Combine(destinationEngineRoot, "LuminoConfig.cmake"), true);
-                        File.Copy(
+                            Path.Combine(destinationEngineRoot, "LuminoConfig.cmake"));
+                        Utils.CopyFile2(
                             Path.Combine(builder.LuminoRootDir, "src", "LuminoCommon.cmake"),
-                            Path.Combine(destinationEngineRoot, "LuminoCommon.cmake"), true);
-                        File.Copy(
+                            Path.Combine(destinationEngineRoot, "LuminoCommon.cmake"));
+                        Utils.CopyFile2(
                             Path.Combine(builder.LuminoRootDir, "external", "ImportExternalLibraries.cmake"),
-                            Path.Combine(destinationEngineRoot, "ImportExternalLibraries.cmake"), true);
+                            Path.Combine(destinationEngineRoot, "ImportExternalLibraries.cmake"));
                     }
                 }
             }
