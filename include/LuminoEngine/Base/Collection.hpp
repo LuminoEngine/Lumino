@@ -406,7 +406,7 @@ protected:
 
 	virtual int getItemCount() const
 	{
-		return m_data.size();
+		return static_cast<int>(m_data.size());
 	}
 
 	virtual const Variant* getItemAsVariant(int index)

@@ -192,7 +192,7 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 	// for tool development and debuging.
 	auto& envSettings = project()->workspace()->buildEnvironment();
 	if (lna::Workspace::developMode) {
-		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->luminoPackageRootDir()));
+		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->engineDevelopmentRepoRootDir()));
 	}
 
 	auto buildDir = ln::Path(project()->buildDir(), arch);

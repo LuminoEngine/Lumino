@@ -55,6 +55,7 @@ public:
 	const ln::Path& androidCMakeToolchain() const { return m_androidCMakeToolchain; }
 
 	bool engineDevelopmentMode() const { return !m_engineDevelopmentRepoRootDir.isEmpty(); }
+	const ln::Path& engineDevelopmentRepoRootDir() const { return m_engineDevelopmentRepoRootDir; }
 
 	static ln::Path findLocalPackageForTesting();
 
