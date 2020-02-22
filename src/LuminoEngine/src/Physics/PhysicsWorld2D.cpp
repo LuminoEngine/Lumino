@@ -199,6 +199,7 @@ void EdgeListCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2Fix
 
 PhysicsObject2D::PhysicsObject2D()
 	: m_ownerWorld(nullptr)
+	, m_body(nullptr)
     , m_listener(nullptr)
     , m_ownerData(nullptr)
 {
@@ -264,6 +265,13 @@ void PhysicsObject2D::onRemoveFromPhysicsWorld()
 {
 }
 
+void PhysicsObject2D::attemptAddToActiveWorld()
+{
+	if (auto& activeWorld = detail::EngineDomain::physicsManager()->activePhysicsWorld2D()) {
+		activeWorld->addPhysicsObject(this);
+	}
+}
+
 void PhysicsObject2D::beginContact(PhysicsObject2D* otherObject)
 {
     m_contactBodies.add(otherObject);
@@ -287,8 +295,7 @@ void PhysicsObject2D::endContact(PhysicsObject2D* otherObject)
 // TriggerBody2D
 
 TriggerBody2D::TriggerBody2D()
-    : m_body(nullptr)
-    , m_group(0x0000FFFF)
+    : m_group(0x0000FFFF)
     , m_groupMask(0x0000FFFF)
 	, m_dirtyFlags(DirtyFlags_All)
     , m_position()
@@ -299,6 +306,7 @@ TriggerBody2D::TriggerBody2D()
 void TriggerBody2D::init()
 {
     PhysicsObject2D::init();
+	attemptAddToActiveWorld();
 }
 
 void TriggerBody2D::addCollisionShape(CollisionShape2D* shape)
@@ -442,9 +450,7 @@ Ref<RigidBody2D> RigidBody2D::create(CollisionShape2D* shape)
 }
 
 RigidBody2D::RigidBody2D()
-    : m_body(nullptr)
-    //, m_fixtures()
-	, m_rotation(0)
+    : m_rotation(0)
     , m_mass(0.0f)
     , m_friction(0.0f)
     , m_restitution(0.0f)
@@ -465,6 +471,7 @@ void RigidBody2D::init(CollisionShape2D* shape)
 {
     PhysicsObject2D::init();
     addCollisionShape(shape);
+	attemptAddToActiveWorld();
 }
 
 void RigidBody2D::onDispose(bool explicitDisposing)
@@ -626,6 +633,8 @@ void RigidBody2D::onBeforeStepSimulation()
 
 //    m_body->SetLinearVelocity(LnToB2(m_velocity));
 
+	m_body->SetTransform(LnToB2(m_position), m_body->GetAngle());
+
     for (auto& c : m_applyCommands)
     {
         switch (c.type)
@@ -679,6 +688,114 @@ void RigidBody2D::onRemoveFromPhysicsWorld()
 }
 
 
+//==============================================================================
+// Joint2D
+
+Joint2D::Joint2D()
+	: m_world(nullptr)
+	, m_creationDirty(true)
+{
+}
+
+bool Joint2D::init()
+{
+	if (!Object::init()) return false;
+	return true;
+}
+
+void Joint2D::onDispose(bool explicitDisposing)
+{
+	removeFormWorld();
+	Object::onDispose(explicitDisposing);
+}
+
+void Joint2D::attemptAddToActiveWorld()
+{
+	if (auto& activeWorld = detail::EngineDomain::physicsManager()->activePhysicsWorld2D()) {
+		activeWorld->addJoint(this);
+	}
+}
+
+void Joint2D::removeFormWorld()
+{
+	if (m_world) {
+		m_world->removeJoint(this);
+	}
+}
+
+//==============================================================================
+// SpringJoint2D
+
+SpringJoint2D::SpringJoint2D()
+{
+}
+
+bool SpringJoint2D::init(PhysicsObject2D* bodyA, const Vector2& anchor1, PhysicsObject2D* bodyB, const Vector2& anchor2, float stiffness, float damping)
+{
+	if (!Joint2D::init()) return false;
+
+	m_bodyA = bodyA;
+	m_bodyB = bodyB;
+	m_anchorA = anchor1;
+	m_anchorB = anchor2;
+	m_stiffness = stiffness;
+	m_damping = damping;
+
+	attemptAddToActiveWorld();
+	return true;
+}
+
+void SpringJoint2D::setBodyA(PhysicsObject2D* value)
+{
+	if (m_bodyA != value) {
+		m_bodyA = value;
+		dirtyCreation();
+	}
+}
+
+void SpringJoint2D::setBodyB(PhysicsObject2D* value)
+{
+	if (m_bodyB != value) {
+		m_bodyB = value;
+		dirtyCreation();
+	}
+}
+
+void SpringJoint2D::setAnchorA(const Vector2& value)
+{
+	if (m_anchorA != value) {
+		m_anchorA = value;
+		dirtyCreation();
+	}
+}
+
+void SpringJoint2D::setAnchorB(const Vector2& value)
+{
+	if (m_anchorB != value) {
+		m_anchorB = value;
+		dirtyCreation();
+	}
+}
+
+bool SpringJoint2D::createJoint()
+{
+
+	b2DistanceJointDef jointDef;
+	jointDef.Initialize(m_bodyA->m_body, m_bodyB->m_body, b2Vec2(m_anchorA.x, m_anchorA.y), b2Vec2(m_anchorA.x, m_anchorA.y));
+	jointDef.collideConnected = true;
+	jointDef.frequencyHz = 1.0;
+	jointDef.dampingRatio = 0.1;
+	m_joint = static_cast<b2DistanceJoint*>(m_world->box2DWorld()->CreateJoint(&jointDef));
+	return true;
+}
+
+void SpringJoint2D::destroyJoint()
+{
+	if (m_joint) {
+		m_world->box2DWorld()->DestroyJoint(m_joint);
+		m_joint = nullptr;
+	}
+}
 
 class PhysicsWorld2DDebugDraw : public b2Draw
 {
@@ -933,10 +1050,17 @@ void PhysicsWorld2D::init()
 
 void PhysicsWorld2D::onDispose(bool explicitDisposing)
 {
+
     for (int i = m_objects.size() - 1; i >= 0; i--) {
         removePhysicsObject(m_objects[i]);
     }
     m_objects.clear();
+
+	updateJointList();
+	for (int i = m_joints.size() - 1; i >= 0; i--) {
+		removeJointInternal(m_joints[i]);
+	}
+	m_joints.clear();
 
     if (m_world) {
         LN_SAFE_DELETE(m_world);
@@ -995,9 +1119,16 @@ void PhysicsWorld2D::addPhysicsObject(PhysicsObject2D* physicsObject)
 {
 	if (LN_REQUIRE(physicsObject)) return;
 	if (LN_REQUIRE(!physicsObject->m_ownerWorld)) return;
-
-	m_objects.add(physicsObject);
 	physicsObject->m_ownerWorld = this;
+
+	if (m_inStepSimulation) {
+		LN_NOTIMPLEMENTED();
+	}
+	else {
+		m_objects.add(physicsObject);
+		//physicsObject->onBeforeStepSimulation();
+	}
+
 }
 
 void PhysicsWorld2D::removePhysicsObject(PhysicsObject2D* physicsObject)
@@ -1015,18 +1146,62 @@ void PhysicsWorld2D::removePhysicsObject(PhysicsObject2D* physicsObject)
     physicsObject->m_ownerWorld = nullptr;
 }
 
+// 追加系はすべて遅延追加とする。
+// よく初期設定で
+// auto node1 = ln::RigidBody2D::create(nodeShape);
+// node1->setMass(1);
+// node1->setPosition(ln::Vector3(-1, 0, 0));
+// のようにするが、create 時点での World 追加で b2Body が作られた後、
+// setMass したのでまた後で作り直さなければならなくなる。
+void PhysicsWorld2D::addJoint(Joint2D* joint)
+{
+	if (LN_REQUIRE(joint)) return;
+	if (LN_REQUIRE(!joint->m_world)) return;
+	joint->m_world = this;
+
+	//if (m_inStepSimulation) {
+		m_delayAddJoints.push_back(joint);
+	//}
+	//else {
+	//	addJointInternal(joint);
+	//}
+}
+
+void PhysicsWorld2D::removeJoint(Joint2D* joint)
+{
+	if (LN_REQUIRE(joint)) return;
+	if (LN_REQUIRE(joint->m_world == this)) return;
+
+	//if (m_inStepSimulation) {
+		m_delayRemoveJoints.push_back(joint);
+	//}
+	//else {
+	//	removeJointInternal(joint);
+	//}
+
+	joint->m_world = nullptr;
+}
+
 void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
 {
 	m_inStepSimulation = true;
 
-	// 推奨値 http://box2d.org/manual.pdf
-	const int32 velocityIterations = 8;
-	const int32 positionIterations = 3;
+
+
+
 
 	for (auto& obj : m_objects) {
 		obj->onBeforeStepSimulation();
 	}
 
+	updateJointList();
+
+
+	// 推奨値 http://box2d.org/manual.pdf
+	const int32 velocityIterations = 8;
+	const int32 positionIterations = 3;
+
+	m_world->SetGravity(b2Vec2(m_gravity.x, m_gravity.y));
 	m_world->Step(elapsedSeconds, velocityIterations, positionIterations);
 
 	for (auto& obj : m_objects) {
@@ -1053,6 +1228,45 @@ void PhysicsWorld2D::removeInternal(PhysicsObject2D* physicsObject)
 	if (m_objects.remove(physicsObject)) {
 		physicsObject->m_ownerWorld = nullptr;
 	}
+}
+
+void PhysicsWorld2D::addJointInternal(Joint2D* joint)
+{
+	m_joints.add(joint);
+	joint->createJoint();
+	joint->m_creationDirty = false;
+}
+
+void PhysicsWorld2D::removeJointInternal(Joint2D* joint)
+{
+	m_joints.remove(joint);
+	joint->destroyJoint();
+}
+
+void PhysicsWorld2D::updateJointList()
+{
+	if (!m_delayRemoveJoints.empty()) {
+		for (auto& joint : m_delayRemoveJoints) {
+			removeJointInternal(joint);
+		}
+		m_delayRemoveJoints.clear();
+	}
+
+	if (!m_delayAddJoints.empty()) {
+		for (auto& joint : m_delayAddJoints) {
+			addJointInternal(joint);
+		}
+		m_delayAddJoints.clear();
+	}
+
+	for (auto& joint : m_joints) {
+		if (joint->m_creationDirty) {
+			joint->destroyJoint();
+			joint->createJoint();
+			joint->m_creationDirty = false;
+		}
+	}
+
 }
 
 //==============================================================================
