@@ -17,6 +17,7 @@ class b2Body;
 class b2Fixture;
 class b2World;
 class b2FixtureDef;
+class b2Joint;
 class b2DistanceJoint;
 
 namespace ln {
@@ -449,6 +450,7 @@ public:
 	/** Remove the joint from the world. */
 	void removeFormWorld();
 
+
 LN_CONSTRUCT_ACCESS:
 	Joint2D();
 	virtual ~Joint2D() = default;
@@ -457,15 +459,19 @@ LN_CONSTRUCT_ACCESS:
 	void attemptAddToActiveWorld();
 
 protected:	// TODO: internal
+	void setJoint(b2Joint* joint);
+	b2Joint* joint() const { return m_joint; }
 	virtual bool createJoint() = 0;
-	virtual void destroyJoint() = 0;
+	void destroyJoint();
 	void dirtyCreation() { m_creationDirty = true; }
 	bool isCreationDirty() const { return m_creationDirty; }
 
 	PhysicsWorld2D* m_world;
+	b2Joint* m_joint;
 	bool m_creationDirty;
 
 	friend class PhysicsWorld2D;
+	friend class RigidBody2D;
 };
 
 
@@ -523,9 +529,9 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	virtual bool createJoint() override;
-	virtual void destroyJoint() override;
+	//virtual void destroyJoint() override;
 
-	b2DistanceJoint* m_joint;
+	//b2DistanceJoint* m_joint;
 	PhysicsObject2D* m_bodyA;
 	PhysicsObject2D* m_bodyB;
 	Vector2 m_anchorA;
@@ -551,9 +557,9 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	virtual bool createJoint() override;
-	virtual void destroyJoint() override;
+	//virtual void destroyJoint() override;
 
-	b2DistanceJoint* m_joint;
+	//b2DistanceJoint* m_joint;
 	PhysicsObject2D* m_bodyA;
 	PhysicsObject2D* m_bodyB;
 	Vector2 m_anchorA;
@@ -611,7 +617,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
     virtual void onDispose(bool explicitDisposing) override;
 
-private:
+public: // TODO:
 	void removeInternal(PhysicsObject2D* physicsObject);
 	void addJointInternal(Joint2D* joint);
 	void removeJointInternal(Joint2D* joint);

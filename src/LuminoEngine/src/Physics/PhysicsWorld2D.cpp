@@ -681,6 +681,20 @@ void RigidBody2D::onAfterStepSimulation()
 void RigidBody2D::onRemoveFromPhysicsWorld()
 {
 	if (m_body) {
+		b2JointEdge* j = m_body->GetJointList();
+		while (j) {
+			Joint2D* joint = reinterpret_cast<Joint2D*>(j->joint->GetUserData());
+			j = j->next;
+			if (joint) {
+				joint->destroyJoint();
+				physicsWorld()->addJointInternal(joint);
+			}
+		}
+
+
+		
+
+
 		m_body->GetWorld()->DestroyBody(m_body);
 		m_body = nullptr;
 		//m_fixtures.clear();
@@ -693,6 +707,7 @@ void RigidBody2D::onRemoveFromPhysicsWorld()
 
 Joint2D::Joint2D()
 	: m_world(nullptr)
+	, m_joint(nullptr)
 	, m_creationDirty(true)
 {
 }
@@ -705,7 +720,6 @@ bool Joint2D::init()
 
 void Joint2D::onDispose(bool explicitDisposing)
 {
-	removeFormWorld();
 	Object::onDispose(explicitDisposing);
 }
 
@@ -713,6 +727,21 @@ void Joint2D::attemptAddToActiveWorld()
 {
 	if (auto& activeWorld = detail::EngineDomain::physicsManager()->activePhysicsWorld2D()) {
 		activeWorld->addJoint(this);
+	}
+}
+
+void Joint2D::setJoint(b2Joint* joint)
+{
+	LN_DCHECK(!m_joint);
+	m_joint = joint;
+	joint->SetUserData(this);
+}
+
+void Joint2D::destroyJoint()
+{
+	if (m_joint) {
+		m_world->box2DWorld()->DestroyJoint(m_joint);
+		m_joint = nullptr;
 	}
 }
 
@@ -795,7 +824,7 @@ void SpringJoint2D::setLength(float value)
 	m_length = value;
 
 	if (m_joint) {
-		m_joint->SetLength(m_length);
+		static_cast<b2DistanceJoint*>(m_joint)->SetLength(m_length);
 	}
 }
 
@@ -807,16 +836,9 @@ bool SpringJoint2D::createJoint()
 	if (m_length > 0.0) jointDef.length = m_length;
 	jointDef.frequencyHz = 1.0;
 	jointDef.dampingRatio = 0.1;
-	m_joint = static_cast<b2DistanceJoint*>(m_world->box2DWorld()->CreateJoint(&jointDef));
+	b2Joint* joint = m_world->box2DWorld()->CreateJoint(&jointDef);
+	setJoint(joint);
 	return true;
-}
-
-void SpringJoint2D::destroyJoint()
-{
-	if (m_joint) {
-		m_world->box2DWorld()->DestroyJoint(m_joint);
-		m_joint = nullptr;
-	}
 }
 
 //==============================================================================
@@ -866,21 +888,13 @@ bool RopeJoint2D::createJoint()
 	jointDef.bodyB = m_bodyB->m_body;
 	jointDef.localAnchorA = LnToB2(m_anchorA);//LnToB2(m_bodyA->position() + m_anchorA);
 	jointDef.localAnchorB = LnToB2(m_anchorB);//LnToB2(m_bodyB->position() + m_anchorB);
-	jointDef.maxLength = 3;//((foodItemBody->GetPosition()) - dragonFlyAnchor->GetPosition()).Length();
+	jointDef.maxLength = ((m_bodyA->position() + m_anchorA) - (m_bodyB->position() + m_anchorB)).length();
 
 
-	m_joint = static_cast<b2DistanceJoint*>(m_world->box2DWorld()->CreateJoint(&jointDef));
+	b2Joint* joint = m_world->box2DWorld()->CreateJoint(&jointDef);
+	setJoint(joint);
 	return true;
 }
-
-void RopeJoint2D::destroyJoint()
-{
-	if (m_joint) {
-		m_world->box2DWorld()->DestroyJoint(m_joint);
-		m_joint = nullptr;
-	}
-}
-
 
 
 class PhysicsWorld2DDebugDraw : public b2Draw
@@ -1127,26 +1141,24 @@ void PhysicsWorld2D::init()
     m_debugDraw->init();
     m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit /*| b2Draw::e_aabbBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit*/);
 
-
-    b2Vec2 gravity(0.0f, -9.8);
-    m_world = LN_NEW b2World(gravity);
+	m_gravity = Vector2(0.0f, -9.8);
+    m_world = LN_NEW b2World(LnToB2(m_gravity));
     m_world->SetContactListener(m_contactListener.get());
     m_world->SetDebugDraw(m_debugDraw.get());
 }
 
 void PhysicsWorld2D::onDispose(bool explicitDisposing)
 {
-
-    for (int i = m_objects.size() - 1; i >= 0; i--) {
-        removePhysicsObject(m_objects[i]);
-    }
-    m_objects.clear();
-
 	updateJointList();
 	for (int i = m_joints.size() - 1; i >= 0; i--) {
 		removeJointInternal(m_joints[i]);
 	}
 	m_joints.clear();
+
+    for (int i = m_objects.size() - 1; i >= 0; i--) {
+        removePhysicsObject(m_objects[i]);
+    }
+    m_objects.clear();
 
     if (m_world) {
         LN_SAFE_DELETE(m_world);
@@ -1325,8 +1337,8 @@ void PhysicsWorld2D::addJointInternal(Joint2D* joint)
 
 void PhysicsWorld2D::removeJointInternal(Joint2D* joint)
 {
-	m_joints.remove(joint);
 	joint->destroyJoint();
+	m_joints.remove(joint);
 }
 
 void PhysicsWorld2D::updateJointList()
