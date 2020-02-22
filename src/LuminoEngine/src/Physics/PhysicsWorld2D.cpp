@@ -199,6 +199,7 @@ void EdgeListCollisionShape2D::resolveBox2DShape(b2Body* targetBody, const b2Fix
 
 PhysicsObject2D::PhysicsObject2D()
 	: m_ownerWorld(nullptr)
+	, m_position()
 	, m_body(nullptr)
     , m_listener(nullptr)
     , m_ownerData(nullptr)
@@ -298,7 +299,6 @@ TriggerBody2D::TriggerBody2D()
     : m_group(0x0000FFFF)
     , m_groupMask(0x0000FFFF)
 	, m_dirtyFlags(DirtyFlags_All)
-    , m_position()
     , m_rotation(0.0f)
 {
 }
@@ -726,8 +726,21 @@ void Joint2D::removeFormWorld()
 //==============================================================================
 // SpringJoint2D
 
+Ref<SpringJoint2D> SpringJoint2D::create()
+{
+	return ln::makeObject<ln::SpringJoint2D>();
+}
+
 SpringJoint2D::SpringJoint2D()
 {
+}
+
+bool SpringJoint2D::init()
+{
+	if (!Joint2D::init()) return false;
+
+	attemptAddToActiveWorld();
+	return true;
 }
 
 bool SpringJoint2D::init(PhysicsObject2D* bodyA, const Vector2& anchor1, PhysicsObject2D* bodyB, const Vector2& anchor2, float stiffness, float damping)
@@ -777,12 +790,21 @@ void SpringJoint2D::setAnchorB(const Vector2& value)
 	}
 }
 
+void SpringJoint2D::setLength(float value)
+{
+	m_length = value;
+
+	if (m_joint) {
+		m_joint->SetLength(m_length);
+	}
+}
+
 bool SpringJoint2D::createJoint()
 {
-
 	b2DistanceJointDef jointDef;
-	jointDef.Initialize(m_bodyA->m_body, m_bodyB->m_body, b2Vec2(m_anchorA.x, m_anchorA.y), b2Vec2(m_anchorA.x, m_anchorA.y));
+	jointDef.Initialize(m_bodyA->m_body, m_bodyB->m_body, LnToB2(m_bodyA->position() + m_anchorA), LnToB2(m_bodyB->position() + m_anchorB));
 	jointDef.collideConnected = true;
+	if (m_length > 0.0) jointDef.length = m_length;
 	jointDef.frequencyHz = 1.0;
 	jointDef.dampingRatio = 0.1;
 	m_joint = static_cast<b2DistanceJoint*>(m_world->box2DWorld()->CreateJoint(&jointDef));

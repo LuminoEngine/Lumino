@@ -163,6 +163,8 @@ class PhysicsObject2D
 public:
 	PhysicsWorld2D* physicsWorld() const { return m_ownerWorld; }
 
+	const Vector2& position() const { return m_position; }
+
 	/** このオブジェクトが属している PhysicsWorld2D からこのオブジェクトを除外します。 */
 	void removeFromPhysicsWorld();
 
@@ -180,6 +182,7 @@ public:
 
 
 public: // TODO: internal
+	Vector2 m_position;
 	b2Body* m_body;
     void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
     void setOwnerData(void* data) { m_ownerData = data; }
@@ -249,7 +252,6 @@ public:
     void setPosition(const Vector2& value);
     void setPosition(const Vector3& value) { return setPosition(value.xy()); }
 
-    const Vector2& position() const { return m_position; }
 
     /** 回転角度を設定します。(unit: radian) */
     void setRotation(float value);
@@ -305,7 +307,6 @@ private:
     std::vector<Ref<CollisionShape2D>> m_shapes;
     uint32_t m_group;
 	uint32_t m_groupMask;
-    Vector2 m_position;
     float m_rotation;
     uint32_t m_dirtyFlags;
 
@@ -424,7 +425,6 @@ private:
 
 	//std::vector<b2Fixture*> m_fixtures;
 	std::vector<Ref<CollisionShape2D>> m_shapes;
-	Vector2 m_position;
 	float m_rotation;
     Vector2 m_velocity;
 	float m_mass;
@@ -504,10 +504,21 @@ public:
 	/** BodyB 側の AnchorPoint を取得します。 */
 	const Vector2& anchorB() const { return m_anchorB; }
 
+	/** ばねの長さを設定します。(default: 0.0)
+	 *
+	 * これはばねの自然状態の長さで、2 つの Body 間の距離をこの値に保とうとします。
+	 * 値が 0.0 以下である場合、Joint 作成時の 2 つの Body 間の距離を使用します。
+	 */
+	void setLength(float value);
+
+	/** ばねの長さを取得します。 */
+	float length() const { return m_length; }
+
 
 LN_CONSTRUCT_ACCESS:
 	SpringJoint2D();
 	virtual ~SpringJoint2D() = default;
+	bool init();
 	bool init(PhysicsObject2D* bodyA, const Vector2& anchor1, PhysicsObject2D* bodyB, const Vector2& anchor2, float stiffness, float damping);
 
 private:
@@ -521,6 +532,7 @@ private:
 	Vector2 m_anchorB;
 	float m_stiffness;
 	float m_damping;
+	float m_length;
 };
 
 
