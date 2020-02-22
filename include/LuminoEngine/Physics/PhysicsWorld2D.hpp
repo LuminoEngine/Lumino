@@ -536,6 +536,30 @@ private:
 };
 
 
+class RopeJoint2D
+	: public Joint2D
+{
+public:
+	static Ref<RopeJoint2D> create();
+	static Ref<RopeJoint2D> create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB);
+
+LN_CONSTRUCT_ACCESS:
+	RopeJoint2D();
+	virtual ~RopeJoint2D() = default;
+	bool init();
+	bool init(PhysicsObject2D* bodyA, const Vector2& anchorA, PhysicsObject2D* bodyB, const Vector2& anchorB);
+
+private:
+	virtual bool createJoint() override;
+	virtual void destroyJoint() override;
+
+	b2DistanceJoint* m_joint;
+	PhysicsObject2D* m_bodyA;
+	PhysicsObject2D* m_bodyB;
+	Vector2 m_anchorA;
+	Vector2 m_anchorB;
+};
+
 
 struct RaycastResult2D
 {

@@ -819,6 +819,70 @@ void SpringJoint2D::destroyJoint()
 	}
 }
 
+//==============================================================================
+// RopeJoint2D
+
+Ref<RopeJoint2D> RopeJoint2D::create()
+{
+	return ln::makeObject<ln::RopeJoint2D>();
+}
+
+Ref<RopeJoint2D> RopeJoint2D::create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB)
+{
+	return ln::makeObject<ln::RopeJoint2D>(bodyA, Vector2::Zero, bodyB, Vector2::Zero);
+}
+
+RopeJoint2D::RopeJoint2D()
+{
+}
+
+bool RopeJoint2D::init()
+{
+	if (!Joint2D::init()) return false;
+
+	attemptAddToActiveWorld();
+	return true;
+}
+
+bool RopeJoint2D::init(PhysicsObject2D* bodyA, const Vector2& anchorA, PhysicsObject2D* bodyB, const Vector2& anchorB)
+{
+	if (!Joint2D::init()) return false;
+
+	m_bodyA = bodyA;
+	m_bodyB = bodyB;
+	m_anchorA = anchorA;
+	m_anchorB = anchorB;
+
+	attemptAddToActiveWorld();
+	return true;
+}
+
+bool RopeJoint2D::createJoint()
+{
+	b2RopeJointDef jointDef;
+
+
+	jointDef.bodyA = m_bodyA->m_body;
+	jointDef.bodyB = m_bodyB->m_body;
+	jointDef.localAnchorA = LnToB2(m_anchorA);//LnToB2(m_bodyA->position() + m_anchorA);
+	jointDef.localAnchorB = LnToB2(m_anchorB);//LnToB2(m_bodyB->position() + m_anchorB);
+	jointDef.maxLength = 3;//((foodItemBody->GetPosition()) - dragonFlyAnchor->GetPosition()).Length();
+
+
+	m_joint = static_cast<b2DistanceJoint*>(m_world->box2DWorld()->CreateJoint(&jointDef));
+	return true;
+}
+
+void RopeJoint2D::destroyJoint()
+{
+	if (m_joint) {
+		m_world->box2DWorld()->DestroyJoint(m_joint);
+		m_joint = nullptr;
+	}
+}
+
+
+
 class PhysicsWorld2DDebugDraw : public b2Draw
 {
 public:
