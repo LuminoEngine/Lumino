@@ -41,7 +41,7 @@ LN_OBJECT_IMPLEMENT(Sprite, VisualObject) {}
 
 Ref<Sprite> Sprite::create(Texture* texture)
 {
-	return makeObject<Sprite>(texture, -1, 1);
+	return makeObject<Sprite>(texture, -1, -1);
 }
 
 Ref<Sprite> Sprite::create(Texture* texture, float width, float height)

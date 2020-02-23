@@ -21,7 +21,7 @@ Sprite は画像を張り付けて表示するための板のようなもので�
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto texture = Texture2D::load(u"picture1.jpg");
         auto sprite = Sprite::load(texture);
@@ -71,7 +71,7 @@ LUMINO_APP(App);
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto texture = Texture2D::load(u"picture1.jpg");
         auto sprite = Sprite::load(texture);
@@ -92,7 +92,7 @@ LUMINO_APP(App);
 絵文字を描画する
 ----------
 
-サンプルをカスタマイズしたりテストコードを描くとき、すぐに使える画像として絵文字を利用できます。
+サンプルをカスタマイズしたりテストプログラムを描くときに、すぐに使える画像として絵文字を利用できます。
 
 絵文字はテクスチャとして作成し、スプライトにセットすることで表示できます。
 
@@ -102,11 +102,10 @@ LUMINO_APP(App);
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto texture = Texture2D::loadEmoji(u"🌱");
-        auto sprite = Sprite::load(texture);
-        sprite->setSize(3, 3);
+        auto sprite = Sprite::create(texture);
     }
 };
 
@@ -118,11 +117,24 @@ LUMINO_APP(App);
 ```
 ---
 
+![](img/image-4.png)
 
+### 絵文字の一覧
+
+次のページから、プログラムにコピーして使えます。
+
+- https://getemoji.com/
+
+Lumino に組み込まれている絵文字は Android 10 版です。イメージは次のページから確認できます。
+
+- https://emojipedia.org/google/
 
 上下・左右を反転して描画する
 ----------
 
+TODO:
 
 テクスチャの一部を描画する
 ----------
+
+TODO:

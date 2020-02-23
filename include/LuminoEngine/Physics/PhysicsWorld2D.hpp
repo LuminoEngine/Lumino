@@ -485,6 +485,7 @@ class SpringJoint2D
 {
 public:
 	static Ref<SpringJoint2D> create();
+	static Ref<SpringJoint2D> create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB);
 
 	/** Body を設定します。 */
 	void setBodyA(PhysicsObject2D* value);
@@ -621,14 +622,17 @@ public: // TODO:
 	void removeInternal(PhysicsObject2D* physicsObject);
 	void addJointInternal(Joint2D* joint);
 	void removeJointInternal(Joint2D* joint);
-	void updateJointList();
+	void updateList();
+	void updateBodyAndJointList();
 
 	Vector2 m_gravity;
 
 	b2World* m_world;
     std::unique_ptr<LocalContactListener> m_contactListener;
 	std::unique_ptr<PhysicsWorld2DDebugDraw> m_debugDraw;
+
 	List<Ref<PhysicsObject2D>> m_objects;
+	std::vector<Ref<PhysicsObject2D>> m_delayAddBodies;
 	std::vector<PhysicsObject2D*> m_removeList;
 
 	List<Ref<Joint2D>> m_joints;

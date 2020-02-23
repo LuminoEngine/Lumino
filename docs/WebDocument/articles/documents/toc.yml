@@ -37,7 +37,7 @@
   - name: 13. 音声を再生する (TBD)
     href: first-tutorial/13-audio.md
   - name: 14. エフェクトを表示する (TBD)
-    href: first-tutorial/14-audio.md
+    href: first-tutorial/14-effect.md
   - name: 15. 物理演算を設定する (TBD)
     href: first-tutorial/15-physics.md
   - name: 16. アセットを管理する (TBD)
@@ -49,23 +49,6 @@
   items:
   - name: グラフィックスの基本仕様
     href: tips/graphics-spec.md
-
-
-- name: プラットフォーム固有の情報
-  items: 
-    - name: Windows
-      href: platform-specific/windows.md
-      items:
-      - name: Nuget からインストールする
-        href: platform-specific/windows-Install-nuget.md
-    - name: macOS
-      href: platform-specific/macOS.md
-    - name: iOS
-      href: platform-specific/iOS.md
-    - name: Android
-      href: platform-specific/android.md
-    - name: Web
-      href: platform-specific/web.md
 
 - name: 未整理・古いドキュメント
   href: old-docs/index.md
@@ -99,6 +82,22 @@
           href: old-docs/tutorial/first-2d-game/11-sound.md
         - name: 12. リリース
           href: old-docs/tutorial/first-2d-game/12-release.md
+
+  - name: プラットフォーム固有の情報
+    items: 
+      - name: Windows
+        href: old-docs/platform-specific/windows.md
+        items:
+        - name: Nuget からインストールする
+          href: old-docs/platform-specific/windows-Install-nuget.md
+      - name: macOS
+        href: old-docs/platform-specific/macOS.md
+      - name: iOS
+        href: old-docs/platform-specific/iOS.md
+      - name: Android
+        href: old-docs/platform-specific/android.md
+      - name: Web
+        href: old-docs/platform-specific/web.md
 
   - name: プログラミングガイド
     href: old-docs/programming-guide/index.md
@@ -149,5 +148,3 @@
     href: old-docs/Base_Logging.md
   - name: オブジェクトのシリアライズ
     href: old-docs/Serialization.md
-  - name: UI レイアウトシステム
-    href: old-docs/UI_LayoutSystem.md

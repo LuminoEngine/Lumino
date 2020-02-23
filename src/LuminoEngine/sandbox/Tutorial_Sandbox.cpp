@@ -3,20 +3,30 @@
 #include <LuminoEngine/UI/UIComboBox.hpp>
 using namespace ln;
 
+#include <Lumino.hpp>
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-		//Engine::renderView()->setGuideGridEnabled(true);
-		//Engine::camera()->setPosition(3, 3, -3);
-		//Engine::camera()->lookAt(0, 0, 0);
+	Ref<BoxMesh> box;    // (1)
 
-		auto texture = Texture2D::load(u"picture1.jpg");
-		auto sprite = Sprite::create(texture);
-		sprite->setSize(3, 3);
+	void onInit() override
+	{
+		box = BoxMesh::create();
+
+		auto camera = Engine::camera();
+		camera->setPosition(5, 5, -5);
+		camera->lookAt(0, 0, 0);
+	}
+
+	void onUpdate() override
+	{
+		auto raycaster = Raycaster::fromScreen(Mouse::position());  // (2)
+		if (auto result = raycaster->intersectPlane(0, 1, 0)) {     // (3)
+			box->setPosition(result->point());                      // (4)
+		}
 	}
 };
+
 
 //class App : public Application
 //{

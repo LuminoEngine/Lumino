@@ -16,10 +16,10 @@ GUI を作る
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
-		auto sprite = UISprite::load(u"picture1.jpg");
-		Engine::ui()->add(sprite);
+        auto sprite = UISprite::load(u"picture1.jpg");
+        Engine::ui()->add(sprite);
     }
 };
 
@@ -41,6 +41,8 @@ App.new.run
 ![](img/gui-1.png)
 
 画像がウィンドウの中央に表示されました。
+
+画像を 2D 空間に表示する UISprite は、3D の時のような奥行きの計算はされませんので、元の画像と同じサイズで表示されます。
 
 ところで、以前の章では 2D 座標系は次のようにウィンドウの左上を原点とすることを学びました。
 
@@ -72,12 +74,12 @@ UIElement は [CSS](https://ja.wikipedia.org/wiki/Cascading_Style_Sheets) ライ
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
-		auto sprite = UISprite::load(u"picture1.jpg");
-		sprite->setAlignments(HAlignment::Left, VAlignment::Top);
-		sprite->setPosition(100, 50);
-		Engine::ui()->add(sprite);
+        auto sprite = UISprite::load(u"picture1.jpg");
+        sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+        sprite->setPosition(100, 50);
+        Engine::ui()->add(sprite);
     }
 };
 
@@ -112,15 +114,15 @@ App.new.run
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
-		auto button = UIButton::create(u"Button");
+        auto button = UIButton::create(u"Button");
 
-		button->connectOnClicked([]() {
-			Debug::printf(u"Hello, UI!");
-		});
+        button->connectOnClicked([]() {
+            Debug::printf(u"Hello, UI!");
+        });
         
-		Engine::ui()->add(button);
+        Engine::ui()->add(button);
     }
 };
 

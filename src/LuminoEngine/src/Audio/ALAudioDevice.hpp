@@ -6,6 +6,7 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #else
+#define AL_LIBTYPE_STATIC
 #include <AL/al.h>
 #include <AL/alc.h>
 #endif
@@ -20,7 +21,7 @@ class ALAudioDevice
 public:
 	ALAudioDevice();
 	virtual ~ALAudioDevice() = default;
-	void init();
+	void init(int frameLength);
 	virtual void dispose() override;
 	virtual int deviceSamplingRate() override;
 	virtual void updateProcess() override;

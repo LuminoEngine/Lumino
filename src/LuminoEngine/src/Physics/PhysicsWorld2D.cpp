@@ -476,12 +476,13 @@ void RigidBody2D::init(CollisionShape2D* shape)
 
 void RigidBody2D::onDispose(bool explicitDisposing)
 {
-	if (m_body) {
-		// m_body->CreateFixture で作成した fixture はこの中で解放される
-		m_body->GetWorld()->DestroyBody(m_body);
-		m_body = nullptr;
-		//m_fixtures.clear();
-	}
+	LN_DCHECK(m_body);
+	//if (m_body) {
+	//	// m_body->CreateFixture で作成した fixture はこの中で解放される
+	//	m_body->GetWorld()->DestroyBody(m_body);
+	//	m_body = nullptr;
+	//	//m_fixtures.clear();
+	//}
 
 	PhysicsObject2D::onDispose(explicitDisposing);
 }
@@ -760,6 +761,14 @@ Ref<SpringJoint2D> SpringJoint2D::create()
 	return ln::makeObject<ln::SpringJoint2D>();
 }
 
+Ref<SpringJoint2D> SpringJoint2D::create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB)
+{
+	auto ptr = ln::makeObject<ln::SpringJoint2D>();
+	ptr->setBodyA(bodyA);
+	ptr->setBodyB(bodyB);
+	return ptr;
+}
+
 SpringJoint2D::SpringJoint2D()
 {
 }
@@ -834,8 +843,12 @@ bool SpringJoint2D::createJoint()
 	jointDef.Initialize(m_bodyA->m_body, m_bodyB->m_body, LnToB2(m_bodyA->position() + m_anchorA), LnToB2(m_bodyB->position() + m_anchorB));
 	jointDef.collideConnected = true;
 	if (m_length > 0.0) jointDef.length = m_length;
-	jointDef.frequencyHz = 1.0;
-	jointDef.dampingRatio = 0.1;
+	// 0.1, 1.0 すごくのびる 0.0 まったくのびない
+	// 0.1, 0.0 すごくのびる
+	// 1.0, 0.0 それなりに伸びて戻ってくる。ほとんど制止しない。
+	// 1.0, 1.0 それなりに伸びて戻ってくる。振れ幅は少しずつ小さくなり、しばらくすると制止する。
+	jointDef.frequencyHz = 1.0;	
+	jointDef.dampingRatio = 0.0;	// 元に戻ろうとする力
 	b2Joint* joint = m_world->box2DWorld()->CreateJoint(&jointDef);
 	setJoint(joint);
 	return true;
@@ -1149,7 +1162,7 @@ void PhysicsWorld2D::init()
 
 void PhysicsWorld2D::onDispose(bool explicitDisposing)
 {
-	updateJointList();
+	updateBodyAndJointList();
 	for (int i = m_joints.size() - 1; i >= 0; i--) {
 		removeJointInternal(m_joints[i]);
 	}
@@ -1218,14 +1231,14 @@ void PhysicsWorld2D::addPhysicsObject(PhysicsObject2D* physicsObject)
 	if (LN_REQUIRE(physicsObject)) return;
 	if (LN_REQUIRE(!physicsObject->m_ownerWorld)) return;
 	physicsObject->m_ownerWorld = this;
-
-	if (m_inStepSimulation) {
-		LN_NOTIMPLEMENTED();
-	}
-	else {
-		m_objects.add(physicsObject);
-		//physicsObject->onBeforeStepSimulation();
-	}
+	m_delayAddBodies.push_back(physicsObject);
+	//if (m_inStepSimulation) {
+	//	LN_NOTIMPLEMENTED();
+	//}
+	//else {
+	//	m_objects.add(physicsObject);
+	//	//physicsObject->onBeforeStepSimulation();
+	//}
 
 }
 
@@ -1234,14 +1247,12 @@ void PhysicsWorld2D::removePhysicsObject(PhysicsObject2D* physicsObject)
 	if (LN_REQUIRE(physicsObject)) return;
 	if (LN_REQUIRE(physicsObject->m_ownerWorld == this)) return;
 
-	if (m_inStepSimulation) {
+	//if (m_inStepSimulation) {
 		m_removeList.push_back(physicsObject);
-	}
-	else {
-		removeInternal(physicsObject);
-	}
-
-    physicsObject->m_ownerWorld = nullptr;
+	//}
+	//else {
+	//	removeInternal(physicsObject);
+	//}
 }
 
 // 追加系はすべて遅延追加とする。
@@ -1277,7 +1288,6 @@ void PhysicsWorld2D::removeJoint(Joint2D* joint)
 	//	removeJointInternal(joint);
 	//}
 
-	joint->m_world = nullptr;
 }
 
 void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
@@ -1288,11 +1298,7 @@ void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
 
 
 
-	for (auto& obj : m_objects) {
-		obj->onBeforeStepSimulation();
-	}
-
-	updateJointList();
+	updateBodyAndJointList();
 
 
 	// 推奨値 http://box2d.org/manual.pdf
@@ -1305,11 +1311,6 @@ void PhysicsWorld2D::stepSimulation(float elapsedSeconds)
 	for (auto& obj : m_objects) {
 		obj->onAfterStepSimulation();
 	}
-
-	for (auto& obj : m_removeList) {
-		removeInternal(obj);
-	}
-	m_removeList.clear();
 
 	m_inStepSimulation = false;
 }
@@ -1339,24 +1340,44 @@ void PhysicsWorld2D::removeJointInternal(Joint2D* joint)
 {
 	joint->destroyJoint();
 	m_joints.remove(joint);
+	joint->m_world = nullptr;
 }
 
-void PhysicsWorld2D::updateJointList()
+void PhysicsWorld2D::updateBodyAndJointList()
 {
+	// Deletion is joint priority.
 	if (!m_delayRemoveJoints.empty()) {
 		for (auto& joint : m_delayRemoveJoints) {
 			removeJointInternal(joint);
 		}
 		m_delayRemoveJoints.clear();
 	}
+	// Destroy body
+	if (!m_removeList.empty()) {
+		for (auto& body : m_removeList) {
+			removeInternal(body);
+		}
+		m_removeList.clear();
+	}
 
+	// Creation is boyd priority.
+	if (!m_delayAddBodies.empty()) {
+		for (auto& body : m_delayAddBodies) {
+			m_objects.add(body);
+		}
+		m_delayAddBodies.clear();
+	}
+	for (auto& obj : m_objects) {
+		obj->onBeforeStepSimulation();
+	}
+
+	// Create joint.
 	if (!m_delayAddJoints.empty()) {
 		for (auto& joint : m_delayAddJoints) {
 			addJointInternal(joint);
 		}
 		m_delayAddJoints.clear();
 	}
-
 	for (auto& joint : m_joints) {
 		if (joint->m_creationDirty) {
 			joint->destroyJoint();

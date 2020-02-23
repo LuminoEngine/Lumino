@@ -20,12 +20,12 @@ class App : public Application
     float posX = 0.0f;
     float posY = 0.0f;
 
-    virtual void onInit() override
+    void onInit() override
     {
         box = BoxMesh::create();
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         if (Input::pressed(u"left")) {
             posX -= 0.1;
@@ -103,9 +103,9 @@ Input の動きを確認する
 | shift            | Shift | -      | 4 番ボタン    |
 | pageup           | Q | -      | 5 番ボタン    |
 | pagedown         | W | -      | 6 番ボタン    |
-| any              | ※1 | ※1     | ※1            |
+| any              | ※ | ※     | ※            |
 
-※1: 割り当てられている全てのボタンに対応します。
+※: any は割り当てられている全てのボタンに対応します。
 
 次のプログラムで、押されたボタンに対応する文字列が表示されることを確認してみましょう。
 
@@ -115,20 +115,20 @@ Input の動きを確認する
 
 class App : public Application
 {
-	virtual void onUpdate() override
-	{
-		if (Input::pressed(u"left")) Debug::print(0, u"left");
-		if (Input::pressed(u"right")) Debug::print(0, u"right");
-		if (Input::pressed(u"up")) Debug::print(0, u"up");
-		if (Input::pressed(u"down")) Debug::print(0, u"down");
-		if (Input::pressed(u"submit")) Debug::print(0, u"submit");
-		if (Input::pressed(u"cancel")) Debug::print(0, u"cancel");
-		if (Input::pressed(u"menu")) Debug::print(0, u"menu");
-		if (Input::pressed(u"shift")) Debug::print(0, u"shift");
-		if (Input::pressed(u"pageup")) Debug::print(0, u"pageup");
-		if (Input::pressed(u"pagedown")) Debug::print(0, u"pagedown");
-		if (Input::pressed(u"any")) Debug::print(0, u"any");
-	}
+    virtual void onUpdate() override
+    {
+        if (Input::pressed(u"left")) Debug::print(0, u"left");
+        if (Input::pressed(u"right")) Debug::print(0, u"right");
+        if (Input::pressed(u"up")) Debug::print(0, u"up");
+        if (Input::pressed(u"down")) Debug::print(0, u"down");
+        if (Input::pressed(u"submit")) Debug::print(0, u"submit");
+        if (Input::pressed(u"cancel")) Debug::print(0, u"cancel");
+        if (Input::pressed(u"menu")) Debug::print(0, u"menu");
+        if (Input::pressed(u"shift")) Debug::print(0, u"shift");
+        if (Input::pressed(u"pageup")) Debug::print(0, u"pageup");
+        if (Input::pressed(u"pagedown")) Debug::print(0, u"pagedown");
+        if (Input::pressed(u"any")) Debug::print(0, u"any");
+    }
 };
 
 LUMINO_APP(App);

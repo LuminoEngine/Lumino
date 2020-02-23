@@ -248,8 +248,6 @@ else()
     find_library(OpenAL_LIBRARY_RELEASE NAMES OpenAL32 PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
     find_library(OpenAL_LIBRARY_DEBUG NAMES OpenAL32d PATHS ${OpenAL_ROOT} PATH_SUFFIXES lib)
 
-    message("OpenAL_ROOT: ${OpenAL_ROOT}")
-
     add_library(OpenAL STATIC IMPORTED)
     set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_RELEASE "${OpenAL_LIBRARY_RELEASE}")
     set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION_DEBUG "${OpenAL_LIBRARY_DEBUG}")

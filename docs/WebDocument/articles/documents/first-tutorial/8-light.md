@@ -20,7 +20,7 @@
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto box = BoxMesh::create();
 

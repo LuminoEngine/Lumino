@@ -103,7 +103,7 @@ Lumino の 3D 空間は、X軸,Y軸,Z軸 からなる直交座標系によって
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto box = BoxMesh::create();
     }
@@ -148,7 +148,7 @@ Lumino の初期状態は、空っぽのワールドにひとつのカメラが�
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto box = BoxMesh::create();
 
@@ -189,7 +189,7 @@ App.new.run
 座標系を変換する (2D -> 3D)
 ----------
 
-マウスで指している位置にオブジェクトを表示したい場合、2D 座標から 3D 座標へ変換する必要があります。
+例えばマウスで指している位置にオブジェクトを表示したい場合、2D 座標から 3D 座標へ変換する必要があります。
 
 ただし、2D 座標から 3D 座標への変換では、直に 3D の一点を求めることはできません。
 
@@ -212,7 +212,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;    // (1)
 
-    virtual void onInit() override
+    void onInit() override
     {
         box = BoxMesh::create();
 
@@ -221,7 +221,7 @@ class App : public Application
         camera->lookAt(0, 0, 0);
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         auto raycaster = Raycaster::fromScreen(Mouse::position());  // (2)
         if (auto result = raycaster->intersectPlane(0, 1, 0)) {     // (3)
@@ -264,9 +264,7 @@ App.new.run
 
 ![](img/graphics-basic-9.gif)
 
-Great!
-
-これまでよりもずっと 3D 空間を触りやすくなりました！
+マウス位置に Box が表示されるようになり、これまでよりもずっと 3D 空間を触りやすくなりました！
 
 
 デバッグ
@@ -274,7 +272,7 @@ Great!
 
 最後に、ワールドのデバッグに使える便利機能を紹介します。
 
-オブジェクトが上手く表示されないようなケースでは、ワールドの状況を観察することが解決の助けになります。（例えば、配置する座標を間違えて、別のオブジェクトの後ろに隠れているだけかもしれません…）
+オブジェクトが上手く表示されないようなケースでは、ワールドの状況を観察することが解決の助けになります。（例えば、配置する座標を間違えて、別のオブジェクトの後ろに隠れていたり、カメラの裏側に置かれているかもしれません…）
 
 ここでは 3D 空間にグリッドを表示し、カメラをマウスで操作できるようにして、ワールドを俯瞰しやすくしてみます。
 
@@ -286,7 +284,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;
 
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
@@ -294,7 +292,7 @@ class App : public Application
         box = BoxMesh::create();
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         auto raycaster = Raycaster::fromScreen(Mouse::position());
         if (auto result = raycaster->intersectPlane(0, 1, 0)) {

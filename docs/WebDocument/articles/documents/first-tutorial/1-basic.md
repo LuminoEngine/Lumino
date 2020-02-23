@@ -61,13 +61,13 @@ App.new.run
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-	}
+    void onInit() override
+    {
+    }
 
-	virtual void onUpdate() override
-	{
-	}
+    void onUpdate() override
+    {
+    }
 };
 
 LUMINO_APP(App);
@@ -114,14 +114,14 @@ Hello, Lumino!
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-		Debug::print(u"Hello, Lumino!");
-	}
+    void onInit() override
+    {
+        Debug::print(u"Hello, Lumino!");
+    }
 
-	virtual void onUpdate() override
-	{
-	}
+    void onUpdate() override
+    {
+    }
 };
 
 LUMINO_APP(App);
@@ -151,14 +151,14 @@ ruby
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-	}
+    void onInit() override
+    {
+    }
 
-	virtual void onUpdate() override
-	{
-		Debug::print(String::format(u"Time: {0}", Engine::time()));
-	}
+    void onUpdate() override
+    {
+        Debug::print(String::format(u"Time: {0}", Engine::time()));
+    }
 };
 
 LUMINO_APP(App);
@@ -185,14 +185,14 @@ ruby
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-	}
+    void onInit() override
+    {
+    }
 
-	virtual void onUpdate() override
-	{
-		Debug::print(0, String::format(u"Time: {0}", Engine::time()));
-	}
+    void onUpdate() override
+    {
+        Debug::print(0, String::format(u"Time: {0}", Engine::time()));
+    }
 };
 
 LUMINO_APP(App);

@@ -13,7 +13,7 @@
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->setPosition(5, 5, -5);
@@ -59,7 +59,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;
 
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->setPosition(5, 5, -5);
@@ -68,7 +68,7 @@ class App : public Application
         box = BoxMesh::create();
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         float r = Mouse::position().x / 100;
 
@@ -108,7 +108,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;
 
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->setPosition(5, 5, -5);
@@ -117,7 +117,7 @@ class App : public Application
         box = BoxMesh::create();
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         float s = Mouse::position().y / 100;
 
