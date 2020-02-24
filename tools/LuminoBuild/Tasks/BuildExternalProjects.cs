@@ -276,15 +276,15 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("bullet3"))
             {
-                //Utils.CallProcess("git", "clone --depth 1 -b 2.87 https://github.com/bulletphysics/bullet3.git bullet3");
+                Utils.CallProcess("git", "clone --depth 1 -b 2.89 https://github.com/bulletphysics/bullet3.git bullet3");
 
                 // 2.87 時点では Android ターゲットのビルドができない。
                 // - ルートの CMakeLists.txt が python を探しに行く、{} 初期化リストで暗黙変換を使っている。など。
                 // 2018/12/29 時点の master では対策されていたのでこれを使用する。
-                Utils.CallProcess("git", "clone https://github.com/bulletphysics/bullet3.git bullet3");
-                Directory.SetCurrentDirectory("bullet3");
-                Utils.CallProcess("git", "checkout 8bc1c8e01b1b2b9284df08385da0e03241f4e6aa");
-                Directory.SetCurrentDirectory(reposDir);
+                //Utils.CallProcess("git", "clone https://github.com/bulletphysics/bullet3.git bullet3");
+                //Directory.SetCurrentDirectory("bullet3");
+                //Utils.CallProcess("git", "checkout 8bc1c8e01b1b2b9284df08385da0e03241f4e6aa");
+                //Directory.SetCurrentDirectory(reposDir);
             }
             if (!Directory.Exists("pcre"))
             {
@@ -452,7 +452,7 @@ namespace LuminoBuild.Tasks
                         var dirName = t.DirName;
                         var args = t.Args;
                         var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "zlib"));
-                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
+                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "ogg"));
 
                         var generator = "Xcode";
