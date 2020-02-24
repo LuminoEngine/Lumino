@@ -17,12 +17,11 @@ namespace LuminoBuild.Tasks
 
 
         // (システム標準の cmake を使う系)
-        private void BuildProject(Builder builder, string projectDirName, string buildType, string externalSourceDir, string buildArch, string generator, string additionalOptions = "")
+        private void BuildProject(Builder builder, string projectDirName, string configuration, string externalSourceDir, string buildArch, string generator, string additionalOptions = "")
         {
             var projectName = Path.GetFileName(projectDirName); // zlib/contrib/minizip のような場合に minizip だけ取り出す
-            var targetName = buildArch + "-" + buildType;
-            var buildDir = builder.GetExternalProjectBuildDir(targetName, projectName);
-            var installDir = builder.GetExternalProjectInstallDir(targetName, projectName);
+            var buildDir = builder.GetExternalProjectBuildDir(buildArch, projectName);
+            var installDir = builder.GetExternalProjectInstallDir(buildArch, projectName);
             var cmakeSourceDir = Path.Combine(externalSourceDir, projectDirName);
             var ov = Path.Combine(builder.LuminoRootDir, "src", "CFlagOverrides.cmake");
 
@@ -41,8 +40,19 @@ namespace LuminoBuild.Tasks
                 $"{cmakeSourceDir}",
             };
             Utils.CallProcess("cmake", string.Join(' ', args));
-            Utils.CallProcess("cmake", $"--build . --config {buildType}");
-            Utils.CallProcess("cmake", $"--build . --config {buildType} --target install");
+            Utils.CallProcess("cmake", $"--build . --config {configuration}");
+            Utils.CallProcess("cmake", $"--build . --config {configuration} --target install");
+
+            if (string.IsNullOrEmpty(configuration) || configuration.Contains("Debug"))
+            {
+                Utils.CallProcess("cmake", $"--build . --config Debug");
+                Utils.CallProcess("cmake", $"--build . --config Debug --target install");
+            }
+            if (string.IsNullOrEmpty(configuration) || configuration.Contains("Release"))
+            {
+                Utils.CallProcess("cmake", $"--build . --config Release");
+                Utils.CallProcess("cmake", $"--build . --config Release --target install");
+            }
         }
 
         private void BuildProjectMSVC(Builder builder, string projectDirName, string externalSourceDir, string targetName, string targetFullName, string configuration, string additionalOptions = "")
@@ -443,8 +453,8 @@ namespace LuminoBuild.Tasks
                 {
                     var targetArgs = new[]
                     {
-                        new { DirName = "macOS", Config = "Debug",Args = "" },
-                        new { DirName = "macOS", Config = "Release",Args = "" },
+                        //new { DirName = "macOS", Config = "Debug",Args = "" },
+                        new { DirName = "macOS", Config = "",Args = "" },
                     };
 
                     foreach (var t in targetArgs)
