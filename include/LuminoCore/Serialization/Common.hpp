@@ -41,6 +41,19 @@ private:
 };
 
 
+#define LN_NVP(var, ...)		::ln::makeNVP(_LT(#var), var, ##__VA_ARGS__)
+
+template<typename TValue>
+NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef)
+{
+	return NameValuePair<TValue>(name, &valueRef);
+}
+
+template<typename TValue>
+NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef, const TValue& defaultValue)
+{
+	return NameValuePair<TValue>(name, &valueRef, defaultValue);
+}
 
 namespace detail
 {

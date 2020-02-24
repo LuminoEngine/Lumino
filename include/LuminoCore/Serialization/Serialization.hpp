@@ -128,8 +128,7 @@ public:
 		}
 		else {
 			key = m_store->memberKey(m_nodeInfoStack.back().arrayIndex);
-			auto nvp = makeNVP(key, value);
-			processLoad(nvp);
+			processLoad(makeNVP(key, value));
 			m_nodeInfoStack.back().arrayIndex++;	// container が Array ではないので、processLoad() 内ではインクリメントされない。ここでインクリメントする。
 		}
 	}
@@ -958,19 +957,6 @@ private:
 };
 
 
-#define LN_NVP(var, ...)		::ln::makeNVP(_LT(#var), var, ##__VA_ARGS__)
-
-template<typename TValue>
-NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef)
-{
-	return NameValuePair<TValue>(name, &valueRef);
-}
-
-template<typename TValue>
-NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef, const TValue& defaultValue)
-{
-	return NameValuePair<TValue>(name, &valueRef, defaultValue);
-}
 
 class JsonTextOutputArchive
 	: public Archive
