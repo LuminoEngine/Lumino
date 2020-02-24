@@ -416,35 +416,38 @@ namespace LuminoBuild.Tasks
                 // iOS
                 if (BuildEnvironment.IsIOSTarget)
                 {
-                    var targetInfos = new []
-                    {
-                        new { Config = "Debug", Platform = "OS64" },
-                        new { Config = "Release", Platform = "OS64" },
-                        new { Config = "Debug", Platform = "SIMULATOR64" },
-                        new { Config = "Release", Platform = "SIMULATOR64" },
-                    };
+                    //var targetInfos = new []
+                    //{
+                    //    new { Config = "", Platform = "OS64" },
+                        //new { Config = "Release", Platform = "OS64" },
+                    //    new { Config = "", Platform = "SIMULATOR64" },
+                        //new { Config = "Release", Platform = "SIMULATOR64" },
+                    //};
+                    
+
                     var iOSToolchainFile = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, "ExternalSource", "ios-cmake", "ios.toolchain.cmake "));
                     
-                    foreach (var t in targetInfos)
+                    //foreach (var t in targetInfos)
                     {
-                        var dirName = $"iOS-{t.Platform}";
-                        var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DPLATFORM={t.Platform}";
+                        var dirName = BuildEnvironment.Target;//$"iOS-{t.Platform}";
+                        var platform = dirName.Replace("iOS-", "");
+                        var args = $"-DCMAKE_TOOLCHAIN_FILE=\"{iOSToolchainFile}\" -DPLATFORM={platform}";
                         var generator = "Xcode";
                         
-                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "zlib"));
-                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
-                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{dirName}-{t.Config}", "ExternalInstall", "ogg"));
+                        var zlibInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "zlib"));
+                        var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "libpng", "include"));
+                        var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, dirName, "ExternalInstall", "ogg"));
 
-                        BuildProject(builder, "zlib", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "libpng", t.Config, reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
-                        BuildProject(builder, "freetype2", t.Config, reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF -DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir} " + args);
-                        BuildProject(builder, "ogg", t.Config, reposDir, dirName, generator, args);
-                        BuildProject(builder, "vorbis", t.Config, reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_DEVELOPER_ROOT={builder.LuminoBuildDir} " + args);
-                        BuildProject(builder, "bullet3", t.Config, reposDir, dirName, generator, $"{bulletOptions} " + args);
-                        BuildProject(builder, "pcre", t.Config, reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF -DPCRE2_BUILD_TESTS=OFF " + args);
-                        BuildProject(builder, "tmxlite/tmxlite", t.Config, reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
-                        BuildProject(builder, "Box2D/Box2D", t.Config, reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
-                        BuildProject(builder, "Vulkan-Headers", t.Config, reposDir, dirName, generator, args);
+                        BuildProject(builder, "zlib", "", reposDir, dirName, generator, args);
+                        BuildProject(builder, "libpng", "", reposDir, dirName, generator, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include " + args);
+                        BuildProject(builder, "freetype2", "", reposDir, dirName, generator, $"-DWITH_ZLIB=OFF -DWITH_BZip2=OFF  -DWITH_PNG=OFF -DWITH_HarfBuzz=OFF -DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir} " + args);
+                        BuildProject(builder, "ogg", "", reposDir, dirName, generator, args);
+                        BuildProject(builder, "vorbis", "", reposDir, dirName, generator, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_DEVELOPER_ROOT={builder.LuminoBuildDir} " + args);
+                        BuildProject(builder, "bullet3", "", reposDir, dirName, generator, $"{bulletOptions} " + args);
+                        BuildProject(builder, "pcre", "", reposDir, dirName, generator, $"-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF -DPCRE2_BUILD_TESTS=OFF " + args);
+                        BuildProject(builder, "tmxlite/tmxlite", "", reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
+                        BuildProject(builder, "Box2D/Box2D", "", reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
+                        BuildProject(builder, "Vulkan-Headers", "", reposDir, dirName, generator, args);
                     }
                 }
 

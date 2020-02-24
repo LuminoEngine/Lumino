@@ -13,6 +13,16 @@ dotnet run -- BuildEngine_macOS
 dotnet run -- MakeNativePackage
 ```
 
+iOS
+----------
+
+```
+dotnet run -- BuildExternalProjects iOS-OS64
+dotnet run -- BuildExternalProjects iOS-SIMULATOR64
+dotnet run -- BuildEngine_iOS
+dotnet run -- MakeNativePackage
+```
+
 
 Android
 ----------
