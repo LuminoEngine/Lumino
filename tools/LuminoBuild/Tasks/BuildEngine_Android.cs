@@ -40,11 +40,13 @@ namespace LuminoBuild.Tasks
                 {
                     var targetName = $"Android-{abi}";
                     var targetDir = Path.Combine(builder.LuminoBuildDir, targetName);
-                    var cmakeBuildDir = Path.Combine(targetDir, "EngineBuild", config);
-                    var cmakeInstallDir = Path.Combine(targetDir, BuildEnvironment.EngineInstallDirName);
-
-                    var args = new string[]
+                    if (Directory.Exists(targetDir))
                     {
+                        var cmakeBuildDir = Path.Combine(targetDir, "EngineBuild", config);
+                        var cmakeInstallDir = Path.Combine(targetDir, BuildEnvironment.EngineInstallDirName);
+
+                        var args = new string[]
+                        {
                         $"-H{cmakeHomeDir}",
                         $"-B{cmakeBuildDir}",
                         $"-DLN_BUILD_TESTS=OFF",
@@ -62,13 +64,14 @@ namespace LuminoBuild.Tasks
                         $"-DCMAKE_MAKE_PROGRAM={AndoridBuildEnv.AndroidSdkNinja}",
                         $"-DANDROID_NATIVE_API_LEVEL=26",
                         $"-G\"Android Gradle - Ninja\"",
-                    };
+                        };
 
-                    Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, string.Join(' ', args));
-                    Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, "--build " + cmakeBuildDir);
-                    Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
+                        Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, string.Join(' ', args));
+                        Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, "--build " + cmakeBuildDir);
+                        Utils.CallProcess(AndoridBuildEnv.AndroidSdkCMake, "--build " + cmakeBuildDir + " --target install");
 
-                    //Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"), cmakeInstallDir);
+                        //Utils.CopyFile(Path.Combine(builder.LuminoExternalDir, "ImportExternalLibraries.cmake"), cmakeInstallDir);
+                    }
                 }
                 
             }

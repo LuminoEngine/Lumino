@@ -10,6 +10,30 @@ env:
 
 jobs:
   #==============================================================================
+  Native-Android:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Common build cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
+    - name: Build
+      run: |
+        dotnet run -- dotnet run -- BuildExternalProjects Android-x86_64
+        dotnet run -- BuildEngine_Android
+
+  #==============================================================================
   Native-MSVC2017-x64-MT:
     runs-on: windows-2016 # for VS2017
 
@@ -22,10 +46,10 @@ jobs:
       with:
         dotnet-version: 2.2.108
 
-    - name: Cache (build/BuildCache)
+    - name: Common build cache (build/BuildCache)
       uses: actions/cache@v1
       with:
-        path: ./build/MSVC2017-x64-MT/BuildCache
+        path: ./build/BuildCache
         key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
             
     - name: Cache (build/MSVC2017-x64-MT/ExternalInstall)

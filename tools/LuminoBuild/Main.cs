@@ -22,7 +22,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
-                //args = new string[] { "BuildExternalProjects", "Android-x86_64" };
+                args = new string[] { "BuildExternalProjects", "Android-x86_64" };
                 //args = new string[] { "BuildEngine_MSVC", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildEngine_Emscripten" };
                 //args = new string[] { "BuildEngine_Android" };
@@ -58,7 +58,6 @@ namespace LuminoBuild
             BuildEnvironment.Configuration = (positionalArgs.Count > 2) ? args[2] : "";
             BuildEnvironment.Initialize(builder);
             EmscriptenBuildEnv.Initialize(builder);
-            AndoridBuildEnv.Initialize(builder);
 
             Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
 

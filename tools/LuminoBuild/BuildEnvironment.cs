@@ -106,6 +106,7 @@ namespace LuminoBuild
                 builder.CommitCache(buildCacheDir);
             }
 
+            AndoridBuildEnv.Initialize(builder);
 
             Directory.CreateDirectory(BuildToolsDir);
         }
