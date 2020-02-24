@@ -139,6 +139,8 @@ jobs:
 
     - name: Build and test with Rake
       run: |
+        ls ./build/MSVC2019-x64-MT/EngineInstall
+        ls ./build/MSVC2019-x64-MT/EngineInstall/bin
         gem install bundler
         dotnet run -- MakePackage_Ruby
 

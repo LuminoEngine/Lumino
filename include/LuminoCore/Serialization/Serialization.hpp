@@ -128,7 +128,7 @@ public:
 		}
 		else {
 			key = m_store->memberKey(m_nodeInfoStack.back().arrayIndex);
-			processLoad(makeNVP(key, value));
+			processLoadNVP<TValue>(makeNVP(key, value));
 			m_nodeInfoStack.back().arrayIndex++;	// container が Array ではないので、processLoad() 内ではインクリメントされない。ここでインクリメントする。
 		}
 	}
@@ -577,9 +577,14 @@ private:
 	template<typename TValue>
 	void processLoad(NameValuePair<TValue>& nvp)
 	{
+		processLoadNVP(nvp);
+	}
 
-        moveState(NodeHeadState::Object);   // Current node は Object confirmed.
-        tryOpenContainer();
+	template<typename TValue>
+	void processLoadNVP(NameValuePair<TValue>& nvp)
+	{
+		moveState(NodeHeadState::Object);   // Current node は Object confirmed.
+		tryOpenContainer();
 
 		preReadValue();
 
