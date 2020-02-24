@@ -37,7 +37,7 @@ void AudioContext::init()
 
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
 	auto device = makeRef<detail::ALAudioDevice>();
-	device->init();
+	device->init(detail::AudioNodeCore::ProcessingSizeInFrames);
 	m_audioDevice = device;
 	
 #elif defined(LN_EMSCRIPTEN)

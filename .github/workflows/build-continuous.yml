@@ -71,7 +71,7 @@ jobs:
   #==============================================================================
   Ruby:
     needs: Native-MSVC2019-x64-MT
-    runs-on: windows-2016
+    runs-on: windows-2019
 
     steps:
     - name: Checkout

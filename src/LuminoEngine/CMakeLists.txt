@@ -347,6 +347,8 @@ elseif (APPLE)
     #list(APPEND LN_PLATFORM_LIBS OpenAL)
     
     list(APPEND LN_PLATFORM_LIBS "-framework OpenAL")
+    list(APPEND LN_PLATFORM_LIBS "-framework Accelerate")
+    
     #list(APPEND LN_PLATFORM_LIBS SDL2)
     
     

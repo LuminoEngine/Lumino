@@ -46,6 +46,10 @@ enum class VariantType
 
 void serialize(Archive& ar, Variant& value);
 
+
+template<typename... TArgs>
+Ref<Variant> makeVariant(TArgs&&... args);
+
 class Variant : public Object
 {
 public:
@@ -93,7 +97,10 @@ LN_CONSTRUCT_ACCESS:
 		: Variant(makeRef<List<Ref<Variant>>>())
 	{
 		auto& tl = Variant::list();
-		for (auto& item : list) tl.add(makeVariant(item));
+		for (auto& item : list) {
+			auto v = makeVariant(item);
+			tl.add(v);
+		}
 	}
 
 public:

@@ -16,7 +16,7 @@ class App_Example_GameAudio : public Application
 
 		auto addButton = ln::UIButton::create(u"Play BGM");
 		addButton->connectOnClicked([this]() {
-			GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
+			GameAudio::playBGM(u"/Users/lriki/Proj/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
 		});
 		//Engine::mainUIView()->addChild(addButton);
 

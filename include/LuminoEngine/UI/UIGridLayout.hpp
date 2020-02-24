@@ -20,7 +20,7 @@ enum class UILayoutRule
 template<class T, class B = typename T::Builder, typename... TArgs>
 B makeDecl(TArgs&&... args)
 {
-	return T::Builder(std::forward<TArgs>(args)...);
+	return typename T::Builder(std::forward<TArgs>(args)...);
 }
 
 

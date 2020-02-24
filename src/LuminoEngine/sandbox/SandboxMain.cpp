@@ -287,13 +287,13 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		//Example_GameAudio();
+		Example_GameAudio();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
         return 0;
     }

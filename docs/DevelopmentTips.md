@@ -9,7 +9,7 @@ brew install git-lfs
 git lfs install
 
 dotnet run -- BuildExternalProjects macOS
-dotnet run -- BuildEngine_Android
+dotnet run -- BuildEngine_macOS
 dotnet run -- MakeNativePackage
 ```
 
