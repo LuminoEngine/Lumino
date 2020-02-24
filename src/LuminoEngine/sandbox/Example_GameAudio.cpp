@@ -18,7 +18,7 @@ class App_Example_GameAudio : public Application
 		addButton->connectOnClicked([this]() {
 			GameAudio::playBGM(u"D:/Music/momentum/02 - momentum.wav", 0.5, 1.0/*, 3.0*/);
 		});
-		Engine::mainUIView()->addChild(addButton);
+		//Engine::mainUIView()->addChild(addButton);
 
 		addButton->setAlignments(HAlignment::Left, VAlignment::Top);
 		addButton->setPosition(0, 0);

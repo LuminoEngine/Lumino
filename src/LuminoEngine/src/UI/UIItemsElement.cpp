@@ -14,6 +14,7 @@ UICollectionItem::UICollectionItem()
     , m_isPressed(false)
 	, m_isSelected(false)
 {
+	m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
 void UICollectionItem::init()

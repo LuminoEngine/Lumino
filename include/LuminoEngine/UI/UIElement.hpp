@@ -484,7 +484,7 @@ public:	// TODO: internal protected
     void setLogicalParent(UIControl* parent) { m_logicalParent = parent; }
     UIControl* logicalParent() const { return m_logicalParent; }
     void removeFromLogicalParent();
-
+	void attemptAddToPrimaryElement();
 
     UIVisualStateManager* getVisualStateManager();
 

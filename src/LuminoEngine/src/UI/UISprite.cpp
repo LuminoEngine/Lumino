@@ -27,11 +27,13 @@ Ref<UISprite> UISprite::load(StringRef filePath)
 
 UISprite::UISprite()
 {
+	m_objectManagementFlags.set(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
 void UISprite::init()
 {
     UIElement::init();
+
 	setAlignments(HAlignment::Center, VAlignment::Center);
     m_material = makeObject<Material>();
     m_size = Size(-1, -1);

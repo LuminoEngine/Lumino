@@ -18,6 +18,7 @@ UIControl::UIControl()
     : m_enabledDirectChildrenContentAlignment(true)
 	, m_logicalChildren(makeCollection<Ref<UIElement>>())
 {
+	m_objectManagementFlags.set(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
 void UIControl::init()
