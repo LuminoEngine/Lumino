@@ -27,12 +27,13 @@ template<typename TValue>
 struct NameValuePair : public detail::NameValuePairBase
 {
 public:
-	const StringRef& name;
+	StringRef name;
 	TValue* value;
 	const TValue* defaultValue;
 
 	NameValuePair(const StringRef& n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
 	NameValuePair(const StringRef& n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
+	NameValuePair(const NameValuePair& other) : name(other.name), value(v.value), defaultValue(v.defaultValue) {}
 
 	bool hasDefaultValue() const { return defaultValue != nullptr; }
 

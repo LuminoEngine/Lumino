@@ -128,7 +128,8 @@ public:
 		}
 		else {
 			key = m_store->memberKey(m_nodeInfoStack.back().arrayIndex);
-			processLoadNVP<TValue>(makeNVP(key, value));
+			NameValuePair<TValue> nvp = makeNVP<TValue>(key, value);
+			processLoadNVP<TValue>(nvp);
 			m_nodeInfoStack.back().arrayIndex++;	// container が Array ではないので、processLoad() 内ではインクリメントされない。ここでインクリメントする。
 		}
 	}
