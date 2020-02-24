@@ -34,10 +34,8 @@ namespace LuminoBuild
 
         public static TargetInfo[] Targets = new TargetInfo[]
         {
-            new TargetInfo(){ Name = "MSVC2017-x86-MD", LibraryExt = "*.lib", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x86-MT", LibraryExt = "*.lib", PdbCopy = true },
-            new TargetInfo(){ Name = "MSVC2017-x64-MD", LibraryExt = "*.lib", PdbCopy = true },
             new TargetInfo(){ Name = "MSVC2017-x64-MT", LibraryExt = "*.lib", PdbCopy = true },
+            new TargetInfo(){ Name = "MSVC2019-x64-MT", LibraryExt = "*.lib", PdbCopy = true },
             new TargetInfo(){ Name = "Emscripten", LibraryExt = "*.a" },
             new TargetInfo(){ Name = "Android-arm64-v8a", LibraryExt = "*.a" },
             new TargetInfo(){ Name = "Android-armeabi-v7a", LibraryExt = "*.a" },

@@ -240,6 +240,8 @@ endif()
 # openal-soft
 if (LN_EMSCRIPTEN)
 
+elseif (LN_ANDROID)
+
 elseif(APPLE)
     # Use OpenAL.framework
 else()

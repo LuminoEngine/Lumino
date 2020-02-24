@@ -13,7 +13,7 @@ namespace LuminoBuild
     class Builder
     {
         // リリースのたびに変更する必要がある情報
-        public string InstallerProductGUID_MSVC2017 = "851a1410-ec9f-4493-b0f8-b78d44da621d";
+        public string InstallerProductGUID = "851a1410-ec9f-4493-b0f8-b78d44da621d";
         public int MajorVersion = 0;
         public int MinorVersion = 9;
         public int RevisionVersion = 0;

@@ -12,7 +12,7 @@ end
 
 Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
   # copy dll
-  lib = File.expand_path("../../../../../build/MSVC2017-x64-MT/src/LuminoEngine/Release/LuminoEngine.dll", __FILE__)
+  lib = File.expand_path("../../../../../build/MSVC2019-x64-MT/src/LuminoEngine/Release/LuminoEngine.dll", __FILE__)
   if File.exist?(lib)
     to = "ext/LuminoEngine.dll"
     FileUtils.cp(lib, to)

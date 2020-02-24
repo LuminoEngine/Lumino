@@ -9,7 +9,8 @@ dotnet run -- BuildExternalProjects Android-x86_64
 dotnet run -- BuildExternalProjects Android-x86
 dotnet run -- BuildExternalProjects Android-arm64-v8a
 dotnet run -- BuildExternalProjects Android-armeabi-v7a
-
+dotnet run -- BuildEngine_Android
+dotnet run -- MakeNativePackage
 ```
 
 

@@ -91,7 +91,7 @@ namespace LuminoBuild.Tasks
 
                 if (Utils.IsWin32)
                 {
-                    string engineInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MT", BuildEnvironment.EngineInstallDirName);
+                    string engineInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
 
                     Utils.CopyDirectory(Path.Combine(engineInstallDir, "bin"), destinationToolDir, pattern: "*.exe");
                     Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));

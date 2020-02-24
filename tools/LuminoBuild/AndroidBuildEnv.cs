@@ -27,7 +27,7 @@ namespace LuminoBuild
                 //string localAppDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 //AndroidSdkRootDir = Path.Combine(localAppDir, @"Android\Sdk");
 
-                AndroidSdkRootDir = Path.Combine(toolsDir, "android-sdk");
+                AndroidSdkRootDir = Path.GetFullPath(Path.Combine(toolsDir, "android-sdk"));
 
                 AndroidSdkCMake = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\cmake.exe");
                 AndroidSdkNinja = Path.Combine(AndroidSdkRootDir, @"cmake\3.6.4111459\bin\ninja.exe");
@@ -75,9 +75,9 @@ namespace LuminoBuild
                     var zip = Path.Combine(toolsDir, "android-ndk-r18b.zip");
                     // https://developer.android.com/ndk/downloads/older_releases
                     if (Utils.IsWin32)
-                        Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-windows-x86_64.zip", zip);
+                       Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-windows-x86_64.zip", zip);
                     else if (Utils.IsMac)
-                        Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-darwin-x86_64.zip", zip);
+                       Utils.DownloadFile("https://dl.google.com/android/repository/android-ndk-r18b-darwin-x86_64.zip", zip);
 
                     Console.WriteLine("Extracting Android NDK...");
                     var tmpDir = Path.Combine(toolsDir, "android-ndk-r18b");

@@ -28,7 +28,7 @@ namespace LuminoBuild.Tasks
                     ContentFilesDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName),
                     WXSFileTemplate = Path.Combine(pkgSrcInstallerDir, "LuminoInstaller.wxs.template"),
                     TargetDirId = "ID_LUMINO_DIR",
-                    ProductGUID = builder.InstallerProductGUID_MSVC2017,
+                    ProductGUID = builder.InstallerProductGUID,
                     Output = builder.ReleasePackageName + ".msi",
                 },
             };
