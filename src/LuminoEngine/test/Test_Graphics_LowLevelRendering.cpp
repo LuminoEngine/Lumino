@@ -159,16 +159,16 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 		GraphicsResourceUsage usage;
 		GraphicsResourcePool pool;
 	};
-	Param params[] =
+	std::array<Param, 3> params =
 	{
-		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
-		{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
-		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
+		Param{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
+		Param{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
+		Param{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
 		//{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
 	};
 
 	// test static and dynamic
-	for (int i = 0; i < LN_ARRAY_SIZE_OF(params); i++)
+	for (int i = 0; i < params.size(); i++)
 	{
 		auto usage = params[i].usage;
 		auto pool = params[i].pool;
@@ -350,16 +350,16 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 		GraphicsResourceUsage usage;
 		GraphicsResourcePool pool;
 	};
-	Param params[] =
+	std::array<Param, 3> params =
 	{
 		//{ GraphicsResourceUsage::Static, GraphicsResourcePool::None },
-		{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
-		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
-		{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
+		Param{ GraphicsResourceUsage::Static, GraphicsResourcePool::Managed },
+		Param{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::None },
+		Param{ GraphicsResourceUsage::Dynamic, GraphicsResourcePool::Managed },
 	};
 
 	// test static and dynamic
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < params.size(); i++)
 	{
 		auto usage = params[i].usage;
 		auto pool = params[i].pool;

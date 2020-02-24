@@ -24,16 +24,17 @@ namespace LuminoBuild.Tasks
         public class MSVCTargetInfo
         {
             public string Generator;
-            public string Platform;
+            public string Arch;
             public string StaticRuntime;
         }
 
         public static Dictionary<string, MSVCTargetInfo> TargetInfoMap = new Dictionary<string, MSVCTargetInfo>()
         {
-            //{ "MSVC2017-x86-MD", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "OFF" } },
-            //{ "MSVC2017-x86-MT", new MSVCTargetInfo { Generator = "Visual Studio 15", Platform="Win32", StaticRuntime = "ON" } },
-            //{ "MSVC2017-x64-MD", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Platform="x64", StaticRuntime = "OFF" } },
-            { "MSVC2017-x64-MT", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Platform="x64", StaticRuntime = "ON" } },
+            //{ "MSVC2017-x86-MD", new MSVCTargetInfo { Generator = "Visual Studio 15", Arch="Win32", StaticRuntime = "OFF" } },
+            //{ "MSVC2017-x86-MT", new MSVCTargetInfo { Generator = "Visual Studio 15", Arch="Win32", StaticRuntime = "ON" } },
+            //{ "MSVC2017-x64-MD", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Arch="x64", StaticRuntime = "OFF" } },
+            { "MSVC2017-x64-MT", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Arch="", StaticRuntime = "ON" } },
+            { "MSVC2019-x64-MT", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="x64", StaticRuntime = "ON" } },
         };
 
         public override void Build(Builder builder)
@@ -67,9 +68,9 @@ namespace LuminoBuild.Tasks
             {
 
                 var additional = "";
-                if (builder.Args.Contains("--enable-bindings") && targetInfo.StaticRuntime == "OFF" && targetInfo.Platform == "Win32")
+                if (!string.IsNullOrEmpty(targetInfo.Arch))
                 {
-                    additional += " -DLN_BUILD_BINDINGS=ON";
+                    additional += "-A " + targetInfo.Arch;
                 }
 
                 var args = new string[]

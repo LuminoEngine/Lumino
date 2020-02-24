@@ -60,12 +60,19 @@ namespace LuminoBuild.Tasks
             Directory.CreateDirectory(buildDir);
             Directory.SetCurrentDirectory(buildDir);
 
+            var localAdditional = "";
+            if (!string.IsNullOrEmpty(targetInfo.Arch))
+            {
+                localAdditional += "-A " + targetInfo.Arch;
+            }
+
             var args = new string[]
             {
                 $"-DCMAKE_INSTALL_PREFIX={installDir}",
                 $"-DCMAKE_DEBUG_POSTFIX:STRING=d",     // cmake の find_package で Debug/Release 両対応するために、同じフォルダに lib を入れておきたい。(Qt 参考)
                 $"-DCMAKE_USER_MAKE_RULES_OVERRIDE:STRING={ov}",
                 $"-DLN_MSVC_STATIC_RUNTIME:BOOL={targetInfo.StaticRuntime}",
+                $"{localAdditional}",
                 $"{additionalOptions}",
                 $"-G \"{targetInfo.Generator}\"",
                 $"{cmakeSourceDir}",

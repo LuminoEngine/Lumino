@@ -26,7 +26,7 @@ namespace LuminoBuild
         public static string TargetFullName { get { return (string.IsNullOrEmpty(Configuration)) ? Target : $"{Target}-{BuildEnvironment.Configuration}"; } }
 
         // Build setting utils.
-        public static bool IsMSVCTarget { get { return Target.Contains("MSVC2017"); } }
+        public static bool IsMSVCTarget { get { return Target.Contains("MSVC"); } }
         public static bool IsWebTarget { get { return Target == "Emscripten"; } }
         public static bool IsAndroidTarget { get { return Target.Contains("Android"); } }
         public static bool IsMacOSTarget { get { return Target.Contains("macOS"); } }

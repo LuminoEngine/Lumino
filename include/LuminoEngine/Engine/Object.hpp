@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <mutex>
+#include <functional>
 
 namespace ln {
 class EngineContext;

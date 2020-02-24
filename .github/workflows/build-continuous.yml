@@ -38,15 +38,45 @@ jobs:
       run: |
         dotnet run -- BuildExternalProjects MSVC2017-x64-MT
         dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
+  
+  #==============================================================================
+  Native-MSVC2019-x64-MT:
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/MSVC2019-x64-MT/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
+    - name: Cache (build/MSVC2019-x64-MT/ExternalInstall)
+      uses: actions/cache@v1
+      with:
+        path: ./build/MSVC2019-x64-MT/ExternalInstall
+        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
+    - name: Build
+      run: |
+        dotnet run -- BuildExternalProjects MSVC2019-x64-MT
+        dotnet run -- BuildEngine_MSVC MSVC2019-x64-MT
       
     - uses: actions/upload-artifact@v1
       with:
-        name: LuminoEngine-MSVC2017-x64-MT
-        path: ./build/MSVC2017-x64-MT/EngineInstall
-  
+        name: LuminoEngine-MSVC2019-x64-MT
+        path: ./build/MSVC2019-x64-MT/EngineInstall
+
   #==============================================================================
   Ruby:
-    needs: Native-MSVC2017-x64-MT
+    needs: Native-MSVC2019-x64-MT
     runs-on: windows-2016
 
     steps:
@@ -61,8 +91,8 @@ jobs:
 
     - uses: actions/download-artifact@v1
       with:
-        name: LuminoEngine-MSVC2017-x64-MT
-        path: ./build/MSVC2017-x64-MT/EngineInstall
+        name: LuminoEngine-MSVC2019-x64-MT
+        path: ./build/MSVC2019-x64-MT/EngineInstall
 
     - name: Build and test with Rake
       run: |

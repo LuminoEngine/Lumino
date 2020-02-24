@@ -108,6 +108,11 @@ void* VertexBuffer::map(MapMode mode)
 
     // if have not entried the Command List at least once, can rewrite directly with map().
     if (m_initialUpdate && m_usage == GraphicsResourceUsage::Static && m_pool == GraphicsResourcePool::None) {
+#if 1
+        // 使用禁止。アドホック的に使うバッファでは需要あるが、Backend の対策が必要。
+        // 今のままここを通すと、 m_rhiObject->map() で HostVisible じゃないから map できないエラーになる。
+        LN_NOTIMPLEMENTED();
+#else
         if (!m_rhiObject) {
             m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createVertexBuffer(m_usage, size(), nullptr);
         }
@@ -118,6 +123,7 @@ void* VertexBuffer::map(MapMode mode)
 
         m_modified = true;
         m_mappedBuffer = m_rhiMappedBuffer;
+#endif
     } else {
         // prepare for GraphicsResourcePool::None
         if (m_buffer.size() < m_primarySize) {
