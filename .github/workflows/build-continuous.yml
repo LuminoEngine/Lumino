@@ -34,36 +34,6 @@ jobs:
         dotnet run -- BuildEngine_Android
 
   #==============================================================================
-  Native-MSVC2017-x64-MT:
-    runs-on: windows-2016 # for VS2017
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
-
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
-            
-    - name: Cache (build/MSVC2017-x64-MT/ExternalInstall)
-      uses: actions/cache@v1
-      with:
-        path: ./build/MSVC2017-x64-MT/ExternalInstall
-        key: ${{ env.cache-version }}-ExternalInstall-${{ hashFiles('**/BuildExternalProjects.cs') }}
-            
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects MSVC2017-x64-MT
-        dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
-  
-  #==============================================================================
   Native-MSVC2019-x64-MT:
     runs-on: windows-2019
 
