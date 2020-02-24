@@ -19,10 +19,4 @@
       </form>
     </div>
   </div>
-
-  <div id="navbar-revision-box" class="navbar-revision-box">
-    <div class="container">
-      Showing the latest document under development - {{>partials/revision_mark}}
-    </div>
-  </div>
 </nav>

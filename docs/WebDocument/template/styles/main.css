@@ -232,3 +232,13 @@ svg:hover path {
   margin: 0 0 20px;
 }
 
+.hero {
+  background-image: url("img/bg.png");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+}
+
+.key-section img {
+  margin: 2px;
+  box-shadow:0px 0px 2px 0px #494949;
+}

@@ -1,5 +1,5 @@
 ---
-title: Welcome to Lumino website!
+title: Lumino
 documentType: index
 ---
 <style type="text/css">
@@ -56,3 +56,19 @@ footer{
     </div>
   </div>
 </div>
+
+<div class="key-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1 text-center">
+        <section>
+          <img src="img/g1.jpg" />
+          <img src="img/g2.jpg" />
+          <img src="img/g3.png" />
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+

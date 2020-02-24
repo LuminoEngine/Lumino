@@ -40,7 +40,7 @@
     "resource": [
       {
         "files": [
-          "images/**",
+          "img/**",
           "articles/**/img/**",
           "logo.png",
           "favicon.ico"
