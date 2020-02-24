@@ -24,6 +24,7 @@ message("_LN_INCLUDE_DIR: ${_LN_INCLUDE_DIR}")
 include(${CMAKE_CURRENT_LIST_DIR}/LuminoCommon.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/ImportExternalLibraries.cmake)
 
+list(REVERSE LN_EXTERNAL_LIBS)
 foreach(LIB IN LISTS LN_EXTERNAL_LIBS)
     list(APPEND _LN_LINK_ONLY_LIBS "\$<LINK_ONLY:${LIB}>")
 endforeach()
