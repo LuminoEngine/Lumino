@@ -33,7 +33,7 @@ public:
 
 	NameValuePair(const StringRef& n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
 	NameValuePair(const StringRef& n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
-	NameValuePair(const NameValuePair& other) : name(other.name), value(v.value), defaultValue(v.defaultValue) {}
+	NameValuePair(const NameValuePair& other) : name(other.name), value(other.value), defaultValue(other.defaultValue) {}
 
 	bool hasDefaultValue() const { return defaultValue != nullptr; }
 
