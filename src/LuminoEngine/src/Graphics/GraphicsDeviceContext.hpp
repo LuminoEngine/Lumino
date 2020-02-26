@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <LuminoCore/Base/Result.hpp>
 #include <LuminoEngine/Graphics/Common.hpp>
+#include <LuminoEngine/Graphics/ColorStructs.hpp>
 #include <LuminoEngine/Graphics/RenderState.hpp>
 #include <LuminoEngine/Shader/Common.hpp>
 #include "../Shader/UnifiedShader.hpp"

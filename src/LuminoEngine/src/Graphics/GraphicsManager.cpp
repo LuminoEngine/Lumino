@@ -8,7 +8,7 @@
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
-#include "OpenGLDeviceContext.hpp"
+#include "OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
 #include "Vulkan/VulkanDeviceContext.hpp"
 #endif

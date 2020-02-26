@@ -7,7 +7,7 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include "GraphicsManager.hpp"
 #include "GraphicsDeviceContext.hpp"
-#include "OpenGLDeviceContext.hpp"
+#include "OpenGL/OpenGLDeviceContext.hpp"
 #include "../Engine/LinearAllocator.hpp"
 
 namespace ln {

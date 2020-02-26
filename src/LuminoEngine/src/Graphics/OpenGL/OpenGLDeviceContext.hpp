@@ -85,7 +85,7 @@
 #include <glad/glad.h>
 #endif
 
-#include "GraphicsDeviceContext.hpp"
+#include "../GraphicsDeviceContext.hpp"
 
 namespace ln {
 namespace detail {
