@@ -4,7 +4,8 @@ if (DEFINED EMSCRIPTEN)
     set(LN_EMSCRIPTEN ON)
     #set(LN_USE_SDL ON)
 
-elseif (LN_ANDROID)
+elseif (ANDROID_ABI)
+	set(LN_ANDROID ON)
 
 elseif (DEFINED IOS_PLATFORM)
     set(LN_IOS ON)

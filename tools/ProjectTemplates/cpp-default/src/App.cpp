@@ -1,18 +1,14 @@
 ﻿
-#include "App.h"
-
-HelloApp::HelloApp()
+class HelloApp : public ln::Application
 {
-	ln::GlobalLogger::setLevel(ln::LogLevel::Debug);
-}
+    void onStart() override
+    {
+    }
 
-void HelloApp::onStart()
-{
-}
-
-void HelloApp::onUpdate()
-{
-}
+    void onUpdate() override
+    {
+    }
+};
 
 LUMINO_APP(HelloApp);
 

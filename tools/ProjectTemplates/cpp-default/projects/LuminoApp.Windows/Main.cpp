@@ -1,4 +1,5 @@
 
+#include <Windows.h>
 #include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 
 extern "C" ::ln::Application* LuminoCreateApplicationInstance();
@@ -16,7 +17,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     auto archive = u"Assets.lca";
     if (ln::FileSystem::existsFile(archive)) {
-        ln::EngineSettings::addAssetArchive(archive, ln::String::Empty);
+        ln::EngineSettings::addAssetArchive(archive, u"");
     }
 
 	::ln::Application* app = ::LuminoCreateApplicationInstance();

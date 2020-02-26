@@ -1,32 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\*.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="PCH.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
+    <Filter Include="app">
+      <UniqueIdentifier>{d14a9f4a-4e29-4e53-84e4-b8778baa48a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{eecb54df-f497-403b-b92f-c3e83ac9d240}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\*.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="PCH.h">
-      <Filter>app</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>app</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>app</Filter>
     </ClInclude>
+    <ClInclude Include="PCH.h">
+      <Filter>app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="app.ico">
+    <Image Include="LuminoApp.ico">
       <Filter>app</Filter>
     </Image>
     <Image Include="small.ico">
@@ -34,16 +28,19 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{252925f5-9db3-447b-b807-dd336c903acb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="app">
-      <UniqueIdentifier>{1ee9024f-4f5b-43b9-b1c1-01f3194bc2c0}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resource.rc">
+    <ResourceCompile Include="LuminoApp.rc">
       <Filter>app</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PCH.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\App.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

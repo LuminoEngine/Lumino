@@ -140,7 +140,7 @@ namespace LuminoBuild.Tasks
             string platform = AndoridBuildEnv.AndroidTargetPlatform;
             var installDir = builder.GetExternalProjectInstallDir(targetName, projectName);
 
-            foreach (var config in new string[] { "Debug", "Release" })
+            foreach (var config in new string[] { /*"Debug",*/ "Release" })
             {
                 //var targetName = $"Android-{abi}-{buildType}";
                 var buildDir = Path.Combine(builder.GetExternalProjectBuildDir(targetName, projectName), config);
@@ -377,8 +377,8 @@ namespace LuminoBuild.Tasks
                         var pngIncludeDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "libpng", "include"));
                         var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{targetName}", "ExternalInstall", "ogg"));
 
-                        BuildProjectAndroid(builder, "zlib", reposDir,targetName);
-                        BuildProjectAndroid(builder, "libpng", reposDir,targetName, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
+                        //BuildProjectAndroid(builder, "zlib", reposDir,targetName);
+                        BuildProjectAndroid(builder, "libpng", reposDir, targetName);//, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                         BuildProjectAndroid(builder, "freetype2", reposDir,targetName, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                         BuildProjectAndroid(builder, "ogg", reposDir,targetName);
                         BuildProjectAndroid(builder, "vorbis", reposDir,targetName, $"-DOGG_ROOT={oggInstallDir} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH");

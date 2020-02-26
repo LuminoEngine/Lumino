@@ -24,7 +24,7 @@ namespace LuminoBuild.Tasks
         };
 
         public static string[] Configurations = new string[] {
-            "Debug",
+            //"Debug",
             "Release",
         };
 

@@ -57,6 +57,14 @@ cp build/Emscripten/src/LuminoEngine/libLuminoEngine-static.a build/Emscripten/e
 python -m http.server 8000
 ```
 
+----------
+
+
+```
+dotnet run -- BuildEngine_MSVC MSVC2019-x64-MT
+```
+
+
 ### 起動できない場合…
 
 Conosle:

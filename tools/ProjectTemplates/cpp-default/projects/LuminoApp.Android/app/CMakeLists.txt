@@ -12,7 +12,7 @@ list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI
 
 include(${LUMINO_ENGINE_ROOT}/LuminoConfig.cmake)
 
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../sec/*.cpp)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../src/*.cpp)
 
 
 # Creates and names a library, sets it as either STATIC

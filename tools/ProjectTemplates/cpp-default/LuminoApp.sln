@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuminoCppTemplate", "Projects\LuminoApp.Windows\LuminoApp.vcxproj", "{AB811218-7DE6-442D-8DDA-83EC55C3DBF4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuminoApp", "projects\LuminoApp.Windows\LuminoApp.vcxproj", "{8B0FDA31-FE19-481F-9E75-C7701ECAD0A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AB811218-7DE6-442D-8DDA-83EC55C3DBF4}.Debug|x86.ActiveCfg = Debug|Win32
-		{AB811218-7DE6-442D-8DDA-83EC55C3DBF4}.Debug|x86.Build.0 = Debug|Win32
-		{AB811218-7DE6-442D-8DDA-83EC55C3DBF4}.Release|x86.ActiveCfg = Release|Win32
-		{AB811218-7DE6-442D-8DDA-83EC55C3DBF4}.Release|x86.Build.0 = Release|Win32
+		{8B0FDA31-FE19-481F-9E75-C7701ECAD0A1}.Debug|x64.ActiveCfg = Debug|x64
+		{8B0FDA31-FE19-481F-9E75-C7701ECAD0A1}.Debug|x64.Build.0 = Debug|x64
+		{8B0FDA31-FE19-481F-9E75-C7701ECAD0A1}.Release|x64.ActiveCfg = Release|x64
+		{8B0FDA31-FE19-481F-9E75-C7701ECAD0A1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EBA2406E-32A4-4AE4-B3C6-1DB38F6133EC}
+		SolutionGuid = {73F28750-BF50-48FD-B094-0A92DC6E5051}
 	EndGlobalSection
 EndGlobal
