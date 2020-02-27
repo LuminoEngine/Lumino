@@ -111,7 +111,7 @@ namespace LuminoBuild.Tasks
                 {
                     Utils.CopyDirectory(
                         Path.Combine(builder.LuminoToolsDir, "ProjectTemplates"),
-                        Path.Combine(destinationToolDir, "ProjectTemplates"));
+                        Path.Combine(builder.LuminoBuildDir, "", "ProjectTemplates"));
                 }
             }
 
@@ -128,7 +128,6 @@ namespace LuminoBuild.Tasks
 
             // Engine assets
             {
-
                 var reposDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
                 using (var cd = CurrentDir.Enter(reposDir))
                 {
@@ -138,6 +137,10 @@ namespace LuminoBuild.Tasks
                         File.Copy("noto-emoji/fonts/NotoColorEmoji.ttf", Path.Combine(builder.LuminoToolsDir, "EngineResources", "NotoColorEmoji.ttf"), true);
                     }
                 }
+
+                Utils.CopyDirectory(
+                    Path.Combine(builder.LuminoToolsDir, "EngineResources"),
+                    Path.Combine(destinationToolDir, "EngineResources"));
             }
         }
 

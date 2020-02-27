@@ -1,13 +1,17 @@
 name: Package
 
 on:
-  push:
+  pull_request:
     branches:
     - master
 
+env:
+  cache-version: v1
+
 jobs:
-  Native-MSVC2017-x64-MT:
-    runs-on: windows-2016 # for VS2017
+  #==============================================================================
+  Native-Windows:
+    runs-on: windows-2019
 
     steps:
     - name: Checkout
@@ -18,38 +22,33 @@ jobs:
       with:
         dotnet-version: 2.2.108
 
+    - name: Common build cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
     - name: Build
-      run: dotnet run -- BuildEngine_MSVC MSVC2017-x64-MT
+      run: |
+        dotnet run -- BuildExternalProjects Android-x86_64
+        dotnet run -- BuildExternalProjects Android-x86
+        dotnet run -- BuildExternalProjects Android-arm64-v8a
+        dotnet run -- BuildExternalProjects Android-armeabi-v7a
+        dotnet run -- BuildExternalProjects Emscripten
+        dotnet run -- BuildExternalProjects MSVC2019-x64-MT
+        dotnet run -- BuildEngine_Android
+        dotnet run -- BuildEngine_Emscripten
+        dotnet run -- BuildEngine_MSVC MSVC2019-x64-MT
+        dotnet run -- BuildEngine_Android
+        dotnet run -- MakeNativePackage
+        dotnet run -- MakeInstaller_Win32
 
     - uses: actions/upload-artifact@v1
       with:
-        name: LuminoEngine-MSVC2017-x64-MT
-        path: ./build/MSVC2017-x64-MT/EngineInstall
-
-  Ruby:
-    needs: Native-MSVC2017-x64-MT
-    runs-on: windows-2016
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Set up Ruby
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.6.x
-        architecture: 'x64'
-
-    - uses: actions/download-artifact@v1
-      with:
-        name: LuminoEngine-MSVC2017-x64-MT
-        path: ./build/MSVC2017-x64-MT/EngineInstall
-
-    - name: Build and test with Rake
-      run: dotnet run -- MakePackage_Ruby
+        name: Lumino-latest-Windows.msi
+        path: ./build/Lumino-latest-Windows.msi
 
     - uses: actions/upload-artifact@v1
       with:
-        name: LuminoEngine-RubyGemPackage
-        path: ./tools/Bindings/Ruby/GemProject/pkg/lumino-0.9.0.pre.gem
-  
+        name: Lumino-latest-Windows.zip
+        path: ./build/Lumino-latest-Windows.zip

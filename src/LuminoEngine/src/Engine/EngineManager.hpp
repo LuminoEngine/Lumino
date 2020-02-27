@@ -211,7 +211,7 @@ private:
 
     //Application* m_application;
 	Path m_persistentDataPath;
-	Path m_engineAssetsPath;
+	Path m_engineResourcesPath;
 
     Ref<UIContext> m_mainUIContext;
 	Ref<UIMainWindow> m_mainWindow;

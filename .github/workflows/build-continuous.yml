@@ -30,7 +30,7 @@ jobs:
             
     - name: Build
       run: |
-        dotnet run -- dotnet run -- BuildExternalProjects Android-x86_64
+        dotnet run -- BuildExternalProjects Android-x86_64
         dotnet run -- BuildEngine_Android
 
   #==============================================================================
@@ -56,31 +56,6 @@ jobs:
       run: |
         dotnet run -- BuildExternalProjects macOS
         dotnet run -- BuildEngine_macOS
-
-  #==============================================================================
-  Native-iOS:
-    runs-on: macos-10.15
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.2.108
-
-    - name: Common build cache (build/BuildCache)
-      uses: actions/cache@v1
-      with:
-        path: ./build/BuildCache
-        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
-            
-    - name: Build
-      run: |
-        dotnet run -- BuildExternalProjects iOS-OS64
-        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
-        dotnet run -- BuildEngine_iOS
       
   #==============================================================================
   Native-MSVC2019-x64-MT:
@@ -116,6 +91,31 @@ jobs:
       with:
         name: LuminoEngine-MSVC2019-x64-MT
         path: ./build/MSVC2019-x64-MT/EngineInstall
+
+  #==============================================================================
+  Native-iOS:
+    runs-on: macos-10.15
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Common build cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
+    - name: Build
+      run: |
+        dotnet run -- BuildExternalProjects iOS-OS64
+        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
+        dotnet run -- BuildEngine_iOS
 
   #==============================================================================
   Ruby:

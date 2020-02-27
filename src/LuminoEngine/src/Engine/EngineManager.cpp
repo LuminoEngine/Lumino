@@ -126,15 +126,27 @@ void EngineManager::init(const EngineSettings& settings)
         m_persistentDataPath = u""; // TODO:
 #endif
 		if (!m_settings.engineResourcesPath.isEmpty()) {
-			m_engineAssetsPath = Path(m_settings.engineResourcesPath).canonicalize();
+			m_engineResourcesPath = Path(m_settings.engineResourcesPath).canonicalize();
 		}
 
-		if (m_engineAssetsPath.isEmpty()) {
+		// Find folder in install.
+		if (m_settings.engineResourcesPath.isEmpty()) {
+			if (auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH")) {
+				auto dir = Path::combine(*path, u"Tools", u"EngineResources");
+				if (FileSystem::existsDirectory(dir)) {
+					m_engineResourcesPath = dir;
+				}
+			}
+
+		}
+
+		// Find folder in repository.
+		if (m_engineResourcesPath.isEmpty()) {
 			auto repo = ln::detail::EngineManager::findRepositoryRootForTesting();
-			m_engineAssetsPath = Path::combine(repo, u"tools", u"EngineResources");
+			m_engineResourcesPath = Path::combine(repo, u"tools", u"EngineResources");
 		}
 
-		LN_LOG_INFO << "EngineAssetsPath: " << m_engineAssetsPath;
+		LN_LOG_INFO << "EngineResourcesPath: " << m_engineResourcesPath;
     }
 	
 
@@ -529,7 +541,7 @@ void EngineManager::initializeFontManager()
 
 		FontManager::Settings settings;
 		settings.assetManager = m_assetManager;
-		settings.engineAssetPath = m_engineAssetsPath;
+		settings.engineAssetPath = m_engineResourcesPath;
 
 		m_fontManager = ln::makeRef<FontManager>();
 		m_fontManager->init(settings);

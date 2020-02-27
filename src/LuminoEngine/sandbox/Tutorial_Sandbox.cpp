@@ -15,14 +15,7 @@ class App : public Application
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
-		////auto texture = Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/picture1.jpg");
-		////auto sprite = Sprite::create(texture, -1, 6);
-		//auto sprite = Sprite::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/picture1.jpg");
-		//sprite->setSize(Size(-1, 2));
-
-		//s = SphereMesh::create();
-		//s->setShadingModel(ShadingModel::Unlit);
-		//s->setColorScale(Color::Yellow);
+		auto text = UITextBlock::create(u"Hello, Lumino!");
 	}
 
 	//virtual void onUpdate() override

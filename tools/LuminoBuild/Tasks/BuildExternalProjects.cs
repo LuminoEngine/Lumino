@@ -349,7 +349,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectMSVC(builder, "SPIRV-Cross", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "glfw", reposDir, targetName, targetFullName, configuration, $"-DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DGLFW_INSTALL=ON");
                     BuildProjectMSVC(builder, "glad", reposDir, targetName, targetFullName, configuration, $"-DGLAD_INSTALL=ON");
-                    BuildProjectMSVC(builder, "openal-soft", reposDir, targetName, targetFullName, configuration);
+                    BuildProjectMSVC(builder, "openal-soft", reposDir, targetName, targetFullName, configuration, $"-DALSOFT_BACKEND_DSOUND=OFF");  // find_package(DSound) で古い WindowsSDK の include パスが登録されてしまい、Windows.h など他の include が古い方に引っ張られてしまう
                     BuildProjectMSVC(builder, "SDL2", reposDir, targetName, targetFullName, configuration, $"-DSDL_SHARED=OFF -DSDL_STATIC=ON -DSSE=OFF ");
                     BuildProjectMSVC(builder, "freetype2", reposDir, targetName, targetFullName, configuration, $"-DPNG_FOUND=ON -DPNG_INCLUDE_DIRS={pngIncludeDir}");
                     BuildProjectMSVC(builder, "ogg", reposDir, targetName, targetFullName, configuration);

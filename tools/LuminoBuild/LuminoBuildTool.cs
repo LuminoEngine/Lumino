@@ -56,7 +56,7 @@ namespace LuminoBuild
                 else
                     targetEnvName = "macOS";
 
-                return $"Lumino-{VersionString}-{targetEnvName}";
+                return $"Lumino-latest-{targetEnvName}";
             }
         }
 

@@ -128,7 +128,7 @@
 #pragma comment(lib, "spirv-cross-util" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "vorbis" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "vorbisfile" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
-#pragma comment(lib, "LuminoEngine" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
+#pragma comment(lib, "LuminoEngine-static" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "freetype" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "glad" LN_MSVC_AUTO_LINK_POSTFIX ".lib")
 #pragma comment(lib, "glslang" LN_MSVC_AUTO_LINK_POSTFIX ".lib")

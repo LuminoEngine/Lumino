@@ -35,6 +35,17 @@ namespace LuminoBuild.Tasks
 
             Directory.CreateDirectory(tmpDir);
 
+            // Create zip package
+            {
+                var orgName = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
+                var tmpName = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName);
+                Directory.Move(orgName, tmpName);
+                Utils.CreateZipFile(tmpName, tmpName + ".zip");
+                Directory.Move(tmpName, orgName);
+            }
+           
+
+
             foreach (var t in targets)
             {
                 Logger.WriteLine("Build {0} ...", t.Output);

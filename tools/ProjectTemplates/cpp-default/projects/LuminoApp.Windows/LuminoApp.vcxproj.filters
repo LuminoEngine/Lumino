@@ -4,9 +4,6 @@
     <Filter Include="app">
       <UniqueIdentifier>{d14a9f4a-4e29-4e53-84e4-b8778baa48a4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src">
-      <UniqueIdentifier>{eecb54df-f497-403b-b92f-c3e83ac9d240}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -36,11 +33,9 @@
     <ClCompile Include="PCH.cpp">
       <Filter>app</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\App.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="Launch.cpp">
       <Filter>app</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\App.cpp" />
   </ItemGroup>
 </Project>
