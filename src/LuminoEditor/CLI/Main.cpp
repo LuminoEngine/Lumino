@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-        ::SetCurrentDirectoryW(L"D:/Proj/TH");
+        ::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/HC0");
 		//::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/Roguelike2");
         ln::Logger::setLevel(ln::LogLevel::Verbose);
     
