@@ -78,6 +78,14 @@ jobs:
     runs-on: windows-2019
     
     steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+        
     - uses: actions/download-artifact@v1
       with:
         name: NativePackage-MSVC2019-x64-MT
