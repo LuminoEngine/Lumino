@@ -77,6 +77,7 @@ jobs:
     needs: [Build-Native-MSVC2019-x64-MT, Build-Native-Android]
     runs-on: windows-2019
     
+    steps:
     - uses: actions/download-artifact@v1
       with:
         name: NativePackage-MSVC2019-x64-MT
