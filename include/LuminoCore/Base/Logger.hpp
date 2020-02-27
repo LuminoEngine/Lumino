@@ -44,7 +44,7 @@ enum class LogLevel
 };
 
 /** グローバルなロギング機能をコントロールするためのクラスです。 */
-class GlobalLogger
+class Logger
 {
 public:
     /**

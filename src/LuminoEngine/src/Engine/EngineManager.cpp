@@ -399,7 +399,7 @@ void EngineManager::initializeCommon()
 		if (m_settings.engineLogEnabled) {
             // engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
 			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
-			GlobalLogger::addFileAdapter(logfile.str().toStdString());
+			Logger::addFileAdapter(logfile.str().toStdString());
 		}
 	}
 #endif

@@ -18,7 +18,7 @@ static void ln_main_loop()
 
 int main(int argc, char** argv)
 {
-    ln::GlobalLogger::addStdErrAdapter();
+    ln::Logger::addStdErrAdapter();
     
     g_app = ::LuminoCreateApplicationInstance();
 

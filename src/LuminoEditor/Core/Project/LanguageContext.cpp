@@ -176,12 +176,12 @@ ln::Result CppLanguageContext::build(const ln::String& target)
 
 ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 {
-	//ln::String arch = u"MSVC2019-x64-MT";
-	ln::String arch = u"MSVC2017-x64-MT";
+	ln::String arch = u"MSVC2019-x64-MT";
 
 	ln::List<ln::String> args = {
 		project()->rootDirPath(),
-		u"-G \"Visual Studio 15 Win64\"",
+		u"-G \"Visual Studio 16 2019\"",
+		u"-A x64",
 		u"-DLN_TARGET_ARCH=" + arch,
 		u"-DLN_MSVC_STATIC_RUNTIME=ON",
 		//u"-DLUMINO_ENGINE_ROOT=\"" + ln::Path(m_project->engineDirPath(), u"Native").str().replace("\\", "/") + u"\"",

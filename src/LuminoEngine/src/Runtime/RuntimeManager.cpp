@@ -16,12 +16,12 @@ RuntimeManager::RuntimeManager()
 {
 //    // 特に Binding-module にて、Engine 初期化以前にいろいろ処理を行うが、
 //    // そこのログを出力したいので他の設定より先に有効化しておく。
-//    ln::GlobalLogger::addStdErrAdapter();
+//    ln::Logger::addStdErrAdapter();
 //#ifdef LN_OS_ANDROID
-//    ln::GlobalLogger::addLogcatAdapter();
+//    ln::Logger::addLogcatAdapter();
 //#endif
 //#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
-//    ln::GlobalLogger::addNLogAdapter();
+//    ln::Logger::addNLogAdapter();
 //#endif
 }
 

@@ -16,7 +16,7 @@ static ln::Application* g_app = nullptr;
 
 void AndroidPlatformInterface::init(int viewWidth, int viewHeight)
 {
-    ln::GlobalLogger::addLogcatAdapter();
+    ln::Logger::addLogcatAdapter();
     g_app = ::LuminoCreateApplicationInstance();
     ln::detail::ApplicationHelper::init(g_app);
     ln::detail::SwapChainInternal::setBackendBufferSize(ln::Engine::mainWindow()->swapChain(), viewWidth, viewHeight);

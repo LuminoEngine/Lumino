@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 	{
         ::SetCurrentDirectoryW(L"D:/Proj/TH");
 		//::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/Roguelike2");
-        ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
+        ln::Logger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>", "-d",
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 			return commnad_localInitialSetup(argv[2]);
 		}
 	
-        ln::GlobalLogger::addStdErrAdapter();
+        ln::Logger::addStdErrAdapter();
 
 		ln::EngineContext::current()->engineManager()->initializeAssetManager();
 

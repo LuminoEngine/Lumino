@@ -331,8 +331,8 @@ LnResult LnObject_SetTypeInfoId(LnHandle obj, int typeInfoId)
 
 void LnLog_SetLevel(LnLogLevel level)
 {
-	ln::GlobalLogger::addStdErrAdapter();	// TODO: とりいそぎ
-    ln::GlobalLogger::setLevel(static_cast<ln::LogLevel>(level));
+	ln::Logger::addStdErrAdapter();	// TODO: とりいそぎ
+    ln::Logger::setLevel(static_cast<ln::LogLevel>(level));
 }
 
 void LnLog_Write(LnLogLevel level, const LnChar* tag, const LnChar* text)

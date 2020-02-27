@@ -11,7 +11,7 @@ void TestEnv::setup()
 {
     EngineFeature feature = EngineFeature::Experimental;//EngineFeature::Public; //
 
-	GlobalLogger::addStdErrAdapter();
+	Logger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
