@@ -61,7 +61,9 @@ struct EngineSettings
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
+
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+	bool graphicsDebugEnabled = false;
 
 	bool engineLogEnabled = false;
 	String engineLogFilePath;

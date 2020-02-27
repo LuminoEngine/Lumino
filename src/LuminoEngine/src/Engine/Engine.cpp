@@ -58,6 +58,11 @@ void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 	detail::EngineManager::s_settings.graphicsAPI = value;
 }
 
+void EngineSettings::setGraphicsDebugEnabled(bool enabled)
+{
+    detail::EngineManager::s_settings.graphicsDebugEnabled = enabled;
+}
+
 void EngineSettings::setDebugToolEnabled(bool enabled)
 {
 	detail::EngineManager::s_settings.debugToolEnabled = enabled;

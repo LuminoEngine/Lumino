@@ -559,6 +559,7 @@ void EngineManager::initializeGraphicsManager()
         settings.assetManager = m_assetManager;
 		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
 		settings.graphicsAPI = m_settings.graphicsAPI;
+		settings.debugMode = m_settings.graphicsDebugEnabled;
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->init(settings);

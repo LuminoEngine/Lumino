@@ -27,6 +27,7 @@ public:
         AssetManager* assetManager = nullptr;
 		PlatformWindow* mainWindow = nullptr;
 		GraphicsAPI graphicsAPI;
+		bool debugMode = false;
 	};
 
 	GraphicsManager();

@@ -80,7 +80,7 @@ namespace LuminoBuild.Tasks
                     $"-DCMAKE_DEBUG_POSTFIX=d",
                     $"-DLN_MSVC_STATIC_RUNTIME={targetInfo.StaticRuntime}",
                     $"-DLN_BUILD_TESTS=ON",
-                    $"-DLN_BUILD_TOOLS=ON",
+                    $"-DLN_BUILD_EDITOR=ON",
                     $"-DLN_BUILD_SHARED_LIBRARY=ON",
                     $"-DLN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER=ON",
                     $"-DLN_TARGET_ARCH:STRING={targetName}",
