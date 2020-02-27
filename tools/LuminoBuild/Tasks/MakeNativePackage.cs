@@ -91,20 +91,27 @@ namespace LuminoBuild.Tasks
 
                 if (Utils.IsWin32)
                 {
-                    string engineInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
-
-                    Utils.CopyDirectory(Path.Combine(engineInstallDir, "bin"), destinationToolDir, pattern: "*.exe");
-                    Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));
+                    var engineInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
+                    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
+                    if (Directory.Exists(sourceBinDir))
+                    {
+                        Utils.CopyDirectory(sourceBinDir, destinationToolDir, pattern: "*.exe");
+                        Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));
+                    }
                 }
                 else if (Utils.IsMac)
                 {
-                    string engineInstallDir = Path.Combine(builder.LuminoBuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
+                    var engineInstallDir = Path.Combine(builder.LuminoBuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
+                    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
 
-                    Utils.CopyDirectory(Path.Combine(engineInstallDir, "bin"), destinationToolDir);
+                    if (Directory.Exists(sourceBinDir))
+                    {
+                        Utils.CopyDirectory(sourceBinDir, destinationToolDir);
 
-                    string setupFile = Path.Combine(destinationToolDir, "setup.sh");
-                    File.Copy(Path.Combine(builder.LuminoRootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
-                    Utils.chmod(setupFile, Utils.S_0755);
+                        var setupFile = Path.Combine(destinationToolDir, "setup.sh");
+                        File.Copy(Path.Combine(builder.LuminoRootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
+                        Utils.chmod(setupFile, Utils.S_0755);
+                    }
                 }
 
                 // Templates
