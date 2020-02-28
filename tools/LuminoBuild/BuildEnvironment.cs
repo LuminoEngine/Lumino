@@ -18,7 +18,7 @@ namespace LuminoBuild
         public const string EngineInstallDirName = "EngineInstall";
 
         public static string BuildToolsDir { get; set; }
-
+        public static bool FromCI { get; private set; }
 
         // Build settings
         public static string Target { get; set; }
@@ -50,6 +50,7 @@ namespace LuminoBuild
         {
             BuildToolsDir = Path.Combine(builder.LuminoRootDir, "build", "BuildTools");
 
+            FromCI = Environment.GetEnvironmentVariable("LN_BUILD_FROM_CI") != null;
 
             InstallTools(builder);
         }

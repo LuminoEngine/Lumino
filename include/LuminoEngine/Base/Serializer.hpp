@@ -78,7 +78,7 @@ private:
 
 
 
-
+#if 0
 /** */
 LN_CLASS()
 class Serializer2
@@ -157,5 +157,6 @@ private:
 	void processSave();
 	void processLoad();
 };
+#endif
 
 } // namespace ln

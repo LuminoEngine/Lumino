@@ -117,6 +117,7 @@ Ref<Object> Serializer::deserialize(const String& str, const String& basePath)
 	return asset->target();
 }
 
+#if 0
 //==============================================================================
 // Serializer2
 LN_OBJECT_IMPLEMENT(Serializer2, Object) {}
@@ -201,6 +202,7 @@ Ref<Object> Serializer2::deserialize(const String& str, const String& basePath)
 {
 	return nullptr;
 }
+#endif
 
 } // namespace ln
 

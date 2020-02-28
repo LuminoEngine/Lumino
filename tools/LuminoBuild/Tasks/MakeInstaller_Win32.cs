@@ -35,15 +35,6 @@ namespace LuminoBuild.Tasks
 
             Directory.CreateDirectory(tmpDir);
 
-            // Create zip package
-            {
-                var orgName = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
-                var tmpName = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName);
-                Directory.Move(orgName, tmpName);
-                Utils.CreateZipFile(tmpName, tmpName + ".zip");
-                Directory.Move(tmpName, orgName);
-            }
-           
 
 
             foreach (var t in targets)
@@ -78,6 +69,19 @@ namespace LuminoBuild.Tasks
                 args = string.Format("-nologo -v -ext WixUIExtension -cultures:ja-jp {0}.wixobj {1}.wixobj -pdbout {0}.wixpdb -out {2}", installerWXS, contentFilesWXS, Path.Combine(builder.LuminoBuildDir, t.Output));
                 Utils.CallProcess(light, args);
             }
+
+            // Create zip package
+            {
+                var orgName = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
+                var tmpName = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName);
+                Directory.Move(orgName, tmpName);
+                if (!BuildEnvironment.FromCI)
+                {
+                    Utils.CreateZipFile(tmpName, tmpName + ".zip");
+                    Directory.Move(tmpName, orgName);
+                }
+            }
+
         }
     }
 }

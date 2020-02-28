@@ -9,10 +9,13 @@ env:
   cache-version: v1
 
 jobs:
+  env:
+    LN_BUILD_FROM_CI: 1
+
   #==============================================================================
   Build-Native-MSVC2019-x64-MT:
     runs-on: windows-2019
-
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -38,6 +41,36 @@ jobs:
       with:
         name: NativePackage-MSVC2019-x64-MT
         path: ./build/NativePackage
+
+  #==============================================================================
+  Build-Native-Web:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Common build cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+
+    - name: Build
+      run: |
+        dotnet run -- BuildExternalProjects Emscripten
+        dotnet run -- BuildEngine_Emscripten Emscripten
+        dotnet run -- MakeNativePackage
+        
+    - uses: actions/upload-artifact@v1
+    with:
+      name: NativePackage-Web
+      path: ./build/NativePackage
 
   #==============================================================================
   Build-Native-Android:
@@ -73,6 +106,67 @@ jobs:
         path: ./build/NativePackage
 
   #==============================================================================
+  Native-macOS:
+    runs-on: macos-10.15
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Common build cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
+    - name: Build
+      run: |
+        dotnet run -- BuildExternalProjects macOS
+        dotnet run -- BuildEngine_macOS
+        dotnet run -- MakeNativePackage
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: NativePackage-macOS
+        path: ./build/NativePackage
+        
+  #==============================================================================
+  Native-iOS:
+    runs-on: macos-10.15
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Common build cache (build/BuildCache)
+      uses: actions/cache@v1
+      with:
+        path: ./build/BuildCache
+        key: ${{ env.cache-version }}-BuildCache-${{ hashFiles('**/BuildExternalProjects.cs') }}
+            
+    - name: Build
+      run: |
+        dotnet run -- BuildExternalProjects iOS-OS64
+        dotnet run -- BuildExternalProjects iOS-SIMULATOR64
+        dotnet run -- BuildEngine_iOS
+        dotnet run -- MakeNativePackage
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: NativePackage-iOS
+        path: ./build/NativePackage
+
+  #==============================================================================
   Package-Windows:
     needs: [Build-Native-MSVC2019-x64-MT, Build-Native-Android]
     runs-on: windows-2019
@@ -93,6 +187,11 @@ jobs:
     
     - uses: actions/download-artifact@v1
       with:
+        name: NativePackage-Web
+        path: ./build/NativePackage
+    
+    - uses: actions/download-artifact@v1
+      with:
         name: NativePackage-Android
         path: ./build/NativePackage
 
@@ -107,7 +206,7 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: Lumino-latest-Windows.zip
-        path: ./build/Lumino-latest-Windows.zip
+        path: ./build/Lumino-latest-Windows
 
 #        dotnet run -- BuildExternalProjects Emscripten
 #        
@@ -116,3 +215,35 @@ jobs:
 #        dotnet run -- BuildEngine_Android
 #        dotnet run -- MakeNativePackage
 #        dotnet run -- MakeInstaller_Win32
+
+  #==============================================================================
+  Package-macOS:
+    needs: [Native-macOS, Native-iOS]
+    runs-on: windows-2019
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+        
+    - uses: actions/download-artifact@v1
+      with:
+        name: NativePackage-macOS
+        path: ./build/NativePackage
+    
+    - uses: actions/download-artifact@v1
+      with:
+        name: NativePackage-iOS
+        path: ./build/NativePackage
+
+    - name: Build
+      run: dotnet run -- MakePackage_macOS
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Lumino-latest-macOS.zip
+        path: ./build/Lumino-latest-macOS
