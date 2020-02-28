@@ -27,10 +27,10 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_Emscripten" };
                 //args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "MakePackage_Ruby" };
-                //args = new string[] { "BuildLLVM" };
+                args = new string[] { "BuildLLVM" };
 
                 //args = new string[] { "MakeNativePackage" };
-                args = new string[] { "MakeInstaller_Win32" };
+                //args = new string[] { "MakeInstaller_Win32" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();

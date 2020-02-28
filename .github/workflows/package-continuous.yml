@@ -217,7 +217,7 @@ jobs:
   #==============================================================================
   Package-macOS:
     needs: [Native-macOS, Native-iOS]
-    runs-on: windows-2019
+    runs-on: macos-10.15
     
     steps:
     - name: Checkout
