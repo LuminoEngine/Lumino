@@ -66,9 +66,9 @@ jobs:
         dotnet run -- MakeNativePackage
         
     - uses: actions/upload-artifact@v1
-    with:
-      name: NativePackage-Web
-      path: ./build/NativePackage
+      with:
+        name: NativePackage-Web
+        path: ./build/NativePackage
 
   #==============================================================================
   Build-Native-Android:
