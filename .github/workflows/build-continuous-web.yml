@@ -6,7 +6,7 @@ on:
     - master
 
 env:
-  cache-version: v1
+  cache-version: v2
 
 jobs:
   Web:
