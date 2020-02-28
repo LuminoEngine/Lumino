@@ -7,11 +7,9 @@ on:
 
 env:
   cache-version: v1
+  LN_BUILD_FROM_CI: 1
 
 jobs:
-  env:
-    LN_BUILD_FROM_CI: 1
-
   #==============================================================================
   Build-Native-MSVC2019-x64-MT:
     runs-on: windows-2019
