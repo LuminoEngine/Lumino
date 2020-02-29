@@ -7,19 +7,20 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    rake (10.5.0)
+    rake (13.0.1)
     rake-compiler (1.1.0)
       rake
     thor (1.0.1)
     yard (0.9.24)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES
   bundler (~> 2.1.4)
   lumino!
-  rake (~> 10.0)
+  rake (~> 13.0)
   rake-compiler
   yard
 
