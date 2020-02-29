@@ -2,6 +2,7 @@
 #include "Common.hpp"
 
 namespace lna {
+class Workspace;
 
 // プロジェクトテンプレートなどの検索パスの基準
 //enum class EnvironmentPathBase
@@ -20,13 +21,13 @@ class BuildEnvironment
 	: public ln::RefObject
 {
 public:
-	BuildEnvironment();
+	BuildEnvironment(Workspace* workspace);
 	void setupPathes(bool developMode);
 	ln::Result prepareEmscriptenSdk();
 
 	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
 
-	Language defaultLanguage() const { return m_defaultLanguage; }
+	//Language defaultLanguage() const { return m_defaultLanguage; }
 	//EnvironmentPathBase actualPathBase() const { return m_actualPathBase; }
 
 	// Pathes
@@ -63,11 +64,12 @@ private:
 	//void setupPathesFromPackageRoot(const ln::Path& packageRoot);
 	//void setupPathesFromRepositoryRoot(const ln::Path& repoRoot);
 	static ln::Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
-	static ln::Path findNativePackageRootDir();
+	ln::Path findNativePackageRootDir() const;
 	static ln::Path findRepositoryRootDir();
 
+	Workspace* m_workspace;
 	ln::String m_defaultTargetName;
-	Language m_defaultLanguage;
+	//Language m_defaultLanguage;
 	//EnvironmentPathBase m_actualPathBase;
 
 	ln::Path m_appDataDirPath;

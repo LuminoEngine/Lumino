@@ -10,7 +10,7 @@
 
 int main(int argc, char** argv)
 {
-	ln::GlobalLogger::addStdErrAdapter();
+	ln::Logger::addStdErrAdapter();
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 	auto pidb = ln::makeRef<PIDatabase>();
 

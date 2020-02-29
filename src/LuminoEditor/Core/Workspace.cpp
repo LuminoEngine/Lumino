@@ -33,10 +33,17 @@ Workspace* Workspace::instance()
 //}
 
 Workspace::Workspace()
-	: m_buildEnvironment(ln::makeRef<BuildEnvironment>())
+	: m_buildEnvironment(ln::makeRef<BuildEnvironment>(this))
 {
     assert(!s_instance);
     s_instance = this;
+
+	ln::String name = ln::Path(ln::Environment::executablePath()).fileNameWithoutExtension();
+	if (name.endsWith(u"-rb"))
+		m_primaryLang = u"ruby";
+	else
+		m_primaryLang = u"cpp";
+
 //#ifdef LN_DEBUG
 //	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
 //#else
@@ -45,6 +52,8 @@ Workspace::Workspace()
 
 	m_projectTemplateManager = ln::makeObject2<ProjectTemplateManager>();
 	m_projectTemplateManager->search();
+
+	
 }
 
 Workspace::~Workspace()

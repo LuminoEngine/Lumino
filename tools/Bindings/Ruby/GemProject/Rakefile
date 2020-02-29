@@ -18,11 +18,26 @@ Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
     FileUtils.cp(lib, to)
     p "Lib copy (" + lib + ", " + to + ")"
   end
-  
+
+  tools_dir = File.expand_path("../../../../../build/NativePackage/Tools", __FILE__)
+  FileUtils.rm_r("Tools")
+  FileUtils.cp_r(tools_dir, 'Tools')
+  if File.exist?('Tools/lumino.exe')
+    File.rename('Tools/lumino.exe', 'Tools/lumino-rb.exe')
+  end
+  p "NativePackage copy (" + tools_dir + ", " + 'Tools' + ")"
+
+  lumino_cmd = File.expand_path("../../../../../build/MSVC2019-x64-MT/src/LuminoEditor/CLI/Release/lumino.exe", __FILE__)
+  if File.exist?(lumino_cmd)
+    to = "Tools/lumino-rb.exe"
+    FileUtils.cp(lumino_cmd, to)
+    p "exe copy (" + lumino_cmd + ", " + to + ")"
+  end
+
   # copy resources
-  resources = File.expand_path("../../../../../tools/EngineResources", __FILE__)
-  FileUtils.cp_r(resources, "ext")
-  p "Copied EngineResources."
+  #resources = File.expand_path("../../../../../tools/EngineResources", __FILE__)
+  #FileUtils.cp_r(resources, "ext")
+  #p "Copied EngineResources."
 
   ext.lib_dir = "lib/lumino"
 end

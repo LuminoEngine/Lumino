@@ -2,11 +2,11 @@
 
 namespace lna {
 
-enum class Language
-{
-    Cpp,
-    Ruby,
-};
+//enum class Language
+//{
+//    Cpp,
+//    Ruby,
+//};
 
 } // namespace lna
 

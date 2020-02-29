@@ -1,4 +1,5 @@
 ﻿
+#include "Workspace.hpp"
 #include "EnvironmentSettings.hpp"
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Engine/EngineManager.hpp"
@@ -9,8 +10,9 @@ namespace lna {
 //==============================================================================
 // BuildEnvironment
 
-BuildEnvironment::BuildEnvironment()
-	: m_toolsDir()
+BuildEnvironment::BuildEnvironment(Workspace* workspace)
+	: m_workspace(workspace)
+	, m_toolsDir()
 	, m_emsdkVer()
 	, m_emsdkRootDir()
 	, m_emscriptenRootDir()
@@ -24,10 +26,10 @@ BuildEnvironment::BuildEnvironment()
 	static_assert("Target not supported.");
 #endif
 
-	m_defaultLanguage = Language::Cpp;
-	if (ln::Environment::executablePath().endsWith(u"-rb")) {
-		m_defaultLanguage = Language::Ruby;
-	}
+	//m_defaultLanguage = Language::Cpp;
+	//if (ln::Environment::executablePath().endsWith(u"-rb")) {
+	//	m_defaultLanguage = Language::Ruby;
+	//}
 }
 
 void BuildEnvironment::setupPathes(bool developMode)
@@ -326,19 +328,30 @@ ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::Li
 	}
 }
 
-ln::Path BuildEnvironment::findNativePackageRootDir()
+ln::Path BuildEnvironment::findNativePackageRootDir() const
 {
 	// 実行ファイルを少しさかのぼってパッケージのルートらしいフォルダがあればそこを採用
 	ln::Path packageRootDir = ln::Path(ln::Environment::executablePath()).parent().parent();
-	ln::Path engineDir = ln::Path(packageRootDir, u"Engine");
-	ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
-	if (ln::FileSystem::existsDirectory(engineDir) && ln::FileSystem::existsDirectory(toolsDir))
-	{
-		return packageRootDir;
+
+	std::cout << m_workspace->primaryLang();
+
+	if (m_workspace->primaryLang() == u"cpp") {
+		ln::Path engineDir = ln::Path(packageRootDir, u"Engine");
+		ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
+		if (ln::FileSystem::existsDirectory(engineDir) && ln::FileSystem::existsDirectory(toolsDir)) {
+			return packageRootDir;
+		}
 	}
-	else {
-		return ln::Path();
+	if (m_workspace->primaryLang() == u"ruby") {
+		printf("rb!!\n");
+		ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
+		if (ln::FileSystem::existsDirectory(toolsDir)) {
+			printf("ok!!\n");
+			return packageRootDir;
+		}
 	}
+
+	return ln::Path();
 }
 
 ln::Path BuildEnvironment::findRepositoryRootDir()

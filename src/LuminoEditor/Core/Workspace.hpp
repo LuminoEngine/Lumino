@@ -23,6 +23,7 @@ public:
     ln::Result runProject(const ln::String& target);
     ln::Result restoreProject();
 
+	const ln::String& primaryLang() const { return m_primaryLang; }
     const ln::Ref<Project>& mainProject() const { return m_mainProject; }
     const ln::Ref<PluginManager>& mainPluginManager() const { return m_mainPluginManager; }
     const ln::Ref<AssetDatabase>& mainAssetDatabase() const { return m_mainAssetDatabase; }
@@ -37,6 +38,7 @@ public:
 private:
     void postMainProjectLoaded();
 
+	ln::String m_primaryLang;
 	ln::Ref<BuildEnvironment> m_buildEnvironment;
 	ln::Ref<Project> m_mainProject;
     ln::Ref<PluginManager> m_mainPluginManager;

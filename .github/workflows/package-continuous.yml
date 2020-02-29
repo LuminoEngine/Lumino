@@ -104,7 +104,7 @@ jobs:
         path: ./build/NativePackage
 
   #==============================================================================
-  Native-macOS:
+  Build-Native-macOS:
     runs-on: macos-10.15
 
     steps:
@@ -134,7 +134,7 @@ jobs:
         path: ./build/NativePackage
         
   #==============================================================================
-  Native-iOS:
+  Build-Native-iOS:
     runs-on: macos-10.15
 
     steps:

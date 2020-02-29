@@ -1,6 +1,7 @@
 ﻿
 #include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
+#include "Project.hpp"
 #include "ProjectTemplateManager.hpp"
 
 namespace lna {
@@ -77,6 +78,36 @@ ProjectTemplate* ProjectTemplateManager::findTemplate(const ln::String& primaryL
 	}
 
 	return nullptr;
+}
+
+ln::Result ProjectTemplateManager::applyTemplates(const Project* project, const ln::String& templateName) const
+{
+	auto templateProject = findTemplate(project->workspace()->primaryLang(), templateName);
+	if (!templateProject) {
+		CLI::error(u"Invalid project template.");
+		return false;
+	}
+
+	auto projectTemplatesDir = project->workspace()->buildEnvironment()->projectTemplatesDirPath();
+	auto dstRoot = project->rootDirPath();
+	auto srcRoot = templateProject->directoryPath;
+
+	CLI::info(u"Template: " + templateName);
+
+	// 先にフォルダを作っておく
+	for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
+		auto rel = srcRoot.makeRelative(dir);
+		ln::FileSystem::createDirectory(ln::Path(dstRoot, rel));
+	}
+
+	// ファイルをコピー
+	for (auto file : ln::FileSystem::getFiles(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
+		auto rel = srcRoot.makeRelative(file);
+		ln::FileSystem::copyFile(file, ln::Path(dstRoot, rel));
+	}
+
+	CLI::info("Copied template.");
+	return true;
 }
 
 } // namespace lna

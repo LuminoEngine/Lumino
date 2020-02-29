@@ -20,7 +20,8 @@ Gem::Specification.new do |spec|
   #spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
   #  `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   #end
-  spec.files = Dir['{bin/*,ext/**/*,lib/**/*,test/**/*}']
+  spec.files = Dir['{bin/*,ext/**/*,lib/**/*,test/**/*,Tools/**/*}']
+  #spec.files.push('exe/lumino-rb.exe')  # see "lumino-rb file" command
 
   spec.bindir        = "exe"
   spec.executables   = ['lumino-rb']#spec.files.grep(%r{^exe/}) { |f| File.basename(f) }

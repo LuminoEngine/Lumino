@@ -5,7 +5,6 @@
 #include "Workspace.hpp"
 #include "Project.hpp"
 #include "BuildAssetHelper.hpp"
-#include "ProjectTemplateManager.hpp"
 #include "LanguageContext.hpp"
 
 namespace lna {
@@ -124,35 +123,6 @@ CppLanguageContext::~CppLanguageContext()
 {
 }
 
-ln::Result CppLanguageContext::applyTemplates(const ln::String& templateName)
-{
-	auto templateProject = Workspace::instance()->projectTemplateManager()->findTemplate(u"cpp", templateName);
-	if (!templateProject) {
-		CLI::error(u"Invalid project template.");
-		return false;
-	}
-
-	auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
-	auto dstRoot = project()->rootDirPath();
-	auto srcRoot = templateProject->directoryPath;
-
-    CLI::info(u"Template: " + templateName);
-
-    // 先にフォルダを作っておく
-    for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
-        auto rel = srcRoot.makeRelative(dir);
-        ln::FileSystem::createDirectory(ln::Path(dstRoot, rel));
-    }
-
-    // ファイルをコピー
-    for (auto file : ln::FileSystem::getFiles(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
-        auto rel = srcRoot.makeRelative(file);
-        ln::FileSystem::copyFile(file, ln::Path(dstRoot, rel));
-    }
-
-	CLI::info("Copied template.");
-	return true;
-}
 
 void CppLanguageContext::restore()
 {
