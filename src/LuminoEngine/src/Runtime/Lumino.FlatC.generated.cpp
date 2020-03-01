@@ -1085,6 +1085,22 @@ public:
 LnUITextBlock_OnSerialize_OverrideCallback LNWS_ln_UITextBlock::s_LnUITextBlock_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_Input : public ln::Input
+{
+public:
+
+
+};
+
+
+class LNWS_ln_Mouse : public ln::Mouse
+{
+public:
+
+
+};
+
+
 class LNWS_ln_EngineSettings : public ln::EngineSettings
 {
 public:
@@ -1316,6 +1332,106 @@ LN_FLAT_API LnResult LnColor_Set(LnColor* color, float r_, float g_, float b_, f
 {
     LNI_FUNC_TRY_BEGIN;
     new (reinterpret_cast<ln::Color*>(color)) ln::Color(r_, g_, b_, a_);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPoint_SetZeros(LnPoint* point)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Point*>(point)) ln::Point();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPoint_Set(LnPoint* point, float x_, float y_)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Point*>(point)) ln::Point(x_, y_);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSize_SetZeros(LnSize* size)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Size*>(size)) ln::Size();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSize_Set(LnSize* size, float w, float h)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Size*>(size)) ln::Size(w, h);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_SetZeros(LnRect* rect)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Rect*>(rect)) ln::Rect();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_Set(LnRect* rect, float x, float y, float width, float height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Rect*>(rect)) ln::Rect(x, y, width, height);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_GetLeft(const LnRect* rect, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (reinterpret_cast<const ln::Rect*>(rect)->getLeft());
+    }
+    else {
+        (reinterpret_cast<const ln::Rect*>(rect)->getLeft());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_SetSize(LnRect* rect, const LnSize* size)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (reinterpret_cast<ln::Rect*>(rect)->setSize(*reinterpret_cast<const ln::Size*>(size)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_GetSize(const LnRect* rect, LnSize* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnSize>(reinterpret_cast<const ln::Rect*>(rect)->getSize());
+    }
+    else {
+        (reinterpret_cast<const ln::Rect*>(rect)->getSize());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnThickness_SetZeros(LnThickness* thickness)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Thickness*>(thickness)) ln::Thickness();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnThickness_Set(LnThickness* thickness, float left_, float top_, float right_, float bottom_)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Thickness*>(thickness)) ln::Thickness(left_, top_, right_, bottom_);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -3160,6 +3276,224 @@ LN_FLAT_API void LnUITextBlock_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UITextBlock>(), id);
 }
+
+LN_FLAT_API LnResult LnInput_Pressed(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::pressed(buttonName));
+    }
+    else {
+        (ln::Input::pressed(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_PressedA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::pressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::pressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_Triggered(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggered(buttonName));
+    }
+    else {
+        (ln::Input::triggered(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_TriggeredA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::triggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_TriggeredOff(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggeredOff(buttonName));
+    }
+    else {
+        (ln::Input::triggeredOff(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_TriggeredOffA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::triggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_Repeated(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::repeated(buttonName));
+    }
+    else {
+        (ln::Input::repeated(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_RepeatedA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::repeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::repeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_GetAxisValue(const LnChar* buttonName, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Input::getAxisValue(buttonName));
+    }
+    else {
+        (ln::Input::getAxisValue(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_GetAxisValueA(const char* buttonName, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Input::getAxisValue(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::getAxisValue(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_ClearAllBindings()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Input::clearAllBindings());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Pressed(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::pressed(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::pressed(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Triggered(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::triggered(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::triggered(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_TriggeredOff(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::triggeredOff(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::triggeredOff(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Repeated(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::repeated(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::repeated(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Position(LnPoint* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnPoint>(ln::Mouse::position());
+    }
+    else {
+        (ln::Mouse::position());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
 {

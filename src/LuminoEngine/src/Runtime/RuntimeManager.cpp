@@ -1,4 +1,5 @@
-﻿#include "RuntimeManager.hpp"
+﻿#include <LuminoEngine/Engine/Object.hpp>
+#include "RuntimeManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -117,7 +118,6 @@ LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 		// 空き場所を取得
 		int newPos = m_objectIndexStack.top();
 		m_objectIndexStack.pop();
-		printf("stack: %d %d\n", m_objectIndexStack.size(), newPos);
 
 		// 格納
 		ObjectEntry& e = m_objectEntryList[newPos];

@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <stack>
 #include <LuminoEngine/Runtime/Common.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
 

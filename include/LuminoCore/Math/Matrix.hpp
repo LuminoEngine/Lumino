@@ -107,11 +107,13 @@ public:
     /** この行列の行要素を取得します。 */
     const Vector4& row(int index) const;
 
+#if !defined(LUMINO_TRANSCODER)
 	/** Returns pointer to the first element. */
 	float* data() LN_NOEXCEPT { return &m11; }
 
 	/** Returns pointer to the first element. */
 	const float* data() const LN_NOEXCEPT { return &m11; }
+#endif
 
     /**
 	 * この行列を平行移動します。

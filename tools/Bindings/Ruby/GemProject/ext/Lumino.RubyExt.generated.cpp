@@ -33,6 +33,7 @@ extern "C" void InitLuminoRubyRuntimeManager();
 
 
 
+VALUE g_enum_MouseButtons;
 VALUE g_enum_PixelFormat;
 VALUE g_enum_TextureFormat;
 VALUE g_enum_DepthBufferFormat;
@@ -74,6 +75,8 @@ VALUE g_class_UIControl;
 VALUE g_class_UIButtonBase;
 VALUE g_class_UIButton;
 VALUE g_class_UITextBlock;
+VALUE g_class_Input;
+VALUE g_class_Mouse;
 VALUE g_class_EngineSettings;
 VALUE g_class_Engine;
 VALUE g_class_Application;
@@ -1046,6 +1049,629 @@ static VALUE Wrap_LnColor_Set(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Color::Color - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::Point
+
+VALUE g_class_Point;
+
+void LnPoint_delete(LnPoint* obj)
+{
+    free(obj);
+}
+
+VALUE LnPoint_allocate( VALUE klass )
+{
+    VALUE obj;
+    LnPoint* internalObj;
+
+    internalObj = (LnPoint*)malloc(sizeof(LnPoint));
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnPoint_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LnPoint_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LnPoint));
+
+    return obj;
+}
+
+static VALUE Wrap_LnPoint_GetX(int argc, VALUE* argv, VALUE self)
+{
+    LnPoint* selfObj;
+    Data_Get_Struct(self, LnPoint, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->x);
+    }
+    rb_raise(rb_eArgError, "ln::Point::getX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPoint_SetX(int argc, VALUE* argv, VALUE self)
+{
+    LnPoint* selfObj;
+    Data_Get_Struct(self, LnPoint, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->x = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Point::setX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPoint_GetY(int argc, VALUE* argv, VALUE self)
+{
+    LnPoint* selfObj;
+    Data_Get_Struct(self, LnPoint, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->y);
+    }
+    rb_raise(rb_eArgError, "ln::Point::getY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPoint_SetY(int argc, VALUE* argv, VALUE self)
+{
+    LnPoint* selfObj;
+    Data_Get_Struct(self, LnPoint, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->y = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Point::setY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPoint_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnPoint* selfObj;
+    Data_Get_Struct(self, LnPoint, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnPoint_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 2) {
+        VALUE x_;
+        VALUE y_;
+        rb_scan_args(argc, argv, "2", &x_, &y_);
+        if (LNRB_VALUE_IS_FLOAT(x_) && LNRB_VALUE_IS_FLOAT(y_))
+        {
+            float _x_ = LNRB_VALUE_TO_FLOAT(x_);
+            float _y_ = LNRB_VALUE_TO_FLOAT(y_);
+            LnResult errorCode = LnPoint_Set(selfObj, _x_, _y_);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Point::Point - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::Size
+
+VALUE g_class_Size;
+
+void LnSize_delete(LnSize* obj)
+{
+    free(obj);
+}
+
+VALUE LnSize_allocate( VALUE klass )
+{
+    VALUE obj;
+    LnSize* internalObj;
+
+    internalObj = (LnSize*)malloc(sizeof(LnSize));
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSize_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LnSize_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LnSize));
+
+    return obj;
+}
+
+static VALUE Wrap_LnSize_GetWidth(int argc, VALUE* argv, VALUE self)
+{
+    LnSize* selfObj;
+    Data_Get_Struct(self, LnSize, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->width);
+    }
+    rb_raise(rb_eArgError, "ln::Size::getWidth - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSize_SetWidth(int argc, VALUE* argv, VALUE self)
+{
+    LnSize* selfObj;
+    Data_Get_Struct(self, LnSize, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->width = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Size::setWidth - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSize_GetHeight(int argc, VALUE* argv, VALUE self)
+{
+    LnSize* selfObj;
+    Data_Get_Struct(self, LnSize, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->height);
+    }
+    rb_raise(rb_eArgError, "ln::Size::getHeight - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSize_SetHeight(int argc, VALUE* argv, VALUE self)
+{
+    LnSize* selfObj;
+    Data_Get_Struct(self, LnSize, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->height = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Size::setHeight - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSize_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnSize* selfObj;
+    Data_Get_Struct(self, LnSize, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnSize_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 2) {
+        VALUE w;
+        VALUE h;
+        rb_scan_args(argc, argv, "2", &w, &h);
+        if (LNRB_VALUE_IS_FLOAT(w) && LNRB_VALUE_IS_FLOAT(h))
+        {
+            float _w = LNRB_VALUE_TO_FLOAT(w);
+            float _h = LNRB_VALUE_TO_FLOAT(h);
+            LnResult errorCode = LnSize_Set(selfObj, _w, _h);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Size::Size - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::Rect
+
+VALUE g_class_Rect;
+
+void LnRect_delete(LnRect* obj)
+{
+    free(obj);
+}
+
+VALUE LnRect_allocate( VALUE klass )
+{
+    VALUE obj;
+    LnRect* internalObj;
+
+    internalObj = (LnRect*)malloc(sizeof(LnRect));
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnRect_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LnRect_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LnRect));
+
+    return obj;
+}
+
+static VALUE Wrap_LnRect_GetX(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->x);
+    }
+    rb_raise(rb_eArgError, "ln::Rect::getX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_SetX(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->x = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::setX - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_GetY(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->y);
+    }
+    rb_raise(rb_eArgError, "ln::Rect::getY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_SetY(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->y = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::setY - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_GetWidth(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->width);
+    }
+    rb_raise(rb_eArgError, "ln::Rect::getWidth - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_SetWidth(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->width = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::setWidth - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_GetHeight(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->height);
+    }
+    rb_raise(rb_eArgError, "ln::Rect::getHeight - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_SetHeight(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->height = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::setHeight - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnRect_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (4 <= argc && argc <= 4) {
+        VALUE x;
+        VALUE y;
+        VALUE width;
+        VALUE height;
+        rb_scan_args(argc, argv, "4", &x, &y, &width, &height);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(width) && LNRB_VALUE_IS_FLOAT(height))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _width = LNRB_VALUE_TO_FLOAT(width);
+            float _height = LNRB_VALUE_TO_FLOAT(height);
+            LnResult errorCode = LnRect_Set(selfObj, _x, _y, _width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::Rect - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_GetLeft(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnRect_GetLeft(selfObj, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::getLeft - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_SetSize(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE size;
+        rb_scan_args(argc, argv, "1", &size);
+        if (LNRB_VALUE_IS_OBJECT(size))
+        {
+            LnSize* tmp__size; Data_Get_Struct(size, LnSize, tmp__size);LnSize& _size = *tmp__size;
+            LnResult errorCode = LnRect_SetSize(selfObj, &_size);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::setSize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRect_GetSize(int argc, VALUE* argv, VALUE self)
+{
+    LnRect* selfObj;
+    Data_Get_Struct(self, LnRect, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnSize _outReturn;
+            LnResult errorCode = LnRect_GetSize(selfObj, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnSize_allocate(g_class_Size);
+            *((LnSize*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Rect::getSize - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::Thickness
+
+VALUE g_class_Thickness;
+
+void LnThickness_delete(LnThickness* obj)
+{
+    free(obj);
+}
+
+VALUE LnThickness_allocate( VALUE klass )
+{
+    VALUE obj;
+    LnThickness* internalObj;
+
+    internalObj = (LnThickness*)malloc(sizeof(LnThickness));
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnThickness_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LnThickness_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LnThickness));
+
+    return obj;
+}
+
+static VALUE Wrap_LnThickness_GetLeft(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->left);
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::getLeft - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_SetLeft(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->left = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::setLeft - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_GetTop(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->top);
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::getTop - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_SetTop(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->top = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::setTop - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_GetRight(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->right);
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::getRight - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_SetRight(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->right = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::setRight - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_GetBottom(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->bottom);
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::getBottom - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_SetBottom(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->bottom = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::setBottom - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnThickness_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnThickness* selfObj;
+    Data_Get_Struct(self, LnThickness, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnThickness_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (4 <= argc && argc <= 4) {
+        VALUE left_;
+        VALUE top_;
+        VALUE right_;
+        VALUE bottom_;
+        rb_scan_args(argc, argv, "4", &left_, &top_, &right_, &bottom_);
+        if (LNRB_VALUE_IS_FLOAT(left_) && LNRB_VALUE_IS_FLOAT(top_) && LNRB_VALUE_IS_FLOAT(right_) && LNRB_VALUE_IS_FLOAT(bottom_))
+        {
+            float _left_ = LNRB_VALUE_TO_FLOAT(left_);
+            float _top_ = LNRB_VALUE_TO_FLOAT(top_);
+            float _right_ = LNRB_VALUE_TO_FLOAT(right_);
+            float _bottom_ = LNRB_VALUE_TO_FLOAT(bottom_);
+            LnResult errorCode = LnThickness_Set(selfObj, _left_, _top_, _right_, _bottom_);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Thickness::Thickness - wrong argument type.");
     return Qnil;
 }
 
@@ -5130,6 +5756,224 @@ LnResult Wrap_LnUITextBlock_OnSerialize_OverrideCallback(LnHandle object, LnHand
 }
 
 //==============================================================================
+// ln::Input
+
+struct Wrap_Input
+{
+
+    Wrap_Input()
+    {}
+};
+
+
+static VALUE Wrap_LnInput_Pressed(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE buttonName;
+        rb_scan_args(argc, argv, "1", &buttonName);
+        if (LNRB_VALUE_IS_STRING(buttonName))
+        {
+            const char* _buttonName = LNRB_VALUE_TO_STRING(buttonName);
+            LnBool _outReturn;
+            LnResult errorCode = LnInput_PressedA(_buttonName, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Input::pressed - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnInput_Triggered(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE buttonName;
+        rb_scan_args(argc, argv, "1", &buttonName);
+        if (LNRB_VALUE_IS_STRING(buttonName))
+        {
+            const char* _buttonName = LNRB_VALUE_TO_STRING(buttonName);
+            LnBool _outReturn;
+            LnResult errorCode = LnInput_TriggeredA(_buttonName, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Input::triggered - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnInput_TriggeredOff(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE buttonName;
+        rb_scan_args(argc, argv, "1", &buttonName);
+        if (LNRB_VALUE_IS_STRING(buttonName))
+        {
+            const char* _buttonName = LNRB_VALUE_TO_STRING(buttonName);
+            LnBool _outReturn;
+            LnResult errorCode = LnInput_TriggeredOffA(_buttonName, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Input::triggeredOff - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnInput_Repeated(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE buttonName;
+        rb_scan_args(argc, argv, "1", &buttonName);
+        if (LNRB_VALUE_IS_STRING(buttonName))
+        {
+            const char* _buttonName = LNRB_VALUE_TO_STRING(buttonName);
+            LnBool _outReturn;
+            LnResult errorCode = LnInput_RepeatedA(_buttonName, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Input::repeated - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnInput_GetAxisValue(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE buttonName;
+        rb_scan_args(argc, argv, "1", &buttonName);
+        if (LNRB_VALUE_IS_STRING(buttonName))
+        {
+            const char* _buttonName = LNRB_VALUE_TO_STRING(buttonName);
+            float _outReturn;
+            LnResult errorCode = LnInput_GetAxisValueA(_buttonName, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Input::getAxisValue - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnInput_ClearAllBindings(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnInput_ClearAllBindings();
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Input::clearAllBindings - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
+// ln::Mouse
+
+struct Wrap_Mouse
+{
+
+    Wrap_Mouse()
+    {}
+};
+
+
+static VALUE Wrap_LnMouse_Pressed(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE button;
+        rb_scan_args(argc, argv, "1", &button);
+        if (LNRB_VALUE_IS_NUMBER(button))
+        {
+            LnMouseButtons _button = (LnMouseButtons)FIX2INT(button);
+            LnBool _outReturn;
+            LnResult errorCode = LnMouse_Pressed(_button, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Mouse::pressed - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMouse_Triggered(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE button;
+        rb_scan_args(argc, argv, "1", &button);
+        if (LNRB_VALUE_IS_NUMBER(button))
+        {
+            LnMouseButtons _button = (LnMouseButtons)FIX2INT(button);
+            LnBool _outReturn;
+            LnResult errorCode = LnMouse_Triggered(_button, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Mouse::triggered - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMouse_TriggeredOff(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE button;
+        rb_scan_args(argc, argv, "1", &button);
+        if (LNRB_VALUE_IS_NUMBER(button))
+        {
+            LnMouseButtons _button = (LnMouseButtons)FIX2INT(button);
+            LnBool _outReturn;
+            LnResult errorCode = LnMouse_TriggeredOff(_button, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Mouse::triggeredOff - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMouse_Repeated(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE button;
+        rb_scan_args(argc, argv, "1", &button);
+        if (LNRB_VALUE_IS_NUMBER(button))
+        {
+            LnMouseButtons _button = (LnMouseButtons)FIX2INT(button);
+            LnBool _outReturn;
+            LnResult errorCode = LnMouse_Repeated(_button, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Mouse::repeated - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnMouse_Position(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnPoint _outReturn;
+            LnResult errorCode = LnMouse_Position(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnPoint_allocate(g_class_Point);
+            *((LnPoint*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Mouse::position - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
 // ln::EngineSettings
 
 struct Wrap_EngineSettings
@@ -5558,6 +6402,14 @@ extern "C" void Init_Lumino_RubyExt()
     InitLuminoRubyRuntimeManager();
     g_rootModule = rb_define_module("Lumino");
 
+    g_enum_MouseButtons = rb_define_module_under(g_rootModule, "MouseButtons");
+    rb_define_const(g_enum_MouseButtons, "NONE", INT2FIX(0)); 
+    rb_define_const(g_enum_MouseButtons, "LEFT", INT2FIX(1)); 
+    rb_define_const(g_enum_MouseButtons, "RIGHT", INT2FIX(2)); 
+    rb_define_const(g_enum_MouseButtons, "MIDDLE", INT2FIX(3)); 
+    rb_define_const(g_enum_MouseButtons, "X1", INT2FIX(4)); 
+    rb_define_const(g_enum_MouseButtons, "X2", INT2FIX(5)); 
+
     g_enum_PixelFormat = rb_define_module_under(g_rootModule, "PixelFormat");
     rb_define_const(g_enum_PixelFormat, "UNKNOWN", INT2FIX(0)); 
     rb_define_const(g_enum_PixelFormat, "A8", INT2FIX(1)); 
@@ -5639,6 +6491,49 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_Color, "a", LN_TO_RUBY_FUNC(Wrap_LnColor_GetA), -1);
     rb_define_method(g_class_Color, "a=", LN_TO_RUBY_FUNC(Wrap_LnColor_SetA), -1);
     rb_define_method(g_class_Color, "initialize", LN_TO_RUBY_FUNC(Wrap_LnColor_Set), -1);
+
+    g_class_Point = rb_define_class_under(g_rootModule, "Point", rb_cObject);
+    rb_define_alloc_func(g_class_Point, LnPoint_allocate);
+    rb_define_method(g_class_Point, "x", LN_TO_RUBY_FUNC(Wrap_LnPoint_GetX), -1);
+    rb_define_method(g_class_Point, "x=", LN_TO_RUBY_FUNC(Wrap_LnPoint_SetX), -1);
+    rb_define_method(g_class_Point, "y", LN_TO_RUBY_FUNC(Wrap_LnPoint_GetY), -1);
+    rb_define_method(g_class_Point, "y=", LN_TO_RUBY_FUNC(Wrap_LnPoint_SetY), -1);
+    rb_define_method(g_class_Point, "initialize", LN_TO_RUBY_FUNC(Wrap_LnPoint_Set), -1);
+
+    g_class_Size = rb_define_class_under(g_rootModule, "Size", rb_cObject);
+    rb_define_alloc_func(g_class_Size, LnSize_allocate);
+    rb_define_method(g_class_Size, "width", LN_TO_RUBY_FUNC(Wrap_LnSize_GetWidth), -1);
+    rb_define_method(g_class_Size, "width=", LN_TO_RUBY_FUNC(Wrap_LnSize_SetWidth), -1);
+    rb_define_method(g_class_Size, "height", LN_TO_RUBY_FUNC(Wrap_LnSize_GetHeight), -1);
+    rb_define_method(g_class_Size, "height=", LN_TO_RUBY_FUNC(Wrap_LnSize_SetHeight), -1);
+    rb_define_method(g_class_Size, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSize_Set), -1);
+
+    g_class_Rect = rb_define_class_under(g_rootModule, "Rect", rb_cObject);
+    rb_define_alloc_func(g_class_Rect, LnRect_allocate);
+    rb_define_method(g_class_Rect, "x", LN_TO_RUBY_FUNC(Wrap_LnRect_GetX), -1);
+    rb_define_method(g_class_Rect, "x=", LN_TO_RUBY_FUNC(Wrap_LnRect_SetX), -1);
+    rb_define_method(g_class_Rect, "y", LN_TO_RUBY_FUNC(Wrap_LnRect_GetY), -1);
+    rb_define_method(g_class_Rect, "y=", LN_TO_RUBY_FUNC(Wrap_LnRect_SetY), -1);
+    rb_define_method(g_class_Rect, "width", LN_TO_RUBY_FUNC(Wrap_LnRect_GetWidth), -1);
+    rb_define_method(g_class_Rect, "width=", LN_TO_RUBY_FUNC(Wrap_LnRect_SetWidth), -1);
+    rb_define_method(g_class_Rect, "height", LN_TO_RUBY_FUNC(Wrap_LnRect_GetHeight), -1);
+    rb_define_method(g_class_Rect, "height=", LN_TO_RUBY_FUNC(Wrap_LnRect_SetHeight), -1);
+    rb_define_method(g_class_Rect, "initialize", LN_TO_RUBY_FUNC(Wrap_LnRect_Set), -1);
+    rb_define_method(g_class_Rect, "get_left", LN_TO_RUBY_FUNC(Wrap_LnRect_GetLeft), -1);
+    rb_define_method(g_class_Rect, "size=", LN_TO_RUBY_FUNC(Wrap_LnRect_SetSize), -1);
+    rb_define_method(g_class_Rect, "size", LN_TO_RUBY_FUNC(Wrap_LnRect_GetSize), -1);
+
+    g_class_Thickness = rb_define_class_under(g_rootModule, "Thickness", rb_cObject);
+    rb_define_alloc_func(g_class_Thickness, LnThickness_allocate);
+    rb_define_method(g_class_Thickness, "left", LN_TO_RUBY_FUNC(Wrap_LnThickness_GetLeft), -1);
+    rb_define_method(g_class_Thickness, "left=", LN_TO_RUBY_FUNC(Wrap_LnThickness_SetLeft), -1);
+    rb_define_method(g_class_Thickness, "top", LN_TO_RUBY_FUNC(Wrap_LnThickness_GetTop), -1);
+    rb_define_method(g_class_Thickness, "top=", LN_TO_RUBY_FUNC(Wrap_LnThickness_SetTop), -1);
+    rb_define_method(g_class_Thickness, "right", LN_TO_RUBY_FUNC(Wrap_LnThickness_GetRight), -1);
+    rb_define_method(g_class_Thickness, "right=", LN_TO_RUBY_FUNC(Wrap_LnThickness_SetRight), -1);
+    rb_define_method(g_class_Thickness, "bottom", LN_TO_RUBY_FUNC(Wrap_LnThickness_GetBottom), -1);
+    rb_define_method(g_class_Thickness, "bottom=", LN_TO_RUBY_FUNC(Wrap_LnThickness_SetBottom), -1);
+    rb_define_method(g_class_Thickness, "initialize", LN_TO_RUBY_FUNC(Wrap_LnThickness_Set), -1);
 
     g_class_Object = rb_define_class_under(g_rootModule, "Object", rb_cObject);
     rb_define_alloc_func(g_class_Object, LnObject_allocate);
@@ -5897,6 +6792,21 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_private_method(g_class_UITextBlock, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUITextBlock_Create), -1);
     LnUITextBlock_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UITextBlock, LnUITextBlock_allocateForGetObject));
     LnUITextBlock_OnSerialize_SetOverrideCallback(Wrap_LnUITextBlock_OnSerialize_OverrideCallback);
+
+    g_class_Input = rb_define_class_under(g_rootModule, "Input", rb_cObject);
+    rb_define_singleton_method(g_class_Input, "pressed", LN_TO_RUBY_FUNC(Wrap_LnInput_Pressed), -1);
+    rb_define_singleton_method(g_class_Input, "triggered", LN_TO_RUBY_FUNC(Wrap_LnInput_Triggered), -1);
+    rb_define_singleton_method(g_class_Input, "triggered_off", LN_TO_RUBY_FUNC(Wrap_LnInput_TriggeredOff), -1);
+    rb_define_singleton_method(g_class_Input, "repeated", LN_TO_RUBY_FUNC(Wrap_LnInput_Repeated), -1);
+    rb_define_singleton_method(g_class_Input, "get_axis_value", LN_TO_RUBY_FUNC(Wrap_LnInput_GetAxisValue), -1);
+    rb_define_singleton_method(g_class_Input, "clear_all_bindings", LN_TO_RUBY_FUNC(Wrap_LnInput_ClearAllBindings), -1);
+
+    g_class_Mouse = rb_define_class_under(g_rootModule, "Mouse", rb_cObject);
+    rb_define_singleton_method(g_class_Mouse, "pressed", LN_TO_RUBY_FUNC(Wrap_LnMouse_Pressed), -1);
+    rb_define_singleton_method(g_class_Mouse, "triggered", LN_TO_RUBY_FUNC(Wrap_LnMouse_Triggered), -1);
+    rb_define_singleton_method(g_class_Mouse, "triggered_off", LN_TO_RUBY_FUNC(Wrap_LnMouse_TriggeredOff), -1);
+    rb_define_singleton_method(g_class_Mouse, "repeated", LN_TO_RUBY_FUNC(Wrap_LnMouse_Repeated), -1);
+    rb_define_singleton_method(g_class_Mouse, "position", LN_TO_RUBY_FUNC(Wrap_LnMouse_Position), -1);
 
     g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
     rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);

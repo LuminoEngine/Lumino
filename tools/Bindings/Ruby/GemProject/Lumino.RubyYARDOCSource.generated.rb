@@ -1,3 +1,19 @@
+# MouseButtons
+module Lumino::MouseButtons
+    # 無効または押されていないことを示す
+    NONE = 0
+    # 左ボタン
+    LEFT = 1
+    # 右ボタン
+    RIGHT = 2
+    # 中央ボタン
+    MIDDLE = 3
+    # 拡張ボタン1
+    X1 = 4
+    # 拡張ボタン2
+    X2 = 5
+end
+
 # PixelFormat
 module Lumino::PixelFormat
     # Unknown
@@ -471,6 +487,284 @@ class Lumino::Color
     #   @param [Float] g_ 
     #   @param [Float] b_ 
     #   @param [Float] a_ 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 2次元上の点を表します。
+# 
+class Lumino::Point
+    # 
+    # @return [Float] 
+    def x(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def x=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def y(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def y=(*args)
+    end
+
+
+
+    # 位置を指定して初期化します。
+    # @overload initialize()
+    #   すべての要素を 0 で初期化します。
+    # @overload initialize(x_, y_)
+    #   位置を指定して初期化します。
+    #   @param [Float] x_ 
+    #   @param [Float] y_ 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 2次元上のオブジェクトサイズを表します。
+# 
+class Lumino::Size
+    # 
+    # @return [Float] 
+    def width(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def width=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def height(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def height=(*args)
+    end
+
+
+
+    # 幅と高さを指定して初期化します。
+    # @overload initialize()
+    #   すべての要素を 0 で初期化します。
+    # @overload initialize(w, h)
+    #   幅と高さを指定して初期化します。
+    #   @param [Float] w 
+    #   @param [Float] h 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 2次元の矩形を表すクラスです。
+# 
+class Lumino::Rect
+    # 
+    # @return [Float] 
+    def x(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def x=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def y(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def y=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def width(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def width=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def height(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def height=(*args)
+    end
+
+
+
+    # 位置とサイズを指定して初期化します。
+    # @overload initialize()
+    #   すべての要素を 0 で初期化します。
+    # @overload initialize(x, y, width, height)
+    #   位置とサイズを指定して初期化します。
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] width 
+    #   @param [Float] height 
+    #   
+    def initialize(*args)
+    end
+
+
+
+    # 左辺の x 軸の値を取得します。
+    # @return [Float] 
+    def get_left(*args)
+    end
+
+
+
+    # 幅と高さを設定します。
+    # @param [Lumino::Size] size 
+    # 
+    def size=(*args)
+    end
+
+
+
+    # 幅と高さを取得します。
+    # @return [Lumino::Size] 
+    def size(*args)
+    end
+
+
+
+end
+
+# 四角形の枠の太さを表すクラスです。
+# 
+class Lumino::Thickness
+    # 
+    # @return [Float] 
+    def left(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def left=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def top(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def top=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def right(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def right=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def bottom(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def bottom=(*args)
+    end
+
+
+
+    # 各辺の幅を指定して初期化します。
+    # @overload initialize()
+    #   すべての要素を 0 で初期化します。
+    # @overload initialize(left_, top_, right_, bottom_)
+    #   各辺の幅を指定して初期化します。
+    #   @param [Float] left_ 
+    #   @param [Float] top_ 
+    #   @param [Float] right_ 
+    #   @param [Float] bottom_ 
     #   
     def initialize(*args)
     end
@@ -1458,6 +1752,110 @@ class Lumino::UITextBlock
     #   @param [] text 
     #   
     def initialize(*args)
+    end
+
+
+
+end
+
+# ゲームパッドやキーボードなどの入力デバイスを透過的に扱うためのインターフェイスです。
+# 
+class Lumino::Input
+    # ボタンが現在押されているかを判定します。
+    # @param [] buttonName 
+    # 
+    # @return [Boolean] 
+    def pressed(*args)
+    end
+
+
+
+    # ボタンが新しく押された瞬間を判定します。
+    # @param [] buttonName 
+    # 
+    # @return [Boolean] 
+    def triggered(*args)
+    end
+
+
+
+    # ボタンが離された瞬間を判定します。
+    # @param [] buttonName 
+    # 
+    # @return [Boolean] 
+    def triggered_off(*args)
+    end
+
+
+
+    # ボタンが新しく押された瞬間とリピート状態を判定します。
+    # @param [] buttonName 
+    # 
+    # @return [Boolean] 
+    def repeated(*args)
+    end
+
+
+
+    # 指定した軸のアナログ値を取得します。
+    # @param [] buttonName 
+    # 
+    # @return [Float] 
+    def get_axis_value(*args)
+    end
+
+
+
+    # 全てのアクションマッピングを削除します。
+    def clear_all_bindings(*args)
+    end
+
+
+
+end
+
+# マウスの入力を受け取るためのクラスです。
+# 
+class Lumino::Mouse
+    # ボタンが現在押されているかを判定します。
+    # @param [Lumino::MouseButtons] button 
+    # 
+    # @return [Boolean] 
+    def pressed(*args)
+    end
+
+
+
+    # ボタンが新しく押された瞬間を判定します。
+    # @param [Lumino::MouseButtons] button 
+    # 
+    # @return [Boolean] 
+    def triggered(*args)
+    end
+
+
+
+    # ボタンが離された瞬間を判定します。
+    # @param [Lumino::MouseButtons] button 
+    # 
+    # @return [Boolean] 
+    def triggered_off(*args)
+    end
+
+
+
+    # ボタンが新しく押された瞬間とリピート状態を判定します。
+    # @param [Lumino::MouseButtons] button 
+    # 
+    # @return [Boolean] 
+    def repeated(*args)
+    end
+
+
+
+    # マウスポインタの位置を取得します。
+    # @return [Lumino::Point] 
+    def position(*args)
     end
 
 

@@ -65,7 +65,84 @@ struct LnColor
     float a;
 };
 
+/**
+    @brief 2次元上の点を表します。
+*/
+struct LnPoint
+{
+    float x;
+    float y;
+};
 
+/**
+    @brief 2次元上のオブジェクトサイズを表します。
+*/
+struct LnSize
+{
+    float width;
+    float height;
+};
+
+/**
+    @brief 2次元の矩形を表すクラスです。
+*/
+struct LnRect
+{
+    float x;
+    float y;
+    float width;
+    float height;
+};
+
+/**
+    @brief 四角形の枠の太さを表すクラスです。
+*/
+struct LnThickness
+{
+    float left;
+    float top;
+    float right;
+    float bottom;
+};
+
+
+
+/**
+    @brief マウスボタン
+*/
+typedef enum tagLnMouseButtons
+{
+    /**
+        @brief 無効または押されていないことを示す
+    */
+    LN_MOUSE_BUTTONS_NONE = 0,
+
+    /**
+        @brief 左ボタン
+    */
+    LN_MOUSE_BUTTONS_LEFT = 1,
+
+    /**
+        @brief 右ボタン
+    */
+    LN_MOUSE_BUTTONS_RIGHT = 2,
+
+    /**
+        @brief 中央ボタン
+    */
+    LN_MOUSE_BUTTONS_MIDDLE = 3,
+
+    /**
+        @brief 拡張ボタン1
+    */
+    LN_MOUSE_BUTTONS_X1 = 4,
+
+    /**
+        @brief 拡張ボタン2
+    */
+    LN_MOUSE_BUTTONS_X2 = 5,
+
+} LnMouseButtons;
 
 /**
     @brief ピクセルフォーマット
@@ -307,6 +384,97 @@ LN_FLAT_API LnResult LnColor_SetZeros(LnColor* color);
     @param[in] color : instance
 */
 LN_FLAT_API LnResult LnColor_Set(LnColor* color, float r_, float g_, float b_, float a_);
+
+
+//==============================================================================
+// ln::Point
+
+/**
+    @brief すべての要素を 0 で初期化します。
+    @param[in] point : instance
+*/
+LN_FLAT_API LnResult LnPoint_SetZeros(LnPoint* point);
+
+
+/**
+    @brief 位置を指定して初期化します。
+    @param[in] point : instance
+*/
+LN_FLAT_API LnResult LnPoint_Set(LnPoint* point, float x_, float y_);
+
+
+//==============================================================================
+// ln::Size
+
+/**
+    @brief すべての要素を 0 で初期化します。
+    @param[in] size : instance
+*/
+LN_FLAT_API LnResult LnSize_SetZeros(LnSize* size);
+
+
+/**
+    @brief 幅と高さを指定して初期化します。
+    @param[in] size : instance
+*/
+LN_FLAT_API LnResult LnSize_Set(LnSize* size, float w, float h);
+
+
+//==============================================================================
+// ln::Rect
+
+/**
+    @brief すべての要素を 0 で初期化します。
+    @param[in] rect : instance
+*/
+LN_FLAT_API LnResult LnRect_SetZeros(LnRect* rect);
+
+
+/**
+    @brief 位置とサイズを指定して初期化します。
+    @param[in] rect : instance
+*/
+LN_FLAT_API LnResult LnRect_Set(LnRect* rect, float x, float y, float width, float height);
+
+
+/**
+    @brief 左辺の x 軸の値を取得します。
+    @param[in] rect : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnRect_GetLeft(const LnRect* rect, float* outReturn);
+
+
+/**
+    @brief 幅と高さを設定します。
+    @param[in] rect : instance
+*/
+LN_FLAT_API LnResult LnRect_SetSize(LnRect* rect, const LnSize* size);
+
+
+/**
+    @brief 幅と高さを取得します。
+    @param[in] rect : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnRect_GetSize(const LnRect* rect, LnSize* outReturn);
+
+
+//==============================================================================
+// ln::Thickness
+
+/**
+    @brief すべての要素を 0 で初期化します。
+    @param[in] thickness : instance
+*/
+LN_FLAT_API LnResult LnThickness_SetZeros(LnThickness* thickness);
+
+
+/**
+    @brief 各辺の幅を指定して初期化します。
+    @param[in] thickness : instance
+*/
+LN_FLAT_API LnResult LnThickness_Set(LnThickness* thickness, float left_, float top_, float right_, float bottom_);
 
 
 
@@ -1255,6 +1423,84 @@ LN_FLAT_API LnResult LnUITextBlock_OnSerialize_CallOverrideBase(LnHandle object,
 
 extern LN_FLAT_API int LnUITextBlock_GetTypeInfoId();
 LN_FLAT_API void LnUITextBlock_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::Input
+
+/**
+    @brief ボタンが現在押されているかを判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnInput_Pressed(const LnChar* buttonName, LnBool* outReturn);
+LN_FLAT_API LnResult LnInput_PressedA(const char* buttonName, LnBool* outReturn);
+
+/**
+    @brief ボタンが新しく押された瞬間を判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnInput_Triggered(const LnChar* buttonName, LnBool* outReturn);
+LN_FLAT_API LnResult LnInput_TriggeredA(const char* buttonName, LnBool* outReturn);
+
+/**
+    @brief ボタンが離された瞬間を判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnInput_TriggeredOff(const LnChar* buttonName, LnBool* outReturn);
+LN_FLAT_API LnResult LnInput_TriggeredOffA(const char* buttonName, LnBool* outReturn);
+
+/**
+    @brief ボタンが新しく押された瞬間とリピート状態を判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnInput_Repeated(const LnChar* buttonName, LnBool* outReturn);
+LN_FLAT_API LnResult LnInput_RepeatedA(const char* buttonName, LnBool* outReturn);
+
+/**
+    @brief 指定した軸のアナログ値を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnInput_GetAxisValue(const LnChar* buttonName, float* outReturn);
+LN_FLAT_API LnResult LnInput_GetAxisValueA(const char* buttonName, float* outReturn);
+
+/**
+    @brief 全てのアクションマッピングを削除します。
+*/
+LN_FLAT_API LnResult LnInput_ClearAllBindings();
+
+
+//==============================================================================
+// ln::Mouse
+
+/**
+    @brief ボタンが現在押されているかを判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnMouse_Pressed(LnMouseButtons button, LnBool* outReturn);
+
+/**
+    @brief ボタンが新しく押された瞬間を判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnMouse_Triggered(LnMouseButtons button, LnBool* outReturn);
+
+/**
+    @brief ボタンが離された瞬間を判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnMouse_TriggeredOff(LnMouseButtons button, LnBool* outReturn);
+
+/**
+    @brief ボタンが新しく押された瞬間とリピート状態を判定します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnMouse_Repeated(LnMouseButtons button, LnBool* outReturn);
+
+/**
+    @brief マウスポインタの位置を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnMouse_Position(LnPoint* outReturn);
+
 
 //==============================================================================
 // ln::EngineSettings

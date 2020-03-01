@@ -36,10 +36,12 @@ int main(int argc, char** argv)
 			TEST_ROOT "src/LuminoEngine/src/Runtime/BindingValidation.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Collection.hpp",
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
+			TEST_ROOT "include/LuminoEngine/Platform/PlatformEvent.hpp",
             TEST_ROOT "include/LuminoEngine/Asset/AssetModel.hpp",
             TEST_ROOT "include/LuminoEngine/Asset/Assets.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/ColorStructs.hpp",
+			TEST_ROOT "include/LuminoEngine/Graphics/GeometryStructs.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Texture.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Component.hpp",
@@ -55,6 +57,8 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UIControl.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIButton.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UITextBlock.hpp",
+			TEST_ROOT "include/LuminoEngine/Input/Input.hpp",
+			TEST_ROOT "include/LuminoEngine/Input/Mouse.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
 			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
             TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
@@ -77,7 +81,7 @@ int main(int argc, char** argv)
 			cdb.inputFile = file;
 			cdb.includeDirectories.add(TEST_ROOT "include");
             if (file.fileName().str() == u"Object.hpp") // Object class が force include されるものと合わせて再定義扱いになりクラス名が取れなくなるため、特別扱いする
-                cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoCore/src/LuminoCore.PCH.h");
+                cdb.forceIncludeFiles.add(TEST_ROOT "include/LuminoCore.hpp");
             else
                 cdb.forceIncludeFiles.add(TEST_ROOT "src/LuminoEngine/src/LuminoEngine.PCH.h");
 			ca.inputs.add(cdb);

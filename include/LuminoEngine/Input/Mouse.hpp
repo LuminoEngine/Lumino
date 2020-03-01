@@ -6,14 +6,42 @@
 #include "Common.hpp"
 
 namespace ln {
-
+    
+/**
+ * マウスの入力を受け取るためのクラスです。
+ */
+LN_CLASS(Static)
 class Mouse
 {
 public:
+    /**
+     * ボタンが現在押されているかを判定します。
+     */
+    LN_METHOD()
     static bool pressed(MouseButtons button);
+
+    /**
+     * ボタンが新しく押された瞬間を判定します。
+     */
+    LN_METHOD()
     static bool triggered(MouseButtons button);
+
+    /**
+     * ボタンが離された瞬間を判定します。
+     */
+    LN_METHOD()
     static bool triggeredOff(MouseButtons button);
+
+    /**
+     * ボタンが新しく押された瞬間とリピート状態を判定します。
+     */
+    LN_METHOD()
     static bool repeated(MouseButtons button);
+
+    /**
+     * マウスポインタの位置を取得します。
+     */
+    LN_METHOD()
     static Point position();
 
 private:

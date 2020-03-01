@@ -2,7 +2,7 @@
 #pragma once
 
 namespace ln {
-
+class Variant;
 
 ///**
 // * 変更通知機能を持つ、Object 用の可変長配列のコンテナテンプレートクラスです。
