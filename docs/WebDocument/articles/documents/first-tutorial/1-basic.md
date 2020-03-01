@@ -79,11 +79,11 @@ LUMINO_APP(App);
 require "lumino"
 
 class App < Application
-    def on_init
-    end
+  def on_init
+  end
 
-    def on_update
-    end
+  def on_update
+  end
 end
 
 App.new.run
@@ -130,7 +130,18 @@ LUMINO_APP(App);
 # [Ruby](#tab/lang-ruby)
 
 ```ruby
-ruby
+require "lumino"
+
+class App < Application
+  def on_init
+    Debug.print("Hello, Lumino!")
+  end
+
+  def on_update
+  end
+end
+
+App.new.run
 ```
 
 ---
@@ -169,10 +180,10 @@ require "lumino"
 
 class App < Application
   def on_init
-    Debug.print("Hello, Lumino!");
   end
 
   def on_update
+    Debug.print("Time: %f" % Engine.time)
   end
 end
 
@@ -217,7 +228,7 @@ class App < Application
   end
 
   def on_update
-    Debug.print(0, "Time: %f" % Engine.time);
+    Debug.print(0, "Time: %f" % Engine.time)
   end
 end
 
