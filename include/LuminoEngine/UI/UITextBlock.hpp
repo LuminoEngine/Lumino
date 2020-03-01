@@ -40,7 +40,7 @@ LN_CONSTRUCT_ACCESS:
      * 表示文字列を指定して、UITextBlock を作成します。
      * @param[in] text : 表示文字列
      */
-    LN_METHOD()
+    LN_METHOD(OverloadPostfix = "WithText")
     void init(const StringRef& text);
 
 protected:

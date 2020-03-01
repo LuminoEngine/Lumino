@@ -76,6 +76,7 @@ VALUE g_class_UIElement;
 VALUE g_class_UIControl;
 VALUE g_class_UIButtonBase;
 VALUE g_class_UIButton;
+VALUE g_class_UITextBlock;
 
 
 //==============================================================================
@@ -2972,6 +2973,7 @@ static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
     if (0 <= argc && argc <= 0) {
 
         {
+
             LnResult errorCode = LnApplication_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
@@ -4260,6 +4262,27 @@ static VALUE Wrap_LnSprite_SetTexture(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+static VALUE Wrap_LnSprite_SetSize(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Sprite* selfObj;
+    Data_Get_Struct(self, Wrap_Sprite, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE width;
+        VALUE height;
+        rb_scan_args(argc, argv, "2", &width, &height);
+        if (LNRB_VALUE_IS_FLOAT(width) && LNRB_VALUE_IS_FLOAT(height))
+        {
+            float _width = LNRB_VALUE_TO_FLOAT(width);
+            float _height = LNRB_VALUE_TO_FLOAT(height);
+            LnResult errorCode = LnSprite_SetSize(selfObj->handle, _width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Sprite::setSize - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE Wrap_LnSprite_SetSourceRectXYWH(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Sprite* selfObj;
@@ -5208,6 +5231,96 @@ LnResult Wrap_LnUIButton_OnSerialize_OverrideCallback(LnHandle object, LnHandle 
     return LN_SUCCESS;
 }
 
+//==============================================================================
+// ln::UITextBlock
+
+struct Wrap_UITextBlock
+    : public Wrap_UIElement
+{
+
+    Wrap_UITextBlock()
+    {}
+};
+
+static void LnUITextBlock_delete(Wrap_UITextBlock* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnUITextBlock_mark(Wrap_UITextBlock* obj)
+{
+	
+
+}
+
+static VALUE LnUITextBlock_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UITextBlock* internalObj;
+
+    internalObj = new Wrap_UITextBlock();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUITextBlock_allocate");
+    obj = Data_Wrap_Struct(klass, LnUITextBlock_mark, LnUITextBlock_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUITextBlock_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UITextBlock* internalObj;
+
+    internalObj = new Wrap_UITextBlock();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUITextBlock_allocate");
+    obj = Data_Wrap_Struct(klass, LnUITextBlock_mark, LnUITextBlock_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnUITextBlock_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UITextBlock* selfObj;
+    Data_Get_Struct(self, Wrap_UITextBlock, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnUITextBlock_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (1 <= argc && argc <= 1) {
+        VALUE text;
+        rb_scan_args(argc, argv, "1", &text);
+        if (LNRB_VALUE_IS_STRING(text))
+        {
+            const char* _text = LNRB_VALUE_TO_STRING(text);
+            LnResult errorCode = LnUITextBlock_CreateWithTextA(_text, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UITextBlock::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnUITextBlock_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+
 
 
 extern "C" void Init_Lumino_RubyExt()
@@ -5502,6 +5615,7 @@ extern "C" void Init_Lumino_RubyExt()
     g_class_Sprite = rb_define_class_under(g_rootModule, "Sprite", g_class_VisualObject);
     rb_define_alloc_func(g_class_Sprite, LnSprite_allocate);
     rb_define_method(g_class_Sprite, "texture=", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetTexture), -1);
+    rb_define_method(g_class_Sprite, "size=", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSize), -1);
     rb_define_method(g_class_Sprite, "set_source_rect", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSourceRectXYWH), -1);
     rb_define_method(g_class_Sprite, "set_caller_test", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetCallerTest), -1);
     rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSprite_Create), -1);
@@ -5562,6 +5676,12 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_UIButton, "connect_on_clicked", LN_TO_RUBY_FUNC(Wrap_LnUIButton_ConnectOnClicked), -1);
     LnUIButton_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIButton, LnUIButton_allocateForGetObject));
     LnUIButton_OnSerialize_SetOverrideCallback(Wrap_LnUIButton_OnSerialize_OverrideCallback);
+
+    g_class_UITextBlock = rb_define_class_under(g_rootModule, "UITextBlock", g_class_UIElement);
+    rb_define_alloc_func(g_class_UITextBlock, LnUITextBlock_allocate);
+    rb_define_private_method(g_class_UITextBlock, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUITextBlock_Create), -1);
+    LnUITextBlock_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UITextBlock, LnUITextBlock_allocateForGetObject));
+    LnUITextBlock_OnSerialize_SetOverrideCallback(Wrap_LnUITextBlock_OnSerialize_OverrideCallback);
 
 }
 

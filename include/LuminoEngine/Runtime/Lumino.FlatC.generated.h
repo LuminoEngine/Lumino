@@ -1088,6 +1088,12 @@ LN_FLAT_API void LnTestDelegate_SetManagedTypeInfoId(int64_t id);
 LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value);
 
 /**
+    @brief スプライトの大きさを設定します。
+    @param[in] sprite : instance
+*/
+LN_FLAT_API LnResult LnSprite_SetSize(LnHandle sprite, float width, float height);
+
+/**
     @brief 
     @param[in] sprite : instance
 */
@@ -1313,6 +1319,30 @@ LN_FLAT_API LnResult LnUIButton_OnSerialize_CallOverrideBase(LnHandle object, Ln
 
 extern LN_FLAT_API int LnUIButton_GetTypeInfoId();
 LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::UITextBlock
+
+/**
+    @brief UITextBlock を作成します。
+    @param[out] outUITextBlock : instance.
+*/
+LN_FLAT_API LnResult LnUITextBlock_Create(LnHandle* outUITextBlock);
+
+/**
+    @brief 表示文字列を指定して、UITextBlock を作成します。
+    @param[in] text : 表示文字列
+    @param[out] outUITextBlock : instance.
+*/
+LN_FLAT_API LnResult LnUITextBlock_CreateWithText(const LnChar* text, LnHandle* outUITextBlock);
+LN_FLAT_API LnResult LnUITextBlock_CreateWithTextA(const char* text, LnHandle* outUITextBlock);
+
+typedef LnResult(*LnUITextBlock_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnUITextBlock_OnSerialize_SetOverrideCallback(LnUITextBlock_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnUITextBlock_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnUITextBlock_GetTypeInfoId();
+LN_FLAT_API void LnUITextBlock_SetManagedTypeInfoId(int64_t id);
 
 
 

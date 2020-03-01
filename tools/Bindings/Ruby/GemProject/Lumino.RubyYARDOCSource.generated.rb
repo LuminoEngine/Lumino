@@ -1265,6 +1265,15 @@ class Lumino::Sprite
 
 
 
+    # スプライトの大きさを設定します。
+    # @param [Float] width 
+    # @param [Float] height 
+    # 
+    def size=(*args)
+    end
+
+
+
     # 
     # @param [Float] x 
     # @param [Float] y 
@@ -1485,6 +1494,23 @@ class Lumino::UIButton
     # 
     # @return [Lumino::EventConnection] 
     def connect_on_clicked(*args)
+    end
+
+
+
+end
+
+# 文字列を表示するための UI 要素です。少量の文字列表示に最適化されています。
+# 
+class Lumino::UITextBlock
+    # UITextBlock を作成します。
+    # @overload initialize()
+    #   UITextBlock を作成します。
+    # @overload initialize(text)
+    #   表示文字列を指定して、UITextBlock を作成します。
+    #   @param [] text 
+    #   
+    def initialize(*args)
     end
 
 
