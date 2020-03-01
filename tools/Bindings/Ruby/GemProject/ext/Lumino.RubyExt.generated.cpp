@@ -2972,7 +2972,6 @@ static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
     if (0 <= argc && argc <= 0) {
 
         {
-
             LnResult errorCode = LnApplication_Create(&selfObj->handle);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);

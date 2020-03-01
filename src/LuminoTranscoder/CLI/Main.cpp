@@ -56,6 +56,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UIElement.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIControl.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIButton.hpp",
+			TEST_ROOT "include/LuminoEngine/UI/UITextBlock.hpp",
 		};
 
 		CodeAnalyzer ca;

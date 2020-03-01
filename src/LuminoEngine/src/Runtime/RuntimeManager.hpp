@@ -68,6 +68,7 @@ public:
     //static void setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 
 	LnResult processException(Exception* e);
+	void dumpInfo() const;
 
     RuntimeStringBuffer* requestCommonStringBuffer() { return &m_commonStringBuffer; }
 
