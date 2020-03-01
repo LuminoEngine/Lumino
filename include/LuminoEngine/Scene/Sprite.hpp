@@ -59,10 +59,11 @@ public:
     void setTexture(Texture* value);
 
     /** スプライトの大きさを設定します。 */
+    LN_METHOD(Property)
     void setSize(const Size& value);
 
 	/** スプライトの大きさを設定します。 */
-	LN_METHOD(Property)
+	LN_METHOD(OverloadPostfix = "WH")
 	void setSize(float width, float height) { setSize(Size(width, height)); }
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */

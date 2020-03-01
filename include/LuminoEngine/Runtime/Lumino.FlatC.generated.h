@@ -1187,7 +1187,13 @@ LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value);
     @brief スプライトの大きさを設定します。
     @param[in] sprite : instance
 */
-LN_FLAT_API LnResult LnSprite_SetSize(LnHandle sprite, float width, float height);
+LN_FLAT_API LnResult LnSprite_SetSize(LnHandle sprite, const LnSize* value);
+
+/**
+    @brief スプライトの大きさを設定します。
+    @param[in] sprite : instance
+*/
+LN_FLAT_API LnResult LnSprite_SetSizeWH(LnHandle sprite, float width, float height);
 
 /**
     @brief 

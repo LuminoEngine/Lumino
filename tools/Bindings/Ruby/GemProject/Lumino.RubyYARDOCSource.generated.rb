@@ -1520,9 +1520,15 @@ class Lumino::Sprite
 
 
     # スプライトの大きさを設定します。
-    # @param [Float] width 
-    # @param [Float] height 
-    # 
+    # @overload size=(value)
+    #   スプライトの大きさを設定します。
+    #   @param [Lumino::Size] value 
+    #   
+    # @overload size=(width, height)
+    #   スプライトの大きさを設定します。
+    #   @param [Float] width 
+    #   @param [Float] height 
+    #   
     def size=(*args)
     end
 

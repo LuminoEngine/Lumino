@@ -107,11 +107,11 @@ class App < Application
   end
   
   def on_update
-    r = Mouse.position.x / 100;
+    r = Mouse.position.x / 100
     
-    @box.set_rotation(0, r, 0);
+    @box.set_rotation(0, r, 0)
         
-    Debug.print(0, "angle: %f" % r);
+    Debug.print(0, "angle: %f" % r)
   end
 end
 
@@ -169,11 +169,11 @@ class App < Application
   end
   
   def on_update
-    s = Mouse.position.y / 100;
+    s = Mouse.position.y / 100
     
-    @box.set_scale(s);
+    @box.set_scale(s)
         
-    Debug.print(0, "scale: %f" % s);
+    Debug.print(0, "scale: %f" % s)
   end
 end
 

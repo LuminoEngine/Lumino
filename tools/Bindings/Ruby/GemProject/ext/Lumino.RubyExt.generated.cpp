@@ -4782,6 +4782,17 @@ static VALUE Wrap_LnSprite_SetSize(int argc, VALUE* argv, VALUE self)
 {
     Wrap_Sprite* selfObj;
     Data_Get_Struct(self, Wrap_Sprite, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_OBJECT(value))
+        {
+            LnSize* tmp__value; Data_Get_Struct(value, LnSize, tmp__value);LnSize& _value = *tmp__value;
+            LnResult errorCode = LnSprite_SetSize(selfObj->handle, &_value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
     if (2 <= argc && argc <= 2) {
         VALUE width;
         VALUE height;
@@ -4790,7 +4801,7 @@ static VALUE Wrap_LnSprite_SetSize(int argc, VALUE* argv, VALUE self)
         {
             float _width = LNRB_VALUE_TO_FLOAT(width);
             float _height = LNRB_VALUE_TO_FLOAT(height);
-            LnResult errorCode = LnSprite_SetSize(selfObj->handle, _width, _height);
+            LnResult errorCode = LnSprite_SetSizeWH(selfObj->handle, _width, _height);
             if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
             return Qnil;
         }
@@ -7334,6 +7345,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_alloc_func(g_class_Sprite, LnSprite_allocate);
     rb_define_method(g_class_Sprite, "texture=", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetTexture), -1);
     rb_define_method(g_class_Sprite, "size=", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSize), -1);
+    rb_define_method(g_class_Sprite, "set_size", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSize), -1);
     rb_define_method(g_class_Sprite, "set_source_rect", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetSourceRectXYWH), -1);
     rb_define_method(g_class_Sprite, "set_caller_test", LN_TO_RUBY_FUNC(Wrap_LnSprite_SetCallerTest), -1);
     rb_define_private_method(g_class_Sprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSprite_Create), -1);

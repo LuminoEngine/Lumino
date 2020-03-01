@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Graphics/GeometryStructs.hpp"
 #include "WorldObject.hpp"
 
 namespace ln {

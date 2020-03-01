@@ -3095,7 +3095,15 @@ LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value)
 }
 
 
-LN_FLAT_API LnResult LnSprite_SetSize(LnHandle sprite, float width, float height)
+LN_FLAT_API LnResult LnSprite_SetSize(LnHandle sprite, const LnSize* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setSize(*reinterpret_cast<const ln::Size*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_SetSizeWH(LnHandle sprite, float width, float height)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setSize(width, height));

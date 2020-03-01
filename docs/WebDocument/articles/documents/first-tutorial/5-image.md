@@ -3,7 +3,6 @@
 
 この章では、2D 画像を表す `テクスチャ` と、それを効率的にワールド上に表示する `スプライト` について学びます。
 
-
 画像ファイルを読み込んで描画する
 ----------
 
@@ -24,7 +23,7 @@ class App : public Application
     void onInit() override
     {
         auto texture = Texture2D::load(u"picture1.jpg");
-        auto sprite = Sprite::load(texture);
+        auto sprite = Sprite::create(texture);
     }
 };
 
@@ -32,7 +31,16 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
+require "lumino"
 
+class App < Application
+  def on_init
+    texture = Texture2D.load("picture1.jpg")
+    sprite = Sprite.new(texture)
+  end
+end
+
+App.new.run
 ```
 ---
 
@@ -74,7 +82,7 @@ class App : public Application
     void onInit() override
     {
         auto texture = Texture2D::load(u"picture1.jpg");
-        auto sprite = Sprite::load(texture);
+        auto sprite = Sprite::create(texture);
         sprite->setSize(3, 3);
     }
 };
@@ -83,7 +91,17 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
+require "lumino"
 
+class App < Application
+  def on_init
+    texture = Texture2D.load("picture1.jpg")
+    sprite = Sprite.new(texture)
+    sprite.set_size(3, 3)
+  end
+end
+
+App.new.run
 ```
 ---
 
@@ -113,7 +131,16 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
+require "lumino"
 
+class App < Application
+  def on_init
+    texture = Texture2D.load_emoji("🌱")
+    sprite = Sprite.new(texture)
+  end
+end
+
+App.new.run
 ```
 ---
 
