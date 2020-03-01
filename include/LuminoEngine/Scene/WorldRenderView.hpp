@@ -18,12 +18,15 @@ class InternalSkyBox;
 }
 
 /**
- *
+ * 3D シーンを描画するための RenderView です。
+ * 
  * ClearMode のデフォルトは ColorAndDepth です。
  */
+LN_CLASS()
 class WorldRenderView
 	: public RenderView
 {
+    LN_OBJECT;
 public:
     void setTargetWorld(World* world);
 	void setCamera(Camera* camera);
@@ -32,7 +35,12 @@ public:
 	void removeImageEffect(ImageEffect* effect);
 
 
+    /** この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを設定します。 */
+    LN_METHOD(Property)
 	void setGuideGridEnabled(bool value) { m_visibleGridPlane = value; }
+
+    /** この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを取得します。 */
+    LN_METHOD(Property)
 	bool guideGridEnabled() const { return m_visibleGridPlane; }
 
     void setPhysicsDebugDrawEnabled(bool value) { m_physicsDebugDrawEnabled = value; }

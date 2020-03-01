@@ -26,6 +26,8 @@ namespace ln {
 //==============================================================================
 // WorldRenderView
 
+LN_OBJECT_IMPLEMENT(WorldRenderView, RenderView) {}
+
 WorldRenderView::WorldRenderView()
     : m_visibleGridPlane(false)
     , m_physicsDebugDrawEnabled(false)

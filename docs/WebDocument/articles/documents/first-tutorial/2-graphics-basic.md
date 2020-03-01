@@ -31,12 +31,12 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
     def on_update
-        Debug.print(0, "X:%f" % [Mouse.pos.x]));
-        Debug.print(0, "Y:%f" % [Mouse.pos.y]));
+        Debug.print(0, "X:%f" % Mouse.position.x)
+        Debug.print(0, "Y:%f" % Mouse.position.y)
     end
 end
 
@@ -113,7 +113,7 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
     def on_init
@@ -166,7 +166,7 @@ LUMINO_APP(App);
 # [Ruby](#tab/lang-ruby)
 デフォルトのカメラは `Engine.camera` で取得し、`set_position` で 3D 位置を指定します。また、位置を指定した後に `look_at` でワールドの原点を向くようにします。
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
     def on_init

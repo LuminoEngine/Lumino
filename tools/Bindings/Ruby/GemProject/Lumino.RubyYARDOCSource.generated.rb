@@ -1260,6 +1260,11 @@ class Lumino::Texture2D
 
 end
 
+# RenderView
+# 
+class Lumino::RenderView
+end
+
 # 
 # 
 class Lumino::Component
@@ -1547,6 +1552,53 @@ class Lumino::Sprite
     #   @param [Float] width 
     #   @param [Float] height 
     #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# カメラのクラスです。カメラは 3D シーンを描画する際の視点となります。
+# 
+class Lumino::Camera
+end
+
+# カメラをマウスで操作するための Component です。
+# 
+class Lumino::CameraOrbitControlComponent
+    # CameraOrbitControlComponent を作成します。
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 3D シーンを描画するための RenderView です。
+# 
+class Lumino::WorldRenderView
+    # この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを設定します。
+    # @param [Boolean] value 
+    # 
+    def guide_grid_enabled=(*args)
+    end
+
+
+
+    # この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを取得します。
+    # @return [Boolean] 
+    def guide_grid_enabled?(*args)
+    end
+
+
+
+end
+
+# 直方体のメッシュオブジェクトです。
+# 
+class Lumino::BoxMesh
+    # 各軸のサイズが 1 である BoxMesh を作成します。
     def initialize(*args)
     end
 
@@ -1959,6 +2011,20 @@ class Lumino::Engine
     # アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
     # @return [] 
     def time(*args)
+    end
+
+
+
+    # デフォルトで作成されるメインの Camera です。
+    # @return [Lumino::Camera] 
+    def camera(*args)
+    end
+
+
+
+    # デフォルトで作成されるメインの RenderView です。
+    # @return [Lumino::WorldRenderView] 
+    def render_view(*args)
     end
 
 

@@ -924,6 +924,16 @@ extern LN_FLAT_API int LnTexture2D_GetTypeInfoId();
 LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
+// ln::RenderView
+
+typedef LnResult(*LnRenderView_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnRenderView_OnSerialize_SetOverrideCallback(LnRenderView_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnRenderView_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnRenderView_GetTypeInfoId();
+LN_FLAT_API void LnRenderView_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
 // ln::Component
 
 typedef LnResult(*LnComponent_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
@@ -1212,6 +1222,77 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, fl
 
 extern LN_FLAT_API int LnSprite_GetTypeInfoId();
 LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::Camera
+
+typedef LnResult(*LnCamera_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnCamera_OnSerialize_SetOverrideCallback(LnCamera_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnCamera_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+typedef LnResult(*LnCamera_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnCamera_OnUpdate_SetOverrideCallback(LnCamera_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnCamera_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
+
+extern LN_FLAT_API int LnCamera_GetTypeInfoId();
+LN_FLAT_API void LnCamera_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::CameraOrbitControlComponent
+
+/**
+    @brief CameraOrbitControlComponent を作成します。
+    @param[out] outCameraOrbitControlComponent : instance.
+*/
+LN_FLAT_API LnResult LnCameraOrbitControlComponent_Create(LnHandle* outCameraOrbitControlComponent);
+
+typedef LnResult(*LnCameraOrbitControlComponent_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnCameraOrbitControlComponent_OnSerialize_SetOverrideCallback(LnCameraOrbitControlComponent_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnCameraOrbitControlComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnCameraOrbitControlComponent_GetTypeInfoId();
+LN_FLAT_API void LnCameraOrbitControlComponent_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::WorldRenderView
+
+/**
+    @brief この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを設定します。
+    @param[in] worldrenderview : instance
+*/
+LN_FLAT_API LnResult LnWorldRenderView_SetGuideGridEnabled(LnHandle worldrenderview, LnBool value);
+
+/**
+    @brief この WorldRenderView が描画する 3D シーン上に、グリッドを表示するかどうかを取得します。
+    @param[in] worldrenderview : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnWorldRenderView_GetGuideGridEnabled(LnHandle worldrenderview, LnBool* outReturn);
+
+typedef LnResult(*LnWorldRenderView_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnWorldRenderView_OnSerialize_SetOverrideCallback(LnWorldRenderView_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnWorldRenderView_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnWorldRenderView_GetTypeInfoId();
+LN_FLAT_API void LnWorldRenderView_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::BoxMesh
+
+/**
+    @brief 各軸のサイズが 1 である BoxMesh を作成します。
+    @param[out] outBoxMesh : instance.
+*/
+LN_FLAT_API LnResult LnBoxMesh_Create(LnHandle* outBoxMesh);
+
+typedef LnResult(*LnBoxMesh_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnBoxMesh_OnSerialize_SetOverrideCallback(LnBoxMesh_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnBoxMesh_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+typedef LnResult(*LnBoxMesh_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnBoxMesh_OnUpdate_SetOverrideCallback(LnBoxMesh_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnBoxMesh_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
+
+extern LN_FLAT_API int LnBoxMesh_GetTypeInfoId();
+LN_FLAT_API void LnBoxMesh_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::UIEventArgs
@@ -1575,6 +1656,18 @@ LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnEngine_Time(double* outReturn);
+
+/**
+    @brief デフォルトで作成されるメインの Camera です。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnEngine_GetCamera(LnHandle* outReturn);
+
+/**
+    @brief デフォルトで作成されるメインの RenderView です。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnEngine_GetRenderView(LnHandle* outReturn);
 
 
 //==============================================================================

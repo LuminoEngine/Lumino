@@ -71,7 +71,7 @@ public:
     static World* world();
 
 	/** デフォルトで作成されるメインの Camera です。 */
-	//LN_METHOD(Property)
+	LN_METHOD(Property)
     static Camera* camera();
 
 	/** デフォルトで作成されるメインの DirectionalLight です。 */
@@ -83,7 +83,7 @@ public:
 	static AmbientLight* ambientLight();
 
 	/** デフォルトで作成されるメインの RenderView です。 */
-	//LN_METHOD(Property)
+	LN_METHOD(Property)
 	static WorldRenderView* renderView();
 
 	static UIControl* ui() { return mainUIView(); }

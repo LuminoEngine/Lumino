@@ -57,6 +57,7 @@ VALUE g_class_Assets;
 VALUE g_class_GraphicsResource;
 VALUE g_class_Texture;
 VALUE g_class_Texture2D;
+VALUE g_class_RenderView;
 VALUE g_class_Component;
 VALUE g_class_VisualComponent;
 VALUE g_class_SpriteComponent;
@@ -66,6 +67,10 @@ VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
 VALUE g_class_TestDelegate;
 VALUE g_class_Sprite;
+VALUE g_class_Camera;
+VALUE g_class_CameraOrbitControlComponent;
+VALUE g_class_WorldRenderView;
+VALUE g_class_BoxMesh;
 VALUE g_class_UIEventArgs;
 VALUE g_class_UIGeneralEventHandler;
 VALUE g_class_UIEventHandler;
@@ -3702,6 +3707,62 @@ LnResult Wrap_LnTexture2D_OnSerialize_OverrideCallback(LnHandle object, LnHandle
 }
 
 //==============================================================================
+// ln::RenderView
+
+struct Wrap_RenderView
+    : public Wrap_Object
+{
+
+    Wrap_RenderView()
+    {}
+};
+
+static void LnRenderView_delete(Wrap_RenderView* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnRenderView_mark(Wrap_RenderView* obj)
+{
+	
+
+}
+
+static VALUE LnRenderView_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_RenderView* internalObj;
+
+    internalObj = new Wrap_RenderView();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnRenderView_allocate");
+    obj = Data_Wrap_Struct(klass, LnRenderView_mark, LnRenderView_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnRenderView_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_RenderView* internalObj;
+
+    internalObj = new Wrap_RenderView();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnRenderView_allocate");
+    obj = Data_Wrap_Struct(klass, LnRenderView_mark, LnRenderView_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+LnResult Wrap_LnRenderView_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
 // ln::Component
 
 struct Wrap_Component
@@ -4831,6 +4892,318 @@ LnResult Wrap_LnSprite_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar
     return LN_SUCCESS;
 }
 LnResult Wrap_LnSprite_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::Camera
+
+struct Wrap_Camera
+    : public Wrap_WorldObject
+{
+
+    Wrap_Camera()
+    {}
+};
+
+static void LnCamera_delete(Wrap_Camera* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnCamera_mark(Wrap_Camera* obj)
+{
+	
+
+}
+
+static VALUE LnCamera_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Camera* internalObj;
+
+    internalObj = new Wrap_Camera();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCamera_allocate");
+    obj = Data_Wrap_Struct(klass, LnCamera_mark, LnCamera_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnCamera_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Camera* internalObj;
+
+    internalObj = new Wrap_Camera();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCamera_allocate");
+    obj = Data_Wrap_Struct(klass, LnCamera_mark, LnCamera_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+LnResult Wrap_LnCamera_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnCamera_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::CameraOrbitControlComponent
+
+struct Wrap_CameraOrbitControlComponent
+    : public Wrap_Component
+{
+
+    Wrap_CameraOrbitControlComponent()
+    {}
+};
+
+static void LnCameraOrbitControlComponent_delete(Wrap_CameraOrbitControlComponent* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnCameraOrbitControlComponent_mark(Wrap_CameraOrbitControlComponent* obj)
+{
+	
+
+}
+
+static VALUE LnCameraOrbitControlComponent_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_CameraOrbitControlComponent* internalObj;
+
+    internalObj = new Wrap_CameraOrbitControlComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCameraOrbitControlComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnCameraOrbitControlComponent_mark, LnCameraOrbitControlComponent_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnCameraOrbitControlComponent_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_CameraOrbitControlComponent* internalObj;
+
+    internalObj = new Wrap_CameraOrbitControlComponent();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCameraOrbitControlComponent_allocate");
+    obj = Data_Wrap_Struct(klass, LnCameraOrbitControlComponent_mark, LnCameraOrbitControlComponent_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnCameraOrbitControlComponent_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_CameraOrbitControlComponent* selfObj;
+    Data_Get_Struct(self, Wrap_CameraOrbitControlComponent, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnCameraOrbitControlComponent_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::CameraOrbitControlComponent::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::WorldRenderView
+
+struct Wrap_WorldRenderView
+    : public Wrap_RenderView
+{
+
+    Wrap_WorldRenderView()
+    {}
+};
+
+static void LnWorldRenderView_delete(Wrap_WorldRenderView* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnWorldRenderView_mark(Wrap_WorldRenderView* obj)
+{
+	
+
+}
+
+static VALUE LnWorldRenderView_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_WorldRenderView* internalObj;
+
+    internalObj = new Wrap_WorldRenderView();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnWorldRenderView_allocate");
+    obj = Data_Wrap_Struct(klass, LnWorldRenderView_mark, LnWorldRenderView_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnWorldRenderView_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_WorldRenderView* internalObj;
+
+    internalObj = new Wrap_WorldRenderView();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnWorldRenderView_allocate");
+    obj = Data_Wrap_Struct(klass, LnWorldRenderView_mark, LnWorldRenderView_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnWorldRenderView_SetGuideGridEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_WorldRenderView* selfObj;
+    Data_Get_Struct(self, Wrap_WorldRenderView, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_BOOL(value))
+        {
+            LnBool _value = LNRB_VALUE_TO_BOOL(value);
+            LnResult errorCode = LnWorldRenderView_SetGuideGridEnabled(selfObj->handle, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::WorldRenderView::setGuideGridEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnWorldRenderView_GetGuideGridEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_WorldRenderView* selfObj;
+    Data_Get_Struct(self, Wrap_WorldRenderView, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnBool _outReturn;
+            LnResult errorCode = LnWorldRenderView_GetGuideGridEnabled(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::WorldRenderView::guideGridEnabled - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnWorldRenderView_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::BoxMesh
+
+struct Wrap_BoxMesh
+    : public Wrap_VisualObject
+{
+
+    Wrap_BoxMesh()
+    {}
+};
+
+static void LnBoxMesh_delete(Wrap_BoxMesh* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnBoxMesh_mark(Wrap_BoxMesh* obj)
+{
+	
+
+}
+
+static VALUE LnBoxMesh_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_BoxMesh* internalObj;
+
+    internalObj = new Wrap_BoxMesh();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnBoxMesh_allocate");
+    obj = Data_Wrap_Struct(klass, LnBoxMesh_mark, LnBoxMesh_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnBoxMesh_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_BoxMesh* internalObj;
+
+    internalObj = new Wrap_BoxMesh();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnBoxMesh_allocate");
+    obj = Data_Wrap_Struct(klass, LnBoxMesh_mark, LnBoxMesh_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnBoxMesh_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_BoxMesh* selfObj;
+    Data_Get_Struct(self, Wrap_BoxMesh, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnBoxMesh_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::BoxMesh::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnBoxMesh_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnBoxMesh_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
@@ -6132,6 +6505,8 @@ static VALUE Wrap_LnEngineSettings_SetEngineLogFilePath(int argc, VALUE* argv, V
 
 struct Wrap_Engine
 {
+    VALUE LnEngine_GetCamera_AccessorCache = Qnil;
+    VALUE LnEngine_GetRenderView_AccessorCache = Qnil;
 
     Wrap_Engine()
     {}
@@ -6195,6 +6570,36 @@ static VALUE Wrap_LnEngine_Time(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Engine::time - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngine_GetCamera(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnEngine_GetCamera(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::camera - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngine_GetRenderView(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnEngine_GetRenderView(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::renderView - wrong argument type.");
     return Qnil;
 }
 
@@ -6661,6 +7066,11 @@ extern "C" void Init_Lumino_RubyExt()
     LnTexture2D_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Texture2D, LnTexture2D_allocateForGetObject));
     LnTexture2D_OnSerialize_SetOverrideCallback(Wrap_LnTexture2D_OnSerialize_OverrideCallback);
 
+    g_class_RenderView = rb_define_class_under(g_rootModule, "RenderView", g_class_Object);
+    rb_define_alloc_func(g_class_RenderView, LnRenderView_allocate);
+    LnRenderView_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_RenderView, LnRenderView_allocateForGetObject));
+    LnRenderView_OnSerialize_SetOverrideCallback(Wrap_LnRenderView_OnSerialize_OverrideCallback);
+
     g_class_Component = rb_define_class_under(g_rootModule, "Component", g_class_Object);
     rb_define_alloc_func(g_class_Component, LnComponent_allocate);
     LnComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Component, LnComponent_allocateForGetObject));
@@ -6695,12 +7105,15 @@ extern "C" void Init_Lumino_RubyExt()
     g_class_WorldObject = rb_define_class_under(g_rootModule, "WorldObject", g_class_Object);
     rb_define_alloc_func(g_class_WorldObject, LnWorldObject_allocate);
     rb_define_method(g_class_WorldObject, "position=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetPosition), -1);
+    rb_define_method(g_class_WorldObject, "set_position", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetPosition), -1);
     rb_define_method(g_class_WorldObject, "position", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetPosition), -1);
     rb_define_method(g_class_WorldObject, "set_rotation", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetRotation), -1);
     rb_define_method(g_class_WorldObject, "rotation", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetRotation), -1);
     rb_define_method(g_class_WorldObject, "scale=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetScale), -1);
+    rb_define_method(g_class_WorldObject, "set_scale", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetScale), -1);
     rb_define_method(g_class_WorldObject, "scale", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetScale), -1);
     rb_define_method(g_class_WorldObject, "center_point=", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetCenterPoint), -1);
+    rb_define_method(g_class_WorldObject, "set_center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetCenterPoint), -1);
     rb_define_method(g_class_WorldObject, "center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetCenterPoint), -1);
     rb_define_method(g_class_WorldObject, "look_at", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_LookAt), -1);
     rb_define_method(g_class_WorldObject, "components", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetComponents), -1);
@@ -6733,6 +7146,32 @@ extern "C" void Init_Lumino_RubyExt()
     LnSprite_OnSerialize_SetOverrideCallback(Wrap_LnSprite_OnSerialize_OverrideCallback);
     LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);
 
+    g_class_Camera = rb_define_class_under(g_rootModule, "Camera", g_class_WorldObject);
+    rb_define_alloc_func(g_class_Camera, LnCamera_allocate);
+    LnCamera_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Camera, LnCamera_allocateForGetObject));
+    LnCamera_OnSerialize_SetOverrideCallback(Wrap_LnCamera_OnSerialize_OverrideCallback);
+    LnCamera_OnUpdate_SetOverrideCallback(Wrap_LnCamera_OnUpdate_OverrideCallback);
+
+    g_class_CameraOrbitControlComponent = rb_define_class_under(g_rootModule, "CameraOrbitControlComponent", g_class_Component);
+    rb_define_alloc_func(g_class_CameraOrbitControlComponent, LnCameraOrbitControlComponent_allocate);
+    rb_define_private_method(g_class_CameraOrbitControlComponent, "initialize", LN_TO_RUBY_FUNC(Wrap_LnCameraOrbitControlComponent_Create), -1);
+    LnCameraOrbitControlComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_CameraOrbitControlComponent, LnCameraOrbitControlComponent_allocateForGetObject));
+    LnCameraOrbitControlComponent_OnSerialize_SetOverrideCallback(Wrap_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback);
+
+    g_class_WorldRenderView = rb_define_class_under(g_rootModule, "WorldRenderView", g_class_RenderView);
+    rb_define_alloc_func(g_class_WorldRenderView, LnWorldRenderView_allocate);
+    rb_define_method(g_class_WorldRenderView, "guide_grid_enabled=", LN_TO_RUBY_FUNC(Wrap_LnWorldRenderView_SetGuideGridEnabled), -1);
+    rb_define_method(g_class_WorldRenderView, "guide_grid_enabled?", LN_TO_RUBY_FUNC(Wrap_LnWorldRenderView_GetGuideGridEnabled), -1);
+    LnWorldRenderView_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_WorldRenderView, LnWorldRenderView_allocateForGetObject));
+    LnWorldRenderView_OnSerialize_SetOverrideCallback(Wrap_LnWorldRenderView_OnSerialize_OverrideCallback);
+
+    g_class_BoxMesh = rb_define_class_under(g_rootModule, "BoxMesh", g_class_VisualObject);
+    rb_define_alloc_func(g_class_BoxMesh, LnBoxMesh_allocate);
+    rb_define_private_method(g_class_BoxMesh, "initialize", LN_TO_RUBY_FUNC(Wrap_LnBoxMesh_Create), -1);
+    LnBoxMesh_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_BoxMesh, LnBoxMesh_allocateForGetObject));
+    LnBoxMesh_OnSerialize_SetOverrideCallback(Wrap_LnBoxMesh_OnSerialize_OverrideCallback);
+    LnBoxMesh_OnUpdate_SetOverrideCallback(Wrap_LnBoxMesh_OnUpdate_OverrideCallback);
+
     g_class_UIEventArgs = rb_define_class_under(g_rootModule, "UIEventArgs", g_class_Object);
     rb_define_alloc_func(g_class_UIEventArgs, LnUIEventArgs_allocate);
     rb_define_method(g_class_UIEventArgs, "sender", LN_TO_RUBY_FUNC(Wrap_LnUIEventArgs_Sender), -1);
@@ -6757,13 +7196,16 @@ extern "C" void Init_Lumino_RubyExt()
     g_class_UIElement = rb_define_class_under(g_rootModule, "UIElement", g_class_UILayoutElement);
     rb_define_alloc_func(g_class_UIElement, LnUIElement_allocate);
     rb_define_method(g_class_UIElement, "position=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPosition), -1);
+    rb_define_method(g_class_UIElement, "set_position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPosition), -1);
     rb_define_method(g_class_UIElement, "position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetPosition), -1);
     rb_define_method(g_class_UIElement, "rotation=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetRotation), -1);
     rb_define_method(g_class_UIElement, "set_euler_angles", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetEulerAngles), -1);
     rb_define_method(g_class_UIElement, "rotation", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetRotation), -1);
     rb_define_method(g_class_UIElement, "scale=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetScale), -1);
+    rb_define_method(g_class_UIElement, "set_scale", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetScale), -1);
     rb_define_method(g_class_UIElement, "scale", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetScale), -1);
     rb_define_method(g_class_UIElement, "center_point=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetCenterPoint), -1);
+    rb_define_method(g_class_UIElement, "set_center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetCenterPoint), -1);
     rb_define_method(g_class_UIElement, "center_point", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetCenterPoint), -1);
     rb_define_method(g_class_UIElement, "add_child", LN_TO_RUBY_FUNC(Wrap_LnUIElement_AddChild), -1);
     LnUIElement_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UIElement, LnUIElement_allocateForGetObject));
@@ -6823,6 +7265,8 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Finalize), -1);
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LnEngine_Time), -1);
+    rb_define_singleton_method(g_class_Engine, "camera", LN_TO_RUBY_FUNC(Wrap_LnEngine_GetCamera), -1);
+    rb_define_singleton_method(g_class_Engine, "render_view", LN_TO_RUBY_FUNC(Wrap_LnEngine_GetRenderView), -1);
 
     g_class_Application = rb_define_class_under(g_rootModule, "Application", g_class_Object);
     rb_define_alloc_func(g_class_Application, LnApplication_allocate);
