@@ -235,6 +235,60 @@ typedef enum tagLnDepthBufferFormat
 
 } LnDepthBufferFormat;
 
+/**
+    @brief 縦方向の表示位置を示します。
+*/
+typedef enum tagLnVAlignment
+{
+    /**
+        @brief 子要素を、親のレイアウト スロットの上端に揃えて配置します。
+    */
+    LN_VALIGNMENT_TOP = 0,
+
+    /**
+        @brief 子要素を、親のレイアウト スロットの中央に揃えて配置します。
+    */
+    LN_VALIGNMENT_CENTER = 1,
+
+    /**
+        @brief 子要素を、親のレイアウト スロットの下端に揃えて配置します。
+    */
+    LN_VALIGNMENT_BOTTOM = 2,
+
+    /**
+        @brief 子要素を、親のレイアウト スロット全体に引き伸ばします。
+    */
+    LN_VALIGNMENT_STRETCH = 3,
+
+} LnVAlignment;
+
+/**
+    @brief 横方向の表示位置を示します。
+*/
+typedef enum tagLnHAlignment
+{
+    /**
+        @brief 子要素を、親のレイアウト スロットの左側に揃えて配置します。
+    */
+    LN_HALIGNMENT_LEFT = 0,
+
+    /**
+        @brief 子要素を、親のレイアウト スロットの中央に揃えて配置します。
+    */
+    LN_HALIGNMENT_CENTER = 1,
+
+    /**
+        @brief 子要素を、親のレイアウト スロットの右側に揃えて配置します。
+    */
+    LN_HALIGNMENT_RIGHT = 2,
+
+    /**
+        @brief 子要素を、親のレイアウト スロット全体に引き伸ばします。
+    */
+    LN_HALIGNMENT_STRETCH = 3,
+
+} LnHAlignment;
+
 
 typedef LnResult(*LnPromiseFailureDelegateCallback)(LnHandle promisefailuredelegate);
 typedef LnResult(*LnZVTestDelegate1Callback)(LnHandle zvtestdelegate1, int p1);
@@ -1169,6 +1223,289 @@ extern LN_FLAT_API int LnVisualObject_GetTypeInfoId();
 LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
+// ln::Camera
+
+typedef LnResult(*LnCamera_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnCamera_OnSerialize_SetOverrideCallback(LnCamera_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnCamera_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+typedef LnResult(*LnCamera_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnCamera_OnUpdate_SetOverrideCallback(LnCamera_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnCamera_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
+
+extern LN_FLAT_API int LnCamera_GetTypeInfoId();
+LN_FLAT_API void LnCamera_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::DirectionalLight
+
+/**
+    @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
+    @param[in] directionallight : instance
+*/
+LN_FLAT_API LnResult LnDirectionalLight_SetEnabled(LnHandle directionallight, LnBool enabled);
+
+/**
+    @brief ライトの有効状態を取得します。
+    @param[in] directionallight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_IsEnabled(LnHandle directionallight, LnBool* outReturn);
+
+/**
+    @brief ライトカラーを設定します。(default: White)
+    @param[in] directionallight : instance
+*/
+LN_FLAT_API LnResult LnDirectionalLight_SetColor(LnHandle directionallight, const LnColor* color);
+
+/**
+    @brief ライトカラーを取得します。
+    @param[in] directionallight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_GetColor(LnHandle directionallight, LnColor* outReturn);
+
+/**
+    @brief ライトの明るさを設定します。(default: 0.5)
+    @param[in] directionallight : instance
+*/
+LN_FLAT_API LnResult LnDirectionalLight_SetIntensity(LnHandle directionallight, float intensity);
+
+/**
+    @brief ライトの明るさを取得します。
+    @param[in] directionallight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_GetIntensity(LnHandle directionallight, float* outReturn);
+
+/**
+    @brief 既定の設定でディレクショナルライトを作成します。
+    @param[out] outDirectionalLight : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_Create(LnHandle* outDirectionalLight);
+
+/**
+    @brief 色を指定してディレクショナルライトを作成します。
+    @param[out] outDirectionalLight : instance.
+*/
+LN_FLAT_API LnResult LnDirectionalLight_CreateWithColor(const LnColor* color, LnHandle* outDirectionalLight);
+
+typedef LnResult(*LnDirectionalLight_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnDirectionalLight_OnSerialize_SetOverrideCallback(LnDirectionalLight_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnDirectionalLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+typedef LnResult(*LnDirectionalLight_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnDirectionalLight_OnUpdate_SetOverrideCallback(LnDirectionalLight_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnDirectionalLight_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
+
+extern LN_FLAT_API int LnDirectionalLight_GetTypeInfoId();
+LN_FLAT_API void LnDirectionalLight_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::PointLight
+
+/**
+    @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
+    @param[in] pointlight : instance
+*/
+LN_FLAT_API LnResult LnPointLight_SetEnabled(LnHandle pointlight, LnBool enabled);
+
+/**
+    @brief ライトの有効状態を取得します。
+    @param[in] pointlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_IsEnabled(LnHandle pointlight, LnBool* outReturn);
+
+/**
+    @brief ライトカラーを設定します。(default: White)
+    @param[in] pointlight : instance
+*/
+LN_FLAT_API LnResult LnPointLight_SetColor(LnHandle pointlight, const LnColor* color);
+
+/**
+    @brief ライトカラーを取得します。
+    @param[in] pointlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_GetColor(LnHandle pointlight, LnColor* outReturn);
+
+/**
+    @brief ライトの明るさを設定します。(default: 1.0)
+    @param[in] pointlight : instance
+*/
+LN_FLAT_API LnResult LnPointLight_SetIntensity(LnHandle pointlight, float intensity);
+
+/**
+    @brief ライトの明るさを取得します。
+    @param[in] pointlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_GetIntensity(LnHandle pointlight, float* outReturn);
+
+/**
+    @brief ライトの影響範囲を設定します。(default: 10.0)
+    @param[in] pointlight : instance
+*/
+LN_FLAT_API LnResult LnPointLight_SetRange(LnHandle pointlight, float range);
+
+/**
+    @brief ライトの影響範囲を取得します。
+    @param[in] pointlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_GetRange(LnHandle pointlight, float* outReturn);
+
+/**
+    @brief ライトの減衰を設定します。(default: 1.0)
+    @param[in] pointlight : instance
+*/
+LN_FLAT_API LnResult LnPointLight_SetAttenuation(LnHandle pointlight, float attenuation);
+
+/**
+    @brief ライトの減衰を取得します。
+    @param[in] pointlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_GetAttenuation(LnHandle pointlight, float* outReturn);
+
+/**
+    @brief 既定の設定でポイントライトを作成します。
+    @param[out] outPointLight : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_Create(LnHandle* outPointLight);
+
+/**
+    @brief 色と範囲を指定してポイントライトを作成します。
+    @param[out] outPointLight : instance.
+*/
+LN_FLAT_API LnResult LnPointLight_CreateWithColorAndRange(const LnColor* color, float range, LnHandle* outPointLight);
+
+typedef LnResult(*LnPointLight_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnPointLight_OnSerialize_SetOverrideCallback(LnPointLight_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnPointLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+typedef LnResult(*LnPointLight_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnPointLight_OnUpdate_SetOverrideCallback(LnPointLight_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnPointLight_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
+
+extern LN_FLAT_API int LnPointLight_GetTypeInfoId();
+LN_FLAT_API void LnPointLight_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::SpotLight
+
+/**
+    @brief ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
+    @param[in] spotlight : instance
+*/
+LN_FLAT_API LnResult LnSpotLight_SetEnabled(LnHandle spotlight, LnBool enabled);
+
+/**
+    @brief ライトの有効状態を取得します。
+    @param[in] spotlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_IsEnabled(LnHandle spotlight, LnBool* outReturn);
+
+/**
+    @brief ライトカラーを設定します。(default: White)
+    @param[in] spotlight : instance
+*/
+LN_FLAT_API LnResult LnSpotLight_SetColor(LnHandle spotlight, const LnColor* color);
+
+/**
+    @brief ライトカラーを取得します。
+    @param[in] spotlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_GetColor(LnHandle spotlight, LnColor* outReturn);
+
+/**
+    @brief ライトの明るさを設定します。(default: 1.0)
+    @param[in] spotlight : instance
+*/
+LN_FLAT_API LnResult LnSpotLight_SetIntensity(LnHandle spotlight, float intensity);
+
+/**
+    @brief ライトの明るさを取得します。
+    @param[in] spotlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_GetIntensity(LnHandle spotlight, float* outReturn);
+
+/**
+    @brief ライトの影響範囲を設定します。(default: 10.0)
+    @param[in] spotlight : instance
+*/
+LN_FLAT_API LnResult LnSpotLight_SetRange(LnHandle spotlight, float range);
+
+/**
+    @brief ライトの影響範囲を取得します。
+    @param[in] spotlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_GetRange(LnHandle spotlight, float* outReturn);
+
+/**
+    @brief ライトの減衰を設定します。(default: 1.0)
+    @param[in] spotlight : instance
+*/
+LN_FLAT_API LnResult LnSpotLight_SetAttenuation(LnHandle spotlight, float attenuation);
+
+/**
+    @brief ライトの減衰を取得します。
+    @param[in] spotlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_GetAttenuation(LnHandle spotlight, float* outReturn);
+
+/**
+    @brief スポットライトのコーン角度を設定します。(ラジアン単位、default: PI / 3)
+    @param[in] spotlight : instance
+*/
+LN_FLAT_API LnResult LnSpotLight_SetAngle(LnHandle spotlight, float angle);
+
+/**
+    @brief スポットライトのコーン角度を取得します。(ラジアン単位)
+    @param[in] spotlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_GetAngle(LnHandle spotlight, float* outReturn);
+
+/**
+    @brief スポットライトのコーン角度に対する減衰率を設定します。(0..1, default: 0)
+    @param[in] spotlight : instance
+*/
+LN_FLAT_API LnResult LnSpotLight_SetPenumbra(LnHandle spotlight, float penumbra);
+
+/**
+    @brief スポットライトのコーン角度に対する減衰率を設定します。
+    @param[in] spotlight : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_GetPenumbra(LnHandle spotlight, float* outReturn);
+
+/**
+    @brief 既定の設定でスポットライトを作成します。
+    @param[out] outSpotLight : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_Create(LnHandle* outSpotLight);
+
+/**
+    @brief 色と範囲を指定してスポットライトを作成します。
+    @param[out] outSpotLight : instance.
+*/
+LN_FLAT_API LnResult LnSpotLight_CreateWithColorAndRange(const LnColor* color, float range, float angle, LnHandle* outSpotLight);
+
+typedef LnResult(*LnSpotLight_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnSpotLight_OnSerialize_SetOverrideCallback(LnSpotLight_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnSpotLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+typedef LnResult(*LnSpotLight_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
+LN_FLAT_API LnResult LnSpotLight_OnUpdate_SetOverrideCallback(LnSpotLight_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnSpotLight_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
+
+extern LN_FLAT_API int LnSpotLight_GetTypeInfoId();
+LN_FLAT_API void LnSpotLight_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
 // ln::TestDelegate
 
 LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate);
@@ -1234,19 +1571,6 @@ LN_FLAT_API LnResult LnSprite_OnUpdate_CallOverrideBase(LnHandle worldobject, fl
 
 extern LN_FLAT_API int LnSprite_GetTypeInfoId();
 LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id);
-
-//==============================================================================
-// ln::Camera
-
-typedef LnResult(*LnCamera_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnCamera_OnSerialize_SetOverrideCallback(LnCamera_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LnResult LnCamera_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
-typedef LnResult(*LnCamera_OnUpdate_OverrideCallback)(LnHandle worldobject, float elapsedSeconds);
-LN_FLAT_API LnResult LnCamera_OnUpdate_SetOverrideCallback(LnCamera_OnUpdate_OverrideCallback callback);
-LN_FLAT_API LnResult LnCamera_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds);
-
-extern LN_FLAT_API int LnCamera_GetTypeInfoId();
-LN_FLAT_API void LnCamera_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::CameraOrbitControlComponent
@@ -1389,6 +1713,64 @@ LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id);
 // ln::UIElement
 
 /**
+    @brief 要素の margin 値 (外側の余白) を設定します。
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LnResult LnUIElement_SetMargin(LnHandle uielement, const LnThickness* margin);
+
+/**
+    @brief 要素の margin 値 (外側の余白) を取得します。
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnUIElement_GetMargin(LnHandle uielement, LnThickness* outReturn);
+
+/**
+    @brief 要素の padding 値 (内側の余白) を設定します。この余白は論理ツリーの子要素のレイアウトに影響します。
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LnResult LnUIElement_SetPadding(LnHandle uielement, const LnThickness* padding);
+
+/**
+    @brief 要素の padding 値 (内側の余白) を取得します。この余白は論理ツリーの子要素のレイアウトに影響します。
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnUIElement_GetPadding(LnHandle uielement, LnThickness* outReturn);
+
+/**
+    @brief 要素の横方向の配置方法を設定します。
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LnResult LnUIElement_SetHAlignment(LnHandle uielement, LnHAlignment value);
+
+/**
+    @brief 要素の横方向の配置方法を取得します。
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnUIElement_GetHAlignment(LnHandle uielement, LnHAlignment* outReturn);
+
+/**
+    @brief 要素の縦方向の配置方法を設定します。
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LnResult LnUIElement_SetVAlignment(LnHandle uielement, LnVAlignment value);
+
+/**
+    @brief 要素の縦方向の配置方法を取得します。
+    @param[in] uielement : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnUIElement_GetVAlignment(LnHandle uielement, LnVAlignment* outReturn);
+
+/**
+    @brief 要素の配置方法を設定します。
+    @param[in] uielement : instance
+*/
+LN_FLAT_API LnResult LnUIElement_SetAlignments(LnHandle uielement, LnHAlignment halign, LnVAlignment valign);
+
+/**
     @brief このオブジェクトの位置を設定します。
     @param[in] uielement : instance
 */
@@ -1520,6 +1902,13 @@ LN_FLAT_API void LnUIButtonBase_SetManagedTypeInfoId(int64_t id);
 LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton);
 
 /**
+    @brief 表示文字列を指定して UIButton を作成します。
+    @param[out] outUIButton : instance.
+*/
+LN_FLAT_API LnResult LnUIButton_CreateWithText(const LnChar* text, LnHandle* outUIButton);
+LN_FLAT_API LnResult LnUIButton_CreateWithTextA(const char* text, LnHandle* outUIButton);
+
+/**
     @brief Clicked イベントの通知を受け取るコールバックを登録します。
     @param[in] uibutton : instance
     @param[out] outReturn : instance. (このオブジェクトは不要になったら LnObject_Release で参照を開放する必要があります)
@@ -1556,6 +1945,53 @@ LN_FLAT_API LnResult LnUITextBlock_OnSerialize_CallOverrideBase(LnHandle object,
 
 extern LN_FLAT_API int LnUITextBlock_GetTypeInfoId();
 LN_FLAT_API void LnUITextBlock_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::UISprite
+
+/**
+    @brief スプライトが表示するテクスチャを設定します。
+    @param[in] uisprite : instance
+*/
+LN_FLAT_API LnResult LnUISprite_SetTexture(LnHandle uisprite, LnHandle texture);
+
+/**
+    @brief テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。
+    @param[in] uisprite : instance
+*/
+LN_FLAT_API LnResult LnUISprite_SetSourceRect(LnHandle uisprite, const LnRect* rect);
+
+/**
+    @brief 
+    @param[in] uisprite : instance
+*/
+LN_FLAT_API LnResult LnUISprite_SetSourceRectXYWH(LnHandle uisprite, float x, float y, float width, float height);
+
+/**
+    @brief テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位)
+    @param[in] uisprite : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnUISprite_GetSourceRect(LnHandle uisprite, LnRect* outReturn);
+
+/**
+    @brief UISprite を作成します。
+    @param[out] outUISprite : instance.
+*/
+LN_FLAT_API LnResult LnUISprite_Create(LnHandle* outUISprite);
+
+/**
+    @brief テクスチャを指定して UISprite を作成します。
+    @param[out] outUISprite : instance.
+*/
+LN_FLAT_API LnResult LnUISprite_CreateWithTexture(LnHandle texture, LnHandle* outUISprite);
+
+typedef LnResult(*LnUISprite_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnUISprite_OnSerialize_SetOverrideCallback(LnUISprite_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnUISprite_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnUISprite_GetTypeInfoId();
+LN_FLAT_API void LnUISprite_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::Input
@@ -1714,6 +2150,12 @@ LN_FLAT_API LnResult LnEngine_Time(double* outReturn);
     @param[out] outReturn : instance.
 */
 LN_FLAT_API LnResult LnEngine_GetCamera(LnHandle* outReturn);
+
+/**
+    @brief デフォルトで作成されるメインの DirectionalLight です。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnEngine_GetLight(LnHandle* outReturn);
 
 /**
     @brief デフォルトで作成されるメインの RenderView です。

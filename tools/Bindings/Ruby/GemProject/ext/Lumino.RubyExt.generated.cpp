@@ -37,6 +37,8 @@ VALUE g_enum_MouseButtons;
 VALUE g_enum_PixelFormat;
 VALUE g_enum_TextureFormat;
 VALUE g_enum_DepthBufferFormat;
+VALUE g_enum_VAlignment;
+VALUE g_enum_HAlignment;
 
 VALUE g_rootModule;
 VALUE g_class_Object;
@@ -65,9 +67,12 @@ VALUE g_class_World;
 VALUE g_class_ComponentList;
 VALUE g_class_WorldObject;
 VALUE g_class_VisualObject;
+VALUE g_class_Camera;
+VALUE g_class_DirectionalLight;
+VALUE g_class_PointLight;
+VALUE g_class_SpotLight;
 VALUE g_class_TestDelegate;
 VALUE g_class_Sprite;
-VALUE g_class_Camera;
 VALUE g_class_CameraOrbitControlComponent;
 VALUE g_class_Raycaster;
 VALUE g_class_RaycastResult;
@@ -82,6 +87,7 @@ VALUE g_class_UIControl;
 VALUE g_class_UIButtonBase;
 VALUE g_class_UIButton;
 VALUE g_class_UITextBlock;
+VALUE g_class_UISprite;
 VALUE g_class_Input;
 VALUE g_class_Mouse;
 VALUE g_class_EngineSettings;
@@ -4632,6 +4638,908 @@ LnResult Wrap_LnVisualObject_OnUpdate_OverrideCallback(LnHandle worldobject, flo
 }
 
 //==============================================================================
+// ln::Camera
+
+struct Wrap_Camera
+    : public Wrap_WorldObject
+{
+
+    Wrap_Camera()
+    {}
+};
+
+static void LnCamera_delete(Wrap_Camera* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnCamera_mark(Wrap_Camera* obj)
+{
+	
+
+}
+
+static VALUE LnCamera_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Camera* internalObj;
+
+    internalObj = new Wrap_Camera();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCamera_allocate");
+    obj = Data_Wrap_Struct(klass, LnCamera_mark, LnCamera_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnCamera_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Camera* internalObj;
+
+    internalObj = new Wrap_Camera();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCamera_allocate");
+    obj = Data_Wrap_Struct(klass, LnCamera_mark, LnCamera_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+LnResult Wrap_LnCamera_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnCamera_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::DirectionalLight
+
+struct Wrap_DirectionalLight
+    : public Wrap_WorldObject
+{
+
+    Wrap_DirectionalLight()
+    {}
+};
+
+static void LnDirectionalLight_delete(Wrap_DirectionalLight* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnDirectionalLight_mark(Wrap_DirectionalLight* obj)
+{
+	
+
+}
+
+static VALUE LnDirectionalLight_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_DirectionalLight* internalObj;
+
+    internalObj = new Wrap_DirectionalLight();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnDirectionalLight_allocate");
+    obj = Data_Wrap_Struct(klass, LnDirectionalLight_mark, LnDirectionalLight_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnDirectionalLight_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_DirectionalLight* internalObj;
+
+    internalObj = new Wrap_DirectionalLight();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnDirectionalLight_allocate");
+    obj = Data_Wrap_Struct(klass, LnDirectionalLight_mark, LnDirectionalLight_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnDirectionalLight_SetEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_DirectionalLight* selfObj;
+    Data_Get_Struct(self, Wrap_DirectionalLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE enabled;
+        rb_scan_args(argc, argv, "1", &enabled);
+        if (LNRB_VALUE_IS_BOOL(enabled))
+        {
+            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
+            LnResult errorCode = LnDirectionalLight_SetEnabled(selfObj->handle, _enabled);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::DirectionalLight::setEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnDirectionalLight_IsEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_DirectionalLight* selfObj;
+    Data_Get_Struct(self, Wrap_DirectionalLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnBool _outReturn;
+            LnResult errorCode = LnDirectionalLight_IsEnabled(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::DirectionalLight::isEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnDirectionalLight_SetColor(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_DirectionalLight* selfObj;
+    Data_Get_Struct(self, Wrap_DirectionalLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE color;
+        rb_scan_args(argc, argv, "1", &color);
+        if (LNRB_VALUE_IS_OBJECT(color))
+        {
+            LnColor* tmp__color; Data_Get_Struct(color, LnColor, tmp__color);LnColor& _color = *tmp__color;
+            LnResult errorCode = LnDirectionalLight_SetColor(selfObj->handle, &_color);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::DirectionalLight::setColor - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnDirectionalLight_GetColor(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_DirectionalLight* selfObj;
+    Data_Get_Struct(self, Wrap_DirectionalLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnColor _outReturn;
+            LnResult errorCode = LnDirectionalLight_GetColor(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnColor_allocate(g_class_Color);
+            *((LnColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::DirectionalLight::getColor - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnDirectionalLight_SetIntensity(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_DirectionalLight* selfObj;
+    Data_Get_Struct(self, Wrap_DirectionalLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE intensity;
+        rb_scan_args(argc, argv, "1", &intensity);
+        if (LNRB_VALUE_IS_FLOAT(intensity))
+        {
+            float _intensity = LNRB_VALUE_TO_FLOAT(intensity);
+            LnResult errorCode = LnDirectionalLight_SetIntensity(selfObj->handle, _intensity);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::DirectionalLight::setIntensity - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnDirectionalLight_GetIntensity(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_DirectionalLight* selfObj;
+    Data_Get_Struct(self, Wrap_DirectionalLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnDirectionalLight_GetIntensity(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::DirectionalLight::getIntensity - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnDirectionalLight_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_DirectionalLight* selfObj;
+    Data_Get_Struct(self, Wrap_DirectionalLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnDirectionalLight_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (1 <= argc && argc <= 1) {
+        VALUE color;
+        rb_scan_args(argc, argv, "1", &color);
+        if (LNRB_VALUE_IS_OBJECT(color))
+        {
+            LnColor* tmp__color; Data_Get_Struct(color, LnColor, tmp__color);LnColor& _color = *tmp__color;
+            LnResult errorCode = LnDirectionalLight_CreateWithColor(&_color, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::DirectionalLight::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnDirectionalLight_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnDirectionalLight_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::PointLight
+
+struct Wrap_PointLight
+    : public Wrap_WorldObject
+{
+
+    Wrap_PointLight()
+    {}
+};
+
+static void LnPointLight_delete(Wrap_PointLight* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnPointLight_mark(Wrap_PointLight* obj)
+{
+	
+
+}
+
+static VALUE LnPointLight_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_PointLight* internalObj;
+
+    internalObj = new Wrap_PointLight();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnPointLight_allocate");
+    obj = Data_Wrap_Struct(klass, LnPointLight_mark, LnPointLight_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnPointLight_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_PointLight* internalObj;
+
+    internalObj = new Wrap_PointLight();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnPointLight_allocate");
+    obj = Data_Wrap_Struct(klass, LnPointLight_mark, LnPointLight_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnPointLight_SetEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE enabled;
+        rb_scan_args(argc, argv, "1", &enabled);
+        if (LNRB_VALUE_IS_BOOL(enabled))
+        {
+            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
+            LnResult errorCode = LnPointLight_SetEnabled(selfObj->handle, _enabled);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::setEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_IsEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnBool _outReturn;
+            LnResult errorCode = LnPointLight_IsEnabled(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::isEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_SetColor(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE color;
+        rb_scan_args(argc, argv, "1", &color);
+        if (LNRB_VALUE_IS_OBJECT(color))
+        {
+            LnColor* tmp__color; Data_Get_Struct(color, LnColor, tmp__color);LnColor& _color = *tmp__color;
+            LnResult errorCode = LnPointLight_SetColor(selfObj->handle, &_color);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::setColor - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_GetColor(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnColor _outReturn;
+            LnResult errorCode = LnPointLight_GetColor(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnColor_allocate(g_class_Color);
+            *((LnColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::getColor - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_SetIntensity(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE intensity;
+        rb_scan_args(argc, argv, "1", &intensity);
+        if (LNRB_VALUE_IS_FLOAT(intensity))
+        {
+            float _intensity = LNRB_VALUE_TO_FLOAT(intensity);
+            LnResult errorCode = LnPointLight_SetIntensity(selfObj->handle, _intensity);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::setIntensity - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_GetIntensity(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnPointLight_GetIntensity(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::getIntensity - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_SetRange(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE range;
+        rb_scan_args(argc, argv, "1", &range);
+        if (LNRB_VALUE_IS_FLOAT(range))
+        {
+            float _range = LNRB_VALUE_TO_FLOAT(range);
+            LnResult errorCode = LnPointLight_SetRange(selfObj->handle, _range);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::setRange - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_GetRange(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnPointLight_GetRange(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::getRange - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_SetAttenuation(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE attenuation;
+        rb_scan_args(argc, argv, "1", &attenuation);
+        if (LNRB_VALUE_IS_FLOAT(attenuation))
+        {
+            float _attenuation = LNRB_VALUE_TO_FLOAT(attenuation);
+            LnResult errorCode = LnPointLight_SetAttenuation(selfObj->handle, _attenuation);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::setAttenuation - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_GetAttenuation(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnPointLight_GetAttenuation(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::getAttenuation - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnPointLight_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_PointLight* selfObj;
+    Data_Get_Struct(self, Wrap_PointLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnPointLight_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 2) {
+        VALUE color;
+        VALUE range;
+        rb_scan_args(argc, argv, "2", &color, &range);
+        if (LNRB_VALUE_IS_OBJECT(color) && LNRB_VALUE_IS_FLOAT(range))
+        {
+            LnColor* tmp__color; Data_Get_Struct(color, LnColor, tmp__color);LnColor& _color = *tmp__color;
+            float _range = LNRB_VALUE_TO_FLOAT(range);
+            LnResult errorCode = LnPointLight_CreateWithColorAndRange(&_color, _range, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::PointLight::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnPointLight_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnPointLight_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::SpotLight
+
+struct Wrap_SpotLight
+    : public Wrap_WorldObject
+{
+
+    Wrap_SpotLight()
+    {}
+};
+
+static void LnSpotLight_delete(Wrap_SpotLight* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnSpotLight_mark(Wrap_SpotLight* obj)
+{
+	
+
+}
+
+static VALUE LnSpotLight_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_SpotLight* internalObj;
+
+    internalObj = new Wrap_SpotLight();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSpotLight_allocate");
+    obj = Data_Wrap_Struct(klass, LnSpotLight_mark, LnSpotLight_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnSpotLight_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_SpotLight* internalObj;
+
+    internalObj = new Wrap_SpotLight();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnSpotLight_allocate");
+    obj = Data_Wrap_Struct(klass, LnSpotLight_mark, LnSpotLight_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnSpotLight_SetEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE enabled;
+        rb_scan_args(argc, argv, "1", &enabled);
+        if (LNRB_VALUE_IS_BOOL(enabled))
+        {
+            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
+            LnResult errorCode = LnSpotLight_SetEnabled(selfObj->handle, _enabled);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::setEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_IsEnabled(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnBool _outReturn;
+            LnResult errorCode = LnSpotLight_IsEnabled(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::isEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_SetColor(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE color;
+        rb_scan_args(argc, argv, "1", &color);
+        if (LNRB_VALUE_IS_OBJECT(color))
+        {
+            LnColor* tmp__color; Data_Get_Struct(color, LnColor, tmp__color);LnColor& _color = *tmp__color;
+            LnResult errorCode = LnSpotLight_SetColor(selfObj->handle, &_color);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::setColor - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_GetColor(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnColor _outReturn;
+            LnResult errorCode = LnSpotLight_GetColor(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnColor_allocate(g_class_Color);
+            *((LnColor*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::getColor - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_SetIntensity(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE intensity;
+        rb_scan_args(argc, argv, "1", &intensity);
+        if (LNRB_VALUE_IS_FLOAT(intensity))
+        {
+            float _intensity = LNRB_VALUE_TO_FLOAT(intensity);
+            LnResult errorCode = LnSpotLight_SetIntensity(selfObj->handle, _intensity);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::setIntensity - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_GetIntensity(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnSpotLight_GetIntensity(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::getIntensity - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_SetRange(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE range;
+        rb_scan_args(argc, argv, "1", &range);
+        if (LNRB_VALUE_IS_FLOAT(range))
+        {
+            float _range = LNRB_VALUE_TO_FLOAT(range);
+            LnResult errorCode = LnSpotLight_SetRange(selfObj->handle, _range);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::setRange - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_GetRange(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnSpotLight_GetRange(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::getRange - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_SetAttenuation(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE attenuation;
+        rb_scan_args(argc, argv, "1", &attenuation);
+        if (LNRB_VALUE_IS_FLOAT(attenuation))
+        {
+            float _attenuation = LNRB_VALUE_TO_FLOAT(attenuation);
+            LnResult errorCode = LnSpotLight_SetAttenuation(selfObj->handle, _attenuation);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::setAttenuation - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_GetAttenuation(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnSpotLight_GetAttenuation(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::getAttenuation - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_SetAngle(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE angle;
+        rb_scan_args(argc, argv, "1", &angle);
+        if (LNRB_VALUE_IS_FLOAT(angle))
+        {
+            float _angle = LNRB_VALUE_TO_FLOAT(angle);
+            LnResult errorCode = LnSpotLight_SetAngle(selfObj->handle, _angle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::setAngle - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_GetAngle(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnSpotLight_GetAngle(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::getAngle - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_SetPenumbra(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE penumbra;
+        rb_scan_args(argc, argv, "1", &penumbra);
+        if (LNRB_VALUE_IS_FLOAT(penumbra))
+        {
+            float _penumbra = LNRB_VALUE_TO_FLOAT(penumbra);
+            LnResult errorCode = LnSpotLight_SetPenumbra(selfObj->handle, _penumbra);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::setPenumbra - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_GetPenumbra(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            float _outReturn;
+            LnResult errorCode = LnSpotLight_GetPenumbra(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::getPenumbra - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnSpotLight_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_SpotLight* selfObj;
+    Data_Get_Struct(self, Wrap_SpotLight, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnSpotLight_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (3 <= argc && argc <= 3) {
+        VALUE color;
+        VALUE range;
+        VALUE angle;
+        rb_scan_args(argc, argv, "3", &color, &range, &angle);
+        if (LNRB_VALUE_IS_OBJECT(color) && LNRB_VALUE_IS_FLOAT(range) && LNRB_VALUE_IS_FLOAT(angle))
+        {
+            LnColor* tmp__color; Data_Get_Struct(color, LnColor, tmp__color);LnColor& _color = *tmp__color;
+            float _range = LNRB_VALUE_TO_FLOAT(range);
+            float _angle = LNRB_VALUE_TO_FLOAT(angle);
+            LnResult errorCode = LnSpotLight_CreateWithColorAndRange(&_color, _range, _angle, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::SpotLight::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnSpotLight_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnSpotLight_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
 // ln::TestDelegate
 
 struct Wrap_TestDelegate
@@ -4924,68 +5832,6 @@ LnResult Wrap_LnSprite_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar
     return LN_SUCCESS;
 }
 LnResult Wrap_LnSprite_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
-    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
-    return LN_SUCCESS;
-}
-
-//==============================================================================
-// ln::Camera
-
-struct Wrap_Camera
-    : public Wrap_WorldObject
-{
-
-    Wrap_Camera()
-    {}
-};
-
-static void LnCamera_delete(Wrap_Camera* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LnCamera_mark(Wrap_Camera* obj)
-{
-	
-
-}
-
-static VALUE LnCamera_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_Camera* internalObj;
-
-    internalObj = new Wrap_Camera();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCamera_allocate");
-    obj = Data_Wrap_Struct(klass, LnCamera_mark, LnCamera_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LnCamera_allocateForGetObject(VALUE klass, LnHandle handle)
-{
-    VALUE obj;
-    Wrap_Camera* internalObj;
-
-    internalObj = new Wrap_Camera();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnCamera_allocate");
-    obj = Data_Wrap_Struct(klass, LnCamera_mark, LnCamera_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-LnResult Wrap_LnCamera_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
-}
-LnResult Wrap_LnCamera_OnUpdate_OverrideCallback(LnHandle worldobject, float elapsedSeconds)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(worldobject);
     VALUE retval = rb_funcall(obj, rb_intern("on_update"), 1, LNI_TO_RUBY_VALUE(elapsedSeconds));
@@ -5749,6 +6595,175 @@ static VALUE LnUIElement_allocateForGetObject(VALUE klass, LnHandle handle)
 }
 
 
+static VALUE Wrap_LnUIElement_SetMargin(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE margin;
+        rb_scan_args(argc, argv, "1", &margin);
+        if (LNRB_VALUE_IS_OBJECT(margin))
+        {
+            LnThickness* tmp__margin; Data_Get_Struct(margin, LnThickness, tmp__margin);LnThickness& _margin = *tmp__margin;
+            LnResult errorCode = LnUIElement_SetMargin(selfObj->handle, &_margin);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setMargin - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_GetMargin(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnThickness _outReturn;
+            LnResult errorCode = LnUIElement_GetMargin(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnThickness_allocate(g_class_Thickness);
+            *((LnThickness*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::margin - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetPadding(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE padding;
+        rb_scan_args(argc, argv, "1", &padding);
+        if (LNRB_VALUE_IS_OBJECT(padding))
+        {
+            LnThickness* tmp__padding; Data_Get_Struct(padding, LnThickness, tmp__padding);LnThickness& _padding = *tmp__padding;
+            LnResult errorCode = LnUIElement_SetPadding(selfObj->handle, &_padding);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setPadding - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_GetPadding(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnThickness _outReturn;
+            LnResult errorCode = LnUIElement_GetPadding(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnThickness_allocate(g_class_Thickness);
+            *((LnThickness*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::padding - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetHAlignment(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_NUMBER(value))
+        {
+            LnHAlignment _value = (LnHAlignment)FIX2INT(value);
+            LnResult errorCode = LnUIElement_SetHAlignment(selfObj->handle, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setHAlignment - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_GetHAlignment(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHAlignment _outReturn;
+            LnResult errorCode = LnUIElement_GetHAlignment(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return INT2FIX(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::hAlignment - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetVAlignment(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_NUMBER(value))
+        {
+            LnVAlignment _value = (LnVAlignment)FIX2INT(value);
+            LnResult errorCode = LnUIElement_SetVAlignment(selfObj->handle, _value);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setVAlignment - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_GetVAlignment(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnVAlignment _outReturn;
+            LnResult errorCode = LnUIElement_GetVAlignment(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return INT2FIX(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::vAlignment - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUIElement_SetAlignments(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UIElement* selfObj;
+    Data_Get_Struct(self, Wrap_UIElement, selfObj);
+    if (2 <= argc && argc <= 2) {
+        VALUE halign;
+        VALUE valign;
+        rb_scan_args(argc, argv, "2", &halign, &valign);
+        if (LNRB_VALUE_IS_NUMBER(halign) && LNRB_VALUE_IS_NUMBER(valign))
+        {
+            LnHAlignment _halign = (LnHAlignment)FIX2INT(halign);
+            LnVAlignment _valign = (LnVAlignment)FIX2INT(valign);
+            LnResult errorCode = LnUIElement_SetAlignments(selfObj->handle, _halign, _valign);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UIElement::setAlignments - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE Wrap_LnUIElement_SetPosition(int argc, VALUE* argv, VALUE self)
 {
     Wrap_UIElement* selfObj;
@@ -6200,6 +7215,20 @@ static VALUE Wrap_LnUIButton_Create(int argc, VALUE* argv, VALUE self)
             return Qnil;
         }
     }
+    if (1 <= argc && argc <= 1) {
+        VALUE text;
+        rb_scan_args(argc, argv, "1", &text);
+        if (LNRB_VALUE_IS_STRING(text))
+        {
+            const char* _text = LNRB_VALUE_TO_STRING(text);
+            LnResult errorCode = LnUIButton_CreateWithTextA(_text, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
     rb_raise(rb_eArgError, "ln::UIButton::init - wrong argument type.");
     return Qnil;
 }
@@ -6327,6 +7356,170 @@ static VALUE Wrap_LnUITextBlock_Create(int argc, VALUE* argv, VALUE self)
 }
 
 LnResult Wrap_LnUITextBlock_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::UISprite
+
+struct Wrap_UISprite
+    : public Wrap_UIElement
+{
+
+    Wrap_UISprite()
+    {}
+};
+
+static void LnUISprite_delete(Wrap_UISprite* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnUISprite_mark(Wrap_UISprite* obj)
+{
+	
+
+}
+
+static VALUE LnUISprite_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_UISprite* internalObj;
+
+    internalObj = new Wrap_UISprite();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUISprite_allocate");
+    obj = Data_Wrap_Struct(klass, LnUISprite_mark, LnUISprite_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnUISprite_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_UISprite* internalObj;
+
+    internalObj = new Wrap_UISprite();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnUISprite_allocate");
+    obj = Data_Wrap_Struct(klass, LnUISprite_mark, LnUISprite_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnUISprite_SetTexture(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UISprite* selfObj;
+    Data_Get_Struct(self, Wrap_UISprite, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE texture;
+        rb_scan_args(argc, argv, "1", &texture);
+        if (LNRB_VALUE_IS_OBJECT(texture))
+        {
+            LnHandle _texture = LuminoRubyRuntimeManager::instance->getHandle(texture);
+            LnResult errorCode = LnUISprite_SetTexture(selfObj->handle, _texture);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UISprite::setTexture - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUISprite_SetSourceRect(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UISprite* selfObj;
+    Data_Get_Struct(self, Wrap_UISprite, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE rect;
+        rb_scan_args(argc, argv, "1", &rect);
+        if (LNRB_VALUE_IS_OBJECT(rect))
+        {
+            LnRect* tmp__rect; Data_Get_Struct(rect, LnRect, tmp__rect);LnRect& _rect = *tmp__rect;
+            LnResult errorCode = LnUISprite_SetSourceRect(selfObj->handle, &_rect);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (4 <= argc && argc <= 4) {
+        VALUE x;
+        VALUE y;
+        VALUE width;
+        VALUE height;
+        rb_scan_args(argc, argv, "4", &x, &y, &width, &height);
+        if (LNRB_VALUE_IS_FLOAT(x) && LNRB_VALUE_IS_FLOAT(y) && LNRB_VALUE_IS_FLOAT(width) && LNRB_VALUE_IS_FLOAT(height))
+        {
+            float _x = LNRB_VALUE_TO_FLOAT(x);
+            float _y = LNRB_VALUE_TO_FLOAT(y);
+            float _width = LNRB_VALUE_TO_FLOAT(width);
+            float _height = LNRB_VALUE_TO_FLOAT(height);
+            LnResult errorCode = LnUISprite_SetSourceRectXYWH(selfObj->handle, _x, _y, _width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UISprite::setSourceRect - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUISprite_GetSourceRect(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UISprite* selfObj;
+    Data_Get_Struct(self, Wrap_UISprite, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnRect _outReturn;
+            LnResult errorCode = LnUISprite_GetSourceRect(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnRect_allocate(g_class_Rect);
+            *((LnRect*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UISprite::sourceRect - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnUISprite_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_UISprite* selfObj;
+    Data_Get_Struct(self, Wrap_UISprite, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnUISprite_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (1 <= argc && argc <= 1) {
+        VALUE texture;
+        rb_scan_args(argc, argv, "1", &texture);
+        if (LNRB_VALUE_IS_OBJECT(texture))
+        {
+            LnHandle _texture = LuminoRubyRuntimeManager::instance->getHandle(texture);
+            LnResult errorCode = LnUISprite_CreateWithTexture(_texture, &selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::UISprite::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnUISprite_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
@@ -6711,6 +7904,7 @@ static VALUE Wrap_LnEngineSettings_SetEngineLogFilePath(int argc, VALUE* argv, V
 struct Wrap_Engine
 {
     VALUE LnEngine_GetCamera_AccessorCache = Qnil;
+    VALUE LnEngine_GetLight_AccessorCache = Qnil;
     VALUE LnEngine_GetRenderView_AccessorCache = Qnil;
 
     Wrap_Engine()
@@ -6790,6 +7984,21 @@ static VALUE Wrap_LnEngine_GetCamera(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Engine::camera - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngine_GetLight(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnEngine_GetLight(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::light - wrong argument type.");
     return Qnil;
 }
 
@@ -7038,7 +8247,19 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_const(g_enum_TextureFormat, "R32U", INT2FIX(7)); 
 
     g_enum_DepthBufferFormat = rb_define_module_under(g_rootModule, "DepthBufferFormat");
-    rb_define_const(g_enum_DepthBufferFormat, "D24S8", INT2FIX(0));
+    rb_define_const(g_enum_DepthBufferFormat, "D24S8", INT2FIX(0)); 
+
+    g_enum_VAlignment = rb_define_module_under(g_rootModule, "VAlignment");
+    rb_define_const(g_enum_VAlignment, "TOP", INT2FIX(0)); 
+    rb_define_const(g_enum_VAlignment, "CENTER", INT2FIX(1)); 
+    rb_define_const(g_enum_VAlignment, "BOTTOM", INT2FIX(2)); 
+    rb_define_const(g_enum_VAlignment, "STRETCH", INT2FIX(3)); 
+
+    g_enum_HAlignment = rb_define_module_under(g_rootModule, "HAlignment");
+    rb_define_const(g_enum_HAlignment, "LEFT", INT2FIX(0)); 
+    rb_define_const(g_enum_HAlignment, "CENTER", INT2FIX(1)); 
+    rb_define_const(g_enum_HAlignment, "RIGHT", INT2FIX(2)); 
+    rb_define_const(g_enum_HAlignment, "STRETCH", INT2FIX(3));
 
     g_class_Vector3 = rb_define_class_under(g_rootModule, "Vector3", rb_cObject);
     rb_define_alloc_func(g_class_Vector3, LnVector3_allocate);
@@ -7336,6 +8557,63 @@ extern "C" void Init_Lumino_RubyExt()
     LnVisualObject_OnSerialize_SetOverrideCallback(Wrap_LnVisualObject_OnSerialize_OverrideCallback);
     LnVisualObject_OnUpdate_SetOverrideCallback(Wrap_LnVisualObject_OnUpdate_OverrideCallback);
 
+    g_class_Camera = rb_define_class_under(g_rootModule, "Camera", g_class_WorldObject);
+    rb_define_alloc_func(g_class_Camera, LnCamera_allocate);
+    LnCamera_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Camera, LnCamera_allocateForGetObject));
+    LnCamera_OnSerialize_SetOverrideCallback(Wrap_LnCamera_OnSerialize_OverrideCallback);
+    LnCamera_OnUpdate_SetOverrideCallback(Wrap_LnCamera_OnUpdate_OverrideCallback);
+
+    g_class_DirectionalLight = rb_define_class_under(g_rootModule, "DirectionalLight", g_class_WorldObject);
+    rb_define_alloc_func(g_class_DirectionalLight, LnDirectionalLight_allocate);
+    rb_define_method(g_class_DirectionalLight, "enabled=", LN_TO_RUBY_FUNC(Wrap_LnDirectionalLight_SetEnabled), -1);
+    rb_define_method(g_class_DirectionalLight, "enabled?", LN_TO_RUBY_FUNC(Wrap_LnDirectionalLight_IsEnabled), -1);
+    rb_define_method(g_class_DirectionalLight, "color=", LN_TO_RUBY_FUNC(Wrap_LnDirectionalLight_SetColor), -1);
+    rb_define_method(g_class_DirectionalLight, "color", LN_TO_RUBY_FUNC(Wrap_LnDirectionalLight_GetColor), -1);
+    rb_define_method(g_class_DirectionalLight, "intensity=", LN_TO_RUBY_FUNC(Wrap_LnDirectionalLight_SetIntensity), -1);
+    rb_define_method(g_class_DirectionalLight, "intensity", LN_TO_RUBY_FUNC(Wrap_LnDirectionalLight_GetIntensity), -1);
+    rb_define_private_method(g_class_DirectionalLight, "initialize", LN_TO_RUBY_FUNC(Wrap_LnDirectionalLight_Create), -1);
+    LnDirectionalLight_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_DirectionalLight, LnDirectionalLight_allocateForGetObject));
+    LnDirectionalLight_OnSerialize_SetOverrideCallback(Wrap_LnDirectionalLight_OnSerialize_OverrideCallback);
+    LnDirectionalLight_OnUpdate_SetOverrideCallback(Wrap_LnDirectionalLight_OnUpdate_OverrideCallback);
+
+    g_class_PointLight = rb_define_class_under(g_rootModule, "PointLight", g_class_WorldObject);
+    rb_define_alloc_func(g_class_PointLight, LnPointLight_allocate);
+    rb_define_method(g_class_PointLight, "enabled=", LN_TO_RUBY_FUNC(Wrap_LnPointLight_SetEnabled), -1);
+    rb_define_method(g_class_PointLight, "enabled?", LN_TO_RUBY_FUNC(Wrap_LnPointLight_IsEnabled), -1);
+    rb_define_method(g_class_PointLight, "color=", LN_TO_RUBY_FUNC(Wrap_LnPointLight_SetColor), -1);
+    rb_define_method(g_class_PointLight, "color", LN_TO_RUBY_FUNC(Wrap_LnPointLight_GetColor), -1);
+    rb_define_method(g_class_PointLight, "intensity=", LN_TO_RUBY_FUNC(Wrap_LnPointLight_SetIntensity), -1);
+    rb_define_method(g_class_PointLight, "intensity", LN_TO_RUBY_FUNC(Wrap_LnPointLight_GetIntensity), -1);
+    rb_define_method(g_class_PointLight, "range=", LN_TO_RUBY_FUNC(Wrap_LnPointLight_SetRange), -1);
+    rb_define_method(g_class_PointLight, "range", LN_TO_RUBY_FUNC(Wrap_LnPointLight_GetRange), -1);
+    rb_define_method(g_class_PointLight, "attenuation=", LN_TO_RUBY_FUNC(Wrap_LnPointLight_SetAttenuation), -1);
+    rb_define_method(g_class_PointLight, "attenuation", LN_TO_RUBY_FUNC(Wrap_LnPointLight_GetAttenuation), -1);
+    rb_define_private_method(g_class_PointLight, "initialize", LN_TO_RUBY_FUNC(Wrap_LnPointLight_Create), -1);
+    LnPointLight_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_PointLight, LnPointLight_allocateForGetObject));
+    LnPointLight_OnSerialize_SetOverrideCallback(Wrap_LnPointLight_OnSerialize_OverrideCallback);
+    LnPointLight_OnUpdate_SetOverrideCallback(Wrap_LnPointLight_OnUpdate_OverrideCallback);
+
+    g_class_SpotLight = rb_define_class_under(g_rootModule, "SpotLight", g_class_WorldObject);
+    rb_define_alloc_func(g_class_SpotLight, LnSpotLight_allocate);
+    rb_define_method(g_class_SpotLight, "enabled=", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_SetEnabled), -1);
+    rb_define_method(g_class_SpotLight, "enabled?", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_IsEnabled), -1);
+    rb_define_method(g_class_SpotLight, "color=", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_SetColor), -1);
+    rb_define_method(g_class_SpotLight, "color", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_GetColor), -1);
+    rb_define_method(g_class_SpotLight, "intensity=", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_SetIntensity), -1);
+    rb_define_method(g_class_SpotLight, "intensity", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_GetIntensity), -1);
+    rb_define_method(g_class_SpotLight, "range=", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_SetRange), -1);
+    rb_define_method(g_class_SpotLight, "range", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_GetRange), -1);
+    rb_define_method(g_class_SpotLight, "attenuation=", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_SetAttenuation), -1);
+    rb_define_method(g_class_SpotLight, "attenuation", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_GetAttenuation), -1);
+    rb_define_method(g_class_SpotLight, "angle=", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_SetAngle), -1);
+    rb_define_method(g_class_SpotLight, "angle", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_GetAngle), -1);
+    rb_define_method(g_class_SpotLight, "penumbra=", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_SetPenumbra), -1);
+    rb_define_method(g_class_SpotLight, "penumbra", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_GetPenumbra), -1);
+    rb_define_private_method(g_class_SpotLight, "initialize", LN_TO_RUBY_FUNC(Wrap_LnSpotLight_Create), -1);
+    LnSpotLight_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_SpotLight, LnSpotLight_allocateForGetObject));
+    LnSpotLight_OnSerialize_SetOverrideCallback(Wrap_LnSpotLight_OnSerialize_OverrideCallback);
+    LnSpotLight_OnUpdate_SetOverrideCallback(Wrap_LnSpotLight_OnUpdate_OverrideCallback);
+
     g_class_TestDelegate = rb_define_class_under(g_rootModule, "TestDelegate", g_class_Object);
     rb_define_alloc_func(g_class_TestDelegate, LnTestDelegate_allocate);
     rb_define_private_method(g_class_TestDelegate, "initialize", LN_TO_RUBY_FUNC(Wrap_LnTestDelegate_Create), -1);
@@ -7352,12 +8630,6 @@ extern "C" void Init_Lumino_RubyExt()
     LnSprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Sprite, LnSprite_allocateForGetObject));
     LnSprite_OnSerialize_SetOverrideCallback(Wrap_LnSprite_OnSerialize_OverrideCallback);
     LnSprite_OnUpdate_SetOverrideCallback(Wrap_LnSprite_OnUpdate_OverrideCallback);
-
-    g_class_Camera = rb_define_class_under(g_rootModule, "Camera", g_class_WorldObject);
-    rb_define_alloc_func(g_class_Camera, LnCamera_allocate);
-    LnCamera_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Camera, LnCamera_allocateForGetObject));
-    LnCamera_OnSerialize_SetOverrideCallback(Wrap_LnCamera_OnSerialize_OverrideCallback);
-    LnCamera_OnUpdate_SetOverrideCallback(Wrap_LnCamera_OnUpdate_OverrideCallback);
 
     g_class_CameraOrbitControlComponent = rb_define_class_under(g_rootModule, "CameraOrbitControlComponent", g_class_Component);
     rb_define_alloc_func(g_class_CameraOrbitControlComponent, LnCameraOrbitControlComponent_allocate);
@@ -7415,6 +8687,15 @@ extern "C" void Init_Lumino_RubyExt()
 
     g_class_UIElement = rb_define_class_under(g_rootModule, "UIElement", g_class_UILayoutElement);
     rb_define_alloc_func(g_class_UIElement, LnUIElement_allocate);
+    rb_define_method(g_class_UIElement, "margin=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetMargin), -1);
+    rb_define_method(g_class_UIElement, "margin", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetMargin), -1);
+    rb_define_method(g_class_UIElement, "padding=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPadding), -1);
+    rb_define_method(g_class_UIElement, "padding", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetPadding), -1);
+    rb_define_method(g_class_UIElement, "h_alignment=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetHAlignment), -1);
+    rb_define_method(g_class_UIElement, "h_alignment", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetHAlignment), -1);
+    rb_define_method(g_class_UIElement, "v_alignment=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetVAlignment), -1);
+    rb_define_method(g_class_UIElement, "v_alignment", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetVAlignment), -1);
+    rb_define_method(g_class_UIElement, "set_alignments", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetAlignments), -1);
     rb_define_method(g_class_UIElement, "position=", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPosition), -1);
     rb_define_method(g_class_UIElement, "set_position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_SetPosition), -1);
     rb_define_method(g_class_UIElement, "position", LN_TO_RUBY_FUNC(Wrap_LnUIElement_GetPosition), -1);
@@ -7455,6 +8736,16 @@ extern "C" void Init_Lumino_RubyExt()
     LnUITextBlock_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UITextBlock, LnUITextBlock_allocateForGetObject));
     LnUITextBlock_OnSerialize_SetOverrideCallback(Wrap_LnUITextBlock_OnSerialize_OverrideCallback);
 
+    g_class_UISprite = rb_define_class_under(g_rootModule, "UISprite", g_class_UIElement);
+    rb_define_alloc_func(g_class_UISprite, LnUISprite_allocate);
+    rb_define_method(g_class_UISprite, "texture=", LN_TO_RUBY_FUNC(Wrap_LnUISprite_SetTexture), -1);
+    rb_define_method(g_class_UISprite, "source_rect=", LN_TO_RUBY_FUNC(Wrap_LnUISprite_SetSourceRect), -1);
+    rb_define_method(g_class_UISprite, "set_source_rect", LN_TO_RUBY_FUNC(Wrap_LnUISprite_SetSourceRect), -1);
+    rb_define_method(g_class_UISprite, "source_rect", LN_TO_RUBY_FUNC(Wrap_LnUISprite_GetSourceRect), -1);
+    rb_define_private_method(g_class_UISprite, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUISprite_Create), -1);
+    LnUISprite_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UISprite, LnUISprite_allocateForGetObject));
+    LnUISprite_OnSerialize_SetOverrideCallback(Wrap_LnUISprite_OnSerialize_OverrideCallback);
+
     g_class_Input = rb_define_class_under(g_rootModule, "Input", rb_cObject);
     rb_define_singleton_method(g_class_Input, "pressed", LN_TO_RUBY_FUNC(Wrap_LnInput_Pressed), -1);
     rb_define_singleton_method(g_class_Input, "triggered", LN_TO_RUBY_FUNC(Wrap_LnInput_Triggered), -1);
@@ -7486,6 +8777,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
     rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LnEngine_Time), -1);
     rb_define_singleton_method(g_class_Engine, "camera", LN_TO_RUBY_FUNC(Wrap_LnEngine_GetCamera), -1);
+    rb_define_singleton_method(g_class_Engine, "light", LN_TO_RUBY_FUNC(Wrap_LnEngine_GetLight), -1);
     rb_define_singleton_method(g_class_Engine, "render_view", LN_TO_RUBY_FUNC(Wrap_LnEngine_GetRenderView), -1);
 
     g_class_Application = rb_define_class_under(g_rootModule, "Application", g_class_Object);

@@ -17,8 +17,8 @@
 class App : public Application
 {
     Ref<BoxMesh> box;
-    float posX = 0.0f;
-    float posY = 0.0f;
+    float posX = 0.0;
+    float posY = 0.0;
 
     void onInit() override
     {
@@ -45,11 +45,11 @@ class App : public Application
 
         // Z key, reset position
         if (Input::triggered(u"submit")) {
-            posX = 0;
-            posY = 0;
+            posX = 0.0;
+            posY = 0.0;
         }
 
-        box->setPosition(posX, posY, 0);
+        box->setPosition(posX, posY, 0.0);
     }
 };
 
@@ -57,6 +57,32 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
+require "lumino"
+
+class App < Application
+  def on_init
+    @box = BoxMesh.new
+    @pos_x = 0.0
+    @pos_y = 0.0
+  end
+  
+  def on_update
+    @pos_x -= 0.1 if Input.pressed("left")
+    @pos_x += 0.1 if Input.pressed("right")
+    @pos_y += 0.1 if Input.pressed("up")
+    @pos_y -= 0.1 if Input.pressed("down")
+
+    # Z key, reset position
+    if Input.triggered("submit")
+      @pos_x = 0.0
+      @pos_y = 0.0
+    end
+
+    @box.set_position(@pos_x, @pos_y, 0.0)
+  end
+end
+
+App.new.run
 ```
 ---
 
@@ -135,6 +161,25 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
+require "lumino"
+
+class App < Application
+  def on_update
+    Debug.print(0, "left") if Input.pressed("left")
+    Debug.print(0, "right") if Input.pressed("right")
+    Debug.print(0, "up") if Input.pressed("up")
+    Debug.print(0, "down") if Input.pressed("down")
+    Debug.print(0, "submit") if Input.pressed("submit")
+    Debug.print(0, "cancel") if Input.pressed("cancel")
+    Debug.print(0, "menu") if Input.pressed("menu")
+    Debug.print(0, "shift") if Input.pressed("shift")
+    Debug.print(0, "pageup") if Input.pressed("pageup")
+    Debug.print(0, "pagedown") if Input.pressed("pagedown")
+    Debug.print(0, "any") if Input.pressed("any")
+  end
+end
+
+App.new.run
 ```
 ---
 

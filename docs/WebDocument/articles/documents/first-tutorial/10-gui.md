@@ -18,8 +18,8 @@ class App : public Application
 {
     void onInit() override
     {
-        auto sprite = UISprite::load(u"picture1.jpg");
-        Engine::ui()->add(sprite);
+        auto texture = Texture2D::load(u"picture1.jpg");
+        auto sprite = UISprite::create(texture);
     }
 };
 
@@ -27,11 +27,13 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-    end
+  def on_init
+    texture = Texture2D.load("picture1.jpg")
+    sprite = UISprite.new(texture)
+  end
 end
 
 App.new.run
@@ -50,7 +52,7 @@ App.new.run
 
 しかし UISprite には特に座標を設定していませんが、センタリングされています。
 
-この原点の仕組みを理解するため、次は簡単なレイアウトについて説明します。
+この原点の仕組みを理解するため、次はレイアウトについて説明します。
 
 
 
@@ -76,10 +78,10 @@ class App : public Application
 {
     void onInit() override
     {
-        auto sprite = UISprite::load(u"picture1.jpg");
+        auto texture = Texture2D::load(u"picture1.jpg");
+        auto sprite = UISprite::create(texture);
         sprite->setAlignments(HAlignment::Left, VAlignment::Top);
         sprite->setPosition(100, 50);
-        Engine::ui()->add(sprite);
     }
 };
 
@@ -87,11 +89,15 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-    end
+  def on_init
+    texture = Texture2D.load("picture1.jpg")
+    sprite = UISprite.new(texture)
+    sprite.set_alignments(HAlignment::LEFT, VAlignment::TOP);
+    sprite.set_position(100, 50);
+  end
 end
 
 App.new.run
@@ -117,12 +123,9 @@ class App : public Application
     void onInit() override
     {
         auto button = UIButton::create(u"Button");
-
         button->connectOnClicked([]() {
             Debug::printf(u"Hello, UI!");
         });
-        
-        Engine::ui()->add(button);
     }
 };
 
@@ -130,11 +133,15 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
+  def on_init
+    button = UIButton.new("Button")
+    button.connect_on_clicked do
+      Debug.print("Hello, UI!")
     end
+  end
 end
 
 App.new.run

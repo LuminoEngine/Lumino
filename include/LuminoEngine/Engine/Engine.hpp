@@ -75,7 +75,7 @@ public:
     static Camera* camera();
 
 	/** デフォルトで作成されるメインの DirectionalLight です。 */
-	//LN_METHOD(Property)
+	LN_METHOD(Property)
 	static DirectionalLight* light();
 
 	/** デフォルトで作成されるメインの AmbientLight です。 */

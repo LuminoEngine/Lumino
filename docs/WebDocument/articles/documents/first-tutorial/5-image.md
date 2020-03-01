@@ -42,6 +42,7 @@ end
 
 App.new.run
 ```
+
 ---
 
 ![](img/image-1.png)

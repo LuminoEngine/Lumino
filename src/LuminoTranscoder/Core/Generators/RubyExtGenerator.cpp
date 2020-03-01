@@ -1153,7 +1153,7 @@ void RubyYARDOCSourceGenerator::generate()
 
 
 
-	ln::String fileName = ln::String::format("GemProject/{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
+	ln::String fileName = ln::String::format("APIReference/{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
 	ln::String src = code.toString();
 	ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
 }

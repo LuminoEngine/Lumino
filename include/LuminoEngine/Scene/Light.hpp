@@ -117,6 +117,7 @@ private:
 };
 
 /** ディレクショナルライトのオブジェクトです。 */
+LN_CLASS()
 class DirectionalLight
 	: public WorldObject
 {
@@ -132,21 +133,27 @@ public:
 public:
 
 	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	LN_METHOD(Property)
 	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
 
 	/** ライトの有効状態を取得します。 */
+	LN_METHOD(Property)
 	bool isEnabled() const { return m_component->isEnabled(); }
 
 	/** ライトカラーを設定します。(default: White) */
+	LN_METHOD(Property)
 	void setColor(const Color& color) { m_component->setColor(color); }
 
 	/** ライトカラーを取得します。 */
+	LN_METHOD(Property)
 	const Color& getColor() const { return m_component->getColor(); }
 
 	/** ライトの明るさを設定します。(default: 0.5) */
+	LN_METHOD(Property)
 	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
 
 	/** ライトの明るさを取得します。 */
+	LN_METHOD(Property)
 	float getIntensity() const { return m_component->getIntensity(); }
 
 	/** コンポーネントを取得します。 */
@@ -157,9 +164,11 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~DirectionalLight();
 
 	/** 既定の設定でディレクショナルライトを作成します。 */
+	LN_METHOD()
 	void init();
 
 	/** 色を指定してディレクショナルライトを作成します。 */
+	LN_METHOD(OverloadPostfix = "WithColor")
 	void init(const Color& color);
 
 private:
@@ -167,6 +176,7 @@ private:
 };
 
 /** ポイントライトのオブジェクトです。 */
+LN_CLASS()
 class PointLight
 	: public WorldObject
 {
@@ -182,33 +192,43 @@ public:
 public:
 
 	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	LN_METHOD(Property)
 	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
 
 	/** ライトの有効状態を取得します。 */
+	LN_METHOD(Property)
 	bool isEnabled() const { return m_component->isEnabled(); }
 
 	/** ライトカラーを設定します。(default: White) */
+	LN_METHOD(Property)
 	void setColor(const Color& color) { m_component->setColor(color); }
 
 	/** ライトカラーを取得します。 */
+	LN_METHOD(Property)
 	const Color& getColor() const { return m_component->getColor(); }
 
 	/** ライトの明るさを設定します。(default: 1.0) */
+	LN_METHOD(Property)
 	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
 
 	/** ライトの明るさを取得します。 */
+	LN_METHOD(Property)
 	float getIntensity() const { return m_component->getIntensity(); }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
+	LN_METHOD(Property)
 	void setRange(float range) { m_component->setRange(range); }
 
 	/** ライトの影響範囲を取得します。 */
+	LN_METHOD(Property)
 	float getRange() const { return m_component->getRange(); }
 
 	/** ライトの減衰を設定します。(default: 1.0) */
+	LN_METHOD(Property)
 	void setAttenuation(float attenuation) { m_component->setAttenuation(attenuation); }
 
 	/** ライトの減衰を取得します。 */
+	LN_METHOD(Property)
 	float getAttenuation() const { return m_component->getAttenuation(); }
 
 	/** コンポーネントを取得します。 */
@@ -219,9 +239,11 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~PointLight();
 
 	/** 既定の設定でポイントライトを作成します。 */
+	LN_METHOD()
 	void init();
 
 	/** 色と範囲を指定してポイントライトを作成します。 */
+	LN_METHOD(OverloadPostfix = "WithColorAndRange")
 	void init(const Color& color, float range);
 
 private:
@@ -229,6 +251,7 @@ private:
 };
 
 /** スポットライトのオブジェクトです。 */
+LN_CLASS()
 class SpotLight
 	: public WorldObject
 {
@@ -244,45 +267,59 @@ public:
 public:
 
 	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	LN_METHOD(Property)
 	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
 
 	/** ライトの有効状態を取得します。 */
+	LN_METHOD(Property)
 	bool isEnabled() const { return m_component->isEnabled(); }
 
 	/** ライトカラーを設定します。(default: White) */
+	LN_METHOD(Property)
 	void setColor(const Color& color) { m_component->setColor(color); }
 
 	/** ライトカラーを取得します。 */
+	LN_METHOD(Property)
 	const Color& getColor() const { return m_component->getColor(); }
 
 	/** ライトの明るさを設定します。(default: 1.0) */
+	LN_METHOD(Property)
 	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
 
 	/** ライトの明るさを取得します。 */
+	LN_METHOD(Property)
 	float getIntensity() const { return m_component->getIntensity(); }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
+	LN_METHOD(Property)
 	void setRange(float range) { m_component->setRange(range); }
 
 	/** ライトの影響範囲を取得します。 */
+	LN_METHOD(Property)
 	float getRange() const { return m_component->getRange(); }
 
 	/** ライトの減衰を設定します。(default: 1.0) */
+	LN_METHOD(Property)
 	void setAttenuation(float attenuation) { m_component->setAttenuation(attenuation); }
 
 	/** ライトの減衰を取得します。 */
+	LN_METHOD(Property)
 	float getAttenuation() const { return m_component->getAttenuation(); }
 
 	/** スポットライトのコーン角度を設定します。(ラジアン単位、default: PI / 3) */
+	LN_METHOD(Property)
 	void setAngle(float angle) { m_component->setAngle(angle); }
 
 	/** スポットライトのコーン角度を取得します。(ラジアン単位) */
+	LN_METHOD(Property)
 	float getAngle() const { return m_component->getAngle(); }
 
 	/** スポットライトのコーン角度に対する減衰率を設定します。(0..1, default: 0) */
+	LN_METHOD(Property)
 	void setPenumbra(float penumbra) { m_component->setPenumbra(penumbra); }
 
 	/** スポットライトのコーン角度に対する減衰率を設定します。 */
+	LN_METHOD(Property)
 	float getPenumbra() const { return m_component->getPenumbra(); }
 
 	/** コンポーネントを取得します。 */
@@ -293,9 +330,11 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~SpotLight();
 
 	/** 既定の設定でスポットライトを作成します。 */
+	LN_METHOD()
 	void init();
 
 	/** 色と範囲を指定してスポットライトを作成します。 */
+	LN_METHOD(OverloadPostfix = "WithColorAndRange")
 	void init(const Color& color, float range, float angle);
 
 private:

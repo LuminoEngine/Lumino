@@ -1,5 +1,0 @@
-Lumino Ruby
-==========
-
-test
-

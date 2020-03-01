@@ -187,7 +187,10 @@ ln::String Generator::makeFlatCParamQualTypeName(const MethodSymbol* methodInfo,
 	}
 	else if (typeInfo->kind() == TypeKind::Enum)
 	{
-		return makeFlatTypeName2(typeInfo);
+		if (paramInfo->isReturn())
+			return ln::String::format(u"{0}*", makeFlatTypeName2(typeInfo));
+		else
+			return makeFlatTypeName2(typeInfo);
 	}
 	else if (typeInfo->isString())
 	{

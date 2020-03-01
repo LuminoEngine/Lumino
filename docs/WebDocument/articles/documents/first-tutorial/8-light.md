@@ -37,22 +37,24 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-        box = BoxMesh.new
+  def on_init
+    box = BoxMesh.new
 
-        camera = Engine.camera
-        camera.set_position(5, 5, -5)
-        camera.lookAt(0, 0, 0)
+    camera = Engine.camera
+    camera.set_position(5, 5, -5)
+    camera.look_at(0, 0, 0)
 
-        light = DirectionalLight.new;
-    end
+    light = Engine::light
+    light.look_at(0, -1, 0);
+  end
 end
 
 App.new.run
 ```
+
 ---
 
 ![](img/graphics-basic-7.png)

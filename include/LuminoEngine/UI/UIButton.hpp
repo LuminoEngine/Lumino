@@ -52,6 +52,8 @@ public:
 	LN_METHOD()
 	void init();
 
+	/** 表示文字列を指定して UIButton を作成します。 */
+	LN_METHOD(OverloadPostfix = "WithText")
     void init(const StringRef& text);
 
     /** Clicked イベントの通知を受け取るコールバックを登録します。*/

@@ -12,15 +12,12 @@ class App : public Application
 
 	virtual void onInit() override
 	{
-		Engine::renderView()->setGuideGridEnabled(true);
-		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-
-		auto text = UITextBlock::create(u"Hello, Lumino!");
+		auto texture = Texture2D::load(u"picture1.jpg");
+		auto sprite = UISprite::create(texture);
 	}
 
 	void onUpdate() override
 	{
-		Debug::print(String::format(u"Time: {0}", Engine::time()));
 	}
 
 	//virtual void onUpdate() override

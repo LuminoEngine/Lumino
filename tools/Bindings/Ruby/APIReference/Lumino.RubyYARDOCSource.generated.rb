@@ -54,6 +54,30 @@ module Lumino::DepthBufferFormat
     D24S8 = 0
 end
 
+# VAlignment
+module Lumino::VAlignment
+    # 子要素を、親のレイアウト スロットの上端に揃えて配置します。
+    TOP = 0
+    # 子要素を、親のレイアウト スロットの中央に揃えて配置します。
+    CENTER = 1
+    # 子要素を、親のレイアウト スロットの下端に揃えて配置します。
+    BOTTOM = 2
+    # 子要素を、親のレイアウト スロット全体に引き伸ばします。
+    STRETCH = 3
+end
+
+# HAlignment
+module Lumino::HAlignment
+    # 子要素を、親のレイアウト スロットの左側に揃えて配置します。
+    LEFT = 0
+    # 子要素を、親のレイアウト スロットの中央に揃えて配置します。
+    CENTER = 1
+    # 子要素を、親のレイアウト スロットの右側に揃えて配置します。
+    RIGHT = 2
+    # 子要素を、親のレイアウト スロット全体に引き伸ばします。
+    STRETCH = 3
+end
+
 # 3次元のベクトルを定義します。
 # 
 class Lumino::Vector3
@@ -1497,6 +1521,290 @@ class Lumino::VisualObject
 
 end
 
+# カメラのクラスです。カメラは 3D シーンを描画する際の視点となります。
+# 
+class Lumino::Camera
+end
+
+# ディレクショナルライトのオブジェクトです。
+# 
+class Lumino::DirectionalLight
+    # ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
+    # @param [Boolean] enabled 
+    # 
+    def enabled=(*args)
+    end
+
+
+
+    # ライトの有効状態を取得します。
+    # @return [Boolean] 
+    def enabled?(*args)
+    end
+
+
+
+    # ライトカラーを設定します。(default: White)
+    # @param [Lumino::Color] color 
+    # 
+    def color=(*args)
+    end
+
+
+
+    # ライトカラーを取得します。
+    # @return [Lumino::Color] 
+    def color(*args)
+    end
+
+
+
+    # ライトの明るさを設定します。(default: 0.5)
+    # @param [Float] intensity 
+    # 
+    def intensity=(*args)
+    end
+
+
+
+    # ライトの明るさを取得します。
+    # @return [Float] 
+    def intensity(*args)
+    end
+
+
+
+    # 既定の設定でディレクショナルライトを作成します。
+    # @overload initialize()
+    #   既定の設定でディレクショナルライトを作成します。
+    # @overload initialize(color)
+    #   色を指定してディレクショナルライトを作成します。
+    #   @param [Lumino::Color] color 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# ポイントライトのオブジェクトです。
+# 
+class Lumino::PointLight
+    # ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
+    # @param [Boolean] enabled 
+    # 
+    def enabled=(*args)
+    end
+
+
+
+    # ライトの有効状態を取得します。
+    # @return [Boolean] 
+    def enabled?(*args)
+    end
+
+
+
+    # ライトカラーを設定します。(default: White)
+    # @param [Lumino::Color] color 
+    # 
+    def color=(*args)
+    end
+
+
+
+    # ライトカラーを取得します。
+    # @return [Lumino::Color] 
+    def color(*args)
+    end
+
+
+
+    # ライトの明るさを設定します。(default: 1.0)
+    # @param [Float] intensity 
+    # 
+    def intensity=(*args)
+    end
+
+
+
+    # ライトの明るさを取得します。
+    # @return [Float] 
+    def intensity(*args)
+    end
+
+
+
+    # ライトの影響範囲を設定します。(default: 10.0)
+    # @param [Float] range 
+    # 
+    def range=(*args)
+    end
+
+
+
+    # ライトの影響範囲を取得します。
+    # @return [Float] 
+    def range(*args)
+    end
+
+
+
+    # ライトの減衰を設定します。(default: 1.0)
+    # @param [Float] attenuation 
+    # 
+    def attenuation=(*args)
+    end
+
+
+
+    # ライトの減衰を取得します。
+    # @return [Float] 
+    def attenuation(*args)
+    end
+
+
+
+    # 既定の設定でポイントライトを作成します。
+    # @overload initialize()
+    #   既定の設定でポイントライトを作成します。
+    # @overload initialize(color, range)
+    #   色と範囲を指定してポイントライトを作成します。
+    #   @param [Lumino::Color] color 
+    #   @param [Float] range 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# スポットライトのオブジェクトです。
+# 
+class Lumino::SpotLight
+    # ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true)
+    # @param [Boolean] enabled 
+    # 
+    def enabled=(*args)
+    end
+
+
+
+    # ライトの有効状態を取得します。
+    # @return [Boolean] 
+    def enabled?(*args)
+    end
+
+
+
+    # ライトカラーを設定します。(default: White)
+    # @param [Lumino::Color] color 
+    # 
+    def color=(*args)
+    end
+
+
+
+    # ライトカラーを取得します。
+    # @return [Lumino::Color] 
+    def color(*args)
+    end
+
+
+
+    # ライトの明るさを設定します。(default: 1.0)
+    # @param [Float] intensity 
+    # 
+    def intensity=(*args)
+    end
+
+
+
+    # ライトの明るさを取得します。
+    # @return [Float] 
+    def intensity(*args)
+    end
+
+
+
+    # ライトの影響範囲を設定します。(default: 10.0)
+    # @param [Float] range 
+    # 
+    def range=(*args)
+    end
+
+
+
+    # ライトの影響範囲を取得します。
+    # @return [Float] 
+    def range(*args)
+    end
+
+
+
+    # ライトの減衰を設定します。(default: 1.0)
+    # @param [Float] attenuation 
+    # 
+    def attenuation=(*args)
+    end
+
+
+
+    # ライトの減衰を取得します。
+    # @return [Float] 
+    def attenuation(*args)
+    end
+
+
+
+    # スポットライトのコーン角度を設定します。(ラジアン単位、default: PI / 3)
+    # @param [Float] angle 
+    # 
+    def angle=(*args)
+    end
+
+
+
+    # スポットライトのコーン角度を取得します。(ラジアン単位)
+    # @return [Float] 
+    def angle(*args)
+    end
+
+
+
+    # スポットライトのコーン角度に対する減衰率を設定します。(0..1, default: 0)
+    # @param [Float] penumbra 
+    # 
+    def penumbra=(*args)
+    end
+
+
+
+    # スポットライトのコーン角度に対する減衰率を設定します。
+    # @return [Float] 
+    def penumbra(*args)
+    end
+
+
+
+    # 既定の設定でスポットライトを作成します。
+    # @overload initialize()
+    #   既定の設定でスポットライトを作成します。
+    # @overload initialize(color, range, angle)
+    #   色と範囲を指定してスポットライトを作成します。
+    #   @param [Lumino::Color] color 
+    #   @param [Float] range 
+    #   @param [Float] angle 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
 # 
 # 
 class Lumino::TestDelegate
@@ -1571,11 +1879,6 @@ class Lumino::Sprite
 
 
 
-end
-
-# カメラのクラスです。カメラは 3D シーンを描画する際の視点となります。
-# 
-class Lumino::Camera
 end
 
 # カメラをマウスで操作するための Component です。
@@ -1699,6 +2002,75 @@ end
 # 
 # 
 class Lumino::UIElement
+    # 要素の margin 値 (外側の余白) を設定します。
+    # @param [Lumino::Thickness] margin 
+    # 
+    def margin=(*args)
+    end
+
+
+
+    # 要素の margin 値 (外側の余白) を取得します。
+    # @return [Lumino::Thickness] 
+    def margin(*args)
+    end
+
+
+
+    # 要素の padding 値 (内側の余白) を設定します。この余白は論理ツリーの子要素のレイアウトに影響します。
+    # @param [Lumino::Thickness] padding 
+    # 
+    def padding=(*args)
+    end
+
+
+
+    # 要素の padding 値 (内側の余白) を取得します。この余白は論理ツリーの子要素のレイアウトに影響します。
+    # @return [Lumino::Thickness] 
+    def padding(*args)
+    end
+
+
+
+    # 要素の横方向の配置方法を設定します。
+    # @param [Lumino::HAlignment] value 
+    # 
+    def h_alignment=(*args)
+    end
+
+
+
+    # 要素の横方向の配置方法を取得します。
+    # @return [Lumino::HAlignment] 
+    def h_alignment(*args)
+    end
+
+
+
+    # 要素の縦方向の配置方法を設定します。
+    # @param [Lumino::VAlignment] value 
+    # 
+    def v_alignment=(*args)
+    end
+
+
+
+    # 要素の縦方向の配置方法を取得します。
+    # @return [Lumino::VAlignment] 
+    def v_alignment(*args)
+    end
+
+
+
+    # 要素の配置方法を設定します。
+    # @param [Lumino::HAlignment] halign 
+    # @param [Lumino::VAlignment] valign 
+    # 
+    def set_alignments(*args)
+    end
+
+
+
     # このオブジェクトの位置を設定します。
     # @overload position=(pos)
     #   このオブジェクトの位置を設定します。
@@ -1828,6 +2200,12 @@ end
 # 
 class Lumino::UIButton
     # init.
+    # @overload initialize()
+    #   init.
+    # @overload initialize(text)
+    #   表示文字列を指定して UIButton を作成します。
+    #   @param [] text 
+    #   
     def initialize(*args)
     end
 
@@ -1853,6 +2231,55 @@ class Lumino::UITextBlock
     # @overload initialize(text)
     #   表示文字列を指定して、UITextBlock を作成します。
     #   @param [] text 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
+# UI 要素として 2D 空間上に表示されるスプライトオブジェクトを表します。
+# 
+class Lumino::UISprite
+    # スプライトが表示するテクスチャを設定します。
+    # @param [Lumino::Texture] texture 
+    # 
+    def texture=(*args)
+    end
+
+
+
+    # テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。
+    # @overload source_rect=(rect)
+    #   テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。
+    #   @param [Lumino::Rect] rect 
+    #   
+    # @overload source_rect=(x, y, width, height)
+    #   
+    #   @param [Float] x 
+    #   @param [Float] y 
+    #   @param [Float] width 
+    #   @param [Float] height 
+    #   
+    def source_rect=(*args)
+    end
+
+
+
+    # テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位)
+    # @return [Lumino::Rect] 
+    def source_rect(*args)
+    end
+
+
+
+    # UISprite を作成します。
+    # @overload initialize()
+    #   UISprite を作成します。
+    # @overload initialize(texture)
+    #   テクスチャを指定して UISprite を作成します。
+    #   @param [Lumino::Texture] texture 
     #   
     def initialize(*args)
     end
@@ -2069,6 +2496,13 @@ class Lumino::Engine
     # デフォルトで作成されるメインの Camera です。
     # @return [Lumino::Camera] 
     def camera(*args)
+    end
+
+
+
+    # デフォルトで作成されるメインの DirectionalLight です。
+    # @return [Lumino::DirectionalLight] 
+    def light(*args)
     end
 
 
