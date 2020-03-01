@@ -69,6 +69,8 @@ VALUE g_class_TestDelegate;
 VALUE g_class_Sprite;
 VALUE g_class_Camera;
 VALUE g_class_CameraOrbitControlComponent;
+VALUE g_class_Raycaster;
+VALUE g_class_RaycastResult;
 VALUE g_class_WorldRenderView;
 VALUE g_class_BoxMesh;
 VALUE g_class_UIEventArgs;
@@ -4463,6 +4465,25 @@ static VALUE Wrap_LnWorldObject_LookAt(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
+static VALUE Wrap_LnWorldObject_AddComponent(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_WorldObject* selfObj;
+    Data_Get_Struct(self, Wrap_WorldObject, selfObj);
+    if (1 <= argc && argc <= 1) {
+        VALUE component;
+        rb_scan_args(argc, argv, "1", &component);
+        if (LNRB_VALUE_IS_OBJECT(component))
+        {
+            LnHandle _component = LuminoRubyRuntimeManager::instance->getHandle(component);
+            LnResult errorCode = LnWorldObject_AddComponent(selfObj->handle, _component);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::WorldObject::addComponent - wrong argument type.");
+    return Qnil;
+}
+
 static VALUE Wrap_LnWorldObject_GetComponents(int argc, VALUE* argv, VALUE self)
 {
     Wrap_WorldObject* selfObj;
@@ -5030,6 +5051,179 @@ static VALUE Wrap_LnCameraOrbitControlComponent_Create(int argc, VALUE* argv, VA
 }
 
 LnResult Wrap_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::Raycaster
+
+struct Wrap_Raycaster
+    : public Wrap_Object
+{
+
+    Wrap_Raycaster()
+    {}
+};
+
+static void LnRaycaster_delete(Wrap_Raycaster* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnRaycaster_mark(Wrap_Raycaster* obj)
+{
+	
+
+}
+
+static VALUE LnRaycaster_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Raycaster* internalObj;
+
+    internalObj = new Wrap_Raycaster();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnRaycaster_allocate");
+    obj = Data_Wrap_Struct(klass, LnRaycaster_mark, LnRaycaster_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnRaycaster_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Raycaster* internalObj;
+
+    internalObj = new Wrap_Raycaster();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnRaycaster_allocate");
+    obj = Data_Wrap_Struct(klass, LnRaycaster_mark, LnRaycaster_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnRaycaster_FromScreen(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE point;
+        rb_scan_args(argc, argv, "1", &point);
+        if (LNRB_VALUE_IS_OBJECT(point))
+        {
+            LnPoint* tmp__point; Data_Get_Struct(point, LnPoint, tmp__point);LnPoint& _point = *tmp__point;
+            LnHandle _outReturn;
+            LnResult errorCode = LnRaycaster_FromScreen(&_point, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Raycaster::fromScreen - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnRaycaster_IntersectPlane(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Raycaster* selfObj;
+    Data_Get_Struct(self, Wrap_Raycaster, selfObj);
+    if (3 <= argc && argc <= 3) {
+        VALUE normalX;
+        VALUE normalY;
+        VALUE normalZ;
+        rb_scan_args(argc, argv, "3", &normalX, &normalY, &normalZ);
+        if (LNRB_VALUE_IS_FLOAT(normalX) && LNRB_VALUE_IS_FLOAT(normalY) && LNRB_VALUE_IS_FLOAT(normalZ))
+        {
+            float _normalX = LNRB_VALUE_TO_FLOAT(normalX);
+            float _normalY = LNRB_VALUE_TO_FLOAT(normalY);
+            float _normalZ = LNRB_VALUE_TO_FLOAT(normalZ);
+            LnHandle _outReturn;
+            LnResult errorCode = LnRaycaster_IntersectPlane(selfObj->handle, _normalX, _normalY, _normalZ, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Raycaster::intersectPlane - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnRaycaster_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::RaycastResult
+
+struct Wrap_RaycastResult
+    : public Wrap_Object
+{
+
+    Wrap_RaycastResult()
+    {}
+};
+
+static void LnRaycastResult_delete(Wrap_RaycastResult* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnRaycastResult_mark(Wrap_RaycastResult* obj)
+{
+	
+
+}
+
+static VALUE LnRaycastResult_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_RaycastResult* internalObj;
+
+    internalObj = new Wrap_RaycastResult();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnRaycastResult_allocate");
+    obj = Data_Wrap_Struct(klass, LnRaycastResult_mark, LnRaycastResult_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnRaycastResult_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_RaycastResult* internalObj;
+
+    internalObj = new Wrap_RaycastResult();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnRaycastResult_allocate");
+    obj = Data_Wrap_Struct(klass, LnRaycastResult_mark, LnRaycastResult_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnRaycastResult_GetPoint(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_RaycastResult* selfObj;
+    Data_Get_Struct(self, Wrap_RaycastResult, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnVector3 _outReturn;
+            LnResult errorCode = LnRaycastResult_GetPoint(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            VALUE retObj = LnVector3_allocate(g_class_Vector3);
+            *((LnVector3*)DATA_PTR(retObj)) = _outReturn;
+            return retObj;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::RaycastResult::point - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnRaycastResult_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
 {
     VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
     VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
@@ -7116,6 +7310,7 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_WorldObject, "set_center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_SetCenterPoint), -1);
     rb_define_method(g_class_WorldObject, "center_point", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetCenterPoint), -1);
     rb_define_method(g_class_WorldObject, "look_at", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_LookAt), -1);
+    rb_define_method(g_class_WorldObject, "add_component", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_AddComponent), -1);
     rb_define_method(g_class_WorldObject, "components", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_GetComponents), -1);
     rb_define_method(g_class_WorldObject, "on_update", LN_TO_RUBY_FUNC(Wrap_LnWorldObject_OnUpdate), -1);
     LnWorldObject_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_WorldObject, LnWorldObject_allocateForGetObject));
@@ -7157,6 +7352,19 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_private_method(g_class_CameraOrbitControlComponent, "initialize", LN_TO_RUBY_FUNC(Wrap_LnCameraOrbitControlComponent_Create), -1);
     LnCameraOrbitControlComponent_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_CameraOrbitControlComponent, LnCameraOrbitControlComponent_allocateForGetObject));
     LnCameraOrbitControlComponent_OnSerialize_SetOverrideCallback(Wrap_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback);
+
+    g_class_Raycaster = rb_define_class_under(g_rootModule, "Raycaster", g_class_Object);
+    rb_define_alloc_func(g_class_Raycaster, LnRaycaster_allocate);
+    rb_define_singleton_method(g_class_Raycaster, "from_screen", LN_TO_RUBY_FUNC(Wrap_LnRaycaster_FromScreen), -1);
+    rb_define_method(g_class_Raycaster, "intersect_plane", LN_TO_RUBY_FUNC(Wrap_LnRaycaster_IntersectPlane), -1);
+    LnRaycaster_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Raycaster, LnRaycaster_allocateForGetObject));
+    LnRaycaster_OnSerialize_SetOverrideCallback(Wrap_LnRaycaster_OnSerialize_OverrideCallback);
+
+    g_class_RaycastResult = rb_define_class_under(g_rootModule, "RaycastResult", g_class_Object);
+    rb_define_alloc_func(g_class_RaycastResult, LnRaycastResult_allocate);
+    rb_define_method(g_class_RaycastResult, "point", LN_TO_RUBY_FUNC(Wrap_LnRaycastResult_GetPoint), -1);
+    LnRaycastResult_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_RaycastResult, LnRaycastResult_allocateForGetObject));
+    LnRaycastResult_OnSerialize_SetOverrideCallback(Wrap_LnRaycastResult_OnSerialize_OverrideCallback);
 
     g_class_WorldRenderView = rb_define_class_under(g_rootModule, "WorldRenderView", g_class_RenderView);
     rb_define_alloc_func(g_class_WorldRenderView, LnWorldRenderView_allocate);

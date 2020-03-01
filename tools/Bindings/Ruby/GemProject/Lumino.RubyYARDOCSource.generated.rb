@@ -1452,6 +1452,14 @@ class Lumino::WorldObject
 
 
 
+    # Component を追加します。
+    # @param [Lumino::Component] component 
+    # 
+    def add_component(*args)
+    end
+
+
+
     # 
     # @return [Lumino::ComponentList] 
     def components(*args)
@@ -1569,6 +1577,43 @@ end
 class Lumino::CameraOrbitControlComponent
     # CameraOrbitControlComponent を作成します。
     def initialize(*args)
+    end
+
+
+
+end
+
+# レイキャスティングを支援するためのクラスです。
+# 
+class Lumino::Raycaster
+    # メインのカメラを使用して、指定したスクリーン座標から正面に向かうレイを定義した Raycaster を取得します。
+    # @param [Lumino::Point] point 
+    # 
+    # @return [Lumino::Raycaster] 
+    def from_screen(*args)
+    end
+
+
+
+    # 指定した向きの平面との交差判定を行います。
+    # @param [Float] normalX 
+    # @param [Float] normalY 
+    # @param [Float] normalZ 
+    # 
+    # @return [Lumino::RaycastResult] 
+    def intersect_plane(*args)
+    end
+
+
+
+end
+
+# レイキャスティングの結果を表すクラスです。
+# 
+class Lumino::RaycastResult
+    # ワールド座標上の交差点
+    # @return [Lumino::Vector3] 
+    def point(*args)
     end
 
 

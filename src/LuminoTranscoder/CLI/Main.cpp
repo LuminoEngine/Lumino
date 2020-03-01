@@ -54,6 +54,7 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Scene/Sprite.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Camera.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/CameraOrbitControlComponent.hpp",
+			TEST_ROOT "include/LuminoEngine/Scene/Raycaster.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/WorldRenderView.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Shapes/MeshPrimitives.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIEvents.hpp",

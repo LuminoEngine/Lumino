@@ -1120,6 +1120,12 @@ LN_FLAT_API LnResult LnWorldObject_LookAt(LnHandle worldobject, const LnVector3*
 LN_FLAT_API LnResult LnWorldObject_LookAtXYZ(LnHandle worldobject, float x, float y, float z);
 
 /**
+    @brief Component を追加します。
+    @param[in] worldobject : instance
+*/
+LN_FLAT_API LnResult LnWorldObject_AddComponent(LnHandle worldobject, LnHandle component);
+
+/**
     @brief 
     @param[in] worldobject : instance
     @param[out] outReturn : instance.
@@ -1251,6 +1257,46 @@ LN_FLAT_API LnResult LnCameraOrbitControlComponent_OnSerialize_CallOverrideBase(
 
 extern LN_FLAT_API int LnCameraOrbitControlComponent_GetTypeInfoId();
 LN_FLAT_API void LnCameraOrbitControlComponent_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::Raycaster
+
+/**
+    @brief メインのカメラを使用して、指定したスクリーン座標から正面に向かうレイを定義した Raycaster を取得します。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnRaycaster_FromScreen(const LnPoint* point, LnHandle* outReturn);
+
+/**
+    @brief 指定した向きの平面との交差判定を行います。
+    @param[in] raycaster : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnRaycaster_IntersectPlane(LnHandle raycaster, float normalX, float normalY, float normalZ, LnHandle* outReturn);
+
+typedef LnResult(*LnRaycaster_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnRaycaster_OnSerialize_SetOverrideCallback(LnRaycaster_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnRaycaster_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnRaycaster_GetTypeInfoId();
+LN_FLAT_API void LnRaycaster_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::RaycastResult
+
+/**
+    @brief ワールド座標上の交差点
+    @param[in] raycastresult : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnRaycastResult_GetPoint(LnHandle raycastresult, LnVector3* outReturn);
+
+typedef LnResult(*LnRaycastResult_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnRaycastResult_OnSerialize_SetOverrideCallback(LnRaycastResult_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnRaycastResult_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+
+extern LN_FLAT_API int LnRaycastResult_GetTypeInfoId();
+LN_FLAT_API void LnRaycastResult_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::WorldRenderView
