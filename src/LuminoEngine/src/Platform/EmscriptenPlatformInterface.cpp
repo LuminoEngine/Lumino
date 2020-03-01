@@ -25,6 +25,7 @@ int main(int argc, char** argv)
     //ln::detail::EngineDomain::engineManager()->settings2().assetArchives.add({ u"Assets.lca", ln::StringRef() });
 
     ln::detail::EngineSettings& settings = ln::detail::EngineManager::s_settings;
+    settings.standaloneFpsControl = false;
     settings.assetArchives.add({ u"Assets.lca", ln::StringRef() });
 
     ln::detail::ApplicationHelper::init(g_app);

@@ -10,19 +10,24 @@ struct ColorI;
 /**
  * 各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
  */
+LN_STRUCT()
 struct Color
 {
 public:
     /** 赤成分 (0.0～1.0) */
+    LN_FIELD()
     float r;
 
     /** 緑成分 (0.0～1.0) */
+    LN_FIELD()
     float g;
 
     /** 青成分 (0.0～1.0) */
+    LN_FIELD()
     float b;
 
     /** アルファ成分 (0.0～1.0) */
+    LN_FIELD()
     float a;
 
 public:
@@ -173,6 +178,7 @@ public:
 
 public:
     /** すべての要素を 0.0 で初期化します。 */
+    LN_METHOD(OverloadPostfix = "Zeros")
     constexpr Color() noexcept
         : r(0.0f)
         , g(0.0f)
@@ -182,6 +188,7 @@ public:
     }
 
     /** 各要素を指定して初期化します。 */
+    LN_METHOD()
     constexpr Color(float r_, float g_, float b_, float a_ = 1.0f) noexcept
         : r(r_)
         , g(g_)

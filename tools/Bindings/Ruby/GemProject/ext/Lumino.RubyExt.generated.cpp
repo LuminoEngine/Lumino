@@ -53,9 +53,6 @@ VALUE g_class_ZVTestEventArgs1;
 VALUE g_class_Serializer;
 VALUE g_class_AssetModel;
 VALUE g_class_Assets;
-VALUE g_class_EngineSettings;
-VALUE g_class_Engine;
-VALUE g_class_Application;
 VALUE g_class_GraphicsResource;
 VALUE g_class_Texture;
 VALUE g_class_Texture2D;
@@ -77,6 +74,10 @@ VALUE g_class_UIControl;
 VALUE g_class_UIButtonBase;
 VALUE g_class_UIButton;
 VALUE g_class_UITextBlock;
+VALUE g_class_EngineSettings;
+VALUE g_class_Engine;
+VALUE g_class_Application;
+VALUE g_class_Debug;
 
 
 //==============================================================================
@@ -873,6 +874,178 @@ static VALUE Wrap_LnMatrix_Set(int argc, VALUE* argv, VALUE self)
         }
     }
     rb_raise(rb_eArgError, "ln::Matrix::Matrix - wrong argument type.");
+    return Qnil;
+}
+
+//==============================================================================
+// ln::Color
+
+VALUE g_class_Color;
+
+void LnColor_delete(LnColor* obj)
+{
+    free(obj);
+}
+
+VALUE LnColor_allocate( VALUE klass )
+{
+    VALUE obj;
+    LnColor* internalObj;
+
+    internalObj = (LnColor*)malloc(sizeof(LnColor));
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnColor_allocate" );
+    obj = Data_Wrap_Struct(klass, NULL, LnColor_delete, internalObj);
+    
+    memset(internalObj, 0, sizeof(LnColor));
+
+    return obj;
+}
+
+static VALUE Wrap_LnColor_GetR(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->r);
+    }
+    rb_raise(rb_eArgError, "ln::Color::getR - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_SetR(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->r = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Color::setR - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_GetG(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->g);
+    }
+    rb_raise(rb_eArgError, "ln::Color::getG - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_SetG(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->g = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Color::setG - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_GetB(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->b);
+    }
+    rb_raise(rb_eArgError, "ln::Color::getB - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_SetB(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->b = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Color::setB - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_GetA(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 0) {
+        return LNI_TO_RUBY_VALUE(selfObj->a);
+    }
+    rb_raise(rb_eArgError, "ln::Color::getA - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_SetA(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (argc == 1) {
+        VALUE value;
+        rb_scan_args(argc, argv, "1", &value);
+        if (LNRB_VALUE_IS_FLOAT(value)) {
+            float _value = LNRB_VALUE_TO_FLOAT(value);
+            selfObj->a = _value;
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Color::setA - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnColor_Set(int argc, VALUE* argv, VALUE self)
+{
+    LnColor* selfObj;
+    Data_Get_Struct(self, LnColor, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnColor_SetZeros(selfObj);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    if (3 <= argc && argc <= 4) {
+        VALUE r_;
+        VALUE g_;
+        VALUE b_;
+        VALUE a_;
+        rb_scan_args(argc, argv, "31", &r_, &g_, &b_, &a_);
+        if (LNRB_VALUE_IS_FLOAT(r_) && LNRB_VALUE_IS_FLOAT(g_) && LNRB_VALUE_IS_FLOAT(b_) && LNRB_VALUE_IS_FLOAT(a_))
+        {
+            float _r_ = LNRB_VALUE_TO_FLOAT(r_);
+            float _g_ = LNRB_VALUE_TO_FLOAT(g_);
+            float _b_ = LNRB_VALUE_TO_FLOAT(b_);
+            float _a_ = (a_ != Qnil) ? LNRB_VALUE_TO_FLOAT(a_) : 1.000000;
+            LnResult errorCode = LnColor_Set(selfObj, _r_, _g_, _b_, _a_);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Color::Color - wrong argument type.");
     return Qnil;
 }
 
@@ -2639,371 +2812,6 @@ static VALUE Wrap_LnAssets_LoadAsset(int argc, VALUE* argv, VALUE self)
     return Qnil;
 }
 
-
-//==============================================================================
-// ln::EngineSettings
-
-struct Wrap_EngineSettings
-{
-
-    Wrap_EngineSettings()
-    {}
-};
-
-
-static VALUE Wrap_LnEngineSettings_SetMainWindowSize(int argc, VALUE* argv, VALUE self)
-{
-    if (2 <= argc && argc <= 2) {
-        VALUE width;
-        VALUE height;
-        rb_scan_args(argc, argv, "2", &width, &height);
-        if (LNRB_VALUE_IS_NUMBER(width) && LNRB_VALUE_IS_NUMBER(height))
-        {
-            int _width = LNRB_VALUE_TO_NUMBER(width);
-            int _height = LNRB_VALUE_TO_NUMBER(height);
-            LnResult errorCode = LnEngineSettings_SetMainWindowSize(_width, _height);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowSize - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngineSettings_SetMainWorldViewSize(int argc, VALUE* argv, VALUE self)
-{
-    if (2 <= argc && argc <= 2) {
-        VALUE width;
-        VALUE height;
-        rb_scan_args(argc, argv, "2", &width, &height);
-        if (LNRB_VALUE_IS_NUMBER(width) && LNRB_VALUE_IS_NUMBER(height))
-        {
-            int _width = LNRB_VALUE_TO_NUMBER(width);
-            int _height = LNRB_VALUE_TO_NUMBER(height);
-            LnResult errorCode = LnEngineSettings_SetMainWorldViewSize(_width, _height);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWorldViewSize - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngineSettings_SetMainWindowTitle(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE title;
-        rb_scan_args(argc, argv, "1", &title);
-        if (LNRB_VALUE_IS_STRING(title))
-        {
-            const char* _title = LNRB_VALUE_TO_STRING(title);
-            LnResult errorCode = LnEngineSettings_SetMainWindowTitleA(_title);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowTitle - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngineSettings_AddAssetDirectory(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE path;
-        rb_scan_args(argc, argv, "1", &path);
-        if (LNRB_VALUE_IS_STRING(path))
-        {
-            const char* _path = LNRB_VALUE_TO_STRING(path);
-            LnResult errorCode = LnEngineSettings_AddAssetDirectoryA(_path);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::addAssetDirectory - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngineSettings_AddAssetArchive(int argc, VALUE* argv, VALUE self)
-{
-    if (2 <= argc && argc <= 2) {
-        VALUE fileFullPath;
-        VALUE password;
-        rb_scan_args(argc, argv, "2", &fileFullPath, &password);
-        if (LNRB_VALUE_IS_STRING(fileFullPath) && LNRB_VALUE_IS_STRING(password))
-        {
-            const char* _fileFullPath = LNRB_VALUE_TO_STRING(fileFullPath);
-            const char* _password = LNRB_VALUE_TO_STRING(password);
-            LnResult errorCode = LnEngineSettings_AddAssetArchiveA(_fileFullPath, _password);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::addAssetArchive - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngineSettings_SetDebugToolEnabled(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE enabled;
-        rb_scan_args(argc, argv, "1", &enabled);
-        if (LNRB_VALUE_IS_BOOL(enabled))
-        {
-            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
-            LnResult errorCode = LnEngineSettings_SetDebugToolEnabled(_enabled);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setDebugToolEnabled - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngineSettings_SetEngineLogEnabled(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE enabled;
-        rb_scan_args(argc, argv, "1", &enabled);
-        if (LNRB_VALUE_IS_BOOL(enabled))
-        {
-            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
-            LnResult errorCode = LnEngineSettings_SetEngineLogEnabled(_enabled);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogEnabled - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngineSettings_SetEngineLogFilePath(int argc, VALUE* argv, VALUE self)
-{
-    if (1 <= argc && argc <= 1) {
-        VALUE filePath;
-        rb_scan_args(argc, argv, "1", &filePath);
-        if (LNRB_VALUE_IS_STRING(filePath))
-        {
-            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
-            LnResult errorCode = LnEngineSettings_SetEngineLogFilePathA(_filePath);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogFilePath - wrong argument type.");
-    return Qnil;
-}
-
-
-//==============================================================================
-// ln::Engine
-
-struct Wrap_Engine
-{
-
-    Wrap_Engine()
-    {}
-};
-
-
-static VALUE Wrap_LnEngine_Initialize(int argc, VALUE* argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-
-        {
-
-            LnResult errorCode = LnEngine_Initialize();
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Engine::initialize - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngine_Finalize(int argc, VALUE* argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-
-        {
-
-            LnResult errorCode = LnEngine_Finalize();
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Engine::finalize - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngine_Update(int argc, VALUE* argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-
-        {
-            LnBool _outReturn;
-            LnResult errorCode = LnEngine_Update(&_outReturn);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return LNI_TO_RUBY_VALUE(_outReturn);
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Engine::update - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnEngine_Time(int argc, VALUE* argv, VALUE self)
-{
-    if (0 <= argc && argc <= 0) {
-
-        {
-            double _outReturn;
-            LnResult errorCode = LnEngine_Time(&_outReturn);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return LNI_TO_RUBY_VALUE(_outReturn);
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Engine::time - wrong argument type.");
-    return Qnil;
-}
-
-
-//==============================================================================
-// ln::Application
-
-struct Wrap_Application
-    : public Wrap_Object
-{
-
-    Wrap_Application()
-    {}
-};
-
-static void LnApplication_delete(Wrap_Application* obj)
-{
-    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
-    delete obj;
-}
-
-static void LnApplication_mark(Wrap_Application* obj)
-{
-	
-
-}
-
-static VALUE LnApplication_allocate(VALUE klass)
-{
-    VALUE obj;
-    Wrap_Application* internalObj;
-
-    internalObj = new Wrap_Application();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
-    obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
-
-    return obj;
-}
-
-static VALUE LnApplication_allocateForGetObject(VALUE klass, LnHandle handle)
-{
-    VALUE obj;
-    Wrap_Application* internalObj;
-
-    internalObj = new Wrap_Application();
-    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
-    obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
-    
-    internalObj->handle = handle;
-    return obj;
-}
-
-
-static VALUE Wrap_LnApplication_OnInit(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_Application* selfObj;
-    Data_Get_Struct(self, Wrap_Application, selfObj);
-    if (0 <= argc && argc <= 0) {
-
-        {
-
-            LnResult errorCode = LnApplication_OnInit_CallOverrideBase(selfObj->handle);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Application::onInit - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnApplication_OnUpdate(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_Application* selfObj;
-    Data_Get_Struct(self, Wrap_Application, selfObj);
-    if (0 <= argc && argc <= 0) {
-
-        {
-
-            LnResult errorCode = LnApplication_OnUpdate_CallOverrideBase(selfObj->handle);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Application::onUpdate - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnApplication_World(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_Application* selfObj;
-    Data_Get_Struct(self, Wrap_Application, selfObj);
-    if (0 <= argc && argc <= 0) {
-
-        {
-            LnHandle _outReturn;
-            LnResult errorCode = LnApplication_World(selfObj->handle, &_outReturn);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Application::world - wrong argument type.");
-    return Qnil;
-}
-
-static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
-{
-    Wrap_Application* selfObj;
-    Data_Get_Struct(self, Wrap_Application, selfObj);
-    if (0 <= argc && argc <= 0) {
-
-        {
-
-            LnResult errorCode = LnApplication_Create(&selfObj->handle);
-            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
-            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
-
-            if (rb_block_given_p()) rb_yield(self);
-            return Qnil;
-        }
-    }
-    rb_raise(rb_eArgError, "ln::Application::init - wrong argument type.");
-    return Qnil;
-}
-
-LnResult Wrap_LnApplication_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
-    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
-    return LN_SUCCESS;
-}
-LnResult Wrap_LnApplication_OnInit_OverrideCallback(LnHandle application)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
-    VALUE retval = rb_funcall(obj, rb_intern("on_init"), 0, );
-    return LN_SUCCESS;
-}
-LnResult Wrap_LnApplication_OnUpdate_OverrideCallback(LnHandle application)
-{
-    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
-    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 0, );
-    return LN_SUCCESS;
-}
 
 //==============================================================================
 // ln::GraphicsResource
@@ -5321,6 +5129,428 @@ LnResult Wrap_LnUITextBlock_OnSerialize_OverrideCallback(LnHandle object, LnHand
     return LN_SUCCESS;
 }
 
+//==============================================================================
+// ln::EngineSettings
+
+struct Wrap_EngineSettings
+{
+
+    Wrap_EngineSettings()
+    {}
+};
+
+
+static VALUE Wrap_LnEngineSettings_SetMainWindowSize(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE width;
+        VALUE height;
+        rb_scan_args(argc, argv, "2", &width, &height);
+        if (LNRB_VALUE_IS_NUMBER(width) && LNRB_VALUE_IS_NUMBER(height))
+        {
+            int _width = LNRB_VALUE_TO_NUMBER(width);
+            int _height = LNRB_VALUE_TO_NUMBER(height);
+            LnResult errorCode = LnEngineSettings_SetMainWindowSize(_width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowSize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetMainWorldViewSize(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE width;
+        VALUE height;
+        rb_scan_args(argc, argv, "2", &width, &height);
+        if (LNRB_VALUE_IS_NUMBER(width) && LNRB_VALUE_IS_NUMBER(height))
+        {
+            int _width = LNRB_VALUE_TO_NUMBER(width);
+            int _height = LNRB_VALUE_TO_NUMBER(height);
+            LnResult errorCode = LnEngineSettings_SetMainWorldViewSize(_width, _height);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWorldViewSize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetMainWindowTitle(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE title;
+        rb_scan_args(argc, argv, "1", &title);
+        if (LNRB_VALUE_IS_STRING(title))
+        {
+            const char* _title = LNRB_VALUE_TO_STRING(title);
+            LnResult errorCode = LnEngineSettings_SetMainWindowTitleA(_title);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setMainWindowTitle - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_AddAssetDirectory(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE path;
+        rb_scan_args(argc, argv, "1", &path);
+        if (LNRB_VALUE_IS_STRING(path))
+        {
+            const char* _path = LNRB_VALUE_TO_STRING(path);
+            LnResult errorCode = LnEngineSettings_AddAssetDirectoryA(_path);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::addAssetDirectory - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_AddAssetArchive(int argc, VALUE* argv, VALUE self)
+{
+    if (2 <= argc && argc <= 2) {
+        VALUE fileFullPath;
+        VALUE password;
+        rb_scan_args(argc, argv, "2", &fileFullPath, &password);
+        if (LNRB_VALUE_IS_STRING(fileFullPath) && LNRB_VALUE_IS_STRING(password))
+        {
+            const char* _fileFullPath = LNRB_VALUE_TO_STRING(fileFullPath);
+            const char* _password = LNRB_VALUE_TO_STRING(password);
+            LnResult errorCode = LnEngineSettings_AddAssetArchiveA(_fileFullPath, _password);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::addAssetArchive - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetDebugToolEnabled(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE enabled;
+        rb_scan_args(argc, argv, "1", &enabled);
+        if (LNRB_VALUE_IS_BOOL(enabled))
+        {
+            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
+            LnResult errorCode = LnEngineSettings_SetDebugToolEnabled(_enabled);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setDebugToolEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetEngineLogEnabled(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE enabled;
+        rb_scan_args(argc, argv, "1", &enabled);
+        if (LNRB_VALUE_IS_BOOL(enabled))
+        {
+            LnBool _enabled = LNRB_VALUE_TO_BOOL(enabled);
+            LnResult errorCode = LnEngineSettings_SetEngineLogEnabled(_enabled);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogEnabled - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngineSettings_SetEngineLogFilePath(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE filePath;
+        rb_scan_args(argc, argv, "1", &filePath);
+        if (LNRB_VALUE_IS_STRING(filePath))
+        {
+            const char* _filePath = LNRB_VALUE_TO_STRING(filePath);
+            LnResult errorCode = LnEngineSettings_SetEngineLogFilePathA(_filePath);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::EngineSettings::setEngineLogFilePath - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
+// ln::Engine
+
+struct Wrap_Engine
+{
+
+    Wrap_Engine()
+    {}
+};
+
+
+static VALUE Wrap_LnEngine_Initialize(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnEngine_Initialize();
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::initialize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngine_Finalize(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnEngine_Finalize();
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::finalize - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngine_Update(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnBool _outReturn;
+            LnResult errorCode = LnEngine_Update(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::update - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnEngine_Time(int argc, VALUE* argv, VALUE self)
+{
+    if (0 <= argc && argc <= 0) {
+
+        {
+            double _outReturn;
+            LnResult errorCode = LnEngine_Time(&_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNI_TO_RUBY_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Engine::time - wrong argument type.");
+    return Qnil;
+}
+
+
+//==============================================================================
+// ln::Application
+
+struct Wrap_Application
+    : public Wrap_Object
+{
+
+    Wrap_Application()
+    {}
+};
+
+static void LnApplication_delete(Wrap_Application* obj)
+{
+    LNRB_SAFE_UNREGISTER_WRAPPER_OBJECT(obj->handle);
+    delete obj;
+}
+
+static void LnApplication_mark(Wrap_Application* obj)
+{
+	
+
+}
+
+static VALUE LnApplication_allocate(VALUE klass)
+{
+    VALUE obj;
+    Wrap_Application* internalObj;
+
+    internalObj = new Wrap_Application();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
+    obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
+
+    return obj;
+}
+
+static VALUE LnApplication_allocateForGetObject(VALUE klass, LnHandle handle)
+{
+    VALUE obj;
+    Wrap_Application* internalObj;
+
+    internalObj = new Wrap_Application();
+    if (internalObj == NULL) rb_raise(LuminoRubyRuntimeManager::instance->luminoModule(), "Faild alloc - LnApplication_allocate");
+    obj = Data_Wrap_Struct(klass, LnApplication_mark, LnApplication_delete, internalObj);
+    
+    internalObj->handle = handle;
+    return obj;
+}
+
+
+static VALUE Wrap_LnApplication_OnInit(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnApplication_OnInit_CallOverrideBase(selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::onInit - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnApplication_OnUpdate(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnApplication_OnUpdate_CallOverrideBase(selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::onUpdate - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnApplication_World(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+            LnHandle _outReturn;
+            LnResult errorCode = LnApplication_World(selfObj->handle, &_outReturn);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return LNRB_HANDLE_WRAP_TO_VALUE(_outReturn);
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::world - wrong argument type.");
+    return Qnil;
+}
+
+static VALUE Wrap_LnApplication_Create(int argc, VALUE* argv, VALUE self)
+{
+    Wrap_Application* selfObj;
+    Data_Get_Struct(self, Wrap_Application, selfObj);
+    if (0 <= argc && argc <= 0) {
+
+        {
+
+            LnResult errorCode = LnApplication_Create(&selfObj->handle);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            LuminoRubyRuntimeManager::instance->registerWrapperObject(self, false);
+
+            if (rb_block_given_p()) rb_yield(self);
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Application::init - wrong argument type.");
+    return Qnil;
+}
+
+LnResult Wrap_LnApplication_OnSerialize_OverrideCallback(LnHandle object, LnHandle ar)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(object);
+    VALUE retval = rb_funcall(obj, rb_intern("on_serialize"), 1, LNRB_HANDLE_WRAP_TO_VALUE(ar));
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnApplication_OnInit_OverrideCallback(LnHandle application)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
+    VALUE retval = rb_funcall(obj, rb_intern("on_init"), 0, );
+    return LN_SUCCESS;
+}
+LnResult Wrap_LnApplication_OnUpdate_OverrideCallback(LnHandle application)
+{
+    VALUE obj = LNRB_HANDLE_WRAP_TO_VALUE(application);
+    VALUE retval = rb_funcall(obj, rb_intern("on_update"), 0, );
+    return LN_SUCCESS;
+}
+
+//==============================================================================
+// ln::Debug
+
+struct Wrap_Debug
+{
+
+    Wrap_Debug()
+    {}
+};
+
+
+static VALUE Wrap_LnDebug_Print(int argc, VALUE* argv, VALUE self)
+{
+    if (1 <= argc && argc <= 1) {
+        VALUE str;
+        rb_scan_args(argc, argv, "1", &str);
+        if (LNRB_VALUE_IS_STRING(str))
+        {
+            const char* _str = LNRB_VALUE_TO_STRING(str);
+            LnResult errorCode = LnDebug_PrintA(_str);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (2 <= argc && argc <= 2) {
+        VALUE time;
+        VALUE str;
+        rb_scan_args(argc, argv, "2", &time, &str);
+        if (LNRB_VALUE_IS_FLOAT(time) && LNRB_VALUE_IS_STRING(str))
+        {
+            float _time = LNRB_VALUE_TO_FLOAT(time);
+            const char* _str = LNRB_VALUE_TO_STRING(str);
+            LnResult errorCode = LnDebug_PrintWithTimeA(_time, _str);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    if (3 <= argc && argc <= 3) {
+        VALUE time;
+        VALUE color;
+        VALUE str;
+        rb_scan_args(argc, argv, "3", &time, &color, &str);
+        if (LNRB_VALUE_IS_FLOAT(time) && LNRB_VALUE_IS_OBJECT(color) && LNRB_VALUE_IS_STRING(str))
+        {
+            float _time = LNRB_VALUE_TO_FLOAT(time);
+            LnColor* tmp__color; Data_Get_Struct(color, LnColor, tmp__color);LnColor& _color = *tmp__color;
+            const char* _str = LNRB_VALUE_TO_STRING(str);
+            LnResult errorCode = LnDebug_PrintWithTimeAndColorA(_time, &_color, _str);
+            if (errorCode < 0) rb_raise(rb_eRuntimeError, "Lumino runtime error. (%d)\n%s", errorCode, LnRuntime_GetLastErrorMessage());
+            return Qnil;
+        }
+    }
+    rb_raise(rb_eArgError, "ln::Debug::print - wrong argument type.");
+    return Qnil;
+}
+
+
 
 
 extern "C" void Init_Lumino_RubyExt()
@@ -5397,6 +5627,18 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_method(g_class_Matrix, "row_3", LN_TO_RUBY_FUNC(Wrap_LnMatrix_GetRow3), -1);
     rb_define_method(g_class_Matrix, "row_3=", LN_TO_RUBY_FUNC(Wrap_LnMatrix_SetRow3), -1);
     rb_define_method(g_class_Matrix, "initialize", LN_TO_RUBY_FUNC(Wrap_LnMatrix_Set), -1);
+
+    g_class_Color = rb_define_class_under(g_rootModule, "Color", rb_cObject);
+    rb_define_alloc_func(g_class_Color, LnColor_allocate);
+    rb_define_method(g_class_Color, "r", LN_TO_RUBY_FUNC(Wrap_LnColor_GetR), -1);
+    rb_define_method(g_class_Color, "r=", LN_TO_RUBY_FUNC(Wrap_LnColor_SetR), -1);
+    rb_define_method(g_class_Color, "g", LN_TO_RUBY_FUNC(Wrap_LnColor_GetG), -1);
+    rb_define_method(g_class_Color, "g=", LN_TO_RUBY_FUNC(Wrap_LnColor_SetG), -1);
+    rb_define_method(g_class_Color, "b", LN_TO_RUBY_FUNC(Wrap_LnColor_GetB), -1);
+    rb_define_method(g_class_Color, "b=", LN_TO_RUBY_FUNC(Wrap_LnColor_SetB), -1);
+    rb_define_method(g_class_Color, "a", LN_TO_RUBY_FUNC(Wrap_LnColor_GetA), -1);
+    rb_define_method(g_class_Color, "a=", LN_TO_RUBY_FUNC(Wrap_LnColor_SetA), -1);
+    rb_define_method(g_class_Color, "initialize", LN_TO_RUBY_FUNC(Wrap_LnColor_Set), -1);
 
     g_class_Object = rb_define_class_under(g_rootModule, "Object", rb_cObject);
     rb_define_alloc_func(g_class_Object, LnObject_allocate);
@@ -5505,33 +5747,6 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_singleton_method(g_class_Assets, "save_asset_to_local_file", LN_TO_RUBY_FUNC(Wrap_LnAssets_SaveAssetToLocalFile), -1);
     rb_define_singleton_method(g_class_Assets, "load_asset_from_local_file", LN_TO_RUBY_FUNC(Wrap_LnAssets_LoadAssetFromLocalFile), -1);
     rb_define_singleton_method(g_class_Assets, "load_asset", LN_TO_RUBY_FUNC(Wrap_LnAssets_LoadAsset), -1);
-
-    g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
-    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_main_world_view_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWorldViewSize), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_title", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowTitle), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "add_asset_directory", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetDirectory), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "add_asset_archive", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetArchive), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_debug_tool_enabled", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetDebugToolEnabled), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_enabled", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetEngineLogEnabled), -1);
-    rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_file_path", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetEngineLogFilePath), -1);
-
-    g_class_Engine = rb_define_class_under(g_rootModule, "Engine", rb_cObject);
-    rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Initialize), -1);
-    rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Finalize), -1);
-    rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
-    rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LnEngine_Time), -1);
-
-    g_class_Application = rb_define_class_under(g_rootModule, "Application", g_class_Object);
-    rb_define_alloc_func(g_class_Application, LnApplication_allocate);
-    rb_define_method(g_class_Application, "on_init", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnInit), -1);
-    rb_define_method(g_class_Application, "on_update", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnUpdate), -1);
-    rb_define_method(g_class_Application, "world", LN_TO_RUBY_FUNC(Wrap_LnApplication_World), -1);
-    rb_define_private_method(g_class_Application, "initialize", LN_TO_RUBY_FUNC(Wrap_LnApplication_Create), -1);
-    LnApplication_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Application, LnApplication_allocateForGetObject));
-    LnApplication_OnSerialize_SetOverrideCallback(Wrap_LnApplication_OnSerialize_OverrideCallback);
-    LnApplication_OnInit_SetOverrideCallback(Wrap_LnApplication_OnInit_OverrideCallback);
-    LnApplication_OnUpdate_SetOverrideCallback(Wrap_LnApplication_OnUpdate_OverrideCallback);
 
     g_class_GraphicsResource = rb_define_class_under(g_rootModule, "GraphicsResource", g_class_Object);
     rb_define_alloc_func(g_class_GraphicsResource, LnGraphicsResource_allocate);
@@ -5682,6 +5897,36 @@ extern "C" void Init_Lumino_RubyExt()
     rb_define_private_method(g_class_UITextBlock, "initialize", LN_TO_RUBY_FUNC(Wrap_LnUITextBlock_Create), -1);
     LnUITextBlock_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_UITextBlock, LnUITextBlock_allocateForGetObject));
     LnUITextBlock_OnSerialize_SetOverrideCallback(Wrap_LnUITextBlock_OnSerialize_OverrideCallback);
+
+    g_class_EngineSettings = rb_define_class_under(g_rootModule, "EngineSettings", rb_cObject);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowSize), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_world_view_size", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWorldViewSize), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_main_window_title", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetMainWindowTitle), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "add_asset_directory", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetDirectory), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "add_asset_archive", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_AddAssetArchive), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_debug_tool_enabled", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetDebugToolEnabled), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_enabled", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetEngineLogEnabled), -1);
+    rb_define_singleton_method(g_class_EngineSettings, "set_engine_log_file_path", LN_TO_RUBY_FUNC(Wrap_LnEngineSettings_SetEngineLogFilePath), -1);
+
+    g_class_Engine = rb_define_class_under(g_rootModule, "Engine", rb_cObject);
+    rb_define_singleton_method(g_class_Engine, "initialize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Initialize), -1);
+    rb_define_singleton_method(g_class_Engine, "finalize", LN_TO_RUBY_FUNC(Wrap_LnEngine_Finalize), -1);
+    rb_define_singleton_method(g_class_Engine, "update", LN_TO_RUBY_FUNC(Wrap_LnEngine_Update), -1);
+    rb_define_singleton_method(g_class_Engine, "time", LN_TO_RUBY_FUNC(Wrap_LnEngine_Time), -1);
+
+    g_class_Application = rb_define_class_under(g_rootModule, "Application", g_class_Object);
+    rb_define_alloc_func(g_class_Application, LnApplication_allocate);
+    rb_define_method(g_class_Application, "on_init", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnInit), -1);
+    rb_define_method(g_class_Application, "on_update", LN_TO_RUBY_FUNC(Wrap_LnApplication_OnUpdate), -1);
+    rb_define_method(g_class_Application, "world", LN_TO_RUBY_FUNC(Wrap_LnApplication_World), -1);
+    rb_define_private_method(g_class_Application, "initialize", LN_TO_RUBY_FUNC(Wrap_LnApplication_Create), -1);
+    LnApplication_SetManagedTypeInfoId(LuminoRubyRuntimeManager::instance->registerTypeInfo(g_class_Application, LnApplication_allocateForGetObject));
+    LnApplication_OnSerialize_SetOverrideCallback(Wrap_LnApplication_OnSerialize_OverrideCallback);
+    LnApplication_OnInit_SetOverrideCallback(Wrap_LnApplication_OnInit_OverrideCallback);
+    LnApplication_OnUpdate_SetOverrideCallback(Wrap_LnApplication_OnUpdate_OverrideCallback);
+
+    g_class_Debug = rb_define_class_under(g_rootModule, "Debug", rb_cObject);
+    rb_define_singleton_method(g_class_Debug, "print", LN_TO_RUBY_FUNC(Wrap_LnDebug_Print), -1);
 
 }
 

@@ -18,6 +18,11 @@ class App : public Application
 		auto text = UITextBlock::create(u"Hello, Lumino!");
 	}
 
+	void onUpdate() override
+	{
+		Debug::print(String::format(u"Time: {0}", Engine::time()));
+	}
+
 	//virtual void onUpdate() override
 	//{
 	//	auto light = Engine::light();

@@ -54,6 +54,17 @@ struct LnMatrix
     LnVector4 row3;
 };
 
+/**
+    @brief 各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
+*/
+struct LnColor
+{
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
 
 
 /**
@@ -279,6 +290,23 @@ LN_FLAT_API LnResult LnMatrix_SetZeros(LnMatrix* matrix);
     @param[in] matrix : instance
 */
 LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44);
+
+
+//==============================================================================
+// ln::Color
+
+/**
+    @brief すべての要素を 0.0 で初期化します。
+    @param[in] color : instance
+*/
+LN_FLAT_API LnResult LnColor_SetZeros(LnColor* color);
+
+
+/**
+    @brief 各要素を指定して初期化します。
+    @param[in] color : instance
+*/
+LN_FLAT_API LnResult LnColor_Set(LnColor* color, float r_, float g_, float b_, float a_);
 
 
 
@@ -651,122 +679,6 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHa
 LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn);
 LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outReturn);
 
-
-//==============================================================================
-// ln::EngineSettings
-
-/**
-    @brief メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
-*/
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
-
-/**
-    @brief メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等)
-*/
-LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height);
-
-/**
-    @brief メインウィンドウのタイトル文字列を設定します。
-*/
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title);
-
-/**
-    @brief アセットが保存されているディレクトリを登録します。
-*/
-LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path);
-LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path);
-
-/**
-    @brief アセットファイルを登録します。
-*/
-LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password);
-LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password);
-
-/**
-    @brief (default: Debug ビルドの場合true、それ以外は false)
-*/
-LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled);
-
-/**
-    @brief デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
-*/
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
-
-/**
-    @brief デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
-*/
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath);
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath);
-
-
-//==============================================================================
-// ln::Engine
-
-/**
-    @brief エンジンの初期化処理を行います。
-*/
-LN_FLAT_API LnResult LnEngine_Initialize();
-
-/**
-    @brief エンジンの終了処理を行います。
-*/
-LN_FLAT_API LnResult LnEngine_Finalize();
-
-/**
-    @brief 
-    @param[out] outReturn : instance.
-    @return アプリケーションの終了が要求されている場合は false を返します。
-*/
-LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
-
-/**
-    @brief アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
-    @param[out] outReturn : instance.
-*/
-LN_FLAT_API LnResult LnEngine_Time(double* outReturn);
-
-
-//==============================================================================
-// ln::Application
-
-/**
-    @brief エンジンの初期化処理が完了した後に呼び出されます。
-    @param[in] application : instance
-*/
-LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
-
-/**
-    @brief 毎フレーム呼び出されます。
-    @param[in] application : instance
-*/
-LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
-
-/**
-    @brief デフォルトで作成されるメインの World を取得します。
-    @param[in] application : instance
-    @param[out] outReturn : instance.
-*/
-LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn);
-
-/**
-    @brief 
-    @param[out] outApplication : instance.
-*/
-LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
-
-typedef LnResult(*LnApplication_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
-typedef LnResult(*LnApplication_OnInit_OverrideCallback)(LnHandle application);
-LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback);
-LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application);
-typedef LnResult(*LnApplication_OnUpdate_OverrideCallback)(LnHandle application);
-LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback);
-LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application);
-
-extern LN_FLAT_API int LnApplication_GetTypeInfoId();
-LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id);
 
 //==============================================================================
 // ln::GraphicsResource
@@ -1343,6 +1255,150 @@ LN_FLAT_API LnResult LnUITextBlock_OnSerialize_CallOverrideBase(LnHandle object,
 
 extern LN_FLAT_API int LnUITextBlock_GetTypeInfoId();
 LN_FLAT_API void LnUITextBlock_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::EngineSettings
+
+/**
+    @brief メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height);
+
+/**
+    @brief メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height);
+
+/**
+    @brief メインウィンドウのタイトル文字列を設定します。
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title);
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title);
+
+/**
+    @brief アセットが保存されているディレクトリを登録します。
+*/
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path);
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path);
+
+/**
+    @brief アセットファイルを登録します。
+*/
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password);
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password);
+
+/**
+    @brief (default: Debug ビルドの場合true、それ以外は false)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled);
+
+/**
+    @brief デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled);
+
+/**
+    @brief デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
+*/
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath);
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath);
+
+
+//==============================================================================
+// ln::Engine
+
+/**
+    @brief エンジンの初期化処理を行います。
+*/
+LN_FLAT_API LnResult LnEngine_Initialize();
+
+/**
+    @brief エンジンの終了処理を行います。
+*/
+LN_FLAT_API LnResult LnEngine_Finalize();
+
+/**
+    @brief 
+    @param[out] outReturn : instance.
+    @return アプリケーションの終了が要求されている場合は false を返します。
+*/
+LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn);
+
+/**
+    @brief アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnEngine_Time(double* outReturn);
+
+
+//==============================================================================
+// ln::Application
+
+/**
+    @brief エンジンの初期化処理が完了した後に呼び出されます。
+    @param[in] application : instance
+*/
+LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application);
+
+/**
+    @brief 毎フレーム呼び出されます。
+    @param[in] application : instance
+*/
+LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application);
+
+/**
+    @brief デフォルトで作成されるメインの World を取得します。
+    @param[in] application : instance
+    @param[out] outReturn : instance.
+*/
+LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn);
+
+/**
+    @brief 
+    @param[out] outApplication : instance.
+*/
+LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication);
+
+typedef LnResult(*LnApplication_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
+LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback);
+LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
+typedef LnResult(*LnApplication_OnInit_OverrideCallback)(LnHandle application);
+LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback);
+LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application);
+typedef LnResult(*LnApplication_OnUpdate_OverrideCallback)(LnHandle application);
+LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback);
+LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application);
+
+extern LN_FLAT_API int LnApplication_GetTypeInfoId();
+LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id);
+
+//==============================================================================
+// ln::Debug
+
+/**
+    @brief ウィンドウ上にデバッグ文字列を表示します。
+    @param[in] str : 表示文字列
+*/
+LN_FLAT_API LnResult LnDebug_Print(const LnChar* str);
+LN_FLAT_API LnResult LnDebug_PrintA(const char* str);
+
+/**
+    @brief 表示時間を指定して、ウィンドウ上にデバッグ文字列を表示します。
+    @param[in] time : 表示時間 (s)
+    @param[in] str : 表示文字列
+*/
+LN_FLAT_API LnResult LnDebug_PrintWithTime(float time, const LnChar* str);
+LN_FLAT_API LnResult LnDebug_PrintWithTimeA(float time, const char* str);
+
+/**
+    @brief 表示時間と文字色を指定して、ウィンドウ上にデバッグ文字列を表示します。
+    @param[in] time : 表示時間 (s)
+    @param[in] color : 文字色
+    @param[in] str : 表示文字列
+*/
+LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColor(float time, const LnColor* color, const LnChar* str);
+LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColorA(float time, const LnColor* color, const char* str);
+
 
 
 

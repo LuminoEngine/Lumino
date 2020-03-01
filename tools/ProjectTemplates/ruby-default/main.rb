@@ -1,14 +1,11 @@
-require 'lumino'
-include Lumino
+require "lumino"
 
 class App < Application
-  def on_init()
-    @texture1 = Texture2D.load("logo.png")
-    @sprite1 = Sprite.new(@texture1, 2, 2)
+  def on_init
+    text = UITextBlock.new("Hello, Lumino!")
   end
 
-  def on_update()
-    # Call per frames.
+  def on_update
   end
 end
 

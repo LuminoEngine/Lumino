@@ -476,76 +476,6 @@ public:
 };
 
 
-class LNWS_ln_EngineSettings : public ln::EngineSettings
-{
-public:
-
-
-};
-
-
-class LNWS_ln_Engine : public ln::Engine
-{
-public:
-
-
-};
-
-
-class LNWS_ln_Application : public ln::Application
-{
-public:
-    static LnApplication_OnSerialize_OverrideCallback s_LnApplication_OnSerialize_OverrideCallback;
-    static LnApplication_OnInit_OverrideCallback s_LnApplication_OnInit_OverrideCallback;
-    static LnApplication_OnUpdate_OverrideCallback s_LnApplication_OnUpdate_OverrideCallback;
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnApplication_OnSerialize_OverrideCallback) s_LnApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Application::onSerialize(ar);
-    }
-    virtual void onInit() override
-    {
-        if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    void onInit_CallBase()
-    {
-        ln::Application::onInit();
-    }
-    virtual void onUpdate() override
-    {
-        if (s_LnApplication_OnUpdate_OverrideCallback) s_LnApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    void onUpdate_CallBase()
-    {
-        ln::Application::onUpdate();
-    }
-
-};
-LnApplication_OnSerialize_OverrideCallback LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = nullptr;
-LnApplication_OnInit_OverrideCallback LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = nullptr;
-LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = nullptr;
-
-
 class LNWS_ln_GraphicsResource : public ln::GraphicsResource
 {
 public:
@@ -1155,6 +1085,84 @@ public:
 LnUITextBlock_OnSerialize_OverrideCallback LNWS_ln_UITextBlock::s_LnUITextBlock_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_EngineSettings : public ln::EngineSettings
+{
+public:
+
+
+};
+
+
+class LNWS_ln_Engine : public ln::Engine
+{
+public:
+
+
+};
+
+
+class LNWS_ln_Application : public ln::Application
+{
+public:
+    static LnApplication_OnSerialize_OverrideCallback s_LnApplication_OnSerialize_OverrideCallback;
+    static LnApplication_OnInit_OverrideCallback s_LnApplication_OnInit_OverrideCallback;
+    static LnApplication_OnUpdate_OverrideCallback s_LnApplication_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnApplication_OnSerialize_OverrideCallback) s_LnApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Application::onSerialize(ar);
+    }
+    virtual void onInit() override
+    {
+        if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    void onInit_CallBase()
+    {
+        ln::Application::onInit();
+    }
+    virtual void onUpdate() override
+    {
+        if (s_LnApplication_OnUpdate_OverrideCallback) s_LnApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    void onUpdate_CallBase()
+    {
+        ln::Application::onUpdate();
+    }
+
+};
+LnApplication_OnSerialize_OverrideCallback LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = nullptr;
+LnApplication_OnInit_OverrideCallback LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = nullptr;
+LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Debug : public ln::Debug
+{
+public:
+
+
+};
+
+
 
 
 extern "C"
@@ -1292,6 +1300,22 @@ LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float 
 {
     LNI_FUNC_TRY_BEGIN;
     new (reinterpret_cast<ln::Matrix*>(matrix)) ln::Matrix(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnColor_SetZeros(LnColor* color)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Color*>(color)) ln::Color();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnColor_Set(LnColor* color, float r_, float g_, float b_, float a_)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Color*>(color)) ln::Color(r_, g_, b_, a_);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2087,230 +2111,6 @@ LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outRetu
     LNI_FUNC_TRY_END_RETURN;
 }
 
-
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowSize(width, height));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWorldViewSize(width, height));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowTitle(title));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowTitle(LNI_UTF8STRPTR_TO_STRING(title)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetDirectory(path));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetDirectory(LNI_UTF8STRPTR_TO_STRING(path)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetArchive(fileFullPath, password));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetArchive(LNI_UTF8STRPTR_TO_STRING(fileFullPath), LNI_UTF8STRPTR_TO_STRING(password)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setDebugToolEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogFilePath(filePath));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogFilePath(LNI_UTF8STRPTR_TO_STRING(filePath)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Initialize()
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::initialize());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Finalize()
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::finalize());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
-    }
-    else {
-        (ln::Engine::update());
-    }
-
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Time(double* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = (ln::Engine::time());
-    }
-    else {
-        (ln::Engine::time());
-    }
-
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onInit_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onUpdate_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
-    }
-    else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
-    }
-
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback)
-{
-    LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
-LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onInit_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback)
-{
-    LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
-LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onUpdate_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback)
-{
-    LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
-extern LN_FLAT_API int LnApplication_GetTypeInfoId()
-{
-    return ln::TypeInfo::getTypeInfo<ln::Application>()->id();
-}
-
-LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
-}
 
 LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -3360,6 +3160,278 @@ LN_FLAT_API void LnUITextBlock_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UITextBlock>(), id);
 }
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWorldViewSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowTitle(title));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowTitle(LNI_UTF8STRPTR_TO_STRING(title)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetDirectory(path));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetDirectory(LNI_UTF8STRPTR_TO_STRING(path)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetArchive(fileFullPath, password));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetArchive(LNI_UTF8STRPTR_TO_STRING(fileFullPath), LNI_UTF8STRPTR_TO_STRING(password)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setDebugToolEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogFilePath(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogFilePath(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Initialize()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Engine::initialize());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Finalize()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Engine::finalize());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
+    }
+    else {
+        (ln::Engine::update());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Time(double* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Engine::time());
+    }
+    else {
+        (ln::Engine::time());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onInit_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onInit_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnApplication_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Application>()->id();
+}
+
+LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
+}
+
+LN_FLAT_API LnResult LnDebug_Print(const LnChar* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(str));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintA(const char* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(LNI_UTF8STRPTR_TO_STRING(str)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTime(float time, const LnChar* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, str));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTimeA(float time, const char* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, LNI_UTF8STRPTR_TO_STRING(str)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColor(float time, const LnColor* color, const LnChar* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, *reinterpret_cast<const ln::Color*>(color), str));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColorA(float time, const LnColor* color, const char* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, *reinterpret_cast<const ln::Color*>(color), LNI_UTF8STRPTR_TO_STRING(str)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 
 	

@@ -38,10 +38,8 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/Base/Serializer.hpp",
             TEST_ROOT "include/LuminoEngine/Asset/AssetModel.hpp",
             TEST_ROOT "include/LuminoEngine/Asset/Assets.hpp",
-			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
-			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
-            TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Common.hpp",
+			TEST_ROOT "include/LuminoEngine/Graphics/ColorStructs.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/GraphicsResource.hpp",
 			TEST_ROOT "include/LuminoEngine/Graphics/Texture.hpp",
 			TEST_ROOT "include/LuminoEngine/Scene/Component.hpp",
@@ -57,6 +55,10 @@ int main(int argc, char** argv)
 			TEST_ROOT "include/LuminoEngine/UI/UIControl.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UIButton.hpp",
 			TEST_ROOT "include/LuminoEngine/UI/UITextBlock.hpp",
+			TEST_ROOT "include/LuminoEngine/Engine/EngineSettings.hpp",
+			TEST_ROOT "include/LuminoEngine/Engine/Engine.hpp",
+            TEST_ROOT "include/LuminoEngine/Engine/Application.hpp",
+			TEST_ROOT "include/LuminoEngine/Engine/Debug.hpp",
 		};
 
 		CodeAnalyzer ca;

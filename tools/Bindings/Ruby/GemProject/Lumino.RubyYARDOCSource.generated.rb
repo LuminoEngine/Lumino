@@ -399,6 +399,86 @@ class Lumino::Matrix
 
 end
 
+# 各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
+# 
+class Lumino::Color
+    # 
+    # @return [Float] 
+    def r(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def r=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def g(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def g=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def b(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def b=(*args)
+    end
+
+
+
+    # 
+    # @return [Float] 
+    def a(*args)
+    end
+
+
+
+    # 
+    # @param [Float] value 
+    # 
+    def a=(*args)
+    end
+
+
+
+    # 各要素を指定して初期化します。
+    # @overload initialize()
+    #   すべての要素を 0.0 で初期化します。
+    # @overload initialize(r_, g_, b_, a_)
+    #   各要素を指定して初期化します。
+    #   @param [Float] r_ 
+    #   @param [Float] g_ 
+    #   @param [Float] b_ 
+    #   @param [Float] a_ 
+    #   
+    def initialize(*args)
+    end
+
+
+
+end
+
 # 
 # 
 class Lumino::Object
@@ -823,139 +903,6 @@ class Lumino::Assets
     # 
     # @return [Lumino::Object] 
     def load_asset(*args)
-    end
-
-
-
-end
-
-# アプリケーション起動時に参照する初期化設定です。
-# 
-class Lumino::EngineSettings
-    # メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
-    # @param [Integer] width 
-    # @param [Integer] height 
-    # 
-    def set_main_window_size(*args)
-    end
-
-
-
-    # メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等)
-    # @param [Integer] width 
-    # @param [Integer] height 
-    # 
-    def set_main_world_view_size(*args)
-    end
-
-
-
-    # メインウィンドウのタイトル文字列を設定します。
-    # @param [String] title 
-    # 
-    def set_main_window_title(*args)
-    end
-
-
-
-    # アセットが保存されているディレクトリを登録します。
-    # @param [String] path 
-    # 
-    def add_asset_directory(*args)
-    end
-
-
-
-    # アセットファイルを登録します。
-    # @param [String] fileFullPath 
-    # @param [String] password 
-    # 
-    def add_asset_archive(*args)
-    end
-
-
-
-    # (default: Debug ビルドの場合true、それ以外は false)
-    # @param [Boolean] enabled 
-    # 
-    def set_debug_tool_enabled(*args)
-    end
-
-
-
-    # デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
-    # @param [Boolean] enabled 
-    # 
-    def set_engine_log_enabled(*args)
-    end
-
-
-
-    # デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
-    # @param [String] filePath 
-    # 
-    def set_engine_log_file_path(*args)
-    end
-
-
-
-end
-
-# アプリケーション全体にかかわる処理を行います。
-# 
-class Lumino::Engine
-    # エンジンの初期化処理を行います。
-    def initialize(*args)
-    end
-
-
-
-    # エンジンの終了処理を行います。
-    def finalize(*args)
-    end
-
-
-
-    # 
-    # @return [Boolean] アプリケーションの終了が要求されている場合は false を返します。
-    def update(*args)
-    end
-
-
-
-    # アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
-    # @return [] 
-    def time(*args)
-    end
-
-
-
-end
-
-# グローバルなアプリケーション状態を扱うための基本クラスです。
-# 
-class Lumino::Application
-    # エンジンの初期化処理が完了した後に呼び出されます。
-    def on_init(*args)
-    end
-
-
-
-    # 毎フレーム呼び出されます。
-    def on_update(*args)
-    end
-
-
-
-    # デフォルトで作成されるメインの World を取得します。
-    # @return [Lumino::World] 
-    def world(*args)
-    end
-
-
-
-    # 
-    def initialize(*args)
     end
 
 
@@ -1511,6 +1458,165 @@ class Lumino::UITextBlock
     #   @param [] text 
     #   
     def initialize(*args)
+    end
+
+
+
+end
+
+# アプリケーション起動時に参照する初期化設定です。
+# 
+class Lumino::EngineSettings
+    # メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480)
+    # @param [Integer] width 
+    # @param [Integer] height 
+    # 
+    def set_main_window_size(*args)
+    end
+
+
+
+    # メインウィンドウに対して作成される WorldView のサイズを設定します。(default: クライアント領域のサイズと同等)
+    # @param [Integer] width 
+    # @param [Integer] height 
+    # 
+    def set_main_world_view_size(*args)
+    end
+
+
+
+    # メインウィンドウのタイトル文字列を設定します。
+    # @param [String] title 
+    # 
+    def set_main_window_title(*args)
+    end
+
+
+
+    # アセットが保存されているディレクトリを登録します。
+    # @param [String] path 
+    # 
+    def add_asset_directory(*args)
+    end
+
+
+
+    # アセットファイルを登録します。
+    # @param [String] fileFullPath 
+    # @param [String] password 
+    # 
+    def add_asset_archive(*args)
+    end
+
+
+
+    # (default: Debug ビルドの場合true、それ以外は false)
+    # @param [Boolean] enabled 
+    # 
+    def set_debug_tool_enabled(*args)
+    end
+
+
+
+    # デバッグ用のログファイルの出力有無を設定します。(default: Debug ビルドの場合true、それ以外は false)
+    # @param [Boolean] enabled 
+    # 
+    def set_engine_log_enabled(*args)
+    end
+
+
+
+    # デバッグ用のログファイルの出力先ファイルパスを設定します。(default: Empty(実行ファイルのディレクトリへ出力))
+    # @param [String] filePath 
+    # 
+    def set_engine_log_file_path(*args)
+    end
+
+
+
+end
+
+# アプリケーション全体にかかわる処理を行います。
+# 
+class Lumino::Engine
+    # エンジンの初期化処理を行います。
+    def initialize(*args)
+    end
+
+
+
+    # エンジンの終了処理を行います。
+    def finalize(*args)
+    end
+
+
+
+    # 
+    # @return [Boolean] アプリケーションの終了が要求されている場合は false を返します。
+    def update(*args)
+    end
+
+
+
+    # アプリケーション開始からの経過時間を取得します。この値はタイムスケールの影響を受けます。
+    # @return [] 
+    def time(*args)
+    end
+
+
+
+end
+
+# グローバルなアプリケーション状態を扱うための基本クラスです。
+# 
+class Lumino::Application
+    # エンジンの初期化処理が完了した後に呼び出されます。
+    def on_init(*args)
+    end
+
+
+
+    # 毎フレーム呼び出されます。
+    def on_update(*args)
+    end
+
+
+
+    # デフォルトで作成されるメインの World を取得します。
+    # @return [Lumino::World] 
+    def world(*args)
+    end
+
+
+
+    # 
+    def initialize(*args)
+    end
+
+
+
+end
+
+# 
+# 
+class Lumino::Debug
+    # ウィンドウ上にデバッグ文字列を表示します。
+    # @overload print(str)
+    #   ウィンドウ上にデバッグ文字列を表示します。
+    #   @param [] str 
+    #   
+    # @overload print(time, str)
+    #   表示時間を指定して、ウィンドウ上にデバッグ文字列を表示します。
+    #   @param [Float] time 
+    #   @param [] str 
+    #   
+    # @overload print(time, color, str)
+    #   表示時間と文字色を指定して、ウィンドウ上にデバッグ文字列を表示します。
+    #   @param [Float] time 
+    #   @param [Lumino::Color] color 
+    #   @param [] str 
+    #   
+    def print(*args)
     end
 
 

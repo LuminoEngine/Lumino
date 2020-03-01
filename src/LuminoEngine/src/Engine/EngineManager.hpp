@@ -70,7 +70,7 @@ struct EngineSettings
 	String engineResourcesPath;
 
     intptr_t userMainWindow = 0;
-	bool standaloneFpsControl = false;
+	bool standaloneFpsControl = true;
 	bool createMainLights = false;
 	int frameRate = 60;
 	bool debugToolEnabled = false;
