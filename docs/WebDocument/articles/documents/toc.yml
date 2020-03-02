@@ -50,6 +50,19 @@
   - name: グラフィックスの基本仕様
     href: tips/graphics-spec.md
 
+- name: プラットフォーム固有の情報
+  items: 
+    - name: Windows
+      href: platform-specific/windows.md
+    - name: macOS
+      href: platform-specific/macOS.md
+    - name: iOS
+      href: platform-specific/iOS.md
+    - name: Android
+      href: platform-specific/android.md
+    - name: Web
+      href: platform-specific/web.md
+
 - name: 未整理・古いドキュメント
   href: old-docs/index.md
   items:
@@ -85,19 +98,8 @@
 
   - name: プラットフォーム固有の情報
     items: 
-      - name: Windows
-        href: old-docs/platform-specific/windows.md
-        items:
-        - name: Nuget からインストールする
-          href: old-docs/platform-specific/windows-Install-nuget.md
-      - name: macOS
-        href: old-docs/platform-specific/macOS.md
-      - name: iOS
-        href: old-docs/platform-specific/iOS.md
-      - name: Android
-        href: old-docs/platform-specific/android.md
-      - name: Web
-        href: old-docs/platform-specific/web.md
+      - name: Nuget からインストールする
+        href: old-docs/platform-specific/windows-Install-nuget.md
 
   - name: プログラミングガイド
     href: old-docs/programming-guide/index.md

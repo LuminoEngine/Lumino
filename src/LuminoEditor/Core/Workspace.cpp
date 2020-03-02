@@ -103,13 +103,13 @@ ln::Result Workspace::runProject(const ln::String& target)
 	// Windows
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto exe = ln::FileSystem::getFile(ln::Path(m_mainProject->windowsProjectDir(), u"bin/Debug"), u"*.exe");
+		auto exe = ln::FileSystem::getFile(ln::Path::combine(m_mainProject->windowsProjectDir(), u"bin", u"x64", u"Debug"), u"*.exe");
 		ln::Process::execute(exe);
 	}
 	// Web
 	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto buildDir = ln::Path::combine(m_mainProject->buildDir(), u"Web").canonicalize();
+		auto buildDir = ln::Path::combine(m_mainProject->acquireBuildDir(), u"Web").canonicalize();
 
 		ln::Process proc;
 		proc.setProgram(m_buildEnvironment->python());

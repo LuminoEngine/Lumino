@@ -149,6 +149,12 @@ void Project::restore()
 	m_context->restore();
 }
 
+const ln::Path& Project::acquireBuildDir() const
+{
+	ln::FileSystem::createDirectory(m_buildDir);
+	return m_buildDir;
+}
+
 bool Project::existsProjectFile(const ln::Path& dir)
 {
     if (ln::FileSystem::existsDirectory(dir)) {

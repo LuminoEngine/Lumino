@@ -43,20 +43,49 @@ cd hello
 
 プロジェクトを実行する
 --------
-Lumino のプロジェクトディレクトリ(.lnproj ファイルのあるディレクトリ)で次のコマンドを入力します。
+
+プロジェクトの中に作成されている `src/App.cpp` が Lumino のエントリーポイントです。ここには次のようなプログラムが書かれています。
+
+```cpp
+#include <Lumino.hpp>
+
+class HelloApp : public Application
+{
+    void onStart() override
+    {
+        auto text = UITextBlock::create(u"Hello, Lumino!");
+    }
+
+    void onUpdate() override
+    {
+    }
+};
+
+LUMINO_APP(HelloApp);
+```
+
+Lumino のプロジェクトディレクトリ(.lnproj ファイルのあるディレクトリ)で次のコマンドを入力してみましょう。
 
 ```sh
 lumino run
 ```
 
-動作中のプラットフォーム向けのアプリがビルド・実行され、ウィンドウが表示されます。
+動作中のプラットフォーム向けのアプリがビルド・実行されます。
 
-その他のプラットフォーム固有の情報は以下のページを参照してください。
-- [Windows アプリ](../platform-specific/windows.md)
-- [macOS アプリ](../platform-specific/macos.md)
-- [iOS アプリ](../platform-specific/ios.md)
-- [Android アプリ](../platform-specific/android.md)
-- [Web アプリ](../platform-specific/web.md)
+![](img/first-program.png)
+
+中央に "Hello, Lumino!" と書かれたウィンドウが表示されましたか？
+
+これで Lumino を使うための準備が整いました。次は [チュートリアル](../first-tutorial/1-basic.md) に進みましょう！
+
+> [!Note]
+> Visual Studio などの IDE を使用して開発を行う方法や、プラットフォーム固有の情報は以下のページを参照してください。
+>
+> - [Windows アプリ (Visual Studio を使って開発する)](../platform-specific/windows.md)
+> - [macOS アプリ](../platform-specific/macos.md)
+> - [iOS アプリ](../platform-specific/ios.md)
+> - [Android アプリ](../platform-specific/android.md)
+> - [Web アプリ](../platform-specific/web.md)
 
 
 

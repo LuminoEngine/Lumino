@@ -24,7 +24,7 @@ gem をインストールする
 
 コマンドラインで次のコマンドを実行します。
 
-```
+```sh
 gem install lumino
 ```
 
@@ -33,7 +33,7 @@ gem install lumino
 
 任意のディレクトリで、次のコマンドを実行します。
 
-```
+```sh
 lumino-rb new hello
 ```
 
@@ -41,6 +41,8 @@ lumino-rb new hello
 
 最初のプログラム
 ----------
+
+`main.rb` には次のようなプログラムが書かれています。
 
 ```ruby
 require "lumino"
@@ -54,7 +56,17 @@ end
 App.new.run
 ```
 
+このまま、次のコマンドで実行してみましょう。
+
+```sh
+ruby main.rb
+```
+
 ![](img/first-program.png)
+
+中央に "Hello, Lumino!" と書かれたウィンドウが表示されましたか？
+
+これで Lumino を使うための準備が整いました。次は [チュートリアル](../first-tutorial/1-basic.md) に進みましょう！
 
 > [!Note]
 > Lumino はソースファイルだけではなくアセットの管理やデプロイのサポートなど、ゲームを開発するための一連の作業を `プロジェクト` という単位で管理します。

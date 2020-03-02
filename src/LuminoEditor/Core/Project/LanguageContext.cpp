@@ -33,7 +33,7 @@ ln::Result LanguageContext::build(const ln::String& target)
 ln::Result LanguageContext::buildAssets() const
 {
 	ln::detail::CryptedAssetArchiveWriter writer;
-	auto outputFilePath = ln::Path(m_project->buildDir(), u"Assets.lca");
+	auto outputFilePath = ln::Path(m_project->acquireBuildDir(), u"Assets.lca");
 	writer.open(outputFilePath, ln::detail::CryptedArchiveHelper::DefaultPassword);
 
 	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
@@ -94,14 +94,12 @@ ln::Result LanguageContext::buildAssets() const
 
 	// Web
 	{
-		if (ln::FileSystem::existsDirectory(m_project->buildDir())) {
-			auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
-			ln::FileSystem::createDirectory(dstDir);
+		auto dstDir = ln::Path::combine(m_project->acquireBuildDir(), u"Web");
+		ln::FileSystem::createDirectory(dstDir);
 
-			auto dst = ln::Path::combine(dstDir, u"Assets.lca");
-			ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-			CLI::info(u"Copy to " + dst);
-		}
+		auto dst = ln::Path::combine(dstDir, u"Assets.lca");
+		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+		CLI::info(u"Copy to " + dst);
 	}
 
 	CLI::info(u"Compilation succeeded.");
@@ -165,7 +163,7 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->engineDevelopmentRepoRootDir()));
 	}
 
-	auto buildDir = ln::Path(project()->buildDir(), arch);
+	auto buildDir = ln::Path(project()->acquireBuildDir(), arch);
 	ln::FileSystem::createDirectory(buildDir);
 
 	ln::Process cmake;
@@ -189,7 +187,7 @@ ln::Result CppLanguageContext::build_WebTarget() const
 	// emsdk がなければインストールする
 	workspace->buildEnvironment()->prepareEmscriptenSdk();
 
-	auto buildDir = ln::Path::combine(project()->buildDir(), u"Web").canonicalize();
+	auto buildDir = ln::Path::combine(project()->acquireBuildDir(), u"Web").canonicalize();
 	auto installDir = ln::Path::combine(buildDir, u"Release");
 	auto cmakeSourceDir = project()->emscriptenProjectDir();
 	auto script = ln::Path::combine(buildDir, u"build.bat");

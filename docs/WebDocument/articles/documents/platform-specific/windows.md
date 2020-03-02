@@ -7,14 +7,14 @@ Lumino プロジェクトフォルダには Visual Studio のソリューショ�
 
 このファイルを Visual Studio で開くことで、Visual Studio 上で開発することができます。
 
-
+プログラムの実行は、[デバッグ] メニューの [デバッグの開始] から行います。
 
 Windows アプリのビルド (コマンドライン)
 --------
 ビルドは次のコマンドで行います。
 
 ```sh
-lumino-cli build Windows
+lumino build Windows
 ```
 
 
@@ -23,5 +23,5 @@ Windows アプリの実行 (コマンドライン)
 実行は次のコマンドで行います。
 
 ```sh
-lumino-cli run Windows
+lumino run Windows
 ```
