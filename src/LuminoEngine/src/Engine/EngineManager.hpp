@@ -75,6 +75,7 @@ struct EngineSettings
 	int frameRate = 60;
 	bool debugToolEnabled = false;
 
+
     bool defaultObjectsCreation = true;
     bool useGLFWWindowSystem = true;
     bool graphicsContextManagement = true;
@@ -121,6 +122,7 @@ public:
     void initializeVisualManager();
     void initializeSceneManager();
 	void initializeUIManager();
+	void initializeDefaultObjects();
 
 	bool updateUnitily();
 	void updateFrame();

@@ -49,7 +49,7 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
 	//ln::FileSystem::createDirectory(m_assetsDir);
 	//ln::FileSystem::createDirectory(projectsDir());
 	//ln::FileSystem::createDirectory(m_buildDir);
-	ln::FileSystem::setAttribute(m_buildDir, ln::FileAttribute::Hidden);
+	//ln::FileSystem::setAttribute(m_buildDir, ln::FileAttribute::Hidden);
 
 	m_context = ln::makeRef<CppLanguageContext>(this);
 	

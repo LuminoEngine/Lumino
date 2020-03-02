@@ -20,19 +20,18 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-        ::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/Roguelike2");
-		//::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/Roguelike2");
+        ::SetCurrentDirectoryW(L"D:/LocalProj/LN");
         ln::Logger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
 			"<program>", "-d",
-			
+			"new", "test4",
 			//"new", "TH-10", "-t", "cmake",
             
 			//"build", "Web",
 			//"build", "Web",
 			
-			"build",// "-p", "Windows"
+			//"build",// "-p", "Windows"
 
 			//"<program>", "dev-install-tools",
 
@@ -74,6 +73,7 @@ int main(int argc, char** argv)
 	
         ln::Logger::addStdErrAdapter();
 
+		ln::EngineContext::current()->initializeEngineManager();
 		ln::EngineContext::current()->engineManager()->initializeAssetManager();
 
 		exitCode = processCommands(argc, argv);
