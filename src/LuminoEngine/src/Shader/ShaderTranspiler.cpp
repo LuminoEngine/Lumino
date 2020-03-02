@@ -779,6 +779,9 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
     for (size_t i = 0; i < resources.uniform_buffers.size(); i++) {
         glsl.unset_decoration(resources.uniform_buffers[i].id, spv::DecorationBinding);
     }
+    for (size_t i = 0; i < resources.sampled_images.size(); i++) {
+        glsl.unset_decoration(resources.sampled_images[i].id, spv::DecorationBinding);
+    }
 
     // HLSL では Texture と SamplerState は独立しているが、GLSL では統合されている。
     // ここでは "キーワード + Texture名 + SamplerState名" というような名前を付けておく。

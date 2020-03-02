@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     
 		const char* debugArgv[] = {
 			"<program>", "-d",
-			"new", "test4",
+			//"new", "test4",
 			//"new", "TH-10", "-t", "cmake",
             
 			//"build", "Web",
@@ -46,8 +46,7 @@ int main(int argc, char** argv)
 			//"restore",
 
             //"fxc", "Assets/LineWave.fx",
-            //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx",
-            //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
+            "fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx",
 
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
