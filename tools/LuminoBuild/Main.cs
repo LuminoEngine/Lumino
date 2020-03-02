@@ -28,9 +28,9 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
-                args = new string[] { "BuildEmbeddedResources" };
+                //args = new string[] { "BuildEmbeddedResources" };
 
-                //args = new string[] { "MakeNativePackage" };
+                args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
             }
 

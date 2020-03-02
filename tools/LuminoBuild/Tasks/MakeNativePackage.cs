@@ -96,6 +96,7 @@ namespace LuminoBuild.Tasks
                     if (Directory.Exists(sourceBinDir))
                     {
                         Utils.CopyDirectory(sourceBinDir, destinationToolDir, pattern: "*.exe");
+
                         Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));
                     }
                 }
@@ -118,7 +119,7 @@ namespace LuminoBuild.Tasks
                 {
                     Utils.CopyDirectory(
                         Path.Combine(builder.LuminoToolsDir, "ProjectTemplates"),
-                        Path.Combine(builder.LuminoBuildDir, "", "ProjectTemplates"));
+                        Path.Combine(destinationToolDir, "ProjectTemplates"));
                 }
             }
 
