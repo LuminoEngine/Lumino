@@ -166,7 +166,7 @@ jobs:
 
   #==============================================================================
   Package-Windows:
-    needs: [Build-Native-MSVC2019-x64-MT, Build-Native-Android]
+    needs: [Build-Native-MSVC2019-x64-MT, Build-Native-Web, Build-Native-Android]
     runs-on: windows-2019
     
     steps:
