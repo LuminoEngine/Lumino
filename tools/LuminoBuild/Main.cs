@@ -18,6 +18,8 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
+                args = new string[] { "BuildLocalPackage" };
+
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MT" };
@@ -30,7 +32,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildLLVM" };
                 //args = new string[] { "BuildEmbeddedResources" };
 
-                args = new string[] { "MakeNativePackage" };
+                //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
             }
 
@@ -74,7 +76,6 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.BuildEmbeddedResources());
             builder.Tasks.Add(new Tasks.BuildEngine_MSVC());
             builder.Tasks.Add(new Tasks.CompressPackage());
-            builder.Tasks.Add(new Tasks.CopyEngineLibsToRepoRoot());
             builder.Tasks.Add(new Tasks.MakeNuGetPackage_Core());
             builder.Tasks.Add(new Tasks.BuildEngine_Android());
             builder.Tasks.Add(new Tasks.BuildEngine_Emscripten());
@@ -82,11 +83,8 @@ namespace LuminoBuild
             builder.Tasks.Add(new Tasks.MakeInstaller_Win32());
             builder.Tasks.Add(new Tasks.MakePackage_macOS());
             builder.Tasks.Add(new Tasks.MakePackage_Ruby());
-            builder.Rules.Add(new Rules.MakePackage());
-            builder.Rules.Add(new Rules.MakeLocalPackage());
-            builder.Rules.Add(new Rules.BuildForCI_1());
-            builder.Rules.Add(new Rules.BuildForCI_2());
-            builder.Rules.Add(new Rules.BuildForCI_3());
+            builder.Rules.Add(new Rules.BuildPackage());
+            builder.Rules.Add(new Rules.BuildLocalPackage());
             
             
             if (args.Length >= 1)

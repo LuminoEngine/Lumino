@@ -19,6 +19,7 @@ void TestEnv::setup()
 	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
     //EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
 	EngineContext::current()->initializeEngineManager();
+	detail::EngineDomain::engineManager()->initializeAllManagers();
     detail::EngineDomain::engineManager()->sceneManager()->autoAddingToActiveWorld = true;
 
 

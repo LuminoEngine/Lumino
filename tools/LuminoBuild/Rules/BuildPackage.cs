@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace LuminoBuild.Rules
 {
-    class MakePackage : BuildRule
+    class BuildPackage : BuildRule
     {
-        public override string Name => "MakePackage";
+        public override string Name => "BuildPackage";
 
         public override void Build(Builder builder)
         {
-            var local = new MakeLocalPackage();
+            var local = new BuildLocalPackage();
             local.Build(builder);
 
             if (Utils.IsWin32)

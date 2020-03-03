@@ -18,7 +18,7 @@
 
 ### macOS
 - macOS 10.11+
-- OpenGL 3.2+
+- OpenGL 3.3+
 
 ### iOS
 - iOS 7+
@@ -35,5 +35,5 @@
 > 0.8.0 時点ではエミュレータ上で動作確認を行っています。
 
 ### Web
-- Chrome, Firefox
-
+- Chrome
+- WebGL 2.0

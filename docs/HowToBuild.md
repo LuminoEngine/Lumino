@@ -1,20 +1,19 @@
 ビルド方法
 ========
 
-
 必要なパッケージをインストールする
 --------
 ### Windows
 
 #### Visual Studio
-Visual Studio 2017 をインストールしてください。
+Visual Studio 2019 をインストールしてください。
 
 また、Visual Studio Installer では次のワークロードをインストールしてください。
 * C++ によるデスクトップ開発
 * .NET Core クロスプラットフォームの開発
 
-
 #### Chocolatey
+
 Chocolatey をインストールしてください。
 ― [Chocolatey installation](https://chocolatey.org/docs/installation)
 
@@ -34,6 +33,7 @@ choco install -y mingw
 ```
 
 ### macOS
+
 [dotnet](https://docs.microsoft.com/ja-jp/dotnet/core/macos-prerequisites?tabs=netcore2x) をインストールしてください。
 
 その他のパッケージは homebrew でインストールします。
@@ -44,13 +44,28 @@ brew install git cmake doxygen docfx openssl python3
 
 ビルドする
 --------
+
 Lumino のルートフォルダ (build.csproj のあるフォルダ) で次のコマンドを実行してください。
+
+Windows (MSVC):
+```
+dotnet run -- BuildLocalPackage MSVC2019-x64-MT
+```
+
+macOS:
+```
+dotnet run -- BuildLocalPackage macOS
+```
+
+Visual Studio や Xcode のプロジェクトファイルは `build/ターゲット名` フォルダ内に作られます。これを開いて、各 IDE で開発できます。
+
+また、上記コマンドは特定ターゲットのみのビルドを行います。Web や Android, iOS ターゲットなども含めてフルビルドする場合は次のコマンドを使用します。
 
 ```
 dotnet run
 ```
 
-このコマンドは Lumino 本体のビルド、ドキュメントのビルド、リリースパッケージの作成までの一連のタスクを実行します。
+なお、このコマンドは Lumino 本体のビルド、ドキュメントのビルド、リリースパッケージの作成までの一連のタスクを実行します。
 
 より細かい単位でタスクを実行したい場合は次のコマンドを使用します。
 
@@ -62,20 +77,3 @@ dotnet run -- <タスク名>
 - tools/LuminoBuild/Rules
 - tools/LuminoBuild/Tasks
 
-
-TIPS
---------
-Lumino の開発を行う場合、ビルド後、build/<ターゲット名> フォルダ内に生成されている各 IDE 用のプロジェクトを開いてコーディングを行うとスムーズに開発できます。その場合は最初に `dotnet run` を実行してパッケージ一式をビルドしてください。
-
-例えば、Visual Studio のプロジェクト (ソリューションファイル) は build/MSVC2017-x86-MT/Lumino.sln などに生成されます。
-
-
-After this, please check in the "build/..." folder.
-
-
-emscripten
-
-emsdk Windows installer
-http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html
-
-https://gist.github.com/faithandbrave/9b3d439d135e63abdbe7

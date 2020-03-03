@@ -7,20 +7,16 @@ using System.Threading.Tasks;
 namespace LuminoBuild.Rules
 {
     // 開発作業用のパッケージを作成する
-    class MakeLocalPackage : BuildRule
+    class BuildLocalPackage : BuildRule
     {
-        public override string Name => "MakeLocalPackage";
+        public override string Name => "BuildLocalPackage";
 
         public override void Build(Builder builder)
         {
-            if (!builder.HasFlagArgument("disable-build-external"))
-            {
-                builder.DoTask("BuildExternalProjects");
-            }
+            builder.DoTask("BuildExternalProjects");
 
-            if (Utils.IsWin32)
+            if (BuildEnvironment.IsMSVCTarget)
             {
-                builder.DoTask("MakeVSProjects");
                 builder.DoTask("BuildEngine_MSVC");
             }
             if (Utils.IsMac)
@@ -29,20 +25,19 @@ namespace LuminoBuild.Rules
                 builder.DoTask("BuildEngine_iOS");
             }
 
-            if (EmscriptenBuildEnv.EmscriptenFound)
+            if (BuildEnvironment.IsWebTarget && EmscriptenBuildEnv.EmscriptenFound)
             {
                 builder.DoTask("BuildEngine_Emscripten");
             }
 
-            if (AndoridBuildEnv.AndroidStudioFound)
+            if (BuildEnvironment.IsAndroidTarget && AndoridBuildEnv.AndroidStudioFound)
             {
                 builder.DoTask("BuildEngine_AndroidJNI");
             }
 
             builder.DoTask("BuildDocuments");
 
-            builder.DoTask("MakeReleasePackage");
-            builder.DoTask("CopyEngineLibsToRepoRoot");
+            builder.DoTask("MakeNativePackage");
         }
     }
 }
