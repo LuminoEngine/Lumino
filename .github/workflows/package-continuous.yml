@@ -1,7 +1,7 @@
 name: Package
 
 on:
-  push:
+  pull_request:
     branches:
     - master
 
@@ -245,3 +245,31 @@ jobs:
       with:
         name: Lumino-latest-macOS.zip
         path: ./build/Lumino-latest-macOS
+
+  #==============================================================================
+  Ruby:
+    needs: Native-MSVC2019-x64-MT
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+        architecture: 'x64'
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: NativePackage-MSVC2019-x64-MT
+        path: ./build/NativePackage
+
+    - name: Build and test with Rake
+      run: |
+        ls ./build/MSVC2019-x64-MT/EngineInstall
+        ls ./build/MSVC2019-x64-MT/EngineInstall/bin
+        gem install bundler
+        dotnet run -- MakePackage_Ruby
+

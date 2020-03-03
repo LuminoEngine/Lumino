@@ -1,7 +1,7 @@
 name: Verification
 
 on:
-  pull_request:
+  push:
     branches:
     - master
 
@@ -149,31 +149,3 @@ jobs:
         dotnet run -- BuildExternalProjects iOS-OS64
         dotnet run -- BuildExternalProjects iOS-SIMULATOR64
         dotnet run -- BuildEngine_iOS
-
-  #==============================================================================
-  Ruby:
-    needs: Native-MSVC2019-x64-MT
-    runs-on: windows-2019
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Set up Ruby
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.6.x
-        architecture: 'x64'
-
-    - uses: actions/download-artifact@v1
-      with:
-        name: LuminoEngine-MSVC2019-x64-MT
-        path: ./build/MSVC2019-x64-MT/EngineInstall
-
-    - name: Build and test with Rake
-      run: |
-        ls ./build/MSVC2019-x64-MT/EngineInstall
-        ls ./build/MSVC2019-x64-MT/EngineInstall/bin
-        gem install bundler
-        dotnet run -- MakePackage_Ruby
-
