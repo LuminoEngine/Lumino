@@ -248,7 +248,7 @@ jobs:
 
   #==============================================================================
   Ruby:
-    needs: Native-MSVC2019-x64-MT
+    needs: Build-Native-MSVC2019-x64-MT
     runs-on: windows-2019
 
     steps:
