@@ -111,9 +111,36 @@ ln::Result Workspace::runProject(const ln::String& target)
 	{
 		auto buildDir = ln::Path::combine(m_mainProject->acquireBuildDir(), u"Web").canonicalize();
 
+		ln::String text = uR"(# -*- coding: utf-8 -*-
+import http.server
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import socketserver
+
+PORT = 8000
+
+Handler = http.server.SimpleHTTPRequestHandler
+Handler.extensions_map={
+    '.wasm': 'application/wasm',
+    '.manifest': 'text/cache-manifest',
+    '.html': 'text/html',
+    '.png': 'image/png',
+    '.jpg': 'image/jpg',
+    '.svg':	'image/svg+xml',
+    '.css':	'text/css',
+    '.js': 'application/x-javascript',
+    '': 'application/octet-stream', # Default
+}
+httpd = socketserver.TCPServer(("", PORT), Handler)
+
+print("serving at port", PORT)
+httpd.serve_forever()
+)";
+		auto scriptName = ln::Path(buildDir, u"serve.py");
+		ln::FileSystem::writeAllText(scriptName, text);
+
 		ln::Process proc;
 		proc.setProgram(m_buildEnvironment->python());
-		proc.setArguments({u"-m", u"SimpleHTTPServer", u"8000"});
+		proc.setArguments({ scriptName });
 		proc.setWorkingDirectory(buildDir);
 		proc.setUseShellExecute(false);
 		proc.start();

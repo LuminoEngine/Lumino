@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-        ::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test3");
+        ::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test2");
         ln::Logger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 
 			
 
-			"run"//, "Web", //"Windows",
+			"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
@@ -268,12 +268,13 @@ static int processCommands(int argc, char** argv)
 			}
 
 
-			BuildCommand cmd;
-			cmd.target = target;
-			if (cmd.execute(workspace, workspace->mainProject()) != 0) {
-				return 1;
-			}
+			//BuildCommand cmd;
+			//cmd.target = target;
+			//if (cmd.execute(workspace, workspace->mainProject()) != 0) {
+			//	return 1;
+			//}
 
+			workspace->buildEnvironment()->prepareEmscriptenSdk();
 			if (!workspace->runProject(target)) {
 				return 1;
 			}
