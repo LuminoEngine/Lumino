@@ -20,7 +20,7 @@ Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
   end
 
   tools_dir = File.expand_path("../../../../../build/NativePackage/Tools", __FILE__)
-  FileUtils.rm_r("Tools")
+  FileUtils.rm_r("Tools") if Dir.exist?("Tools")
   FileUtils.cp_r(tools_dir, 'Tools')
   if File.exist?('Tools/lumino.exe')
     File.rename('Tools/lumino.exe', 'Tools/lumino-rb.exe')
