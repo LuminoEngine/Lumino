@@ -164,6 +164,8 @@ public:
 	/** 指定した座標を向くように、オブジェクトを回転させます。 */
     void lookAt(float x, float y, float z, const Vector3& up) { return lookAt(Vector3(x, y, z), up); }
 
+	/** Component を追加します。 */
+	LN_METHOD()
     void addComponent(Component* component);
 
     void addTag(const StringRef& tag) { m_tags->add(tag); }

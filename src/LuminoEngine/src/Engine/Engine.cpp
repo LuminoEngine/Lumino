@@ -58,6 +58,11 @@ void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 	detail::EngineManager::s_settings.graphicsAPI = value;
 }
 
+void EngineSettings::setGraphicsDebugEnabled(bool enabled)
+{
+    detail::EngineManager::s_settings.graphicsDebugEnabled = enabled;
+}
+
 void EngineSettings::setDebugToolEnabled(bool enabled)
 {
 	detail::EngineManager::s_settings.debugToolEnabled = enabled;
@@ -131,7 +136,7 @@ void Engine::initialize()
 {
 	detail::EngineDomain::engineContext()->initializeEngineManager();
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
-    if (manager->settings2().externalMainLoop) {
+    if (manager->settings().externalMainLoop) {
         beginFrame();
     }
 }
@@ -140,7 +145,7 @@ void Engine::finalize()
 {
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
 	if (manager) {
-		if (manager->settings2().externalMainLoop) {
+		if (manager->settings().externalMainLoop) {
 			endFrame();
 		}
 		detail::EngineDomain::engineContext()->disposeEngineManager();
@@ -152,7 +157,7 @@ bool Engine::update()
 {
 
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
-    if (manager->settings2().externalMainLoop) {
+    if (manager->settings().externalMainLoop) {
         endFrame();
         beginFrame();
     }

@@ -153,15 +153,26 @@ enum class PlatformEventType
 
 
 /** マウスボタン */
+LN_ENUM()
 enum class MouseButtons
 {
-	None = 0,		/**< 無効または押されていないことを示す */
-	Left,			/**< 左ボタン */
-	Right,			/**< 右ボタン */
-	Middle,			/**< 中央ボタン */
+	/** 無効または押されていないことを示す */
+	None = 0,	
 
-	X1,				/**< 拡張ボタン1 */
-	X2,				/**< 拡張ボタン2 */
+	/** 左ボタン */
+	Left,
+
+	/** 右ボタン */
+	Right,
+
+	/** 中央ボタン */
+	Middle,
+
+	/** 拡張ボタン1 */
+	X1,
+
+	/** 拡張ボタン2 */
+	X2,
 };
 
 namespace detail {

@@ -8,7 +8,7 @@
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "GraphicsManager.hpp"
 #include "RenderTargetTextureCache.hpp"
-#include "OpenGLDeviceContext.hpp"
+#include "OpenGL/OpenGLDeviceContext.hpp"
 #ifdef LN_USE_VULKAN
 #include "Vulkan/VulkanDeviceContext.hpp"
 #endif
@@ -305,7 +305,7 @@ void GraphicsManager::createVulkanContext(const Settings& settings)
 
 	VulkanDevice::Settings dcSettings;
     dcSettings.mainWindow = settings.mainWindow;
-	dcSettings.debugMode = false;
+	dcSettings.debugMode = settings.debugMode;
 	auto ctx = makeRef<VulkanDevice>();
 	bool driverSupported = false;
 	if (!ctx->init(dcSettings, &driverSupported)) {

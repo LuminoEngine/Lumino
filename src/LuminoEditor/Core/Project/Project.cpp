@@ -1,6 +1,7 @@
 ﻿#include "EnvironmentSettings.hpp"
 #include "Workspace.hpp"
 #include "LanguageContext.hpp"
+#include "ProjectTemplateManager.hpp"
 #include "Project.hpp"
 
 namespace lna {
@@ -44,14 +45,15 @@ ln::Result Project::newProject(const ln::Path& projectDir, const ln::String& pro
     }
 
 	//ln::FileSystem::createDirectory(m_engineDir);
-	ln::FileSystem::createDirectory(m_sourcesDir);
-	ln::FileSystem::createDirectory(m_assetsDir);
-	ln::FileSystem::createDirectory(projectsDir());
-	ln::FileSystem::createDirectory(m_buildDir);
-	ln::FileSystem::setAttribute(m_buildDir, ln::FileAttribute::Hidden);
+	//ln::FileSystem::createDirectory(m_sourcesDir);
+	//ln::FileSystem::createDirectory(m_assetsDir);
+	//ln::FileSystem::createDirectory(projectsDir());
+	//ln::FileSystem::createDirectory(m_buildDir);
+	//ln::FileSystem::setAttribute(m_buildDir, ln::FileAttribute::Hidden);
 
 	m_context = ln::makeRef<CppLanguageContext>(this);
-	if (!m_context->applyTemplates(templateName)) {
+	
+	if (!m_workspace->projectTemplateManager()->applyTemplates(this, templateName)) {
 		return false;
 	}
     //if (!m_context->applyEngine()) {
@@ -145,6 +147,12 @@ void Project::close()
 void Project::restore()
 {
 	m_context->restore();
+}
+
+const ln::Path& Project::acquireBuildDir() const
+{
+	ln::FileSystem::createDirectory(m_buildDir);
+	return m_buildDir;
 }
 
 bool Project::existsProjectFile(const ln::Path& dir)

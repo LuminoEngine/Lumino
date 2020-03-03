@@ -23,9 +23,15 @@ class UIStyleInstance;
 // RenderView は別の RenderingContext の描画コマンド構築中に、レンダリングターゲットを生成する目的で render を実行することがある。
 // そのため render の実装は RenderingContext や GraphicsContext の状態に依存しないようにしなければならない。
 // TODO: onUpdateUILayout() など、少し UI に依存してきている。UI モジュールにもっていくのが正しい？
+
+/**
+ * RenderView
+ */
+LN_CLASS()
 class RenderView
 	: public Object
 {
+	LN_OBJECT;
 public:
 	RenderView();
 	virtual ~RenderView();

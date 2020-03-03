@@ -74,6 +74,7 @@ void UIContext::setupDefaultStyle()
 {
 	auto defaultStyle = makeObject<UIStyle>();
 	defaultStyle->setupDefault();
+	defaultStyle->fontSize = 15;
 
     auto theme = makeObject<UITheme>();
 	theme->setDefaultStyle(defaultStyle);

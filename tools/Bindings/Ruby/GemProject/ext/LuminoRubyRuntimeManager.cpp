@@ -169,9 +169,9 @@ VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retai
         LNRB_LOG_D("New Ruby object from WrapObjectForGetting (typeinfoIndex:%d)", typeinfoIndex);
         VALUE obj = m_typeInfoList[typeinfoIndex].factory(m_typeInfoList[typeinfoIndex].klass, handle);
         if (retain) {
-            registerWrapperObject(obj, true);
+            LnObject_Retain(handle);
         }
-        LnObject_Retain(handle);
+        registerWrapperObject(obj, true);
         return obj;
     }
     else {
@@ -181,12 +181,12 @@ VALUE LuminoRubyRuntimeManager::wrapObjectForGetting(LnHandle handle, bool retai
 
 LnHandle LuminoRubyRuntimeManager::getHandle(VALUE value) const
 {
-	if (value == Qnil) {
-		return LN_NULL_HANDLE;
-	}
-	Wrap_RubyObject* obj;
-	Data_Get_Struct(value, Wrap_RubyObject, obj);
-	return obj->handle;
+    if (value == Qnil) {
+        return LN_NULL_HANDLE;
+    }
+    Wrap_RubyObject* obj;
+    Data_Get_Struct(value, Wrap_RubyObject, obj);
+    return obj->handle;
 }
 
 int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc factory)
@@ -198,7 +198,7 @@ int LuminoRubyRuntimeManager::registerTypeInfo(VALUE klass, ObjectFactoryFunc fa
     int id =  m_typeInfoList.size() - 1;
 
     if (s_logLevel == LN_LOG_LEVEL_DEBUG) {
-        LNRB_LOG_D("Type registerd. (id: %d, displayName: %s)", id, RubyUtils::getClassName(klass).c_str());
+        LNRB_LOG_D("Type registerd. (id: %d, displayName: %s)", id, RubyUtils::getClassNameFromClass(klass).c_str());
     }
 
     return id;
@@ -216,24 +216,24 @@ void LuminoRubyRuntimeManager::registerWrapperObject(VALUE obj, bool forNativeGe
     }
 
     // grow
-	if (m_objectListIndexStack.size() == 0)
-	{
-		int growCount = m_objectList.size();
-		for (int i = 0; i < growCount; i++)
-		{
-			m_objectList.push_back({ Qnil, Qnil });
-			m_objectListIndexStack.push(growCount + i);
-		}
-	}
+    if (m_objectListIndexStack.size() == 0)
+    {
+        int growCount = m_objectList.size();
+        for (int i = 0; i < growCount; i++)
+        {
+            m_objectList.push_back({ Qnil, Qnil });
+            m_objectListIndexStack.push(growCount + i);
+        }
+    }
 
-	int index = m_objectListIndexStack.top();
-	m_objectListIndexStack.pop();
-	m_objectList[index].weakRef = obj;
+    int index = m_objectListIndexStack.top();
+    m_objectListIndexStack.pop();
+    m_objectList[index].weakRef = obj;
     if (forNativeGetting) {
         m_objectList[index].strongRef = obj;
     }
     
-	LnRuntime_SetManagedObjectId(handle, index);
+    LnRuntime_SetManagedObjectId(handle, index);
     LNRB_LOG_D("registerWrapperObject (handle:%u, ManagedObjectId:%d)\n", handle, index);
 
     // ユーザー定義型の型情報をオブジェクトにセットする
@@ -353,6 +353,41 @@ void LuminoRubyRuntimeManager::handleCreateInstanceCallback(int typeInfoId, LnHa
     LNRB_LOG_D("end: handleCreateInstanceCallback");
 }
 
+void LuminoRubyRuntimeManager::dumpInfo() const
+{
+    LnRuntime_DumpInfo();
+    
+    std::cout << std::endl;
+    std::cout << "Ruby alive objects" << std::endl;
+    std::cout << "----------" << std::endl;
+
+    for (size_t i = 0; i < m_objectList.size(); i++) {
+        const auto& item = m_objectList[i];
+        
+        if (item.weakRef != Qnil || item.strongRef != Qnil) {
+            std::cout << "mid: " << i;
+
+            VALUE obj = Qnil;
+            if (item.weakRef != Qnil) {
+                std::cout << "(weak) ";
+                obj = item.weakRef;
+            }
+            if (item.strongRef != Qnil) {
+                std::cout << "(strong) ";
+                obj = item.strongRef;
+            }
+
+            std::cout << "VALUE: " << obj;
+            std::cout << "(" << RubyUtils::getClassNameFromObject(obj) << ")" << std::endl;
+            std::cout << "  nid(Handle): " << getHandle(obj) << std::endl;
+            std::cout << "  TypeInfoName: " << RubyUtils::makeTypeInfoName(CLASS_OF(obj)) << std::endl;
+        }
+    }
+
+    std::cout << "----------" << std::endl;
+    std::cout << std::endl;
+}
+
 extern "C" void InitLuminoRubyRuntimeManager()
 {
     VALUE manager = rb_eval_string_protect("defined? $lumino_ruby_runtime_manager", NULL);
@@ -375,10 +410,16 @@ extern "C" void InitLuminoRubyRuntimeManager()
 //==============================================================================
 // RubyUtils
 
-std::string RubyUtils::getClassName(VALUE klass)
+std::string RubyUtils::getClassNameFromClass(VALUE klass)
 {
     VALUE v = rb_funcall(klass, rb_intern("name"), 0, 0);
     return std::string(StringValuePtr(v));
+}
+
+std::string RubyUtils::getClassNameFromObject(VALUE obj)
+{
+    VALUE klass = CLASS_OF(obj);
+    return getClassNameFromClass(klass);
 }
 
 std::string RubyUtils::makeTypeInfoName(VALUE klass)

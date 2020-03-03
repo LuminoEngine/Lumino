@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Common.hpp"
 #include "Object.hpp"
 
 namespace ln {

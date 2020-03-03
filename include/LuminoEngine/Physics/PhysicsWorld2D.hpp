@@ -17,6 +17,8 @@ class b2Body;
 class b2Fixture;
 class b2World;
 class b2FixtureDef;
+class b2Joint;
+class b2DistanceJoint;
 
 namespace ln {
 class RenderingContext;
@@ -162,6 +164,8 @@ class PhysicsObject2D
 public:
 	PhysicsWorld2D* physicsWorld() const { return m_ownerWorld; }
 
+	const Vector2& position() const { return m_position; }
+
 	/** このオブジェクトが属している PhysicsWorld2D からこのオブジェクトを除外します。 */
 	void removeFromPhysicsWorld();
 
@@ -179,6 +183,8 @@ public:
 
 
 public: // TODO: internal
+	Vector2 m_position;
+	b2Body* m_body;
     void setEventListener(detail::IPhysicsObjectEventListener* listener) { m_listener = listener; }
     void setOwnerData(void* data) { m_ownerData = data; }
     void* ownerData() const { return m_ownerData; }
@@ -201,6 +207,8 @@ protected:
 	virtual void onBeforeStepSimulation();
 	virtual void onAfterStepSimulation();
 	virtual void onRemoveFromPhysicsWorld();
+
+	void attemptAddToActiveWorld();
 
 LN_CONSTRUCT_ACCESS:
 	PhysicsObject2D();
@@ -245,7 +253,6 @@ public:
     void setPosition(const Vector2& value);
     void setPosition(const Vector3& value) { return setPosition(value.xy()); }
 
-    const Vector2& position() const { return m_position; }
 
     /** 回転角度を設定します。(unit: radian) */
     void setRotation(float value);
@@ -297,12 +304,10 @@ private:
         DirtyFlags_All = 0xFFFF,
     };
 
-    b2Body* m_body;
     //std::vector<b2Fixture*> m_fixtures;
     std::vector<Ref<CollisionShape2D>> m_shapes;
     uint32_t m_group;
 	uint32_t m_groupMask;
-    Vector2 m_position;
     float m_rotation;
     uint32_t m_dirtyFlags;
 
@@ -419,10 +424,8 @@ private:
         Vector2 center;
     };
 
-	b2Body* m_body;
 	//std::vector<b2Fixture*> m_fixtures;
 	std::vector<Ref<CollisionShape2D>> m_shapes;
-	Vector2 m_position;
 	float m_rotation;
     Vector2 m_velocity;
 	float m_mass;
@@ -436,6 +439,134 @@ private:
 
     bool m_modifyVelocityInSim = false; // TODO: test
 };
+
+class Joint2D
+	: public Object
+{
+public:
+	/** Get the physics world. */
+	PhysicsWorld2D* physicsWorld() const { return m_world; }
+
+	/** Remove the joint from the world. */
+	void removeFormWorld();
+
+
+LN_CONSTRUCT_ACCESS:
+	Joint2D();
+	virtual ~Joint2D() = default;
+	bool init();
+	virtual void onDispose(bool explicitDisposing) override;
+	void attemptAddToActiveWorld();
+
+protected:	// TODO: internal
+	void setJoint(b2Joint* joint);
+	b2Joint* joint() const { return m_joint; }
+	virtual bool createJoint() = 0;
+	void destroyJoint();
+	void dirtyCreation() { m_creationDirty = true; }
+	bool isCreationDirty() const { return m_creationDirty; }
+
+	PhysicsWorld2D* m_world;
+	b2Joint* m_joint;
+	bool m_creationDirty;
+
+	friend class PhysicsWorld2D;
+	friend class RigidBody2D;
+};
+
+
+/*
+ * SpringJoint2D
+ *
+ * AnchorPoint は　Body のローカル座標上の点です。(0, 0) は Body の原点 (中心点) です。
+ */
+class SpringJoint2D
+	: public Joint2D
+{
+public:
+	static Ref<SpringJoint2D> create();
+	static Ref<SpringJoint2D> create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB);
+
+	/** Body を設定します。 */
+	void setBodyA(PhysicsObject2D* value);
+
+	/** Body を取得します。 */
+	PhysicsObject2D* bodyA() const { return m_bodyA; }
+
+	/** Body を設定します。 */
+	void setBodyB(PhysicsObject2D* value);
+
+	/** Body を取得します。 */
+	PhysicsObject2D* bodyB(const Vector2& value) const { return m_bodyB; }
+
+	/** BodyA 側の AnchorPoint を設定します。(default: (0, 0)) */
+	void setAnchorA(const Vector2& value);
+
+	/** BodyA 側の AnchorPoint を取得します。 */
+	const Vector2& anchorA() const { return m_anchorA; }
+
+	/** BodyB 側の AnchorPoint を設定します。(default: (0, 0)) */
+	void setAnchorB(const Vector2& value);
+
+	/** BodyB 側の AnchorPoint を取得します。 */
+	const Vector2& anchorB() const { return m_anchorB; }
+
+	/** ばねの長さを設定します。(default: 0.0)
+	 *
+	 * これはばねの自然状態の長さで、2 つの Body 間の距離をこの値に保とうとします。
+	 * 値が 0.0 以下である場合、Joint 作成時の 2 つの Body 間の距離を使用します。
+	 */
+	void setLength(float value);
+
+	/** ばねの長さを取得します。 */
+	float length() const { return m_length; }
+
+
+LN_CONSTRUCT_ACCESS:
+	SpringJoint2D();
+	virtual ~SpringJoint2D() = default;
+	bool init();
+	bool init(PhysicsObject2D* bodyA, const Vector2& anchor1, PhysicsObject2D* bodyB, const Vector2& anchor2, float stiffness, float damping);
+
+private:
+	virtual bool createJoint() override;
+	//virtual void destroyJoint() override;
+
+	//b2DistanceJoint* m_joint;
+	PhysicsObject2D* m_bodyA;
+	PhysicsObject2D* m_bodyB;
+	Vector2 m_anchorA;
+	Vector2 m_anchorB;
+	float m_stiffness;
+	float m_damping;
+	float m_length;
+};
+
+
+class RopeJoint2D
+	: public Joint2D
+{
+public:
+	static Ref<RopeJoint2D> create();
+	static Ref<RopeJoint2D> create(PhysicsObject2D* bodyA, PhysicsObject2D* bodyB);
+
+LN_CONSTRUCT_ACCESS:
+	RopeJoint2D();
+	virtual ~RopeJoint2D() = default;
+	bool init();
+	bool init(PhysicsObject2D* bodyA, const Vector2& anchorA, PhysicsObject2D* bodyB, const Vector2& anchorB);
+
+private:
+	virtual bool createJoint() override;
+	//virtual void destroyJoint() override;
+
+	//b2DistanceJoint* m_joint;
+	PhysicsObject2D* m_bodyA;
+	PhysicsObject2D* m_bodyB;
+	Vector2 m_anchorA;
+	Vector2 m_anchorB;
+};
+
 
 struct RaycastResult2D
 {
@@ -459,12 +590,22 @@ class PhysicsWorld2D
 	: public Object
 {
 public:
-    bool raycast(const Vector3& origin, const Vector2& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, RaycastResult2D* outResult = nullptr);
+
+	/** Change the global gravity. */
+	void setGravity(const Vector2& value) { m_gravity = value; }
+
+	/** Get the global gravity. */
+	Vector2 gravity() const { return m_gravity; }
+	
+	bool raycast(const Vector3& origin, const Vector2& direction, float maxDistance/* = Math::Inf*/, uint32_t layerMask /*= 0xFFFFFFFF*/, bool queryTrigger /*= false*/, RaycastResult2D* outResult = nullptr);
     bool raycast(const Vector3& origin, const Vector2& direction, float maxDistance, uint32_t layerMask, RaycastResult2D* outResult = nullptr) { return raycast(origin, direction, maxDistance, layerMask, false, outResult); }
 
 
 	void addPhysicsObject(PhysicsObject2D* physicsObject);
 	void removePhysicsObject(PhysicsObject2D* physicsObject);
+	void addJoint(Joint2D* joint);
+	void removeJoint(Joint2D* joint);
+
 	void stepSimulation(float elapsedSeconds);
 	void renderDebug(RenderingContext* context);
 
@@ -477,14 +618,27 @@ LN_CONSTRUCT_ACCESS:
 	void init();
     virtual void onDispose(bool explicitDisposing) override;
 
-private:
+public: // TODO:
 	void removeInternal(PhysicsObject2D* physicsObject);
+	void addJointInternal(Joint2D* joint);
+	void removeJointInternal(Joint2D* joint);
+	void updateList();
+	void updateBodyAndJointList();
+
+	Vector2 m_gravity;
 
 	b2World* m_world;
     std::unique_ptr<LocalContactListener> m_contactListener;
 	std::unique_ptr<PhysicsWorld2DDebugDraw> m_debugDraw;
+
 	List<Ref<PhysicsObject2D>> m_objects;
+	std::vector<Ref<PhysicsObject2D>> m_delayAddBodies;
 	std::vector<PhysicsObject2D*> m_removeList;
+
+	List<Ref<Joint2D>> m_joints;
+	std::vector<Ref<Joint2D>> m_delayAddJoints;
+	std::vector<Joint2D*> m_delayRemoveJoints;
+
 	bool m_inStepSimulation;
 };
 

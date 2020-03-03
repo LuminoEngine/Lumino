@@ -278,7 +278,7 @@ int main(int argc, char** argv)
 #ifdef _WIN32
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-	GlobalLogger::addStdErrAdapter();
+	Logger::addStdErrAdapter();
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
@@ -350,8 +350,8 @@ int main(int argc, char** argv)
 	//return UISandboxMain();
 
 
-    //GlobalLogger::addStdErrAdapter();
-	//GlobalLogger::setLevel(LogLevel::Verbose);
+    //Logger::addStdErrAdapter();
+	//Logger::setLevel(LogLevel::Verbose);
 	int div = 2;
     EngineSettings::setMainWindowSize(640 / div, 480 / div);
     //EngineSettings::setMainWorldViewSize(640 / div, 480 / div);

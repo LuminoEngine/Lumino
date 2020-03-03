@@ -1,3 +1,6 @@
+
+- name: ダウンロード
+  href: articles/getting-started/download.md
 - name: ドキュメント
   href: articles/documents/index.md
 - name: API リファレンス

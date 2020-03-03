@@ -20,8 +20,9 @@ using TestDelegate = Delegate<int(int a)>;
 /**
  * スプライトオブジェクトを表します。
  *
- * デフォルトの BlendMode は Alpha です。
- * デフォルトの CullMode は None です。（両面表示となります）
+ * - デフォルトの BlendMode は Alpha です。
+ * - デフォルトの CullMode は None です。（両面表示）
+ * - デフォルトの ShadingModel は Unlit です。
  */
 LN_CLASS()
 class Sprite
@@ -44,6 +45,7 @@ public:
         friend class Sprite;
     };
 
+	static Ref<Sprite> create(Texture* texture);
     static Ref<Sprite> create(Texture* texture, float width, float height);
 	static Ref<Sprite> create(SpriteSheet* frameSet);
 	
@@ -57,7 +59,12 @@ public:
     void setTexture(Texture* value);
 
     /** スプライトの大きさを設定します。 */
+    LN_METHOD(Property)
     void setSize(const Size& value);
+
+	/** スプライトの大きさを設定します。 */
+	LN_METHOD(OverloadPostfix = "WH")
+	void setSize(float width, float height) { setSize(Size(width, height)); }
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
 	//LN_METHOD(Property)

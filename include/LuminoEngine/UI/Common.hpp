@@ -54,13 +54,13 @@ enum class UICollectionChangedAction
 namespace detail {
 
 // TODO: UI モジュールではなく共通の場所に持っていく。WorldObject も似たような管理を行う。
-enum class ObjectManagementFlags
+enum class ObjectManagementFlags : uint8_t
 {
 	None = 0,
-	AutoAddToActiveScene = 1 << 1,
+	AutoAddToPrimaryElement = 1 << 1,
 };
 
-enum class UISpecialElementFlags
+enum class UISpecialElementFlags : uint8_t
 {
 	None = 0,
 	FrameWindow = 1 << 1,

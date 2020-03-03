@@ -67,7 +67,7 @@ public:
 	TypeInfo* registerType(const char* className, TypeInfo* baseType, TypeInfoClass typeClass)
 	{
 		auto typeInfo = makeRef<TypeInfo>(className, baseType, typeClass);
-		typeInfo->m_id = m_typeInfos.size();
+		typeInfo->m_id = static_cast<int>(m_typeInfos.size());
 		m_typeInfos.push_back(typeInfo);
 		m_typeInfoSet.insert({ typeInfo->name(), typeInfo });
 		return typeInfo;

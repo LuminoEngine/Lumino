@@ -61,17 +61,20 @@ struct EngineSettings
 	AssetStorageAccessPriority assetStorageAccessPriority = AssetStorageAccessPriority::DirectoryFirst;
     List<EngineSettingsAssetArchiveEntry> assetArchives;
 	List<Path> assetDirectories;
+
 	GraphicsAPI graphicsAPI = GraphicsAPI::Default;
+	bool graphicsDebugEnabled = false;
 
 	bool engineLogEnabled = false;
 	String engineLogFilePath;
 	String engineResourcesPath;
 
     intptr_t userMainWindow = 0;
-	bool standaloneFpsControl = false;
+	bool standaloneFpsControl = true;
 	bool createMainLights = false;
 	int frameRate = 60;
 	bool debugToolEnabled = false;
+
 
     bool defaultObjectsCreation = true;
     bool useGLFWWindowSystem = true;
@@ -119,6 +122,7 @@ public:
     void initializeVisualManager();
     void initializeSceneManager();
 	void initializeUIManager();
+	void initializeDefaultObjects();
 
 	bool updateUnitily();
 	void updateFrame();
@@ -128,7 +132,7 @@ public:
 	bool isExitRequested() const { return m_exitRequested; }
 	void quit();
 
-	EngineSettings& settings2() { return m_settings; }
+	const EngineSettings& settings() { return m_settings; }
     const Ref<AssetManager>& assetManager() const { return m_assetManager; }
 	const Ref<PlatformManager>& platformManager() const { return m_platformManager; }
     const Ref<AnimationManager>& animationManager() const { return m_animationManager; }
@@ -211,7 +215,7 @@ private:
 
     //Application* m_application;
 	Path m_persistentDataPath;
-	Path m_engineAssetsPath;
+	Path m_engineResourcesPath;
 
     Ref<UIContext> m_mainUIContext;
 	Ref<UIMainWindow> m_mainWindow;

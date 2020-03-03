@@ -60,11 +60,27 @@ void UITextBlock::init()
 {
     UIElement::init();
 
+    // Alignment は Center をデフォルトにしてみる。
+    // Web だと Top-Left だが、これは下方向のサイズ上限がないっていうのと、活版印刷を意識しているため…と思ってる。
+    //
+    // WPF も Top-Left がデフォルト。これは Desktop アプリの文化かな。
+    // 実際のところ、これまでいろいろなアプリ作ってきたけど Center-Left が一番よく使う。次に Top-Center.
+    //
+    // モバイル・タブレット系の Framework では Center-Center が多い。
+    // Lumino は今後モバイル・タブレット系に寄せていきたいところ。
+    // 
+    // また、デフォルトが Top-Left だと表示したときぱっと目に入りづらいことがあるので、デバッグや導入的な視点からちょっとマイナスかも。
+    setHAlignment(HAlignment::Center);
+    setVAlignment(VAlignment::Center);
+
+
     // WPF default
-    setHAlignment(HAlignment::Left);
-    setVAlignment(VAlignment::Top);
+    //setHAlignment(HAlignment::Left);
+    //setVAlignment(VAlignment::Top);
 
     setBlendMode(BlendMode::Alpha);
+
+    attemptAddToPrimaryElement();
 }
 
 void UITextBlock::init(const StringRef& text)

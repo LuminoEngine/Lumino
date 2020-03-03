@@ -1,4 +1,5 @@
-﻿#include "RuntimeManager.hpp"
+﻿#include <LuminoEngine/Engine/Object.hpp>
+#include "RuntimeManager.hpp"
 
 namespace ln {
 namespace detail {
@@ -16,12 +17,12 @@ RuntimeManager::RuntimeManager()
 {
 //    // 特に Binding-module にて、Engine 初期化以前にいろいろ処理を行うが、
 //    // そこのログを出力したいので他の設定より先に有効化しておく。
-//    ln::GlobalLogger::addStdErrAdapter();
+//    ln::Logger::addStdErrAdapter();
 //#ifdef LN_OS_ANDROID
-//    ln::GlobalLogger::addLogcatAdapter();
+//    ln::Logger::addLogcatAdapter();
 //#endif
 //#if defined(LN_OS_MAC) || defined(LN_OS_IOS)
-//    ln::GlobalLogger::addNLogAdapter();
+//    ln::Logger::addNLogAdapter();
 //#endif
 }
 
@@ -109,6 +110,7 @@ LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 		data->fromCreate = fromCreate;
 		detail::ObjectHelper::setRuntimeData(obj, data);
 
+		LN_LOG_DEBUG << "nid registerd: " << e.index;
 		return e.index;
 	}
 	else
@@ -129,6 +131,7 @@ LnHandle RuntimeManager::makeObjectWrap(Object* obj, bool fromCreate)
 		data->fromCreate = fromCreate;
 		detail::ObjectHelper::setRuntimeData(obj, data);
 
+		LN_LOG_DEBUG << "nid registerd: " << e.index;
 		return e.index;
 	}
 }
@@ -169,18 +172,7 @@ void RuntimeManager::releaseObjectExplicitly(LnHandle handle)
 	auto runtimeData = detail::ObjectHelper::getRuntimeData(e.object);
 	runtimeData->fromCreate = false;
 
-
 	RefObjectHelper::release(e.object);		// If the reference count reaches 0, onDestructObject is called.
-
-	//if (e.object)
-	//{
-	//	e.externalRefCount--;
-	//	if (e.externalRefCount <= 0)
-	//	{
-	//		RefObjectHelper::release(e.object);
-	//		m_objectIndexStack.push(index);
-	//	}
-	//}
 }
 
 void RuntimeManager::onDestructObject(Object* obj)
@@ -197,6 +189,7 @@ void RuntimeManager::onDestructObject(Object* obj)
 			m_objectIndexStack.push(runtimeData->index);
 			e.object = nullptr;
 		}
+		LN_LOG_DEBUG << "nid unregisterd: " << e.index;
 
 		delete runtimeData;
 	}
@@ -277,6 +270,24 @@ void RuntimeManager::onReleasedObject(Object* obj)
 LnResult RuntimeManager::processException(Exception* e)
 {
 	return LN_ERROR_UNKNOWN;
+}
+
+void RuntimeManager::dumpInfo() const
+{
+	std::cout << std::endl;
+	std::cout << "Native alive objects" << std::endl;
+	std::cout << "----------" << std::endl;
+
+	for (auto& entry : m_objectEntryList) {
+		if (entry.object) {
+			std::cout << entry.index << ": ";
+			std::cout << entry.object;
+			std::cout << "(" << TypeInfo::getTypeInfo(entry.object)->name() << ")";
+			std::cout << ", refc: " << RefObjectHelper::getReferenceCount(entry.object) << std::endl;
+		}
+	}
+	std::cout << "----------" << std::endl;
+	std::cout << std::endl;
 }
 
 } // namespace detail

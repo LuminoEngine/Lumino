@@ -354,7 +354,13 @@ Result VulkanDevice::createInstance()
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+	
+    if (StringHelper::indexOf(pCallbackData->pMessage, -1, "prior to any Draw Cmds.", -1) >= 0 ||
+        StringHelper::indexOf(pCallbackData->pMessage, -1, "Vertex shader consumes input at location", -1) >= 0) {
+    }
+    else {
+        std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+    }
 
 	return VK_FALSE;
 }
@@ -3031,7 +3037,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 VkDescriptorBufferInfo info;
                 info.buffer = VK_NULL_HANDLE;   // set from submitDescriptorWriteInfo
                 info.offset = 0;
-                info.range = 1000000;//item.size;
+                info.range = item.size;
                 m_bufferDescriptorBufferInfo.push_back(info);
                 
                 VkWriteDescriptorSet set;

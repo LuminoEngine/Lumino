@@ -1,4 +1,5 @@
 
+#include <LuminoCore.hpp>
 #include "Internal.hpp"
 
 #ifdef LN_OS_MAC

@@ -125,22 +125,6 @@ void RubyExtGenerator::generate()
 		code.AppendLine(u"// {0}", structSymbol->fullName());
 		code.NewLine();
 
-        //// wrap struct
-        //{
-        //    OutputBuffer wrapStruct;
-
-        //    wrapStruct.AppendLine(u"struct {0}", makeWrapStructName(structSymbol));
-        //    wrapStruct.AppendLine(u"{");
-        //    wrapStruct.IncreaseIndent();
-        //    {
-        //        wrapStruct.AppendLine(u"{0} value;", makeFlatClassName(structSymbol));
-        //    }
-        //    wrapStruct.DecreaseIndent();
-        //    wrapStruct.AppendLine(u"};");
-        //    wrapStruct.NewLine();
-        //    code.AppendLines(wrapStruct.toString());
-        //}
-
 		code.AppendLine(u"VALUE {0};", makeRubyClassInfoVariableName(structSymbol));
 		code.NewLine();
 
@@ -157,12 +141,6 @@ void RubyExtGenerator::generate()
 		code.AppendLines(makeClassRequiredImplementation(classSymbol));
 		code.AppendLines(makeClassImplementation(classSymbol));
 	}
-
-	// delegateObjects
-	//for (auto& delegateSymbol : db()->delegateObjects()) {
-	//	code.AppendLines(makeClassRequiredImplementation(delegateSymbol));
-	//}
-
 
 	// Ruby クラス定義 (rb_define_XXXX 呼び出し)
 	OutputBuffer typeVALUEDecls;
@@ -225,7 +203,18 @@ void RubyExtGenerator::generate()
 					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
 				}
 				else {
-					moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+					auto propertySetter = overload->methods().findIf([](auto& x) { return x->isPropertySetter(); });
+					auto normalSetter = overload->methods().findIf([](auto& x) { return !x->isPropertySetter(); });
+					if (propertySetter && normalSetter) {
+						// 次の 2 つのようなオーバーロードを想定する。
+						// - void setPosition(const Vector3& pos);
+						// - void setPosition(float x, float y, float z);
+						moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(*propertySetter), makeWrapFuncName(overload->representative()));
+						moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(*normalSetter), makeWrapFuncName(overload->representative()));
+					}
+					else {
+						moduleInitializer.AppendLine(u"rb_define_method({0}, \"{1}\", LN_TO_RUBY_FUNC({2}), -1);", classInfoVar, makeRubyMethodName(overload->representative()), makeWrapFuncName(overload->representative()));
+					}
 				}
 			}
 
@@ -1164,7 +1153,7 @@ void RubyYARDOCSourceGenerator::generate()
 
 
 
-	ln::String fileName = ln::String::format("GemProject/{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
+	ln::String fileName = ln::String::format("APIReference/{0}.RubyYARDOCSource.generated.rb", config()->moduleName);
 	ln::String src = code.toString();
 	ln::FileSystem::writeAllText(makeOutputFilePath(u"Ruby", fileName), src);
 }

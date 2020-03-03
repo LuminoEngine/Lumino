@@ -13,6 +13,8 @@ namespace ln {
 // CameraOrbitControlComponent
 // https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
 
+LN_OBJECT_IMPLEMENT(CameraOrbitControlComponent, Component) {}
+
 Ref<CameraOrbitControlComponent> CameraOrbitControlComponent::create()
 {
 	return makeObject<CameraOrbitControlComponent>();

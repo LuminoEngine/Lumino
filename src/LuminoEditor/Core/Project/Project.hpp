@@ -36,7 +36,7 @@ public:
 	const ln::Path& engineDirPath() const { return m_engineDir; }
 	const ln::Path& rootDirPath() const { return m_rootDir; }
     const ln::Path& assetsDir() const { return m_assetsDir; }
-	const ln::Path& buildDir() const { return m_buildDir; }
+	const ln::Path& acquireBuildDir() const;
 	const ln::Path& releaseDir() const { return m_releaseDir; }
 	const ln::Path& intermediateAssetsDir() const { return m_intermediateAssetsDir; }
     const ln::Path& localPluginDir() const { return m_localPluginDir; } // プロジェクト固有のプラグインと、プロジェクトごとのエディタ拡張の保存場所

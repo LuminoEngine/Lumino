@@ -2,6 +2,7 @@
 #pragma once
 
 namespace ln {
+class World;
 
 enum class EngineFeature
 {

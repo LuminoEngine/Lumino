@@ -1,11 +1,7 @@
 Lumino の基本
 ==========
 
-Note:
-- Lumino の基本
-- 
-
-
+この章では、Lumino を使ってアプリケーションを作成するための最も基本的な流れについて学びます。
 
 最小のプログラム
 ----------
@@ -29,7 +25,7 @@ LUMINO_APP(App);
 # [Ruby](#tab/lang-ruby)
 
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
 end
@@ -65,13 +61,13 @@ App.new.run
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-	}
+    void onInit() override
+    {
+    }
 
-	virtual void onUpdate() override
-	{
-	}
+    void onUpdate() override
+    {
+    }
 };
 
 LUMINO_APP(App);
@@ -80,14 +76,14 @@ LUMINO_APP(App);
 # [Ruby](#tab/lang-ruby)
 
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-    end
+  def on_init
+  end
 
-    def on_update
-    end
+  def on_update
+  end
 end
 
 App.new.run
@@ -101,6 +97,7 @@ App.new.run
 
 > [!Note]
 > onUpdate() は 1秒間に 60 回、繰り返し実行されます。
+> この 1 回分の実行単位を `フレーム` と呼び、「1 秒間は 60 フレーム」といったように使います。
 
 
 Hello, Lumino!
@@ -117,14 +114,14 @@ Hello, Lumino!
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-		Debug::print(u"Hello, Lumino!");
-	}
+    void onInit() override
+    {
+        Debug::print(u"Hello, Lumino!");
+    }
 
-	virtual void onUpdate() override
-	{
-	}
+    void onUpdate() override
+    {
+    }
 };
 
 LUMINO_APP(App);
@@ -133,7 +130,18 @@ LUMINO_APP(App);
 # [Ruby](#tab/lang-ruby)
 
 ```ruby
-ruby
+require "lumino"
+
+class App < Application
+  def on_init
+    Debug.print("Hello, Lumino!")
+  end
+
+  def on_update
+  end
+end
+
+App.new.run
 ```
 
 ---
@@ -154,21 +162,32 @@ ruby
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-	}
+    void onInit() override
+    {
+    }
 
-	virtual void onUpdate() override
-	{
-		Debug::print(String::format(u"Time: {0}", Engine::time()));
-	}
+    void onUpdate() override
+    {
+        Debug::print(String::format(u"Time: {0}", Engine::time()));
+    }
 };
 
 LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-ruby
+require "lumino"
+
+class App < Application
+  def on_init
+  end
+
+  def on_update
+    Debug.print("Time: %f" % Engine.time)
+  end
+end
+
+App.new.run
 ```
 ---
 
@@ -180,7 +199,7 @@ ruby
 
 繰り返し実行されているのはわかりましたが、今は過去の情報は不要です。
 
-`Debug::print()` は第一引数に数値を指定することで、テキストの表示時間をコントロールできます。次のように修正して、実行してみましょう。
+`Debug::print()` は第一引数に数値を指定することで、テキストの表示時間をコントロールできます。次のように 0 を指定することで、テキストは 1 フレームの間だけ表示されるようになります。
 
 # [C++](#tab/lang-cpp)
 ```cpp
@@ -188,25 +207,39 @@ ruby
 
 class App : public Application
 {
-	virtual void onInit() override
-	{
-	}
+    void onInit() override
+    {
+    }
 
-	virtual void onUpdate() override
-	{
-		Debug::print(0, String::format(u"Time: {0}", Engine::time()));
-	}
+    void onUpdate() override
+    {
+        Debug::print(0, String::format(u"Time: {0}", Engine::time()));
+    }
 };
 
 LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-ruby
+require "lumino"
+
+class App < Application
+  def on_init
+  end
+
+  def on_update
+    Debug.print(0, "Time: %f" % Engine.time)
+  end
+end
+
+App.new.run
 ```
 ---
 
+修正したら、実行してみましょう。
 
 ![](img/basic-4.gif)
 
 シンプルなタイマーができました！
+
+テキストは 1 秒間に 60 回、表示と消去を繰り返すことで、リアルタイムに変化しているように見えます。

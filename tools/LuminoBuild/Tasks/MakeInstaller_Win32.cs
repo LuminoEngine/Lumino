@@ -4,11 +4,14 @@ using System.IO;
 
 namespace LuminoBuild.Tasks
 {
+    /// <summary>
+    /// Archive "build\NativePackage" as an installer.
+    /// </summary>
     class MakeInstaller_Win32 : BuildTask
     {
         public override string CommandName => "MakeInstaller_Win32";
 
-        public override List<string> Dependencies => new List<string>() { "BuildDocuments", "BuildEngine_MSVC" };
+        //public override List<string> Dependencies => new List<string>() { "BuildDocuments", "BuildEngine_MSVC" };
 
         public override void Build(Builder builder)
         {
@@ -25,12 +28,14 @@ namespace LuminoBuild.Tasks
                     ContentFilesDir = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName),
                     WXSFileTemplate = Path.Combine(pkgSrcInstallerDir, "LuminoInstaller.wxs.template"),
                     TargetDirId = "ID_LUMINO_DIR",
-                    ProductGUID = builder.InstallerProductGUID_MSVC2017,
+                    ProductGUID = builder.InstallerProductGUID,
                     Output = builder.ReleasePackageName + ".msi",
                 },
             };
 
             Directory.CreateDirectory(tmpDir);
+
+
 
             foreach (var t in targets)
             {
@@ -64,6 +69,19 @@ namespace LuminoBuild.Tasks
                 args = string.Format("-nologo -v -ext WixUIExtension -cultures:ja-jp {0}.wixobj {1}.wixobj -pdbout {0}.wixpdb -out {2}", installerWXS, contentFilesWXS, Path.Combine(builder.LuminoBuildDir, t.Output));
                 Utils.CallProcess(light, args);
             }
+
+            // Create zip package
+            {
+                var orgName = Path.Combine(builder.LuminoBuildDir, builder.LocalPackageName);
+                var tmpName = Path.Combine(builder.LuminoBuildDir, builder.ReleasePackageName);
+                Directory.Move(orgName, tmpName);
+                if (!BuildEnvironment.FromCI)
+                {
+                    Utils.CreateZipFile(tmpName, tmpName + ".zip");
+                    Directory.Move(tmpName, orgName);
+                }
+            }
+
         }
     }
 }

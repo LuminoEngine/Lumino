@@ -4,6 +4,10 @@
 namespace ln {
 class Material;
 
+/**
+ * UI 要素として 2D 空間上に表示されるスプライトオブジェクトを表します。
+ */
+LN_CLASS()
 class UISprite
     : public UIElement
 {
@@ -30,10 +34,16 @@ public:
 	const Rect& sourceRect() const;
 
 
+LN_CONSTRUCT_ACCESS:
     UISprite();
-	void init();
-    void init(Texture* texture);
 
+    /** UISprite を作成します。 */
+    LN_METHOD()
+	void init();
+
+	/** テクスチャを指定して UISprite を作成します。 */
+	LN_METHOD(OverloadPostfix = "WithTexture")
+    void init(Texture* texture);
 
 protected:
 	virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;

@@ -93,7 +93,7 @@ LightOcclusionPass::LightOcclusionPass()
 void LightOcclusionPass::init()
 {
 	SceneRendererPass::init();
-	m_blackShader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlackShader.fx");
+	m_blackShader = detail::EngineDomain::renderingManager()->builtinShader(BuiltinShader::BlackShader);
 	m_blackShaderTechnique = m_blackShader->findTechnique(u"Default");
 	m_renderPass = makeObject<RenderPass>();
 }

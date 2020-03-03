@@ -1,6 +1,31 @@
 内部実装
 ==========
 
+
+Strong reference について
+----------
+
+次のように、内部で参照を持たないため、Ref を値で返しているものが該当する。
+
+```
+static Ref<Texture2D> load(...);
+```
+
+このようなものは、FlatC ではユーザープログラムでインスタンスを Release しなければならない。
+
+```
+LnTexture2D_Load(..., &tex);
+LnObject_Release(tex);
+```
+
+Strong reference は、これをマークするために戻り値型などの QualType が持つ属性。
+
+
+
+
+
+
+
 `Draft`
 
 

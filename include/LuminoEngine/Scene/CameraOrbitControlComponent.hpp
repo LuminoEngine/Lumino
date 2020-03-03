@@ -20,9 +20,14 @@ struct Spherical
     }
 };
 
+/**
+ * カメラをマウスで操作するための Component です。
+ */
+LN_CLASS()
 class CameraOrbitControlComponent
 	: public Component
 {
+    LN_OBJECT;
 public:
 	static Ref<CameraOrbitControlComponent> create();
 
@@ -32,6 +37,9 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	CameraOrbitControlComponent();
     virtual ~CameraOrbitControlComponent();
+
+    /** CameraOrbitControlComponent を作成します。 */
+    LN_METHOD()
 	void init();
 
 private:

@@ -16,8 +16,8 @@ EngineContext* EngineContext::current()
 }
 
 EngineContext::EngineContext()
-	: m_runtimeManager(makeRef<detail::RuntimeManager>())
-	, m_engineManager(makeRef<detail::EngineManager>())
+	: m_runtimeManager(nullptr)
+	, m_engineManager(nullptr)
 {
 	internalInit();
 }
@@ -53,14 +53,20 @@ void EngineContext::internalInit()
 
 void EngineContext::initializeRuntimeManager()
 {
-	m_runtimeManager->init(detail::RuntimeManager::s_globalSettings);
+	if (!m_runtimeManager) {
+		m_runtimeManager = makeRef<detail::RuntimeManager>();
+		m_runtimeManager->init(detail::RuntimeManager::s_globalSettings);
+	}
 }
 
 void EngineContext::initializeEngineManager()
 {
 	initializeRuntimeManager();
 
-	m_engineManager->init(detail::EngineManager::s_settings);
+	if (!m_engineManager) {
+		m_engineManager = makeRef<detail::EngineManager>();
+		m_engineManager->init(detail::EngineManager::s_settings);
+	}
 }
 
 void EngineContext::disposeRuntimeManager()

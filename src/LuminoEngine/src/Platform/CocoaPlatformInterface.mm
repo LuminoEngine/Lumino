@@ -1,4 +1,5 @@
 
+#include <LuminoCore.hpp>
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/CocoaPlatformInterface.hpp>
@@ -25,7 +26,7 @@ int CocoaPlatformInterface::Main()
 
 void CocoaPlatformInterface::addAssetArchive(const StringRef& fileFullPath, const StringRef& password)
 {
-    detail::EngineDomain::engineManager()->settings2().assetArchives.add({ fileFullPath, password });
+    detail::EngineManager::s_settings.assetArchives.add({ fileFullPath, password });
 }
 
 } // namespace ln

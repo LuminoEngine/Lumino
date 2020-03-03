@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <shared_mutex>
 
-#ifdef __EMSCRIPTEN__
-#else
+//#ifdef __EMSCRIPTEN__
+//#else
 #define LN_AUDIO_THREAD_ENABLED
-#endif
+//#endif
 
 namespace ln {
 class Sound;

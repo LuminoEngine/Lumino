@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14) # C++14...
 
 set(_LN_LIBRARY_DIR "${LUMINO_ENGINE_ROOT}/lib")
 set(_LN_INCLUDE_DIR "${LUMINO_ENGINE_ROOT}/include")
-set(LN_TARGET_ARCH "MSVC2017-x86-MD")
+#set(LN_TARGET_ARCH "MSVC2017-x86-MD")
 set(LN_EXTERNAL_FIND_PATH_MODE "config")
 
 message("_LN_LIBRARY_DIR: ${_LN_LIBRARY_DIR}")
@@ -24,6 +24,7 @@ message("_LN_INCLUDE_DIR: ${_LN_INCLUDE_DIR}")
 include(${CMAKE_CURRENT_LIST_DIR}/LuminoCommon.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/ImportExternalLibraries.cmake)
 
+list(REVERSE LN_EXTERNAL_LIBS)
 foreach(LIB IN LISTS LN_EXTERNAL_LIBS)
     list(APPEND _LN_LINK_ONLY_LIBS "\$<LINK_ONLY:${LIB}>")
 endforeach()

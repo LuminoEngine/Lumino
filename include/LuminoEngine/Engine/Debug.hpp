@@ -11,8 +11,28 @@ LN_CLASS(Static)
 class Debug
 {
 public:
+	/**
+	 * ウィンドウ上にデバッグ文字列を表示します。
+     * @param[in] str : 表示文字列
+	 */
+	LN_METHOD()
 	static void print(StringRef str);
+
+	/**
+	 * 表示時間を指定して、ウィンドウ上にデバッグ文字列を表示します。
+     * @param[in] time : 表示時間 (s)
+     * @param[in] str : 表示文字列
+	 */
+	LN_METHOD(OverloadPostfix = "WithTime")
 	static void print(float time, StringRef str);
+
+	/**
+	 * 表示時間と文字色を指定して、ウィンドウ上にデバッグ文字列を表示します。
+     * @param[in] time : 表示時間 (s)
+     * @param[in] color : 文字色
+     * @param[in] str : 表示文字列
+	 */
+	LN_METHOD(OverloadPostfix = "WithTimeAndColor")
 	static void print(float time, const Color& color, StringRef str);
 
 

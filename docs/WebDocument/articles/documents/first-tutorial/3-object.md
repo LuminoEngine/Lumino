@@ -1,6 +1,7 @@
 オブジェクトを動かす
 ==========
 
+この章では、3D 空間内のオブジェクトの姿勢を設定する方法について学びます。
 
 移動する
 ----------
@@ -13,7 +14,7 @@
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->setPosition(5, 5, -5);
@@ -34,11 +35,23 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-    end
+  def on_init
+    Engine.render_view.guide_grid_enabled = true
+    Engine.camera.set_position(5, 5, -5)
+    Engine.camera.look_at(0, 0, 0)
+    
+    box1 = BoxMesh.new
+    box1.set_position(1, 0, 0)
+
+    box2 = BoxMesh.new
+    box2.set_position(0, 2, 0)
+
+    box3 = BoxMesh.new
+    box3.set_position(0, 0, 3)
+  end
 end
 
 App.new.run
@@ -59,7 +72,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;
 
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->setPosition(5, 5, -5);
@@ -68,7 +81,7 @@ class App : public Application
         box = BoxMesh::create();
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         float r = Mouse::position().x / 100;
 
@@ -82,11 +95,24 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-    end
+  def on_init
+    Engine.render_view.guide_grid_enabled = true
+    Engine.camera.set_position(5, 5, -5)
+    Engine.camera.look_at(0, 0, 0)
+    
+    @box = BoxMesh.new
+  end
+  
+  def on_update
+    r = Mouse.position.x / 100
+    
+    @box.set_rotation(0, r, 0)
+        
+    Debug.print(0, "angle: %f" % r)
+  end
 end
 
 App.new.run
@@ -108,7 +134,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;
 
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->setPosition(5, 5, -5);
@@ -117,7 +143,7 @@ class App : public Application
         box = BoxMesh::create();
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         float s = Mouse::position().y / 100;
 
@@ -131,11 +157,24 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-    end
+  def on_init
+    Engine.render_view.guide_grid_enabled = true
+    Engine.camera.set_position(5, 5, -5)
+    Engine.camera.look_at(0, 0, 0)
+    
+    @box = BoxMesh.new
+  end
+  
+  def on_update
+    s = Mouse.position.y / 100
+    
+    @box.set_scale(s)
+        
+    Debug.print(0, "scale: %f" % s)
+  end
 end
 
 App.new.run

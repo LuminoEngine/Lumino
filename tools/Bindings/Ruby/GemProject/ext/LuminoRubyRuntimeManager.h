@@ -1,5 +1,6 @@
 #pragma once
 #include <ruby.h>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <stack>
@@ -52,7 +53,7 @@ public:
     static void handleRuntimeFinalized();
     static void handleCreateInstanceCallback(int typeInfoId, LnHandle* outHandle);
 
-
+    void dumpInfo() const;
 
     // TODO: internal
     std::unordered_map<std::string, int> m_userDefinedClassTypeIdMap;
@@ -76,7 +77,8 @@ public: // TODO:
 class RubyUtils
 {
 public:
-    static std::string getClassName(VALUE klass);
+    static std::string getClassNameFromClass(VALUE klass);
+    static std::string getClassNameFromObject(VALUE klass);
     static std::string makeTypeInfoName(VALUE klass);
 };
 

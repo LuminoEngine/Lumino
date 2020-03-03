@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "../Base/Builder.hpp"
-#include "../Graphics/ColorStructs.hpp"
 #include "../Rendering/Drawing.hpp"
 #include "UILayoutElement.hpp"
 #include "UIEvents.hpp"
@@ -133,30 +132,39 @@ public:
 
 
     /** 要素の margin 値 (外側の余白) を設定します。 */
+	LN_METHOD(Property)
     void setMargin(const Thickness& margin);
 
     /** 要素の margin 値 (外側の余白) を取得します。 */
+	LN_METHOD(Property)
     const Thickness& margin() const;
 
     /** 要素の padding 値 (内側の余白) を設定します。この余白は論理ツリーの子要素のレイアウトに影響します。 */
+	LN_METHOD(Property)
     void setPadding(const Thickness& padding);
 
     /** 要素の padding 値 (内側の余白) を取得します。この余白は論理ツリーの子要素のレイアウトに影響します。 */
+	LN_METHOD(Property)
     const Thickness& padding() const;
 
 	/** 要素の横方向の配置方法を設定します。 */
+	LN_METHOD(Property)
 	void setHAlignment(HAlignment value);
 
 	/** 要素の横方向の配置方法を取得します。 */
+	LN_METHOD(Property)
 	HAlignment hAlignment() const;
 
 	/** 要素の縦方向の配置方法を設定します。 */
+	LN_METHOD(Property)
 	void setVAlignment(VAlignment value);
 
 	/** 要素の縦方向の配置方法を取得します。 */
+	LN_METHOD(Property)
 	VAlignment vAlignment() const;
 
 	/** 要素の配置方法を設定します。 */
+	LN_METHOD()
 	void setAlignments(HAlignment halign, VAlignment valign);
 
     
@@ -484,7 +492,7 @@ public:	// TODO: internal protected
     void setLogicalParent(UIControl* parent) { m_logicalParent = parent; }
     UIControl* logicalParent() const { return m_logicalParent; }
     void removeFromLogicalParent();
-
+	void attemptAddToPrimaryElement();
 
     UIVisualStateManager* getVisualStateManager();
 

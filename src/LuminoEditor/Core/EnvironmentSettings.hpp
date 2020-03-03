@@ -2,32 +2,33 @@
 #include "Common.hpp"
 
 namespace lna {
+class Workspace;
 
 // プロジェクトテンプレートなどの検索パスの基準
-enum class EnvironmentPathBase
-{
-	// 環境変数 LUMINO_PATH を基準とする
-	//EnvironmentVariable,
-
-	// 実行ファイルからフォルダをさかのぼり、パッケージのルートを検索する (インストールせずに使用する)
-	LocalPackage,
-
-	// 実行ファイルからフォルダをさかのぼり、リポジトリのルートを検索する (主にツールのデバッグで使用する)
-	Repository,
-};
+//enum class EnvironmentPathBase
+//{
+//	// 環境変数 LUMINO_PATH を基準とする
+//	//EnvironmentVariable,
+//
+//	// 実行ファイルからフォルダをさかのぼり、パッケージのルートを検索する (インストールせずに使用する)
+//	LocalPackage,
+//
+//	// 実行ファイルからフォルダをさかのぼり、リポジトリのルートを検索する (主にツールのデバッグで使用する)
+//	Repository,
+//};
 
 class BuildEnvironment
 	: public ln::RefObject
 {
 public:
-	BuildEnvironment();
-	void setupPathes(EnvironmentPathBase pathBase);
+	BuildEnvironment(Workspace* workspace);
+	void setupPathes(bool developMode);
 	ln::Result prepareEmscriptenSdk();
 
 	const ln::String& defaultTargetName() const { return m_defaultTargetName; }
 
-	Language defaultLanguage() const { return m_defaultLanguage; }
-	EnvironmentPathBase actualPathBase() const { return m_actualPathBase; }
+	//Language defaultLanguage() const { return m_defaultLanguage; }
+	//EnvironmentPathBase actualPathBase() const { return m_actualPathBase; }
 
 	// Pathes
 	ln::Path projectTemplatesDirPath() const { return m_projectTemplatesDirPath; }
@@ -54,18 +55,22 @@ public:
 	const ln::Path& androidNdkRootDir() const { return m_androidNdkRootDir; }
 	const ln::Path& androidCMakeToolchain() const { return m_androidCMakeToolchain; }
 
+	bool engineDevelopmentMode() const { return !m_engineDevelopmentRepoRootDir.isEmpty(); }
+	const ln::Path& engineDevelopmentRepoRootDir() const { return m_engineDevelopmentRepoRootDir; }
+
 	static ln::Path findLocalPackageForTesting();
 
 private:
 	//void setupPathesFromPackageRoot(const ln::Path& packageRoot);
 	//void setupPathesFromRepositoryRoot(const ln::Path& repoRoot);
 	static ln::Result callProcess(const ln::String& program, const ln::List<ln::String>& arguments, const ln::Path& workingDir);
-	static ln::Path findNativePackageRootDir();
+	ln::Path findNativePackageRootDir() const;
 	static ln::Path findRepositoryRootDir();
 
+	Workspace* m_workspace;
 	ln::String m_defaultTargetName;
-	Language m_defaultLanguage;
-	EnvironmentPathBase m_actualPathBase;
+	//Language m_defaultLanguage;
+	//EnvironmentPathBase m_actualPathBase;
 
 	ln::Path m_appDataDirPath;
 	ln::Path m_luminoPackageRootDir;
@@ -89,6 +94,9 @@ private:
 	ln::Path m_androidSdkNinja;
 	ln::Path m_androidNdkRootDir;
 	ln::Path m_androidCMakeToolchain;
+
+	ln::Path m_engineDevelopmentRepoRootDir;
+	//bool m_engineDevelopmentMode;
 };
 
 } // namespace lna

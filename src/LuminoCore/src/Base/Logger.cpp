@@ -338,9 +338,9 @@ void LoggerInterface::operator+=(const LogRecord& record)
 } // namespace detail
 
 //==============================================================================
-// GlobalLogger
+// Logger
 
-bool GlobalLogger::addFileAdapter(const std::string& filePath)
+bool Logger::addFileAdapter(const std::string& filePath)
 {
 	if (g_logFile.IsOpend()) {
 		return false;
@@ -354,13 +354,13 @@ bool GlobalLogger::addFileAdapter(const std::string& filePath)
     return true;
 }
 
-void GlobalLogger::addStdErrAdapter()
+void Logger::addStdErrAdapter()
 {
     detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
         std::make_shared<detail::StdErrLoggerAdapter>());
 }
 
-void GlobalLogger::addLogcatAdapter()
+void Logger::addLogcatAdapter()
 {
 #ifdef LN_OS_ANDROID
 	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
@@ -369,7 +369,7 @@ void GlobalLogger::addLogcatAdapter()
 #endif
 }
 
-void GlobalLogger::addNLogAdapter()
+void Logger::addNLogAdapter()
 {
 #if defined(LN_OS_MAC) || defined(LN_OS_IOS)
 	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
@@ -378,12 +378,12 @@ void GlobalLogger::addNLogAdapter()
 #endif
 }
 
-bool GlobalLogger::hasAnyAdapter()
+bool Logger::hasAnyAdapter()
 {
 	return !detail::LoggerInterface::getInstance()->m_impl->m_adapters.empty();
 }
 
-void GlobalLogger::setLevel(LogLevel level)
+void Logger::setLevel(LogLevel level)
 {
 	detail::g_maxLevel = level;
 }

@@ -1,4 +1,5 @@
 ﻿
+#define LUMINO_BUILD_DLL 1
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 #include <Windows.h>

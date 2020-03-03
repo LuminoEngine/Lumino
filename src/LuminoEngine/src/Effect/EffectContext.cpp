@@ -96,6 +96,54 @@ void EffectContext::render(RenderingContext* renderingContext)
     }
 }
 
+//==============================================================================
+// SpriteFrameEffectResource::Builder
+
+//LN_BUILDER_IMPLEMENT(SpriteFrameEffectResource, EffectResource);
+//SpriteFrameEffectResource::Builder::Builder() : Builder(makeRef<Details>()) {}
+//SpriteFrameEffectResource::Builder::Builder(Details* d) : base::Builder(d) {}
+
+//UIGridLayout::Builder::Builder() : Builder(makeRef<Details>()) {}
+//	UIGridLayout::Builder::Builder(Details* d) : base::Builder(d) {}
+//
+	//type::Builder() : Builder(makeRef<type::Builder::Details>()) {} \
+	//	type::Builder(type::Builder::Details* d) : base::Builder(d) {}
+
+//UIGridLayout::Builder::Builder()
+//	: Builder(makeRef<Details>())
+//{
+//}
+//
+//UIGridLayout::Builder::Builder(Details* d)
+//	: UIElement::Builder(d)
+//{
+//}
+
+//UIGridLayout::Builder& UIGridLayout::Builder::columnCount(int value)
+//{
+//	detailsAs<Details>()->columnCount = value;
+//	return *this;
+//}
+//
+//UIGridLayout::Builder& UIGridLayout::Builder::add(const UIElement::Builder& value)
+//{
+//	detailsAs<Details>()->children.push_back(value);
+//	return *this;
+//}
+
+//Ref<UIGridLayout> UIGridLayout::Builder::build()
+//{
+//	return buildAs<UIGridLayout>();
+//}
+
+//Ref<Object> UIGridLayout::Builder::Details::build()
+//{
+//	auto ptr = makeObject<UIGridLayout>();
+//	ptr->setColumnCount(columnCount);
+//	for (auto& b : children)
+//		ptr->addChild(b.build());
+//	return ptr;
+//}
 
 //==============================================================================
 // SpriteFrameEffectResource

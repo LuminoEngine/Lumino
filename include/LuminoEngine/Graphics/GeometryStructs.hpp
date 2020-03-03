@@ -44,6 +44,7 @@ public:
 
 public:
     /** すべての要素を 0 で初期化します。*/
+    LN_METHOD(OverloadPostfix = "Zeros")
     Point()
         : x(0)
         , y(0)
@@ -51,6 +52,7 @@ public:
     }
 
     /** 位置を指定して初期化します。*/
+    LN_METHOD()
     Point(float x_, float y_) { set(x_, y_); }
 
     /** 位置を指定して初期化します。*/
@@ -97,9 +99,11 @@ public:
 
 public:
     /** すべての要素を 0 で初期化します。*/
+    LN_METHOD(OverloadPostfix = "Zeros")
     Size() { set(0, 0); }
 
     /** 幅と高さを指定して初期化します。*/
+    LN_METHOD()
     Size(float w, float h) { set(w, h); }
 
     /** 各要素を設定します。*/
@@ -168,7 +172,7 @@ public:
 
 public:
     /** すべての要素を 0 で初期化します。*/
-    LN_METHOD()
+    LN_METHOD(OverloadPostfix = "Zeros")
     Rect() { set(0, 0, 0, 0); }
 
     /** 位置とサイズを指定して初期化します。*/
@@ -307,6 +311,7 @@ public:
 };
 
 /** 四角形の枠の太さを表すクラスです。 */
+LN_STRUCT()
 struct Thickness
 {
 public:
@@ -315,19 +320,24 @@ public:
 
 public:
     /** 四角形の左辺の幅 */
+    LN_FIELD()
     float left;
 
     /** 四角形の上辺の幅 */
+    LN_FIELD()
     float top;
 
     /** 四角形の右辺の幅 */
+    LN_FIELD()
     float right;
 
     /** 四角形の底辺の幅 */
+    LN_FIELD()
     float bottom;
 
 public:
     /** すべての要素を 0 で初期化します。 */
+    LN_METHOD(OverloadPostfix = "Zeros")
     Thickness() { set(0, 0, 0, 0); }
 
     /** すべての要素を uniformLength で初期化します。 */
@@ -337,6 +347,7 @@ public:
     Thickness(float leftAndRight, float topAndbottom) { set(leftAndRight, topAndbottom, leftAndRight, topAndbottom); }
 
     /** 各辺の幅を指定して初期化します。 */
+    LN_METHOD()
     Thickness(float left_, float top_, float right_, float bottom_) { set(left_, top_, right_, bottom_); }
 
     /** 各要素を設定します。 */

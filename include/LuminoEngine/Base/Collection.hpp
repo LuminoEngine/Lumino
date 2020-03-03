@@ -2,7 +2,7 @@
 #pragma once
 
 namespace ln {
-
+class Variant;
 
 ///**
 // * 変更通知機能を持つ、Object 用の可変長配列のコンテナテンプレートクラスです。
@@ -406,7 +406,7 @@ protected:
 
 	virtual int getItemCount() const
 	{
-		return m_data.size();
+		return static_cast<int>(m_data.size());
 	}
 
 	virtual const Variant* getItemAsVariant(int index)

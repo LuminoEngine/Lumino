@@ -1,6 +1,8 @@
 
 #include <LuminoEngine/Platform/Win32PlatformInterface.hpp>
 
+extern "C" ::ln::Application* LuminoCreateApplicationInstance();
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -14,11 +16,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     auto archive = u"Assets.lca";
     if (ln::FileSystem::existsFile(archive)) {
-        ln::EngineSettings::addAssetArchive(archive);
+        ln::EngineSettings::addAssetArchive(archive, ln::String::Empty);
     }
 
-    ln::Win32PlatformInterface::init();
-    return ln::Win32PlatformInterface::WinMain();
+	::ln::Application* app = ::LuminoCreateApplicationInstance();
+	return ln::Win32PlatformInterface::WinMain(app);
 }
 
 int main(int argc, char** argv)

@@ -8,6 +8,7 @@
 
 namespace lna {
 
+bool Workspace::developMode = false;
 static Workspace* s_instance = nullptr;
 
 Workspace* Workspace::instance()
@@ -32,18 +33,27 @@ Workspace* Workspace::instance()
 //}
 
 Workspace::Workspace()
-	: m_buildEnvironment(ln::makeRef<BuildEnvironment>())
+	: m_buildEnvironment(ln::makeRef<BuildEnvironment>(this))
 {
     assert(!s_instance);
     s_instance = this;
+
+	ln::String name = ln::Path(ln::Environment::executablePath()).fileNameWithoutExtension();
+	if (name.endsWith(u"-rb"))
+		m_primaryLang = u"ruby";
+	else
+		m_primaryLang = u"cpp";
+
 //#ifdef LN_DEBUG
 //	m_buildEnvironment->setupPathes(EnvironmentPathBase::Repository);
 //#else
-	m_buildEnvironment->setupPathes(EnvironmentPathBase::LocalPackage);
+	m_buildEnvironment->setupPathes(developMode);
 //#endif
 
 	m_projectTemplateManager = ln::makeObject2<ProjectTemplateManager>();
 	m_projectTemplateManager->search();
+
+	
 }
 
 Workspace::~Workspace()
@@ -93,17 +103,44 @@ ln::Result Workspace::runProject(const ln::String& target)
 	// Windows
 	if (ln::String::compare(target, u"Windows", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto exe = ln::FileSystem::getFile(ln::Path(m_mainProject->windowsProjectDir(), u"bin/Debug"), u"*.exe");
+		auto exe = ln::FileSystem::getFile(ln::Path::combine(m_mainProject->windowsProjectDir(), u"bin", u"x64", u"Debug"), u"*.exe");
 		ln::Process::execute(exe);
 	}
 	// Web
 	else if (ln::String::compare(target, u"Web", ln::CaseSensitivity::CaseInsensitive) == 0)
 	{
-		auto buildDir = ln::Path::combine(m_mainProject->buildDir(), u"Web").canonicalize();
+		auto buildDir = ln::Path::combine(m_mainProject->acquireBuildDir(), u"Web").canonicalize();
+
+		ln::String text = uR"(# -*- coding: utf-8 -*-
+import http.server
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import socketserver
+
+PORT = 8000
+
+Handler = http.server.SimpleHTTPRequestHandler
+Handler.extensions_map={
+    '.wasm': 'application/wasm',
+    '.manifest': 'text/cache-manifest',
+    '.html': 'text/html',
+    '.png': 'image/png',
+    '.jpg': 'image/jpg',
+    '.svg':	'image/svg+xml',
+    '.css':	'text/css',
+    '.js': 'application/x-javascript',
+    '': 'application/octet-stream', # Default
+}
+httpd = socketserver.TCPServer(("", PORT), Handler)
+
+print("serving at port", PORT)
+httpd.serve_forever()
+)";
+		auto scriptName = ln::Path(buildDir, u"serve.py");
+		ln::FileSystem::writeAllText(scriptName, text);
 
 		ln::Process proc;
 		proc.setProgram(m_buildEnvironment->python());
-		proc.setArguments({u"-m", u"SimpleHTTPServer", u"8000"});
+		proc.setArguments({ scriptName });
 		proc.setWorkingDirectory(buildDir);
 		proc.setUseShellExecute(false);
 		proc.start();

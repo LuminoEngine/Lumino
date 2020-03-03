@@ -1,4 +1,5 @@
 ﻿
+#include "Workspace.hpp"
 #include "EnvironmentSettings.hpp"
 #include "../../LuminoEngine/src/Engine/EngineDomain.hpp"
 #include "../../LuminoEngine/src/Engine/EngineManager.hpp"
@@ -9,11 +10,13 @@ namespace lna {
 //==============================================================================
 // BuildEnvironment
 
-BuildEnvironment::BuildEnvironment()
-	: m_toolsDir()
+BuildEnvironment::BuildEnvironment(Workspace* workspace)
+	: m_workspace(workspace)
+	, m_toolsDir()
 	, m_emsdkVer()
 	, m_emsdkRootDir()
 	, m_emscriptenRootDir()
+	, m_engineDevelopmentRepoRootDir()
 {
 #if defined(LN_OS_WIN32)
 	m_defaultTargetName = u"Windows";
@@ -23,30 +26,37 @@ BuildEnvironment::BuildEnvironment()
 	static_assert("Target not supported.");
 #endif
 
-	m_defaultLanguage = Language::Cpp;
-	if (ln::Environment::executablePath().endsWith(u"-rb")) {
-		m_defaultLanguage = Language::Ruby;
-	}
+	//m_defaultLanguage = Language::Cpp;
+	//if (ln::Environment::executablePath().endsWith(u"-rb")) {
+	//	m_defaultLanguage = Language::Ruby;
+	//}
 }
 
-void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
+void BuildEnvironment::setupPathes(bool developMode)
 {
 	// Make package paths.
 	{
-#ifdef LN_DEBUG
-		// Visual Studio など IDE 上からデバッグする用。
-		// 先に build.csproj を実行して NativePackage を作っておく必要がある。
-		auto rootPath = findRepositoryRootDir();
-		if (!rootPath.isEmpty()) {
-			m_luminoPackageRootDir = ln::Path::combine(rootPath, u"build", u"NativePackage");
+		if (developMode) {
+			// Visual Studio など IDE 上からデバッグする用。
+			// 先に build.csproj を実行して NativePackage を作っておく必要がある。
+			m_engineDevelopmentRepoRootDir = findRepositoryRootDir();
+			if (!m_engineDevelopmentRepoRootDir.isEmpty()) {
+				m_luminoPackageRootDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, u"build", u"NativePackage");
+
+				m_projectTemplatesDirPath = ln::Path::combine(m_engineDevelopmentRepoRootDir, u"Tools", u"ProjectTemplates");
+			}
 		}
-#endif
+
 		// 実行ファイルからディレクトリを親へ辿って、Package の Root を見つける。
 		if (m_luminoPackageRootDir.isEmpty()) {
 			m_luminoPackageRootDir = findNativePackageRootDir();
 		}
 
-		m_projectTemplatesDirPath = ln::Path::combine(m_luminoPackageRootDir, u"Tools", u"ProjectTemplates");
+
+		if (m_projectTemplatesDirPath.isEmpty()) {
+			m_projectTemplatesDirPath = ln::Path::combine(m_luminoPackageRootDir, u"Tools", u"ProjectTemplates");
+		}
+
 		m_luminoPackageEngineDir = ln::Path::combine(m_luminoPackageRootDir, u"Engine");
 		
 		// Validation
@@ -131,14 +141,14 @@ void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
 #endif
 
 
+	m_appDataDirPath = ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino");
+    m_toolsDir = (ln::Path::combine(m_appDataDirPath, u"BuildTools"));
 
 
     // Emscripten
     {
-        m_appDataDirPath = ln::Path::combine(ln::Environment::specialFolderPath(ln::SpecialFolder::ApplicationData), u"Lumino");
-        m_toolsDir = (ln::Path::combine(m_appDataDirPath, u"BuildTools"));
-        m_emsdkVer = u"1.39.7";
-        m_emsdkName = u"1.39.7";
+        m_emsdkVer = u"1.39.8";
+        m_emsdkName = u"1.39.8";
     }
 
 	// Android
@@ -187,11 +197,19 @@ void BuildEnvironment::setupPathes(EnvironmentPathBase pathBase)
 
 ln::Result BuildEnvironment::prepareEmscriptenSdk()
 {
-	ln::FileSystem::createDirectory(m_toolsDir);
 
 	// Emscripten
 	{
-		m_emsdkRootDir = ln::Path::combine(m_toolsDir, u"emsdk");
+		if (engineDevelopmentMode()) {
+			m_emsdkRootDir = ln::Path::combine(m_engineDevelopmentRepoRootDir, u"build", u"Emscripten", u"emsdk");
+		}
+
+		if (m_emsdkRootDir.isEmpty()) {
+			m_emsdkRootDir = ln::Path::combine(m_toolsDir, u"emsdk");
+		}
+
+		ln::FileSystem::createDirectory(m_emsdkRootDir);
+
 		m_emscriptenRootDir = ln::Path::combine(m_emsdkRootDir, u"upstream", u"emscripten");
 		m_emscriptenSysRootLocal = ln::Path::combine(m_emscriptenRootDir, u"system", u"local");
 		m_python = ln::Path::combine(m_emsdkRootDir, u"python", u"3.7.4_64bit", u"python");
@@ -233,14 +251,14 @@ ln::Result BuildEnvironment::prepareEmscriptenSdk()
 		}
 	}
 
-#ifdef LN_DEBUG
 	{
-		auto src = ln::Path::combine(m_luminoPackageEngineDir, u"Emscripten");
-		auto dst = ln::Path::combine(m_emscriptenSysRootLocal, u"LuminoEngine");
-		CLI::info(ln::String::format(u"Copy Engine '{0}' to '{1}'", src, dst));
-		ln::FileSystem::copyDirectory(src, dst, true, true);
+		auto engineRoot = ln::Path::combine(m_emscriptenSysRootLocal, u"LuminoEngine");
+		if (!ln::FileSystem::existsDirectory(engineRoot)) {
+			auto src = ln::Path::combine(m_luminoPackageEngineDir, u"Emscripten");
+			CLI::info(ln::String::format(u"Copy Engine '{0}' to '{1}'", src, engineRoot));
+			ln::FileSystem::copyDirectory(src, engineRoot, true, true);
+		}
 	}
-#endif
 
     return true;
 }
@@ -310,19 +328,30 @@ ln::Result BuildEnvironment::callProcess(const ln::String& program, const ln::Li
 	}
 }
 
-ln::Path BuildEnvironment::findNativePackageRootDir()
+ln::Path BuildEnvironment::findNativePackageRootDir() const
 {
 	// 実行ファイルを少しさかのぼってパッケージのルートらしいフォルダがあればそこを採用
 	ln::Path packageRootDir = ln::Path(ln::Environment::executablePath()).parent().parent();
-	ln::Path engineDir = ln::Path(packageRootDir, u"Engine");
-	ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
-	if (ln::FileSystem::existsDirectory(engineDir) && ln::FileSystem::existsDirectory(toolsDir))
-	{
-		return packageRootDir;
+
+	std::cout << m_workspace->primaryLang();
+
+	if (m_workspace->primaryLang() == u"cpp") {
+		ln::Path engineDir = ln::Path(packageRootDir, u"Engine");
+		ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
+		if (ln::FileSystem::existsDirectory(engineDir) && ln::FileSystem::existsDirectory(toolsDir)) {
+			return packageRootDir;
+		}
 	}
-	else {
-		return ln::Path();
+	if (m_workspace->primaryLang() == u"ruby") {
+		printf("rb!!\n");
+		ln::Path toolsDir = ln::Path(packageRootDir, u"Tools");
+		if (ln::FileSystem::existsDirectory(toolsDir)) {
+			printf("ok!!\n");
+			return packageRootDir;
+		}
 	}
+
+	return ln::Path();
 }
 
 ln::Path BuildEnvironment::findRepositoryRootDir()

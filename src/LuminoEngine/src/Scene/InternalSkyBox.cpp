@@ -4,6 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "../Rendering/RenderingManager.hpp"
 #include "InternalSkyBox.hpp"
 
 namespace ln {
@@ -19,7 +20,7 @@ InternalSkyBox::InternalSkyBox()
 void InternalSkyBox::init()
 {
 	Object::init();
-	auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.fx");
+	auto shader = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SkyLowAltitudeOptimized);
 
 	m_material = makeObject<Material>();
 	m_material->setShader(shader);

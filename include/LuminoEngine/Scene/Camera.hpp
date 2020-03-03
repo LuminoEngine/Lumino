@@ -8,12 +8,13 @@ class WorldRenderView;
 class CameraComponent;
 
 /**
-	@brief
-*/
+ * カメラのクラスです。カメラは 3D シーンを描画する際の視点となります。
+ */
+LN_CLASS()
 class Camera
 	: public WorldObject
 {
-	//LN_OBJECT;
+	LN_OBJECT;
 public:
     /** 既定の設定で Camera を作成します。 */
     static Ref<Camera> create();

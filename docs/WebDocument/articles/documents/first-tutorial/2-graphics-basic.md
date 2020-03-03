@@ -1,6 +1,8 @@
 描画の基本
 ==========
 
+この章では、画面上に図形や絵を表示するための基礎を学びます。
+
 2D 座標系
 ----------
 
@@ -29,12 +31,12 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
     def on_update
-        Debug.print(0, "X:%f" % [Mouse.pos.x]));
-        Debug.print(0, "Y:%f" % [Mouse.pos.y]));
+        Debug.print(0, "X:%f" % Mouse.position.x)
+        Debug.print(0, "Y:%f" % Mouse.position.y)
     end
 end
 
@@ -101,7 +103,7 @@ Lumino の 3D 空間は、X軸,Y軸,Z軸 からなる直交座標系によって
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto box = BoxMesh::create();
     }
@@ -111,7 +113,7 @@ LUMINO_APP(App);
 ```
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
     def on_init
@@ -126,6 +128,9 @@ App.new.run
 ![](img/graphics-basic-4.png)
 
 ウィンドウ中央に四角形が表示されました。
+
+> [!Note]
+> このチュートリアルで紹介する方法では、オブジェクトを「描く」というよりは、「作って、3D 空間に置く」といった考え方がメインとなります。
 
 
 カメラを操作する
@@ -146,7 +151,7 @@ Lumino の初期状態は、空っぽのワールドにひとつのカメラが�
 
 class App : public Application
 {
-    virtual void onInit() override
+    void onInit() override
     {
         auto box = BoxMesh::create();
 
@@ -161,7 +166,7 @@ LUMINO_APP(App);
 # [Ruby](#tab/lang-ruby)
 デフォルトのカメラは `Engine.camera` で取得し、`set_position` で 3D 位置を指定します。また、位置を指定した後に `look_at` でワールドの原点を向くようにします。
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
     def on_init
@@ -187,7 +192,7 @@ App.new.run
 座標系を変換する (2D -> 3D)
 ----------
 
-マウスで指している位置にオブジェクトを表示したい場合、2D 座標から 3D 座標へ変換する必要があります。
+例えばマウスで指している位置にオブジェクトを表示したい場合、2D 座標から 3D 座標へ変換する必要があります。
 
 ただし、2D 座標から 3D 座標への変換では、直に 3D の一点を求めることはできません。
 
@@ -210,7 +215,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;    // (1)
 
-    virtual void onInit() override
+    void onInit() override
     {
         box = BoxMesh::create();
 
@@ -219,7 +224,7 @@ class App : public Application
         camera->lookAt(0, 0, 0);
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         auto raycaster = Raycaster::fromScreen(Mouse::position());  // (2)
         if (auto result = raycaster->intersectPlane(0, 1, 0)) {     // (3)
@@ -230,9 +235,8 @@ class App : public Application
 
 LUMINO_APP(App);
 ```
-
 1. `onInit()` で作成した box を `onUpdate()` で操作できるようにするため、これまで `auto box = ...;` と定義していたローカル変数ではなくメンバ変数として定義します。
-2. スクリーン上の、現在のマウス位置 `Mouse::position()` を起点としてレイキャスティングを行う `Raycaster` インスタンスを取得します。
+2. スクリーン上の現在のマウス位置 `Mouse::position()` を起点としてレイキャスティングを行う `Raycaster` インスタンスを取得します。
 3. レイと平面との衝突判定を行います。 `intersectPlane()` の引数は面の表方向を表す x, y, z 値です。ここでは、Y+ 方向 （真上）を向く、つまるところ通常の `地平面` を指定しています。
    衝突した場合、結果を返します。衝突しなければ nullptr で、if 内には入りません。
 4. `result->point()` で衝突した点を取得できます、これをカメラの時と同じようして `box->setPosition()` にセットすることで、Box を移動させます。
@@ -242,29 +246,37 @@ LUMINO_APP(App);
 
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-        box = BoxMesh.new
+  def on_init
+    @box = BoxMesh.new
 
-        camera = Engine.camera
-        camera.set_position(5, 5, -5)
-        camera.lookAt(0, 0, 0)
-
-        light = DirectionalLight.new;
+    camera = Engine.camera
+    camera.set_position(5, 5, -5)
+    camera.look_at(0, 0, 0)
+  end
+  
+  def on_update
+    raycaster = Raycaster.from_screen(Mouse.position)  # (1)
+    result = raycaster.intersect_plane(0, 1, 0)  # (2)
+    if result
+      @box.set_position(result.point) # (3)
     end
+  end
 end
 
 App.new.run
 ```
----
+1. スクリーン上の現在のマウス位置 `Mouse.position` を起点としてレイキャスティングを行う `Raycaster` インスタンスを取得します。
+2. レイと平面との衝突判定を行います。 `intersect_plane()` の引数は面の表方向を表す x, y, z 値です。ここでは、Y+ 方向 （真上）を向く、つまるところ通常の `地平面` を指定しています。衝突した場合、結果を返します。衝突しなければ nullptr で、if 内には入りません。
+3. `result.point` で衝突した点を取得できます、これをカメラの時と同じようして `@box.set_position()` にセットすることで、Box を移動させます。
+
+----------
 
 ![](img/graphics-basic-9.gif)
 
-Great!
-
-これまでよりもずっと 3D 空間を触りやすくなりました！
+マウス位置に Box が表示されるようになり、これまでよりもずっと 3D 空間を触りやすくなりました！
 
 
 デバッグ
@@ -272,7 +284,7 @@ Great!
 
 最後に、ワールドのデバッグに使える便利機能を紹介します。
 
-オブジェクトが上手く表示されないようなケースでは、ワールドの状況を観察することが解決の助けになります。（例えば、配置する座標を間違えて、別のオブジェクトの後ろに隠れているだけかもしれません…）
+オブジェクトが上手く表示されないようなケースでは、ワールドの状況を観察することが解決の助けになります。（例えば、配置する座標を間違えて、別のオブジェクトの後ろに隠れていたり、カメラの裏側に置かれているかもしれません…）
 
 ここでは 3D 空間にグリッドを表示し、カメラをマウスで操作できるようにして、ワールドを俯瞰しやすくしてみます。
 
@@ -284,7 +296,7 @@ class App : public Application
 {
     Ref<BoxMesh> box;
 
-    virtual void onInit() override
+    void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
@@ -292,7 +304,7 @@ class App : public Application
         box = BoxMesh::create();
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
         auto raycaster = Raycaster::fromScreen(Mouse::position());
         if (auto result = raycaster->intersectPlane(0, 1, 0)) {
@@ -303,33 +315,38 @@ class App : public Application
 
 LUMINO_APP(App);
 ```
-
 onInit() の先頭に2行の新しいコードが増えています。
-
-`Engine::renderView()->setGuideGridEnabled(true);` は、ワールド全体の地平面にグリッドを表示します。また、原点から各軸方向を示す赤、緑、青の線分を表示します。
-
-`Engine::camera()->addComponent(CameraOrbitControlComponent::create());` は、これまで使ってきたカメラに対して、マウスを使って操作できる機能を追加します。
-
+- `Engine::renderView()->setGuideGridEnabled(true);` は、ワールド全体の地平面にグリッドを表示します。また、原点から各軸方向を示す赤、緑、青の線分を表示します。
+- `Engine::camera()->addComponent(CameraOrbitControlComponent::create());` は、これまで使ってきたカメラに対して、マウスを使って操作できる機能を追加します。
 
 # [Ruby](#tab/lang-ruby)
 ```ruby
-require 'lumino'
+require "lumino"
 
 class App < Application
-    def on_init
-        box = BoxMesh.new
-
-        camera = Engine.camera
-        camera.set_position(5, 5, -5)
-        camera.lookAt(0, 0, 0)
-
-        light = DirectionalLight.new;
+  def on_init
+    Engine.render_view.guide_grid_enabled = true
+    Engine.camera.add_component(CameraOrbitControlComponent.new)
+    
+    @box = BoxMesh.new
+  end
+  
+  def on_update
+    raycaster = Raycaster.from_screen(Mouse.position)
+    result = raycaster.intersect_plane(0, 1, 0)
+    if result
+      @box.set_position(result.point)
     end
+  end
 end
 
 App.new.run
 ```
----
+on_init の先頭に2行の新しいコードが増えています。
+- `Engine.render_view.guide_grid_enabled = true` は、ワールド全体の地平面にグリッドを表示します。また、原点から各軸方向を示す赤、緑、青の線分を表示します。
+- `Engine.camera.add_component(CameraOrbitControlComponent.new)` は、これまで使ってきたカメラに対して、マウスを使って操作できる機能を追加します。
+
+----------
 
 マウス操作は次の通りです。
 

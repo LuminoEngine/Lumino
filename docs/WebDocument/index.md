@@ -1,5 +1,5 @@
 ---
-title: Welcome to Lumino website!
+title: Lumino
 documentType: index
 ---
 <style type="text/css">
@@ -49,10 +49,26 @@ footer{
             現在は主にゲーム開発を支援するためのゲームエンジンとして開発を進めています。
           </p>
           <p class="lead">
-            API はまだ安定していません。特に、チュートリアルやサンプルに乗せたもの以外は頻繁に変更される可能性があります。
+            主要な API は安定してきましたが、開発状況はフレームワーク全体の "下書き" がようやく終わったくらいです。利用状況次第で変更が入る可能性があります。
           </p>
         </section>
       </div>
     </div>
   </div>
 </div>
+
+<div class="key-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1 text-center">
+        <section>
+          <img src="img/g1.jpg" />
+          <img src="img/g2.jpg" />
+          <img src="img/g3.png" />
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+

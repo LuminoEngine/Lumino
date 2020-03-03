@@ -8,6 +8,8 @@ namespace ln {
 //==============================================================================
 // Camera
 
+LN_OBJECT_IMPLEMENT(Camera, WorldObject) {}
+
 Ref<Camera> Camera::create()
 {
     return makeObject<Camera>();

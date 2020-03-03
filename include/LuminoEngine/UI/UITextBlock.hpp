@@ -8,6 +8,10 @@ class RTDocument;
 //class FlexText;
 //}
 
+/**
+ * 文字列を表示するための UI 要素です。少量の文字列表示に最適化されています。
+ */
+LN_CLASS()
 class UITextBlock
     : public UIElement
 {
@@ -25,7 +29,18 @@ public:
 
 LN_CONSTRUCT_ACCESS:
     UITextBlock();
-	void init(); 
+    
+    /**
+     * UITextBlock を作成します。
+     */
+    LN_METHOD()
+	void init();
+
+    /**
+     * 表示文字列を指定して、UITextBlock を作成します。
+     * @param[in] text : 表示文字列
+     */
+    LN_METHOD(OverloadPostfix = "WithText")
     void init(const StringRef& text);
 
 protected:

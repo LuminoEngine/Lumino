@@ -5,14 +5,14 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-set(LUMINO_ENGINE_ROOT $ENV{LUMINO_PATH}/Engine/Native)
 set(LN_TARGET_ARCH Android-${ANDROID_ABI})
+set(LUMINO_ENGINE_ROOT $ENV{LUMINO_PATH}/Engine/${LN_TARGET_ARCH})
 
 list(APPEND CMAKE_FIND_ROOT_PATH ${LUMINO_ENGINE_ROOT}/lib/Android-${ANDROID_ABI})
 
-include(${LUMINO_ENGINE_ROOT}/lib/cmake/LuminoSetup.cmake)
+include(${LUMINO_ENGINE_ROOT}/LuminoConfig.cmake)
 
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../Sources/*.cpp)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../../src/*.cpp)
 
 
 # Creates and names a library, sets it as either STATIC
@@ -50,8 +50,6 @@ find_library( # Sets the name of the path variable.
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
-add_dependencies(PNG ZLIB)
-
 target_link_libraries( # Specifies the target library.
                        native-lib
 
@@ -62,6 +60,5 @@ target_link_libraries( # Specifies the target library.
                        GLESv3
                        m
                        z
-                       LuminoEngine-static
-                       #${ZLIB_LIBRARY_RELEASE}
+                       LuminoEngine
                        )

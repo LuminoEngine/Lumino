@@ -1,18 +1,16 @@
-﻿
-#include "App.h"
+﻿#include <Lumino.hpp>
 
-HelloApp::HelloApp()
+class HelloApp : public Application
 {
-	ln::GlobalLogger::setLevel(ln::LogLevel::Debug);
-}
+    void onStart() override
+    {
+        auto text = UITextBlock::create(u"Hello, Lumino!");
+    }
 
-void HelloApp::onStart()
-{
-}
-
-void HelloApp::onUpdate()
-{
-}
+    void onUpdate() override
+    {
+    }
+};
 
 LUMINO_APP(HelloApp);
 

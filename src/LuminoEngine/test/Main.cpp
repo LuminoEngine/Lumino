@@ -20,13 +20,13 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Binding.*"
+		//"--gtest_filter=Test_UI_UITextBlock.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
 
-	GlobalLogger::setLevel(LogLevel::Debug);
-	GlobalLogger::addStdErrAdapter();
+	Logger::setLevel(LogLevel::Debug);
+	Logger::addStdErrAdapter();
 
 	TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
 	TestHelper::setTempDirPath(Environment::specialFolderPath(SpecialFolder::Temporary));

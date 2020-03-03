@@ -87,7 +87,8 @@ if (auto result = Raycaster::intersectFrom2DView(Mouse::position(), Vector3::Uni
 
 
  */
-
+	
+LN_OBJECT_IMPLEMENT(Raycaster, Object) {}
 	
 Raycaster* Raycaster::fromScreen(Camera* camera, const Point& point)
 {
@@ -142,6 +143,8 @@ RaycastResult* Raycaster::intersectPlane(const Plane& plane) const
 
 //==============================================================================
 // RaycastResult
+
+LN_OBJECT_IMPLEMENT(RaycastResult, Object) {}
 
 RaycastResult::RaycastResult()
 {

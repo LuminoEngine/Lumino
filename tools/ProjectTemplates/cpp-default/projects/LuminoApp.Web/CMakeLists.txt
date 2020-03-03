@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(LuminoApp)
 
-include(${LUMINO_ENGINE_ROOT}/LuminoConfig.cmake)
+find_package(Lumino)
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 file(GLOB APP_SOURCES "../../src/*.h" "../../src/*.cpp")

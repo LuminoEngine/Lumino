@@ -79,7 +79,7 @@ LN_OBJECT_IMPLEMENT(UIElement, UILayoutElement) {}
 
 UIElement::UIElement()
     : m_manager(nullptr)
-	, m_objectManagementFlags(detail::ObjectManagementFlags::AutoAddToActiveScene)
+	, m_objectManagementFlags(detail::ObjectManagementFlags::None)
     , m_context(nullptr)
     , m_visualParent(nullptr)
     , m_logicalParent(nullptr)
@@ -124,12 +124,9 @@ void UIElement::init()
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle->backgroundMaterial = makeObject<Material>();
 
-	//if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
-	//	UIContainerElement* primaryElement = m_manager->primaryElement();
-	//	if (primaryElement) {
-	//		primaryElement->addElement(this);
-	//	}
-	//}
+	if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
+		attemptAddToPrimaryElement();
+	}
 
 
     //if (m_manager->mainContext()) {
@@ -1000,6 +997,16 @@ void UIElement::removeFromLogicalParent()
     if (m_logicalParent) {
         m_logicalParent->removeElement(this);
     }
+}
+
+void UIElement::attemptAddToPrimaryElement()
+{
+	//if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToActiveScene)) {
+		UIControl* primaryElement = m_manager->primaryElement();
+		if (primaryElement) {
+			primaryElement->addElement(this);
+		}
+	//}
 }
 
 void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strategy)

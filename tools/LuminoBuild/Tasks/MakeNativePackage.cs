@@ -9,7 +9,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "MakeNativePackage";
 
-        public override List<string> Dependencies => new List<string>() { "BuildEngine_MSVC" };
+        //public override List<string> Dependencies => new List<string>() { "BuildEngine_MSVC" };
 
         public bool fileMoving = false;
 
@@ -25,40 +25,42 @@ namespace LuminoBuild.Tasks
                 string sourceBuildDir = Path.Combine(builder.LuminoBuildDir, target.Name);
                 if (Directory.Exists(sourceBuildDir))
                 {
+                    Console.WriteLine($"{target.Name}...");
+
                     string destinationEngineRoot = Path.Combine(destinationRootDir, "Engine", target.Name);
                     string destinationEngineIncludeDir = Path.Combine(destinationEngineRoot, "include");
                     string destinationEngineLibDir = Path.Combine(destinationEngineRoot, "lib");
+                    string destinationEngineBinDir = Path.Combine(destinationEngineRoot, "bin");
                     Directory.CreateDirectory(destinationEngineRoot);
                     Directory.CreateDirectory(destinationEngineIncludeDir);
                     Directory.CreateDirectory(destinationEngineLibDir);
 
                     string engineInstallDir = Path.Combine(builder.LuminoBuildDir, target.Name, BuildEnvironment.EngineInstallDirName);
 
-                    // Engine include files
+                    // Engine include
                     {
                         Utils.CopyDirectory(
                             Path.Combine(engineInstallDir, "include"),
                             Path.Combine(destinationEngineIncludeDir));
                     }
 
-                    // Engine libs
+                    // Engine lib
                     {
-                        Console.WriteLine($"Engine libs...");
-
                         var srcDir = Path.Combine(engineInstallDir, "lib");
                         Utils.CopyDirectory(srcDir, destinationEngineLibDir, recursive: false);
                         if (fileMoving)
                             Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
                     }
 
-                    // Engine libs
+                    // Engine bin
                     {
-                        Console.WriteLine($"Engine libs...");
-
-                        var srcDir = Path.Combine(engineInstallDir, "lib");
-                        Utils.CopyDirectory(srcDir, destinationEngineLibDir, recursive: false);
-                        if (fileMoving)
-                            Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                        var srcDir = Path.Combine(engineInstallDir, "bin");
+                        if (Directory.Exists(srcDir))
+                        {
+                            Utils.CopyDirectory(srcDir, destinationEngineBinDir, recursive: false);
+                            if (fileMoving)
+                                Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                        }
                     }
 
                     // External libs
@@ -79,6 +81,19 @@ namespace LuminoBuild.Tasks
                             }
                         }
                     }
+
+                    // cmake
+                    {
+                        Utils.CopyFile2(
+                            Path.Combine(builder.LuminoRootDir, "src", "LuminoConfig.cmake"),
+                            Path.Combine(destinationEngineRoot, "LuminoConfig.cmake"));
+                        Utils.CopyFile2(
+                            Path.Combine(builder.LuminoRootDir, "src", "LuminoCommon.cmake"),
+                            Path.Combine(destinationEngineRoot, "LuminoCommon.cmake"));
+                        Utils.CopyFile2(
+                            Path.Combine(builder.LuminoRootDir, "external", "ImportExternalLibraries.cmake"),
+                            Path.Combine(destinationEngineRoot, "ImportExternalLibraries.cmake"));
+                    }
                 }
             }
 
@@ -88,20 +103,28 @@ namespace LuminoBuild.Tasks
 
                 if (Utils.IsWin32)
                 {
-                    string engineInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MT", BuildEnvironment.EngineInstallDirName);
+                    var engineInstallDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", BuildEnvironment.EngineInstallDirName);
+                    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
+                    if (Directory.Exists(sourceBinDir))
+                    {
+                        Utils.CopyDirectory(sourceBinDir, destinationToolDir, pattern: "*.exe");
 
-                    Utils.CopyDirectory(Path.Combine(engineInstallDir, "bin"), destinationToolDir, pattern: "*.exe");
-                    Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));
+                        Utils.DownloadFile(BuildEnvironment.VSWhereUrl, Path.Combine(destinationToolDir, "vswhere.exe"));
+                    }
                 }
                 else if (Utils.IsMac)
                 {
-                    string engineInstallDir = Path.Combine(builder.LuminoBuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
+                    var engineInstallDir = Path.Combine(builder.LuminoBuildDir, "macOS", BuildEnvironment.EngineInstallDirName);
+                    var sourceBinDir = Path.Combine(engineInstallDir, "bin");
 
-                    Utils.CopyDirectory(Path.Combine(engineInstallDir, "bin"), destinationToolDir);
+                    if (Directory.Exists(sourceBinDir))
+                    {
+                        Utils.CopyDirectory(sourceBinDir, destinationToolDir);
 
-                    string setupFile = Path.Combine(destinationToolDir, "setup.sh");
-                    File.Copy(Path.Combine(builder.LuminoRootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
-                    Utils.chmod(setupFile, Utils.S_0755);
+                        var setupFile = Path.Combine(destinationToolDir, "setup.sh");
+                        File.Copy(Path.Combine(builder.LuminoRootDir, "Tools", "PackageSource", "macOS", "setup.sh"), setupFile, true);
+                        Utils.chmod(setupFile, Utils.S_0755);
+                    }
                 }
 
                 // Templates
@@ -125,7 +148,6 @@ namespace LuminoBuild.Tasks
 
             // Engine assets
             {
-
                 var reposDir = Path.Combine(builder.LuminoBuildDir, "ExternalSource");
                 using (var cd = CurrentDir.Enter(reposDir))
                 {
@@ -135,6 +157,10 @@ namespace LuminoBuild.Tasks
                         File.Copy("noto-emoji/fonts/NotoColorEmoji.ttf", Path.Combine(builder.LuminoToolsDir, "EngineResources", "NotoColorEmoji.ttf"), true);
                     }
                 }
+
+                Utils.CopyDirectory(
+                    Path.Combine(builder.LuminoToolsDir, "EngineResources"),
+                    Path.Combine(destinationToolDir, "EngineResources"));
             }
         }
 

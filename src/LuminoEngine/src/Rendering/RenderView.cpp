@@ -28,7 +28,9 @@ namespace ln {
  * - UE4: GEngine->GameViewport->GetViewportSize(Result);
  * みたいに、Camera ではないインターフェイスからビューサイズをとったりする。
  * ひとまずはこの一点だけの利用になりそうだけど、分ける方向で考えてみよう。
- */
+*/
+
+LN_OBJECT_IMPLEMENT(RenderView, Object) {}
 
 RenderView::RenderView()
 	: m_clearMode(RenderViewClearMode::None)

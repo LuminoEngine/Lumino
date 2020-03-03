@@ -6,6 +6,10 @@ namespace ln {
 class BoxMeshComponent;
 class SphereMeshComponent;
 
+/**
+ * 直方体のメッシュオブジェクトです。
+ */
+LN_CLASS()
 class BoxMesh
 	: public VisualObject
 {
@@ -19,6 +23,9 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	BoxMesh();
 	virtual ~BoxMesh();
+
+	/** 各軸のサイズが 1 である BoxMesh を作成します。 */
+	LN_METHOD()
 	void init();
 
 private:

@@ -21,25 +21,23 @@ int main(int argc, char** argv)
 	if (argc == 1)
 	{
         ::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test2");
-		//::SetCurrentDirectoryW(L"C:/Proj/LN/PrivateProjects/Roguelike2");
-        ln::GlobalLogger::setLevel(ln::LogLevel::Verbose);
+        ln::Logger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
-			"<program>",
-			
-			//"new", "Test1", "-t", "cmake",
+			"<program>", "-d",
+			//"new", "test4",
+			//"new", "TH-10", "-t", "cmake",
             
-			"build", "Web",
+			//"build", "Web",
 			//"build", "Web",
 			
-			//"init", "RinoTutorial", "-t", "SimpleDesktop",
-			//"build", "-p", "Windows"
+			//"build",// "-p", "Windows"
 
 			//"<program>", "dev-install-tools",
 
 			
 
-			//"run", "Web", //"Windows",
+			"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
@@ -48,8 +46,7 @@ int main(int argc, char** argv)
 			//"restore",
 
             //"fxc", "Assets/LineWave.fx",
-            //"fxc", "C:/Proj/GitHub/Lumino/src/LuminoEngine/test/Assets/Shader/FxcTest1.fx",
-            //"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.hlsl",
+            //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx",
 
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
@@ -73,8 +70,9 @@ int main(int argc, char** argv)
 			return commnad_localInitialSetup(argv[2]);
 		}
 	
-        ln::GlobalLogger::addStdErrAdapter();
+        ln::Logger::addStdErrAdapter();
 
+		ln::EngineContext::current()->initializeEngineManager();
 		ln::EngineContext::current()->engineManager()->initializeAssetManager();
 
 		exitCode = processCommands(argc, argv);
@@ -159,7 +157,7 @@ static int processCommands(int argc, char** argv)
 	parser.addHelpOption();
 
 	//auto langOption = parser.addNamedValueOption(u"l", u"lang", u"language.", { u"cpp", u"rb" });
-
+	auto devOption = parser.addFlagOption(u"d", u"dev", u"Development mode.");
 
 	//--------------------------------------------------------------------------------
 	// new command
@@ -205,13 +203,18 @@ static int processCommands(int argc, char** argv)
 
 	if (parser.process(argc, argv))
 	{
-		auto workspace = ln::makeObject<lna::Workspace>();
-		auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+		if (devOption->isSet()) {
+			lna::Workspace::developMode = true;
+			CLI::info(u"Running on develop-mode.");
+		}
 
 		//--------------------------------------------------------------------------------
 		// new command
 		if (parser.has(newCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			NewCommand cmd;
 			if (newCommand_nameOption->hasValue()) {
 				cmd.projectName = newCommand_nameOption->value();
@@ -231,6 +234,9 @@ static int processCommands(int argc, char** argv)
 		// build command
 		else if (parser.has(buildCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			ln::String target = workspace->buildEnvironment()->defaultTargetName();
 			if (burildTargetArg->hasValue()) {
 				target = burildTargetArg->value();
@@ -249,6 +255,9 @@ static int processCommands(int argc, char** argv)
 		// run command
 		else if (parser.has(runCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			ln::String target = workspace->buildEnvironment()->defaultTargetName();
 			if (runCommand_targetArg->hasValue()) {
 				target = runCommand_targetArg->value();
@@ -259,12 +268,13 @@ static int processCommands(int argc, char** argv)
 			}
 
 
-			BuildCommand cmd;
-			cmd.target = target;
-			if (cmd.execute(workspace, workspace->mainProject()) != 0) {
-				return 1;
-			}
+			//BuildCommand cmd;
+			//cmd.target = target;
+			//if (cmd.execute(workspace, workspace->mainProject()) != 0) {
+			//	return 1;
+			//}
 
+			workspace->buildEnvironment()->prepareEmscriptenSdk();
 			if (!workspace->runProject(target)) {
 				return 1;
 			}
@@ -273,6 +283,9 @@ static int processCommands(int argc, char** argv)
 		// restore command
 		else if (parser.has(restoreCommand))
 		{
+			auto workspace = ln::makeObject<lna::Workspace>();
+			auto projectFile = lna::Workspace::findProejctFile(ln::Environment::currentDirectory());
+
 			if (!workspace->openMainProject(projectFile)) {
 				return 1;
 			}
@@ -299,19 +312,19 @@ static int processCommands(int argc, char** argv)
 		//    return cmd.execute(workspace->project());
 		//}
 		//--------------------------------------------------------------------------------
-		else if (parser.has(dev_installTools))
-		{
-			if (!workspace->dev_installTools()) {
-				return 1;
-			}
-		}
-		else if (parser.has(dev_openide))
-		{
-			if (!workspace->openMainProject(projectFile)) {
-				return 1;
-			}
-			workspace->dev_openIde(dev_openide_targetArg->value());
-		}
+		//else if (parser.has(dev_installTools))
+		//{
+		//	if (!workspace->dev_installTools()) {
+		//		return 1;
+		//	}
+		//}
+		//else if (parser.has(dev_openide))
+		//{
+		//	if (!workspace->openMainProject(projectFile)) {
+		//		return 1;
+		//	}
+		//	workspace->dev_openIde(dev_openide_targetArg->value());
+		//}
 		else
 		{
 			parser.printHelp();

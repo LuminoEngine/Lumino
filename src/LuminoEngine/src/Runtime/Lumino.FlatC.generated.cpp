@@ -476,76 +476,6 @@ public:
 };
 
 
-class LNWS_ln_EngineSettings : public ln::EngineSettings
-{
-public:
-
-
-};
-
-
-class LNWS_ln_Engine : public ln::Engine
-{
-public:
-
-
-};
-
-
-class LNWS_ln_Application : public ln::Application
-{
-public:
-    static LnApplication_OnSerialize_OverrideCallback s_LnApplication_OnSerialize_OverrideCallback;
-    static LnApplication_OnInit_OverrideCallback s_LnApplication_OnInit_OverrideCallback;
-    static LnApplication_OnUpdate_OverrideCallback s_LnApplication_OnUpdate_OverrideCallback;
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnApplication_OnSerialize_OverrideCallback) s_LnApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Application::onSerialize(ar);
-    }
-    virtual void onInit() override
-    {
-        if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    void onInit_CallBase()
-    {
-        ln::Application::onInit();
-    }
-    virtual void onUpdate() override
-    {
-        if (s_LnApplication_OnUpdate_OverrideCallback) s_LnApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    void onUpdate_CallBase()
-    {
-        ln::Application::onUpdate();
-    }
-
-};
-LnApplication_OnSerialize_OverrideCallback LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = nullptr;
-LnApplication_OnInit_OverrideCallback LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = nullptr;
-LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = nullptr;
-
-
 class LNWS_ln_GraphicsResource : public ln::GraphicsResource
 {
 public:
@@ -640,6 +570,38 @@ public:
 
 };
 LnTexture2D_OnSerialize_OverrideCallback LNWS_ln_Texture2D::s_LnTexture2D_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_RenderView : public ln::RenderView
+{
+public:
+    static LnRenderView_OnSerialize_OverrideCallback s_LnRenderView_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnRenderView_OnSerialize_OverrideCallback) s_LnRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::RenderView::onSerialize(ar);
+    }
+
+};
+LnRenderView_OnSerialize_OverrideCallback LNWS_ln_RenderView::s_LnRenderView_OnSerialize_OverrideCallback = nullptr;
 
 
 class LNWS_ln_Component : public ln::Component
@@ -888,6 +850,178 @@ LnVisualObject_OnSerialize_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObje
 LnVisualObject_OnUpdate_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_OnUpdate_OverrideCallback = nullptr;
 
 
+class LNWS_ln_Camera : public ln::Camera
+{
+public:
+    static LnCamera_OnSerialize_OverrideCallback s_LnCamera_OnSerialize_OverrideCallback;
+    static LnCamera_OnUpdate_OverrideCallback s_LnCamera_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<WorldObject>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnCamera_OnSerialize_OverrideCallback) s_LnCamera_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Camera::onSerialize(ar);
+    }
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnCamera_OnUpdate_OverrideCallback) s_LnCamera_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::Camera::onUpdate(elapsedSeconds);
+    }
+
+};
+LnCamera_OnSerialize_OverrideCallback LNWS_ln_Camera::s_LnCamera_OnSerialize_OverrideCallback = nullptr;
+LnCamera_OnUpdate_OverrideCallback LNWS_ln_Camera::s_LnCamera_OnUpdate_OverrideCallback = nullptr;
+
+
+class LNWS_ln_DirectionalLight : public ln::DirectionalLight
+{
+public:
+    static LnDirectionalLight_OnSerialize_OverrideCallback s_LnDirectionalLight_OnSerialize_OverrideCallback;
+    static LnDirectionalLight_OnUpdate_OverrideCallback s_LnDirectionalLight_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<WorldObject>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnDirectionalLight_OnSerialize_OverrideCallback) s_LnDirectionalLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::DirectionalLight::onSerialize(ar);
+    }
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnDirectionalLight_OnUpdate_OverrideCallback) s_LnDirectionalLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::DirectionalLight::onUpdate(elapsedSeconds);
+    }
+
+};
+LnDirectionalLight_OnSerialize_OverrideCallback LNWS_ln_DirectionalLight::s_LnDirectionalLight_OnSerialize_OverrideCallback = nullptr;
+LnDirectionalLight_OnUpdate_OverrideCallback LNWS_ln_DirectionalLight::s_LnDirectionalLight_OnUpdate_OverrideCallback = nullptr;
+
+
+class LNWS_ln_PointLight : public ln::PointLight
+{
+public:
+    static LnPointLight_OnSerialize_OverrideCallback s_LnPointLight_OnSerialize_OverrideCallback;
+    static LnPointLight_OnUpdate_OverrideCallback s_LnPointLight_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<WorldObject>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnPointLight_OnSerialize_OverrideCallback) s_LnPointLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::PointLight::onSerialize(ar);
+    }
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnPointLight_OnUpdate_OverrideCallback) s_LnPointLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::PointLight::onUpdate(elapsedSeconds);
+    }
+
+};
+LnPointLight_OnSerialize_OverrideCallback LNWS_ln_PointLight::s_LnPointLight_OnSerialize_OverrideCallback = nullptr;
+LnPointLight_OnUpdate_OverrideCallback LNWS_ln_PointLight::s_LnPointLight_OnUpdate_OverrideCallback = nullptr;
+
+
+class LNWS_ln_SpotLight : public ln::SpotLight
+{
+public:
+    static LnSpotLight_OnSerialize_OverrideCallback s_LnSpotLight_OnSerialize_OverrideCallback;
+    static LnSpotLight_OnUpdate_OverrideCallback s_LnSpotLight_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<WorldObject>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSpotLight_OnSerialize_OverrideCallback) s_LnSpotLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::SpotLight::onSerialize(ar);
+    }
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnSpotLight_OnUpdate_OverrideCallback) s_LnSpotLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::SpotLight::onUpdate(elapsedSeconds);
+    }
+
+};
+LnSpotLight_OnSerialize_OverrideCallback LNWS_ln_SpotLight::s_LnSpotLight_OnSerialize_OverrideCallback = nullptr;
+LnSpotLight_OnUpdate_OverrideCallback LNWS_ln_SpotLight::s_LnSpotLight_OnUpdate_OverrideCallback = nullptr;
+
+
 class LNWS_ln_Sprite : public ln::Sprite
 {
 public:
@@ -929,6 +1063,177 @@ public:
 };
 LnSprite_OnSerialize_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnSerialize_OverrideCallback = nullptr;
 LnSprite_OnUpdate_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = nullptr;
+
+
+class LNWS_ln_CameraOrbitControlComponent : public ln::CameraOrbitControlComponent
+{
+public:
+    static LnCameraOrbitControlComponent_OnSerialize_OverrideCallback s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Component>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback) s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::CameraOrbitControlComponent::onSerialize(ar);
+    }
+
+};
+LnCameraOrbitControlComponent_OnSerialize_OverrideCallback LNWS_ln_CameraOrbitControlComponent::s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Raycaster : public ln::Raycaster
+{
+public:
+    static LnRaycaster_OnSerialize_OverrideCallback s_LnRaycaster_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnRaycaster_OnSerialize_OverrideCallback) s_LnRaycaster_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Raycaster::onSerialize(ar);
+    }
+
+};
+LnRaycaster_OnSerialize_OverrideCallback LNWS_ln_Raycaster::s_LnRaycaster_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_RaycastResult : public ln::RaycastResult
+{
+public:
+    static LnRaycastResult_OnSerialize_OverrideCallback s_LnRaycastResult_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnRaycastResult_OnSerialize_OverrideCallback) s_LnRaycastResult_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::RaycastResult::onSerialize(ar);
+    }
+
+};
+LnRaycastResult_OnSerialize_OverrideCallback LNWS_ln_RaycastResult::s_LnRaycastResult_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_WorldRenderView : public ln::WorldRenderView
+{
+public:
+    static LnWorldRenderView_OnSerialize_OverrideCallback s_LnWorldRenderView_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<RenderView>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnWorldRenderView_OnSerialize_OverrideCallback) s_LnWorldRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::WorldRenderView::onSerialize(ar);
+    }
+
+};
+LnWorldRenderView_OnSerialize_OverrideCallback LNWS_ln_WorldRenderView::s_LnWorldRenderView_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_BoxMesh : public ln::BoxMesh
+{
+public:
+    static LnBoxMesh_OnSerialize_OverrideCallback s_LnBoxMesh_OnSerialize_OverrideCallback;
+    static LnBoxMesh_OnUpdate_OverrideCallback s_LnBoxMesh_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<VisualObject>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnBoxMesh_OnSerialize_OverrideCallback) s_LnBoxMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::BoxMesh::onSerialize(ar);
+    }
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnBoxMesh_OnUpdate_OverrideCallback) s_LnBoxMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::BoxMesh::onUpdate(elapsedSeconds);
+    }
+
+};
+LnBoxMesh_OnSerialize_OverrideCallback LNWS_ln_BoxMesh::s_LnBoxMesh_OnSerialize_OverrideCallback = nullptr;
+LnBoxMesh_OnUpdate_OverrideCallback LNWS_ln_BoxMesh::s_LnBoxMesh_OnUpdate_OverrideCallback = nullptr;
 
 
 class LNWS_ln_UIEventArgs : public ln::UIEventArgs
@@ -1123,6 +1428,164 @@ public:
 LnUIButton_OnSerialize_OverrideCallback LNWS_ln_UIButton::s_LnUIButton_OnSerialize_OverrideCallback = nullptr;
 
 
+class LNWS_ln_UITextBlock : public ln::UITextBlock
+{
+public:
+    static LnUITextBlock_OnSerialize_OverrideCallback s_LnUITextBlock_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIElement>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUITextBlock_OnSerialize_OverrideCallback) s_LnUITextBlock_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UITextBlock::onSerialize(ar);
+    }
+
+};
+LnUITextBlock_OnSerialize_OverrideCallback LNWS_ln_UITextBlock::s_LnUITextBlock_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_UISprite : public ln::UISprite
+{
+public:
+    static LnUISprite_OnSerialize_OverrideCallback s_LnUISprite_OnSerialize_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<UIElement>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUISprite_OnSerialize_OverrideCallback) s_LnUISprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UISprite::onSerialize(ar);
+    }
+
+};
+LnUISprite_OnSerialize_OverrideCallback LNWS_ln_UISprite::s_LnUISprite_OnSerialize_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Input : public ln::Input
+{
+public:
+
+
+};
+
+
+class LNWS_ln_Mouse : public ln::Mouse
+{
+public:
+
+
+};
+
+
+class LNWS_ln_EngineSettings : public ln::EngineSettings
+{
+public:
+
+
+};
+
+
+class LNWS_ln_Engine : public ln::Engine
+{
+public:
+
+
+};
+
+
+class LNWS_ln_Application : public ln::Application
+{
+public:
+    static LnApplication_OnSerialize_OverrideCallback s_LnApplication_OnSerialize_OverrideCallback;
+    static LnApplication_OnInit_OverrideCallback s_LnApplication_OnInit_OverrideCallback;
+    static LnApplication_OnUpdate_OverrideCallback s_LnApplication_OnUpdate_OverrideCallback;
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnApplication_OnSerialize_OverrideCallback) s_LnApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Application::onSerialize(ar);
+    }
+    virtual void onInit() override
+    {
+        if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    void onInit_CallBase()
+    {
+        ln::Application::onInit();
+    }
+    virtual void onUpdate() override
+    {
+        if (s_LnApplication_OnUpdate_OverrideCallback) s_LnApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    void onUpdate_CallBase()
+    {
+        ln::Application::onUpdate();
+    }
+
+};
+LnApplication_OnSerialize_OverrideCallback LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = nullptr;
+LnApplication_OnInit_OverrideCallback LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = nullptr;
+LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = nullptr;
+
+
+class LNWS_ln_Debug : public ln::Debug
+{
+public:
+
+
+};
+
+
 
 
 extern "C"
@@ -1198,9 +1661,7 @@ LN_FLAT_API LnResult LnVector3_Normalize(const LnVector3* vec, LnVector3* outRet
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        //*outReturn = reinterpret_cast<const LnVector3&>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
-		*outReturn = ln::detail::convertStructForced<LnVector3>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
-		
+        *outReturn = ln::detail::convertStructForced<LnVector3>(ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
     }
     else {
         (ln::Vector3::normalize(*reinterpret_cast<const ln::Vector3*>(vec)));
@@ -1262,6 +1723,122 @@ LN_FLAT_API LnResult LnMatrix_Set(LnMatrix* matrix, float m11, float m12, float 
 {
     LNI_FUNC_TRY_BEGIN;
     new (reinterpret_cast<ln::Matrix*>(matrix)) ln::Matrix(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnColor_SetZeros(LnColor* color)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Color*>(color)) ln::Color();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnColor_Set(LnColor* color, float r_, float g_, float b_, float a_)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Color*>(color)) ln::Color(r_, g_, b_, a_);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPoint_SetZeros(LnPoint* point)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Point*>(point)) ln::Point();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPoint_Set(LnPoint* point, float x_, float y_)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Point*>(point)) ln::Point(x_, y_);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSize_SetZeros(LnSize* size)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Size*>(size)) ln::Size();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSize_Set(LnSize* size, float w, float h)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Size*>(size)) ln::Size(w, h);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_SetZeros(LnRect* rect)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Rect*>(rect)) ln::Rect();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_Set(LnRect* rect, float x, float y, float width, float height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Rect*>(rect)) ln::Rect(x, y, width, height);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_GetLeft(const LnRect* rect, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (reinterpret_cast<const ln::Rect*>(rect)->getLeft());
+    }
+    else {
+        (reinterpret_cast<const ln::Rect*>(rect)->getLeft());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_SetSize(LnRect* rect, const LnSize* size)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (reinterpret_cast<ln::Rect*>(rect)->setSize(*reinterpret_cast<const ln::Size*>(size)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRect_GetSize(const LnRect* rect, LnSize* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnSize>(reinterpret_cast<const ln::Rect*>(rect)->getSize());
+    }
+    else {
+        (reinterpret_cast<const ln::Rect*>(rect)->getSize());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnThickness_SetZeros(LnThickness* thickness)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Thickness*>(thickness)) ln::Thickness();
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnThickness_Set(LnThickness* thickness, float left_, float top_, float right_, float bottom_)
+{
+    LNI_FUNC_TRY_BEGIN;
+    new (reinterpret_cast<ln::Thickness*>(thickness)) ln::Thickness(left_, top_, right_, bottom_);
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2058,230 +2635,6 @@ LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outRetu
 }
 
 
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowSize(width, height));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWorldViewSize(width, height));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowTitle(title));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setMainWindowTitle(LNI_UTF8STRPTR_TO_STRING(title)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetDirectory(path));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetDirectory(LNI_UTF8STRPTR_TO_STRING(path)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetArchive(fileFullPath, password));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::addAssetArchive(LNI_UTF8STRPTR_TO_STRING(fileFullPath), LNI_UTF8STRPTR_TO_STRING(password)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setDebugToolEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogFilePath(filePath));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::EngineSettings::setEngineLogFilePath(LNI_UTF8STRPTR_TO_STRING(filePath)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Initialize()
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::initialize());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Finalize()
-{
-    LNI_FUNC_TRY_BEGIN;
-    (ln::Engine::finalize());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
-    }
-    else {
-        (ln::Engine::update());
-    }
-
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnEngine_Time(double* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = (ln::Engine::time());
-    }
-    else {
-        (ln::Engine::time());
-    }
-
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onInit_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onUpdate_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn)
-{
-    LNI_FUNC_TRY_BEGIN;
-    if (outReturn) {
-        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
-    }
-    else {
-        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
-    }
-
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-
-LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback)
-{
-    LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
-LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onInit_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback)
-{
-    LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
-LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application)
-{
-    LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onUpdate_CallBase());
-    LNI_FUNC_TRY_END_RETURN;
-}
-LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback)
-{
-    LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
-
-extern LN_FLAT_API int LnApplication_GetTypeInfoId()
-{
-    return ln::TypeInfo::getTypeInfo<ln::Application>()->id();
-}
-
-LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
-}
-
 LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -2434,6 +2787,28 @@ extern LN_FLAT_API int LnTexture2D_GetTypeInfoId()
 LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Texture2D>(), id);
+}
+
+LN_FLAT_API LnResult LnRenderView_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_RenderView, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnRenderView_OnSerialize_SetOverrideCallback(LnRenderView_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_RenderView::s_LnRenderView_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnRenderView_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::RenderView>()->id();
+}
+
+LN_FLAT_API void LnRenderView_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::RenderView>(), id);
 }
 
 LN_FLAT_API LnResult LnComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
@@ -2632,7 +3007,7 @@ LN_FLAT_API LnResult LnWorldObject_GetPosition(LnHandle worldobject, LnVector3* 
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->position());
@@ -2662,7 +3037,7 @@ LN_FLAT_API LnResult LnWorldObject_GetRotation(LnHandle worldobject, LnQuaternio
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
+        *outReturn = ln::detail::convertStructForced<LnQuaternion>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->rotation());
@@ -2700,7 +3075,7 @@ LN_FLAT_API LnResult LnWorldObject_GetScale(LnHandle worldobject, LnVector3* out
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->scale());
@@ -2730,7 +3105,7 @@ LN_FLAT_API LnResult LnWorldObject_GetCenterPoint(LnHandle worldobject, LnVector
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->centerPoint());
@@ -2752,6 +3127,14 @@ LN_FLAT_API LnResult LnWorldObject_LookAtXYZ(LnHandle worldobject, float x, floa
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->lookAt(x, y, z));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnWorldObject_AddComponent(LnHandle worldobject, LnHandle component)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldObject, worldobject)->addComponent(LNI_HANDLE_TO_OBJECT(ln::Component, component)));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2860,6 +3243,520 @@ LN_FLAT_API void LnVisualObject_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::VisualObject>(), id);
 }
 
+LN_FLAT_API LnResult LnCamera_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Camera, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnCamera_OnSerialize_SetOverrideCallback(LnCamera_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Camera::s_LnCamera_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnCamera_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Camera, worldobject)->onUpdate_CallBase(elapsedSeconds));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnCamera_OnUpdate_SetOverrideCallback(LnCamera_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_Camera::s_LnCamera_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnCamera_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Camera>()->id();
+}
+
+LN_FLAT_API void LnCamera_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Camera>(), id);
+}
+
+LN_FLAT_API LnResult LnDirectionalLight_SetEnabled(LnHandle directionallight, LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->setEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_IsEnabled(LnHandle directionallight, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->isEnabled());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->isEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_SetColor(LnHandle directionallight, const LnColor* color)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->setColor(*reinterpret_cast<const ln::Color*>(color)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_GetColor(LnHandle directionallight, LnColor* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnColor>(LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->getColor());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->getColor());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_SetIntensity(LnHandle directionallight, float intensity)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->setIntensity(intensity));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_GetIntensity(LnHandle directionallight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->getIntensity());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, directionallight)->getIntensity());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_Create(LnHandle* outDirectionalLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDirectionalLight, LNWS_ln_DirectionalLight, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_CreateWithColor(const LnColor* color, LnHandle* outDirectionalLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDirectionalLight, LNWS_ln_DirectionalLight, init, *reinterpret_cast<const ln::Color*>(color));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDirectionalLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnDirectionalLight_OnSerialize_SetOverrideCallback(LnDirectionalLight_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_DirectionalLight::s_LnDirectionalLight_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnDirectionalLight_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_DirectionalLight, worldobject)->onUpdate_CallBase(elapsedSeconds));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnDirectionalLight_OnUpdate_SetOverrideCallback(LnDirectionalLight_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_DirectionalLight::s_LnDirectionalLight_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnDirectionalLight_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::DirectionalLight>()->id();
+}
+
+LN_FLAT_API void LnDirectionalLight_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::DirectionalLight>(), id);
+}
+
+LN_FLAT_API LnResult LnPointLight_SetEnabled(LnHandle pointlight, LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->setEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_IsEnabled(LnHandle pointlight, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->isEnabled());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->isEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_SetColor(LnHandle pointlight, const LnColor* color)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->setColor(*reinterpret_cast<const ln::Color*>(color)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_GetColor(LnHandle pointlight, LnColor* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnColor>(LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getColor());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getColor());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_SetIntensity(LnHandle pointlight, float intensity)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->setIntensity(intensity));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_GetIntensity(LnHandle pointlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getIntensity());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getIntensity());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_SetRange(LnHandle pointlight, float range)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->setRange(range));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_GetRange(LnHandle pointlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getRange());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getRange());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_SetAttenuation(LnHandle pointlight, float attenuation)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->setAttenuation(attenuation));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_GetAttenuation(LnHandle pointlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getAttenuation());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, pointlight)->getAttenuation());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_Create(LnHandle* outPointLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outPointLight, LNWS_ln_PointLight, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_CreateWithColorAndRange(const LnColor* color, float range, LnHandle* outPointLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outPointLight, LNWS_ln_PointLight, init, *reinterpret_cast<const ln::Color*>(color), range);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnPointLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnPointLight_OnSerialize_SetOverrideCallback(LnPointLight_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_PointLight::s_LnPointLight_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnPointLight_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_PointLight, worldobject)->onUpdate_CallBase(elapsedSeconds));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnPointLight_OnUpdate_SetOverrideCallback(LnPointLight_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_PointLight::s_LnPointLight_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnPointLight_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::PointLight>()->id();
+}
+
+LN_FLAT_API void LnPointLight_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::PointLight>(), id);
+}
+
+LN_FLAT_API LnResult LnSpotLight_SetEnabled(LnHandle spotlight, LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->setEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_IsEnabled(LnHandle spotlight, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->isEnabled());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->isEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_SetColor(LnHandle spotlight, const LnColor* color)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->setColor(*reinterpret_cast<const ln::Color*>(color)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_GetColor(LnHandle spotlight, LnColor* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnColor>(LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getColor());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getColor());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_SetIntensity(LnHandle spotlight, float intensity)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->setIntensity(intensity));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_GetIntensity(LnHandle spotlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getIntensity());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getIntensity());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_SetRange(LnHandle spotlight, float range)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->setRange(range));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_GetRange(LnHandle spotlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getRange());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getRange());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_SetAttenuation(LnHandle spotlight, float attenuation)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->setAttenuation(attenuation));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_GetAttenuation(LnHandle spotlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getAttenuation());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getAttenuation());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_SetAngle(LnHandle spotlight, float angle)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->setAngle(angle));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_GetAngle(LnHandle spotlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getAngle());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getAngle());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_SetPenumbra(LnHandle spotlight, float penumbra)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->setPenumbra(penumbra));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_GetPenumbra(LnHandle spotlight, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getPenumbra());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, spotlight)->getPenumbra());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_Create(LnHandle* outSpotLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSpotLight, LNWS_ln_SpotLight, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_CreateWithColorAndRange(const LnColor* color, float range, float angle, LnHandle* outSpotLight)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outSpotLight, LNWS_ln_SpotLight, init, *reinterpret_cast<const ln::Color*>(color), range, angle);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSpotLight_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnSpotLight_OnSerialize_SetOverrideCallback(LnSpotLight_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_SpotLight::s_LnSpotLight_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnSpotLight_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_SpotLight, worldobject)->onUpdate_CallBase(elapsedSeconds));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnSpotLight_OnUpdate_SetOverrideCallback(LnSpotLight_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_SpotLight::s_LnSpotLight_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnSpotLight_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::SpotLight>()->id();
+}
+
+LN_FLAT_API void LnSpotLight_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::SpotLight>(), id);
+}
+
 LN_FLAT_API void LnTestDelegate_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::TestDelegate>(), id);
@@ -2869,6 +3766,22 @@ LN_FLAT_API LnResult LnSprite_SetTexture(LnHandle sprite, LnHandle value)
 {
     LNI_FUNC_TRY_BEGIN;
     (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_SetSize(LnHandle sprite, const LnSize* value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setSize(*reinterpret_cast<const ln::Size*>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnSprite_SetSizeWH(LnHandle sprite, float width, float height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Sprite, sprite)->setSize(width, height));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -2947,6 +3860,208 @@ LN_FLAT_API void LnSprite_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Sprite>(), id);
 }
 
+LN_FLAT_API LnResult LnCameraOrbitControlComponent_Create(LnHandle* outCameraOrbitControlComponent)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outCameraOrbitControlComponent, LNWS_ln_CameraOrbitControlComponent, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnCameraOrbitControlComponent_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_CameraOrbitControlComponent, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnCameraOrbitControlComponent_OnSerialize_SetOverrideCallback(LnCameraOrbitControlComponent_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_CameraOrbitControlComponent::s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnCameraOrbitControlComponent_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::CameraOrbitControlComponent>()->id();
+}
+
+LN_FLAT_API void LnCameraOrbitControlComponent_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::CameraOrbitControlComponent>(), id);
+}
+
+LN_FLAT_API LnResult LnRaycaster_FromScreen(const LnPoint* point, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Raycaster::fromScreen(*reinterpret_cast<const ln::Point*>(point)));
+    }
+    else {
+        (ln::Raycaster::fromScreen(*reinterpret_cast<const ln::Point*>(point)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRaycaster_IntersectPlane(LnHandle raycaster, float normalX, float normalY, float normalZ, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Raycaster, raycaster)->intersectPlane(normalX, normalY, normalZ));
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Raycaster, raycaster)->intersectPlane(normalX, normalY, normalZ));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRaycaster_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Raycaster, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnRaycaster_OnSerialize_SetOverrideCallback(LnRaycaster_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Raycaster::s_LnRaycaster_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnRaycaster_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Raycaster>()->id();
+}
+
+LN_FLAT_API void LnRaycaster_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Raycaster>(), id);
+}
+
+LN_FLAT_API LnResult LnRaycastResult_GetPoint(LnHandle raycastresult, LnVector3* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_RaycastResult, raycastresult)->point());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_RaycastResult, raycastresult)->point());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnRaycastResult_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_RaycastResult, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnRaycastResult_OnSerialize_SetOverrideCallback(LnRaycastResult_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_RaycastResult::s_LnRaycastResult_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnRaycastResult_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::RaycastResult>()->id();
+}
+
+LN_FLAT_API void LnRaycastResult_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::RaycastResult>(), id);
+}
+
+LN_FLAT_API LnResult LnWorldRenderView_SetGuideGridEnabled(LnHandle worldrenderview, LnBool value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldRenderView, worldrenderview)->setGuideGridEnabled(LNI_LNBOOL_TO_BOOL(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnWorldRenderView_GetGuideGridEnabled(LnHandle worldrenderview, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldRenderView, worldrenderview)->guideGridEnabled());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldRenderView, worldrenderview)->guideGridEnabled());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnWorldRenderView_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_WorldRenderView, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnWorldRenderView_OnSerialize_SetOverrideCallback(LnWorldRenderView_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_WorldRenderView::s_LnWorldRenderView_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnWorldRenderView_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::WorldRenderView>()->id();
+}
+
+LN_FLAT_API void LnWorldRenderView_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::WorldRenderView>(), id);
+}
+
+LN_FLAT_API LnResult LnBoxMesh_Create(LnHandle* outBoxMesh)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outBoxMesh, LNWS_ln_BoxMesh, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnBoxMesh_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxMesh, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnBoxMesh_OnSerialize_SetOverrideCallback(LnBoxMesh_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_BoxMesh::s_LnBoxMesh_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnBoxMesh_OnUpdate_CallOverrideBase(LnHandle worldobject, float elapsedSeconds)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_BoxMesh, worldobject)->onUpdate_CallBase(elapsedSeconds));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnBoxMesh_OnUpdate_SetOverrideCallback(LnBoxMesh_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_BoxMesh::s_LnBoxMesh_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnBoxMesh_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::BoxMesh>()->id();
+}
+
+LN_FLAT_API void LnBoxMesh_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::BoxMesh>(), id);
+}
+
 LN_FLAT_API LnResult LnUIEventArgs_Sender(LnHandle uieventargs, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -3015,6 +4130,102 @@ LN_FLAT_API void LnUILayoutElement_SetManagedTypeInfoId(int64_t id)
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UILayoutElement>(), id);
 }
 
+LN_FLAT_API LnResult LnUIElement_SetMargin(LnHandle uielement, const LnThickness* margin)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setMargin(*reinterpret_cast<const ln::Thickness*>(margin)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_GetMargin(LnHandle uielement, LnThickness* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnThickness>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->margin());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->margin());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_SetPadding(LnHandle uielement, const LnThickness* padding)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setPadding(*reinterpret_cast<const ln::Thickness*>(padding)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_GetPadding(LnHandle uielement, LnThickness* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnThickness>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->padding());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->padding());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_SetHAlignment(LnHandle uielement, LnHAlignment value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setHAlignment(static_cast<ln::HAlignment>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_GetHAlignment(LnHandle uielement, LnHAlignment* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LnHAlignment>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->hAlignment());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->hAlignment());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_SetVAlignment(LnHandle uielement, LnVAlignment value)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setVAlignment(static_cast<ln::VAlignment>(value)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_GetVAlignment(LnHandle uielement, LnVAlignment* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = static_cast<LnVAlignment>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->vAlignment());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->vAlignment());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIElement_SetAlignments(LnHandle uielement, LnHAlignment halign, LnVAlignment valign)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->setAlignments(static_cast<ln::HAlignment>(halign), static_cast<ln::VAlignment>(valign)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnUIElement_SetPosition(LnHandle uielement, const LnVector3* pos)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -3035,7 +4246,7 @@ LN_FLAT_API LnResult LnUIElement_GetPosition(LnHandle uielement, LnVector3* outR
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->position());
@@ -3065,7 +4276,7 @@ LN_FLAT_API LnResult LnUIElement_GetRotation(LnHandle uielement, LnQuaternion* o
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnQuaternion&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
+        *outReturn = ln::detail::convertStructForced<LnQuaternion>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->rotation());
@@ -3103,7 +4314,7 @@ LN_FLAT_API LnResult LnUIElement_GetScale(LnHandle uielement, LnVector3* outRetu
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->scale());
@@ -3133,7 +4344,7 @@ LN_FLAT_API LnResult LnUIElement_GetCenterPoint(LnHandle uielement, LnVector3* o
 {
     LNI_FUNC_TRY_BEGIN;
     if (outReturn) {
-        *outReturn = reinterpret_cast<const LnVector3&>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
+        *outReturn = ln::detail::convertStructForced<LnVector3>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
     }
     else {
         (LNI_HANDLE_TO_OBJECT(LNWS_ln_UIElement, uielement)->centerPoint());
@@ -3241,6 +4452,22 @@ LN_FLAT_API LnResult LnUIButton_Create(LnHandle* outUIButton)
 }
 
 
+LN_FLAT_API LnResult LnUIButton_CreateWithText(const LnChar* text, LnHandle* outUIButton)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIButton, LNWS_ln_UIButton, init, text);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUIButton_CreateWithTextA(const char* text, LnHandle* outUIButton)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUIButton, LNWS_ln_UIButton, init, LNI_UTF8STRPTR_TO_STRING(text));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
 LN_FLAT_API LnResult LnUIButton_ConnectOnClicked(LnHandle uibutton, LnHandle handler, LnHandle* outReturn)
 {
     LNI_FUNC_TRY_BEGIN;
@@ -3276,6 +4503,660 @@ LN_FLAT_API void LnUIButton_SetManagedTypeInfoId(int64_t id)
 {
     ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UIButton>(), id);
 }
+
+LN_FLAT_API LnResult LnUITextBlock_Create(LnHandle* outUITextBlock)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUITextBlock, LNWS_ln_UITextBlock, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUITextBlock_CreateWithText(const LnChar* text, LnHandle* outUITextBlock)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUITextBlock, LNWS_ln_UITextBlock, init, text);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUITextBlock_CreateWithTextA(const char* text, LnHandle* outUITextBlock)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUITextBlock, LNWS_ln_UITextBlock, init, LNI_UTF8STRPTR_TO_STRING(text));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUITextBlock_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UITextBlock, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUITextBlock_OnSerialize_SetOverrideCallback(LnUITextBlock_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UITextBlock::s_LnUITextBlock_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUITextBlock_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UITextBlock>()->id();
+}
+
+LN_FLAT_API void LnUITextBlock_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UITextBlock>(), id);
+}
+
+LN_FLAT_API LnResult LnUISprite_SetTexture(LnHandle uisprite, LnHandle texture)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, uisprite)->setTexture(LNI_HANDLE_TO_OBJECT(ln::Texture, texture)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUISprite_SetSourceRect(LnHandle uisprite, const LnRect* rect)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, uisprite)->setSourceRect(*reinterpret_cast<const ln::Rect*>(rect)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUISprite_SetSourceRectXYWH(LnHandle uisprite, float x, float y, float width, float height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, uisprite)->setSourceRect(x, y, width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUISprite_GetSourceRect(LnHandle uisprite, LnRect* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnRect>(LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, uisprite)->sourceRect());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, uisprite)->sourceRect());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUISprite_Create(LnHandle* outUISprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUISprite, LNWS_ln_UISprite, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUISprite_CreateWithTexture(LnHandle texture, LnHandle* outUISprite)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outUISprite, LNWS_ln_UISprite, init, LNI_HANDLE_TO_OBJECT(ln::Texture, texture));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnUISprite_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_UISprite, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnUISprite_OnSerialize_SetOverrideCallback(LnUISprite_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_UISprite::s_LnUISprite_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnUISprite_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::UISprite>()->id();
+}
+
+LN_FLAT_API void LnUISprite_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::UISprite>(), id);
+}
+
+LN_FLAT_API LnResult LnInput_Pressed(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::pressed(buttonName));
+    }
+    else {
+        (ln::Input::pressed(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_PressedA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::pressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::pressed(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_Triggered(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggered(buttonName));
+    }
+    else {
+        (ln::Input::triggered(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_TriggeredA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::triggered(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_TriggeredOff(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggeredOff(buttonName));
+    }
+    else {
+        (ln::Input::triggeredOff(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_TriggeredOffA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::triggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::triggeredOff(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_Repeated(const LnChar* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::repeated(buttonName));
+    }
+    else {
+        (ln::Input::repeated(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_RepeatedA(const char* buttonName, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Input::repeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::repeated(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_GetAxisValue(const LnChar* buttonName, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Input::getAxisValue(buttonName));
+    }
+    else {
+        (ln::Input::getAxisValue(buttonName));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_GetAxisValueA(const char* buttonName, float* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Input::getAxisValue(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+    else {
+        (ln::Input::getAxisValue(LNI_UTF8STRPTR_TO_STRING(buttonName)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnInput_ClearAllBindings()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Input::clearAllBindings());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Pressed(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::pressed(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::pressed(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Triggered(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::triggered(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::triggered(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_TriggeredOff(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::triggeredOff(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::triggeredOff(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Repeated(LnMouseButtons button, LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Mouse::repeated(static_cast<ln::MouseButtons>(button)));
+    }
+    else {
+        (ln::Mouse::repeated(static_cast<ln::MouseButtons>(button)));
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnMouse_Position(LnPoint* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = ln::detail::convertStructForced<LnPoint>(ln::Mouse::position());
+    }
+    else {
+        (ln::Mouse::position());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWorldViewSize(int width, int height)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWorldViewSize(width, height));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitle(const LnChar* title)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowTitle(title));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetMainWindowTitleA(const char* title)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setMainWindowTitle(LNI_UTF8STRPTR_TO_STRING(title)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectory(const LnChar* path)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetDirectory(path));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetDirectoryA(const char* path)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetDirectory(LNI_UTF8STRPTR_TO_STRING(path)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchive(const LnChar* fileFullPath, const LnChar* password)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetArchive(fileFullPath, password));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_AddAssetArchiveA(const char* fileFullPath, const char* password)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::addAssetArchive(LNI_UTF8STRPTR_TO_STRING(fileFullPath), LNI_UTF8STRPTR_TO_STRING(password)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetDebugToolEnabled(LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setDebugToolEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogEnabled(LnBool enabled)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogEnabled(LNI_LNBOOL_TO_BOOL(enabled)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePath(const LnChar* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogFilePath(filePath));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngineSettings_SetEngineLogFilePathA(const char* filePath)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::EngineSettings::setEngineLogFilePath(LNI_UTF8STRPTR_TO_STRING(filePath)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Initialize()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Engine::initialize());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Finalize()
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Engine::finalize());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Update(LnBool* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_BOOL_TO_LNBOOL(ln::Engine::update());
+    }
+    else {
+        (ln::Engine::update());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_Time(double* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = (ln::Engine::time());
+    }
+    else {
+        (ln::Engine::time());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_GetCamera(LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::camera());
+    }
+    else {
+        (ln::Engine::camera());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_GetLight(LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::light());
+    }
+    else {
+        (ln::Engine::light());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnEngine_GetRenderView(LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(ln::Engine::renderView());
+    }
+    else {
+        (ln::Engine::renderView());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_OnInit(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onInit_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_OnUpdate(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->LNWS_ln_Application::onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_World(LnHandle application, LnHandle* outReturn)
+{
+    LNI_FUNC_TRY_BEGIN;
+    if (outReturn) {
+        *outReturn = LNI_OBJECT_TO_HANDLE(LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+    else {
+        (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->world());
+    }
+
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_Create(LnHandle* outApplication)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outApplication, LNWS_ln_Application, init, );
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnApplication_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnSerialize_SetOverrideCallback(LnApplication_OnSerialize_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnApplication_OnInit_CallOverrideBase(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onInit_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnInit_SetOverrideCallback(LnApplication_OnInit_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+LN_FLAT_API LnResult LnApplication_OnUpdate_CallOverrideBase(LnHandle application)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (LNI_HANDLE_TO_OBJECT(LNWS_ln_Application, application)->onUpdate_CallBase());
+    LNI_FUNC_TRY_END_RETURN;
+}
+LN_FLAT_API LnResult LnApplication_OnUpdate_SetOverrideCallback(LnApplication_OnUpdate_OverrideCallback callback)
+{
+    LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = callback;
+    return LN_SUCCESS;
+}
+
+extern LN_FLAT_API int LnApplication_GetTypeInfoId()
+{
+    return ln::TypeInfo::getTypeInfo<ln::Application>()->id();
+}
+
+LN_FLAT_API void LnApplication_SetManagedTypeInfoId(int64_t id)
+{
+    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::Application>(), id);
+}
+
+LN_FLAT_API LnResult LnDebug_Print(const LnChar* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(str));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintA(const char* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(LNI_UTF8STRPTR_TO_STRING(str)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTime(float time, const LnChar* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, str));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTimeA(float time, const char* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, LNI_UTF8STRPTR_TO_STRING(str)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColor(float time, const LnColor* color, const LnChar* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, *reinterpret_cast<const ln::Color*>(color), str));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+
+LN_FLAT_API LnResult LnDebug_PrintWithTimeAndColorA(float time, const LnColor* color, const char* str)
+{
+    LNI_FUNC_TRY_BEGIN;
+    (ln::Debug::print(time, *reinterpret_cast<const ln::Color*>(color), LNI_UTF8STRPTR_TO_STRING(str)));
+    LNI_FUNC_TRY_END_RETURN;
+}
+
 
 
 	

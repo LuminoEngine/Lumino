@@ -27,7 +27,7 @@ namespace LuminoBuild.Tasks
 
         private void BuildFX(Builder builder, string searchDir)
         {
-            var compiler = Path.Combine(builder.LuminoRootDir, "build/MSVC2017-x64-MD/src/LuminoEditor/CLI/Debug/lumino-cli.exe");
+            var compiler = Path.Combine(builder.LuminoRootDir, "build/MSVC2019-x64-MT/src/LuminoEditor/CLI/Debug/lumino.exe");
 
             foreach (var file in Directory.EnumerateFiles(searchDir, "*.fx", SearchOption.AllDirectories))
             {

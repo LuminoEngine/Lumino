@@ -31,12 +31,21 @@ enum class BuiltinShader
 	ShadowCaster,
 	//LegacyDiffuse,		// Lambert Shading
 
+	BlackShader,
+
+	// for Sky
+	SkyLowAltitudeOptimized,
+
     ScreenBlurImageEffect,
     ToneImageEffect,
 
+	// for Bloom
 	LuminosityHighPassShader,
 	SeperableBlur,
 	BloomComposite,
+
+	// for LightShaft
+	RadialBlur,
 };
 
 enum class BuiltinMaterial
@@ -202,7 +211,7 @@ private:
 	// RenderStage 関係のデータ (ステートやコマンド) 用の LinearAllocatorPageManager
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
-	std::array<Ref<Shader>, 9> m_builtinShaders;
+	std::array<Ref<Shader>, 12> m_builtinShaders;
     std::array<Ref<Material>, 2> m_builtinMaterials;
 };
 

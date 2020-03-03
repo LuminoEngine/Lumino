@@ -92,6 +92,16 @@ void RenderingManager::init(const Settings& settings)
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
+	// Sprite
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/Sprite.lcfx.inl"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		MemoryStream stream(data, size);
+		m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(u"Sprite", &stream);
+	}
     // ClusteredShadingDefault
     {
         static const unsigned char data[] =
@@ -112,16 +122,25 @@ void RenderingManager::init(const Settings& settings)
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::DepthPrepass] = makeObject<Shader>(u"DepthPrepass", &stream);
     }
-    // Sprite
-    {
-        static const unsigned char data[] =
-        {
-#include "Resource/Sprite.lcfx.inl"
-        };
-        static const size_t size = LN_ARRAY_SIZE_OF(data);
-        MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::Sprite] = makeObject<Shader>(u"Sprite", &stream);
-    }
+	// BlackShader
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/BlackShader.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::BlackShader] = makeObject<Shader>(u"BlackShader", &stream);
+	}
+	// SkyLowAltitudeOptimized
+	{
+		static const unsigned char data[] =
+		{
+#include "../Scene/Resource/SkyLowAltitudeOptimized.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = makeObject<Shader>(u"SkyLowAltitudeOptimized", &stream);
+	}
+	
 
 	// LuminosityHighPassShader
 	{
@@ -150,6 +169,15 @@ void RenderingManager::init(const Settings& settings)
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject<Shader>(u"BloomComposite", &stream);
 	}
+	// RadialBlur
+	{
+		const unsigned char data[] =
+		{
+#include "../ImageEffect/Resource/RadialBlur.lcfx.inl"
+		};
+		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
+		m_builtinShaders[(int)BuiltinShader::RadialBlur] = makeObject<Shader>(u"RadialBlur", &stream);
+	}
 
     //#if 0
     //	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
@@ -158,8 +186,8 @@ void RenderingManager::init(const Settings& settings)
     //	m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/GitHub/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
     //#endif
 #if 1
-    m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
-    m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
+    //m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
+    //m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
     //m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.fx");
     //m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
  //   m_builtinShaders[(int)BuiltinShader::ScreenBlurImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");

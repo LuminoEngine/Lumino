@@ -39,8 +39,12 @@ public:
 //	/** 指定したフォルダをアセットフォルダとして扱います。アセットフォルダのファイルにアクセスするには Assets クラスの機能を使用します。 */
 //	static void addAssetsDirectory(const StringRef& directoryPath);
 //
-	/** グラフィックス機能で使用する描画 API を設定します。(default: Default) */
+	/** グラフィックス機能で使用する描画 API を設定します。(default: false) */
 	static void setGraphicsAPI(GraphicsAPI graphicsAPI);
+
+	/** グラフィックスバックエンドのデバッグ機能を有効にします。 実際にグラフィックスバックエンドがデバッグ機能をサポートしている場合、診断結果がログに出力されます。 (default: Default) */
+	static void setGraphicsDebugEnabled(bool enabled);
+	
 
 //	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threaded) */
 //	static void setGraphicsRenderingType(RenderingType renderingType);

@@ -164,7 +164,7 @@ void printError(const Exception& e)
         }
 	}
 
-	if (GlobalLogger::hasAnyAdapter()) {
+	if (Logger::hasAnyAdapter()) {
 		LN_LOG_ERROR << buf;
 	}
 	else {

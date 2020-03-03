@@ -14,6 +14,11 @@ end
 require "lumino/version"
 require "Lumino_RubyExt"
 
+current_assets_dir = File.expand_path("assets")
+if File.exist?(current_assets_dir)
+  Lumino::EngineSettings.add_asset_directory(current_assets_dir)
+end
+
 module Lumino
   #class Error < StandardError; end
 

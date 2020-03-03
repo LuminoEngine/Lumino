@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <stack>
 #include <LuminoEngine/Runtime/Common.hpp>
 #include <LuminoEngine/Runtime/Runtime.hpp>
 
@@ -68,6 +67,7 @@ public:
     //static void setRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 
 	LnResult processException(Exception* e);
+	void dumpInfo() const;
 
     RuntimeStringBuffer* requestCommonStringBuffer() { return &m_commonStringBuffer; }
 

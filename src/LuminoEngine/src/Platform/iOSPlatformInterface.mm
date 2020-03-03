@@ -1,4 +1,5 @@
 
+#include <LuminoCore.hpp>
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
 #include <LuminoEngine/Platform/iOSPlatformInterface.hpp>

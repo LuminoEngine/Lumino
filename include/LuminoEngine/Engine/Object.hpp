@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <mutex>
+#include <functional>
 
 namespace ln {
 class EngineContext;
@@ -17,8 +18,8 @@ class TypeInfoTraits;
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
-class ObjectRuntimeData;
 class EngineDomain;
+struct ObjectRuntimeData;
 
 class AssetPath
 {

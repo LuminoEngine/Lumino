@@ -126,15 +126,26 @@ void EngineManager::init(const EngineSettings& settings)
         m_persistentDataPath = u""; // TODO:
 #endif
 		if (!m_settings.engineResourcesPath.isEmpty()) {
-			m_engineAssetsPath = Path(m_settings.engineResourcesPath).canonicalize();
+			m_engineResourcesPath = Path(m_settings.engineResourcesPath).canonicalize();
 		}
 
-		if (m_engineAssetsPath.isEmpty()) {
+		// Find folder in install.
+		if (m_settings.engineResourcesPath.isEmpty()) {
+			if (auto path = ln::Environment::getEnvironmentVariable(u"LUMINO_PATH")) {
+				auto dir = Path::combine(*path, u"Tools", u"EngineResources");
+				if (FileSystem::existsDirectory(dir)) {
+					m_engineResourcesPath = dir;
+				}
+			}
+		}
+
+		// Find folder in repository.
+		if (m_engineResourcesPath.isEmpty()) {
 			auto repo = ln::detail::EngineManager::findRepositoryRootForTesting();
-			m_engineAssetsPath = Path::combine(repo, u"tools", u"EngineResources");
+			m_engineResourcesPath = Path::combine(repo, u"tools", u"EngineResources");
 		}
 
-		LN_LOG_INFO << "EngineAssetsPath: " << m_engineAssetsPath;
+		LN_LOG_INFO << "EngineResourcesPath: " << m_engineResourcesPath;
     }
 	
 
@@ -151,103 +162,8 @@ void EngineManager::init(const EngineSettings& settings)
 		EngineDomain::registerType<ZVTestClass1>();
     }
 
-
-	initializeAllManagers();
-
 	m_fpsController.setFrameRate(m_settings.frameRate);
 	m_fpsController.setMeasurementEnabled(true);
-
-	if (m_settings.debugToolEnabled) {
-		setDebugToolMode(DebugToolMode::Minimalized);
-	}
-	else {
-		setDebugToolMode(DebugToolMode::Disable);
-	}
-
-	//m_debugToolEnabled = m_settings.debugToolEnabled;
-	//if (m_debugToolEnabled) {
-	//	m_showDebugFpsEnabled = true;
-	//}
-
-    if (m_settings.defaultObjectsCreation)
-    {
-        if (m_uiManager) {
-
-			setMainWindow(makeObject<UIMainWindow>());
-
-            m_mainViewport = makeObject<UIViewport>();
-            m_mainWindow->addElement(m_mainViewport);
-        }
-
-        if (m_sceneManager)
-        {
-            m_mainWorld = makeObject<World>();
-            m_sceneManager->setActiveWorld(m_mainWorld);
-
-            m_mainScene = m_mainWorld->masterScene();
-
-            m_mainCamera = makeObject<Camera>();
-            m_mainWorld->add(m_mainCamera);
-
-			if (m_settings.createMainLights) {
-
-
-				auto mainAmbientLight = makeObject<AmbientLight>();
-				m_mainWorld->add(mainAmbientLight);
-				m_mainWorld->setMainAmbientLight(mainAmbientLight);
-
-				auto mainDirectionalLight = makeObject<DirectionalLight>();
-				m_mainWorld->add(mainDirectionalLight);
-				m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
-			}
-
-            m_mainWorldRenderView = makeObject<WorldRenderView>();
-            m_mainWorldRenderView->setTargetWorld(m_mainWorld);
-            m_mainWorldRenderView->setCamera(m_mainCamera);
-            m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
-            m_mainViewport->addRenderView(m_mainWorldRenderView);
-
-
-            m_mainUIRenderView = makeObject<UIRenderView>();
-            m_mainViewport->addRenderView(m_mainUIRenderView);
-			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
-
-            m_mainUIRoot = makeObject<UIControl>();
-            m_mainUIRoot->setHAlignment(HAlignment::Stretch);
-            m_mainUIRoot->setVAlignment(VAlignment::Stretch);
-			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
-            m_mainUIRenderView->setRootElement(m_mainUIRoot);
-            m_uiManager->setPrimaryElement(m_mainUIRoot);
-
-            m_mainPhysicsWorld = m_mainWorld->physicsWorld();
-            m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
-
-            m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
-
-
-			m_debugInterface = makeObject<DebugInterface>();
-			m_mainWindow->m_debugInterface = m_debugInterface;
-
-
-			//m_debugCamera = makeObject<Camera>();
-			////m_mainWorld->add(m_mainCamera);
-			////Ref<Camera> m_debugCamera;
-			//m_debugWorldRenderView = makeObject<WorldRenderView>();
-			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
-			//m_debugWorldRenderView->setCamera(m_debugCamera);
-			//m_debugWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
-			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
-			//m_mainViewport->addRenderView(m_debugWorldRenderView);
-			//m_debugCamera->setPosition(10, 10, -10);
-			//m_debugCamera->lookAt(Vector3(0, 0, 0));
-        }
-    }
-
-	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
-	if (m_mainUIContext && m_mainWindow) {
-		m_mainUIContext->updateStyleTree();
-		m_mainWindow->updateLayoutTree();
-	}
 
     LN_LOG_DEBUG << "EngineManager Initialization ended.";
 }
@@ -376,6 +292,8 @@ void EngineManager::initializeAllManagers()
     initializeVisualManager();
     initializeSceneManager();
 	initializeUIManager();
+
+	initializeDefaultObjects();
 }
 
 void EngineManager::initializeCommon()
@@ -387,7 +305,7 @@ void EngineManager::initializeCommon()
 		if (m_settings.engineLogEnabled) {
             // engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
 			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
-			GlobalLogger::addFileAdapter(logfile.str().toStdString());
+			Logger::addFileAdapter(logfile.str().toStdString());
 		}
 	}
 #endif
@@ -529,7 +447,7 @@ void EngineManager::initializeFontManager()
 
 		FontManager::Settings settings;
 		settings.assetManager = m_assetManager;
-		settings.engineAssetPath = m_engineAssetsPath;
+		settings.engineAssetPath = m_engineResourcesPath;
 
 		m_fontManager = ln::makeRef<FontManager>();
 		m_fontManager->init(settings);
@@ -547,6 +465,7 @@ void EngineManager::initializeGraphicsManager()
         settings.assetManager = m_assetManager;
 		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
 		settings.graphicsAPI = m_settings.graphicsAPI;
+		settings.debugMode = m_settings.graphicsDebugEnabled;
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
 		m_graphicsManager->init(settings);
@@ -653,7 +572,99 @@ void EngineManager::initializeUIManager()
 
         m_mainUIContext = makeObject<UIContext>();
         m_uiManager->setMainContext(m_mainUIContext);
+
+
+		if (m_settings.debugToolEnabled) {
+			setDebugToolMode(DebugToolMode::Minimalized);
+		}
+		else {
+			setDebugToolMode(DebugToolMode::Disable);
+		}
 	}
+}
+
+void EngineManager::initializeDefaultObjects()
+{
+	if (m_settings.defaultObjectsCreation)
+	{
+		if (m_uiManager) {
+
+			setMainWindow(makeObject<UIMainWindow>());
+
+			m_mainViewport = makeObject<UIViewport>();
+			m_mainWindow->addElement(m_mainViewport);
+		}
+
+		if (m_sceneManager)
+		{
+			m_mainWorld = makeObject<World>();
+			m_sceneManager->setActiveWorld(m_mainWorld);
+
+			m_mainScene = m_mainWorld->masterScene();
+
+			m_mainCamera = makeObject<Camera>();
+			m_mainWorld->add(m_mainCamera);
+
+			if (m_settings.createMainLights) {
+
+
+				auto mainAmbientLight = makeObject<AmbientLight>();
+				m_mainWorld->add(mainAmbientLight);
+				m_mainWorld->setMainAmbientLight(mainAmbientLight);
+
+				auto mainDirectionalLight = makeObject<DirectionalLight>();
+				m_mainWorld->add(mainDirectionalLight);
+				m_mainWorld->setMainDirectionalLight(mainDirectionalLight);
+			}
+
+			m_mainWorldRenderView = makeObject<WorldRenderView>();
+			m_mainWorldRenderView->setTargetWorld(m_mainWorld);
+			m_mainWorldRenderView->setCamera(m_mainCamera);
+			m_mainWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			m_mainViewport->addRenderView(m_mainWorldRenderView);
+
+
+			m_mainUIRenderView = makeObject<UIRenderView>();
+			m_mainViewport->addRenderView(m_mainUIRenderView);
+			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
+
+			m_mainUIRoot = makeObject<UIControl>();
+			m_mainUIRoot->setHAlignment(HAlignment::Stretch);
+			m_mainUIRoot->setVAlignment(VAlignment::Stretch);
+			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる
+			m_mainUIRenderView->setRootElement(m_mainUIRoot);
+			m_uiManager->setPrimaryElement(m_mainUIRoot);
+
+			m_mainPhysicsWorld = m_mainWorld->physicsWorld();
+			m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
+
+			m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
+
+
+			m_debugInterface = makeObject<DebugInterface>();
+			m_mainWindow->m_debugInterface = m_debugInterface;
+
+
+			//m_debugCamera = makeObject<Camera>();
+			////m_mainWorld->add(m_mainCamera);
+			////Ref<Camera> m_debugCamera;
+			//m_debugWorldRenderView = makeObject<WorldRenderView>();
+			//m_debugWorldRenderView->setTargetWorld(m_mainWorld);
+			//m_debugWorldRenderView->setCamera(m_debugCamera);
+			//m_debugWorldRenderView->setClearMode(RenderViewClearMode::ColorAndDepth);
+			//m_debugCamera->addComponent(makeObject<CameraOrbitControlComponent>());
+			//m_mainViewport->addRenderView(m_debugWorldRenderView);
+			//m_debugCamera->setPosition(10, 10, -10);
+			//m_debugCamera->lookAt(Vector3(0, 0, 0));
+		}
+	}
+
+	// init 直後にウィンドウサイズを取得したり、Camera Matrix を計算するため、ViewSize を確定させる
+	if (m_mainUIContext && m_mainWindow) {
+		m_mainUIContext->updateStyleTree();
+		m_mainWindow->updateLayoutTree();
+	}
+
 }
 
 bool EngineManager::updateUnitily()

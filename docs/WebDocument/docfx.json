@@ -33,15 +33,14 @@
         ],
         "exclude": [
           "obj/**",
-          "_site/**",
-          "articles/documents/old-docs/**"
+          "_site/**"
         ]
       }
     ],
     "resource": [
       {
         "files": [
-          "images/**",
+          "img/**",
           "articles/**/img/**",
           "logo.png",
           "favicon.ico"
@@ -77,7 +76,7 @@
     "cleanupCacheHistory": false,
     "globalMetadata": {
       "_appTitle": "Lumino website",
-      "_appFooter": "Copyright © 2017-2019 lriki",
+      "_appFooter": "Copyright © 2017-2020 lriki",
       "_appLogoPath": "logo.png",
       "_appFaviconPath": "favicon.ico",
       "_disableContribution": true

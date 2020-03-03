@@ -6,8 +6,8 @@ namespace LuminoBuild
 {
     class EmscriptenBuildEnv
     {
-        public const string emsdkVer = "1.39.7";
-        public const string emVer = "1.39.7";
+        public const string emsdkVer = "1.39.8";
+        public const string emVer = "1.39.8";
 
         public static bool EmscriptenFound { get; set; }
         public static string EmsdkDir { get; set; }

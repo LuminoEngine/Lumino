@@ -116,6 +116,7 @@ extern LN_FLAT_API void LnRuntime_SetReferenceTrackEnabled(LnHandle handle);
 //extern LN_FLAT_API void LnRuntime_SetRuntimeCreateInstanceCallback(LnRuntimeCreateInstanceCallback callback);
 //extern LN_FLAT_API void LnRuntime_SetRuntimeGetTypeInfoIdCallback(LnRuntimeGetTypeInfoIdCallback callback);
 extern LN_FLAT_API void LnRuntime_RunAppInternal(LnHandle app);
+extern LN_FLAT_API void LnRuntime_DumpInfo();
 
 extern LN_FLAT_API void LnInternalEngineSettings_SetEngineResourcesPathA(const char* path);
 

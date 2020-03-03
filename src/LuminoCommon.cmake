@@ -2,9 +2,10 @@
 
 if (DEFINED EMSCRIPTEN)
     set(LN_EMSCRIPTEN ON)
-    set(LN_USE_SDL ON)
+    #set(LN_USE_SDL ON)
 
-elseif (LN_ANDROID)
+elseif (ANDROID_ABI)
+	set(LN_ANDROID ON)
 
 elseif (DEFINED IOS_PLATFORM)
     set(LN_IOS ON)
@@ -14,12 +15,6 @@ elseif(WIN32 OR APPLE OR UNIX)
     set(LN_OS_DESKTOP ON)
     set(LN_USE_OPENAL ON)
 
-endif()
-
-if (MSVC AND LN_MSVC_USE_SDL)
-    set(LN_USE_SDL ON)
-else()
-    set(LN_USE_SDL OFF)
 endif()
 
 #------------------------------------------------------------------------------

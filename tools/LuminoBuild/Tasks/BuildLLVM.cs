@@ -31,8 +31,8 @@ namespace LuminoBuild.Tasks
             Directory.SetCurrentDirectory(reposDir);
             */
             var repoRoot = Path.Combine(reposDir, "llvm-project", "llvm");
-            var buildDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MT", "llvm-build");
-            var installDir = Path.Combine(builder.LuminoBuildDir, "MSVC2017-x64-MT", "BuildToolsInstall", "llvm");
+            var buildDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", "llvm-build");
+            var installDir = Path.Combine(builder.LuminoBuildDir, "MSVC2019-x64-MT", "BuildToolsInstall", "llvm");
             BuildProject(repoRoot, buildDir, installDir);
         }
 
@@ -44,8 +44,8 @@ namespace LuminoBuild.Tasks
             var args = new string[]
             {
                 $"{cmakeHomeDir}",
-                $"-G\"Visual Studio 15 Win64\"",
-                //$"-A x64",
+                $"-G\"Visual Studio 16 2019\"",
+                $"-A x64",
                 //$"-A Win32",
                 //$"-A Win64",
                 $"-Thost=x64",  // required http://clang.llvm.org/get_started.html

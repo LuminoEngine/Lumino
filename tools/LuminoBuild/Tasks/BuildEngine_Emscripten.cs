@@ -8,7 +8,7 @@ namespace LuminoBuild.Tasks
     {
         public override string CommandName => "BuildEngine_Emscripten";
 
-        public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
+        //public override List<string> Dependencies => new List<string>() { "BuildExternalProjects" };
 
         public override void Build(Builder builder)
         {
@@ -17,7 +17,7 @@ namespace LuminoBuild.Tasks
             var buildDir = Path.Combine(builder.LuminoBuildDir, buildArchDir);
             var installDir = Path.Combine(builder.LuminoBuildDir, buildArchDir, BuildEnvironment.EngineInstallDirName);
             var cmakeSourceDir = builder.LuminoRootDir;
-            var dependenciesRoot = EmscriptenBuildEnv.EmscriptenSysRootLocal;
+            var dependenciesRoot = Path.Combine(EmscriptenBuildEnv.EmscriptenSysRootLocal, "ExternalInstall");
 
             Directory.CreateDirectory(buildDir);
 

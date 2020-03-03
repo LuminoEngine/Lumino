@@ -18,42 +18,42 @@
     href: first-tutorial/3-object.md
   - name: 4. 図形を描画する
     href: first-tutorial/4-shapes.md
-  - name: 5. ライトを設定する
-    href: first-tutorial/5-light.md
-  - name: 6. 画像を描画する
-    href: first-tutorial/6-image.md
-  - name: 7. マテリアルを設定する (TBD)
-    href: first-tutorial/7-material.md
-  - name: 8. GUI を作る
-    href: first-tutorial/8-gui.md
-  - name: 9. 文字列とフォントを扱う (TBD)
-    href: first-tutorial/9-font.md
-  - name: 10. 入力を受け取る
-    href: first-tutorial/10-input.md
-  - name: 11. 音声を再生する (TBD)
-    href: first-tutorial/11-audio.md
-  - name: 12. エフェクトを表示する (TBD)
-    href: first-tutorial/12-audio.md
-  - name: 13. 物理演算を設定する (TBD)
-    href: first-tutorial/13-physics.md
-  - name: 14. アセットを管理する (TBD)
-    href: first-tutorial/14-assets.md
-  - name: 15. アプリをリリースする (TBD)
-    href: first-tutorial/15-publish.md
+  - name: 5. 画像を描画する
+    href: first-tutorial/5-image.md
+  - name: 6. 描画設定を変更する (TBD)
+    href: first-tutorial/6-render-settings.md
+  - name: 7. アニメーションを扱う (TBD)
+    href: first-tutorial/7-animation.md
+  - name: 8. ライトを設定する
+    href: first-tutorial/8-light.md
+  - name: 9. マテリアルを設定する (TBD)
+    href: first-tutorial/9-material.md
+  - name: 10. GUI を作る
+    href: first-tutorial/10-gui.md
+  - name: 11. 文字列とフォントを扱う (TBD)
+    href: first-tutorial/11-font.md
+  - name: 12. 入力を受け取る
+    href: first-tutorial/12-input.md
+  - name: 13. 音声を再生する (TBD)
+    href: first-tutorial/13-audio.md
+  - name: 14. エフェクトを表示する (TBD)
+    href: first-tutorial/14-effect.md
+  - name: 15. 物理演算を設定する (TBD)
+    href: first-tutorial/15-physics.md
+  - name: 16. アセットを管理する (TBD)
+    href: first-tutorial/16-assets.md
+  - name: 17. アプリをリリースする (TBD)
+    href: first-tutorial/17-publish.md
 
 - name: TIPS
   items:
   - name: グラフィックスの基本仕様
     href: tips/graphics-spec.md
 
-
 - name: プラットフォーム固有の情報
   items: 
     - name: Windows
       href: platform-specific/windows.md
-      items:
-      - name: Nuget からインストールする
-        href: platform-specific/windows-Install-nuget.md
     - name: macOS
       href: platform-specific/macOS.md
     - name: iOS
@@ -63,7 +63,8 @@
     - name: Web
       href: platform-specific/web.md
 
-- name: 古いドキュメント
+- name: 未整理・古いドキュメント
+  href: old-docs/index.md
   items:
   - name: 入門チュートリアル (0.8.0)
     href: old-docs/tutorial/index.md
@@ -95,3 +96,57 @@
         - name: 12. リリース
           href: old-docs/tutorial/first-2d-game/12-release.md
 
+  - name: プラットフォーム固有の情報
+    items: 
+      - name: Nuget からインストールする
+        href: old-docs/platform-specific/windows-Install-nuget.md
+
+  - name: プログラミングガイド
+    href: old-docs/programming-guide/index.md
+    items:
+    - name: C++
+      href: old-docs/programming-guide/cpp.md
+
+  - name: Core
+    items:
+    - name: 文字列の取り扱い
+      href: old-docs/Base/String.md
+    - name: 文字列の書式指定
+      href: old-docs/Base/CompoundFormatString.md
+    - name: オブジェクトのメモリ管理
+      href: old-docs/Base/MemoryManagement.md
+    - name: エラーハンドリング
+      href: old-docs/Base/ErrorHandling.md
+    
+  - name: Math
+    href: old-docs/Math/Index.md
+    items: 
+    - name: ベクトル
+      href: old-docs/Math/Vector.md
+    - name: 行列
+      href: old-docs/Math/Matrix.md
+    - name: クォータニオン
+      href: old-docs/Math/Quaternion.md
+    - name: ユーティリティ
+      href: old-docs/Math/Utilities.md
+
+  - name: IO
+    items: 
+    - name: ファイルの読み書き
+      href: old-docs/IO/FileReadWrite.md
+    - name: コマンドライン引数の解析
+      href: old-docs/IO/CommandLineParser.md
+
+  - name: Shader
+    items: 
+    - name: シェーダの概要
+      href: old-docs/Shader/ShaderOverview.md
+    - name: シェーダの使い方
+      href: old-docs/Shader/ShaderUsing.md
+    - name: API固有のレンダリングの違いについて
+      href: old-docs/Shader/ShaderBackendCompatibility.md
+    
+  - name: ログ出力
+    href: old-docs/Base_Logging.md
+  - name: オブジェクトのシリアライズ
+    href: old-docs/Serialization.md

@@ -5,7 +5,6 @@
 #include "Workspace.hpp"
 #include "Project.hpp"
 #include "BuildAssetHelper.hpp"
-#include "ProjectTemplateManager.hpp"
 #include "LanguageContext.hpp"
 
 namespace lna {
@@ -34,7 +33,7 @@ ln::Result LanguageContext::build(const ln::String& target)
 ln::Result LanguageContext::buildAssets() const
 {
 	ln::detail::CryptedAssetArchiveWriter writer;
-	auto outputFilePath = ln::Path(m_project->buildDir(), u"Assets.lca");
+	auto outputFilePath = ln::Path(m_project->acquireBuildDir(), u"Assets.lca");
 	writer.open(outputFilePath, ln::detail::CryptedArchiveHelper::DefaultPassword);
 
 	for (auto& file : ln::FileSystem::getFiles(m_project->assetsDir(), ln::StringRef(), ln::SearchOption::Recursive)) {
@@ -95,14 +94,12 @@ ln::Result LanguageContext::buildAssets() const
 
 	// Web
 	{
-		if (ln::FileSystem::existsDirectory(m_project->buildDir())) {
-			auto dstDir = ln::Path::combine(m_project->buildDir(), u"Web");
-			ln::FileSystem::createDirectory(dstDir);
+		auto dstDir = ln::Path::combine(m_project->acquireBuildDir(), u"Web");
+		ln::FileSystem::createDirectory(dstDir);
 
-			auto dst = ln::Path::combine(dstDir, u"Assets.lca");
-			ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
-			CLI::info(u"Copy to " + dst);
-		}
+		auto dst = ln::Path::combine(dstDir, u"Assets.lca");
+		ln::FileSystem::copyFile(outputFilePath, dst, ln::FileCopyOption::Overwrite);
+		CLI::info(u"Copy to " + dst);
 	}
 
 	CLI::info(u"Compilation succeeded.");
@@ -124,35 +121,6 @@ CppLanguageContext::~CppLanguageContext()
 {
 }
 
-ln::Result CppLanguageContext::applyTemplates(const ln::String& templateName)
-{
-	auto templateProject = Workspace::instance()->projectTemplateManager()->findTemplate(u"cpp", templateName);
-	if (!templateProject) {
-		CLI::error(u"Invalid project template.");
-		return false;
-	}
-
-	auto projectTemplatesDir = project()->workspace()->buildEnvironment()->projectTemplatesDirPath();
-	auto dstRoot = project()->rootDirPath();
-	auto srcRoot = templateProject->directoryPath;
-
-    CLI::info(u"Template: " + templateName);
-
-    // 先にフォルダを作っておく
-    for (auto dir : ln::FileSystem::getDirectories(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
-        auto rel = srcRoot.makeRelative(dir);
-        ln::FileSystem::createDirectory(ln::Path(dstRoot, rel));
-    }
-
-    // ファイルをコピー
-    for (auto file : ln::FileSystem::getFiles(srcRoot, ln::StringRef(), ln::SearchOption::Recursive)) {
-        auto rel = srcRoot.makeRelative(file);
-        ln::FileSystem::copyFile(file, ln::Path(dstRoot, rel));
-    }
-
-	CLI::info("Copied template.");
-	return true;
-}
 
 void CppLanguageContext::restore()
 {
@@ -176,12 +144,12 @@ ln::Result CppLanguageContext::build(const ln::String& target)
 
 ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 {
-	//ln::String arch = u"MSVC2019-x64-MT";
-	ln::String arch = u"MSVC2017-x64-MT";
+	ln::String arch = u"MSVC2019-x64-MT";
 
 	ln::List<ln::String> args = {
 		project()->rootDirPath(),
-		u"-G \"Visual Studio 15 Win64\"",
+		u"-G \"Visual Studio 16 2019\"",
+		u"-A x64",
 		u"-DLN_TARGET_ARCH=" + arch,
 		u"-DLN_MSVC_STATIC_RUNTIME=ON",
 		//u"-DLUMINO_ENGINE_ROOT=\"" + ln::Path(m_project->engineDirPath(), u"Native").str().replace("\\", "/") + u"\"",
@@ -191,11 +159,11 @@ ln::Result CppLanguageContext::build_NativeCMakeTarget() const
 
 	// for tool development and debuging.
 	auto& envSettings = project()->workspace()->buildEnvironment();
-	if (envSettings->actualPathBase() == EnvironmentPathBase::Repository) {
-		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->luminoPackageRootDir()));
+	if (lna::Workspace::developMode) {
+		args.add(ln::String::format(u"-DLUMINO_REPO_ROOT=\"{0}\"", envSettings->engineDevelopmentRepoRootDir()));
 	}
 
-	auto buildDir = ln::Path(project()->buildDir(), arch);
+	auto buildDir = ln::Path(project()->acquireBuildDir(), arch);
 	ln::FileSystem::createDirectory(buildDir);
 
 	ln::Process cmake;
@@ -219,7 +187,7 @@ ln::Result CppLanguageContext::build_WebTarget() const
 	// emsdk がなければインストールする
 	workspace->buildEnvironment()->prepareEmscriptenSdk();
 
-	auto buildDir = ln::Path::combine(project()->buildDir(), u"Web").canonicalize();
+	auto buildDir = ln::Path::combine(project()->acquireBuildDir(), u"Web").canonicalize();
 	auto installDir = ln::Path::combine(buildDir, u"Release");
 	auto cmakeSourceDir = project()->emscriptenProjectDir();
 	auto script = ln::Path::combine(buildDir, u"build.bat");

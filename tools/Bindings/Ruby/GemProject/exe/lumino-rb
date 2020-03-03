@@ -1,3 +1,11 @@
 #!/usr/bin/env ruby
-require 'lumino/cli'
-LuminoCLI::CLI.start
+
+# exe は gemspec の spec.executables に直接指定することはできない。
+# ここに指定できるのは ruby script file だけで、もし exe を指定してしまうと、拡張子が .exe である起動用の ruby script file が、
+# ruby の bin フォルダ内に生成されてしまう。
+#（その結果、windows で "lumino-rb" と打つと中身がテキストの lumino-rb.exe を実行ファイルとして起動してしまい、エラーになる）
+# 回避として、exe は普通のファイルとしてパッケージに含めておいて、それを起動するスクリプト (このファイル) を中継して起動するようにしてみる。
+
+cmd = __dir__ + "/../Tools/lumino-rb.exe"
+system(cmd + ' ' + ARGV.join(' '))
+
