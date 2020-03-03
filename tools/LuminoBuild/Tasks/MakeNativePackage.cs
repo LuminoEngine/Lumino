@@ -30,25 +30,37 @@ namespace LuminoBuild.Tasks
                     string destinationEngineRoot = Path.Combine(destinationRootDir, "Engine", target.Name);
                     string destinationEngineIncludeDir = Path.Combine(destinationEngineRoot, "include");
                     string destinationEngineLibDir = Path.Combine(destinationEngineRoot, "lib");
+                    string destinationEngineBinDir = Path.Combine(destinationEngineRoot, "bin");
                     Directory.CreateDirectory(destinationEngineRoot);
                     Directory.CreateDirectory(destinationEngineIncludeDir);
                     Directory.CreateDirectory(destinationEngineLibDir);
 
                     string engineInstallDir = Path.Combine(builder.LuminoBuildDir, target.Name, BuildEnvironment.EngineInstallDirName);
 
-                    // Engine include files
+                    // Engine include
                     {
                         Utils.CopyDirectory(
                             Path.Combine(engineInstallDir, "include"),
                             Path.Combine(destinationEngineIncludeDir));
                     }
 
-                    // Engine libs
+                    // Engine lib
                     {
                         var srcDir = Path.Combine(engineInstallDir, "lib");
                         Utils.CopyDirectory(srcDir, destinationEngineLibDir, recursive: false);
                         if (fileMoving)
                             Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                    }
+
+                    // Engine bin
+                    {
+                        var srcDir = Path.Combine(engineInstallDir, "bin");
+                        if (Directory.Exists(srcDir))
+                        {
+                            Utils.CopyDirectory(srcDir, destinationEngineBinDir, recursive: false);
+                            if (fileMoving)
+                                Directory.Delete(srcDir, true); // FIXME: CI サーバのストレージ不足対策
+                        }
                     }
 
                     // External libs

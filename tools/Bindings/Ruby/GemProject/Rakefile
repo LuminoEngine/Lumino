@@ -11,13 +11,9 @@ Rake::TestTask.new do |t|
 end
 
 Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
-  # copy dll
-  lib = File.expand_path("../../../../../build/MSVC2019-x64-MT/src/LuminoEngine/Release/LuminoEngine.dll", __FILE__)
-  if File.exist?(lib)
-    to = "ext/LuminoEngine.dll"
-    FileUtils.cp(lib, to)
-    p "Lib copy (" + lib + ", " + to + ")"
-  end
+
+  #--------------------
+  # for release package
 
   tools_dir = File.expand_path("../../../../../build/NativePackage/Tools", __FILE__)
   FileUtils.rm_r("Tools") if Dir.exist?("Tools")
@@ -26,6 +22,24 @@ Rake::ExtensionTask.new "Lumino_RubyExt" do |ext|
     File.rename('Tools/lumino.exe', 'Tools/lumino-rb.exe')
   end
   p "NativePackage copy (" + tools_dir + ", " + 'Tools' + ")"
+
+  lib = File.expand_path("../../../../../build/NativePackage/Engine/MSVC2019-x64-MT/bin/LuminoEngine.dll", __FILE__)
+  if File.exist?(lib)
+    to = "ext/LuminoEngine.dll"
+    FileUtils.cp(lib, to)
+    p "Lib copy (" + lib + ", " + to + ")"
+  end
+
+  #--------------------
+  # for development
+
+  # copy dll
+  lib = File.expand_path("../../../../../build/MSVC2019-x64-MT/src/LuminoEngine/Release/LuminoEngine.dll", __FILE__)
+  if File.exist?(lib)
+    to = "ext/LuminoEngine.dll"
+    FileUtils.cp(lib, to)
+    p "Lib copy (" + lib + ", " + to + ")"
+  end
 
   lumino_cmd = File.expand_path("../../../../../build/MSVC2019-x64-MT/src/LuminoEditor/CLI/Release/lumino.exe", __FILE__)
   if File.exist?(lumino_cmd)
