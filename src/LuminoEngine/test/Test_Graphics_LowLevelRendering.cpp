@@ -63,8 +63,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
 	{
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		ctx->beginRenderPass(TestEnv::renderPass());
         ctx->setVertexLayout(m_vertexDecl1);
         ctx->setVertexBuffer(0, vertexBuffer);
@@ -79,8 +79,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 
 	//* [ ] Viewport や Scissor の影響を受けず、全体をクリアできること。
 	{
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		ctx->beginRenderPass(TestEnv::renderPass());
 		ctx->setViewportRect(Rect(0, 0, 10, 10));
 		ctx->setScissorRect(Rect(0, 0, 10, 10));
@@ -101,8 +101,8 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 		auto t1 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 		auto t2 = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBA8, false);
 
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         ctx->setVertexLayout(m_vertexDecl1);
         ctx->setVertexBuffer(0, vertexBuffer);
         ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -138,10 +138,11 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 
     //* [ ] RenderPass の begin/end だけでクリアできること
     {
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::Blue, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
         auto ctx = TestEnv::beginFrame();
-        ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::Blue, 1.0f, 0);
+        ctx->beginRenderPass(crp);
         ctx->endRenderPass();
         TestEnv::endFrame();
         ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/Test_Graphics_LowLevelRendering-Clear-1.png"), cbb);
@@ -181,10 +182,11 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、更新できること
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -206,9 +208,10 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			Vector4 v2[] = {
 				Vector4(0, 1, 0, 1),
@@ -217,7 +220,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 			};
 			memcpy(vb1->map(MapMode::Write), v2, vb1->size());
 
-			ctx->beginRenderPass(TestEnv::renderPass());
+			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -230,9 +233,10 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、拡張できること
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			Vector4 v2[] = {
 				Vector4(-0.5, 0.5, 0, 1),
@@ -246,7 +250,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			memcpy(vb2->map(MapMode::Write), v2, vb2->size());
 
-			ctx->beginRenderPass(TestEnv::renderPass());
+			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexBuffer(0, vb2);
@@ -260,9 +264,10 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 		// * [ ] 一度レンダリングに使用されたバッファを、拡張できること
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			Vector4 v2[] = {
 				Vector4(-0.5, 0.5, 0, 1),
@@ -277,7 +282,7 @@ TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 
 			memcpy(vb2->map(MapMode::Write), v2, vb2->size());
 
-			ctx->beginRenderPass(TestEnv::renderPass());
+			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexBuffer(0, vb2);
@@ -321,10 +326,11 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 	vd1->addElement(1, VertexElementType::Float3, VertexElementUsage::TexCoord, 0);
 	vd1->addElement(2, VertexElementType::Float4, VertexElementUsage::TexCoord, 1);
 
-    TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 	auto ctx = TestEnv::beginFrame();
-	ctx->beginRenderPass(TestEnv::renderPass());
+    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+	auto crp = TestEnv::renderPass();
+	crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+	ctx->beginRenderPass(crp);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setVertexBuffer(1, vb2);
 	ctx->setVertexBuffer(2, vb3);
@@ -377,14 +383,15 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 
 		// * [ ] まだ一度もレンダリングに使用されていないバッファを、更新できること
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			uint16_t indices[] = { 0, 2, 4 };
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
-			ctx->beginRenderPass(TestEnv::renderPass());
+			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setIndexBuffer(ib1);
@@ -398,14 +405,15 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 
 		// * [ ] 一度レンダリングに使用されたバッファを、再更新できること
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
 			uint16_t indices[] = { 1, 2, 4 };
 			memcpy(ib1->map(MapMode::Write), indices, ib1->bytesSize());
 
-			ctx->beginRenderPass(TestEnv::renderPass());
+			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(m_vertexDecl1);
 			ctx->setVertexBuffer(0, vb1);
 			ctx->setIndexBuffer(ib1);
@@ -424,12 +432,13 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 			}
 			else
 			{
-                TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-                auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 				auto ctx = TestEnv::beginFrame();
+                auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+				auto crp = TestEnv::renderPass();
+				crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 				ib1->setFormat(IndexBufferFormat::UInt32);
 
-				ctx->beginRenderPass(TestEnv::renderPass());
+				ctx->beginRenderPass(crp);
 				ctx->setVertexLayout(m_vertexDecl1);
 				ctx->setVertexBuffer(0, vb1);
 				ctx->setIndexBuffer(ib1);
@@ -458,10 +467,11 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 	//* [ ] Viewport
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -483,10 +493,11 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 	//* [ ] Scissor
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -508,10 +519,11 @@ TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 
 	//* [ ] Viewport+Scissor (Experimental) ... OpenGL では Viewport が優先だった。
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(m_shader1->techniques()[0]->passes()[0]);
@@ -543,10 +555,11 @@ TEST_F(Test_Graphics_LowLevelRendering, ConstantBuffer)
 
 
 	auto renderAndCapture = [&]() {
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(m_vertexDecl1);
 		ctx->setVertexBuffer(0, vertexBuffer);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -806,10 +819,11 @@ TEST_F(Test_Graphics_LowLevelRendering, Texture)
 
 	// * [ ] default
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
@@ -907,10 +921,11 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 	// * [ ] default (Point, Reprat)
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
@@ -926,10 +941,11 @@ TEST_F(Test_Graphics_LowLevelRendering, SamplerState)
 
 	// * [ ] Linear, Clamp
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
@@ -989,10 +1005,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 
 	// * [ ] check BlendState (RGB Add blend)
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::Gray, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::Gray, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 
@@ -1033,10 +1050,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		state4.fillMode = FillMode::Wireframe;
 
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setRasterizerState(state1);
@@ -1052,10 +1070,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		}
 
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setRasterizerState(state2);
@@ -1071,10 +1090,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		}
 
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setRasterizerState(state3);
@@ -1090,10 +1110,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		}
 
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setRasterizerState(state4);
@@ -1111,10 +1132,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 	// * [ ] check DepthStencilState
 	{
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setVertexBuffer(0, vb2);
@@ -1129,13 +1151,14 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		}
 
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			DepthStencilStateDesc state1;
 			state1.depthTestFunc = ComparisonFunc::Always;
 
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setDepthStencilState(state1);
@@ -1151,13 +1174,14 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		}
 
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			DepthStencilStateDesc state2;
 			state2.depthWriteEnabled = false;
 
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setDepthStencilState(state2);
@@ -1184,10 +1208,11 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderStateTest)
 		state1.frontFace.stencilFunc = ComparisonFunc::Always;	// 常に成功（常に上書き）
 
 		{
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 			auto ctx = TestEnv::beginFrame();
-			ctx->beginRenderPass(TestEnv::renderPass());
+            auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
 			ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
 			ctx->setVertexLayout(vertexDecl1);
 			ctx->setDepthStencilState(state1);
@@ -1248,8 +1273,8 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 
         auto renderTarget1 = makeObject<RenderTargetTexture>(160, 120, TextureFormat::RGBA8, false);
 
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto renderPass = makeObject<RenderPass>();
         renderPass->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
 
@@ -1269,8 +1294,9 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
         // 次に renderTarget1 からバックバッファへ全体を描く
         {
             shader2->findParameter("g_texture1")->setTexture(renderTarget1);
-            TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-			ctx->beginRenderPass(TestEnv::renderPass());
+			auto crp = TestEnv::renderPass();
+			crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+			ctx->beginRenderPass(crp);
             ctx->setVertexLayout(vertexDecl2);
             ctx->setVertexBuffer(0, vertexBuffer2);
             ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);

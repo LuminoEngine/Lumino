@@ -5,7 +5,7 @@
 
 String TestEnv::LuminoCLI;
 Ref<DepthBuffer> TestEnv::depthBuffer;
-RenderTargetTexture* TestEnv::lastBackBuffer;
+//RenderTargetTexture* TestEnv::lastBackBuffer;
 
 void TestEnv::setup()
 {
@@ -15,6 +15,7 @@ void TestEnv::setup()
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+	EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setEngineFeatures(feature);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));
     //EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority::AllowLocalDirectory);
@@ -36,8 +37,8 @@ void TestEnv::setup()
         //Engine::mainDirectionalLight()->lookAt(Vector3(0, 0, 0));
     }
 
-	lastBackBuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
-	depthBuffer = DepthBuffer::create(lastBackBuffer->width(), lastBackBuffer->height());
+	auto backbuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
+	depthBuffer = DepthBuffer::create(backbuffer->width(), backbuffer->height());
 
 #ifdef LN_OS_WIN32
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
@@ -53,7 +54,7 @@ void TestEnv::teardown()
 
 void TestEnv::updateFrame()
 {
-	lastBackBuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
+	//lastBackBuffer = Engine::mainWindow()->swapChain()->currentBackbuffer();
     detail::EngineDomain::engineManager()->updateFrame();
     detail::EngineDomain::engineManager()->renderFrame();
     detail::EngineDomain::engineManager()->presentFrame();
@@ -97,7 +98,7 @@ Ref<Bitmap2D> TestEnv::capture(RenderTargetTexture* renderTarget)
 	if (renderTarget)
 		return detail::TextureInternal::readData(renderTarget, nullptr);
 	else
-		return detail::TextureInternal::readData(lastBackBuffer, TestEnv::graphicsContext());
+		return detail::TextureInternal::readData(TestEnv::mainWindowSwapChain()->currentBackbuffer(), TestEnv::graphicsContext());
 }
 
 void TestEnv::saveScreenShot(const Char* filePath, RenderTargetTexture* renderTarget)
