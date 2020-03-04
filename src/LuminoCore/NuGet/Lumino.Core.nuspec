@@ -5,9 +5,9 @@
     <version>0.9.0</version>
     <authors>lriki</authors>
     <owners>lriki</owners>
-    <licenseUrl>https://github.com/lriki/Lumino/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/lriki/Lumino</projectUrl>
-    <iconUrl>https://github.com/lriki/Lumino/raw/master/docs/Assets/icon64.png</iconUrl>
+    <licenseUrl>https://github.com/LuminoEngine/Lumino/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/LuminoEngine/Lumino</projectUrl>
+    <iconUrl>https://github.com/LuminoEngine/Lumino/raw/master/docs/Assets/icon64.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Portable C++ class library</description>
     <releaseNotes></releaseNotes>

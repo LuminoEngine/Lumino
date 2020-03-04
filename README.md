@@ -10,16 +10,15 @@ Lumino はゲームやデジタルアートなどのリアルタイムグラフ�
 Build and Unit Tests
 --------
 
-[![Actions Status](https://github.com/lriki/Lumino/workflows/Build%20engine/badge.svg)](https://github.com/lriki/Lumino/actions)
-
+[![Package](https://github.com/LuminoEngine/Lumino/workflows/Package/badge.svg)](https://github.com/LuminoEngine/Lumino/actions)
 
 
 Get started
 --------
 
-[Website](https://lriki.github.io/lumino/) ([Prebuild](https://lriki.github.io/lumino/latest-lumino-webdocs/))
+[Website](https://luminoengine.github.io/)
 
-[Roadmap](https://github.com/lriki/Lumino/wiki/ProjectRoadmap)
+[Roadmap](https://github.com/LuminoEngine/Lumino/wiki/ProjectRoadmap)
 
 [How to build](docs/HowToBuild.md)
 

@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Real-time graphics application framework.}
   spec.description   = %q{Real-time graphics application framework.}
-  spec.homepage      = "https://github.com/lriki/Lumino"
+  spec.homepage      = "https://github.com/LuminoEngine/Lumino"
   spec.license       = "MIT"
   spec.extensions    = %w[ext/extconf.rb]
 
