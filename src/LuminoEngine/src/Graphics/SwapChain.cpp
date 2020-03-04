@@ -93,9 +93,7 @@ GraphicsContext* SwapChain::beginFrame2()
 	detail::GraphicsContextInternal::beginCommandRecoding(m_graphicsContext);
 	m_graphicsContext->resetState();
 
-	// TODO: ここでやるのが正しい。ウィンドウリサイズ時に警告が出なくなる。
-	// ただ、テスト側が見るフレームに細工入れているのでそっち直さないと警告が出る。
-	//m_rhiObject->acquireNextImage(&m_imageIndex);
+	m_rhiObject->acquireNextImage(&m_imageIndex);
 	return m_graphicsContext;
 }
 
@@ -109,7 +107,6 @@ void SwapChain::endFrame()
 	detail::GraphicsContextInternal::flushCommandRecoding(m_graphicsContext, currentBackbuffer());
 	detail::GraphicsContextInternal::endCommandRecoding(m_graphicsContext);
 	detail::GraphicsResourceInternal::manager(this)->renderingQueue()->submit(m_graphicsContext);
-	//auto nativeContext = detail::GraphicsContextInternal::commitState(m_graphicsContext);
 	detail::GraphicsContextInternal::resetCommandList(m_graphicsContext, nullptr);
 
     present(m_graphicsContext);
@@ -142,8 +139,6 @@ void SwapChain::resetRHIBackbuffers()
         commandList->init(detail::GraphicsResourceInternal::manager(this));
 		m_commandLists[i] = commandList;
 	}
-
-	m_rhiObject->acquireNextImage(&m_imageIndex);
 }
 
 void SwapChain::present(GraphicsContext* context)
@@ -162,8 +157,6 @@ void SwapChain::present(GraphicsContext* context)
 		{
 			rhi->present();
 		});
-	
-    m_rhiObject->acquireNextImage(&m_imageIndex);
 }
 
 detail::ISwapChain* SwapChain::resolveRHIObject(GraphicsContext* context, bool* outModified) const

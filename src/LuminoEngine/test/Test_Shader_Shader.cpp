@@ -45,10 +45,11 @@ TEST_F(Test_Shader_Shader, IndependentSamplerState)
 
     // * [ ] default
     {
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+        auto crp = TestEnv::renderPass();
+        crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setIndexBuffer(nullptr);
@@ -86,10 +87,11 @@ TEST_F(Test_Shader_Shader, UniformBuffer)
     // PixelShader からのみ参照されるパラメータ
     shader1->findParameter("_Color2")->setVector(Vector4(0, 0, 1, 1));
 
-    TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 	auto ctx = TestEnv::beginFrame();
-	ctx->beginRenderPass(TestEnv::renderPass());
+    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+    auto crp = TestEnv::renderPass();
+    crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+	ctx->beginRenderPass(crp);
     ctx->setVertexLayout(vertexDecl1);
     ctx->setVertexBuffer(0, vb1);
     ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -126,10 +128,11 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
 	// _Texture1 のみ (赤)
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+        auto crp = TestEnv::renderPass();
+        crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -143,10 +146,11 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
 	// _Texture2 のみ (緑)
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+        auto crp = TestEnv::renderPass();
+        crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -160,10 +164,11 @@ TEST_F(Test_Shader_Shader, MultiTechMultiTexture)
 
 	// _Texture1 + _Texture2 (黄)
 	{
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+        auto crp = TestEnv::renderPass();
+        crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vertexDecl1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -192,10 +197,11 @@ TEST_F(Test_Shader_Shader, NotProvidedVertexAttribute)
 	};
 	auto vb1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
-    TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 	auto ctx = TestEnv::beginFrame();
-	ctx->beginRenderPass(TestEnv::renderPass());
+    auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+    auto crp = TestEnv::renderPass();
+    crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+	ctx->beginRenderPass(crp);
 	ctx->setVertexLayout(vertexDecl1);
 	ctx->setVertexBuffer(0, vb1);
 	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);

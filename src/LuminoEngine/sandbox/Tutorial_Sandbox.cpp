@@ -38,6 +38,7 @@ class App : public Application
 void Tutorial_Sandbox()
 {
     App app;
+	EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setDebugToolEnabled(false);
 	EngineSettings::setMainWindowSize(1600, 800);
     detail::ApplicationHelper::run(&app);

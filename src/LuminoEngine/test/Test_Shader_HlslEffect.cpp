@@ -31,10 +31,11 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		auto shader1 = makeObject<Shader>(LN_ASSETFILE("Basic.fx"));
 		shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vd1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
@@ -50,10 +51,11 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("NestedStruct.fx"));
 		shader2->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
 
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexLayout(vd1);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
@@ -91,10 +93,11 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		props->addDefinition(u"GREEN=1");
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
@@ -111,10 +114,11 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		props->addDefinition(u"BLUE");
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest2.fx"), props);
 
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);
@@ -132,10 +136,11 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest.fx"), props);
 		shader2->findConstantBuffer("ConstBuff2")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
-        TestEnv::renderPass()->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
-        auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
 		auto ctx = TestEnv::beginFrame();
-		ctx->beginRenderPass(TestEnv::renderPass());
+		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+		auto crp = TestEnv::renderPass();
+		crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+		ctx->beginRenderPass(crp);
 		ctx->setVertexBuffer(0, vb1);
 		ctx->setVertexLayout(vd1);
 		ctx->setShaderPass(shader2->techniques()[0]->passes()[0]);

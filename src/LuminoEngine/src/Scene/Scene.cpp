@@ -119,7 +119,13 @@ void Scene::clear()
 void Scene::addObject(WorldObject* obj)
 {
 	if (LN_REQUIRE(obj)) return;
-	if (LN_REQUIRE(!obj->m_scene)) return;
+    if (obj->m_scene) {
+        if (obj->m_scene == this) {
+            return;
+        }
+        obj->m_scene->removeObject(obj);
+    }
+
 	m_rootWorldObjectList->add(obj);
     obj->attachScene(this);
 }
