@@ -27,11 +27,12 @@ dotnet run
 
 Documents
 ----------
-### Web Site
 
-docs/WebDocument/_site
+### Website
 
-の中身を丸ごと配置する。
+https://github.com/LuminoEngine/Website
+
+build.py の中で Lumino リポジトリをタグ指定 clone している個所を変更する。
 
 ### リリースノート
 ※1.0.0 までは用意しない。
