@@ -1,5 +1,3 @@
 Lumino for Ruby
 ==========
 
-test
-
