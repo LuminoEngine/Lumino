@@ -255,19 +255,19 @@ public:
 	/** 名前を設定します。 */
 	void setName(const StringRef& name) { m_name = name; }
 
-	/** メインの MeshResource を設定します。 */
-	void setMeshResource(MeshResource* mesh);
+	///** メインの MeshResource を設定します。 */
+	//void setMeshResource(MeshResource* mesh);
 
-	/** メインの MeshResource を取得します。 */
-	MeshResource* meshResource() const;
+	///** メインの MeshResource を取得します。 */
+	//MeshResource* meshResource() const;
 
-    void addMeshResource(MeshResource* mesh);
+ //   void addMeshResource(MeshResource* mesh);
 
 	/** メッシュの境界ボックスを取得します。 */
 	const Box& bounds() const { return m_boundingBox; }
 
 	// TODO: internal
-	MeshResource* selectLODResource(float distance) const;
+	//MeshResource* selectLODResource(float distance) const;
 
 	void calculateBounds();
 
@@ -286,7 +286,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	ln::String m_name;
 	Box m_boundingBox;
-	List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
+	//List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
     List<Ref<Mesh>> m_lodMesh;
 
 	friend class StaticMeshModel;

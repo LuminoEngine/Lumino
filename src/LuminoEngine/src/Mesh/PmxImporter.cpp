@@ -169,7 +169,11 @@ Ref<SkinnedMeshModel> PmxSkinnedMeshResource::createSkinnedMeshModel()
     auto model = makeObject<SkinnedMeshModel>();
 
     auto meshContainer = makeObject<MeshContainer>();
+#if 1
+	LN_NOTIMPLEMENTED();
+#else
     meshContainer->setMeshResource(this);
+#endif
     model->addMeshContainer(meshContainer);
 
     //---------------------------------------------------------

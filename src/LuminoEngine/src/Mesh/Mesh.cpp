@@ -781,7 +781,7 @@ void Mesh::resetVertexLayout()
 
 MeshContainer::MeshContainer()
 	: m_name()
-	, m_lodResources()
+	//, m_lodResources()
 {
     m_lodMesh.resize(1);
 }
@@ -793,29 +793,32 @@ MeshContainer::~MeshContainer()
 void MeshContainer::init()
 {
 	Object::init();
-	m_lodResources.resize(1);
+	//m_lodResources.resize(1);
 }
-
-void MeshContainer::setMeshResource(MeshResource* mesh)
-{
-    if (LN_REQUIRE(!mesh->m_ownerContainer)) return;
-    m_lodResources[0] = mesh;
-    mesh->m_ownerContainer = this;
-}
-
-MeshResource* MeshContainer::meshResource() const
-{
-	return m_lodResources[0];
-}
-
-MeshResource* MeshContainer::selectLODResource(float distance) const
-{
-	// TODO:
-	return m_lodResources[0];
-}
-
+//
+//void MeshContainer::setMeshResource(MeshResource* mesh)
+//{
+//    if (LN_REQUIRE(!mesh->m_ownerContainer)) return;
+//    m_lodResources[0] = mesh;
+//    mesh->m_ownerContainer = this;
+//}
+//
+//MeshResource* MeshContainer::meshResource() const
+//{
+//	return m_lodResources[0];
+//}
+//
+//MeshResource* MeshContainer::selectLODResource(float distance) const
+//{
+//	// TODO:
+//	return m_lodResources[0];
+//}
+//
 void MeshContainer::calculateBounds()
 {
+#if 1
+	m_boundingBox = Box();
+#else
 	MeshResource* mesh = meshResource();
 	if (mesh)
 	{
@@ -860,6 +863,7 @@ void MeshContainer::calculateBounds()
 	{
 		m_boundingBox = Box();
 	}
+#endif
 }
 
 void MeshContainer::setMesh(Mesh* mesh)

@@ -12,6 +12,9 @@ class App : public Application
 
 	virtual void onInit() override
 	{
+		Engine::renderView()->setGuideGridEnabled(true);
+		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+
 		auto texture = Texture2D::load(u"picture1.jpg");
 		auto sprite = UISprite::create(texture);
 	}

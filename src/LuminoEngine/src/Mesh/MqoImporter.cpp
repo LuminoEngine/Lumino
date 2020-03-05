@@ -343,8 +343,11 @@ Ref<StaticMeshModel> MqoImporter::import(MeshManager* manager, const Path& fileP
 	// TODO: on end ほしい
 	GMeshOperations::calculateNormals(m_mesh, 0);
 
+#if 1
+	LN_NOTIMPLEMENTED();
+#else
 	m_meshContainer->setMeshResource(GMeshOperations::generateMeshResource(m_mesh));
-
+#endif
 	return m_model;
 }
 
