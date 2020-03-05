@@ -156,6 +156,30 @@ struct MeshSection2
 };
 
 // LOD
+// 方針：サイズは固定。内容は変更可。
+/*
+	頂点レイアウトは次のようになっている。
+		Stream.0:
+			Float3 Position.0
+			Float3 Normal.0
+			Float2 TexCoord.0
+			Float4 Color.0
+		Stream.1:
+			Float3 Tangent.0
+			Float3 Binormal.0
+		Stream.2:
+			Float3 BlendWeight.0
+			Float4 BlendIndices.0
+		Stream.X:
+			...
+
+	Stream 0, 1, 2 は予約済み。
+	0 は必須。
+	1, 2 は要求された場合のみ作られる。
+
+	3~ はユーザー定義できる。
+	今は主に glTF 形式のモデルを読むときのカスタムフォーマットのために用意されている。
+*/
 class Mesh
 	: public Object
 {

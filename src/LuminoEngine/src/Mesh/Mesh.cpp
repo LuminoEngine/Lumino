@@ -765,7 +765,7 @@ void Mesh::resetVertexLayout()
 
 	if (m_skinningVertexBuffer) {
 		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendWeight, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendIndices, 0);
+		m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
 		count++;
 	}
 
