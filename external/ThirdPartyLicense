@@ -1,10 +1,26 @@
 
-- zlib
-- libpng
-- glfw
-- freetype
+### Runtime
 
+- Box2D
+- bullet3
+- freetype2
+- glad
+- glfw
+- glslang
+- libpng
+- noto-emoji
+- ogg
+- pcre
+- SPIRV-Cross
 - tmxlite
-- pugixml
-- miniz
+- vorbis
+- zlib
+
+### Engine build tools
+
+- ios-cmake
+- openal-soft
+- SDL2
+- Vulkan-Headers
+- googletest
 
