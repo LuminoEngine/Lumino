@@ -206,14 +206,6 @@ jobs:
         name: Lumino-latest-Windows.zip
         path: ./build/Lumino-latest-Windows
 
-#        dotnet run -- BuildExternalProjects Emscripten
-#        
-#        dotnet run -- BuildEngine_Emscripten
-#        
-#        dotnet run -- BuildEngine_Android
-#        dotnet run -- MakeNativePackage
-#        dotnet run -- MakeInstaller_Win32
-
   #==============================================================================
   Package-macOS:
     needs: [Build-Native-macOS, Build-Native-iOS]
@@ -247,7 +239,7 @@ jobs:
         path: ./build/Lumino-latest-macOS
 
   #==============================================================================
-  Ruby:
+  Package-Ruby:
     needs: Build-Native-MSVC2019-x64-MT
     runs-on: windows-2019
 
@@ -271,3 +263,7 @@ jobs:
         gem install bundler
         dotnet run -- MakePackage_Ruby
 
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Lumino-latest-Ruby
+        path: ./tools/Bindings/Ruby/GemProject/pkg

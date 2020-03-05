@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 #if defined(LN_DEBUG) && defined(_WIN32)
 	if (argc == 1)
 	{
-        ::SetCurrentDirectoryW(L"D:/LocalProj/LN/Test2");
+        ::SetCurrentDirectoryW(L"D:/LocalProj/LN/test1");
         ln::Logger::setLevel(ln::LogLevel::Verbose);
     
 		const char* debugArgv[] = {
@@ -28,16 +28,10 @@ int main(int argc, char** argv)
 			//"new", "test4",
 			//"new", "TH-10", "-t", "cmake",
             
-			//"build", "Web",
-			//"build", "Web",
-			
-			//"build",// "-p", "Windows"
+			"build", "Web",
+			//"build", "Windows"
 
-			//"<program>", "dev-install-tools",
-
-			
-
-			"run", "Web", //"Windows",
+			//"run", "Web", //"Windows",
 
 			//"dev-openide", "vs",
 			
