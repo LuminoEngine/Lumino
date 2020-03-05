@@ -191,15 +191,18 @@ ln::Result CppLanguageContext::build_WebTarget() const
 	auto installDir = ln::Path::combine(buildDir, u"Release");
 	auto cmakeSourceDir = project()->emscriptenProjectDir();
 	auto script = ln::Path::combine(buildDir, u"build.bat");
-	auto engineRoot = ln::Path(workspace->buildEnvironment()->emscriptenSysRootLocalDir(), u"LuminoEngine");
+	auto engineRootPath = ln::Path(workspace->buildEnvironment()->emscriptenSysRootLocalDir(), u"LuminoEngine");
 
 	ln::FileSystem::createDirectory(buildDir);
 
 	{
+		auto engineRoot = engineRootPath.str().replace("\\", "/");
 		ln::List<ln::String> emcmakeArgs = {
 			u"-DCMAKE_BUILD_TYPE=Release",
 			u"-DCMAKE_INSTALL_PREFIX=" + installDir,
-			u"-DLUMINO_ENGINE_ROOT=\"" + engineRoot.str().replace("\\", "/") + u"\"",
+			//u"-DCMAKE_PREFIX_PATH=\"" + ln::String::concat(engineRoot, u"/", u"Emscripten") + u"\"",
+			u"-DCMAKE_PREFIX_PATH=\"" + engineRoot + u"\"",
+			u"-DLUMINO_ENGINE_ROOT=\"" + engineRoot + u"\"",
 			u"-DLN_TARGET_ARCH=Emscripten",
 			u"-G \"MinGW Makefiles\"",
 			cmakeSourceDir,
