@@ -63,24 +63,19 @@ Ref<Mesh> MeshGeometryBuilder::buildMesh()
 
 	auto mesh = makeObject<Mesh>(vertexCount, indexCount);
 
-	auto* vertexBuffer = mesh->acquireVertexBuffer(InterleavedVertexGroup::Main);
-	auto* indexBuffer = mesh->acquireIndexBuffer();
-	auto* mappedVB = vertexBuffer->map(MapMode::Write);
-	auto* mappedIB = indexBuffer->map(MapMode::Write);
+	auto* mappedVB = mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main);
+	auto* mappedIB = mesh->acquireMappedIndexBuffer();
 
 	int vertexOffset = 0;
 	int indexOffset = 0;
 	for (int i = s.startGenerator; i < s.startGenerator + s.generatorCount; i++) {
 		auto* g = m_generators[i];
 		detail::MeshGeneraterBuffer genBuffer(nullptr);	// TODO: allocator
-		genBuffer.setBuffer(static_cast<Vertex*>(mappedVB) + vertexOffset, mappedIB, indexBuffer->format(), indexOffset);
+		genBuffer.setBuffer(static_cast<Vertex*>(mappedVB) + vertexOffset, mappedIB, mesh->indexBufferFormat(), indexOffset);
 		genBuffer.generate(g);
 		vertexOffset += g->vertexCount();
 		indexOffset += g->indexCount();
 	}
-
-	vertexBuffer->unmap();
-	indexBuffer->unmap();
 
 	return mesh;
 }

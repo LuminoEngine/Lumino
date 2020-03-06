@@ -184,6 +184,25 @@ class Mesh
 	: public Object
 {
 public:
+	/** 頂点の数を取得します。 */
+	int vertexCount() const { return m_vertexCount; }
+
+	/** インデックスの数を取得します。 */
+	int indexCount() const { return m_indexCount; }
+
+	/** 頂点を設定します。 */
+	void setVertex(int index, const Vertex& value);
+
+	/** 頂点を取得します。 */
+	const Vertex& vertex(int index);
+
+	/** インデックス値を設定します。 */
+	void setIndex(int index, int value);
+
+	/** インデックス値を取得します。 */
+	int index(int index);
+
+
 	/** セクションの情報を追加します。 */
 	void addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
 
@@ -192,9 +211,10 @@ public:
     const List<MeshSection2>& sections() const { return m_sections; }
 
 	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
-	VertexBuffer* acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
-	VertexBuffer* acquireVertexBuffer(InterleavedVertexGroup group);
-	IndexBuffer* acquireIndexBuffer();
+	void* acquireMappedVertexBuffer(InterleavedVertexGroup group);
+	void* acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
+	void* acquireMappedIndexBuffer();
+	IndexBufferFormat indexBufferFormat() const { return m_indexFormat; }
 
 LN_CONSTRUCT_ACCESS:
 	Mesh();
@@ -206,19 +226,31 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void attemptResetVertexLayout();
 
+	struct VertexBufferEntry
+	{
+		Ref<VertexBuffer> buffer;
+		void* mappedBuffer = nullptr;
+	};
+
+	struct IndexBufferEntry
+	{
+		Ref<IndexBuffer> buffer;
+		void* mappedBuffer = nullptr;
+	};
+
 	struct VertexBufferAttribute
 	{
         VertexElementType type;
 		VertexElementUsage usage;
         int usageIndex;
-		Ref<VertexBuffer> buffer;
+		VertexBufferEntry entry;
 	};
 
-	Ref<VertexBuffer> m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
-	Ref<VertexBuffer> m_tangentsVertexBuffer;	// Tangent0, BiNormal0
-	Ref<VertexBuffer> m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
+	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
+	VertexBufferEntry m_tangentsVertexBuffer;	// Tangent0, BiNormal0
+	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
 	List<VertexBufferAttribute> m_extraVertexBuffers;
-	Ref<IndexBuffer> m_indexBuffer;
+	IndexBufferEntry m_indexBuffer;
     Ref<VertexLayout> m_vertexLayout;
 	List<MeshSection2> m_sections;
 

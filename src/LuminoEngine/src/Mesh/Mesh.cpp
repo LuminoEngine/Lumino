@@ -372,31 +372,57 @@ void Mesh::addSection(int startIndex, int primitiveCount, int materialIndex, Pri
 
 void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
 {
+	// unmap
+	{
+		if (m_mainVertexBuffer.mappedBuffer) {
+			m_mainVertexBuffer.buffer->unmap();
+			m_mainVertexBuffer.mappedBuffer = nullptr;
+		}
+		if (m_tangentsVertexBuffer.mappedBuffer) {
+			m_tangentsVertexBuffer.buffer->unmap();
+			m_tangentsVertexBuffer.mappedBuffer = nullptr;
+		}
+		if (m_skinningVertexBuffer.mappedBuffer) {
+			m_skinningVertexBuffer.buffer->unmap();
+			m_skinningVertexBuffer.mappedBuffer = nullptr;
+		}
+		for (auto& v : m_extraVertexBuffers) {
+			if (v.entry.mappedBuffer) {
+				v.entry.buffer->unmap();
+				v.entry.mappedBuffer = nullptr;
+			}
+		}
+		if (m_indexBuffer.mappedBuffer) {
+			m_indexBuffer.buffer->unmap();
+			m_indexBuffer.mappedBuffer = nullptr;
+		}
+	}
+
 	attemptResetVertexLayout();
 
     *outSection = m_sections[sectionIndex];
     *outDecl = m_vertexLayout;
-    *outIB = m_indexBuffer;
+    *outIB = m_indexBuffer.buffer;
 
 	int count = 0;
 
-	if (m_mainVertexBuffer) {
-		(*outVBs)[count] = m_mainVertexBuffer;
+	if (m_mainVertexBuffer.buffer) {
+		(*outVBs)[count] = m_mainVertexBuffer.buffer;
 		count++;
 	}
 
-	if (m_tangentsVertexBuffer) {
-		(*outVBs)[count] = m_tangentsVertexBuffer;
+	if (m_tangentsVertexBuffer.buffer) {
+		(*outVBs)[count] = m_tangentsVertexBuffer.buffer;
 		count++;
 	}
 
-	if (m_skinningVertexBuffer) {
-		(*outVBs)[count] = m_skinningVertexBuffer;
+	if (m_skinningVertexBuffer.buffer) {
+		(*outVBs)[count] = m_skinningVertexBuffer.buffer;
 		count++;
 	}
 
     for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
-        (*outVBs)[count] = m_extraVertexBuffers[i].buffer;
+        (*outVBs)[count] = m_extraVertexBuffers[i].entry.buffer;
 		count++;
     }
 
@@ -424,7 +450,65 @@ InterleavedVertexGroup Mesh::getStandardElement(VertexElementUsage usage, int us
 	return InterleavedVertexGroup::Undefined;
 }
 
-VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex)
+void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
+{
+	switch (group)
+	{
+	case InterleavedVertexGroup::Undefined:
+	{
+		LN_UNREACHABLE();
+		return nullptr;
+	}
+	case InterleavedVertexGroup::Main:
+		if (!m_mainVertexBuffer.buffer) {
+			m_mainVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, GraphicsResourceUsage::Static);
+
+			// set default
+			auto* buf = static_cast<Vertex*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
+			for (int i = 0; i < m_vertexCount; i++) {
+				buf[i].normal = Vector3(0, 0, 1);
+				buf[i].color = Color::White;
+			}
+		}
+
+		if (!m_mainVertexBuffer.mappedBuffer) {
+			m_mainVertexBuffer.mappedBuffer = m_mainVertexBuffer.buffer->map(MapMode::Write);
+		}
+		return m_mainVertexBuffer.mappedBuffer;
+
+	case InterleavedVertexGroup::Tangents:
+		if (!m_tangentsVertexBuffer.buffer) {
+			m_tangentsVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, GraphicsResourceUsage::Static);
+
+			// set default
+			auto* buf = static_cast<VertexTangents*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
+			for (int i = 0; i < m_vertexCount; i++) {
+				buf[i] = VertexTangents::Default;
+			}
+		}
+
+		if (!m_tangentsVertexBuffer.mappedBuffer) {
+			m_tangentsVertexBuffer.mappedBuffer = m_tangentsVertexBuffer.buffer->map(MapMode::Write);
+		}
+		return m_tangentsVertexBuffer.mappedBuffer;
+
+	case InterleavedVertexGroup::Skinning:
+		if (!m_skinningVertexBuffer.buffer) {
+			m_skinningVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, GraphicsResourceUsage::Static);
+		}
+
+		if (!m_skinningVertexBuffer.mappedBuffer) {
+			m_skinningVertexBuffer.mappedBuffer = m_skinningVertexBuffer.buffer->map(MapMode::Write);
+		}
+		return m_skinningVertexBuffer.mappedBuffer;
+
+	default:
+		LN_UNREACHABLE();
+		return nullptr;
+	}
+}
+
+void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
 	auto group = getStandardElement(usage, usageIndex);
 	if (group == InterleavedVertexGroup::Undefined) {
@@ -436,71 +520,39 @@ VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsa
 				return nullptr;
 			}
 			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, GraphicsResourceUsage::Static);
-			m_extraVertexBuffers.add({ type, usage, usageIndex, vb });
+			
+			VertexBufferEntry entry;
+			entry.buffer = vb;
+			entry.mappedBuffer = vb->map(MapMode::Write);
+
+			m_extraVertexBuffers.add({ type, usage, usageIndex, entry });
 			m_vertexLayout = nullptr;	// dirty layout
-			return vb;
+
+			return entry.mappedBuffer;
 		}
 		else {
-			return r->buffer;
+			if (!r->entry.mappedBuffer) {
+				r->entry.mappedBuffer = r->entry.buffer->map(MapMode::Write);
+			}
+			return r->entry.mappedBuffer;
 		}
 	}
 	else {
-		return acquireVertexBuffer(group);
+		return acquireMappedVertexBuffer(group);
 	}
 }
 
-VertexBuffer* Mesh::acquireVertexBuffer(InterleavedVertexGroup group)
+void* Mesh::acquireMappedIndexBuffer()
 {
-	switch (group)
-	{
-		case InterleavedVertexGroup::Undefined:
-		{
-			LN_UNREACHABLE();
-			return nullptr;
-		}
-		case InterleavedVertexGroup::Main:
-			if (!m_mainVertexBuffer) {
-				m_mainVertexBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, GraphicsResourceUsage::Static);
-
-				// set default
-				auto* buf = static_cast<Vertex*>(m_mainVertexBuffer->map(MapMode::Write));
-				for (int i = 0; i < m_vertexCount; i++) {
-					buf[i].normal = Vector3(0, 0, 1);
-					buf[i].color = Color::White;
-				}
-			}
-			return m_mainVertexBuffer;
-
-		case InterleavedVertexGroup::Tangents:
-			if (!m_tangentsVertexBuffer) {
-				m_tangentsVertexBuffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, GraphicsResourceUsage::Static);
-
-				// set default
-				auto* buf = static_cast<VertexTangents*>(m_mainVertexBuffer->map(MapMode::Write));
-				for (int i = 0; i < m_vertexCount; i++) {
-					buf[i] = VertexTangents::Default;
-				}
-			}
-			return m_tangentsVertexBuffer;
-
-		case InterleavedVertexGroup::Skinning:
-			if (!m_skinningVertexBuffer) {
-				m_skinningVertexBuffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, GraphicsResourceUsage::Static);
-			}
-			return m_skinningVertexBuffer;
-
-		default:
-			LN_UNREACHABLE();
-			return nullptr;
+	if (!m_indexBuffer.buffer) {
+		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, GraphicsResourceUsage::Static);
 	}
-}
 
-IndexBuffer* Mesh::acquireIndexBuffer()
-{
-	if (!m_indexBuffer) {
-		m_indexBuffer = makeObject<IndexBuffer>(m_indexCount, GraphicsResourceUsage::Static);
+	if (!m_indexBuffer.mappedBuffer) {
+		m_indexBuffer.mappedBuffer = m_indexBuffer.buffer->map(MapMode::Write);
 	}
-	return m_indexBuffer;
+
+	return m_indexBuffer.mappedBuffer;
 }
 
 void Mesh::attemptResetVertexLayout()
@@ -510,7 +562,7 @@ void Mesh::attemptResetVertexLayout()
 
 		int count = 0;
 
-		if (m_mainVertexBuffer) {
+		if (m_mainVertexBuffer.buffer) {
 			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Position, 0);
 			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Normal, 0);
 			m_vertexLayout->addElement(count, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
@@ -518,13 +570,13 @@ void Mesh::attemptResetVertexLayout()
 			count++;
 		}
 
-		if (m_tangentsVertexBuffer) {
+		if (m_tangentsVertexBuffer.buffer) {
 			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
 			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
 			count++;
 		}
 
-		if (m_skinningVertexBuffer) {
+		if (m_skinningVertexBuffer.buffer) {
 			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendWeight, 0);
 			m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
 			count++;

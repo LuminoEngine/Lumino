@@ -455,8 +455,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
         for (auto& vbView : section.vertexBufferViews) {
 			auto reservedGroup = coreMesh->getStandardElement(vbView.usage, vbView.usageIndex);
-			VertexBuffer* vertexBuffer = coreMesh->acquireVertexBuffer(vbView.type, vbView.usage, vbView.usageIndex);
-            auto* rawbuf = static_cast<byte_t*>(vertexBuffer->map(MapMode::Write));
+            auto* rawbuf = static_cast<byte_t*>(coreMesh->acquireMappedVertexBuffer(vbView.type, vbView.usage, vbView.usageIndex));
             auto* src = static_cast<const byte_t*>(vbView.data);// +vbView.byteOffset;
 
 			int offset = 0;
@@ -545,8 +544,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	//   Lumino の MeshSection は glTF の Primitive と対応させているが、glTF の Primitive は様々な Index buffer を参照することができる。
 	//   MeshSection で扱うにはそれらすべてをひとつの Index buffer に統合する必要がある。
 	{
-		auto* indexBuffer = coreMesh->acquireIndexBuffer();
-		void* buf = indexBuffer->map(MapMode::Write);
+		void* buf = coreMesh->acquireMappedIndexBuffer();
 
 		int beginVertexIndex = 0;
 		int indexOffset = 0;
