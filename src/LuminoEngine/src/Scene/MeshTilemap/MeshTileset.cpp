@@ -29,12 +29,8 @@ void AutoMeshTileset::init()
 
 LN_OBJECT_IMPLEMENT(MeshTileset, Object) {}
 
-struct AutoTileInfo
-{
-	uint8_t subtiles[4];	// [top-left][top-right][bottom-left][bottom-light]
-};
 
-static AutoTileInfo g_AutoTileTable[48] =
+const MeshTileset::AutoTileInfo MeshTileset::AutoTileTable[48] =
 {
 	// Block tiles.
 	/*[0]*/  {1,1,1,1},{2,1,1,1},{3,3,1,1},{1,2,1,1}, {2,2,1,1},{4,1,4,1},{5,3,4,1},{4,2,4,1},
@@ -93,7 +89,7 @@ void MeshTileset::init()
 		const Matrix& transform = faceTransforms[iFaceDir];
 
 		for (int i = 0; i < 48; i++) {
-			const auto& info = g_AutoTileTable[i];
+			const auto& info = AutoTileTable[i];
 			int startIndex = offsetI;
 			Vector3 pysOffsets[4] = { { 0.0, 1.0, 0.0 }, { 0.5, 1.0, 0.0 }, { 0.0, 0.5, 0.0 }, { 0.5, 0.5, 0.0 } };
 

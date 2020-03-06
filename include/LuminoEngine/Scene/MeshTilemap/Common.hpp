@@ -25,7 +25,11 @@ namespace detail {
 
 struct MeshTile
 {
-	uint8_t id[6] = {};  // FaceDirection. Non Autotile の場合は [0] だけ使用する
+	// 2D Tilemap と同様のルールの Id. 
+	int tileId = 0;
+
+	// FaceDirection. tileId が Autotile の場合のみ使用される.
+	uint8_t id[6] = {};
 };
 } // namespace detail
 } // namespace ln

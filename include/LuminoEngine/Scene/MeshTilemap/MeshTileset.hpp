@@ -19,11 +19,19 @@ class MeshTileset
 {
     LN_OBJECT;
 public:
+	struct AutoTileInfo
+	{
+		uint8_t subtiles[4];	// [top-left][top-right][bottom-left][bottom-light]
+	};
+
 	static const int AutoTileOffset = 16384;
 	static const int AutoTileSetStride = 1024;
-	static const int AutoTileUnitStride = 128;
+	static const int AutoTileUnitStride = 48;
 	static const int MaxAutoTilests = AutoTileOffset / AutoTileSetStride;
 	static const int LocalAutoTileIdSlopeOffset = 96;
+	static const AutoTileInfo AutoTileTable[48];
+
+	static int autoTileKindId(int tileId) { return (tileId < AutoTileOffset) ? -1 : ((tileId - AutoTileOffset) / AutoTileSetStride); }
 
 LN_CONSTRUCT_ACCESS:
     MeshTileset();

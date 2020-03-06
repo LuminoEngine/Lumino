@@ -64,7 +64,11 @@ class App : public Application
 		// TODO: test
 		auto layer = makeObject<MeshTilemapLayer>();
 		layer->resize(10, 3, 10);
-		layer->setTileId(0, 0, 0, MeshTileFaceDirection::XMinus, 2);
+		layer->putAutoTile(0, 0, 0, 0);
+		layer->putAutoTile(1, 1, 1, 0);
+		layer->putAutoTile(2, 1, 1, 0);
+		layer->putAutoTile(3, 1, 1, 0);
+		layer->putAutoTile(4, 1, 1, 0);
 		meshTilemapModel->addLayer(layer);
 
 		auto meshTilemapComponent = makeObject<MeshTilemapComponent>();
