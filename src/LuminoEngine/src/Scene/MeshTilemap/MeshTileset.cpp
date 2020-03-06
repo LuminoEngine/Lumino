@@ -73,13 +73,14 @@ void MeshTileset::init()
 	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
 
 	// ZMinus を、指定方向に向けるための変換行列
+	const auto finalOffset = Vector3(0.5, 0.5, 0.5);
 	Matrix faceTransforms[6] = {
-		Matrix::makeRotationY(Math::PI / 2),
-		Matrix::makeRotationY(-Math::PI / 2),
-		Matrix::makeRotationX(-Math::PI / 2),
-		Matrix::makeRotationX(Math::PI / 2),
-		Matrix::Identity,
-		Matrix::makeRotationY(Math::PI),
+		Matrix::makeRotationY(Math::PI / 2) * Matrix::makeTranslation(Vector3(-0.5, 0, 0) + finalOffset),
+		Matrix::makeRotationY(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0.5, 0, 0) + finalOffset),
+		Matrix::makeRotationZ(Math::PI) * Matrix::makeRotationX(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0, -0.5, 0) + finalOffset),
+		Matrix::makeRotationX(Math::PI / 2) * Matrix::makeTranslation(Vector3(0, 0.5, 0) + finalOffset),
+		Matrix::Identity * Matrix::makeTranslation(Vector3(0, 0, -0.5) + finalOffset),
+		Matrix::makeRotationY(Math::PI) * Matrix::makeTranslation(Vector3(0, 0, 0.5) + finalOffset),
 	};
 
 	int offsetV = 0;
@@ -91,7 +92,7 @@ void MeshTileset::init()
 		for (int i = 0; i < 48; i++) {
 			const auto& info = AutoTileTable[i];
 			int startIndex = offsetI;
-			Vector3 pysOffsets[4] = { { 0.0, 1.0, 0.0 }, { 0.5, 1.0, 0.0 }, { 0.0, 0.5, 0.0 }, { 0.5, 0.5, 0.0 } };
+			Vector3 pysOffsets[4] = { { -0.5, +0.5, 0.0 }, { 0.0, +0.5, 0.0 }, { -0.5, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } };
 
 			// [top-left], [top-right], [bottom-left], [bottom-light]
 			for (int iCorner = 0; iCorner < 4; iCorner++) {

@@ -69,6 +69,12 @@ class App : public Application
 		layer->putAutoTile(2, 1, 1, 0);
 		layer->putAutoTile(3, 1, 1, 0);
 		layer->putAutoTile(4, 1, 1, 0);
+		layer->putAutoTile(5, 1, 1, 0);
+		layer->putAutoTile(2, 1, 2, 0);
+		layer->putAutoTile(3, 1, 2, 0);
+		layer->putAutoTile(4, 1, 2, 0);
+		layer->putAutoTile(2, 1, 3, 0);
+		layer->putAutoTile(4, 1, 3, 0);
 		meshTilemapModel->addLayer(layer);
 
 		auto meshTilemapComponent = makeObject<MeshTilemapComponent>();

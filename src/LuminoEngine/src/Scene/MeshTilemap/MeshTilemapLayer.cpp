@@ -112,6 +112,8 @@ void MeshTilemapLayer::refreshAutoTileFace(int x, int y, int z, MeshTileFaceDire
 			else
 				subtiles[i] = 3;
 		}
+		else if (!equals[checkIdx[0]])
+			subtiles[i] = 2;
 		else
 			subtiles[i] = 1;
 	}
@@ -184,8 +186,8 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 		int cx = x + ofs[i].x;
 		int cy = y + ofs[i].y;
 		int cz = z + ofs[i].z;
-		if (isValidIndex(cx, cy,cx)) {
-			outInfo->tileIds[i] = tile(cx, cy, cx).tileId;
+		if (isValidIndex(cx, cy, cz)) {
+			outInfo->tileIds[i] = tile(cx, cy, cz).tileId;
 		}
 		else {
 			outInfo->tileIds[i] = -1;
