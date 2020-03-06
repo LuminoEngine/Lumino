@@ -360,6 +360,52 @@ void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat)
 	m_indexFormat = indexFormat;
 }
 
+void Mesh::setVertex(int index, const Vertex& value)
+{
+	if (LN_REQUIRE(0 <= index && index < m_vertexCount)) return;
+	reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main))[index] = value;
+}
+
+const Vertex& Mesh::vertex(int index)
+{
+	if (LN_REQUIRE(0 <= index && index < m_vertexCount)) return Vertex::Default;
+	return reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main))[index];
+}
+
+void Mesh::setIndex(int index, int value)
+{
+	if (LN_REQUIRE(0 <= index && index < m_indexCount)) return;
+	
+	switch (m_indexFormat)
+	{
+	case IndexBufferFormat::UInt16:
+		reinterpret_cast<uint16_t*>(acquireMappedIndexBuffer())[index] = value;
+		break;
+	case IndexBufferFormat::UInt32:
+		reinterpret_cast<uint32_t*>(acquireMappedIndexBuffer())[index] = value;
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
+int Mesh::index(int index)
+{
+	if (LN_REQUIRE(0 <= index && index < m_indexCount)) return 0;
+
+	switch (m_indexFormat)
+	{
+	case IndexBufferFormat::UInt16:
+		return reinterpret_cast<uint16_t*>(acquireMappedIndexBuffer())[index];
+	case IndexBufferFormat::UInt32:
+		return reinterpret_cast<uint32_t*>(acquireMappedIndexBuffer())[index];
+	default:
+		LN_UNREACHABLE();
+		return 0;
+	}
+}
+
 void Mesh::addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
 {
 	MeshSection2 meshSection;
