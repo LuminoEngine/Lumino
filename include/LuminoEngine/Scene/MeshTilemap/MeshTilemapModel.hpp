@@ -18,6 +18,8 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+	Ref<Material> m_material;
+	Ref<Mesh> m_mesh;
 };
 
 } // namespace ln

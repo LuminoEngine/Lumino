@@ -31,5 +31,12 @@ void MeshTilemapComponent::setModel(MeshTilemapModel* value)
     m_model = value;
 }
 
+void MeshTilemapComponent::onRender(RenderingContext* context)
+{
+    if (m_model) {
+        m_model->draw(context, Matrix::Identity);
+    }
+}
+
 } // namespace ln
 

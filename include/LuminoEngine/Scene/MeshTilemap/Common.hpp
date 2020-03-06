@@ -5,6 +5,7 @@
 namespace ln {
 class Texture;
 class Material;
+class Mesh;
 class RenderingContext;
 class MeshTilemapModel;
 class MeshTilemapLayer;
