@@ -184,45 +184,6 @@ class Mesh
 	: public Object
 {
 public:
-	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。
-	struct VertexBufferView
-	{
-		VertexElementType type;
-		VertexElementUsage usage;
-		int usageIndex;
-		const void* data;
-		//size_t byteOffset;
-		size_t count;	// vertex count. not byte size. (byte size = count * size(type))
-		size_t byteStride;
-	};
-
-	// ファイルからのデータ読み込み用
-	struct SectionView
-	{
-		std::vector<VertexBufferView> vertexBufferViews;
-        //int indexOffset;    // (unit: index number. not byte size)
-        //int indexCount;     // (unit: index number. not byte size)
-
-        const void* indexData;  // このセクション内で 0 から始まるインデックス
-        int indexElementSize;	// byte size. (1, 2, 4)
-        size_t indexCount;
-
-        int materialIndex;
-
-		PrimitiveTopology topology;
-	};
-
-    struct MeshView
-    {
-        std::vector<SectionView> sectionViews;
-    };
-
-	///** 頂点の数を変更します。 */
-	//void resizeVertexBuffer(int vertexCount);
-
-	///** インデックスの数を変更します。 */
-	//void resizeIndexBuffer(int indexCount);
-
 	/** セクションの情報を追加します。 */
 	void addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
 
@@ -241,7 +202,6 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 	void init(int vertexCount, int indexCount);
 	void init(int vertexCount, int indexCount, IndexBufferFormat indexFormat);
-	void init(const MeshView& meshView);
 
 private:
 	void attemptResetVertexLayout();

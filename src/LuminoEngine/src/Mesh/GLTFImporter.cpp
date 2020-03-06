@@ -228,7 +228,7 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 
 Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 {
-    Mesh::MeshView meshView;
+    MeshView meshView;
 
     int indexBufferViewIndex = -1;
     int indexComponentType = -1;
@@ -237,7 +237,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 		const tinygltf::Primitive& primitive = mesh.primitives[i];
 		if (primitive.indices < 0) return nullptr;
 
-		Mesh::SectionView sectionView;
+		SectionView sectionView;
         sectionView.materialIndex = primitive.material;
 
 		// Vertex buffers
@@ -250,7 +250,7 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 				return nullptr;
 			}
 
-			Mesh::VertexBufferView vbView;
+			VertexBufferView vbView;
 			//vbView.byteOffset = accessor.byteOffset;
 			vbView.count = accessor.count;
 
@@ -404,7 +404,7 @@ void flipFaceIndex_Triangle(T* indices, int count)
 	}
 }
 
-Ref<Mesh> GLTFImporter::generateMesh(const Mesh::MeshView& meshView) const
+Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 {
 	// Validation and count vertices.
 	int vertexCount = 0;
