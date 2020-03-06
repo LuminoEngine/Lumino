@@ -21,6 +21,8 @@ private:
     Ref<Material> readMaterial(const tinygltf::Material& material);
 	Ref<MeshNode> readNode(const tinygltf::Node& node);
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
+	Ref<Mesh> generateMesh(const Mesh::MeshView& meshView) const;
+
 
 	static bool FileExists(const std::string &abs_filename, void *user_data);
 	static std::string ExpandFilePath(const std::string &filepath, void *user_data);

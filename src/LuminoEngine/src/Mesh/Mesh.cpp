@@ -342,7 +342,6 @@ Mesh::~Mesh()
 void Mesh::init()
 {
 	Object::init();
-	m_vertexLayout = makeObject<VertexLayout>();
 }
 
 void Mesh::init(int vertexCount, int indexCount)
@@ -350,6 +349,15 @@ void Mesh::init(int vertexCount, int indexCount)
 	init();
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
+	m_indexFormat = detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount);
+}
+
+void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat)
+{
+	init();
+	m_vertexCount = vertexCount;
+	m_indexCount = indexCount;
+	m_indexFormat = indexFormat;
 }
 
 template<class T>
@@ -517,7 +525,7 @@ void Mesh::init(const MeshView& meshView)
 
 
 	// Vertex layout
-	resetVertexLayout();
+	attemptResetVertexLayout();
 
     // Index buffer.
     //   Lumino の MeshSection は glTF の Primitive と対応させているが、glTF の Primitive は様々な Index buffer を参照することができる。
@@ -609,12 +617,22 @@ void Mesh::init(const MeshView& meshView)
         // TODO: unmap 無いとめんどい以前に怖い
 
     }
-    
+}
 
+void Mesh::addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
+{
+	MeshSection2 meshSection;
+	meshSection.startIndex = startIndex;
+	meshSection.primitiveCount = primitiveCount;
+	meshSection.materialIndex = materialIndex;
+	meshSection.topology = topology;
+	m_sections.add(meshSection);
 }
 
 void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
 {
+	attemptResetVertexLayout();
+
     *outSection = m_sections[sectionIndex];
     *outDecl = m_vertexLayout;
     *outIB = m_indexBuffer;
@@ -678,6 +696,7 @@ VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsa
 			}
 			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, GraphicsResourceUsage::Static);
 			m_extraVertexBuffers.add({ type, usage, usageIndex, vb });
+			m_vertexLayout = nullptr;	// dirty layout
 			return vb;
 		}
 		else {
@@ -743,36 +762,38 @@ IndexBuffer* Mesh::acquireIndexBuffer()
 	return m_indexBuffer;
 }
 
-void Mesh::resetVertexLayout()
+void Mesh::attemptResetVertexLayout()
 {
-	m_vertexLayout = makeObject<VertexLayout>();
+	if (!m_vertexLayout) {
+		m_vertexLayout = makeObject<VertexLayout>();
 
-	int count = 0;
+		int count = 0;
 
-	if (m_mainVertexBuffer) {
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Position, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Normal, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::Color, 0);
-		count++;
-	}
+		if (m_mainVertexBuffer) {
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Position, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Normal, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::Color, 0);
+			count++;
+		}
 
-	if (m_tangentsVertexBuffer) {
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
-		count++;
-	}
+		if (m_tangentsVertexBuffer) {
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
+			count++;
+		}
 
-	if (m_skinningVertexBuffer) {
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendWeight, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
-		count++;
-	}
+		if (m_skinningVertexBuffer) {
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendWeight, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
+			count++;
+		}
 
-	for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
-		const auto& attr = m_extraVertexBuffers[i];
-		m_vertexLayout->addElement(count, attr.type, attr.usage, attr.usageIndex);
-		count++;
+		for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
+			const auto& attr = m_extraVertexBuffers[i];
+			m_vertexLayout->addElement(count, attr.type, attr.usage, attr.usageIndex);
+			count++;
+		}
 	}
 }
 

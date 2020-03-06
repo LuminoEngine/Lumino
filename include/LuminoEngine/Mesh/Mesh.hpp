@@ -224,25 +224,27 @@ public:
 	//void resizeIndexBuffer(int indexCount);
 
 	/** セクションの情報を追加します。 */
-	void addSection(int startIndex, int primitiveCount, int materialIndex);
+	void addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
 
 	// TODO: internal
 	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
     const List<MeshSection2>& sections() const { return m_sections; }
+
+	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
+	VertexBuffer* acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
+	VertexBuffer* acquireVertexBuffer(InterleavedVertexGroup group);
+	IndexBuffer* acquireIndexBuffer();
 
 LN_CONSTRUCT_ACCESS:
 	Mesh();
 	virtual ~Mesh();
 	void init();
 	void init(int vertexCount, int indexCount);
+	void init(int vertexCount, int indexCount, IndexBufferFormat indexFormat);
 	void init(const MeshView& meshView);
 
 private:
-	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
-	VertexBuffer* acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
-	VertexBuffer* acquireVertexBuffer(InterleavedVertexGroup group);
-	IndexBuffer* acquireIndexBuffer();
-	void resetVertexLayout();
+	void attemptResetVertexLayout();
 
 	struct VertexBufferAttribute
 	{
@@ -262,6 +264,7 @@ private:
 
 	int m_vertexCount;
 	int m_indexCount;
+	IndexBufferFormat m_indexFormat;
 
 	friend class MeshGeometryBuilder;
 };

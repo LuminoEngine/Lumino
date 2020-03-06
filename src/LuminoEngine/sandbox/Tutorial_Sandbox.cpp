@@ -15,35 +15,20 @@ class App : public Application
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
-		auto texture = Texture2D::load(u"picture1.jpg");
-		auto sprite = UISprite::create(texture);
+		auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
 	}
 
 	void onUpdate() override
 	{
 	}
-
-	//virtual void onUpdate() override
-	//{
-	//	auto light = Engine::light();
-
-	//	
-	//	s->setPosition(-light->transform()->getFront() * 5);;
-
-	//	//float x, y;
-	//	//Math::sinCos(Engine::time(), &x, &y);
-	//	//light->lookAt(x, 0, y);
-
-	//	//s->setPosition(-Vector3(x, 0, y) * 5);
-	//}
 };
 
 void Tutorial_Sandbox()
 {
     App app;
-	EngineSettings::setGraphicsDebugEnabled(true);
-    EngineSettings::setDebugToolEnabled(false);
-	EngineSettings::setMainWindowSize(1600, 800);
+	//EngineSettings::setGraphicsDebugEnabled(true);
+ //   EngineSettings::setDebugToolEnabled(false);
+	//EngineSettings::setMainWindowSize(1600, 800);
     detail::ApplicationHelper::run(&app);
 }
 

@@ -6,6 +6,7 @@
 #include "../../../build/BuildCache/tinygltf/tiny_gltf.h"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
+#include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -388,11 +389,230 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 		meshView.sectionViews.push_back(std::move(sectionView));
 	}
 
-	auto coreMesh = makeObject<Mesh>(meshView);
     auto meshContainer = makeObject<MeshContainer>();
-    meshContainer->setMesh(coreMesh);
+    meshContainer->setMesh(generateMesh(meshView));
 
 	return meshContainer;
+}
+
+template<class T>
+void flipFaceIndex_Triangle(T* indices, int count)
+{
+	int c = count / 3;
+	for (int i = 0; i < c; i++) {
+		std::swap(indices[(i * 3) + 1], indices[(i * 3) + 2]);
+	}
+}
+
+Ref<Mesh> GLTFImporter::generateMesh(const Mesh::MeshView& meshView) const
+{
+	// Validation and count vertices.
+	int vertexCount = 0;
+	for (auto& section : meshView.sectionViews) {
+		int count = section.vertexBufferViews[0].count;
+		for (size_t i = 0; i < section.vertexBufferViews.size(); i++) {
+			auto& view = section.vertexBufferViews[i];
+			if (count != view.count) {
+				// ひとつの section 内ではすべての頂点数が一致していることが前提
+				LN_ERROR();
+				return nullptr;
+			}
+		}
+		vertexCount += count;
+	}
+
+	// count indices and measure element size.
+	int indexCount = 0;
+	int indexElementSize = 0;
+	for (auto& section : meshView.sectionViews) {
+		indexCount += section.indexCount;
+		indexElementSize = std::max(indexElementSize, section.indexElementSize);
+	}
+
+	// select index format.
+	IndexBufferFormat indexForamt;
+	if (indexElementSize == 1 || indexElementSize == 2) {
+		indexForamt = IndexBufferFormat::UInt16;
+		indexElementSize = 2;
+	}
+	else if (indexElementSize == 4) {
+		indexForamt = IndexBufferFormat::UInt32;
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+
+	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt);
+
+
+
+
+	// Build vertex buffer.
+	int vertexOffset = 0;
+    for (auto& section : meshView.sectionViews) {
+        int vertexCountInSection = section.vertexBufferViews[0].count;
+
+        for (auto& vbView : section.vertexBufferViews) {
+			auto reservedGroup = coreMesh->getStandardElement(vbView.usage, vbView.usageIndex);
+			VertexBuffer* vertexBuffer = coreMesh->acquireVertexBuffer(vbView.type, vbView.usage, vbView.usageIndex);
+            auto* rawbuf = static_cast<byte_t*>(vertexBuffer->map(MapMode::Write));
+            auto* src = static_cast<const byte_t*>(vbView.data);// +vbView.byteOffset;
+
+			int offset = 0;
+			int stride = 0;
+
+			if (reservedGroup == InterleavedVertexGroup::Main) {
+				stride = sizeof(Vertex);
+				if (vbView.usage == VertexElementUsage::Position) offset = LN_MEMBER_OFFSETOF(Vertex, position);
+				else if (vbView.usage == VertexElementUsage::Normal) offset = LN_MEMBER_OFFSETOF(Vertex, normal);
+				else if (vbView.usage == VertexElementUsage::TexCoord) offset = LN_MEMBER_OFFSETOF(Vertex, uv);
+				else if (vbView.usage == VertexElementUsage::Color) offset = LN_MEMBER_OFFSETOF(Vertex, color);
+				else {
+					LN_ERROR();
+				}
+			}
+			else if (reservedGroup == InterleavedVertexGroup::Tangents) {
+				stride = sizeof(VertexTangents);
+				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexTangents, tangent);
+				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexTangents, binormal);
+				else {
+					LN_ERROR();
+				}
+			}
+			else if (reservedGroup == InterleavedVertexGroup::Skinning) {
+				stride = sizeof(VertexBlendWeight);
+				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
+				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+				else {
+					LN_ERROR();
+				}
+			}
+			else {
+				stride = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+				//int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+				//for (int i = 0; i < vertexCountInSection; i++) {
+				//	memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
+				//	//memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
+				//}
+			}
+
+			int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+			for (int i = 0; i < vertexCountInSection; i++) {
+				memcpy(&rawbuf[((vertexOffset + i) * stride) + offset], src + (vbView.byteStride * i), size);
+			}
+
+
+
+
+			// Flip Z (RH to LH)
+			{
+				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Position) {
+					if (vbView.type == VertexElementType::Float3) {
+						auto* p = reinterpret_cast<Vertex*>(rawbuf);
+						for (int i = 0; i < vertexCountInSection; i++) {
+							p[i].position.z *= -1.0f;
+						}
+					}
+					else {
+						LN_NOTIMPLEMENTED();
+						return nullptr;
+					}
+				}
+				else if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Normal) {
+					if (vbView.type == VertexElementType::Float3) {
+						auto* p = reinterpret_cast<Vertex*>(rawbuf);
+						for (int i = 0; i < vertexCountInSection; i++) {
+							p[i].normal.z *= -1.0f;
+						}
+					}
+					else {
+						LN_NOTIMPLEMENTED();
+						return nullptr;
+					}
+				}
+			}
+
+            // TODO: unmap 無いとめんどい以前に怖い
+        }
+
+        vertexOffset += vertexCountInSection;
+    }
+
+
+
+	// Build index buffer.
+	//   Lumino の MeshSection は glTF の Primitive と対応させているが、glTF の Primitive は様々な Index buffer を参照することができる。
+	//   MeshSection で扱うにはそれらすべてをひとつの Index buffer に統合する必要がある。
+	{
+		auto* indexBuffer = coreMesh->acquireIndexBuffer();
+		void* buf = indexBuffer->map(MapMode::Write);
+
+		int beginVertexIndex = 0;
+		int indexOffset = 0;
+		for (auto& section : meshView.sectionViews) {
+			int vertexCountInSection = section.vertexBufferViews[0].count;
+
+			if (indexElementSize == 2) {
+				if (section.indexElementSize == 1) {
+					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint8_t*>(section.indexData);
+					for (int i = 0; i < section.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
+					}
+					flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
+				}
+				else if (section.indexElementSize == 2) {
+					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint16_t*>(section.indexData);
+					for (int i = 0; i < section.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
+					}
+					flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
+				}
+				else if (section.indexElementSize == 4) {
+				}
+				else {
+					LN_NOTIMPLEMENTED();
+				}
+			}
+			else if (indexElementSize == 4) {
+				if (section.indexElementSize == 4) {
+					auto* b = static_cast<uint32_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint32_t*>(section.indexData);
+					for (int i = 0; i < section.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
+					}
+					flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
+				}
+				else {
+					LN_NOTIMPLEMENTED();
+				}
+			}
+			else {
+				LN_NOTIMPLEMENTED();
+			}
+
+			assert(section.topology == PrimitiveTopology::TriangleList);
+
+			// make mesh section
+			// TODO: tri only
+			coreMesh->addSection(indexOffset, section.indexCount / 3, section.materialIndex, section.topology);
+
+			// next
+			indexOffset += section.indexCount;
+			beginVertexIndex += vertexCountInSection;
+		}
+
+		// TODO: unmap 無いとめんどい以前に怖い
+
+	}
+
+
+	return coreMesh;
 }
 
 bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)
