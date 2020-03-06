@@ -60,6 +60,7 @@ class App : public Application
 		meshTilemapComponent->setModel(meshTilemapModel);
 		auto meshTilemap = makeObject<VisualObject>();
 		meshTilemap->addComponent(meshTilemapComponent);
+		meshTilemapComponent->setShadingModel(ShadingModel::Unlit);
 	}
 
 	void onUpdate() override
