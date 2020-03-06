@@ -1,6 +1,8 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/UI/UIComboBox.hpp>
+#include <LuminoEngine/Scene/MeshTilemap/MeshTileset.hpp>
+#include <LuminoEngine/Scene/MeshTilemap/MeshTilemapLayer.hpp>
 #include <LuminoEngine/Scene/MeshTilemap/MeshTilemapModel.hpp>
 #include <LuminoEngine/Scene/MeshTilemap/MeshTilemapComponent.hpp>
 using namespace ln;
@@ -55,6 +57,15 @@ class App : public Application
 		////auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
 
 		auto meshTilemapModel = makeObject<MeshTilemapModel>();
+
+		auto meshTileset = makeObject<MeshTileset>();
+		meshTilemapModel->setTileset(meshTileset);
+
+		// TODO: test
+		auto layer = makeObject<MeshTilemapLayer>();
+		layer->resize(10, 3, 10);
+		layer->setTileId(0, 0, 0, MeshTileFaceDirection::XMinus, 2);
+		meshTilemapModel->addLayer(layer);
 
 		auto meshTilemapComponent = makeObject<MeshTilemapComponent>();
 		meshTilemapComponent->setModel(meshTilemapModel);
