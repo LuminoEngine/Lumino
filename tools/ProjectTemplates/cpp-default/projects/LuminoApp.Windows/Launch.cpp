@@ -10,7 +10,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
 #ifdef LN_DEBUG
-    auto projectRoot = ln::Path(ln::Environment::executablePath()).parent().parent().parent().parent().parent();
+    auto projectRoot = ln::Path(ln::Environment::executablePath()).parent().parent().parent().parent().parent().parent();
     ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u"Assets"));
 	ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u".ln", u"Assets"));
 #endif
