@@ -10,16 +10,18 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 
+//#include <simpleboolean/meshoperator.h>
+
 namespace ln {
 
 //==============================================================================
-// AutoMeshTileset
+// MeshAutoTileset
 
-AutoMeshTileset::AutoMeshTileset()
+MeshAutoTileset::MeshAutoTileset()
 {
 }
 
-void AutoMeshTileset::init()
+void MeshAutoTileset::init()
 {
 	Object::init();
 }
@@ -61,66 +63,94 @@ MeshTileset::MeshTileset()
 
 void MeshTileset::init()
 {
-    Object::init();
+	Object::init();
 
-	auto tex = Texture2D::load(u"autotile1");
-	int subtilePixelSize = 16;
-	int hc = 6;
-	int vc = 8;
-	//auto subTileUVSize = Vector2(static_cast<float>(hc) / tex->width(), static_cast<float>(vc) / tex->height());
-	auto subTileUVSize = Vector2(1.0f / static_cast<float>(hc), 1.0f / static_cast<float>(vc));
+	//{
 
-	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+	//	simpleboolean::Mesh mesh1;
+	//	simpleboolean::Mesh mesh2;
+	//	simpleboolean::loadTriangulatedObj(mesh1, firstObj);
+	//	simpleboolean::loadTriangulatedObj(mesh2, secondObj);
 
-	// ZMinus を、指定方向に向けるための変換行列
-	const auto finalOffset = Vector3(0.5, 0.5, 0.5);
-	Matrix faceTransforms[6] = {
-		Matrix::makeRotationY(Math::PI / 2) * Matrix::makeTranslation(Vector3(-0.5, 0, 0) + finalOffset),
-		Matrix::makeRotationY(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0.5, 0, 0) + finalOffset),
-		Matrix::makeRotationZ(Math::PI) * Matrix::makeRotationX(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0, -0.5, 0) + finalOffset),
-		Matrix::makeRotationX(Math::PI / 2) * Matrix::makeTranslation(Vector3(0, 0.5, 0) + finalOffset),
-		Matrix::Identity * Matrix::makeTranslation(Vector3(0, 0, -0.5) + finalOffset),
-		Matrix::makeRotationY(Math::PI) * Matrix::makeTranslation(Vector3(0, 0, 0.5) + finalOffset),
-	};
+	//	simpleboolean::MeshOperator combiner;
+	//	combiner.setMeshes(mesh1, mesh2);
+	//	if (!combiner.combine())
+	//		return 1;
 
-	int offsetV = 0;
-	int offsetI = 0;
+	//	//if (nullptr != outputObj) {
+	//		simpleboolean::Mesh unionMesh;
+	//		combiner.getResult(simpleboolean::Type::Union, &unionMesh);
+	//	//}
 
-	for (int iFaceDir = 0; iFaceDir < 6; iFaceDir++) {
-		const Matrix& transform = faceTransforms[iFaceDir];
+	//}
 
-		for (int i = 0; i < 48; i++) {
-			const auto& info = AutoTileTable[i];
-			int startIndex = offsetI;
-			Vector3 pysOffsets[4] = { { -0.5, +0.5, 0.0 }, { 0.0, +0.5, 0.0 }, { -0.5, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } };
 
-			// [top-left], [top-right], [bottom-left], [bottom-light]
-			for (int iCorner = 0; iCorner < 4; iCorner++) {
-				int index_tl = g_AutoTileSourcePosTable_TkoolXP[iCorner][info.subtiles[iCorner]];
-				auto uv = Vector2(subTileUVSize.x * (index_tl % hc), subTileUVSize.y * (index_tl / hc));
-				auto p1 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, 0, 0), transform);
-				auto p2 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, 0, 0), transform);
-				auto p3 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, -0.5, 0), transform);
-				auto p4 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, -0.5, 0), transform);
-				m_mesh->setVertex(offsetV + 0, Vertex{ p1, Vector3::UnitZ, Vector2(uv.x, uv.y), Color::White });
-				m_mesh->setVertex(offsetV + 1, Vertex{ p2, Vector3::UnitZ, Vector2(uv.x + subTileUVSize.x, uv.y), Color::White });
-				m_mesh->setVertex(offsetV + 2, Vertex{ p3, Vector3::UnitZ, Vector2(uv.x, uv.y + subTileUVSize.y), Color::White });
-				m_mesh->setVertex(offsetV + 3, Vertex{ p4, Vector3::UnitZ, Vector2(uv.x + subTileUVSize.x, uv.y + subTileUVSize.y), Color::White });
-				m_mesh->setIndex(offsetI + 0, offsetV + 0);
-				m_mesh->setIndex(offsetI + 1, offsetV + 1);
-				m_mesh->setIndex(offsetI + 2, offsetV + 2);
-				m_mesh->setIndex(offsetI + 3, offsetV + 2);
-				m_mesh->setIndex(offsetI + 4, offsetV + 1);
-				m_mesh->setIndex(offsetI + 5, offsetV + 3);
-				offsetV += 4;
-				offsetI += 6;
+
+
+
+	if (0)
+	{
+
+
+		auto tex = Texture2D::load(u"autotile1");
+		int subtilePixelSize = 16;
+		int hc = 6;
+		int vc = 8;
+		//auto subTileUVSize = Vector2(static_cast<float>(hc) / tex->width(), static_cast<float>(vc) / tex->height());
+		auto subTileUVSize = Vector2(1.0f / static_cast<float>(hc), 1.0f / static_cast<float>(vc));
+
+		m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+
+		// ZMinus を、指定方向に向けるための変換行列
+		const auto finalOffset = Vector3(0.5, 0.5, 0.5);
+		Matrix faceTransforms[6] = {
+			Matrix::makeRotationY(Math::PI / 2) * Matrix::makeTranslation(Vector3(-0.5, 0, 0) + finalOffset),
+			Matrix::makeRotationY(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0.5, 0, 0) + finalOffset),
+			Matrix::makeRotationZ(Math::PI) * Matrix::makeRotationX(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0, -0.5, 0) + finalOffset),
+			Matrix::makeRotationX(Math::PI / 2) * Matrix::makeTranslation(Vector3(0, 0.5, 0) + finalOffset),
+			Matrix::Identity * Matrix::makeTranslation(Vector3(0, 0, -0.5) + finalOffset),
+			Matrix::makeRotationY(Math::PI) * Matrix::makeTranslation(Vector3(0, 0, 0.5) + finalOffset),
+		};
+
+		int offsetV = 0;
+		int offsetI = 0;
+
+		for (int iFaceDir = 0; iFaceDir < 6; iFaceDir++) {
+			const Matrix& transform = faceTransforms[iFaceDir];
+
+			for (int i = 0; i < 48; i++) {
+				const auto& info = AutoTileTable[i];
+				int startIndex = offsetI;
+				Vector3 pysOffsets[4] = { { -0.5, +0.5, 0.0 }, { 0.0, +0.5, 0.0 }, { -0.5, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } };
+
+				// [top-left], [top-right], [bottom-left], [bottom-light]
+				for (int iCorner = 0; iCorner < 4; iCorner++) {
+					int index_tl = g_AutoTileSourcePosTable_TkoolXP[iCorner][info.subtiles[iCorner]];
+					auto uv = Vector2(subTileUVSize.x * (index_tl % hc), subTileUVSize.y * (index_tl / hc));
+					auto p1 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, 0, 0), transform);
+					auto p2 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, 0, 0), transform);
+					auto p3 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, -0.5, 0), transform);
+					auto p4 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, -0.5, 0), transform);
+					m_mesh->setVertex(offsetV + 0, Vertex{ p1, Vector3::UnitZ, Vector2(uv.x, uv.y), Color::White });
+					m_mesh->setVertex(offsetV + 1, Vertex{ p2, Vector3::UnitZ, Vector2(uv.x + subTileUVSize.x, uv.y), Color::White });
+					m_mesh->setVertex(offsetV + 2, Vertex{ p3, Vector3::UnitZ, Vector2(uv.x, uv.y + subTileUVSize.y), Color::White });
+					m_mesh->setVertex(offsetV + 3, Vertex{ p4, Vector3::UnitZ, Vector2(uv.x + subTileUVSize.x, uv.y + subTileUVSize.y), Color::White });
+					m_mesh->setIndex(offsetI + 0, offsetV + 0);
+					m_mesh->setIndex(offsetI + 1, offsetV + 1);
+					m_mesh->setIndex(offsetI + 2, offsetV + 2);
+					m_mesh->setIndex(offsetI + 3, offsetV + 2);
+					m_mesh->setIndex(offsetI + 4, offsetV + 1);
+					m_mesh->setIndex(offsetI + 5, offsetV + 3);
+					offsetV += 4;
+					offsetI += 6;
+				}
+
+				m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
 			}
-
-			m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
 		}
-	}
 
-	m_material = Material::create(tex);
+		m_material = Material::create(tex);
+	}
 }
 
 void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile) const

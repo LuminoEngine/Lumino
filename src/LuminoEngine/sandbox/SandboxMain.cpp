@@ -262,6 +262,7 @@ private:
 
 
 void Example_GameAudio();
+void Example_MeshViewer();
 void Example_MessageWindow();
 void Example_Navigator();
 void Example_SoundControl();
@@ -288,12 +289,13 @@ int main(int argc, char** argv)
 
     if (1) {
 		//Example_GameAudio();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		Tutorial_Sandbox();
+		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
         return 0;
     }

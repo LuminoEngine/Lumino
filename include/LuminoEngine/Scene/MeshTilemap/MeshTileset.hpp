@@ -4,13 +4,13 @@
 
 namespace ln {
 
-class AutoMeshTileset
+class MeshAutoTileset
 	: public Object
 {
 public:
 	
 LN_CONSTRUCT_ACCESS:
-    AutoMeshTileset();
+    MeshAutoTileset();
 	void init();
 };
 
