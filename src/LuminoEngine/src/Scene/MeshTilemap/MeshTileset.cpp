@@ -88,7 +88,7 @@ void MeshTileset::init()
 
 
 
-	if (0)
+	if (1)
 	{
 
 

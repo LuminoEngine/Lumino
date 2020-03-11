@@ -170,6 +170,26 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 			{  +1, -1, 0 }, {  0, -1, 0 }, {  -1, -1,  0 },
 		},
 	};
+	const Vec3I topOffsets[6] = {
+		{ // XMinus
+			-1, 0, 0,
+		},
+		{ // XPlus
+			+1, 0, 0,
+		},
+		{ // YMinus
+			0, -1, 0,
+		},
+		{ // YPlus
+			0, +1, 0,
+		},
+		{ // ZMinus
+			0, 0, -1,
+		},
+		{ // ZPlus
+			0, 0, +1,
+		},
+	};
 
 	//PointI offsets2D[9] = {
 	//	{ -1, -1 }, { 0, -1 }, { +1, -1 },
@@ -186,14 +206,43 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 		int cx = x + ofs[i].x;
 		int cy = y + ofs[i].y;
 		int cz = z + ofs[i].z;
+
+		outInfo->tileIds[i] = 0;
 		if (isValidIndex(cx, cy, cz)) {
-			outInfo->tileIds[i] = tile(cx, cy, cz).tileId;
+			//outInfo->tileIds[i] = tile(cx, cy, cz).tileId;
+			int id1 = tile(cx, cy, cz).tileId;
+
+			if (id1 >= 1) {
+				// 面方向にひとつ進んだ Block も調べる (面が覆われているか)
+				int cx2 = cx + topOffsets[static_cast<int>(dir)].x;
+				int cy2 = cy + topOffsets[static_cast<int>(dir)].y;
+				int cz2 = cz + topOffsets[static_cast<int>(dir)].z;
+				if (isValidIndex(cx2, cy2, cz2)) {
+					int id2 = tile(cx2, cy2, cz2).tileId;
+					if (id2 >= 1) {
+						//outInfo->tileIds[i] = -1
+						id1 = 0;
+					}
+				}
+			}
+
+			outInfo->tileIds[i] = id1;
 		}
-		else {
-			outInfo->tileIds[i] = -1;
-		}
+
 	}
 
+	//{
+	//	int cx = x + topOffsets[static_cast<int>(dir)].x;
+	//	int cy = y + topOffsets[static_cast<int>(dir)].y;
+	//	int cz = z + topOffsets[static_cast<int>(dir)].z;
+	//	if (isValidIndex(cx, cy, cz)) {
+	//		outInfo->topTileId = tile(cx, cy, cz).tileId;
+	//	}
+	//	else {
+	//		outInfo->topTileId = -1;
+	//	}
+	//}
+	
 }
 
 void MeshTilemapLayer::draw(RenderingContext* context, const MeshTileset* tileset)

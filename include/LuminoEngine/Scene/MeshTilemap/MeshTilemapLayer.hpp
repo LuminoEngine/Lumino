@@ -33,6 +33,7 @@ private:
     {
         //PointI points[9];
         int tileIds[9];
+        //int topTileIds[9];
     };
 
     bool isValidIndex(int x, int y, int z) const { return (0 <= x && x < m_sizeX) && (0 <= y && y < m_sizeY) && (0 <= z && z < m_sizeZ); }
