@@ -4,6 +4,12 @@
 
 namespace ln {
 
+enum class PredefinedMeshAutoTilesetMesh
+{
+	Uniform,	// 全面均一
+	Wall,	// 壁
+};
+
 class MeshAutoTileset
 	: public Object
 {
