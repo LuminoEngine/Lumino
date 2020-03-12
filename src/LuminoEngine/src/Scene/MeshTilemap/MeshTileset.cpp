@@ -214,14 +214,16 @@ void MeshTileset::init()
 	}
 }
 
-void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile) const
+void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency) const
 {
 
 	context->setMaterial(m_material);
 
-	for (int d = 0; d < 6; d++) {
-		if (tile.id[d] >= 1) {
-			context->drawMesh(m_mesh, (d * 48) + tile.id[d]);
+	if (autoTileKindId(tile.tileId) >= 0) {
+		for (int d = 0; d < 6; d++) {
+			if (!adjacency.buried[d]) {
+				context->drawMesh(m_mesh, (d * 48) + tile.faceTileId[d]);
+			}
 		}
 	}
 }

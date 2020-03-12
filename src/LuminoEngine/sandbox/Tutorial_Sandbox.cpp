@@ -8,7 +8,7 @@
 using namespace ln;
 
 #include <Lumino.hpp>
-
+#include <DTL.hpp>
 
 class App : public Application
 {
@@ -63,24 +63,32 @@ class App : public Application
 
 		// TODO: test
 		auto layer = makeObject<MeshTilemapLayer>();
-		layer->resize(10, 3, 10);
-		layer->putAutoTile(0, 0, 0, 0);
-		layer->putAutoTile(1, 1, 1, 0);
-		layer->putAutoTile(2, 1, 1, 0);
-		layer->putAutoTile(3, 1, 1, 0);
-		layer->putAutoTile(4, 1, 1, 0);
-		layer->putAutoTile(5, 1, 1, 0);
-		layer->putAutoTile(2, 1, 2, 0);
-		layer->putAutoTile(3, 1, 2, 0);
-		layer->putAutoTile(4, 1, 2, 0);
-		layer->putAutoTile(2, 1, 3, 0);
-		layer->putAutoTile(4, 1, 3, 0);
-		layer->putAutoTile(3, 2, 2, 0);
+		layer->resize(20, 3, 20);
 
-		layer->putAutoTile(5, 0, 0, 0); layer->putAutoTile(6, 0, 0, 0); layer->putAutoTile(7, 0, 0, 0);
-		layer->putAutoTile(5, 0, 1, 0); layer->putAutoTile(6, 0, 1, 0); layer->putAutoTile(7, 0, 1, 0);
-		layer->putAutoTile(5, 1, 0, 0); layer->putAutoTile(6, 1, 0, 0); layer->putAutoTile(7, 1, 0, 0);
-		layer->putAutoTile(5, 1, 1, 0); layer->putAutoTile(6, 1, 1, 0); layer->putAutoTile(7, 1, 1, 0);
+		if (0) {
+			layer->putAutoTile(0, 0, 0, 0);
+			layer->putAutoTile(1, 1, 1, 0);
+			layer->putAutoTile(2, 1, 1, 0);
+			layer->putAutoTile(3, 1, 1, 0);
+			layer->putAutoTile(4, 1, 1, 0);
+			layer->putAutoTile(5, 1, 1, 0);
+			layer->putAutoTile(2, 1, 2, 0);
+			layer->putAutoTile(3, 1, 2, 0);
+			layer->putAutoTile(4, 1, 2, 0);
+			layer->putAutoTile(2, 1, 3, 0);
+			layer->putAutoTile(4, 1, 3, 0);
+			layer->putAutoTile(3, 2, 2, 0);
+
+			layer->putAutoTile(5, 0, 0, 0); layer->putAutoTile(6, 0, 0, 0); layer->putAutoTile(7, 0, 0, 0);
+			layer->putAutoTile(5, 0, 1, 0); layer->putAutoTile(6, 0, 1, 0); layer->putAutoTile(7, 0, 1, 0);
+			layer->putAutoTile(5, 1, 0, 0); layer->putAutoTile(6, 1, 0, 0); layer->putAutoTile(7, 1, 0, 0);
+			layer->putAutoTile(5, 1, 1, 0); layer->putAutoTile(6, 1, 1, 0); layer->putAutoTile(7, 1, 1, 0);
+		}
+		else {
+			for (int z = 0; z < layer->sizeZ(); z++)
+				for (int x = 0; x < layer->sizeX(); x++)
+					layer->putAutoTile(x, 0, z, 0);
+		}
 
 		meshTilemapModel->addLayer(layer);
 
@@ -89,6 +97,25 @@ class App : public Application
 		auto meshTilemap = makeObject<VisualObject>();
 		meshTilemap->addComponent(meshTilemapComponent);
 		meshTilemapComponent->setShadingModel(ShadingModel::Unlit);
+
+
+		//auto sp1 = UISprite::create(Texture2D::load(u"autotile2"));
+		//sp1->setAlignments(HAlignment::Left, VAlignment::Top);
+
+
+		constexpr std::size_t matrix_size_x{ 20 };
+		constexpr std::size_t matrix_size_y{ 20 };
+		constexpr std::size_t dungeon_pixel_size{ 2 };
+		std::array<std::bitset<matrix_size_x>, matrix_size_y> matrix{ {} };
+		dtl::shape::SimpleVoronoiIsland<bool>(100, 0.5, 1, 0).draw(matrix);
+		//dtl::utility::CellularAutomation<bool>().draw(matrix);
+		for (std::size_t row{}; row < matrix.size(); ++row)
+			for (std::size_t col{}; col < matrix[row].size(); ++col)
+				if (matrix[row][col]) {
+					layer->putAutoTile(row, 1, col, 0);
+					layer->putAutoTile(row, 2, col, 0);
+				}
+
 	}
 
 	void onUpdate() override

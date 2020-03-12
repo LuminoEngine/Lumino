@@ -38,13 +38,14 @@ public:
 	static const AutoTileInfo AutoTileTable[48];
 
 	static int autoTileKindId(int tileId) { return (tileId < AutoTileOffset) ? -1 : ((tileId - AutoTileOffset) / AutoTileSetStride); }
+	static int localIdToGlobalId(int localTileId, int autotileKind) { return AutoTileSetStride * autotileKind + localTileId + AutoTileOffset; }
 
 LN_CONSTRUCT_ACCESS:
     MeshTileset();
 	void init();
 
 private:
-	void drawTile(RenderingContext* context, const detail::MeshTile& tile) const;
+	void drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency) const;
 
 	Ref<Material> m_material;
 	Ref<Mesh> m_mesh;

@@ -29,7 +29,13 @@ struct MeshTile
 	int tileId = 0;
 
 	// FaceDirection. tileId が Autotile の場合のみ使用される.
-	uint8_t id[6] = {};
+	uint8_t faceTileId[6] = {};
 };
+
+struct MeshTileFaceAdjacency
+{
+	bool buried[6]; // MeshTileFaceDirection
+};
+
 } // namespace detail
 } // namespace ln

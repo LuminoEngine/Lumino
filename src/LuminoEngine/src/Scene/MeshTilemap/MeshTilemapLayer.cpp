@@ -8,6 +8,27 @@
 namespace ln {
 
 
+const MeshTilemapLayer::Vec3I MeshTilemapLayer::TopOffsets[6] = {
+	{ // XMinus
+		-1, 0, 0,
+	},
+	{ // XPlus
+		+1, 0, 0,
+	},
+	{ // YMinus
+		0, -1, 0,
+	},
+	{ // YPlus
+		0, +1, 0,
+	},
+	{ // ZMinus
+		0, 0, -1,
+	},
+	{ // ZPlus
+		0, 0, +1,
+	},
+};
+
 //==============================================================================
 // MeshTilemapLayer
 
@@ -69,7 +90,7 @@ void MeshTilemapLayer::putAutoTile(int x, int y, int z, int autotileKindId)
 void MeshTilemapLayer::setAutoTileIdDirect(int x, int y, int z, MeshTileFaceDirection dir, int id)
 {
 	if (LN_REQUIRE(isValidIndex(x, y, z))) return;
-	tile(x, y, z).id[(int)dir] = id;
+	tile(x, y, z).faceTileId[(int)dir] = id;
 }
 
 void MeshTilemapLayer::refreshAutoTile(int x, int y, int z)
@@ -131,7 +152,7 @@ void MeshTilemapLayer::refreshAutoTileFace(int x, int y, int z, MeshTileFaceDire
 	}
 	if (LN_REQUIRE(newLocalTileId >= 0)) return;
 
-	tileInfo.id[static_cast<int>(dir)] = newLocalTileId;
+	tileInfo.faceTileId[static_cast<int>(dir)] = newLocalTileId;////MeshTileset::localIdToGlobalId(newLocalTileId, autotileKindId);
 }
 
 void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceDirection dir, AutoTileNearbyInfo* outInfo) const
@@ -170,26 +191,6 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 			{  +1, -1, 0 }, {  0, -1, 0 }, {  -1, -1,  0 },
 		},
 	};
-	const Vec3I topOffsets[6] = {
-		{ // XMinus
-			-1, 0, 0,
-		},
-		{ // XPlus
-			+1, 0, 0,
-		},
-		{ // YMinus
-			0, -1, 0,
-		},
-		{ // YPlus
-			0, +1, 0,
-		},
-		{ // ZMinus
-			0, 0, -1,
-		},
-		{ // ZPlus
-			0, 0, +1,
-		},
-	};
 
 	//PointI offsets2D[9] = {
 	//	{ -1, -1 }, { 0, -1 }, { +1, -1 },
@@ -214,9 +215,9 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 
 			if (id1 >= 1) {
 				// 面方向にひとつ進んだ Block も調べる (面が覆われているか)
-				int cx2 = cx + topOffsets[static_cast<int>(dir)].x;
-				int cy2 = cy + topOffsets[static_cast<int>(dir)].y;
-				int cz2 = cz + topOffsets[static_cast<int>(dir)].z;
+				int cx2 = cx + TopOffsets[static_cast<int>(dir)].x;
+				int cy2 = cy + TopOffsets[static_cast<int>(dir)].y;
+				int cz2 = cz + TopOffsets[static_cast<int>(dir)].z;
 				if (isValidIndex(cx2, cy2, cz2)) {
 					int id2 = tile(cx2, cy2, cz2).tileId;
 					if (id2 >= 1) {
@@ -252,10 +253,30 @@ void MeshTilemapLayer::draw(RenderingContext* context, const MeshTileset* tilese
 	for (int y = 0; y < m_sizeY; y++) {
 		for (int z = 0; z < m_sizeZ; z++) {
 			for (int x = 0; x < m_sizeX; x++) {
+
 				const detail::MeshTile& t = tile(x, y, z);
 
+
+				detail::MeshTileFaceAdjacency adjacency;
+				for (int iFace = 0; iFace < 6; iFace++) {
+					adjacency.buried[iFace] = false;
+					int cx = x + TopOffsets[iFace].x;
+					int cy = y + TopOffsets[iFace].y;
+					int cz = z + TopOffsets[iFace].z;
+					if (isValidIndex(cx, cy, cz)) {
+						if (MeshTileset::autoTileKindId(t.tileId) == MeshTileset::autoTileKindId(tile(cx, cy, cz).tileId)) {
+
+							adjacency.buried[iFace] = true;
+						}
+					}
+				}
+
+
+
+
+
 				context->setBaseTransfrom(Matrix::makeTranslation(x, y, z));
-				tileset->drawTile(context, t);
+				tileset->drawTile(context, t, adjacency);
 			}
 		}
 	}
