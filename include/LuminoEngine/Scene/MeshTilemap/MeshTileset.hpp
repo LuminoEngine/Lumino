@@ -54,12 +54,12 @@ private:
 
 namespace detail {
 
-enum SubtilePlacement
+enum SubtileCorner
 {
-	SubtilePlacement_TopLeft = 0,
-	SubtilePlacement_TopRight = 1,
-	SubtilePlacement_BottomLeft = 3,
-	SubtilePlacement_BottomRight = 3,
+	SubtileCorner_TopLeft = 0,
+	SubtileCorner_TopRight = 1,
+	SubtileCorner_BottomLeft = 3,
+	SubtileCorner_BottomRight = 3,
 };
 
 class MeshAutoTilesetUVMapper
@@ -75,7 +75,7 @@ public:
 	MeshAutoTilesetUVMapper(const Size& textureSize, const Rect& sourceRect, Format format);
 
 	// 
-	Rect getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtilePlacement placement) const;
+	Rect getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtileCorner corner) const;
 
 private:
 	Format m_format;
