@@ -52,4 +52,36 @@ private:
 	friend class MeshTilemapLayer;
 };
 
+namespace detail {
+
+enum SubtilePlacement
+{
+	SubtilePlacement_TopLeft = 0,
+	SubtilePlacement_TopRight = 1,
+	SubtilePlacement_BottomLeft = 3,
+	SubtilePlacement_BottomRight = 3,
+};
+
+class MeshAutoTilesetUVMapper
+{
+public:
+	enum class Format
+	{
+		//XP,
+		//MV,
+		MVWithWall,
+	};
+
+	MeshAutoTilesetUVMapper(const Size& textureSize, const Rect& sourceRect, Format format);
+
+	// 
+	Rect getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtilePlacement placement) const;
+
+private:
+	Format m_format;
+	Vector2 m_globalUVOffset;
+	Vector2 m_subtileUVSize;
+};
+
+} // namespace detail
 } // namespace ln

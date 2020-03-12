@@ -165,5 +165,63 @@ void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& ti
 	}
 }
 
-} // namespace ln
+namespace detail {
 
+// SubTileId([0] is invalid) => PhysicalTileIndex
+static int g_AutoTileSourcePosTable_MVFloor[4][6] =
+{
+	// [top-left]
+	{ -1, 13, 2, 9, 12, 8 },
+	// [top-right]
+	{ -1, 14, 3, 10, 15, 11 },
+	// [bottom-left]
+	{ -1, 17, 6, 21, 16, 20 },
+	// [bottom-light]
+	{ -1, 18, 7, 22, 19, 23 },
+};
+static int g_AutoTileSourcePosTable_MVWall[4][6] =
+{
+	// [top-left]
+	{ -1, 13 + 24, 2, 9 + 24, 12 + 24, 8 },
+	// [top-right]
+	{ -1, 14 + 24, 3, 10 + 24, 15 + 24, 11 + 24 },
+	// [bottom-left]
+	{ -1, 17 + 24, 6, 21 + 24, 16 + 24, 20 + 24 },
+	// [bottom-light]
+	{ -1, 18 + 24, 7, 22 + 24, 19 + 24, 23 + 24 },
+};
+
+MeshAutoTilesetUVMapper::MeshAutoTilesetUVMapper(const Size& textureSize, const Rect& sourceRect, Format format)
+	: m_format(format)
+{
+	m_globalUVOffset.x = sourceRect.x / textureSize.width;
+	m_globalUVOffset.y = sourceRect.y / textureSize.height;
+
+	if (m_format == Format::MVWithWall) {
+		m_subtileUVSize.x = (sourceRect.width / 4) / textureSize.width;
+		m_subtileUVSize.y = (sourceRect.height / 10) / textureSize.height;
+	}
+	else {
+		LN_UNREACHABLE();
+	}
+}
+
+Rect MeshAutoTilesetUVMapper::getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtileCorner corner) const
+{
+	if (m_format == Format::MVWithWall) {
+		if (direction == MeshTileFaceDirection::YPlus || direction == MeshTileFaceDirection::YMinus) {
+			const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
+			int index_tl = g_AutoTileSourcePosTable_TkoolXP[corner][info.subtiles[corner]];
+		}
+		else {
+
+		}
+	}
+	else {
+		LN_UNREACHABLE();
+		return Rect();
+	}
+}
+
+} // namespace detail
+} // namespace ln
