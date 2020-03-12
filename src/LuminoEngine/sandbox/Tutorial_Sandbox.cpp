@@ -76,6 +76,12 @@ class App : public Application
 		layer->putAutoTile(2, 1, 3, 0);
 		layer->putAutoTile(4, 1, 3, 0);
 		layer->putAutoTile(3, 2, 2, 0);
+
+		layer->putAutoTile(5, 0, 0, 0); layer->putAutoTile(6, 0, 0, 0); layer->putAutoTile(7, 0, 0, 0);
+		layer->putAutoTile(5, 0, 1, 0); layer->putAutoTile(6, 0, 1, 0); layer->putAutoTile(7, 0, 1, 0);
+		layer->putAutoTile(5, 1, 0, 0); layer->putAutoTile(6, 1, 0, 0); layer->putAutoTile(7, 1, 0, 0);
+		layer->putAutoTile(5, 1, 1, 0); layer->putAutoTile(6, 1, 1, 0); layer->putAutoTile(7, 1, 1, 0);
+
 		meshTilemapModel->addLayer(layer);
 
 		auto meshTilemapComponent = makeObject<MeshTilemapComponent>();

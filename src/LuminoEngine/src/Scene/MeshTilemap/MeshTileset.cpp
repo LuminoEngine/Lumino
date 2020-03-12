@@ -88,9 +88,8 @@ void MeshTileset::init()
 
 
 
-	if (1)
+	if (0)
 	{
-
 
 		auto tex = Texture2D::load(u"autotile1");
 		int subtilePixelSize = 16;
@@ -151,6 +150,68 @@ void MeshTileset::init()
 
 		m_material = Material::create(tex);
 	}
+	else
+	{
+		auto tex = Texture2D::load(u"autotile2");
+		detail::MeshAutoTilesetUVMapper uvMapper(Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVWithWall);
+
+
+
+		m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+
+		// ZMinus を、指定方向に向けるための変換行列
+		const auto finalOffset = Vector3(0.5, 0.5, 0.5);
+		Matrix faceTransforms[6] = {
+			Matrix::makeRotationY(Math::PI / 2) * Matrix::makeTranslation(Vector3(-0.5, 0, 0) + finalOffset),
+			Matrix::makeRotationY(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0.5, 0, 0) + finalOffset),
+			Matrix::makeRotationZ(Math::PI) * Matrix::makeRotationX(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0, -0.5, 0) + finalOffset),
+			Matrix::makeRotationX(Math::PI / 2) * Matrix::makeTranslation(Vector3(0, 0.5, 0) + finalOffset),
+			Matrix::Identity * Matrix::makeTranslation(Vector3(0, 0, -0.5) + finalOffset),
+			Matrix::makeRotationY(Math::PI) * Matrix::makeTranslation(Vector3(0, 0, 0.5) + finalOffset),
+		};
+
+		int offsetV = 0;
+		int offsetI = 0;
+
+		for (int iFaceDir = 0; iFaceDir < 6; iFaceDir++) {
+			const Matrix& transform = faceTransforms[iFaceDir];
+
+			for (int i = 0; i < 48; i++) {
+				const auto& info = AutoTileTable[i];
+				int startIndex = offsetI;
+				Vector3 pysOffsets[4] = { { -0.5, +0.5, 0.0 }, { 0.0, +0.5, 0.0 }, { -0.5, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } };
+
+				// [top-left], [top-right], [bottom-left], [bottom-light]
+				for (int iCorner = 0; iCorner < 4; iCorner++) {
+					int index_tl = g_AutoTileSourcePosTable_TkoolXP[iCorner][info.subtiles[iCorner]];
+					//auto uv = Vector2(subTileUVSize.x * (index_tl % hc), subTileUVSize.y * (index_tl / hc));
+					auto uvRect = uvMapper.getUVRectFromLocalId(static_cast<MeshTileFaceDirection>(iFaceDir), i, static_cast<detail::SubtileCorner>(iCorner));
+					auto p1 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, 0, 0), transform);
+					auto p2 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, 0, 0), transform);
+					auto p3 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, -0.5, 0), transform);
+					auto p4 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, -0.5, 0), transform);
+					m_mesh->setVertex(offsetV + 0, Vertex{ p1, Vector3::UnitZ, uvRect.getTopLeft(), Color::White });
+					m_mesh->setVertex(offsetV + 1, Vertex{ p2, Vector3::UnitZ, uvRect.getTopRight(), Color::White });
+					m_mesh->setVertex(offsetV + 2, Vertex{ p3, Vector3::UnitZ, uvRect.getBottomLeft(), Color::White });
+					m_mesh->setVertex(offsetV + 3, Vertex{ p4, Vector3::UnitZ, uvRect.getBottomRight(), Color::White });
+					m_mesh->setIndex(offsetI + 0, offsetV + 0);
+					m_mesh->setIndex(offsetI + 1, offsetV + 1);
+					m_mesh->setIndex(offsetI + 2, offsetV + 2);
+					m_mesh->setIndex(offsetI + 3, offsetV + 2);
+					m_mesh->setIndex(offsetI + 4, offsetV + 1);
+					m_mesh->setIndex(offsetI + 5, offsetV + 3);
+					offsetV += 4;
+					offsetI += 6;
+				}
+
+				m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
+			}
+		}
+
+
+
+		m_material = Material::create(tex);
+	}
 }
 
 void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile) const
@@ -182,13 +243,13 @@ static int g_AutoTileSourcePosTable_MVFloor[4][6] =
 static int g_AutoTileSourcePosTable_MVWall[4][6] =
 {
 	// [top-left]
-	{ -1, 13 + 24, 2, 9 + 24, 12 + 24, 8 },
+	{ -1, 13 + 16, 24, 9 + 16, 12 + 16, 24 },
 	// [top-right]
-	{ -1, 14 + 24, 3, 10 + 24, 15 + 24, 11 + 24 },
+	{ -1, 14 + 16, 27 , 10 + 16, 15 + 16, 11 + 16 },
 	// [bottom-left]
-	{ -1, 17 + 24, 6, 21 + 24, 16 + 24, 20 + 24 },
+	{ -1, 17 + 16, 36, 21 + 16, 16 + 16, 20 + 16 },
 	// [bottom-light]
-	{ -1, 18 + 24, 7, 22 + 24, 19 + 24, 23 + 24 },
+	{ -1, 18 + 16, 39, 22 + 16, 19 + 16, 23 + 16 },
 };
 
 MeshAutoTilesetUVMapper::MeshAutoTilesetUVMapper(const Size& textureSize, const Rect& sourceRect, Format format)
@@ -211,10 +272,15 @@ Rect MeshAutoTilesetUVMapper::getUVRectFromLocalId(MeshTileFaceDirection directi
 	if (m_format == Format::MVWithWall) {
 		if (direction == MeshTileFaceDirection::YPlus || direction == MeshTileFaceDirection::YMinus) {
 			const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
-			int index_tl = g_AutoTileSourcePosTable_TkoolXP[corner][info.subtiles[corner]];
+			int index_tl = g_AutoTileSourcePosTable_MVFloor[corner][info.subtiles[corner]];
+			auto offset = Vector2(m_subtileUVSize.x * (index_tl % 4), m_subtileUVSize.y * (index_tl / 4));
+			return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 		}
 		else {
-
+			const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
+			int index_tl = g_AutoTileSourcePosTable_MVWall[corner][info.subtiles[corner]];
+			auto offset = Vector2(m_subtileUVSize.x * (index_tl % 4), m_subtileUVSize.y * (index_tl / 4));
+			return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 		}
 	}
 	else {
