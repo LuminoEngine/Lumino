@@ -8,7 +8,10 @@
 using namespace ln;
 
 #include <Lumino.hpp>
+
+#if TEST_DTL
 #include <DTL.hpp>
+#endif
 
 class App : public Application
 {
@@ -103,6 +106,7 @@ class App : public Application
 		//sp1->setAlignments(HAlignment::Left, VAlignment::Top);
 
 
+#if TEST_DTL
 		constexpr std::size_t matrix_size_x{ 20 };
 		constexpr std::size_t matrix_size_y{ 20 };
 		constexpr std::size_t dungeon_pixel_size{ 2 };
@@ -114,7 +118,8 @@ class App : public Application
 				if (matrix[row][col]) {
 					layer->putAutoTile(row, 1, col, 0);
 					layer->putAutoTile(row, 2, col, 0);
-				}
+				}i
+#endif
 
 	}
 

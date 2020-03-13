@@ -68,7 +68,7 @@ class MeshAutoTilesetUVMapper
 public:
 	enum class Format
 	{
-		//XP,
+		XP,
 		//MV,
 		MVWithWall,
 	};
