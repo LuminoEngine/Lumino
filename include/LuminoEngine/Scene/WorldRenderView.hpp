@@ -10,6 +10,8 @@ class World;
 class Camera;
 class RenderingContext;
 class StaticMeshModel;
+class MeshResource;
+class Material;
 class ImageEffect;
 namespace detail {
 class ImageEffectRenderer;
@@ -78,7 +80,8 @@ private:
     Ref<Material> m_clearMaterial;
 	Ref<StaticMeshModel> m_skyProjectionPlane;
 
-    Ref<StaticMeshModel> m_gridPlane;
+    Ref<MeshResource> m_gridPlaneMesh;
+    Ref<Material> m_gridPlaneMaterial;
     bool m_visibleGridPlane;
     bool m_physicsDebugDrawEnabled;
     bool m_gizmoEnabled;

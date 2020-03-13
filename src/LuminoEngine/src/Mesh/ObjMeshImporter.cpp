@@ -240,7 +240,11 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
             meshResource->addSection(section.startIndex, section.primitiveCount, section.materialIndex);
         }
 
+#if 1
+        LN_NOTIMPLEMENTED();
+#else
         meshContainer->setMeshResource(meshResource);
+#endif
 
         meshModel->addMeshContainer(meshContainer);
     }

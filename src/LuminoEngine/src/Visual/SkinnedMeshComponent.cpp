@@ -74,6 +74,9 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
 
 void SkinnedMeshComponent::onRender(RenderingContext* context)
 {
+#if 1
+	LN_NOTIMPLEMENTED();
+#else
     for (auto& meshContainer : m_model->meshContainers())
     {
         MeshResource* meshResource = meshContainer->meshResource();
@@ -83,6 +86,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
             context->drawMesh(meshResource, iSection);
         }
     }
+#endif
 }
 
 } // namespace ln

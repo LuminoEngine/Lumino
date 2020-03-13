@@ -37,6 +37,7 @@ StaticMeshModel* StaticMeshComponent::model() const
 
 void StaticMeshComponent::onRender(RenderingContext* context)
 {
+#if 0
     const auto& containers = m_model->meshContainers();
     for (int iContainer = 0; iContainer < containers.size(); iContainer++)
     {
@@ -59,6 +60,7 @@ void StaticMeshComponent::onRender(RenderingContext* context)
         //    }
         //}
     }
+#endif
 
 
     for (const auto& node : m_model->meshNodes()) {

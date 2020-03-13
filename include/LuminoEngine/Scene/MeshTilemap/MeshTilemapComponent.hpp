@@ -13,6 +13,9 @@ public:
     MeshTilemapModel* model() const;
     void setModel(MeshTilemapModel* value);
 
+protected:
+    virtual void onRender(RenderingContext* context) override;
+
 LN_CONSTRUCT_ACCESS:
     MeshTilemapComponent();
 	void init();

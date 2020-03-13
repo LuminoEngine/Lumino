@@ -77,7 +77,7 @@ void WorldRenderView::init()
 		buffer.setBuffer((Vertex*)vb, ib, fmt, 0);
 		buffer.generate(&gen);
 
-
+#if 0
 		auto meshContainer = makeObject<MeshContainer>();
 		meshContainer->setMeshResource(meshResource);
 
@@ -85,7 +85,8 @@ void WorldRenderView::init()
 		m_skyProjectionPlane->addMeshContainer(meshContainer);
 
 		m_skyProjectionPlane->addMaterial(m_clearMaterial);
-	}
+#endif
+    }
 
 	m_internalSkyBox = makeObject<detail::InternalSkyBox>();
 
@@ -325,7 +326,11 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 renderingContext->setDepthWriteEnabled(false);
                 renderingContext->setMaterial(m_clearMaterial);
                 //renderingContext->drawScreenRectangle();
+#if 1
+                LN_NOTIMPLEMENTED();
+#else
 				renderingContext->drawMesh(m_skyProjectionPlane->meshContainers()[0]->meshResource(), 0);
+#endif
                 renderingContext->popState();
 			}
 
@@ -378,22 +383,22 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 void WorldRenderView::createGridPlane()
 {
     // 適当な四角形メッシュ
-    auto meshResource = makeObject<MeshResource>();
-    meshResource->resizeVertexBuffer(4);
-    meshResource->resizeIndexBuffer(6);
-    meshResource->setIndex(0, 0);
-    meshResource->setIndex(1, 1);
-    meshResource->setIndex(2, 2);
-    meshResource->setIndex(3, 2);
-    meshResource->setIndex(4, 1);
-    meshResource->setIndex(5, 3);
-    meshResource->addSection(0, 2, 0);
+    m_gridPlaneMesh = makeObject<MeshResource>();
+    m_gridPlaneMesh->resizeVertexBuffer(4);
+    m_gridPlaneMesh->resizeIndexBuffer(6);
+    m_gridPlaneMesh->setIndex(0, 0);
+    m_gridPlaneMesh->setIndex(1, 1);
+    m_gridPlaneMesh->setIndex(2, 2);
+    m_gridPlaneMesh->setIndex(3, 2);
+    m_gridPlaneMesh->setIndex(4, 1);
+    m_gridPlaneMesh->setIndex(5, 3);
+    m_gridPlaneMesh->addSection(0, 2, 0);
 
-    auto meshContainer = makeObject<MeshContainer>();
-    meshContainer->setMeshResource(meshResource);
+    //auto meshContainer = makeObject<MeshContainer>();
+    //meshContainer->setMeshResource(meshResource);
 
-    m_gridPlane = makeObject<StaticMeshModel>();
-    m_gridPlane->addMeshContainer(meshContainer);
+    //m_gridPlane = makeObject<StaticMeshModel>();
+    //m_gridPlane->addMeshContainer(meshContainer);
 
 #if 1
 	static const unsigned char data[] =
@@ -406,9 +411,9 @@ void WorldRenderView::createGridPlane()
 #else
     auto shader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 #endif
-    auto material = makeObject<Material>();
-    material->setShader(shader);
-    m_gridPlane->addMaterial(material);
+    m_gridPlaneMaterial = makeObject<Material>();
+    m_gridPlaneMaterial->setShader(shader);
+    //m_gridPlane->addMaterial(material);
 
     // 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
     SizeI gridTexSize(512, 512);
@@ -426,9 +431,9 @@ void WorldRenderView::createGridPlane()
         gridTex->setPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
     }
     //gridTex->clear(Color::Green);
-    material->setMainTexture(gridTex);
-    material->setBlendMode(BlendMode::Alpha);
-    material->setDepthWriteEnabled(false);
+    m_gridPlaneMaterial->setMainTexture(gridTex);
+    m_gridPlaneMaterial->setBlendMode(BlendMode::Alpha);
+    m_gridPlaneMaterial->setDepthWriteEnabled(false);
 
     auto samplerState = makeObject<SamplerState>();
     samplerState->setFilterMode(TextureFilterMode::Linear);
@@ -455,8 +460,8 @@ void WorldRenderView::renderGridPlane(RenderingContext* renderingContext, Render
         renderingContext->setRenderPhase(RenderPhaseClass::Gizmo);
         //renderingContext->setBlendMode(BlendMode::Alpha);
         //renderingContext->setDepthWriteEnabled(false);
-        renderingContext->setMaterial(m_gridPlane->materials()[0]);
-        renderingContext->drawMesh(m_gridPlane->meshContainers()[0]->meshResource(), 0);
+        renderingContext->setMaterial(m_gridPlaneMaterial);
+        renderingContext->drawMesh(m_gridPlaneMesh, 0);
         //renderingContext->setRenderPhase(RenderPhaseClass::Default);
 
 		renderingContext->setMaterial(nullptr);
@@ -533,11 +538,10 @@ void WorldRenderView::adjustGridPlane(const ViewFrustum& viewFrustum, RenderView
             maxPos = Vector3::max(p, maxPos);
         }
 
-        MeshResource* mesh = m_gridPlane->meshContainers().front()->meshResource();
-        mesh->setVertex(0, Vertex{ Vector3(minPos.x, 0, maxPos.z), Vector3::UnitY, Vector2(-1.0f, 1.0f), Color::White });
-        mesh->setVertex(1, Vertex{ Vector3(maxPos.x, 0, maxPos.z), Vector3::UnitY, Vector2(1.0f, 1.0f), Color::White });
-        mesh->setVertex(2, Vertex{ Vector3(minPos.x, 0, minPos.z), Vector3::UnitY, Vector2(-1.0f, -1.0f), Color::White });
-        mesh->setVertex(3, Vertex{ Vector3(maxPos.x, 0, minPos.z), Vector3::UnitY, Vector2(1.0f, -1.0f), Color::White });
+        m_gridPlaneMesh->setVertex(0, Vertex{ Vector3(minPos.x, 0, maxPos.z), Vector3::UnitY, Vector2(-1.0f, 1.0f), Color::White });
+        m_gridPlaneMesh->setVertex(1, Vertex{ Vector3(maxPos.x, 0, maxPos.z), Vector3::UnitY, Vector2(1.0f, 1.0f), Color::White });
+        m_gridPlaneMesh->setVertex(2, Vertex{ Vector3(minPos.x, 0, minPos.z), Vector3::UnitY, Vector2(-1.0f, -1.0f), Color::White });
+        m_gridPlaneMesh->setVertex(3, Vertex{ Vector3(maxPos.x, 0, minPos.z), Vector3::UnitY, Vector2(1.0f, -1.0f), Color::White });
 
         //mesh->setVertex(0, Vertex{ Vector3(-1, 1, 1), Vector3::UnitY, Vector2(-1.0f, 1.0f), Color::White });
         //mesh->setVertex(1, Vertex{ Vector3(1, 1, 1), Vector3::UnitY, Vector2(1.0f, 1.0f), Color::White });

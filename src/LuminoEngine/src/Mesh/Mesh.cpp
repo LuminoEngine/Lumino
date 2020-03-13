@@ -342,7 +342,6 @@ Mesh::~Mesh()
 void Mesh::init()
 {
 	Object::init();
-	m_vertexLayout = makeObject<VertexLayout>();
 }
 
 void Mesh::init(int vertexCount, int indexCount)
@@ -350,294 +349,126 @@ void Mesh::init(int vertexCount, int indexCount)
 	init();
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
+	m_indexFormat = detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount);
 }
 
-template<class T>
-void flipFaceIndex_Triangle(T* indices, int count)
-{
-    int c = count / 3;
-    for (int i = 0; i < c; i++) {
-        std::swap(indices[(i * 3) + 1], indices[(i * 3) + 2]);
-    }
-}
-
-void Mesh::init(const MeshView& meshView)
+void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat)
 {
 	init();
+	m_vertexCount = vertexCount;
+	m_indexCount = indexCount;
+	m_indexFormat = indexFormat;
+}
 
-    // Validation and count vertices
-	m_vertexCount = 0;
-	for (auto& section : meshView.sectionViews) {
-		int count = section.vertexBufferViews[0].count;
-		for (size_t i = 0; i < section.vertexBufferViews.size(); i++) {
-            auto& view = section.vertexBufferViews[i];
-			if (count != view.count) {
-				// ひとつの section 内ではすべての頂点数が一致していることが前提
-				LN_ERROR();
-				return;
-			}
+void Mesh::setVertex(int index, const Vertex& value)
+{
+	if (LN_REQUIRE(0 <= index && index < m_vertexCount)) return;
+	reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main))[index] = value;
+}
 
-			//if (getStandardElement(view.usage, view.usageIndex) != detail::MeshStandardVB_None) {
-			//	// standard
-			//}
-			//else {
-			//	// extra
-			//	auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == view.usage && x.usageIndex == view.usageIndex; });
-			//	if (!r) {
-			//		m_extraVertexBuffers.add({ view.type, view.usage, view.usageIndex, nullptr });
-			//	}
-			//}
+const Vertex& Mesh::vertex(int index)
+{
+	if (LN_REQUIRE(0 <= index && index < m_vertexCount)) return Vertex::Default;
+	return reinterpret_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main))[index];
+}
 
-		}
-		m_vertexCount += count;
+void Mesh::setIndex(int index, int value)
+{
+	if (LN_REQUIRE(0 <= index && index < m_indexCount)) return;
+	
+	switch (m_indexFormat)
+	{
+	case IndexBufferFormat::UInt16:
+		reinterpret_cast<uint16_t*>(acquireMappedIndexBuffer())[index] = value;
+		break;
+	case IndexBufferFormat::UInt32:
+		reinterpret_cast<uint32_t*>(acquireMappedIndexBuffer())[index] = value;
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
 	}
+}
 
-    // Allocate vertex buffers
-    //for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
-    //    auto& attr = m_extraVertexBuffers[i];
-    //    attr.buffer = makeObject<VertexBuffer>(vertexCount * GraphicsHelper::getVertexElementTypeSize(attr.type), GraphicsResourceUsage::Static);
-    //}
+int Mesh::index(int index)
+{
+	if (LN_REQUIRE(0 <= index && index < m_indexCount)) return 0;
 
-    int vertexOffset = 0;
-    for (auto& section : meshView.sectionViews) {
-        int vertexCountInSection = section.vertexBufferViews[0].count;
+	switch (m_indexFormat)
+	{
+	case IndexBufferFormat::UInt16:
+		return reinterpret_cast<uint16_t*>(acquireMappedIndexBuffer())[index];
+	case IndexBufferFormat::UInt32:
+		return reinterpret_cast<uint32_t*>(acquireMappedIndexBuffer())[index];
+	default:
+		LN_UNREACHABLE();
+		return 0;
+	}
+}
 
-        for (auto& vbView : section.vertexBufferViews) {
-
-			VertexBuffer* vertexBuffer = acquireVertexBuffer(vbView.type, vbView.usage, vbView.usageIndex);
-            auto* rawbuf = static_cast<byte_t*>(vertexBuffer->map(MapMode::Write));
-            auto* src = static_cast<const byte_t*>(vbView.data);// +vbView.byteOffset;
-
-			int offset = 0;
-			int stride = 0;
-
-			if (vertexBuffer == m_mainVertexBuffer) {
-				stride = sizeof(Vertex);
-				if (vbView.usage == VertexElementUsage::Position) offset = LN_MEMBER_OFFSETOF(Vertex, position);
-				else if (vbView.usage == VertexElementUsage::Normal) offset = LN_MEMBER_OFFSETOF(Vertex, normal);
-				else if (vbView.usage == VertexElementUsage::TexCoord) offset = LN_MEMBER_OFFSETOF(Vertex, uv);
-				else if (vbView.usage == VertexElementUsage::Color) offset = LN_MEMBER_OFFSETOF(Vertex, color);
-				else {
-					LN_ERROR();
-				}
-			}
-			else if (vertexBuffer == m_tangentsVertexBuffer) {
-				stride = sizeof(VertexTangents);
-				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexTangents, tangent);
-				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexTangents, binormal);
-				else {
-					LN_ERROR();
-				}
-			}
-			else if (vertexBuffer == m_skinningVertexBuffer) {
-				stride = sizeof(VertexBlendWeight);
-				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
-				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
-				else {
-					LN_ERROR();
-				}
-			}
-			else {
-				stride = GraphicsHelper::getVertexElementTypeSize(vbView.type);
-				//int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
-				//for (int i = 0; i < vertexCountInSection; i++) {
-				//	memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
-				//	//memcpy(&buf[(vertexOffset + i) * size], src + (vbView.byteStride * i), size);
-				//}
-			}
-
-			int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
-			for (int i = 0; i < vertexCountInSection; i++) {
-				memcpy(&rawbuf[((vertexOffset + i) * stride) + offset], src + (vbView.byteStride * i), size);
-			}
-
-
-
-
-			// Flip Z (RH to LH)
-            if (vertexBuffer == m_mainVertexBuffer && vbView.usage == VertexElementUsage::Position) {
-                if (vbView.type == VertexElementType::Float3) {
-                    auto* p = reinterpret_cast<Vertex*>(rawbuf);
-                    for (int i = 0; i < vertexCountInSection; i++) {
-                        p[i].position.z *= -1.0f;
-                    }
-                }
-                else {
-                    LN_NOTIMPLEMENTED();
-                    return;
-                }
-            }
-            else if (vertexBuffer == m_mainVertexBuffer && vbView.usage == VertexElementUsage::Normal) {
-                if (vbView.type == VertexElementType::Float3) {
-                    auto* p = reinterpret_cast<Vertex*>(rawbuf);
-                    for (int i = 0; i < vertexCountInSection; i++) {
-                        p[i].normal.z *= -1.0f;
-                    }
-                }
-                else {
-                    LN_NOTIMPLEMENTED();
-                    return;
-                }
-            }
-
-            // TODO: unmap 無いとめんどい以前に怖い
-        }
-
-        vertexOffset += vertexCountInSection;
-    }
-
-   // // 
-   // {
-   //     auto r = m_vertexBuffers.findIf([&](auto& x) { return x.usage == VertexElementUsage::Color; });
-   //     if (!r) {
-   //         VertexBufferAttribute attr;
-   //         attr.type = VertexElementType::Float4;
-   //         attr.usage = VertexElementUsage::Color;
-   //         attr.usageIndex = 0;
-   //         attr.buffer = makeObject<VertexBuffer>(1 * sizeof(Vector4), GraphicsResourceUsage::Static);
-			//attr.buffer->m_zeroStride = true;
-   //         m_vertexBuffers.add(attr);
-   //         
-   //         auto* buf = static_cast<Vector4*>(attr.buffer->map(MapMode::Write));
-   //         for (int i = 0; i < vertexCount; i++) {
-   //             buf[i] = Vector4(1, 1, 1, 1);
-   //         }
-   //     }
-   // }
-
-    //VertexBufferAttribute posa = m_vertexBuffers[1];
-    //m_vertexBuffers.removeAt(1);
-    //m_vertexBuffers.insert(0, posa);
-
-
-    //for (int i = 0; i < m_vertexBuffers.size(); i++) {
-    //    auto& attr = m_vertexBuffers[i];
-    //    m_vertexLayout->addElement(i, attr.type, attr.usage, attr.usageIndex);
-    //}
-
-
-	// Vertex layout
-	resetVertexLayout();
-
-    // Index buffer.
-    //   Lumino の MeshSection は glTF の Primitive と対応させているが、glTF の Primitive は様々な Index buffer を参照することができる。
-    //   MeshSection で扱うにはそれらすべてをひとつの Index buffer に統合する必要がある。
-    {
-        // 全ての index buffer を調べて、一番大きい Format でバッファ確保
-        int indexElementSize = 0;
-        int indexCount = 0;
-        for (auto& section : meshView.sectionViews) {
-            indexElementSize = std::max(indexElementSize, section.indexElementSize);
-            indexCount += section.indexCount;
-        }
-        if (indexElementSize == 1 || indexElementSize == 2) {
-            m_indexBuffer = makeObject<IndexBuffer>(indexCount, IndexBufferFormat::UInt16, GraphicsResourceUsage::Static);
-            indexElementSize = 2;
-        }
-        else if (indexElementSize == 4) {
-            m_indexBuffer = makeObject<IndexBuffer>(indexCount, IndexBufferFormat::UInt32, GraphicsResourceUsage::Static);
-        }
-        else {
-            LN_NOTIMPLEMENTED();
-        }
-
-        void* buf = m_indexBuffer->map(MapMode::Write);
-
-        int beginVertexIndex = 0;
-        int indexOffset = 0;
-        for (auto& section : meshView.sectionViews) {
-            int vertexCountInSection = section.vertexBufferViews[0].count;
-
-            if (indexElementSize == 2) {
-                if (section.indexElementSize == 1) {
-                    auto* b = static_cast<uint16_t*>(buf) + indexOffset;
-                    auto* s = static_cast<const uint8_t*>(section.indexData);
-                    for (int i = 0; i < section.indexCount; i++) {
-                        b[i] = beginVertexIndex + s[i];
-                        assert(b[i] < m_vertexCount);
-                    }
-                    flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
-                }
-                else if (section.indexElementSize == 2) {
-                    auto* b = static_cast<uint16_t*>(buf) + indexOffset;
-                    auto* s = static_cast<const uint16_t*>(section.indexData);
-                    for (int i = 0; i < section.indexCount; i++) {
-                        b[i] = beginVertexIndex + s[i];
-                        assert(b[i] < m_vertexCount);
-                    }
-                    flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
-                }
-                else if (section.indexElementSize == 4) {
-                }
-                else {
-                    LN_NOTIMPLEMENTED();
-                }
-            }
-            else if (indexElementSize == 4) {
-                if (section.indexElementSize == 4) {
-                    auto* b = static_cast<uint32_t*>(buf) + indexOffset;
-                    auto* s = static_cast<const uint32_t*>(section.indexData);
-                    for (int i = 0; i < section.indexCount; i++) {
-                        b[i] = beginVertexIndex + s[i];
-                        assert(b[i] < m_vertexCount);
-                    }
-                    flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
-                }
-                else {
-                    LN_NOTIMPLEMENTED();
-                }
-            }
-            else {
-                LN_NOTIMPLEMENTED();
-            }
-
-            assert(section.topology == PrimitiveTopology::TriangleList);
-
-            // make mesh section
-            MeshSection2 meshSection;
-            meshSection.startIndex = indexOffset;
-            meshSection.primitiveCount = section.indexCount / 3;    // TODO: tri only
-            meshSection.materialIndex = section.materialIndex;
-            meshSection.topology = section.topology;
-            m_sections.add(meshSection);
-
-            // next
-            indexOffset += section.indexCount;
-            beginVertexIndex += vertexCountInSection;
-        }
-
-        // TODO: unmap 無いとめんどい以前に怖い
-
-    }
-    
-
+void Mesh::addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
+{
+	MeshSection2 meshSection;
+	meshSection.startIndex = startIndex;
+	meshSection.primitiveCount = primitiveCount;
+	meshSection.materialIndex = materialIndex;
+	meshSection.topology = topology;
+	m_sections.add(meshSection);
 }
 
 void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
 {
+	// unmap
+	{
+		if (m_mainVertexBuffer.mappedBuffer) {
+			m_mainVertexBuffer.buffer->unmap();
+			m_mainVertexBuffer.mappedBuffer = nullptr;
+		}
+		if (m_tangentsVertexBuffer.mappedBuffer) {
+			m_tangentsVertexBuffer.buffer->unmap();
+			m_tangentsVertexBuffer.mappedBuffer = nullptr;
+		}
+		if (m_skinningVertexBuffer.mappedBuffer) {
+			m_skinningVertexBuffer.buffer->unmap();
+			m_skinningVertexBuffer.mappedBuffer = nullptr;
+		}
+		for (auto& v : m_extraVertexBuffers) {
+			if (v.entry.mappedBuffer) {
+				v.entry.buffer->unmap();
+				v.entry.mappedBuffer = nullptr;
+			}
+		}
+		if (m_indexBuffer.mappedBuffer) {
+			m_indexBuffer.buffer->unmap();
+			m_indexBuffer.mappedBuffer = nullptr;
+		}
+	}
+
+	attemptResetVertexLayout();
+
     *outSection = m_sections[sectionIndex];
     *outDecl = m_vertexLayout;
-    *outIB = m_indexBuffer;
+    *outIB = m_indexBuffer.buffer;
 
 	int count = 0;
 
-	if (m_mainVertexBuffer) {
-		(*outVBs)[count] = m_mainVertexBuffer;
+	if (m_mainVertexBuffer.buffer) {
+		(*outVBs)[count] = m_mainVertexBuffer.buffer;
 		count++;
 	}
 
-	if (m_tangentsVertexBuffer) {
-		(*outVBs)[count] = m_tangentsVertexBuffer;
+	if (m_tangentsVertexBuffer.buffer) {
+		(*outVBs)[count] = m_tangentsVertexBuffer.buffer;
 		count++;
 	}
 
-	if (m_skinningVertexBuffer) {
-		(*outVBs)[count] = m_skinningVertexBuffer;
+	if (m_skinningVertexBuffer.buffer) {
+		(*outVBs)[count] = m_skinningVertexBuffer.buffer;
 		count++;
 	}
 
     for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
-        (*outVBs)[count] = m_extraVertexBuffers[i].buffer;
+        (*outVBs)[count] = m_extraVertexBuffers[i].entry.buffer;
 		count++;
     }
 
@@ -665,7 +496,65 @@ InterleavedVertexGroup Mesh::getStandardElement(VertexElementUsage usage, int us
 	return InterleavedVertexGroup::Undefined;
 }
 
-VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex)
+void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
+{
+	switch (group)
+	{
+	case InterleavedVertexGroup::Undefined:
+	{
+		LN_UNREACHABLE();
+		return nullptr;
+	}
+	case InterleavedVertexGroup::Main:
+		if (!m_mainVertexBuffer.buffer) {
+			m_mainVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, GraphicsResourceUsage::Static);
+
+			// set default
+			auto* buf = static_cast<Vertex*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
+			for (int i = 0; i < m_vertexCount; i++) {
+				buf[i].normal = Vector3(0, 0, 1);
+				buf[i].color = Color::White;
+			}
+		}
+
+		if (!m_mainVertexBuffer.mappedBuffer) {
+			m_mainVertexBuffer.mappedBuffer = m_mainVertexBuffer.buffer->map(MapMode::Write);
+		}
+		return m_mainVertexBuffer.mappedBuffer;
+
+	case InterleavedVertexGroup::Tangents:
+		if (!m_tangentsVertexBuffer.buffer) {
+			m_tangentsVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, GraphicsResourceUsage::Static);
+
+			// set default
+			auto* buf = static_cast<VertexTangents*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
+			for (int i = 0; i < m_vertexCount; i++) {
+				buf[i] = VertexTangents::Default;
+			}
+		}
+
+		if (!m_tangentsVertexBuffer.mappedBuffer) {
+			m_tangentsVertexBuffer.mappedBuffer = m_tangentsVertexBuffer.buffer->map(MapMode::Write);
+		}
+		return m_tangentsVertexBuffer.mappedBuffer;
+
+	case InterleavedVertexGroup::Skinning:
+		if (!m_skinningVertexBuffer.buffer) {
+			m_skinningVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, GraphicsResourceUsage::Static);
+		}
+
+		if (!m_skinningVertexBuffer.mappedBuffer) {
+			m_skinningVertexBuffer.mappedBuffer = m_skinningVertexBuffer.buffer->map(MapMode::Write);
+		}
+		return m_skinningVertexBuffer.mappedBuffer;
+
+	default:
+		LN_UNREACHABLE();
+		return nullptr;
+	}
+}
+
+void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
 	auto group = getStandardElement(usage, usageIndex);
 	if (group == InterleavedVertexGroup::Undefined) {
@@ -677,102 +566,73 @@ VertexBuffer* Mesh::acquireVertexBuffer(VertexElementType type, VertexElementUsa
 				return nullptr;
 			}
 			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, GraphicsResourceUsage::Static);
-			m_extraVertexBuffers.add({ type, usage, usageIndex, vb });
-			return vb;
+			
+			VertexBufferEntry entry;
+			entry.buffer = vb;
+			entry.mappedBuffer = vb->map(MapMode::Write);
+
+			m_extraVertexBuffers.add({ type, usage, usageIndex, entry });
+			m_vertexLayout = nullptr;	// dirty layout
+
+			return entry.mappedBuffer;
 		}
 		else {
-			return r->buffer;
+			if (!r->entry.mappedBuffer) {
+				r->entry.mappedBuffer = r->entry.buffer->map(MapMode::Write);
+			}
+			return r->entry.mappedBuffer;
 		}
 	}
 	else {
-		return acquireVertexBuffer(group);
+		return acquireMappedVertexBuffer(group);
 	}
 }
 
-VertexBuffer* Mesh::acquireVertexBuffer(InterleavedVertexGroup group)
+void* Mesh::acquireMappedIndexBuffer()
 {
-	switch (group)
-	{
-		case InterleavedVertexGroup::Undefined:
-		{
-			LN_UNREACHABLE();
-			return nullptr;
+	if (!m_indexBuffer.buffer) {
+		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, GraphicsResourceUsage::Static);
+	}
+
+	if (!m_indexBuffer.mappedBuffer) {
+		m_indexBuffer.mappedBuffer = m_indexBuffer.buffer->map(MapMode::Write);
+	}
+
+	return m_indexBuffer.mappedBuffer;
+}
+
+void Mesh::attemptResetVertexLayout()
+{
+	if (!m_vertexLayout) {
+		m_vertexLayout = makeObject<VertexLayout>();
+
+		int count = 0;
+
+		if (m_mainVertexBuffer.buffer) {
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Position, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Normal, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::Color, 0);
+			count++;
 		}
-		case InterleavedVertexGroup::Main:
-			if (!m_mainVertexBuffer) {
-				m_mainVertexBuffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, GraphicsResourceUsage::Static);
 
-				// set default
-				auto* buf = static_cast<Vertex*>(m_mainVertexBuffer->map(MapMode::Write));
-				for (int i = 0; i < m_vertexCount; i++) {
-					buf[i].normal = Vector3(0, 0, 1);
-					buf[i].color = Color::White;
-				}
-			}
-			return m_mainVertexBuffer;
+		if (m_tangentsVertexBuffer.buffer) {
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
+			count++;
+		}
 
-		case InterleavedVertexGroup::Tangents:
-			if (!m_tangentsVertexBuffer) {
-				m_tangentsVertexBuffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, GraphicsResourceUsage::Static);
+		if (m_skinningVertexBuffer.buffer) {
+			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendWeight, 0);
+			m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
+			count++;
+		}
 
-				// set default
-				auto* buf = static_cast<VertexTangents*>(m_mainVertexBuffer->map(MapMode::Write));
-				for (int i = 0; i < m_vertexCount; i++) {
-					buf[i] = VertexTangents::Default;
-				}
-			}
-			return m_tangentsVertexBuffer;
-
-		case InterleavedVertexGroup::Skinning:
-			if (!m_skinningVertexBuffer) {
-				m_skinningVertexBuffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, GraphicsResourceUsage::Static);
-			}
-			return m_skinningVertexBuffer;
-
-		default:
-			LN_UNREACHABLE();
-			return nullptr;
-	}
-}
-
-IndexBuffer* Mesh::acquireIndexBuffer()
-{
-	if (!m_indexBuffer) {
-		m_indexBuffer = makeObject<IndexBuffer>(m_indexCount, GraphicsResourceUsage::Static);
-	}
-	return m_indexBuffer;
-}
-
-void Mesh::resetVertexLayout()
-{
-	m_vertexLayout = makeObject<VertexLayout>();
-
-	int count = 0;
-
-	if (m_mainVertexBuffer) {
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Position, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Normal, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::Color, 0);
-		count++;
-	}
-
-	if (m_tangentsVertexBuffer) {
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
-		count++;
-	}
-
-	if (m_skinningVertexBuffer) {
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendWeight, 0);
-		m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendIndices, 0);
-		count++;
-	}
-
-	for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
-		const auto& attr = m_extraVertexBuffers[i];
-		m_vertexLayout->addElement(count, attr.type, attr.usage, attr.usageIndex);
-		count++;
+		for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
+			const auto& attr = m_extraVertexBuffers[i];
+			m_vertexLayout->addElement(count, attr.type, attr.usage, attr.usageIndex);
+			count++;
+		}
 	}
 }
 
@@ -781,7 +641,7 @@ void Mesh::resetVertexLayout()
 
 MeshContainer::MeshContainer()
 	: m_name()
-	, m_lodResources()
+	//, m_lodResources()
 {
     m_lodMesh.resize(1);
 }
@@ -793,29 +653,32 @@ MeshContainer::~MeshContainer()
 void MeshContainer::init()
 {
 	Object::init();
-	m_lodResources.resize(1);
+	//m_lodResources.resize(1);
 }
-
-void MeshContainer::setMeshResource(MeshResource* mesh)
-{
-    if (LN_REQUIRE(!mesh->m_ownerContainer)) return;
-    m_lodResources[0] = mesh;
-    mesh->m_ownerContainer = this;
-}
-
-MeshResource* MeshContainer::meshResource() const
-{
-	return m_lodResources[0];
-}
-
-MeshResource* MeshContainer::selectLODResource(float distance) const
-{
-	// TODO:
-	return m_lodResources[0];
-}
-
+//
+//void MeshContainer::setMeshResource(MeshResource* mesh)
+//{
+//    if (LN_REQUIRE(!mesh->m_ownerContainer)) return;
+//    m_lodResources[0] = mesh;
+//    mesh->m_ownerContainer = this;
+//}
+//
+//MeshResource* MeshContainer::meshResource() const
+//{
+//	return m_lodResources[0];
+//}
+//
+//MeshResource* MeshContainer::selectLODResource(float distance) const
+//{
+//	// TODO:
+//	return m_lodResources[0];
+//}
+//
 void MeshContainer::calculateBounds()
 {
+#if 1
+	m_boundingBox = Box();
+#else
 	MeshResource* mesh = meshResource();
 	if (mesh)
 	{
@@ -860,6 +723,7 @@ void MeshContainer::calculateBounds()
 	{
 		m_boundingBox = Box();
 	}
+#endif
 }
 
 void MeshContainer::setMesh(Mesh* mesh)

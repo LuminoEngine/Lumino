@@ -156,88 +156,107 @@ struct MeshSection2
 };
 
 // LOD
+// 方針：サイズは固定。内容は変更可。
+/*
+	頂点レイアウトは次のようになっている。
+		Stream.0:
+			Float3 Position.0
+			Float3 Normal.0
+			Float2 TexCoord.0
+			Float4 Color.0
+		Stream.1:
+			Float3 Tangent.0
+			Float3 Binormal.0
+		Stream.2:
+			Float3 BlendWeight.0
+			Float4 BlendIndices.0
+		Stream.X:
+			...
+
+	Stream 0, 1, 2 は予約済み。
+	0 は必須。
+	1, 2 は要求された場合のみ作られる。
+
+	3~ はユーザー定義できる。
+	今は主に glTF 形式のモデルを読むときのカスタムフォーマットのために用意されている。
+*/
 class Mesh
 	: public Object
 {
 public:
-	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。
-	struct VertexBufferView
-	{
-		VertexElementType type;
-		VertexElementUsage usage;
-		int usageIndex;
-		const void* data;
-		//size_t byteOffset;
-		size_t count;	// vertex count. not byte size. (byte size = count * size(type))
-		size_t byteStride;
-	};
+	/** 頂点の数を取得します。 */
+	int vertexCount() const { return m_vertexCount; }
 
-	// ファイルからのデータ読み込み用
-	struct SectionView
-	{
-		std::vector<VertexBufferView> vertexBufferViews;
-        //int indexOffset;    // (unit: index number. not byte size)
-        //int indexCount;     // (unit: index number. not byte size)
+	/** インデックスの数を取得します。 */
+	int indexCount() const { return m_indexCount; }
 
-        const void* indexData;  // このセクション内で 0 から始まるインデックス
-        int indexElementSize;	// byte size. (1, 2, 4)
-        size_t indexCount;
+	/** 頂点を設定します。 */
+	void setVertex(int index, const Vertex& value);
 
-        int materialIndex;
+	/** 頂点を取得します。 */
+	const Vertex& vertex(int index);
 
-		PrimitiveTopology topology;
-	};
+	/** インデックス値を設定します。 */
+	void setIndex(int index, int value);
 
-    struct MeshView
-    {
-        std::vector<SectionView> sectionViews;
-    };
+	/** インデックス値を取得します。 */
+	int index(int index);
 
-	///** 頂点の数を変更します。 */
-	//void resizeVertexBuffer(int vertexCount);
-
-	///** インデックスの数を変更します。 */
-	//void resizeIndexBuffer(int indexCount);
 
 	/** セクションの情報を追加します。 */
-	void addSection(int startIndex, int primitiveCount, int materialIndex);
+	void addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
 
 	// TODO: internal
 	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
     const List<MeshSection2>& sections() const { return m_sections; }
+
+	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
+	void* acquireMappedVertexBuffer(InterleavedVertexGroup group);
+	void* acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
+	void* acquireMappedIndexBuffer();
+	IndexBufferFormat indexBufferFormat() const { return m_indexFormat; }
 
 LN_CONSTRUCT_ACCESS:
 	Mesh();
 	virtual ~Mesh();
 	void init();
 	void init(int vertexCount, int indexCount);
-	void init(const MeshView& meshView);
+	void init(int vertexCount, int indexCount, IndexBufferFormat indexFormat);
 
 private:
-	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
-	VertexBuffer* acquireVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
-	VertexBuffer* acquireVertexBuffer(InterleavedVertexGroup group);
-	IndexBuffer* acquireIndexBuffer();
-	void resetVertexLayout();
+	void attemptResetVertexLayout();
+
+	struct VertexBufferEntry
+	{
+		Ref<VertexBuffer> buffer;
+		void* mappedBuffer = nullptr;
+	};
+
+	struct IndexBufferEntry
+	{
+		Ref<IndexBuffer> buffer;
+		void* mappedBuffer = nullptr;
+	};
 
 	struct VertexBufferAttribute
 	{
         VertexElementType type;
 		VertexElementUsage usage;
         int usageIndex;
-		Ref<VertexBuffer> buffer;
+		VertexBufferEntry entry;
 	};
 
-	Ref<VertexBuffer> m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
-	Ref<VertexBuffer> m_tangentsVertexBuffer;	// Tangent0, BiNormal0
-	Ref<VertexBuffer> m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
+	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
+	VertexBufferEntry m_tangentsVertexBuffer;	// Tangent0, BiNormal0
+	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
 	List<VertexBufferAttribute> m_extraVertexBuffers;
-	Ref<IndexBuffer> m_indexBuffer;
+	IndexBufferEntry m_indexBuffer;
     Ref<VertexLayout> m_vertexLayout;
 	List<MeshSection2> m_sections;
 
 	int m_vertexCount;
 	int m_indexCount;
+	IndexBufferFormat m_indexFormat;
 
 	friend class MeshGeometryBuilder;
 };
@@ -255,19 +274,19 @@ public:
 	/** 名前を設定します。 */
 	void setName(const StringRef& name) { m_name = name; }
 
-	/** メインの MeshResource を設定します。 */
-	void setMeshResource(MeshResource* mesh);
+	///** メインの MeshResource を設定します。 */
+	//void setMeshResource(MeshResource* mesh);
 
-	/** メインの MeshResource を取得します。 */
-	MeshResource* meshResource() const;
+	///** メインの MeshResource を取得します。 */
+	//MeshResource* meshResource() const;
 
-    void addMeshResource(MeshResource* mesh);
+ //   void addMeshResource(MeshResource* mesh);
 
 	/** メッシュの境界ボックスを取得します。 */
 	const Box& bounds() const { return m_boundingBox; }
 
 	// TODO: internal
-	MeshResource* selectLODResource(float distance) const;
+	//MeshResource* selectLODResource(float distance) const;
 
 	void calculateBounds();
 
@@ -286,7 +305,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	ln::String m_name;
 	Box m_boundingBox;
-	List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
+	//List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
     List<Ref<Mesh>> m_lodMesh;
 
 	friend class StaticMeshModel;
