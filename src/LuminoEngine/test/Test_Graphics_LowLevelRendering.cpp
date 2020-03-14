@@ -1310,3 +1310,55 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
     }
 }
 
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Graphics_LowLevelRendering, Instancing)
+{
+	struct InstanceData
+	{
+		Vector4 Pos;
+		Vector4 InstanceColor;
+	};
+
+	auto shader1 = Shader::create(LN_ASSETFILE("Graphics/Instancing.vsh"), LN_ASSETFILE("Graphics/Instancing.psh"));
+
+	Vector4 v[] = {
+		Vector4(-1, 1, 0, 1),
+		Vector4(0, 1, 0, 1),
+		Vector4(-1, 0, 0, 1),
+	};
+	auto vertexBuffer1 = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
+
+	InstanceData instanceData[] = {
+		{ Vector4(0, 0, 0, 1), Vector4(1, 0, 0, 1) },
+		{ Vector4(1, 0, 0, 1), Vector4(0, 1, 0, 1) },
+		{ Vector4(0, -1, 0, 1), Vector4(0, 0, 1, 1) },
+		{ Vector4(1, -1, 0, 1), Vector4(1, 1, 0, 1) },
+	};
+	auto vertexBuffer2 = makeObject<VertexBuffer>(sizeof(instanceData), instanceData, GraphicsResourceUsage::Static);
+
+	uint16_t ib[] = { 0, 1, 2 };
+	auto indexBuffer1 = makeObject<IndexBuffer>(3, IndexBufferFormat::UInt16, ib, GraphicsResourceUsage::Static);
+
+	auto vertexDecl1 = makeObject<VertexLayout>();
+	vertexDecl1->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
+	vertexDecl1->addElement(1, VertexElementType::Float4, VertexElementUsage::Position, 1, VertexInputRate::Instance);
+	vertexDecl1->addElement(1, VertexElementType::Float4, VertexElementUsage::Color, 0, VertexInputRate::Instance);
+
+	auto ctx = TestEnv::beginFrame();
+	auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
+	auto crp = TestEnv::renderPass();
+	crp->setClearValues(ClearFlags::All, Color::White, 1.0f, 0);
+	ctx->beginRenderPass(crp);
+	ctx->setVertexLayout(vertexDecl1);
+	ctx->setVertexBuffer(0, vertexBuffer1);
+	ctx->setVertexBuffer(1, vertexBuffer2);
+	ctx->setIndexBuffer(indexBuffer1);
+	ctx->setShaderPass(shader1->techniques()[0]->passes()[0]);
+	ctx->setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	ctx->drawPrimitiveIndexed(0, 1, 4);
+	ctx->endRenderPass();
+	TestEnv::endFrame();
+	ASSERT_RENDERTARGET(LN_ASSETFILE("Graphics/Result/LowLevelRendering-Instancing-1.png"), cbb);
+	
+}

@@ -1182,9 +1182,10 @@ void VulkanGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int sta
 	vkCmdDraw(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startVertex, 0);
 }
 
-void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount)
+void VulkanGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount)
 {
-	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), 1, startIndex, 0, 0);
+    int ic = (instanceCount == 0) ? 1 : instanceCount;
+	vkCmdDrawIndexed(m_recodingCommandBuffer->vulkanCommandBuffer(), VulkanHelper::getPrimitiveVertexCount(primitive, primitiveCount), ic, startIndex, 0, 0);
 }
 
 void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
@@ -2179,7 +2180,14 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
     for (int i = 0; i < m_maxStreamCount; i++)
     {
         m_bindings[i].binding = i;  // VkVertexInputAttributeDescription が参照する binding 番号。ひとまず連番
-        m_bindings[i].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        for (int j = 0; j < elementsCount; j++) {
+            if (elements[i].StreamIndex == i) {
+                m_bindings[i].inputRate = (elements[i].rate == VertexInputRate::Vertex) ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
+            }
+        }
+
+        //m_bindings[i].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
     }
 
     // 実際に値を計算する
