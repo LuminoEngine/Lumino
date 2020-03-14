@@ -337,7 +337,7 @@ void InternalSpriteRenderer::flush(ICommandList* context)
 	context->setVertexBuffer(0, m_vertexBuffer);
 	context->setIndexBuffer(m_indexBuffer);
 	context->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	context->drawPrimitiveIndexed(0, spriteCount * 2);
+	context->drawPrimitiveIndexed(0, spriteCount * 2, 0);
 
 	// Cleanup
 	clear();

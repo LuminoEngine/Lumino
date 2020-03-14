@@ -17,7 +17,7 @@ public:
     static Ref<VertexLayout> create();
 
     /** レイアウトに新しい要素を追加します。 */
-    void addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex);
+    void addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex, VertexInputRate rate = VertexInputRate::Vertex);
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;

@@ -47,7 +47,7 @@ void VertexLayout::onDispose(bool explicitDisposing)
     GraphicsResource::onDispose(explicitDisposing);
 }
 
-void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
+void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex, VertexInputRate rate)
 {
     if (LN_REQUIRE(streamIndex >= 0)) return;
     if (LN_REQUIRE(usageIndex >= 0)) return;
@@ -57,6 +57,7 @@ void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexEle
     e.Type = type;
     e.Usage = usage;
     e.UsageIndex = usageIndex;
+    e.rate = rate;
     m_vertexElements.add(e);
 }
 

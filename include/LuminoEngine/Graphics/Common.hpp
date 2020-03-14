@@ -149,6 +149,16 @@ enum class VertexElementUsage
     BlendWeight,
 };
 
+/** 頂点バッファのレート */
+enum class VertexInputRate
+{
+    /** 頂点バッファを頂点データのストリームとして扱う。 */
+    Vertex,
+
+    /** 頂点バッファをインスタンスデータのストリームとして扱う。 */
+    Instance,
+};
+
 /** 頂点宣言の1要素 */
 struct VertexElement
 {
@@ -163,6 +173,8 @@ struct VertexElement
 
     /** UsageIndex */
     uint32_t UsageIndex;
+
+    VertexInputRate rate = VertexInputRate::Vertex;
 };
 
 /** インデックスバッファのフォーマット */
