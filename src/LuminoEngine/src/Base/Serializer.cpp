@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <nlohmann/json.hpp>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 
@@ -117,13 +118,62 @@ Ref<Object> Serializer::deserialize(const String& str, const String& basePath)
 	return asset->target();
 }
 
-#if 0
+//==============================================================================
+// 
+
+//using ljsonserializer = nlohmann::adl_serializer;
+//using ljson = nlohmann::basic_json<std::map, std::vector, String, bool, int64_t, uint64_t, double, std::allocator, >;
+using ljson = nlohmann::json;
+
+namespace detail {
+class SerializerStore2 : public RefObject
+{
+public:
+	enum class ContainerType
+	{
+		Unknown,
+		List,
+		Object,
+	};
+
+	struct StackItem
+	{
+		ContainerType containerType = ContainerType::Unknown;
+		ljson value;
+		String name;	// container を end するとき、親 value に追加するときのプロパティ名
+	};
+
+	std::vector<StackItem> stack;
+	String nextName;
+};
+} // namespace detail
+
+
+static std::string str_to_ns(const String& str) { return str.toStdString(); }
+static String ns_to_str(const std::string& str) { return String::fromStdString(str); }
+
+#if 1
 //==============================================================================
 // Serializer2
 LN_OBJECT_IMPLEMENT(Serializer2, Object) {}
 
 Serializer2::Serializer2()
 {
+	std::string::value_type;
+	m_store = makeRef<detail::SerializerStore2>();
+	//nlohmann::json j;
+	//j[u"pi"] = 3.141;
+	//j[u"happy"] = true;
+	//j[u"name"] = u"Niels";
+	//j[u"nothing"] = nullptr;
+	//j[u"answer"][u"everything"] = 42;  // 存在しないキーを指定するとobjectが構築される
+	//j[u"list"] = { 1, 0, 2 };         // [1,0,2]
+	//j[u"object"] = { {u"currency", u"USD"}, {u"value", 42.99} };  // {"currentcy": "USD", "value": 42.99}
+
+	//auto& j2 = m_store->root["test"];
+	//j2["pi"] = 3.141;
+	//auto s = m_store->root.dump();
+	//std::cout << s << std::endl;
 }
 
 void Serializer2::init()
@@ -133,29 +183,64 @@ void Serializer2::init()
 
 void Serializer2::writeBool(const StringRef& name, bool value)
 {
+	if (LN_REQUIRE(isSaving())) return;
 	LN_NOTIMPLEMENTED();
 }
 
-void Serializer2::writeInt(const StringRef& name, int value)
+void Serializer2::writeInt(int value)
 {
-	LN_NOTIMPLEMENTED();
+	if (LN_REQUIRE(isSaving())) return;
+	if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::Object)
+		m_store->stack.back().value[str_to_ns(m_store->nextName)] = value;
+	else if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::List)
+		m_store->stack.back().value.push_back(value);
 }
 
 void Serializer2::writeFloat(const StringRef& name, float value)
 {
+	if (LN_REQUIRE(isSaving())) return;
 	LN_NOTIMPLEMENTED();
 }
 
 void Serializer2::writeString(const StringRef& name, const StringRef& value)
 {
+	if (LN_REQUIRE(isSaving())) return;
 	String v = value;
 	LN_NOTIMPLEMENTED();
 }
 
-void Serializer2::writeObject(const StringRef& name, Object* value)
+void Serializer2::writeName(const StringRef& name)
 {
+	m_store->nextName = name;
+}
+
+void Serializer2::writeObject(Object* value)
+{
+	if (LN_REQUIRE(isSaving())) return;
 	Ref<Object> v;
 	LN_NOTIMPLEMENTED();
+}
+
+void Serializer2::beginWriteList()
+{
+	m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::List, ljson(), m_store->nextName });
+}
+
+void Serializer2::endWriteList()
+{
+	auto& current = m_store->stack[m_store->stack.size() - 1];
+	auto& parent = m_store->stack[m_store->stack.size() - 2];
+	if (parent.containerType == detail::SerializerStore2::ContainerType::Object) {
+		parent.value[str_to_ns(parent.name)] = std::move(current.value);
+	}
+	else if (parent.containerType == detail::SerializerStore2::ContainerType::List) {
+		parent.value.push_back(std::move(current.value));
+	}
+	else {
+		LN_UNREACHABLE();
+	}
+
+	m_store->stack.pop_back();
 }
 
 bool Serializer2::readBool(const StringRef& name)
@@ -195,7 +280,13 @@ Ref<Object> Serializer2::readObject(const StringRef& name)
 
 String Serializer2::serialize(Object* value, const String& basePath)
 {
-	return String::Empty;
+	if (LN_REQUIRE(value)) return String::Empty;
+	auto sr = makeObject<Serializer2>();
+	sr->m_mode = ArchiveMode::Save;
+	sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson() });
+	value->onSerialize2(sr);
+	LN_ENSURE(sr->m_store->stack.size() == 1);
+	return ns_to_str(sr->m_store->stack.back().value.dump(2));
 }
 
 Ref<Object> Serializer2::deserialize(const String& str, const String& basePath)

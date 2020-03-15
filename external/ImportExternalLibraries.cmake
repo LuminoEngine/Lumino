@@ -1,4 +1,6 @@
 ﻿
+message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
+
 # FIXME: Emscripten と Android のビルド時、find_library が sysroot 以外を探せるように強制。
 #set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)

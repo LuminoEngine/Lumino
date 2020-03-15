@@ -17,6 +17,18 @@ elseif(WIN32 OR APPLE OR UNIX)
 
 endif()
 
+
+
+#------------------------------------------------------------------------------
+function(ln_add_msvc_runtime_flag proj)
+  if(${LN_USE_MSVC_STATIC_RUNTIME})
+    target_compile_options(${proj} PRIVATE $<$<NOT:$<CONFIG:Debug>>:/MT> $<$<CONFIG:Debug>:/MTd>)
+  else()
+    target_compile_options(${proj} PRIVATE $<$<NOT:$<CONFIG:Debug>>:/MD> $<$<CONFIG:Debug>:/MDd>)
+  endif()
+endfunction()
+
+
 #------------------------------------------------------------------------------
 
 

@@ -8,6 +8,7 @@ class TypeInfo;
 class PropertyInfo;
 class ReflectionObjectVisitor;
 class Serializer;
+class Serializer2;
 class ViewProperty;
 class ViewPropertyInfo;
 class ObservablePropertyBase;
@@ -176,6 +177,10 @@ protected:
     LN_METHOD()
     virtual void onSerialize(Serializer* ar);
 
+    /** onSerialize */
+    LN_METHOD()
+    virtual void onSerialize2(Serializer2* ar);
+
 public:
 	/**
 	 * このオブジェクトが保持しているリソースを開放します。
@@ -213,6 +218,7 @@ private:
 
     friend class TypeInfo;
     friend class detail::ObjectHelper;
+    friend class Serializer2;
 	template<class U> friend class Ref;
 	template<class T> friend class TypeInfoTraits;
 };

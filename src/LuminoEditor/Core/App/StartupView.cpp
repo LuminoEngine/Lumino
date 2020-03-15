@@ -49,7 +49,7 @@ ln::Result StartupView::init()
 
     m_recentProjectListView = ln::makeObject<RecentProjectListView>();
     m_recentProjectListView->setWidth(200);
-    layout->addChild(m_openProjectButton);
+    layout->addChild(m_recentProjectListView);
 
 
 

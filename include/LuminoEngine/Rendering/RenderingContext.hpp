@@ -28,6 +28,17 @@ class RenderDrawElement;
 } // namespace detail
 
 
+class InstancedMeshList
+{
+public:
+
+private:
+	Ref<Mesh> m_mesh;
+
+};
+
+
+
 class RenderingContext
 	: public RefObject  // TODO: Object
 {

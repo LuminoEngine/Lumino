@@ -75,10 +75,12 @@ private:
 	std::unique_ptr<Archive> m_archive;
 };
 
+namespace detail {
+class SerializerStore2;
+}
 
 
-
-#if 0
+#if 1
 /** */
 LN_CLASS()
 class Serializer2
@@ -86,6 +88,10 @@ class Serializer2
 {
 	LN_OBJECT;
 public:
+
+	bool isSaving() const { return m_mode == ArchiveMode::Save; }
+
+	bool isLoading() const { return m_mode == ArchiveMode::Load; }
 	
 	/** write */
 	//LN_METHOD()
@@ -93,7 +99,7 @@ public:
 
 	/** write */
 	//LN_METHOD()
-	void writeInt(const StringRef& name, int value);
+	void writeInt(int value);
 
 	/** write */
 	//LN_METHOD()
@@ -103,12 +109,24 @@ public:
 	//LN_METHOD()
 	void writeString(const StringRef& name, const StringRef& value);
 
+
+
+	void writeName(const StringRef& name);
+
 	/** write */
 	//LN_METHOD()
 	// beginObject, endObject のユーティリティ
-	void writeObject(const StringRef& name, Object* value);
+	void writeObject(Object* value);
 
-	
+	//template<class T>
+	//void writeList(const StringRef& name, const List<T>& value)
+	//{
+	//	beginWriteList(name);
+
+	//	endWriteList();
+	//}
+
+	//
 	/** read */
 	//LN_METHOD()
 	bool readBool(const StringRef& name);
@@ -135,7 +153,7 @@ public:
 	/** sec */
 	void beginWriteObject(const StringRef& name, Object* value);
 	void endWriteObject();
-	void beginWriteList(const StringRef& name);
+	void beginWriteList();
 	void endWriteList();
 
 
@@ -156,6 +174,9 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void processSave();
 	void processLoad();
+
+	ArchiveMode m_mode;
+	Ref<detail::SerializerStore2> m_store;
 };
 #endif
 

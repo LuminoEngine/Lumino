@@ -84,12 +84,17 @@ void Object::serialize(Archive& ar)
         prop->accessor()->serializeMember(this, ar, prop->name());
     }
 
-    onSerialize(ar.m_serializer);
+    //onSerialize(ar.m_serializer);
 
     printf("[Engine] end onSerialize\n");
 }
 
 void Object::onSerialize(Serializer* ar)
+{
+
+}
+
+void Object::onSerialize2(Serializer2* ar)
 {
 
 }
