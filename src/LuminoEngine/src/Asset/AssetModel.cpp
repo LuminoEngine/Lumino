@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include "AssetManager.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
+#include <LuminoEngine/Base/Serializer.hpp>
 
 namespace ln {
 
@@ -67,6 +68,17 @@ void AssetModel::serialize(Archive& ar)
     //if (ar.isLoading()) {
     //    m_target->setAssetPath(assetId);
     //}
+}
+
+void AssetModel::onSerialize2(Serializer2* sr)
+{
+    if (sr->isSaving()) {
+        sr->writeName(u"Object");
+        sr->writeObject(m_target);
+    }
+    else {
+        //m_target = sr->readObject(u"value1");
+    }
 }
 
 ln::Uuid AssetModel::readAssetId(const ln::Path& filePath)

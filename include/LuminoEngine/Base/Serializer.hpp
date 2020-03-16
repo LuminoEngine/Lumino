@@ -4,6 +4,7 @@
 #include "../Engine/Object.hpp"
 
 namespace ln {
+class AssetModel;
 
 /** */
 LN_CLASS()
@@ -151,7 +152,7 @@ public:
 
 
 	/** sec */
-	void beginWriteObject(const StringRef& name, Object* value);
+	void beginWriteObject();
 	void endWriteObject();
 	void beginWriteList();
 	void endWriteList();
@@ -160,11 +161,11 @@ public:
 	
 	/** serialize */
 	//LN_METHOD()
-	static String serialize(Object* value, const String& basePath);
+	static String serialize(AssetModel* value, const String& basePath);
 	
 	/** serialize */
 	//LN_METHOD()
-	static Ref<Object> deserialize(const String& str, const String& basePath);
+	static Ref<AssetModel> deserialize(const String& str, const String& basePath);
 
 LN_CONSTRUCT_ACCESS:
 	Serializer2();

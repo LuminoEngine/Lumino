@@ -3,28 +3,33 @@
 
 class Test_Base_Serializer : public ::testing::Test {};
 
+class TestObject1 : public Object
+{
+	LN_OBJECT;
+
+	int m_value = 100;
+
+	void onSerialize2(Serializer2* sr) override
+	{
+		if (sr->isSaving()) {
+			sr->writeName(u"value1");
+			sr->writeInt(m_value);
+		}
+		else {
+			m_value = sr->readInt(u"value1");
+		}
+	}
+};
+LN_OBJECT_IMPLEMENT(TestObject1, Object) {}
+
 TEST_F(Test_Base_Serializer, Basic)
 {
-	class TestObject1 : public Object
-	{
-		int m_value = 100;
-
-		void onSerialize2(Serializer2* sr) override
-		{
-			if (sr->isSaving()) {
-				sr->writeName(u"value1");
-				sr->writeInt(m_value);
-			}
-			else {
-				m_value = sr->readInt(u"value1");
-			}
-		}
-	};
-
 	auto obj1 = makeObject<TestObject1>();
-	String text = Serializer2::serialize(obj1, u"");
+	auto asset1 = makeObject<AssetModel>(obj1);
+	String text = Serializer2::serialize(asset1, u"");
 
-	auto obj2 = dynamic_pointer_cast<TestObject1>(Serializer2::deserialize(text, u""));
+	auto asset2 = Serializer2::deserialize(text, u"");
+	auto obj2 = dynamic_cast<TestObject1*>(asset2->target());
 
 	printf("");
 }
@@ -44,8 +49,8 @@ TEST_F(Test_Base_Serializer, List)
 		}
 	};
 
-	auto obj1 = makeObject<TestObject1>();
-	String text = Serializer2::serialize(obj1, u"");
+	//auto obj1 = makeObject<TestObject1>();
+	//String text = Serializer2::serialize(obj1, u"");
 
 	printf("");
 }

@@ -125,6 +125,9 @@ Ref<Object> Serializer::deserialize(const String& str, const String& basePath)
 //using ljson = nlohmann::basic_json<std::map, std::vector, String, bool, int64_t, uint64_t, double, std::allocator, >;
 using ljson = nlohmann::json;
 
+static std::string str_to_ns(const String& str) { return str.toStdString(); }
+static String ns_to_str(const std::string& str) { return String::fromStdString(str); }
+
 namespace detail {
 class SerializerStore2 : public RefObject
 {
@@ -145,12 +148,27 @@ public:
 
 	std::vector<StackItem> stack;
 	String nextName;
+
+	void pop()
+	{
+		auto& current = stack[stack.size() - 1];
+		auto& parent = stack[stack.size() - 2];
+		if (parent.containerType == SerializerStore2::ContainerType::Object) {
+			parent.value[str_to_ns(current.name)] = std::move(current.value);
+		}
+		else if (parent.containerType == SerializerStore2::ContainerType::List) {
+			parent.value.push_back(std::move(current.value));
+		}
+		else {
+			LN_UNREACHABLE();
+		}
+
+		stack.pop_back();
+	}
 };
 } // namespace detail
 
 
-static std::string str_to_ns(const String& str) { return str.toStdString(); }
-static String ns_to_str(const std::string& str) { return String::fromStdString(str); }
 
 #if 1
 //==============================================================================
@@ -217,8 +235,19 @@ void Serializer2::writeName(const StringRef& name)
 void Serializer2::writeObject(Object* value)
 {
 	if (LN_REQUIRE(isSaving())) return;
-	Ref<Object> v;
-	LN_NOTIMPLEMENTED();
+	beginWriteObject();
+	static_cast<Object*>(value)->onSerialize2(this);
+	endWriteObject();
+}
+
+void Serializer2::beginWriteObject()
+{
+	m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson(), m_store->nextName });
+}
+
+void Serializer2::endWriteObject()
+{
+	m_store->pop();
 }
 
 void Serializer2::beginWriteList()
@@ -228,19 +257,7 @@ void Serializer2::beginWriteList()
 
 void Serializer2::endWriteList()
 {
-	auto& current = m_store->stack[m_store->stack.size() - 1];
-	auto& parent = m_store->stack[m_store->stack.size() - 2];
-	if (parent.containerType == detail::SerializerStore2::ContainerType::Object) {
-		parent.value[str_to_ns(parent.name)] = std::move(current.value);
-	}
-	else if (parent.containerType == detail::SerializerStore2::ContainerType::List) {
-		parent.value.push_back(std::move(current.value));
-	}
-	else {
-		LN_UNREACHABLE();
-	}
-
-	m_store->stack.pop_back();
+	m_store->pop();
 }
 
 bool Serializer2::readBool(const StringRef& name)
@@ -278,20 +295,25 @@ Ref<Object> Serializer2::readObject(const StringRef& name)
 	return value;
 }
 
-String Serializer2::serialize(Object* value, const String& basePath)
+String Serializer2::serialize(AssetModel* value, const String& basePath)
 {
 	if (LN_REQUIRE(value)) return String::Empty;
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Save;
 	sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson() });
-	value->onSerialize2(sr);
+	static_cast<Object*>(value)->onSerialize2(sr);
 	LN_ENSURE(sr->m_store->stack.size() == 1);
 	return ns_to_str(sr->m_store->stack.back().value.dump(2));
 }
 
-Ref<Object> Serializer2::deserialize(const String& str, const String& basePath)
+Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePath)
 {
-	return nullptr;
+	auto sr = makeObject<Serializer2>();
+	sr->m_mode = ArchiveMode::Load;
+	sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
+	auto asset = makeObject<AssetModel>();
+	static_cast<Object*>(asset)->onSerialize2(sr);
+	return asset;
 }
 #endif
 
