@@ -77,6 +77,7 @@ void AssetModel::onSerialize2(Serializer2* sr)
         sr->writeObject(m_target);
     }
     else {
+        if (sr->setName(u"Object")) m_target = sr->readObject();
         //m_target = sr->readObject(u"value1");
     }
 }

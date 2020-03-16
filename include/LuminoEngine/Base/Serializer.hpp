@@ -127,6 +127,9 @@ public:
 	//	endWriteList();
 	//}
 
+
+	bool setName(const StringRef& name);
+
 	//
 	/** read */
 	//LN_METHOD()
@@ -134,7 +137,7 @@ public:
 
 	/** read */
 	//LN_METHOD()
-	int readInt(const StringRef& name);
+	int readInt();
 
 	/** read */
 	//LN_METHOD()
@@ -147,7 +150,7 @@ public:
 	/** read */
 	//LN_METHOD()
 	// beginObject, endObject のユーティリティ
-	Ref<Object> readObject(const StringRef& name);
+	Ref<Object> readObject();
 
 
 
@@ -157,6 +160,9 @@ public:
 	void beginWriteList();
 	void endWriteList();
 
+
+	void beginReadObject();
+	void endReadObject();
 
 	
 	/** serialize */

@@ -144,10 +144,13 @@ public:
 		ContainerType containerType = ContainerType::Unknown;
 		ljson value;
 		String name;	// container を end するとき、親 value に追加するときのプロパティ名
+		ljson::iterator readPos;
 	};
 
 	std::vector<StackItem> stack;
 	String nextName;
+
+	StackItem& current() { return stack.back(); }
 
 	void pop()
 	{
@@ -163,6 +166,11 @@ public:
 			LN_UNREACHABLE();
 		}
 
+		stack.pop_back();
+	}
+
+	void popRead()
+	{
 		stack.pop_back();
 	}
 };
@@ -236,6 +244,8 @@ void Serializer2::writeObject(Object* value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	beginWriteObject();
+	auto typeName = TypeInfo::getTypeInfo(value)->name();
+	m_store->current().value["__type"] = str_to_ns(typeName);
 	static_cast<Object*>(value)->onSerialize2(this);
 	endWriteObject();
 }
@@ -260,6 +270,29 @@ void Serializer2::endWriteList()
 	m_store->pop();
 }
 
+void Serializer2::beginReadObject()
+{
+	m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, *(m_store->current().readPos) });
+}
+
+void Serializer2::endReadObject()
+{
+	m_store->popRead();
+}
+
+bool Serializer2::setName(const StringRef& name)
+{
+	if (isSaving()) {
+		LN_NOTIMPLEMENTED();
+		return true;
+	}
+	else {
+		auto& c = m_store->current();
+		c.readPos =c.value.find(str_to_ns(name));
+		return c.readPos != c.value.end();
+	}
+}
+
 bool Serializer2::readBool(const StringRef& name)
 {
 	bool value = false;
@@ -267,11 +300,9 @@ bool Serializer2::readBool(const StringRef& name)
 	return value;
 }
 
-int Serializer2::readInt(const StringRef& name)
+int Serializer2::readInt()
 {
-	int value = 0;
-	LN_NOTIMPLEMENTED();
-	return value;
+	return m_store->current().readPos->get<int>();
 }
 
 float Serializer2::readFloat(const StringRef& name)
@@ -288,11 +319,28 @@ String Serializer2::readString(const StringRef& name)
 	return value;
 }
 
-Ref<Object> Serializer2::readObject(const StringRef& name)
+Ref<Object> Serializer2::readObject()
 {
-	Ref<Object> value;
-	LN_NOTIMPLEMENTED();
-	return value;
+	if (LN_REQUIRE(isLoading())) return nullptr;
+	beginReadObject();
+	
+	Ref<Object> obj;
+	auto s = m_store->current().value.find("__type");
+	if (s != m_store->current().value.end()) {
+		auto typeName = ns_to_str((*s).get<std::string>());
+		if (!typeName.isEmpty()) {
+			obj = TypeInfo::createInstance(typeName);
+		}
+	}
+
+	// fallback
+	if (!obj) {
+		obj = makeObject<Object>();
+	}
+
+	obj->onSerialize2(this);
+	endWriteObject();
+	return obj;
 }
 
 String Serializer2::serialize(AssetModel* value, const String& basePath)

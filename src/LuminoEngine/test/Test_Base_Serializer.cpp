@@ -6,8 +6,9 @@ class Test_Base_Serializer : public ::testing::Test {};
 class TestObject1 : public Object
 {
 	LN_OBJECT;
+public:
 
-	int m_value = 100;
+	int m_value;
 
 	void onSerialize2(Serializer2* sr) override
 	{
@@ -16,7 +17,7 @@ class TestObject1 : public Object
 			sr->writeInt(m_value);
 		}
 		else {
-			m_value = sr->readInt(u"value1");
+			if (sr->setName(u"value1")) m_value = sr->readInt();
 		}
 	}
 };
@@ -25,13 +26,14 @@ LN_OBJECT_IMPLEMENT(TestObject1, Object) {}
 TEST_F(Test_Base_Serializer, Basic)
 {
 	auto obj1 = makeObject<TestObject1>();
+	obj1->m_value = 500;
 	auto asset1 = makeObject<AssetModel>(obj1);
 	String text = Serializer2::serialize(asset1, u"");
 
 	auto asset2 = Serializer2::deserialize(text, u"");
 	auto obj2 = dynamic_cast<TestObject1*>(asset2->target());
 
-	printf("");
+	ASSERT_EQ(500, obj2->m_value);
 }
 
 TEST_F(Test_Base_Serializer, List)
