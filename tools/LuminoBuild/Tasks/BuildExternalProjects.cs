@@ -324,6 +324,10 @@ namespace LuminoBuild.Tasks
                 Utils.CallProcess("git", "submodule update --init");
                 Directory.SetCurrentDirectory(reposDir);
             }
+            if (!Directory.Exists("yaml-cpp"))
+            {
+                Utils.CallProcess("git", "clone --depth 1 -b yaml-cpp-0.6.3 https://github.com/jbeder/yaml-cpp.git yaml-cpp");
+            }
 
 
             const string bulletOptions = "-DBUILD_BULLET2_DEMOS=OFF -DBUILD_CLSOCKET=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_ENET=OFF -DBUILD_EXTRAS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF -DINSTALL_LIBS=ON";
@@ -342,7 +346,9 @@ namespace LuminoBuild.Tasks
                     var oggInstallDir = Utils.ToUnixPath(Path.Combine(builder.LuminoBuildDir, $"{BuildEnvironment.TargetFullName}", "ExternalInstall", "ogg"));
                     var targetInfo = BuildEngine_MSVC.TargetInfoMap[targetName];
                     var altRuntime = "-DUSE_MSVC_RUNTIME_LIBRARY_DLL=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
-                        
+                    var cppyamlRuntime = "-DYAML_MSVC_SHARED_RT=" + (targetInfo.StaticRuntime == "ON" ? "OFF" : "ON");
+
+                    BuildProjectMSVC(builder, "yaml-cpp", reposDir, targetName, targetFullName, configuration, $"{cppyamlRuntime} -DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                     BuildProjectMSVC(builder, "zlib", reposDir, targetName, targetFullName, configuration);
                     BuildProjectMSVC(builder, "libpng", reposDir, targetName, targetFullName, configuration, $"-DZLIB_INCLUDE_DIR={zlibInstallDir}/include");
                     BuildProjectMSVC(builder, "glslang", reposDir, targetName, targetFullName, configuration);

@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
-#include <nlohmann/json.hpp>
+//#include <nlohmann/json.hpp>
+#include <yaml-cpp/yaml.h>
 #include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 
@@ -123,7 +124,7 @@ Ref<Object> Serializer::deserialize(const String& str, const String& basePath)
 
 //using ljsonserializer = nlohmann::adl_serializer;
 //using ljson = nlohmann::basic_json<std::map, std::vector, String, bool, int64_t, uint64_t, double, std::allocator, >;
-using ljson = nlohmann::json;
+//using ljson = nlohmann::json;
 
 static std::string str_to_ns(const String& str) { return str.toStdString(); }
 static String ns_to_str(const std::string& str) { return String::fromStdString(str); }
@@ -142,36 +143,62 @@ public:
 	struct StackItem
 	{
 		ContainerType containerType = ContainerType::Unknown;
-		ljson value;
-		String name;	// container を end するとき、親 value に追加するときのプロパティ名
-		ljson::iterator readPos;
+		YAML::Node node;
+		std::string name;
 	};
 
 	std::vector<StackItem> stack;
-	String nextName;
+	std::string nextName;
 
 	StackItem& current() { return stack.back(); }
 
-	void pop()
+	void initWrite()
+	{
+		stack.push_back(StackItem{ ContainerType::Object, YAML::Node() });
+	}
+
+	void pushWrite(ContainerType containerType)
+	{
+		stack.push_back(StackItem{ ContainerType::Object, YAML::Node(), nextName });
+		nextName = std::string();
+	}
+
+	void popWrite()
 	{
 		auto& current = stack[stack.size() - 1];
 		auto& parent = stack[stack.size() - 2];
 		if (parent.containerType == SerializerStore2::ContainerType::Object) {
-			parent.value[str_to_ns(current.name)] = std::move(current.value);
+			parent.node[current.name] = std::move(current.node);
 		}
 		else if (parent.containerType == SerializerStore2::ContainerType::List) {
-			parent.value.push_back(std::move(current.value));
+			parent.node.push_back(std::move(current.node));
 		}
 		else {
 			LN_UNREACHABLE();
 		}
-
 		stack.pop_back();
 	}
 
+	void writeString(const std::string& v)
+	{
+		if (current().containerType == SerializerStore2::ContainerType::Object) {
+			current().node[nextName] = v;
+		}
+		else {
+			LN_UNREACHABLE();
+		}
+	}
+
+	std::string str()
+	{
+		YAML::Emitter emitter;
+		emitter << stack.front().node;
+		return emitter.c_str();
+	}
+
+
 	void popRead()
 	{
-		stack.pop_back();
 	}
 };
 } // namespace detail
@@ -216,10 +243,10 @@ void Serializer2::writeBool(const StringRef& name, bool value)
 void Serializer2::writeInt(int value)
 {
 	if (LN_REQUIRE(isSaving())) return;
-	if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::Object)
-		m_store->stack.back().value[str_to_ns(m_store->nextName)] = value;
-	else if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::List)
-		m_store->stack.back().value.push_back(value);
+	//if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::Object)
+	//	m_store->stack.back().value[str_to_ns(m_store->nextName)] = value;
+	//else if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::List)
+	//	m_store->stack.back().value.push_back(value);
 }
 
 void Serializer2::writeFloat(const StringRef& name, float value)
@@ -237,7 +264,7 @@ void Serializer2::writeString(const StringRef& name, const StringRef& value)
 
 void Serializer2::writeName(const StringRef& name)
 {
-	m_store->nextName = name;
+	m_store->nextName = str_to_ns(name);
 }
 
 void Serializer2::writeObject(Object* value)
@@ -245,34 +272,36 @@ void Serializer2::writeObject(Object* value)
 	if (LN_REQUIRE(isSaving())) return;
 	beginWriteObject();
 	auto typeName = TypeInfo::getTypeInfo(value)->name();
-	m_store->current().value["__type"] = str_to_ns(typeName);
+	m_store->nextName = "__type";
+	m_store->writeString(str_to_ns(typeName));
 	static_cast<Object*>(value)->onSerialize2(this);
 	endWriteObject();
 }
 
 void Serializer2::beginWriteObject()
 {
-	m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson(), m_store->nextName });
+	m_store->pushWrite(detail::SerializerStore2::ContainerType::Object);
+	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson(), m_store->nextName });
 }
 
 void Serializer2::endWriteObject()
 {
-	m_store->pop();
+	m_store->popWrite();
 }
 
 void Serializer2::beginWriteList()
 {
-	m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::List, ljson(), m_store->nextName });
+	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::List, ljson(), m_store->nextName });
 }
 
 void Serializer2::endWriteList()
 {
-	m_store->pop();
+	m_store->popWrite();
 }
 
 void Serializer2::beginReadObject()
 {
-	m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, *(m_store->current().readPos) });
+	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, *(m_store->current().readPos) });
 }
 
 void Serializer2::endReadObject()
@@ -287,9 +316,10 @@ bool Serializer2::setName(const StringRef& name)
 		return true;
 	}
 	else {
-		auto& c = m_store->current();
-		c.readPos =c.value.find(str_to_ns(name));
-		return c.readPos != c.value.end();
+		//auto& c = m_store->current();
+		//c.readPos =c.value.find(str_to_ns(name));
+		//return c.readPos != c.value.end();
+		return false;
 	}
 }
 
@@ -302,7 +332,8 @@ bool Serializer2::readBool(const StringRef& name)
 
 int Serializer2::readInt()
 {
-	return m_store->current().readPos->get<int>();
+	//return m_store->current().readPos->get<int>();
+	return 0;
 }
 
 float Serializer2::readFloat(const StringRef& name)
@@ -321,44 +352,62 @@ String Serializer2::readString(const StringRef& name)
 
 Ref<Object> Serializer2::readObject()
 {
-	if (LN_REQUIRE(isLoading())) return nullptr;
-	beginReadObject();
-	
-	Ref<Object> obj;
-	auto s = m_store->current().value.find("__type");
-	if (s != m_store->current().value.end()) {
-		auto typeName = ns_to_str((*s).get<std::string>());
-		if (!typeName.isEmpty()) {
-			obj = TypeInfo::createInstance(typeName);
-		}
-	}
+	//if (LN_REQUIRE(isLoading())) return nullptr;
+	//beginReadObject();
+	//
+	//Ref<Object> obj;
+	//auto s = m_store->current().value.find("__type");
+	//if (s != m_store->current().value.end()) {
+	//	auto typeName = ns_to_str((*s).get<std::string>());
+	//	if (!typeName.isEmpty()) {
+	//		obj = TypeInfo::createInstance(typeName);
+	//	}
+	//}
 
-	// fallback
-	if (!obj) {
-		obj = makeObject<Object>();
-	}
+	//// fallback
+	//if (!obj) {
+	//	obj = makeObject<Object>();
+	//}
 
-	obj->onSerialize2(this);
-	endWriteObject();
-	return obj;
+	//obj->onSerialize2(this);
+	//endWriteObject();
+	//return obj;
+	return nullptr;
 }
 
 String Serializer2::serialize(AssetModel* value, const String& basePath)
 {
+	//YAML::Node n;
+	//n["a"] = 10;
+	//n["b"] = "B";
+	//YAML::Node n2;
+	//n2["c"] = "C";
+	//n["n2"] = n2;
+	//n2["d"] = "DD";
+
+	//YAML::Node n3 = n["n2"];
+	//n3["d"] = "D3";
+	//YAML::Emitter emitter;
+	//emitter << n;
+	//auto text = emitter.c_str();
+	////auto a = YAML::LoadFile("D:/tmp/test.yml");
+	////auto t = a.Type();
+	////auto b = a["aaa"];
+
 	if (LN_REQUIRE(value)) return String::Empty;
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Save;
-	sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson() });
+	sr->m_store->initWrite();
 	static_cast<Object*>(value)->onSerialize2(sr);
 	LN_ENSURE(sr->m_store->stack.size() == 1);
-	return ns_to_str(sr->m_store->stack.back().value.dump(2));
+	return ns_to_str(sr->m_store->str());
 }
 
 Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePath)
 {
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Load;
-	sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
+	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
 	auto asset = makeObject<AssetModel>();
 	static_cast<Object*>(asset)->onSerialize2(sr);
 	return asset;

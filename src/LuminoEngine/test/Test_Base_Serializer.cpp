@@ -12,13 +12,13 @@ public:
 
 	void onSerialize2(Serializer2* sr) override
 	{
-		if (sr->isSaving()) {
-			sr->writeName(u"value1");
-			sr->writeInt(m_value);
-		}
-		else {
-			if (sr->setName(u"value1")) m_value = sr->readInt();
-		}
+		//if (sr->isSaving()) {
+		//	sr->writeName(u"value1");
+		//	sr->writeInt(m_value);
+		//}
+		//else {
+		//	if (sr->setName(u"value1")) m_value = sr->readInt();
+		//}
 	}
 };
 LN_OBJECT_IMPLEMENT(TestObject1, Object) {}

@@ -73,11 +73,11 @@ void AssetModel::serialize(Archive& ar)
 void AssetModel::onSerialize2(Serializer2* sr)
 {
     if (sr->isSaving()) {
-        sr->writeName(u"Object");
+        sr->writeName(u"object");
         sr->writeObject(m_target);
     }
     else {
-        if (sr->setName(u"Object")) m_target = sr->readObject();
+        if (sr->setName(u"object")) m_target = sr->readObject();
         //m_target = sr->readObject(u"value1");
     }
 }

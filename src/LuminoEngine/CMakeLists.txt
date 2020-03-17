@@ -392,6 +392,7 @@ set(
     BulletCollision
     LinearMath
     tmxlite
+    yamlcpp
     VulkanHeaders
     ${LN_PLATFORM_LIBS}
 )
