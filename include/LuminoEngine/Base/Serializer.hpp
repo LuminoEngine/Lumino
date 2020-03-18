@@ -93,10 +93,13 @@ public:
 	bool isSaving() const { return m_mode == ArchiveMode::Save; }
 
 	bool isLoading() const { return m_mode == ArchiveMode::Load; }
-	
+
+
+	void writeName(const StringRef& name);
+
 	/** write */
 	//LN_METHOD()
-	void writeBool(const StringRef& name, bool value);
+	void writeBool(bool value);
 
 	/** write */
 	//LN_METHOD()
@@ -104,15 +107,13 @@ public:
 
 	/** write */
 	//LN_METHOD()
-	void writeFloat(const StringRef& name, float value);
+	void writeFloat(float value);
 
 	/** write */
 	//LN_METHOD()
-	void writeString(const StringRef& name, const StringRef& value);
+	void writeString(const StringRef& value);
 
 
-
-	void writeName(const StringRef& name);
 
 	/** write */
 	//LN_METHOD()
@@ -163,6 +164,8 @@ public:
 
 	void beginReadObject();
 	void endReadObject();
+	bool beginReadList(int* outItemCount);
+	void endReadList();
 
 	
 	/** serialize */

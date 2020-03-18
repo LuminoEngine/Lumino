@@ -145,6 +145,9 @@ public:
 		ContainerType containerType = ContainerType::Unknown;
 		YAML::Node node;
 		std::string name;
+		int nextIndex = 0;
+
+		bool writingPrimitiveOnly = true;	// write 時、list などを簡易表現にしたいか
 
 		YAML::Node readingNode;
 	};
@@ -164,7 +167,7 @@ public:
 
 	void pushWrite(ContainerType containerType)
 	{
-		stack.push_back(StackItem{ ContainerType::Object, YAML::Node(), nextName });
+		stack.push_back(StackItem{ containerType, YAML::Node(), nextName });
 		nextName = std::string();
 	}
 
@@ -172,6 +175,15 @@ public:
 	{
 		auto& current = stack[stack.size() - 1];
 		auto& parent = stack[stack.size() - 2];
+		
+
+		if (current.writingPrimitiveOnly) {
+			current.node.SetStyle(YAML::EmitterStyle::Flow);
+		}
+		else {
+			current.node.SetStyle(YAML::EmitterStyle::Default);
+		}
+
 		if (parent.containerType == SerializerStore2::ContainerType::Object) {
 			parent.node[current.name] = std::move(current.node);
 		}
@@ -189,8 +201,10 @@ public:
 	{
 		if (current().containerType == SerializerStore2::ContainerType::Object)
 			current().node[nextName] = value;
-		else if (current().containerType == SerializerStore2::ContainerType::List)
+		else if (current().containerType == SerializerStore2::ContainerType::List) {
 			current().node.push_back(value);
+			//current().node.SetStyle(YAML::EmitterStyle::Flow);
+		}
 	}
 
 	void writeString(const std::string& v)
@@ -219,11 +233,26 @@ public:
 		stack.push_back(StackItem{ ContainerType::Object, YAML::Load(text) });
 	}
 
-	void pushRead()
+	bool pushRead(ContainerType requireContainerType, int* outItemCount)
 	{
 		auto node = current().readingNode;
-		if (LN_REQUIRE(node.Type() == YAML::NodeType::Map || node.Type() == YAML::NodeType::Sequence)) return;
-		stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::Object, node });
+
+		if (requireContainerType == ContainerType::Object) {
+			if (node.Type() != YAML::NodeType::Map) return false;
+			stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::Object, node });
+			*outItemCount = node.size();
+			return true;
+		}
+		else if (requireContainerType == ContainerType::List) {
+			if (node.Type() != YAML::NodeType::Sequence) return false;
+			stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::List, node });
+			*outItemCount = node.size();
+			return true;
+		}
+		else {
+			LN_UNREACHABLE();
+			return false;
+		}
 	}
 
 	void popRead()
@@ -247,7 +276,16 @@ public:
 	template<typename T>
 	void readPrimitive(T* value)
 	{
-		*value = current().readingNode.as<T>();
+		if (current().containerType == ContainerType::Object) {
+			*value = current().readingNode.as<T>();
+		}
+		else if (current().containerType == ContainerType::List) {
+			*value = current().node[current().nextIndex].as<T>();
+			current().nextIndex++;
+		}
+		else {
+			LN_UNREACHABLE();
+		}
 	}
 };
 } // namespace detail
@@ -283,7 +321,12 @@ void Serializer2::init()
 	Object::init();
 }
 
-void Serializer2::writeBool(const StringRef& name, bool value)
+void Serializer2::writeName(const StringRef& name)
+{
+	m_store->nextName = str_to_ns(name);
+}
+
+void Serializer2::writeBool(bool value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	LN_NOTIMPLEMENTED();
@@ -295,22 +338,17 @@ void Serializer2::writeInt(int value)
 	m_store->writePrimitive<int>(value);
 }
 
-void Serializer2::writeFloat(const StringRef& name, float value)
+void Serializer2::writeFloat(float value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	LN_NOTIMPLEMENTED();
 }
 
-void Serializer2::writeString(const StringRef& name, const StringRef& value)
+void Serializer2::writeString(const StringRef& value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 	String v = value;
 	LN_NOTIMPLEMENTED();
-}
-
-void Serializer2::writeName(const StringRef& name)
-{
-	m_store->nextName = str_to_ns(name);
 }
 
 void Serializer2::writeObject(Object* value)
@@ -327,7 +365,6 @@ void Serializer2::writeObject(Object* value)
 void Serializer2::beginWriteObject()
 {
 	m_store->pushWrite(detail::SerializerStore2::ContainerType::Object);
-	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson(), m_store->nextName });
 }
 
 void Serializer2::endWriteObject()
@@ -337,7 +374,7 @@ void Serializer2::endWriteObject()
 
 void Serializer2::beginWriteList()
 {
-	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::List, ljson(), m_store->nextName });
+	m_store->pushWrite(detail::SerializerStore2::ContainerType::List);
 }
 
 void Serializer2::endWriteList()
@@ -348,10 +385,21 @@ void Serializer2::endWriteList()
 void Serializer2::beginReadObject()
 {
 	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, *(m_store->current().readPos) });
-	m_store->pushRead();
+	int itemCount = 0;
+	m_store->pushRead(detail::SerializerStore2::ContainerType::Object, &itemCount);
 }
 
 void Serializer2::endReadObject()
+{
+	m_store->popRead();
+}
+
+bool Serializer2::beginReadList(int* outItemCount)
+{
+	return m_store->pushRead(detail::SerializerStore2::ContainerType::List, outItemCount);
+}
+
+void Serializer2::endReadList()
 {
 	m_store->popRead();
 }

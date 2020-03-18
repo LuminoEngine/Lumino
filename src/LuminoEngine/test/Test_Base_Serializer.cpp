@@ -36,25 +36,49 @@ TEST_F(Test_Base_Serializer, Basic)
 	ASSERT_EQ(500, obj2->m_value);
 }
 
-TEST_F(Test_Base_Serializer, List)
+class Test_Base_Serializer_TestObject1 : public Object
 {
-	class TestObject1 : public Object
-	{
-		List<int> m_list = { 1, 2, 3 };
+	LN_OBJECT;
+public:
+	List<int> m_list;
 
-		void onSerialize2(Serializer2* sr) override
-		{
+	void onSerialize2(Serializer2* sr) override
+	{
+		if (sr->isSaving()) {
 			sr->writeName(u"list");
 			sr->beginWriteList();
 			for (auto& v : m_list) sr->writeInt(v);
 			sr->endWriteList();
 		}
-	};
+		else {
+			if (sr->readName(u"list")) {
+				int count = 0;
+				if (sr->beginReadList(&count)) {
+					m_list.reserve(count);
+					for (int i = 0; i < count; i++) m_list.add(sr->readInt());
+					sr->endReadList();
+				}
+			}
+		}
+	}
+};
+LN_OBJECT_IMPLEMENT(Test_Base_Serializer_TestObject1, Object) {}
 
-	//auto obj1 = makeObject<TestObject1>();
-	//String text = Serializer2::serialize(obj1, u"");
+TEST_F(Test_Base_Serializer, List)
+{
+	auto obj1 = makeObject<Test_Base_Serializer_TestObject1>();
+	obj1->m_list = { 1, 2, 3 };
+	auto asset1 = makeObject<AssetModel>(obj1);
+	String text = Serializer2::serialize(asset1, u"");
 
-	printf("");
+	auto asset2 = Serializer2::deserialize(text, u"");
+	auto obj2 = dynamic_cast<Test_Base_Serializer_TestObject1*>(asset2->target());
+
+	ASSERT_EQ(true, obj2 != nullptr);
+	ASSERT_EQ(3, obj2->m_list.size());
+	ASSERT_EQ(1, obj2->m_list[0]);
+	ASSERT_EQ(2, obj2->m_list[1]);
+	ASSERT_EQ(3, obj2->m_list[2]);
 }
 
 //TEST_F(Test_Base_Serializer, BasicSceneDirectly)
