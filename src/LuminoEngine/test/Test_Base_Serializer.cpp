@@ -7,18 +7,17 @@ class TestObject1 : public Object
 {
 	LN_OBJECT;
 public:
-
-	int m_value;
+	int m_value = 0;
 
 	void onSerialize2(Serializer2* sr) override
 	{
-		//if (sr->isSaving()) {
-		//	sr->writeName(u"value1");
-		//	sr->writeInt(m_value);
-		//}
-		//else {
-		//	if (sr->setName(u"value1")) m_value = sr->readInt();
-		//}
+		if (sr->isSaving()) {
+			sr->writeName(u"value1");
+			sr->writeInt(m_value);
+		}
+		else {
+			if (sr->readName(u"value1")) m_value = sr->readInt();
+		}
 	}
 };
 LN_OBJECT_IMPLEMENT(TestObject1, Object) {}
@@ -33,6 +32,7 @@ TEST_F(Test_Base_Serializer, Basic)
 	auto asset2 = Serializer2::deserialize(text, u"");
 	auto obj2 = dynamic_cast<TestObject1*>(asset2->target());
 
+	ASSERT_EQ(true, obj2 != nullptr);
 	ASSERT_EQ(500, obj2->m_value);
 }
 

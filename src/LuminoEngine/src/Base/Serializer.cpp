@@ -145,12 +145,17 @@ public:
 		ContainerType containerType = ContainerType::Unknown;
 		YAML::Node node;
 		std::string name;
+
+		YAML::Node readingNode;
 	};
 
 	std::vector<StackItem> stack;
 	std::string nextName;
 
 	StackItem& current() { return stack.back(); }
+
+	//------------------------------
+	// Write
 
 	void initWrite()
 	{
@@ -179,6 +184,15 @@ public:
 		stack.pop_back();
 	}
 
+	template<typename T>
+	void writePrimitive(T value)
+	{
+		if (current().containerType == SerializerStore2::ContainerType::Object)
+			current().node[nextName] = value;
+		else if (current().containerType == SerializerStore2::ContainerType::List)
+			current().node.push_back(value);
+	}
+
 	void writeString(const std::string& v)
 	{
 		if (current().containerType == SerializerStore2::ContainerType::Object) {
@@ -197,8 +211,43 @@ public:
 	}
 
 
+	//------------------------------
+	// Read
+
+	void initRead(const std::string& text)
+	{
+		stack.push_back(StackItem{ ContainerType::Object, YAML::Load(text) });
+	}
+
+	void pushRead()
+	{
+		auto node = current().readingNode;
+		if (LN_REQUIRE(node.Type() == YAML::NodeType::Map || node.Type() == YAML::NodeType::Sequence)) return;
+		stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::Object, node });
+	}
+
 	void popRead()
 	{
+		stack.pop_back();
+	}
+
+	bool readName(const std::string& v)
+	{
+		auto node = current().node[v];
+		if (node.Type() != YAML::NodeType::Null) {
+			//nextName = v;
+			current().readingNode = node;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	template<typename T>
+	void readPrimitive(T* value)
+	{
+		*value = current().readingNode.as<T>();
 	}
 };
 } // namespace detail
@@ -243,10 +292,7 @@ void Serializer2::writeBool(const StringRef& name, bool value)
 void Serializer2::writeInt(int value)
 {
 	if (LN_REQUIRE(isSaving())) return;
-	//if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::Object)
-	//	m_store->stack.back().value[str_to_ns(m_store->nextName)] = value;
-	//else if (m_store->stack.back().containerType == detail::SerializerStore2::ContainerType::List)
-	//	m_store->stack.back().value.push_back(value);
+	m_store->writePrimitive<int>(value);
 }
 
 void Serializer2::writeFloat(const StringRef& name, float value)
@@ -272,7 +318,7 @@ void Serializer2::writeObject(Object* value)
 	if (LN_REQUIRE(isSaving())) return;
 	beginWriteObject();
 	auto typeName = TypeInfo::getTypeInfo(value)->name();
-	m_store->nextName = "__type";
+	m_store->nextName = ".class";
 	m_store->writeString(str_to_ns(typeName));
 	static_cast<Object*>(value)->onSerialize2(this);
 	endWriteObject();
@@ -302,6 +348,7 @@ void Serializer2::endWriteList()
 void Serializer2::beginReadObject()
 {
 	//m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, *(m_store->current().readPos) });
+	m_store->pushRead();
 }
 
 void Serializer2::endReadObject()
@@ -309,17 +356,14 @@ void Serializer2::endReadObject()
 	m_store->popRead();
 }
 
-bool Serializer2::setName(const StringRef& name)
+bool Serializer2::readName(const StringRef& name)
 {
 	if (isSaving()) {
 		LN_NOTIMPLEMENTED();
 		return true;
 	}
 	else {
-		//auto& c = m_store->current();
-		//c.readPos =c.value.find(str_to_ns(name));
-		//return c.readPos != c.value.end();
-		return false;
+		return m_store->readName(str_to_ns(name));
 	}
 }
 
@@ -332,8 +376,10 @@ bool Serializer2::readBool(const StringRef& name)
 
 int Serializer2::readInt()
 {
+	int v = 0;
+	m_store->readPrimitive(&v);
 	//return m_store->current().readPos->get<int>();
-	return 0;
+	return v;
 }
 
 float Serializer2::readFloat(const StringRef& name)
@@ -352,27 +398,27 @@ String Serializer2::readString(const StringRef& name)
 
 Ref<Object> Serializer2::readObject()
 {
-	//if (LN_REQUIRE(isLoading())) return nullptr;
-	//beginReadObject();
-	//
-	//Ref<Object> obj;
-	//auto s = m_store->current().value.find("__type");
-	//if (s != m_store->current().value.end()) {
-	//	auto typeName = ns_to_str((*s).get<std::string>());
-	//	if (!typeName.isEmpty()) {
-	//		obj = TypeInfo::createInstance(typeName);
-	//	}
-	//}
+	if (LN_REQUIRE(isLoading())) return nullptr;
+	beginReadObject();
+	
+	Ref<Object> obj;
 
-	//// fallback
-	//if (!obj) {
-	//	obj = makeObject<Object>();
-	//}
+	if (m_store->readName(".class")) {
+		std::string typeName;
+		m_store->readPrimitive(&typeName);
+		if (!typeName.empty()) {
+			obj = TypeInfo::createInstance(String::fromStdString(typeName));
+		}
+	}
 
-	//obj->onSerialize2(this);
-	//endWriteObject();
-	//return obj;
-	return nullptr;
+	// fallback
+	if (!obj) {
+		obj = makeObject<Object>();
+	}
+
+	obj->onSerialize2(this);
+	endWriteObject();
+	return obj;
 }
 
 String Serializer2::serialize(AssetModel* value, const String& basePath)
@@ -407,6 +453,7 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePa
 {
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Load;
+	sr->m_store->initRead(str_to_ns(str));
 	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
 	auto asset = makeObject<AssetModel>();
 	static_cast<Object*>(asset)->onSerialize2(sr);

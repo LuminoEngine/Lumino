@@ -128,7 +128,7 @@ public:
 	//}
 
 
-	bool setName(const StringRef& name);
+	bool readName(const StringRef& name);
 
 	//
 	/** read */
