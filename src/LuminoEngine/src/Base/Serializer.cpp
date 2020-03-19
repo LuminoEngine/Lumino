@@ -445,7 +445,7 @@ void Serializer2::writeInt64(int64_t value)
 void Serializer2::writeUInt8(uint8_t value)
 {
 	if (LN_REQUIRE(isSaving())) return;
-	m_store->writePrimitive(value);
+	m_store->writePrimitive(static_cast<int>(value));
 }
 
 void Serializer2::writeUInt16(uint16_t value)
@@ -501,7 +501,7 @@ void Serializer2::writeObject(Object* value)
 	auto typeName = TypeInfo::getTypeInfo(value)->name();
 	m_store->nextName = "class." + str_to_ns(typeName);
 	beginWriteObject();
-	static_cast<Object*>(value)->onSerialize2(this);
+	static_cast<Object*>(value)->serialize2(*this);
 	endWriteObject();
 	endWriteObject();
 #else
@@ -604,7 +604,7 @@ int64_t Serializer2::readInt64()
 
 uint8_t Serializer2::readUInt8()
 {
-	uint8_t v = 0;
+	int v = 0;
 	m_store->readPrimitive(&v);
 	return v;
 }
@@ -686,7 +686,7 @@ Ref<Object> Serializer2::readObject()
 	}
 
 	beginReadObject();
-	obj->onSerialize2(this);
+	obj->serialize2(*this);
 	endReadObject();
 
 	endReadObject();
@@ -738,7 +738,7 @@ String Serializer2::serialize(AssetModel* value, const String& basePath)
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Save;
 	sr->m_store->initWrite();
-	static_cast<Object*>(value)->onSerialize2(sr);
+	static_cast<Object*>(value)->serialize2(*sr);
 	LN_ENSURE(sr->m_store->stack.size() == 1);
 	return ns_to_str(sr->m_store->str());
 }
@@ -750,7 +750,7 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePa
 	sr->m_store->initRead(str_to_ns(str));
 	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
 	auto asset = makeObject<AssetModel>();
-	static_cast<Object*>(asset)->onSerialize2(sr);
+	static_cast<Object*>(asset)->serialize2(*sr);
 	return asset;
 }
 #endif

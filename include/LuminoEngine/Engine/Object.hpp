@@ -173,6 +173,8 @@ protected:
 	LN_SERIALIZE_CLASS_VERSION(1);
     virtual void serialize(Archive& ar);
 
+    virtual void serialize2(Serializer2& sr);
+
     /** onSerialize */
     LN_METHOD()
     virtual void onSerialize(Serializer* ar);

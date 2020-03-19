@@ -89,14 +89,17 @@ void Object::serialize(Archive& ar)
     printf("[Engine] end onSerialize\n");
 }
 
+void Object::serialize2(Serializer2& sr)
+{
+	onSerialize2(&sr);
+}
+
 void Object::onSerialize(Serializer* ar)
 {
-
 }
 
 void Object::onSerialize2(Serializer2* ar)
 {
-
 }
 
 bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
