@@ -167,6 +167,7 @@ public:
 			//sr->writeName(u"m_uint64"); sr->writeUInt64(m_uint64);
 			sr->writeName(u"m_float"); sr->writeFloat(m_float);
 			sr->writeName(u"m_double"); sr->writeDouble(m_double);
+			sr->writeName(u"m_string"); sr->writeString(m_string);
 		}
 		else {
 			if (sr->readName(u"m_bool")) m_bool = sr->readBool();
@@ -180,6 +181,7 @@ public:
 			//if (sr->readName(u"m_uint64")) m_uint64 = sr->readUInt64();
 			if (sr->readName(u"m_float")) m_float = sr->readFloat();
 			if (sr->readName(u"m_double")) m_double = sr->readDouble();
+			if (sr->readName(u"m_string")) m_string = sr->readString();
 		}
 	}
 };

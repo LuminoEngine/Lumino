@@ -450,20 +450,23 @@ void Serializer2::writeUInt8(uint8_t value)
 
 void Serializer2::writeUInt16(uint16_t value)
 {
-	if (LN_REQUIRE(isSaving())) return;
-	m_store->writePrimitive(value);
+	LN_NOTIMPLEMENTED();	// unsigned 系は未サポート。yaml-cpp の中で encode に失敗する
+	//if (LN_REQUIRE(isSaving())) return;
+	//m_store->writePrimitive(value);
 }
 
 void Serializer2::writeUInt32(uint32_t value)
 {
-	if (LN_REQUIRE(isSaving())) return;
-	m_store->writePrimitive(value);
+	LN_NOTIMPLEMENTED();	// unsigned 系は未サポート。yaml-cpp の中で encode に失敗する
+	//if (LN_REQUIRE(isSaving())) return;
+	//m_store->writePrimitive(value);
 }
 
 void Serializer2::writeUInt64(uint64_t value)
 {
-	if (LN_REQUIRE(isSaving())) return;
-	m_store->writePrimitive(value);
+	LN_NOTIMPLEMENTED();	// unsigned 系は未サポート。yaml-cpp の中で encode に失敗する
+	//if (LN_REQUIRE(isSaving())) return;
+	//m_store->writePrimitive(value);
 }
 
 void Serializer2::writeFloat(float value)
@@ -487,8 +490,7 @@ void Serializer2::writeInt(int value)
 void Serializer2::writeString(const StringRef& value)
 {
 	if (LN_REQUIRE(isSaving())) return;
-	String v = value;
-	LN_NOTIMPLEMENTED();
+	m_store->writePrimitive(str_to_ns(value));
 }
 
 void Serializer2::writeObject(Object* value)
@@ -657,11 +659,11 @@ float Serializer2::readFloat(const StringRef& name)
 	return value;
 }
 
-String Serializer2::readString(const StringRef& name)
+String Serializer2::readString()
 {
-	String value;
-	LN_NOTIMPLEMENTED();
-	return value;
+	std::string v;
+	m_store->readPrimitive(&v);
+	return ns_to_str(v);
 }
 
 Ref<Object> Serializer2::readObject()

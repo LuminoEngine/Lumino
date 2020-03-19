@@ -165,7 +165,7 @@ public:
 
 	/** read */
 	//LN_METHOD()
-	String readString(const StringRef& name);
+	String readString();
 
 	/** read */
 	//LN_METHOD()
