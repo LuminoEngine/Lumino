@@ -134,7 +134,7 @@ public:
 	//
 	/** read */
 	//LN_METHOD()
-	bool readBool(const StringRef& name);
+	bool readBool();
 
 	/** read */
 	//LN_METHOD()

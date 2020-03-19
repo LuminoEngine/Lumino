@@ -149,13 +149,17 @@ public:
 
 		bool writingPrimitiveOnly = true;	// write 時、list などを簡易表現にしたいか
 
+		// node の直接の子ノード
 		YAML::Node readingNode;
 	};
 
 	std::vector<StackItem> stack;
 	std::string nextName;
 
+	std::string m_error;
+
 	StackItem& current() { return stack.back(); }
+	StackItem& parent() { return stack[stack.size() - 2]; }
 
 	//------------------------------
 	// Write
@@ -177,11 +181,11 @@ public:
 		auto& parent = stack[stack.size() - 2];
 		
 
-		if (current.writingPrimitiveOnly) {
+		if (current.containerType == SerializerStore2::ContainerType::List && current.writingPrimitiveOnly) {
 			current.node.SetStyle(YAML::EmitterStyle::Flow);
 		}
 		else {
-			current.node.SetStyle(YAML::EmitterStyle::Default);
+			//current.node.SetStyle(YAML::EmitterStyle::Default);
 		}
 
 		if (parent.containerType == SerializerStore2::ContainerType::Object) {
@@ -194,6 +198,8 @@ public:
 			LN_UNREACHABLE();
 		}
 		stack.pop_back();
+
+		this->current().writingPrimitiveOnly = false;
 	}
 
 	template<typename T>
@@ -235,18 +241,35 @@ public:
 
 	bool pushRead(ContainerType requireContainerType, int* outItemCount)
 	{
+		//auto& p = parent();
+		//p.containerType
+
+
 		auto node = current().readingNode;
 
+
+
 		if (requireContainerType == ContainerType::Object) {
-			if (node.Type() != YAML::NodeType::Map) return false;
+			if (node.Type() != YAML::NodeType::Map) {
+				reportError("Serializer expects an Object, but wasn't actual an Object.");
+				return false;
+			}
 			stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::Object, node });
-			*outItemCount = node.size();
+			if (outItemCount) *outItemCount = node.size();
 			return true;
 		}
 		else if (requireContainerType == ContainerType::List) {
-			if (node.Type() != YAML::NodeType::Sequence) return false;
+			if (node.Type() != YAML::NodeType::Sequence) {
+				reportError("Serializer expects an List, but wasn't actual an List.");
+				return false;
+			}
 			stack.push_back(SerializerStore2::StackItem{ SerializerStore2::ContainerType::List, node });
-			*outItemCount = node.size();
+			if (outItemCount) *outItemCount = node.size();
+
+			if (node.size() > 0) {
+				current().readingNode = node[0];
+			}
+
 			return true;
 		}
 		else {
@@ -258,13 +281,15 @@ public:
 	void popRead()
 	{
 		stack.pop_back();
+		postRead();
 	}
 
 	bool readName(const std::string& v)
 	{
+		if (LN_REQUIRE(current().containerType == ContainerType::Object && current().node.Type() == YAML::NodeType::Map)) return false;
+
 		auto node = current().node[v];
 		if (node.Type() != YAML::NodeType::Null) {
-			//nextName = v;
 			current().readingNode = node;
 			return true;
 		}
@@ -276,16 +301,41 @@ public:
 	template<typename T>
 	void readPrimitive(T* value)
 	{
-		if (current().containerType == ContainerType::Object) {
-			*value = current().readingNode.as<T>();
+		auto& c = current();
+		*value = c.readingNode.as<T>();
+		postRead();
+
+		//if (c.containerType == ContainerType::Object) {
+		//}
+		//else if (c.containerType == ContainerType::List) {
+		//	*value = c.readingNode.as<T>();
+		//	c.nextIndex++;
+		//	c.readingNode = c.node[c.nextIndex];
+		//}
+		//else {
+		//	LN_UNREACHABLE();
+		//}
+	}
+
+	void postRead()
+	{
+		auto& c = current();
+		if (c.containerType == ContainerType::Object) {
+			c.readingNode = YAML::Node();
+			c.name.clear();
 		}
-		else if (current().containerType == ContainerType::List) {
-			*value = current().node[current().nextIndex].as<T>();
-			current().nextIndex++;
+		else if (c.containerType == ContainerType::List) {
+			c.nextIndex++;
+			c.readingNode = c.node[c.nextIndex];
 		}
 		else {
 			LN_UNREACHABLE();
 		}
+	}
+
+	void reportError(const char* message)
+	{
+		m_error = message;
 	}
 };
 } // namespace detail
@@ -295,6 +345,26 @@ public:
 #if 1
 //==============================================================================
 // Serializer2
+
+/*
+	Struct の serialize について
+	----------
+	Binding からも呼べるようにしたいが、struct は共通のベースクラスとか無いので、FlatAPI を個別に作っていかないとならない。
+	Serializer の API としては writeStruct() とか公開できないので、struct 側に serialize を実装する必要がある。
+
+	struct Vector3
+	{
+		LN_METHOD()
+		void srialize(Serializer* sr)
+		{
+		   sr->beginObject();	// ほとんどは Array になるかな
+		   sr->writePropertyName("x");
+		   sr->writeFloat(x);
+		   sr->endObject();
+		}
+	}
+*/
+
 LN_OBJECT_IMPLEMENT(Serializer2, Object) {}
 
 Serializer2::Serializer2()
@@ -329,7 +399,7 @@ void Serializer2::writeName(const StringRef& name)
 void Serializer2::writeBool(bool value)
 {
 	if (LN_REQUIRE(isSaving())) return;
-	LN_NOTIMPLEMENTED();
+	m_store->writePrimitive<bool>(value);
 }
 
 void Serializer2::writeInt(int value)
@@ -415,11 +485,11 @@ bool Serializer2::readName(const StringRef& name)
 	}
 }
 
-bool Serializer2::readBool(const StringRef& name)
+bool Serializer2::readBool()
 {
-	bool value = false;
-	LN_NOTIMPLEMENTED();
-	return value;
+	bool v = false;
+	m_store->readPrimitive(&v);
+	return v;
 }
 
 int Serializer2::readInt()
@@ -465,7 +535,7 @@ Ref<Object> Serializer2::readObject()
 	}
 
 	obj->onSerialize2(this);
-	endWriteObject();
+	endReadObject();
 	return obj;
 }
 
