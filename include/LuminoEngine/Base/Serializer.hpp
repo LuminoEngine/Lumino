@@ -101,13 +101,21 @@ public:
 	//LN_METHOD()
 	void writeBool(bool value);
 
+	void writeInt8(int8_t value);
+	void writeInt16(int16_t value);
+	void writeInt32(int32_t value);
+	void writeInt64(int64_t value);
+	void writeUInt8(uint8_t value);
+	void writeUInt16(uint16_t value);
+	void writeUInt32(uint32_t value);
+	void writeUInt64(uint64_t value);
+	void writeFloat(float value);
+	void writeDouble(double value);
+
 	/** write */
 	//LN_METHOD()
 	void writeInt(int value);
 
-	/** write */
-	//LN_METHOD()
-	void writeFloat(float value);
 
 	/** write */
 	//LN_METHOD()
@@ -135,6 +143,17 @@ public:
 	/** read */
 	//LN_METHOD()
 	bool readBool();
+
+	int8_t readInt8();
+	int16_t readInt16();
+	int32_t readInt32();
+	int64_t readInt64();
+	uint8_t readUInt8();
+	uint16_t readUInt16();
+	uint32_t readUInt32();
+	uint64_t readUInt64();
+	float readFloat();
+	double readDouble();
 
 	/** read */
 	//LN_METHOD()
