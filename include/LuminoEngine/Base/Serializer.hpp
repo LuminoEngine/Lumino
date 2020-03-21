@@ -259,7 +259,6 @@ private:
 	template<typename T>
 	void writeValue(Ref<T>& value) { writeObject(value); }
 	template<typename T>
-	//void writeValue(T& value) { value.serialize2(*this); }
 	void writeValue(T& value) { ln::serialize2(*this, value); }
 
 	template<typename T>
@@ -289,7 +288,6 @@ private:
 	template<typename T>
 	void readValue(Ref<T>& outValue) { outValue = dynamic_pointer_cast<T>(readObject()); }
 	template<typename T>
-	//void readValue(T& outValue) { outValue.serialize2(*this); }
 	void readValue(T& outValue) { ln::serialize2(*this, outValue); }
 
 	ArchiveMode m_mode;
