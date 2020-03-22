@@ -393,6 +393,7 @@ namespace LuminoBuild.Tasks
                         BuildProjectAndroid(builder, "tmxlite/tmxlite", reposDir,targetName, "-DTMXLITE_STATIC_LIB=ON");
                         BuildProjectAndroid(builder, "Box2D/Box2D", reposDir,targetName, "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
                         BuildProjectAndroid(builder, "Vulkan-Headers", reposDir,targetName);
+                        BuildProjectAndroid(builder, "yaml-cpp", reposDir, targetName, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                     }
                 }
 
@@ -414,6 +415,7 @@ namespace LuminoBuild.Tasks
                     BuildProjectEm(builder, "pcre", reposDir, "Emscripten", "-DPCRE2_BUILD_PCRE2_8=OFF -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=OFF");
                     BuildProjectEm(builder, "tmxlite/tmxlite", reposDir, "Emscripten", "-DTMXLITE_STATIC_LIB=ON");
                     BuildProjectEm(builder, "Box2D/Box2D", reposDir, "Emscripten", "-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON");
+                    BuildProjectEm(builder, "yaml-cpp", reposDir, "Emscripten", $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF");
                 }
 
             }
@@ -454,6 +456,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "tmxlite/tmxlite", "", reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
                         BuildProject(builder, "Box2D/Box2D", "", reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
                         BuildProject(builder, "Vulkan-Headers", "", reposDir, dirName, generator, args);
+                        BuildProject(builder, "yaml-cpp", "", reposDir, dirName, generator, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF " + args);
                     }
                 }
 
@@ -489,6 +492,7 @@ namespace LuminoBuild.Tasks
                         BuildProject(builder, "tmxlite/tmxlite", t.Config, reposDir, dirName, generator, $"-DTMXLITE_STATIC_LIB=ON " + args);
                         BuildProject(builder, "Box2D/Box2D", t.Config, reposDir, dirName, generator, $"-DBOX2D_BUILD_EXAMPLES=OFF -DBOX2D_INSTALL_DOC=OFF -DBOX2D_BUILD_SHARED=OFF -DBOX2D_BUILD_STATIC=ON -DBOX2D_INSTALL=ON " + args);
                         BuildProject(builder, "Vulkan-Headers", t.Config, reposDir, dirName, generator, args);
+                        BuildProject(builder, "yaml-cpp", t.Config, reposDir, dirName, generator, $"-DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_CONTRIB=OFF -DYAML_CPP_BUILD_TOOLS=OFF " + args);
                     }
                 }
             }
