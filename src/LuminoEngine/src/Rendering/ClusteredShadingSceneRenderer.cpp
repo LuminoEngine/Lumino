@@ -152,6 +152,7 @@ ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = requestedMeshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
+	classSet.drawMode = ShaderTechniqueClass_DrawMode::Primitive;
 	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
 	if (technique)
 		return technique;
@@ -264,6 +265,7 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = requestedMeshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
+	classSet.drawMode = ShaderTechniqueClass_DrawMode::Primitive;
     ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(shader, classSet);
 	if (technique)
 		return technique;

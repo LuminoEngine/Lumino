@@ -404,6 +404,7 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
     outClassSet->phase = ShaderTechniqueClass_Phase::Geometry;
     outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
     outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+    outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Primitive;
     if (String::compare(str, u"Default", CaseSensitivity::CaseInsensitive) == 0)
     {
         outClassSet->defaultTechnique = true;
@@ -423,6 +424,9 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
             else if (String::compare(token, u"UnLighting", CaseSensitivity::CaseInsensitive) == 0) {
                 outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Unlit;
             }
+            else if (String::compare(token, u"Instancing", CaseSensitivity::CaseInsensitive) == 0) {
+                outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Instancing;
+            }
         }
     }
 }
@@ -432,7 +436,8 @@ bool ShaderTechniqueClass::equals(const ShaderTechniqueClass& a, const ShaderTec
     return a.ligiting == b.ligiting &&
            a.phase == b.phase &&
            a.meshProcess == b.meshProcess &&
-           a.shadingModel == b.shadingModel;
+           a.shadingModel == b.shadingModel &&
+           a.drawMode == b.drawMode;
 }
 
 } // namespace detail
