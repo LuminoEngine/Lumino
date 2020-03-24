@@ -422,8 +422,8 @@ list(APPEND LN_EXTERNAL_LIBS VulkanHeaders)
 # yaml-cpp
 ln_make_external_find_path(yamlcpp_ROOT "yaml-cpp")
 
-find_library(yamlcpp_LIBRARY_RELEASE NAMES libyaml-cppmt libyaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
-find_library(yamlcpp_LIBRARY_DEBUG NAMES libyaml-cppmtd libyaml-cppd libyaml-cppmt libyaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp libyaml-cppmt libyaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd libyaml-cppmtd libyaml-cppd yaml-cpp libyaml-cppmt libyaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
 
 add_library(yamlcpp STATIC IMPORTED)
 set_target_properties(yamlcpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
