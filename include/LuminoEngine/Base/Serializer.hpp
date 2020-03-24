@@ -6,6 +6,8 @@
 namespace ln {
 class AssetModel;
 
+template<typename T> void serialize2(Serializer2& sr, List<T>& value);
+
 /** */
 LN_CLASS()
 class Serializer

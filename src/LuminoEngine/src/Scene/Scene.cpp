@@ -54,7 +54,7 @@ void Scene::init()
 
 }
 
-void Scene::onCreated()
+void Scene::onStart()
 {
 }
 

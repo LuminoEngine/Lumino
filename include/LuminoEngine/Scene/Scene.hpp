@@ -29,7 +29,7 @@ public:
 protected:
 	/** 開始処理 */
 	LN_METHOD()
-	virtual void onCreated(); // TODO: onStart かな。
+	virtual void onStart();
 
 	/** 終了処理 */
 	LN_METHOD()

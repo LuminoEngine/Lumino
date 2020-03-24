@@ -21,6 +21,7 @@ class DrawElementList;
 class WorldSceneGraphRenderingContext;
 }
 
+/** 3D シーンを表すクラスです。 */
 LN_CLASS()
 class World
 	: public Object
