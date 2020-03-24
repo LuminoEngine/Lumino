@@ -141,7 +141,7 @@ void SceneManager::executeCommands()
 				m_activeScene = cmd.scene;
 				if (m_activeScene != nullptr)
 				{
-					m_activeScene->onCreated();
+					m_activeScene->onStart();
                     m_activeScene->onActivated();
 				}
 				break;
@@ -151,7 +151,7 @@ void SceneManager::executeCommands()
 			{
 				m_sceneStack.push(m_activeScene);
 				m_activeScene = cmd.scene;
-				m_activeScene->onCreated();
+				m_activeScene->onStart();
                 m_activeScene->onActivated();
 				break;
 			}

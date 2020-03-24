@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <vector>
 #include <memory>
+#include <mutex>
 #include <fcntl.h>
 #include <sys/stat.h>
 #ifdef _WIN32
@@ -257,6 +258,7 @@ static LoggerInterface g_logger;
 static bool g_logEnabled = true;
 static std::string g_logFilePath = "LuminoLog.txt";
 static LogLevel g_maxLevel = LogLevel::Info;
+static std::mutex g_logMutex;
 
 static const char* GetLogLevelString(LogLevel level)
 {
@@ -306,6 +308,8 @@ void LoggerInterface::operator+=(const LogRecord& record)
 {
 	if (m_impl->hasAdapter())
 	{
+        std::lock_guard<std::mutex> lock(g_logMutex);
+
 		tm t;
 		char date[64];
 		LogHelper::GetLocalTime(&t, &record.getTime().time);

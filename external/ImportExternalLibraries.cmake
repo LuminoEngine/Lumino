@@ -1,4 +1,6 @@
 ﻿
+message("LN_TARGET_ARCH: ${LN_TARGET_ARCH}")
+
 # FIXME: Emscripten と Android のビルド時、find_library が sysroot 以外を探せるように強制。
 #set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
@@ -416,6 +418,18 @@ list(APPEND LN_EXTERNAL_LIBS VulkanHeaders)
 #endif()
 
 
+#--------------------------------------
+# yaml-cpp
+ln_make_external_find_path(yamlcpp_ROOT "yaml-cpp")
+
+find_library(yamlcpp_LIBRARY_RELEASE NAMES yaml-cpp libyaml-cppmt libyaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+find_library(yamlcpp_LIBRARY_DEBUG NAMES yaml-cppd libyaml-cppmtd libyaml-cppd yaml-cpp libyaml-cppmt libyaml-cpp PATHS ${yamlcpp_ROOT} PATH_SUFFIXES lib NO_CMAKE_SYSTEM_PATH)
+
+add_library(yamlcpp STATIC IMPORTED)
+set_target_properties(yamlcpp PROPERTIES IMPORTED_LOCATION_RELEASE "${yamlcpp_LIBRARY_RELEASE}")
+set_target_properties(yamlcpp PROPERTIES IMPORTED_LOCATION_DEBUG "${yamlcpp_LIBRARY_DEBUG}")
+set_target_properties(yamlcpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp_ROOT}/include)
+list(APPEND LN_EXTERNAL_LIBS yamlcpp)
 
 #--------------------------------------
 # Effekseer

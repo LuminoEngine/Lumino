@@ -558,20 +558,7 @@ Result VulkanDevice::createLogicalDevice()
             queueCreateInfos[i].pQueuePriorities = &queuePriorities[offset];
             offset += queueCreateInfos[i].queueCount;
         }
-
     }
-
-	//std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	//std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value()/*, indices.presentFamily.value()*/ };
-
-	//for (uint32_t queueFamily : uniqueQueueFamilies) {
-	//	VkDeviceQueueCreateInfo queueCreateInfo = {};
-	//	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	//	queueCreateInfo.queueFamilyIndex = queueFamily;
-	//	queueCreateInfo.queueCount = 1;
-	//	queueCreateInfo.pQueuePriorities = &queuePriority;
-	//	queueCreateInfos.push_back(queueCreateInfo);
-	//}
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
@@ -1228,55 +1215,20 @@ Result VulkanSwapChain::init(VulkanDevice* deviceContext, PlatformWindow* window
 #error Invalid target.
 #endif
 
-
-
-
-
 	if (!createNativeSwapchain(backbufferSize)) {
 		return false;
 	}
 
-
-
-    //m_swapchainRenderTarget = makeRef<VulkanSwapchainRenderTargetTexture>();
-    //m_swapchainRenderTarget->init(m_deviceContext);
-    //m_swapchainRenderTarget->reset(swapChainExtent.width, swapChainExtent.height, swapChainImageFormat, swapChainImages, swapChainImageViews);
-
-
-
     m_imageAvailableSemaphores.resize(maxFrameCount());
-    //m_renderFinishedSemaphores.resize(maxFrameCount());
-    ////inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-    ////VkFenceCreateInfo fenceInfo = {};
-    ////fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    ////fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
     for (size_t i = 0; i < maxFrameCount(); i++) {
         LN_VK_CHECK(vkCreateSemaphore(device, &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_imageAvailableSemaphores[i]));
-        //LN_VK_CHECK(vkCreateSemaphore(device, &semaphoreInfo, m_deviceContext->vulkanAllocator(), &m_renderFinishedSemaphores[i]));
-
-        //if ( != VK_SUCCESS ||
-        //    vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]) != VK_SUCCESS/* ||
-        //    vkCreateFence(device, &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS*/) {
-        //    throw std::runtime_error("failed to create synchronization objects for a frame!");
-        //}
     }
     m_currentFrame = 0;
 
-
-    //m_inFlightCommandBuffers.resize(m_swapchainRenderTargets.size());
-    //for (size_t i = 0; i < m_inFlightCommandBuffers.size(); i++) {
-    //    m_inFlightCommandBuffers[i] = makeRef<VulkanCommandBuffer>();
-    //    if (!m_inFlightCommandBuffers[i]->init(m_deviceContext)) {
-    //        return false;
-    //    }
-    //}
-
-	//m_colorBuffer = makeRef<VulkanRenderTarget>();
 	return true;
 }
 
@@ -1290,20 +1242,6 @@ void VulkanSwapChain::dispose()
 	m_imageAvailableSemaphores.clear();
 
     cleanupNativeSwapchain();
-
-    //for (auto c : m_inFlightCommandBuffers) {
-    //    if (c) {
-    //        c->dispose();
-    //    }
-    //}
-    //m_inFlightCommandBuffers.clear();
-
-
-    //for (auto& x : m_renderFinishedSemaphores) {
-    //    vkDestroySemaphore(device, x, m_deviceContext->vulkanAllocator());
-    //}
-    //m_renderFinishedSemaphores.clear();
-
 
     if (m_surface) {
         vkDestroySurfaceKHR(m_deviceContext->vulkanInstance(), m_surface, m_deviceContext->vulkanAllocator());
@@ -1513,11 +1451,6 @@ void VulkanSwapChain::present()
     //}
 
     m_currentFrame = (m_currentFrame + 1) % maxFrameCount();
-
-
-    // TODO: 必要？
-    //vkDeviceWaitIdle(m_deviceContext->vulkanDevice());
-	//::Sleep(1000);
 }
 
 VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -1731,14 +1664,6 @@ Result VulkanRenderPass2::init(VulkanDevice* device, const DeviceFramebufferStat
 	subpass.preserveAttachmentCount = 0;
 	subpass.pPreserveAttachments = nullptr;
 
-	//VkSubpassDependency dependency = {};
-	//dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	//dependency.dstSubpass = 0;
-	//dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	//dependency.srcAccessMask = 0;
-	//dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	//dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
 	std::array<VkSubpassDependency, 2> dependencies;
 
 	// この RenderPass より前の RenderPass で内容が作られることを示す
@@ -1910,20 +1835,6 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-	//auto bindingDescription = vertexDeclaration->vertexBindingDescriptions(); //Vertex::getBindingDescription();
-	////auto attributeDescriptions = Vertex::getAttributeDescriptions();
-	//std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-	//{
-	//	auto& attrs = vertexDeclaration->vertexAttributeDescriptionSources();
-	//	for (int i = 0; i < attrs.size(); i++) {
-	//		VkVertexInputAttributeDescription desc;
-	//		desc.location = i;  // UnifiedShader からセマンティクス情報取れなければやむを得ないので連番
-	//		desc.binding = attrs[i].binding;
-	//		desc.format = attrs[i].format;
-	//		desc.offset = attrs[i].offset;
-	//		attributeDescriptions.push_back(desc);
-	//	}
-	//}
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
     {
         const auto& attrs = shaderPass->attributes();
@@ -1942,7 +1853,6 @@ Result VulkanPipeline2::init(VulkanDevice* deviceContext, const DevicePipelineSt
             }
         }
     }
-    //{
 
     const auto& bindingDescription = vertexDeclaration->vertexBindingDescriptions();
 	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescription.size());

@@ -84,6 +84,8 @@ private:
     LN_SERIALIZE_CLASS_VERSION(1);
     void serialize(Archive& ar);
 
+    void onSerialize2(Serializer2* sr) override;
+
     String m_assetType;
 	Ref<Object> m_target;
     Ref<AssetModel> m_parent;

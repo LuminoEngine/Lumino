@@ -34,6 +34,9 @@ class LN_API String
 public:
     static const String Empty;
 
+    using value_type = Char;
+    size_t size() const { return length(); }
+
     String();
     ~String();
     String(const String& str);

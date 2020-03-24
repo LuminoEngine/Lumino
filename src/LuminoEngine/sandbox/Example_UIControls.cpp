@@ -6,7 +6,7 @@ using namespace ln;
 class App_Example_UIControls : public Application
 {
 
-    virtual void onInit() override
+    void onInit() override
     {
         //Engine::mainCamera()->setBackgroundColor(Color::Gray);
 
@@ -16,7 +16,7 @@ class App_Example_UIControls : public Application
         Engine::mainUIView()->addElement(combobox1);
     }
 
-    virtual void onUpdate() override
+    void onUpdate() override
     {
     }
 };

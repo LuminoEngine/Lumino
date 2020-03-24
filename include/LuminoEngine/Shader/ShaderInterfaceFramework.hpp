@@ -245,6 +245,12 @@ enum class ShaderTechniqueClass_ShadingModel : uint8_t
     Unlit,
 };
 
+enum class ShaderTechniqueClass_DrawMode : uint8_t
+{
+    Primitive, // default
+    Instancing,
+};
+
 // Rendering モジュールで、Pass が ShaderTechnique を検索するときに使うデータ
 struct ShaderTechniqueClass
 {
@@ -253,6 +259,7 @@ struct ShaderTechniqueClass
     ShaderTechniqueClass_Phase phase;
     ShaderTechniqueClass_MeshProcess meshProcess;
     ShaderTechniqueClass_ShadingModel shadingModel;
+    ShaderTechniqueClass_DrawMode drawMode;
 
     static void parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet);
     static bool equals(const ShaderTechniqueClass& a, const ShaderTechniqueClass& b);

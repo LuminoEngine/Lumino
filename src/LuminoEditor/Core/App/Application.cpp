@@ -51,6 +51,9 @@ EditorApplication::~EditorApplication()
 
 ln::Result EditorApplication::init()
 {
+#ifdef LN_DEBUG
+    lna::Workspace::developMode = true;
+#endif
     lna::AppData::current()->load();
 
 	ln::EngineSettings::setMainWindowSize(1600, 800);
@@ -59,6 +62,7 @@ ln::Result EditorApplication::init()
     ln::EngineSettings::setGraphicsAPI(ln::GraphicsAPI::Vulkan);
     ln::detail::EngineManager::s_settings.defaultObjectsCreation = false;
 	ln::detail::EngineDomain::engineContext()->initializeEngineManager();
+    ln::detail::EngineDomain::engineContext()->engineManager()->initializeAllManagers();
 
 	auto root = ln::detail::EngineManager::findRepositoryRootForTesting();
     ln::Font::registerFontFromFile(ln::Path(root, u"tools/mplus-font/mplus-1c-regular.ttf"));
