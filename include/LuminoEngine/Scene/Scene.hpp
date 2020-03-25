@@ -12,7 +12,9 @@ class World;
 class WorldObject;
 class RenderingContext;
 namespace ed { class SceneAsset; }
-namespace detail { class SceneManager; }
+namespace detail {
+	class SceneManager; class SceneConductor;
+}
 
 /**
  * シーンのベースクラスです。
@@ -94,6 +96,7 @@ public: // TODO: internal
 
     friend class ed::SceneAsset;
 	friend class detail::SceneManager;
+	friend class detail::SceneConductor;
     friend class World;
 };
 

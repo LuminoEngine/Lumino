@@ -8,20 +8,39 @@
 using namespace ln;
 
 
-
 class TitleScene : public Scene
 {
 	void onStart() override
 	{
+		Debug::print(u"TitleScene");
+		Engine::renderView()->setBackgroundColor(Color::White);
+	}
 
+	void onUpdate() override;
+};
+
+class GameScene : public Scene
+{
+	void onStart() override
+	{
+		Debug::print(u"GameScene");
+		Engine::renderView()->setBackgroundColor(Color::Gray);
 	}
 
 	void onUpdate() override
 	{
-
+		if (Input::triggered(u"submit")) {
+			Engine::world()->gotoScene(makeObject<TitleScene>());
+		}
 	}
 };
 
+void TitleScene::onUpdate()
+{
+	if (Input::triggered(u"submit")) {
+		Engine::world()->gotoScene(makeObject<GameScene>());
+	}
+}
 
 class App : public Application
 {
@@ -30,6 +49,7 @@ class App : public Application
 		Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
+		Engine::world()->gotoScene(makeObject<TitleScene>());
 	}
 
 	void onUpdate() override

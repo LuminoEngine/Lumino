@@ -9,6 +9,7 @@ class Material;
 class World;
 
 namespace detail {
+class SceneConductor;
 
 class SceneManager
 	: public RefObject
@@ -26,8 +27,8 @@ public:
 	void gotoScene(Scene* scene);
 	void callScene(Scene* scene);
 	void returnScene();
-#endif
 	Scene* activeScene() const { return m_activeScene; }
+#endif
 
 	void updateFrame();
 
@@ -46,33 +47,10 @@ public:
     bool autoAddingToActiveWorld = true;
 
 private:
-	void executeCommands();
-	void releaseAndTerminateAllRunningScenes();
-
-	enum class EventType
-	{
-		Goto,
-		Call,
-		Return,
-		/*
-		SMC_CHANGE_LOADING,
-		SMC_PUSH_LOADING
-		*/
-	};
-
-	struct EventCommsnd
-	{
-		EventType			type;
-		Ref<Scene>   scene;
-	};
-
-	Ref<Scene>				m_activeScene;
-	std::deque<EventCommsnd>		m_eventQueue;
-	std::stack<Ref<Scene>>	m_sceneStack;	// not contains m_activeScene
-
     World* m_activeWorld;
     Ref<Shader> m_atmosphereShader;
 	Ref<Raycaster> m_raycasterCache;
+
 
 	Ref<Material> m_primitiveMeshDefaultMaterial;
 };

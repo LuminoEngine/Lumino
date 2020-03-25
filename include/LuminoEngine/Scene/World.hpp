@@ -19,6 +19,7 @@ struct CameraInfo;
 class EngineManager;
 class DrawElementList;
 class WorldSceneGraphRenderingContext;
+class SceneConductor;
 }
 
 /** 3D シーンを表すクラスです。 */
@@ -54,6 +55,12 @@ public:
     Scene* masterScene() const;
 	void addScene(Scene* scene);
 
+
+    void gotoScene(Scene* scene);
+    void callScene(Scene* scene);
+    void returnScene();
+    Scene* activeScene() const;
+
 protected:
     // update sequence
     virtual void onPreUpdate(float elapsedSeconds);
@@ -87,6 +94,7 @@ public: // TODO: internal
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
     Ref<EffectContext> m_effectContext;
     Ref<Scene> m_masterScene;
+    Ref<detail::SceneConductor> m_sceneConductor;
 
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;
