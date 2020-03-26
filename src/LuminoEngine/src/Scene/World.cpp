@@ -227,6 +227,8 @@ void World::onPostUpdate(float elapsedSeconds)
     if (auto* scene = m_sceneConductor->activeScene()) {
         scene->onPostUpdate(elapsedSeconds);
     }
+
+    m_sceneConductor->transitionEffect()->onUpdateFrame(elapsedSeconds);
 }
 
 //void World::serialize(Archive& ar)

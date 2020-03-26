@@ -28,7 +28,7 @@ class GameScene : public Level
 	{
 		Debug::print(u"GameScene");
 		Engine::renderView()->setBackgroundColor(Color::Gray);
-		g_TransitionImageEffect->startFadeOut(5);
+		//g_TransitionImageEffect->startFadeOut(5);
 	}
 
 	void onUpdate() override
@@ -54,9 +54,9 @@ class App : public Application
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
 
-		auto transitionImageEffect = TransitionImageEffect::create();
-	    Engine::renderView()->addImageEffect(transitionImageEffect);
-		g_TransitionImageEffect = transitionImageEffect;
+		//auto transitionImageEffect = TransitionImageEffect::create();
+	 //   Engine::renderView()->addImageEffect(transitionImageEffect);
+		//g_TransitionImageEffect = transitionImageEffect;
 
 		Engine::world()->gotoScene(makeObject<TitleScene>());
 	}

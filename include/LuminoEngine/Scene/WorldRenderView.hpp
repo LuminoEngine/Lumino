@@ -66,6 +66,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    detail::ImageEffectRenderer* acquireImageEffectPresenter();
     void createGridPlane();
     void renderGridPlane(RenderingContext* renderingContext, RenderView* renderView);
     void adjustGridPlane(const ViewFrustum& viewFrustum, RenderView* renderView);

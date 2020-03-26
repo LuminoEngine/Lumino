@@ -122,10 +122,8 @@ void WorldRenderView::setCamera(Camera* camera)
 
 void WorldRenderView::addImageEffect(ImageEffect* effect)
 {
-	if (!m_imageEffectRenderer) {
-		m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
-	}
-	m_imageEffectRenderer->addImageEffect(effect);
+    auto* presenter = acquireImageEffectPresenter();
+    presenter->addImageEffect(effect);
 }
 
 void WorldRenderView::removeImageEffect(ImageEffect* effect)
@@ -365,8 +363,12 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             detail::EngineDomain::effectManager()->testDraw(renderingContext);
             //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
 
+            if (!renderingContext->imageEffects().isEmpty()) {
+                acquireImageEffectPresenter();
+            }
 
 			if (m_imageEffectRenderer) {
+                m_imageEffectRenderer->applyInSceneImageEffects(renderingContext->imageEffects());
 				m_imageEffectRenderer->render(renderingContext, renderTarget);
 			}
         }
@@ -378,6 +380,14 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 
 		//graphicsContext->resetState();
 	}
+}
+
+detail::ImageEffectRenderer* WorldRenderView::acquireImageEffectPresenter()
+{
+    if (!m_imageEffectRenderer) {
+        m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
+    }
+    return m_imageEffectRenderer;
 }
 
 void WorldRenderView::createGridPlane()

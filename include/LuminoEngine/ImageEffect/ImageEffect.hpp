@@ -24,5 +24,7 @@ private:
     friend class detail::ImageEffectRenderer;
 };
 
+//using ImageEffectInstanceRenderer = ImageEffect;
+
 } // namespace ln
 

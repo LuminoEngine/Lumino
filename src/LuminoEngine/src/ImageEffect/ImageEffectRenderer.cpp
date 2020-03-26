@@ -38,9 +38,22 @@ void ImageEffectRenderer::updateFrame(float elapsedSeconds)
     }
 }
 
+void ImageEffectRenderer::applyInSceneImageEffects(const List<ImageEffect*>& imageEffects)
+{
+    m_imageEffectRenderers.resize(imageEffects.size());
+    for (int i = 0; i < imageEffects.size(); i++) {
+        // TODO: ImageEffect のうち、更新部分と Render 部分を分離して、Render 部分だけここで複製する
+        ImageEffect* im = imageEffects[i];
+        m_imageEffectRenderers[i] = (im);
+    }
+}
+
 void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture* inout)
 {
-    if (!m_imageEffects.isEmpty())
+
+
+
+    if (!m_imageEffects.isEmpty() || !m_imageEffectRenderers.isEmpty())
     {
 		Ref<RenderTargetTexture> primaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
 		Ref<RenderTargetTexture> secondaryTarget = RenderTargetTexture::getTemporary(inout->width(), inout->height(), TextureFormat::RGBA8, false);
@@ -59,15 +72,28 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
         context->pushState(true);
         context->setDepthBuffer(nullptr);
 
-        for (int i = 0; i < m_imageEffects.size(); i++)
+        int i = 0;
+        for (auto& renderer : m_imageEffects)
         {
             if (i == 0) {
-                m_imageEffects[i]->onRender(context, inout, secondaryTarget);
+                renderer->onRender(context, inout, secondaryTarget);
             }
             else {
-                m_imageEffects[i]->onRender(context, primaryTarget, secondaryTarget);
+                renderer->onRender(context, primaryTarget, secondaryTarget);
             }
             std::swap(primaryTarget, secondaryTarget);
+            i++;
+        }
+        for (auto& renderer : m_imageEffectRenderers)
+        {
+            if (i == 0) {
+                renderer->onRender(context, inout, secondaryTarget);
+            }
+            else {
+                renderer->onRender(context, primaryTarget, secondaryTarget);
+            }
+            std::swap(primaryTarget, secondaryTarget);
+            i++;
         }
 
         context->resetState();

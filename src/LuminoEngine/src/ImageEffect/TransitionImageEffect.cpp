@@ -38,14 +38,14 @@ void TransitionImageEffect::init()
 void TransitionImageEffect::startFadeOut(float duration)
 {
     m_mode = Mode::FadeOut;
-    m_factor.start(1.0f, duration);
+    m_factor.start(0.0f, 1.0f, duration);
     m_freezeRequested = true;
 }
 
 void TransitionImageEffect::startFadeIn(float duration)
 {
     m_mode = Mode::FadeIn;
-    m_factor.start(0.0f, duration);
+    m_factor.start(1.0f, 0.0f,  duration);
     m_freezeRequested = true;
 }
 
