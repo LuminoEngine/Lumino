@@ -5,6 +5,7 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
+#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
@@ -262,6 +263,8 @@ void World::renderObjects()
 	m_renderingContext->pushState(true);
     m_effectContext->render(m_renderingContext);
     m_renderingContext->popState();
+
+    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
 }
 
 void World::renderGizmos(RenderingContext* context)

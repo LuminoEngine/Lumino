@@ -18,6 +18,7 @@ class Mesh;
 class MeshContainer;
 class RenderViewPoint;
 class RenderView;
+class ImageEffect;
 namespace detail {
 class FontRequester;
 class FlexGlyphRun;
@@ -218,6 +219,9 @@ public:
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;
 	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
+	void collectImageEffect(ImageEffect* effect) { m_imageEffects.add(effect); }
+	const List<ImageEffect*>& imageEffects() const { return m_imageEffects; }
+	void clearImageEffects() { m_imageEffects.clear(); }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();
@@ -228,6 +232,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 protected:  // TODO:
 	detail::RenderingManager* m_manager;
 	Ref<detail::DrawElementListBuilder> m_builder;
+	List<ImageEffect*> m_imageEffects;
 };
 
 } // namespace ln

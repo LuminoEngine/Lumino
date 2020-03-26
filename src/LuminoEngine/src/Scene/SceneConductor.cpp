@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 #include "SceneManager.hpp"
@@ -41,6 +42,17 @@ Level* SceneConductor::activeScene()
     return detail::EngineDomain::sceneManager()->activeScene();
 }
 #endif
+
+SceneConductor::SceneConductor()
+{
+	m_transitionEffect = makeObject<TransitionImageEffect>();
+}
+
+//void SceneConductor::init()
+//{
+//
+//}
+//
 void SceneConductor::gotoScene(Level* scene)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;

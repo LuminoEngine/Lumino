@@ -185,7 +185,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         if (m_targetWorld) {
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
             renderingContext->baseRenderView = this;
-
+            renderingContext->clearImageEffects();
 
 
 			if (clearMode() == RenderViewClearMode::ColorAndDepth) {

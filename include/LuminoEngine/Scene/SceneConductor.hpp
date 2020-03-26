@@ -11,7 +11,10 @@ namespace detail {
 class SceneConductor : public RefObject
 {
 public:
-	//SceneConductor();
+	SceneConductor();
+	//void init();
+
+	const Ref<TransitionImageEffect>& transitionEffect() const { return m_transitionEffect; }
 
     ///** Level を読み込み、アクティブな World にアタッチします。 */
     //static Level* loadScene(const StringRef& sceneAssetFilePath);
@@ -48,7 +51,7 @@ private:
 	std::deque<EventCommsnd> m_eventQueue;
 	std::stack<Ref<Level>> m_sceneStack;	// not contains m_activeScene
 
-	//Ref<TransitionImageEffect> m_TransitionEffect;
+	Ref<TransitionImageEffect> m_transitionEffect;
 };
 
 } // namespace detail
