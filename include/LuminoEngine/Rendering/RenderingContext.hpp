@@ -17,6 +17,7 @@ class MeshResource;
 class Mesh;
 class MeshContainer;
 class RenderViewPoint;
+class RenderView;
 namespace detail {
 class FontRequester;
 class FlexGlyphRun;
@@ -213,6 +214,7 @@ public:
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
+	RenderView* baseRenderView = nullptr;
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;
 	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
