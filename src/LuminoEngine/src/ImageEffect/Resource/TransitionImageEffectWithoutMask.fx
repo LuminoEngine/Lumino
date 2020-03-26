@@ -36,7 +36,7 @@ float4 PS_Main(PS_Input input) : COLOR0
     color.rgb = lerp(
         color.rgb,
         tex2D(_OverrayTexture, input.UV).rgb,
-        (1.0 - _Factor));
+        _Factor);
     return color;
 }
 

@@ -15,6 +15,8 @@ public:
     void startFadeIn(float duration);
     void startCrossFade(float duration, int vague = 20);
 
+    bool isRunning() const { return !m_factor.isFinished(); }
+
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
     virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;

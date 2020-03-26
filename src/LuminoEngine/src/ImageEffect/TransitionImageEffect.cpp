@@ -63,13 +63,13 @@ void TransitionImageEffect::onUpdateFrame(float elapsedSeconds)
 
 void TransitionImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    if (m_factor >= 1.0f) {
+    if (!isRunning()) {
         // No effect apply.
         m_copyMaterial->setMainTexture(source);
         context->blit(m_copyMaterial, destination);
     }
     else if (m_mode == Mode::FadeIn || m_mode == Mode::FadeOut) {
-        renderFadeInOut(context, source, destination, m_factor);
+        renderFadeInOut(context, source, destination, m_factor.value());
     }
     else if (m_mode == Mode::CrossFade) {
         renderCrossFade(context, source, destination);
@@ -157,7 +157,7 @@ void TransitionImageEffect::renderCrossFade(RenderingContext* context, RenderTar
     else
     {
         // マスクテクスチャ不使用
-        m_withoutMaskMaterial->setFloat(u"_Factor", m_factor);
+        m_withoutMaskMaterial->setFloat(u"_Factor", m_factor.value());
         m_withoutMaskMaterial->setVector(u"_ColorScale", Vector4(1, 1, 1, 1));
         m_withoutMaskMaterial->setTexture(u"_OverrayTexture", m_overrayTarget);
         material = m_withoutMaskMaterial;
