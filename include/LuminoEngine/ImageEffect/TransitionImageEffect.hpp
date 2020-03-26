@@ -11,7 +11,9 @@ class TransitionImageEffect
 public:
     static Ref<TransitionImageEffect> create();
 
-    void start(float duration, int vague = 20);
+    void startFadeOut(float duration);
+    void startFadeIn(float duration);
+    void startCrossFade(float duration, int vague = 20);
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
@@ -22,8 +24,18 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-    bool preparePreviousFrameTarget(int width, int height);
+    enum class Mode
+    {
+        FadeOut,
+        FadeIn,
+        CrossFade,
+    };
 
+    bool preparePreviousFrameTarget(int width, int height);
+    void renderFadeInOut(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor);
+    void renderCrossFade(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
+
+    Mode m_mode;
 
     // Rendering result of previous frame.
     Ref<RenderTargetTexture> m_previousFrameTarget;
@@ -31,8 +43,8 @@ private:
     // Transition source image.
     Ref<RenderTargetTexture> m_overrayTarget;
 
-
-    float m_factor;
+    // 0:no effect, 1:full overray
+    EasingValue<float> m_factor;
 
     Ref<Material> m_withoutMaskMaterial;
     Ref<Material> m_copyMaterial;

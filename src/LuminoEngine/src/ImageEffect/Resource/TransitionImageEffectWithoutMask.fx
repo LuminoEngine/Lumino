@@ -2,6 +2,7 @@
 #include <Lumino.fxh>
 
 float _Factor;
+float4 _ColorScale;
 sampler2D _OverrayTexture;
 
 struct VS_Input
@@ -31,7 +32,7 @@ VS_Output VS_Main(VS_Input input)
 
 float4 PS_Main(PS_Input input) : COLOR0
 {
-    float4 color = tex2D(ln_MaterialTexture, input.UV);
+    float4 color = tex2D(ln_MaterialTexture, input.UV) * _ColorScale;
     color.rgb = lerp(
         color.rgb,
         tex2D(_OverrayTexture, input.UV).rgb,

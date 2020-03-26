@@ -16,7 +16,7 @@ class TitleScene : public Level
 	{
 		Debug::print(u"TitleScene");
 		Engine::renderView()->setBackgroundColor(Color::White);
-		g_TransitionImageEffect->start(5);
+		//g_TransitionImageEffect->start(5);
 	}
 
 	void onUpdate() override;
@@ -28,7 +28,7 @@ class GameScene : public Level
 	{
 		Debug::print(u"GameScene");
 		Engine::renderView()->setBackgroundColor(Color::Gray);
-		g_TransitionImageEffect->start(5);
+		g_TransitionImageEffect->startFadeOut(5);
 	}
 
 	void onUpdate() override
