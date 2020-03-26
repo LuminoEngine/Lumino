@@ -4,8 +4,18 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
-class Scene;
+class Level;
 class Camera;
 class Raycaster;
 class RaycastResult;
+
+enum class LevelTransitionMode
+{
+	/**  */
+	FadeInOut,
+
+	/**  */
+	CrossFade,
+};
+
 } // namespace ln

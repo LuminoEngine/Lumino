@@ -20,8 +20,8 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(World, Object) {}
 
 World::World()
-	: m_masterScene(makeObject<Scene>())
-    , m_sceneList(makeList<Ref<Scene>>())
+	: m_masterScene(makeObject<Level>())
+    , m_sceneList(makeList<Ref<Level>>())
     , m_timeScale(1.0f)
 {
     m_masterScene->m_ownerWorld = this;
@@ -117,12 +117,12 @@ WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
     return nullptr;
 }
 
-Scene* World::masterScene() const
+Level* World::masterScene() const
 {
     return m_masterScene;
 }
 
-void World::addScene(Scene* scene)
+void World::addScene(Level* scene)
 {
 	if (LN_REQUIRE(scene)) return;
 	if (LN_REQUIRE(!scene->m_ownerWorld)) return;
@@ -131,12 +131,12 @@ void World::addScene(Scene* scene)
 	scene->m_initialUpdate = true;
 }
 
-void World::gotoScene(Scene* scene)
+void World::gotoScene(Level* scene)
 {
     m_sceneConductor->gotoScene(scene);
 }
 
-void World::callScene(Scene* scene)
+void World::callScene(Level* scene)
 {
     m_sceneConductor->callScene(scene);
 }
@@ -146,7 +146,7 @@ void World::returnScene()
     m_sceneConductor->returnScene();
 }
 
-Scene* World::activeScene() const
+Level* World::activeScene() const
 {
     return m_sceneConductor->activeScene();
 }

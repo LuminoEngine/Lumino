@@ -19,9 +19,9 @@ namespace detail {
 /**
  * シーンのベースクラスです。
  */
-// Note: Scene はひとつの World に属し、World からの通知により onUpdate() や m_rootWorldObjectList の Object へさらに通知したりする。
+// Note: Level はひとつの World に属し、World からの通知により onUpdate() や m_rootWorldObjectList の Object へさらに通知したりする。
 LN_CLASS()
-class Scene
+class Level
 	: public Object
 {
 	LN_OBJECT;
@@ -70,8 +70,8 @@ protected:
 
 
 LN_CONSTRUCT_ACCESS:
-	Scene();
-	virtual ~Scene();
+	Level();
+	virtual ~Level();
 
 	/** Initialize */
 	LN_METHOD()
@@ -98,6 +98,12 @@ public: // TODO: internal
 	friend class detail::SceneManager;
 	friend class detail::SceneConductor;
     friend class World;
+};
+
+// utils
+class Scene
+{
+
 };
 
 //namespace ed {

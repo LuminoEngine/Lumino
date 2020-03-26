@@ -64,11 +64,11 @@ void RigidBody2DComponent::addCollisionShape(CollisionShape2D* shape)
     m_body->addCollisionShape(shape);
 }
 
-void RigidBody2DComponent::onAttachedScene(Scene* newOwner)
+void RigidBody2DComponent::onAttachedScene(Level* newOwner)
 {
 }
 
-void RigidBody2DComponent::onDetachedScene(Scene* oldOwner)
+void RigidBody2DComponent::onDetachedScene(Level* oldOwner)
 {
 }
 
@@ -175,11 +175,11 @@ void TriggerBody2DComponent::addCollisionShape(CollisionShape2D* shape)
     m_body->addCollisionShape(shape);
 }
 
-void TriggerBody2DComponent::onAttachedScene(Scene* newOwner)
+void TriggerBody2DComponent::onAttachedScene(Level* newOwner)
 {
 }
 
-void TriggerBody2DComponent::onDetachedScene(Scene* oldOwner)
+void TriggerBody2DComponent::onDetachedScene(Level* oldOwner)
 {
 }
 

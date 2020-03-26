@@ -276,7 +276,7 @@ void WorldObject::serialize(Archive& ar)
     }
 }
 
-void WorldObject::attachScene(Scene* scene)
+void WorldObject::attachScene(Level* scene)
 {
 	if (LN_REQUIRE(scene)) return;
 	if (LN_REQUIRE(!m_scene)) return;
@@ -289,7 +289,7 @@ void WorldObject::attachScene(Scene* scene)
 void WorldObject::detachScene()
 {
 	if (m_scene) {
-		Scene* old = m_scene;
+		Level* old = m_scene;
 		m_scene = nullptr;
 
 		for (auto& c : *m_components) {

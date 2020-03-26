@@ -10,7 +10,7 @@ using namespace ln;
 
 TransitionImageEffect* g_TransitionImageEffect;
 
-class TitleScene : public Scene
+class TitleScene : public Level
 {
 	void onStart() override
 	{
@@ -22,7 +22,7 @@ class TitleScene : public Scene
 	void onUpdate() override;
 };
 
-class GameScene : public Scene
+class GameScene : public Level
 {
 	void onStart() override
 	{

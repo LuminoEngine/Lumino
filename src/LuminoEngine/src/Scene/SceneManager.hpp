@@ -20,14 +20,14 @@ public:
 	void init();
 	void dispose();
 
-    Scene* loadScene(const StringRef& sceneAssetFilePath);
-    void unloadScene(Scene* scene);
+    Level* loadScene(const StringRef& sceneAssetFilePath);
+    void unloadScene(Level* scene);
 
 #if 0
-	void gotoScene(Scene* scene);
-	void callScene(Scene* scene);
+	void gotoScene(Level* scene);
+	void callScene(Level* scene);
 	void returnScene();
-	Scene* activeScene() const { return m_activeScene; }
+	Level* activeScene() const { return m_activeScene; }
 #endif
 
 	void updateFrame();

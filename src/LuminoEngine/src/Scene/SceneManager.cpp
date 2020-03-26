@@ -57,7 +57,7 @@ void SceneManager::init()
 	m_primitiveMeshDefaultMaterial->setMetallic(0.0f);
 
     EngineDomain::registerType<World>();
-    EngineDomain::registerType<Scene>();
+    EngineDomain::registerType<Level>();
     EngineDomain::registerType<Sprite>();
 
     EngineDomain::registerType<Tileset>();
@@ -74,14 +74,14 @@ void SceneManager::dispose()
 	//releaseAndTerminateAllRunningScenes();
 }
 
-Scene* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
+Level* SceneManager::loadScene(const StringRef& sceneAssetFilePath)
 {
-    auto scene = dynamic_pointer_cast<Scene>(Assets::loadAsset(sceneAssetFilePath));
+    auto scene = dynamic_pointer_cast<Level>(Assets::loadAsset(sceneAssetFilePath));
     activeWorld()->addScene(scene);
     return nullptr;
 }
 
-void SceneManager::unloadScene(Scene* scene)
+void SceneManager::unloadScene(Level* scene)
 {
     activeWorld()->m_sceneList->remove(scene);
 }

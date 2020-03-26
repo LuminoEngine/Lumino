@@ -49,7 +49,7 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 
 	auto tilesetAsset = context->assetDatabase()->openAsset(u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1");
 
-    auto scene = ln::makeObject<ln::Scene>();
+    auto scene = ln::makeObject<ln::Level>();
 
 	auto tilemap = ln::makeObject<ln::Tilemap>();
 	tilemap->setShadingModel(ln::ShadingModel::Unlit);

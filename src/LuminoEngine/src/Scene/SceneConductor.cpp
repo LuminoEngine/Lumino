@@ -10,23 +10,23 @@ namespace detail {
 //==============================================================================
 // SceneConductor
 
-//Scene* SceneConductor::loadScene(const StringRef& sceneAssetFilePath)
+//Level* SceneConductor::loadScene(const StringRef& sceneAssetFilePath)
 //{
 //    return detail::EngineDomain::sceneManager()->loadScene(sceneAssetFilePath);
 //}
 //
-//void SceneConductor::unloadScene(Scene* scene)
+//void SceneConductor::unloadScene(Level* scene)
 //{
 //    detail::EngineDomain::sceneManager()->unloadScene(scene);
 //}
 
 #if 0
-void SceneConductor::gotoScene(Scene* scene)
+void SceneConductor::gotoScene(Level* scene)
 {
     detail::EngineDomain::sceneManager()->gotoScene(scene);
 }
 
-void SceneConductor::callScene(Scene* scene)
+void SceneConductor::callScene(Level* scene)
 {
     detail::EngineDomain::sceneManager()->callScene(scene);
 }
@@ -36,12 +36,12 @@ void SceneConductor::returnScene()
     detail::EngineDomain::sceneManager()->returnScene();
 }
 
-Scene* SceneConductor::activeScene()
+Level* SceneConductor::activeScene()
 {
     return detail::EngineDomain::sceneManager()->activeScene();
 }
 #endif
-void SceneConductor::gotoScene(Scene* scene)
+void SceneConductor::gotoScene(Level* scene)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
 	EventCommsnd c;
@@ -50,7 +50,7 @@ void SceneConductor::gotoScene(Scene* scene)
 	m_eventQueue.push_back(c);
 }
 
-void SceneConductor::callScene(Scene* scene)
+void SceneConductor::callScene(Level* scene)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
 	EventCommsnd c;
@@ -68,7 +68,7 @@ void SceneConductor::returnScene()
 	m_eventQueue.push_back(c);
 }
 
-Scene* SceneConductor::activeScene() const
+Level* SceneConductor::activeScene() const
 {
 	return m_activeScene;
 }
@@ -107,7 +107,7 @@ void SceneConductor::executeCommands()
 		/////////////// 呼び出し元へ戻る
 		case EventType::Return:
 		{
-			Ref<Scene> oldScene = m_activeScene;
+			Ref<Level> oldScene = m_activeScene;
 			m_activeScene = m_sceneStack.top();
 			oldScene->onDeactivated();
 			oldScene->onClosed();

@@ -161,7 +161,7 @@ void TilemapSceneEditor::onOpened(ln::AssetModel* asset, ln::UIContainerElement*
     }
 
     // attach as main scene
-    auto scene = dynamic_cast<ln::Scene*>(asset->target());
+    auto scene = dynamic_cast<ln::Level*>(asset->target());
     m_mainWorld->addScene(scene);
    
     m_tilemap = static_cast<ln::Tilemap*>(m_mainWorld->findObjectByComponentType(ln::TypeInfo::getTypeInfo<ln::TilemapComponent>()));
@@ -311,8 +311,8 @@ void TilemapSceneListPane::init()
 
 void TilemapSceneListPane::addButton_onClick(ln::UIEventArgs* e)
 {
-    auto Scene = ln::makeObject<ln::Scene>();
-    auto asset = ln::makeObject<ln::AssetModel>(Scene);
+    auto Level = ln::makeObject<ln::Level>();
+    auto asset = ln::makeObject<ln::AssetModel>(Level);
 
     auto project = lna::Workspace::instance()->project();
 

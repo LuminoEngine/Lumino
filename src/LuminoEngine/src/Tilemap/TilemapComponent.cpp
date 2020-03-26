@@ -85,7 +85,7 @@ void TilemapComponent::onStart()
 	worldObject()->scene()->world()->physicsWorld2D()->addPhysicsObject(m_rigidBody);
 }
 
-void TilemapComponent::onDetachedScene(Scene* oldOwner)
+void TilemapComponent::onDetachedScene(Level* oldOwner)
 {
 	// TODO: onStop とか。
 	if (m_rigidBody) {

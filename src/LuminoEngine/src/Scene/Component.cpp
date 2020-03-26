@@ -51,11 +51,11 @@ void Component::onDetaching(WorldObject* owner)
 {
 }
 
-void Component::onAttachedScene(Scene* newOwner)
+void Component::onAttachedScene(Level* newOwner)
 {
 }
 
-void Component::onDetachedScene(Scene* oldOwner)
+void Component::onDetachedScene(Level* oldOwner)
 {
 }
 

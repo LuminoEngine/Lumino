@@ -18,7 +18,7 @@ class UIControl;
 class PhysicsWorld;
 class PhysicsWorld2D;
 class World;
-class Scene;
+class Level;
 class WorldRenderView;
 class Camera;
 class AmbientLight;
@@ -223,7 +223,7 @@ private:
     Ref<UIRenderView> m_mainUIRenderView;   // m_mainViewport の ViewBox 内部に配置する
     Ref<UIControl> m_mainUIRoot;   // m_mainUIRenderView の RootElement
     Ref<World> m_mainWorld;
-    Ref<Scene> m_mainScene;
+    Ref<Level> m_mainScene;
     Ref<Camera> m_mainCamera;
     Ref<WorldRenderView> m_mainWorldRenderView;
     Ref<PhysicsWorld> m_mainPhysicsWorld;

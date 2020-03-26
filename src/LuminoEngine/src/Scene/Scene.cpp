@@ -1,5 +1,5 @@
 ﻿/*
- Note: Scene なんて必要なの？
+ Note: Level なんて必要なの？
     主な目的は、
     1. オブジェクト間の相互作用ルールを記述する
     2. コールツリーを利用して、アクティブなルールを制御する
@@ -21,11 +21,11 @@
 namespace ln {
 
 //==============================================================================
-// Scene
+// Level
 
-LN_OBJECT_IMPLEMENT(Scene, Object) {}
+LN_OBJECT_IMPLEMENT(Level, Object) {}
 
-Scene::Scene()
+Level::Level()
     : m_ownerWorld(nullptr)
 	, m_rootWorldObjectList(makeList<Ref<WorldObject>>())
 	, m_initialUpdate(true)
@@ -45,36 +45,36 @@ Scene::Scene()
 
 }
 
-Scene::~Scene()
+Level::~Level()
 {
 }
 
-void Scene::init()
+void Level::init()
 {
 
 }
 
-void Scene::onStart()
+void Level::onStart()
 {
 }
 
-void Scene::onClosed()
+void Level::onClosed()
 {
 }
 
-void Scene::onActivated()
+void Level::onActivated()
 {
 }
 
-void Scene::onDeactivated()
+void Level::onDeactivated()
 {
 }
 
-void Scene::onUpdate()
+void Level::onUpdate()
 {
 }
 
-void Scene::onPostUpdate(float elapsedSeconds)
+void Level::onPostUpdate(float elapsedSeconds)
 {
     for (WorldObject* obj : m_destroyList) {
         //obj->removeFromWorld();
@@ -85,7 +85,7 @@ void Scene::onPostUpdate(float elapsedSeconds)
     m_destroyList.clear();
 }
 
-void Scene::update(float elapsedSeconds)
+void Level::update(float elapsedSeconds)
 {
     // onUpdate 内で新しい WorldObject が作成され、m_rootWorldObjectList に add される場合に備えて
     // イテレータによる列挙は行わない。新しく追加されたものは、このループで
@@ -98,25 +98,25 @@ void Scene::update(float elapsedSeconds)
 }
 
 
-void Scene::setup(const ln::Path& filePath)
+void Level::setup(const ln::Path& filePath)
 {
 	m_filePath = filePath;
 }
 
-void Scene::save()
+void Level::save()
 {
 }
 
-void Scene::load()
+void Level::load()
 {
 }
 
-void Scene::clear()
+void Level::clear()
 {
 	m_rootWorldObjectList->clear();
 }
 
-void Scene::addObject(WorldObject* obj)
+void Level::addObject(WorldObject* obj)
 {
 	if (LN_REQUIRE(obj)) return;
     if (obj->m_scene) {
@@ -130,12 +130,12 @@ void Scene::addObject(WorldObject* obj)
     obj->attachScene(this);
 }
 
-void Scene::removeObject(WorldObject* obj)
+void Level::removeObject(WorldObject* obj)
 {
 	m_rootWorldObjectList->remove(obj);
 }
 
-void Scene::removeRootObject(WorldObject* obj)
+void Level::removeRootObject(WorldObject* obj)
 {
     if (m_rootWorldObjectList->remove(obj)) {
         if (obj->destroyed()) {
@@ -145,7 +145,7 @@ void Scene::removeRootObject(WorldObject* obj)
     }
 }
 
-void Scene::removeAllObjects()
+void Level::removeAllObjects()
 {
     for (int i = m_rootWorldObjectList->size() - 1; i >= 0; i--)
     {
@@ -163,7 +163,7 @@ void Scene::removeAllObjects()
 }
 
 // Multi-Lang 対応のため、テンプレートではなく基本は TypeInfo で検索する
-WorldObject* Scene::findObjectByComponentType(const TypeInfo* type) const
+WorldObject* Level::findObjectByComponentType(const TypeInfo* type) const
 {
     class LocalVisitor : public detail::IWorldObjectVisitor
     {
@@ -192,7 +192,7 @@ WorldObject* Scene::findObjectByComponentType(const TypeInfo* type) const
     return visitor.result;
 }
 
-void Scene::updateObjectsWorldMatrix()
+void Level::updateObjectsWorldMatrix()
 {
     for (auto& obj : m_rootWorldObjectList)
     {
@@ -200,7 +200,7 @@ void Scene::updateObjectsWorldMatrix()
     }
 }
 
-void Scene::onPreUpdate(float elapsedSeconds)
+void Level::onPreUpdate(float elapsedSeconds)
 {
 	if (m_initialUpdate) {
 		for (auto& obj : m_rootWorldObjectList) {
@@ -216,7 +216,7 @@ void Scene::onPreUpdate(float elapsedSeconds)
     }
 }
 
-void Scene::renderObjects(RenderingContext* context)
+void Level::renderObjects(RenderingContext* context)
 {
     for (auto& obj : m_rootWorldObjectList)
     {
@@ -230,7 +230,7 @@ void Scene::renderObjects(RenderingContext* context)
     }
 }
 
-void Scene::renderGizmos(RenderingContext* context)
+void Level::renderGizmos(RenderingContext* context)
 {
     for (auto& obj : m_rootWorldObjectList) {
         for (auto& c : *(obj->m_components)) {
@@ -239,7 +239,7 @@ void Scene::renderGizmos(RenderingContext* context)
     }
 }
 
-void Scene::serialize(Archive& ar)
+void Level::serialize(Archive& ar)
 {
     Object::serialize(ar);
 
