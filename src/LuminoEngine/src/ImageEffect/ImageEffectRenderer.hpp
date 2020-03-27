@@ -5,6 +5,7 @@ class RenderTargetTexture;
 class RenderingContext;
 class ImageEffect;
 using ImageEffectInstanceRenderer = ImageEffect;
+class ImageEffectInstance;
 class Material;
 namespace detail {
 
@@ -13,6 +14,7 @@ class ImageEffectRenderer
 {
 public:
     ImageEffectRenderer();
+    void dispose();
     void addImageEffect(ImageEffect* effect);
     void removeImageEffect(ImageEffect* effect);
     void updateFrame(float elapsedSeconds);
@@ -20,9 +22,20 @@ public:
     void render(RenderingContext* context, RenderTargetTexture* inout);
 
 private:
+    struct Instance
+    {
+        Ref<ImageEffectInstance> instance;
+        bool found = false;
+    };
+
+    void refreshImageEffectInstances();
+
     RenderingManager* m_manager;
     List<Ref<ImageEffect>> m_imageEffects;
-    List<Ref<ImageEffectInstanceRenderer>> m_imageEffectRenderers;
+    //List<Ref<ImageEffectInstanceRenderer>> m_imageEffectRenderers;
+
+    List<Instance> m_imageEffectInstances;
+    List<Instance> m_collectedImageEffectInstances;
 	Ref<Material> m_copyMaterial;
 };
 

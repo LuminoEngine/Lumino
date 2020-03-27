@@ -3,6 +3,7 @@
 #include "ImageEffect.hpp"
 
 namespace ln {
+namespace detail { class ToneImageEffectInstance; }
 class Material;
 
 class ToneImageEffect
@@ -16,7 +17,7 @@ public:
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    virtual Ref<ImageEffectInstance> onCreateInstance() override;
 
 LN_CONSTRUCT_ACCESS:
     ToneImageEffect();
@@ -24,9 +25,28 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-    Ref<Material> m_material;
     EasingValue<Vector4> m_toneValue;
+
+    friend class detail::ToneImageEffectInstance;
 };
 
+namespace detail {
+
+class ToneImageEffectInstance
+    : public ImageEffectInstance
+{
+protected:
+    void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+
+LN_CONSTRUCT_ACCESS:
+    ToneImageEffectInstance();
+    bool init(ToneImageEffect* owner);
+
+private:
+    ToneImageEffect* m_owner;
+    Ref<Material> m_material;
+};
+
+} // namespace detail
 } // namespace ln
 

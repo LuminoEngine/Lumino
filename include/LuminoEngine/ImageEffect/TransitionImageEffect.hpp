@@ -5,6 +5,7 @@
 namespace ln {
 class Material;
 class Texture;
+namespace detail { class TransitionImageEffectInstance; }
 
 class TransitionImageEffect
 	: public ImageEffect
@@ -20,7 +21,9 @@ public:
 
 public:	// TODO: protected
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    //virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    //virtual void onPostRender() override;
 
 LN_CONSTRUCT_ACCESS:
     TransitionImageEffect();
@@ -34,11 +37,37 @@ private:
         CrossFade,
     };
 
+
+    Mode m_mode;
+
+    Ref<Texture> m_maskTexture;
+
+    // 0:no effect, 1:full overray
+    EasingValue<float> m_factor;
+
+    int m_freezeRevision;
+
+    friend class detail::TransitionImageEffectInstance;
+};
+
+namespace detail {
+
+class TransitionImageEffectInstance
+    : public ImageEffectInstance
+{
+protected:
+    void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+
+LN_CONSTRUCT_ACCESS:
+    TransitionImageEffectInstance();
+    bool init(TransitionImageEffect* owner);
+
+private:
     bool preparePreviousFrameTarget(int width, int height);
     void renderFadeInOut(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor);
     void renderCrossFade(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination);
 
-    Mode m_mode;
+    TransitionImageEffect* m_owner;
 
     // Rendering result of previous frame.
     Ref<RenderTargetTexture> m_previousFrameTarget;
@@ -46,18 +75,13 @@ private:
     // Transition source image.
     Ref<RenderTargetTexture> m_overrayTarget;
 
-    Ref<Texture> m_maskTexture;
-
-    // 0:no effect, 1:full overray
-    EasingValue<float> m_factor;
-
     Ref<Material> m_withoutMaskMaterial;
     Ref<Material> m_withMaskMaterial;
     Ref<Material> m_copyMaterial;
-
-    // freeze を次回の onRender の中で行うかどうか
-    bool m_freezeRequested;
+    Texture* m_maskTexture;
+    int m_freezeRevision;
 };
 
+} // namespace detail
 } // namespace ln
 
