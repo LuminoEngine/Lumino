@@ -100,9 +100,22 @@ public: // TODO: internal
     friend class World;
 };
 
-// utils
+
+/** ワールド 及び レベル 管理のユーティリティです。 */
+LN_CLASS(Static)
 class Scene
 {
+public:
+	/** 指定したレベルへ遷移します。既存の全てのレベルは非アクティブ化または削除されます。 */
+	static void gotoLevel(Level* level);
+
+	static void callLevel(Level* level);
+
+	static void returnLevel();
+
+	static Level* activeLevel();
+
+
 
 };
 
