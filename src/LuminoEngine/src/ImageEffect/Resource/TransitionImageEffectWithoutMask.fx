@@ -43,6 +43,6 @@ technique Forward_Geometry_UnLighting
     pass P0
     {
         VertexShader = VS_Main;
-        PixelShader     = PS_Main;
+        PixelShader = PS_Main;
     }
 }

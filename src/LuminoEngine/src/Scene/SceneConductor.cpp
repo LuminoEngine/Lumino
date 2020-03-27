@@ -60,7 +60,9 @@ void SceneConductor::gotoScene(Level* scene)
 	c.type = EventType::Goto;
 	c.scene = scene;
 	m_eventQueue.push_back(c);
-	m_transitionEffect->startFadeOut(5);
+
+	//m_transitionEffect->startFadeOut(5);
+	m_transitionEffect->startCrossFade(5);
 }
 
 void SceneConductor::callScene(Level* scene)

@@ -4,6 +4,7 @@
 
 namespace ln {
 class Material;
+class Texture;
 
 class TransitionImageEffect
 	: public ImageEffect
@@ -13,7 +14,7 @@ public:
 
     void startFadeOut(float duration);
     void startFadeIn(float duration);
-    void startCrossFade(float duration, int vague = 20);
+    void startCrossFade(float duration);
 
     bool isRunning() const { return !m_factor.isFinished(); }
 
@@ -45,10 +46,13 @@ private:
     // Transition source image.
     Ref<RenderTargetTexture> m_overrayTarget;
 
+    Ref<Texture> m_maskTexture;
+
     // 0:no effect, 1:full overray
     EasingValue<float> m_factor;
 
     Ref<Material> m_withoutMaskMaterial;
+    Ref<Material> m_withMaskMaterial;
     Ref<Material> m_copyMaterial;
 
     // freeze を次回の onRender の中で行うかどうか

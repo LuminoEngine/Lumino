@@ -26,10 +26,16 @@ TransitionImageEffect::TransitionImageEffect()
 void TransitionImageEffect::init()
 {
     ImageEffect::init();
-    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithoutMask.fx");
 
     m_withoutMaskMaterial = makeObject<Material>();
-    m_withoutMaskMaterial->setShader(shader);
+    m_withoutMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithoutMask.fx"));
+    
+    m_withMaskMaterial = makeObject<Material>();
+    m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithMask.fx"));
+    m_withMaskMaterial->setFloat(u"_Vague", 0.0);
+
+    m_maskTexture = Texture2D::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Transition1.png");
+    m_withMaskMaterial->setTexture(u"_MaskTexture", m_maskTexture);
 
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->shadingModel = ShadingModel::Unlit;
@@ -49,10 +55,10 @@ void TransitionImageEffect::startFadeIn(float duration)
     m_freezeRequested = true;
 }
 
-void TransitionImageEffect::startCrossFade(float duration, int vague)
+void TransitionImageEffect::startCrossFade(float duration)
 {
     m_mode = Mode::CrossFade;
-    m_factor.start(0.0f, duration);
+    m_factor.start(1.0f, 0.0f, duration);
     m_freezeRequested = true;
 }
 
@@ -107,7 +113,7 @@ void TransitionImageEffect::renderFadeInOut(RenderingContext* context, RenderTar
     //}
 
     Material* material = nullptr;
-    if (0)
+    if (m_maskTexture)
     {
         // マスクテクスチャ使用
         LN_NOTIMPLEMENTED();
@@ -149,14 +155,15 @@ void TransitionImageEffect::renderCrossFade(RenderingContext* context, RenderTar
 
 
     Material* material = nullptr;
-    if (0)
+    if (m_maskTexture)
     {
-        // マスクテクスチャ使用
-        LN_NOTIMPLEMENTED();
+        m_withMaskMaterial->setFloat(u"_Factor", m_factor.value());
+        m_withMaskMaterial->setVector(u"_ColorScale", Vector4(1, 1, 1, 1));
+        m_withMaskMaterial->setTexture(u"_OverrayTexture", m_overrayTarget);
+        material = m_withMaskMaterial;
     }
     else
     {
-        // マスクテクスチャ不使用
         m_withoutMaskMaterial->setFloat(u"_Factor", m_factor.value());
         m_withoutMaskMaterial->setVector(u"_ColorScale", Vector4(1, 1, 1, 1));
         m_withoutMaskMaterial->setTexture(u"_OverrayTexture", m_overrayTarget);
