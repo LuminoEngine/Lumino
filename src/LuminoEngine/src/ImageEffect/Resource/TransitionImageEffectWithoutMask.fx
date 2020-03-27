@@ -32,10 +32,11 @@ VS_Output VS_Main(VS_Input input)
 
 float4 PS_Main(PS_Input input) : COLOR0
 {
-    return lerp(
-        tex2D(ln_MaterialTexture, input.UV),
-        tex2D(_OverrayTexture, input.UV) * _ColorScale,
-        _Factor);
+    float3 c = lerp(
+        tex2D(ln_MaterialTexture, input.UV).rgb,
+        tex2D(_OverrayTexture, input.UV).rgb * _ColorScale.rgb,
+        saturate(_Factor));
+    return float4(c, 1.0);
 }
 
 technique Forward_Geometry_UnLighting

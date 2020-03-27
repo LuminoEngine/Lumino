@@ -44,6 +44,8 @@ Level* SceneConductor::activeScene()
 #endif
 
 SceneConductor::SceneConductor()
+	: m_transitionMode(LevelTransitionMode::FadeInOut)
+	, m_transitionEffectDuration(1.0)
 {
 	m_transitionEffect = makeObject<TransitionImageEffect>();
 }
@@ -53,34 +55,71 @@ SceneConductor::SceneConductor()
 //
 //}
 //
+
+void SceneConductor::setTransitionEffectColor(const Color& value)
+{
+	m_transitionEffect->setFadeColor(value);
+}
+
+const Color& SceneConductor::transitionEffectColor() const
+{
+	return m_transitionEffect->fadeColor();
+}
+
+void SceneConductor::setTransitionMaskTexture(Texture* value)
+{
+	m_transitionEffect->setMaskTexture(value);
+}
+
+Texture* SceneConductor::transitionMaskTexture() const
+{
+	return m_transitionEffect->maskTexture();
+}
+
+void SceneConductor::setTransitionEffectVague(float value)
+{
+	m_transitionEffect->setVague(value);
+}
+
+float SceneConductor::transitionEffectVague() const
+{
+	return m_transitionEffect->vague();
+}
+
 void SceneConductor::gotoScene(Level* scene)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
+	//if (LN_REQUIRE(!isTransitionEffectRunning())) return;
 	EventCommsnd c;
 	c.type = EventType::Goto;
 	c.scene = scene;
 	m_eventQueue.push_back(c);
 
-	//m_transitionEffect->startFadeOut(5);
-	m_transitionEffect->startCrossFade(5);
+	attemptFadeOutTransition();
 }
 
 void SceneConductor::callScene(Level* scene)
 {
 	if (LN_REQUIRE(scene != nullptr)) return;
+	//if (LN_REQUIRE(!isTransitionEffectRunning())) return;
 	EventCommsnd c;
 	c.type = EventType::Call;
 	c.scene = scene;
 	m_eventQueue.push_back(c);
+
+	attemptFadeOutTransition();
 }
 
 void SceneConductor::returnScene()
 {
 	if (LN_REQUIRE(m_activeScene != nullptr)) return;
+	//if (LN_REQUIRE(!isTransitionEffectRunning())) return;
 	EventCommsnd c;
 	c.type = EventType::Return;
 	c.scene = nullptr;
 	m_eventQueue.push_back(c);
+
+	attemptFadeOutTransition();
 }
 
 Level* SceneConductor::activeScene() const
@@ -88,11 +127,21 @@ Level* SceneConductor::activeScene() const
 	return m_activeScene;
 }
 
+bool SceneConductor::isTransitionEffectRunning() const
+{
+	return m_transitionEffect->isRunning();
+}
+
 void SceneConductor::executeCommands()
 {
+	if (m_transitionMode == LevelTransitionMode::FadeInOut && isTransitionEffectRunning()) {
+		return;
+	}
+
 	while (!m_eventQueue.empty())
 	{
 		const EventCommsnd& cmd = m_eventQueue.front();
+		bool fadein = true;//(m_activeScene != nullptr);
 
 		switch (cmd.type)
 		{
@@ -108,6 +157,10 @@ void SceneConductor::executeCommands()
 				m_activeScene->onStart();
 				m_activeScene->onActivated();
 			}
+
+			if (fadein) {
+				attemptFadeInTransition();
+			}
 			break;
 		}
 		/////////////// 呼び出し
@@ -117,6 +170,10 @@ void SceneConductor::executeCommands()
 			m_activeScene = cmd.scene;
 			m_activeScene->onStart();
 			m_activeScene->onActivated();
+
+			if (fadein) {
+				attemptFadeInTransition();
+			}
 			break;
 		}
 		/////////////// 呼び出し元へ戻る
@@ -126,6 +183,10 @@ void SceneConductor::executeCommands()
 			m_activeScene = m_sceneStack.top();
 			oldScene->onDeactivated();
 			oldScene->onClosed();
+
+			if (fadein) {
+				attemptFadeInTransition();
+			}
 			break;
 		}
 		}
@@ -146,6 +207,43 @@ void SceneConductor::releaseAndTerminateAllRunningScenes()
 	{
 		m_sceneStack.top()->onClosed();
 		m_sceneStack.pop();
+	}
+}
+
+void SceneConductor::attemptFadeOutTransition()
+{
+	if (m_activeScene) {
+		switch (m_transitionMode)
+		{
+		case LevelTransitionMode::None:
+			break;
+		case LevelTransitionMode::FadeInOut:
+			m_transitionEffect->startFadeOut(m_transitionEffectDuration / 2.0);
+			break;
+		case LevelTransitionMode::CrossFade:
+			m_transitionEffect->startCrossFade(m_transitionEffectDuration);
+			break;
+		default:
+			LN_UNREACHABLE();
+			break;
+		}
+	}
+}
+
+void SceneConductor::attemptFadeInTransition()
+{
+	switch (m_transitionMode)
+	{
+	case LevelTransitionMode::None:
+		break;
+	case LevelTransitionMode::FadeInOut:
+		m_transitionEffect->startFadeIn(m_transitionEffectDuration / 2.0);
+		break;
+	case LevelTransitionMode::CrossFade:
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
 	}
 }
 

@@ -16,6 +16,9 @@
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
+#include <LuminoEngine/Scene/World.hpp>
+#include <LuminoEngine/Scene/SceneConductor.hpp>
+#include "../Engine/EngineManager.hpp"
 #include "SceneManager.hpp"
 
 namespace ln {
@@ -252,7 +255,83 @@ void Level::serialize(Archive& ar)
     }
 }
 
+//==============================================================================
+// Scene
 
+void Scene::gotoLevel(Level* level)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->gotoScene(level);
+}
+
+void Scene::callLevel(Level* level)
+{
+    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->callScene(level);
+}
+
+void Scene::returnLevel()
+{
+    detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->returnScene();
+}
+
+Level* Scene::activeLevel()
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->activeScene();
+}
+
+bool Scene::isTransitionEffectRunning()
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->isTransitionEffectRunning();
+}
+
+void Scene::setTransitionMode(LevelTransitionMode value)
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->setTransitionMode(value);
+}
+
+LevelTransitionMode Scene::transitionMode()
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->transitionMode();
+}
+
+void Scene::setTransitionDuration(float value)
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->setTransitionEffectDuration(value);
+}
+
+float Scene::transitionDuration()
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->transitionEffectDuration();
+}
+
+void Scene::setTransitionEffectColor(const Color& value)
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->setTransitionEffectColor(value);
+}
+
+const Color& Scene::transitionEffectColor()
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->transitionEffectColor();
+}
+
+void Scene::setTransitionEffectMaskTexture(Texture* value)
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->setTransitionMaskTexture(value);
+}
+
+Texture* Scene::transitionEffectMaskTexture()
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->transitionMaskTexture();
+}
+
+void Scene::setTransitionEffectVague(float value)
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->setTransitionEffectVague(value);
+}
+
+float Scene::transitionEffectVague()
+{
+    return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->transitionEffectVague();
+}
 
 
 ////==============================================================================

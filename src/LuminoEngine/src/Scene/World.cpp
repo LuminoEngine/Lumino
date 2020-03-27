@@ -166,6 +166,7 @@ void World::updateObjectsWorldMatrix()
 
 void World::updateFrame(float elapsedSeconds)
 {
+    m_sceneConductor->transitionEffect()->onUpdateFrame(elapsedSeconds);
     m_sceneConductor->executeCommands();
 
     float t = elapsedSeconds * m_timeScale;
@@ -227,8 +228,6 @@ void World::onPostUpdate(float elapsedSeconds)
     if (auto* scene = m_sceneConductor->activeScene()) {
         scene->onPostUpdate(elapsedSeconds);
     }
-
-    m_sceneConductor->transitionEffect()->onUpdateFrame(elapsedSeconds);
 }
 
 //void World::serialize(Archive& ar)

@@ -11,6 +11,8 @@ class ImageEffect
 	: public Object
 {
 protected:
+	virtual void onDispose(bool explicitDisposing) override;
+
 	Ref<ImageEffectInstance> createInstance();
 
     virtual void onUpdateFrame(float elapsedSeconds);
@@ -25,7 +27,7 @@ LN_CONSTRUCT_ACCESS:
     void updateFrame(float elapsedSeconds);
 
 private:
-	List<ImageEffectInstance*> m_instances;
+	//List<ImageEffectInstance*> m_instances;
 
     friend class detail::ImageEffectRenderer;
 };
@@ -39,7 +41,8 @@ protected:
 	virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 private:
-	ImageEffect* m_owner = nullptr;
+	//ImageEffect* m_owner = nullptr;
+	Ref<ImageEffect> m_owner;
 	bool m_ownerDisposed = false;
 
 	friend class ImageEffect;

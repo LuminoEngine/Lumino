@@ -11,6 +11,8 @@ class RaycastResult;
 
 enum class LevelTransitionMode
 {
+	None,
+
 	/**  */
 	FadeInOut,
 

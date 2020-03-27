@@ -35,6 +35,9 @@ public:
 	/** アセットが保存されている場所へのアクセス優先度を設定します。(default:DirectoryFirst) */
 	static void setAssetStorageAccessPriority(AssetStorageAccessPriority value);
 	
+	/** フレームレートを設定します。(default: 60) */
+	LN_METHOD()
+	static void setFrameRate(int value);
 //
 //	/** 指定したフォルダをアセットフォルダとして扱います。アセットフォルダのファイルにアクセスするには Assets クラスの機能を使用します。 */
 //	static void addAssetsDirectory(const StringRef& directoryPath);

@@ -37,8 +37,14 @@ float steprange(float gray)
     
     //float t = steprange(gray);
     float t = (1.0 - _Factor);// * (1.0 * _Vague);
-    t *= 1.0 / _Vague;  // ぼかし範囲が大きいほど時間を加速
+
+    float range = 1.0 + _Vague;
+
+    //t *= 1.0 / _Vague;  // ぼかし範囲が大きいほど時間を加速
+    //t -= _Vague;
+    t *= range;
     t -= _Vague;
+
     float a = (gray - t) / _Vague;
     //a += _Vague * 2;
     return a;
@@ -60,10 +66,12 @@ float4 PS_Main(PS_Input input) : COLOR0
 
     float a = (_Vague > 0.0) ? steprange(gray) : step(1.0 - _Factor, gray);
 
-    return lerp(
-        tex2D(ln_MaterialTexture, input.UV),
-        tex2D(_OverrayTexture, input.UV) * _ColorScale,
-        clamp(a, 0.0, 1.0));
+
+    float3 c = lerp(
+        tex2D(ln_MaterialTexture, input.UV).rgb,
+        tex2D(_OverrayTexture, input.UV).rgb * _ColorScale.rgb,
+        saturate(a));
+    return float4(c, 1.0);
 }
 
 technique Forward_Geometry_UnLighting

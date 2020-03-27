@@ -14,9 +14,16 @@ class TitleScene : public Level
 {
 	void onStart() override
 	{
+		//auto sprite = Sprite::create(Texture2D::load(u"picture1"));
+
 		Debug::print(u"TitleScene");
 		Engine::renderView()->setBackgroundColor(Color::White);
 		//g_TransitionImageEffect->start(5);
+		Scene::setTransitionMode(LevelTransitionMode::CrossFade);
+		Scene::setTransitionEffectColor(Color::Red);
+		//Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition1"));
+		//Scene::setTransitionEffectVague(0);
+		Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition2"));
 	}
 
 	void onUpdate() override;
@@ -33,16 +40,16 @@ class GameScene : public Level
 
 	void onUpdate() override
 	{
-		if (Input::triggered(u"submit")) {
-			Engine::world()->gotoScene(makeObject<TitleScene>());
+		if (!Scene::isTransitionEffectRunning() && Input::triggered(u"submit")) {
+			Scene::gotoLevel(makeObject<TitleScene>());
 		}
 	}
 };
 
 void TitleScene::onUpdate()
 {
-	if (Input::triggered(u"submit")) {
-		Engine::world()->gotoScene(makeObject<GameScene>());
+	if (!Scene::isTransitionEffectRunning() && Input::triggered(u"submit")) {
+		Scene::gotoLevel(makeObject<GameScene>());
 	}
 }
 
@@ -69,6 +76,7 @@ class App : public Application
 void Tutorial_Sandbox()
 {
     App app;
+	//EngineSettings::setFrameRate(10);
     detail::ApplicationHelper::run(&app);
 }
 

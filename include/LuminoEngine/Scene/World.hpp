@@ -83,6 +83,7 @@ public: // TODO: internal
     const Ref<PhysicsWorld>& physicsWorld() const { return m_physicsWorld; }
 	const Ref<PhysicsWorld2D>& physicsWorld2D() const { return m_physicsWorld2D; }
     const Ref<EffectContext>& effectContext() const { return m_effectContext; }
+    const Ref<detail::SceneConductor>& sceneConductor() const { return m_sceneConductor; }
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);

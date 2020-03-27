@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Animation/EasingFunctions.hpp"
+#include "../Graphics/ColorStructs.hpp"
 #include "ImageEffect.hpp"
 
 namespace ln {
@@ -13,6 +14,12 @@ class TransitionImageEffect
 public:
     static Ref<TransitionImageEffect> create();
 
+    void setFadeColor(const Color& value) { m_fadeColor = value; }
+    const Color& fadeColor() const { return m_fadeColor; }
+    void setMaskTexture(Texture* value);
+    Texture* maskTexture() const;
+    void setVague(float value) { m_vague = value; }
+    float vague() const { return m_vague; }
     void startFadeOut(float duration);
     void startFadeIn(float duration);
     void startCrossFade(float duration);
@@ -40,10 +47,12 @@ private:
 
     Mode m_mode;
 
+    Color m_fadeColor;
     Ref<Texture> m_maskTexture;
 
     // 0:no effect, 1:full overray
     EasingValue<float> m_factor;
+    float m_vague;
 
     int m_freezeRevision;
 

@@ -18,7 +18,9 @@ Ref<TransitionImageEffect> TransitionImageEffect::create()
 
 TransitionImageEffect::TransitionImageEffect()
     : m_mode(Mode::FadeOut)
+    , m_fadeColor(Color::Black)
     , m_factor()
+    , m_vague(0.2)
     , m_freezeRevision(0)
 {
 }
@@ -26,8 +28,16 @@ TransitionImageEffect::TransitionImageEffect()
 void TransitionImageEffect::init()
 {
     ImageEffect::init();
+}
 
-    m_maskTexture = Texture2D::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Transition1.png");
+void TransitionImageEffect::setMaskTexture(Texture* value)
+{
+    m_maskTexture = value;
+}
+
+Texture* TransitionImageEffect::maskTexture() const
+{
+    return m_maskTexture;
 }
 
 void TransitionImageEffect::startFadeOut(float duration)
@@ -86,8 +96,7 @@ bool TransitionImageEffectInstance::init(TransitionImageEffect* owner)
 
     m_withMaskMaterial = makeObject<Material>();
     m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithMask.fx"));
-    m_withMaskMaterial->setFloat(u"_Vague", 0.0);
-
+    
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->shadingModel = ShadingModel::Unlit;
 
@@ -96,10 +105,31 @@ bool TransitionImageEffectInstance::init(TransitionImageEffect* owner)
 
 void TransitionImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+    bool recreated = preparePreviousFrameTarget(source->width(), source->height());
+    if (m_freezeRevision != m_owner->m_freezeRevision) {
+        if (recreated) {
+            // 起動直後など、レンダリングターゲット作成後1回も描画していないのに遷移しようとしている。
+            // このときはビューの背景色を使う。
+
+            // TODO: scoped または blit みたいに RT 直接指定の Clear
+            Ref<RenderTargetTexture> oldTarget = context->renderTarget(0);
+            context->setRenderTarget(0, m_overrayTarget);
+            context->clear(ClearFlags::Color, context->baseRenderView->backgroundColor());
+            context->setRenderTarget(0, oldTarget);
+        }
+        else {
+            std::swap(m_previousFrameTarget, m_overrayTarget);
+        }
+
+        m_freezeRevision = m_owner->m_freezeRevision;
+    }
+
+
     if (!m_owner->isRunning()) {
         // No effect apply.
         m_copyMaterial->setMainTexture(source);
         context->blit(m_copyMaterial, destination);
+        context->blit(m_copyMaterial, m_previousFrameTarget);
     }
     else {
         if (m_maskTexture != m_owner->m_maskTexture) {
@@ -136,6 +166,9 @@ bool TransitionImageEffectInstance::preparePreviousFrameTarget(int width, int he
 
 void TransitionImageEffectInstance::renderFadeInOut(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination, float factor)
 {
+    context->setDepthTestEnabled(false);
+    context->setDepthWriteEnabled(false);
+
     //bool recreated = preparePreviousFrameTarget(source->width(), source->height());
     //if (m_freezeRequested || recreated) {
     //    // TODO: scoped または blit みたいに RT 直接指定の Clear
@@ -146,46 +179,45 @@ void TransitionImageEffectInstance::renderFadeInOut(RenderingContext* context, R
     //    m_freezeRequested = false;
     //}
 
+    //std::cout << m_owner->m_factor.value() << std::endl;
+
     Material* material = nullptr;
     if (m_owner->m_maskTexture)
     {
-        // マスクテクスチャ使用
-        LN_NOTIMPLEMENTED();
+        m_withMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());
+        m_withMaskMaterial->setVector(u"_ColorScale", m_owner->m_fadeColor.toVector4());
+        m_withMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
+        m_withMaskMaterial->setTexture(u"_OverrayTexture", Texture2D::whiteTexture());
+        material = m_withMaskMaterial;
     }
     else
     {
-        // マスクテクスチャ不使用
         m_withoutMaskMaterial->setFloat(u"_Factor", factor);
-        m_withoutMaskMaterial->setVector(u"_ColorScale", Vector4(0, 0, 0, 1));
+        m_withoutMaskMaterial->setVector(u"_ColorScale", m_owner->m_fadeColor.toVector4());
+        m_withoutMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
         m_withoutMaskMaterial->setTexture(u"_OverrayTexture", Texture2D::whiteTexture());
         material = m_withoutMaskMaterial;
     }
 
-    // Final output.
+    // エフェクト適用済みの描画結果を前回の描画結果として毎回覚えておく
     material->setMainTexture(source);
-    context->blit(material, destination);
+    context->blit(material, m_previousFrameTarget);
+
+    // Final output.
+    m_copyMaterial->setMainTexture(m_previousFrameTarget);
+    context->blit(m_copyMaterial, destination);
+
+    //// Final output.
+    //material->setMainTexture(source);
+    //context->blit(material, destination);
+
+
+    //m_copyMaterial->setMainTexture(source);
+    //context->blit(m_copyMaterial, destination);
 }
 
 void TransitionImageEffectInstance::renderCrossFade(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    bool recreated = preparePreviousFrameTarget(source->width(), source->height());
-    if (m_freezeRevision != m_owner->m_freezeRevision) {
-        if (recreated) {
-            // 起動直後など、レンダリングターゲット作成後1回も描画していないのに遷移しようとしている。
-            // このときはビューの背景色を使う。
-
-            // TODO: scoped または blit みたいに RT 直接指定の Clear
-            Ref<RenderTargetTexture> oldTarget = context->renderTarget(0);
-            context->setRenderTarget(0, m_overrayTarget);
-            context->clear(ClearFlags::Color, context->baseRenderView->backgroundColor());
-            context->setRenderTarget(0, oldTarget);
-        }
-        else {
-            std::swap(m_previousFrameTarget, m_overrayTarget);
-        }
-
-        m_freezeRevision = m_owner->m_freezeRevision;
-    }
 
 
     Material* material = nullptr;
@@ -193,6 +225,7 @@ void TransitionImageEffectInstance::renderCrossFade(RenderingContext* context, R
     {
         m_withMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());
         m_withMaskMaterial->setVector(u"_ColorScale", Vector4(1, 1, 1, 1));
+        m_withMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
         m_withMaskMaterial->setTexture(u"_OverrayTexture", m_overrayTarget);
         material = m_withMaskMaterial;
     }
@@ -200,6 +233,7 @@ void TransitionImageEffectInstance::renderCrossFade(RenderingContext* context, R
     {
         m_withoutMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());
         m_withoutMaskMaterial->setVector(u"_ColorScale", Vector4(1, 1, 1, 1));
+        m_withoutMaskMaterial->setFloat(u"_Vague", m_owner->m_vague);
         m_withoutMaskMaterial->setTexture(u"_OverrayTexture", m_overrayTarget);
         material = m_withoutMaskMaterial;
     }
