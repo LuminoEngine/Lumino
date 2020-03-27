@@ -125,11 +125,11 @@ public:
 
 	/** レベル遷移時のエフェクトの種類を設定します。 */
 	LN_METHOD()
-	static void setTransitionMode(LevelTransitionMode value);
+	static void setTransitionEffectMode(LevelTransitionEffectMode value);
 
 	/** レベル遷移時のエフェクトの種類を取得します。 */
 	LN_METHOD()
-	static LevelTransitionMode transitionMode();
+	static LevelTransitionEffectMode transitionEffectMode();
 
 	/** レベルの遷移にかける時間を設定します。(Unit: 秒) */
 	LN_METHOD()

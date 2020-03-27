@@ -19,11 +19,13 @@ class TitleScene : public Level
 		Debug::print(u"TitleScene");
 		Engine::renderView()->setBackgroundColor(Color::White);
 		//g_TransitionImageEffect->start(5);
-		Scene::setTransitionMode(LevelTransitionMode::CrossFade);
+		Scene::setTransitionEffectMode(LevelTransitionEffectMode::CrossFade);
 		Scene::setTransitionEffectColor(Color::Red);
-		//Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition1"));
+		Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition1"));
 		//Scene::setTransitionEffectVague(0);
-		Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition2"));
+		//Scene::setTransitionEffectMaskTexture(Texture2D::load(u"Transition2"));
+
+		//auto button = UIButton::create(u"button");
 	}
 
 	void onUpdate() override;

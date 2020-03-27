@@ -44,7 +44,7 @@ Level* SceneConductor::activeScene()
 #endif
 
 SceneConductor::SceneConductor()
-	: m_transitionMode(LevelTransitionMode::FadeInOut)
+	: m_transitionMode(LevelTransitionEffectMode::FadeInOut)
 	, m_transitionEffectDuration(1.0)
 {
 	m_transitionEffect = makeObject<TransitionImageEffect>();
@@ -134,7 +134,7 @@ bool SceneConductor::isTransitionEffectRunning() const
 
 void SceneConductor::executeCommands()
 {
-	if (m_transitionMode == LevelTransitionMode::FadeInOut && isTransitionEffectRunning()) {
+	if (m_transitionMode == LevelTransitionEffectMode::FadeInOut && isTransitionEffectRunning()) {
 		return;
 	}
 
@@ -215,12 +215,12 @@ void SceneConductor::attemptFadeOutTransition()
 	if (m_activeScene) {
 		switch (m_transitionMode)
 		{
-		case LevelTransitionMode::None:
+		case LevelTransitionEffectMode::None:
 			break;
-		case LevelTransitionMode::FadeInOut:
+		case LevelTransitionEffectMode::FadeInOut:
 			m_transitionEffect->startFadeOut(m_transitionEffectDuration / 2.0);
 			break;
-		case LevelTransitionMode::CrossFade:
+		case LevelTransitionEffectMode::CrossFade:
 			m_transitionEffect->startCrossFade(m_transitionEffectDuration);
 			break;
 		default:
@@ -234,12 +234,12 @@ void SceneConductor::attemptFadeInTransition()
 {
 	switch (m_transitionMode)
 	{
-	case LevelTransitionMode::None:
+	case LevelTransitionEffectMode::None:
 		break;
-	case LevelTransitionMode::FadeInOut:
+	case LevelTransitionEffectMode::FadeInOut:
 		m_transitionEffect->startFadeIn(m_transitionEffectDuration / 2.0);
 		break;
-	case LevelTransitionMode::CrossFade:
+	case LevelTransitionEffectMode::CrossFade:
 		break;
 	default:
 		LN_UNREACHABLE();

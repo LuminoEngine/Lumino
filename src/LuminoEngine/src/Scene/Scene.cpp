@@ -284,12 +284,12 @@ bool Scene::isTransitionEffectRunning()
     return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->isTransitionEffectRunning();
 }
 
-void Scene::setTransitionMode(LevelTransitionMode value)
+void Scene::setTransitionEffectMode(LevelTransitionEffectMode value)
 {
     return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->setTransitionMode(value);
 }
 
-LevelTransitionMode Scene::transitionMode()
+LevelTransitionEffectMode Scene::transitionEffectMode()
 {
     return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->transitionMode();
 }

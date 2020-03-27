@@ -22,8 +22,8 @@ public:
     //static void unloadScene(Level* scene);
 
 
-	void setTransitionMode(LevelTransitionMode value) { m_transitionMode = value; }
-	LevelTransitionMode transitionMode() { return m_transitionMode; }
+	void setTransitionMode(LevelTransitionEffectMode value) { m_transitionMode = value; }
+	LevelTransitionEffectMode transitionMode() { return m_transitionMode; }
 	void setTransitionEffectColor(const Color& value);
 	const Color& transitionEffectColor() const;
 	void setTransitionMaskTexture(Texture* value);
@@ -68,7 +68,7 @@ private:
 	std::deque<EventCommsnd> m_eventQueue;
 	std::stack<Ref<Level>> m_sceneStack;	// not contains m_activeScene
 
-	LevelTransitionMode m_transitionMode;
+	LevelTransitionEffectMode m_transitionMode;
 	Ref<TransitionImageEffect> m_transitionEffect;
 	float m_transitionEffectDuration;
 };

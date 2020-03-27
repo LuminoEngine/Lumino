@@ -9,7 +9,7 @@ class Camera;
 class Raycaster;
 class RaycastResult;
 
-enum class LevelTransitionMode
+enum class LevelTransitionEffectMode
 {
 	None,
 
