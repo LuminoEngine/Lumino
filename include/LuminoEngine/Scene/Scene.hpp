@@ -123,11 +123,11 @@ public:
 	LN_METHOD()
 	static bool isTransitionEffectRunning();
 
-	/** レベルの遷移方法を設定します。 */
+	/** レベル遷移時のエフェクトの種類を設定します。 */
 	LN_METHOD()
 	static void setTransitionMode(LevelTransitionMode value);
 
-	/** レベルの遷移方法を取得します。 */
+	/** レベル遷移時のエフェクトの種類を取得します。 */
 	LN_METHOD()
 	static LevelTransitionMode transitionMode();
 
@@ -139,11 +139,11 @@ public:
 	LN_METHOD()
 	static float transitionDuration();
 
-	/** レベルの遷移モードが FadeInOut の場合に使用する色を設定します。 */
+	/** レベルの遷移モードが FadeInOut である場合に使用する色を設定します。 */
 	LN_METHOD()
 	static void setTransitionEffectColor(const Color& value);
 
-	/** レベルの遷移モードが FadeInOut の場合に使用する色を取得します。 */
+	/** レベルの遷移モードが FadeInOut である場合に使用する色を取得します。 */
 	LN_METHOD()
 	static const Color& transitionEffectColor();
 
@@ -162,6 +162,18 @@ public:
 	/** レベルの遷移エフェクトの境界のあいまいさを取得します。 */
 	LN_METHOD()
 	static float transitionEffectVague();
+
+	/** フェードアウトエフェクトを開始します。 */
+	LN_METHOD()
+	static void startFadeOut();
+
+	/** フェードインエフェクトを開始します。 */
+	LN_METHOD()
+	static void startFadeIn();
+
+	/** クロスフェードエフェクトを開始します。 */
+	LN_METHOD()
+	static void startCrossFade();
 
 };
 

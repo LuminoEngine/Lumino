@@ -51,6 +51,12 @@ void TitleScene::onUpdate()
 	if (!Scene::isTransitionEffectRunning() && Input::triggered(u"submit")) {
 		Scene::gotoLevel(makeObject<GameScene>());
 	}
+	if (Input::triggered(u"left")) {
+		Scene::startFadeOut();
+	}
+	if (Input::triggered(u"right")) {
+		Scene::startFadeIn();
+	}
 }
 
 class App : public Application

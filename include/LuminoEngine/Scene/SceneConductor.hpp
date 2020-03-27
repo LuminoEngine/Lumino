@@ -38,6 +38,8 @@ public:
 	Level* activeScene() const;
 	bool isTransitionEffectRunning() const;
 
+	//const Ref<TransitionImageEffect>& transitionEffect() const { return m_transitionEffect;  }
+
 	void executeCommands();
 	void releaseAndTerminateAllRunningScenes();
 

@@ -43,14 +43,14 @@ Texture* TransitionImageEffect::maskTexture() const
 void TransitionImageEffect::startFadeOut(float duration)
 {
     m_mode = Mode::FadeOut;
-    m_factor.start(0.0f, 1.0f, duration);
+    m_factor.start(1.0f, duration);
     m_freezeRevision++;
 }
 
 void TransitionImageEffect::startFadeIn(float duration)
 {
     m_mode = Mode::FadeIn;
-    m_factor.start(1.0f, 0.0f,  duration);
+    m_factor.start(0.0f,  duration);
     m_freezeRevision++;
 }
 
@@ -125,7 +125,8 @@ void TransitionImageEffectInstance::onRender(RenderingContext* context, RenderTa
     }
 
 
-    if (!m_owner->isRunning()) {
+   // if (!m_owner->isRunning()) {
+    if (Math::nearEqual(m_owner->m_factor.value(), 0.0f)) {
         // No effect apply.
         m_copyMaterial->setMainTexture(source);
         context->blit(m_copyMaterial, destination);

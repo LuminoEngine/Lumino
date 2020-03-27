@@ -18,6 +18,7 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
+#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "SceneManager.hpp"
 
@@ -333,6 +334,23 @@ float Scene::transitionEffectVague()
     return detail::EngineDomain::engineManager()->mainWorld()->sceneConductor()->transitionEffectVague();
 }
 
+void Scene::startFadeOut()
+{
+    auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
+    sc->transitionEffect()->startFadeOut(sc->transitionEffectDuration());
+}
+
+void Scene::startFadeIn()
+{
+    auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
+    sc->transitionEffect()->startFadeIn(sc->transitionEffectDuration());
+}
+
+void Scene::startCrossFade()
+{
+    auto& sc = detail::EngineDomain::engineManager()->mainWorld()->sceneConductor();
+    sc->transitionEffect()->startCrossFade(sc->transitionEffectDuration());
+}
 
 ////==============================================================================
 //// SceneAsset
