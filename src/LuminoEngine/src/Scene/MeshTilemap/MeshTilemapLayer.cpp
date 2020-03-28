@@ -246,9 +246,12 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 	
 }
 
-void MeshTilemapLayer::draw(RenderingContext* context, const MeshTileset* tileset)
+void MeshTilemapLayer::draw(RenderingContext* context, MeshTileset* tileset)
 {
 	// TODO: View culling
+
+	tileset->beginBatch();
+
 
 	for (int y = 0; y < m_sizeY; y++) {
 		for (int z = 0; z < m_sizeZ; z++) {
@@ -275,13 +278,14 @@ void MeshTilemapLayer::draw(RenderingContext* context, const MeshTileset* tilese
 
 
 
-				context->setBaseTransfrom(Matrix::makeTranslation(x, y, z));
-				tileset->drawTile(context, t, adjacency);
-				return;	// TODO: test
+				//context->setBaseTransfrom(Matrix::makeTranslation(x, y, z));
+				tileset->drawTile(context, t, adjacency, Matrix::makeTranslation(x, y, z));
+				//return;	// TODO: test
 			}
 		}
 	}
 
+	tileset->drawBatch(context);
 
 	//   context->setMaterial(m_material);
 	   //for (int i = 0; i < 48; i++) {

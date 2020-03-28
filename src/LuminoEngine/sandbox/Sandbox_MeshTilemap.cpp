@@ -9,6 +9,8 @@ using namespace ln;
 
 #include <Lumino.hpp>
 
+#define TEST_DTL 1
+
 #if TEST_DTL
 #include <DTL.hpp>
 #endif
@@ -68,7 +70,7 @@ class Sandbox_MeshTilemap_App : public Application
 		auto layer = makeObject<MeshTilemapLayer>();
 		layer->resize(20, 3, 20);
 
-		if (1) {
+		if (0) {
 			layer->putAutoTile(0, 0, 0, 0);
 			layer->putAutoTile(1, 1, 1, 0);
 			layer->putAutoTile(2, 1, 1, 0);
@@ -118,7 +120,7 @@ class Sandbox_MeshTilemap_App : public Application
 				if (matrix[row][col]) {
 					layer->putAutoTile(row, 1, col, 0);
 					layer->putAutoTile(row, 2, col, 0);
-				}i
+				}
 #endif
 
 	}

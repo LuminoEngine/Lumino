@@ -49,7 +49,7 @@ private:
     void refreshAutoTileFace(int x, int y, int z, MeshTileFaceDirection dir);
     void makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceDirection dir, AutoTileNearbyInfo* outInfo) const;
 
-    void draw(RenderingContext* context, const MeshTileset* tileset);
+    void draw(RenderingContext* context, MeshTileset* tileset);
 
     List<detail::MeshTile> m_tiles;
     int m_sizeX;

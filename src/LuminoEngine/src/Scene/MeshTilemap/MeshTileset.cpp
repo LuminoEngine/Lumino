@@ -157,27 +157,50 @@ void MeshTileset::init()
 
 	m_material->shadingModel = ShadingModel::Unlit;
 	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
-	m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
+	//m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
 	//m_meshList->setTransform(Matrix::makeTranslation(-5, 0, 0));
 	//m_meshList->drawMesh();
-	m_meshList->setTransform(Matrix::makeTranslation(-1, 0, 0));
-	m_meshList->drawMesh();
+	//m_meshList->setTransform(Matrix::makeTranslation(-1, 0, 0));
+	//m_meshList->drawMesh();
+	for (int i = 0; i < m_meshList.size(); i++) {
+		m_meshList[i] = makeObject<InstancedMeshList>(m_mesh, i);
+	}
 }
 
-void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency) const
+void MeshTileset::beginBatch()
+{
+	for (int i = 0; i < m_meshList.size(); i++) {
+		m_meshList[i]->reset();
+	}
+}
+
+void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform) const
 {
 
+	//context->setMaterial(m_material);
+
+	if (autoTileKindId(tile.tileId) >= 0) {
+		for (int d = 0; d < 6; d++) {
+			if (!adjacency.buried[d]) {
+				//context->drawMesh(m_mesh, (d * 48) + tile.faceTileId[d]);
+				int index = (d * 48) + tile.faceTileId[d];
+				m_meshList[index]->setTransform(transform);
+				m_meshList[index]->drawMesh();
+			}
+		}
+	}
+
+	//context->drawMeshInstanced(m_meshList);
+}
+
+void MeshTileset::drawBatch(RenderingContext* context)
+{
 	context->setMaterial(m_material);
-
-	//if (autoTileKindId(tile.tileId) >= 0) {
-	//	for (int d = 0; d < 6; d++) {
-	//		if (!adjacency.buried[d]) {
-	//			context->drawMesh(m_mesh, (d * 48) + tile.faceTileId[d]);
-	//		}
-	//	}
-	//}
-
-	context->drawMeshInstanced(m_meshList);
+	for (int i = 0; i < m_meshList.size(); i++) {
+		if (m_meshList[i]->instanceCount() > 0) {
+			context->drawMeshInstanced(m_meshList[i]);
+		}
+	}
 }
 
 namespace detail {

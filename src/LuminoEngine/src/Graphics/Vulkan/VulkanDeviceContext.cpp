@@ -2092,8 +2092,8 @@ Result VulkanVertexDeclaration::init(const VertexElement* elements, int elements
         m_bindings[i].binding = i;  // VkVertexInputAttributeDescription が参照する binding 番号。ひとまず連番
 
         for (int j = 0; j < elementsCount; j++) {
-            if (elements[i].StreamIndex == i) {
-                m_bindings[i].inputRate = (elements[i].rate == VertexInputRate::Vertex) ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
+            if (elements[j].StreamIndex == i) {
+                m_bindings[i].inputRate = (elements[j].rate == VertexInputRate::Vertex) ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
             }
         }
 
