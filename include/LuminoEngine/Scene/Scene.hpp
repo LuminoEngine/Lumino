@@ -8,18 +8,21 @@ template <class T>
 void staticFactory2();
 
 namespace ln {
+class Texture;
 class World;
 class WorldObject;
 class RenderingContext;
 namespace ed { class SceneAsset; }
-namespace detail { class SceneManager; }
+namespace detail {
+	class SceneManager; class SceneConductor;
+}
 
 /**
  * シーンのベースクラスです。
  */
-// Note: Scene はひとつの World に属し、World からの通知により onUpdate() や m_rootWorldObjectList の Object へさらに通知したりする。
+// Note: Level はひとつの World に属し、World からの通知により onUpdate() や m_rootWorldObjectList の Object へさらに通知したりする。
 LN_CLASS()
-class Scene
+class Level
 	: public Object
 {
 	LN_OBJECT;
@@ -68,8 +71,8 @@ protected:
 
 
 LN_CONSTRUCT_ACCESS:
-	Scene();
-	virtual ~Scene();
+	Level();
+	virtual ~Level();
 
 	/** Initialize */
 	LN_METHOD()
@@ -94,7 +97,84 @@ public: // TODO: internal
 
     friend class ed::SceneAsset;
 	friend class detail::SceneManager;
+	friend class detail::SceneConductor;
     friend class World;
+};
+
+
+/** ワールド 及び レベル 管理のユーティリティです。 */
+LN_CLASS(Static)
+class Scene
+{
+public:
+	/** 指定したレベルへ遷移します。既存の全てのレベルは非アクティブ化または削除されます。 */
+	LN_METHOD()
+	static void gotoLevel(Level* level);
+
+	static void callLevel(Level* level);
+
+	static void returnLevel();
+
+	/** 現在のアクティブなレベルを取得します。 */
+	LN_METHOD()
+	static Level* activeLevel();
+
+	/** レベルの遷移エフェクトを実行中であるかを確認します。 */
+	LN_METHOD()
+	static bool isTransitionEffectRunning();
+
+	/** レベル遷移時のエフェクトの種類を設定します。 */
+	LN_METHOD()
+	static void setTransitionEffectMode(LevelTransitionEffectMode value);
+
+	/** レベル遷移時のエフェクトの種類を取得します。 */
+	LN_METHOD()
+	static LevelTransitionEffectMode transitionEffectMode();
+
+	/** レベルの遷移にかける時間を設定します。(Unit: 秒) */
+	LN_METHOD()
+	static void setTransitionDuration(float value);
+
+	/** レベルの遷移にかける時間を取得します。(Unit: 秒) */
+	LN_METHOD()
+	static float transitionDuration();
+
+	/** レベルの遷移モードが FadeInOut である場合に使用する色を設定します。 */
+	LN_METHOD()
+	static void setTransitionEffectColor(const Color& value);
+
+	/** レベルの遷移モードが FadeInOut である場合に使用する色を取得します。 */
+	LN_METHOD()
+	static const Color& transitionEffectColor();
+
+	/** レベルの遷移エフェクトで使用するマスクテクスチャを設定します。 */
+	LN_METHOD()
+	static void setTransitionEffectMaskTexture(Texture* value);
+
+	/** レベルの遷移エフェクトで使用するマスクテクスチャを取得します。 */
+	LN_METHOD()
+	static Texture* transitionEffectMaskTexture();
+
+	/** レベルの遷移エフェクトの境界のあいまいさを設定します。 */
+	LN_METHOD()
+	static void setTransitionEffectVague(float value);
+
+	/** レベルの遷移エフェクトの境界のあいまいさを取得します。 */
+	LN_METHOD()
+	static float transitionEffectVague();
+
+	/** フェードアウトエフェクトを開始します。 */
+	LN_METHOD()
+	static void startFadeOut();
+
+	/** フェードインエフェクトを開始します。 */
+	LN_METHOD()
+	static void startFadeIn();
+
+	/** クロスフェードエフェクトを開始します。 */
+	LN_METHOD()
+	static void startCrossFade();
+
 };
 
 //namespace ed {

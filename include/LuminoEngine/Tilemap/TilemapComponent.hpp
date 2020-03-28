@@ -21,7 +21,7 @@ public:
 
 protected:
 	virtual void onStart() override;
-	virtual void onDetachedScene(Scene* oldOwner) override;
+	virtual void onDetachedScene(Level* oldOwner) override;
     virtual void onRender(RenderingContext* context) override;
     virtual void onRenderGizmo(RenderingContext* context) override;
 

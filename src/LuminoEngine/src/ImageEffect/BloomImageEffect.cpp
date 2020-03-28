@@ -25,14 +25,61 @@ BloomImageEffect::BloomImageEffect()
     : m_luminosityThreshold(0.9f)
     , m_bloomStrength(1.0f)
     , m_bloomRadius(1.0f)
-    , m_viewWidth(0)
-    , m_viewHeight(0)
 {
 }
 
 void BloomImageEffect::init()
 {
     ImageEffect::init();
+
+}
+
+void BloomImageEffect::setThreshold(float value)
+{
+    m_luminosityThreshold = value;
+}
+
+void BloomImageEffect::setStrength(float value)
+{
+    m_bloomStrength = value;
+}
+
+void BloomImageEffect::setSize(float value)
+{
+    m_bloomRadius = value;
+}
+
+void BloomImageEffect::onUpdateFrame(float elapsedSeconds)
+{
+}
+
+//void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+//{
+//}
+
+Ref<ImageEffectInstance> BloomImageEffect::onCreateInstance()
+{
+    return makeObject<detail::BloomImageEffectInstance>(this);
+}
+
+//==============================================================================
+// BloomImageEffectInstance
+
+namespace detail {
+
+BloomImageEffectInstance::BloomImageEffectInstance()
+    : m_owner(nullptr)
+    , m_viewWidth(0)
+    , m_viewHeight(0)
+{
+}
+
+bool BloomImageEffectInstance::init(BloomImageEffect* owner)
+{
+    if (!ImageEffectInstance::init()) return false;
+
+    m_owner = owner;
+
     const auto* manager = detail::EngineDomain::renderingManager();
 
     auto luminosityHighPassShader = manager->builtinShader(detail::BuiltinShader::LuminosityHighPassShader);
@@ -66,28 +113,11 @@ void BloomImageEffect::init()
     m_compositeMaterial->setShader(bloomCompositeShader);
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+
+    return true;
 }
 
-void BloomImageEffect::setThreshold(float value)
-{
-    m_luminosityThreshold = value;
-}
-
-void BloomImageEffect::setStrength(float value)
-{
-    m_bloomStrength = value;
-}
-
-void BloomImageEffect::setSize(float value)
-{
-    m_bloomRadius = value;
-}
-
-void BloomImageEffect::onUpdateFrame(float elapsedSeconds)
-{
-}
-
-void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void BloomImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     int resx = source->width();
     int resy = source->height();
@@ -104,7 +134,7 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
     {
         m_materialHighPassFilter->setVector(u"_Color", Vector4(0.0f, 0.0f, 0.0f, 0.0f));
         m_materialHighPassFilter->setFloat(u"_Opacity", 0.0f);
-        m_materialHighPassFilter->setFloat(u"_LuminosityThreshold", m_luminosityThreshold);
+        m_materialHighPassFilter->setFloat(u"_LuminosityThreshold", m_owner->m_luminosityThreshold);
         m_materialHighPassFilter->setFloat(u"_SmoothWidth", 0.01);
 
         m_materialHighPassFilter->setMainTexture(source);
@@ -126,13 +156,13 @@ void BloomImageEffect::onRender(RenderingContext* context, RenderTargetTexture* 
     // Composite All the mips
     m_compositeMaterial->setMainTexture(source);
     Vector4 bloomTintColors[] = { Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1), Vector4(1, 1, 1, 1) };
-    m_compositeMaterial->setFloat(u"_BloomStrength", m_bloomStrength);
-    m_compositeMaterial->setFloat(u"_BloomRadius", m_bloomRadius);
+    m_compositeMaterial->setFloat(u"_BloomStrength", m_owner->m_bloomStrength);
+    m_compositeMaterial->setFloat(u"_BloomRadius", m_owner->m_bloomRadius);
     m_compositeMaterial->setVectorArray(u"_BloomTintColors", bloomTintColors, MIPS);
     context->blit(m_compositeMaterial, destination);
 }
 
-void BloomImageEffect::resetResources(int resx, int resy)
+void BloomImageEffectInstance::resetResources(int resx, int resy)
 {
     m_renderTargetsHorizontal.clear();
     m_renderTargetsVertical.clear();
@@ -169,5 +199,6 @@ void BloomImageEffect::resetResources(int resx, int resy)
     m_viewHeight = resy;
 }
 
+} // namespace detail
 } // namespace ln
 

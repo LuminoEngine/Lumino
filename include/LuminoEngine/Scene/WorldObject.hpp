@@ -7,7 +7,7 @@
 
 namespace ln {
 class World;
-class Scene;
+class Level;
 class WorldObject;
 class Component;
 class RenderingContext;
@@ -186,7 +186,7 @@ public:
 
     const Matrix& worldMatrix();
 
-	Scene* scene() const { return m_scene; }
+	Level* scene() const { return m_scene; }
 
 
     /** この WorldObject に含まれている Component のうち、指定した型である最初の Component を返します。 */
@@ -229,7 +229,7 @@ public: // TODO:
     void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
     bool isSpecialObject() const { return m_isSpecialObject; }
     detail::WorldObjectTransform* transform() const { return m_transform; }
-	void attachScene(Scene* scene);
+	void attachScene(Level* scene);
 	void detachScene();
 	void start();
     void preUpdateFrame();
@@ -239,7 +239,7 @@ public: // TODO:
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();
 
-    Scene* m_scene;
+    Level* m_scene;
     WorldObject* m_parent;
     Ref<detail::WorldObjectTransform> m_transform;
     Ref<List<String>> m_tags;
@@ -252,7 +252,7 @@ public: // TODO:
 	bool m_destroyed;
 
     friend class World;
-    friend class Scene;
+    friend class Level;
 };
 
 namespace ed {

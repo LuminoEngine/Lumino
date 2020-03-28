@@ -4,7 +4,7 @@
 #include "Common.hpp"
 
 namespace ln {
-class Scene;
+class Level;
 class AnimationContext;
 class AmbientLight;
 class DirectionalLight;
@@ -19,6 +19,7 @@ struct CameraInfo;
 class EngineManager;
 class DrawElementList;
 class WorldSceneGraphRenderingContext;
+class SceneConductor;
 }
 
 /** 3D シーンを表すクラスです。 */
@@ -51,8 +52,14 @@ public:
     /** この World に含まれている WorldObject のうち、指定した型のコンポーネントを持っている最初の WorldObject を返します。 */
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
 
-    Scene* masterScene() const;
-	void addScene(Scene* scene);
+    Level* masterScene() const;
+	void addScene(Level* scene);
+
+
+    void gotoScene(Level* scene);
+    void callScene(Level* scene);
+    void returnScene();
+    Level* activeScene() const;
 
 protected:
     // update sequence
@@ -76,6 +83,7 @@ public: // TODO: internal
     const Ref<PhysicsWorld>& physicsWorld() const { return m_physicsWorld; }
 	const Ref<PhysicsWorld2D>& physicsWorld2D() const { return m_physicsWorld2D; }
     const Ref<EffectContext>& effectContext() const { return m_effectContext; }
+    const Ref<detail::SceneConductor>& sceneConductor() const { return m_sceneConductor; }
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
@@ -86,12 +94,13 @@ public: // TODO: internal
     Ref<PhysicsWorld> m_physicsWorld;
 	Ref<PhysicsWorld2D> m_physicsWorld2D;
     Ref<EffectContext> m_effectContext;
-    Ref<Scene> m_masterScene;
+    Ref<Level> m_masterScene;
+    Ref<detail::SceneConductor> m_sceneConductor;
 
     Ref<AmbientLight> m_mainAmbientLight;
     Ref<DirectionalLight> m_mainDirectionalLight;
 
-    Ref<List<Ref<Scene>>> m_sceneList;
+    Ref<List<Ref<Level>>> m_sceneList;
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
 	//List<WorldObject*> m_destroyList;
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;

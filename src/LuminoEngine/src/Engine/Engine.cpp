@@ -53,6 +53,11 @@ void EngineSettings::setAssetStorageAccessPriority(AssetStorageAccessPriority va
 	detail::EngineManager::s_settings.assetStorageAccessPriority = value;
 }
 
+void EngineSettings::setFrameRate(int value)
+{
+    detail::EngineManager::s_settings.frameRate = value;
+}
+
 void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 {
 	detail::EngineManager::s_settings.graphicsAPI = value;

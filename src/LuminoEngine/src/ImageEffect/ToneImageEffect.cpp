@@ -26,10 +26,6 @@ ToneImageEffect::~ToneImageEffect()
 void ToneImageEffect::init()
 {
     ImageEffect::init();
-    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
-
-    m_material = makeObject<Material>();
-    m_material->setShader(shader);
 }
 
 void ToneImageEffect::play(const ColorTone& tone, double time)
@@ -42,13 +38,41 @@ void ToneImageEffect::onUpdateFrame(float elapsedSeconds)
     m_toneValue.advanceTime(elapsedSeconds);
 }
 
-void ToneImageEffect::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+Ref<ImageEffectInstance> ToneImageEffect::onCreateInstance()
 {
-	m_material->setMainTexture(source);
-	//m_material->setMainTexture(Texture2D::whiteTexture());
-    m_material->setVector(u"_Tone", m_toneValue.value());
+    return makeObject<detail::ToneImageEffectInstance>(this);
+}
+
+//==============================================================================
+// ToneImageEffectInstance
+
+namespace detail {
+
+ToneImageEffectInstance::ToneImageEffectInstance()
+{
+}
+
+bool ToneImageEffectInstance::init(ToneImageEffect* owner)
+{
+    if (!ImageEffectInstance::init()) return false;
+
+    m_owner = owner;
+
+    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
+    m_material = makeObject<Material>();
+    m_material->setShader(shader);
+
+    return true;
+}
+
+void ToneImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+{
+    m_material->setMainTexture(source);
+    //m_material->setMainTexture(Texture2D::whiteTexture());
+    m_material->setVector(u"_Tone", m_owner->m_toneValue.value());
     context->blit(m_material, destination);
 }
 
+} // namespace detail
 } // namespace ln
 

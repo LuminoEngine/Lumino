@@ -5,8 +5,10 @@
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Effect/EffectContext.hpp>
+#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
+#include <LuminoEngine/Scene/SceneConductor.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -19,8 +21,8 @@ namespace ln {
 LN_OBJECT_IMPLEMENT(World, Object) {}
 
 World::World()
-	: m_masterScene(makeObject<Scene>())
-    , m_sceneList(makeList<Ref<Scene>>())
+	: m_masterScene(makeObject<Level>())
+    , m_sceneList(makeList<Ref<Level>>())
     , m_timeScale(1.0f)
 {
     m_masterScene->m_ownerWorld = this;
@@ -40,6 +42,7 @@ void World::init()
     m_effectContext = makeObject<EffectContext>();
     m_renderingContext = makeRef<detail::WorldSceneGraphRenderingContext>();
 
+    m_sceneConductor = makeRef<detail::SceneConductor>();
 
 	m_mainDirectionalLight = makeObject<DirectionalLight>();
 	add(m_mainDirectionalLight);
@@ -50,6 +53,10 @@ void World::init()
 void World::onDispose(bool explicitDisposing)
 {
     removeAllObjects();
+
+    if (m_sceneConductor) {
+        m_sceneConductor->releaseAndTerminateAllRunningScenes();
+    }
 
     if (m_mainAmbientLight) {
         //m_mainAmbientLight->dispose();
@@ -111,12 +118,12 @@ WorldObject* World::findObjectByComponentType(const TypeInfo* type) const
     return nullptr;
 }
 
-Scene* World::masterScene() const
+Level* World::masterScene() const
 {
     return m_masterScene;
 }
 
-void World::addScene(Scene* scene)
+void World::addScene(Level* scene)
 {
 	if (LN_REQUIRE(scene)) return;
 	if (LN_REQUIRE(!scene->m_ownerWorld)) return;
@@ -125,16 +132,43 @@ void World::addScene(Scene* scene)
 	scene->m_initialUpdate = true;
 }
 
+void World::gotoScene(Level* scene)
+{
+    m_sceneConductor->gotoScene(scene);
+}
+
+void World::callScene(Level* scene)
+{
+    m_sceneConductor->callScene(scene);
+}
+
+void World::returnScene()
+{
+    m_sceneConductor->returnScene();
+}
+
+Level* World::activeScene() const
+{
+    return m_sceneConductor->activeScene();
+}
+
 void World::updateObjectsWorldMatrix()
 {
     m_masterScene->updateObjectsWorldMatrix();
     for (auto& scene : m_sceneList) {
         scene->updateObjectsWorldMatrix();
     }
+
+    if (auto* scene = m_sceneConductor->activeScene()) {
+        scene->updateObjectsWorldMatrix();
+    }
 }
 
 void World::updateFrame(float elapsedSeconds)
 {
+    m_sceneConductor->transitionEffect()->onUpdateFrame(elapsedSeconds);
+    m_sceneConductor->executeCommands();
+
     float t = elapsedSeconds * m_timeScale;
     onPreUpdate(t);
     onInternalPhysicsUpdate(t);
@@ -149,6 +183,9 @@ void World::onPreUpdate(float elapsedSeconds)
 
     m_masterScene->onPreUpdate(elapsedSeconds);
     for (auto& scene : m_sceneList) {
+        scene->onPreUpdate(elapsedSeconds);
+    }
+    if (auto* scene = m_sceneConductor->activeScene()) {
         scene->onPreUpdate(elapsedSeconds);
     }
 }
@@ -173,6 +210,9 @@ void World::onUpdate(float elapsedSeconds)
     for (auto& scene : m_sceneList) {
         scene->update(elapsedSeconds);
     }
+    if (auto* scene = m_sceneConductor->activeScene()) {
+        scene->update(elapsedSeconds);
+    }
 }
 
 void World::onInternalAnimationUpdate(float elapsedSeconds)
@@ -183,6 +223,9 @@ void World::onPostUpdate(float elapsedSeconds)
 {
     m_masterScene->onPostUpdate(elapsedSeconds);
     for (auto& scene : m_sceneList) {
+        scene->onPostUpdate(elapsedSeconds);
+    }
+    if (auto* scene = m_sceneConductor->activeScene()) {
         scene->onPostUpdate(elapsedSeconds);
     }
 }
@@ -214,16 +257,24 @@ void World::renderObjects()
     for (auto& scene : m_sceneList) {
         scene->renderObjects(m_renderingContext);
     }
+    if (auto* scene = m_sceneConductor->activeScene()) {
+        scene->renderObjects(m_renderingContext);
+    }
 
 	m_renderingContext->pushState(true);
     m_effectContext->render(m_renderingContext);
     m_renderingContext->popState();
+
+    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
 }
 
 void World::renderGizmos(RenderingContext* context)
 {
     m_masterScene->renderGizmos(context);
     for (auto& scene : m_sceneList) {
+        scene->renderGizmos(context);
+    }
+    if (auto* scene = m_sceneConductor->activeScene()) {
         scene->renderGizmos(context);
     }
 }

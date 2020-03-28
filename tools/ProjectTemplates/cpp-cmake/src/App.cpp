@@ -3,7 +3,7 @@
 
 HelloApp::HelloApp()
 {
-	ln::GlobalLogger::setLevel(ln::LogLevel::Debug);
+	ln::Logger::setLevel(ln::LogLevel::Debug);
 }
 
 void HelloApp::onStart()

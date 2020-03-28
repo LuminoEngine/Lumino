@@ -3,6 +3,7 @@
 
 namespace ln {
 class Material;
+namespace detail { class BloomImageEffectInstance; }
 
 class BloomImageEffect
     : public ImageEffect
@@ -21,32 +22,55 @@ public:
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    //virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     BloomImageEffect();
     void init();
 
 private:
-    void resetResources(int resx, int resy);
 
     float m_luminosityThreshold;
     float m_bloomStrength;
     float m_bloomRadius;
 
-    Ref<Material> m_materialHighPassFilter;
-    List<Ref<Material>> m_separableBlurMaterialsH;
-    List<Ref<Material>> m_separableBlurMaterialsV;
-    Ref<Material> m_compositeMaterial;
-    Ref<SamplerState> m_samplerState;
+
+    friend class detail::BloomImageEffectInstance;
+
+};
+
+
+namespace detail {
+
+class BloomImageEffectInstance
+    : public ImageEffectInstance
+{
+protected:
+    void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+
+LN_CONSTRUCT_ACCESS:
+    BloomImageEffectInstance();
+    bool init(BloomImageEffect* owner);
+
+private:
+    void resetResources(int resx, int resy);
+
+    BloomImageEffect* m_owner;
 
     Ref<RenderTargetTexture> m_renderTargetBright;
     List<Ref<RenderTargetTexture>> m_renderTargetsHorizontal;
     List<Ref<RenderTargetTexture>> m_renderTargetsVertical;
-
+    Ref<SamplerState> m_samplerState;
+    Ref<Material> m_compositeMaterial;
     int m_viewWidth;
     int m_viewHeight;
+
+    List<Ref<Material>> m_separableBlurMaterialsH;
+    List<Ref<Material>> m_separableBlurMaterialsV;
+    Ref<Material> m_materialHighPassFilter;
 };
 
+} // namespace detail
 } // namespace ln
 

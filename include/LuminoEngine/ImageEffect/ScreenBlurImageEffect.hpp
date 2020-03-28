@@ -3,6 +3,7 @@
 #include "../Animation/EasingFunctions.hpp"
 
 namespace ln {
+namespace detail { class ScreenBlurImageEffectInstance; }
 
 class ScreenBlurImageEffect
 	: public ImageEffect
@@ -23,7 +24,8 @@ public:
 
 protected:
     virtual void onUpdateFrame(float elapsedSeconds) override;
-    virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    virtual Ref<ImageEffectInstance> onCreateInstance() override;
+    //virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     ScreenBlurImageEffect();
@@ -31,15 +33,35 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-	Ref<Material> m_materialForCopySourceTo;
-	Ref<Material> m_materialForCopyAccumTo;
-    Ref<Material> m_material;
     //float m_amount;
     EasingValue<float> m_amountValue;
-    Ref<RenderTargetTexture> m_accumTexture;	// Save previous screen
     Vector2 m_center;
     float m_scale;
+
+    friend class detail::ScreenBlurImageEffectInstance;
 };
 
+namespace detail {
+
+class ScreenBlurImageEffectInstance
+    : public ImageEffectInstance
+{
+protected:
+    void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+
+LN_CONSTRUCT_ACCESS:
+    ScreenBlurImageEffectInstance();
+    bool init(ScreenBlurImageEffect* owner);
+
+private:
+    ScreenBlurImageEffect* m_owner;
+
+    Ref<Material> m_materialForCopySourceTo;
+    Ref<Material> m_materialForCopyAccumTo;
+    Ref<Material> m_material;
+    Ref<RenderTargetTexture> m_accumTexture;	// Save previous screen
+};
+
+} // namespace detail
 } // namespace ln
 
