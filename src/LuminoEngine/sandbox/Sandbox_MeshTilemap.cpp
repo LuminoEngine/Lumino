@@ -68,7 +68,7 @@ class Sandbox_MeshTilemap_App : public Application
 		auto layer = makeObject<MeshTilemapLayer>();
 		layer->resize(20, 3, 20);
 
-		if (0) {
+		if (1) {
 			layer->putAutoTile(0, 0, 0, 0);
 			layer->putAutoTile(1, 1, 1, 0);
 			layer->putAutoTile(2, 1, 1, 0);

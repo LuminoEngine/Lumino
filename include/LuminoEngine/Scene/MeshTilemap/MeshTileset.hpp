@@ -3,6 +3,7 @@
 #include "Common.hpp"
 
 namespace ln {
+class InstancedMeshList;
 
 enum class PredefinedMeshAutoTilesetMesh
 {
@@ -40,6 +41,8 @@ public:
 	static int autoTileKindId(int tileId) { return (tileId < AutoTileOffset) ? -1 : ((tileId - AutoTileOffset) / AutoTileSetStride); }
 	static int localIdToGlobalId(int localTileId, int autotileKind) { return AutoTileSetStride * autotileKind + localTileId + AutoTileOffset; }
 
+	Ref<InstancedMeshList> m_meshList;
+
 LN_CONSTRUCT_ACCESS:
     MeshTileset();
 	void init();
@@ -49,6 +52,8 @@ private:
 
 	Ref<Material> m_material;
 	Ref<Mesh> m_mesh;
+
+
 
 	friend class MeshTilemapLayer;
 };

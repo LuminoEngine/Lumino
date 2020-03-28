@@ -153,6 +153,15 @@ void MeshTileset::init()
 
 		m_material = Material::create(tex);
 	}
+
+
+	m_material->shadingModel = ShadingModel::Unlit;
+	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+	m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
+	//m_meshList->setTransform(Matrix::makeTranslation(-5, 0, 0));
+	//m_meshList->drawMesh();
+	m_meshList->setTransform(Matrix::makeTranslation(-1, 0, 0));
+	m_meshList->drawMesh();
 }
 
 void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency) const
@@ -160,13 +169,15 @@ void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& ti
 
 	context->setMaterial(m_material);
 
-	if (autoTileKindId(tile.tileId) >= 0) {
-		for (int d = 0; d < 6; d++) {
-			if (!adjacency.buried[d]) {
-				context->drawMesh(m_mesh, (d * 48) + tile.faceTileId[d]);
-			}
-		}
-	}
+	//if (autoTileKindId(tile.tileId) >= 0) {
+	//	for (int d = 0; d < 6; d++) {
+	//		if (!adjacency.buried[d]) {
+	//			context->drawMesh(m_mesh, (d * 48) + tile.faceTileId[d]);
+	//		}
+	//	}
+	//}
+
+	context->drawMeshInstanced(m_meshList);
 }
 
 namespace detail {

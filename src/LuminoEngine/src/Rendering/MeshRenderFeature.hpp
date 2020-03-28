@@ -12,6 +12,7 @@
 namespace ln {
 class MeshResource;
 class Mesh;
+class InstancedMeshList;
 namespace detail {
 
 // 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
@@ -49,7 +50,9 @@ public:
 
 	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
     RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex);
+	RequestBatchResult drawMeshInstanced(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, InstancedMeshList* list);
 
+	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced);
 	virtual void beginRendering() override;
 	virtual void submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList) override;
 	virtual void renderBatch(GraphicsContext* context, RenderFeatureBatch* batch) override;
@@ -63,6 +66,7 @@ private:
 		Ref<IndexBuffer> indexBuffer;
 		int startIndex;
 		int primitiveCount;
+		int instanceCount;
 		PrimitiveTopology primitiveType;
 	};
 
@@ -70,6 +74,7 @@ private:
 	{
 		int offset;
 		int count;
+		bool instanced;
 	};
 
 	class Batch : public RenderFeatureBatch

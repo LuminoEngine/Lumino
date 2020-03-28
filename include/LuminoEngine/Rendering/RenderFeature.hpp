@@ -51,6 +51,8 @@ public:
 	Texture* overrideTexture = nullptr;
 	SamplerState* overrideSamplerState = nullptr;	// 共通の FontCache を AA 有無で描画したいときの区別
 
+	bool instancing = false;
+
     // Extension 用。RenderPass を開始しない。
     bool ensureRenderPassOutside = false;
 

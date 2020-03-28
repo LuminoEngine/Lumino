@@ -76,6 +76,7 @@ RenderPass* DepthPrepass::renderPass() const
 
 ShaderTechnique* DepthPrepass::selectShaderTechnique(
 	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	ShaderTechniqueClass_DrawMode drawMode,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -140,6 +141,7 @@ bool LightOcclusionPass::filterElement(RenderDrawElement* element) const
 
 ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	ShaderTechniqueClass_DrawMode drawMode,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -152,7 +154,7 @@ ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = requestedMeshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-	classSet.drawMode = ShaderTechniqueClass_DrawMode::Primitive;
+	classSet.drawMode = drawMode;
 	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
 	if (technique)
 		return technique;
@@ -247,6 +249,7 @@ RenderPass* ClusteredShadingGeometryRenderingPass::renderPass() const
 
 ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	ShaderTechniqueClass_DrawMode drawMode,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -265,7 +268,7 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = requestedMeshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-	classSet.drawMode = ShaderTechniqueClass_DrawMode::Primitive;
+	classSet.drawMode = drawMode;
     ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(shader, classSet);
 	if (technique)
 		return technique;
@@ -384,6 +387,7 @@ RenderPass* ShadowCasterPass::renderPass() const
 
 ShaderTechnique* ShadowCasterPass::selectShaderTechnique(
 	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+	ShaderTechniqueClass_DrawMode drawMode,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {

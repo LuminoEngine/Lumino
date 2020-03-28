@@ -405,8 +405,10 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				elementInfo.boneLocalQuaternionTexture = nullptr;	// TODO:
 
 				ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;	// TODO:
+				ShaderTechniqueClass_DrawMode drawMode = (batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive;
 				ShaderTechnique* tech = pass->selectShaderTechnique(
 					meshProcess,
+					drawMode,
 					finalMaterial->shader(),
 					stage->getShadingModelFinal(finalMaterial));
 

@@ -277,6 +277,7 @@ void MeshTilemapLayer::draw(RenderingContext* context, const MeshTileset* tilese
 
 				context->setBaseTransfrom(Matrix::makeTranslation(x, y, z));
 				tileset->drawTile(context, t, adjacency);
+				return;	// TODO: test
 			}
 		}
 	}
