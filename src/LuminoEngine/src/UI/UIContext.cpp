@@ -27,7 +27,7 @@ void UIContext::init()
     //m_finalDefaultStyle->setupDefault();
 
 
-	if (0) {
+	if (1) {
 		auto theme = makeObject<UITheme>();
 		theme->buildLumitelier();
 		m_styleContext->addStyleSheet(theme->styleSheet());

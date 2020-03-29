@@ -271,7 +271,7 @@ void Example_Tilemap();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
 void Sandbox_Voxel();
-
+void UISandboxMain();
 
 int main(int argc, char** argv)
 {
@@ -296,9 +296,10 @@ int main(int argc, char** argv)
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		Sandbox_MeshTilemap();
+		//Sandbox_MeshTilemap();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
+		UISandboxMain();
         return 0;
     }
 

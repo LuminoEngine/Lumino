@@ -1423,6 +1423,7 @@ VulkanBuffer* VulkanCommandBuffer::cmdCopyBuffer(size_t size, VulkanBuffer* dest
         // http://web.engr.oregonstate.edu/~mjb/vulkan/Handouts/PipelineBarriers.2pp.pdf
         // https://stackoverflow.com/questions/48894573/how-to-synchronize-uniform-buffer-updates
         //https://stackoverflow.com/questions/40577047/vulkan-vkcmdpipelinebarrier-for-data-coherence
+    // https://chromium.googlesource.com/chromium/src/+/master/gpu/vulkan/vulkan_command_buffer.cc
 #endif
 
 	// 戻り先で書いてもらう

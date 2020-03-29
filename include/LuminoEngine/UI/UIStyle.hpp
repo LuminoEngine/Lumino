@@ -798,9 +798,11 @@ public:
 
     void setSpacing(float value) { m_spacing = value; }
 
+    // 1: Control 間の最小スペース, ListItem などの Container と Content の余白
     float spacing(float factor) const { return m_spacing * factor; }
 
-	float lineContentHeight() const { return spacing(4); }
+    // Control の最小高さ
+	float lineContentHeight() const { return m_lineContentHeight; }
 	
 	// 行と行の間。ListItem の高さ。
 	float lineSpacing() const { return m_lineSpacing; }
@@ -822,6 +824,7 @@ private:
     std::unordered_map<String, Color> m_colors;
     float m_spacing;
 	float m_lineSpacing;
+    float m_lineContentHeight = 8*4;
 	std::array<Color, 20> m_constantPalette;
 	Ref<UIStyle> m_defaultStyle;
 	Ref<UIStyleSheet> m_styleSheet;

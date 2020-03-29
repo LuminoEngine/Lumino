@@ -136,6 +136,7 @@ void Sandbox_MeshTilemap()
 	//EngineSettings::setGraphicsDebugEnabled(true);
  //   EngineSettings::setDebugToolEnabled(false);
 	//EngineSettings::setMainWindowSize(1600, 800);
+	EngineSettings::setDebugToolEnabled(true);
     detail::ApplicationHelper::run(&app);
 }
 

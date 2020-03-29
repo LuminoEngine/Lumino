@@ -1462,24 +1462,27 @@ void UITheme::init()
     Object::init();
 }
 
+// PC 用 Editor 向け Theme. Material-UI and Blender 2.8 based.
 void UITheme::buildLumitelier()
 {
 	m_defaultStyle = makeObject<UIStyle>();
 	m_defaultStyle->setupDefault();
 	m_defaultStyle->textColor = Color::White;
-	m_defaultStyle->fontSize = 14;
+	m_defaultStyle->fontSize = 12;
 
-	setSpacing(8);
-	m_lineSpacing = 22;
+	setSpacing(4);
+	m_lineContentHeight = 22;
+	m_lineSpacing = m_lineSpacing + spacing(1);
 
 	// Background
-	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
+	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
+	setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
 	setColor(UIThemeConstantPalette::PaperBackgroundColor, Color::parse(u"#424242"));
 
 	// Intentions
 	setColor(UIThemeConstantPalette::DefaultMainColor, UIColors::get(UIColorHues::Grey, 2));
 	setColor(UIThemeConstantPalette::DefaultTextColor, Color::Black);
-	setColor(UIThemeConstantPalette::PrimaryMainColor, UIColors::get(UIColorHues::LightGreen, 5));
+	setColor(UIThemeConstantPalette::PrimaryMainColor, UIColors::get(UIColorHues::Green, 5));
 	setColor(UIThemeConstantPalette::PrimaryTextColor, Color::White);
 	setColor(UIThemeConstantPalette::SecondaryMainColor, UIColors::get(UIColorHues::Orange, 5));
 	setColor(UIThemeConstantPalette::SecondaryTextColor, Color::White);
@@ -1500,6 +1503,48 @@ void UITheme::buildLumitelier()
 	setColor(UIThemeConstantPalette::DefaultDivider, Color::White.withAlpha(0.3));
 
 	auto sheet = makeObject<UIStyleSheet>();
+
+	//--------------------------------
+	// UIButton
+	{
+		if (auto s = sheet->obtainStyle(u"UIButton")) {
+			s->minWidth = 64;
+			s->minHeight = m_lineSpacing;
+			s->margin = Thickness(8);   // TODO: spacing?
+			s->padding = Thickness(spacing(2), spacing(1));
+			s->hAlignment = HAlignment::Center;
+			s->vAlignment = VAlignment::Center;
+			s->horizontalContentAlignment = HAlignment::Center;
+			s->verticalContentAlignment = VAlignment::Center;
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
+			s->cornerRadius = CornerRadius(4);
+			s->shadowBlurRadius = 4;
+			s->shadowOffsetY = 1;
+			s->shadowColor = Color(0, 0, 0, 0.5);
+		}
+
+
+		//auto e = sheet->addStyleSet(u"UIButton");
+		//{
+		//	auto s = e->mainStyleClass()->mainStyle();
+		//}
+		//// UIButton.test
+		//{
+		//	auto s = makeObject<UIStyle>();
+		//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
+		//	c->addClassStyle(u"test", s);
+		//}
+		// UIButton:MouseOver
+		if (auto s = sheet->obtainStyle(u"UIButton:MouseOver")) {
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
+		}
+		// 
+		if (auto s = sheet->obtainStyle(u"UIButton:Pressed")) {
+			s->backgroundColor = color(UIThemeConstantPalette::PrimaryMainColor);
+			s->shadowBlurRadius = 0;
+			s->shadowOffsetY = 0;
+		}
+	}
 
 	//--------------------------------
 	// UIWindow
@@ -1523,7 +1568,7 @@ void UITheme::buildLumitelier()
 	{
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
 			s->padding = Thickness(spacing(1), 0);
-			s->minHeight = m_lineSpacing;
+			s->minHeight = lineContentHeight();
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
 			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);

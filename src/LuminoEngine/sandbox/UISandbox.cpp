@@ -6,15 +6,16 @@
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoEngine/UI/UIListBox.hpp>
 using namespace ln;
 
 
 
-
+// https://www.infragistics.com/community/blogs/b/blagunas/posts/free-metro-light-and-dark-themes-for-wpf-and-silverlight-microsoft-controls
 class UISandboxApp : public Application
 {
 public:
-    virtual void onCreate()
+	void onInit() override
     {
 		//auto vm = makeObject<UIFileSystemCollectionModel>();
 		//auto root = vm->setRootPath(u"C:/Proj/LN/Lumino");
@@ -31,25 +32,82 @@ public:
 		//		std::cout << "  " << data2 << std::endl;
 		//	}
 		//}
-		
+
+		Engine::renderView()->setBackgroundColor(Color::Gray);
+
+		auto mainLauout = makeObject<UIGridLayout>();
+		mainLauout->setColumnCount(4);
+		Engine::ui()->addChild(mainLauout);
+
+		int margin = 8;
+
+		// Button
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"Button"));
+
+			auto button1 = makeObject<UIButton>();
+			button1->setText(u"Button");
+			layout1->addChild(button1);
+		}
+		// RadioButton
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
+
+			layout1->addChild(makeObject<UIButton>(u"dummy"));
+		}
+		// CheckBox
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+
+			layout1->addChild(makeObject<UIButton>(u"dummy"));
+		}
+		// ComboBox
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
+
+			layout1->addChild(makeObject<UIButton>(u"dummy"));
+		}
+		// ListBox (direct)
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"ListBox (direct)"));
+
+			auto listbox1 = UIListBox::create();
+			listbox1->addChild(u"item1");
+			listbox1->addChild(u"item2");
+			listbox1->addChild(u"item3");
+			listbox1->addChild(u"item4");
+			layout1->addChild(listbox1);
+		}
+
+
 		//{
-		//	auto button1 = makeObject<UIButton>();
+		//	auto button1 = makeObject<UIToggleButton>();
 		//	button1->setWidth(200);
 		//	button1->setHeight(32);
-		//	button1->setText(u"Push button");
+		//	button1->setText(u"Toggle button");
 		//	button1->setHAlignment(HAlignment::Right);
-		//	Engine::mainUIView()->addElement(button1);
+		//	button1->setVAlignment(VAlignment::Center);
 		//}
-
-		{
-			auto button1 = makeObject<UIToggleButton>();
-			button1->setWidth(200);
-			button1->setHeight(32);
-			button1->setText(u"Toggle button");
-			button1->setHAlignment(HAlignment::Right);
-			button1->setVAlignment(VAlignment::Center);
-			Engine::mainUIView()->addElement(button1);
-		}
 
 
 		//auto thumb1 = makeObject<UIThumb>();
@@ -92,12 +150,11 @@ private:
 
 };
 
-int UISandboxMain()
+void UISandboxMain()
 {
 	UISandboxApp app;
-	detail::ApplicationHelper::init(&app);
+	EngineSettings::setMainWindowSize(1000, 600);
 	detail::ApplicationHelper::run(&app);
-	return 0;
 }
 
 

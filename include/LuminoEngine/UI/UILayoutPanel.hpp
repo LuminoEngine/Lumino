@@ -117,7 +117,7 @@ public:
 
 
 
-// TODO: ネスト
+
 class UILayoutPanel2
     : public UIElement
     , public IScrollInfo
@@ -430,6 +430,32 @@ private:
 //LN_CONSTRUCT_ACCESS:
 //    void init();
 //};
+
+class UIStackLayout
+    : public UILayoutPanel2
+{
+public:
+    static Ref<UIStackLayout> create();
+    static Ref<UIStackLayout> create(Orientation orientation);
+
+    // (default: Vertical)
+    void setOrientation(Orientation orientation) { m_orientation = orientation; }
+    Orientation getOrientation() const { return m_orientation; }
+
+    bool lastStretch = false;
+
+LN_CONSTRUCT_ACCESS:
+    UIStackLayout();
+    bool init();
+    bool init(Orientation orientation);
+
+    Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+
+private:
+    Orientation m_orientation;
+};
+
 
 } // namespace ln
 

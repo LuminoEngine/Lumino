@@ -27,6 +27,17 @@ Ref<Object> UILayoutPanel2::Builder::Details::build()
 
 //==============================================================================
 // UILayoutPanel2
+/*
+    [2020/3/29] UILayoutPanel は UIElement の派生とするべきか？
+    ----------
+    派生としないパターンは QtWidgets. ネストしたい場合は Layout::addLayout で重ねる。
+    ただしこの場合、通常の論理ツリーとほぼ同義のツリーが、それとは別のルーティングで存在することになる。
+    特にメモリ効率よくなるわけでもないし、一方でイベントルーティングをカスタマイズする必要があったり、
+    ユーザープログラムとしては addElement と addLayout を分けないとならない (addChild でまとめるの不自然) し、
+    メリットがほとんどない。
+
+
+*/
 
 UILayoutPanel2::UILayoutPanel2()
     : m_ownerItemsControl(nullptr)
@@ -63,6 +74,11 @@ void UILayoutPanel2::onDispose(bool explicitDisposing)
 void UILayoutPanel2::onAddChild(UIElement* child)
 {
     if (LN_REQUIRE(child)) return;
+
+    if (child->logicalParent()) {
+        child->removeFromLogicalParent();
+    }
+
     m_logicalChildren.add(child);
     addVisualChild(child);
 }
@@ -982,14 +998,138 @@ Size UIStackLayout_Obsolete::arrangeOverride(UILayoutContext* layoutContext, con
     return finalSlotRect.getSize();
 }
 
-////==============================================================================
-//// UIVBoxLayout
-//
-//void UIVBoxLayout::init()
-//{
-//    UIStackLayout_Obsolete::init();
-//    setOrientation(Orientation::Vertical);
-//}
+//==============================================================================
+// UIStackLayout
+
+Ref<UIStackLayout> UIStackLayout::create()
+{
+    return makeObject<UIStackLayout>();
+}
+
+Ref<UIStackLayout> UIStackLayout::create(Orientation orientation)
+{
+    return makeObject<UIStackLayout>(orientation);
+}
+
+UIStackLayout::UIStackLayout()
+    : m_orientation(Orientation::Vertical)
+{
+}
+
+bool UIStackLayout::init()
+{
+    UILayoutPanel2::init();
+    return true;
+}
+
+bool UIStackLayout::init(Orientation orientation)
+{
+    if (!init()) return false;
+    setOrientation(orientation);
+    return true;
+}
+
+Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    Size size = constraint;
+
+    if (m_orientation == Orientation::Horizontal) {
+        // 横に並べる場合、幅の制限を設けない
+        size.width = std::numeric_limits<float>::infinity();
+    }
+    else {
+        // 縦に並べる場合、高さの制限を設けない
+        size.height = std::numeric_limits<float>::infinity();
+    }
+
+    Size desiredSize;
+    int childCount = getVisualChildrenCount();
+    for (int i = 0; i < childCount; i++)
+    {
+        UIElement* child = getVisualChild(i);
+
+        child->measureLayout(layoutContext, size);
+
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
+        if (m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal) {
+            desiredSize.width += childDesiredSize.width;
+            desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+        }
+        else {
+            desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+            desiredSize.height += child->getLayoutDesiredSize().height;
+        }
+    }
+
+    return desiredSize;
+}
+
+Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+    const Thickness& padding = finalStyle()->padding;
+    Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
+    int actualCellCount = m_logicalChildren.size();
+    Rect finalSlotRect(padding.left, padding.top, childrenBoundSize.width, childrenBoundSize.height);
+
+    //Size childrenBoundSize(finalSlotRect.width, finalSlotRect.height);
+    //Size selfBounds(FLT_MAX, FLT_MAX);
+    //if (stretch) {
+    //    selfBounds = finalSlotRect.getSize();
+    //}
+
+    float prevChildSize = 0;
+    float rPos = 0;
+    Rect childRect(0, 0, 0, 0);
+    int childCount = getVisualChildrenCount();
+    for (int i = 0; i < childCount; i++)
+    {
+        UIElement* child = getVisualChild(i);
+        const Size& childDesiredSize = child->getLayoutDesiredSize();
+
+        switch (m_orientation)
+        {
+        case Orientation::Horizontal:
+            childRect.x += prevChildSize;
+            prevChildSize = childDesiredSize.width;
+            childRect.width = prevChildSize;
+            childRect.height = childrenBoundSize.height;
+            break;
+        case Orientation::Vertical:
+            childRect.y += prevChildSize;
+            prevChildSize = childDesiredSize.height;
+            childRect.width = childrenBoundSize.width;
+            childRect.height = prevChildSize;
+            break;
+        case Orientation::ReverseHorizontal:
+            prevChildSize = childDesiredSize.width;
+            rPos -= prevChildSize;
+            childRect.x = childrenBoundSize.width + rPos;
+            childRect.width = prevChildSize;
+            childRect.height = childrenBoundSize.height;
+            break;
+        case Orientation::ReverseVertical:
+            prevChildSize = childDesiredSize.height;
+            rPos -= prevChildSize;
+            childRect.y = childrenBoundSize.height + rPos;
+            childRect.width = childrenBoundSize.width;
+            childRect.height = prevChildSize;
+            break;
+        default:
+            LN_UNREACHABLE();
+            break;
+        }
+
+        Rect actual(finalSlotRect.x + childRect.x, finalSlotRect.y + childRect.y, childRect.width, childRect.height);
+        if (lastStretch && i == childCount - 1) {
+            actual.width = finalSlotRect.width - actual.x;
+            actual.height = finalSlotRect.height - actual.y;
+        }
+
+        child->arrangeLayout(layoutContext, actual);
+    }
+
+    return finalSlotRect.getSize();
+}
 
 } // namespace ln
 
