@@ -157,7 +157,15 @@ void UIItemsControl::addItem(UICollectionItem* item)
     m_logicalChildren->add(item);
     item->setLogicalParent(this);
 
-    m_itemssHostLayout->addVisualChild(item);
+    if (m_itemssHostLayout) {
+        m_itemssHostLayout->addVisualChild(item);
+    }
+
+    onItemAdded(item);
+}
+
+void UIItemsControl::onItemAdded(UICollectionItem* item)
+{
 }
 
 void UIItemsControl::removeItem(UICollectionItem* item)

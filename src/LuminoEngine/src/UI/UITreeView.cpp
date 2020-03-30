@@ -193,6 +193,16 @@ void UITreeItem::onRoutedEvent(UIEventArgs* e)
     UICollectionItem::onRoutedEvent(e);
 }
 
+void UITreeItem::traverse(IUITreeItemVisitor* visitor)
+{
+    if (isRenderVisible()) {
+        visitor->visit(this);
+        for (auto& child : m_items) {
+            child->traverse(visitor);
+        }
+    }
+}
+
 void UITreeItem::expander_Checked(UIEventArgs* e)
 {
     onExpanded();
@@ -220,9 +230,9 @@ void UITreeView::init()
 {
     UIItemsControl::init();
 
-    auto layout = makeObject<UIStackLayout2_Obsolete>();
-    layout->setOrientation(Orientation::Vertical);
-    setItemsLayoutPanel(layout);
+    //auto layout = makeObject<UIStackLayout2_Obsolete>();
+    //layout->setOrientation(Orientation::Vertical);
+    //setItemsLayoutPanel(layout);
 
     setHorizontalContentAlignment(HAlignment::Left);
     setVerticalContentAlignment(VAlignment::Center);
@@ -285,8 +295,59 @@ void UITreeView::onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e)
     }
 }
 
+Size UITreeView::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
+        class LocalVisitor : public IUITreeItemVisitor
+        {
+        public:
+            List<UITreeItem*>* list;
+            virtual void visit(UITreeItem* item)
+            {
+                list->add(item);
+            }
+        };
+        LocalVisitor v;
+        v.list = &m_listLayoutCache;
+        m_listLayoutCache.clear();
+
+        for (auto& child : *m_logicalChildren) {
+            static_pointer_cast<UITreeItem>(child)->traverse(&v);
+        }
+
+        if (m_listLayoutCache.size() >= 1) {
+            for (auto& item : m_listLayoutCache) {
+                item->measureLayout(layoutContext, constraint);
+            }
+
+            Size size = m_listLayoutCache.front()->desiredSize();
+
+            // 全 item 固定サイズで算出
+            size.height = size.height * m_listLayoutCache.size();
+
+            return size;
+        }
+    }
+
+    return UIItemsControl::measureOverride(layoutContext, constraint);
+}
+
 Size UITreeView::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
+    if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
+        if (m_listLayoutCache.size() >= 1) {
+            Rect rect;
+            for (auto& item : m_listLayoutCache) {
+                rect.width = item->desiredSize().width;
+                rect.height = item->desiredSize().height;
+                item->arrangeLayout(layoutContext, rect);
+                rect.y += rect.height;
+            }
+
+            return finalSize;
+        }
+    }
+
     return UIItemsControl::arrangeOverride(layoutContext, finalSize);
 }
 
@@ -337,8 +398,13 @@ void UITreeView::makeChildItems(UITreeItem* item)
             addItemInternal(child);
         }
     }
+}
 
-
+void UITreeView::onItemAdded(UICollectionItem* item)
+{
+    if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
+        addVisualChild(item);
+    }
 }
 
 } // namespace ln

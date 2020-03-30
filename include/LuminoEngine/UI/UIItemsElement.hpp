@@ -70,6 +70,8 @@ protected:
 	void removeItem(UICollectionItem* item);
     void removeAllItems();
 
+    // 新しく item が追加された。
+    virtual void onItemAdded(UICollectionItem* item);
     virtual void onItemClick(UICollectionItem* item, UIClickEventArgs* e);
     virtual void onSelectionChanged(UISelectionChangedEventArgs* e);
 

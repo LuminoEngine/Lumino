@@ -2,6 +2,24 @@
 #include "UIItemsElement.hpp"
 
 namespace ln {
+class UITreeItem;
+
+enum class UITreeViewLayoutMode
+{
+    // 通常のレイアウト。子 Item は、親 Item がレイアウトする。
+    Hierarchical,
+
+    // インデント付きのリストのようにレイアウトする。
+    // 各 Item は、論理ツリーは通常通りだが、VisualParent は TreeView となる。
+    // 
+    IndentedList,
+};
+
+class IUITreeItemVisitor
+{
+public:
+    virtual void visit(UITreeItem* item) = 0;
+};
 
 class UITreeItem
 	: public UICollectionItem
@@ -32,6 +50,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    void traverse(IUITreeItemVisitor* visitor);
     void expander_Checked(UIEventArgs* e);
     void expander_Unchecked(UIEventArgs* e);
 
@@ -58,8 +77,10 @@ protected:
     virtual Ref<UITreeItem> onRenderItem(UICollectionItemViewModel* viewModel);
 
     // base interface
+    virtual void onItemAdded(UICollectionItem* item) override;
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
     virtual void onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -72,6 +93,9 @@ private:
     //UITreeItem* makeTreeViewItem();
 
     Ref<UICollectionModel> m_model;
+    UITreeViewLayoutMode m_layoutMode = UITreeViewLayoutMode::IndentedList;
+    List<UITreeItem*> m_listLayoutCache;
+    bool m_initializing = true;
 
     friend class UITreeItem;
 };
