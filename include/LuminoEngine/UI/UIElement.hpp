@@ -70,6 +70,16 @@ struct GridLayoutInfo
 //};
 
 
+class UICreationContext
+	: public Object
+{
+public:
+	bool m_autoAddToPrimaryElement = true;
+
+	static Ref<UICreationContext> Default;
+	static Ref<UICreationContext> DisabledAutoAddToPrimaryElement;
+};
+
 class UIViewModel
 	: public Object
 {
@@ -354,7 +364,7 @@ public:
 	void setViewModel(UIViewModel* value);
     virtual void setContent(UIElement* content);
     virtual void setContent(const String& content);
-	/** Add element to container. */
+	/** Add element to container. 論理的な子要素として追加する。 */
 	LN_METHOD()
     void addChild(UIElement* child);
     void addChild(const String& child);
@@ -376,7 +386,8 @@ public:
 
     UIElement();
     virtual ~UIElement();
-	void init();
+	bool init() { return init(UICreationContext::Default); }
+	bool init(const UICreationContext* context);
 
 public: // TODO: internal
     void setRenderPriority(int value);
@@ -519,8 +530,8 @@ public: // TODO: internal
     UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
     UIFrameRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
     
-    UIElement* m_visualParent;
-    UIControl* m_logicalParent;    // TODO: Layout も親となりえる。
+    UIElement* m_visualParent;		// 必ず存在する。
+    UIControl* m_logicalParent;    // 必ず存在するとは限らない。 TODO: Layout も親となりえる。
 	Ref<List<Ref<UIElement>>> m_visualChildren;
 	Ref<List<UIElement*>> m_orderdVisualChildren;
     Ref<List<String>> m_classList;

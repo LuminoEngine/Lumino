@@ -374,7 +374,7 @@ UIMessageTextArea::UIMessageTextArea()
 
 void UIMessageTextArea::init()
 {
-	UIElement::init();
+	UIElement::init(nullptr);
 	m_document = makeObject<detail::RTDocument>();
 
 

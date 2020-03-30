@@ -25,7 +25,11 @@ void UITreeItem::init()
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Pressed);
 
-	m_expanderButton = makeObject<UIToggleButton>();
+    // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
+	m_expanderButton = makeObject<UIToggleButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
+    //m_expanderButton = makeRef<UIToggleButton>();
+    //m_expanderButton->m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
+    //m_expanderButton->init();
 
 	m_expanderButton->addClass(u"UITreeItem-Expander");
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem::expander_Checked));
@@ -56,10 +60,17 @@ void UITreeItem::addChild(UITreeItem* item)
 void UITreeItem::onExpanded()
 {
     m_ownerTreeView->makeChildItems(this);
+    
+    for (auto& child : m_items) {
+        child->m_internalVisibility = UIVisibility::Visible;;
+    }
 }
 
 void UITreeItem::onCollapsed()
 {
+    for (auto& child : m_items) {
+        child->m_internalVisibility = UIVisibility::Collapsed;;
+    }
 }
 
 void UITreeItem::onClick(UIMouseEventArgs* e)
@@ -288,6 +299,7 @@ void UITreeView::makeChildItems(UITreeItem* item)
 
     UICollectionItemModel* itemModel = nullptr; // null is root
     if (item) {
+        item->removeAllChildren();
 		itemModel = item->m_model;
     }
 

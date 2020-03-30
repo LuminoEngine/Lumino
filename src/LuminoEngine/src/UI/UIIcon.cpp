@@ -19,7 +19,7 @@ UIIcon::UIIcon()
 
 void UIIcon::init()
 {
-    UIElement::init();
+    UIElement::init(nullptr);
 }
 
 void UIIcon::setIconName(const StringRef& value)

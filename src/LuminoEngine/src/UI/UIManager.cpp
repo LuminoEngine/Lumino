@@ -40,11 +40,21 @@ void UIManager::init(const Settings& settings)
 
 	//m_defaultLayout = makeObject<UIFrameLayout>();
 
+
+    UICreationContext::Default = makeObject<UICreationContext>();
+    UICreationContext::Default->m_autoAddToPrimaryElement = true;
+
+    UICreationContext::DisabledAutoAddToPrimaryElement = makeObject<UICreationContext>();
+    UICreationContext::DisabledAutoAddToPrimaryElement->m_autoAddToPrimaryElement = false;
+
     LN_LOG_DEBUG << "UIManager Initialization finished.";
 }
 
 void UIManager::dispose()
 {
+    UICreationContext::Default = nullptr;
+    UICreationContext::DisabledAutoAddToPrimaryElement = nullptr;
+
     m_eventArgsPool = nullptr;
     m_mainContext = nullptr;
 }

@@ -16,7 +16,7 @@ UIScrollView::UIScrollView()
 
 void UIScrollView::init()
 {
-	UIControl::init();
+	UIControl::init(nullptr);
 }
 
 
@@ -35,7 +35,7 @@ UIThumb::~UIThumb()
 
 void UIThumb::init()
 {
-	UIElement::init();
+	UIElement::init(nullptr);
 }
 
 void UIThumb::onRoutedEvent(UIEventArgs* e)
@@ -135,7 +135,7 @@ UIRangeBase::~UIRangeBase()
 
 void UIRangeBase::init()
 {
-	UIElement::init();
+	UIElement::init(nullptr);
 }
 
 void UIRangeBase::setValue(float value)
@@ -222,7 +222,7 @@ UITrack::~UITrack()
 
 void UITrack::init()
 {
-    UIControl::init();
+    UIControl::init(nullptr);
 
 	// register VisualState
 	auto* vsm = getVisualStateManager();
@@ -493,7 +493,7 @@ UIScrollBar::~UIScrollBar()
 
 void UIScrollBar::init()
 {
-    UIElement::init();
+    UIElement::init(nullptr);
 
     // register VisualState
     auto* vsm = getVisualStateManager();

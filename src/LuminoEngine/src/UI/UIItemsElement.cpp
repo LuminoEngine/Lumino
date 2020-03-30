@@ -19,7 +19,7 @@ UICollectionItem::UICollectionItem()
 
 void UICollectionItem::init()
 {
-	UIControl::init();
+	UIControl::init(nullptr);
 	auto vsm = getVisualStateManager();
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
@@ -114,7 +114,7 @@ UIItemsControl::UIItemsControl()
 
 void UIItemsControl::init()
 {
-    UIControl::init();
+    UIControl::init(nullptr);
 
 	// dummy for single select mode
 	m_selectedItems.add(nullptr);
@@ -346,7 +346,7 @@ UIMenuItem::UIMenuItem()
 
 void UIMenuItem::init()
 {
-    UIControl::init();
+    UIControl::init(nullptr);
 }
 
 } // namespace ln

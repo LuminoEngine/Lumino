@@ -80,7 +80,7 @@ void UITextBlock::init()
 
     setBlendMode(BlendMode::Alpha);
 
-    attemptAddToPrimaryElement();
+    //attemptAddToPrimaryElement();
 }
 
 void UITextBlock::init(const StringRef& text)

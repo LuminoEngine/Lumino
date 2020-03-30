@@ -7,6 +7,7 @@
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UIListBox.hpp>
+#include <LuminoEngine/UI/UITreeView.hpp>
 using namespace ln;
 
 
@@ -41,62 +42,77 @@ public:
 
 		int margin = 8;
 
-		// Button
+		//// Button
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"Button"));
+
+		//	auto button1 = makeObject<UIButton>();
+		//	button1->setText(u"Button");
+		//	layout1->addChild(button1);
+		//}
+		//// RadioButton
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
+
+		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
+		//}
+		//// CheckBox
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+
+		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
+		//}
+		//// ComboBox
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
+
+		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
+		//}
+		//// ListBox (Direct)
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"ListBox (Direct)"));
+
+		//	auto listbox1 = UIListBox::create();
+		//	listbox1->addChild(u"item1");
+		//	listbox1->addChild(u"item2");
+		//	listbox1->addChild(u"item3");
+		//	listbox1->addChild(u"item4");
+		//	layout1->addChild(listbox1);
+		//}
+		// TreeView (Model)
 		{
 			auto layout1 = makeObject<UIStackLayout>();
 			layout1->setMargin(margin);
 			mainLauout->addChild(layout1);
 
-			layout1->addChild(makeObject<UITextBlock>(u"Button"));
+			layout1->addChild(makeObject<UITextBlock>(u"TreeView (Model)"));
 
-			auto button1 = makeObject<UIButton>();
-			button1->setText(u"Button");
-			layout1->addChild(button1);
-		}
-		// RadioButton
-		{
-			auto layout1 = makeObject<UIStackLayout>();
-			layout1->setMargin(margin);
-			mainLauout->addChild(layout1);
+			auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
+			model1->setRootPath(LN_LOCALFILE("Assets"));
 
-			layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
-
-			layout1->addChild(makeObject<UIButton>(u"dummy"));
-		}
-		// CheckBox
-		{
-			auto layout1 = makeObject<UIStackLayout>();
-			layout1->setMargin(margin);
-			mainLauout->addChild(layout1);
-
-			layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
-
-			layout1->addChild(makeObject<UIButton>(u"dummy"));
-		}
-		// ComboBox
-		{
-			auto layout1 = makeObject<UIStackLayout>();
-			layout1->setMargin(margin);
-			mainLauout->addChild(layout1);
-
-			layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
-
-			layout1->addChild(makeObject<UIButton>(u"dummy"));
-		}
-		// ListBox (direct)
-		{
-			auto layout1 = makeObject<UIStackLayout>();
-			layout1->setMargin(margin);
-			mainLauout->addChild(layout1);
-
-			layout1->addChild(makeObject<UITextBlock>(u"ListBox (direct)"));
-
-			auto listbox1 = UIListBox::create();
-			listbox1->addChild(u"item1");
-			listbox1->addChild(u"item2");
-			listbox1->addChild(u"item3");
-			listbox1->addChild(u"item4");
-			layout1->addChild(listbox1);
+			auto treeview1 = makeObject<UITreeView>();
+			treeview1->setViewModel(model1);
+			layout1->addChild(treeview1);
 		}
 
 

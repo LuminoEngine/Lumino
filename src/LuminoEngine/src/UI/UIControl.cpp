@@ -21,9 +21,9 @@ UIControl::UIControl()
 	m_objectManagementFlags.set(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
-void UIControl::init()
+bool UIControl::init(const UICreationContext* context)
 {
-    UIElement::init();
+    if (!UIElement::init(context)) return false;
     auto vsm = getVisualStateManager();
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
@@ -33,6 +33,8 @@ void UIControl::init()
 	//setVAlignment(VAlignment::Stretch);
 
     //setLayoutPanel(makeObject<UIFrameLayout>());
+
+    return true;
 }
 
 void UIControl::onDispose(bool explicitDisposing)

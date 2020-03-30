@@ -578,7 +578,7 @@ UITextArea::UITextArea()
 
 void UITextArea::init()
 {
-	UIElement::init();
+	UIElement::init(nullptr);
 	m_textLayout = makeObject<detail::UITextLayout>();
     focus();    // TODO: test
 

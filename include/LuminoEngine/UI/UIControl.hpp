@@ -109,7 +109,8 @@ class UIControl
 	LN_OBJECT;
 public:
     UIControl();
-	void init();
+    bool init() { return init(UICreationContext::Default); }
+    bool init(const UICreationContext* context);
     virtual void onDispose(bool explicitDisposing) override;
 
 

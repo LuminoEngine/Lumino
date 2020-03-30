@@ -15,7 +15,7 @@ UITextField::UITextField()
 
 void UITextField::init()
 {
-	UIElement::init();
+	UIElement::init(nullptr);
 	m_textArea = makeObject<UIEditableTextArea>();
 	addVisualChild(m_textArea);
 }

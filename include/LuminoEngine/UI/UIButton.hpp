@@ -18,7 +18,8 @@ class UIButtonBase
 	LN_OBJECT;
 public:
 	UIButtonBase();
-	void init();
+	bool init() { return init(UICreationContext::Default); }
+	bool init(const UICreationContext* context);
 
 	/** set text. */
 	LN_METHOD()
@@ -92,7 +93,8 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
-	void init();
+	bool init() { return init(UICreationContext::Default); }
+	bool init(const UICreationContext* context);
 
 protected:
 	virtual const String& elementName() const  override { static String name = u"UIToggleButton"; return name; }

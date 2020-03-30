@@ -27,7 +27,8 @@ public:
 	ViewProperty* getViewProperty(StringRef name);
 	std::vector<Ref<ViewProperty>> m_viewProperties;
 
-LN_CONSTRUCT_ACCESS:
+//LN_CONSTRUCT_ACCESS:
+public: // TODO:
     UITextBlock();
     
     /**

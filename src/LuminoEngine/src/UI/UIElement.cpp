@@ -17,6 +17,9 @@
 #include "UIManager.hpp"
 
 namespace ln {
+    
+Ref<UICreationContext> UICreationContext::Default;
+Ref<UICreationContext> UICreationContext::DisabledAutoAddToPrimaryElement;
 
 //==============================================================================
 // UIViewModel
@@ -113,18 +116,20 @@ void UIElement::onDispose(bool explicitDisposing)
     UILayoutElement::onDispose(explicitDisposing);
 }
 
-void UIElement::init()
+bool UIElement::init(const UICreationContext* context)
 {
 	UILayoutElement::init(m_finalStyle);
+    context = (context) ? context : UICreationContext::Default;
     m_manager = detail::EngineDomain::uiManager();
-    if (LN_REQUIRE(m_manager->mainContext())) return;
+    if (LN_REQUIRE(m_manager->mainContext())) return false;
 
     m_dirtyFlags.set(detail::UIElementDirtyFlags::InitialLoading);
 
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
 	m_finalStyle->backgroundMaterial = makeObject<Material>();
 
-	if (m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
+	if (context->m_autoAddToPrimaryElement &&
+        m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
 		attemptAddToPrimaryElement();
 	}
 
@@ -134,6 +139,8 @@ void UIElement::init()
     //}
 
     //onSetup();
+
+    return true;
 }
 
 void UIElement::setWidth(float value)
@@ -478,7 +485,13 @@ void UIElement::setContent(UIElement* content)
 
 void UIElement::setContent(const String& content)
 {
-    auto textblock = makeObject<UITextBlock>();
+    // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
+    //m_expanderButton = makeObject<UIToggleButton>();
+    auto textblock = makeRef<UITextBlock>();
+    textblock->m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
+    textblock->init();
+
+    //auto textblock = makeObject<UITextBlock>();
     textblock->setText(content);
     setContent(textblock);
 }
