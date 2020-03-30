@@ -230,9 +230,9 @@ void UITreeView::init()
 {
     UIItemsControl::init();
 
-    //auto layout = makeObject<UIStackLayout2_Obsolete>();
-    //layout->setOrientation(Orientation::Vertical);
-    //setItemsLayoutPanel(layout);
+    auto layout = makeObject<UIStackLayout>();
+    layout->setOrientation(Orientation::Vertical);
+    setItemsLayoutPanel(layout);
 
     setHorizontalContentAlignment(HAlignment::Left);
     setVerticalContentAlignment(VAlignment::Center);
@@ -297,6 +297,7 @@ void UITreeView::onSourcePropertyChanged(UINotifyPropertyChangedEventArgs* e)
 
 Size UITreeView::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
+#if 0
     if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
         class LocalVisitor : public IUITreeItemVisitor
         {
@@ -328,12 +329,14 @@ Size UITreeView::measureOverride(UILayoutContext* layoutContext, const Size& con
             return size;
         }
     }
+#endif
 
     return UIItemsControl::measureOverride(layoutContext, constraint);
 }
 
 Size UITreeView::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
+#if 0
     if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
         if (m_listLayoutCache.size() >= 1) {
             Rect rect;
@@ -347,6 +350,7 @@ Size UITreeView::arrangeOverride(UILayoutContext* layoutContext, const Size& fin
             return finalSize;
         }
     }
+#endif
 
     return UIItemsControl::arrangeOverride(layoutContext, finalSize);
 }
@@ -402,9 +406,9 @@ void UITreeView::makeChildItems(UITreeItem* item)
 
 void UITreeView::onItemAdded(UICollectionItem* item)
 {
-    if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
-        addVisualChild(item);
-    }
+    //if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
+    //    addVisualChild(item);
+    //}
 }
 
 } // namespace ln

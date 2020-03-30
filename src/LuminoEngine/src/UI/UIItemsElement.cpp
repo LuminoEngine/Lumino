@@ -216,6 +216,19 @@ void UIItemsControl::onSelectionChanged(UISelectionChangedEventArgs* e)
     m_onSelectionChanged.raise(e);
 }
 
+void UIItemsControl::onAddChild(UIElement* child)
+{
+    // TODO: dynamic_cast じゃなくてフラグで見たい
+    auto* item = dynamic_cast<UICollectionItem*>(child);
+    if (!item) {
+        LN_NOTIMPLEMENTED();
+        return;
+    }
+
+    addItem(item);
+
+}
+
 void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
 {
     UIControl::onUpdateStyle(styleContext, finalStyle);
@@ -356,6 +369,26 @@ void UIMenuItem::init()
 {
     UIControl::init(nullptr);
 }
+
+
+////==============================================================================
+//// UICollectionControl
+//
+//UICollectionControl::UICollectionControl()
+//{
+//
+//}
+//
+//bool UICollectionControl::init()
+//{
+//    if (!UIControl::init()) return false;
+//    return true;
+//}
+//
+//void UICollectionControl::onAddChild(UIElement* child)
+//{
+//
+//}
 
 } // namespace ln
 

@@ -46,6 +46,7 @@ private:
 	friend class UIItemsControl;
 };
 
+// item 追加は addChild で。
 class UIItemsControl	// TODO: UICollectionItem がほかにいい名前思いつかなければ、CollectionControl かなぁ・・・
 	: public UIControl
 {
@@ -66,7 +67,9 @@ protected:
 
     void setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild = true);
 
-	void addItem(UICollectionItem* item);
+    // UICollectionItem であるとわかっている 時に、addChild の代わりに使うと効率的に追加できる。
+    void addItem(UICollectionItem* item);
+
 	void removeItem(UICollectionItem* item);
     void removeAllItems();
 
@@ -76,6 +79,7 @@ protected:
     virtual void onSelectionChanged(UISelectionChangedEventArgs* e);
 
 	// base interfaces
+    void onAddChild(UIElement* child) override;
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
@@ -83,6 +87,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIItemsControl();
 	void init();
+
+private:
 
 public: // TODO:
     void selectItemExclusive(UICollectionItem* item);
@@ -158,6 +164,23 @@ private:
     Ref<UIElement> m_icon;
 };
 
+
+//// item 追加は addChild で。
+//class UICollectionControl
+//    : public UIControl
+//{
+//public:
+//
+//protected:
+//    // base interfaces
+//    void onAddChild(UIElement* child) override;
+//    
+//LN_CONSTRUCT_ACCESS:
+//	UICollectionControl();
+//	bool init();
+//
+//private:
+//};
 
 } // namespace ln
 
