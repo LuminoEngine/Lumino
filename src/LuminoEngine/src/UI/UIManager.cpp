@@ -93,18 +93,20 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
 
 
 #if 1
+    UIElement* old = m_mouseHoverElement;
+
     UIElement* hoverdElement = mouseEventSource->onLookupMouseHoverElement(frameClientPosition);
     if (m_mouseHoverElement != hoverdElement) {
         clearMouseHover();
-    }
-
-    if (hoverdElement)
-    {
-        m_mouseHoverElement = hoverdElement;
-        auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
-        m_mouseHoverElement->raiseEvent(args);
 
 
+
+        if (hoverdElement)
+        {
+            m_mouseHoverElement = hoverdElement;
+            auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
+            m_mouseHoverElement->raiseEvent(args);
+        }
     }
 
 

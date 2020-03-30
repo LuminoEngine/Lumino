@@ -66,14 +66,14 @@ void UITreeItem::onExpanded()
     m_ownerTreeView->makeChildItems(this);
     
     for (auto& child : m_items) {
-        child->m_internalVisibility = UIVisibility::Visible;;
+        child->m_internalVisibility = UIVisibility::Visible;
     }
 }
 
 void UITreeItem::onCollapsed()
 {
     for (auto& child : m_items) {
-        child->m_internalVisibility = UIVisibility::Collapsed;;
+        child->m_internalVisibility = UIVisibility::Collapsed;
     }
 }
 
@@ -303,30 +303,30 @@ void UITreeView::makeChildItems(UITreeItem* item)
 
     UICollectionItemViewModel* itemModel = nullptr; // null is root
     if (item) {
-        item->removeAllChildren();
-		itemModel = item->m_model;
 
+        itemModel = item->m_model;
         int count = itemModel->getChildrenCount();
-        for (int i = 0; i < count; i++) {
-            auto childModel = itemModel->getItem(i);
-            //auto itemData = m_model->getData(childModel, u"");
+        if (item->m_items.size() != count) {
+            item->removeAllChildren();
 
-            //auto text = makeObject<UITextBlock>();
-            //text->setText(itemData);
+            for (int i = 0; i < count; i++) {
+                auto childModel = itemModel->getItem(i);
+                //auto itemData = m_model->getData(childModel, u"");
 
-            //auto child = makeObject<UITreeItem>();
-            //child->setContent(text);
-            //child->setViewModel(childModel);
-            //child->setData(makeVariant(childModel));
-            auto child = onRenderItem(childModel);
+                //auto text = makeObject<UITextBlock>();
+                //text->setText(itemData);
 
-            if (!item) {
-                addItemInternal(child);
-            }
-            else {
+                //auto child = makeObject<UITreeItem>();
+                //child->setContent(text);
+                //child->setViewModel(childModel);
+                //child->setData(makeVariant(childModel));
+                auto child = onRenderItem(childModel);
+
                 item->addChild(child);
             }
         }
+
+
     }
     else {
         int count = m_model->getItemCount();
@@ -334,12 +334,7 @@ void UITreeView::makeChildItems(UITreeItem* item)
             auto childModel = m_model->getItem(i);
             auto child = onRenderItem(childModel);
 
-            if (!item) {
-                addItemInternal(child);
-            }
-            else {
-                item->addChild(child);
-            }
+            addItemInternal(child);
         }
     }
 

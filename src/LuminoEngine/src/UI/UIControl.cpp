@@ -209,6 +209,8 @@ void UIControl::onRoutedEvent(UIEventArgs* e)
 {
     if (e->type() == UIEvents::MouseEnterEvent) {
         getVisualStateManager()->gotoState(UIVisualStates::MouseOver);
+        e->handled = true;
+        return;
     }
     else if (e->type() == UIEvents::MouseLeaveEvent) {
         getVisualStateManager()->gotoState(UIVisualStates::Normal);
