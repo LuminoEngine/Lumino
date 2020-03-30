@@ -35,7 +35,7 @@ void AssetBrowserTreeView::setPath(const ln::Path & path)
     m_model->setRootPath(path);
 }
 
-Ref<ln::UITreeItem> AssetBrowserTreeView::onRenderItem(ln::UICollectionItemModel* viewModel)
+Ref<ln::UITreeItem> AssetBrowserTreeView::onRenderItem(ln::UICollectionItemViewModel* viewModel)
 {
     return UITreeView::onRenderItem(viewModel);
     //auto item = UITreeView::onRenderItem(viewModel);
@@ -54,7 +54,7 @@ Ref<ln::UITreeItem> AssetBrowserTreeView::onRenderItem(ln::UICollectionItemModel
 void AssetBrowserTreeView::onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e)
 {
     UITreeView::onItemClick(item, e);
-    auto path = m_model->filePath(static_cast<ln::UICollectionItemModel*>(item->m_viewModel.get()));
+    auto path = m_model->filePath(static_cast<ln::UICollectionItemViewModel*>(item->m_viewModel.get()));
     m_owner->setAssetListPathFromTreeClick(path);
 
 #if 0

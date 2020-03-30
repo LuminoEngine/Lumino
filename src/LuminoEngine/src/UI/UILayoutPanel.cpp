@@ -1047,17 +1047,18 @@ Size UIStackLayout::measureOverride(UILayoutContext* layoutContext, const Size& 
     for (int i = 0; i < childCount; i++)
     {
         UIElement* child = getVisualChild(i);
+        if (layoutContext->testLayoutEnabled(child)) {
+            child->measureLayout(layoutContext, size);
 
-        child->measureLayout(layoutContext, size);
-
-        const Size& childDesiredSize = child->getLayoutDesiredSize();
-        if (m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal) {
-            desiredSize.width += childDesiredSize.width;
-            desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
-        }
-        else {
-            desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-            desiredSize.height += child->getLayoutDesiredSize().height;
+            const Size& childDesiredSize = child->getLayoutDesiredSize();
+            if (m_orientation == Orientation::Horizontal || m_orientation == Orientation::ReverseHorizontal) {
+                desiredSize.width += childDesiredSize.width;
+                desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+            }
+            else {
+                desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+                desiredSize.height += child->getLayoutDesiredSize().height;
+            }
         }
     }
 
@@ -1084,48 +1085,50 @@ Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Size& 
     for (int i = 0; i < childCount; i++)
     {
         UIElement* child = getVisualChild(i);
-        const Size& childDesiredSize = child->getLayoutDesiredSize();
+        if (layoutContext->testLayoutEnabled(child)) {
+            const Size& childDesiredSize = child->getLayoutDesiredSize();
 
-        switch (m_orientation)
-        {
-        case Orientation::Horizontal:
-            childRect.x += prevChildSize;
-            prevChildSize = childDesiredSize.width;
-            childRect.width = prevChildSize;
-            childRect.height = childrenBoundSize.height;
-            break;
-        case Orientation::Vertical:
-            childRect.y += prevChildSize;
-            prevChildSize = childDesiredSize.height;
-            childRect.width = childrenBoundSize.width;
-            childRect.height = prevChildSize;
-            break;
-        case Orientation::ReverseHorizontal:
-            prevChildSize = childDesiredSize.width;
-            rPos -= prevChildSize;
-            childRect.x = childrenBoundSize.width + rPos;
-            childRect.width = prevChildSize;
-            childRect.height = childrenBoundSize.height;
-            break;
-        case Orientation::ReverseVertical:
-            prevChildSize = childDesiredSize.height;
-            rPos -= prevChildSize;
-            childRect.y = childrenBoundSize.height + rPos;
-            childRect.width = childrenBoundSize.width;
-            childRect.height = prevChildSize;
-            break;
-        default:
-            LN_UNREACHABLE();
-            break;
+            switch (m_orientation)
+            {
+            case Orientation::Horizontal:
+                childRect.x += prevChildSize;
+                prevChildSize = childDesiredSize.width;
+                childRect.width = prevChildSize;
+                childRect.height = childrenBoundSize.height;
+                break;
+            case Orientation::Vertical:
+                childRect.y += prevChildSize;
+                prevChildSize = childDesiredSize.height;
+                childRect.width = childrenBoundSize.width;
+                childRect.height = prevChildSize;
+                break;
+            case Orientation::ReverseHorizontal:
+                prevChildSize = childDesiredSize.width;
+                rPos -= prevChildSize;
+                childRect.x = childrenBoundSize.width + rPos;
+                childRect.width = prevChildSize;
+                childRect.height = childrenBoundSize.height;
+                break;
+            case Orientation::ReverseVertical:
+                prevChildSize = childDesiredSize.height;
+                rPos -= prevChildSize;
+                childRect.y = childrenBoundSize.height + rPos;
+                childRect.width = childrenBoundSize.width;
+                childRect.height = prevChildSize;
+                break;
+            default:
+                LN_UNREACHABLE();
+                break;
+            }
+
+            Rect actual(finalSlotRect.x + childRect.x, finalSlotRect.y + childRect.y, childRect.width, childRect.height);
+            if (lastStretch && i == childCount - 1) {
+                actual.width = finalSlotRect.width - actual.x;
+                actual.height = finalSlotRect.height - actual.y;
+            }
+
+            child->arrangeLayout(layoutContext, actual);
         }
-
-        Rect actual(finalSlotRect.x + childRect.x, finalSlotRect.y + childRect.y, childRect.width, childRect.height);
-        if (lastStretch && i == childCount - 1) {
-            actual.width = finalSlotRect.width - actual.x;
-            actual.height = finalSlotRect.height - actual.y;
-        }
-
-        child->arrangeLayout(layoutContext, actual);
     }
 
     return finalSlotRect.getSize();

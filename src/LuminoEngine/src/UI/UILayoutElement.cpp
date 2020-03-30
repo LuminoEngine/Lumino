@@ -283,7 +283,11 @@ void UILayoutContext::init()
 
 bool UILayoutContext::testLayoutEnabled(UIElement* element) const
 {
-	return !element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
+	bool cllapsed = element->m_finalStyle->visible == UIVisibility::Collapsed || element->m_internalVisibility == UIVisibility::Collapsed;
+
+	return
+		!cllapsed &&
+		!element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
 }
 
 //==============================================================================

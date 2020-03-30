@@ -21,7 +21,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     UIListView* m_ownerListView;
-    Ref<UICollectionItemModel> m_model;
+    Ref<UICollectionItemViewModel> m_model;
 
     friend class UIListView;
 };
@@ -34,7 +34,7 @@ public:
     void refresh();
 
 protected:
-    virtual Ref<UIListViewItem> onGenerateItem(UICollectionItemModel* viewModel);
+    virtual Ref<UIListViewItem> onGenerateItem(UICollectionItemViewModel* viewModel);
 
     // base interface
     virtual const String& elementName() const  override { static String name = u"UIListView"; return name; }

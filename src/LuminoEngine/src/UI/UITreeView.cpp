@@ -35,11 +35,15 @@ void UITreeItem::init()
     m_expanderButton->connectOnChecked(bind(this, &UITreeItem::expander_Checked));
     m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem::expander_Unchecked));
 
+    //m_expanderButton->setBackgroundColor(Color::Red);
+
 	addVisualChild(m_expanderButton);
 
-    auto layout = makeObject<UIStackLayout_Obsolete>();
+    //auto layout = makeObject<UIStackLayout_Obsolete>();
+    auto layout = makeObject<UIStackLayout>();
     layout->setOrientation(Orientation::Vertical);
     m_itemsLayout = layout;
+    addVisualChild(m_itemsLayout);
 }
 
 void UITreeItem::setContent(UIElement* value)
@@ -54,7 +58,7 @@ void UITreeItem::addChild(UITreeItem* item)
     if (LN_REQUIRE(item)) return;
     m_items.add(item);
     item->m_ownerTreeView = m_ownerTreeView;
-    addVisualChild(item);   // TODO: 多重追加対策
+    m_itemsLayout->addVisualChild(item);   // TODO: 多重追加対策
 }
 
 void UITreeItem::onExpanded()
@@ -85,7 +89,7 @@ void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
 		LN_NOTIMPLEMENTED();
 	}
 
-	m_model = dynamic_cast<UICollectionItemModel*>(newViewModel);
+	m_model = dynamic_cast<UICollectionItemViewModel*>(newViewModel);
 	if (!m_model) {
 		LN_NOTIMPLEMENTED();
 	}
@@ -98,7 +102,7 @@ void UITreeItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
         m_expanderButton->m_internalVisibility = UIVisibility::Hidden;
     }
 
-    UIElement::setContent(m_model->getData(u""));
+    UIElement::setContent(m_model->getValue(u""));
 }
 
 Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
@@ -131,7 +135,7 @@ Size UITreeItem::measureOverride(UILayoutContext* layoutContext, const Size& con
     }
 
     // children
-    m_itemsLayout->measureLayout(layoutContext, &list, constraint);
+    m_itemsLayout->measureLayout(layoutContext, constraint);
     size.width = std::max(size.width, m_itemsLayout->desiredSize().width);
     size.height += m_itemsLayout->desiredSize().height;
 
@@ -175,7 +179,7 @@ Size UITreeItem::arrangeOverride(UILayoutContext* layoutContext, const Size& fin
 
     // children
     area.y = std::max(m_expanderButton->actualSize().height, headerContentHeight);
-    m_itemsLayout->arrangeLayout(layoutContext, &list, area);
+    m_itemsLayout->arrangeLayout(layoutContext, area);
 
     return finalSize;
 }
@@ -252,7 +256,7 @@ void UITreeView::onItemClick(UITreeItem* item, UIMouseEventArgs* e)
 {
 }
 
-Ref<UITreeItem> UITreeView::onRenderItem(UICollectionItemModel* viewModel)
+Ref<UITreeItem> UITreeView::onRenderItem(UICollectionItemViewModel* viewModel)
 {
     auto item = makeObject<UITreeItem>();
     item->setViewModel(viewModel);
@@ -297,33 +301,48 @@ void UITreeView::makeChildItems(UITreeItem* item)
 {
     assert(isVirtualize());
 
-    UICollectionItemModel* itemModel = nullptr; // null is root
+    UICollectionItemViewModel* itemModel = nullptr; // null is root
     if (item) {
         item->removeAllChildren();
 		itemModel = item->m_model;
+
+        int count = itemModel->getChildrenCount();
+        for (int i = 0; i < count; i++) {
+            auto childModel = itemModel->getItem(i);
+            //auto itemData = m_model->getData(childModel, u"");
+
+            //auto text = makeObject<UITextBlock>();
+            //text->setText(itemData);
+
+            //auto child = makeObject<UITreeItem>();
+            //child->setContent(text);
+            //child->setViewModel(childModel);
+            //child->setData(makeVariant(childModel));
+            auto child = onRenderItem(childModel);
+
+            if (!item) {
+                addItemInternal(child);
+            }
+            else {
+                item->addChild(child);
+            }
+        }
+    }
+    else {
+        int count = m_model->getItemCount();
+        for (int i = 0; i < count; i++) {
+            auto childModel = m_model->getItem(i);
+            auto child = onRenderItem(childModel);
+
+            if (!item) {
+                addItemInternal(child);
+            }
+            else {
+                item->addChild(child);
+            }
+        }
     }
 
-    int count = m_model->getRowCount(itemModel);
-    for (int i = 0; i < count; i++) {
-        auto childModel = m_model->getIndex(i, 0, itemModel);
-        auto itemData = m_model->getData(childModel, u"");
-
-        //auto text = makeObject<UITextBlock>();
-        //text->setText(itemData);
-
-        //auto child = makeObject<UITreeItem>();
-        //child->setContent(text);
-		//child->setViewModel(childModel);
-        //child->setData(makeVariant(childModel));
-        auto child = onRenderItem(childModel);
-
-        if (!item) {
-            addItemInternal(child);
-        }
-        else {
-            item->addChild(child);
-        }
-    }
 
 }
 

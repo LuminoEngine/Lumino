@@ -39,8 +39,8 @@ private:
 	Ref<UIToggleButton> m_expanderButton;
     Ref<UIElement> m_headerContent;
     List<Ref<UITreeItem>> m_items;
-    Ref<UILayoutPanel> m_itemsLayout;
-	Ref<UICollectionItemModel> m_model;
+    Ref<UILayoutPanel2> m_itemsLayout;
+	Ref<UICollectionItemViewModel> m_model;
 
     friend class UITreeView;
 };
@@ -55,7 +55,7 @@ public:
 
 protected:
     virtual void onItemClick(UITreeItem* item, UIMouseEventArgs* e);
-    virtual Ref<UITreeItem> onRenderItem(UICollectionItemModel* viewModel);
+    virtual Ref<UITreeItem> onRenderItem(UICollectionItemViewModel* viewModel);
 
     // base interface
 	virtual void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;

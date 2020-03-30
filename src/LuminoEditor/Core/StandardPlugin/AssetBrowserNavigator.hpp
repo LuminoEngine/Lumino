@@ -21,7 +21,7 @@ public:
 
 protected:
     virtual void onItemClick(ln::UITreeItem* item, ln::UIMouseEventArgs* e) override;
-    virtual Ref<ln::UITreeItem> onRenderItem(ln::UICollectionItemModel* viewModel) override;
+    virtual Ref<ln::UITreeItem> onRenderItem(ln::UICollectionItemViewModel* viewModel) override;
 
 private:
     AssetBrowserNavigatorExtension* m_owner;

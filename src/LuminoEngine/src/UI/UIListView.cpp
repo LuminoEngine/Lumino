@@ -28,12 +28,12 @@ void UIListViewItem::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* 
         LN_NOTIMPLEMENTED();
     }
 
-    m_model = dynamic_cast<UICollectionItemModel*>(newViewModel);
+    m_model = dynamic_cast<UICollectionItemViewModel*>(newViewModel);
     if (!m_model) {
         LN_NOTIMPLEMENTED();
     }
 
-    UIElement::setContent(m_model->getData(u""));
+    UIElement::setContent(m_model->getValue(u""));
 }
 
 //==============================================================================
@@ -65,10 +65,10 @@ void UIListView::refresh()
 
 
     if (m_model) {
-        int count = m_model->getRowCount(nullptr);
+        int count = m_model->getItemCount();
         for (int i = 0; i < count; i++) {
-            auto childModel = m_model->getIndex(i, 0, nullptr);
-            auto itemData = m_model->getData(childModel, u"");
+            auto childModel = m_model->getItem(i);
+           // auto itemData = m_model->getData(childModel, u"");
 
             //auto text = makeObject<UITextBlock>();
             //text->setText(itemData);
@@ -84,7 +84,7 @@ void UIListView::refresh()
     }
 }
 
-Ref<UIListViewItem> UIListView::onGenerateItem(UICollectionItemModel* viewModel)
+Ref<UIListViewItem> UIListView::onGenerateItem(UICollectionItemViewModel* viewModel)
 {
     auto item = makeObject<UIListViewItem>();
     item->setViewModel(viewModel);
