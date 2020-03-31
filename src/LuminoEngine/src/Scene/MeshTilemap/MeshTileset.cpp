@@ -26,6 +26,173 @@ void MeshAutoTileset::init()
 	Object::init();
 }
 
+void MeshAutoTileset::setMaterial(Material* value)
+{
+	m_material = value;
+}
+
+void MeshAutoTileset::buildQubeFloorAndWall()
+{
+	//auto tex = Texture2D::load(u"autotile1");
+	//detail::MeshAutoTilesetUVMapper uvMapper(
+	//	Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::XP);
+
+	auto* tex = m_material->mainTexture();
+
+	detail::MeshAutoTilesetUVMapper uvMapper(
+		Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVWithWall);
+
+
+	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+
+	// ZMinus を、指定方向に向けるための変換行列
+	const auto finalOffset = Vector3(0.5, 0.5, 0.5);
+	Matrix faceTransforms[6] = {
+		Matrix::makeRotationY(Math::PI / 2) * Matrix::makeTranslation(Vector3(-0.5, 0, 0) + finalOffset),
+		Matrix::makeRotationY(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0.5, 0, 0) + finalOffset),
+		Matrix::makeRotationZ(Math::PI) * Matrix::makeRotationX(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0, -0.5, 0) + finalOffset),
+		Matrix::makeRotationX(Math::PI / 2) * Matrix::makeTranslation(Vector3(0, 0.5, 0) + finalOffset),
+		Matrix::Identity * Matrix::makeTranslation(Vector3(0, 0, -0.5) + finalOffset),
+		Matrix::makeRotationY(Math::PI) * Matrix::makeTranslation(Vector3(0, 0, 0.5) + finalOffset),
+	};
+
+	int offsetV = 0;
+	int offsetI = 0;
+
+	for (int iFaceDir = 0; iFaceDir < 6; iFaceDir++) {
+		const Matrix& transform = faceTransforms[iFaceDir];
+
+		for (int i = 0; i < 48; i++) {
+			const auto& info = MeshTileset::AutoTileTable[i];
+			int startIndex = offsetI;
+			Vector3 pysOffsets[4] = { { -0.5, +0.5, 0.0 }, { 0.0, +0.5, 0.0 }, { -0.5, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } };
+
+			// [top-left], [top-right], [bottom-left], [bottom-light]
+			for (int iCorner = 0; iCorner < 4; iCorner++) {
+				//int index_tl = g_AutoTileSourcePosTable_TkoolXP[iCorner][info.subtiles[iCorner]];
+				//auto uv = Vector2(subTileUVSize.x * (index_tl % hc), subTileUVSize.y * (index_tl / hc));
+				auto uvRect = uvMapper.getUVRectFromLocalId(static_cast<MeshTileFaceDirection>(iFaceDir), i, static_cast<detail::SubtileCorner>(iCorner));
+				auto p1 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, 0, 0), transform);
+				auto p2 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, 0, 0), transform);
+				auto p3 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, -0.5, 0), transform);
+				auto p4 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, -0.5, 0), transform);
+				m_mesh->setVertex(offsetV + 0, Vertex{ p1, Vector3::UnitZ, uvRect.getTopLeft(), Color::White });
+				m_mesh->setVertex(offsetV + 1, Vertex{ p2, Vector3::UnitZ, uvRect.getTopRight(), Color::White });
+				m_mesh->setVertex(offsetV + 2, Vertex{ p3, Vector3::UnitZ, uvRect.getBottomLeft(), Color::White });
+				m_mesh->setVertex(offsetV + 3, Vertex{ p4, Vector3::UnitZ, uvRect.getBottomRight(), Color::White });
+				m_mesh->setIndex(offsetI + 0, offsetV + 0);
+				m_mesh->setIndex(offsetI + 1, offsetV + 1);
+				m_mesh->setIndex(offsetI + 2, offsetV + 2);
+				m_mesh->setIndex(offsetI + 3, offsetV + 2);
+				m_mesh->setIndex(offsetI + 4, offsetV + 1);
+				m_mesh->setIndex(offsetI + 5, offsetV + 3);
+				offsetV += 4;
+				offsetI += 6;
+			}
+
+			m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
+		}
+	}
+
+	//m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
+	//m_meshList->setTransform(Matrix::makeTranslation(-5, 0, 0));
+	//m_meshList->drawMesh();
+	//m_meshList->setTransform(Matrix::makeTranslation(-1, 0, 0));
+	//m_meshList->drawMesh();
+	for (int i = 0; i < m_meshList.size(); i++) {
+		m_meshList[i] = makeObject<InstancedMeshList>(m_mesh, i);
+	}
+}
+
+void MeshAutoTileset::buildFloor()
+{
+	auto* tex = m_material->mainTexture();
+	//detail::MeshAutoTilesetUVMapper uvMapper(
+	//	Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVFloor);
+	detail::MeshAutoTilesetUVMapper uvMapper(Size(tex->width(), tex->height()), Rect(0, 0, 64, 96), detail::MeshAutoTilesetUVMapper::Format::MVFloor);
+
+	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 1, (6 * 4 * 48) * 1);
+
+
+
+	int offsetV = 0;
+	int offsetI = 0;
+	for (int i = 0; i < 48; i++) {
+		const auto& info = MeshTileset::AutoTileTable[i];
+		int startIndex = offsetI;
+
+		// [top-left], [top-right], [bottom-left], [bottom-light]
+		Vector3 pysOffsets[4] = { { 0.0, +1.0, +1.0 }, { +0.5, +1.0, +1.0 }, { 0.0, +1.0, +0.5 }, { +0.5, +1.0, +0.5 } };
+		for (int iCorner = 0; iCorner < 4; iCorner++) {
+			auto uvRect = uvMapper.getUVRectFromLocalId(MeshTileFaceDirection::YPlus, i, static_cast<detail::SubtileCorner>(iCorner));
+			auto p1 = pysOffsets[iCorner] + Vector3(0, 0, 0);
+			auto p2 = pysOffsets[iCorner] + Vector3(0.5, 0, 0);
+			auto p3 = pysOffsets[iCorner] + Vector3(0, 0, -0.5);
+			auto p4 = pysOffsets[iCorner] + Vector3(0.5, 0, -0.5);
+			m_mesh->setVertex(offsetV + 0, Vertex{ p1, Vector3::UnitZ, uvRect.getTopLeft(), Color::White });
+			m_mesh->setVertex(offsetV + 1, Vertex{ p2, Vector3::UnitZ, uvRect.getTopRight(), Color::White });
+			m_mesh->setVertex(offsetV + 2, Vertex{ p3, Vector3::UnitZ, uvRect.getBottomLeft(), Color::White });
+			m_mesh->setVertex(offsetV + 3, Vertex{ p4, Vector3::UnitZ, uvRect.getBottomRight(), Color::White });
+			m_mesh->setIndex(offsetI + 0, offsetV + 0);
+			m_mesh->setIndex(offsetI + 1, offsetV + 1);
+			m_mesh->setIndex(offsetI + 2, offsetV + 2);
+			m_mesh->setIndex(offsetI + 3, offsetV + 2);
+			m_mesh->setIndex(offsetI + 4, offsetV + 1);
+			m_mesh->setIndex(offsetI + 5, offsetV + 3);
+			offsetV += 4;
+			offsetI += 6;
+		}
+
+		m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
+		setInstancedMeshList((int)MeshTileFaceDirection::YPlus, i, makeObject<InstancedMeshList>(m_mesh, i));
+	}
+}
+
+void MeshAutoTileset::resetBatch()
+{
+	for (auto& batch : m_meshList) {
+		if (batch) {
+			batch->reset();
+		}
+	}
+}
+
+void MeshAutoTileset::setInstancedMeshList(int d, int autotileId, InstancedMeshList* value)
+{
+	int index = (d * 48) + autotileId;
+	m_meshList[index] = value;
+}
+
+InstancedMeshList* MeshAutoTileset::instancedMeshList(int d, int autotileId) const
+{
+	int index = (d * 48) + autotileId;
+	return m_meshList[index];
+}
+
+void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform) const
+{
+	for (int d = 0; d < 6; d++) {
+		if (!adjacency.buried[d]) {
+			auto* batch = instancedMeshList(d, tile.faceTileId[d]);
+			if (batch) {
+				batch->setTransform(transform);
+				batch->drawMesh();
+			}
+		}
+	}
+}
+
+void MeshAutoTileset::flushBatch(RenderingContext* context)
+{
+	context->setMaterial(m_material);
+	for (auto& batch : m_meshList) {
+		if (batch) {
+			context->drawMeshInstanced(batch);
+		}
+	}
+}
+
+
 //==============================================================================
 // MeshTileset
 
@@ -84,93 +251,48 @@ void MeshTileset::init()
 
 	//}
 
-
-	//auto tex = Texture2D::load(u"autotile1");
-	//detail::MeshAutoTilesetUVMapper uvMapper(
-	//	Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::XP);
 	auto tex = Texture2D::load(u"autotile2");
-	detail::MeshAutoTilesetUVMapper uvMapper(
-		Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVWithWall);
+	m_material = Material::create(tex);
+	m_material->shadingModel = ShadingModel::Unlit;
+	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
-
+	m_autotileSet[0] = makeObject<MeshAutoTileset>();
+	m_autotileSet[0]->setMaterial(m_material);
+	m_autotileSet[0]->buildQubeFloorAndWall();
 
 	{
 
+		auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at01.png");
+		auto material = Material::create(tex);
+		material->shadingModel = ShadingModel::Unlit;
+		material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
+		m_autotileSet[1] = makeObject<MeshAutoTileset>();
+		m_autotileSet[1]->setMaterial(material);
+		m_autotileSet[1]->buildFloor();
 
-		m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
-
-		// ZMinus を、指定方向に向けるための変換行列
-		const auto finalOffset = Vector3(0.5, 0.5, 0.5);
-		Matrix faceTransforms[6] = {
-			Matrix::makeRotationY(Math::PI / 2) * Matrix::makeTranslation(Vector3(-0.5, 0, 0) + finalOffset),
-			Matrix::makeRotationY(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0.5, 0, 0) + finalOffset),
-			Matrix::makeRotationZ(Math::PI) * Matrix::makeRotationX(-Math::PI / 2) * Matrix::makeTranslation(Vector3(0, -0.5, 0) + finalOffset),
-			Matrix::makeRotationX(Math::PI / 2) * Matrix::makeTranslation(Vector3(0, 0.5, 0) + finalOffset),
-			Matrix::Identity * Matrix::makeTranslation(Vector3(0, 0, -0.5) + finalOffset),
-			Matrix::makeRotationY(Math::PI) * Matrix::makeTranslation(Vector3(0, 0, 0.5) + finalOffset),
-		};
-
-		int offsetV = 0;
-		int offsetI = 0;
-
-		for (int iFaceDir = 0; iFaceDir < 6; iFaceDir++) {
-			const Matrix& transform = faceTransforms[iFaceDir];
-
-			for (int i = 0; i < 48; i++) {
-				const auto& info = AutoTileTable[i];
-				int startIndex = offsetI;
-				Vector3 pysOffsets[4] = { { -0.5, +0.5, 0.0 }, { 0.0, +0.5, 0.0 }, { -0.5, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } };
-
-				// [top-left], [top-right], [bottom-left], [bottom-light]
-				for (int iCorner = 0; iCorner < 4; iCorner++) {
-					//int index_tl = g_AutoTileSourcePosTable_TkoolXP[iCorner][info.subtiles[iCorner]];
-					//auto uv = Vector2(subTileUVSize.x * (index_tl % hc), subTileUVSize.y * (index_tl / hc));
-					auto uvRect = uvMapper.getUVRectFromLocalId(static_cast<MeshTileFaceDirection>(iFaceDir), i, static_cast<detail::SubtileCorner>(iCorner));
-					auto p1 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, 0, 0), transform);
-					auto p2 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, 0, 0), transform);
-					auto p3 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0, -0.5, 0), transform);
-					auto p4 = Vector3::transformCoord(pysOffsets[iCorner] + Vector3(0.5, -0.5, 0), transform);
-					m_mesh->setVertex(offsetV + 0, Vertex{ p1, Vector3::UnitZ, uvRect.getTopLeft(), Color::White });
-					m_mesh->setVertex(offsetV + 1, Vertex{ p2, Vector3::UnitZ, uvRect.getTopRight(), Color::White });
-					m_mesh->setVertex(offsetV + 2, Vertex{ p3, Vector3::UnitZ, uvRect.getBottomLeft(), Color::White });
-					m_mesh->setVertex(offsetV + 3, Vertex{ p4, Vector3::UnitZ, uvRect.getBottomRight(), Color::White });
-					m_mesh->setIndex(offsetI + 0, offsetV + 0);
-					m_mesh->setIndex(offsetI + 1, offsetV + 1);
-					m_mesh->setIndex(offsetI + 2, offsetV + 2);
-					m_mesh->setIndex(offsetI + 3, offsetV + 2);
-					m_mesh->setIndex(offsetI + 4, offsetV + 1);
-					m_mesh->setIndex(offsetI + 5, offsetV + 3);
-					offsetV += 4;
-					offsetI += 6;
-				}
-
-				m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
-			}
-		}
-
-
-
-		m_material = Material::create(tex);
 	}
+	
+	{
 
 
-	m_material->shadingModel = ShadingModel::Unlit;
-	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
-	//m_meshList = makeObject<InstancedMeshList>(m_mesh, 0);
-	//m_meshList->setTransform(Matrix::makeTranslation(-5, 0, 0));
-	//m_meshList->drawMesh();
-	//m_meshList->setTransform(Matrix::makeTranslation(-1, 0, 0));
-	//m_meshList->drawMesh();
-	for (int i = 0; i < m_meshList.size(); i++) {
-		m_meshList[i] = makeObject<InstancedMeshList>(m_mesh, i);
+		auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at02.png");
+		auto material = Material::create(tex);
+		material->shadingModel = ShadingModel::Unlit;
+		material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+		m_autotileSet[2] = makeObject<MeshAutoTileset>();
+		m_autotileSet[2]->setMaterial(material);
+		m_autotileSet[2]->buildFloor();
 	}
 }
 
 void MeshTileset::beginBatch()
 {
-	for (int i = 0; i < m_meshList.size(); i++) {
-		m_meshList[i]->reset();
+	for (auto& autotileset : m_autotileSet) {
+		if (autotileset) {
+			autotileset->resetBatch();
+		}
 	}
 }
 
@@ -179,15 +301,10 @@ void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& ti
 
 	//context->setMaterial(m_material);
 
-	if (autoTileKindId(tile.tileId) >= 0) {
-		for (int d = 0; d < 6; d++) {
-			if (!adjacency.buried[d]) {
-				//context->drawMesh(m_mesh, (d * 48) + tile.faceTileId[d]);
-				int index = (d * 48) + tile.faceTileId[d];
-				m_meshList[index]->setTransform(transform);
-				m_meshList[index]->drawMesh();
-			}
-		}
+	int autotileKind = autoTileKindId(tile.tileId);
+	if (autotileKind >= 0) {
+		m_autotileSet[autotileKind]->drawVoxel(tile, adjacency, transform);
+
 	}
 
 	//context->drawMeshInstanced(m_meshList);
@@ -195,10 +312,9 @@ void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& ti
 
 void MeshTileset::drawBatch(RenderingContext* context)
 {
-	context->setMaterial(m_material);
-	for (int i = 0; i < m_meshList.size(); i++) {
-		if (m_meshList[i]->instanceCount() > 0) {
-			context->drawMeshInstanced(m_meshList[i]);
+	for (auto& autotileset : m_autotileSet) {
+		if (autotileset) {
+			autotileset->flushBatch(context);
 		}
 	}
 }
@@ -209,13 +325,13 @@ namespace detail {
 static int g_AutoTileSourcePosTable_MVFloor[4][6] =
 {
 	// [top-left]
-	{ -1, 13, 2, 9, 12, 8 },
+	{ -1, 13, 2, 10, 16, 8 },
 	// [top-right]
-	{ -1, 14, 3, 10, 15, 11 },
+	{ -1, 14, 3, 9, 19, 11 },
 	// [bottom-left]
-	{ -1, 17, 6, 21, 16, 20 },
+	{ -1, 17, 6, 22, 12, 20 },
 	// [bottom-light]
-	{ -1, 18, 7, 22, 19, 23 },
+	{ -1, 18, 7, 21, 15, 23 },
 };
 static int g_AutoTileSourcePosTable_MVWall[4][6] =
 {
@@ -243,6 +359,10 @@ MeshAutoTilesetUVMapper::MeshAutoTilesetUVMapper(const Size& textureSize, const 
 		m_subtileUVSize.x = (sourceRect.width / 4) / textureSize.width;
 		m_subtileUVSize.y = (sourceRect.height / 10) / textureSize.height;
 	}
+	else if (m_format == Format::MVFloor) {
+		m_subtileUVSize.x = (sourceRect.width / 4) / textureSize.width;
+		m_subtileUVSize.y = (sourceRect.height / 6) / textureSize.height;
+	}
 	else {
 		LN_UNREACHABLE();
 	}
@@ -269,6 +389,12 @@ Rect MeshAutoTilesetUVMapper::getUVRectFromLocalId(MeshTileFaceDirection directi
 			auto offset = Vector2(m_subtileUVSize.x * (index_tl % 4), m_subtileUVSize.y * (index_tl / 4));
 			return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 		}
+	}
+	else if (m_format == Format::MVFloor) {
+		const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
+		int index_tl = g_AutoTileSourcePosTable_MVFloor[corner][info.subtiles[corner]];
+		auto offset = Vector2(m_subtileUVSize.x * (index_tl % 4), m_subtileUVSize.y * (index_tl / 4));
+		return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 	}
 	else {
 		LN_UNREACHABLE();

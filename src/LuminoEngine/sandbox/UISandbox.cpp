@@ -42,18 +42,18 @@ public:
 
 		int margin = 8;
 
-		//// Button
-		//{
-		//	auto layout1 = makeObject<UIStackLayout>();
-		//	layout1->setMargin(margin);
-		//	mainLauout->addChild(layout1);
+		// Button
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UITextBlock>(u"Button"));
+			layout1->addChild(makeObject<UITextBlock>(u"Button"));
 
-		//	auto button1 = makeObject<UIButton>();
-		//	button1->setText(u"Button");
-		//	layout1->addChild(button1);
-		//}
+			auto button1 = makeObject<UIButton>();
+			button1->setText(u"Button");
+			layout1->addChild(button1);
+		}
 		//// RadioButton
 		//{
 		//	auto layout1 = makeObject<UIStackLayout>();
@@ -84,21 +84,21 @@ public:
 
 		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
 		//}
-		//// ListBox (Direct)
-		//{
-		//	auto layout1 = makeObject<UIStackLayout>();
-		//	layout1->setMargin(margin);
-		//	mainLauout->addChild(layout1);
+		// ListBox (Direct)
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
 
-		//	layout1->addChild(makeObject<UITextBlock>(u"ListBox (Direct)"));
+			layout1->addChild(makeObject<UITextBlock>(u"ListBox (Direct)"));
 
-		//	auto listbox1 = UIListBox::create();
-		//	listbox1->addChild(u"item1");
-		//	listbox1->addChild(u"item2");
-		//	listbox1->addChild(u"item3");
-		//	listbox1->addChild(u"item4");
-		//	layout1->addChild(listbox1);
-		//}
+			auto listbox1 = UIListBox::create();
+			listbox1->addChild(u"item1");
+			listbox1->addChild(u"item2");
+			listbox1->addChild(u"item3");
+			listbox1->addChild(u"item4");
+			layout1->addChild(listbox1);
+		}
 		//// TreeView (Model)
 		//{
 		//	auto layout1 = makeObject<UIStackLayout>();

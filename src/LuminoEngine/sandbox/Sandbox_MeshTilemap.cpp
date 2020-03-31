@@ -9,7 +9,7 @@ using namespace ln;
 
 #include <Lumino.hpp>
 
-#define TEST_DTL 0
+#define TEST_DTL 1
 
 #if TEST_DTL
 #include <DTL.hpp>
@@ -92,7 +92,7 @@ class Sandbox_MeshTilemap_App : public Application
 		else {
 			for (int z = 0; z < layer->sizeZ(); z++)
 				for (int x = 0; x < layer->sizeX(); x++)
-					layer->putAutoTile(x, 0, z, 0);
+					layer->putAutoTile(x, 0, z, 1);
 		}
 
 		meshTilemapModel->addLayer(layer);
@@ -118,11 +118,13 @@ class Sandbox_MeshTilemap_App : public Application
 		for (std::size_t row{}; row < matrix.size(); ++row)
 			for (std::size_t col{}; col < matrix[row].size(); ++col)
 				if (matrix[row][col]) {
-					layer->putAutoTile(row, 1, col, 0);
-					layer->putAutoTile(row, 2, col, 0);
+					//layer->putAutoTile(row, 1, col, 0);
+					//layer->putAutoTile(row, 2, col, 0);
 				}
 #endif
 
+		layer->putAutoTile(2, 0, 2, 2);
+		layer->putAutoTile(1, 0, 2, 2);
 	}
 
 	void onUpdate() override

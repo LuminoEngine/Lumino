@@ -552,6 +552,8 @@ void RenderingContext::drawMeshInstanced(InstancedMeshList* list)
 		}
 	};
 
+	if (list->instanceCount() <= 0) return;
+
 	m_builder->setPrimitiveTopology(list->mesh()->sections()[list->sectionIndex()].topology);
 	auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(
 		m_manager->meshRenderFeature(),

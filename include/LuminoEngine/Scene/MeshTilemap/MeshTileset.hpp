@@ -15,10 +15,30 @@ class MeshAutoTileset
 	: public Object
 {
 public:
-	
+	void setMaterial(Material* value);
+
+	// 正方形メッシュ, 上下面に Floor, 側面に Wall
+	void buildQubeFloorAndWall();
+
+	// 上面のみに平面 Floor
+	void buildFloor();
+
+
+
+	void resetBatch();
+	void setInstancedMeshList(int d, int autotileId, InstancedMeshList* value);
+	InstancedMeshList* instancedMeshList(int d, int autotileId) const;
+	void drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform) const;
+	void flushBatch(RenderingContext* context);
+
 LN_CONSTRUCT_ACCESS:
     MeshAutoTileset();
 	void init();
+
+private:
+	Ref<Material> m_material;
+	Ref<Mesh> m_mesh;
+	std::array<Ref<InstancedMeshList>, 6 * 48> m_meshList;
 };
 
 class MeshTileset
@@ -41,7 +61,6 @@ public:
 	static int autoTileKindId(int tileId) { return (tileId < AutoTileOffset) ? -1 : ((tileId - AutoTileOffset) / AutoTileSetStride); }
 	static int localIdToGlobalId(int localTileId, int autotileKind) { return AutoTileSetStride * autotileKind + localTileId + AutoTileOffset; }
 
-	std::array<Ref<InstancedMeshList>, 6 * 48> m_meshList;
 
 LN_CONSTRUCT_ACCESS:
     MeshTileset();
@@ -53,8 +72,7 @@ private:
 	void drawBatch(RenderingContext* context);
 
 	Ref<Material> m_material;
-	Ref<Mesh> m_mesh;
-
+	std::array<Ref<MeshAutoTileset>, 16> m_autotileSet;
 
 
 	friend class MeshTilemapLayer;
@@ -78,6 +96,7 @@ public:
 		XP,
 		//MV,
 		MVWithWall,
+		MVFloor,
 	};
 
 	MeshAutoTilesetUVMapper(const Size& textureSize, const Rect& sourceRect, Format format);
