@@ -111,6 +111,10 @@ void MeshAutoTileset::buildFloor()
 	//	Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVFloor);
 	detail::MeshAutoTilesetUVMapper uvMapper(Size(tex->width(), tex->height()), Rect(0, 0, 64, 96), detail::MeshAutoTilesetUVMapper::Format::MVFloor);
 
+	m_frameUVOffset.x = 64.0f / tex->width();
+	m_frameUVOffset.y = 0;
+	m_animationFrameCount = 3;
+
 	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 1, (6 * 4 * 48) * 1);
 
 
@@ -169,13 +173,19 @@ InstancedMeshList* MeshAutoTileset::instancedMeshList(int d, int autotileId) con
 	return m_meshList[index];
 }
 
-void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform) const
+void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform, int animationFrame) const
 {
+	Vector4 uvOffset;
+	if (m_animationFrameCount > 0) {
+		uvOffset = Vector4(m_frameUVOffset * (animationFrame % m_animationFrameCount), 0, 0);
+	}
+
 	for (int d = 0; d < 6; d++) {
 		if (!adjacency.buried[d]) {
 			auto* batch = instancedMeshList(d, tile.faceTileId[d]);
 			if (batch) {
 				batch->setTransform(transform);
+				batch->setUVOffset(uvOffset);
 				batch->drawMesh();
 			}
 		}
@@ -296,14 +306,14 @@ void MeshTileset::beginBatch()
 	}
 }
 
-void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform) const
+void MeshTileset::drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform, int animationFrame) const
 {
 
 	//context->setMaterial(m_material);
 
 	int autotileKind = autoTileKindId(tile.tileId);
 	if (autotileKind >= 0) {
-		m_autotileSet[autotileKind]->drawVoxel(tile, adjacency, transform);
+		m_autotileSet[autotileKind]->drawVoxel(tile, adjacency, transform, animationFrame);
 
 	}
 

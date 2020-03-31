@@ -246,8 +246,12 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 	
 }
 
+static int g_frames = 0;
+
 void MeshTilemapLayer::draw(RenderingContext* context, MeshTileset* tileset)
 {
+	g_frames++;
+
 	// TODO: View culling
 
 	tileset->beginBatch();
@@ -279,7 +283,7 @@ void MeshTilemapLayer::draw(RenderingContext* context, MeshTileset* tileset)
 
 
 				//context->setBaseTransfrom(Matrix::makeTranslation(x, y, z));
-				tileset->drawTile(context, t, adjacency, Matrix::makeTranslation(x, y, z));
+				tileset->drawTile(context, t, adjacency, Matrix::makeTranslation(x, y, z), g_frames / 20);
 				//return;	// TODO: test
 			}
 		}

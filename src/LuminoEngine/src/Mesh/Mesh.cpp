@@ -857,6 +857,11 @@ void InstancedMeshList::setTransform(const Matrix& transform)
 	m_stagingData.transform3 = transform.row(3);
 }
 
+void InstancedMeshList::setUVOffset(const Vector4& value)
+{
+	m_stagingData.uvOffset = value;
+}
+
 void InstancedMeshList::drawMesh()
 {
 	m_instanceData.push_back(m_stagingData);
@@ -881,6 +886,7 @@ void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout*
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Position, 2, VertexInputRate::Instance);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Position, 3, VertexInputRate::Instance);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Position, 4, VertexInputRate::Instance);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::TexCoord, 2, VertexInputRate::Instance);
 		}
 
 		if (!m_instanceBuffer || (m_instanceBuffer->size() / sizeof(InstanceData)) < m_instanceCount) {

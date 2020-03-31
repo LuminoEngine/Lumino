@@ -118,8 +118,8 @@ class Sandbox_MeshTilemap_App : public Application
 		for (std::size_t row{}; row < matrix.size(); ++row)
 			for (std::size_t col{}; col < matrix[row].size(); ++col)
 				if (matrix[row][col]) {
-					//layer->putAutoTile(row, 1, col, 0);
-					//layer->putAutoTile(row, 2, col, 0);
+					layer->putAutoTile(row, 1, col, 0);
+					layer->putAutoTile(row, 2, col, 0);
 				}
 #endif
 

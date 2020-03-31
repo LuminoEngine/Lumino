@@ -16,6 +16,7 @@ class MeshAutoTileset
 {
 public:
 	void setMaterial(Material* value);
+	void setAnimationFrames(int value) { m_animationFrameCount = value; }
 
 	// 正方形メッシュ, 上下面に Floor, 側面に Wall
 	void buildQubeFloorAndWall();
@@ -28,7 +29,7 @@ public:
 	void resetBatch();
 	void setInstancedMeshList(int d, int autotileId, InstancedMeshList* value);
 	InstancedMeshList* instancedMeshList(int d, int autotileId) const;
-	void drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform) const;
+	void drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform, int animationFrame) const;
 	void flushBatch(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:
@@ -37,6 +38,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<Material> m_material;
+	Vector2 m_frameUVOffset;
+	int m_animationFrameCount = 0;
 	Ref<Mesh> m_mesh;
 	std::array<Ref<InstancedMeshList>, 6 * 48> m_meshList;
 };
@@ -68,7 +71,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	void beginBatch();
-	void drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform) const;
+	void drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform, int animationFrame) const;
 	void drawBatch(RenderingContext* context);
 
 	Ref<Material> m_material;
