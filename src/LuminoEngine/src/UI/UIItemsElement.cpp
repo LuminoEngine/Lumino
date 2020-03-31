@@ -371,24 +371,24 @@ void UIMenuItem::init()
 }
 
 
-////==============================================================================
-//// UICollectionControl
-//
-//UICollectionControl::UICollectionControl()
-//{
-//
-//}
-//
-//bool UICollectionControl::init()
-//{
-//    if (!UIControl::init()) return false;
-//    return true;
-//}
-//
-//void UICollectionControl::onAddChild(UIElement* child)
-//{
-//
-//}
+//==============================================================================
+// UICollectionControl
+
+UICollectionControl::UICollectionControl()
+{
+
+}
+
+bool UICollectionControl::init()
+{
+    if (!UIControl::init()) return false;
+    return true;
+}
+
+void UICollectionControl::onAddChild(UIElement* child)
+{
+
+}
 
 } // namespace ln
 

@@ -673,6 +673,16 @@ void UIElement::removeVisualChild(UIElement* element)
     invalidateLayout();
 }
 
+void UIElement::removeAllVisualChild()
+{
+    if (m_visualChildren) {
+        for (auto& child : *m_visualChildren) child->m_visualParent = nullptr;
+        m_visualChildren->clear();
+        m_orderdVisualChildren->clear();
+    }
+    invalidateLayout();
+}
+
 //void UIElement::onSetup()
 //{
 //}

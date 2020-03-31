@@ -238,7 +238,7 @@ void UITreeView::init()
     setVerticalContentAlignment(VAlignment::Center);
 }
 
-//void UITreeView::setModel(UICollectionModel* model)
+//void UITreeView::setModel(UICollectionViewModel* model)
 //{
 //    m_model = model;
 //    //int count = m_model->getRowCount(nullptr);
@@ -279,7 +279,7 @@ void UITreeView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
 		LN_NOTIMPLEMENTED();
 	}
 
-	m_model = dynamic_cast<UICollectionModel*>(newViewModel);
+	m_model = dynamic_cast<UICollectionViewModel*>(newViewModel);
 	if (!m_model) {
 		LN_NOTIMPLEMENTED();
 	}
@@ -409,6 +409,315 @@ void UITreeView::onItemAdded(UICollectionItem* item)
     //if (m_layoutMode == UITreeViewLayoutMode::IndentedList) {
     //    addVisualChild(item);
     //}
+}
+
+//==============================================================================
+// UITreeItem2
+
+UITreeItem2::UITreeItem2()
+{
+    m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
+}
+
+bool UITreeItem2::init()
+{
+    if (!UIControl::init()) return false;
+
+    // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
+    m_expanderButton = makeObject<UIToggleButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
+    m_expanderButton->addClass(u"UITreeItem-Expander");
+    m_expanderButton->connectOnChecked(bind(this, &UITreeItem2::expander_Checked));
+    m_expanderButton->connectOnUnchecked(bind(this, &UITreeItem2::expander_Unchecked));
+
+    //m_expanderButton->setBackgroundColor(Color::Red);
+
+    addVisualChild(m_expanderButton);
+
+
+
+    return true;
+}
+
+bool UITreeItem2::isExpanded() const
+{
+    return m_expanderButton->isChecked();
+}
+
+void UITreeItem2::setContent(UIElement* value)
+{
+    assert(!m_headerContent);    // TODO
+    m_headerContent = value;
+    addVisualChild(m_headerContent);
+}
+
+void UITreeItem2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
+{
+    if (oldViewModel) {
+        LN_NOTIMPLEMENTED();
+    }
+
+    m_model = dynamic_cast<UICollectionItemViewModel*>(newViewModel);
+    if (!m_model) {
+        LN_NOTIMPLEMENTED();
+    }
+
+    // TODO: model の変更通知対応
+    if (m_model->getChildrenCount() > 0) {
+        m_expanderButton->m_internalVisibility = UIVisibility::Visible;
+    }
+    else {
+        m_expanderButton->m_internalVisibility = UIVisibility::Hidden;
+    }
+
+    UIElement::setContent(m_model->getValue(u""));
+}
+
+Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    for (auto& item : *m_logicalChildren) {
+        static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = m_layoutingOwnerTreeView;
+        static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = m_layoutDepth + 1;
+    }
+    //if (layoutContext->collectingTreeItem) {
+    //    layoutContext->treeView->addItemAsVisualChildren(this);
+    //}
+
+
+    Size size;
+
+    // expander
+    m_expanderButton->measureLayout(layoutContext, constraint);
+    size.width += m_expanderButton->desiredSize().width;
+    size.height = std::max(size.height, m_expanderButton->desiredSize().height);
+
+    // depth offset
+    size.width += m_finalStyle->minHeight * (m_layoutDepth);
+
+    // header
+    if (m_headerContent) {
+        m_headerContent->measureLayout(layoutContext, constraint);
+        size.width += m_headerContent->desiredSize().width;
+        size.height = std::max(size.height, m_headerContent->desiredSize().height);
+    }
+
+    Size desiredSize = UIControl::measureOverride(layoutContext, constraint);
+
+    return Size::max(size, desiredSize);
+}
+
+Size UITreeItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+    float headerHeight = m_finalStyle->minHeight;
+    Size expanderSlotAreaSize(headerHeight, headerHeight);
+    float offset = expanderSlotAreaSize.width * (m_layoutDepth);
+
+    // expander
+    Rect expanderSlot(offset, 0, expanderSlotAreaSize);
+    m_expanderButton->arrangeLayout(layoutContext, expanderSlot); // TODO: actualsize 返すようにしていいかも
+
+    Rect area = Rect(expanderSlot.getRight(), 0, finalSize.width - expanderSlot.width, expanderSlot.height);
+
+    // header
+    float headerContentHeight = 0;
+    if (m_headerContent) {
+        Rect contentSlotRect;
+        detail::LayoutHelper::adjustAlignment(
+            area, m_headerContent->desiredSize(),
+            m_layoutingOwnerTreeView->m_finalStyle->horizontalContentAlignment,
+            m_layoutingOwnerTreeView->m_finalStyle->verticalContentAlignment, &contentSlotRect);
+
+
+        m_headerContent->arrangeLayout(layoutContext, contentSlotRect);
+        headerContentHeight = m_headerContent->actualSize().height;
+    }
+
+    return finalSize;
+}
+
+void UITreeItem2::expander_Checked(UIEventArgs* e)
+{
+    attemptCreateChildItemsInstance();
+
+    for (auto& child : *m_logicalChildren) {
+        child->m_internalVisibility = UIVisibility::Visible;
+    }
+}
+
+void UITreeItem2::expander_Unchecked(UIEventArgs* e)
+{
+    for (auto& child : *m_logicalChildren) {
+        child->m_internalVisibility = UIVisibility::Collapsed;
+    }
+}
+
+void UITreeItem2::attemptCreateChildItemsInstance()
+{
+    int count = m_model->getChildrenCount();
+    if (m_logicalChildren->size() != count) {
+        removeAllChildren();
+
+        for (int i = 0; i < count; i++) {
+            auto childModel = m_model->getItem(i);
+
+            auto item = makeObject<UITreeItem2>();
+            item->setViewModel(childModel);
+
+            m_logicalChildren->add(item);
+            item->m_logicalParent = this;
+            //getTreeView()->addItemAsVisualChildren(item);
+            //addChild(item);
+        }
+
+        dirtyVisualItemCount();
+    }
+}
+
+UITreeView2* UITreeItem2::getTreeView()
+{
+    // TODO: dynamic_cast じゃなくて flags 確認で。
+    if (auto* t = dynamic_cast<UITreeView2*>(m_logicalParent))
+        return t;
+    else if (auto* t = dynamic_cast<UITreeItem2*>(m_logicalParent))
+        return t->getTreeView();
+    else
+        return nullptr;
+}
+
+void UITreeItem2::dirtyVisualItemCount()
+{
+    getTreeView()->m_dirtyItemVisualTree = true;
+}
+
+void UITreeItem2::traverse(IVisitor* visitor)
+{
+    //if (isRenderVisible()) {
+        visitor->visit(this);
+        if (isExpanded()) {
+            for (auto& child : *m_logicalChildren) {
+                static_pointer_cast<UITreeItem2>(child)->traverse(visitor);
+            }
+        }
+    //}
+}
+
+//==============================================================================
+// UITreeView2
+
+UITreeView2::UITreeView2()
+{
+}
+
+bool UITreeView2::init()
+{
+    if (!UIControl::init()) return false;
+
+    auto layout = makeObject<UIStackLayout>();
+    layout->setOrientation(Orientation::Vertical);
+    addVisualChild(layout);
+    m_itemsHostLayout = layout;
+
+    return true;
+}
+
+void UITreeView2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
+{
+    if (oldViewModel) {
+        LN_NOTIMPLEMENTED();
+    }
+
+    m_model = dynamic_cast<UICollectionViewModel*>(newViewModel);
+    if (!m_model) {
+        LN_NOTIMPLEMENTED();
+    }
+
+    rebuildTreeFromViewModel();
+}
+
+void UITreeView2::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+{
+    if (m_dirtyItemVisualTree) {
+        class LocalVisitor : public UITreeItem2::IVisitor
+        {
+        public:
+            UITreeView2* self;
+            void visit(UITreeItem2* item) override { self->addItemAsVisualChildren(item); }
+        };
+        LocalVisitor v;
+        v.self = this;
+        m_itemsHostLayout->removeAllVisualChild();
+
+        for (auto& item : *m_logicalChildren) {
+            static_pointer_cast<UITreeItem2>(item)->traverse(&v);
+        }
+
+        m_dirtyItemVisualTree = false;
+    }
+
+    UIControl::onUpdateStyle(styleContext, finalStyle);
+}
+
+Size UITreeView2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    //auto old_collectingTreeItem = layoutContext->collectingTreeItem;
+    //auto old_treeView = layoutContext->treeView;
+    //if (m_dirtyItemVisualTree) {
+    //    layoutContext->collectingTreeItem = true;
+    //    layoutContext->treeView = this;
+    //    m_itemsHostLayout->removeAllVisualChild();
+    //    m_dirtyItemVisualTree = false;
+    //}
+
+    for (auto& item : *m_logicalChildren) {
+        static_pointer_cast<UITreeItem2>(item)->m_layoutingOwnerTreeView = this;
+        static_pointer_cast<UITreeItem2>(item)->m_layoutDepth = 0;
+    }
+
+
+    m_itemsHostLayout->measureLayout(layoutContext, constraint);
+    Size layoutSize = m_itemsHostLayout->desiredSize();
+    Size localSize = UIElement::measureOverride(layoutContext, constraint);
+
+    // Restore context state.
+    //layoutContext->collectingTreeItem = old_collectingTreeItem;
+    //layoutContext->treeView = old_treeView;
+
+    return Size::max(layoutSize, localSize);
+}
+
+Size UITreeView2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+    Rect contentSlotRect = detail::LayoutHelper::makePaddingRect(this, finalSize);
+    m_itemsHostLayout->arrangeLayout(layoutContext, contentSlotRect);
+    return finalSize;
+}
+
+void UITreeView2::rebuildTreeFromViewModel()
+{
+    LN_CHECK(m_model);
+
+    int count = m_model->getItemCount();
+    for (int i = 0; i < count; i++) {
+        auto childModel = m_model->getItem(i);
+
+        auto item = makeObject<UITreeItem2>();
+        item->setViewModel(childModel);
+
+        addItemAsLogicalChildren(item);
+    }
+}
+
+void UITreeView2::addItemAsLogicalChildren(UITreeItem2* item)
+{
+    LN_CHECK(item);
+    m_logicalChildren->add(item);
+    item->m_logicalParent = this;
+    m_itemsHostLayout->addVisualChild(item);
+}
+
+void UITreeView2::addItemAsVisualChildren(UITreeItem2* item)
+{
+    LN_CHECK(item);
+    m_itemsHostLayout->addVisualChild(item);
 }
 
 } // namespace ln

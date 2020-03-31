@@ -10,6 +10,7 @@ class AbstractMaterial;
 class UIStyle;
 class UILayoutContext;
 class UIElement;
+class UITreeView2;
 namespace detail { class LayoutHelper; }
 
 
@@ -227,6 +228,12 @@ public:
 	float dpiScale() const { return m_dpiScale; }
 
 	bool testLayoutEnabled(UIElement* element) const;
+
+	// TreeItem の追加などで、TreeView の VisualChild としての TreeItem を再集計したいかどうか。
+	// 再収集は measure の中でやりたいので、UILayoutContext にフラグを持たせている。
+	// ※別に measure じゃなくてもツリーを走査して再構築する別なフローを作ってもいいのだが、パフォーマンスへの影響が心配。
+	//bool collectingTreeItem = false;
+	//UITreeView2* treeView = nullptr;
 
 LN_CONSTRUCT_ACCESS:
 	UILayoutContext();

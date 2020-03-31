@@ -1468,11 +1468,11 @@ void UITheme::buildLumitelier()
 	m_defaultStyle = makeObject<UIStyle>();
 	m_defaultStyle->setupDefault();
 	m_defaultStyle->textColor = Color::White;
-	m_defaultStyle->fontSize = 12;
+	m_defaultStyle->fontSize = 14;
 
 	setSpacing(4);
-	m_lineContentHeight = 22;
-	m_lineSpacing = m_lineSpacing + spacing(1);
+	m_lineContentHeight = 24;
+	m_lineSpacing = m_lineContentHeight + spacing(1);
 
 	// Background
 	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
@@ -1581,7 +1581,7 @@ void UITheme::buildLumitelier()
 	// UITreeView
 	{
 		if (auto s = sheet->obtainStyle(u"UITreeView")) {
-			s->backgroundColor = Color::Black;
+			s->horizontalContentAlignment = HAlignment::Left;
 		}
 	}
 	//--------------------------------
@@ -1611,12 +1611,14 @@ void UITheme::buildLumitelier()
 		//}
 		if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
 			auto icon = makeObject<UIStyleDecorator>();
-			icon->setIconName(u"angle-down", 15);
+			icon->setIconName(u"angle-down", 12);
+			icon->m_color = Color::White;
 			s->decorators.add(icon);
 		}
 		if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Unchecked")) {
 			auto icon = makeObject<UIStyleDecorator>();
-			icon->setIconName(u"angle-right", 15);
+			icon->setIconName(u"angle-right", 12);
+			icon->m_color = Color::White;
 			s->decorators.add(icon);
 		}
 	}

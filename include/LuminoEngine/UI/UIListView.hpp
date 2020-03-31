@@ -50,7 +50,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     void addItemInternal(UIListViewItem* item);
 
-    Ref<UICollectionModel> m_model;
+    Ref<UICollectionViewModel> m_model;
 };
 
 } // namespace ln

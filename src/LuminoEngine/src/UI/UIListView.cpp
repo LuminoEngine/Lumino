@@ -95,7 +95,7 @@ void UIListView::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldV
 {
     UIItemsControl::onViewModelChanged(newViewModel, oldViewModel);
 
-    m_model = dynamic_cast<UICollectionModel*>(newViewModel);
+    m_model = dynamic_cast<UICollectionViewModel*>(newViewModel);
     if (!m_model) {
         LN_NOTIMPLEMENTED();
     }

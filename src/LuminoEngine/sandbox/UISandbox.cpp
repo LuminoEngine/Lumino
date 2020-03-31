@@ -99,6 +99,22 @@ public:
 		//	listbox1->addChild(u"item4");
 		//	layout1->addChild(listbox1);
 		//}
+		//// TreeView (Model)
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"TreeView (Model)"));
+
+		//	auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
+		//	model1->setRootPath(LN_LOCALFILE("Assets"));
+
+		//	auto treeview1 = makeObject<UITreeView>();
+		//	treeview1->setViewModel(model1);
+		//	layout1->addChild(treeview1);
+		//}
+
 		// TreeView (Model)
 		{
 			auto layout1 = makeObject<UIStackLayout>();
@@ -110,7 +126,8 @@ public:
 			auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
 			model1->setRootPath(LN_LOCALFILE("Assets"));
 
-			auto treeview1 = makeObject<UITreeView>();
+			auto treeview1 = makeObject<UITreeView2>();
+			//treeview1->setBackgroundColor(Color::Red);
 			treeview1->setViewModel(model1);
 			layout1->addChild(treeview1);
 		}

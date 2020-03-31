@@ -17,13 +17,13 @@ UICollectionItemViewModel::UICollectionItemViewModel()
 {
 }
 
-//void UICollectionItemModel::init(UICollectionModel* owner)
+//void UICollectionItemModel::init(UICollectionViewModel* owner)
 //{
 //	Object::init();
 //	m_owner = owner;
 //}
 //
-//void UICollectionItemModel::init(UICollectionModel* owner, int row, int column, UICollectionItemModel* parent, Variant* data)
+//void UICollectionItemModel::init(UICollectionViewModel* owner, int row, int column, UICollectionItemModel* parent, Variant* data)
 //{
 //	Object::init();
 //	m_owner = owner;
@@ -44,14 +44,14 @@ UICollectionItemViewModel::UICollectionItemViewModel()
 //}
 //
 //==============================================================================
-// UICollectionModel
+// UICollectionViewModel
 // https://doc.qt.io/qt-5/qabstractitemmodel.html#hasChildren
 
-UICollectionModel::UICollectionModel()
+UICollectionViewModel::UICollectionViewModel()
 {
 }
 
-void UICollectionModel::init()
+void UICollectionViewModel::init()
 {
 	Object::init();
 }

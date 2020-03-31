@@ -4,7 +4,7 @@
 
 namespace ln {
 class Material;
-class UICollectionModel;
+class UICollectionViewModel;
 
 // row, column, parent を使って、Model 内のデータを一意に識別するためのキー
 // TODO: [2020/2/5] ViewModel 扱いじゃなくていいと思う。Qt だと Ploxy, Kivy は Adapter.
@@ -28,18 +28,18 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	UICollectionItemViewModel();
-	//void init(UICollectionModel* owner);
-	//void init(UICollectionModel* owner, int row, int column, UICollectionItemModel* parent = nullptr, Variant* data = nullptr);
+	//void init(UICollectionViewModel* owner);
+	//void init(UICollectionViewModel* owner, int row, int column, UICollectionItemModel* parent = nullptr, Variant* data = nullptr);
 
 private:
-	//UICollectionModel* m_owner;
+	//UICollectionViewModel* m_owner;
 	//int m_row;
 	//int m_column;
 	//Ref<UICollectionItemModel> m_parent;
 	//Ref<Variant> m_data;
 };
 
-class UICollectionModel	// TODO: naming, WPF の CollectionView や CollectionViewSource に近い
+class UICollectionViewModel	// TODO: naming, WPF の CollectionView や CollectionViewSource に近い
     : public UIViewModel
 {
 public:
@@ -53,7 +53,7 @@ public:
 	//virtual String getData(UICollectionItemViewModel* index, int column, const String& role) = 0;
 
 LN_CONSTRUCT_ACCESS:
-	UICollectionModel();
+	UICollectionViewModel();
 	void init();
 
 
@@ -61,7 +61,7 @@ private:
 };
 
 class UIFileSystemCollectionModel
-	: public UICollectionModel
+	: public UICollectionViewModel
 {
 public:
 	void setRootPath(const Path& path);

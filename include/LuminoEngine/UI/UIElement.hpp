@@ -403,8 +403,18 @@ public:	// TODO: internal protected
     void focus();
 	void retainCapture();
 	void releaseCapture();
+
+	// element を、この要素の Visual 子要素として追加する。
+	// Visual 子要素は次のワークフローに組み込まれる。
+	// - マウスのヒットテスト (Hierarchical)
+	// - スタイル更新 (Hierarchical)
+	// - フレーム更新 (Hierarchical)
+	// - 描画 (Hierarchical)
+	// 注意点として、レイアウトは含まれない。
+	// このため通常は、 measureOverride, arrangeOverride を実装してレイアウトする必要がある。
 	void addVisualChild(UIElement* element);
 	void removeVisualChild(UIElement* element);
+	void removeAllVisualChild();
 
     virtual const String& elementName() const { return String::Empty; }
 

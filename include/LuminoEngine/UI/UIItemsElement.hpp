@@ -165,22 +165,22 @@ private:
 };
 
 
-//// item 追加は addChild で。
-//class UICollectionControl
-//    : public UIControl
-//{
-//public:
-//
-//protected:
-//    // base interfaces
-//    void onAddChild(UIElement* child) override;
-//    
-//LN_CONSTRUCT_ACCESS:
-//	UICollectionControl();
-//	bool init();
-//
-//private:
-//};
+// item 追加は addChild で。
+class UICollectionControl
+    : public UIControl
+{
+public:
+
+protected:
+    // base interfaces
+    void onAddChild(UIElement* child) override;
+    
+LN_CONSTRUCT_ACCESS:
+	UICollectionControl();
+	bool init();
+
+private:
+};
 
 } // namespace ln
 
