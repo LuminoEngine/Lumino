@@ -775,17 +775,16 @@ Size UIScrollViewHelper::measure(UILayoutContext* layoutContext, const Size& own
 
 Rect UIScrollViewHelper::calculateClientArea(const Size& ownerAreaSize)
 {
-	float barWidth = 0;
-	float barHeight = 0;
+	Rect clientArea(0, 0, ownerAreaSize.width, ownerAreaSize.height);
+
 	if (m_horizontalScrollBar) {
-		barWidth = m_horizontalScrollBar->desiredSize().width;
+		clientArea.height -= m_horizontalScrollBar->desiredSize().height;
 	}
 
 	if (m_verticalScrollBar) {
-		barHeight = m_verticalScrollBar->desiredSize().height;
+		clientArea.width -= m_verticalScrollBar->desiredSize().width;
 	}
 
-	Rect clientArea(0, 0, ownerAreaSize.width - barWidth, ownerAreaSize.height - barHeight);
 	return clientArea;
 }
 

@@ -106,6 +106,20 @@ private:
 class UITreeView2;
 
 
+/**
+ * TreeView の要素です。
+ *
+ * UIControl は直接の子要素を、UIFrameLayout2 のレイアウト仕様に従ってレイアウトします。
+ *
+ * Visual States
+ * ----------
+ *
+ * | Name           | Group          | Description    |
+ * |----------------|----------------|----------------|
+ * | Unselected     | Selection      |  |
+ * | Selected       | Selection      |  |
+ *
+ */
 class UITreeItem2
     : public UIControl
 {
@@ -117,6 +131,8 @@ public:
 protected:
     //virtual void onExpanded();
     //virtual void onCollapsed();
+    virtual void onSelected(UIEventArgs* e);
+    virtual void onUnselected(UIEventArgs* e);
 
     // base interface
     void setContent(UIElement* value) override;
@@ -125,9 +141,9 @@ protected:
 
     //// UIElement interface
     virtual const String& elementName() const  override { static String name = u"UITreeItem"; return name; }
+    virtual void onRoutedEvent(UIEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
-    //virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
     UITreeItem2();
@@ -147,6 +163,9 @@ private:
     void dirtyVisualItemCount();
     void traverse(IVisitor* visitor);
 
+    // Selector
+    void setSelectedInternal(bool selected);
+
     //UITreeView* m_ownerTreeView;
     Ref<UIToggleButton> m_expanderButton;
     Ref<UIElement> m_headerContent;
@@ -160,10 +179,14 @@ private:
     UITreeView2* m_layoutingOwnerTreeView = nullptr;
     int m_layoutDepth = 0;
 
+    bool m_isSelected = false;
+
     friend class UITreeView2;
 };
 
 // - WPF だと、ListView は Selector の派生だが、TreeView はそうではない。ItemsControl の直接のサブクラス。
+// - いったん UICollectionControl の派生にはしないようにしてみる。ほかの ListView とかとうまいこと共通化できる部分が少ないかもしれない。
+//   ListView 実装後、共通化できそうなものがあれば作っていく。
 class UITreeView2
     //: public UICollectionControl
     : public UIControl
@@ -171,6 +194,8 @@ class UITreeView2
 public:
 
 protected:
+    virtual void onSelectionChanged(UISelectionChangedEventArgs* e);
+
     //virtual void onItemClick(UITreeItem* item, UIMouseEventArgs* e);
     //virtual Ref<UITreeItem> onRenderItem(UICollectionItemModel* viewModel);
 
@@ -196,10 +221,19 @@ private:
     void addItemAsLogicalChildren(UITreeItem2* item);
     void addItemAsVisualChildren(UITreeItem2* item);
 
+    // Selector
+    void clearSelection();
+    void selectItemExclusive(UITreeItem2* item);
+    void notifyItemClicked(UITreeItem2* item);
+
+
     Ref<UICollectionViewModel> m_model;
     Ref<UILayoutPanel2> m_itemsHostLayout;
     Ref<UIScrollViewHelper> m_scrollViewHelper;
     bool m_dirtyItemVisualTree = true;
+
+    // Selector
+    List<UITreeItem2*> m_selectedItems;
 
     friend class UITreeItem2;
 };

@@ -424,6 +424,11 @@ bool UITreeItem2::init()
 {
     if (!UIControl::init()) return false;
 
+    auto vsm = getVisualStateManager();
+    vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
+    vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
+    vsm->gotoState(UIVisualStates::Unselected);
+
     // TODO: CreationContext とか用意したほうがいいかも。init を public にしないとダメだし。
     m_expanderButton = makeObject<UIToggleButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
     m_expanderButton->addClass(u"UITreeItem-Expander");
@@ -442,6 +447,14 @@ bool UITreeItem2::init()
 bool UITreeItem2::isExpanded() const
 {
     return m_expanderButton->isChecked();
+}
+
+void UITreeItem2::onSelected(UIEventArgs* e)
+{
+}
+
+void UITreeItem2::onUnselected(UIEventArgs* e)
+{
 }
 
 void UITreeItem2::setContent(UIElement* value)
@@ -471,6 +484,19 @@ void UITreeItem2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* old
     }
 
     UIElement::setContent(m_model->getValue(u""));
+}
+
+void UITreeItem2::onRoutedEvent(UIEventArgs* e)
+{
+    if (e->type() == UIEvents::MouseDownEvent) {
+        if (auto* t = getTreeView()) {
+            t->notifyItemClicked(this);
+        }
+        e->handled = true;
+        return;
+    }
+
+    UIControl::onRoutedEvent(e);
 }
 
 Size UITreeItem2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
@@ -601,11 +627,27 @@ void UITreeItem2::traverse(IVisitor* visitor)
     //}
 }
 
+void UITreeItem2::setSelectedInternal(bool selected)
+{
+    if (m_isSelected != selected) {
+        m_isSelected = selected;
+
+        if (m_isSelected) {
+            onSelected(UIEventArgs::create(this, UIEvents::Selected));
+            getVisualStateManager()->gotoState(UIVisualStates::Selected);
+        }
+        else {
+            onUnselected(UIEventArgs::create(this, UIEvents::Selected));
+            getVisualStateManager()->gotoState(UIVisualStates::Unselected);
+        }
+    }
+}
+
 //==============================================================================
 // UITreeView2
 
 UITreeView2::UITreeView2()
-    : m_scrollViewHelper(makeRef<UIScrollViewHelper>(this))
+    : m_scrollViewHelper()
 {
 }
 
@@ -622,10 +664,17 @@ bool UITreeView2::init()
     ////m_scrollBarV->setBackgroundColor(Color::Red);
     //m_scrollBarV->setWidth(10);
     //addVisualChild(m_scrollBarV);
+
+    m_scrollViewHelper = makeRef<UIScrollViewHelper>(this);
     m_scrollViewHelper->setScrollTarget(m_itemsHostLayout);
     m_scrollViewHelper->setVScrollbarVisible(true);
 
+
     return true;
+}
+
+void UITreeView2::onSelectionChanged(UISelectionChangedEventArgs* e)
+{
 }
 
 void UITreeView2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
@@ -751,6 +800,30 @@ void UITreeView2::addItemAsVisualChildren(UITreeItem2* item)
     LN_CHECK(item);
     m_itemsHostLayout->addVisualChild(item);
 }
+
+void UITreeView2::clearSelection()
+{
+    for (auto& item : m_selectedItems) {
+        item->setSelectedInternal(false);
+    }
+    m_selectedItems.clear();
+}
+
+void UITreeView2::selectItemExclusive(UITreeItem2* item)
+{
+    clearSelection();
+
+    m_selectedItems.add(item);
+    item->setSelectedInternal(true);
+
+    onSelectionChanged(UISelectionChangedEventArgs::create(this, UIEvents::SelectionChanged));
+}
+
+void UITreeView2::notifyItemClicked(UITreeItem2* item)
+{
+    selectItemExclusive(item);
+}
+
 
 } // namespace ln
 

@@ -1628,8 +1628,8 @@ void UITheme::buildLumitelier()
 	// UIThumb
 	{
 		if (auto s = sheet->obtainStyle(u"UIThumb.UITrack-Thumb")) {
-			s->backgroundColor = UIColors::get(UIColorHues::Red, 5);
-			s->cornerRadius = CornerRadius(4);
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
+			s->cornerRadius = CornerRadius(3);
 		}
 
 		//auto e = sheet->addStyleSet(u"UIThumb");
@@ -1661,8 +1661,8 @@ void UITheme::buildLumitelier()
 	// UIScrollBar
 	{
 		if (auto s = sheet->obtainStyle(u"UIScrollBar")) {
-			s->backgroundColor = UIColors::get(UIColorHues::Green, 7);
-			s->minWidth = 8;
+			//s->backgroundColor = UIColors::get(UIColorHues::Green, 7);
+			s->minWidth = 6;
 		}
 	}
 	//--------------------------------
@@ -1670,7 +1670,7 @@ void UITheme::buildLumitelier()
 	{
 		if (auto s = sheet->obtainStyle(u"UITrack")) {
 			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
-			s->cornerRadius = CornerRadius(4);
+			s->cornerRadius = CornerRadius(3);
 		}
 		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton")) {
 			s->backgroundColor = Color(1, 1, 1, 0);
