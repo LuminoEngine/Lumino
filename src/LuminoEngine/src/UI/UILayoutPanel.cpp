@@ -1127,6 +1127,8 @@ Size UIStackLayout::arrangeOverride(UILayoutContext* layoutContext, const Size& 
                 actual.height = finalSlotRect.height - actual.y;
             }
 
+            actual.x -= m_scrollOffset.x;
+            actual.y -= m_scrollOffset.y;
             child->arrangeLayout(layoutContext, actual);
         }
     }

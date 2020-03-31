@@ -184,6 +184,7 @@ protected:
     void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    void onRoutedEvent(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
     UITreeView2();
@@ -197,6 +198,7 @@ private:
 
     Ref<UICollectionViewModel> m_model;
     Ref<UILayoutPanel2> m_itemsHostLayout;
+    Ref<UIScrollViewHelper> m_scrollViewHelper;
     bool m_dirtyItemVisualTree = true;
 
     friend class UITreeItem2;

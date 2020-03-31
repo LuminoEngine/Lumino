@@ -1623,6 +1623,86 @@ void UITheme::buildLumitelier()
 		}
 	}
 
+
+	//--------------------------------
+	// UIThumb
+	{
+		if (auto s = sheet->obtainStyle(u"UIThumb.UITrack-Thumb")) {
+			s->backgroundColor = UIColors::get(UIColorHues::Red, 5);
+			s->cornerRadius = CornerRadius(4);
+		}
+
+		//auto e = sheet->addStyleSet(u"UIThumb");
+		//// UIThumb
+		//{
+		//	auto s = e->mainStyleClass()->mainStyle();
+		//}
+		//// UIThumb.UITrack-Thumb
+		//{
+		//	auto s = makeObject<UIStyle>();
+
+		//	s->margin = Thickness(2);
+		//	s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
+		//	s->cornerRadius = CornerRadius(4);
+		//	s->hAlignment = HAlignment::Stretch;
+		//	s->vAlignment = VAlignment::Stretch;
+
+		//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
+		//	e->mainStyleClass()->addStateStyle(u"UITrack-Thumb", s);
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIThumb.SplitterBar"))
+		//{
+		//	s->backgroundColor = Color(0, 1, 0, 0.2); // debug
+		//	s->margin = Thickness(-2, -2, -2, -2);
+		//}
+	}
+
+	//--------------------------------
+	// UIScrollBar
+	{
+		if (auto s = sheet->obtainStyle(u"UIScrollBar")) {
+			s->backgroundColor = UIColors::get(UIColorHues::Green, 7);
+			s->minWidth = 8;
+		}
+	}
+	//--------------------------------
+	// UITrack
+	{
+		if (auto s = sheet->obtainStyle(u"UITrack")) {
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
+			s->cornerRadius = CornerRadius(4);
+		}
+		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton")) {
+			s->backgroundColor = Color(1, 1, 1, 0);
+			s->cornerRadius = CornerRadius(0);
+			s->shadowBlurRadius = 0;
+			s->shadowOffsetY = 0;
+			s->hAlignment = HAlignment::Stretch;
+			s->vAlignment = VAlignment::Stretch;
+		}
+		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:MouseOver")) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
+			s->backgroundColor = Color::Transparency;
+		}
+		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:Pressed")) {
+			s->backgroundColor = Color::Transparency;
+		}
+		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton")) {
+			s->backgroundColor = Color(1, 1, 1, 0);
+			s->cornerRadius = CornerRadius(0);
+			s->shadowBlurRadius = 0;
+			s->shadowOffsetY = 0;
+			s->hAlignment = HAlignment::Stretch;
+			s->vAlignment = VAlignment::Stretch;
+		}
+		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
+			s->backgroundColor = Color::Transparency;
+		}
+		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:Pressed")) {
+			s->backgroundColor = Color::Transparency;
+		}
+
+	}
+
 	m_styleSheet = sheet;
 }
 

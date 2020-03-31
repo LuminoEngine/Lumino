@@ -4,6 +4,7 @@
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UIButton.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
+#include <LuminoEngine/UI/UIScrollView.hpp>
 #include <LuminoEngine/UI/UITreeView.hpp>
 
 namespace ln {
@@ -604,6 +605,7 @@ void UITreeItem2::traverse(IVisitor* visitor)
 // UITreeView2
 
 UITreeView2::UITreeView2()
+    : m_scrollViewHelper(makeRef<UIScrollViewHelper>(this))
 {
 }
 
@@ -615,6 +617,13 @@ bool UITreeView2::init()
     layout->setOrientation(Orientation::Vertical);
     addVisualChild(layout);
     m_itemsHostLayout = layout;
+
+    //m_scrollBarV = makeObject<UIScrollBar>();
+    ////m_scrollBarV->setBackgroundColor(Color::Red);
+    //m_scrollBarV->setWidth(10);
+    //addVisualChild(m_scrollBarV);
+    m_scrollViewHelper->setScrollTarget(m_itemsHostLayout);
+    m_scrollViewHelper->setVScrollbarVisible(true);
 
     return true;
 }
@@ -658,6 +667,9 @@ void UITreeView2::onUpdateStyle(const UIStyleContext* styleContext, const detail
 
 Size UITreeView2::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
+    //m_scrollBarV->measureLayout(layoutContext, constraint);
+    Size scrollBarDesiredSize = m_scrollViewHelper->measure(layoutContext, constraint);
+
     //auto old_collectingTreeItem = layoutContext->collectingTreeItem;
     //auto old_treeView = layoutContext->treeView;
     //if (m_dirtyItemVisualTree) {
@@ -681,14 +693,34 @@ Size UITreeView2::measureOverride(UILayoutContext* layoutContext, const Size& co
     //layoutContext->collectingTreeItem = old_collectingTreeItem;
     //layoutContext->treeView = old_treeView;
 
-    return Size::max(layoutSize, localSize);
+    Size desiredSize = Size::max(layoutSize, localSize);
+    desiredSize.width += scrollBarDesiredSize.width;
+    desiredSize.height += scrollBarDesiredSize.height;
+    return desiredSize;
 }
 
 Size UITreeView2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    Rect contentSlotRect = detail::LayoutHelper::makePaddingRect(this, finalSize);
+    //Size scrollHSize = m_scrollBarV->desiredSize();
+    //Rect scrollHArea(finalSize.width - scrollHSize.width, 0, scrollHSize.width, finalSize.height);
+    //m_scrollBarV->arrangeLayout(layoutContext, scrollHArea);
+    Rect clientArea = m_scrollViewHelper->calculateClientArea(finalSize);
+
+    Rect contentSlotRect = detail::LayoutHelper::makePaddingRect(this, clientArea.getSize());
+    contentSlotRect.x += clientArea.x;
+    contentSlotRect.y += clientArea.y;
+
     m_itemsHostLayout->arrangeLayout(layoutContext, contentSlotRect);
+
+    m_scrollViewHelper->arrange(layoutContext, finalSize);
+
     return finalSize;
+}
+
+void UITreeView2::onRoutedEvent(UIEventArgs* e)
+{
+    UIControl::onRoutedEvent(e);
+    m_scrollViewHelper->handleRoutedEvent(e);
 }
 
 void UITreeView2::rebuildTreeFromViewModel()

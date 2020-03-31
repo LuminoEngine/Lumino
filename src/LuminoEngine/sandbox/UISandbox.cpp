@@ -127,6 +127,7 @@ public:
 			model1->setRootPath(LN_LOCALFILE("Assets"));
 
 			auto treeview1 = makeObject<UITreeView2>();
+			treeview1->setHeight(200);
 			//treeview1->setBackgroundColor(Color::Red);
 			treeview1->setViewModel(model1);
 			layout1->addChild(treeview1);

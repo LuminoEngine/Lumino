@@ -284,6 +284,11 @@ void DrawElementListBuilder::pushState(bool reset)
 
     if (reset) {
         this->reset2();
+
+		// TODO: もうちょいスマートな方法あると思うけど…
+		if (m_stateStackMode == StateStackMode::ScissorPushPop) {
+			setScissorRect(state->frameBufferStageParameters.m_scissorRect);
+		}
     }
 }
 

@@ -37,6 +37,10 @@ public:
 
 	UITheme* theme() const;
 
+
+	//void pushScissorRect(const RectI& rect);
+	//void popScissorRect();
+
 public: // TODO: inernal
 	void resetForBeginRendering();
 
@@ -46,6 +50,8 @@ public: // TODO: inernal
 
 	// onRender の中で、blit の位置調整のために使いたい
 	//Rect m_currentRenderTargetRect;
+
+	//std::stack<RectI> m_scissorStack;
 };
 
 } // namespace ln

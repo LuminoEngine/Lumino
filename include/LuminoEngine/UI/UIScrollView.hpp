@@ -97,7 +97,7 @@ private:
 	@brief
 */
 class UITrack
-	: public UIControl	// TODO: UIElement にしたい気持ち。今は init で addElement している個所を、addVisualChild とかにしたい。
+	: public UIElement	// TODO: UIElement にしたい気持ち。今は init で addElement している個所を、addVisualChild とかにしたい。
 								// ※VisualChild はその要素を表現するために深く紐づいた子要素。Window のクライアント領域外のボタンとかが相当する。
 {
 	//LN_OBJECT;
@@ -119,7 +119,7 @@ public:
 	Orientation getOrientation() const { return m_orientation; }
 
 	/** スクロール位置に対する値を設定します。*/
-	void setValue(float value) { m_value = value; }
+	void setValue(float value);
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
 	float getValue() const { return m_value; }
@@ -192,6 +192,10 @@ private:
 /**
     @brief
 */
+// 方針としては、「SliderMode でも ScrollBarMode でも、Thumb が下端に付いたら Maximum の値になる」
+// なので、Scrollbar を作るときに ExtentSize をそのまま Maximum にしたりすると、
+// オフセットの最大値が ExtentSize になるので、Thumb を下端に持ってくると Extent 全体がViewport外にスライドする。これは仕様。
+// Maximum には ExtentSize - ViewportSize を設定する必要がある。
 class UIScrollBar
     : public UIElement
 {
@@ -245,6 +249,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
     // UIElement interface
+	virtual const String& elementName() const  override { static String name = u"UIScrollBar"; return name; }
     virtual void onRoutedEvent(UIEventArgs* e) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
@@ -258,9 +263,37 @@ private:
     float m_dragStartValue;
 };
 
+
+// TODO: detail
+// WPF のように UIScrollViewer を UI ツリーに含めると更新のオーバーヘッドが増える。
+// ただスクロールバー出すためだけに複雑なことしたくないので、ListView とか TreeView に簡単に
+// スクロールバーを付けるためのユーティリティ。
+class UIScrollViewHelper
+	: public RefObject
+{
+public:
+	UIScrollViewHelper(UIControl* owner);
+	void setHScrollbarVisible(bool value);
+	void setVScrollbarVisible(bool value);
+	void setScrollTarget(IScrollInfo* value) { m_scrollTarget = value; }
+	Size measure(UILayoutContext* layoutContext, const Size& ownerAreaSize);
+	Rect calculateClientArea(const Size& ownerAreaSize);
+	void arrange(UILayoutContext* layoutContext, const Size& ownerAreaSize);
+	void refreshScrollInfo();
+	void handleRoutedEvent(UIEventArgs* e);
+
+private:
+	UIControl* m_owner;
+	Ref<UIScrollBar> m_horizontalScrollBar;
+	Ref<UIScrollBar> m_verticalScrollBar;
+	IScrollInfo* m_scrollTarget;
+};
+
+
 /**
     @brief
 */
+// TODO: obsolete: UIScrollViewHelper を内包するように修正する
 class UIScrollViewer
     : public UIControl
 {

@@ -107,9 +107,10 @@ UIButton::UIButton()
 {
 }
 
-void UIButton::init()
+bool UIButton::init(const UICreationContext* context)
 {
-	UIButtonBase::init(nullptr);
+    if (!UIButtonBase::init(context)) return false;
+    return true;
 }
 
 void UIButton::init(const StringRef& text)

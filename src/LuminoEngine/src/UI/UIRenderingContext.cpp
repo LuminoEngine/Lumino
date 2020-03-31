@@ -19,6 +19,7 @@ UIRenderingContext::UIRenderingContext()
 	: m_elementList(makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager()))
 {
 	setDrawElementList(m_elementList);
+    m_builder->m_stateStackMode = detail::StateStackMode::ScissorPushPop;
 }
 
 void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color)
@@ -161,6 +162,31 @@ UITheme* UIRenderingContext::theme() const
 	assert(m_theme);
 	return m_theme;
 }
+
+//void UIRenderingContext::pushScissorRect(const RectI& rect)
+//{
+//    if (m_scissorStack.empty()) {
+//        m_scissorStack.push(rect);
+//    }
+//    else {
+//        RectI r = rect;
+//        r.clip(m_scissorStack.top());
+//        m_scissorStack.push(r);
+//    }
+//
+//    setScissorRect(m_scissorStack.top());
+//}
+//
+//void UIRenderingContext::popScissorRect()
+//{
+//    m_scissorStack.pop();
+//    if (m_scissorStack.empty()) {
+//        setScissorRect(RectI::Empty);
+//    }
+//    else {
+//        setScissorRect(m_scissorStack.top());
+//    }
+//}
 
 void UIRenderingContext::resetForBeginRendering()
 {

@@ -51,7 +51,8 @@ public:
 
 	/** init. */
 	LN_METHOD()
-	void init();
+	bool init() { return init(UICreationContext::Default); }
+	bool init(const UICreationContext* context);
 
 	/** 表示文字列を指定して UIButton を作成します。 */
 	LN_METHOD(OverloadPostfix = "WithText")

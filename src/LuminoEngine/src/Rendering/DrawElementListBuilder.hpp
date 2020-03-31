@@ -12,7 +12,14 @@
 namespace ln {
 class RenderViewPoint;
 
+
 namespace detail {
+
+enum class StateStackMode
+{
+	Default,
+	ScissorPushPop,
+};
 
 // CommandBuffer から使われることを想定。
 // draw 系を呼んだときに、ステートが変化していれば新しい RenderStage を作ったり、
@@ -27,6 +34,8 @@ class DrawElementListBuilder
 	: public RefObject
 {
 public:
+	StateStackMode m_stateStackMode = StateStackMode::Default;	// TODO: private
+
 	DrawElementListBuilder();
     virtual ~DrawElementListBuilder();
 	DrawElementList* targetList() const { return m_targetList; }
