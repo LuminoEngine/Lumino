@@ -192,9 +192,14 @@ class UITreeView2
     : public UIControl
 {
 public:
+    /** ItemSubmitted イベントの通知を受け取るコールバックを登録します。*/
+    Ref<EventConnection> connectOnChecked(Ref<UIGeneralEventHandler> handler);
 
 protected:
     virtual void onSelectionChanged(UISelectionChangedEventArgs* e);
+
+    /** Enter キーやダブルクリックなどで、Item の主要なアクションを実行するタイミングで呼び出されます。sender は UITreeViewitem です。 */
+    virtual void onItemSubmitted(UIEventArgs* e);
 
     //virtual void onItemClick(UITreeItem* item, UIMouseEventArgs* e);
     //virtual Ref<UITreeItem> onRenderItem(UICollectionItemModel* viewModel);
@@ -234,6 +239,8 @@ private:
 
     // Selector
     List<UITreeItem2*> m_selectedItems;
+
+    Event<UIGeneralEventHandler> m_onItemSubmitted;
 
     friend class UITreeItem2;
 };

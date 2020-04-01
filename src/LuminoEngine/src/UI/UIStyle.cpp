@@ -1509,16 +1509,16 @@ void UITheme::buildLumitelier()
 	{
 		if (auto s = sheet->obtainStyle(u"UIButton")) {
 			s->minWidth = 64;
-			s->minHeight = m_lineSpacing;
+			s->minHeight = lineContentHeight();
 			s->margin = Thickness(8);   // TODO: spacing?
-			s->padding = Thickness(spacing(2), spacing(1));
+			s->padding = Thickness(spacing(2), 0);
 			s->hAlignment = HAlignment::Center;
 			s->vAlignment = VAlignment::Center;
 			s->horizontalContentAlignment = HAlignment::Center;
 			s->verticalContentAlignment = VAlignment::Center;
 			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
 			s->cornerRadius = CornerRadius(4);
-			s->shadowBlurRadius = 4;
+			s->shadowBlurRadius = 1;
 			s->shadowOffsetY = 1;
 			s->shadowColor = Color(0, 0, 0, 0.5);
 		}
@@ -1672,34 +1672,34 @@ void UITheme::buildLumitelier()
 			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
 			s->cornerRadius = CornerRadius(3);
 		}
-		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton")) {
-			s->backgroundColor = Color(1, 1, 1, 0);
-			s->cornerRadius = CornerRadius(0);
-			s->shadowBlurRadius = 0;
-			s->shadowOffsetY = 0;
-			s->hAlignment = HAlignment::Stretch;
-			s->vAlignment = VAlignment::Stretch;
-		}
-		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:MouseOver")) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
-			s->backgroundColor = Color::Transparency;
-		}
-		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:Pressed")) {
-			s->backgroundColor = Color::Transparency;
-		}
-		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton")) {
-			s->backgroundColor = Color(1, 1, 1, 0);
-			s->cornerRadius = CornerRadius(0);
-			s->shadowBlurRadius = 0;
-			s->shadowOffsetY = 0;
-			s->hAlignment = HAlignment::Stretch;
-			s->vAlignment = VAlignment::Stretch;
-		}
-		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
-			s->backgroundColor = Color::Transparency;
-		}
-		if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:Pressed")) {
-			s->backgroundColor = Color::Transparency;
-		}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton")) {
+		//	s->backgroundColor = Color(1, 1, 1, 0);
+		//	s->cornerRadius = CornerRadius(0);
+		//	s->shadowBlurRadius = 0;
+		//	s->shadowOffsetY = 0;
+		//	s->hAlignment = HAlignment::Stretch;
+		//	s->vAlignment = VAlignment::Stretch;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:MouseOver")) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
+		//	s->backgroundColor = Color::Transparency;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:Pressed")) {
+		//	s->backgroundColor = Color::Transparency;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton")) {
+		//	s->backgroundColor = Color(1, 1, 1, 0);
+		//	s->cornerRadius = CornerRadius(0);
+		//	s->shadowBlurRadius = 0;
+		//	s->shadowOffsetY = 0;
+		//	s->hAlignment = HAlignment::Stretch;
+		//	s->vAlignment = VAlignment::Stretch;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
+		//	s->backgroundColor = Color::Transparency;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:Pressed")) {
+		//	s->backgroundColor = Color::Transparency;
+		//}
 
 	}
 

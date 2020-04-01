@@ -91,7 +91,8 @@ public:
 	static const UIEventType	Selected;
 	static const UIEventType	Unselected;
 
-    static const UIEventType	Click;
+    static const UIEventType	Click;	// TODO: obsolete
+	static const UIEventType	Submitted;
 
     static const UIEventType    SelectionChanged;
 

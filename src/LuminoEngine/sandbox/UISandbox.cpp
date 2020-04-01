@@ -130,6 +130,11 @@ public:
 			treeview1->setHeight(200);
 			//treeview1->setBackgroundColor(Color::Red);
 			treeview1->setViewModel(model1);
+			treeview1->connectOnChecked([model1](UIEventArgs* e) {
+				auto* item = static_cast<UITreeItem2*>(e->sender());
+				auto path = model1->filePath(static_pointer_cast<UICollectionItemViewModel>(item->m_viewModel));
+				Debug::print(u"Item clicked. " + path);
+			});
 			layout1->addChild(treeview1);
 		}
 

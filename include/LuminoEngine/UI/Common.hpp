@@ -75,6 +75,9 @@ enum class UISpecialElementFlags : uint8_t
 
     // 
     //LayoutInvisible = 1 << 3,
+
+    DragDropSource = 1 << 5,
+    DragDropTarget = 1 << 6,
 };
 
 enum class UIElementDirtyFlags

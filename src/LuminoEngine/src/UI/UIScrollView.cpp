@@ -346,7 +346,7 @@ Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Size& finalS
 		if (m_thumb != nullptr)
 		{
 			rect.x = decreaseButtonLength;
-			rect.width = thumbLength;
+			rect.width = std::ceil(thumbLength);	// Pixel snap
 			m_thumb->arrangeLayout(layoutContext, rect);
 		}
 		// PageDown Button
@@ -372,7 +372,7 @@ Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Size& finalS
 		if (m_thumb != nullptr)
 		{
 			rect.y = decreaseButtonLength;
-			rect.height = thumbLength;
+			rect.height = std::ceil(thumbLength);	// Pixel snap
 			m_thumb->arrangeLayout(layoutContext, rect);
 		}
 		// PageDown Button

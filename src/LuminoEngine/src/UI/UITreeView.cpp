@@ -491,9 +491,17 @@ void UITreeItem2::onRoutedEvent(UIEventArgs* e)
     if (e->type() == UIEvents::MouseDownEvent) {
         if (auto* t = getTreeView()) {
             t->notifyItemClicked(this);
+
+            if (static_cast<UIMouseEventArgs*>(e)->getClickCount() == 2) {
+                // Double click
+                t->onItemSubmitted(UIEventArgs::create(this, UIEvents::Submitted));
+            }
         }
+
+
         e->handled = true;
         return;
+
     }
 
     UIControl::onRoutedEvent(e);
@@ -673,8 +681,18 @@ bool UITreeView2::init()
     return true;
 }
 
+Ref<EventConnection> UITreeView2::connectOnChecked(Ref<UIGeneralEventHandler> handler)
+{
+    return m_onItemSubmitted.connect(handler);
+}
+
 void UITreeView2::onSelectionChanged(UISelectionChangedEventArgs* e)
 {
+}
+
+void UITreeView2::onItemSubmitted(UIEventArgs* e)
+{
+    m_onItemSubmitted.raise(e);
 }
 
 void UITreeView2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel)
