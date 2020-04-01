@@ -24,6 +24,8 @@ public:
 	// 上面のみに平面 Floor
 	void buildFloor();
 
+	// 壁に少し角度をつける
+	void buildFloorAndSlopeWall();
 
 
 	void resetBatch();

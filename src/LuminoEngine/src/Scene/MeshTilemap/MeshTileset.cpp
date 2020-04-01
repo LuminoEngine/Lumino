@@ -152,6 +152,126 @@ void MeshAutoTileset::buildFloor()
 	}
 }
 
+void MeshAutoTileset::buildFloorAndSlopeWall()
+{
+	auto* tex = m_material->mainTexture();
+
+	detail::MeshAutoTilesetUVMapper uvMapper(
+		Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVWithWall);
+
+
+	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+
+
+	float slopeMargin = 0.2;
+	float slopeMarginHalf = slopeMargin / 2;
+
+
+
+	int offsetV = 0;
+	int offsetI = 0;
+
+	auto putSquare = [&](const Vertex* points, const Matrix& rot, const Vector3& offset) {
+		m_mesh->setVertex(offsetV + 0, Vertex{ Vector3::transformCoord(points[0].position, rot) + offset, Vector3::transformCoord(points[0].normal, rot), points[0].uv, Color::White });
+		m_mesh->setVertex(offsetV + 1, Vertex{ Vector3::transformCoord(points[1].position, rot) + offset, Vector3::transformCoord(points[1].normal, rot), points[1].uv, Color::White });
+		m_mesh->setVertex(offsetV + 2, Vertex{ Vector3::transformCoord(points[2].position, rot) + offset, Vector3::transformCoord(points[2].normal, rot), points[2].uv, Color::White });
+		m_mesh->setVertex(offsetV + 3, Vertex{ Vector3::transformCoord(points[3].position, rot) + offset, Vector3::transformCoord(points[3].normal, rot), points[3].uv, Color::White });
+		m_mesh->setIndex(offsetI + 0, offsetV + 0);
+		m_mesh->setIndex(offsetI + 1, offsetV + 1);
+		m_mesh->setIndex(offsetI + 2, offsetV + 2);
+		m_mesh->setIndex(offsetI + 3, offsetV + 2);
+		m_mesh->setIndex(offsetI + 4, offsetV + 1);
+		m_mesh->setIndex(offsetI + 5, offsetV + 3);
+		offsetV += 4;
+		offsetI += 6;
+	};
+
+	MeshTileFaceDirection sideDirs[4] = {
+		MeshTileFaceDirection::ZMinus,
+		MeshTileFaceDirection::XMinus,
+		MeshTileFaceDirection::XPlus,
+		MeshTileFaceDirection::ZPlus };
+	Matrix faceRotation[4] = {
+		Matrix::Identity,
+		Matrix::makeRotationY(Math::PI / 2),
+		Matrix::makeRotationY(-Math::PI / 2),
+		Matrix::makeRotationY(Math::PI) };
+	Vector3 faceOffset[4] = {
+		Vector3(0, 0.5, 0),
+		Vector3(0, 0.5, 0.5),
+		Vector3(1, 0.5, 0.5),
+		Vector3(0, 0.5, 1), };
+	for (int iFaceDir = 0; iFaceDir < 4; iFaceDir++) {
+		MeshTileFaceDirection dir = sideDirs[iFaceDir];
+		const Matrix& transform = faceRotation[iFaceDir];
+		const Vector3& offset = faceOffset[iFaceDir];
+
+		for (int i = 0; i < 48; i++) {
+			const auto& info = MeshTileset::AutoTileTable[i];
+			int startIndex = offsetI;
+
+			// 作るMesh は Z=0で ZPlus をベースとし、Tile の中央が (0,0,0)
+
+			// [top-left]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft);
+
+				int t = info.subtiles[0];
+				if (t == 1 || t == 2) {	// 2=平面と斜面の接合
+					// 平面
+					Vertex pts[] = {
+						Vertex{ Vector3(-0.5, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.0, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+					};
+					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+				}
+				else if (t == 3) {
+					// 斜面左接合
+					Vertex pts[] = {
+						Vertex{ Vector3(-0.5, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+					};
+					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+				}
+				else if (t == 4) {
+					// 平面上接合
+					Vertex pts[] = {
+						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+					};
+					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+				}
+				else if (t == 5) {
+					// 角
+					Vertex pts[] = {
+						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+					};
+					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+				}
+				else {
+					LN_UNREACHABLE();
+				}
+			}
+
+
+			m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
+			setInstancedMeshList((int)dir, i, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
+
+		}
+
+		return;
+	}
+}
+
 void MeshAutoTileset::resetBatch()
 {
 	for (auto& batch : m_meshList) {
@@ -266,34 +386,40 @@ void MeshTileset::init()
 	m_material->shadingModel = ShadingModel::Unlit;
 	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
-	m_autotileSet[0] = makeObject<MeshAutoTileset>();
-	m_autotileSet[0]->setMaterial(m_material);
-	m_autotileSet[0]->buildQubeFloorAndWall();
+	//m_autotileSet[0] = makeObject<MeshAutoTileset>();
+	//m_autotileSet[0]->setMaterial(m_material);
+	//m_autotileSet[0]->buildQubeFloorAndWall();
 
+	//{
+
+	//	auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at01.png");
+	//	auto material = Material::create(tex);
+	//	material->shadingModel = ShadingModel::Unlit;
+	//	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+	//	m_autotileSet[1] = makeObject<MeshAutoTileset>();
+	//	m_autotileSet[1]->setMaterial(material);
+	//	m_autotileSet[1]->buildFloor();
+
+	//}
+	//
+	//{
+
+
+	//	auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at02.png");
+	//	auto material = Material::create(tex);
+	//	material->shadingModel = ShadingModel::Unlit;
+	//	material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+	//	m_autotileSet[2] = makeObject<MeshAutoTileset>();
+	//	m_autotileSet[2]->setMaterial(material);
+	//	m_autotileSet[2]->buildFloor();
+	//}
 	{
 
-		auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at01.png");
-		auto material = Material::create(tex);
-		material->shadingModel = ShadingModel::Unlit;
-		material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
-
-		m_autotileSet[1] = makeObject<MeshAutoTileset>();
-		m_autotileSet[1]->setMaterial(material);
-		m_autotileSet[1]->buildFloor();
-
-	}
-	
-	{
-
-
-		auto tex = Texture2D::load(u"D:/Materials/Tilemap/ねくらファンタジーマップチップ素材集/マップ素材/オートタイル規格2/b_06海岸_at02.png");
-		auto material = Material::create(tex);
-		material->shadingModel = ShadingModel::Unlit;
-		material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
-
-		m_autotileSet[2] = makeObject<MeshAutoTileset>();
-		m_autotileSet[2]->setMaterial(material);
-		m_autotileSet[2]->buildFloor();
+		m_autotileSet[3] = makeObject<MeshAutoTileset>();
+		m_autotileSet[3]->setMaterial(m_material);
+		m_autotileSet[3]->buildFloorAndSlopeWall();
 	}
 }
 
