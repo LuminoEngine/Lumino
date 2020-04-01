@@ -213,16 +213,19 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 			//outInfo->tileIds[i] = tile(cx, cy, cz).tileId;
 			int id1 = tile(cx, cy, cz).tileId;
 
-			if (id1 >= 1) {
-				// 面方向にひとつ進んだ Block も調べる (面が覆われているか)
-				int cx2 = cx + TopOffsets[static_cast<int>(dir)].x;
-				int cy2 = cy + TopOffsets[static_cast<int>(dir)].y;
-				int cz2 = cz + TopOffsets[static_cast<int>(dir)].z;
-				if (isValidIndex(cx2, cy2, cz2)) {
-					int id2 = tile(cx2, cy2, cz2).tileId;
-					if (id2 >= 1) {
-						//outInfo->tileIds[i] = -1
-						id1 = 0;
+			if (0) {	// 面が覆われている場合、別種類タイルにするかどうか（TODO: NG: 押し込まれたオートタイルが不自然になる。完全 box のばあいはいいが。）
+				if (id1 >= 1) {
+					// 面方向にひとつ進んだ Block も調べる (面が覆われているか)
+					int cx2 = cx + TopOffsets[static_cast<int>(dir)].x;
+					int cy2 = cy + TopOffsets[static_cast<int>(dir)].y;
+					int cz2 = cz + TopOffsets[static_cast<int>(dir)].z;
+					if (isValidIndex(cx2, cy2, cz2)) {
+						int id2 = tile(cx2, cy2, cz2).tileId;
+						//outInfo->piledTileIds[i] = id1;
+
+						if (id2 >= 1) {
+							id1 = 0;
+						}
 					}
 				}
 			}

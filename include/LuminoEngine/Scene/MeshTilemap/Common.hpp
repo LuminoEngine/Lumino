@@ -35,6 +35,7 @@ struct MeshTile
 struct MeshTileFaceAdjacency
 {
 	bool buried[6]; // MeshTileFaceDirection
+	int tileIds[27];
 };
 
 } // namespace detail

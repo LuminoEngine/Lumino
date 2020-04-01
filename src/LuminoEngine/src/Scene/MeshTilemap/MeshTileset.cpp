@@ -148,7 +148,7 @@ void MeshAutoTileset::buildFloor()
 		}
 
 		m_mesh->addSection(startIndex, 8, 0, PrimitiveTopology::TriangleList);
-		setInstancedMeshList((int)MeshTileFaceDirection::YPlus, i, makeObject<InstancedMeshList>(m_mesh, i));
+		setInstancedMeshList((int)MeshTileFaceDirection::YPlus, i, false, makeObject<InstancedMeshList>(m_mesh, i));
 	}
 }
 
@@ -171,11 +171,11 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 	int offsetV = 0;
 	int offsetI = 0;
 
-	auto putSquare = [&](const Vertex* points, const Matrix& rot, const Vector3& offset) {
-		m_mesh->setVertex(offsetV + 0, Vertex{ Vector3::transformCoord(points[0].position, rot) + offset, Vector3::transformCoord(points[0].normal, rot), points[0].uv, Color::White });
-		m_mesh->setVertex(offsetV + 1, Vertex{ Vector3::transformCoord(points[1].position, rot) + offset, Vector3::transformCoord(points[1].normal, rot), points[1].uv, Color::White });
-		m_mesh->setVertex(offsetV + 2, Vertex{ Vector3::transformCoord(points[2].position, rot) + offset, Vector3::transformCoord(points[2].normal, rot), points[2].uv, Color::White });
-		m_mesh->setVertex(offsetV + 3, Vertex{ Vector3::transformCoord(points[3].position, rot) + offset, Vector3::transformCoord(points[3].normal, rot), points[3].uv, Color::White });
+	auto putSquare = [&](Vertex p0, Vertex p1, Vertex p2, Vertex p3, const Matrix& rot, const Vector3& offset) {
+		m_mesh->setVertex(offsetV + 0, Vertex{ Vector3::transformCoord(p0.position, rot) + offset, Vector3::transformCoord(p0.normal, rot), p0.uv, Color::White });
+		m_mesh->setVertex(offsetV + 1, Vertex{ Vector3::transformCoord(p1.position, rot) + offset, Vector3::transformCoord(p1.normal, rot), p1.uv, Color::White });
+		m_mesh->setVertex(offsetV + 2, Vertex{ Vector3::transformCoord(p2.position, rot) + offset, Vector3::transformCoord(p2.normal, rot), p2.uv, Color::White });
+		m_mesh->setVertex(offsetV + 3, Vertex{ Vector3::transformCoord(p3.position, rot) + offset, Vector3::transformCoord(p3.normal, rot), p3.uv, Color::White });
 		m_mesh->setIndex(offsetI + 0, offsetV + 0);
 		m_mesh->setIndex(offsetI + 1, offsetV + 1);
 		m_mesh->setIndex(offsetI + 2, offsetV + 2);
@@ -187,20 +187,20 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 	};
 
 	MeshTileFaceDirection sideDirs[4] = {
-		MeshTileFaceDirection::ZMinus,
 		MeshTileFaceDirection::XMinus,
 		MeshTileFaceDirection::XPlus,
+		MeshTileFaceDirection::ZMinus,
 		MeshTileFaceDirection::ZPlus };
 	Matrix faceRotation[4] = {
-		Matrix::Identity,
 		Matrix::makeRotationY(Math::PI / 2),
 		Matrix::makeRotationY(-Math::PI / 2),
+		Matrix::Identity,
 		Matrix::makeRotationY(Math::PI) };
-	Vector3 faceOffset[4] = {
-		Vector3(0, 0.5, 0),
+	Vector3 faceOffset[4] = {	// box の 左下手前を原点にしたい
 		Vector3(0, 0.5, 0.5),
 		Vector3(1, 0.5, 0.5),
-		Vector3(0, 0.5, 1), };
+		Vector3(0.5, 0.5, 0.0),
+		Vector3(0.5, 0.5, 1) };
 	for (int iFaceDir = 0; iFaceDir < 4; iFaceDir++) {
 		MeshTileFaceDirection dir = sideDirs[iFaceDir];
 		const Matrix& transform = faceRotation[iFaceDir];
@@ -215,60 +215,156 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 			// [top-left]
 			{
 				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft);
-
 				int t = info.subtiles[0];
 				if (t == 1 || t == 2) {	// 2=平面と斜面の接合
 					// 平面
-					Vertex pts[] = {
+					putSquare(
 						Vertex{ Vector3(-0.5, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
 						Vertex{ Vector3(0.0, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
 						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
 						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-					};
-					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+						transform, offset);
 				}
 				else if (t == 3) {
-					// 斜面左接合
-					Vertex pts[] = {
+					// 斜面・側面接合
+					putSquare(
 						Vertex{ Vector3(-0.5, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
 						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
 						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
 						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-					};
-					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+						transform, offset);
 				}
 				else if (t == 4) {
 					// 平面上接合
-					Vertex pts[] = {
+					putSquare(
 						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
 						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
 						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
 						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-					};
-					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+						transform, offset);
 				}
 				else if (t == 5) {
 					// 角
-					Vertex pts[] = {
-						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
+					putSquare(
+						Vertex{ Vector3(-0.5 + slopeMargin, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
 						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-					};
-					putSquare(pts, transform, Vector3(0, 0.5, -0.5) + offset);
+						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+						transform, offset);
 				}
 				else {
 					LN_UNREACHABLE();
 				}
 			}
 
+			// [top-right]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight);
+				int t = info.subtiles[1];
+				if (t == 1 || t == 2) {
+					putSquare(
+						Vertex{ Vector3(0.0, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.5, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+						transform, offset);
+				}
+				else if (t == 3) {
+					putSquare(
+						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.5, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+						transform, offset);
+				}
+				else if (t == 4) {
+					putSquare(
+						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.5 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+						transform, offset);
+				}
+				else if (t == 5) {
+					putSquare(
+						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.5 - slopeMargin, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.5 - slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+						transform,  offset);
+				}
+				else {
+					LN_UNREACHABLE();
+				}
+			}
 
 			m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
-			setInstancedMeshList((int)dir, i, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
+			setInstancedMeshList((int)dir, i, false, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
 
 		}
+	}
 
-		return;
+
+	for (int iFaceDir = 0; iFaceDir < 4; iFaceDir++) {
+		MeshTileFaceDirection dir = sideDirs[iFaceDir];
+		const Matrix& transform = faceRotation[iFaceDir];
+		const Vector3& offset = faceOffset[iFaceDir];
+
+		for (int i = 0; i < 48; i++) {
+			const auto& info = MeshTileset::AutoTileTable[i];
+			int startIndex = offsetI;
+
+			// 作るMesh は Z=0で ZPlus をベースとし、Tile の中央が (0,0,0)
+
+			// [top-left]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft);
+				int t = info.subtiles[0];
+				//if (t == 1 || t == 2) {	// 2=平面と斜面の接合
+					// 平面
+					putSquare(
+						Vertex{ Vector3(-0.5, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
+						Vertex{ Vector3(0.0, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
+						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+						transform, offset);
+				//}
+				//else if (t == 3) {
+				//	// 斜面・側面接合
+				//	putSquare(
+				//		Vertex{ Vector3(-0.5, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
+				//		Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
+				//		Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+				//		Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+				//		transform, offset);
+				//}
+				//else if (t == 4) {
+				//	// 平面上接合
+				//	putSquare(
+				//		Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
+				//		Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
+				//		Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+				//		Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+				//		transform, offset);
+				//}
+				//else if (t == 5) {
+				//	// 角
+				//	putSquare(
+				//		Vertex{ Vector3(-0.5 + slopeMargin, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
+				//		Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
+				//		Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
+				//		Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
+				//		transform, offset);
+				//}
+				//else {
+				//	LN_UNREACHABLE();
+				//}
+			}
+
+			m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
+			setInstancedMeshList((int)dir, i, true, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
+
+		}
 	}
 }
 
@@ -279,18 +375,29 @@ void MeshAutoTileset::resetBatch()
 			batch->reset();
 		}
 	}
+	for (auto& batch : m_dentMeshList) {
+		if (batch) {
+			batch->reset();
+		}
+	}
 }
 
-void MeshAutoTileset::setInstancedMeshList(int d, int autotileId, InstancedMeshList* value)
+void MeshAutoTileset::setInstancedMeshList(int d, int autotileId, bool dent, InstancedMeshList* value)
 {
 	int index = (d * 48) + autotileId;
-	m_meshList[index] = value;
+	if (dent)
+		m_dentMeshList[index] = value;
+	else
+		m_meshList[index] = value;
 }
 
-InstancedMeshList* MeshAutoTileset::instancedMeshList(int d, int autotileId) const
+InstancedMeshList* MeshAutoTileset::instancedMeshList(int d, int autotileId, bool dent) const
 {
 	int index = (d * 48) + autotileId;
-	return m_meshList[index];
+	if (dent)
+		return m_dentMeshList[index];
+	else
+		return m_meshList[index];
 }
 
 void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform, int animationFrame) const
@@ -302,7 +409,15 @@ void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::Mesh
 
 	for (int d = 0; d < 6; d++) {
 		if (!adjacency.buried[d]) {
-			auto* batch = instancedMeshList(d, tile.faceTileId[d]);
+			auto* batch = instancedMeshList(d, tile.faceTileId[d], false);
+			if (batch) {
+				batch->setTransform(transform);
+				batch->setUVOffset(uvOffset);
+				batch->drawMesh();
+			}
+		}
+		else {
+			auto* batch = instancedMeshList(d, tile.faceTileId[d], true);
 			if (batch) {
 				batch->setTransform(transform);
 				batch->setUVOffset(uvOffset);
@@ -316,6 +431,11 @@ void MeshAutoTileset::flushBatch(RenderingContext* context)
 {
 	context->setMaterial(m_material);
 	for (auto& batch : m_meshList) {
+		if (batch) {
+			context->drawMeshInstanced(batch);
+		}
+	}
+	for (auto& batch : m_dentMeshList) {
 		if (batch) {
 			context->drawMeshInstanced(batch);
 		}

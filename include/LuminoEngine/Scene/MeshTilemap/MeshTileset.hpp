@@ -29,8 +29,8 @@ public:
 
 
 	void resetBatch();
-	void setInstancedMeshList(int d, int autotileId, InstancedMeshList* value);
-	InstancedMeshList* instancedMeshList(int d, int autotileId) const;
+	void setInstancedMeshList(int d, int autotileId, bool dent, InstancedMeshList* value);
+	InstancedMeshList* instancedMeshList(int d, int autotileId, bool dent) const;
 	void drawVoxel(const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform, int animationFrame) const;
 	void flushBatch(RenderingContext* context);
 
@@ -44,6 +44,7 @@ private:
 	int m_animationFrameCount = 0;
 	Ref<Mesh> m_mesh;
 	std::array<Ref<InstancedMeshList>, 6 * 48> m_meshList;
+	std::array<Ref<InstancedMeshList>, 6 * 48> m_dentMeshList;
 };
 
 class MeshTileset

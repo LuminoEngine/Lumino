@@ -37,7 +37,7 @@ private:
     {
         //PointI points[9];
         int tileIds[9];
-        //int topTileIds[9];
+        //int piledTileIds[9];  // 面方向にひとつ進んだところにあるタイルID
     };
 
     static const Vec3I TopOffsets[6];
