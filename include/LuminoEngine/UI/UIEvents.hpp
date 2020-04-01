@@ -28,6 +28,8 @@ using UIEventType = int32_t;
 class UIEvents
 {
 public:
+	static const UIEventType	Default;	// 型を詳細説明する必要が無いもの
+
     /** GotFocusEvent イベントの識別子 (UIEventArgs) */
     static const UIEventType	GotFocusEvent;
 

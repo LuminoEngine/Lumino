@@ -1703,6 +1703,28 @@ void UITheme::buildLumitelier()
 
 	}
 
+	////--------------------------------
+	//// UITabBar
+	//{
+	//	if (auto s = sheet->obtainStyle(u"UITabBar")) {
+	//		s->backgroundColor = color(UIThemeConstantPalette::DefaultDivider);
+	//	}
+	//}
+
+	//--------------------------------
+	// UITabBarItem
+	{
+		if (auto s = sheet->obtainStyle(u"UITabBarItem")) {
+			s->minHeight = lineContentHeight();
+			s->padding = Thickness(spacing(2), 0);
+			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor);
+		}
+		if (auto s = sheet->obtainStyle(u"UITabBarItem:Selected")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+		}
+	}
+
+
 	m_styleSheet = sheet;
 }
 

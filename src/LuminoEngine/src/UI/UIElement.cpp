@@ -974,7 +974,6 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 		d->render(context, actualSize());
 	}
 
-	context->popState();	// TODO: scoped
 
 	// child elements
 	if (m_orderdVisualChildren) {
@@ -982,6 +981,8 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 			e->render(context, combinedTransform);
 		}
 	}
+
+	context->popState();	// TODO: scoped
 }
 
 void UIElement::onRoutedEvent(UIEventArgs* e)

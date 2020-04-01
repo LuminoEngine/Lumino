@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include "../Font/FontCore.hpp"
 #include "../Font/FontManager.hpp"
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
@@ -11,33 +12,93 @@ namespace ln {
 //==============================================================================
 // UIIcon
 
+Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName)
+{
+	return makeObject<UIIcon>(iconName);
+}
+
+Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName, int size)
+{
+	return makeObject<UIIcon>(iconName, size);
+}
+
+Ref<UIIcon> UIIcon::loadFontIcon(const StringRef& iconName, int size, const Color& color)
+{
+	return makeObject<UIIcon>(iconName, size, color);
+}
+
 UIIcon::UIIcon()
 	: m_font(nullptr)
 	, m_codePoint(0)
 {
 }
 
-void UIIcon::init()
+bool UIIcon::init()
 {
-    UIElement::init(nullptr);
+	if (!UIElement::init(nullptr)) return false;
+	setAlignments(HAlignment::Center, VAlignment::Center);
+	return true;
+}
+
+bool UIIcon::init(const StringRef& iconName)
+{
+	if (!init()) return false;
+	setIconName(iconName);
+	return true;
+}
+
+bool UIIcon::init(const StringRef& iconName, int size)
+{
+	if (!init()) return false;
+	setIconName(iconName);
+	setFontSize(size);
+	return true;
+}
+
+bool UIIcon::init(const StringRef& iconName, int size, const Color& color)
+{
+	if (!init()) return false;
+	setIconName(iconName);
+	setFontSize(size);
+	setTextColor(color);
+	return true;
 }
 
 void UIIcon::setIconName(const StringRef& value)
 {
     // TODO: size
-	m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Reguler", 25);
 	m_codePoint = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeCodePoint(value);
 }
 
 Size UIIcon::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-    // TODO:
-	return Size(27, 27);
+	// フォントアイコンの場合は setFontSize でサイズを指定できるようにする
+	float fontSize = finalStyle()->font->size();
+
+	if (!m_font) {
+		m_font = detail::EngineDomain::fontManager()->glyphIconFontManager()->getFontAwesomeFont(u"Reguler", fontSize);
+	}
+	if (m_font->size() != fontSize) {
+		m_font->setSize(fontSize);
+	}
+
+	detail::FontGlobalMetrics gm;
+	auto fc = detail::FontHelper::resolveFontCore(m_font, layoutContext->dpiScale());
+	fc->getGlobalMetrics(&gm);
+
+	Size areaSize = Size(gm.lineSpace, gm.lineSpace);
+
+	detail::FontGlyphMetrics metrics;
+	fc->getGlyphMetrics(m_codePoint, &metrics);
+	m_renderOffset.x = (areaSize.width - metrics.size.width) / 2;
+	m_renderOffset.y = (areaSize.height - metrics.size.height) / 2;
+
+	return areaSize;
 }
 
 void UIIcon::onRender(UIRenderingContext* context)
 {
-	context->drawChar(m_codePoint, finalStyle()->textColor, m_font);
+	context->drawChar(m_codePoint, finalStyle()->textColor, m_font, Matrix::makeTranslation(m_renderOffset.x, m_renderOffset.y, 0));
 }
 
 } // namespace ln

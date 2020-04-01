@@ -512,6 +512,7 @@ public:	// TODO: internal protected
 	Flags<detail::UISpecialElementFlags>& specialElementFlags() { return m_specialElementFlags; }
     void setLogicalParent(UIControl* parent) { m_logicalParent = parent; }
     UIControl* logicalParent() const { return m_logicalParent; }
+	template<class T> T* logicalParentAs() const { return static_cast<T*>(m_logicalParent); }
     void removeFromLogicalParent();
 	void attemptAddToPrimaryElement();
 
