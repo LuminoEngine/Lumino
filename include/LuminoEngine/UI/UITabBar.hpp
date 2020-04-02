@@ -65,16 +65,21 @@ class UITabBar2
 	: public UIControl
 {
 public:
+	/** SelectedTabChanged イベントの通知を受け取るコールバックを登録します。*/
+	Ref<EventConnection> connectOnSelectedTabChanged(Ref<UIGeneralEventHandler> handler);
+
 	//void addTab(UITabItem* item);
 	//void removeTab(UITabItem* item);
 	//void setSelectedTab(UITabItem* tab);
-	//UITabItem* selectedTab() const;
+	UITabBarItem2* selectedTab() const { return m_selectedTab; }
 
 LN_CONSTRUCT_ACCESS:
 	UITabBar2();
 	bool init();
 
 protected:
+	/** selectedTab が変更された時に呼び出されます。 */
+	virtual void onSelectedTabChanged(UIEventArgs* e);
 
 	const String& elementName() const override { static String name = u"UITabBar"; return name; }
 	void onAddChild(UIElement* child) override;
@@ -86,6 +91,7 @@ private:
 
 	Ref<UILayoutPanel2> m_itemsHostLayout;
 	UITabBarItem2* m_selectedTab;
+	Event<UIGeneralEventHandler> m_onSelectedTabChanged;
 
 	friend class UITabBarItem2;
 };

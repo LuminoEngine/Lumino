@@ -147,6 +147,16 @@ bool UITabBar2::init()
 	return true;
 }
 
+Ref<EventConnection> UITabBar2::connectOnSelectedTabChanged(Ref<UIGeneralEventHandler> handler)
+{
+	return m_onSelectedTabChanged.connect(handler);
+}
+
+void UITabBar2::onSelectedTabChanged(UIEventArgs* e)
+{
+	m_onSelectedTabChanged.raise(e);
+}
+
 void UITabBar2::onAddChild(UIElement* child)
 {
 	// TODO: dynamic_cast じゃなくてフラグで
@@ -158,6 +168,10 @@ void UITabBar2::onAddChild(UIElement* child)
 	child->m_logicalParent = this;
 
 	m_itemsHostLayout->addVisualChild(child);
+
+	if (!m_selectedTab) {
+		selectItem(item);
+	}
 }
 
 Size UITabBar2::measureOverride(UILayoutContext* context, const Size& constraint)
@@ -178,7 +192,6 @@ void UITabBar2::selectItem(UITabBarItem2* item)
 		UITabBarItem2* old = m_selectedTab;
 		m_selectedTab = item;
 	
-
 		if (old) {
 			old->getVisualStateManager()->gotoState(UIVisualStates::Unselected);
 			old->onSelectedChanged(UIEventArgs::create(this, UIEvents::Default));
@@ -187,6 +200,8 @@ void UITabBar2::selectItem(UITabBarItem2* item)
 			m_selectedTab->getVisualStateManager()->gotoState(UIVisualStates::Selected);
 			m_selectedTab->onSelectedChanged(UIEventArgs::create(this, UIEvents::Default));
 		}
+
+		onSelectedTabChanged(UIEventArgs::create(this, UIEvents::SelectionChanged));
 	}
 }
 

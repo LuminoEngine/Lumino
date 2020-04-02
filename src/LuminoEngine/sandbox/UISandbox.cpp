@@ -44,7 +44,7 @@ public:
 		Engine::ui()->addChild(mainLauout);
 
 		int margin = 8;
-#if 0
+#if 1
 		// Button
 		{
 			auto layout1 = makeObject<UIStackLayout>();
@@ -215,7 +215,6 @@ public:
 
 
 			auto tabbar1 = makeObject<UITabBar2>();
-			//tabbar1->setBackgroundColor(Color::AliceBlue);
 			layout1->addChild(tabbar1);
 
 			auto tab1 = makeObject<UITabBarItem2>();
@@ -238,6 +237,12 @@ public:
 			e2->setHeight(100);
 			e2->setBackgroundColor(UIColors::get(UIColorHues::Green, 3));
 			switch1->addChild(e2);
+
+			tab1->setData(makeVariant(e1));
+			tab2->setData(makeVariant(e2));
+			tabbar1->connectOnSelectedTabChanged([tabbar1, switch1](UIEventArgs* e) {
+				switch1->setActive(tabbar1->selectedTab()->data()->getAsObject<UIElement>());
+			});
 		}
     }
 

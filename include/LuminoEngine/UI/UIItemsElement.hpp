@@ -13,8 +13,8 @@ class UICollectionItem
 	: public UIControl
 {
 public:
-    void setData(Variant* value) { m_data = value; }
-    Variant* data() const { return m_data; }
+    //void setData(Variant* value) { m_data = value; }
+    //Variant* data() const { return m_data; }
     
     /** Click イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
@@ -38,7 +38,7 @@ private:
 	void setSelectedInternal(bool selected);
 
 	UIItemsControl* m_ownerCollectionControl;
-    Ref<Variant> m_data;
+    //Ref<Variant> m_data;
     bool m_isPressed;
 	bool m_isSelected;
     Event<UIClickEventHandler> m_onClick;
