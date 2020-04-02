@@ -34,8 +34,16 @@ struct MeshTile
 
 struct MeshTileFaceAdjacency
 {
-	bool buried[6]; // MeshTileFaceDirection
-	int tileIds[27];
+	enum State
+	{
+		BURIED = 0, // 面方向に接続しているが、全面埋まっており、描画は必要ない
+		//CONNECTED = 1,	// 面方向に接続しており、押し込みがあるため描画が必要
+		OPEN = 2,	// 通常描画
+	};
+
+
+	State state[6]; // MeshTileFaceDirection
+	//int tileIds[27];
 };
 
 } // namespace detail

@@ -45,9 +45,11 @@ private:
     bool isValidIndex(int x, int y, int z) const { return (0 <= x && x < m_sizeX) && (0 <= y && y < m_sizeY) && (0 <= z && z < m_sizeZ); }
     detail::MeshTile& tile(int x, int y, int z) { return m_tiles[((m_sizeX * m_sizeY) * z) + (m_sizeX * y) + x]; }
     const detail::MeshTile& tile(int x, int y, int z) const { return m_tiles[((m_sizeX * m_sizeY) * z) + (m_sizeX * y) + x]; }
+    int getGBIDSafe(int x, int y, int z) const { return isValidIndex(x, y, z) ? tile(x, y, z).tileId : -1; }
     void refreshAutoTile(int x, int y, int z);
     void refreshAutoTileFace(int x, int y, int z, MeshTileFaceDirection dir);
     void makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceDirection dir, AutoTileNearbyInfo* outInfo) const;
+    int getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId) const;
 
     void draw(RenderingContext* context, MeshTileset* tileset);
 

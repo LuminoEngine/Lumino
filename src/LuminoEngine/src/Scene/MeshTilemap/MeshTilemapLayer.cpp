@@ -106,53 +106,24 @@ void MeshTilemapLayer::refreshAutoTile(int x, int y, int z)
 void MeshTilemapLayer::refreshAutoTileFace(int x, int y, int z, MeshTileFaceDirection dir)
 {
 	auto& tileInfo = tile(x, y, z);
-
-	AutoTileNearbyInfo nearbyInfo;
-	makeAutoTileNearbyInfo(x, y, z, dir, &nearbyInfo);
-
 	int autotileKindId = MeshTileset::autoTileKindId(tileInfo.tileId);
 
-	//int localTileId = MeshTileset::autoTileLocalId(tileId);
 
-	bool equals[9];
-	for (int i = 0; i < 9; i++) {
-		// -1(範囲外) は同一種類とする
-		equals[i] = (nearbyInfo.tileIds[i] < 0) || (MeshTileset::autoTileKindId(nearbyInfo.tileIds[i]) == autotileKindId);
+
+	auto& topOffset = MeshTilemapLayer::TopOffsets[(int)dir];
+
+	if (MeshTileset::autoTileKindId(getGBIDSafe(x + topOffset.x, y + topOffset.y, z + topOffset.z)) == autotileKindId) {
+		// 面方向に同一種類のブロックが存在している
+		AutoTileNearbyInfo nearbyInfo;
+		//makeAutoTileNearbyInfo(x + topOffset.x, y + topOffset.y, z + topOffset.z, dir, &nearbyInfo);
+		makeAutoTileNearbyInfo(x, y, z, dir, &nearbyInfo);
+		tileInfo.faceTileId[static_cast<int>(dir)] = getAutoBlockLocalIdFromNearbyInfo(nearbyInfo, autotileKindId) + MeshTileset::PiledAutoBlockOffset;
 	}
-
-	// 四隅の種類を確定する
-	int subtiles[4] = { 0, 0, 0, 0 };
-	const int checkIdxs[4][3] = { { 0, 3, 1 }, { 2, 5, 1 }, { 6, 3, 7 }, { 8, 5, 7 }, };	// [対角,横,縦]
-	for (int i = 0; i < 4; i++) {
-		const int* checkIdx = checkIdxs[i];
-		if (!equals[checkIdx[1]] || !equals[checkIdx[2]]) {
-			if (!equals[checkIdx[1]] && !equals[checkIdx[2]])
-				subtiles[i] = 5;
-			else if (equals[checkIdx[2]])
-				subtiles[i] = 4;
-			else
-				subtiles[i] = 3;
-		}
-		else if (!equals[checkIdx[0]])
-			subtiles[i] = 2;
-		else
-			subtiles[i] = 1;
+	else {
+		AutoTileNearbyInfo nearbyInfo;
+		makeAutoTileNearbyInfo(x, y, z, dir, &nearbyInfo);
+		tileInfo.faceTileId[static_cast<int>(dir)] = getAutoBlockLocalIdFromNearbyInfo(nearbyInfo, autotileKindId);
 	}
-
-	// subtiles が一致するものを線形で検索
-	int newLocalTileId = -1;
-	for (int i = 0; i < MeshTileset::AutoTileUnitStride; i++) {
-		const auto& info = MeshTileset::AutoTileTable[i];
-		if (info.subtiles[0] == subtiles[0] &&
-			info.subtiles[1] == subtiles[1] &&
-			info.subtiles[2] == subtiles[2] &&
-			info.subtiles[3] == subtiles[3]) {
-			newLocalTileId = i;
-		}
-	}
-	if (LN_REQUIRE(newLocalTileId >= 0)) return;
-
-	tileInfo.faceTileId[static_cast<int>(dir)] = newLocalTileId;////MeshTileset::localIdToGlobalId(newLocalTileId, autotileKindId);
 }
 
 void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceDirection dir, AutoTileNearbyInfo* outInfo) const
@@ -249,6 +220,52 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 	
 }
 
+// 0~47
+int MeshTilemapLayer::getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId) const
+{
+	//int localTileId = MeshTileset::autoTileLocalId(tileId);
+
+	bool equals[9];
+	for (int i = 0; i < 9; i++) {
+		// -1(マップ範囲外) は同一種類とする
+		equals[i] = (nearbyInfo.tileIds[i] < 0) || (MeshTileset::autoTileKindId(nearbyInfo.tileIds[i]) == autoBlockKindId);
+	}
+
+	// 四隅の種類を確定する
+	int subtiles[4] = { 0, 0, 0, 0 };
+	const int checkIdxs[4][3] = { { 0, 3, 1 }, { 2, 5, 1 }, { 6, 3, 7 }, { 8, 5, 7 }, };	// [対角,横,縦]
+	for (int i = 0; i < 4; i++) {
+		const int* checkIdx = checkIdxs[i];
+		if (!equals[checkIdx[1]] || !equals[checkIdx[2]]) {
+			if (!equals[checkIdx[1]] && !equals[checkIdx[2]])
+				subtiles[i] = 5;
+			else if (equals[checkIdx[2]])
+				subtiles[i] = 4;
+			else
+				subtiles[i] = 3;
+		}
+		else if (!equals[checkIdx[0]])
+			subtiles[i] = 2;
+		else
+			subtiles[i] = 1;
+	}
+
+	// subtiles が一致するものを線形で検索
+	int newLocalTileId = -1;
+	for (int i = 0; i < MeshTileset::AutoTileUnitStride; i++) {
+		const auto& info = MeshTileset::AutoTileTable[i];
+		if (info.subtiles[0] == subtiles[0] &&
+			info.subtiles[1] == subtiles[1] &&
+			info.subtiles[2] == subtiles[2] &&
+			info.subtiles[3] == subtiles[3]) {
+			newLocalTileId = i;
+		}
+	}
+	if (LN_REQUIRE(newLocalTileId >= 0)) return -1;
+
+	return newLocalTileId;
+}
+
 static int g_frames = 0;
 
 void MeshTilemapLayer::draw(RenderingContext* context, MeshTileset* tileset)
@@ -266,28 +283,38 @@ void MeshTilemapLayer::draw(RenderingContext* context, MeshTileset* tileset)
 
 				const detail::MeshTile& t = tile(x, y, z);
 
+				if (t.tileId > 0) {
 
-				detail::MeshTileFaceAdjacency adjacency;
-				for (int iFace = 0; iFace < 6; iFace++) {
-					adjacency.buried[iFace] = false;
-					int cx = x + TopOffsets[iFace].x;
-					int cy = y + TopOffsets[iFace].y;
-					int cz = z + TopOffsets[iFace].z;
-					if (isValidIndex(cx, cy, cz)) {
-						if (MeshTileset::autoTileKindId(t.tileId) == MeshTileset::autoTileKindId(tile(cx, cy, cz).tileId)) {
+					detail::MeshTileFaceAdjacency adjacency;
+					for (int iFace = 0; iFace < 6; iFace++) {
+						adjacency.state[iFace] = detail::MeshTileFaceAdjacency::OPEN;
 
-							adjacency.buried[iFace] = true;
+						int autoKID = MeshTileset::autoTileKindId(t.tileId);
+						auto& autotileset = tileset->autotileSet(autoKID);
+
+						//if (!autotileset->beveled[iFace]) {
+						int cx = x + TopOffsets[iFace].x;
+						int cy = y + TopOffsets[iFace].y;
+						int cz = z + TopOffsets[iFace].z;
+						if (isValidIndex(cx, cy, cz)) {
+							if (autoKID == MeshTileset::autoTileKindId(tile(cx, cy, cz).tileId)) {
+								adjacency.state[iFace] = detail::MeshTileFaceAdjacency::BURIED;
+							}
 						}
+						//}
+						//else {
+
+						//}
 					}
+
+
+
+
+
+					//context->setBaseTransfrom(Matrix::makeTranslation(x, y, z));
+					tileset->drawTile(context, t, adjacency, Matrix::makeTranslation(x, y, z), g_frames / 20);
+					//return;	// TODO: test
 				}
-
-
-
-
-
-				//context->setBaseTransfrom(Matrix::makeTranslation(x, y, z));
-				tileset->drawTile(context, t, adjacency, Matrix::makeTranslation(x, y, z), g_frames / 20);
-				//return;	// TODO: test
 			}
 		}
 	}

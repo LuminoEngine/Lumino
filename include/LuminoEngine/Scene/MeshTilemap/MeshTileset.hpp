@@ -15,6 +15,8 @@ class MeshAutoTileset
 	: public Object
 {
 public:
+	bool beveled[6];
+
 	void setMaterial(Material* value);
 	void setAnimationFrames(int value) { m_animationFrameCount = value; }
 
@@ -64,9 +66,12 @@ public:
 	static const int LocalAutoTileIdSlopeOffset = 96;
 	static const AutoTileInfo AutoTileTable[48];
 
+	static const int PiledAutoBlockOffset = 100;
+
 	static int autoTileKindId(int tileId) { return (tileId < AutoTileOffset) ? -1 : ((tileId - AutoTileOffset) / AutoTileSetStride); }
 	static int localIdToGlobalId(int localTileId, int autotileKind) { return AutoTileSetStride * autotileKind + localTileId + AutoTileOffset; }
 
+	const Ref<MeshAutoTileset>& autotileSet(int akid) const { return m_autotileSet[akid]; }
 
 LN_CONSTRUCT_ACCESS:
     MeshTileset();

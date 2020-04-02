@@ -24,6 +24,7 @@ MeshAutoTileset::MeshAutoTileset()
 void MeshAutoTileset::init()
 {
 	Object::init();
+	for (int i = 0; i < 6; i++) beveled[i] = false;
 }
 
 void MeshAutoTileset::setMaterial(Material* value)
@@ -154,6 +155,11 @@ void MeshAutoTileset::buildFloor()
 
 void MeshAutoTileset::buildFloorAndSlopeWall()
 {
+	beveled[(int)MeshTileFaceDirection::XMinus] = true;
+	beveled[(int)MeshTileFaceDirection::XPlus] = true;
+	beveled[(int)MeshTileFaceDirection::ZMinus] = true;
+	beveled[(int)MeshTileFaceDirection::ZPlus] = true;
+
 	auto* tex = m_material->mainTexture();
 
 	detail::MeshAutoTilesetUVMapper uvMapper(
@@ -163,19 +169,25 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
 
 
-	float slopeMargin = 0.2;
-	float slopeMarginHalf = slopeMargin / 2;
+	float m = 0.2;
+	float mh = m / 2;
 
 
 
 	int offsetV = 0;
 	int offsetI = 0;
 
-	auto putSquare = [&](Vertex p0, Vertex p1, Vertex p2, Vertex p3, const Matrix& rot, const Vector3& offset) {
-		m_mesh->setVertex(offsetV + 0, Vertex{ Vector3::transformCoord(p0.position, rot) + offset, Vector3::transformCoord(p0.normal, rot), p0.uv, Color::White });
-		m_mesh->setVertex(offsetV + 1, Vertex{ Vector3::transformCoord(p1.position, rot) + offset, Vector3::transformCoord(p1.normal, rot), p1.uv, Color::White });
-		m_mesh->setVertex(offsetV + 2, Vertex{ Vector3::transformCoord(p2.position, rot) + offset, Vector3::transformCoord(p2.normal, rot), p2.uv, Color::White });
-		m_mesh->setVertex(offsetV + 3, Vertex{ Vector3::transformCoord(p3.position, rot) + offset, Vector3::transformCoord(p3.normal, rot), p3.uv, Color::White });
+	struct Vert
+	{
+		Vector3 pos;
+		Vector2 uv;
+	};
+
+	auto putSquare = [&](Vert p0, Vert p1, Vert p2, Vert p3, const Rect& uvRect, const Matrix& rot, const Vector3& offset) {
+		m_mesh->setVertex(offsetV + 0, Vertex{ Vector3::transformCoord(p0.pos, rot) + offset, Vector3::UnitZ, uvRect.getPointByRatio(p0.uv), Color::White });
+		m_mesh->setVertex(offsetV + 1, Vertex{ Vector3::transformCoord(p1.pos, rot) + offset, Vector3::UnitZ, uvRect.getPointByRatio(p1.uv), Color::White });
+		m_mesh->setVertex(offsetV + 2, Vertex{ Vector3::transformCoord(p2.pos, rot) + offset, Vector3::UnitZ, uvRect.getPointByRatio(p2.uv), Color::White });
+		m_mesh->setVertex(offsetV + 3, Vertex{ Vector3::transformCoord(p3.pos, rot) + offset, Vector3::UnitZ, uvRect.getPointByRatio(p3.uv), Color::White });
 		m_mesh->setIndex(offsetI + 0, offsetV + 0);
 		m_mesh->setIndex(offsetI + 1, offsetV + 1);
 		m_mesh->setIndex(offsetI + 2, offsetV + 2);
@@ -217,90 +229,83 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft);
 				int t = info.subtiles[0];
 				if (t == 1 || t == 2) {	// 2=平面と斜面の接合
-					// 平面
-					putSquare(
-						Vertex{ Vector3(-0.5, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.0, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
+					putSquare(	// 平面
+						{ Vector3(-0.5, 0.5, mh), Vector2(0, 0) },
+						{ Vector3( 0.0, 0.5, mh), Vector2(1, 0) },
+						{ Vector3(-0.5, 0.0, mh), Vector2(0, 1) },
+						{ Vector3( 0.0, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
 				}
 				else if (t == 3) {
-					// 斜面・側面接合
-					putSquare(
-						Vertex{ Vector3(-0.5, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
+					putSquare(	// 斜面・側面接合
+						{ Vector3(-0.5, 0.5, m), Vector2(0, 0) },
+						{ Vector3( 0.0, 0.5, m), Vector2(1, 0) },
+						{ Vector3(-0.5, 0.0, mh), Vector2(0, 1) },
+						{ Vector3( 0.0, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
 				}
 				else if (t == 4) {
-					// 平面上接合
-					putSquare(
-						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
+					putSquare(	// 平面上接合
+						{ Vector3(-0.5 + mh, 0.5, mh), Vector2(0, 0) },
+						{ Vector3( 0.0 + mh, 0.5, mh), Vector2(1, 0) },
+						{ Vector3(-0.5 + mh, 0.0, mh), Vector2(0, 1) },
+						{ Vector3( 0.0 + mh, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
 				}
 				else if (t == 5) {
-					// 角
-					putSquare(
-						Vertex{ Vector3(-0.5 + slopeMargin, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
-				}
-				else {
-					LN_UNREACHABLE();
+					putSquare(	// 角
+						{ Vector3(-0.5 + m, 0.5, m), Vector2(0, 0) },
+						{ Vector3( 0.0, 0.5, m), Vector2(1, 0) },
+						{ Vector3(-0.5 + mh, 0.0, mh), Vector2(0, 1) },
+						{ Vector3( 0.0, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
 				}
 			}
-
 			// [top-right]
 			{
 				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight);
 				int t = info.subtiles[1];
 				if (t == 1 || t == 2) {
 					putSquare(
-						Vertex{ Vector3(0.0, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.5, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
+						{ Vector3(0.0, 0.5, mh), Vector2(0, 0) },
+						{ Vector3(0.5, 0.5, mh), Vector2(1, 0) },
+						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
+						{ Vector3(0.5, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
 				}
 				else if (t == 3) {
 					putSquare(
-						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.5, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
+						{ Vector3(0.0, 0.5, m), Vector2(0, 0) },
+						{ Vector3(0.5, 0.5, m), Vector2(1, 0) },
+						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
+						{ Vector3(0.5, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
 				}
 				else if (t == 4) {
 					putSquare(
-						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.5 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
+						{ Vector3(0.0 + mh, 0.5, mh), Vector2(0, 0) },
+						{ Vector3(0.5 + mh, 0.5, mh), Vector2(1, 0) },
+						{ Vector3(0.0 + mh, 0.0, mh), Vector2(0, 1) },
+						{ Vector3(0.5 + mh, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
 				}
 				else if (t == 5) {
 					putSquare(
-						Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.5 - slopeMargin, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.5 - slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform,  offset);
+						{ Vector3(0.0, 0.5, m), Vector2(0, 0) },
+						{ Vector3(0.5 - m, 0.5, m), Vector2(1, 0) },
+						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
+						{ Vector3(0.5 - mh, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform,  offset);
 				}
 				else {
 					LN_UNREACHABLE();
 				}
 			}
 
-			m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
-			setInstancedMeshList((int)dir, i, false, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
-
+			if (offsetI > startIndex) {
+				m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
+				setInstancedMeshList((int)dir, i, false, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
+			}
 		}
 	}
 
@@ -314,55 +319,53 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 			const auto& info = MeshTileset::AutoTileTable[i];
 			int startIndex = offsetI;
 
-			// 作るMesh は Z=0で ZPlus をベースとし、Tile の中央が (0,0,0)
-
 			// [top-left]
 			{
 				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft);
 				int t = info.subtiles[0];
-				//if (t == 1 || t == 2) {	// 2=平面と斜面の接合
-					// 平面
+				if (t == 1) {	// No draw.
+				}
+				else if (t == 2) {	// No draw.
+				}
+				else if (t == 3) {
 					putSquare(
-						Vertex{ Vector3(-0.5, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
-						Vertex{ Vector3(0.0, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
-						Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-						Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-						transform, offset);
-				//}
-				//else if (t == 3) {
-				//	// 斜面・側面接合
-				//	putSquare(
-				//		Vertex{ Vector3(-0.5, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
-				//		Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
-				//		Vertex{ Vector3(-0.5, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-				//		Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-				//		transform, offset);
-				//}
-				//else if (t == 4) {
-				//	// 平面上接合
-				//	putSquare(
-				//		Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopLeft() },
-				//		Vertex{ Vector3(0.0 + slopeMarginHalf, 0.5, slopeMarginHalf), Vector3::UnitZ, uvRect.getTopRight() },
-				//		Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-				//		Vertex{ Vector3(0.0 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-				//		transform, offset);
-				//}
-				//else if (t == 5) {
-				//	// 角
-				//	putSquare(
-				//		Vertex{ Vector3(-0.5 + slopeMargin, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopLeft() },
-				//		Vertex{ Vector3(0.0, 0.5, slopeMargin), Vector3::UnitZ, uvRect.getTopRight() },
-				//		Vertex{ Vector3(-0.5 + slopeMarginHalf, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomLeft() },
-				//		Vertex{ Vector3(0.0, 0.0, slopeMarginHalf), Vector3::UnitZ, uvRect.getBottomRight() },
-				//		transform, offset);
-				//}
-				//else {
-				//	LN_UNREACHABLE();
-				//}
+						{ Vector3(-0.5, 0.5, m), Vector2(0, 0) },
+						{ Vector3(0.0, 0.5, m), Vector2(1, 0) },
+						{ Vector3(-0.5, 0.0, mh), Vector2(0, 1) },
+						{ Vector3(0.0, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {	// No draw.
+				}
+			}
+			// [top-right]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight);
+				int t = info.subtiles[1];
+				if (t == 1) {	// No draw.
+				}
+				else if (t == 2) {	// No draw.
+				}
+				else if (t == 3) {
+					putSquare(
+						{ Vector3(0.0, 0.5, m), Vector2(0, 0) },
+						{ Vector3(0.5, 0.5, m), Vector2(1, 0) },
+						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
+						{ Vector3(0.5, 0.0, mh), Vector2(1, 1) },
+						uvRect, transform, offset);
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {	// No draw.
+				}
 			}
 
-			m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
-			setInstancedMeshList((int)dir, i, true, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
+			if (offsetI > startIndex) {
+				m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
+				setInstancedMeshList((int)dir, i, true, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
+			}
 
 		}
 	}
@@ -408,8 +411,10 @@ void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::Mesh
 	}
 
 	for (int d = 0; d < 6; d++) {
-		if (!adjacency.buried[d]) {
-			auto* batch = instancedMeshList(d, tile.faceTileId[d], false);
+
+		if (tile.faceTileId[d] >= MeshTileset::PiledAutoBlockOffset) {
+			int lid = tile.faceTileId[d] - MeshTileset::PiledAutoBlockOffset;
+			auto* batch = instancedMeshList(d, lid, true);
 			if (batch) {
 				batch->setTransform(transform);
 				batch->setUVOffset(uvOffset);
@@ -417,13 +422,20 @@ void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::Mesh
 			}
 		}
 		else {
-			auto* batch = instancedMeshList(d, tile.faceTileId[d], true);
+			auto* batch = instancedMeshList(d, tile.faceTileId[d], false);
 			if (batch) {
 				batch->setTransform(transform);
 				batch->setUVOffset(uvOffset);
 				batch->drawMesh();
 			}
 		}
+
+
+
+		//if (adjacency.state[d] == detail::MeshTileFaceAdjacency::OPEN) {
+		//}
+		//else if (adjacency.state[d] == detail::MeshTileFaceAdjacency::CONNECTED) {
+		//}
 	}
 }
 
