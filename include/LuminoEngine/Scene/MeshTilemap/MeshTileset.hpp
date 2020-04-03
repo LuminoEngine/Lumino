@@ -11,6 +11,7 @@ enum class PredefinedMeshAutoTilesetMesh
 	Wall,	// 壁
 };
 
+
 class MeshAutoTileset
 	: public Object
 {

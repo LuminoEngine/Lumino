@@ -11,6 +11,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 
 //#include <simpleboolean/meshoperator.h>
+#include "VoxelmapMesh.hpp"
 
 namespace ln {
 
@@ -167,11 +168,74 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 		Size(tex->width(), tex->height()), Rect(0, 0, tex->width(), tex->height()), detail::MeshAutoTilesetUVMapper::Format::MVWithWall);
 
 
-	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
-
 
 	float m = 0.2;
 	float mh = m / 2;
+
+#if 1
+	detail::VoxelmapMeshBuilder builder;
+
+	MeshTileFaceDirection sideDirs[4] = {
+		MeshTileFaceDirection::XMinus,
+		MeshTileFaceDirection::XPlus,
+		MeshTileFaceDirection::ZMinus,
+		MeshTileFaceDirection::ZPlus };
+	for (int iFaceDir = 0; iFaceDir < 4; iFaceDir++) {
+		MeshTileFaceDirection dir = sideDirs[iFaceDir];
+
+		for (int i = 0; i < 48; i++) {
+			builder.beginSection(dir, i, detail::VoxelMeshFaceKind::Convex);
+
+			const auto& info = MeshTileset::AutoTileTable[i];
+			// [top-left]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[0];
+				if (t == 1 || t == 2) {
+					builder.putSquare({ -0.5f, 0.5f, mh }, { 0.0f, 0.5f, mh }, { -0.5f, 0.0f, mh }, { 0.0f, 0.0f, mh });
+				}
+				else if (t == 3) {
+					builder.putSquare({ -0.5f, 0.5f, m }, { 0.0f, 0.5f, m }, { -0.5f, 0.0f, mh }, { 0.0f, 0.0f, mh });
+				}
+				else if (t == 4) {
+					builder.putSquare({ -0.5f + mh, 0.5f, mh }, { 0.0f + mh, 0.5f, mh }, { -0.5f + mh, 0.0f, m }, { 0.0f + mh, 0.0f, mh });
+				}
+				else if (t == 5) {
+					builder.putSquare({ -0.5f + m, 0.5f, m }, { 0.0f, 0.5, m }, { -0.5f + mh, 0.0f, mh }, { 0.0f, 0.0f, mh });
+				}
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft));
+			}
+			// [top-right]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[1];
+				if (t == 1 || t == 2) {
+					builder.putSquare({ 0.0f, 0.5f, mh }, { 0.5f, 0.5f, mh }, { 0.0f, 0.0f, mh }, { 0.5f, 0.0f, mh });
+				}
+				else if (t == 3) {
+					builder.putSquare({ 0.0f, 0.5f, m }, { 0.5f, 0.5f, m }, { 0.0f, 0.0f, mh }, { 0.5f, 0.0f, mh });
+				}
+				else if (t == 4) {
+					builder.putSquare({ 0.0f + mh, 0.5f, mh }, { 0.5f + mh, 0.5f, mh }, { 0.0f + mh, 0.0f, mh }, { 0.5f + mh, 0.0f, mh });
+				}
+				else if (t == 5) {
+					builder.putSquare({ 0.0f, 0.5f, m }, { 0.5f - m, 0.5f, m }, { 0.0, 0.0, mh }, { 0.5f - mh, 0.0f, mh });
+				}
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight));
+			}
+
+			builder.endSection();
+		}
+	}
+
+	builder.build();
+	m_mesh = builder.mesh();
+	m_meshList = builder.convexMeshList();
+	m_dentMeshList = builder.concaveMeshList();
+
+#else
+	m_mesh = makeObject<Mesh>((4 * 4 * 48) * 6, (6 * 4 * 48) * 6);
+
 
 
 
@@ -579,6 +643,7 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 
 		}
 	}
+#endif
 }
 
 void MeshAutoTileset::resetBatch()
