@@ -114,7 +114,7 @@ public:
 	MeshAutoTilesetUVMapper(const Size& textureSize, const Rect& sourceRect, Format format);
 
 	// 
-	Rect getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtileCorner corner) const;
+	Rect getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtileCorner corner, bool beveled = false) const;
 
 private:
 	Format m_format;

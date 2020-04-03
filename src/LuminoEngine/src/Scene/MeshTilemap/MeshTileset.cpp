@@ -322,7 +322,7 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 
 			// [top-left]
 			{
-				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft);
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft, true);
 				int t = info.subtiles[0];
 				if (t == 1) {	// No draw.
 				}
@@ -343,7 +343,7 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 			}
 			// [top-right]
 			{
-				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight);
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight, true);
 				int t = info.subtiles[1];
 				if (t == 1) {	// No draw.
 				}
@@ -673,31 +673,30 @@ MeshAutoTilesetUVMapper::MeshAutoTilesetUVMapper(const Size& textureSize, const 
 	}
 }
 
-Rect MeshAutoTilesetUVMapper::getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtileCorner corner) const
+Rect MeshAutoTilesetUVMapper::getUVRectFromLocalId(MeshTileFaceDirection direction, int autotileLocalId, SubtileCorner corner, bool beveled) const
 {
+	const MeshTileset::AutoTileInfo* info = (beveled) ? &MeshTileset::PiledAutoTileTable[autotileLocalId] : &MeshTileset::AutoTileTable[autotileLocalId];
+	
+
 	if (m_format == Format::XP) {
-		const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
-		int index_tl = g_AutoTileSourcePosTable_TkoolXP[corner][info.subtiles[corner]];
+		int index_tl = g_AutoTileSourcePosTable_TkoolXP[corner][info->subtiles[corner]];
 		auto offset = Vector2(m_subtileUVSize.x * (index_tl % 6), m_subtileUVSize.y * (index_tl / 6));
 		return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 	}
 	else if (m_format == Format::MVWithWall) {
 		if (direction == MeshTileFaceDirection::YPlus || direction == MeshTileFaceDirection::YMinus) {
-			const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
-			int index_tl = g_AutoTileSourcePosTable_MVFloor[corner][info.subtiles[corner]];
+			int index_tl = g_AutoTileSourcePosTable_MVFloor[corner][info->subtiles[corner]];
 			auto offset = Vector2(m_subtileUVSize.x * (index_tl % 4), m_subtileUVSize.y * (index_tl / 4));
 			return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 		}
 		else {
-			const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
-			int index_tl = g_AutoTileSourcePosTable_MVWall[corner][info.subtiles[corner]];
+			int index_tl = g_AutoTileSourcePosTable_MVWall[corner][info->subtiles[corner]];
 			auto offset = Vector2(m_subtileUVSize.x * (index_tl % 4), m_subtileUVSize.y * (index_tl / 4));
 			return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 		}
 	}
 	else if (m_format == Format::MVFloor) {
-		const auto& info = MeshTileset::AutoTileTable[autotileLocalId];
-		int index_tl = g_AutoTileSourcePosTable_MVFloor[corner][info.subtiles[corner]];
+		int index_tl = g_AutoTileSourcePosTable_MVFloor[corner][info->subtiles[corner]];
 		auto offset = Vector2(m_subtileUVSize.x * (index_tl % 4), m_subtileUVSize.y * (index_tl / 4));
 		return Rect(offset.x, offset.y, m_subtileUVSize.x, m_subtileUVSize.y);
 	}
