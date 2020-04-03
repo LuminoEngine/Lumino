@@ -334,12 +334,43 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 						uvRect, transform, offset);
 				}
 				else if (t == 2) {
+					// TODO: 重なってるのでよくない
+					putSquare(
+						{ Vector3(-0.5, 0.5 - m, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0, 0.5 - m, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5, 0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, 0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
+					putSquare(
+						{ Vector3(-0.5 + m, 0.5, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.0,     0.5, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + m, 0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.0,     0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 3) {
+					putSquare(
+						{ Vector3(-0.5, 0.5 - m, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0, 0.5 - m, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5, 0.0,     0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, 0.0,     0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 4) {
+					putSquare(
+						{ Vector3(-0.5 + m, 0.5, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0,     0.5, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + m, 0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0,     0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 5) {
+					putSquare(
+						{ Vector3(-0.5 + m, 0.5 - m, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0,     0.5 - m, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + m, 0.0,     0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0,     0.0,     0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 			}
 			// [top-right]
@@ -355,12 +386,36 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 						uvRect, transform, offset);
 				}
 				else if (t == 2) {
+					putSquare(
+						{ Vector3(0.0,     0.5 - m, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 - m, 0.5 - m, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0,     0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 - m, 0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 3) {
+					putSquare(
+						{ Vector3(0.0, 0.5 - m, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5, 0.5 - m, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0, 0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5, 0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 4) {
+					putSquare(
+						{ Vector3(0.0,     0.5, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 - m, 0.5, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0,     0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 - m, 0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 5) {
+					putSquare(
+						{ Vector3(0.0,     0.5 - m, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 - m, 0.5 - m, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0,     0.0,     0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 - m, 0.0,     0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 			}
 			// [bottom-left]
@@ -379,12 +434,36 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 					//auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_BottomLeft);
 				}
 				else if (t == 2) {
+					putSquare(
+						{ Vector3(-0.5 + m,  0.0, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0,      0.0, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + m, -0.5 + m, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0,     -0.5 + m, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 3) {
+					putSquare(
+						{ Vector3(-0.5,  0.0,     0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0,  0.0,     0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5, -0.5 + m, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, -0.5 + m, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 4) {
+					putSquare(
+						{ Vector3(-0.5 + m,  0.0, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0,      0.0, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + m, -0.5, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0,     -0.5, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 5) {
+					putSquare(
+						{ Vector3(-0.5 + m,  0.0,     0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0,      0.0,     0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + m, -0.5 + m, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0,     -0.5 + m, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 			}
 			// [bottom-right]
@@ -400,12 +479,36 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 						uvRect, transform, offset);
 				}
 				else if (t == 2) {
+					putSquare(
+						{ Vector3(0.0,      0.0,     0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 - m,  0.0,     0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0,     -0.5 + m, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 - m, -0.5 + m, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 3) {
+					putSquare(
+						{ Vector3(0.0,  0.0,     0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5,  0.0,     0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0, -0.5 + m, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5, -0.5 + m, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 4) {
+					putSquare(
+						{ Vector3(0.0,      0.0, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 - m,  0.0, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0,     -0.5, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 - m, -0.5, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 				else if (t == 5) {
+					putSquare(
+						{ Vector3(0.0,      0.0,     0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 - m,  0.0,     0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0,     -0.5 + m, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 - m, -0.5 + m, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
 				}
 			}
 
