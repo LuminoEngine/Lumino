@@ -28,16 +28,24 @@ public:
 
 	void beginSection(MeshTileFaceDirection dir, int autovoxelLocalId, VoxelMeshFaceKind faceKind);
 	void endSection();
-	void projectUV(const Rect& uvRect);
 
+
+
+	void beginSubtile();
+	void endSubtile();
 	// 四角形を生成する。向きは Z+。中心 (0,0,0) で作ること。
 	// Subtile の begin/end は不要
 	void putSquare(const Vector3& p0, const Vector2& uv0, const Vector3& p1, const Vector2& uv1, const Vector3& p2, const Vector2& uv2, const Vector3& p3, const Vector2& uv3);
 	void putSquare(const Vector3& p0, const Vector3& p1,  const Vector3& p2, const Vector3& p3);
 
-	void beginSubtile();
-	void endSubtile();
 	void putSquareChamfer(float l, float t, float r, float b, SubtileCorner corner, float depth);
+
+	void projectUV(const Rect& uvRect);
+
+
+	// postprocess
+	void applyTileCenterMagnitude();
+
 
 	void build();
 	const Ref<Mesh>& mesh() const { return m_mesh; }

@@ -171,6 +171,7 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 
 	float m = 0.2;
 	float mh = m / 2;
+	//float mag = 0.1;
 
 #if 1
 	detail::VoxelmapMeshBuilder builder;
@@ -221,6 +222,62 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 			builder.endSection();
 		}
 	}
+
+	for (int iFaceDir = 0; iFaceDir < 4; iFaceDir++) {
+		MeshTileFaceDirection dir = sideDirs[iFaceDir];
+
+		for (int i = 0; i < 48; i++) {
+			builder.beginSection(dir, i, detail::VoxelMeshFaceKind::Concave);
+			const auto& info = MeshTileset::PiledAutoTileTable[i];
+
+			// [top-left]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[0];
+				if (t == 1) {	// No draw.
+				}
+				else if (t == 2) {
+				}
+				else if (t == 3) {
+					builder.putSquare(
+						Vector3(-0.5, 0.5, m), Vector2(0.0, 0.0),
+						Vector3(-0.5 + m, 0.5, m), Vector2(m, 0.0),
+						Vector3(-0.5, 0.0, mh), Vector2(0.0, 1.0),
+						Vector3(-0.5 + mh, 0.0, mh), Vector2(mh, 1.0));
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {
+				}
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft, true));
+				builder.endSubtile();
+			}
+			// [top-right]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[1];
+				if (t == 1) {	// No draw.
+				}
+				else if (t == 2) {	// No draw.
+				}
+				else if (t == 3) {
+					builder.putSquare(
+						Vector3(0.5 - m, 0.5, m), Vector2(0, 0.0),
+						Vector3(0.5, 0.5, m), Vector2(1.0, 0.0),
+						Vector3(0.5 - mh, 0.0, mh), Vector2(0, 1.0),
+						Vector3(0.5, 0.0, mh), Vector2(1.0, 1.0));
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {	// No draw.
+				}
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight, true));
+				builder.endSubtile();
+			}
+			builder.endSection();
+		}
+	}
+
 	//builder.putSquare({ }, { }, { }, { });
 	// 天板
 	{
@@ -320,6 +377,7 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 		}
 	}
 
+	builder.applyTileCenterMagnitude();
 	builder.build();
 	m_mesh = builder.mesh();
 	m_meshList = builder.convexMeshList();
@@ -916,7 +974,7 @@ void MeshTileset::init()
 
 	//}
 
-	auto tex = Texture2D::load(u"autotile2");
+	auto tex = Texture2D::load(u"autotile3");
 	m_material = Material::create(tex);
 	m_material->shadingModel = ShadingModel::Unlit;
 	m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));

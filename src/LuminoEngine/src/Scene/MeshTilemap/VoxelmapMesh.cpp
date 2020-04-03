@@ -128,6 +128,29 @@ void VoxelmapMeshBuilder::projectUV(const Rect& uvRect)
 	}
 }
 
+void VoxelmapMeshBuilder::applyTileCenterMagnitude()
+{
+	float mag = 0.025;
+	for (auto& v : m_vertices) {
+		auto pos = v.position;
+		{
+			float sign = (std::fmodf(pos.x, 1.0f) > 0.5f) ? 1 : -1;
+			float r = Math::clamp01(std::abs(std::fmodf(pos.x, 1.0f)) / 0.5f);
+			v.position.z += sign * mag * r;
+		}
+		{
+			float sign = (std::fmodf(pos.x, 1.0f) > 0.5f) ? 1 : -1;
+			float r = Math::clamp01(std::abs(std::fmodf(pos.x, 1.0f)) / 0.5f);
+			v.position.y += sign * mag * r;
+		}
+		{
+			float sign = (std::fmodf(pos.z, 1.0f) > 0.5f) ? 1 : -1;
+			float r = Math::clamp01(std::abs(std::fmodf(pos.z, 1.0f)) / 0.5f);
+			v.position.x += sign * mag * r;
+		}
+	}
+}
+
 void VoxelmapMeshBuilder::putSquare(const Vector3& p0, const Vector2& uv0, const Vector3& p1, const Vector2& uv1, const Vector3& p2, const Vector2& uv2, const Vector3& p3, const Vector2& uv3)
 {
 	int v = m_vertices.size();
