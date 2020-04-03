@@ -11,8 +11,8 @@ namespace detail {
 const Matrix VoxelmapMeshBuilder::RotationTransforms[6] = {
 	Matrix::makeRotationY(Math::PI / 2),
 	Matrix::makeRotationY(-Math::PI / 2),
-	Matrix::makeRotationX(Math::PI / 2),
 	Matrix::makeRotationX(-Math::PI / 2),
+	Matrix::makeRotationX(Math::PI / 2),
 	Matrix(),
 	Matrix::makeRotationY(Math::PI),
 };
@@ -32,7 +32,6 @@ void VoxelmapMeshBuilder::beginSection(MeshTileFaceDirection dir, int autovoxelL
 	m_curUVRect = Rect::Empty;
 	m_curAutovoxelLocalId = autovoxelLocalId;
 	m_curFaceKind = faceKind;
-	//m_offsetVertex =
 	m_startVertex = m_vertices.size();
 	m_offsetIndex = m_startIndex = m_indices.size();
 }
@@ -53,6 +52,72 @@ void VoxelmapMeshBuilder::endSection()
 void VoxelmapMeshBuilder::beginSubtile()
 {
 	m_subtileStartVertex = m_vertices.size();
+}
+
+void VoxelmapMeshBuilder::endSubtile()
+{
+}
+
+void VoxelmapMeshBuilder::putSquareChamfer(float l, float t, float r, float b, SubtileCorner corner, float depth)
+{
+	int v = m_vertices.size();
+	float ru = 0;//depth / std::abs(r - l);
+	float rv = 0;//depth / std::abs(b - t);
+	switch (corner)
+	{
+	case ln::detail::SubtileCorner_TopLeft:
+		m_vertices.push_back({ Vector3(l, t - depth, 0), Vector3::UnitZ, Vector2(0, rv), Color::White });
+		m_vertices.push_back({ Vector3(l + depth, t - depth, 0), Vector3::UnitZ, Vector2(ru, rv), Color::White });
+		m_vertices.push_back({ Vector3(l + depth, t, 0), Vector3::UnitZ, Vector2(ru, 0), Color::White });
+		m_vertices.push_back({ Vector3(r, t, 0), Vector3::UnitZ, Vector2(1, 0), Color::White });
+		m_vertices.push_back({ Vector3(r, b, 0), Vector3::UnitZ, Vector2(1, 1), Color::White });
+		m_vertices.push_back({ Vector3(l, b, 0), Vector3::UnitZ, Vector2(0, 1), Color::White });
+		m_indices.push_back(v + 4); m_indices.push_back(v + 5); m_indices.push_back(v + 0);
+		m_indices.push_back(v + 4); m_indices.push_back(v + 0); m_indices.push_back(v + 1);
+		m_indices.push_back(v + 4); m_indices.push_back(v + 1); m_indices.push_back(v + 2);
+		m_indices.push_back(v + 4); m_indices.push_back(v + 2); m_indices.push_back(v + 3);
+		break;
+	case ln::detail::SubtileCorner_TopRight:
+		m_vertices.push_back({ Vector3(l, t, 0), Vector3::UnitZ, Vector2(0, 0), Color::White });
+		m_vertices.push_back({ Vector3(r - depth, t, 0), Vector3::UnitZ, Vector2(1 - ru, 0), Color::White });
+		m_vertices.push_back({ Vector3(r - depth, t - depth, 0), Vector3::UnitZ, Vector2(1 - ru, rv), Color::White });
+		m_vertices.push_back({ Vector3(r, t - depth, 0), Vector3::UnitZ, Vector2(1, rv), Color::White });
+		m_vertices.push_back({ Vector3(r, b, 0), Vector3::UnitZ, Vector2(1, 1), Color::White });
+		m_vertices.push_back({ Vector3(l, b, 0), Vector3::UnitZ, Vector2(0, 1), Color::White });
+		m_indices.push_back(v + 5); m_indices.push_back(v + 0); m_indices.push_back(v + 1);
+		m_indices.push_back(v + 5); m_indices.push_back(v + 1); m_indices.push_back(v + 2);
+		m_indices.push_back(v + 5); m_indices.push_back(v + 2); m_indices.push_back(v + 3);
+		m_indices.push_back(v + 5); m_indices.push_back(v + 3); m_indices.push_back(v + 4);
+		break;
+	case ln::detail::SubtileCorner_BottomRight:
+		m_vertices.push_back({ Vector3(l, t, 0), Vector3::UnitZ, Vector2(0, 0), Color::White });
+		m_vertices.push_back({ Vector3(r, t, 0), Vector3::UnitZ, Vector2(1, 0), Color::White });
+		m_vertices.push_back({ Vector3(r, b + depth, 0), Vector3::UnitZ, Vector2(1, 1 - rv), Color::White });
+		m_vertices.push_back({ Vector3(r - depth, b + depth, 0), Vector3::UnitZ, Vector2(1 - ru, 1 - rv), Color::White });
+		m_vertices.push_back({ Vector3(r - depth, b, 0), Vector3::UnitZ, Vector2(1 - ru, 1), Color::White });
+		m_vertices.push_back({ Vector3(l, b, 0), Vector3::UnitZ, Vector2(0, 1), Color::White });
+		m_indices.push_back(v + 0); m_indices.push_back(v + 1); m_indices.push_back(v + 2);
+		m_indices.push_back(v + 0); m_indices.push_back(v + 2); m_indices.push_back(v + 3);
+		m_indices.push_back(v + 0); m_indices.push_back(v + 3); m_indices.push_back(v + 4);
+		m_indices.push_back(v + 0); m_indices.push_back(v + 4); m_indices.push_back(v + 5);
+		break;
+	case ln::detail::SubtileCorner_BottomLeft:
+		m_vertices.push_back({ Vector3(l, t, 0), Vector3::UnitZ, Vector2(0.0f, 0.0f), Color::White });
+		m_vertices.push_back({ Vector3(r, t, 0), Vector3::UnitZ, Vector2(1.0f, 0.0f), Color::White });
+		m_vertices.push_back({ Vector3(r, b, 0), Vector3::UnitZ, Vector2(1.0f, 1.0f), Color::White });
+		m_vertices.push_back({ Vector3(l + depth, b, 0), Vector3::UnitZ, Vector2(ru, 1.0f), Color::White });
+		m_vertices.push_back({ Vector3(l + depth, b + depth, 0), Vector3::UnitZ, Vector2(ru, 1.0f - rv), Color::White });
+		m_vertices.push_back({ Vector3(l, b + depth, 0), Vector3::UnitZ, Vector2(0.0f, 1.0f - rv), Color::White });
+		m_indices.push_back(v + 1); m_indices.push_back(v + 2); m_indices.push_back(v + 3);
+		m_indices.push_back(v + 1); m_indices.push_back(v + 3); m_indices.push_back(v + 4);
+		m_indices.push_back(v + 1); m_indices.push_back(v + 4); m_indices.push_back(v + 5);
+		m_indices.push_back(v + 1); m_indices.push_back(v + 5); m_indices.push_back(v + 0);
+		break;
+	default:
+		LN_UNREACHABLE();
+		return;
+	}
+	m_offsetIndex += 12;
 }
 
 void VoxelmapMeshBuilder::projectUV(const Rect& uvRect)
@@ -76,7 +141,6 @@ void VoxelmapMeshBuilder::putSquare(const Vector3& p0, const Vector2& uv0, const
 	m_indices.push_back(v + 2);
 	m_indices.push_back(v + 1);
 	m_indices.push_back(v + 3);
-	//m_offsetVertex += 4;
 	m_offsetIndex += 6;
 }
 

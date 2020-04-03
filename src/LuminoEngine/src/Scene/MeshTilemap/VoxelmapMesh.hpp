@@ -31,10 +31,13 @@ public:
 	void projectUV(const Rect& uvRect);
 
 	// 四角形を生成する。向きは Z+。中心 (0,0,0) で作ること。
+	// Subtile の begin/end は不要
 	void putSquare(const Vector3& p0, const Vector2& uv0, const Vector3& p1, const Vector2& uv1, const Vector3& p2, const Vector2& uv2, const Vector3& p3, const Vector2& uv3);
 	void putSquare(const Vector3& p0, const Vector3& p1,  const Vector3& p2, const Vector3& p3);
 
 	void beginSubtile();
+	void endSubtile();
+	void putSquareChamfer(float l, float t, float r, float b, SubtileCorner corner, float depth);
 
 	void build();
 	const Ref<Mesh>& mesh() const { return m_mesh; }
@@ -56,7 +59,6 @@ private:
 	VoxelMeshFaceKind m_curFaceKind;
 	int m_startVertex;
 	int m_startIndex;
-	//int m_offsetVertex;
 	int m_offsetIndex;
 	int m_subtileStartVertex;
 

@@ -23,6 +23,14 @@ enum class MeshTileFaceDirection
 
 namespace detail {
 
+enum SubtileCorner
+{
+	SubtileCorner_TopLeft = 0,
+	SubtileCorner_TopRight = 1,
+	SubtileCorner_BottomLeft = 2,
+	SubtileCorner_BottomRight = 3,
+};
+
 struct MeshTile
 {
 	// 2D Tilemap と同様のルールの Id. 

@@ -180,50 +180,142 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 		MeshTileFaceDirection::XPlus,
 		MeshTileFaceDirection::ZMinus,
 		MeshTileFaceDirection::ZPlus };
+
+	// Convex
 	for (int iFaceDir = 0; iFaceDir < 4; iFaceDir++) {
 		MeshTileFaceDirection dir = sideDirs[iFaceDir];
 
 		for (int i = 0; i < 48; i++) {
 			builder.beginSection(dir, i, detail::VoxelMeshFaceKind::Convex);
-
 			const auto& info = MeshTileset::AutoTileTable[i];
 			// [top-left]
 			{
 				builder.beginSubtile();
 				int t = info.subtiles[0];
-				if (t == 1 || t == 2) {
+				if (t == 1 || t == 2)
 					builder.putSquare({ -0.5f, 0.5f, mh }, { 0.0f, 0.5f, mh }, { -0.5f, 0.0f, mh }, { 0.0f, 0.0f, mh });
-				}
-				else if (t == 3) {
+				else if (t == 3)
 					builder.putSquare({ -0.5f, 0.5f, m }, { 0.0f, 0.5f, m }, { -0.5f, 0.0f, mh }, { 0.0f, 0.0f, mh });
-				}
-				else if (t == 4) {
+				else if (t == 4)
 					builder.putSquare({ -0.5f + mh, 0.5f, mh }, { 0.0f + mh, 0.5f, mh }, { -0.5f + mh, 0.0f, m }, { 0.0f + mh, 0.0f, mh });
-				}
-				else if (t == 5) {
+				else if (t == 5)
 					builder.putSquare({ -0.5f + m, 0.5f, m }, { 0.0f, 0.5, m }, { -0.5f + mh, 0.0f, mh }, { 0.0f, 0.0f, mh });
-				}
 				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft));
+				builder.endSubtile();
 			}
 			// [top-right]
 			{
 				builder.beginSubtile();
 				int t = info.subtiles[1];
-				if (t == 1 || t == 2) {
+				if (t == 1 || t == 2)
 					builder.putSquare({ 0.0f, 0.5f, mh }, { 0.5f, 0.5f, mh }, { 0.0f, 0.0f, mh }, { 0.5f, 0.0f, mh });
+				else if (t == 3)
+					builder.putSquare({ 0.0f, 0.5f, m }, { 0.5f, 0.5f, m }, { 0.0f, 0.0f, mh }, { 0.5f, 0.0f, mh });
+				else if (t == 4)
+					builder.putSquare({ 0.0f + mh, 0.5f, mh }, { 0.5f + mh, 0.5f, mh }, { 0.0f + mh, 0.0f, mh }, { 0.5f + mh, 0.0f, mh });
+				else if (t == 5)
+					builder.putSquare({ 0.0f, 0.5f, m }, { 0.5f - m, 0.5f, m }, { 0.0, 0.0, mh }, { 0.5f - mh, 0.0f, mh });
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight));
+				builder.endSubtile();
+			}
+			builder.endSection();
+		}
+	}
+	//builder.putSquare({ }, { }, { }, { });
+	// 天板
+	{
+		MeshTileFaceDirection dir = MeshTileFaceDirection::YPlus;
+		for (int i = 0; i < 48; i++) {
+			builder.beginSection(dir, i, detail::VoxelMeshFaceKind::Convex);
+			const auto& info = MeshTileset::AutoTileTable[i];
+			// [top-left]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[0];
+				if (t == 1) {
+					builder.putSquare({ -0.5f, 0.5f, 0.0f }, { 0.0f, 0.5f, 0.0f }, { -0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+				}
+				else if (t == 2) {
+					builder.putSquareChamfer(-0.5f, 0.5, 0.0, 0.0, detail::SubtileCorner_TopLeft, m);
 				}
 				else if (t == 3) {
-					builder.putSquare({ 0.0f, 0.5f, m }, { 0.5f, 0.5f, m }, { 0.0f, 0.0f, mh }, { 0.5f, 0.0f, mh });
+					builder.putSquare({ -0.5f, 0.5f - m, 0.0f }, { 0.0f, 0.5f - m, 0.0f }, { -0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
 				}
 				else if (t == 4) {
-					builder.putSquare({ 0.0f + mh, 0.5f, mh }, { 0.5f + mh, 0.5f, mh }, { 0.0f + mh, 0.0f, mh }, { 0.5f + mh, 0.0f, mh });
+					builder.putSquare({ -0.5f + m, 0.5f, 0.0f }, { 0.0f, 0.5f, 0.0f }, { -0.5f + m, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
 				}
 				else if (t == 5) {
-					builder.putSquare({ 0.0f, 0.5f, m }, { 0.5f - m, 0.5f, m }, { 0.0, 0.0, mh }, { 0.5f - mh, 0.0f, mh });
+					builder.putSquare({ -0.5f + m, 0.5f - m, 0.0f }, { 0.0f, 0.5f - m, 0.0f }, { -0.5f + m, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
+				}
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft));
+				builder.endSubtile();
+			}
+			// [top-right]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[1];
+				if (t == 1) {
+					builder.putSquare({ 0.0f, 0.5f, 0.0f }, { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.0f, 0.0f });
+				}
+				else if (t == 2) {
+					builder.putSquareChamfer(0, 0.5, 0.5, 0.0, detail::SubtileCorner_TopRight, m);
+				}
+				else if (t == 3) {
+					builder.putSquare({ 0.0f, 0.5f - m, 0.0f }, { 0.5f, 0.5f - m, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.0f, 0.0f });
+				}
+				else if (t == 4) {
+					builder.putSquare({ 0.0f, 0.5f, 0.0f }, { 0.5f - m, 0.5f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f - m, 0.0f, 0.0f });
+				}
+				else if (t == 5) {
+					builder.putSquare({ 0.0f, 0.5f - m, 0.0f }, { 0.5f - m, 0.5f - m, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f - m, 0.0f, 0.0f });
 				}
 				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight));
+				builder.endSubtile();
 			}
-
+			// [bottom-left]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[2];
+				if (t == 1) {
+					builder.putSquare({ -0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { -0.5f, -0.5f, 0.0f }, { 0.0f, -0.5f, 0.0f });
+				}
+				else if (t == 2) {
+					builder.putSquareChamfer(-0.5, 0.0, 0.0, -0.5, detail::SubtileCorner_BottomLeft, m);
+				}
+				else if (t == 3) {
+					builder.putSquare({ -0.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { -0.5f, -0.5f + m, 0.0f }, { 0.0f, -0.5f + m, 0.0f });
+				}
+				else if (t == 4) {
+					builder.putSquare({ -0.5f + m, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { -0.5f + m, -0.5f, 0.0f }, { 0.0f, -0.5f, 0.0f });
+				}
+				else if (t == 5) {
+					builder.putSquare({ -0.5f + m,  0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { -0.5f + m, -0.5f + m, 0.0f }, { 0.0f, -0.5f + m, 0.0f });
+				}
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_BottomLeft));
+				builder.endSubtile();
+			}
+			// [bottom-right]
+			{
+				builder.beginSubtile();
+				int t = info.subtiles[3];
+				if (t == 1) {
+					builder.putSquare({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.0f, 0.0f }, { 0.0f, -0.5f, 0.0f }, { 0.5f, -0.5f, 0.0f });
+				}
+				else if (t == 2) {
+					builder.putSquareChamfer(0.0, 0.0, 0.5, -0.5, detail::SubtileCorner_BottomRight, m);
+				}
+				else if (t == 3) {
+					builder.putSquare({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.0f, 0.0f }, { 0.0f, -0.5f + m, 0.0f }, { 0.5f, -0.5f + m, 0.0f });
+				}
+				else if (t == 4) {
+					builder.putSquare({ 0.0f, 0.0f, 0.0f }, { 0.5f - m, 0.0f, 0.0f }, { 0.0f, -0.5f, 0.0f }, { 0.5f - m, -0.5f, 0.0f });
+				}
+				else if (t == 5) {
+					builder.putSquare({ 0.0f, 0.0f, 0.0f}, { 0.5f - m,  0.0f, 0.0f }, { 0.0f, -0.5f + m, 0.0f }, { 0.5f - m, -0.5f + m, 0.0f });
+				}
+				builder.projectUV(uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_BottomRight));
+				builder.endSubtile();
+			}
 			builder.endSection();
 		}
 	}
