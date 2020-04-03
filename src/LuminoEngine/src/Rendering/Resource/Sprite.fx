@@ -76,7 +76,7 @@ LN_VSIOutput VSI_Main(LN_VSIInput input)
     o.svPos			= mul(o.svPos, ln_Projection);
 	o.Normal		= mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
 	o.UV			= input.UV + input.InstanceUVOffset.xy;
-	o.Color			= input.Color;
+	o.Color			= input.Color;// * float4(input.UV.xy, 1, 1);
 	return o;
 }
 

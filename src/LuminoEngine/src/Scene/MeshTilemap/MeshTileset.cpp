@@ -231,34 +231,34 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 				int t = info.subtiles[0];
 				if (t == 1 || t == 2) {	// 2=平面と斜面の接合
 					putSquare(	// 平面
-						{ Vector3(-0.5, 0.5, mh), Vector2(0, 0) },
-						{ Vector3( 0.0, 0.5, mh), Vector2(1, 0) },
-						{ Vector3(-0.5, 0.0, mh), Vector2(0, 1) },
-						{ Vector3( 0.0, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(-0.5, 0.5, mh), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0, 0.5, mh), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 3) {
 					putSquare(	// 斜面・側面接合
-						{ Vector3(-0.5, 0.5, m), Vector2(0, 0) },
-						{ Vector3( 0.0, 0.5, m), Vector2(1, 0) },
-						{ Vector3(-0.5, 0.0, mh), Vector2(0, 1) },
-						{ Vector3( 0.0, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(-0.5, 0.5, m), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0, 0.5, m), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 4) {
 					putSquare(	// 平面上接合
-						{ Vector3(-0.5 + mh, 0.5, mh), Vector2(0, 0) },
-						{ Vector3( 0.0 + mh, 0.5, mh), Vector2(1, 0) },
-						{ Vector3(-0.5 + mh, 0.0, mh), Vector2(0, 1) },
-						{ Vector3( 0.0 + mh, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(-0.5 + mh, 0.5, mh), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0 + mh, 0.5, mh), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + mh, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0 + mh, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 5) {
 					putSquare(	// 角
-						{ Vector3(-0.5 + m, 0.5, m), Vector2(0, 0) },
-						{ Vector3( 0.0, 0.5, m), Vector2(1, 0) },
-						{ Vector3(-0.5 + mh, 0.0, mh), Vector2(0, 1) },
-						{ Vector3( 0.0, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(-0.5 + m, 0.5, m), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0, 0.5, m), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5 + mh, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 			}
@@ -268,38 +268,144 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 				int t = info.subtiles[1];
 				if (t == 1 || t == 2) {
 					putSquare(
-						{ Vector3(0.0, 0.5, mh), Vector2(0, 0) },
-						{ Vector3(0.5, 0.5, mh), Vector2(1, 0) },
-						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
-						{ Vector3(0.5, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(0.0, 0.5, mh), Vector2(0.0, 0.0) },
+						{ Vector3(0.5, 0.5, mh), Vector2(1.0, 0.0) },
+						{ Vector3(0.0, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3(0.5, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 3) {
 					putSquare(
-						{ Vector3(0.0, 0.5, m), Vector2(0, 0) },
-						{ Vector3(0.5, 0.5, m), Vector2(1, 0) },
-						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
-						{ Vector3(0.5, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(0.0, 0.5, m), Vector2(0.0, 0.0) },
+						{ Vector3(0.5, 0.5, m), Vector2(1.0, 0.0) },
+						{ Vector3(0.0, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3(0.5, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 4) {
 					putSquare(
-						{ Vector3(0.0 + mh, 0.5, mh), Vector2(0, 0) },
-						{ Vector3(0.5 + mh, 0.5, mh), Vector2(1, 0) },
-						{ Vector3(0.0 + mh, 0.0, mh), Vector2(0, 1) },
-						{ Vector3(0.5 + mh, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(0.0 + mh, 0.5, mh), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 + mh, 0.5, mh), Vector2(1.0, 0.0) },
+						{ Vector3(0.0 + mh, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 + mh, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 5) {
 					putSquare(
-						{ Vector3(0.0, 0.5, m), Vector2(0, 0) },
-						{ Vector3(0.5 - m, 0.5, m), Vector2(1, 0) },
-						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
-						{ Vector3(0.5 - mh, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(0.0, 0.5, m), Vector2(0.0, 0.0) },
+						{ Vector3(0.5 - m, 0.5, m), Vector2(1.0, 0.0) },
+						{ Vector3(0.0, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3(0.5 - mh, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform,  offset);
 				}
 				else {
 					LN_UNREACHABLE();
+				}
+			}
+
+			if (offsetI > startIndex) {
+				m_mesh->addSection(startIndex, (offsetI - startIndex) / 3, 0, PrimitiveTopology::TriangleList);
+				setInstancedMeshList((int)dir, i, false, makeObject<InstancedMeshList>(m_mesh, m_mesh->sections().size() - 1));
+			}
+		}
+	}
+	// 天板
+	{
+		MeshTileFaceDirection dir = MeshTileFaceDirection::YPlus;
+		Matrix transform = Matrix::makeRotationX(Math::PI / 2);
+		Vector3 offset = Vector3(0.5, 1.0, 0.5);
+
+		for (int i = 0; i < 48; i++) {
+			const auto& info = MeshTileset::AutoTileTable[i];
+			int startIndex = offsetI;
+
+			// 作るMesh は Z=0で ZPlus をベースとし、Tile の中央が (0,0,0)
+
+			// [top-left]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopLeft);
+				int t = info.subtiles[0];
+				if (t == 1) {
+					putSquare(
+						{ Vector3(-0.5, 0.5, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0, 0.5, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5, 0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, 0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
+				}
+				else if (t == 2) {
+				}
+				else if (t == 3) {
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {
+				}
+			}
+			// [top-right]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_TopRight);
+				int t = info.subtiles[1];
+				if (t == 1) {
+					putSquare(
+						{ Vector3(0.0, 0.5, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5, 0.5, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0, 0.0, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5, 0.0, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
+				}
+				else if (t == 2) {
+				}
+				else if (t == 3) {
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {
+				}
+			}
+			// [bottom-left]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_BottomLeft);
+				int t = info.subtiles[2];
+				if (t == 1) {
+					putSquare(
+						{ Vector3(-0.5,  0.0, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3( 0.0,  0.0, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(-0.5, -0.5, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3( 0.0, -0.5, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
+					//x
+					//printf("%f, %f, %f, %f\n", uvRect.x, uvRect.y, uvRect.width, uvRect.height);
+					//auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_BottomLeft);
+				}
+				else if (t == 2) {
+				}
+				else if (t == 3) {
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {
+				}
+			}
+			// [bottom-right]
+			{
+				auto uvRect = uvMapper.getUVRectFromLocalId(dir, i, detail::SubtileCorner::SubtileCorner_BottomRight);
+				int t = info.subtiles[3];
+				if (t == 1) {
+					putSquare(
+						{ Vector3(0.0,  0.0, 0.0), Vector2(0.0, 0.0) },
+						{ Vector3(0.5,  0.0, 0.0), Vector2(1.0, 0.0) },
+						{ Vector3(0.0, -0.5, 0.0), Vector2(0.0, 1.0) },
+						{ Vector3(0.5, -0.5, 0.0), Vector2(1.0, 1.0) },
+						uvRect, transform, offset);
+				}
+				else if (t == 2) {
+				}
+				else if (t == 3) {
+				}
+				else if (t == 4) {
+				}
+				else if (t == 5) {
 				}
 			}
 

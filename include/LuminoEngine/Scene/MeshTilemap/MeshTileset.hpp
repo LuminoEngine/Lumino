@@ -96,7 +96,7 @@ enum SubtileCorner
 {
 	SubtileCorner_TopLeft = 0,
 	SubtileCorner_TopRight = 1,
-	SubtileCorner_BottomLeft = 3,
+	SubtileCorner_BottomLeft = 2,
 	SubtileCorner_BottomRight = 3,
 };
 
