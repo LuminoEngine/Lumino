@@ -29,6 +29,16 @@ const MeshTilemapLayer::Vec3I MeshTilemapLayer::TopOffsets[6] = {
 	},
 };
 
+// [軸平面上のSubtileIndex][面方向にひとつ進んだ位置のSubtileIndex] -> Mapに保存する LocalAutoBlockId
+static const int AutBlockPairMap[6][6] = {
+	{ 0, 0, 0, 0, 0, 0 },
+	{ 0, 0, 2, 4, 3, 5 },
+	{ 0, 0, 0, 4, 3, 5 },
+	{ 0, 0, 0, 0, 3, 3 },
+	{ 0, 0, 0, 4, 0, 4 },
+	{ 0, 0, 0, 0, 0, 0 },
+};
+
 //==============================================================================
 // MeshTilemapLayer
 
