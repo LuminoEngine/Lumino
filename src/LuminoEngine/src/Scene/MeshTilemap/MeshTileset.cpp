@@ -14,6 +14,7 @@
 
 namespace ln {
 
+
 //==============================================================================
 // MeshAutoTileset
 
@@ -316,7 +317,7 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 		const Vector3& offset = faceOffset[iFaceDir];
 
 		for (int i = 0; i < 48; i++) {
-			const auto& info = MeshTileset::AutoTileTable[i];
+			const auto& info = MeshTileset::PiledAutoTileTable[i];
 			int startIndex = offsetI;
 
 			// [top-left]
@@ -325,19 +326,19 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 				int t = info.subtiles[0];
 				if (t == 1) {	// No draw.
 				}
-				else if (t == 2) {	// No draw.
+				else if (t == 2) {
 				}
 				else if (t == 3) {
 					putSquare(
-						{ Vector3(-0.5, 0.5, m), Vector2(0, 0) },
-						{ Vector3(0.0, 0.5, m), Vector2(1, 0) },
-						{ Vector3(-0.5, 0.0, mh), Vector2(0, 1) },
-						{ Vector3(0.0, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(-0.5, 0.5, m), Vector2(0.0, 0.0) },
+						{ Vector3(-0.5 + m, 0.5, m), Vector2(m, 0.0) },
+						{ Vector3(-0.5, 0.0, mh), Vector2(0.0, 1.0) },
+						{ Vector3(-0.5 + mh, 0.0, mh), Vector2(mh, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 4) {
 				}
-				else if (t == 5) {	// No draw.
+				else if (t == 5) {
 				}
 			}
 			// [top-right]
@@ -350,10 +351,10 @@ void MeshAutoTileset::buildFloorAndSlopeWall()
 				}
 				else if (t == 3) {
 					putSquare(
-						{ Vector3(0.0, 0.5, m), Vector2(0, 0) },
-						{ Vector3(0.5, 0.5, m), Vector2(1, 0) },
-						{ Vector3(0.0, 0.0, mh), Vector2(0, 1) },
-						{ Vector3(0.5, 0.0, mh), Vector2(1, 1) },
+						{ Vector3(0.5 - m, 0.5, m), Vector2(0, 0.0) },
+						{ Vector3(0.5, 0.5, m), Vector2(1.0, 0.0) },
+						{ Vector3(0.5 - mh, 0.0, mh), Vector2(0, 1.0) },
+						{ Vector3(0.5, 0.0, mh), Vector2(1.0, 1.0) },
 						uvRect, transform, offset);
 				}
 				else if (t == 4) {
@@ -412,16 +413,35 @@ void MeshAutoTileset::drawVoxel(const detail::MeshTile& tile, const detail::Mesh
 
 	for (int d = 0; d < 6; d++) {
 
+		//int t1 = (tile.faceTileId[d] & 0x0F);
+		//int t2 = (tile.faceTileId[d] & 0xF0) >> 4;
+
+		//if (tile.faceTileId[d] >= MeshTileset::PiledAutoBlockOffset) {
+		//	int lid = tile.faceTileId[d] - MeshTileset::PiledAutoBlockOffset;
+		//if (t2 > 0) {
+		//	int t = AutBlockPairMap[t1][t2];
+		//	auto* batch = instancedMeshList(d, t, true);
+		//	if (batch) {
+		//		batch->setTransform(transform);
+		//		batch->setUVOffset(uvOffset);
+		//		batch->drawMesh();
+		//	}
+		//}
+		//else
 		if (tile.faceTileId[d] >= MeshTileset::PiledAutoBlockOffset) {
 			int lid = tile.faceTileId[d] - MeshTileset::PiledAutoBlockOffset;
-			auto* batch = instancedMeshList(d, lid, true);
-			if (batch) {
-				batch->setTransform(transform);
-				batch->setUVOffset(uvOffset);
-				batch->drawMesh();
+			if (lid > 0) {	// [0] は {1,1,1,1} で一切描画しないので処理不要
+
+				auto* batch = instancedMeshList(d, lid, true);
+				if (batch) {
+					batch->setTransform(transform);
+					batch->setUVOffset(uvOffset);
+					batch->drawMesh();
+				}
 			}
 		}
-		else {
+		else
+		{
 			auto* batch = instancedMeshList(d, tile.faceTileId[d], false);
 			if (batch) {
 				batch->setTransform(transform);
@@ -470,6 +490,23 @@ const MeshTileset::AutoTileInfo MeshTileset::AutoTileTable[48] =
 	/*[24]*/ {3,3,3,3},{1,2,3,3},{2,2,3,3},{4,1,5,3}, {5,3,5,3},{4,2,5,3},{1,4,3,5},{2,4,3,5},
 	/*[32]*/ {3,5,3,5},{4,4,5,5},{5,5,5,5},{1,1,1,2}, {2,1,1,2},{3,3,1,2},{1,2,1,2},{2,2,1,2},
 	/*[40]*/ {4,1,4,2},{5,3,4,2},{4,2,4,2},{1,1,2,2}, {2,1,2,2},{3,3,2,2},{1,2,2,2},{2,2,2,2},
+};
+
+const MeshTileset::AutoTileInfo MeshTileset::PiledAutoTileTable[48] =
+{
+	// Block tiles.
+	{ 1, 1, 1, 1 },{ 4, 4, 1, 1 },{ 3, 1, 3, 1 },{ 5, 4, 3, 1 }, { 2, 1, 1, 1 },{ 1, 3, 1, 3 },{ 4, 5, 1, 3 },{ 1, 2, 1, 1 },
+	{ 3, 3, 3, 3 },{ 5, 5, 3, 3 },{ 2, 3, 1, 3 },{ 3, 2, 3, 1 }, { 2, 2, 1, 1 },{ 1, 1, 4, 4 },{ 4, 4, 4, 4 },{ 3, 1, 5, 4 },
+	{ 5, 4, 5, 4 },{ 2, 1, 4, 4 },{ 1, 3, 4, 5 },{ 4, 5, 4, 5 }, { 1, 2, 4, 4 },{ 3, 3, 5, 5 },{ 5, 5, 5, 5 },{ 2, 3, 4, 5 },
+	{ 3, 2, 5, 4 },{ 2, 2, 4, 4 },{ 1, 1, 2, 1 },{ 4, 4, 2, 1 }, { 2, 1, 2, 1 },{ 1, 3, 2, 3 },{ 4, 5, 2, 3 },{ 2, 3, 2, 3 },
+	{ 1, 2, 2, 1 },{ 2, 2, 2, 1 },{ 1, 1, 1, 2 },{ 4, 4, 1, 2 }, { 1, 2, 1, 2 },{ 3, 1, 3, 2 },{ 5, 4, 3, 2 },{ 2, 1, 1, 2 },
+	{ 3, 2, 3, 2 },{ 2, 2, 1, 2 },{ 1, 1, 2, 2 },{ 4, 4, 2, 2 }, { 2, 1, 2, 2 },{ 1, 2, 2, 2 },{ 2, 2, 2, 2 },{ 0, 0, 0, 0 },
+	///*[0]*/  {1,1,1,1},{2,1,1,1},{3,3,1,1},{1,2,1,1}, {2,2,1,1},{4,1,4,1},{5,3,4,1},{4,2,4,1},
+	///*[8]*/  {1,4,1,4},{2,4,1,4},{3,5,1,4},{4,4,4,4}, {5,5,4,4},{1,1,2,1},{2,1,2,1},{3,3,2,1},
+	///*[16]*/ {1,2,2,1},{2,2,2,1},{4,3,4,1},{1,4,2,4}, {2,4,2,4},{3,5,2,4},{1,1,3,3},{2,1,3,3},
+	///*[24]*/ {3,3,3,3},{1,2,3,3},{2,2,3,3},{4,1,5,3}, {5,3,5,3},{4,2,5,3},{1,4,3,5},{2,4,3,5},
+	///*[32]*/ {3,5,3,5},{4,4,5,5},{5,5,5,5},{1,1,1,2}, {2,1,1,2},{3,3,1,2},{1,2,1,2},{2,2,1,2},
+	///*[40]*/ {4,1,4,2},{5,3,4,2},{4,2,4,2},{1,1,2,2}, {2,1,2,2},{3,3,2,2},{1,2,2,2},{2,2,2,2},
 };
 
 // SubTileId([0] is invalid) => PhysicalTileIndex

@@ -65,6 +65,7 @@ public:
 	static const int MaxAutoTilests = AutoTileOffset / AutoTileSetStride;
 	static const int LocalAutoTileIdSlopeOffset = 96;
 	static const AutoTileInfo AutoTileTable[48];
+	static const AutoTileInfo PiledAutoTileTable[48];
 
 	static const int PiledAutoBlockOffset = 100;
 

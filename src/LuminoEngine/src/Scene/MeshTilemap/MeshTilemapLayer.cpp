@@ -30,13 +30,14 @@ const MeshTilemapLayer::Vec3I MeshTilemapLayer::TopOffsets[6] = {
 };
 
 // [軸平面上のSubtileIndex][面方向にひとつ進んだ位置のSubtileIndex] -> Mapに保存する LocalAutoBlockId
+// 1 は描画しない。
 static const int AutBlockPairMap[6][6] = {
-	{ 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 2, 4, 3, 5 },
-	{ 0, 0, 0, 4, 3, 5 },
-	{ 0, 0, 0, 0, 3, 3 },
-	{ 0, 0, 0, 4, 0, 4 },
-	{ 0, 0, 0, 0, 0, 0 },
+	{ 1, 1, 1, 1, 1, 1 },
+	{ 1, 1, 2, 4, 3, 5 },
+	{ 1, 1, 1, 4, 3, 5 },
+	{ 1, 1, 1, 1, 3, 3 },
+	{ 1, 1, 1, 4, 1, 4 },
+	{ 1, 1, 1, 1, 1, 1 },
 };
 
 //==============================================================================
@@ -55,6 +56,55 @@ MeshTilemapLayer::MeshTilemapLayer()
 void MeshTilemapLayer::init()
 {
 	Object::init();
+
+
+#if 0	// piled の table を作る
+	std::vector<MeshTileset::AutoTileInfo> piledAutoTileTable;
+	for (int d1 = 0; d1 < 256; d1++) {	// base
+		for (int d2 = 0; d2 < 256; d2++) { // 手前
+			AutoTileNearbyInfo info1 = { { 
+				       d1 & 1, (d1 >> 1) & 1, (d1 >> 2) & 1,
+				(d1 >> 3) & 1,             1, (d1 >> 4) & 1,
+				(d1 >> 5) & 1, (d1 >> 6) & 1, (d1 >> 7) & 1} };
+			AutoTileNearbyInfo info2 = { {
+					   d2 & 1, (d2 >> 1) & 1, (d2 >> 2) & 1,
+				(d2 >> 3) & 1,             1, (d2 >> 4) & 1,
+				(d2 >> 5) & 1, (d2 >> 6) & 1, (d2 >> 7) & 1} };
+			for (int i = 0; i < 9; i++) {
+				info1.tileIds[i] = -info1.tileIds[i];
+				info2.tileIds[i] = -info2.tileIds[i];
+			}
+
+			int subtiles1[4] = {};
+			int subtiles2[4] = {};
+			getSubtileIdsFromNearbyInfo(info1, 1, subtiles1);
+			getSubtileIdsFromNearbyInfo(info2, 1, subtiles2);
+
+			MeshTileset::AutoTileInfo cur;
+			for (int i = 0; i < 4; i++) {
+				cur.subtiles[i] = AutBlockPairMap[subtiles1[i]][subtiles2[i]];
+			}
+
+			int newLocalTileId = -1;
+			for (int i = 0; i < piledAutoTileTable.size(); i++) {
+				const auto& info = piledAutoTileTable[i];
+				if (info.subtiles[0] == cur.subtiles[0] &&
+					info.subtiles[1] == cur.subtiles[1] &&
+					info.subtiles[2] == cur.subtiles[2] &&
+					info.subtiles[3] == cur.subtiles[3]) {
+					newLocalTileId = i;
+				}
+			}
+			if (newLocalTileId == -1) {
+				piledAutoTileTable.push_back(cur);
+			}
+		}
+	}
+	for (auto& info : piledAutoTileTable) {
+		printf("{ %d, %d, %d, %d },", info.subtiles[0], info.subtiles[1], info.subtiles[2], info.subtiles[3]);
+	}
+	printf("");
+#endif
 }
 
 void MeshTilemapLayer::resize(int sizeX, int sizeY, int sizeZ)
@@ -131,8 +181,13 @@ void MeshTilemapLayer::refreshAutoTileFace(int x, int y, int z, MeshTileFaceDire
 
 			
 		tileInfo.faceTileId[static_cast<int>(dir)] = getAutoBlockLocalIdFromNearbyInfo2(nearbyInfo1, nearbyInfo2, autotileKindId) + MeshTileset::PiledAutoBlockOffset;
+
+		//int t1 = getAutoBlockLocalIdFromNearbyInfo(nearbyInfo1, autotileKindId);
+		//int t2 = getAutoBlockLocalIdFromNearbyInfo(nearbyInfo2, autotileKindId);
+		//tileInfo.faceTileId[static_cast<int>(dir)] = (((t2 << 4) & 0xF0) | (t1 & 0x0F));
 	}
-	else {
+	else
+	{
 		AutoTileNearbyInfo nearbyInfo;
 		makeAutoTileNearbyInfo(x, y, z, dir, &nearbyInfo);
 		tileInfo.faceTileId[static_cast<int>(dir)] = getAutoBlockLocalIdFromNearbyInfo(nearbyInfo, autotileKindId);
@@ -307,7 +362,7 @@ int MeshTilemapLayer::getAutoBlockLocalIdFromNearbyInfo2(const AutoTileNearbyInf
 	// subtiles が一致するものを線形で検索
 	int newLocalTileId = -1;
 	for (int i = 0; i < MeshTileset::AutoTileUnitStride; i++) {
-		const auto& info = MeshTileset::AutoTileTable[i];
+		const auto& info = MeshTileset::PiledAutoTileTable[i];
 		if (info.subtiles[0] == subtiles[0] &&
 			info.subtiles[1] == subtiles[1] &&
 			info.subtiles[2] == subtiles[2] &&
