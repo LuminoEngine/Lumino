@@ -122,12 +122,15 @@ void MeshTilemapLayer::refreshAutoTileFace(int x, int y, int z, MeshTileFaceDire
 
 	auto& topOffset = MeshTilemapLayer::TopOffsets[(int)dir];
 
-	if (MeshTileset::autoTileKindId(getGBIDSafe(x + topOffset.x, y + topOffset.y, z + topOffset.z)) == autotileKindId) {
+	int gbid = getGBIDSafe(x + topOffset.x, y + topOffset.y, z + topOffset.z);
+	if (MeshTileset::autoTileKindId(gbid) == autotileKindId) {
 		// 面方向に同一種類のブロックが存在している
-		AutoTileNearbyInfo nearbyInfo;
-		//makeAutoTileNearbyInfo(x + topOffset.x, y + topOffset.y, z + topOffset.z, dir, &nearbyInfo);
-		makeAutoTileNearbyInfo(x, y, z, dir, &nearbyInfo);
-		tileInfo.faceTileId[static_cast<int>(dir)] = getAutoBlockLocalIdFromNearbyInfo(nearbyInfo, autotileKindId) + MeshTileset::PiledAutoBlockOffset;
+		AutoTileNearbyInfo nearbyInfo1, nearbyInfo2;
+		makeAutoTileNearbyInfo(x, y, z, dir, &nearbyInfo1);
+		makeAutoTileNearbyInfo(x + topOffset.x, y + topOffset.y, z + topOffset.z, dir, &nearbyInfo2);
+
+			
+		tileInfo.faceTileId[static_cast<int>(dir)] = getAutoBlockLocalIdFromNearbyInfo2(nearbyInfo1, nearbyInfo2, autotileKindId) + MeshTileset::PiledAutoBlockOffset;
 	}
 	else {
 		AutoTileNearbyInfo nearbyInfo;
@@ -230,8 +233,7 @@ void MeshTilemapLayer::makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceD
 	
 }
 
-// 0~47
-int MeshTilemapLayer::getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId) const
+void MeshTilemapLayer::getSubtileIdsFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId, int subtiles[4]) const
 {
 	//int localTileId = MeshTileset::autoTileLocalId(tileId);
 
@@ -242,7 +244,7 @@ int MeshTilemapLayer::getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo
 	}
 
 	// 四隅の種類を確定する
-	int subtiles[4] = { 0, 0, 0, 0 };
+	//int subtiles[4] = { 0, 0, 0, 0 };
 	const int checkIdxs[4][3] = { { 0, 3, 1 }, { 2, 5, 1 }, { 6, 3, 7 }, { 8, 5, 7 }, };	// [対角,横,縦]
 	for (int i = 0; i < 4; i++) {
 		const int* checkIdx = checkIdxs[i];
@@ -258,6 +260,48 @@ int MeshTilemapLayer::getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo
 			subtiles[i] = 2;
 		else
 			subtiles[i] = 1;
+	}
+}
+
+// 0~47
+int MeshTilemapLayer::getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId) const
+{
+	int subtiles[4] = { 0, 0, 0, 0 };
+	getSubtileIdsFromNearbyInfo(nearbyInfo, autoBlockKindId, subtiles);
+
+	// subtiles が一致するものを線形で検索
+	int newLocalTileId = -1;
+	for (int i = 0; i < MeshTileset::AutoTileUnitStride; i++) {
+		const auto& info = MeshTileset::AutoTileTable[i];
+		if (info.subtiles[0] == subtiles[0] &&
+			info.subtiles[1] == subtiles[1] &&
+			info.subtiles[2] == subtiles[2] &&
+			info.subtiles[3] == subtiles[3]) {
+			newLocalTileId = i;
+		}
+	}
+	if (LN_REQUIRE(newLocalTileId >= 0)) return -1;
+
+	return newLocalTileId;
+}
+
+int MeshTilemapLayer::getAutoBlockLocalIdFromNearbyInfo2(const AutoTileNearbyInfo& nearbyInfo1, const AutoTileNearbyInfo& nearbyInfo2, int autoBlockKindId) const
+{
+	int subtiles1[4] = { 0, 0, 0, 0 };
+	int subtiles2[4] = { 0, 0, 0, 0 };
+	getSubtileIdsFromNearbyInfo(nearbyInfo1, autoBlockKindId, subtiles1);
+	getSubtileIdsFromNearbyInfo(nearbyInfo2, autoBlockKindId, subtiles2);
+
+	int subtiles[4];
+	for (int i = 0; i < 4; i++) {
+		subtiles[i] = AutBlockPairMap[subtiles1[i]][subtiles2[i]];
+	}
+
+	if (subtiles[0] == 0 &&
+		subtiles[1] == 0 &&
+		subtiles[2] == 0 &&
+		subtiles[3] == 0) {
+		return 0;
 	}
 
 	// subtiles が一致するものを線形で検索

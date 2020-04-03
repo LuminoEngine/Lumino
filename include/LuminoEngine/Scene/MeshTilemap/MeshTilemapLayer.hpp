@@ -49,7 +49,9 @@ private:
     void refreshAutoTile(int x, int y, int z);
     void refreshAutoTileFace(int x, int y, int z, MeshTileFaceDirection dir);
     void makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceDirection dir, AutoTileNearbyInfo* outInfo) const;
+    void getSubtileIdsFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId, int subtiles[4]) const;
     int getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId) const;
+    int getAutoBlockLocalIdFromNearbyInfo2(const AutoTileNearbyInfo& nearbyInfo1, const AutoTileNearbyInfo& nearbyInfo2, int autoBlockKindId) const;
 
     void draw(RenderingContext* context, MeshTileset* tileset);
 
