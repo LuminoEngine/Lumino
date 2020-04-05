@@ -130,22 +130,22 @@ void VoxelmapMeshBuilder::projectUV(const Rect& uvRect)
 
 void VoxelmapMeshBuilder::applyTileCenterMagnitude()
 {
-	float mag = 0.025;
+	float mag = 0.05;
 	for (auto& v : m_vertices) {
 		auto pos = v.position;
 		{
 			float sign = (std::fmodf(pos.x, 1.0f) > 0.5f) ? 1 : -1;
-			float r = Math::clamp01(std::abs(std::fmodf(pos.x, 1.0f)) / 0.5f);
+			float r = 1.0f - Math::clamp01(std::abs(std::fmodf(pos.x, 1.0f)) / 0.5f);
 			v.position.z += sign * mag * r;
 		}
 		{
 			float sign = (std::fmodf(pos.x, 1.0f) > 0.5f) ? 1 : -1;
-			float r = Math::clamp01(std::abs(std::fmodf(pos.x, 1.0f)) / 0.5f);
+			float r = 1.0f - Math::clamp01(std::abs(std::fmodf(pos.x, 1.0f)) / 0.5f);
 			v.position.y += sign * mag * r;
 		}
 		{
 			float sign = (std::fmodf(pos.z, 1.0f) > 0.5f) ? 1 : -1;
-			float r = Math::clamp01(std::abs(std::fmodf(pos.z, 1.0f)) / 0.5f);
+			float r = 1.0f - Math::clamp01(std::abs(std::fmodf(pos.z, 1.0f)) / 0.5f);
 			v.position.x += sign * mag * r;
 		}
 	}

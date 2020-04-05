@@ -90,9 +90,9 @@ class Sandbox_MeshTilemap_App : public Application
 			layer->putAutoTile(5, 1, 1, 0); layer->putAutoTile(6, 1, 1, 0); layer->putAutoTile(7, 1, 1, 0);
 		}
 		else {
-			//for (int z = 0; z < layer->sizeZ(); z++)
-			//	for (int x = 0; x < layer->sizeX(); x++)
-			//		layer->putAutoTile(x, 0, z, 1);
+			for (int z = 0; z < layer->sizeZ(); z++)
+				for (int x = 0; x < layer->sizeX(); x++)
+					layer->putAutoTile(x, 0, z, 1);
 		}
 
 		meshTilemapModel->addLayer(layer);
@@ -123,9 +123,12 @@ class Sandbox_MeshTilemap_App : public Application
 					layer->putAutoTile(row, 1, col, 3);
 				}
 #endif
-
-		//layer->putAutoTile(2, 0, 2, 2);
-		//layer->putAutoTile(1, 0, 2, 2);
+		//{
+		//	layer->putAutoTile(1, 0, 0, 3);
+		//	layer->putAutoTile(0, 0, 1, 3);
+		//	layer->putAutoTile(1, 0, 1, 3);
+		//	layer->putAutoTile(2, 0, 1, 3);
+		//}
 	}
 
 	void onUpdate() override
