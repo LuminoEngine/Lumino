@@ -271,7 +271,8 @@ Size UIFrameLayout2::staticMeasureOverride(UILayoutContext* layoutContext, UIEle
 {
     Size childMaxSize = staticMeasureChildrenAreaSize(layoutContext, ownerElement, constraint);
 
-    return detail::LayoutHelper::measureElement(ownerElement, constraint, childMaxSize);
+    return layoutContext->makeDesiredSize(ownerElement, childMaxSize);
+    //return detail::LayoutHelper::measureElement(ownerElement, constraint, childMaxSize);
 
     //auto selfSize = ownerElement->UIElement::measureOverride(constraint);
     //return Size::max(selfSize, childMaxSize);

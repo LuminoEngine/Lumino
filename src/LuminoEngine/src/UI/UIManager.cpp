@@ -35,6 +35,7 @@ void UIManager::init(const Settings& settings)
 
 	m_graphicsManager = settings.graphicsManager;
     m_application = settings.application;
+    m_defaultThemeName = settings.defaultThemeName;
     m_eventArgsPool = makeRef<EventArgsPool>();
     //m_mainContext = makeObject<UIContext>();
 

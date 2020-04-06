@@ -125,7 +125,7 @@ void UISliderField::onRoutedEvent(UIEventArgs* e)
 void UISliderField::onRender(UIRenderingContext* context)
 {
 	float r = (m_value - m_minimum) / (m_maximum - m_minimum);
-	auto cr = clientRect();
+	auto cr = clientRect_Obsolete();
 	auto bar = cr.makeDeflate(2);
 	bar.width = bar.width * r;
 	context->drawSolidRectangle(bar, context->theme()->color(UIThemeConstantPalette::PrimaryMainColor));
@@ -135,7 +135,7 @@ void UISliderField::onRender(UIRenderingContext* context)
 
 void UISliderField::updateValue(const Point& pos)
 {
-	auto cr = clientRect();
+	auto cr = clientRect_Obsolete();
 	//if (cr.contains(pos)) {
 		float r = (pos.x - cr.x) / cr.width;
 		m_value = Math::clamp(m_minimum + ((m_maximum - m_minimum) * r), m_minimum, m_maximum);

@@ -566,6 +566,7 @@ void EngineManager::initializeUIManager()
 		UIManager::Settings settings;
 		settings.graphicsManager = m_graphicsManager;
         settings.application = m_settings.application;
+		settings.defaultThemeName = m_settings.defaultUITheme;
 		
 		m_uiManager = makeRef<UIManager>();
 		m_uiManager->init(settings);

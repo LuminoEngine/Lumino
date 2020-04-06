@@ -49,7 +49,7 @@ void UILayoutElement::updateLayout(UILayoutContext* layoutContext, const Rect& p
 	arrangeLayout(layoutContext, parentFinalGlobalRect);
 }
 
-Rect UILayoutElement::clientRect() const
+Rect UILayoutElement::clientRect_Obsolete() const
 {
 	return Rect(
 		m_finalStyle->borderThickness.left,
@@ -58,7 +58,7 @@ Rect UILayoutElement::clientRect() const
 		m_actualSize.height - m_finalStyle->borderThickness.height());
 }
 
-Rect UILayoutElement::contentRect() const
+Rect UILayoutElement::contentRect_Obsolete() const
 {
 	return Rect(
 		m_finalStyle->borderThickness.left + m_finalStyle->padding.left,
@@ -74,8 +74,6 @@ void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& 
 	
 	Size desiredSize = measureOverride(layoutContext, localAvailableSize);
 
-	//if (!Math::isNaNOrInf(m_finalStyle->width)) desiredSize.width = std::min(desiredSize.width, m_finalStyle->width);
-	//if (!Math::isNaNOrInf(m_finalStyle->height)) desiredSize.height = std::min(desiredSize.height, m_finalStyle->height);
 	
 	desiredSize.width += outerSpace.width;
 	desiredSize.height += outerSpace.height;
@@ -291,6 +289,43 @@ bool UILayoutContext::testLayoutEnabled(UIElement* element) const
 	return
 		!cllapsed &&
 		!element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
+}
+
+//Rect UILayoutContext::makeContentAreaRect(const UIElement* element, const Size& borderRect) const
+//{
+//
+//}
+
+Size UILayoutContext::makeDesiredSize(const UIElement* element, const Size& contentAreaSize) const
+{
+	// TODO: https://saruwakakun.com/html-css/reference/box-sizing
+
+	detail::UIStyleInstance* style = element->m_finalStyle;
+
+	// 要素サイズが明示されている場合、はそちらを優先する
+	Size desiredSize(
+		!Math::isNaNOrInf(style->width) ? style->width : contentAreaSize.width,
+		!Math::isNaNOrInf(style->height) ? style->height : contentAreaSize.height);
+
+	// Apply min/max. width/height よりも優先
+	Size minSize, maxSize;
+	element->getLayoutMinMaxInfo(&minSize, &maxSize);
+	if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
+	if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
+	if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
+	if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+
+	// Padding
+	desiredSize.width += style->padding.width();
+	desiredSize.height += style->padding.height();
+
+	// Border
+	if (!style->borderInset) {
+		desiredSize.width += style->borderThickness.width();
+		desiredSize.height += style->borderThickness.height();
+	}
+
+	return desiredSize;
 }
 
 //==============================================================================

@@ -233,7 +233,7 @@ Size UIControl::measureOverride(UILayoutContext* layoutContext, const Size& cons
         // Inline 要素も含めた領域 (client area)
         Size clientAreaSize = m_aligned3x3GridLayoutArea->measure(layoutContext, m_inlineElements, constraint, childrenAreaSize);
         // padding, border も含めたサイズ (client は、this と clientAreaSize のうち大きい方を採用)
-        return detail::LayoutHelper::measureElement(this, constraint, clientAreaSize);
+        return layoutContext->makeDesiredSize(this, clientAreaSize);
     }
     else {
         //   struct ElementList : public IUIElementList {

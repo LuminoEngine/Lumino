@@ -75,6 +75,8 @@ struct EngineSettings
 	int frameRate = 60;
 	bool debugToolEnabled = false;
 
+	String defaultUITheme;
+
 
     bool defaultObjectsCreation = true;
     bool useGLFWWindowSystem = true;

@@ -21,6 +21,7 @@ public:
 	{
 		GraphicsManager* graphicsManager;
         Application* application = nullptr;
+        String defaultThemeName;
 	};
 
     static const float MouseButtonClickTimeout;
@@ -35,6 +36,7 @@ public:
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     Application* application() const { return m_application; }
+    const String& defaultThemeName() const { return m_defaultThemeName; }
 
     void setPrimaryElement(UIControl* element);
 	UIControl* primaryElement() const;
@@ -79,6 +81,7 @@ private:
 
 	GraphicsManager* m_graphicsManager;
     Application* m_application;
+    String m_defaultThemeName;
 	//PlatformManager* platformManager;
     Ref<UIControl> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;

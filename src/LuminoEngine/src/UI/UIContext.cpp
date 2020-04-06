@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UIContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
+#include "UIManager.hpp"
 
 namespace ln {
 
@@ -21,13 +22,15 @@ void UIContext::init()
 {
     Object::init();
 
+	
+
 	m_styleContext = makeObject<UIStyleContext>();
 	//m_defaultStyle = makeObject<UIStyle>();
 	//m_defaultStyle->setupDefault();
     //m_finalDefaultStyle->setupDefault();
 
 
-	if (0) {
+	if (String::compare(detail::EngineDomain::uiManager()->defaultThemeName(), u"Chocotelier", CaseSensitivity::CaseInsensitive) == 0) {
 		auto theme = makeObject<UITheme>();
 		theme->buildLumitelier();
 		m_styleContext->addStyleSheet(theme->styleSheet());

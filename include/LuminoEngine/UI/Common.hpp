@@ -50,7 +50,6 @@ enum class UICollectionChangedAction
     Reset,
 };
 
-
 namespace detail {
 
 // TODO: UI モジュールではなく共通の場所に持っていく。WorldObject も似たような管理を行う。

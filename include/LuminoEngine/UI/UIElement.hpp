@@ -134,8 +134,8 @@ public:
     void setName(const String& value) { m_name = value; }
     const String& name() const { return m_name; }
 
-	/** 要素のサイズを設定します。サイズには、border の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
-	void setSize(float width, float height);
+	/** 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
+	void setSize(float width, float height) { setWidth(width); setHeight(height); }
 
     void setWidth(float value);
     float width() const;
@@ -451,7 +451,9 @@ public:	// TODO: internal protected
 		通常、padding と border を加算したサイズを返すように実装します。
 		border については、inset または outset の場合分けが必要です。
 
-        Note: レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は Inf が含まれることがある。
+        @note
+			- レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は Inf が含まれることがある。
+			- 実装では padding と border のサイズを考慮する必要があるが、これは VisualChild をレイアウトしてほしいためこうする必要がある。(LogicalChild ではなく)
     */
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 

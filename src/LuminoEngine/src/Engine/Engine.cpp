@@ -68,6 +68,11 @@ void EngineSettings::setGraphicsDebugEnabled(bool enabled)
     detail::EngineManager::s_settings.graphicsDebugEnabled = enabled;
 }
 
+void EngineSettings::setDefaultUITheme(const String& value)
+{
+    detail::EngineManager::s_settings.defaultUITheme = value;
+}
+
 void EngineSettings::setDebugToolEnabled(bool enabled)
 {
 	detail::EngineManager::s_settings.debugToolEnabled = enabled;
