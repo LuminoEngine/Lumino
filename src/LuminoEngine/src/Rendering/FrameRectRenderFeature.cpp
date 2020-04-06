@@ -33,14 +33,21 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context,
 	if (rect.isEmpty()) return RequestBatchResult::Staging;
     m_worldTransform = &worldTransform;
 
-	if (wrapMode == Sprite9DrawMode::StretchedSingleImage)
-	{
+	if (wrapMode == Sprite9DrawMode::StretchedSingleImage) {
 		Size rec(1.0f / srcTextureSize.width, 1.0f / srcTextureSize.height);
 		Rect uvRect(srcRect.x * rec.width, srcRect.y * rec.height, srcRect.width * rec.width, srcRect.height * rec.height);
 		putRectangleStretch(context, rect, uvRect);
 	}
-	else
-	{
+	else if (wrapMode == Sprite9DrawMode::RepeatedSingleImage) {
+		Size rec(1.0f / srcTextureSize.width, 1.0f / srcTextureSize.height);
+		Rect uvRect(srcRect.x * rec.width, srcRect.y * rec.height, srcRect.width * rec.width, srcRect.height * rec.height);
+		putRectangleTiling(context, rect, srcRect, uvRect);
+	}
+	else if (
+		wrapMode == Sprite9DrawMode::StretchedBoxFrame ||
+		wrapMode == Sprite9DrawMode::RepeatedBoxFrame ||
+		wrapMode == Sprite9DrawMode::StretchedBorderFrame ||
+		wrapMode == Sprite9DrawMode::RepeatedBorderFrame) {
 		// 枠
 		{
 			// TODO: thickness が left しか対応できていない
@@ -48,8 +55,8 @@ RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context,
 		}
 
 		// Inner
-		if (wrapMode == Sprite9DrawMode::RepeatedBoxFrame || wrapMode == Sprite9DrawMode::StretchedBoxFrame)
-		{
+		if (wrapMode == Sprite9DrawMode::RepeatedBoxFrame ||
+			wrapMode == Sprite9DrawMode::StretchedBoxFrame) {
 			Rect dstRect = rect;
 			dstRect.x += borderThickness.left;
 			dstRect.y += borderThickness.top;

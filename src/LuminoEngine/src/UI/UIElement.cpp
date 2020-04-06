@@ -249,14 +249,14 @@ const Vector3& UIElement::centerPoint() const
     return m_localStyle->mainStyle()->centerPoint.getOrDefault(Vector3::Zero);
 }
 
-void UIElement::setBackgroundDrawMode(BrushImageDrawMode value)
+void UIElement::setBackgroundDrawMode(Sprite9DrawMode value)
 {
     m_localStyle->mainStyle()->backgroundDrawMode = value;
 }
 
-BrushImageDrawMode UIElement::backgroundDrawMode() const
+Sprite9DrawMode UIElement::backgroundDrawMode() const
 {
-    return m_localStyle->mainStyle()->backgroundDrawMode.getOrDefault(BrushImageDrawMode::Image);
+    return m_localStyle->mainStyle()->backgroundDrawMode.getOrDefault(Sprite9DrawMode::StretchedSingleImage);
 }
 
 void UIElement::setBackgroundColor(const Color& value)

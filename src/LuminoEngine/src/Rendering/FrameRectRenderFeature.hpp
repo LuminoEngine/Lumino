@@ -163,10 +163,9 @@ class DrawFrameRectElement : public RenderDrawElement
 public:
     Rect rect;
     Matrix transform;
-    BrushImageDrawMode imageDrawMode;
+	Sprite9DrawMode imageDrawMode;
     Thickness borderThickness;
     Rect srcRect;
-	Sprite9DrawMode wrapMode;
 
 	virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 	{
@@ -174,7 +173,7 @@ public:
 		m_srcTextureSize.height = subsetInfo->materialTexture->height();
 
 		return static_cast<detail::FrameRectRenderFeature*>(renderFeature)->drawRequest(
-            context, rect, transform, borderThickness, srcRect, wrapMode, m_srcTextureSize);
+            context, rect, transform, borderThickness, srcRect, imageDrawMode, m_srcTextureSize);
     }
 
 private:

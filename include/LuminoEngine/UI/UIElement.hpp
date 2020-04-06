@@ -236,10 +236,10 @@ public:
 
 
     /** 背景の描画モードを設定します。*/
-    void setBackgroundDrawMode(BrushImageDrawMode value);
+    void setBackgroundDrawMode(Sprite9DrawMode value);
 
     /** 背景の描画モードを取得します。*/
-    BrushImageDrawMode backgroundDrawMode() const;
+	Sprite9DrawMode backgroundDrawMode() const;
 
 	/** 背景の色を設定します。 */
 	void setBackgroundColor(const Color& value);

@@ -31,7 +31,7 @@ class App_Example_MessageWindow : public Application
         window1->setBackgroundImage(windowSkin);
         window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window1->setBackgroundImageBorder(Thickness(8));
-        window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+        window1->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
         //Engine::mainUIView()->addElement(window1);
 
         m_message1 = UIMessageTextArea::create();
@@ -48,7 +48,7 @@ class App_Example_MessageWindow : public Application
         window2->setBackgroundImage(windowSkin);
         window2->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window2->setBackgroundImageBorder(Thickness(8));
-        window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+        window2->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
         //Engine::mainUIView()->addElement(window2);
 
         m_message2 = UIMessageTextArea::create();

@@ -27,12 +27,12 @@ enum class Sprite9DrawMode
 	RepeatedBorderFrame,
 };
 
-enum class BrushImageDrawMode
-{
-	Image,
-	BoxFrame,		
-	BorderFrame,	/**< 3x3 のボーダーを描画する。中央は描画しない。*/
-};
+//enum class BrushImageDrawMode
+//{
+//	Image,
+//	BoxFrame,		
+//	BorderFrame,	/**< 3x3 のボーダーを描画する。中央は描画しない。*/
+//};
 
 //namespace detail {
 //

@@ -271,7 +271,7 @@ public:
 	static const Vector3 DefaultCenterPoint;
 
 	// background
-    detail::UIStyleAttribute<BrushImageDrawMode> backgroundDrawMode;
+    detail::UIStyleAttribute<Sprite9DrawMode> backgroundDrawMode;
 	detail::UIStyleAttribute<Color> backgroundColor;
 	detail::UIStyleAttribute<Ref<Texture>> backgroundImage;
 	detail::UIStyleAttribute<Ref<Shader>> backgroundShader;
@@ -279,7 +279,7 @@ public:
     detail::UIStyleAttribute<Rect> backgroundImageRect;
     detail::UIStyleAttribute<Thickness> backgroundImageBorder;
 
-	static const BrushImageDrawMode DefaultBackgroundDrawMode;
+	static const Sprite9DrawMode DefaultBackgroundDrawMode;
 	static const Color DefaultBackgroundColor;
 	static const Ref<Texture> DefaultBackgroundImage;
 	static const Ref<Shader> DefaultBackgroundShader;
@@ -539,7 +539,7 @@ public:
     Vector3 centerPoint;
 
     // background
-    BrushImageDrawMode backgroundDrawMode;
+    Sprite9DrawMode backgroundDrawMode;
     Color backgroundColor;
     Ref<Texture> backgroundImage;
     Ref<Shader> backgroundShader;

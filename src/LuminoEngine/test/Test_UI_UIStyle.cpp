@@ -35,17 +35,48 @@ TEST_F(Test_UI_UIStyle, Background)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_UIStyle, BackgroundImage)
 {
-	{
-		auto element1 = makeObject<UIElement>();
-		element1->setAlignments(HAlignment::Center, VAlignment::Center);
-		element1->setSize(80, 60);
-		element1->setBackgroundImage(Texture2D::load(u"Sprite1.png"));
-		Engine::ui()->addElement(element1);
+	auto element1 = makeObject<UIElement>();
+	element1->setAlignments(HAlignment::Center, VAlignment::Center);
+	element1->setSize(80, 60);
+	Engine::ui()->addElement(element1);
 
+	element1->setBackgroundImage(Texture2D::load(u"Sprite1.png"));
+	{
+		element1->setBackgroundDrawMode(Sprite9DrawMode::StretchedSingleImage);
 		TestEnv::updateFrame();
 		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-1.png"));
-		LN_TEST_CLEAN_SCENE;
 	}
+	{
+		element1->setBackgroundDrawMode(Sprite9DrawMode::RepeatedSingleImage);
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-2.png"));
+	}
+
+	element1->setBackgroundImage(Texture2D::load(u"UI/Window2.png"));
+	element1->setBackgroundImageRect(Rect(0, 32, 32, 32));
+	element1->setBackgroundImageBorder(Thickness(8));
+	{
+		element1->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-3.png"));
+	}
+	{
+		element1->setBackgroundDrawMode(Sprite9DrawMode::RepeatedBoxFrame);
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-4.png"));
+	}
+	{
+		element1->setBackgroundDrawMode(Sprite9DrawMode::StretchedBorderFrame);
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-5.png"));
+	}
+	{
+		element1->setBackgroundDrawMode(Sprite9DrawMode::RepeatedBorderFrame);
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-6.png"));
+	}
+
+	LN_TEST_CLEAN_SCENE;
 }
 
 //------------------------------------------------------------------------------

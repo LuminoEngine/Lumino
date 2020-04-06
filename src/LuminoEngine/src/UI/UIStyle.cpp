@@ -147,7 +147,7 @@ const Vector3 UIStyle::DefaultScale = Vector3(1.0f, 1.0f, 1.0f);
 const Vector3 UIStyle::DefaultCenterPoint = Vector3(0.0f, 0.0f, 0.0f);
 
 // background
-const BrushImageDrawMode UIStyle::DefaultBackgroundDrawMode = BrushImageDrawMode::Image;
+const Sprite9DrawMode UIStyle::DefaultBackgroundDrawMode = Sprite9DrawMode::StretchedSingleImage;
 const Color UIStyle::DefaultBackgroundColor = Color::Transparency;
 const Ref<Texture> UIStyle::DefaultBackgroundImage = nullptr;
 const Ref<Shader> UIStyle::DefaultBackgroundShader = nullptr;
@@ -869,7 +869,7 @@ void UIStyleInstance::setupDefault()
     scale = Vector3::Ones;
     centerPoint = Vector3::Zero;
 
-    backgroundDrawMode = BrushImageDrawMode::Image;
+    backgroundDrawMode = Sprite9DrawMode::StretchedSingleImage;
     backgroundImageRect = Rect::Zero;
     backgroundImageBorder = Thickness::Zero;
 

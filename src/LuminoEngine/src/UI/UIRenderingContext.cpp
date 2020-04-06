@@ -38,7 +38,7 @@ void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color
     //element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
 }
 
-void UIRenderingContext::drawImageBox(const Rect& rect, BrushImageDrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
+void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
 {
     if (!m_builder->material()) return;
 
@@ -62,7 +62,7 @@ void UIRenderingContext::drawImageBox(const Rect& rect, BrushImageDrawMode mode,
         element->borderThickness = borderThickness;
         element->srcRect = actualSourceRect;
         //element->wrapMode = Sprite9DrawMode::StretchedBoxFrame;
-        element->wrapMode = Sprite9DrawMode::StretchedSingleImage;
+        //element->wrapMode = mode;
     //}
 }
 
