@@ -45,6 +45,7 @@ public:
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		ShaderTechniqueClass_DrawMode drawMode,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) = 0;
 

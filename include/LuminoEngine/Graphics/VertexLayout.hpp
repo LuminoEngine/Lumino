@@ -19,6 +19,15 @@ public:
     /** レイアウトに新しい要素を追加します。 */
     void addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex, VertexInputRate rate = VertexInputRate::Vertex);
 
+    void addElement(const VertexElement& element);
+
+    //int elementCount() const { return m_vertexElements.size(); }
+
+    //const VertexElement& element() const { return m_vertexElements[i]; }
+
+    // TODO: internal
+    const List<VertexElement>& vertexElements() const { return m_vertexElements; }
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) override;

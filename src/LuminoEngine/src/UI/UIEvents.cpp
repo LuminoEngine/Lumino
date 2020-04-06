@@ -10,7 +10,8 @@ namespace ln {
 
 //==============================================================================
 // UIEvents
-
+    
+const UIEventType	UIEvents::Default = 0;
 const UIEventType	UIEvents::GotFocusEvent = 1;
 const UIEventType	UIEvents::LostFocusEvent = 2;
 const UIEventType	UIEvents::MouseMoveEvent = 3;
@@ -36,10 +37,11 @@ const UIEventType	UIEvents::Selected = 21;
 const UIEventType	UIEvents::Unselected = 22;
 
 const UIEventType	UIEvents::Click = 23;
+const UIEventType	UIEvents::Submitted = 24;
 
-const UIEventType   UIEvents::SelectionChanged = 24;
+const UIEventType   UIEvents::SelectionChanged = 25;
 
-const UIEventType   UIEvents::Timer = 25;
+const UIEventType   UIEvents::Timer = 26;
 
 const UIEventType	UIEvents::ExecuteCommandEvent = 201;
 const UIEventType	UIEvents::CanExecuteCommandEvent = 202;

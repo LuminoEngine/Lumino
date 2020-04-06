@@ -303,6 +303,13 @@ public:
     /** 指定した厚さだけ、この矩形から縮小した矩形を作成します。 */
     Rect makeDeflate(const Thickness& thickness) const;
 
+    Vector2 getPointByRatio(const Vector2& uv) const
+    {
+        return Vector2(
+            x + width * uv.x,
+            y + height * uv.y);
+    }
+
     void serialize(Archive& ar);
 
 public:

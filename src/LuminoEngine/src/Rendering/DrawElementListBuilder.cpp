@@ -284,6 +284,15 @@ void DrawElementListBuilder::pushState(bool reset)
 
     if (reset) {
         this->reset2();
+
+		// TODO: もうちょいスマートな方法あると思うけど…
+		//if (m_stateStackMode == StateStackMode::ScissorPushPop && m_aliveStateStack.size() >= 2) {
+		//	auto& prevState = m_aliveStateStack[m_aliveStateStack.size() - 2];
+		//	setScissorRect(state->frameBufferStageParameters.m_scissorRect);
+		//}
+		if (m_stateStackMode == StateStackMode::ScissorPushPop) {
+			setScissorRect(state->frameBufferStageParameters.m_scissorRect);
+		}
     }
 }
 
@@ -292,6 +301,10 @@ void DrawElementListBuilder::popState()
     auto state = m_aliveStateStack.back();
     m_aliveStateStack.removeLast();
     m_freeStateStack.add(state);
+
+	if (m_stateStackMode == StateStackMode::ScissorPushPop && !m_aliveStateStack.isEmpty()) {
+		setScissorRect(m_aliveStateStack.back()->frameBufferStageParameters.m_scissorRect);
+	}
 }
 
 RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)

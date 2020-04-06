@@ -752,6 +752,13 @@ void FreeTypeFont::getGlobalMetricsInternal(FontGlobalMetrics* outMetrics, bool 
 	outMetrics->ascender = FLValueToFloatPx(m_face->size->metrics.ascender);
 	outMetrics->descender = FLValueToFloatPx(m_face->size->metrics.descender);
 	outMetrics->lineSpace = FLValueToFloatPx(m_face->size->metrics.height);	// ascender - descender ではなく height を使う。FreeType 内部で端数が切り捨てられているので、1px足りないとかになる。
+	
+	// 最終的な lineSpace は、(desender - ascender) と height のうち大きい方を使う。
+	// FontAwesome の "file" だと height の方が 1px 小さくなって、グリフビットマップの方が大きい状態になってた。
+	// 一方 mplus などのフォントでは height の方が小さかったりした。FreeType の内部で小数点以下が切り捨てられているようだ。
+	float diff = std::abs(outMetrics->descender - outMetrics->ascender);
+	outMetrics->lineSpace = std::max(outMetrics->lineSpace, diff);
+	
 	outMetrics->outlineSupported = FT_IS_SCALABLE(m_face);
 
 	if (fromInit) {

@@ -4,55 +4,56 @@
 
 namespace ln {
 class Material;
-class UICollectionModel;
+class UICollectionViewModel;
 
 // row, column, parent を使って、Model 内のデータを一意に識別するためのキー
 // TODO: [2020/2/5] ViewModel 扱いじゃなくていいと思う。Qt だと Ploxy, Kivy は Adapter.
 // Adapter は ItemsSource や Generator(Template) 等を持つ。
 // ちなみに Unity は Adapter 相当のデータを内部に持っているみたい (コンストラクタで Generator とかを渡す)
 // https://docs.unity3d.com/ScriptReference/UIElements.ListView.html
-class UICollectionItemModel
+class UICollectionItemViewModel
 	: public UIViewModel
 {
 public:
-	int row() const { return m_row; }
-	int column() const { return m_column; }
-	UICollectionItemModel* parent() const { return m_parent; }
-	Variant* data() const { return m_data; }
+	//int row() const { return m_row; }
+	//int column() const { return m_column; }
+	//UICollectionItemViewModel* parent() const { return m_parent; }
+	//Variant* data() const { return m_data; }
 
-	bool isRoot() const { return !m_parent; }
+	//bool isRoot() const { return !m_parent; }
 
-	String getData(const String& role);
-    int getChildrenCount();
+	virtual String getValue(const String& role) { return String::Empty; }
+	virtual int getChildrenCount() const { return 0; }
+	virtual Ref<UICollectionItemViewModel> getItem(int row) const { return nullptr; }
 
 LN_CONSTRUCT_ACCESS:
-	UICollectionItemModel();
-	void init(UICollectionModel* owner);
-	void init(UICollectionModel* owner, int row, int column, UICollectionItemModel* parent = nullptr, Variant* data = nullptr);
+	UICollectionItemViewModel();
+	//void init(UICollectionViewModel* owner);
+	//void init(UICollectionViewModel* owner, int row, int column, UICollectionItemModel* parent = nullptr, Variant* data = nullptr);
 
 private:
-	UICollectionModel* m_owner;
-	int m_row;
-	int m_column;
-	Ref<UICollectionItemModel> m_parent;
-	Ref<Variant> m_data;
+	//UICollectionViewModel* m_owner;
+	//int m_row;
+	//int m_column;
+	//Ref<UICollectionItemModel> m_parent;
+	//Ref<Variant> m_data;
 };
 
-class UICollectionModel	// TODO: naming, WPF の CollectionView や CollectionViewSource に近い
+class UICollectionViewModel	// TODO: naming, WPF の CollectionView や CollectionViewSource に近い
     : public UIViewModel
 {
 public:
-	// index が示すデータが持つ、子 row の数
-	virtual int getRowCount(UICollectionItemModel* index) = 0;
+	// index が示すデータが持つ、子 row の数. nullptr は root.
+	virtual int getItemCount() = 0;
 
-	virtual Ref<UICollectionItemModel> getIndex(int row, int column, UICollectionItemModel* parent) = 0;
+	virtual Ref<UICollectionItemViewModel> getItem(int row) = 0;
 
 	// index が示すデータ
 	//virtual Ref<Variant> getData(const UICollectionItemModel* index, const String& role) const;
-	virtual String getData(UICollectionItemModel* index, const String& role) = 0;
+	//virtual String getData(UICollectionItemViewModel* index, int column, const String& role) = 0;
 
 LN_CONSTRUCT_ACCESS:
-	UICollectionModel();
+	UICollectionViewModel();
 	void init();
 
 
@@ -60,17 +61,16 @@ private:
 };
 
 class UIFileSystemCollectionModel
-	: public UICollectionModel
+	: public UICollectionViewModel
 {
 public:
-	Ref<UICollectionItemModel> setRootPath(const Path& path);
+	void setRootPath(const Path& path);
     void setExcludeFilters(List<String>* value);
 
-	virtual int getRowCount(UICollectionItemModel* index) override;
-	virtual Ref<UICollectionItemModel> getIndex(int row, int column, UICollectionItemModel* parent) override;
-	virtual String getData(UICollectionItemModel* index, const String& role) override;
+	virtual int getItemCount() override;
+	virtual Ref<UICollectionItemViewModel> getItem(int row) override;
 
-    virtual Path filePath(UICollectionItemModel* itemModel);
+    virtual Path filePath(UICollectionItemViewModel* index);
 
     void refresh();
 
@@ -82,23 +82,46 @@ protected:
     virtual bool onTestFilter(const Path& path);
 
 private:
-	class FileSystemNode : public RefObject
+	class FileSystemNode : public UICollectionItemViewModel
 	{
 	public:
-		FileSystemNode(const ln::Path& p) : path(p) {}
-		Path path;
-		List<Ref<FileSystemNode>> children;
-		bool dirty = true;
+		//FileSystemNode(const ln::Path& p) : m_path(p) {}
+		bool init(UIFileSystemCollectionModel* owner, const ln::Path& p)
+		{
+			UICollectionItemViewModel::init();
+			m_owner = owner;
+			m_path = p; return true;
+		}
+
+		const Path& path() const { return m_path; }
+		const List<Ref<FileSystemNode>>& children() const { return m_children; }
+
+		void attemptConstructChildNodes(UIFileSystemCollectionModel* owner, bool forceReset);
+		void refreshHierarchical(UIFileSystemCollectionModel* owner);
+
+		String getValue(const String& role) override { return m_path.fileName(); }
+		int getChildrenCount() const override  { return m_children.size(); }
+		Ref<UICollectionItemViewModel> getItem(int row) const override
+		{
+			m_children[row]->attemptConstructChildNodes(m_owner, false);
+			return m_children[row];
+		}
+
+	private:
+		UIFileSystemCollectionModel* m_owner;
+		Path m_path;
+		List<Ref<FileSystemNode>> m_children;
+		bool m_dirty = true;
 	};
 
-	FileSystemNode* getNode(UICollectionItemModel* index);
-	Ref<FileSystemNode> makeNode(const Path& path);
-	void constructChildNodes(FileSystemNode* node, bool reset);
-    void refreshHierarchical(UICollectionItemModel* model);
+	//FileSystemNode* getNode(UICollectionItemModel* index);
+	//Ref<FileSystemNode> makeNode(const Path& path);
+	//void constructChildNodes(FileSystemNode* node, bool reset);
+    //void refreshHierarchical(UICollectionItemModel* model);
     bool testFilter(const Path& path);
 
 	Ref<FileSystemNode> m_rootNode;
-    Ref<UICollectionItemModel> m_rootModel;
+    //Ref<UICollectionItemModel> m_rootModel;
     Ref<List<String>> m_excludeFilters;
 };
 

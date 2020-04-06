@@ -19,7 +19,7 @@ UICollectionItem::UICollectionItem()
 
 void UICollectionItem::init()
 {
-	UIControl::init();
+	UIControl::init(nullptr);
 	auto vsm = getVisualStateManager();
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Unselected);
 	vsm->registerState(UIVisualStates::SelectionStates, UIVisualStates::Selected);
@@ -114,7 +114,7 @@ UIItemsControl::UIItemsControl()
 
 void UIItemsControl::init()
 {
-    UIControl::init();
+    UIControl::init(nullptr);
 
 	// dummy for single select mode
 	m_selectedItems.add(nullptr);
@@ -157,7 +157,15 @@ void UIItemsControl::addItem(UICollectionItem* item)
     m_logicalChildren->add(item);
     item->setLogicalParent(this);
 
-    m_itemssHostLayout->addVisualChild(item);
+    if (m_itemssHostLayout) {
+        m_itemssHostLayout->addVisualChild(item);
+    }
+
+    onItemAdded(item);
+}
+
+void UIItemsControl::onItemAdded(UICollectionItem* item)
+{
 }
 
 void UIItemsControl::removeItem(UICollectionItem* item)
@@ -206,6 +214,19 @@ void UIItemsControl::onItemClick(UICollectionItem* item, UIClickEventArgs* e)
 void UIItemsControl::onSelectionChanged(UISelectionChangedEventArgs* e)
 {
     m_onSelectionChanged.raise(e);
+}
+
+void UIItemsControl::onAddChild(UIElement* child)
+{
+    // TODO: dynamic_cast じゃなくてフラグで見たい
+    auto* item = dynamic_cast<UICollectionItem*>(child);
+    if (!item) {
+        LN_NOTIMPLEMENTED();
+        return;
+    }
+
+    addItem(item);
+
 }
 
 void UIItemsControl::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
@@ -346,7 +367,27 @@ UIMenuItem::UIMenuItem()
 
 void UIMenuItem::init()
 {
-    UIControl::init();
+    UIControl::init(nullptr);
+}
+
+
+//==============================================================================
+// UICollectionControl
+
+UICollectionControl::UICollectionControl()
+{
+
+}
+
+bool UICollectionControl::init()
+{
+    if (!UIControl::init()) return false;
+    return true;
+}
+
+void UICollectionControl::onAddChild(UIElement* child)
+{
+
 }
 
 } // namespace ln

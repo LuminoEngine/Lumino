@@ -7,7 +7,7 @@
 namespace ln {
 
 /** コントロールのレイアウト方向を示します。*/
-enum class Orientation
+enum class Orientation  // TODO: name LayoutOrientation
 {
 	Horizontal = 0,		/**< 水平方向に配置します。*/
 	Vertical,			/**< 垂直方向に配置します。*/
@@ -75,6 +75,9 @@ enum class UISpecialElementFlags : uint8_t
 
     // 
     //LayoutInvisible = 1 << 3,
+
+    DragDropSource = 1 << 5,
+    DragDropTarget = 1 << 6,
 };
 
 enum class UIElementDirtyFlags

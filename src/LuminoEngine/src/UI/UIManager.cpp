@@ -40,11 +40,21 @@ void UIManager::init(const Settings& settings)
 
 	//m_defaultLayout = makeObject<UIFrameLayout>();
 
+
+    UICreationContext::Default = makeObject<UICreationContext>();
+    UICreationContext::Default->m_autoAddToPrimaryElement = true;
+
+    UICreationContext::DisabledAutoAddToPrimaryElement = makeObject<UICreationContext>();
+    UICreationContext::DisabledAutoAddToPrimaryElement->m_autoAddToPrimaryElement = false;
+
     LN_LOG_DEBUG << "UIManager Initialization finished.";
 }
 
 void UIManager::dispose()
 {
+    UICreationContext::Default = nullptr;
+    UICreationContext::DisabledAutoAddToPrimaryElement = nullptr;
+
     m_eventArgsPool = nullptr;
     m_mainContext = nullptr;
 }
@@ -83,18 +93,20 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
 
 
 #if 1
+    UIElement* old = m_mouseHoverElement;
+
     UIElement* hoverdElement = mouseEventSource->onLookupMouseHoverElement(frameClientPosition);
     if (m_mouseHoverElement != hoverdElement) {
         clearMouseHover();
-    }
-
-    if (hoverdElement)
-    {
-        m_mouseHoverElement = hoverdElement;
-        auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
-        m_mouseHoverElement->raiseEvent(args);
 
 
+
+        if (hoverdElement)
+        {
+            m_mouseHoverElement = hoverdElement;
+            auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
+            m_mouseHoverElement->raiseEvent(args);
+        }
     }
 
 

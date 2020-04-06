@@ -15,7 +15,7 @@ UIAdorner::UIAdorner()
 
 void UIAdorner::init(UIElement* adornedElement)
 {
-	UIElement::init();
+	UIElement::init(nullptr);
     m_adornedElement = adornedElement;
 }
 

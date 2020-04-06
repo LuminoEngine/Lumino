@@ -1462,6 +1462,7 @@ void UITheme::init()
     Object::init();
 }
 
+// PC 用 Editor 向け Theme. Material-UI and Blender 2.8 based.
 void UITheme::buildLumitelier()
 {
 	m_defaultStyle = makeObject<UIStyle>();
@@ -1469,17 +1470,19 @@ void UITheme::buildLumitelier()
 	m_defaultStyle->textColor = Color::White;
 	m_defaultStyle->fontSize = 14;
 
-	setSpacing(8);
-	m_lineSpacing = 22;
+	setSpacing(4);
+	m_lineContentHeight = 24;
+	m_lineSpacing = m_lineContentHeight + spacing(1);
 
 	// Background
-	setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
+	//setColor(UIThemeConstantPalette::DefaultBackgroundColor, Color::parse(u"#303030"));
+	setColor(UIThemeConstantPalette::DefaultBackgroundColor, UIColors::get(UIColorHues::Grey, 8));
 	setColor(UIThemeConstantPalette::PaperBackgroundColor, Color::parse(u"#424242"));
 
 	// Intentions
 	setColor(UIThemeConstantPalette::DefaultMainColor, UIColors::get(UIColorHues::Grey, 2));
 	setColor(UIThemeConstantPalette::DefaultTextColor, Color::Black);
-	setColor(UIThemeConstantPalette::PrimaryMainColor, UIColors::get(UIColorHues::LightGreen, 5));
+	setColor(UIThemeConstantPalette::PrimaryMainColor, UIColors::get(UIColorHues::Green, 5));
 	setColor(UIThemeConstantPalette::PrimaryTextColor, Color::White);
 	setColor(UIThemeConstantPalette::SecondaryMainColor, UIColors::get(UIColorHues::Orange, 5));
 	setColor(UIThemeConstantPalette::SecondaryTextColor, Color::White);
@@ -1502,6 +1505,48 @@ void UITheme::buildLumitelier()
 	auto sheet = makeObject<UIStyleSheet>();
 
 	//--------------------------------
+	// UIButton
+	{
+		if (auto s = sheet->obtainStyle(u"UIButton")) {
+			s->minWidth = 64;
+			s->minHeight = lineContentHeight();
+			s->margin = Thickness(8);   // TODO: spacing?
+			s->padding = Thickness(spacing(2), 0);
+			s->hAlignment = HAlignment::Center;
+			s->vAlignment = VAlignment::Center;
+			s->horizontalContentAlignment = HAlignment::Center;
+			s->verticalContentAlignment = VAlignment::Center;
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
+			s->cornerRadius = CornerRadius(4);
+			s->shadowBlurRadius = 1;
+			s->shadowOffsetY = 1;
+			s->shadowColor = Color(0, 0, 0, 0.5);
+		}
+
+
+		//auto e = sheet->addStyleSet(u"UIButton");
+		//{
+		//	auto s = e->mainStyleClass()->mainStyle();
+		//}
+		//// UIButton.test
+		//{
+		//	auto s = makeObject<UIStyle>();
+		//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
+		//	c->addClassStyle(u"test", s);
+		//}
+		// UIButton:MouseOver
+		if (auto s = sheet->obtainStyle(u"UIButton:MouseOver")) {
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
+		}
+		// 
+		if (auto s = sheet->obtainStyle(u"UIButton:Pressed")) {
+			s->backgroundColor = color(UIThemeConstantPalette::PrimaryMainColor);
+			s->shadowBlurRadius = 0;
+			s->shadowOffsetY = 0;
+		}
+	}
+
+	//--------------------------------
 	// UIWindow
 	{
 		//auto e = sheet->addStyleSet(u"UIWindow");
@@ -1522,8 +1567,8 @@ void UITheme::buildLumitelier()
 	// UIListBoxItem
 	{
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
-			s->padding = Thickness(spacing(1), 0);
-			s->minHeight = m_lineSpacing;
+			s->minHeight = lineContentHeight();
+			//s->padding = Thickness(spacing(1), 0);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
 			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
@@ -1532,6 +1577,153 @@ void UITheme::buildLumitelier()
 			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
 		}
 	}
+	//--------------------------------
+	// UITreeView
+	{
+		if (auto s = sheet->obtainStyle(u"UITreeView")) {
+			s->horizontalContentAlignment = HAlignment::Left;
+		}
+	}
+	//--------------------------------
+	// UITreeItem
+	{
+		if (auto s = sheet->obtainStyle(u"UITreeItem")) {
+			s->minHeight = lineContentHeight();
+			s->hAlignment = HAlignment::Stretch;
+			s->vAlignment = VAlignment::Top;
+		}
+		if (auto s = sheet->obtainStyle(u"UITreeItem:MouseOver")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+		}
+		if (auto s = sheet->obtainStyle(u"UITreeItem:Selected")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+		}
+		if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander")) {   // VisualState によらず常に有効。個別にしたければ:Normalを付ける。
+			s->width = 16;
+			s->height = 16;
+			s->hAlignment = HAlignment::Center;
+			s->vAlignment = VAlignment::Center;
+			s->backgroundColor = Color::Transparency;
+		}
+		//if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:MouseOver")) {
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Pressed")) {
+		//}
+		if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Checked")) {
+			auto icon = makeObject<UIStyleDecorator>();
+			icon->setIconName(u"angle-down", 12);
+			icon->m_color = Color::White;
+			s->decorators.add(icon);
+		}
+		if (auto s = sheet->obtainStyle(u"UIToggleButton.UITreeItem-Expander:Unchecked")) {
+			auto icon = makeObject<UIStyleDecorator>();
+			icon->setIconName(u"angle-right", 12);
+			icon->m_color = Color::White;
+			s->decorators.add(icon);
+		}
+	}
+
+
+	//--------------------------------
+	// UIThumb
+	{
+		if (auto s = sheet->obtainStyle(u"UIThumb.UITrack-Thumb")) {
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 5);
+			s->cornerRadius = CornerRadius(3);
+		}
+
+		//auto e = sheet->addStyleSet(u"UIThumb");
+		//// UIThumb
+		//{
+		//	auto s = e->mainStyleClass()->mainStyle();
+		//}
+		//// UIThumb.UITrack-Thumb
+		//{
+		//	auto s = makeObject<UIStyle>();
+
+		//	s->margin = Thickness(2);
+		//	s->backgroundColor = UIColors::get(UIColorHues::Grey, 4);
+		//	s->cornerRadius = CornerRadius(4);
+		//	s->hAlignment = HAlignment::Stretch;
+		//	s->vAlignment = VAlignment::Stretch;
+
+		//	s->backgroundColor = UIColors::get(UIColorHues::Blue, 4);
+		//	e->mainStyleClass()->addStateStyle(u"UITrack-Thumb", s);
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIThumb.SplitterBar"))
+		//{
+		//	s->backgroundColor = Color(0, 1, 0, 0.2); // debug
+		//	s->margin = Thickness(-2, -2, -2, -2);
+		//}
+	}
+
+	//--------------------------------
+	// UIScrollBar
+	{
+		if (auto s = sheet->obtainStyle(u"UIScrollBar")) {
+			//s->backgroundColor = UIColors::get(UIColorHues::Green, 7);
+			s->minWidth = 6;
+		}
+	}
+	//--------------------------------
+	// UITrack
+	{
+		if (auto s = sheet->obtainStyle(u"UITrack")) {
+			s->backgroundColor = UIColors::get(UIColorHues::Grey, 7);
+			s->cornerRadius = CornerRadius(3);
+		}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton")) {
+		//	s->backgroundColor = Color(1, 1, 1, 0);
+		//	s->cornerRadius = CornerRadius(0);
+		//	s->shadowBlurRadius = 0;
+		//	s->shadowOffsetY = 0;
+		//	s->hAlignment = HAlignment::Stretch;
+		//	s->vAlignment = VAlignment::Stretch;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:MouseOver")) {	// ベース要素である UIButton の VisualState を全て上書きする必要がある。CSS と同じ動作。
+		//	s->backgroundColor = Color::Transparency;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-DecreaseButton:Pressed")) {
+		//	s->backgroundColor = Color::Transparency;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton")) {
+		//	s->backgroundColor = Color(1, 1, 1, 0);
+		//	s->cornerRadius = CornerRadius(0);
+		//	s->shadowBlurRadius = 0;
+		//	s->shadowOffsetY = 0;
+		//	s->hAlignment = HAlignment::Stretch;
+		//	s->vAlignment = VAlignment::Stretch;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:MouseOver")) {
+		//	s->backgroundColor = Color::Transparency;
+		//}
+		//if (auto s = sheet->obtainStyle(u"UIButton.UITrack-IncreaseButton:Pressed")) {
+		//	s->backgroundColor = Color::Transparency;
+		//}
+
+	}
+
+	////--------------------------------
+	//// UITabBar
+	//{
+	//	if (auto s = sheet->obtainStyle(u"UITabBar")) {
+	//		s->backgroundColor = color(UIThemeConstantPalette::DefaultDivider);
+	//	}
+	//}
+
+	//--------------------------------
+	// UITabBarItem
+	{
+		if (auto s = sheet->obtainStyle(u"UITabBarItem")) {
+			s->minHeight = lineContentHeight();
+			s->padding = Thickness(spacing(2), 0);
+			s->backgroundColor = color(UIThemeConstantPalette::DefaultBackgroundColor);
+		}
+		if (auto s = sheet->obtainStyle(u"UITabBarItem:Selected")) {
+			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+		}
+	}
+
 
 	m_styleSheet = sheet;
 }

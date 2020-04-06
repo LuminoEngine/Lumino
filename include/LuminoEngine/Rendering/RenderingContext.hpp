@@ -19,6 +19,7 @@ class MeshContainer;
 class RenderViewPoint;
 class RenderView;
 class ImageEffect;
+class InstancedMeshList;
 namespace detail {
 class FontRequester;
 class FlexGlyphRun;
@@ -30,14 +31,6 @@ class RenderDrawElement;
 } // namespace detail
 
 
-class InstancedMeshList
-{
-public:
-
-private:
-	Ref<Mesh> m_mesh;
-
-};
 
 
 
@@ -167,6 +160,8 @@ public:
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
     void drawMesh(Mesh* mesh, int sectionIndex);
+
+	void drawMeshInstanced(InstancedMeshList* list);
 
 	void drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font);
 

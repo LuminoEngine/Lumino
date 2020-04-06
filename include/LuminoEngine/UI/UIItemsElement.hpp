@@ -13,8 +13,8 @@ class UICollectionItem
 	: public UIControl
 {
 public:
-    void setData(Variant* value) { m_data = value; }
-    Variant* data() const { return m_data; }
+    //void setData(Variant* value) { m_data = value; }
+    //Variant* data() const { return m_data; }
     
     /** Click イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
@@ -38,7 +38,7 @@ private:
 	void setSelectedInternal(bool selected);
 
 	UIItemsControl* m_ownerCollectionControl;
-    Ref<Variant> m_data;
+    //Ref<Variant> m_data;
     bool m_isPressed;
 	bool m_isSelected;
     Event<UIClickEventHandler> m_onClick;
@@ -46,6 +46,7 @@ private:
 	friend class UIItemsControl;
 };
 
+// item 追加は addChild で。
 class UIItemsControl	// TODO: UICollectionItem がほかにいい名前思いつかなければ、CollectionControl かなぁ・・・
 	: public UIControl
 {
@@ -66,14 +67,19 @@ protected:
 
     void setItemsLayoutPanel(UILayoutPanel2* layout, bool setAsVisualChild = true);
 
-	void addItem(UICollectionItem* item);
+    // UICollectionItem であるとわかっている 時に、addChild の代わりに使うと効率的に追加できる。
+    void addItem(UICollectionItem* item);
+
 	void removeItem(UICollectionItem* item);
     void removeAllItems();
 
+    // 新しく item が追加された。
+    virtual void onItemAdded(UICollectionItem* item);
     virtual void onItemClick(UICollectionItem* item, UIClickEventArgs* e);
     virtual void onSelectionChanged(UISelectionChangedEventArgs* e);
 
 	// base interfaces
+    void onAddChild(UIElement* child) override;
 	virtual void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
     virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
@@ -81,6 +87,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIItemsControl();
 	void init();
+
+private:
 
 public: // TODO:
     void selectItemExclusive(UICollectionItem* item);
@@ -156,6 +164,23 @@ private:
     Ref<UIElement> m_icon;
 };
 
+
+// item 追加は addChild で。
+class UICollectionControl
+    : public UIControl
+{
+public:
+
+protected:
+    // base interfaces
+    void onAddChild(UIElement* child) override;
+    
+LN_CONSTRUCT_ACCESS:
+	UICollectionControl();
+	bool init();
+
+private:
+};
 
 } // namespace ln
 

@@ -9,6 +9,8 @@ using namespace ln;
 
 #include <Lumino.hpp>
 
+#define TEST_DTL 0
+
 #if TEST_DTL
 #include <DTL.hpp>
 #endif
@@ -90,7 +92,7 @@ class Sandbox_MeshTilemap_App : public Application
 		else {
 			for (int z = 0; z < layer->sizeZ(); z++)
 				for (int x = 0; x < layer->sizeX(); x++)
-					layer->putAutoTile(x, 0, z, 0);
+					layer->putAutoTile(x, 0, z, 1);
 		}
 
 		meshTilemapModel->addLayer(layer);
@@ -116,11 +118,17 @@ class Sandbox_MeshTilemap_App : public Application
 		for (std::size_t row{}; row < matrix.size(); ++row)
 			for (std::size_t col{}; col < matrix[row].size(); ++col)
 				if (matrix[row][col]) {
-					layer->putAutoTile(row, 1, col, 0);
-					layer->putAutoTile(row, 2, col, 0);
-				}i
+					//layer->putAutoTile(row, 1, col, 0);
+					//layer->putAutoTile(row, 2, col, 0);
+					layer->putAutoTile(row, 1, col, 3);
+				}
 #endif
-
+		//{
+		//	layer->putAutoTile(1, 0, 0, 3);
+		//	layer->putAutoTile(0, 0, 1, 3);
+		//	layer->putAutoTile(1, 0, 1, 3);
+		//	layer->putAutoTile(2, 0, 1, 3);
+		//}
 	}
 
 	void onUpdate() override
@@ -134,6 +142,7 @@ void Sandbox_MeshTilemap()
 	//EngineSettings::setGraphicsDebugEnabled(true);
  //   EngineSettings::setDebugToolEnabled(false);
 	//EngineSettings::setMainWindowSize(1600, 800);
+	EngineSettings::setDebugToolEnabled(true);
     detail::ApplicationHelper::run(&app);
 }
 

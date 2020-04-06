@@ -70,6 +70,16 @@ struct GridLayoutInfo
 //};
 
 
+class UICreationContext
+	: public Object
+{
+public:
+	bool m_autoAddToPrimaryElement = true;
+
+	static Ref<UICreationContext> Default;
+	static Ref<UICreationContext> DisabledAutoAddToPrimaryElement;
+};
+
 class UIViewModel
 	: public Object
 {
@@ -123,6 +133,9 @@ public:
 
     void setName(const String& value) { m_name = value; }
     const String& name() const { return m_name; }
+
+	/** 要素のサイズを設定します。サイズには、border の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
+	void setSize(float width, float height);
 
     void setWidth(float value);
     float width() const;
@@ -354,7 +367,7 @@ public:
 	void setViewModel(UIViewModel* value);
     virtual void setContent(UIElement* content);
     virtual void setContent(const String& content);
-	/** Add element to container. */
+	/** Add element to container. 論理的な子要素として追加する。 */
 	LN_METHOD()
     void addChild(UIElement* child);
     void addChild(const String& child);
@@ -376,7 +389,8 @@ public:
 
     UIElement();
     virtual ~UIElement();
-	void init();
+	bool init() { return init(UICreationContext::Default); }
+	bool init(const UICreationContext* context);
 
 public: // TODO: internal
     void setRenderPriority(int value);
@@ -392,8 +406,18 @@ public:	// TODO: internal protected
     void focus();
 	void retainCapture();
 	void releaseCapture();
+
+	// element を、この要素の Visual 子要素として追加する。
+	// Visual 子要素は次のワークフローに組み込まれる。
+	// - マウスのヒットテスト (Hierarchical)
+	// - スタイル更新 (Hierarchical)
+	// - フレーム更新 (Hierarchical)
+	// - 描画 (Hierarchical)
+	// 注意点として、レイアウトは含まれない。
+	// このため通常は、 measureOverride, arrangeOverride を実装してレイアウトする必要がある。
 	void addVisualChild(UIElement* element);
 	void removeVisualChild(UIElement* element);
+	void removeAllVisualChild();
 
     virtual const String& elementName() const { return String::Empty; }
 
@@ -491,6 +515,7 @@ public:	// TODO: internal protected
 	Flags<detail::UISpecialElementFlags>& specialElementFlags() { return m_specialElementFlags; }
     void setLogicalParent(UIControl* parent) { m_logicalParent = parent; }
     UIControl* logicalParent() const { return m_logicalParent; }
+	template<class T> T* logicalParentAs() const { return static_cast<T*>(m_logicalParent); }
     void removeFromLogicalParent();
 	void attemptAddToPrimaryElement();
 
@@ -519,8 +544,8 @@ public: // TODO: internal
     UIContext* m_context;       // ルート要素 (ほとんどの場合は UIFrameWindow) が値を持つ。それ以外は基本的に null. もしウィンドウ内で別のコンテキストに属したい場合はセットする。
     UIFrameRenderView* m_renderView = nullptr; // ルート要素が値を持つ。
     
-    UIElement* m_visualParent;
-    UIControl* m_logicalParent;    // TODO: Layout も親となりえる。
+    UIElement* m_visualParent;		// 必ず存在する。
+    UIControl* m_logicalParent;    // 必ず存在するとは限らない。 TODO: Layout も親となりえる。
 	Ref<List<Ref<UIElement>>> m_visualChildren;
 	Ref<List<UIElement*>> m_orderdVisualChildren;
     Ref<List<String>> m_classList;

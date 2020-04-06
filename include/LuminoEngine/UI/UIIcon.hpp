@@ -3,11 +3,26 @@
 
 namespace ln {
 
-
+/**
+ * アイコンの UI 要素です。
+ *
+ * フォントアイコンを使用する場合、要素のサイズは フォントの Global metrix の行間サイズをベースとする正方形となります。
+ * グリフの境界ボックスではありません。
+ * このためグリフが異なっていても、フォントサイズが同一であれば UIIcon としてのサイズは同一となります。
+ */
 class UIIcon
 	: public UIElement
 {
 public:
+	/** アイコン名を指定して UIIcon を作成します。 */
+	static Ref<UIIcon> loadFontIcon(const StringRef& iconName);
+
+	/** アイコン名・サイズ を指定して UIIcon を作成します。 */
+	static Ref<UIIcon> loadFontIcon(const StringRef& iconName, int size);
+
+	/** アイコン名・サイズ・色 (TextColor) を指定して UIIcon を作成します。 */
+	static Ref<UIIcon> loadFontIcon(const StringRef& iconName, int size, const Color& color);
+
 	void setIconName(const StringRef& value);
 
 protected:
@@ -16,11 +31,15 @@ protected:
 
 LN_CONSTRUCT_ACCESS:
 	UIIcon();
-	void init();
+	bool init();
+	bool init(const StringRef& iconName);
+	bool init(const StringRef& iconName, int size);
+	bool init(const StringRef& iconName, int size, const Color& color);
 
 private:
 	Ref<Font> m_font;
 	uint32_t m_codePoint;
+	Vector2 m_renderOffset;
 };
 
 } // namespace ln

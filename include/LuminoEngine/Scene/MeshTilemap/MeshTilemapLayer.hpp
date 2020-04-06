@@ -37,7 +37,7 @@ private:
     {
         //PointI points[9];
         int tileIds[9];
-        //int topTileIds[9];
+        //int piledTileIds[9];  // 面方向にひとつ進んだところにあるタイルID
     };
 
     static const Vec3I TopOffsets[6];
@@ -45,11 +45,15 @@ private:
     bool isValidIndex(int x, int y, int z) const { return (0 <= x && x < m_sizeX) && (0 <= y && y < m_sizeY) && (0 <= z && z < m_sizeZ); }
     detail::MeshTile& tile(int x, int y, int z) { return m_tiles[((m_sizeX * m_sizeY) * z) + (m_sizeX * y) + x]; }
     const detail::MeshTile& tile(int x, int y, int z) const { return m_tiles[((m_sizeX * m_sizeY) * z) + (m_sizeX * y) + x]; }
+    int getGBIDSafe(int x, int y, int z) const { return isValidIndex(x, y, z) ? tile(x, y, z).tileId : -1; }
     void refreshAutoTile(int x, int y, int z);
     void refreshAutoTileFace(int x, int y, int z, MeshTileFaceDirection dir);
     void makeAutoTileNearbyInfo(int x, int y, int z, MeshTileFaceDirection dir, AutoTileNearbyInfo* outInfo) const;
+    void getSubtileIdsFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId, int subtiles[4]) const;
+    int getAutoBlockLocalIdFromNearbyInfo(const AutoTileNearbyInfo& nearbyInfo, int autoBlockKindId) const;
+    int getAutoBlockLocalIdFromNearbyInfo2(const AutoTileNearbyInfo& nearbyInfo1, const AutoTileNearbyInfo& nearbyInfo2, int autoBlockKindId) const;
 
-    void draw(RenderingContext* context, const MeshTileset* tileset);
+    void draw(RenderingContext* context, MeshTileset* tileset);
 
     List<detail::MeshTile> m_tiles;
     int m_sizeX;

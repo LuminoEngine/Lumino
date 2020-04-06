@@ -311,6 +311,8 @@ struct GLVertexElement
 	GLboolean			normalized;		// データを正規化するか (0.0 ～ 1.0 にするか。色を 0～255 で指定していて、GLSL では 0.0～1.0 で使いたいときは true)
 	GLsizei				stride;			// 頂点1つ分のバイト数 (この要素が1つのバイト数ではないので注意)
 	size_t				byteOffset;		// 先頭からのバイト数
+
+	bool instance = false;
 };
 
 class GLVertexDeclaration

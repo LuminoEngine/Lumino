@@ -14,7 +14,7 @@ UISplitter::UISplitter()
 
 void UISplitter::init()
 {
-    UIControl::init();
+    UIControl::init(nullptr);
 }
 
 void UISplitter::setOrientation(Orientation value)
@@ -112,10 +112,14 @@ Size UISplitter::measureOverride(UILayoutContext* layoutContext, const Size& con
         }
 
         // total size
-        if (isHorizontal())
-            childrenSize.width += childDesiredSize.width;
-        else
-            childrenSize.height += childDesiredSize.height;
+		if (isHorizontal()) {
+			childrenSize.width += childDesiredSize.width;
+			childrenSize.height = std::max(childrenSize.height, childDesiredSize.height);
+		}
+		else {
+			childrenSize.width = std::max(childrenSize.width, childDesiredSize.width);
+			childrenSize.height += childDesiredSize.height;
+		}
     }
 
     // bar area
@@ -265,14 +269,14 @@ void UISplitter::onRoutedEvent(UIEventArgs* e)
 			auto& prev = m_cellDefinitions[index];
 			auto& next = m_cellDefinitions[index + 1];
 
-			if (isHorizontal()) {
-				prev.actualSize = m_dragStartSize1 + e2->offsetX();
-				next.actualSize = m_dragStartSize2 - e2->offsetX();
-			}
-			else {
-				prev.actualSize = m_dragStartSize1 + e2->offsetY();
-				next.actualSize = m_dragStartSize2 - e2->offsetY();
-			}
+			float offset = isHorizontal() ? e2->offsetX() : e2->offsetY();
+
+			if (m_dragStartSize1 + offset < 0) offset = -m_dragStartSize1;
+			if (m_dragStartSize2 - offset < 0) offset = m_dragStartSize2;
+
+			prev.actualSize = m_dragStartSize1 + offset;
+			next.actualSize = m_dragStartSize2 - offset;
+
 			invalidate(detail::UIElementDirtyFlags::Layout, true);
 		}
 

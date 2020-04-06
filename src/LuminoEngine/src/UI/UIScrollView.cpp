@@ -16,7 +16,7 @@ UIScrollView::UIScrollView()
 
 void UIScrollView::init()
 {
-	UIControl::init();
+	UIControl::init(nullptr);
 }
 
 
@@ -35,7 +35,7 @@ UIThumb::~UIThumb()
 
 void UIThumb::init()
 {
-	UIElement::init();
+	UIElement::init(nullptr);
 }
 
 void UIThumb::onRoutedEvent(UIEventArgs* e)
@@ -135,7 +135,7 @@ UIRangeBase::~UIRangeBase()
 
 void UIRangeBase::init()
 {
-	UIElement::init();
+	UIElement::init(nullptr);
 }
 
 void UIRangeBase::setValue(float value)
@@ -214,6 +214,7 @@ UITrack::UITrack()
 	, m_thumb(nullptr)
 	, m_increaseButton(nullptr)
 {
+	m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
 }
 
 UITrack::~UITrack()
@@ -222,24 +223,24 @@ UITrack::~UITrack()
 
 void UITrack::init()
 {
-    UIControl::init();
+	UIElement::init(nullptr);
 
 	// register VisualState
 	auto* vsm = getVisualStateManager();
 	vsm->registerState(OrientationStates, HorizontalState);
 	vsm->registerState(OrientationStates, VerticalState);
 
-	m_decreaseButton = makeObject<UIButton>();
+	//m_decreaseButton = makeObject<UIButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
 	m_thumb = makeObject<UIThumb>();
-	m_increaseButton = makeObject<UIButton>();
+	//m_increaseButton = makeObject<UIButton>(UICreationContext::DisabledAutoAddToPrimaryElement);
 
-	m_decreaseButton->addClass(u"UITrack-DecreaseButton");
+	//m_decreaseButton->addClass(u"UITrack-DecreaseButton");
 	m_thumb->addClass(u"UITrack-Thumb");
-	m_increaseButton->addClass(u"UITrack-IncreaseButton");
+	//m_increaseButton->addClass(u"UITrack-IncreaseButton");
 
-	addVisualChild(m_decreaseButton);
+	//addVisualChild(m_decreaseButton);
 	addVisualChild(m_thumb);
-	addVisualChild(m_increaseButton);
+	//addVisualChild(m_increaseButton);
 
 	setOrientation(Orientation::Horizontal);
 }
@@ -260,6 +261,11 @@ void UITrack::setOrientation(Orientation orientation)
 		LN_NOTIMPLEMENTED();
 		break;
 	}
+}
+
+void UITrack::setValue(float value)
+{
+	m_value = std::max(m_minimum, std::min(m_maximum, value));
 }
 
 float UITrack::valueFromDistance(float horizontal, float vertical)
@@ -293,9 +299,18 @@ UIThumb* UITrack::getThumb() const
 
 Size UITrack::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	m_decreaseButton->measureLayout(layoutContext, constraint);
-	m_thumb->measureLayout(layoutContext, constraint);
-	m_increaseButton->measureLayout(layoutContext, constraint);
+	if (m_decreaseButton) {
+		m_decreaseButton->measureLayout(layoutContext, constraint);
+	}
+
+	if (m_thumb) {
+		m_thumb->measureLayout(layoutContext, constraint);
+	}
+
+	if (m_increaseButton) {
+		m_increaseButton->measureLayout(layoutContext, constraint);
+	}
+
 	return UIElement::measureOverride(layoutContext, constraint);
 }
 
@@ -331,7 +346,7 @@ Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Size& finalS
 		if (m_thumb != nullptr)
 		{
 			rect.x = decreaseButtonLength;
-			rect.width = thumbLength;
+			rect.width = std::ceil(thumbLength);	// Pixel snap
 			m_thumb->arrangeLayout(layoutContext, rect);
 		}
 		// PageDown Button
@@ -357,7 +372,7 @@ Size UITrack::arrangeOverride(UILayoutContext* layoutContext, const Size& finalS
 		if (m_thumb != nullptr)
 		{
 			rect.y = decreaseButtonLength;
-			rect.height = thumbLength;
+			rect.height = std::ceil(thumbLength);	// Pixel snap
 			m_thumb->arrangeLayout(layoutContext, rect);
 		}
 		// PageDown Button
@@ -445,12 +460,16 @@ void UITrack::calcScrollBarComponentsSize(
 	float range = std::max(0.0f, m_maximum - min);
 	float offset = std::min(range, m_value - min);            // m_value の位置
 	float extent = std::max(0.0f, range) + viewportSize;    // コンテンツ全体のサイズ
+	//float extent = std::max(0.0f, range);
+
+	float tl = (viewportSize / (range + viewportSize)) * trackLength;
 
 	//float trackLength = finalLength;
 	float thumbMinLength = 16.0f;
 
 	// Thumb サイズを計算する
-	float thumbLength = trackLength * viewportSize / extent;    // コンテンツ全体の内、どの部分を表示しているのか、その割合で Thumb の長さを作る
+	//float thumbLength = trackLength * viewportSize / extent;    // コンテンツ全体の内、どの部分を表示しているのか、その割合で Thumb の長さを作る
+	float thumbLength = (viewportSize / (range + viewportSize)) * trackLength;	// MSDN の計算式
 	coerceLength(thumbLength, trackLength);
 	thumbLength = std::max(thumbMinLength, thumbLength);
 
@@ -493,7 +512,7 @@ UIScrollBar::~UIScrollBar()
 
 void UIScrollBar::init()
 {
-    UIElement::init();
+    UIElement::init(nullptr);
 
     // register VisualState
     auto* vsm = getVisualStateManager();
@@ -675,10 +694,180 @@ void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta
     float newValue = m_dragStartValue + valueDelta;
     m_track->setValue(newValue);
 
+
+	//std::cout << newValue << std::endl;
+	//std::cout << m_track->getValue() << std::endl;
+
+
     // TODO:
     //Ref<ScrollEventArgs> args(m_manager->getEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
     //raiseEvent(ScrollEvent, this, args);
 }
+
+//==============================================================================
+// UIScrollViewer
+
+UIScrollViewHelper::UIScrollViewHelper(UIControl* owner)
+	: m_owner(owner)
+	, m_horizontalScrollBar(nullptr)
+	, m_verticalScrollBar(nullptr)
+	, m_scrollTarget(nullptr)
+{
+	m_owner->setClipToBounds(true);
+}
+
+void UIScrollViewHelper::setHScrollbarVisible(bool value)
+{
+	if (value) {
+		if (!m_horizontalScrollBar) {
+			m_horizontalScrollBar = makeObject<UIScrollBar>();
+			m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
+			//m_horizontalScrollBar->setWidth(16);	// TODO: style
+			m_horizontalScrollBar->setVAlignment(VAlignment::Stretch);
+			m_owner->addVisualChild(m_horizontalScrollBar);
+		}
+	}
+	else {
+		if (m_horizontalScrollBar) {
+			m_owner->removeVisualChild(m_horizontalScrollBar);
+			m_horizontalScrollBar = nullptr;
+		}
+	}
+}
+
+void UIScrollViewHelper::setVScrollbarVisible(bool value)
+{
+	if (value) {
+		if (!m_verticalScrollBar) {
+			m_verticalScrollBar = makeObject<UIScrollBar>();
+			//m_verticalScrollBar->setHeight(16);	// TODO: style
+			m_verticalScrollBar->setOrientation(Orientation::Vertical);
+			m_verticalScrollBar->setHAlignment(HAlignment::Stretch);
+			m_owner->addVisualChild(m_verticalScrollBar);
+		}
+	}
+	else {
+		if (m_verticalScrollBar) {
+			m_owner->removeVisualChild(m_verticalScrollBar);
+			m_verticalScrollBar = nullptr;
+		}
+	}
+}
+
+Size UIScrollViewHelper::measure(UILayoutContext* layoutContext, const Size& ownerAreaSize)
+{
+	Size desiredSize(0, 0);
+
+	if (m_horizontalScrollBar) {
+		m_horizontalScrollBar->measureLayout(layoutContext, ownerAreaSize);
+		desiredSize.height += m_horizontalScrollBar->desiredSize().height;
+	}
+
+	if (m_verticalScrollBar) {
+		m_verticalScrollBar->measureLayout(layoutContext, ownerAreaSize);
+		desiredSize.width += m_verticalScrollBar->desiredSize().width;
+	}
+
+	return desiredSize;
+	//Rect clientArea(0, 0, desiredSize.width, desiredSize.height);
+	//return clientArea;
+}
+
+Rect UIScrollViewHelper::calculateClientArea(const Size& ownerAreaSize)
+{
+	Rect clientArea(0, 0, ownerAreaSize.width, ownerAreaSize.height);
+
+	if (m_horizontalScrollBar) {
+		clientArea.height -= m_horizontalScrollBar->desiredSize().height;
+	}
+
+	if (m_verticalScrollBar) {
+		clientArea.width -= m_verticalScrollBar->desiredSize().width;
+	}
+
+	return clientArea;
+}
+
+void UIScrollViewHelper::arrange(UILayoutContext* layoutContext, const Size& ownerAreaSize)
+{
+
+	if (m_scrollTarget)
+	{
+		if (m_horizontalScrollBar) {
+			m_horizontalScrollBar->setMinimum(0.0f);
+			m_horizontalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentWidth() - m_scrollTarget->getViewportWidth()));
+			m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
+		}
+		if (m_verticalScrollBar) {
+			m_verticalScrollBar->setMinimum(0.0f);
+			m_verticalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentHeight() - m_scrollTarget->getViewportHeight()));
+			m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
+		}
+	}
+	else
+	{
+		if (m_horizontalScrollBar) {
+			m_horizontalScrollBar->setMinimum(0.0f);
+			m_horizontalScrollBar->setMaximum(0.0f);
+			m_horizontalScrollBar->setViewportSize(0.0f);
+		}
+		if (m_verticalScrollBar) {
+			m_verticalScrollBar->setMinimum(0.0f);
+			m_verticalScrollBar->setMaximum(0.0f);
+			m_verticalScrollBar->setViewportSize(0.0f);
+		}
+	}
+
+	Rect rc;
+
+	if (m_horizontalScrollBar) {
+		auto desiredSize = m_horizontalScrollBar->desiredSize();
+		rc.width = ownerAreaSize.width;
+		rc.height = desiredSize.height;
+		rc.x = 0;
+		rc.y = ownerAreaSize.height - desiredSize.height;
+		m_horizontalScrollBar->arrangeLayout(layoutContext, rc);
+	}
+
+	if (m_verticalScrollBar) {
+		auto desiredSize = m_verticalScrollBar->desiredSize();
+		rc.width = desiredSize.width;
+		rc.height = ownerAreaSize.height;
+		rc.x = ownerAreaSize.width - desiredSize.width;
+		rc.y = 0;
+		m_verticalScrollBar->arrangeLayout(layoutContext, rc);
+	}
+
+
+
+
+}
+
+void UIScrollViewHelper::refreshScrollInfo()
+{
+
+}
+
+void UIScrollViewHelper::handleRoutedEvent(UIEventArgs* e)
+{
+	if (e->type() == UIEvents::ScrollEvent)
+	{
+		auto* e2 = static_cast<UIScrollEventArgs*>(e);
+
+		if (m_scrollTarget != nullptr)
+		{
+			if (e->sender() == m_horizontalScrollBar)
+			{
+				m_scrollTarget->setHorizontalOffset(e2->newValue());
+			}
+			else if (e->sender() == m_verticalScrollBar)
+			{
+				m_scrollTarget->setVerticalOffset(e2->newValue());
+			}
+		}
+	}
+}
+
 
 
 //==============================================================================
@@ -803,12 +992,12 @@ Size UIScrollViewer::arrangeOverride(UILayoutContext* layoutContext, const Size&
     {
 		if (m_horizontalScrollBar) {
 			m_horizontalScrollBar->setMinimum(0.0f);
-			m_horizontalScrollBar->setMaximum(m_scrollTarget->getExtentWidth());
+			m_horizontalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentWidth() - m_scrollTarget->getViewportWidth()));
 			m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
 		}
 		if (m_verticalScrollBar) {
 			m_verticalScrollBar->setMinimum(0.0f);
-			m_verticalScrollBar->setMaximum(m_scrollTarget->getExtentHeight());
+			m_verticalScrollBar->setMaximum(std::max(0.0f, m_scrollTarget->getExtentHeight() - m_scrollTarget->getViewportHeight()));
 			m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
 		}
     }

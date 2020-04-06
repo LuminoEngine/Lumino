@@ -539,6 +539,28 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
     // TODO: bounding
 }
 
+void RenderingContext::drawMeshInstanced(InstancedMeshList* list)
+{
+	class DrawMeshInstanced : public detail::RenderDrawElement
+	{
+	public:
+		Ref<InstancedMeshList> list;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMeshInstanced(batchList, context, list);
+		}
+	};
+
+	if (list->instanceCount() <= 0) return;
+
+	m_builder->setPrimitiveTopology(list->mesh()->sections()[list->sectionIndex()].topology);
+	auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(
+		m_manager->meshRenderFeature(),
+		m_builder->meshRenderFeatureStageParameters());
+	element->list = list;
+}
+
 //void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
 //{
 //	class DrawMesh : public detail::RenderDrawElement

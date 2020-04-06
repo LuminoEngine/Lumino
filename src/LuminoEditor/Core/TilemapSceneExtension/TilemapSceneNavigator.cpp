@@ -72,7 +72,7 @@ void TilemapSceneListPane::addButton_onClick()
 void TilemapSceneListPane::listView_onItemClick(ln::UIClickEventArgs* e)
 {
     if (e->clickCount() == 2) {
-        auto path = m_model->filePath(ln::static_pointer_cast<ln::UICollectionItemModel>(e->sender()->m_viewModel));
+        auto path = m_model->filePath(ln::static_pointer_cast<ln::UICollectionItemViewModel>(e->sender()->m_viewModel));
         EditorApplication::instance()->openAssetFile(path);
     }
 }

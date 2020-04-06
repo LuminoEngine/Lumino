@@ -6,52 +6,52 @@
 namespace ln {
 
 //==============================================================================
-// UICollectionItemModel
+// UICollectionItemViewModel
 
-UICollectionItemModel::UICollectionItemModel()
-	: m_owner(nullptr)
-	, m_row(0)
-	, m_column(0)
-	, m_parent(nullptr)
-	, m_data(nullptr)
+UICollectionItemViewModel::UICollectionItemViewModel()
+	//: m_owner(nullptr)
+	//, m_row(0)
+	//, m_column(0)
+	//, m_parent(nullptr)
+	//, m_data(nullptr)
 {
 }
 
-void UICollectionItemModel::init(UICollectionModel* owner)
-{
-	Object::init();
-	m_owner = owner;
-}
-
-void UICollectionItemModel::init(UICollectionModel* owner, int row, int column, UICollectionItemModel* parent, Variant* data)
-{
-	Object::init();
-	m_owner = owner;
-	m_row = row;
-	m_column = column;
-	m_parent = parent;
-	m_data = data;
-}
-
-String UICollectionItemModel::getData(const String& role)
-{
-	return m_owner->getData(this, role);
-}
-
-int UICollectionItemModel::getChildrenCount()
-{
-    return m_owner->getRowCount(this);
-}
-
+//void UICollectionItemModel::init(UICollectionViewModel* owner)
+//{
+//	Object::init();
+//	m_owner = owner;
+//}
+//
+//void UICollectionItemModel::init(UICollectionViewModel* owner, int row, int column, UICollectionItemModel* parent, Variant* data)
+//{
+//	Object::init();
+//	m_owner = owner;
+//	m_row = row;
+//	m_column = column;
+//	m_parent = parent;
+//	m_data = data;
+//}
+//
+//String UICollectionItemModel::getData(const String& role)
+//{
+//	return m_owner->getData(this, role);
+//}
+//
+//int UICollectionItemModel::getChildrenCount()
+//{
+//    return m_owner->getRowCount(this);
+//}
+//
 //==============================================================================
-// UICollectionModel
+// UICollectionViewModel
 // https://doc.qt.io/qt-5/qabstractitemmodel.html#hasChildren
 
-UICollectionModel::UICollectionModel()
+UICollectionViewModel::UICollectionViewModel()
 {
 }
 
-void UICollectionModel::init()
+void UICollectionViewModel::init()
 {
 	Object::init();
 }
@@ -68,12 +68,13 @@ void UIFileSystemCollectionModel::init()
 	Object::init();
 }
 
-Ref<UICollectionItemModel> UIFileSystemCollectionModel::setRootPath(const Path& path)
+void UIFileSystemCollectionModel::setRootPath(const Path& path)
 {
-	m_rootNode = makeNode(path);
-    m_rootModel = makeObject<UICollectionItemModel>(this, 0, 0, nullptr, makeVariant(m_rootNode));
+    m_rootNode = makeObject<FileSystemNode>(this, path);
+    m_rootNode->attemptConstructChildNodes(this, false);
+    //m_rootModel = makeObject<FileSystemNode>(this, 0, 0, nullptr, makeVariant(m_rootNode));
     notify(UINotifyPropertyChangedEventArgs::create(nullptr, UIEvents::NotifyPropertyChanged, UICollectionChangedAction::Reset, 0, 0));
-    return m_rootModel;
+    //return m_rootModel;
 }
 
 void UIFileSystemCollectionModel::setExcludeFilters(List<String>* value)
@@ -81,37 +82,46 @@ void UIFileSystemCollectionModel::setExcludeFilters(List<String>* value)
     m_excludeFilters = value;
 }
 
-int UIFileSystemCollectionModel::getRowCount(UICollectionItemModel* index)
+int UIFileSystemCollectionModel::getItemCount()
 {
-	auto node = getNode(index);
-    if (!node) 
-        return 0;
+    if (m_rootNode)
+        return m_rootNode->children().size();
     else
-    	return node->children.size();
+        return 0;
 }
 
-Ref<UICollectionItemModel> UIFileSystemCollectionModel::getIndex(int row, int column, UICollectionItemModel* parent)
+Ref<UICollectionItemViewModel> UIFileSystemCollectionModel::getItem(int row)
 {
-	auto parentNode = getNode(parent);
-	return makeObject<UICollectionItemModel>(this, row, column, parent, makeVariant(parentNode->children[row]));
+    if (!m_rootNode)
+        return nullptr;
+    else {
+        auto& node = m_rootNode->children().at(row);
+        node->attemptConstructChildNodes(this, false);
+        return node;
+    }
 }
 
-String UIFileSystemCollectionModel::getData(UICollectionItemModel* index, const String& role)
-{
-	auto node = getNode(index);
-	return node->path.fileName();
-}
+//String UIFileSystemCollectionModel::getData(Variant* index, int column, const String& role)
+//{
+//    auto node = index->getAsObject<FileSystemNode>();
+//	return node->path().fileName();
+//}
 
-Path UIFileSystemCollectionModel::filePath(UICollectionItemModel* itemModel)
+Path UIFileSystemCollectionModel::filePath(UICollectionItemViewModel* index)
 {
-    auto node = getNode(itemModel);
-    return node->path;
+    auto* node = dynamic_cast<FileSystemNode*>(index);
+    if (!node) {
+        LN_NOTIMPLEMENTED();
+    }
+    return node->path();
+    //auto node = index->getAsObject<FileSystemNode>();
+    //return node->path();
 }
 
 void UIFileSystemCollectionModel::refresh()
 {
-    if (m_rootModel) {
-        refreshHierarchical(m_rootModel);
+    if (m_rootNode) {
+        m_rootNode->refreshHierarchical(this);
         notify();   // TODO: rootModel の分もここへ流すか・・・？いっそ rootModel 廃止した方がいいような気もする
     }
 }
@@ -121,60 +131,100 @@ bool UIFileSystemCollectionModel::onTestFilter(const Path& path)
     return true;
 }
 
-UIFileSystemCollectionModel::FileSystemNode* UIFileSystemCollectionModel::getNode(UICollectionItemModel* index)
+//UIFileSystemCollectionModel::FileSystemNode* UIFileSystemCollectionModel::getNode(UICollectionItemModel* index)
+//{
+//    if (!index) {
+//        return m_rootNode;
+//    }
+//	auto node = index->data()->getObject<FileSystemNode>();
+//	constructChildNodes(node, false);
+//	return node;
+//}
+
+//Ref<UIFileSystemCollectionModel::FileSystemNode> UIFileSystemCollectionModel::makeNode(const Path& path)
+//{
+//	auto node = makeRef<FileSystemNode>(path);
+//	constructChildNodes(node, false);
+//	return node;
+//}
+
+void UIFileSystemCollectionModel::FileSystemNode::attemptConstructChildNodes(UIFileSystemCollectionModel* owner, bool forceReset)
 {
-    if (!index) {
-        return m_rootNode;
+    if (m_dirty || forceReset) {
+        m_children.clear();
+
+        if (FileSystem::existsDirectory(m_path)) {
+            auto dirs = FileSystem::getDirectories(m_path, StringRef(), SearchOption::TopDirectoryOnly);
+            for (auto& dir : dirs) {
+                if (owner->testFilter(dir)) {
+                    m_children.add(makeObject<FileSystemNode>(m_owner, dir));
+                }
+            }
+            auto files = FileSystem::getFiles(m_path, StringRef(), SearchOption::TopDirectoryOnly);
+            for (auto& file : files) {
+                if (owner->testFilter(file)) {
+                    m_children.add(makeObject<FileSystemNode>(m_owner, file));
+                }
+            }
+        }
+        m_dirty = false;
     }
-	auto node = index->data()->getObject<FileSystemNode>();
-	constructChildNodes(node, false);
-	return node;
-}
-
-Ref<UIFileSystemCollectionModel::FileSystemNode> UIFileSystemCollectionModel::makeNode(const Path& path)
-{
-	auto node = makeRef<FileSystemNode>(path);
-	constructChildNodes(node, false);
-	return node;
-}
-
-void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node, bool reset)
-{
-	if (node->dirty || reset)
-	{
-        node->children.clear();
-
-		if (FileSystem::existsDirectory(node->path)) {
-			auto& path = node->path;
-			auto dirs = FileSystem::getDirectories(path, StringRef(), SearchOption::TopDirectoryOnly);
-			for (auto& dir : dirs) {
-                if (testFilter(dir)) {
-                    node->children.add(makeRef<FileSystemNode>(dir));
-                }
-			}
-			auto files = FileSystem::getFiles(path, StringRef(), SearchOption::TopDirectoryOnly);
-			for (auto& file : files) {
-               if (testFilter(file)) {
-                    node->children.add(makeRef<FileSystemNode>(file));
-                }
-			}
-		}
-		node->dirty = false;
-	}
 }
 
 // TODO: サブツリー全部捜査しようとする。ツリーで展開されている部分や、リストで表示されている部分に絞るなど、対策しておく。
-void UIFileSystemCollectionModel::refreshHierarchical(UICollectionItemModel* model)
+void UIFileSystemCollectionModel::FileSystemNode::refreshHierarchical(UIFileSystemCollectionModel* owner)
 {
-    constructChildNodes(getNode(model), true);
-    model->notify();
-    
-    int childCount = model->getChildrenCount();
-    for (int i = 0; i < childCount; i++) {
-        auto child = getIndex(i, 0, model);
-        refreshHierarchical(child);
+    attemptConstructChildNodes(owner, true);
+    notify();
+
+    for (auto& child : m_children) {
+        child->refreshHierarchical(owner);
     }
+
+    //int childCount = model->getChildrenCount();
+    //for (int i = 0; i < childCount; i++) {
+    //    auto child = getIndex(i, 0, model);
+    //    refreshHierarchical(child);
+    //}
 }
+
+//void UIFileSystemCollectionModel::constructChildNodes(FileSystemNode* node, bool reset)
+//{
+//	if (node->dirty || reset)
+//	{
+//        node->children.clear();
+//
+//		if (FileSystem::existsDirectory(node->path)) {
+//			auto& path = node->path;
+//			auto dirs = FileSystem::getDirectories(path, StringRef(), SearchOption::TopDirectoryOnly);
+//			for (auto& dir : dirs) {
+//                if (testFilter(dir)) {
+//                    node->children.add(makeRef<FileSystemNode>(dir));
+//                }
+//			}
+//			auto files = FileSystem::getFiles(path, StringRef(), SearchOption::TopDirectoryOnly);
+//			for (auto& file : files) {
+//               if (testFilter(file)) {
+//                    node->children.add(makeRef<FileSystemNode>(file));
+//                }
+//			}
+//		}
+//		node->dirty = false;
+//	}
+//}
+
+//// TODO: サブツリー全部捜査しようとする。ツリーで展開されている部分や、リストで表示されている部分に絞るなど、対策しておく。
+//void UIFileSystemCollectionModel::refreshHierarchical(UICollectionItemModel* model)
+//{
+//    constructChildNodes(getNode(model), true);
+//    model->notify();
+//    
+//    int childCount = model->getChildrenCount();
+//    for (int i = 0; i < childCount; i++) {
+//        auto child = getIndex(i, 0, model);
+//        refreshHierarchical(child);
+//    }
+//}
 
 bool UIFileSystemCollectionModel::testFilter(const Path& path)
 {

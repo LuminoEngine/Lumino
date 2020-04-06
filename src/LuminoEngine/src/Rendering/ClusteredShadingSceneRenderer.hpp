@@ -32,6 +32,7 @@ public:
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		ShaderTechniqueClass_DrawMode drawMode,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) override;
 
@@ -62,6 +63,7 @@ public:
 	virtual bool filterElement(RenderDrawElement* element) const;
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		ShaderTechniqueClass_DrawMode drawMode,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) override;
 
@@ -91,6 +93,7 @@ public:
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		ShaderTechniqueClass_DrawMode drawMode,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) override;
 
@@ -126,6 +129,7 @@ public:
 
 	virtual ShaderTechnique* selectShaderTechnique(
 		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
+		ShaderTechniqueClass_DrawMode drawMode,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) override;
 

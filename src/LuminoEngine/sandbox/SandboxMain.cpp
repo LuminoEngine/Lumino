@@ -269,8 +269,9 @@ void Example_SoundControl();
 void Example_UIControls();
 void Example_Tilemap();
 void Tutorial_Sandbox();
+void Sandbox_MeshTilemap();
 void Sandbox_Voxel();
-
+void UISandboxMain();
 
 int main(int argc, char** argv)
 {
@@ -290,13 +291,15 @@ int main(int argc, char** argv)
     if (1) {
 		//Example_GameAudio();
 		//Example_MeshViewer();
-        //Example_MessageWindow();
+        Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		Tutorial_Sandbox();
+		//Sandbox_MeshTilemap();
+		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
+		//UISandboxMain();
         return 0;
     }
 

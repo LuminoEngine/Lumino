@@ -930,26 +930,35 @@ void GLGraphicsContext::onDrawPrimitive(PrimitiveTopology primitive, int startVe
 
 void GLGraphicsContext::onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount)
 {
-	if (instanceCount > 0) {
-		LN_NOTIMPLEMENTED();
-		return;
-	}
-
 	GLenum gl_prim;
 	int vertexCount;
 	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
+
+	GLenum indexFormat = 0;
+	GLvoid* startIndexPtr = nullptr;
+	if (m_currentIndexBuffer->format() == IndexBufferFormat::UInt16) {
+		indexFormat = GL_UNSIGNED_SHORT;
+		startIndexPtr = (GLvoid*)(sizeof(GLushort) * startIndex);
+	}
+	else if (m_currentIndexBuffer->format() == IndexBufferFormat::UInt32) {
+		indexFormat = GL_UNSIGNED_INT;
+		startIndexPtr = (GLvoid*)(sizeof(GLuint) * startIndex);
+	}
+	else {
+		LN_UNREACHABLE();
+		return;
+	}
 
 	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
 	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
 	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
 	// TODO: ↑Radeon で稀に吹っ飛ぶ
-	if (m_currentIndexBuffer->format() == IndexBufferFormat::UInt16)
-	{
-		GL_CHECK(glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex)));
+
+	if (instanceCount > 0) {
+		GL_CHECK(glDrawElementsInstanced(gl_prim, vertexCount, indexFormat, startIndexPtr, instanceCount));
 	}
-	else
-	{
-		GL_CHECK(glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * startIndex)));
+	else {
+		GL_CHECK(glDrawElements(gl_prim, vertexCount, indexFormat, startIndexPtr));
 	}
 }
 
@@ -1299,6 +1308,9 @@ void GLVertexDeclaration::createGLVertexElements(const VertexElement* vertexElem
 
 		elm.byteOffset = sizeInStream[elm.streamIndex];
 		sizeInStream[elm.streamIndex] += GraphicsHelper::getVertexElementTypeSize(vertexElements[i].Type);
+
+
+		elm.instance = (vertexElements[i].rate == VertexInputRate::Instance);
 
 		//elm.stride = getVertexSize(vertexElements, elementsCount, elm.streamIndex);
 		//elm.byteOffset = totalSize;
@@ -2956,6 +2968,15 @@ void GLPipeline::bind(const std::array<IVertexBuffer*, MaxVertexStreams>& vertex
 					GL_CHECK(glEnableVertexAttribArray(attr.layoutLocation));
 					GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffers[element->streamIndex])->vertexBufferId()));
 					GL_CHECK(glVertexAttribPointer(attr.layoutLocation, element->size, element->type, element->normalized, element->stride, (void*)(element->byteOffset)));
+				
+					if (element->instance) {
+						glVertexAttribDivisor(attr.layoutLocation, 1);
+					}
+					else {
+						glVertexAttribDivisor(attr.layoutLocation, 0);
+					}
+				
+					
 				}
 				else {
 					GL_CHECK(glDisableVertexAttribArray(attr.layoutLocation));

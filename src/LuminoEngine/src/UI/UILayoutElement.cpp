@@ -74,6 +74,9 @@ void UILayoutElement::measureLayout(UILayoutContext* layoutContext, const Size& 
 	
 	Size desiredSize = measureOverride(layoutContext, localAvailableSize);
 
+	//if (!Math::isNaNOrInf(m_finalStyle->width)) desiredSize.width = std::min(desiredSize.width, m_finalStyle->width);
+	//if (!Math::isNaNOrInf(m_finalStyle->height)) desiredSize.height = std::min(desiredSize.height, m_finalStyle->height);
+	
 	desiredSize.width += outerSpace.width;
 	desiredSize.height += outerSpace.height;
 
@@ -283,7 +286,11 @@ void UILayoutContext::init()
 
 bool UILayoutContext::testLayoutEnabled(UIElement* element) const
 {
-	return !element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
+	bool cllapsed = element->m_finalStyle->visible == UIVisibility::Collapsed || element->m_internalVisibility == UIVisibility::Collapsed;
+
+	return
+		!cllapsed &&
+		!element->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Popup);
 }
 
 //==============================================================================

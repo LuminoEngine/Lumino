@@ -6,15 +6,20 @@
 #include <LuminoEngine/UI/UIItemsModel.hpp>
 #include <LuminoEngine/UI/UIItemsElement.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
+#include <LuminoEngine/UI/UIListBox.hpp>
+#include <LuminoEngine/UI/UITreeView.hpp>
+#include <LuminoEngine/UI/UISplitter.hpp>
+#include <LuminoEngine/UI/UIIcon.hpp>
+#include <LuminoEngine/UI/UITabBar.hpp>
 using namespace ln;
 
 
 
-
+// https://www.infragistics.com/community/blogs/b/blagunas/posts/free-metro-light-and-dark-themes-for-wpf-and-silverlight-microsoft-controls
 class UISandboxApp : public Application
 {
 public:
-    virtual void onCreate()
+	void onInit() override
     {
 		//auto vm = makeObject<UIFileSystemCollectionModel>();
 		//auto root = vm->setRootPath(u"C:/Proj/LN/Lumino");
@@ -31,60 +36,214 @@ public:
 		//		std::cout << "  " << data2 << std::endl;
 		//	}
 		//}
-		
-		//{
-		//	auto button1 = makeObject<UIButton>();
-		//	button1->setWidth(200);
-		//	button1->setHeight(32);
-		//	button1->setText(u"Push button");
-		//	button1->setHAlignment(HAlignment::Right);
-		//	Engine::mainUIView()->addElement(button1);
-		//}
 
+		Engine::renderView()->setBackgroundColor(Color::Gray);
+
+		auto mainLauout = makeObject<UIGridLayout>();
+		mainLauout->setColumnCount(4);
+		Engine::ui()->addChild(mainLauout);
+
+		int margin = 8;
+#if 1
+		// Button
 		{
-			auto button1 = makeObject<UIToggleButton>();
-			button1->setWidth(200);
-			button1->setHeight(32);
-			button1->setText(u"Toggle button");
-			button1->setHAlignment(HAlignment::Right);
-			button1->setVAlignment(VAlignment::Center);
-			Engine::mainUIView()->addElement(button1);
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"Button"));
+
+			auto button1 = makeObject<UIButton>();
+			button1->setText(u"Button");
+			layout1->addChild(button1);
+		}
+		// RadioButton
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"RadioButton"));
+
+			layout1->addChild(makeObject<UIButton>(u"dummy"));
+		}
+		//// CheckBox
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"CheckBox"));
+
+		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
+		//}
+		//// ComboBox
+		//{
+		//	auto layout1 = makeObject<UIStackLayout>();
+		//	layout1->setMargin(margin);
+		//	mainLauout->addChild(layout1);
+
+		//	layout1->addChild(makeObject<UITextBlock>(u"ComboBox"));
+
+		//	layout1->addChild(makeObject<UIButton>(u"dummy"));
+		//}
+		// ListBox (Direct)
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"ListBox (Direct)"));
+
+			auto listbox1 = UIListBox::create();
+			listbox1->addChild(u"item1");
+			listbox1->addChild(u"item2");
+			listbox1->addChild(u"item3");
+			listbox1->addChild(u"item4");
+			layout1->addChild(listbox1);
 		}
 
+		// TreeView (Model)
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
 
-		//auto thumb1 = makeObject<UIThumb>();
-		//thumb1->setWidth(20);
-		//thumb1->setHeight(20);
-		
-		//auto track = makeObject<UITrack>();
-		//track->setOrientation(Orientation::Vertical);
-		//track->setWidth(20);
-		//track->setHeight(100);
-		//track->setMaximum(50);
-		//track->setViewportSize(10);
-		//Engine::mainUIView()->addElement(track);
+			layout1->addChild(makeObject<UITextBlock>(u"TreeView (Model)"));
 
-        //auto scrollbar = makeObject<UIScrollBar>();
-        //scrollbar->setOrientation(Orientation::Vertical);
-        //scrollbar->setWidth(20);
-        //scrollbar->setHeight(100);
-        //scrollbar->setMaximum(50);
-        //scrollbar->setViewportSize(10);
-        //Engine::mainUIView()->addElement(scrollbar);
+			auto model1 = ln::makeObject<ln::UIFileSystemCollectionModel>();
+			model1->setRootPath(LN_LOCALFILE("Assets"));
 
-        //auto scrollview = makeObject<UIScrollViewer>();
-        //scrollview->setWidth(200);
-        //scrollview->setHeight(300);
-        //Engine::mainUIView()->addElement(scrollview);
+			auto treeview1 = makeObject<UITreeView2>();
+			treeview1->setHeight(200);
+			//treeview1->setBackgroundColor(Color::Red);
+			treeview1->setViewModel(model1);
+			treeview1->connectOnChecked([model1](UIEventArgs* e) {
+				auto* item = static_cast<UITreeItem2*>(e->sender());
+				auto path = model1->filePath(static_pointer_cast<UICollectionItemViewModel>(item->m_viewModel));
+				Debug::print(u"Item clicked. " + path);
+			});
+			layout1->addChild(treeview1);
+		}
+
+		// Splitter
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"Splitter"));
+
+			auto splitter1 = makeObject<UISplitter>();
+			splitter1->setOrientation(Orientation::Horizontal);
+
+			auto e1 = makeObject<UIElement>();
+			e1->setHeight(100);
+			e1->setBackgroundColor(UIColors::get(UIColorHues::Red, 3));
+			splitter1->addChild(e1);
+
+			auto e2 = makeObject<UIElement>();
+			e2->setHeight(100);
+			e2->setBackgroundColor(UIColors::get(UIColorHues::Green, 3));
+			splitter1->addChild(e2);
+
+			auto e3 = makeObject<UIElement>();
+			e3->setHeight(100);
+			e3->setBackgroundColor(UIColors::get(UIColorHues::Blue, 3));
+			splitter1->addChild(e3);
+
+			layout1->addChild(splitter1);
+		}
+		// Icon
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+
+			layout1->addChild(makeObject<UITextBlock>(u"Font icon"));
+
+			{
+				auto layout2 = makeObject<UIStackLayout>();
+				layout2->setOrientation(Orientation::Horizontal);
+				layout2->setHAlignment(HAlignment::Center);
+
+				auto icon1 = makeObject<UIIcon>();
+				icon1->setIconName(u"file");
+				icon1->setFontSize(30);
+				layout2->addChild(icon1);
+
+				auto icon2 = makeObject<UIIcon>();
+				icon2->setIconName(u"file");
+				icon2->setFontSize(20);
+				layout2->addChild(icon2);
+
+				auto icon3 = makeObject<UIIcon>();
+				icon3->setIconName(u"file");
+				icon3->setFontSize(10);
+				layout2->addChild(icon3);
+
+				//icon1->setBorderThickness(1);
+				//icon2->setBorderThickness(1);
+				//icon3->setBorderThickness(1);
+
+				layout1->addChild(layout2);
+			}
+
+			{
+				auto layout2 = makeObject<UIStackLayout>();
+				layout2->setOrientation(Orientation::Horizontal);
+				layout2->setHAlignment(HAlignment::Center);
+
+				layout2->addChild(UIIcon::loadFontIcon(u"align-justify", 20));
+				layout2->addChild(UIIcon::loadFontIcon(u"arrow-alt-circle-up", 20));
+				layout2->addChild(UIIcon::loadFontIcon(u"book-medical", 20));
+				layout2->addChild(UIIcon::loadFontIcon(u"check-circle", 20, UIColors::get(UIColorHues::Green)));
+				layout2->addChild(UIIcon::loadFontIcon(u"times-circle", 20, UIColors::get(UIColorHues::Red)));
+
+				layout1->addChild(layout2);
+			}
+		}
+#endif
 
 
-        //m_button1 = makeObject<UIButton>();
-        //m_button1->setWidth(300);
-        //m_button1->setHeight(400);
-        //m_button1->setText(u"Lumino");
-        //scrollview->addElement(m_button1);
+		// TabBar
+		{
+			auto layout1 = makeObject<UIStackLayout>();
+			layout1->setMargin(margin);
+			mainLauout->addChild(layout1);
+			layout1->addChild(makeObject<UITextBlock>(u"TabBar"));
 
 
+			auto tabbar1 = makeObject<UITabBar2>();
+			layout1->addChild(tabbar1);
+
+			auto tab1 = makeObject<UITabBarItem2>();
+			tab1->addChild(u"Tab1");
+			tabbar1->addChild(tab1);
+
+			auto tab2 = makeObject<UITabBarItem2>();
+			tab2->addChild(u"Tab2");
+			tabbar1->addChild(tab2);
+
+			auto switch1 = makeObject<UISwitchLayout>();
+			layout1->addChild(switch1);
+
+			auto e1 = makeObject<UIElement>();
+			e1->setHeight(100);
+			e1->setBackgroundColor(UIColors::get(UIColorHues::Red, 3));
+			switch1->addChild(e1);
+
+			auto e2 = makeObject<UIElement>();
+			e2->setHeight(100);
+			e2->setBackgroundColor(UIColors::get(UIColorHues::Green, 3));
+			switch1->addChild(e2);
+
+			tab1->setData(makeVariant(e1));
+			tab2->setData(makeVariant(e2));
+			tabbar1->connectOnSelectedTabChanged([tabbar1, switch1](UIEventArgs* e) {
+				switch1->setActive(tabbar1->selectedTab()->data()->getAsObject<UIElement>());
+			});
+		}
     }
 
 private:
@@ -92,12 +251,11 @@ private:
 
 };
 
-int UISandboxMain()
+void UISandboxMain()
 {
 	UISandboxApp app;
-	detail::ApplicationHelper::init(&app);
+	EngineSettings::setMainWindowSize(1000, 600);
 	detail::ApplicationHelper::run(&app);
-	return 0;
 }
 
 
