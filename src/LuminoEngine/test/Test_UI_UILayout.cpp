@@ -78,6 +78,29 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 		LN_TEST_CLEAN_SCENE;
 	}
 }
+//
+//TEST_F(Test_UI_UILayout, FixedParentSize)
+//{
+//	auto e1 = makeObject<UIControl>();
+//	e1->setHAlignment(HAlignment::Left);
+//	e1->setVAlignment(VAlignment::Top);
+//	e1->setBackgroundColor(Color::Red);
+//	e1->setWidth(50);
+//	e1->setHeight(50);
+//	Engine::mainUIView()->addElement(e1);
+//
+//	auto e2 = makeObject<UIElement>();
+//	e2->setHAlignment(HAlignment::Center);
+//	e2->setVAlignment(VAlignment::Center);
+//	e2->setBackgroundColor(Color::Green);
+//	e2->setWidth(100);
+//	e2->setHeight(20);
+//	e1->addElement(e2);
+//
+//	TestEnv::updateFrame();
+//	ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UILayout-FixedParentSize-1.png"));
+//	LN_TEST_CLEAN_SCENE;
+//}
 
 //------------------------------------------------------------------------------
 //## BorderLayout

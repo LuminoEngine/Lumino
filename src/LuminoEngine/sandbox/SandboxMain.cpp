@@ -291,12 +291,12 @@ int main(int argc, char** argv)
     if (1) {
 		//Example_GameAudio();
 		//Example_MeshViewer();
-        //Example_MessageWindow();
+        Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-		Sandbox_MeshTilemap();
+		//Sandbox_MeshTilemap();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();

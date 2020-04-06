@@ -23,9 +23,11 @@ class App_Example_MessageWindow : public Application
         auto windowSkin = Texture2D::load(u"Window1");
 
         auto window1 = UIWindow::create();
+        window1->setHAlignment(HAlignment::Left);
+        window1->setVAlignment(VAlignment::Top);
         window1->setPosition(10, 10);
         window1->setWidth(200);
-        window1->setHeight(100);
+        window1->setHeight(80);
         window1->setBackgroundImage(windowSkin);
         window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window1->setBackgroundImageBorder(Thickness(8));
@@ -38,7 +40,7 @@ class App_Example_MessageWindow : public Application
         window1->addElement(m_message1);
 
         auto window2 = UIWindow::create();
-        window2->setPosition(10, 10);
+        window2->setPosition(10, 100);
         window2->setHAlignment(HAlignment::Left);
         window2->setVAlignment(VAlignment::Top);
         window2->setWidth(400);
@@ -47,7 +49,7 @@ class App_Example_MessageWindow : public Application
         window2->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window2->setBackgroundImageBorder(Thickness(8));
         window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
-        Engine::mainUIView()->addElement(window2);
+        //Engine::mainUIView()->addElement(window2);
 
         m_message2 = UIMessageTextArea::create();
         m_message2->setMargin(16);

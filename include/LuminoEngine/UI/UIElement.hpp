@@ -134,6 +134,9 @@ public:
     void setName(const String& value) { m_name = value; }
     const String& name() const { return m_name; }
 
+	/** 要素のサイズを設定します。サイズには、border の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
+	void setSize(float width, float height);
+
     void setWidth(float value);
     float width() const;
 
