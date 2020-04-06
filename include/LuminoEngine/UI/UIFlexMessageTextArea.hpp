@@ -1,10 +1,16 @@
 ﻿#pragma once
 #include "UIElement.hpp"
+#include "UIWindow.hpp"
 
 namespace ln {
 
 namespace detail { class RTDocument; }
 
+enum class MessageTextPageFeedCursorPosition
+{
+    BottomCenter,
+    EndOfLine,
+};
 
 // - typing
 // - transform/animation par glyph
@@ -23,6 +29,8 @@ public:
 	void setTypingSpeed(float value) { m_typingSpeed = value; }
 
     //void setViewportLineCount(int value) { m_viewportLineCount = value; }
+
+
 
 LN_CONSTRUCT_ACCESS:
     UIMessageTextArea();
@@ -43,6 +51,36 @@ private:
     //int m_viewportLineCount;
     //float m_viewportFitSize;
 };
+
+class UIMessageTextWindow
+    : public UIWindow
+{
+public:
+    static Ref<UIMessageTextWindow> create();
+
+    void setText(const StringRef& value);
+    void setTypingSpeed(float value);
+
+
+LN_CONSTRUCT_ACCESS:
+    UIMessageTextWindow();
+    void init();
+
+protected:
+    virtual void onUpdateFrame(float elapsedSeconds) override;
+    virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
+    virtual Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    virtual void onRender(UIRenderingContext* context) override;
+
+private:
+    Ref<detail::RTDocument> m_document;
+};
+
+
+
+
+
+
 
 namespace detail {
 

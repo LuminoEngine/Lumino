@@ -321,7 +321,7 @@ class RTDocumentBuilder
 {
 public:
 	RTDocumentBuilder(RTDocument* doc);
-	void parse(Font* font, float dpiScale, const ln::String& text, const Size& areaSize);
+	void parse(Font* font, const ln::String& text);
 
 private:
 
@@ -337,7 +337,7 @@ RTDocumentBuilder::RTDocumentBuilder(RTDocument* doc)
 {
 }
 
-void RTDocumentBuilder::parse(Font* font, float dpiScale, const ln::String& text, const Size& areaSize)
+void RTDocumentBuilder::parse(Font* font, const ln::String& text)
 {
 	m_document->clear();
 	//m_timeOffset = 0.0f;
@@ -408,7 +408,7 @@ Size UIMessageTextArea::measureOverride(UILayoutContext* layoutContext, const Si
 {
     if (m_textDirty) {
         detail::RTDocumentBuilder builder(m_document);
-        builder.parse(finalStyle()->font, layoutContext->dpiScale(), m_text, constraint);
+        builder.parse(finalStyle()->font, m_text);
         m_textDirty = false;
     }
 
@@ -450,6 +450,63 @@ void UIMessageTextArea::onRender(UIRenderingContext* context)
     //m_document->setRenderOffset(Point(0, actualSize().height - m_document->actualSize().height));
 
 	m_document->render(context);
+}
+
+//==============================================================================
+// UIMessageTextWindow
+
+Ref<UIMessageTextWindow> UIMessageTextWindow::create()
+{
+    return makeObject<UIMessageTextWindow>();
+}
+
+UIMessageTextWindow::UIMessageTextWindow()
+{
+}
+
+void UIMessageTextWindow::init()
+{
+    UIElement::init(nullptr);
+    m_document = makeObject<detail::RTDocument>();
+}
+
+void UIMessageTextWindow::setText(const StringRef& value)
+{
+    detail::RTDocumentBuilder builder(m_document);
+    builder.parse(finalStyle()->font, value);
+}
+
+//void UIMessageTextWindow::setTypingSpeed(float value)
+//{
+//}
+
+void UIMessageTextWindow::onUpdateFrame(float elapsedSeconds)
+{
+    m_document->updateFrame(elapsedSeconds);
+}
+
+Size UIMessageTextWindow::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
+{
+    m_document->updateFont(detail::FontHelper::getFontDesc(finalStyle()->font), layoutContext->dpiScale());
+
+    Size baseArea = Size::max(constraint, UIElement::measureOverride(layoutContext, constraint));
+
+
+    return Size::min(m_document->measureLayout(layoutContext, constraint), baseArea);
+}
+
+Size UIMessageTextWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+
+    auto size = Size::min(m_document->arrangeLayout(layoutContext, finalSize), UIElement::arrangeOverride(layoutContext, finalSize));
+
+
+    return size;
+}
+
+void UIMessageTextWindow::onRender(UIRenderingContext* context)
+{
+    m_document->render(context);
 }
 
 } // namespace ln
