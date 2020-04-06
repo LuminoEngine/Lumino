@@ -35,18 +35,17 @@ TEST_F(Test_UI_UIStyle, Background)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_UIStyle, BackgroundImage)
 {
-	auto element1 = makeObject<UIElement>();
-	element1->setHAlignment(HAlignment::Center);
-	element1->setVAlignment(VAlignment::Center);
-	element1->setWidth(80);
-	element1->setHeight(60);
-	Engine::ui()->addElement(element1);
+	{
+		auto element1 = makeObject<UIElement>();
+		element1->setAlignments(HAlignment::Center, VAlignment::Center);
+		element1->setSize(80, 60);
+		element1->setBackgroundImage(Texture2D::load(u"Sprite1.png"));
+		Engine::ui()->addElement(element1);
 
-	element1->setBackgroundImage(Texture2D::load(u"Sprite1.png"));
-
-	TestEnv::updateFrame();
-	ASSERT_SCREEN_S(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-1.png"));
-	LN_TEST_CLEAN_SCENE;
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UIStyle-BackgroundImage-1.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
 }
 
 //------------------------------------------------------------------------------
