@@ -288,6 +288,7 @@ public:
 	List<Ref<UIStyleDecorator>> decorators;
 
 
+
     void setBorderColor(const Color& color)
     {
         leftBorderColor = color;
@@ -296,9 +297,23 @@ public:
         bottomBorderColor = color;
     }
 
-    void addPositionAnimation(const Vector3& target, float duration, EasingMode timingFunction, AnimationWrapMode direction);
-    void addSizeAnimation(const Size& target, float duration, EasingMode timingFunction, AnimationWrapMode direction);
-    void addOpacityAnimation(float target, float duration, EasingMode timingFunction, AnimationWrapMode direction);
+
+    void setWidthAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setHeightAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setPositionXAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setPositionYAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setPositionZAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setBackgroundColorAnimation(const Color& startValue, const Color& targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setOpacityAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+
+    void setWidthTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setHeightTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setPositionXTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setPositionYTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setPositionZTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setBackgroundColorTransition(const Color& target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setOpacityTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+
 
 public:	// TODO: internal
 	void setupDefault();
@@ -312,6 +327,27 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    struct AnimationData
+    {
+        Ref<UIValueTrack> width;
+        Ref<UIValueTrack> height;
+        Ref<UIValueTrack> positionX;
+        Ref<UIValueTrack> positionY;
+        Ref<UIValueTrack> positionZ;
+        Ref<UIValueTrack> backgroundColor;
+        Ref<UIValueTrack> opacity;
+    };
+
+    AnimationData* acquireAnimationData()
+    {
+        if (!m_animationData) {
+            m_animationData = std::make_unique<AnimationData>();
+        }
+        return m_animationData.get();
+    }
+
+    // これも結構サイズ大きいので、必要なものだけ遅延で作る
+    std::unique_ptr<AnimationData> m_animationData;
 };
 
 // 要素ひとつに対応。複数の class を管理する

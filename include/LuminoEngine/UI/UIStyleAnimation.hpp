@@ -15,31 +15,50 @@ class AnimationCurve;
 
 
 
-
-class UIScalarAnimationTrack
+class UIValueTrack
 	: public Object
 {
 public:
-	bool testActiveTime(float time) const
+	float duration() const { return m_duration; }
+	float delay() const { return m_delay; }
+	AnimationWrapMode wrapMode() const { return m_wrapMode; }
+	bool testActiveTime(float time) const { return m_wrapMode != AnimationWrapMode::Once || 0.0f <= time && time <= m_duration; }
+
+LN_CONSTRUCT_ACCESS:
+	UIValueTrack()
+	{}
+	bool init(float duration, float delay, AnimationWrapMode wrapMode)
 	{
-		return 0.0f <= time && time <= m_duration;
+		if (!Object::init()) return false;
+		m_duration = duration;
+		m_delay = delay;
+		m_wrapMode = wrapMode;
+		return true;
 	}
 
+private:
+	float m_duration;
+	float m_delay;
+	AnimationWrapMode m_wrapMode;
+};
+
+class UIScalarAnimationTrack
+	: public UIValueTrack
+{
+public:
 	float evaluate(float time) const
 	{
-		return m_function(time, m_startValue, m_targetValue - m_startValue, m_duration);
+		return m_function(time, m_startValue, m_targetValue - m_startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
 	UIScalarAnimationTrack()
 	{}
-	bool init(float startValue, float targetValue, float duration, EasingMode func, float delay)
+	bool init(float startValue, float targetValue, float duration, EasingMode func, float delay, AnimationWrapMode wrapMode)
 	{
-		if (!Object::init()) return false;
+		if (!UIValueTrack::init(duration, delay, wrapMode)) return false;
 		m_function = EasingFunctions::function(func);
 		m_targetValue = targetValue;
-		m_duration = duration;
-		m_delay = delay;
 		return true;
 	}
 
@@ -47,34 +66,25 @@ private:
 	EasingFunctions::FloatEasingFunctionPtr m_function;
 	float m_startValue;
 	float m_targetValue;
-	float m_duration;
-	float m_delay;
 };
 
 class UIVector4AnimationTrack
-	: public Object
+	: public UIValueTrack
 {
 public:
-	bool testActiveTime(float time) const
-	{
-		return 0.0f <= time && time <= m_duration;
-	}
-
 	Vector4 evaluate(float time) const
 	{
-		return m_function(time, m_startValue, m_targetValue - m_startValue, m_duration);
+		return m_function(time, m_startValue, m_targetValue - m_startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
 	UIVector4AnimationTrack()
 	{}
-	bool init(Vector4 startValue, Vector4 targetValue, float duration, EasingMode func, float delay)
+	bool init(Vector4 startValue, Vector4 targetValue, float duration, EasingMode func, float delay, AnimationWrapMode wrapMode)
 	{
-		if (!Object::init()) return false;
+		if (!UIValueTrack::init(duration, delay, wrapMode)) return false;
 		m_function = EasingFunctions::functionVector4(func);
 		m_targetValue = targetValue;
-		m_duration = duration;
-		m_delay = delay;
 		return true;
 	}
 
@@ -82,22 +92,15 @@ private:
 	EasingFunctions::Vector4EasingFunctionPtr m_function;
 	Vector4 m_startValue;
 	Vector4 m_targetValue;
-	float m_duration;
-	float m_delay;
 };
 
 class UIScalarTransitionTrack
-	: public Object
+	: public UIValueTrack
 {
 public:
-	bool testActiveTime(float time) const
-	{
-		return 0.0f <= time && time <= m_duration;
-	}
-
 	float evaluate(float startValue, float time) const
 	{
-		return m_function(time, startValue, m_targetValue - startValue, m_duration);
+		return m_function(time, startValue, m_targetValue - startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
@@ -105,33 +108,24 @@ LN_CONSTRUCT_ACCESS:
 	{}
 	bool init(float targetValue, float duration, EasingMode func, float delay)
 	{
-		if (!Object::init()) return false;
+		if (!UIValueTrack::init(duration, delay, AnimationWrapMode::Once)) return false;
 		m_function = EasingFunctions::function(func);
 		m_targetValue = targetValue;
-		m_duration = duration;
-		m_delay = delay;
 		return true;
 	}
 
 private:
 	EasingFunctions::FloatEasingFunctionPtr m_function;
 	float m_targetValue;
-	float m_duration;
-	float m_delay;
 };
 
 class UIVector4TransitionTrack
-	: public Object
+	: public UIValueTrack
 {
 public:
-	bool testActiveTime(float time) const
-	{
-		return 0.0f <= time && time <= m_duration;
-	}
-
 	Vector4 evaluate(Vector4 startValue, float time)  const
 	{
-		return m_function(time, startValue, m_targetValue - startValue, m_duration);
+		return m_function(time, startValue, m_targetValue - startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
@@ -139,19 +133,15 @@ LN_CONSTRUCT_ACCESS:
 	{}
 	bool init(Vector4 targetValue, float duration, EasingMode func, float delay)
 	{
-		if (!Object::init()) return false;
+		if (!UIValueTrack::init(duration, delay, AnimationWrapMode::Once)) return false;
 		m_function = EasingFunctions::functionVector4(func);
 		m_targetValue = targetValue;
-		m_duration = duration;
-		m_delay = delay;
 		return true;
 	}
 
 private:
 	EasingFunctions::Vector4EasingFunctionPtr m_function;
 	Vector4 m_targetValue;
-	float m_duration;
-	float m_delay;
 };
 
 

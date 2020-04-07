@@ -199,6 +199,76 @@ void UIStyle::init()
 {
     Object::init();
 }
+void UIStyle::setWidthAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	acquireAnimationData()->width = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+}
+
+void UIStyle::setHeightAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	acquireAnimationData()->height = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+}
+
+void UIStyle::setPositionXAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	acquireAnimationData()->positionX = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+}
+
+void UIStyle::setPositionYAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	acquireAnimationData()->positionY = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+}
+
+void UIStyle::setPositionZAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	acquireAnimationData()->positionZ = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+}
+
+void UIStyle::setBackgroundColorAnimation(const Color& startValue, const Color& targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	acquireAnimationData()->backgroundColor = makeObject<UIVector4AnimationTrack>(startValue.toVector4(), targetValue.toVector4(), duration, timingFunction, delay, wrapMode);
+}
+
+void UIStyle::setOpacityAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	acquireAnimationData()->opacity = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+}
+
+
+void UIStyle::setWidthTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	acquireAnimationData()->width = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+}
+
+void UIStyle::setHeightTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	acquireAnimationData()->height = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+}
+
+void UIStyle::setPositionXTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	acquireAnimationData()->positionX = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+}
+
+void UIStyle::setPositionYTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	acquireAnimationData()->positionY = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+}
+
+void UIStyle::setPositionZTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	acquireAnimationData()->positionZ = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+}
+
+void UIStyle::setBackgroundColorTransition(const Color& target, float duration, EasingMode timingFunction, float delay)
+{
+	acquireAnimationData()->backgroundColor = makeObject<UIVector4TransitionTrack>(target.toVector4(), duration, timingFunction, delay);
+}
+
+void UIStyle::setOpacityTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	acquireAnimationData()->opacity = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+}
 
 void UIStyle::setupDefault()
 {
