@@ -508,13 +508,13 @@ void UIElement::addChild(const String& child)
     addChild(textblock);
 }
 
-void UIElement::activate()
-{
-	//if (m_focusable) {
-	//	activateInternal();
-	//}
-	m_manager->tryGetInputFocus(this);
-}
+//void UIElement::activate()
+//{
+//	//if (m_focusable) {
+//	//	activateInternal();
+//	//}
+//	m_manager->tryGetInputFocus(this);
+//}
 
 void UIElement::setRenderPriority(int value)
 {
@@ -605,7 +605,9 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
 void UIElement::focus()
 {
-	activate();
+    if (m_focusable) {
+        m_manager->tryGetInputFocus(this);
+    }
 }
 
 void UIElement::retainCapture()
@@ -994,7 +996,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 void UIElement::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseDownEvent) {
-		activate();
+		focus();
 	}
 }
 

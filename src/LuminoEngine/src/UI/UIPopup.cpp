@@ -57,7 +57,7 @@ void UIPopup::open()
             renderView->adornerLayer()->add(m_adorner);
         }
 
-		activate();
+		focus();
 		m_hitTestMode = detail::UIHitTestMode::Visible;
         m_opend = true;
     }

@@ -7,6 +7,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/UIDialog.hpp>
+#include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
@@ -145,6 +146,7 @@ void UIFrameRenderView::invalidate(detail::UIElementDirtyFlags flags)
 // UIRenderView
 
 UIRenderView::UIRenderView()
+    : m_focusNavigator(makeObject<UIFocusNavigator>())
 {
 }
 

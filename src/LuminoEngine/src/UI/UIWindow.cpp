@@ -20,7 +20,6 @@ UIWindow::UIWindow()
 void UIWindow::init()
 {
     UIContainerElement::init();
-	setFocusable(true);
 }
 
 } // namespace ln

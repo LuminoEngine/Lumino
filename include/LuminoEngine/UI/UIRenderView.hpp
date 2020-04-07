@@ -7,6 +7,7 @@ class UIElement;
 class UIFrameWindow;
 class UIAdornerLayer;
 class UIDialog;
+class UIFocusNavigator;
 namespace detail {
 class FlatRenderingPipeline;
 } // namespace detail
@@ -64,6 +65,8 @@ public:
     // TODO: 複数表示のため push/pop の方がいいかもしれない
     //void setDialog(UIDialog* dialog);
 
+    const Ref<UIFocusNavigator>& focusNavigator() const { return m_focusNavigator; }
+
 public:	// TODO: protected
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -74,7 +77,7 @@ public:	// TODO: protected
 private:
     //Ref<RenderPass> m_clearRenderPass;
     //Ref<UIDialog> m_dialog;
-
+    Ref<UIFocusNavigator> m_focusNavigator;
 };
 
 } // namespace ln

@@ -1,5 +1,7 @@
 ﻿#pragma once
+#include "../Animation/Common.hpp"
 #include "UIElement.hpp"
+#include "UIStyleAnimation.hpp"
 
 namespace ln {
 class Shader;
@@ -71,72 +73,6 @@ public:
     bool hasValue() const
     {
         return m_source != UIStyleAttributeValueSource::Default;
-    }
-
-    bool inherit(const UIStyleAttribute& parent/*, UIStyleAttributeInheritSourceType sourceType*/)
-    {
-        // そもそも parent が値を持っていなければ何もする必要はない
-        if (parent.m_source == UIStyleAttributeValueSource::Default) return false;
-        // Local 値を持っているので継承する必要はない
-        if (m_source == UIStyleAttributeValueSource::ByUserLocal) return false;
-
-        //bool inherit = ((int)m_source < ((int)parent.m_source - 1));
-        //bool inherit = false;
-        //if (m_source == UIStyleAttributeValueSource::Default)
-        //{
-        //	inherit = true;
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::InheritParent)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::ParentElement ||
-        //		sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::InheritBaseOn)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::InheritBase)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::StyleLocal)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-
-        bool changed = false;
-        //if (inherit)
-        {
-            //if (sourceType == UIStyleAttributeInheritSourceType::ParentElement)
-            //	m_source = UIStyleAttributeValueSource::InheritParent;
-            //else if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle)
-            //	m_source = UIStyleAttributeValueSource::InheritBaseOn;
-            //else if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle)
-            //	m_source = UIStyleAttributeValueSource::InheritBase;
-            //else
-            //	m_source = UIStyleAttributeValueSource::StyleLocal;
-            m_source = UIStyleAttributeValueSource::ByStyleInherit;
-            changed = (m_value != parent.m_value);
-            m_value = parent.m_value;
-        }
-        return changed;
     }
 
     T							m_value;
@@ -359,6 +295,10 @@ public:
         rightBorderColor = color;
         bottomBorderColor = color;
     }
+
+    void addPositionAnimation(const Vector3& target, float duration, EasingMode timingFunction, AnimationWrapMode direction);
+    void addSizeAnimation(const Size& target, float duration, EasingMode timingFunction, AnimationWrapMode direction);
+    void addOpacityAnimation(float target, float duration, EasingMode timingFunction, AnimationWrapMode direction);
 
 public:	// TODO: internal
 	void setupDefault();
@@ -845,6 +785,10 @@ public:
 	static const String MouseOver;
 	static const String Pressed;
 	static const String Disabled;
+
+    // FocusStates
+    static const String Focused;    // Input focus を持っているか. (Logical focus は関係ない)
+    static const String Unfocused;
 
 	// CheckStates
 	static const String CheckedState;

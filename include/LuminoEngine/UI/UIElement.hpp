@@ -380,12 +380,13 @@ public:
 
 	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
 	void setFocusable(bool value) { m_focusable = value; }
+	bool focusable() const { return m_focusable; }
 
     void setClipToBounds(bool value) { m_clipToBounds = value; }
     bool clipToBounds() const { return m_clipToBounds; }
 
 	/** ウィンドウを前面にしてアクティブ化することを試みます。 */
-	void activate();
+	//void activate();
 
     UIElement();
     virtual ~UIElement();

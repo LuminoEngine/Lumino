@@ -8,7 +8,13 @@ class Material;
  * 要素のフォーカス遷移を管理すためのコンテナ要素。
  *
  * Dialog のようにひとつの Active な要素にのみ、UI イベントを通知するようにしたいときに使う。
- * Dialog と異なるのは、関係する要素を常に表示したままにすることができること。
+ * Dialog と異なるのは、
+ * - 関係する要素を常に表示したままにすることができること。
+ * - 履歴を一気にさかのぼれること。
+ *  - 例：[メニュー] > [アイテム] > [つかう] と選んだら全てのウィンドウを閉じてゲーム画面に戻る
+ * - 履歴を積まないで画面遷移もできること。
+ *  - 例：PageUp/PageDown で別メニューへ移動
+ * 
  *
  * 基本動作
  * ----------
@@ -33,7 +39,8 @@ class Material;
  *
  */
 class UIFocusNavigator
-    : public UIContainerElement
+    //: public UIContainerElement
+    : public Object
 {
 public:
 	void gotoFocus(UIElement* element);
@@ -45,10 +52,10 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	UIFocusNavigator();
-	void init();
+	bool init();
 
 protected:
-	virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
+	//virtual UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
 
 private:
     List<UIElement*> m_history;

@@ -19,6 +19,7 @@ UIControl::UIControl()
 	, m_logicalChildren(makeCollection<Ref<UIElement>>())
 {
 	m_objectManagementFlags.set(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
+    setFocusable(true);
 }
 
 bool UIControl::init(const UICreationContext* context)
@@ -28,6 +29,10 @@ bool UIControl::init(const UICreationContext* context)
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Normal);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::MouseOver);
     vsm->registerState(UIVisualStates::CommonStates, UIVisualStates::Disabled);
+    vsm->registerState(UIVisualStates::FocusStates, UIVisualStates::Focused);
+    vsm->registerState(UIVisualStates::FocusStates, UIVisualStates::Unfocused);
+    vsm->gotoState(UIVisualStates::Normal);
+    vsm->gotoState(UIVisualStates::Unfocused);
 
 	//setHAlignment(HAlignment::Stretch);
 	//setVAlignment(VAlignment::Stretch);
@@ -214,6 +219,12 @@ void UIControl::onRoutedEvent(UIEventArgs* e)
     }
     else if (e->type() == UIEvents::MouseLeaveEvent) {
         getVisualStateManager()->gotoState(UIVisualStates::Normal);
+    }
+    else if (e->type() == UIEvents::LostFocusEvent) {
+        getVisualStateManager()->gotoState(UIVisualStates::Unfocused);
+    }
+    else if (e->type() == UIEvents::GotFocusEvent) {
+        getVisualStateManager()->gotoState(UIVisualStates::Focused);
     }
 
     if (m_actions) {

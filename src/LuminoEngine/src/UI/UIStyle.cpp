@@ -1574,6 +1574,9 @@ void UITheme::buildLumitelier()
 			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
+			//s->backgroundColor = Color::Red;
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {
 			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
 		}
 	}
@@ -1741,6 +1744,9 @@ const String UIVisualStates::Normal = u"Normal";
 const String UIVisualStates::MouseOver = u"MouseOver";
 const String UIVisualStates::Pressed = u"Pressed";
 const String UIVisualStates::Disabled = u"Disabled";
+
+const String UIVisualStates::Focused = u"Focused";
+const String UIVisualStates::Unfocused = u"Unfocused";
 
 const String UIVisualStates::CheckedState = u"Checked";
 const String UIVisualStates::UncheckedState = u"Unchecked";

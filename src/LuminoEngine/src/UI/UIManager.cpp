@@ -193,7 +193,7 @@ void UIManager::activateTree(UIElement* element)
 {
 	m_activationCache.clear();
 
-	// 論理フォーカスを持っているものをすべて列挙
+	// VisualTree を遡ってすべて列挙
 	UIElement* e = element;
 	while (e)
 	{
@@ -212,8 +212,10 @@ void UIManager::activateTree(UIElement* element)
 		}
 
         // deactivate
-        auto args = UIEventArgs::create(e, UIEvents::LostFocusEvent, true);
-        e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+        if (e->focusable()) {
+            auto args = UIEventArgs::create(e, UIEvents::LostFocusEvent, true);
+            e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+        }
 
 		e = e->m_visualParent;
 	}
@@ -228,8 +230,10 @@ void UIManager::activateTree(UIElement* element)
 
         // activate
         e->activateInternal();
-        auto args = UIEventArgs::create(e, UIEvents::GotFocusEvent, true);
-        e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+        if (e->focusable()) {
+            auto args = UIEventArgs::create(e, UIEvents::GotFocusEvent, true);
+            e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+        }
 
 		e = e->m_visualParent;
 	}
