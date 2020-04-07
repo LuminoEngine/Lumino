@@ -525,6 +525,14 @@ void UIElement::updateFrame(float elapsedSeconds)
 {
     onUpdateFrame(elapsedSeconds);
 
+    if (m_finalStyle && m_finalStyle->hasAnimationData()) {
+        m_finalStyle->advanceAnimation(elapsedSeconds);
+        auto dirtyFlags = m_finalStyle->applyAnimationValues();
+        if (dirtyFlags != detail::UIElementDirtyFlags::None) {
+            invalidate(dirtyFlags, true);
+        }
+    }
+
     // child elements
     int count = getVisualChildrenCount();
     for (int i = 0; i < count; i++) {
@@ -776,6 +784,8 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	detail::UIStyleInstance::updateStyleDataHelper(styleContext, /*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
 
 	m_finalStyle->theme = styleContext->mainTheme;
+    
+    m_finalStyle->updateAnimationData();
 
 	onUpdateStyle(styleContext, m_finalStyle);
 

@@ -197,7 +197,7 @@ public:
 
 	// transform
     detail::UIStyleAttribute<Vector3> position;
-    detail::UIStyleAttribute<Quaternion> rotation;
+    detail::UIStyleAttribute<Quaternion> rotation;  // TODO: eular にする
     detail::UIStyleAttribute<Vector3> scale;
     detail::UIStyleAttribute<Vector3> centerPoint;
 
@@ -530,6 +530,9 @@ public:
 
 	UITheme* theme = nullptr;
 
+
+
+
     // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 
     UIStyleInstance();
@@ -554,10 +557,35 @@ public:
 		return Size(margin.left, margin.top);
 	}
 
+    void updateAnimationData();
+    bool hasAnimationData() const { return m_animationData != nullptr; }
+    void advanceAnimation(float elapsedTime);
+    UIElementDirtyFlags applyAnimationValues();
+
 LN_CONSTRUCT_ACCESS:
 
 private:
+    struct AnimationData
+    {
+        Ref<UIScalarAnimationInstance> width;
+        Ref<UIScalarAnimationInstance> height;
+        Ref<UIScalarAnimationInstance> positionX;
+        Ref<UIScalarAnimationInstance> positionY;
+        Ref<UIScalarAnimationInstance> positionZ;
+        Ref<UIVector4AnimationInstance> backgroundColor;
+        Ref<UIScalarAnimationInstance> opacity;
+    };
 
+    AnimationData* acquireAnimationData()
+    {
+        if (!m_animationData) {
+            m_animationData = std::make_unique<AnimationData>();
+        }
+        return m_animationData.get();
+    }
+
+    // これも結構サイズ大きいので、必要なものだけ遅延で作る
+    std::unique_ptr<AnimationData> m_animationData;
 };
 
 class UIStyleClassInstance

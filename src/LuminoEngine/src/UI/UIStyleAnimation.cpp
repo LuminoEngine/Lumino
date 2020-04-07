@@ -33,6 +33,25 @@
     Animation には２種類ある。
     - animation: キーフレームアニメーション。値はすべて事前定義。
     - transition: アクティブになったら、現在値から目標値へ遷移する。
+
+
+
+    Animation は Style の要素単位で持つ。
+    "Vector3 position" ではなく、"float positionX, positionY, positionZ" のようにプリミティブ単位で。
+    こうしておかないと、たとえば x y 「どちらかだけ省略する」ができなくなる。
+    Size を例にすると、高さは Alignment.Center で決めたいが幅はマウスオーバーしたらアニメ付きで伸ばしたい、といったときに弊害になる。
+
+
+    適用時は、
+    StyleInstance に TransitionInstance を、こちらも要素単位で持たせておく。
+    AnimationInstance は、combinedStyle に集まってくる AnimationElement (ポインタ)をキーに作る。revsiton 見てもいいかも。
+
+    Animation と Transition の同時指定は無効。
+    Style に一応設定はできるが、Instance を作るときは Transition が優先される。
+
+
+
+    Color は要素ごとにアニメしなくていいかもしれない。というか要素単位アニメほとんど使わない気がする。CSSでも無いし。
 */
 #include "Internal.hpp"
 #include <LuminoEngine/Animation/AnimationCurve.hpp>

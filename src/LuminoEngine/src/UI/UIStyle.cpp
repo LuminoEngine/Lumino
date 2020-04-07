@@ -1200,6 +1200,55 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 	}
 }
 
+void UIStyleInstance::updateAnimationData()
+{
+
+}
+
+void UIStyleInstance::advanceAnimation(float elapsedTime)
+{
+	if (m_animationData) {
+		AnimationData* d = m_animationData.get();
+		if (d->width) d->width->advanceTime(elapsedTime);
+		if (d->height) d->height->advanceTime(elapsedTime);
+		if (d->positionX) d->positionX->advanceTime(elapsedTime);
+		if (d->positionY) d->positionY->advanceTime(elapsedTime);
+		if (d->positionZ) d->positionZ->advanceTime(elapsedTime);
+		if (d->backgroundColor) d->backgroundColor->advanceTime(elapsedTime);
+		if (d->opacity) d->opacity->advanceTime(elapsedTime);
+	}
+}
+
+template<typename T, typename TValue>
+static UIElementDirtyFlags applyAnimation(const T& instance, TValue* value, UIElementDirtyFlags flag)
+{
+	if (instance && instance->isActive()) {
+		*value = instance->evaluate();
+		return flag;
+	}
+	else {
+		return UIElementDirtyFlags::None;
+	}
+}
+
+UIElementDirtyFlags UIStyleInstance::applyAnimationValues()
+{
+	Flags<UIElementDirtyFlags> dirty = UIElementDirtyFlags::None;
+
+	if (m_animationData) {
+		AnimationData* d = m_animationData.get();
+		dirty |= applyAnimation(d->width, &width, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->height, &height, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->positionX, &position.x, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->positionY, &position.y, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->positionZ, &position.z, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->backgroundColor, &backgroundColor, UIElementDirtyFlags::Render);
+		dirty |= applyAnimation(d->opacity, &opacity, UIElementDirtyFlags::Render);
+	}
+
+	return dirty;
+}
+
 //==============================================================================
 // UIStyleClassInstance
 
