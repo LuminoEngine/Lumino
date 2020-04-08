@@ -1,5 +1,34 @@
 ﻿/*
+    [2020/4/8]
+    ----------
+    値の優先度は、
+    1. デフォルト値
+    2. 継承した値
+    3. アニメーション値
+    4. ローカル値
+
+    例えば ListItem の背景を特別に赤くしたい時は直接 element->setBackgroundColor() とかするが、
+    このときはユーザープログラムが強い意志で色を変えたいということで、アニメーション値は上書きされる。
+
+
+    beginFrame
+        updateFrame
+            setPosition とか setVisible とか focus とか、メインでコードベースで色々やるのはここ。
+            invalidate flag 付いたり、visual state 変わったりする。
+            時間を正しく認識できるのはここだけ。作られている instance に対して elapsedTime を適用する。
+            値の適用もここでやる。invalidateStyle が無ければ、このフレームでは updateStyle は実行されないこともある。
+        updateStyle
+            update後、アニメーションによる値の適用を行う。updateFrame() でやったのと同じ処理。
+            こうしておかないと、継承した値をアニメーション値で上書きできない。
+            updateStyle が呼ばれるフレームでは updateFrame と同じ処理が動くがやむなし。
+            updateFrame 側で、invalidateStyle 状態だったら アニメ適用しない対応はできるかも。
+        updateLayout
+            
+        render
+    endFrame
+
   [2020/4/7]
+  ----------
   結局 WPF のようなプロパティ単位で極限まで抽象化されたアニメーションの実装はやめることにした。
   メンテナンスの難易度もそうだが、文字列検索が頻繁に発生したり、パフォーマンスへの影響も大きい。
 
@@ -52,6 +81,9 @@
 
 
     Color は要素ごとにアニメしなくていいかもしれない。というか要素単位アニメほとんど使わない気がする。CSSでも無いし。
+
+    
+    
 */
 #include "Internal.hpp"
 #include <LuminoEngine/Animation/AnimationCurve.hpp>

@@ -48,18 +48,18 @@ class App_Example_Navigator : public Application
 		//m_listbox1->setVAlignment(VAlignment::Top);
 		m_listbox1->addChild(u"item1");
 		m_listbox1->addChild(u"item2");
-		m_listbox1->addChild(u"item3");
-		m_listbox1->addChild(u"item4");
+		//m_listbox1->addChild(u"item3");
+		//m_listbox1->addChild(u"item4");
 		m_window1->addChild(m_listbox1);
 		//// m_navigator->addElement(m_listbox1);
 
 
 
 
-        m_window2 = UIWindow::create();
-		m_window2->setAlignments(HAlignment::Left, VAlignment::Top);
-		m_window2->setPosition(220, 20);
-		m_window2->setSize(200, 300);
+  //      m_window2 = UIWindow::create();
+		//m_window2->setAlignments(HAlignment::Left, VAlignment::Top);
+		//m_window2->setPosition(220, 20);
+		//m_window2->setSize(200, 300);
 		//m_window2->setMargin(8);
         //m_window2->setBackgroundColor(Color::Blue);
 		//m_window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
@@ -72,11 +72,11 @@ class App_Example_Navigator : public Application
 		//items->add(makeProperty<String>(u"item2"));
 		//items->add(makeProperty<String>(u"item3"));
 		//m_items.set(items);
-		m_listbox2 = UIListBox::create();
-		m_listbox2->addChild(u"item1");
-		m_listbox2->addChild(u"item2");
-		m_listbox2->addChild(u"item3");
-		m_window2->addChild(m_listbox2);
+		//m_listbox2 = UIListBox::create();
+		//m_listbox2->addChild(u"item1");
+		//m_listbox2->addChild(u"item2");
+		//m_listbox2->addChild(u"item3");
+		//m_window2->addChild(m_listbox2);
 		//// m_navigator->addElement(m_listbox1);
 
 

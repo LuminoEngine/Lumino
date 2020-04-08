@@ -336,18 +336,23 @@ private:
         Ref<UIValueTrack> positionZ;
         Ref<UIValueTrack> backgroundColor;
         Ref<UIValueTrack> opacity;
+
+        uint32_t hasLocalValueFlags = 0;
+        uint32_t inheritFlags = 0;
+
+        void setLocalValueFlag(detail::UIStyleAnimationElement index, bool v) { if (v) hasLocalValueFlags |= (1 << index); else hasLocalValueFlags &= ~(1 << index); }
+        void setInheritFlag(detail::UIStyleAnimationElement index, bool v) { if (v) hasLocalValueFlags |= (1 << index); else hasLocalValueFlags &= ~(1 << index); }
+        bool hasValue(detail::UIStyleAnimationElement index) const { return (hasLocalValueFlags & (1 << index)) != 0; }
+        bool isInherited(detail::UIStyleAnimationElement index) const { return (inheritFlags & (1 << index)) != 0; }
+        bool hasLocalValue(detail::UIStyleAnimationElement index) const { return hasValue(index) && !isInherited(index); }
     };
 
-    AnimationData* acquireAnimationData()
-    {
-        if (!m_animationData) {
-            m_animationData = std::make_unique<AnimationData>();
-        }
-        return m_animationData.get();
-    }
+    AnimationData* acquireAnimationData();
 
     // これも結構サイズ大きいので、必要なものだけ遅延で作る
     std::unique_ptr<AnimationData> m_animationData;
+
+    friend class detail::UIStyleInstance;
 };
 
 // 要素ひとつに対応。複数の class を管理する
@@ -709,6 +714,13 @@ public:
 	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList);
     void combineStyle(UIStyle* style, const UIStyleClass* styleClass);
     //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
+
+    void printActive()
+    {
+        for (auto& g : m_groups) {
+            std::cout << g.name << ": " << g.stateNames[g.activeStateIndex] << std::endl;
+        }
+    }
 
 LN_CONSTRUCT_ACCESS:
     UIVisualStateManager();

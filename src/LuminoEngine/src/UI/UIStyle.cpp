@@ -201,73 +201,101 @@ void UIStyle::init()
 }
 void UIStyle::setWidthAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
-	acquireAnimationData()->width = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	auto* d = acquireAnimationData();
+	d->width = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Width, true);
 }
 
 void UIStyle::setHeightAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
-	acquireAnimationData()->height = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	auto* d = acquireAnimationData();
+	d->height = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Height, true);
 }
 
 void UIStyle::setPositionXAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
-	acquireAnimationData()->positionX = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	auto* d = acquireAnimationData();
+	d->positionX = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionX, true);
 }
 
 void UIStyle::setPositionYAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
-	acquireAnimationData()->positionY = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	auto* d = acquireAnimationData();
+	d->positionY = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionY, true);
 }
 
 void UIStyle::setPositionZAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
-	acquireAnimationData()->positionZ = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	auto* d = acquireAnimationData();
+	d->positionZ = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionZ, true);
 }
 
 void UIStyle::setBackgroundColorAnimation(const Color& startValue, const Color& targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
-	acquireAnimationData()->backgroundColor = makeObject<UIVector4AnimationTrack>(startValue.toVector4(), targetValue.toVector4(), duration, timingFunction, delay, wrapMode);
+	auto* d = acquireAnimationData();
+	d->backgroundColor = makeObject<UIVector4AnimationTrack>(startValue.toVector4(), targetValue.toVector4(), duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_BackgroundColor, true);
 }
 
 void UIStyle::setOpacityAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
 {
-	acquireAnimationData()->opacity = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	auto* d = acquireAnimationData();
+	d->opacity = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Opacity, true);
 }
 
 
 void UIStyle::setWidthTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
-	acquireAnimationData()->width = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	auto* d = acquireAnimationData();
+	d->width = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Width, true);
 }
 
 void UIStyle::setHeightTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
-	acquireAnimationData()->height = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	auto* d = acquireAnimationData();
+	d->height = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Height, true);
 }
 
 void UIStyle::setPositionXTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
-	acquireAnimationData()->positionX = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	auto* d = acquireAnimationData();
+	d->positionX = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionX, true);
 }
 
 void UIStyle::setPositionYTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
-	acquireAnimationData()->positionY = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	auto* d = acquireAnimationData();
+	d->positionY = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionY, true);
 }
 
 void UIStyle::setPositionZTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
-	acquireAnimationData()->positionZ = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	auto* d = acquireAnimationData();
+	d->positionZ = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionZ, true);
 }
 
 void UIStyle::setBackgroundColorTransition(const Color& target, float duration, EasingMode timingFunction, float delay)
 {
-	acquireAnimationData()->backgroundColor = makeObject<UIVector4TransitionTrack>(target.toVector4(), duration, timingFunction, delay);
+	auto* d = acquireAnimationData();
+	d->backgroundColor = makeObject<UIVector4TransitionTrack>(target.toVector4(), duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_BackgroundColor, true);
 }
 
 void UIStyle::setOpacityTransition(float target, float duration, EasingMode timingFunction, float delay)
 {
-	acquireAnimationData()->opacity = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	auto* d = acquireAnimationData();
+	d->opacity = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Opacity, true);
 }
 
 void UIStyle::setupDefault()
@@ -337,6 +365,9 @@ void UIStyle::setupDefault()
 
 	// decorators
 	decorators.clear();
+
+	// animations
+	m_animationData = nullptr;
 }
 
 void UIStyle::reset()
@@ -406,6 +437,9 @@ void UIStyle::reset()
 
 	// decorators
 	decorators.clear();
+
+	// animations
+	m_animationData = nullptr;
 }
 
 void UIStyle::mergeFrom(const UIStyle* other)
@@ -478,6 +512,26 @@ void UIStyle::mergeFrom(const UIStyle* other)
 	// decorators
 	for (auto& d : other->decorators) {
 		decorators.add(d);
+	}
+
+	// animations
+	if (other->m_animationData) {
+		AnimationData* d = acquireAnimationData();
+
+#define LN_MERGE_ANIMATION_DATA(field, flagIndex) \
+		if (!d->hasLocalValue(flagIndex)) { \
+			d->field = other->m_animationData->field; \
+			d->setInheritFlag(flagIndex, true); \
+		}
+
+		LN_MERGE_ANIMATION_DATA(width, detail::UIStyleAnimationElement_Width);
+		LN_MERGE_ANIMATION_DATA(height, detail::UIStyleAnimationElement_Height);
+		LN_MERGE_ANIMATION_DATA(positionX, detail::UIStyleAnimationElement_PositionX);
+		LN_MERGE_ANIMATION_DATA(positionY, detail::UIStyleAnimationElement_PositionY);
+		LN_MERGE_ANIMATION_DATA(positionZ, detail::UIStyleAnimationElement_PositionZ);
+		LN_MERGE_ANIMATION_DATA(backgroundColor, detail::UIStyleAnimationElement_BackgroundColor);
+		LN_MERGE_ANIMATION_DATA(opacity, detail::UIStyleAnimationElement_Opacity);
+#undef LN_MERGE_ANIMATION_DATA
 	}
 }
 
@@ -552,6 +606,28 @@ void UIStyle::copyFrom(const UIStyle* other)
 	for (auto& d : other->decorators) {
 		decorators.add(d);
 	}
+
+	// animations
+	if (other->m_animationData) {
+		AnimationData* d = acquireAnimationData();
+		d->hasLocalValueFlags = other->m_animationData->hasLocalValueFlags;
+		d->inheritFlags = other->m_animationData->inheritFlags;
+		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Width)) d->width = other->m_animationData->width;
+		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Height)) d->height = other->m_animationData->height;
+		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionX)) d->positionX = other->m_animationData->positionX;
+		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionY)) d->positionY = other->m_animationData->positionY;
+		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionZ)) d->positionZ = other->m_animationData->positionZ;
+		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_BackgroundColor)) d->backgroundColor = other->m_animationData->backgroundColor;
+		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Opacity)) d->opacity = other->m_animationData->opacity;
+	}
+}
+
+UIStyle::AnimationData* UIStyle::acquireAnimationData()
+{
+	if (!m_animationData) {
+		m_animationData = std::make_unique<AnimationData>();
+	}
+	return m_animationData.get();
 }
 
 //==============================================================================
@@ -1116,6 +1192,27 @@ void UIStyleInstance::makeRenderObjects()
 
 void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
 {
+	// animations
+	//	StartValue は最新のスタイルの値にする前の、現在値を使いたいので、animation 更新は最初に行う。
+	{
+		if (combinedStyle->m_animationData) {
+			const auto& sd = combinedStyle->m_animationData;
+			auto* d = outStyleData->acquireAnimationData();
+
+			//if (!d->backgroundColor) {	// TODO: test
+			if (sd->hasValue(UIStyleAnimationElement_BackgroundColor)) {
+				if (UIVector4AnimationInstance::realloc(sd->backgroundColor, &d->backgroundColor)) {
+					d->backgroundColor->reset(outStyleData->backgroundColor.toVector4());
+				}
+			}
+
+
+
+			//}
+		}
+	}
+
+
 	//const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
 	//if (parentStyle)
 	//{
@@ -1268,6 +1365,7 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 	for (auto& d : combinedStyle->decorators) {
 		outStyleData->decorators.add(d);
 	}
+
 }
 
 void UIStyleInstance::updateAnimationData()
@@ -1292,7 +1390,7 @@ void UIStyleInstance::advanceAnimation(float elapsedTime)
 template<typename T, typename TValue>
 static UIElementDirtyFlags applyAnimation(const T& instance, TValue* value, UIElementDirtyFlags flag)
 {
-	if (instance && instance->isActive()) {
+	if (instance/* && instance->isActive()*/) {	// TODO: 今は毎フレーム style の reset してるので、アニメ適用しないと初期値になってしまう
 		*value = instance->evaluate();
 		return flag;
 	}
@@ -1688,15 +1786,23 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
 			s->minHeight = lineContentHeight();
 			//s->padding = Thickness(spacing(1), 0);
+			//s->setBackgroundColorTransition(color(UIThemeConstantPalette::ItemHoverAction), 1.0f);
+			//s->setBackgroundColorTransition(Color::Transparency, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
-			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+			//s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+			//s->setBackgroundColorTransition(color(UIThemeConstantPalette::ItemHoverAction), 1.0f);
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {
+			//s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Unselected")) {
+			//s->backgroundColor = Color::Red;
+			s->setBackgroundColorTransition(Color::Green, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
 			//s->backgroundColor = Color::Red;
-		}
-		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {
-			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+			s->setBackgroundColorTransition(Color::Red, 1.0f);
 		}
 	}
 	//--------------------------------

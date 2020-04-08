@@ -527,8 +527,10 @@ void UIElement::updateFrame(float elapsedSeconds)
 
     if (m_finalStyle && m_finalStyle->hasAnimationData()) {
         m_finalStyle->advanceAnimation(elapsedSeconds);
-        auto dirtyFlags = m_finalStyle->applyAnimationValues();
-        if (dirtyFlags != detail::UIElementDirtyFlags::None) {
+
+        // Style 更新が要求されているなら、次の updateStyle で同じ Animation 適用の処理が動くので、ここで行う必要はない。
+        if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
+            auto dirtyFlags = m_finalStyle->applyAnimationValues();
             invalidate(dirtyFlags, true);
         }
     }
@@ -764,6 +766,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	if (m_visualStateManager) {
 		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName(), m_classList);
         m_visualStateManager->combineStyle(m_combinedStyle, m_localStyle);
+        m_visualStateManager->printActive();
 	}
     else {
         m_combinedStyle->mergeFrom(m_localStyle->mainStyle());
@@ -786,6 +789,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	m_finalStyle->theme = styleContext->mainTheme;
     
     m_finalStyle->updateAnimationData();
+    m_finalStyle->applyAnimationValues();
 
 	onUpdateStyle(styleContext, m_finalStyle);
 
@@ -1067,6 +1071,8 @@ void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strate
 
 void UIElement::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
 {
+    if (flags == detail::UIElementDirtyFlags::None) return;
+
     m_dirtyFlags.set(flags);
     if (toAncestor && m_visualParent) {
         m_visualParent->invalidate(flags, toAncestor);
