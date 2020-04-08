@@ -5,6 +5,8 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class UIListItemsControl;
+class UIListBox;
 
 /** コントロールのレイアウト方向を示します。*/
 enum class Orientation  // TODO: name LayoutOrientation

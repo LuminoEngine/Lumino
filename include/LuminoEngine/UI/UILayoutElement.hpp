@@ -242,6 +242,9 @@ public:
 	// measureOverride() の戻り値を計算するユーティリティ
 	Size makeDesiredSize(const UIElement* element, const Size& contentAreaSize) const;
 
+	// arrangeOverride() のユーティリティ
+	Rect makeContentRect(const UIElement* element, const Size& finalSize) const;
+
 LN_CONSTRUCT_ACCESS:
 	UILayoutContext();
 	void init();

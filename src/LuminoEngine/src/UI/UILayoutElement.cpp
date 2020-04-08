@@ -328,6 +328,20 @@ Size UILayoutContext::makeDesiredSize(const UIElement* element, const Size& cont
 	return desiredSize;
 }
 
+Rect UILayoutContext::makeContentRect(const UIElement* element, const Size& finalSize) const
+{
+	detail::UIStyleInstance* style = element->m_finalStyle;
+
+	Rect result(0, 0, finalSize);
+	result = result.makeDeflate(style->padding);
+
+	if (!style->borderInset) {
+		result = result.makeDeflate(style->borderThickness);
+	}
+
+	return result;
+}
+
 //==============================================================================
 // ILayoutPanel
 

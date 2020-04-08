@@ -13,9 +13,6 @@ class UICollectionItem
 	: public UIControl
 {
 public:
-    //void setData(Variant* value) { m_data = value; }
-    //Variant* data() const { return m_data; }
-    
     /** Click イベントの通知を受け取るコールバックを登録します。*/
     //LN_METHOD(Event)
     Ref<EventConnection> connectOnClick(Ref<UIClickEventHandler> handler);
