@@ -4,6 +4,7 @@
 #include "../Platform/PlatformEvent.hpp"
 
 namespace ln {
+class InputGesture;
 class RenderView;
 class UICommand;
 class UIElement;
@@ -128,6 +129,8 @@ public:
     UIElement* sender() const { return m_sender; }
 
 	UIEventType type() const { return m_type; }
+	
+    static bool testInputGesture(UIEventArgs* e, InputGesture* gesture);
 
 LN_CONSTRUCT_ACCESS:
 	UIEventArgs();
