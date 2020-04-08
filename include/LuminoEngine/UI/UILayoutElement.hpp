@@ -165,7 +165,7 @@ public:	// TODO: internal
 	//const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
 
     // TODO: internal
-    const Point localPosition() const { return m_localPosition; }
+    const Point& localPosition() const { return m_localPosition; }
 
 protected:
 	virtual ~UILayoutElement();

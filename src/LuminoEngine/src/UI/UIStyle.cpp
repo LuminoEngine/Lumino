@@ -1801,7 +1801,7 @@ void UITheme::buildLumitelier()
 			//s->setBackgroundColorTransition(Color::Transparency, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
-			//s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
 			//s->setBackgroundColorTransition(color(UIThemeConstantPalette::ItemHoverAction), 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {
@@ -1814,7 +1814,7 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
 			//s->backgroundColor = Color::Red;
 			//s->setBackgroundColorTransition(Color::Red, 1.0f);
-			s->setBackgroundColorAnimation(Color::TransparencyWhite, Color::White, 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
+			s->setBackgroundColorAnimation(Color::White.withAlpha(0.3), Color::White.withAlpha(0.6), 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
 		}
 	}
 	//--------------------------------

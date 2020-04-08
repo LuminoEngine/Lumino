@@ -46,9 +46,11 @@ class App_Example_Navigator : public Application
 		m_listbox1 = UIListBox::create();
 		//m_listbox1->setHAlignment(HAlignment::Left);
 		//m_listbox1->setVAlignment(VAlignment::Top);
-		m_listbox1->addChild(u"item1");
-		m_listbox1->addChild(u"item2");
-		//m_listbox1->addChild(u"item3");
+		m_listbox1->addChild(u"Item");
+		m_listbox1->addChild(u"Skill");
+		m_listbox1->addChild(u"Status");
+		m_listbox1->addChild(u"Save");
+		m_listbox1->addChild(u"Load");
 		//m_listbox1->addChild(u"item4");
 		m_window1->addChild(m_listbox1);
 		//// m_navigator->addElement(m_listbox1);

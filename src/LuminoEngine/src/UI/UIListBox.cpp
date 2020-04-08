@@ -74,6 +74,7 @@ void UIListItem::setSelectedInternal(bool selected)
 UIListItemsControl::UIListItemsControl()
 	: m_itemsHostLayout(nullptr)
 	, m_selectedItems()
+	, m_selectionMoveMode(UIListSelectionMoveMode::Cyclic)
 {
 }
 
@@ -151,6 +152,76 @@ void UIListItemsControl::removeAllItems()
 		m_itemsHostLayout->removeVisualChild(item);
 	}
 	m_logicalChildren->clear();
+}
+
+void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
+{
+	UIControl::onRoutedEvent(e);
+
+	if (e->type() == UIEvents::KeyDownEvent) {
+
+		if (!m_logicalChildren->isEmpty()) {
+
+			if (m_selectedItems.isEmpty()) {
+				selectItemExclusive(static_pointer_cast<UIListItem>(m_logicalChildren->at(0)));
+			}
+			else {
+				auto* k = static_cast<UIKeyEventArgs*>(e);
+				Vector2 dir;
+				if (k->getKey() == Keys::Left)
+					dir.x = -1;
+				else if (k->getKey() == Keys::Up)
+					dir.y = -1;
+				else if (k->getKey() == Keys::Right)
+					dir.x = 1;
+				else if (k->getKey() == Keys::Down)
+					dir.y = 1;
+
+				UIElement* selected = m_selectedItems.front();
+				UIElement* next = nullptr;
+				float distance = FLT_MAX;
+				for (const auto& item : *m_logicalChildren) {
+					auto diff = item->localPosition() - selected->localPosition();
+					auto f = diff * dir;
+					if (f.x >= 1.0f || f.y >= 1.0f) {
+						float len = diff.lengthSquared();
+						if (len < distance) {
+							distance = len;
+							next = item;
+						}
+					}
+				}
+
+				if (!next && m_selectionMoveMode == UIListSelectionMoveMode::Cyclic) {
+					dir *= -1.0f;
+					distance = 0.0f;
+					for (const auto& item : *m_logicalChildren) {
+						auto diff = item->localPosition() - selected->localPosition();
+						auto f = diff * dir;
+						if (f.x >= 1.0f || f.y >= 1.0f) {
+							float len = diff.lengthSquared();
+							if (len > distance) {
+								distance = len;
+								next = item;
+							}
+						}
+					}
+				}
+
+				if (next) {
+					selectItemExclusive(static_cast<UIListItem*>(next));
+				}
+			}
+		}
+
+
+
+
+
+		//m_ownerListControl->notifyItemClicked(this);
+		e->handled = true;
+		return;
+	}
 }
 
 Size UIListItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)

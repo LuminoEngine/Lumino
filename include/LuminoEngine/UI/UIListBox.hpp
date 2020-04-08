@@ -2,6 +2,13 @@
 #include "UIItemsElement.hpp"
 
 namespace ln {
+
+
+enum class UIListSelectionMoveMode
+{
+	EdgeStop,
+	Cyclic,
+};
 	
 /**
  * UIListItemsControl 内の選択可能な項目を表します。
@@ -55,6 +62,7 @@ protected:
 	void removeAllItems();
 
 	// base interfaces
+	void onRoutedEvent(UIEventArgs* e) override;
 	Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 	Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
@@ -68,6 +76,7 @@ private:
 
 	Ref<UILayoutPanel2> m_itemsHostLayout;
 	List<UIListItem*> m_selectedItems;
+	UIListSelectionMoveMode m_selectionMoveMode;
 
 	friend class UIListItem;
 };
