@@ -18,40 +18,45 @@ AnimationCurve::~AnimationCurve()
 
 float AnimationCurve::evaluate(float time)
 {
-    float localTime = 0.0f;
-
-    switch (m_wrapMode)
-    {
-        case AnimationWrapMode::Once:
-            localTime = time;
-            break;
-        case AnimationWrapMode::Loop:
-            localTime = std::fmod(time, lastFrameTime());
-            break;
-        case AnimationWrapMode::Alternate:
-        {
-            float freq = lastFrameTime() * 2;
-            float t = std::fmod(time, freq);
-            float phase = t / freq;
-            if (phase <= 0.5) {
-                localTime = t;
-            }
-            else {
-                localTime = freq - t;
-            }
-            break;
-        }
-        default:
-            LN_UNREACHABLE();
-            break;
-    }
-
-	return onEvaluate(localTime);
+	return onEvaluate(calculateLocalTime(time, lastFrameTime(), m_wrapMode));
 }
 
 float AnimationCurve::lastFrameTime() const
 {
 	return onGetLastFrameTime();
+}
+
+float AnimationCurve::calculateLocalTime(float time, float duration, AnimationWrapMode wrapMode)
+{
+	float localTime = 0.0f;
+
+	switch (wrapMode)
+	{
+	case AnimationWrapMode::Once:
+		localTime = std::min(time, duration);
+		break;
+	case AnimationWrapMode::Loop:
+		localTime = std::fmod(time, duration);
+		break;
+	case AnimationWrapMode::Alternate:
+	{
+		float freq = duration * 2;
+		float t = std::fmod(time, freq);
+		float phase = t / freq;
+		if (phase <= 0.5) {
+			localTime = t;
+		}
+		else {
+			localTime = freq - t;
+		}
+		break;
+	}
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+
+	return localTime;
 }
 
 //==============================================================================

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../Animation/EasingFunctions.hpp"
+#include "../Animation/AnimationCurve.hpp"
 #include "UIElement.hpp"
 
 namespace ln {
@@ -63,7 +64,9 @@ public:
 	TrackType trackType() const override { return TrackType::Animation; }
 	float evaluate(float time) const
 	{
-		return m_function(time, m_startValue, m_targetValue - m_startValue, duration());
+		return m_function(
+			AnimationCurve::calculateLocalTime(time, duration(), wrapMode()),
+			m_startValue, m_targetValue - m_startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
@@ -91,7 +94,9 @@ public:
 	TrackType trackType() const override { return TrackType::Animation; }
 	Vector4 evaluate(float time) const
 	{
-		return m_function(time, m_startValue, m_targetValue - m_startValue, duration());
+		return m_function(
+			AnimationCurve::calculateLocalTime(time, duration(), wrapMode()),
+			m_startValue, m_targetValue - m_startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
@@ -119,7 +124,9 @@ public:
 	TrackType trackType() const override { return TrackType::Transition; }
 	float evaluate(float startValue, float time) const
 	{
-		return m_function(time, startValue, m_targetValue - startValue, duration());
+		return m_function(
+			AnimationCurve::calculateLocalTime(time, duration(), wrapMode()),
+			startValue, m_targetValue - startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
@@ -146,7 +153,9 @@ public:
 	TrackType trackType() const override { return TrackType::Transition; }
 	Vector4 evaluate(Vector4 startValue, float time)  const
 	{
-		return m_function(time, startValue, m_targetValue - startValue, duration());
+		return m_function(
+			AnimationCurve::calculateLocalTime(time, duration(), wrapMode()),
+			startValue, m_targetValue - startValue, duration());
 	}
 
 LN_CONSTRUCT_ACCESS:
@@ -238,9 +247,6 @@ public:
 	void advanceTime(float elapsedTimer)
 	{
 		m_time += elapsedTimer;
-		if (m_time > m_sourceTrack->duration()) {
-			m_time = m_sourceTrack->duration();
-		}
 	}
 
 	bool isActive() const
@@ -308,9 +314,6 @@ public:
 	void advanceTime(float elapsedTimer)
 	{
 		m_time += elapsedTimer;
-		if (m_time > m_sourceTrack->duration()) {
-			m_time = m_sourceTrack->duration();
-		}
 	}
 
 	bool isActive() const

@@ -439,7 +439,7 @@ void UIStyle::reset()
 	decorators.clear();
 
 	// animations
-	m_animationData = nullptr;
+	m_animationData = nullptr;	// TODO: 捨てるとメモリ効率悪い
 }
 
 void UIStyle::mergeFrom(const UIStyle* other)
@@ -612,13 +612,20 @@ void UIStyle::copyFrom(const UIStyle* other)
 		AnimationData* d = acquireAnimationData();
 		d->hasLocalValueFlags = other->m_animationData->hasLocalValueFlags;
 		d->inheritFlags = other->m_animationData->inheritFlags;
-		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Width)) d->width = other->m_animationData->width;
-		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Height)) d->height = other->m_animationData->height;
-		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionX)) d->positionX = other->m_animationData->positionX;
-		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionY)) d->positionY = other->m_animationData->positionY;
-		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionZ)) d->positionZ = other->m_animationData->positionZ;
-		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_BackgroundColor)) d->backgroundColor = other->m_animationData->backgroundColor;
-		if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Opacity)) d->opacity = other->m_animationData->opacity;
+		d->width = other->m_animationData->width;
+		d->height = other->m_animationData->height;
+		d->positionX = other->m_animationData->positionX;
+		d->positionY = other->m_animationData->positionY;
+		d->positionZ = other->m_animationData->positionZ;
+		d->backgroundColor = other->m_animationData->backgroundColor;
+		d->opacity = other->m_animationData->opacity;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Width)) d->width = other->m_animationData->width;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Height)) d->height = other->m_animationData->height;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionX)) d->positionX = other->m_animationData->positionX;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionY)) d->positionY = other->m_animationData->positionY;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionZ)) d->positionZ = other->m_animationData->positionZ;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_BackgroundColor)) d->backgroundColor = other->m_animationData->backgroundColor;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Opacity)) d->opacity = other->m_animationData->opacity;
 	}
 }
 
@@ -1205,10 +1212,14 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 					d->backgroundColor->reset(outStyleData->backgroundColor.toVector4());
 				}
 			}
-
-
-
-			//}
+			else {
+				// TODO: 消すとメモリ効率悪い。poolにする
+				d->backgroundColor = nullptr;
+			}
+		}
+		else {
+			// TODO: 消すとメモリ効率悪い。poolにする
+			outStyleData->m_animationData = nullptr;
 		}
 	}
 
@@ -1798,11 +1809,12 @@ void UITheme::buildLumitelier()
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Unselected")) {
 			//s->backgroundColor = Color::Red;
-			s->setBackgroundColorTransition(Color::Green, 1.0f);
+			//s->setBackgroundColorTransition(Color::Green, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
 			//s->backgroundColor = Color::Red;
-			s->setBackgroundColorTransition(Color::Red, 1.0f);
+			//s->setBackgroundColorTransition(Color::Red, 1.0f);
+			s->setBackgroundColorAnimation(Color::TransparencyWhite, Color::White, 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
 		}
 	}
 	//--------------------------------

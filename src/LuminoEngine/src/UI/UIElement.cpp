@@ -766,7 +766,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	if (m_visualStateManager) {
 		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName(), m_classList);
         m_visualStateManager->combineStyle(m_combinedStyle, m_localStyle);
-        m_visualStateManager->printActive();
+        //m_visualStateManager->printActive();
 	}
     else {
         m_combinedStyle->mergeFrom(m_localStyle->mainStyle());

@@ -23,6 +23,8 @@ public:
 	/**　アニメーションの繰り返しの動作を設定します。(default: Once) */
 	void setWrapMode(AnimationWrapMode mode) { m_wrapMode = mode; }
 
+	static float calculateLocalTime(float time, float duration, AnimationWrapMode wrapMode);
+
 protected:
 	virtual float onEvaluate(float time) = 0;
 	virtual float onGetLastFrameTime() const = 0;
