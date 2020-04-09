@@ -61,6 +61,7 @@ private:
     Point m_mousePosition;
     MouseClickTracker m_mouseClickTrackers[8];
     MouseButtons m_pressedButton;
+    Flags<ModifierKeys> m_modifierKeys;
 };
 
 } // namespace detail

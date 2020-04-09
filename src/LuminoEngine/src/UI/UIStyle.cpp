@@ -1553,13 +1553,22 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 		for (auto& name : *classList) {
 			auto cs = set->findStyleClass(name);
 			if (cs) {
-				for (auto& group : m_groups) {
-					if (group.activeStateIndex >= 0) {
-						if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
-							style->mergeFrom(stateStyle);
-						}
+				for (const auto& slot : cs->visualStateStyles()) {
+					auto r = m_groups.findIf([&slot](const auto& x) {
+						return x.activeStateIndex >= 0 && String::compare(x.stateNames[x.activeStateIndex], slot.name, CaseSensitivity::CaseInsensitive) == 0; });
+					if (r) {
+						style->mergeFrom(slot.style);
 					}
 				}
+
+
+				//for (auto& group : m_groups) {
+				//	if (group.activeStateIndex >= 0) {
+				//		if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
+				//			style->mergeFrom(stateStyle);
+				//		}
+				//	}
+				//}
 			}
 		}
 	}
@@ -1602,13 +1611,20 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleClass* styl
 {
     style->mergeFrom(styleClass->mainStyle());
 
-    for (auto& group : m_groups) {
-        if (group.activeStateIndex >= 0) {
-            if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
-                style->mergeFrom(stateStyle);
-            }
-        }
-    }
+	for (const auto& slot : styleClass->visualStateStyles()) {
+		auto r = m_groups.findIf([&slot](const auto& x) {
+			return x.activeStateIndex >= 0 && String::compare(x.stateNames[x.activeStateIndex], slot.name, CaseSensitivity::CaseInsensitive) == 0; });
+		if (r) {
+			style->mergeFrom(slot.style);
+		}
+	}
+    //for (auto& group : m_groups) {
+    //    if (group.activeStateIndex >= 0) {
+    //        if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
+    //            style->mergeFrom(stateStyle);
+    //        }
+    //    }
+    //}
 }
 
 //detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)
@@ -1804,16 +1820,19 @@ void UITheme::buildLumitelier()
 			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
 			//s->setBackgroundColorTransition(color(UIThemeConstantPalette::ItemHoverAction), 1.0f);
 		}
-		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {
-			//s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
-		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Unselected")) {
 			//s->backgroundColor = Color::Red;
 			//s->setBackgroundColorTransition(Color::Green, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
-			//s->backgroundColor = Color::Red;
+			s->backgroundColor = Color::Red;
 			//s->setBackgroundColorTransition(Color::Red, 1.0f);
+			//
+			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {	// 後から書かれたものが優先される
+			//s->backgroundColor = Color::Blue;
+			//s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
 			s->setBackgroundColorAnimation(Color::White.withAlpha(0.3), Color::White.withAlpha(0.6), 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
 		}
 	}

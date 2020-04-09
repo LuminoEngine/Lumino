@@ -28,6 +28,7 @@ namespace detail {
 UIInputInjector::UIInputInjector(UIFrameWindow* owner)
     : m_owner(owner)
     , m_pressedButton(MouseButtons::None)
+    , m_modifierKeys(ModifierKeys::None)
 {
 }
 
@@ -40,7 +41,7 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
 
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -50,7 +51,7 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
     sender = mouseHoveredElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -81,7 +82,7 @@ bool UIInputInjector::injectMouseButtonDown(MouseButtons button)
     UIElement* sender = capturedElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -92,7 +93,7 @@ bool UIInputInjector::injectMouseButtonDown(MouseButtons button)
     sender = mouseHoveredElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -110,7 +111,7 @@ bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
     UIElement* sender = capturedElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -122,7 +123,7 @@ bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
     sender = mouseHoveredElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -156,6 +157,13 @@ bool UIInputInjector::injectMouseWheel(int delta)
 
 bool UIInputInjector::injectKeyDown(Keys keyCode, ModifierKeys modifierKeys)
 {
+    if (keyCode == Keys::LAlt || keyCode == Keys::RAlt)
+        m_modifierKeys.set(ModifierKeys::Alt);
+    else if (keyCode == Keys::LShift || keyCode == Keys::RShift)
+        m_modifierKeys.set(ModifierKeys::Shift);
+    else if (keyCode == Keys::LCtrl || keyCode == Keys::RCtrl)
+        m_modifierKeys.set(ModifierKeys::Control);
+
     // フォーカスを持っているUI要素に送る
     UIElement* sender = forcusedElement();
     if (sender)
@@ -169,6 +177,13 @@ bool UIInputInjector::injectKeyDown(Keys keyCode, ModifierKeys modifierKeys)
 
 bool UIInputInjector::injectKeyUp(Keys keyCode, ModifierKeys modifierKeys)
 {
+    if (keyCode == Keys::LAlt || keyCode == Keys::RAlt)
+        m_modifierKeys.unset(ModifierKeys::Alt);
+    else if (keyCode == Keys::LShift || keyCode == Keys::RShift)
+        m_modifierKeys.unset(ModifierKeys::Shift);
+    else if (keyCode == Keys::LCtrl || keyCode == Keys::RCtrl)
+        m_modifierKeys.unset(ModifierKeys::Control);
+
     // フォーカスを持っているUI要素に送る
     UIElement* sender = forcusedElement();
     if (sender)

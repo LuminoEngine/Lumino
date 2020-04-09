@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/Application.hpp>
+#include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIContainerElement.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
@@ -40,6 +41,27 @@ void UIManager::init(const Settings& settings)
     //m_mainContext = makeObject<UIContext>();
 
 	//m_defaultLayout = makeObject<UIFrameLayout>();
+
+    m_commonInputCommands.left = makeObject<UICommand>(u"left");
+    m_commonInputCommands.right = makeObject<UICommand>(u"right");
+    m_commonInputCommands.up = makeObject<UICommand>(u"up");
+    m_commonInputCommands.down = makeObject<UICommand>(u"down");
+    m_commonInputCommands.submit = makeObject<UICommand>(u"submit");
+    m_commonInputCommands.cancel = makeObject<UICommand>(u"cancel");
+    m_commonInputCommands.menu = makeObject<UICommand>(u"menu");
+    m_commonInputCommands.shift = makeObject<UICommand>(u"shift");
+    m_commonInputCommands.pageUp = makeObject<UICommand>(u"pageUp");
+    m_commonInputCommands.pageDown = makeObject<UICommand>(u"pageDown");
+    m_inputCommands.add(m_commonInputCommands.left);
+    m_inputCommands.add(m_commonInputCommands.right);
+    m_inputCommands.add(m_commonInputCommands.up);
+    m_inputCommands.add(m_commonInputCommands.down);
+    m_inputCommands.add(m_commonInputCommands.submit);
+    m_inputCommands.add(m_commonInputCommands.cancel);
+    m_inputCommands.add(m_commonInputCommands.menu);
+    m_inputCommands.add(m_commonInputCommands.shift);
+    m_inputCommands.add(m_commonInputCommands.pageUp);
+    m_inputCommands.add(m_commonInputCommands.pageDown);
 
 
     UICreationContext::Default = makeObject<UICreationContext>();
@@ -105,7 +127,7 @@ void UIManager::updateMouseHover(UIRenderView* mouseEventSource, const Point& fr
         if (hoverdElement)
         {
             m_mouseHoverElement = hoverdElement;
-            auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, true);
+            auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseEnterEvent, MouseButtons::None, frameClientPosition.x, frameClientPosition.y, 0, ModifierKeys::None, true);
             m_mouseHoverElement->raiseEvent(args);
         }
     }
@@ -285,7 +307,7 @@ void UIManager::clearMouseHover()
 {
     if (m_mouseHoverElement)
     {
-        auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseLeaveEvent, MouseButtons::None, 0, 0, 0, true);
+        auto args = UIMouseEventArgs::create(m_mouseHoverElement, UIEvents::MouseLeaveEvent, MouseButtons::None, 0, 0, 0, ModifierKeys::None, true);
         m_mouseHoverElement->raiseEvent(args);
         m_mouseHoverElement = nullptr;
     }
@@ -305,6 +327,18 @@ void UIManager::handleDetachFromUITree(UIElement* element)
     if (m_forcusedElement == element) {
         clearFocus();
     }
+}
+
+bool UIManager::handleCommonInputCommands(UIEventArgs* e)
+{
+    for (const auto& c : m_inputCommands) {
+        if (c->testInputEvent(e)) {
+            e->handled = true;
+            UICommandEventArgs::raiseExecute(forcusedElement(), c);
+            return true;
+        }
+    }
+    return false;
 }
 
 } // namespace detail

@@ -5,6 +5,8 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class UICommand;
+class UIControl;
 class UIListItemsControl;
 class UIListBox;
 

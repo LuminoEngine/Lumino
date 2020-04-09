@@ -406,17 +406,20 @@ public:
 	void copyFrom(const UIStyleClass* other);
 	void mergeFrom(const UIStyleClass* other);
 
+	struct VisualStateSlot
+	{
+		String name;
+		Ref<UIStyle> style;
+	};
+
+    const List<VisualStateSlot>& visualStateStyles() const { return m_visualStateStyles; }
+
 LN_CONSTRUCT_ACCESS:
 	UIStyleClass();
 	virtual ~UIStyleClass();
 	void init(const StringRef& name);
 
 private:
-	struct VisualStateSlot
-	{
-		String name;
-		Ref<UIStyle> style;
-	};
 
 	String m_name;
 	Ref<UIStyle> m_mainStyle;

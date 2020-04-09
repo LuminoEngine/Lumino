@@ -75,6 +75,10 @@ void Application::onRoutedEvent(UIEventArgs* e)
         }
     }
 
+	if (detail::EngineDomain::uiManager()->handleCommonInputCommands(e)) {
+		return;
+	}
+
 
     if (detail::UICommandInternal::handleCommandRoutedEvent(e, m_actions)) {
         return;

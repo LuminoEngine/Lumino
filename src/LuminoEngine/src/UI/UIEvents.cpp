@@ -110,63 +110,63 @@ bool UIEventArgs::testInputGesture(UIEventArgs* e, InputGesture* gesture)
         if (gesture->getType() == detail::InputBindingType::Mouse) {
             auto* me = static_cast<UIMouseEventArgs*>(e);
             auto* g = static_cast<MouseGesture*>(gesture);
-            //if (me->modi && g->getModifierKeys())
-            // TODO: getModifierKeys
-            switch (g->getMouseAction())
-            {
-            case MouseAction::LeftClick:
-                if (me->getMouseButtons() == MouseButtons::Left && me->getClickCount() == 1) {
-                    return true;
+            if (me->modifierKeys() == g->getModifierKeys()) {
+                switch (g->getMouseAction())
+                {
+                case MouseAction::LeftClick:
+                    if (me->getMouseButtons() == MouseButtons::Left && me->getClickCount() == 1) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::LeftDoubleClick:
+                    if (me->getMouseButtons() == MouseButtons::Left && me->getClickCount() == 2) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::RightClick:
+                    if (me->getMouseButtons() == MouseButtons::Right && me->getClickCount() == 1) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::RightDoubleClick:
+                    if (me->getMouseButtons() == MouseButtons::Right && me->getClickCount() == 2) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::MiddleClick:
+                    if (me->getMouseButtons() == MouseButtons::Middle && me->getClickCount() == 1) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::MiddleDoubleClick:
+                    if (me->getMouseButtons() == MouseButtons::Middle && me->getClickCount() == 2) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::X1Click:
+                    if (me->getMouseButtons() == MouseButtons::X1 && me->getClickCount() == 1) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::X1DoubleClick:
+                    if (me->getMouseButtons() == MouseButtons::X1 && me->getClickCount() == 2) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::X2Click:
+                    if (me->getMouseButtons() == MouseButtons::X2 && me->getClickCount() == 1) {
+                        return true;
+                    }
+                    break;
+                case MouseAction::X2DoubleClick:
+                    if (me->getMouseButtons() == MouseButtons::X2 && me->getClickCount() == 2) {
+                        return true;
+                    }
+                    break;
+                default:
+                    LN_UNREACHABLE();
+                    break;
                 }
-                break;
-            case MouseAction::LeftDoubleClick:
-                if (me->getMouseButtons() == MouseButtons::Left && me->getClickCount() == 2) {
-                    return true;
-                }
-                break;
-            case MouseAction::RightClick:
-                if (me->getMouseButtons() == MouseButtons::Right && me->getClickCount() == 1) {
-                    return true;
-                }
-                break;
-            case MouseAction::RightDoubleClick:
-                if (me->getMouseButtons() == MouseButtons::Right && me->getClickCount() == 2) {
-                    return true;
-                }
-                break;
-            case MouseAction::MiddleClick:
-                if (me->getMouseButtons() == MouseButtons::Middle && me->getClickCount() == 1) {
-                    return true;
-                }
-                break;
-            case MouseAction::MiddleDoubleClick:
-                if (me->getMouseButtons() == MouseButtons::Middle && me->getClickCount() == 2) {
-                    return true;
-                }
-                break;
-            case MouseAction::X1Click:
-                if (me->getMouseButtons() == MouseButtons::X1 && me->getClickCount() == 1) {
-                    return true;
-                }
-                break;
-            case MouseAction::X1DoubleClick:
-                if (me->getMouseButtons() == MouseButtons::X1 && me->getClickCount() == 2) {
-                    return true;
-                }
-                break;
-            case MouseAction::X2Click:
-                if (me->getMouseButtons() == MouseButtons::X2 && me->getClickCount() == 1) {
-                    return true;
-                }
-                break;
-            case MouseAction::X2DoubleClick:
-                if (me->getMouseButtons() == MouseButtons::X2 && me->getClickCount() == 2) {
-                    return true;
-                }
-                break;
-            default:
-                LN_UNREACHABLE();
-                break;
             }
         }
     }
@@ -202,12 +202,12 @@ bool UIEventArgs::testInputGesture(UIEventArgs* e, InputGesture* gesture)
 
 LN_OBJECT_IMPLEMENT(UIMouseEventArgs, UIEventArgs) {}
 
-Ref<UIMouseEventArgs> UIMouseEventArgs::create(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching)
+Ref<UIMouseEventArgs> UIMouseEventArgs::create(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, ModifierKeys modifierKeys, bool caching)
 {
     if (caching)
     {
         auto& pool = detail::EngineDomain::uiManager()->eventArgsPool();
-        Ref<UIMouseEventArgs> ptr(pool->create<UIMouseEventArgs>(sender, type, button, x, y, clickCount), false);
+        Ref<UIMouseEventArgs> ptr(pool->create<UIMouseEventArgs>(sender, type, button, x, y, clickCount, modifierKeys), false);
         return ptr;
     }
     else
@@ -221,6 +221,7 @@ UIMouseEventArgs::UIMouseEventArgs()
     : m_button(MouseButtons::None)
     , m_position(0, 0)
     , m_clickCount(0)
+    , m_modifierKeys(ModifierKeys::None)
 {
 }
 
@@ -233,13 +234,14 @@ bool UIMouseEventArgs::init()
 	return UIEventArgs::init();
 }
 
-bool UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount)
+bool UIMouseEventArgs::init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, ModifierKeys modifierKeys)
 {
 	if (!UIEventArgs::init(sender, type)) return false;
     m_button = button;
     m_position.x = x;
     m_position.y = y;
     m_clickCount = clickCount;
+    m_modifierKeys = modifierKeys;
 	return true;
 }
 
