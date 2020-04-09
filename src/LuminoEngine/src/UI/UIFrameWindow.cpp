@@ -170,8 +170,19 @@ bool UIInputInjector::injectKeyDown(Keys keyCode, ModifierKeys modifierKeys)
     {
         auto args = UIKeyEventArgs::create(sender, UIEvents::KeyDownEvent, keyCode, modifierKeys, 0, true);
         sender->raiseEvent(args);
-        return args->handled;
+        if (args->handled) {
+            return true;
+        }
     }
+
+    if (m_owner) {
+        auto args = UIKeyEventArgs::create(m_owner, UIEvents::KeyDownEvent, keyCode, modifierKeys, 0, true);
+        m_owner->raiseEvent(args);
+        if (args->handled) {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -190,8 +201,19 @@ bool UIInputInjector::injectKeyUp(Keys keyCode, ModifierKeys modifierKeys)
     {
         auto args = UIKeyEventArgs::create(sender, UIEvents::KeyUpEvent, keyCode, modifierKeys, 0, true);
         sender->raiseEvent(args);
-        return args->handled;
+        if (args->handled) {
+            return true;
+        }
     }
+
+    if (m_owner) {
+        auto args = UIKeyEventArgs::create(m_owner, UIEvents::KeyUpEvent, keyCode, modifierKeys, 0, true);
+        m_owner->raiseEvent(args);
+        if (args->handled) {
+            return true;
+        }
+    }
+
     return false;
 }
 

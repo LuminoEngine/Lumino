@@ -63,6 +63,9 @@ void UIManager::init(const Settings& settings)
     m_inputCommands.add(m_commonInputCommands.pageUp);
     m_inputCommands.add(m_commonInputCommands.pageDown);
 
+    // TODO: Input とリンクするか、どちらかで一元管理する
+    m_commonInputCommands.submit->addInputGesture(makeObject<KeyGesture>(Keys::Z, ModifierKeys::None));
+
 
     UICreationContext::Default = makeObject<UICreationContext>();
     UICreationContext::Default->m_autoAddToPrimaryElement = true;

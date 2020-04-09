@@ -46,7 +46,8 @@ class App_Example_Navigator : public Application
 		m_listbox1 = UIListBox::create();
 		//m_listbox1->setHAlignment(HAlignment::Left);
 		//m_listbox1->setVAlignment(VAlignment::Top);
-		m_listbox1->addChild(u"Item");
+		auto item1 = UIListBoxItem::create(u"Item");
+		m_listbox1->addChild(item1);
 		m_listbox1->addChild(u"Skill");
 		m_listbox1->addChild(u"Status");
 		m_listbox1->addChild(u"Save");
@@ -74,11 +75,21 @@ class App_Example_Navigator : public Application
 		//items->add(makeProperty<String>(u"item3"));
 		//m_items.set(items);
 		m_listbox2 = UIListBox::create();
-		m_listbox2->addChild(u"item1");
+		auto item2_1 = UIListBoxItem::create(u"item1");
+		m_listbox2->addChild(item2_1);
 		m_listbox2->addChild(u"item2");
 		m_listbox2->addChild(u"item3");
 		m_window2->addChild(m_listbox2);
 		//// m_navigator->addElement(m_listbox1);
+
+
+
+
+		item1->connectOnSubmit([this, item2_1]() {
+			Debug::print(u"Item clicked. ");
+			m_listbox2->selectItem(item2_1);
+			item2_1->focus();
+		});
 
 
 		//auto text = UITextBlock::create(u"Test");

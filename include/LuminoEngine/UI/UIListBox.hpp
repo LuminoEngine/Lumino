@@ -19,10 +19,13 @@ class UIListItem
 public:
 	// TODO: group
 
+	/** Submit イベントの通知を受け取るコールバックを登録します。*/
+	//LN_METHOD(Event)
+	Ref<EventConnection> connectOnSubmit(Ref<UIEventHandler> handler);
 
 
 protected:
-	virtual void onSubmitted(UIEventArgs* e);	// TODO: double click
+	virtual void onSubmit();	// TODO: double click
 	virtual void onSelected(UIEventArgs* e);
 	virtual void onUnselected(UIEventArgs* e);
 
@@ -37,7 +40,7 @@ private:
 	void setSelectedInternal(bool selected);
 
 	UIListItemsControl* m_ownerListControl;
-	Event<UIEventHandler> m_onSubmitted;
+	Event<UIEventHandler> m_onSubmit;
 	bool m_isSelected;
 
 	friend class UIListItemsControl;
@@ -54,6 +57,8 @@ class UIListItemsControl
 	: public UIControl
 {
 public:
+	void selectItem(UIListItem* item);
+	UIListItem* selectedItem() const;
 	void setItemsLayoutPanel(UILayoutPanel2* layout);
 
 protected:
@@ -91,6 +96,9 @@ class UIListBoxItem
     : public UIListItem
 {
 public:
+	static Ref<UIListBoxItem> create(StringRef text);
+
+
     // TODO: group
 
 
@@ -103,6 +111,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     UIListBoxItem();
     bool init();
+	bool init(StringRef text);
 
 private:
 };

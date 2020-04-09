@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Engine/VMProperty.hpp>
+#include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
 #include <LuminoEngine/UI/UITextBlock.hpp>
@@ -13,7 +14,7 @@ namespace ln {
 
 UIListItem::UIListItem()
 	: m_ownerListControl(nullptr)
-	, m_onSubmitted()
+	, m_onSubmit()
 	, m_isSelected(false)
 {
 	m_objectManagementFlags.unset(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
@@ -29,8 +30,14 @@ bool UIListItem::init()
 	return true;
 }
 
-void UIListItem::onSubmitted(UIEventArgs* e)
+Ref<EventConnection> UIListItem::connectOnSubmit(Ref<UIEventHandler> handler)
 {
+	return m_onSubmit.connect(handler);
+}
+
+void UIListItem::onSubmit()
+{
+	m_onSubmit.raise();
 }
 
 void UIListItem::onSelected(UIEventArgs* e)
@@ -88,6 +95,18 @@ bool UIListItemsControl::init()
 	setItemsLayoutPanel(layout);
 
 	return true;
+}
+
+void UIListItemsControl::selectItem(UIListItem* item)
+{
+	if (LN_REQUIRE(m_selectedItems.contains(item))) return;
+	selectItemExclusive(item);
+}
+
+UIListItem* UIListItemsControl::selectedItem() const
+{
+	if (m_selectedItems.isEmpty()) return nullptr;
+	return m_selectedItems.front();
 }
 
 void UIListItemsControl::setItemsLayoutPanel(UILayoutPanel2* layout)
@@ -161,56 +180,60 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 	if (e->type() == UIEvents::KeyDownEvent) {
 
 		if (!m_logicalChildren->isEmpty()) {
+			auto* k = static_cast<UIKeyEventArgs*>(e);
+			Vector2 dir;
+			if (k->getKey() == Keys::Left)
+				dir.x = -1;
+			else if (k->getKey() == Keys::Up)
+				dir.y = -1;
+			else if (k->getKey() == Keys::Right)
+				dir.x = 1;
+			else if (k->getKey() == Keys::Down)
+				dir.y = 1;
 
-			if (m_selectedItems.isEmpty()) {
-				selectItemExclusive(static_pointer_cast<UIListItem>(m_logicalChildren->at(0)));
-			}
-			else {
-				auto* k = static_cast<UIKeyEventArgs*>(e);
-				Vector2 dir;
-				if (k->getKey() == Keys::Left)
-					dir.x = -1;
-				else if (k->getKey() == Keys::Up)
-					dir.y = -1;
-				else if (k->getKey() == Keys::Right)
-					dir.x = 1;
-				else if (k->getKey() == Keys::Down)
-					dir.y = 1;
-
-				UIElement* selected = m_selectedItems.front();
-				UIElement* next = nullptr;
-				float distance = FLT_MAX;
-				for (const auto& item : *m_logicalChildren) {
-					auto diff = item->localPosition() - selected->localPosition();
-					auto f = diff * dir;
-					if (f.x >= 1.0f || f.y >= 1.0f) {
-						float len = diff.lengthSquared();
-						if (len < distance) {
-							distance = len;
-							next = item;
-						}
-					}
+			if (dir != Vector2::Zero) {
+				if (m_selectedItems.isEmpty()) {
+					selectItemExclusive(static_pointer_cast<UIListItem>(m_logicalChildren->at(0)));
 				}
+				else {
 
-				if (!next && m_selectionMoveMode == UIListSelectionMoveMode::Cyclic) {
-					dir *= -1.0f;
-					distance = 0.0f;
+					UIElement* selected = m_selectedItems.front();
+					UIElement* next = nullptr;
+					float distance = FLT_MAX;
 					for (const auto& item : *m_logicalChildren) {
 						auto diff = item->localPosition() - selected->localPosition();
 						auto f = diff * dir;
 						if (f.x >= 1.0f || f.y >= 1.0f) {
 							float len = diff.lengthSquared();
-							if (len > distance) {
+							if (len < distance) {
 								distance = len;
 								next = item;
 							}
 						}
 					}
+
+					if (!next && m_selectionMoveMode == UIListSelectionMoveMode::Cyclic) {
+						dir *= -1.0f;
+						distance = 0.0f;
+						for (const auto& item : *m_logicalChildren) {
+							auto diff = item->localPosition() - selected->localPosition();
+							auto f = diff * dir;
+							if (f.x >= 1.0f || f.y >= 1.0f) {
+								float len = diff.lengthSquared();
+								if (len > distance) {
+									distance = len;
+									next = item;
+								}
+							}
+						}
+					}
+
+					if (next) {
+						selectItemExclusive(static_cast<UIListItem*>(next));
+					}
 				}
 
-				if (next) {
-					selectItemExclusive(static_cast<UIListItem*>(next));
-				}
+				e->handled = true;
 			}
 		}
 
@@ -219,9 +242,18 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 
 
 		//m_ownerListControl->notifyItemClicked(this);
-		e->handled = true;
 		return;
 	}
+	else if (e->type() == UIEvents::ExecuteCommandEvent) {
+		if (static_cast<UICommandEventArgs*>(e)->command() == UICommonInputCommands::submit()) {
+			if (UIListItem* item = selectedItem()) {
+				item->onSubmit();
+				e->handled = true;
+			}
+			return;
+		}
+	}
+
 }
 
 Size UIListItemsControl::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
@@ -271,6 +303,11 @@ void UIListItemsControl::selectItemExclusive(UIListItem* item)
 //==============================================================================
 // UIListBoxItem
 
+Ref<UIListBoxItem> UIListBoxItem::create(StringRef text)
+{
+	return makeObject<UIListBoxItem>(text);
+}
+
 UIListBoxItem::UIListBoxItem()
 {
 }
@@ -278,6 +315,15 @@ UIListBoxItem::UIListBoxItem()
 bool UIListBoxItem::init()
 {
 	if (!UIListItem::init()) return false;
+	return true;
+}
+
+bool UIListBoxItem::init(StringRef text)
+{
+	if (!init()) return false;
+
+	addChild(makeObject<UITextBlock>(text));
+
 	return true;
 }
 
@@ -336,10 +382,15 @@ void UIListBox::bind(ObservablePropertyBase* prop)
 
 void UIListBox::onAddChild(UIElement* child)
 {
-    auto item = ln::makeObject<UIListBoxItem>();
-    item->addElement(child);
-
-	addListItem(item);
+	// TODO: flag で判定
+	if (auto* item1 = dynamic_cast<UIListBoxItem*>(child)) {
+		addListItem(item1);
+	}
+	else {
+		auto item = ln::makeObject<UIListBoxItem>();
+		item->addElement(child);
+		addListItem(item);
+	}
 }
 
 } // namespace ln

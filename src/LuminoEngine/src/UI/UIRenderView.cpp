@@ -194,6 +194,11 @@ void UIRenderView::onUpdateUILayout(UILayoutContext* layoutContext)
 
 UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
 {
+    if (UIElement* element = m_focusNavigator->focusedElement()) {
+        return element->lookupMouseHoverElement(frameClientPosition);
+    }
+
+
 	UIElement* element = adornerLayer()->lookupMouseHoverElement(frameClientPosition);
 	if (element) {
 		return element;
