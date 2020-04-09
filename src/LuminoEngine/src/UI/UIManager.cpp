@@ -64,7 +64,10 @@ void UIManager::init(const Settings& settings)
     m_inputCommands.add(m_commonInputCommands.pageDown);
 
     // TODO: Input とリンクするか、どちらかで一元管理する
+    // → もしかしたら別管理のほうがいいかもしれない。特に、マウスクリックで項目選択するとき、
+    // 何もないところをクリックして submit 扱いされるのはあんまりよくない。
     m_commonInputCommands.submit->addInputGesture(makeObject<KeyGesture>(Keys::Z, ModifierKeys::None));
+    m_commonInputCommands.cancel->addInputGesture(makeObject<KeyGesture>(Keys::X, ModifierKeys::None));
 
 
     UICreationContext::Default = makeObject<UICreationContext>();

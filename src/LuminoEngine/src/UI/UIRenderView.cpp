@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
@@ -150,7 +151,6 @@ void UIFrameRenderView::invalidate(detail::UIElementDirtyFlags flags)
 // UIRenderView
 
 UIRenderView::UIRenderView()
-    : m_focusNavigator(makeObject<UIFocusNavigator>())
 {
 }
 
@@ -198,9 +198,6 @@ void UIRenderView::onUpdateUILayout(UILayoutContext* layoutContext)
 
 UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
 {
-    if (UIElement* element = m_focusNavigator->focusedElement()) {
-        return element->lookupMouseHoverElement(frameClientPosition);
-    }
 
 
 	UIElement* element = adornerLayer()->lookupMouseHoverElement(frameClientPosition);
@@ -230,16 +227,46 @@ bool UIDomainProvidor::init()
     return true;
 }
 
+void UIDomainProvidor::setupNavigator()
+{
+    if (!m_focusNavigator) {
+        m_focusNavigator = makeObject<UIFocusNavigator>();
+    }
+}
+
 void UIDomainProvidor::onRoutedEvent(UIEventArgs* e)
 {
     if (LN_REQUIRE(!m_visualParent)) return;
 
-    UIContainerElement::onRoutedEvent(e);
 
+    if (m_focusNavigator) {
+        if (UIElement* element = m_focusNavigator->focusedElement()) {
+            if (e->type() == UIEvents::ExecuteCommandEvent) {
+                if (static_cast<UICommandEventArgs*>(e)->command() == UICommonInputCommands::cancel()) {
+                    m_focusNavigator->popFocus();
+                    e->handled = true;
+                    return;
+                }
+            }
+        }
+    }
+
+    UIContainerElement::onRoutedEvent(e);
 
     if (m_parentRenderView && m_parentRenderView->m_ownerViewport) {
         m_parentRenderView->m_ownerViewport->raiseEvent(e);
     }
+}
+
+UIElement* UIDomainProvidor::lookupMouseHoverElement(const Point& frameClientPosition)
+{
+    if (m_focusNavigator) {
+        if (UIElement* element = m_focusNavigator->focusedElement()) {
+            return element->lookupMouseHoverElement(frameClientPosition);
+        }
+    }
+
+    return UIContainerElement::lookupMouseHoverElement(frameClientPosition);
 }
 
 } // namespace ln

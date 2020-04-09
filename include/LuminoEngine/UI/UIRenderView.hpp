@@ -69,7 +69,7 @@ public:
     // TODO: 複数表示のため push/pop の方がいいかもしれない
     //void setDialog(UIDialog* dialog);
 
-    const Ref<UIFocusNavigator>& focusNavigator() const { return m_focusNavigator; }
+    //const Ref<UIFocusNavigator>& focusNavigator() const { return m_focusNavigator; }
 
 public:	// TODO: protected
 	virtual void onUpdateFrame(float elapsedSeconds) override;
@@ -81,7 +81,6 @@ public:	// TODO: protected
 private:
     //Ref<RenderPass> m_clearRenderPass;
     //Ref<UIDialog> m_dialog;
-    Ref<UIFocusNavigator> m_focusNavigator;
 };
 
 /**
@@ -91,8 +90,13 @@ class UIDomainProvidor
 	: public UIContainerElement
 {
 public:
+    // TODO: internal
+    void setupNavigator();
+    const Ref<UIFocusNavigator>& focusNavigator() const { return m_focusNavigator; }
+
 protected:
 	void onRoutedEvent(UIEventArgs* e) override;
+    UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
 
 LN_CONSTRUCT_ACCESS:
     UIDomainProvidor();
@@ -100,8 +104,10 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     UIFrameRenderView* m_parentRenderView;
+    Ref<UIFocusNavigator> m_focusNavigator;
 
 	friend class UIFrameRenderView;
+    friend class UIRenderView;
 };
 
 } // namespace ln
