@@ -20,9 +20,9 @@ UIContainerElement::UIContainerElement()
 {
 }
 
-void UIContainerElement::init()
+bool UIContainerElement::init()
 {
-    UIControl::init(nullptr);
+    return UIControl::init(nullptr);
 }
 
 //==============================================================================

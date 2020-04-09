@@ -226,7 +226,7 @@ UIDomainProvidor::UIDomainProvidor()
 
 bool UIDomainProvidor::init()
 {
-    if (!UIControl::init()) return false;
+    if (!UIContainerElement::init()) return false;
     return true;
 }
 
@@ -234,7 +234,8 @@ void UIDomainProvidor::onRoutedEvent(UIEventArgs* e)
 {
     if (LN_REQUIRE(!m_visualParent)) return;
 
-    UIControl::onRoutedEvent(e);
+    UIContainerElement::onRoutedEvent(e);
+
 
     if (m_parentRenderView && m_parentRenderView->m_ownerViewport) {
         m_parentRenderView->m_ownerViewport->raiseEvent(e);

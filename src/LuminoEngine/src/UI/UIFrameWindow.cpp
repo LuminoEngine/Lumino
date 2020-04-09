@@ -269,7 +269,7 @@ UIFrameWindow::~UIFrameWindow()
 
 void UIFrameWindow::init()
 {
-	UIContainerElement::init();
+    UIDomainProvidor::init();
     m_manager = detail::EngineDomain::uiManager();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
@@ -330,7 +330,7 @@ void UIFrameWindow::onDispose(bool explicitDisposing)
         m_platformWindow = nullptr;
 	}
 
-	UIContainerElement::onDispose(explicitDisposing);
+    UIDomainProvidor::onDispose(explicitDisposing);
 }
 
 void UIFrameWindow::renderContents()
@@ -414,7 +414,7 @@ void UIFrameWindow::updateLayoutTree()
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	UIContainerElement::measureOverride(layoutContext, constraint);
+    UIDomainProvidor::measureOverride(layoutContext, constraint);
 
 	// TODO: DPI チェック
 	return m_clientSize;
@@ -432,7 +432,7 @@ Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& 
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-	return UIContainerElement::arrangeOverride(layoutContext, desiredSize());
+	return UIDomainProvidor::arrangeOverride(layoutContext, desiredSize());
 	//int childCount = logicalChildren().size();
 	//for (int i = 0; i < childCount; i++)
 	//{
@@ -445,7 +445,7 @@ Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& 
 
 void UIFrameWindow::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
-	UIContainerElement::render(context, parentTransform);
+    UIDomainProvidor::render(context, parentTransform);
 
 	if (m_debugInterface) {
 		m_debugInterface->renderOnUI(context);
@@ -454,7 +454,7 @@ void UIFrameWindow::render(UIRenderingContext* context, const Matrix& parentTran
 
 void UIFrameWindow::onRender(UIRenderingContext* context)
 {
-    UIContainerElement::onRender(context);
+    UIDomainProvidor::onRender(context);
 
     //detail::EngineDomain::effectManager()->testDraw(m_renderingGraphicsContext);
 }
@@ -596,7 +596,7 @@ void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncesto
 		}
 	}
 
-    UIContainerElement::invalidate(flags, toAncestor);
+    UIDomainProvidor::invalidate(flags, toAncestor);
 }
 
 //==============================================================================

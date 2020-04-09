@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include "UIControl.hpp"
+#include "UIContainerElement.hpp"
 
 namespace ln {
 class UIRenderingContext;
@@ -88,7 +88,7 @@ private:
  * UIRenderView の直接の子要素となり、ルーティングイベントを UIRenderView 以上へ通知するための中間要素。
  */
 class UIDomainProvidor
-	: public UIControl
+	: public UIContainerElement
 {
 public:
 protected:

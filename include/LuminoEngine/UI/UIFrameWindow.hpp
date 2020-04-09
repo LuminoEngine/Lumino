@@ -4,7 +4,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 #include "Common.hpp"
 #include "UIEvents.hpp"
-#include "UIContainerElement.hpp"
+#include "UIRenderView.hpp"
 #include "ImGuiIntegration.hpp"
 
 namespace ln {
@@ -67,7 +67,7 @@ private:
 } // namespace detail
 
 class LN_API UIFrameWindow
-	: public UIContainerElement
+	: public UIDomainProvidor
 	, public detail::IPlatforEventListener
 {
 public:
