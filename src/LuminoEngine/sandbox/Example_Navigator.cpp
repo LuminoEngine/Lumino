@@ -57,6 +57,7 @@ class App_Example_Navigator : public Application
 		//// m_navigator->addElement(m_listbox1);
 
 
+		Engine::mainWindow()->renderView()->focusNavigator()->pushFocus(m_window1);
 
 
         m_window2 = UIWindow::create();
@@ -86,6 +87,7 @@ class App_Example_Navigator : public Application
 
 
 		item1->connectOnSubmit([this, item2_1]() {
+			Engine::mainWindow()->renderView()->focusNavigator()->pushFocus(m_window2);
 			Debug::print(u"Item clicked. ");
 			m_listbox2->selectItem(item2_1);
 			item2_1->focus();

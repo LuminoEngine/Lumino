@@ -6,6 +6,7 @@
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UIEvents.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
+#include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
@@ -57,11 +58,21 @@ void UIViewport::onDispose(bool explicitDisposing)
 void UIViewport::addRenderView(RenderView* view)
 {
     m_renderViews.add(view);
+
+	// TODO: dynamic_cast じゃなくて flag とか で判定
+	if (auto* uiRenderView = dynamic_cast<UIFrameRenderView*>(view)) {
+		uiRenderView->m_ownerViewport = this;
+	}
 }
 
 void UIViewport::removeRenderView(RenderView* view)
 {
     m_renderViews.remove(view);
+
+	// TODO: dynamic_cast じゃなくて flag とか で判定
+	if (auto* uiRenderView = dynamic_cast<UIFrameRenderView*>(view)) {
+		uiRenderView->m_ownerViewport = nullptr;
+	}
 }
 
 //void UIViewport::addImageEffect(ImageEffect* effect)

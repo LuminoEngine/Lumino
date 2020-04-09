@@ -248,9 +248,9 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 		if (static_cast<UICommandEventArgs*>(e)->command() == UICommonInputCommands::submit()) {
 			if (UIListItem* item = selectedItem()) {
 				item->onSubmit();
-				e->handled = true;
+				//e->handled = true;
 			}
-			return;
+			//return;
 		}
 	}
 

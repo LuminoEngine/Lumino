@@ -6,6 +6,8 @@
 
 namespace ln {
 class UICommand;
+class UIDomainProvidor;
+class UIViewport;
 class UIControl;
 class UIListItemsControl;
 class UIListBox;

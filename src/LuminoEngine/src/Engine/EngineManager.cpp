@@ -629,7 +629,7 @@ void EngineManager::initializeDefaultObjects()
 			m_mainViewport->addRenderView(m_mainUIRenderView);
 			m_mainViewport->setViewBoxSize(m_settings.mainWorldViewSize.toFloatSize());
 
-			m_mainUIRoot = makeObject<UIControl>();
+			m_mainUIRoot = makeObject<UIDomainProvidor>();
 			m_mainUIRoot->setHAlignment(HAlignment::Stretch);
 			m_mainUIRoot->setVAlignment(VAlignment::Stretch);
 			m_mainUIRoot->m_hitTestMode = detail::UIHitTestMode::InvisiblePanel;       // main の WorldView 全体に覆いかぶせるように配置するので、false にしておかないと CameraControl などにイベントが行かなくなる

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "UIControl.hpp"
 
 namespace ln {
 class UIRenderingContext;
@@ -19,9 +20,9 @@ class UIFrameRenderView
     : public RenderView
 {
 public:
-    void setRootElement(UIElement* element);
+    void setRootElement(UIDomainProvidor* element);
 
-    UIElement* rootElement() const;
+    UIDomainProvidor* rootElement() const;
     UIAdornerLayer* adornerLayer() const;
 
     // TODO: internal
@@ -36,7 +37,8 @@ protected:
     void init();
 
 private:
-    Ref<UIElement> m_rootElement;
+    UIViewport* m_ownerViewport;
+    Ref<UIDomainProvidor> m_rootElement;
     Ref<UIRenderingContext> m_renderingContext;
 	//Ref<UIRenderingContext> m_debugRenderingContext;
     Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
@@ -45,6 +47,8 @@ private:
     Ref<UIAdornerLayer> m_adornerLayer;
 
     friend class UIFrameWindow;
+    friend class UIViewport;
+    friend class UIDomainProvidor;
 };
 
 
@@ -78,6 +82,26 @@ private:
     //Ref<RenderPass> m_clearRenderPass;
     //Ref<UIDialog> m_dialog;
     Ref<UIFocusNavigator> m_focusNavigator;
+};
+
+/**
+ * UIRenderView の直接の子要素となり、ルーティングイベントを UIRenderView 以上へ通知するための中間要素。
+ */
+class UIDomainProvidor
+	: public UIControl
+{
+public:
+protected:
+	void onRoutedEvent(UIEventArgs* e) override;
+
+LN_CONSTRUCT_ACCESS:
+    UIDomainProvidor();
+	bool init();
+
+private:
+    UIFrameRenderView* m_parentRenderView;
+
+	friend class UIFrameRenderView;
 };
 
 } // namespace ln
