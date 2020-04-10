@@ -199,7 +199,7 @@ void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
 
 					UIElement* selected = m_selectedItems.front();
 					UIElement* next = nullptr;
-					float distance = FLT_MAX;
+					float distance = std::numeric_limits<double>::max();
 					for (const auto& item : *m_logicalChildren) {
 						auto diff = item->localPosition() - selected->localPosition();
 						auto f = diff * dir;
