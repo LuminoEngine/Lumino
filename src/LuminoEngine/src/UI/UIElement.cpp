@@ -616,7 +616,10 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 void UIElement::focus()
 {
     if (m_focusable) {
-        m_manager->tryGetInputFocus(this);
+        UIElement* leaf = findFocusedVisualChildLeaf();
+        if (LN_REQUIRE(leaf)) return;
+
+        m_manager->tryGetInputFocus(leaf);
     }
 }
 
@@ -682,6 +685,10 @@ void UIElement::removeVisualChild(UIElement* element)
 	m_visualChildren->remove(element);
 	m_orderdVisualChildren->remove(element);
 	element->m_visualParent = nullptr;
+
+    if (m_focusedVisualChild == element)
+        m_focusedVisualChild = nullptr;
+    
     invalidateLayout();
 }
 
@@ -1124,6 +1131,14 @@ void UIElement::handleDetachFromUITree()
     for (int i = 0; i < count; i++) {
         getVisualChild(i)->handleDetachFromUITree();
     }
+}
+
+UIElement* UIElement::findFocusedVisualChildLeaf()
+{
+    if (m_focusedVisualChild) {
+        return m_focusedVisualChild->findFocusedVisualChildLeaf();
+    }
+    return this;
 }
 
 UIVisualStateManager* UIElement::getVisualStateManager()

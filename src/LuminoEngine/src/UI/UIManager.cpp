@@ -15,6 +15,51 @@
 namespace ln {
 namespace detail {
 
+/*
+    [2020/4/10] Focus
+    ----------
+         +
+        /|\
+       / | \
+      +  +  +
+     /|\   /|\
+    + + + + + +
+
+         *
+        /|\
+       / | \
+      +  +  *
+     /|\   /|\
+    + + + + + *
+              ^
+              InputFocus を与える
+
+         *
+        /|\
+       / | \
+      *  +  x
+     /|\   /|\
+    + * + + + x  <ルートからは独立するが、内部的にはフラグを持っている
+      ^
+      次はこっちに InputFocus を与える
+
+         *
+        /|\
+       / | \
+      x  +  *  < 1.ここに focus() する
+     /|\   /|\
+    + x + + + *  < 2. 子へフラグを探しに行って、ここから通常の focus() する
+ 
+         *
+        /|\
+       / | \
+      x  +  *  < フラグは子が持つのではなく、親が持つ。この Level では、同時に２つの子がフラグを持つことになってしまうため。
+     /|\   /|\
+    + x + + + *
+      
+
+*/
+
 //==============================================================================
 // UIManager
 
@@ -261,6 +306,10 @@ void UIManager::activateTree(UIElement* element)
         if (e->focusable()) {
             auto args = UIEventArgs::create(e, UIEvents::GotFocusEvent, true);
             e->raiseEvent(args, UIEventRoutingStrategy::Direct);
+        }
+
+        if (e->m_visualParent) {
+            e->m_visualParent->m_focusedVisualChild = e;
         }
 
 		e = e->m_visualParent;

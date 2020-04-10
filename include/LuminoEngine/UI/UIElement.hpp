@@ -536,6 +536,7 @@ public: // TODO: internal
 	void moveVisualChildToForeground(UIElement* child);
 
     void handleDetachFromUITree();
+	UIElement* findFocusedVisualChildLeaf();
 
     detail::UIManager* m_manager;
     String m_name;
@@ -562,6 +563,7 @@ public: // TODO: internal
 	UIVisibility m_internalVisibility;
     int m_renderPriority;
 	detail::UIHitTestMode m_hitTestMode;
+	UIElement* m_focusedVisualChild = nullptr;
 	bool m_focusable;			// TODO: flags
     bool m_clipToBounds;			// TODO: flags
 

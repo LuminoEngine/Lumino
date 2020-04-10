@@ -99,7 +99,7 @@ bool UIListItemsControl::init()
 
 void UIListItemsControl::selectItem(UIListItem* item)
 {
-	if (LN_REQUIRE(m_selectedItems.contains(item))) return;
+	if (LN_REQUIRE(m_logicalChildren->contains(item))) return;
 	selectItemExclusive(item);
 }
 
