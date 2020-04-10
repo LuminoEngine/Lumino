@@ -72,7 +72,7 @@ void AnimationState::updateTargetElements()
         case AnimationWrapMode::Loop:
             localTime = std::fmod(m_localTime, m_clip->lastFrameTime());
             break;
-        case AnimationWrapMode::RoundTrip:
+        case AnimationWrapMode::Alternate:
         {
             float freq = m_clip->lastFrameTime() * 2;
             float t = std::fmod(m_localTime, freq);

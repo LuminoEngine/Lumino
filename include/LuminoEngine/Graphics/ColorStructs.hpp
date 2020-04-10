@@ -225,7 +225,7 @@ public:
     }
 
     /** 指定した Vector4 をコピーして初期化します。x y z w 成分がそれぞれ r g b a 値となります。 */
-    constexpr explicit Color(const Vector4& vec) noexcept;
+    constexpr Color(const Vector4& vec) noexcept;
 
     /** 指定した Vector3 とアルファ値をで初期化します。 x y z 成分がそれぞれ r g b 値となります。 */
     constexpr explicit Color(const Vector3& vec, float a = 1.0f) noexcept;

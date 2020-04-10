@@ -284,6 +284,7 @@ int main(int argc, char** argv)
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
+	EngineSettings::setDefaultUITheme(u"Chocotelier");
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
@@ -291,8 +292,8 @@ int main(int argc, char** argv)
     if (1) {
 		//Example_GameAudio();
 		//Example_MeshViewer();
-        Example_MessageWindow();
-        //Example_Navigator();
+        //Example_MessageWindow();
+        Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();

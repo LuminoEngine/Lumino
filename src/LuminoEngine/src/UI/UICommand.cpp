@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UICommand.hpp>
+#include "UIManager.hpp"
 
 namespace ln {
 
@@ -25,9 +26,16 @@ UICommand::UICommand()
 {
 }
 
-void UICommand::init()
+bool UICommand::init()
 {
-    Object::init();
+    return Object::init();
+}
+
+bool UICommand::init(const String& name)
+{
+    if (!init()) return false;
+    m_name = name;
+    return true;
 }
 
 void UICommand::addInputGesture(InputGesture* value)
@@ -61,19 +69,80 @@ bool UICommand::testInputEvent(UIEventArgs* e)
     //        }
     //    }
     //}
-    if (e->type() == UIEvents::KeyDownEvent) {
-        auto* ke = static_cast<UIKeyEventArgs*>(e);
-        for (auto& gesture : m_inputGestures) {
-            if (gesture->getType() == detail::InputBindingType::Keyboard) {
-                auto* mg = static_cast<KeyGesture*>(gesture.get());
-                if (ke->getKey() == mg->getKey() && ke->getModifierKeys() == mg->getModifierKeys()) {
-                    return true;
-                }
-            }
+    //if (e->type() == UIEvents::KeyDownEvent) {
+    //    auto* ke = static_cast<UIKeyEventArgs*>(e);
+    //    for (auto& gesture : m_inputGestures) {
+    //        if (gesture->getType() == detail::InputBindingType::Keyboard) {
+    //            auto* mg = static_cast<KeyGesture*>(gesture.get());
+    //            if (ke->getKey() == mg->getKey() && ke->getModifierKeys() == mg->getModifierKeys()) {
+    //                return true;
+    //            }
+    //        }
+    //    }
+    //}
+
+    for (const auto& gesture : m_inputGestures) {
+        if (UIEventArgs::testInputGesture(e, gesture)) {
+            return true;
         }
     }
+
     return false;
 }
+
+//==============================================================================
+// UICommonInputCommands
+
+const UICommand* UICommonInputCommands::left()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().left;
+}
+
+const UICommand* UICommonInputCommands::right()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().right;
+}
+
+const UICommand* UICommonInputCommands::up()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().up;
+}
+
+const UICommand* UICommonInputCommands::down()
+{
+    return  detail::EngineDomain::uiManager()->commonInputCommands().down;
+}
+
+const UICommand* UICommonInputCommands::submit()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().submit;
+}
+
+const UICommand* UICommonInputCommands::cancel()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().cancel;
+}
+
+const UICommand* UICommonInputCommands::menu()
+{
+    return  detail::EngineDomain::uiManager()->commonInputCommands().menu;
+}
+
+const UICommand* UICommonInputCommands::shift()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().shift;
+}
+
+const UICommand* UICommonInputCommands::pageUp()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().pageUp;
+}
+
+const UICommand* UICommonInputCommands::pageDown()
+{
+    return detail::EngineDomain::uiManager()->commonInputCommands().pageDown;
+}
+
 
 //==============================================================================
 // UIAction

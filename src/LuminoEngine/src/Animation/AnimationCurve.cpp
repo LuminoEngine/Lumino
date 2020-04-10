@@ -18,40 +18,45 @@ AnimationCurve::~AnimationCurve()
 
 float AnimationCurve::evaluate(float time)
 {
-    float localTime = 0.0f;
-
-    switch (m_wrapMode)
-    {
-        case AnimationWrapMode::Once:
-            localTime = time;
-            break;
-        case AnimationWrapMode::Loop:
-            localTime = std::fmod(time, lastFrameTime());
-            break;
-        case AnimationWrapMode::RoundTrip:
-        {
-            float freq = lastFrameTime() * 2;
-            float t = std::fmod(time, freq);
-            float phase = t / freq;
-            if (phase <= 0.5) {
-                localTime = t;
-            }
-            else {
-                localTime = freq - t;
-            }
-            break;
-        }
-        default:
-            LN_UNREACHABLE();
-            break;
-    }
-
-	return onEvaluate(localTime);
+	return onEvaluate(calculateLocalTime(time, lastFrameTime(), m_wrapMode));
 }
 
 float AnimationCurve::lastFrameTime() const
 {
 	return onGetLastFrameTime();
+}
+
+float AnimationCurve::calculateLocalTime(float time, float duration, AnimationWrapMode wrapMode)
+{
+	float localTime = 0.0f;
+
+	switch (wrapMode)
+	{
+	case AnimationWrapMode::Once:
+		localTime = std::min(time, duration);
+		break;
+	case AnimationWrapMode::Loop:
+		localTime = std::fmod(time, duration);
+		break;
+	case AnimationWrapMode::Alternate:
+	{
+		float freq = duration * 2;
+		float t = std::fmod(time, freq);
+		float phase = t / freq;
+		if (phase <= 0.5) {
+			localTime = t;
+		}
+		else {
+			localTime = freq - t;
+		}
+		break;
+	}
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+
+	return localTime;
 }
 
 //==============================================================================
@@ -256,6 +261,42 @@ AnimationKeyFrame* KeyFrameAnimationCurve::findKeyFrame(float time)
 	//};
 
 	//return (AnimationKeyFrame*)bsearch(&time, &(m_keyFrames[0]), m_keyFrames.getCount(), sizeof(AnimationKeyFrame), Compare::cmpKey);
+}
+
+//==============================================================================
+// EasingAnimationCurve
+
+Ref<EasingAnimationCurve> EasingAnimationCurve::create(float startValue, float targetValue, float duration, EasingMode function)
+{
+	return makeObject<EasingAnimationCurve>(startValue, targetValue, duration, function);
+}
+
+EasingAnimationCurve::EasingAnimationCurve()
+	: m_function(nullptr)
+	, m_startValue(0.0f)
+	, m_targetValue(0.0f)
+	, m_duration(0.0f)
+{
+}
+
+bool EasingAnimationCurve::init(float startValue, float targetValue, float duration, EasingMode function)
+{
+	if (!Object::init()) return false;
+	m_function = EasingFunctions::function(function);
+	m_startValue = startValue;
+	m_targetValue = targetValue;
+	m_duration = duration;
+	return true;
+}
+
+float EasingAnimationCurve::onEvaluate(float time)
+{
+	return m_function(time, m_startValue, m_targetValue - m_startValue, m_duration);
+}
+
+float EasingAnimationCurve::onGetLastFrameTime() const
+{
+	return m_duration;
 }
 
 } // namespace ln

@@ -134,8 +134,8 @@ public:
     void setName(const String& value) { m_name = value; }
     const String& name() const { return m_name; }
 
-	/** 要素のサイズを設定します。サイズには、border の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
-	void setSize(float width, float height);
+	/** 要素のサイズを設定します。サイズには、border と padding の幅と高さは含まれません。(例：width 10, border 10 とすると、要素の最終サイズは 20 となります) */
+	void setSize(float width, float height) { setWidth(width); setHeight(height); }
 
     void setWidth(float value);
     float width() const;
@@ -236,10 +236,10 @@ public:
 
 
     /** 背景の描画モードを設定します。*/
-    void setBackgroundDrawMode(BrushImageDrawMode value);
+    void setBackgroundDrawMode(Sprite9DrawMode value);
 
     /** 背景の描画モードを取得します。*/
-    BrushImageDrawMode backgroundDrawMode() const;
+	Sprite9DrawMode backgroundDrawMode() const;
 
 	/** 背景の色を設定します。 */
 	void setBackgroundColor(const Color& value);
@@ -380,12 +380,13 @@ public:
 
 	/** 入力フォーカスを得ることができるかどうかを設定します。(default: false) */
 	void setFocusable(bool value) { m_focusable = value; }
+	bool focusable() const { return m_focusable; }
 
     void setClipToBounds(bool value) { m_clipToBounds = value; }
     bool clipToBounds() const { return m_clipToBounds; }
 
 	/** ウィンドウを前面にしてアクティブ化することを試みます。 */
-	void activate();
+	//void activate();
 
     UIElement();
     virtual ~UIElement();
@@ -451,7 +452,9 @@ public:	// TODO: internal protected
 		通常、padding と border を加算したサイズを返すように実装します。
 		border については、inset または outset の場合分けが必要です。
 
-        Note: レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は Inf が含まれることがある。
+        @note
+			- レイアウトのコツとしては、constraint から減算するのではなく、子要素を加算してくこと。constraint は Inf が含まれることがある。
+			- 実装では padding と border のサイズを考慮する必要があるが、これは VisualChild をレイアウトしてほしいためこうする必要がある。(LogicalChild ではなく)
     */
     virtual Size measureOverride(UILayoutContext* layoutContext, const Size& constraint) override;
 
@@ -533,6 +536,7 @@ public: // TODO: internal
 	void moveVisualChildToForeground(UIElement* child);
 
     void handleDetachFromUITree();
+	UIElement* findFocusedVisualChildLeaf();
 
     detail::UIManager* m_manager;
     String m_name;
@@ -559,6 +563,7 @@ public: // TODO: internal
 	UIVisibility m_internalVisibility;
     int m_renderPriority;
 	detail::UIHitTestMode m_hitTestMode;
+	UIElement* m_focusedVisualChild = nullptr;
 	bool m_focusable;			// TODO: flags
     bool m_clipToBounds;			// TODO: flags
 

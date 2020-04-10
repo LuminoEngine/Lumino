@@ -11,9 +11,10 @@ UIFocusNavigator::UIFocusNavigator()
 {
 }
 
-void UIFocusNavigator::init()
+bool UIFocusNavigator::init()
 {
-    UIContainerElement::init();
+    if (!Object::init()) return false;
+    return true;
 }
 
 void UIFocusNavigator::gotoFocus(UIElement* element)
@@ -48,16 +49,16 @@ UIElement* UIFocusNavigator::focusedElement() const
 	return m_history.back();
 }
 
-UIElement* UIFocusNavigator::lookupMouseHoverElement(const Point& frameClientPosition)
-{
-	if (UIElement* focused = focusedElement()) {
-		if (UIElement* e = focused->lookupMouseHoverElement(frameClientPosition)) {
-			return e;
-		}
-	}
-
-	return nullptr;
-}
+//UIElement* UIFocusNavigator::lookupMouseHoverElement(const Point& frameClientPosition)
+//{
+//	if (UIElement* focused = focusedElement()) {
+//		if (UIElement* e = focused->lookupMouseHoverElement(frameClientPosition)) {
+//			return e;
+//		}
+//	}
+//
+//	return nullptr;
+//}
 
 } // namespace ln
 

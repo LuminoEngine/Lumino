@@ -6,6 +6,7 @@
 #include <LuminoEngine/Engine/EngineSettings.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIContext.hpp>
+#include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
@@ -66,6 +67,11 @@ void EngineSettings::setGraphicsAPI(GraphicsAPI value)
 void EngineSettings::setGraphicsDebugEnabled(bool enabled)
 {
     detail::EngineManager::s_settings.graphicsDebugEnabled = enabled;
+}
+
+void EngineSettings::setDefaultUITheme(const String& value)
+{
+    detail::EngineManager::s_settings.defaultUITheme = value;
 }
 
 void EngineSettings::setDebugToolEnabled(bool enabled)

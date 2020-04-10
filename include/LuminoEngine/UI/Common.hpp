@@ -5,6 +5,12 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class UICommand;
+class UIDomainProvidor;
+class UIViewport;
+class UIControl;
+class UIListItemsControl;
+class UIListBox;
 
 /** コントロールのレイアウト方向を示します。*/
 enum class Orientation  // TODO: name LayoutOrientation
@@ -49,7 +55,6 @@ enum class UICollectionChangedAction
     /** コレクションの内容が大幅に変わった */
     Reset,
 };
-
 
 namespace detail {
 

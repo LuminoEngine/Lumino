@@ -9,7 +9,7 @@ class UIContainerElement
 {
 public:
     UIContainerElement();
-	void init();
+    bool init();
 
 private:
 };

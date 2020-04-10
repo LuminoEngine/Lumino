@@ -12,7 +12,8 @@ using namespace ln;
 class App_Example_MessageWindow : public Application
 {
     Ref<UIButton> m_button1;
-    Ref<UIMessageTextArea> m_message1;
+    Ref<UIMessageTextWindow> m_window1;
+    //Ref<UIMessageTextArea> m_message1;
     Ref<UIMessageTextArea> m_message2;
     int m_step = 0;
 
@@ -22,22 +23,25 @@ class App_Example_MessageWindow : public Application
 
         auto windowSkin = Texture2D::load(u"Window1");
 
-        auto window1 = UIWindow::create();
-        window1->setHAlignment(HAlignment::Left);
-        window1->setVAlignment(VAlignment::Top);
-        window1->setPosition(10, 10);
-        window1->setWidth(200);
-        window1->setHeight(80);
-        window1->setBackgroundImage(windowSkin);
-        window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
-        window1->setBackgroundImageBorder(Thickness(8));
-        window1->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+        m_window1 = UIMessageTextWindow::create();
+        m_window1->setHAlignment(HAlignment::Left);
+        m_window1->setVAlignment(VAlignment::Top);
+        m_window1->setPosition(10, 10);
+        m_window1->setWidth(200);
+        m_window1->setHeight(80);
+        m_window1->setBackgroundImage(windowSkin);
+        m_window1->setBackgroundImageRect(Rect(0, 0, 48, 48));
+        m_window1->setBackgroundImageBorder(Thickness(8));
+        m_window1->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
+        m_window1->setBackgroundColor(Color::Transparency);
+        m_window1->setBorderThickness(0);
         //Engine::mainUIView()->addElement(window1);
+        m_window1->setText(u"Hello, Lumino!");
 
-        m_message1 = UIMessageTextArea::create();
-        m_message1->setMargin(16);
-        m_message1->setText(u"Hello, Lumino!");
-        window1->addElement(m_message1);
+        //m_message1 = UIMessageTextArea::create();
+        //m_message1->setMargin(16);
+        //m_message1->setText(u"Hello, Lumino!");
+        //window1->addElement(m_message1);
 
         auto window2 = UIWindow::create();
         window2->setPosition(10, 100);
@@ -48,7 +52,7 @@ class App_Example_MessageWindow : public Application
         window2->setBackgroundImage(windowSkin);
         window2->setBackgroundImageRect(Rect(0, 0, 48, 48));
         window2->setBackgroundImageBorder(Thickness(8));
-        window2->setBackgroundDrawMode(BrushImageDrawMode::BoxFrame);
+        window2->setBackgroundDrawMode(Sprite9DrawMode::StretchedBoxFrame);
         //Engine::mainUIView()->addElement(window2);
 
         m_message2 = UIMessageTextArea::create();
@@ -77,22 +81,22 @@ class App_Example_MessageWindow : public Application
             switch (m_step)
             {
             case 0:
-                m_message1->setText(u"All in the golden afternoon");
+                m_window1->setText(u"All in the golden afternoon");
                 break;
             case 1:
-                m_message1->setText(u"Full leisurely we glide;");
+                m_window1->setText(u"Full leisurely we glide;");
                 break;
             case 2:
-                m_message1->setText(u"For both our oars, with little skill,");
+                m_window1->setText(u"For both our oars, with little skill,");
                 break;
             case 3:
-                m_message1->setText(u"By little arms are plied,");
+                m_window1->setText(u"By little arms are plied,");
                 break;
             case 4:
-                m_message1->setText(u"While little hands make vain pretence");
+                m_window1->setText(u"While little hands make vain pretence");
                 break;
             case 5:
-                m_message1->setText(u"Our wanderings to guide.");
+                m_window1->setText(u"Our wanderings to guide.");
                 break;
             default:
                 break;

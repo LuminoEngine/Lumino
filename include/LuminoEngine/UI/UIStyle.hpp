@@ -1,5 +1,7 @@
 ﻿#pragma once
+#include "../Animation/Common.hpp"
 #include "UIElement.hpp"
+#include "UIStyleAnimation.hpp"
 
 namespace ln {
 class Shader;
@@ -71,72 +73,6 @@ public:
     bool hasValue() const
     {
         return m_source != UIStyleAttributeValueSource::Default;
-    }
-
-    bool inherit(const UIStyleAttribute& parent/*, UIStyleAttributeInheritSourceType sourceType*/)
-    {
-        // そもそも parent が値を持っていなければ何もする必要はない
-        if (parent.m_source == UIStyleAttributeValueSource::Default) return false;
-        // Local 値を持っているので継承する必要はない
-        if (m_source == UIStyleAttributeValueSource::ByUserLocal) return false;
-
-        //bool inherit = ((int)m_source < ((int)parent.m_source - 1));
-        //bool inherit = false;
-        //if (m_source == UIStyleAttributeValueSource::Default)
-        //{
-        //	inherit = true;
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::InheritParent)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::ParentElement ||
-        //		sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::InheritBaseOn)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::InheritBase)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-        //		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-        //else if (m_source == UIStyleAttributeValueSource::StyleLocal)
-        //{
-        //	if (sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-        //	{
-        //		inherit = true;
-        //	}
-        //}
-
-        bool changed = false;
-        //if (inherit)
-        {
-            //if (sourceType == UIStyleAttributeInheritSourceType::ParentElement)
-            //	m_source = UIStyleAttributeValueSource::InheritParent;
-            //else if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle)
-            //	m_source = UIStyleAttributeValueSource::InheritBaseOn;
-            //else if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle)
-            //	m_source = UIStyleAttributeValueSource::InheritBase;
-            //else
-            //	m_source = UIStyleAttributeValueSource::StyleLocal;
-            m_source = UIStyleAttributeValueSource::ByStyleInherit;
-            changed = (m_value != parent.m_value);
-            m_value = parent.m_value;
-        }
-        return changed;
     }
 
     T							m_value;
@@ -261,7 +197,7 @@ public:
 
 	// transform
     detail::UIStyleAttribute<Vector3> position;
-    detail::UIStyleAttribute<Quaternion> rotation;
+    detail::UIStyleAttribute<Quaternion> rotation;  // TODO: eular にする
     detail::UIStyleAttribute<Vector3> scale;
     detail::UIStyleAttribute<Vector3> centerPoint;
 
@@ -271,7 +207,7 @@ public:
 	static const Vector3 DefaultCenterPoint;
 
 	// background
-    detail::UIStyleAttribute<BrushImageDrawMode> backgroundDrawMode;
+    detail::UIStyleAttribute<Sprite9DrawMode> backgroundDrawMode;
 	detail::UIStyleAttribute<Color> backgroundColor;
 	detail::UIStyleAttribute<Ref<Texture>> backgroundImage;
 	detail::UIStyleAttribute<Ref<Shader>> backgroundShader;
@@ -279,7 +215,7 @@ public:
     detail::UIStyleAttribute<Rect> backgroundImageRect;
     detail::UIStyleAttribute<Thickness> backgroundImageBorder;
 
-	static const BrushImageDrawMode DefaultBackgroundDrawMode;
+	static const Sprite9DrawMode DefaultBackgroundDrawMode;
 	static const Color DefaultBackgroundColor;
 	static const Ref<Texture> DefaultBackgroundImage;
 	static const Ref<Shader> DefaultBackgroundShader;
@@ -352,6 +288,7 @@ public:
 	List<Ref<UIStyleDecorator>> decorators;
 
 
+
     void setBorderColor(const Color& color)
     {
         leftBorderColor = color;
@@ -359,6 +296,24 @@ public:
         rightBorderColor = color;
         bottomBorderColor = color;
     }
+
+
+    void setWidthAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setHeightAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setPositionXAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setPositionYAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setPositionZAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setBackgroundColorAnimation(const Color& startValue, const Color& targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+    void setOpacityAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f, AnimationWrapMode wrapMode = AnimationWrapMode::Once);
+
+    void setWidthTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setHeightTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setPositionXTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setPositionYTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setPositionZTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setBackgroundColorTransition(const Color& target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+    void setOpacityTransition(float target, float duration, EasingMode timingFunction = EasingMode::Linear, float delay = 0.0f);
+
 
 public:	// TODO: internal
 	void setupDefault();
@@ -372,6 +327,32 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+    struct AnimationData
+    {
+        Ref<UIValueTrack> width;
+        Ref<UIValueTrack> height;
+        Ref<UIValueTrack> positionX;
+        Ref<UIValueTrack> positionY;
+        Ref<UIValueTrack> positionZ;
+        Ref<UIValueTrack> backgroundColor;
+        Ref<UIValueTrack> opacity;
+
+        uint32_t hasLocalValueFlags = 0;
+        uint32_t inheritFlags = 0;
+
+        void setLocalValueFlag(detail::UIStyleAnimationElement index, bool v) { if (v) hasLocalValueFlags |= (1 << index); else hasLocalValueFlags &= ~(1 << index); }
+        void setInheritFlag(detail::UIStyleAnimationElement index, bool v) { if (v) hasLocalValueFlags |= (1 << index); else hasLocalValueFlags &= ~(1 << index); }
+        bool hasValue(detail::UIStyleAnimationElement index) const { return (hasLocalValueFlags & (1 << index)) != 0; }
+        bool isInherited(detail::UIStyleAnimationElement index) const { return (inheritFlags & (1 << index)) != 0; }
+        bool hasLocalValue(detail::UIStyleAnimationElement index) const { return hasValue(index) && !isInherited(index); }
+    };
+
+    AnimationData* acquireAnimationData();
+
+    // これも結構サイズ大きいので、必要なものだけ遅延で作る
+    std::unique_ptr<AnimationData> m_animationData;
+
+    friend class detail::UIStyleInstance;
 };
 
 // 要素ひとつに対応。複数の class を管理する
@@ -425,17 +406,20 @@ public:
 	void copyFrom(const UIStyleClass* other);
 	void mergeFrom(const UIStyleClass* other);
 
+	struct VisualStateSlot
+	{
+		String name;
+		Ref<UIStyle> style;
+	};
+
+    const List<VisualStateSlot>& visualStateStyles() const { return m_visualStateStyles; }
+
 LN_CONSTRUCT_ACCESS:
 	UIStyleClass();
 	virtual ~UIStyleClass();
 	void init(const StringRef& name);
 
 private:
-	struct VisualStateSlot
-	{
-		String name;
-		Ref<UIStyle> style;
-	};
 
 	String m_name;
 	Ref<UIStyle> m_mainStyle;
@@ -539,7 +523,7 @@ public:
     Vector3 centerPoint;
 
     // background
-    BrushImageDrawMode backgroundDrawMode;
+    Sprite9DrawMode backgroundDrawMode;
     Color backgroundColor;
     Ref<Texture> backgroundImage;
     Ref<Shader> backgroundShader;
@@ -590,6 +574,9 @@ public:
 
 	UITheme* theme = nullptr;
 
+
+
+
     // TODO: 今後サブクラスごとにスタイルを追加する場合は、ここに map を設ける
 
     UIStyleInstance();
@@ -614,10 +601,35 @@ public:
 		return Size(margin.left, margin.top);
 	}
 
+    void updateAnimationData();
+    bool hasAnimationData() const { return m_animationData != nullptr; }
+    void advanceAnimation(float elapsedTime);
+    UIElementDirtyFlags applyAnimationValues();
+
 LN_CONSTRUCT_ACCESS:
 
 private:
+    struct AnimationData
+    {
+        Ref<UIScalarAnimationInstance> width;
+        Ref<UIScalarAnimationInstance> height;
+        Ref<UIScalarAnimationInstance> positionX;
+        Ref<UIScalarAnimationInstance> positionY;
+        Ref<UIScalarAnimationInstance> positionZ;
+        Ref<UIVector4AnimationInstance> backgroundColor;
+        Ref<UIScalarAnimationInstance> opacity;
+    };
 
+    AnimationData* acquireAnimationData()
+    {
+        if (!m_animationData) {
+            m_animationData = std::make_unique<AnimationData>();
+        }
+        return m_animationData.get();
+    }
+
+    // これも結構サイズ大きいので、必要なものだけ遅延で作る
+    std::unique_ptr<AnimationData> m_animationData;
 };
 
 class UIStyleClassInstance
@@ -705,6 +717,13 @@ public:
 	void combineStyle(UIStyle* style, const UIStyleContext* styleContext, const ln::String& elementName, const List<String>* classList);
     void combineStyle(UIStyle* style, const UIStyleClass* styleClass);
     //detail::UIStyleInstance* resolveStyle(const UIStyleContext* styleContext, const ln::String& className);
+
+    void printActive()
+    {
+        for (auto& g : m_groups) {
+            std::cout << g.name << ": " << g.stateNames[g.activeStateIndex] << std::endl;
+        }
+    }
 
 LN_CONSTRUCT_ACCESS:
     UIVisualStateManager();
@@ -845,6 +864,10 @@ public:
 	static const String MouseOver;
 	static const String Pressed;
 	static const String Disabled;
+
+    // FocusStates
+    static const String Focused;    // Input focus を持っているか. (Logical focus は関係ない)
+    static const String Unfocused;
 
 	// CheckStates
 	static const String CheckedState;

@@ -147,7 +147,7 @@ const Vector3 UIStyle::DefaultScale = Vector3(1.0f, 1.0f, 1.0f);
 const Vector3 UIStyle::DefaultCenterPoint = Vector3(0.0f, 0.0f, 0.0f);
 
 // background
-const BrushImageDrawMode UIStyle::DefaultBackgroundDrawMode = BrushImageDrawMode::Image;
+const Sprite9DrawMode UIStyle::DefaultBackgroundDrawMode = Sprite9DrawMode::StretchedSingleImage;
 const Color UIStyle::DefaultBackgroundColor = Color::Transparency;
 const Ref<Texture> UIStyle::DefaultBackgroundImage = nullptr;
 const Ref<Shader> UIStyle::DefaultBackgroundShader = nullptr;
@@ -198,6 +198,104 @@ UIStyle::~UIStyle()
 void UIStyle::init()
 {
     Object::init();
+}
+void UIStyle::setWidthAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	auto* d = acquireAnimationData();
+	d->width = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Width, true);
+}
+
+void UIStyle::setHeightAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	auto* d = acquireAnimationData();
+	d->height = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Height, true);
+}
+
+void UIStyle::setPositionXAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	auto* d = acquireAnimationData();
+	d->positionX = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionX, true);
+}
+
+void UIStyle::setPositionYAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	auto* d = acquireAnimationData();
+	d->positionY = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionY, true);
+}
+
+void UIStyle::setPositionZAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	auto* d = acquireAnimationData();
+	d->positionZ = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionZ, true);
+}
+
+void UIStyle::setBackgroundColorAnimation(const Color& startValue, const Color& targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	auto* d = acquireAnimationData();
+	d->backgroundColor = makeObject<UIVector4AnimationTrack>(startValue.toVector4(), targetValue.toVector4(), duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_BackgroundColor, true);
+}
+
+void UIStyle::setOpacityAnimation(float startValue, float targetValue, float duration, EasingMode timingFunction, float delay, AnimationWrapMode wrapMode)
+{
+	auto* d = acquireAnimationData();
+	d->opacity = makeObject<UIScalarAnimationTrack>(startValue, targetValue, duration, timingFunction, delay, wrapMode);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Opacity, true);
+}
+
+
+void UIStyle::setWidthTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	auto* d = acquireAnimationData();
+	d->width = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Width, true);
+}
+
+void UIStyle::setHeightTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	auto* d = acquireAnimationData();
+	d->height = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Height, true);
+}
+
+void UIStyle::setPositionXTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	auto* d = acquireAnimationData();
+	d->positionX = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionX, true);
+}
+
+void UIStyle::setPositionYTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	auto* d = acquireAnimationData();
+	d->positionY = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionY, true);
+}
+
+void UIStyle::setPositionZTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	auto* d = acquireAnimationData();
+	d->positionZ = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_PositionZ, true);
+}
+
+void UIStyle::setBackgroundColorTransition(const Color& target, float duration, EasingMode timingFunction, float delay)
+{
+	auto* d = acquireAnimationData();
+	d->backgroundColor = makeObject<UIVector4TransitionTrack>(target.toVector4(), duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_BackgroundColor, true);
+}
+
+void UIStyle::setOpacityTransition(float target, float duration, EasingMode timingFunction, float delay)
+{
+	auto* d = acquireAnimationData();
+	d->opacity = makeObject<UIScalarTransitionTrack>(target, duration, timingFunction, delay);
+	d->setLocalValueFlag(detail::UIStyleAnimationElement_Opacity, true);
 }
 
 void UIStyle::setupDefault()
@@ -267,6 +365,9 @@ void UIStyle::setupDefault()
 
 	// decorators
 	decorators.clear();
+
+	// animations
+	m_animationData = nullptr;
 }
 
 void UIStyle::reset()
@@ -336,6 +437,9 @@ void UIStyle::reset()
 
 	// decorators
 	decorators.clear();
+
+	// animations
+	m_animationData = nullptr;	// TODO: 捨てるとメモリ効率悪い
 }
 
 void UIStyle::mergeFrom(const UIStyle* other)
@@ -408,6 +512,26 @@ void UIStyle::mergeFrom(const UIStyle* other)
 	// decorators
 	for (auto& d : other->decorators) {
 		decorators.add(d);
+	}
+
+	// animations
+	if (other->m_animationData) {
+		AnimationData* d = acquireAnimationData();
+
+#define LN_MERGE_ANIMATION_DATA(field, flagIndex) \
+		if (!d->hasLocalValue(flagIndex)) { \
+			d->field = other->m_animationData->field; \
+			d->setInheritFlag(flagIndex, true); \
+		}
+
+		LN_MERGE_ANIMATION_DATA(width, detail::UIStyleAnimationElement_Width);
+		LN_MERGE_ANIMATION_DATA(height, detail::UIStyleAnimationElement_Height);
+		LN_MERGE_ANIMATION_DATA(positionX, detail::UIStyleAnimationElement_PositionX);
+		LN_MERGE_ANIMATION_DATA(positionY, detail::UIStyleAnimationElement_PositionY);
+		LN_MERGE_ANIMATION_DATA(positionZ, detail::UIStyleAnimationElement_PositionZ);
+		LN_MERGE_ANIMATION_DATA(backgroundColor, detail::UIStyleAnimationElement_BackgroundColor);
+		LN_MERGE_ANIMATION_DATA(opacity, detail::UIStyleAnimationElement_Opacity);
+#undef LN_MERGE_ANIMATION_DATA
 	}
 }
 
@@ -482,6 +606,35 @@ void UIStyle::copyFrom(const UIStyle* other)
 	for (auto& d : other->decorators) {
 		decorators.add(d);
 	}
+
+	// animations
+	if (other->m_animationData) {
+		AnimationData* d = acquireAnimationData();
+		d->hasLocalValueFlags = other->m_animationData->hasLocalValueFlags;
+		d->inheritFlags = other->m_animationData->inheritFlags;
+		d->width = other->m_animationData->width;
+		d->height = other->m_animationData->height;
+		d->positionX = other->m_animationData->positionX;
+		d->positionY = other->m_animationData->positionY;
+		d->positionZ = other->m_animationData->positionZ;
+		d->backgroundColor = other->m_animationData->backgroundColor;
+		d->opacity = other->m_animationData->opacity;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Width)) d->width = other->m_animationData->width;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Height)) d->height = other->m_animationData->height;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionX)) d->positionX = other->m_animationData->positionX;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionY)) d->positionY = other->m_animationData->positionY;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_PositionZ)) d->positionZ = other->m_animationData->positionZ;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_BackgroundColor)) d->backgroundColor = other->m_animationData->backgroundColor;
+		//if (other->m_animationData->hasLocalValue(detail::UIStyleAnimationElement_Opacity)) d->opacity = other->m_animationData->opacity;
+	}
+}
+
+UIStyle::AnimationData* UIStyle::acquireAnimationData()
+{
+	if (!m_animationData) {
+		m_animationData = std::make_unique<AnimationData>();
+	}
+	return m_animationData.get();
 }
 
 //==============================================================================
@@ -869,7 +1022,7 @@ void UIStyleInstance::setupDefault()
     scale = Vector3::Ones;
     centerPoint = Vector3::Zero;
 
-    backgroundDrawMode = BrushImageDrawMode::Image;
+    backgroundDrawMode = Sprite9DrawMode::StretchedSingleImage;
     backgroundImageRect = Rect::Zero;
     backgroundImageBorder = Thickness::Zero;
 
@@ -1046,6 +1199,31 @@ void UIStyleInstance::makeRenderObjects()
 
 void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const detail::UIStyleInstance* parentStyleData, const UIStyle* combinedStyle, detail::UIStyleInstance* outStyleData)
 {
+	// animations
+	//	StartValue は最新のスタイルの値にする前の、現在値を使いたいので、animation 更新は最初に行う。
+	{
+		if (combinedStyle->m_animationData) {
+			const auto& sd = combinedStyle->m_animationData;
+			auto* d = outStyleData->acquireAnimationData();
+
+			//if (!d->backgroundColor) {	// TODO: test
+			if (sd->hasValue(UIStyleAnimationElement_BackgroundColor)) {
+				if (UIVector4AnimationInstance::realloc(sd->backgroundColor, &d->backgroundColor)) {
+					d->backgroundColor->reset(outStyleData->backgroundColor.toVector4());
+				}
+			}
+			else {
+				// TODO: 消すとメモリ効率悪い。poolにする
+				d->backgroundColor = nullptr;
+			}
+		}
+		else {
+			// TODO: 消すとメモリ効率悪い。poolにする
+			outStyleData->m_animationData = nullptr;
+		}
+	}
+
+
 	//const UIStyle* parentStyle = (parentStyleData) ? parentStyleData->sourceLocalStyle : nullptr;
 	//if (parentStyle)
 	//{
@@ -1198,6 +1376,56 @@ void UIStyleInstance::updateStyleDataHelper(const UIStyleContext* context, const
 	for (auto& d : combinedStyle->decorators) {
 		outStyleData->decorators.add(d);
 	}
+
+}
+
+void UIStyleInstance::updateAnimationData()
+{
+
+}
+
+void UIStyleInstance::advanceAnimation(float elapsedTime)
+{
+	if (m_animationData) {
+		AnimationData* d = m_animationData.get();
+		if (d->width) d->width->advanceTime(elapsedTime);
+		if (d->height) d->height->advanceTime(elapsedTime);
+		if (d->positionX) d->positionX->advanceTime(elapsedTime);
+		if (d->positionY) d->positionY->advanceTime(elapsedTime);
+		if (d->positionZ) d->positionZ->advanceTime(elapsedTime);
+		if (d->backgroundColor) d->backgroundColor->advanceTime(elapsedTime);
+		if (d->opacity) d->opacity->advanceTime(elapsedTime);
+	}
+}
+
+template<typename T, typename TValue>
+static UIElementDirtyFlags applyAnimation(const T& instance, TValue* value, UIElementDirtyFlags flag)
+{
+	if (instance/* && instance->isActive()*/) {	// TODO: 今は毎フレーム style の reset してるので、アニメ適用しないと初期値になってしまう
+		*value = instance->evaluate();
+		return flag;
+	}
+	else {
+		return UIElementDirtyFlags::None;
+	}
+}
+
+UIElementDirtyFlags UIStyleInstance::applyAnimationValues()
+{
+	Flags<UIElementDirtyFlags> dirty = UIElementDirtyFlags::None;
+
+	if (m_animationData) {
+		AnimationData* d = m_animationData.get();
+		dirty |= applyAnimation(d->width, &width, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->height, &height, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->positionX, &position.x, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->positionY, &position.y, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->positionZ, &position.z, UIElementDirtyFlags::Layout);
+		dirty |= applyAnimation(d->backgroundColor, &backgroundColor, UIElementDirtyFlags::Render);
+		dirty |= applyAnimation(d->opacity, &opacity, UIElementDirtyFlags::Render);
+	}
+
+	return dirty;
 }
 
 //==============================================================================
@@ -1325,13 +1553,22 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleContext* st
 		for (auto& name : *classList) {
 			auto cs = set->findStyleClass(name);
 			if (cs) {
-				for (auto& group : m_groups) {
-					if (group.activeStateIndex >= 0) {
-						if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
-							style->mergeFrom(stateStyle);
-						}
+				for (const auto& slot : cs->visualStateStyles()) {
+					auto r = m_groups.findIf([&slot](const auto& x) {
+						return x.activeStateIndex >= 0 && String::compare(x.stateNames[x.activeStateIndex], slot.name, CaseSensitivity::CaseInsensitive) == 0; });
+					if (r) {
+						style->mergeFrom(slot.style);
 					}
 				}
+
+
+				//for (auto& group : m_groups) {
+				//	if (group.activeStateIndex >= 0) {
+				//		if (auto stateStyle = cs->findStateStyle(group.stateNames[group.activeStateIndex])) {
+				//			style->mergeFrom(stateStyle);
+				//		}
+				//	}
+				//}
 			}
 		}
 	}
@@ -1374,13 +1611,20 @@ void UIVisualStateManager::combineStyle(UIStyle* style, const UIStyleClass* styl
 {
     style->mergeFrom(styleClass->mainStyle());
 
-    for (auto& group : m_groups) {
-        if (group.activeStateIndex >= 0) {
-            if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
-                style->mergeFrom(stateStyle);
-            }
-        }
-    }
+	for (const auto& slot : styleClass->visualStateStyles()) {
+		auto r = m_groups.findIf([&slot](const auto& x) {
+			return x.activeStateIndex >= 0 && String::compare(x.stateNames[x.activeStateIndex], slot.name, CaseSensitivity::CaseInsensitive) == 0; });
+		if (r) {
+			style->mergeFrom(slot.style);
+		}
+	}
+    //for (auto& group : m_groups) {
+    //    if (group.activeStateIndex >= 0) {
+    //        if (auto stateStyle = styleClass->findStateStyle(group.stateNames[group.activeStateIndex])) {
+    //            style->mergeFrom(stateStyle);
+    //        }
+    //    }
+    //}
 }
 
 //detail::UIStyleInstance* UIVisualStateManager::resolveStyle(const UIStyleContext* styleContext, const ln::String& className)
@@ -1569,12 +1813,27 @@ void UITheme::buildLumitelier()
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem")) {
 			s->minHeight = lineContentHeight();
 			//s->padding = Thickness(spacing(1), 0);
+			//s->setBackgroundColorTransition(color(UIThemeConstantPalette::ItemHoverAction), 1.0f);
+			//s->setBackgroundColorTransition(Color::Transparency, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:MouseOver")) {
 			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+			//s->setBackgroundColorTransition(color(UIThemeConstantPalette::ItemHoverAction), 1.0f);
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Unselected")) {
+			//s->backgroundColor = Color::Red;
+			//s->setBackgroundColorTransition(Color::Green, 1.0f);
 		}
 		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Selected")) {
-			s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+			s->backgroundColor = Color::Red;
+			//s->setBackgroundColorTransition(Color::Red, 1.0f);
+			//
+			s->backgroundColor = color(UIThemeConstantPalette::ItemHoverAction);
+		}
+		if (auto s = sheet->obtainStyle(u"UIListBoxItem:Focused")) {	// 後から書かれたものが優先される
+			//s->backgroundColor = Color::Blue;
+			//s->backgroundColor = color(UIThemeConstantPalette::ItemSelectedAction);
+			s->setBackgroundColorAnimation(Color::White.withAlpha(0.3), Color::White.withAlpha(0.6), 0.5, EasingMode::Linear, 0.0f, AnimationWrapMode::Alternate);
 		}
 	}
 	//--------------------------------
@@ -1741,6 +2000,9 @@ const String UIVisualStates::Normal = u"Normal";
 const String UIVisualStates::MouseOver = u"MouseOver";
 const String UIVisualStates::Pressed = u"Pressed";
 const String UIVisualStates::Disabled = u"Disabled";
+
+const String UIVisualStates::Focused = u"Focused";
+const String UIVisualStates::Unfocused = u"Unfocused";
 
 const String UIVisualStates::CheckedState = u"Checked";
 const String UIVisualStates::UncheckedState = u"Unchecked";

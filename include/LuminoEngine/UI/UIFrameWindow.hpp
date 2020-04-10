@@ -4,7 +4,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 #include "Common.hpp"
 #include "UIEvents.hpp"
-#include "UIContainerElement.hpp"
+#include "UIRenderView.hpp"
 #include "ImGuiIntegration.hpp"
 
 namespace ln {
@@ -61,12 +61,13 @@ private:
     Point m_mousePosition;
     MouseClickTracker m_mouseClickTrackers[8];
     MouseButtons m_pressedButton;
+    Flags<ModifierKeys> m_modifierKeys;
 };
 
 } // namespace detail
 
 class LN_API UIFrameWindow
-	: public UIContainerElement
+	: public UIDomainProvidor
 	, public detail::IPlatforEventListener
 {
 public:

@@ -13,7 +13,7 @@ enum class AnimationWrapMode
     Loop,
 
     /** 最後まで再生された後、逆方向に戻ってループします。 */
-    RoundTrip,
+    Alternate,
 };
 
 enum class AnimationClockAffiliation
@@ -21,6 +21,33 @@ enum class AnimationClockAffiliation
     Standalone,
 
     ActiveWorld,
+};
+
+/** イージング関数の種類を表します。*/
+enum class EasingMode
+{
+	Linear = 0,
+	EaseInQuad,
+	EaseOutQuad,
+	EaseInOutQuad,
+	EaseInCubic,
+	EaseOutCubic,
+	EaseInOutCubic,
+	EaseInQuart,
+	EaseOutQuart,
+	EaseInOutQuart,
+	EaseInQuint,
+	EaseOutQuint,
+	EaseInOutQuint,
+	EaseInSine,
+	EaseOutSine,
+	EaseInOutSine,
+	EaseInExpo,
+	EaseOutExpo,
+	EaseInOutExpo,
+	EaseInCirc,
+	EaseOutCirc,
+	EaseInOutCirc,
 };
 
 } // namespace ln

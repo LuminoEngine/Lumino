@@ -28,38 +28,55 @@ void FrameRectRenderFeature::init(RenderingManager* manager)
     m_vertexLayout = manager->standardVertexDeclaration();
 }
 
-RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, BrushImageDrawMode imageDrawMode, const Thickness& borderThickness, const Rect& srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize)
+RequestBatchResult FrameRectRenderFeature::drawRequest(GraphicsContext* context, const Rect& rect, const Matrix& worldTransform, const Thickness& borderThickness, const Rect& srcRect, Sprite9DrawMode wrapMode, const SizeI& srcTextureSize)
 {
 	if (rect.isEmpty()) return RequestBatchResult::Staging;
     m_worldTransform = &worldTransform;
 
-	// 枠
-	{
-		// TODO: thickness が left しか対応できていない
-		putFrameRectangle(context, rect, borderThickness, srcRect, wrapMode, srcTextureSize);
+	if (wrapMode == Sprite9DrawMode::StretchedSingleImage) {
+		Size rec(1.0f / srcTextureSize.width, 1.0f / srcTextureSize.height);
+		Rect uvRect(srcRect.x * rec.width, srcRect.y * rec.height, srcRect.width * rec.width, srcRect.height * rec.height);
+		putRectangleStretch(context, rect, uvRect);
 	}
+	else if (wrapMode == Sprite9DrawMode::RepeatedSingleImage) {
+		Size rec(1.0f / srcTextureSize.width, 1.0f / srcTextureSize.height);
+		Rect uvRect(srcRect.x * rec.width, srcRect.y * rec.height, srcRect.width * rec.width, srcRect.height * rec.height);
+		putRectangleTiling(context, rect, srcRect, uvRect);
+	}
+	else if (
+		wrapMode == Sprite9DrawMode::StretchedBoxFrame ||
+		wrapMode == Sprite9DrawMode::RepeatedBoxFrame ||
+		wrapMode == Sprite9DrawMode::StretchedBorderFrame ||
+		wrapMode == Sprite9DrawMode::RepeatedBorderFrame) {
+		// 枠
+		{
+			// TODO: thickness が left しか対応できていない
+			putFrameRectangle(context, rect, borderThickness, srcRect, wrapMode, srcTextureSize);
+		}
 
-	// Inner
-	if (imageDrawMode == BrushImageDrawMode::BoxFrame)
-	{
-		Rect dstRect = rect;
-		dstRect.x += borderThickness.left;
-		dstRect.y += borderThickness.top;
-		dstRect.width -= borderThickness.width();
-		dstRect.height -= borderThickness.height();
+		// Inner
+		if (wrapMode == Sprite9DrawMode::RepeatedBoxFrame ||
+			wrapMode == Sprite9DrawMode::StretchedBoxFrame) {
+			Rect dstRect = rect;
+			dstRect.x += borderThickness.left;
+			dstRect.y += borderThickness.top;
+			dstRect.width -= borderThickness.width();
+			dstRect.height -= borderThickness.height();
 
-		Rect innterSrcRect = srcRect;
-		innterSrcRect.x += borderThickness.left;
-		innterSrcRect.y += borderThickness.top;
-		innterSrcRect.width -= borderThickness.width();
-		innterSrcRect.height -= borderThickness.height();
+			Rect innterSrcRect = srcRect;
+			innterSrcRect.x += borderThickness.left;
+			innterSrcRect.y += borderThickness.top;
+			innterSrcRect.width -= borderThickness.width();
+			innterSrcRect.height -= borderThickness.height();
 
-		Size texSize((float)srcTextureSize.width, (float)srcTextureSize.height);
-		texSize.width = 1.0f / texSize.width;
-		texSize.height = 1.0f / texSize.height;
-		Rect uvSrcRect(innterSrcRect.x * texSize.width, innterSrcRect.y * texSize.height, innterSrcRect.width * texSize.width, innterSrcRect.height * texSize.height);
+			Size texSize((float)srcTextureSize.width, (float)srcTextureSize.height);
+			texSize.width = 1.0f / texSize.width;
+			texSize.height = 1.0f / texSize.height;
+			Rect uvSrcRect(innterSrcRect.x * texSize.width, innterSrcRect.y * texSize.height, innterSrcRect.width * texSize.width, innterSrcRect.height * texSize.height);
 
-		putRectangle(context, dstRect, innterSrcRect, uvSrcRect, wrapMode);
+			putRectangle(context, dstRect, innterSrcRect, uvSrcRect, wrapMode);
+		}
+
 	}
 
 
@@ -248,19 +265,19 @@ void FrameRectRenderFeature::putRectangleTiling(GraphicsContext* context, const 
 	}
 }
 
-void FrameRectRenderFeature::putRectangle(GraphicsContext* context, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, BrushWrapMode wrapMode)
+void FrameRectRenderFeature::putRectangle(GraphicsContext* context, const Rect& rect, const Rect& srcPixelRect, const Rect& srcUVRect, Sprite9DrawMode wrapMode)
 {
-	if (wrapMode == BrushWrapMode::Stretch)
+	if (wrapMode == Sprite9DrawMode::StretchedBorderFrame || wrapMode == Sprite9DrawMode::StretchedBoxFrame)
 	{
 		putRectangleStretch(context, rect, srcUVRect);
 	}
-	else if (wrapMode == BrushWrapMode::Tile)
+	else if (wrapMode == Sprite9DrawMode::RepeatedBorderFrame || wrapMode == Sprite9DrawMode::RepeatedBoxFrame)
 	{
 		putRectangleTiling(context, rect, srcPixelRect, srcUVRect);
 	}
 }
 
-void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const Rect& rect, const Thickness& borderThickness, Rect srcRect, BrushWrapMode wrapMode, const SizeI& srcTextureSize)
+void FrameRectRenderFeature::putFrameRectangle(GraphicsContext* context, const Rect& rect, const Thickness& borderThickness, Rect srcRect, Sprite9DrawMode wrapMode, const SizeI& srcTextureSize)
 {
 	if (srcRect.isEmpty()) return;
 	if (srcTextureSize.width == 0) return;

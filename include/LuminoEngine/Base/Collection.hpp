@@ -284,6 +284,12 @@ public:
 		return -1;
 	}
 
+	/** 指定した要素がこの配列内に存在するかどうかを判断します。*/
+	bool contains(const value_type& item) const
+	{
+		return std::find(m_data.begin(), m_data.end(), item) != m_data.end();
+	}
+
 	/** 指定した条件と一致する最初の要素を検索し、その要素を指す Optional を返します。見つからなければ値を保持していません。 */
 	template<typename TPred>
 	Optional<T> findIf(TPred pred) const

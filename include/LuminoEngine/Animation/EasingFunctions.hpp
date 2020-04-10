@@ -200,6 +200,73 @@ public:
 		t -= 2;
 		return c / 2 * (std::sqrt(1 - t*t) + 1) + b;
 	};
+
+
+	typedef float(*FloatEasingFunctionPtr)(float, float, float, float);
+
+	constexpr static FloatEasingFunctionPtr function(EasingMode easing)
+	{
+		FloatEasingFunctionPtr table[] =
+		{
+			EasingFunctions::linearTween,
+			EasingFunctions::easeInQuad,
+			EasingFunctions::easeOutQuad,
+			EasingFunctions::easeInOutQuad,
+			EasingFunctions::easeInCubic,
+			EasingFunctions::easeOutCubic,
+			EasingFunctions::easeInOutCubic,
+			EasingFunctions::easeInQuart,
+			EasingFunctions::easeOutQuart,
+			EasingFunctions::easeInOutQuart,
+			EasingFunctions::easeInQuint,
+			EasingFunctions::easeOutQuint,
+			EasingFunctions::easeInOutQuint,
+			EasingFunctions::easeInSine,
+			EasingFunctions::easeOutSine,
+			EasingFunctions::easeInOutSine,
+			EasingFunctions::easeInExpo,
+			EasingFunctions::easeOutExpo,
+			EasingFunctions::easeInOutExpo,
+			EasingFunctions::easeInCirc,
+			EasingFunctions::easeOutCirc,
+			EasingFunctions::easeInOutCirc,
+		};
+		assert(LN_ARRAY_SIZE_OF(table) == 22);
+		return table[(int)easing];
+	}
+
+	using Vector4EasingFunctionPtr = Vector4(*)(float, Vector4, Vector4, float);
+
+	constexpr static Vector4EasingFunctionPtr functionVector4(EasingMode easing)
+	{
+		Vector4EasingFunctionPtr table[] =
+		{
+			EasingFunctions::linearTween,
+			EasingFunctions::easeInQuad,
+			EasingFunctions::easeOutQuad,
+			EasingFunctions::easeInOutQuad,
+			EasingFunctions::easeInCubic,
+			EasingFunctions::easeOutCubic,
+			EasingFunctions::easeInOutCubic,
+			EasingFunctions::easeInQuart,
+			EasingFunctions::easeOutQuart,
+			EasingFunctions::easeInOutQuart,
+			EasingFunctions::easeInQuint,
+			EasingFunctions::easeOutQuint,
+			EasingFunctions::easeInOutQuint,
+			EasingFunctions::easeInSine,
+			EasingFunctions::easeOutSine,
+			EasingFunctions::easeInOutSine,
+			EasingFunctions::easeInExpo,
+			EasingFunctions::easeOutExpo,
+			EasingFunctions::easeInOutExpo,
+			EasingFunctions::easeInCirc,
+			EasingFunctions::easeOutCirc,
+			EasingFunctions::easeInOutCirc,
+		};
+		assert(LN_ARRAY_SIZE_OF(table) == 22);
+		return table[(int)easing];
+	}
 };
 
 /** イージングによりシンプルに遷移する値のクラスです。 */
@@ -324,7 +391,7 @@ private:
             }
             time = m_currentTime;
             break;
-        case AnimationWrapMode::RoundTrip:
+        case AnimationWrapMode::Alternate:
             if (m_currentTime > m_totalTime)
             {
                 m_currentTime = -m_currentTime;

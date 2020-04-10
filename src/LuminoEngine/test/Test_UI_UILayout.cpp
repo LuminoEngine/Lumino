@@ -78,29 +78,78 @@ TEST_F(Test_UI_UILayout, RenderTransform)
 		LN_TEST_CLEAN_SCENE;
 	}
 }
-//
-//TEST_F(Test_UI_UILayout, FixedParentSize)
-//{
-//	auto e1 = makeObject<UIControl>();
-//	e1->setHAlignment(HAlignment::Left);
-//	e1->setVAlignment(VAlignment::Top);
-//	e1->setBackgroundColor(Color::Red);
-//	e1->setWidth(50);
-//	e1->setHeight(50);
-//	Engine::mainUIView()->addElement(e1);
-//
-//	auto e2 = makeObject<UIElement>();
-//	e2->setHAlignment(HAlignment::Center);
-//	e2->setVAlignment(VAlignment::Center);
-//	e2->setBackgroundColor(Color::Green);
-//	e2->setWidth(100);
-//	e2->setHeight(20);
-//	e1->addElement(e2);
-//
-//	TestEnv::updateFrame();
-//	ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UILayout-FixedParentSize-1.png"));
-//	LN_TEST_CLEAN_SCENE;
-//}
+
+
+
+TEST_F(Test_UI_UILayout, Size)
+{
+	// size
+	{
+		auto e1 = makeObject<UIControl>();
+		e1->setAlignments(HAlignment::Center, VAlignment::Center);
+		e1->setBackgroundColor(Color::Red);
+		e1->setSize(100, 80);
+		Engine::ui()->addElement(e1);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UILayout-Size-1.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+	// size & margin
+	{
+		auto e1 = makeObject<UIControl>();
+		e1->setAlignments(HAlignment::Center, VAlignment::Center);
+		e1->setBackgroundColor(Color::Red);
+		Engine::ui()->addElement(e1);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setAlignments(HAlignment::Center, VAlignment::Center);
+		e2->setBackgroundColor(Color::Green);
+		e2->setSize(30, 20);
+		e2->setMargin(Thickness(10));
+		e1->addElement(e2);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UILayout-Size-2.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+	// size & padding
+	{
+		auto e1 = makeObject<UIControl>();
+		e1->setAlignments(HAlignment::Center, VAlignment::Center);
+		e1->setBackgroundColor(Color::Red);
+		e1->setPadding(Thickness(10));
+		Engine::ui()->addElement(e1);
+
+		auto e2 = makeObject<UIElement>();
+		e2->setAlignments(HAlignment::Center, VAlignment::Center);
+		e2->setBackgroundColor(Color::Green);
+		e2->setSize(30, 20);
+		e1->addElement(e2);
+
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UILayout-Size-3.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+	// 親子両方でサイズ固定されている & 子の方がサイズ大きい場合 → はみだす
+	{
+		auto e1 = makeObject<UIControl>();
+		e1->setAlignments(HAlignment::Center, VAlignment::Center);
+		e1->setBackgroundColor(Color::Red);
+		e1->setSize(50, 50);
+		Engine::mainUIView()->addElement(e1);
+		
+		auto e2 = makeObject<UIElement>();
+		e2->setAlignments(HAlignment::Left, VAlignment::Top);
+		e2->setBackgroundColor(Color::Green);
+		e2->setSize(100, 20);
+		e1->addElement(e2);
+		
+		TestEnv::updateFrame();
+		ASSERT_SCREEN(LN_ASSETFILE("UI/Expects/UILayout-Size-5.png"));
+		LN_TEST_CLEAN_SCENE;
+	}
+}
 
 //------------------------------------------------------------------------------
 //## BorderLayout

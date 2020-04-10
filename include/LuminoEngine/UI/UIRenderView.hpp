@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include "UIContainerElement.hpp"
 
 namespace ln {
 class UIRenderingContext;
@@ -7,6 +8,7 @@ class UIElement;
 class UIFrameWindow;
 class UIAdornerLayer;
 class UIDialog;
+class UIFocusNavigator;
 namespace detail {
 class FlatRenderingPipeline;
 } // namespace detail
@@ -18,9 +20,9 @@ class UIFrameRenderView
     : public RenderView
 {
 public:
-    void setRootElement(UIElement* element);
+    void setRootElement(UIDomainProvidor* element);
 
-    UIElement* rootElement() const;
+    UIDomainProvidor* rootElement() const;
     UIAdornerLayer* adornerLayer() const;
 
     // TODO: internal
@@ -35,7 +37,8 @@ protected:
     void init();
 
 private:
-    Ref<UIElement> m_rootElement;
+    UIViewport* m_ownerViewport;
+    Ref<UIDomainProvidor> m_rootElement;
     Ref<UIRenderingContext> m_renderingContext;
 	//Ref<UIRenderingContext> m_debugRenderingContext;
     Ref<detail::FlatRenderingPipeline> m_sceneRenderingPipeline;
@@ -44,6 +47,8 @@ private:
     Ref<UIAdornerLayer> m_adornerLayer;
 
     friend class UIFrameWindow;
+    friend class UIViewport;
+    friend class UIDomainProvidor;
 };
 
 
@@ -64,6 +69,8 @@ public:
     // TODO: 複数表示のため push/pop の方がいいかもしれない
     //void setDialog(UIDialog* dialog);
 
+    //const Ref<UIFocusNavigator>& focusNavigator() const { return m_focusNavigator; }
+
 public:	// TODO: protected
 	virtual void onUpdateFrame(float elapsedSeconds) override;
 	virtual void onUpdateUIStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
@@ -74,7 +81,33 @@ public:	// TODO: protected
 private:
     //Ref<RenderPass> m_clearRenderPass;
     //Ref<UIDialog> m_dialog;
+};
 
+/**
+ * UIRenderView の直接の子要素となり、ルーティングイベントを UIRenderView 以上へ通知するための中間要素。
+ */
+class UIDomainProvidor
+	: public UIContainerElement
+{
+public:
+    // TODO: internal
+    void setupNavigator();
+    const Ref<UIFocusNavigator>& focusNavigator() const { return m_focusNavigator; }
+
+protected:
+	void onRoutedEvent(UIEventArgs* e) override;
+    UIElement* lookupMouseHoverElement(const Point& frameClientPosition) override;
+
+LN_CONSTRUCT_ACCESS:
+    UIDomainProvidor();
+	bool init();
+
+private:
+    UIFrameRenderView* m_parentRenderView;
+    Ref<UIFocusNavigator> m_focusNavigator;
+
+	friend class UIFrameRenderView;
+    friend class UIRenderView;
 };
 
 } // namespace ln

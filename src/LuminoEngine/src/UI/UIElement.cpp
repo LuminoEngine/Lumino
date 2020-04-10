@@ -249,14 +249,14 @@ const Vector3& UIElement::centerPoint() const
     return m_localStyle->mainStyle()->centerPoint.getOrDefault(Vector3::Zero);
 }
 
-void UIElement::setBackgroundDrawMode(BrushImageDrawMode value)
+void UIElement::setBackgroundDrawMode(Sprite9DrawMode value)
 {
     m_localStyle->mainStyle()->backgroundDrawMode = value;
 }
 
-BrushImageDrawMode UIElement::backgroundDrawMode() const
+Sprite9DrawMode UIElement::backgroundDrawMode() const
 {
-    return m_localStyle->mainStyle()->backgroundDrawMode.getOrDefault(BrushImageDrawMode::Image);
+    return m_localStyle->mainStyle()->backgroundDrawMode.getOrDefault(Sprite9DrawMode::StretchedSingleImage);
 }
 
 void UIElement::setBackgroundColor(const Color& value)
@@ -508,13 +508,13 @@ void UIElement::addChild(const String& child)
     addChild(textblock);
 }
 
-void UIElement::activate()
-{
-	//if (m_focusable) {
-	//	activateInternal();
-	//}
-	m_manager->tryGetInputFocus(this);
-}
+//void UIElement::activate()
+//{
+//	//if (m_focusable) {
+//	//	activateInternal();
+//	//}
+//	m_manager->tryGetInputFocus(this);
+//}
 
 void UIElement::setRenderPriority(int value)
 {
@@ -524,6 +524,16 @@ void UIElement::setRenderPriority(int value)
 void UIElement::updateFrame(float elapsedSeconds)
 {
     onUpdateFrame(elapsedSeconds);
+
+    if (m_finalStyle && m_finalStyle->hasAnimationData()) {
+        m_finalStyle->advanceAnimation(elapsedSeconds);
+
+        // Style 更新が要求されているなら、次の updateStyle で同じ Animation 適用の処理が動くので、ここで行う必要はない。
+        if (m_dirtyFlags.hasFlag(detail::UIElementDirtyFlags::Style)) {
+            auto dirtyFlags = m_finalStyle->applyAnimationValues();
+            invalidate(dirtyFlags, true);
+        }
+    }
 
     // child elements
     int count = getVisualChildrenCount();
@@ -605,7 +615,12 @@ UIElement* UIElement::lookupMouseHoverElement(const Point& frameClientPosition)
 
 void UIElement::focus()
 {
-	activate();
+    if (m_focusable) {
+        UIElement* leaf = findFocusedVisualChildLeaf();
+        if (LN_REQUIRE(leaf)) return;
+
+        m_manager->tryGetInputFocus(leaf);
+    }
 }
 
 void UIElement::retainCapture()
@@ -670,6 +685,10 @@ void UIElement::removeVisualChild(UIElement* element)
 	m_visualChildren->remove(element);
 	m_orderdVisualChildren->remove(element);
 	element->m_visualParent = nullptr;
+
+    if (m_focusedVisualChild == element)
+        m_focusedVisualChild = nullptr;
+    
     invalidateLayout();
 }
 
@@ -754,6 +773,7 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	if (m_visualStateManager) {
 		m_visualStateManager->combineStyle(m_combinedStyle, styleContext, elementName(), m_classList);
         m_visualStateManager->combineStyle(m_combinedStyle, m_localStyle);
+        //m_visualStateManager->printActive();
 	}
     else {
         m_combinedStyle->mergeFrom(m_localStyle->mainStyle());
@@ -774,6 +794,9 @@ void UIElement::updateStyleHierarchical(const UIStyleContext* styleContext, cons
 	detail::UIStyleInstance::updateStyleDataHelper(styleContext, /*m_localStyle, */parentFinalStyle, m_combinedStyle, m_finalStyle);
 
 	m_finalStyle->theme = styleContext->mainTheme;
+    
+    m_finalStyle->updateAnimationData();
+    m_finalStyle->applyAnimationValues();
 
 	onUpdateStyle(styleContext, m_finalStyle);
 
@@ -890,46 +913,52 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 	{
 		context->setMaterial(m_finalStyle->backgroundMaterial);
 
+        if (m_finalStyle->backgroundMaterial && m_finalStyle->backgroundMaterial->mainTexture()) {
+            context->drawImageBox(Rect(0, 0, actualSize()), m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundImageBorder, Color::White);
+        }
+
 #ifdef LN_BOX_ELEMENT_RENDER_FEATURE_TEST
-        BoxElementShapeBaseStyle baseStyle;
-        BoxElementShapeBackgroundStyle backgroundStyle;
-        BoxElementShapeBorderStyle borderStyle;
-        BoxElementShapeShadowStyle shadowStyle;
+        {
+            BoxElementShapeBaseStyle baseStyle;
+            BoxElementShapeBackgroundStyle backgroundStyle;
+            BoxElementShapeBorderStyle borderStyle;
+            BoxElementShapeShadowStyle shadowStyle;
 
-        baseStyle.baseRect = Rect(0, 0, actualSize());// .makeDeflate(m_finalStyle->borderThickness);
-        baseStyle.baseRect.width -= m_finalStyle->borderThickness.width();
-        baseStyle.baseRect.height -= m_finalStyle->borderThickness.height();
-        baseStyle.cornerRadius = m_finalStyle->cornerRadius;
+            baseStyle.baseRect = Rect(0, 0, actualSize());// .makeDeflate(m_finalStyle->borderThickness);
+            baseStyle.baseRect.width -= m_finalStyle->borderThickness.width();
+            baseStyle.baseRect.height -= m_finalStyle->borderThickness.height();
+            baseStyle.cornerRadius = m_finalStyle->cornerRadius;
 
-        const BoxElementShapeBackgroundStyle* actualBackgroundStyle = nullptr;
-        if (m_finalStyle->backgroundColor.a > 0.0f) {
-            backgroundStyle.color = m_finalStyle->backgroundColor;
-            actualBackgroundStyle = &backgroundStyle;
-        }
+            const BoxElementShapeBackgroundStyle* actualBackgroundStyle = nullptr;
+            if (m_finalStyle->backgroundColor.a > 0.0f) {
+                backgroundStyle.color = m_finalStyle->backgroundColor;
+                actualBackgroundStyle = &backgroundStyle;
+            }
 
-        const BoxElementShapeBorderStyle* actualBorderStyle = nullptr;
-        if (!m_finalStyle->borderThickness.isZero()) {
-            borderStyle.borderLeftColor = m_finalStyle->leftBorderColor;
-            borderStyle.borderTopColor = m_finalStyle->topBorderColor;
-            borderStyle.borderRightColor = m_finalStyle->rightBorderColor;
-            borderStyle.borderBottomColor = m_finalStyle->bottomBorderColor;
-            borderStyle.borderThickness = m_finalStyle->borderThickness;
-            borderStyle.borderInset = false;    // CSS default
-            actualBorderStyle = &borderStyle;
-        }
+            const BoxElementShapeBorderStyle* actualBorderStyle = nullptr;
+            if (!m_finalStyle->borderThickness.isZero()) {
+                borderStyle.borderLeftColor = m_finalStyle->leftBorderColor;
+                borderStyle.borderTopColor = m_finalStyle->topBorderColor;
+                borderStyle.borderRightColor = m_finalStyle->rightBorderColor;
+                borderStyle.borderBottomColor = m_finalStyle->bottomBorderColor;
+                borderStyle.borderThickness = m_finalStyle->borderThickness;
+                borderStyle.borderInset = false;    // CSS default
+                actualBorderStyle = &borderStyle;
+            }
 
-        const BoxElementShapeShadowStyle* actualShadowStyle = nullptr;
-        if (m_finalStyle->shadowBlurRadius > 0.0f) {
-            shadowStyle.shadowOffset = Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY);
-            shadowStyle.shadowColor = m_finalStyle->shadowColor;
-            shadowStyle.shadowWidth = m_finalStyle->shadowSpreadRadius;
-            shadowStyle.shadowBlur = m_finalStyle->shadowBlurRadius;
-            shadowStyle.shadowInset = m_finalStyle->shadowInset;
-            actualShadowStyle = &shadowStyle;
-        }
+            const BoxElementShapeShadowStyle* actualShadowStyle = nullptr;
+            if (m_finalStyle->shadowBlurRadius > 0.0f) {
+                shadowStyle.shadowOffset = Vector2(m_finalStyle->shadowOffsetX, m_finalStyle->shadowOffsetY);
+                shadowStyle.shadowColor = m_finalStyle->shadowColor;
+                shadowStyle.shadowWidth = m_finalStyle->shadowSpreadRadius;
+                shadowStyle.shadowBlur = m_finalStyle->shadowBlurRadius;
+                shadowStyle.shadowInset = m_finalStyle->shadowInset;
+                actualShadowStyle = &shadowStyle;
+            }
 
-        if (actualBackgroundStyle || actualBorderStyle || actualShadowStyle) {
-            context->drawBoxElement(baseStyle, actualBackgroundStyle, actualBorderStyle, actualShadowStyle);
+            if (actualBackgroundStyle || actualBorderStyle || actualShadowStyle) {
+                context->drawBoxElement(baseStyle, actualBackgroundStyle, actualBorderStyle, actualShadowStyle);
+            }
         }
 #else
 
@@ -988,7 +1017,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 void UIElement::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->type() == UIEvents::MouseDownEvent) {
-		activate();
+		focus();
 	}
 }
 
@@ -1049,6 +1078,8 @@ void UIElement::raiseEventInternal(UIEventArgs* e, UIEventRoutingStrategy strate
 
 void UIElement::invalidate(detail::UIElementDirtyFlags flags, bool toAncestor)
 {
+    if (flags == detail::UIElementDirtyFlags::None) return;
+
     m_dirtyFlags.set(flags);
     if (toAncestor && m_visualParent) {
         m_visualParent->invalidate(flags, toAncestor);
@@ -1100,6 +1131,14 @@ void UIElement::handleDetachFromUITree()
     for (int i = 0; i < count; i++) {
         getVisualChild(i)->handleDetachFromUITree();
     }
+}
+
+UIElement* UIElement::findFocusedVisualChildLeaf()
+{
+    if (m_focusedVisualChild) {
+        return m_focusedVisualChild->findFocusedVisualChildLeaf();
+    }
+    return this;
 }
 
 UIVisualStateManager* UIElement::getVisualStateManager()

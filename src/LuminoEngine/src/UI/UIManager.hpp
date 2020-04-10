@@ -21,6 +21,21 @@ public:
 	{
 		GraphicsManager* graphicsManager;
         Application* application = nullptr;
+        String defaultThemeName;
+	};
+
+	struct CommonInputCommands
+	{
+		Ref<UICommand> left;
+		Ref<UICommand> right;
+		Ref<UICommand> up;
+		Ref<UICommand> down;
+		Ref<UICommand> submit;
+		Ref<UICommand> cancel;
+		Ref<UICommand> menu;
+		Ref<UICommand> shift;
+		Ref<UICommand> pageUp;
+		Ref<UICommand> pageDown;
 	};
 
     static const float MouseButtonClickTimeout;
@@ -35,6 +50,7 @@ public:
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
     Application* application() const { return m_application; }
+    const String& defaultThemeName() const { return m_defaultThemeName; }
 
     void setPrimaryElement(UIControl* element);
 	UIControl* primaryElement() const;
@@ -45,14 +61,14 @@ public:
     const Ref<UIContext>& mainContext() const { return m_mainContext; }
 
     void updateMouseHover(UIRenderView* mouseEventSource, const Point& frameClientPosition);
-    UIElement* mouseHoverElement() const { return m_mouseHoverElement; }
+    const Ref<UIElement>& mouseHoverElement() const { return m_mouseHoverElement; }
 
 	void retainCapture(UIElement* element);
 	void releaseCapture(UIElement* element);
-	UIElement* capturedElement() const { return m_capturedElement; }
+	const Ref<UIElement>& capturedElement() const { return m_capturedElement; }
 
     void tryGetInputFocus(UIElement* element);
-    UIElement* forcusedElement() const { return m_forcusedElement; }
+	const Ref<UIElement>& forcusedElement() const { return m_forcusedElement; }
 	void activateTree(UIElement* element);
 
     void postEvent(UIElement* target, UIEventArgs* e);
@@ -70,6 +86,9 @@ public:
     void clearFocus();
     void handleDetachFromUITree(UIElement* element);
 
+	const CommonInputCommands& commonInputCommands() const { return m_commonInputCommands; }
+	bool handleCommonInputCommands(UIEventArgs* e);
+
 private:
     struct EventQueueItem
     {
@@ -79,6 +98,7 @@ private:
 
 	GraphicsManager* m_graphicsManager;
     Application* m_application;
+    String m_defaultThemeName;
 	//PlatformManager* platformManager;
     Ref<UIControl> m_primaryElement;
     Ref<EventArgsPool> m_eventArgsPool;
@@ -89,6 +109,8 @@ private:
 	//Ref<UIFrameLayout> m_defaultLayout;
     std::deque<EventQueueItem> m_eventQueue;
 	List<Ref<UIActiveTimer>> m_activeTimers;
+	CommonInputCommands m_commonInputCommands;
+	List<Ref<UICommand>> m_inputCommands;
 
     // 
 	List<Ref<UIElement>> m_activationCache;

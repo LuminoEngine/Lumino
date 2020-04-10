@@ -38,12 +38,20 @@ void UIRenderingContext::drawSolidRectangle(const Rect& rect, const Color& color
     //element->commandList.addDrawBoxBackground(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, CornerRadius(), color);
 }
 
-void UIRenderingContext::drawImageBox(const Rect& rect, BrushImageDrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
+void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, const Rect& textureSourceRect, const Thickness& borderThickness, const Color& color)
 {
-    if (mode == BrushImageDrawMode::Image) {
-        drawSolidRectangle(rect, color);
-    }
-    else {
+    if (!m_builder->material()) return;
+
+    Texture* texture = m_builder->material()->mainTexture();
+    if (!texture) return;
+
+    Rect actualSourceRect = textureSourceRect;
+    if (actualSourceRect.isZero()) actualSourceRect = Rect(0, 0, texture->width(), texture->height());
+
+    //if (mode == BrushImageDrawMode::Image) {
+    //    drawSolidRectangle(rect, color);
+    //}
+    //else {
         auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
             m_manager->frameRectRenderFeature(),
             m_builder->frameRectRenderFeatureStageParameters());
@@ -52,9 +60,10 @@ void UIRenderingContext::drawImageBox(const Rect& rect, BrushImageDrawMode mode,
         element->transform = element->combinedWorldMatrix();
         element->imageDrawMode = mode;
         element->borderThickness = borderThickness;
-        element->srcRect = textureSourceRect;
-        element->wrapMode = BrushWrapMode::Stretch;
-    }
+        element->srcRect = actualSourceRect;
+        //element->wrapMode = Sprite9DrawMode::StretchedBoxFrame;
+        //element->wrapMode = mode;
+    //}
 }
 
 //void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)

@@ -48,6 +48,7 @@ public:
 	/** グラフィックスバックエンドのデバッグ機能を有効にします。 実際にグラフィックスバックエンドがデバッグ機能をサポートしている場合、診断結果がログに出力されます。 (default: Default) */
 	static void setGraphicsDebugEnabled(bool enabled);
 	
+	static void setDefaultUITheme(const String& value);
 
 //	/** グラフィックス機能で使用するレンダリング方法を設定します。(default: Threaded) */
 //	static void setGraphicsRenderingType(RenderingType renderingType);

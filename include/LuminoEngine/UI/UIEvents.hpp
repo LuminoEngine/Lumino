@@ -4,6 +4,7 @@
 #include "../Platform/PlatformEvent.hpp"
 
 namespace ln {
+class InputGesture;
 class RenderView;
 class UICommand;
 class UIElement;
@@ -128,6 +129,8 @@ public:
     UIElement* sender() const { return m_sender; }
 
 	UIEventType type() const { return m_type; }
+	
+    static bool testInputGesture(UIEventArgs* e, InputGesture* gesture);
 
 LN_CONSTRUCT_ACCESS:
 	UIEventArgs();
@@ -153,7 +156,7 @@ class UIMouseEventArgs
 public:
 
 	/** UIMouseEventArgs のインスタンスを作成します。*/
-	static Ref<UIMouseEventArgs> create(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching = true);
+	static Ref<UIMouseEventArgs> create(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, ModifierKeys modifierKeys, bool caching = true);
 
 	/** ボタンの種類を取得します。*/
 	MouseButtons getMouseButtons() const { return m_button; }
@@ -164,6 +167,9 @@ public:
 	/** ボタンがクリックされた回数を取得します。(ダブルクリックやトリプルクリックを区別するために使用する。最大3まで) */
 	int getClickCount() const { return m_clickCount; }
 
+	/** 修飾キーを取得します。 */
+	ModifierKeys modifierKeys() const { return m_modifierKeys; }
+
 	/** 指定した要素から見た相対的なマウス ポインターの位置を返します。*/
 	Point getPosition(UIElement* relativeTo) const;
 	//Point getPosition(RenderView* relativeTo) const;
@@ -172,12 +178,13 @@ LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
 	virtual ~UIMouseEventArgs();
 	bool init();
-	bool init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount);
+	bool init(UIElement* sender, UIEventType type, MouseButtons button, float x, float y, int clickCount, ModifierKeys modifierKeys);
 
 private:
-	MouseButtons	m_button;
-	Point			m_position;
-	int				m_clickCount;
+	MouseButtons m_button;
+	Point m_position;
+	int m_clickCount;
+	ModifierKeys m_modifierKeys;
 };
 
 /**

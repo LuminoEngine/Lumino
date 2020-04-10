@@ -28,6 +28,7 @@ namespace detail {
 UIInputInjector::UIInputInjector(UIFrameWindow* owner)
     : m_owner(owner)
     , m_pressedButton(MouseButtons::None)
+    , m_modifierKeys(ModifierKeys::None)
 {
 }
 
@@ -40,7 +41,7 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
 
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -50,7 +51,7 @@ bool UIInputInjector::injectMouseMove(float clientX, float clientY)
     sender = mouseHoveredElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseMoveEvent, m_pressedButton, clientX, clientY, 0, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -81,7 +82,7 @@ bool UIInputInjector::injectMouseButtonDown(MouseButtons button)
     UIElement* sender = capturedElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -92,7 +93,7 @@ bool UIInputInjector::injectMouseButtonDown(MouseButtons button)
     sender = mouseHoveredElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseDownEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -110,7 +111,7 @@ bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
     UIElement* sender = capturedElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -122,7 +123,7 @@ bool UIInputInjector::injectMouseButtonUp(MouseButtons button)
     sender = mouseHoveredElement();
     if (sender)
     {
-        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, true);
+        auto args = UIMouseEventArgs::create(sender, UIEvents::MouseUpEvent, button, m_mousePosition.x, m_mousePosition.y, tracker.clickCount, m_modifierKeys, true);
         sender->raiseEvent(args);
         return args->handled;
     }
@@ -156,27 +157,63 @@ bool UIInputInjector::injectMouseWheel(int delta)
 
 bool UIInputInjector::injectKeyDown(Keys keyCode, ModifierKeys modifierKeys)
 {
+    if (keyCode == Keys::LAlt || keyCode == Keys::RAlt)
+        m_modifierKeys.set(ModifierKeys::Alt);
+    else if (keyCode == Keys::LShift || keyCode == Keys::RShift)
+        m_modifierKeys.set(ModifierKeys::Shift);
+    else if (keyCode == Keys::LCtrl || keyCode == Keys::RCtrl)
+        m_modifierKeys.set(ModifierKeys::Control);
+
     // フォーカスを持っているUI要素に送る
     UIElement* sender = forcusedElement();
     if (sender)
     {
         auto args = UIKeyEventArgs::create(sender, UIEvents::KeyDownEvent, keyCode, modifierKeys, 0, true);
         sender->raiseEvent(args);
-        return args->handled;
+        if (args->handled) {
+            return true;
+        }
     }
+
+    if (m_owner) {
+        auto args = UIKeyEventArgs::create(m_owner, UIEvents::KeyDownEvent, keyCode, modifierKeys, 0, true);
+        m_owner->raiseEvent(args);
+        if (args->handled) {
+            return true;
+        }
+    }
+
     return false;
 }
 
 bool UIInputInjector::injectKeyUp(Keys keyCode, ModifierKeys modifierKeys)
 {
+    if (keyCode == Keys::LAlt || keyCode == Keys::RAlt)
+        m_modifierKeys.unset(ModifierKeys::Alt);
+    else if (keyCode == Keys::LShift || keyCode == Keys::RShift)
+        m_modifierKeys.unset(ModifierKeys::Shift);
+    else if (keyCode == Keys::LCtrl || keyCode == Keys::RCtrl)
+        m_modifierKeys.unset(ModifierKeys::Control);
+
     // フォーカスを持っているUI要素に送る
     UIElement* sender = forcusedElement();
     if (sender)
     {
         auto args = UIKeyEventArgs::create(sender, UIEvents::KeyUpEvent, keyCode, modifierKeys, 0, true);
         sender->raiseEvent(args);
-        return args->handled;
+        if (args->handled) {
+            return true;
+        }
     }
+
+    if (m_owner) {
+        auto args = UIKeyEventArgs::create(m_owner, UIEvents::KeyUpEvent, keyCode, modifierKeys, 0, true);
+        m_owner->raiseEvent(args);
+        if (args->handled) {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -232,7 +269,7 @@ UIFrameWindow::~UIFrameWindow()
 
 void UIFrameWindow::init()
 {
-	UIContainerElement::init();
+    UIDomainProvidor::init();
     m_manager = detail::EngineDomain::uiManager();
     specialElementFlags().set(detail::UISpecialElementFlags::FrameWindow);
     m_inputInjector = makeRef<detail::UIInputInjector>(this);
@@ -293,7 +330,7 @@ void UIFrameWindow::onDispose(bool explicitDisposing)
         m_platformWindow = nullptr;
 	}
 
-	UIContainerElement::onDispose(explicitDisposing);
+    UIDomainProvidor::onDispose(explicitDisposing);
 }
 
 void UIFrameWindow::renderContents()
@@ -377,7 +414,7 @@ void UIFrameWindow::updateLayoutTree()
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& constraint)
 {
-	UIContainerElement::measureOverride(layoutContext, constraint);
+    UIDomainProvidor::measureOverride(layoutContext, constraint);
 
 	// TODO: DPI チェック
 	return m_clientSize;
@@ -395,7 +432,7 @@ Size UIFrameWindow::measureOverride(UILayoutContext* layoutContext, const Size& 
 // 強制的にウィンドウサイズとする
 Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
-	return UIContainerElement::arrangeOverride(layoutContext, desiredSize());
+	return UIDomainProvidor::arrangeOverride(layoutContext, desiredSize());
 	//int childCount = logicalChildren().size();
 	//for (int i = 0; i < childCount; i++)
 	//{
@@ -408,7 +445,7 @@ Size UIFrameWindow::arrangeOverride(UILayoutContext* layoutContext, const Size& 
 
 void UIFrameWindow::render(UIRenderingContext* context, const Matrix& parentTransform)
 {
-	UIContainerElement::render(context, parentTransform);
+    UIDomainProvidor::render(context, parentTransform);
 
 	if (m_debugInterface) {
 		m_debugInterface->renderOnUI(context);
@@ -417,7 +454,7 @@ void UIFrameWindow::render(UIRenderingContext* context, const Matrix& parentTran
 
 void UIFrameWindow::onRender(UIRenderingContext* context)
 {
-    UIContainerElement::onRender(context);
+    UIDomainProvidor::onRender(context);
 
     //detail::EngineDomain::effectManager()->testDraw(m_renderingGraphicsContext);
 }
@@ -559,7 +596,7 @@ void UIFrameWindow::invalidate(detail::UIElementDirtyFlags flags, bool toAncesto
 		}
 	}
 
-    UIContainerElement::invalidate(flags, toAncestor);
+    UIDomainProvidor::invalidate(flags, toAncestor);
 }
 
 //==============================================================================

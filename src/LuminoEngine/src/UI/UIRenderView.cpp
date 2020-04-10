@@ -3,17 +3,21 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
+#include <LuminoEngine/UI/UICommand.hpp>
 #include <LuminoEngine/UI/UIElement.hpp>
 #include <LuminoEngine/UI/UIRenderView.hpp>
+#include <LuminoEngine/UI/UIViewport.hpp>
 #include <LuminoEngine/UI/UIAdorner.hpp>
 #include <LuminoEngine/UI/UIDialog.hpp>
+#include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
 namespace ln {
 
 UIFrameRenderView::UIFrameRenderView()
-    : m_rootElement(nullptr)
+    : m_ownerViewport(nullptr)
+    , m_rootElement(nullptr)
 {
 }
 
@@ -35,20 +39,22 @@ void UIFrameRenderView::init()
     addDrawElementListManager(m_drawElementListCollector);
 }
 
-void UIFrameRenderView::setRootElement(UIElement* element)
+void UIFrameRenderView::setRootElement(UIDomainProvidor* element)
 {
     if (m_rootElement) {
+        m_rootElement->m_parentRenderView = nullptr;
         m_rootElement->m_renderView = nullptr;
     }
 
     m_rootElement = element;
 
     if (m_rootElement) {
+        m_rootElement->m_parentRenderView = this;
         m_rootElement->m_renderView = this;
     }
 }
 
-UIElement* UIFrameRenderView::rootElement() const
+UIDomainProvidor* UIFrameRenderView::rootElement() const
 {
     return m_rootElement;
 }
@@ -192,6 +198,8 @@ void UIRenderView::onUpdateUILayout(UILayoutContext* layoutContext)
 
 UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosition)
 {
+
+
 	UIElement* element = adornerLayer()->lookupMouseHoverElement(frameClientPosition);
 	if (element) {
 		return element;
@@ -203,6 +211,62 @@ UIElement* UIRenderView::onLookupMouseHoverElement(const Point& frameClientPosit
     //else {
         return rootElement()->lookupMouseHoverElement(frameClientPosition);
     //}
+}
+
+//==============================================================================
+// UIDomainProvidor
+
+UIDomainProvidor::UIDomainProvidor()
+    : m_parentRenderView(nullptr)
+{
+}
+
+bool UIDomainProvidor::init()
+{
+    if (!UIContainerElement::init()) return false;
+    return true;
+}
+
+void UIDomainProvidor::setupNavigator()
+{
+    if (!m_focusNavigator) {
+        m_focusNavigator = makeObject<UIFocusNavigator>();
+    }
+}
+
+void UIDomainProvidor::onRoutedEvent(UIEventArgs* e)
+{
+    if (LN_REQUIRE(!m_visualParent)) return;
+
+
+    if (m_focusNavigator) {
+        if (UIElement* element = m_focusNavigator->focusedElement()) {
+            if (e->type() == UIEvents::ExecuteCommandEvent) {
+                if (static_cast<UICommandEventArgs*>(e)->command() == UICommonInputCommands::cancel()) {
+                    m_focusNavigator->popFocus();
+                    e->handled = true;
+                    return;
+                }
+            }
+        }
+    }
+
+    UIContainerElement::onRoutedEvent(e);
+
+    if (m_parentRenderView && m_parentRenderView->m_ownerViewport) {
+        m_parentRenderView->m_ownerViewport->raiseEvent(e);
+    }
+}
+
+UIElement* UIDomainProvidor::lookupMouseHoverElement(const Point& frameClientPosition)
+{
+    if (m_focusNavigator) {
+        if (UIElement* element = m_focusNavigator->focusedElement()) {
+            return element->lookupMouseHoverElement(frameClientPosition);
+        }
+    }
+
+    return UIContainerElement::lookupMouseHoverElement(frameClientPosition);
 }
 
 } // namespace ln

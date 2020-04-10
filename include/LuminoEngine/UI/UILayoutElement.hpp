@@ -153,19 +153,19 @@ public:	// TODO: internal
 	 *
 	 * クライアント領域は、境界領域に Border 幅を適用したものです。
 	 */
-	Rect clientRect() const;
+	Rect clientRect_Obsolete() const;
 
 	/**
 	 * 要素のコンテンツ領域を返します。座標は要素の境界領域内の相対座標です。
 	 *
 	 * コンテンツ領域は、境界領域に Border 幅と Padding を適用したものです。
 	 */
-	Rect contentRect() const;
+	Rect contentRect_Obsolete() const;
 
 	//const Rect& finalGlobalRect() const { return m_finalGlobalRect; }
 
     // TODO: internal
-    const Point localPosition() const { return m_localPosition; }
+    const Point& localPosition() const { return m_localPosition; }
 
 protected:
 	virtual ~UILayoutElement();
@@ -234,6 +234,16 @@ public:
 	// ※別に measure じゃなくてもツリーを走査して再構築する別なフローを作ってもいいのだが、パフォーマンスへの影響が心配。
 	//bool collectingTreeItem = false;
 	//UITreeView2* treeView = nullptr;
+
+	// measureOverride() や arrangeOverride() でコンテンツ領域を計算するユーティリティ
+	// (コンテンツ領域 = 論理的な子要素を配置する領域。Chrome DevTool で示される青色の部分)
+	//Rect makeContentAreaRect(const UIElement* element, const Size& borderRect) const;
+
+	// measureOverride() の戻り値を計算するユーティリティ
+	Size makeDesiredSize(const UIElement* element, const Size& contentAreaSize) const;
+
+	// arrangeOverride() のユーティリティ
+	Rect makeContentRect(const UIElement* element, const Size& finalSize) const;
 
 LN_CONSTRUCT_ACCESS:
 	UILayoutContext();

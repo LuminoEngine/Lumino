@@ -60,6 +60,8 @@ Size UICollectionItem::arrangeOverride(UILayoutContext* layoutContext, const Siz
 
 void UICollectionItem::onRoutedEvent(UIEventArgs* e)
 {
+	UIControl::onRoutedEvent(e);
+
 	if (e->type() == UIEvents::MouseDownEvent) {
 		e->handled = true;
 
@@ -82,8 +84,6 @@ void UICollectionItem::onRoutedEvent(UIEventArgs* e)
             return;
         }
     }
-
-	UIControl::onRoutedEvent(e);
 }
 
 void UICollectionItem::setSelectedInternal(bool selected)

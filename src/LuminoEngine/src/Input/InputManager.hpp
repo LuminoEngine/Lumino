@@ -23,6 +23,7 @@ class InputManager
 	
 
 public:
+
 	InputManager();
 	virtual ~InputManager();
 

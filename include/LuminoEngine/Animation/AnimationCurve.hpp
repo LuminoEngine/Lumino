@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.hpp"
+#include "EasingFunctions.hpp"
 
 namespace ln {
 
@@ -21,6 +22,8 @@ public:
 
 	/**　アニメーションの繰り返しの動作を設定します。(default: Once) */
 	void setWrapMode(AnimationWrapMode mode) { m_wrapMode = mode; }
+
+	static float calculateLocalTime(float time, float duration, AnimationWrapMode wrapMode);
 
 protected:
 	virtual float onEvaluate(float time) = 0;
@@ -99,15 +102,39 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~KeyFrameAnimationCurve();
 
 protected:
-	// override AnimationCurve
-	virtual float onEvaluate(float time) override;
-	virtual float onGetLastFrameTime() const override;
+	// AnimationCurve interface 
+	float onEvaluate(float time) override;
+	float onGetLastFrameTime() const override;
 
 private:
 	AnimationKeyFrame * findKeyFrame(float time);
 
 	List<AnimationKeyFrame>	m_keyFrames;
 	float m_defaultValue;
+};
+
+/** EasingFunction を用いて補間を行う AnimationCurve です。 */
+class EasingAnimationCurve
+	: public AnimationCurve
+{
+public:
+	/** 空の EasingAnimationCurve を作成します。 */
+	static Ref<EasingAnimationCurve> create(float startValue, float targetValue, float duration, EasingMode function);
+
+LN_CONSTRUCT_ACCESS:
+	EasingAnimationCurve();
+	bool init(float startValue, float targetValue, float duration, EasingMode function);
+
+protected:
+	// AnimationCurve interface 
+	float onEvaluate(float time) override;
+	float onGetLastFrameTime() const override;
+
+private:
+	EasingFunctions::FloatEasingFunctionPtr m_function;
+	float m_startValue;
+	float m_targetValue;
+	float m_duration;
 };
 
 } // namespace ln
