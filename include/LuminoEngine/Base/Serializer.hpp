@@ -172,7 +172,7 @@ public:
 	/** read */
 	//LN_METHOD()
 	// beginObject, endObject のユーティリティ
-	Ref<Object> readObject();
+	Ref<Object> readObject(Object* existing = nullptr);
 
 
 
@@ -197,6 +197,7 @@ public:
 	//LN_METHOD()
 	static Ref<AssetModel> deserialize(const String& str, const String& basePath);
 
+	static void deserializeInstance(AssetModel* asset, const String& str, const String& basePath);
 
 
 	// C++ utils

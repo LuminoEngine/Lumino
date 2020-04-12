@@ -38,11 +38,13 @@ public:
     // "asset:///dir/file.txt"         => ローカルファイルパス。登録されているいずれかの AssetArchive 内のファイルを指す。
     // TODO: "asset://ArchiveName/" とかで AssetArchive を明示できるようにしてもいい気がする
     Optional<AssetPath> findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const;
-	bool existsAsset(const AssetPath& assetPath) const;
+    Optional<AssetPath> findAssetPath(const StringRef& filePath) const;
+    bool existsAsset(const AssetPath& assetPath) const;
     Ref<Stream> openStreamFromAssetPath(const AssetPath& assetPath) const;
 
     Ref<AssetModel> loadAssetModelFromLocalFile(const String& filePath) const;
     Ref<AssetModel> loadAssetModelFromAssetPath(const AssetPath& assetPath) const;
+    void loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const;
     void saveAssetModelToLocalFile(AssetModel* asset, const String& filePath = String::Empty) const;  // 別名で保存するときは filePath を指定する
 
     String assetPathToLocalFullPath(const AssetPath& assetPath) const;

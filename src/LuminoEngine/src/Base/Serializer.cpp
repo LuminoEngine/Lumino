@@ -666,7 +666,7 @@ String Serializer2::readString()
 	return ns_to_str(v);
 }
 
-Ref<Object> Serializer2::readObject()
+Ref<Object> Serializer2::readObject(Object* existing)
 {
 	if (LN_REQUIRE(isLoading())) return nullptr;
 
@@ -675,14 +675,22 @@ Ref<Object> Serializer2::readObject()
 
 	std::string typeName;
 	Ref<Object> obj;
-	if (m_store->readFirstProperty(&typeName)) {
-		// class. 以降
-		obj = TypeInfo::createInstance(String::fromStdString(typeName.substr(6)));
-	}
+	if (existing) {
+		obj = existing;
 
-	// fallback
-	if (!obj) {
-		obj = makeObject<Object>();
+		// 型が既知なので不要だが、1度でも子ノードにアクセスしておかないと cpp-yaml が正しく孫ノードを呼んでくれなかった
+		m_store->readFirstProperty(&typeName);
+	}
+	else {
+		if (m_store->readFirstProperty(&typeName)) {
+			// class. 以降
+			obj = TypeInfo::createInstance(String::fromStdString(typeName.substr(6)));
+		}
+
+		// fallback
+		if (!obj) {
+			obj = makeObject<Object>();
+		}
 	}
 
 	beginReadObject();
@@ -752,6 +760,17 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePa
 	auto asset = makeObject<AssetModel>();
 	static_cast<Object*>(asset)->serialize2(*sr);
 	return asset;
+}
+
+void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const String& basePath)
+{
+	asset->m_externalObjectDeserialization = true;
+
+	auto sr = makeObject<Serializer2>();
+	sr->m_mode = ArchiveMode::Load;
+	sr->m_store->initRead(str_to_ns(str));
+	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
+	static_cast<Object*>(asset)->serialize2(*sr);
 }
 #endif
 

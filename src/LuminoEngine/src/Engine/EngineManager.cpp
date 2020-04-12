@@ -816,10 +816,10 @@ ln::Path EngineManager::findParentDirectoryContainingSpecifiedFile(StringRef fil
 			luminoRepoRoot = path;
 			break;
 		}
-		if (ln::FileSystem::existsFile(ln::Path(path, file))) {
-			luminoRepoRoot = path;
-			break;
-		}
+		//if (ln::FileSystem::existsFile(ln::Path(path, file))) {
+		//	luminoRepoRoot = path;
+		//	break;
+		//}
 		path = path.parent();
 	}
 	return luminoRepoRoot;

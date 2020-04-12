@@ -95,6 +95,7 @@ public:
 
     // TODO: internal
     static void setActiveWorld(World* world);
+	static ln::Path findProjectLocalRoot();
 };
 
 } // namespace ln

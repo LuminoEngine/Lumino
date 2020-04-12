@@ -66,6 +66,9 @@ public:
 
     static ln::Uuid readAssetId(const ln::Path& filePath);
 
+    // TODO: internal
+    bool m_externalObjectDeserialization = false;
+
 LN_CONSTRUCT_ACCESS:
     AssetModel();
 

@@ -293,6 +293,11 @@ void Engine::setActiveWorld(World* world)
     detail::EngineDomain::engineManager()->sceneManager()->setActiveWorld(world);
 }
 
+ln::Path Engine::findProjectLocalRoot()
+{
+    // TODO: proj.ext定数化
+    return detail::EngineDomain::engineManager()->findParentDirectoryContainingSpecifiedFile(u"*.lnproj");
+}
 
 // TODO: time
 //Engine::elapsedSeconds()

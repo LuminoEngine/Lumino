@@ -172,8 +172,7 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const AssetPath& assetPath) co
 
 Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath) const
 {
-    const Char* ext = AssetModel::AssetFileExtension.c_str();
-    auto assetPath = findAssetPath(filePath, &ext, 1);
+    auto assetPath = findAssetPath(filePath);
     if (assetPath) {
         return loadAssetModelFromAssetPath(*assetPath);
     }
@@ -181,6 +180,12 @@ Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath
         LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
         return nullptr;
     }
+}
+
+Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
+{
+    const Char* ext = AssetModel::AssetFileExtension.c_str();
+    return findAssetPath(filePath, &ext, 1);
 }
 
 Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& assetPath) const
@@ -205,14 +210,26 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
     return asset;
 }
 
+void AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const
+{
+    auto stream = openStreamFromAssetPath(assetPath);
+    auto text = FileSystem::readAllText(stream);
+
+    auto asset = makeObject<AssetModel>(obj);
+    Serializer2::deserializeInstance(asset, text, assetPath.getParentAssetPath().toString());
+}
+
 void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& filePath) const
 {
     if (LN_REQUIRE(asset)) return;
+    if (LN_REQUIRE(!m_primaryLocalAssetDirectory.isEmpty())) return;
+
     AssetPath assetPath;
-    String localPath;
+    Path localPath;
     if (!filePath.isEmpty()) {
-        assetPath = AssetPath::makeFromLocalFilePath(localPath);
-        localPath = filePath;
+        auto fullPath = Path(m_primaryLocalAssetDirectory, filePath);
+        assetPath = AssetPath::makeFromLocalFilePath(fullPath);
+        localPath = fullPath;
     }
     else if (!asset->target()->assetPath().isNull()) {
         assetPath = asset->target()->assetPath();
@@ -223,17 +240,22 @@ void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& fi
         return;
     }
 
+    if (!localPath.hasExtension()) {
+        localPath = localPath.replaceExtension(AssetModel::AssetFileExtension);
+    }
 
+    String text = Serializer2::serialize(asset, assetPath.getParentAssetPath().toString());
+    FileSystem::writeAllText(localPath, text);
 
-    //auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
-    auto serializer = makeObject<Serializer>(); // TODO: Pool
-    JsonTextOutputArchive ar;
-    ar.m_serializer = serializer;
-    ar.setBasePath(assetPath.getParentAssetPath().toString());
-    ar.save(*asset);
-    auto json = ar.toString(JsonFormatting::Indented);
+    ////auto json = JsonSerializer::serialize(*asset, assetPath.getParentAssetPath().toString(), JsonFormatting::Indented);
+    //auto serializer = makeObject<Serializer>(); // TODO: Pool
+    //JsonTextOutputArchive ar;
+    //ar.m_serializer = serializer;
+    //ar.setBasePath(assetPath.getParentAssetPath().toString());
+    //ar.save(*asset);
+    //auto json = ar.toString(JsonFormatting::Indented);
 
-    FileSystem::writeAllText(localPath, json);
+    //FileSystem::writeAllText(localPath, json);
 }
 
 String AssetManager::assetPathToLocalFullPath(const AssetPath& assetPath) const

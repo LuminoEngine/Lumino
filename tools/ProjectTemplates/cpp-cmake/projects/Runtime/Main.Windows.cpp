@@ -9,9 +9,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
 #ifdef LN_DEBUG
-    auto projectRoot = ln::Path(ln::Environment::executablePath()).parent().parent().parent().parent().parent();
+    auto projectRoot = ln::Engine::findProjectLocalRoot();
     ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u"Assets"));
-	ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u".ln", u"Assets"));
+    ln::EngineSettings::addAssetDirectory(ln::Path::combine(projectRoot, u".ln", u"Assets"));
 #endif
 
     auto archive = u"Assets.lca";
@@ -19,8 +19,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         ln::EngineSettings::addAssetArchive(archive, ln::String::Empty);
     }
 
-	::ln::Application* app = ::LuminoCreateApplicationInstance();
-	return ln::Win32PlatformInterface::WinMain(app);
+    ::ln::Application* app = ::LuminoCreateApplicationInstance();
+    return ln::Win32PlatformInterface::WinMain(app);
 }
 
 int main(int argc, char** argv)

@@ -12,6 +12,7 @@
 #else
 #include "FileSystem_Unix.hpp"
 #endif
+#include "PathHelper.hpp"
 
 namespace ln {
 
@@ -738,7 +739,10 @@ private:
                     if (m_searchPattern.isEmpty()) {
                         break; // パターン指定なし。返す。
                     }
-                    if (PlatformFileSystem::matchPath(current()->getCurrent().c_str(), m_searchPattern.c_str())) {
+
+                    const auto& path = current()->getCurrent();
+                    const auto* name = PathTraits::getFileName(path.c_str(), path.c_str() + path.length());
+                    if (PlatformFileSystem::matchPath(name, m_searchPattern.c_str())) {
                         break; // パターンに一致。返す。
                     }
                 }
@@ -747,7 +751,10 @@ private:
                     if (m_searchPattern.isEmpty()) {
                         break; // パターン指定なし。返す。
                     }
-                    if (PlatformFileSystem::matchPath(current()->getCurrent().c_str(), m_searchPattern.c_str())) {
+                    
+                    const auto& path = current()->getCurrent();
+                    const auto* name = PathTraits::getFileName(path.c_str(), path.c_str() + path.length());
+                    if (PlatformFileSystem::matchPath(name, m_searchPattern.c_str())) {
                         break; // パターンに一致。返す。
                     }
                 }
