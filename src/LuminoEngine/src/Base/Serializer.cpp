@@ -668,6 +668,11 @@ String Serializer2::readString()
 
 Ref<Object> Serializer2::readObject(Object* existing)
 {
+	return readObjectInteral(nullptr, existing);
+}
+
+Ref<Object> Serializer2::readObjectInteral(std::function<Ref<Object>()> knownTypeCreator, Object* existing)
+{
 	if (LN_REQUIRE(isLoading())) return nullptr;
 
 #if 1
@@ -683,8 +688,17 @@ Ref<Object> Serializer2::readObject(Object* existing)
 	}
 	else {
 		if (m_store->readFirstProperty(&typeName)) {
-			// class. 以降
-			obj = TypeInfo::createInstance(String::fromStdString(typeName.substr(6)));
+
+			if (typeName == "class.Object" && knownTypeCreator != nullptr) {
+				// save 時に Lumino の 型システムに登録されていないものは Object 型として保存される。
+				// ただ、Load 時に template として型が既知の場合はそちらを使用したいが、Object の場合は
+				// 完全にインスタンスの生成を既知の型から行うようにしてみる。
+				obj = knownTypeCreator();
+			}
+
+			if (!obj) {
+				obj = TypeInfo::createInstance(String::fromStdString(typeName.substr(6)));
+			}
 		}
 
 		// fallback
@@ -701,7 +715,7 @@ Ref<Object> Serializer2::readObject(Object* existing)
 	return obj;
 #else
 	beginReadObject();
-	
+
 	Ref<Object> obj;
 
 	if (m_store->readName(".class")) {

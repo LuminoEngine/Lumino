@@ -173,6 +173,7 @@ public:
 	//LN_METHOD()
 	// beginObject, endObject のユーティリティ
 	Ref<Object> readObject(Object* existing = nullptr);
+	Ref<Object> readObjectInteral(std::function<Ref<Object>()> knownTypeCreator, Object* existing = nullptr);
 
 
 
@@ -289,7 +290,7 @@ private:
 	void readValue(double& outValue) { outValue = readDouble(); }
 	void readValue(String& outValue) { outValue = readString(); }
 	template<typename T>
-	void readValue(Ref<T>& outValue) { outValue = dynamic_pointer_cast<T>(readObject()); }
+	void readValue(Ref<T>& outValue) { outValue = dynamic_pointer_cast<T>(readObjectInteral([]() -> Ref<Object> { return makeObject<T>(); }, nullptr)); }
 	template<typename T>
 	void readValue(T& outValue) { ln::serialize2(*this, outValue); }
 
