@@ -5,6 +5,39 @@
 
 namespace ln {
 class AssetModel;
+class Serializer2;
+
+namespace detail {
+
+// void serialize(Archive& ar) をメンバ関数として持っているか
+template<typename T>
+class has_member_serialize2_function
+{
+private:
+	template<typename U>
+	static auto check(U&& v) -> decltype(v.serialize2(*reinterpret_cast<Serializer2*>(0)), std::true_type());
+	static auto check(...) -> decltype(std::false_type());
+
+public:
+	typedef decltype(check(std::declval<T>())) type;
+	static bool const value = type::value;
+};
+
+// void serialize(Archive& ar) をメンバ関数として持っていないか
+template<typename T>
+class non_member_serialize2_function
+{
+private:
+	template<typename U>
+	static auto check(U&& v) -> decltype(v.serialize2(*reinterpret_cast<Serializer2*>(0)), std::true_type());
+	static auto check(...) -> decltype(std::false_type());
+
+public:
+	typedef decltype(check(std::declval<T>())) type;
+	static bool const value = !type::value;
+};
+
+} // namespace detail
 
 template<typename T> void serialize2(Serializer2& sr, List<T>& value);
 
@@ -85,6 +118,7 @@ class SerializerStore2;
 
 #if 1
 /** */
+// Ref<List> はサポートしない。Ref<> は Object のみサポート。 Ref<Collection>　を使うこと。
 LN_CLASS()
 class Serializer2
 	: public Object
@@ -95,6 +129,8 @@ public:
 	bool isSaving() const { return m_mode == ArchiveMode::Save; }
 
 	bool isLoading() const { return m_mode == ArchiveMode::Load; }
+
+	const String& basePath() const { return m_basePath; }
 
 
 	void writeName(const StringRef& name);
@@ -188,6 +224,11 @@ public:
 	void endReadObject();
 	bool beginReadList(int* outItemCount);
 	void endReadList();
+	
+	// beginWriteList と beginReadList のユーティリティ
+	bool beginList(int* outItemCount);
+	void endList();
+
 
 	
 	/** serialize */
@@ -209,16 +250,7 @@ public:
 		process(std::forward<T>(value));
 		return *this;
 	}
-	
 
-LN_CONSTRUCT_ACCESS:
-	Serializer2();
-	virtual ~Serializer2() = default;
-	void init();
-
-private:
-	void processSave();
-	void processLoad();
 
 	template<typename T>
 	void process(T&& head)
@@ -236,6 +268,15 @@ private:
 			break;
 		}
 	}
+
+LN_CONSTRUCT_ACCESS:
+	Serializer2();
+	virtual ~Serializer2() = default;
+	void init();
+
+private:
+	void processSave();
+	void processLoad();
 
 	template<typename T>
 	void processSave(NameValuePair<T>& nvp)
@@ -262,7 +303,9 @@ private:
 	void writeValue(String& value) { writeString(value); }
 	template<typename T>
 	void writeValue(Ref<T>& value) { writeObject(value); }
-	template<typename T>
+	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
+	void writeValue(T& value) { value.serialize2(*this); }
+	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
 	void writeValue(T& value) { ln::serialize2(*this, value); }
 
 	template<typename T>
@@ -290,34 +333,50 @@ private:
 	void readValue(double& outValue) { outValue = readDouble(); }
 	void readValue(String& outValue) { outValue = readString(); }
 	template<typename T>
-	void readValue(Ref<T>& outValue) { outValue = dynamic_pointer_cast<T>(readObjectInteral([]() -> Ref<Object> { return makeObject<T>(); }, nullptr)); }
-	template<typename T>
+	void readValue(Ref<T>& outValue) { outValue = dynamic_pointer_cast<T>(readObjectInteral([]() -> Ref<Object> { return detail::makeObjectHelper<T>(); }, nullptr)); }
+	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
+	void readValue(T& outValue) { outValue.serialize2(*this); }
+	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
 	void readValue(T& outValue) { ln::serialize2(*this, outValue); }
 
 	ArchiveMode m_mode;
+	String m_basePath;
 	Ref<detail::SerializerStore2> m_store;
 };
 #endif
 
 template<typename T>
-void serialize2(Serializer2& sr, List<T>& value)
+void serialize2(Serializer2& ar, List<T>& value)
 {
-	if (sr.isSaving()) {
-		sr.beginWriteList();
+	if (ar.isSaving()) {
+		ar.beginWriteList();
 		for (auto& v : value) {
-			sr & v;
+			ar & v;
 		}
-		sr.endWriteList();
+		ar.endWriteList();
 	}
 	else {
 		int size = 0;
-		if (sr.beginReadList(&size)) {
+		if (ar.beginReadList(&size)) {
 			value.resize(size);
 			for (auto& v : value) {
-				sr & v;
+				ar & v;
 			}
-			sr.endReadList();
+			ar.endReadList();
 		}
 	}
 }
+
+inline void serialize2(Serializer2& ar, Vector2& value)
+{
+	int size = 0;
+	ar.beginList(&size);
+	if (ar.isLoading()) {
+		assert(size == 2);	// TODO: error handling
+	}
+	ar.process(value.x);
+	ar.process(value.y);
+	ar.endList();
+}
+
 } // namespace ln

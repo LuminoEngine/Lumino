@@ -556,6 +556,27 @@ void Serializer2::endReadList()
 	m_store->popRead();
 }
 
+bool Serializer2::beginList(int* outItemCount)
+{
+	if (isSaving()) {
+		beginWriteList();
+		return true;
+	}
+	else {
+		return beginReadList(outItemCount);
+	}
+}
+
+void Serializer2::endList()
+{
+	if (isSaving()) {
+		endWriteList();
+	}
+	else {
+		endReadList();
+	}
+}
+
 bool Serializer2::readName(const StringRef& name)
 {
 	if (isSaving()) {
@@ -759,6 +780,7 @@ String Serializer2::serialize(AssetModel* value, const String& basePath)
 	if (LN_REQUIRE(value)) return String::Empty;
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Save;
+	sr->m_basePath = basePath;
 	sr->m_store->initWrite();
 	static_cast<Object*>(value)->serialize2(*sr);
 	LN_ENSURE(sr->m_store->stack.size() == 1);
@@ -769,6 +791,7 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePa
 {
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Load;
+	sr->m_basePath = basePath;
 	sr->m_store->initRead(str_to_ns(str));
 	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
 	auto asset = makeObject<AssetModel>();
@@ -782,6 +805,7 @@ void Serializer2::deserializeInstance(AssetModel* asset, const String& str, cons
 
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Load;
+	sr->m_basePath = basePath;
 	sr->m_store->initRead(str_to_ns(str));
 	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
 	static_cast<Object*>(asset)->serialize2(*sr);

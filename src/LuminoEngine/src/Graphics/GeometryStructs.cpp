@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <limits>
 #include <algorithm>
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/GeometryStructs.hpp>
 
 namespace ln {
@@ -74,6 +75,27 @@ void Rect::serialize(Archive& ar)
     ar.process(y);
     ar.process(width);
     ar.process(height);
+}
+
+void Rect::serialize2(Serializer2& ar)
+{
+    int size = 0;
+    if (ar.isSaving())
+        ar.beginWriteList();
+    else {
+        ar.beginReadList(&size);
+        assert(size == 4);	// TODO: error handling
+    }
+
+    ar.process(x);
+    ar.process(y);
+    ar.process(width);
+    ar.process(height);
+
+    if (ar.isSaving())
+        ar.endWriteList();
+    else
+        ar.endReadList();
 }
 
 //==============================================================================

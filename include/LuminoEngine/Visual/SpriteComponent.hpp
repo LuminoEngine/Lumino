@@ -30,7 +30,8 @@ public:
 
 protected:
     LN_SERIALIZE_CLASS_VERSION(1);
-    virtual void serialize(Archive& ar) override;
+    void serialize(Archive& ar) override;
+	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteFrame();
@@ -60,12 +61,13 @@ public:
     Texture* texture() const;
 
 public: // TODO: internal
-	int frameCount() const { return m_frames->size(); }
+	int frameCount() const { return m_frames.size(); }
 	SpriteFrame* frame(int index) const;
 
 protected:
     LN_SERIALIZE_CLASS_VERSION(1);
-    virtual void serialize(Archive& ar) override;
+    void serialize(Archive& ar) override;
+	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteSheet();
@@ -81,7 +83,7 @@ private:
     int m_frameHeight;
     Vector2 m_anchorPoint;
 	Ref<Texture> m_texture;
-	Ref<List<Ref<SpriteFrame>>> m_frames;
+	List<Ref<SpriteFrame>> m_frames;
 };
 
 
