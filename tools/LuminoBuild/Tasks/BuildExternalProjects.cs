@@ -326,7 +326,12 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("yaml-cpp"))
             {
-                Utils.CallProcess("git", "clone --depth 1 -b yaml-cpp-0.6.3 https://github.com/jbeder/yaml-cpp.git yaml-cpp");
+                //Utils.CallProcess("git", "clone --depth 1 -b yaml-cpp-0.6.3 https://github.com/jbeder/yaml-cpp.git yaml-cpp");
+                // まだタグの振られていない #824 の修正がほしい
+                Utils.CallProcess("git", "clone https://github.com/jbeder/yaml-cpp.git yaml-cpp");
+                Directory.SetCurrentDirectory("yaml-cpp");
+                Utils.CallProcess("git", "checkout 4edff1fa5dbfca16fc72d89870841bee89f8ef89");
+                Directory.SetCurrentDirectory(reposDir);
             }
 
 

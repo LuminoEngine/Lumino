@@ -191,22 +191,9 @@ Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
 Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& assetPath) const
 {
     auto stream = openStreamFromAssetPath(assetPath);
-    auto json = FileSystem::readAllText(stream);
-    auto asset = makeObject<AssetModel>();
-
-    //JsonSerializer::deserialize(json, assetPath.getParentAssetPath().toString(), *asset);
-    auto serializer = makeObject<Serializer>(); // TODO: Pool
-    JsonTextInputArchive ar(json);
-    ar.m_serializer = serializer;
-    ar.setBasePath(assetPath.getParentAssetPath().toString());
-    ar.load(*asset);
-
-
-    printf("[Engine] end load\n");
-
+    auto text = FileSystem::readAllText(stream);
+    auto asset = Serializer2::deserialize(text, assetPath.getParentAssetPath().toString());
     asset->target()->setAssetPath(assetPath);
-    printf("[Engine] end loadAssetModelFromAssetPath\n");
-
     return asset;
 }
 
