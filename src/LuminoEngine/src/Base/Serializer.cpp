@@ -223,6 +223,16 @@ public:
 		}
 	}
 
+	void writeNull()
+	{
+		if (current().containerType == SerializerStore2::ContainerType::Object) {
+			current().node[nextName] = YAML::Node(YAML::NodeType::Null);
+		}
+		else {
+			current().node.push_back(YAML::Node(YAML::NodeType::Null));
+		}
+	}
+
 	std::string str()
 	{
 		YAML::Emitter emitter;
@@ -289,7 +299,7 @@ public:
 		if (LN_REQUIRE(current().containerType == ContainerType::Object && current().node.Type() == YAML::NodeType::Map)) return false;
 
 		auto node = current().node[v];
-		if (node.Type() != YAML::NodeType::Null) {
+		if (node.Type() != YAML::NodeType::Null && node.Type() != YAML::NodeType::Undefined) {
 			current().readingNode = node;
 			return true;
 		}
@@ -497,13 +507,18 @@ void Serializer2::writeObject(Object* value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 #if 1
-	beginWriteObject();
-	auto typeName = TypeInfo::getTypeInfo(value)->name();
-	m_store->nextName = "class." + str_to_ns(typeName);
-	beginWriteObject();
-	static_cast<Object*>(value)->serialize2(*this);
-	endWriteObject();
-	endWriteObject();
+	if (value) {
+		beginWriteObject();
+		auto typeName = TypeInfo::getTypeInfo(value)->name();
+		m_store->nextName = "class." + str_to_ns(typeName);
+		beginWriteObject();
+		static_cast<Object*>(value)->serialize2(*this);
+		endWriteObject();
+		endWriteObject();
+	}
+	else {
+		m_store->writeNull();
+	}
 #else
 	beginWriteObject();
 	auto typeName = TypeInfo::getTypeInfo(value)->name();
