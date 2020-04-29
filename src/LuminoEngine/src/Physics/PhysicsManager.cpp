@@ -29,6 +29,16 @@ void PhysicsManager::dispose()
 {
 }
 
+void PhysicsManager::setActivePhysicsWorld(PhysicsWorld* value)
+{
+    m_activePhysicsWorld = value;
+}
+
+const Ref<PhysicsWorld>& PhysicsManager::activePhysicsWorld() const
+{
+    return m_activePhysicsWorld;
+}
+
 void PhysicsManager::setActivePhysicsWorld2D(PhysicsWorld2D* value)
 {
     m_activePhysicsWorld2D = value;

@@ -125,6 +125,7 @@ protected:
     virtual void onAfterStepSimulation() override;
 
 private:
+    void attemptAddToActiveWorld();
     void activate();
     void createBtRigidBody();
     void setTransformFromMotionState(const btTransform& transform);

@@ -640,6 +640,7 @@ void EngineManager::initializeDefaultObjects()
 			m_mainPhysicsWorld = m_mainWorld->physicsWorld();
 			m_mainPhysicsWorld2D = m_mainWorld->physicsWorld2D();
 
+			m_physicsManager->setActivePhysicsWorld(m_mainPhysicsWorld);
 			m_physicsManager->setActivePhysicsWorld2D(m_mainPhysicsWorld2D);
 
 
