@@ -62,6 +62,8 @@ class SkinnedMeshModel
 	, public IAnimationTargetObject
 {
 public:
+	static Ref<SkinnedMeshModel> load(const StringRef& filePath);
+
 	AnimationController* animationController() const { return m_animationController; }
 
 	//void addMeshContainer(MeshContainer* meshContainer);

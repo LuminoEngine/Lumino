@@ -44,7 +44,9 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
 	m_model->setWorldTransform(worldObject()->worldMatrix());
 
 	//m_meshModel->getAnimator()->advanceTime(elapsedTime);
-	m_model->animationController()->advanceTime(elapsedSeconds);
+	if (m_model->animationController()) {
+		m_model->animationController()->advanceTime(elapsedSeconds);
+	}
 	//m_model->animationController()->updateTargetElements();
 	//static bool init = false;
 	//if (!init)
@@ -74,19 +76,39 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
 
 void SkinnedMeshComponent::onRender(RenderingContext* context)
 {
-#if 1
-	LN_NOTIMPLEMENTED();
-#else
-    for (auto& meshContainer : m_model->meshContainers())
-    {
-        MeshResource* meshResource = meshContainer->meshResource();
-        for (int iSection = 0; iSection < meshResource->sections().size(); iSection++)
-        {
-            context->setMaterial(m_model->materials()[meshResource->sections()[iSection].materialIndex]);
-            context->drawMesh(meshResource, iSection);
-        }
-    }
-#endif
+//#if 1
+//	LN_NOTIMPLEMENTED();
+//#else
+//    for (auto& meshContainer : m_model->meshContainers())
+//    {
+//        MeshResource* meshResource = meshContainer->meshResource();
+//        for (int iSection = 0; iSection < meshResource->sections().size(); iSection++)
+//        {
+//            context->setMaterial(m_model->materials()[meshResource->sections()[iSection].materialIndex]);
+//            context->drawMesh(meshResource, iSection);
+//        }
+//    }
+//#endif
+//
+
+	// TODO: ひとまず StaticMesh と同じ
+	for (const auto& node : m_model->meshNodes()) {
+		if (node->meshContainerIndex() >= 0) {
+			context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
+
+
+			const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
+
+			Mesh* mesh = meshContainer->mesh();
+			if (mesh) {
+				for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
+					context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
+					context->drawMesh(mesh, iSection);
+				}
+			}
+
+		}
+	}
 }
 
 } // namespace ln

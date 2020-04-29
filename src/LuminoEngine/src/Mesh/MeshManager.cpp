@@ -242,13 +242,34 @@ Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, fl
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
 {
-    //Ref<MeshResource> mesh;
+	static const Char* candidateExts[] = { u".gltf", u".glb" };
+	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
+	if (path) {
 
-    PmxLoader  importer;
-    auto file = FileStream::create(filePath);
-    auto mesh = importer.load(this, file, filePath.parent(), false);
+		Ref<SkinnedMeshModel> mesh;
 
-    return mesh->createSkinnedMeshModel();
+		{
+			auto diag = makeObject<DiagnosticsManager>();
+
+			GLTFImporter importer;
+			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);
+
+			diag->dumpToLog();
+		}
+
+		return mesh;
+	}
+	else {
+		// TODO: deprecated
+
+		//Ref<MeshResource> mesh;
+
+		PmxLoader  importer;
+		auto file = FileStream::create(filePath);
+		auto mesh = importer.load(this, file, filePath.parent(), false);
+
+		return mesh->createSkinnedMeshModel();
+	}
 }
 
 Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag)

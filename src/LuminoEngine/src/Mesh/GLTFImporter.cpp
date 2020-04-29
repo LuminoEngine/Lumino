@@ -11,20 +11,21 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
 
 namespace ln {
 namespace detail {
 
-Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 {
-	m_assetManager = assetManager;
-    m_basedir = assetPath.getParentAssetPath();//ln::Path(assetPath).parent();
-	auto stream = assetManager->openStreamFromAssetPath(assetPath);
+	m_basedir = assetPath.getParentAssetPath();
+	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
 	auto data = stream->readToEnd();
 
-	tinygltf::Model model;
+	m_model = std::make_shared<tinygltf::Model>();
+	//tinygltf::Model model;
 	tinygltf::TinyGLTF loader;
 	tinygltf::FsCallbacks fs = {
 		&FileExists,
@@ -37,51 +38,82 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Asse
 
 	std::string err;
 	std::string warn;
-    bool result;
-    if (data[0] == 'g' && data[1] == 'l' && data[2] == 'T' && data[3] == 'F') {
-        result = loader.LoadBinaryFromMemory(&model, &err, &warn, data.data(), data.size(), "");
-    }
-    else {
-        result = loader.LoadASCIIFromString(&model, &err, &warn, (const char*)data.data(), data.size(), "");
-    }
-	if (!err.empty()) diag->reportError(String::fromStdString(err));
-	if (!warn.empty()) diag->reportError(String::fromStdString(warn));
-	if (!result) {
-		return nullptr;
+	bool result;
+	if (data[0] == 'g' && data[1] == 'l' && data[2] == 'T' && data[3] == 'F') {
+		result = loader.LoadBinaryFromMemory(m_model.get(), &err, &warn, data.data(), data.size(), "");
 	}
 	else {
-		m_model = &model;
-        m_meshModel = makeObject<StaticMeshModel>();
-
-        for (auto& material : m_model->materials) {
-            m_meshModel->addMaterial(readMaterial(material));
-        }
-
-        for (auto& mesh : m_model->meshes) {
-            auto meshContainer = readMesh(mesh);
-            if (!meshContainer) {
-                return nullptr;
-            }
-            m_meshModel->addMeshContainer(meshContainer);
-        }
-
-        for (auto& node : m_model->nodes) {
-            auto meshNode = readNode(node);
-            if (!meshNode) {
-                return nullptr;
-            }
-            m_meshModel->addNode(meshNode);
-        }
-
-        int scene_to_display = model.defaultScene > -1 ? model.defaultScene : 0;
-        const tinygltf::Scene &scene = model.scenes[scene_to_display];
-        for (size_t i = 0; i < scene.nodes.size(); i++) {
-            m_meshModel->addRootNode(scene.nodes[i]);
-        }
-
-        m_meshModel->updateNodeTransforms();
-		return m_meshModel;
+		result = loader.LoadASCIIFromString(m_model.get(), &err, &warn, (const char*)data.data(), data.size(), "");
 	}
+	if (!err.empty()) m_diag->reportError(String::fromStdString(err));
+	if (!warn.empty()) m_diag->reportError(String::fromStdString(warn));
+
+
+	return result;
+}
+
+Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+{
+	m_assetManager = assetManager;
+	m_diag = diag;
+
+	if (!openGLTFModel(assetPath)) {
+		return nullptr;
+	}
+
+    auto meshModel = makeObject<StaticMeshModel>();
+
+	readCommon(meshModel);
+
+	return meshModel;
+}
+
+Ref<SkinnedMeshModel> GLTFImporter::GLTFImporter::importSkinnedMesh(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+{
+	m_assetManager = assetManager;
+	m_diag = diag;
+
+	if (!openGLTFModel(assetPath)) {
+		return nullptr;
+	}
+
+	auto meshModel = makeObject<SkinnedMeshModel>();
+
+	readCommon(meshModel);
+
+
+	return meshModel;
+}
+
+bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
+{
+	for (auto& material : m_model->materials) {
+		meshModel->addMaterial(readMaterial(material));
+	}
+
+	for (auto& mesh : m_model->meshes) {
+		auto meshContainer = readMesh(mesh);
+		if (!meshContainer) {
+			return nullptr;
+		}
+		meshModel->addMeshContainer(meshContainer);
+	}
+
+	for (auto& node : m_model->nodes) {
+		auto meshNode = readNode(node);
+		if (!meshNode) {
+			return nullptr;
+		}
+		meshModel->addNode(meshNode);
+	}
+
+	int scene_to_display = m_model->defaultScene > -1 ? m_model->defaultScene : 0;
+	const tinygltf::Scene& scene = m_model->scenes[scene_to_display];
+	for (size_t i = 0; i < scene.nodes.size(); i++) {
+		meshModel->addRootNode(scene.nodes[i]);
+	}
+
+	meshModel->updateNodeTransforms();
 }
 
 Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
@@ -300,6 +332,14 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 				vbView.usage = VertexElementUsage::Color;
 				vbView.usageIndex = 0;
 			}
+			else if (itr->first.compare("JOINTS_0") == 0) {
+				vbView.usage = VertexElementUsage::BlendIndices;
+				vbView.usageIndex = 0;
+			}
+			else if (itr->first.compare("WEIGHTS_0") == 0) {
+				vbView.usage = VertexElementUsage::BlendWeight;
+				vbView.usageIndex = 0;
+			}
 			else {
 				LN_UNREACHABLE();
 				return nullptr;
@@ -481,8 +521,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 			}
 			else if (reservedGroup == InterleavedVertexGroup::Skinning) {
 				stride = sizeof(VertexBlendWeight);
-				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
-				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+				if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+				else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
 				else {
 					LN_ERROR();
 				}
