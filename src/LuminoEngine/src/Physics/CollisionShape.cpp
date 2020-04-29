@@ -27,7 +27,7 @@ LN_OBJECT_IMPLEMENT(CollisionShape, Object) {}
 //------------------------------------------------------------------------------
 CollisionShape::CollisionShape()
 	: m_shape(nullptr)
-	, m_offset()
+	, m_position()
 	, m_isTrigger(false)
 {
 }
@@ -321,7 +321,7 @@ void BtShapeManager::refresh()
 {
 	btCollisionShape* shape;
     if (m_collisionShapes.size() == 1 &&
-        m_collisionShapes.front()->getCenter() == Vector3::Zero &&
+        m_collisionShapes.front()->position() == Vector3::Zero &&
         m_collisionShapes.front()->rotation() == Quaternion::Identity) {
         // Shape が1つだけ & ローカル姿勢も定義していない場合は btCompoundShape を作る必要はない。メモリ削減。
         shape = m_collisionShapes.front()->getBtCollisionShape();
@@ -345,7 +345,7 @@ void BtShapeManager::refresh()
             btTransform t;
             t.setBasis(btMatrix3x3::getIdentity());
             t.setRotation(BulletUtil::LNQuaternionToBtQuaternion(shape->rotation()));
-            t.setOrigin(BulletUtil::LNVector3ToBtVector3(shape->getCenter()));
+            t.setOrigin(BulletUtil::LNVector3ToBtVector3(shape->position()));
             m_btCompoundShape->addChildShape(t, shape->getBtCollisionShape());
         }
 

@@ -19,6 +19,7 @@ class PhysicsObject
 public:
     PhysicsWorld* physicsWorld() const;
 
+
 protected:
     virtual void onBeforeStepSimulation();
     virtual void onAfterStepSimulation();

@@ -10,7 +10,7 @@ class PhysicsObject;
 class RigidBody;
 class PhysicsJoint;
 namespace detail {
-class PhysicsDebugRenderer;
+class PhysicsDebugRenderer3D;
 }
 
 class PhysicsWorld
@@ -50,7 +50,7 @@ private:
     btSoftRigidDynamicsWorld*				m_btWorld;
     btGhostPairCallback*					m_btGhostPairCallback;
     btSoftBodyWorldInfo*					m_softBodyWorldInfo;
-    std::unique_ptr<detail::PhysicsDebugRenderer> m_debugRenderer;
+    std::unique_ptr<detail::PhysicsDebugRenderer3D> m_debugRenderer;
 
     List<Ref<PhysicsObject>> m_physicsObjectList;
 };

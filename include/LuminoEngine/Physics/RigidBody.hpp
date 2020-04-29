@@ -40,6 +40,17 @@ public:
     void init(CollisionShape* shape);
 
 
+
+    ///** 位置を設定します。(default: 0, 0) */
+    //void setPosition(float x, float y, float z) { return setPosition(Vector3(x, y, z)); }
+    //void setPosition(const Vector3& value);
+
+    //const Vector3& position() const { return m_position; }
+
+
+
+
+
     /** 質量を設定します。0 を設定すると静的なボディとなります。 */
     void setMass(float mass);
 
