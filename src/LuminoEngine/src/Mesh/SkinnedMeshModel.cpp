@@ -91,6 +91,11 @@ bool MeshArmature::init()
 	return true;
 }
 
+MeshBone* MeshArmature::bone(int index) const
+{
+	return m_bones[index];
+}
+
 void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 {
 	auto bone = makeObject<MeshBone>();
@@ -99,7 +104,7 @@ void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 	m_bones.add(bone);
 }
 
-void MeshArmature::updateSkinningMatrices()
+void MeshArmature::updateSkinningMatrices(SkinnedMeshModel* model)
 {
 	if (!m_skinningMatricesTexture || m_skinningMatricesTexture->height() != m_bones.size()) {
 		m_skinningMatricesTexture = makeObject<Texture2D>(4, m_bones.size(), TextureFormat::RGBA32F);
@@ -109,13 +114,17 @@ void MeshArmature::updateSkinningMatrices()
 	Bitmap2D* bitmap = m_skinningMatricesTexture->map(MapMode::Write);
 	Matrix* data = reinterpret_cast<Matrix*>(bitmap->data());
 
+	const auto& nodes = model->meshNodes();
 	for (int i = 0; i < m_bones.size(); i++) {
-		data[i] = Matrix::Identity;
+		const auto& bone = m_bones[i];
+		
 
-		// TODO: test
-		if (i == 0) {
-			data[i] = Matrix::makeRotationZ(0.3);
-		}
+		data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
+
+		//// TODO: test
+		//if (i == 0) {
+		//	data[i] = Matrix::makeRotationZ(0.3);
+		//}
 	}
 
 	m_skinningMatricesTexture->unmap();
@@ -214,6 +223,8 @@ void SkinnedMeshModel::postUpdate()
 
 void SkinnedMeshModel::updateBoneTransformHierarchy()
 {
+	updateNodeTransforms();
+
 	//for (SkinnedMeshBone* bone : m_rootBoneList)
 	//{
 	//	bone->updateGlobalTransform(true);
@@ -230,7 +241,7 @@ void SkinnedMeshModel::updateIK()
 void SkinnedMeshModel::updateSkinningMatrices()
 {
 	for (auto& skeleton : m_skeletons) {
-		skeleton->updateSkinningMatrices();
+		skeleton->updateSkinningMatrices(this);
 	}
 #if 0
 	// スキニング行列の作成

@@ -73,6 +73,9 @@ public:
 
 private:
 	int m_node = -1;
+
+	// ボーンの初期姿勢を打ち消して、原点に戻す行列。
+	// モデル空間内の絶対座標系となっている。(親ボーンからの相対座標系ではない点に注意)
 	Matrix m_inverseInitialMatrix;
 
 	friend class MeshArmature;
@@ -85,11 +88,12 @@ class MeshArmature
 	: public Object
 {
 public:
+	MeshBone* bone(int index) const;
 
 public:
 	// TODO: internal
 	void addBone(int linkNode, const Matrix& inverseInitialMatrix);
-	void updateSkinningMatrices();
+	void updateSkinningMatrices(SkinnedMeshModel* model);
 	const Ref<Texture2D>& skinningMatricesTexture() const { return m_skinningMatricesTexture; }
 
 LN_CONSTRUCT_ACCESS:
