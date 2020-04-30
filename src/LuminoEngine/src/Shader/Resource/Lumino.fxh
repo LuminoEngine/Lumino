@@ -8,13 +8,22 @@
 #define LN_EPSILON				1e-6
 #define LN_MAX_GLOBAL_LIGHTS	4
 
-float4x4	ln_View;
-float4x4	ln_Projection;
+cbuffer LNRenderViewBuffer
+{
+	/* [0]   */ float4x4 ln_View;
+	/* [64]  */ float4x4 ln_Projection;
+	/* [128] */ float3 ln_CameraPosition;
+	/* [144] */ float3 ln_CameraDirection;
+	/* [160] */ float2 ln_ViewportPixelSize;
+	/* [136] */ float ln_NearClip;
+	/* [140] */ float ln_FarClip;
+};
+
+
 float4x4	ln_World;
 float4x4	ln_WorldViewProjection;
 float4x4	ln_WorldView;
 float4x4	ln_WorldViewIT;
-float2		ln_ViewportPixelSize;
 sampler2D		ln_MaterialTexture;
 //SamplerState	ln_MaterialTextureSamplerState;
 

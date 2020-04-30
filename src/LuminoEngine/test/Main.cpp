@@ -25,7 +25,7 @@ GTEST_API_ int main(int argc, char **argv)
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
 
-	Logger::setLevel(LogLevel::Debug);
+	Logger::setLevel(LogLevel::Verbose);
 	Logger::addStdErrAdapter();
 
 	TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));

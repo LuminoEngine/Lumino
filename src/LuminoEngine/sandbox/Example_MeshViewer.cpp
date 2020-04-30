@@ -25,6 +25,7 @@ class App_Example_MeshViewer : public Application
 
 void Example_MeshViewer()
 {
+    //Logger::setLevel(LogLevel::Verbose);
 	App_Example_MeshViewer app;
 	detail::ApplicationHelper::run(&app);
 }

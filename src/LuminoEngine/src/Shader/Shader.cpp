@@ -397,6 +397,11 @@ void Shader::postInitialize()
         if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
             m_globalConstantBuffer = m_buffers.front();
         }
+
+        for (auto& cbuffer : m_buffers) {
+            m_semanticsManager.prepareConstantBuffer(cbuffer);
+        }
+
     }
 
     // analyze semantices.

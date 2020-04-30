@@ -99,27 +99,25 @@ static BuiltinSemanticsNamePair g_builtinSemanticsNamePairMap[] =
 
 ShaderSemanticsManager::ShaderSemanticsManager()
     : m_sceneVariables()
-    , m_cameraVariables()
     , m_elementVariables()
     , m_subsetVariables()
     , m_variablesTable{}
 //, m_lastCameraInfoId(0)
 //, m_tempBufferWriter(&m_tempBuffer)
 {
+    // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
+    assert(128 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
+    assert(144 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
+    assert(160 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_ViewportPixelSize));
+    assert(168 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
+    assert(172 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
+    assert(176 == sizeof(LNRenderViewBuffer));
+    std::cout << sizeof(LNRenderViewBuffer) << std::endl;
 }
 
 void ShaderSemanticsManager::prepareParameter(ShaderParameter* var)
 {
     const String& name = var->name();
-
-    // try camera unit
-    {
-        auto itr = g_builtinNameMap_CameraUnit.find(name);
-        if (itr != g_builtinNameMap_CameraUnit.end()) {
-            m_cameraVariables.add({var, itr->second});
-            return;
-        }
-    }
 
     // try element unit
     {
@@ -148,38 +146,29 @@ void ShaderSemanticsManager::prepareParameter(ShaderParameter* var)
     }
 }
 
+void ShaderSemanticsManager::prepareConstantBuffer(ShaderConstantBuffer* buffer)
+{
+    if (buffer->name() == u"LNRenderViewBuffer") {
+        m_renderViewBuffer = buffer;
+    }
+}
+
 void ShaderSemanticsManager::updateSceneVariables(const SceneInfo& info)
 {
 }
 
 void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 {
-    for (const VariableKindPair& varInfo : m_cameraVariables) {
-        switch (varInfo.kind) {
-            case BuiltinSemantics::View:
-                varInfo.variable->setMatrix(info.viewMatrix);
-                break;
-            case BuiltinSemantics::Projection:
-                varInfo.variable->setMatrix(info.projMatrix);
-                break;
-            case BuiltinSemantics::ViewportPixelSize:
-                varInfo.variable->setVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
-                break;
-            case BuiltinSemantics::NearClip:
-                varInfo.variable->setFloat(info.nearClip);
-                break;
-            case BuiltinSemantics::FarClip:
-                varInfo.variable->setFloat(info.farClip);
-                break;
-            case BuiltinSemantics::CameraPosition:
-                varInfo.variable->setVector(Vector4(info.viewPosition, 0));
-                break;
-            case BuiltinSemantics::CameraDirection:
-                varInfo.variable->setVector(Vector4(info.viewDirection, 0));
-                break;
-            default:
-                break;
-        }
+    if (m_renderViewBuffer) {
+        LNRenderViewBuffer data;
+        data.ln_View = info.viewMatrix;
+        data.ln_Projection = info.projMatrix;
+        data.ln_ViewportPixelSize = info.viewPixelSize;
+        data.ln_NearClip = info.nearClip;
+        data.ln_FarClip = info.farClip;
+        data.ln_CameraPosition = info.viewPosition;
+        data.ln_CameraDirection = info.viewDirection;
+        m_renderViewBuffer->setData(&data, sizeof(data));
     }
 }
 

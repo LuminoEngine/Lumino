@@ -8,7 +8,20 @@ namespace ln {
 class Texture;
 class Texture2D;
 class ShaderParameter;
+class ShaderConstantBuffer;
 namespace detail {
+
+// cbuffer LNRenderViewBuffer
+struct alignas(16) LNRenderViewBuffer
+{
+    alignas(16) Matrix ln_View;
+    alignas(16) Matrix ln_Projection;
+    alignas(16) Vector3 ln_CameraPosition;
+    alignas(16) Vector3 ln_CameraDirection;
+    alignas(8) Vector2 ln_ViewportPixelSize;
+    alignas(4) float ln_NearClip;
+    alignas(4) float ln_FarClip;
+};
 
 // シェーダ変数セマンティクス
 enum class BuiltinSemantics
@@ -189,7 +202,8 @@ public:
     ShaderSemanticsManager();
 
     // call by shader creation time.
-    void prepareParameter(ShaderParameter* var);
+    void prepareParameter(ShaderParameter* var);    // deprecated
+    void prepareConstantBuffer(ShaderConstantBuffer* buffer);
 
     // call by rendering time.
     void updateSceneVariables(const SceneInfo& info);
@@ -208,7 +222,8 @@ private:
     };
 
     List<VariableKindPair> m_sceneVariables;
-    List<VariableKindPair> m_cameraVariables;
+    //List<VariableKindPair> m_cameraVariables;
+    ShaderConstantBuffer* m_renderViewBuffer = nullptr;
     List<VariableKindPair> m_elementVariables;
     List<VariableKindPair> m_subsetVariables;
     // TODO: 実質↑のほとんどの変数は使うので、リストを分けるとかえって変にメモリ使ってしまうかも。
