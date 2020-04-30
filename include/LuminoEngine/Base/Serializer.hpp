@@ -40,6 +40,7 @@ public:
 } // namespace detail
 
 template<typename T> void serialize2(Serializer2& sr, List<T>& value);
+void serialize2(Serializer2& ar, Vector2& value);
 
 /** */
 LN_CLASS()
