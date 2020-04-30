@@ -394,9 +394,9 @@ void Shader::postInitialize()
     // find global constant buffer.
     {
         m_globalConstantBuffer = findConstantBuffer(u"_Global");
-        if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
-            m_globalConstantBuffer = m_buffers.front();
-        }
+        //if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
+        //    m_globalConstantBuffer = m_buffers.front();
+        //}
 
         for (auto& cbuffer : m_buffers) {
             m_semanticsManager.prepareConstantBuffer(cbuffer);

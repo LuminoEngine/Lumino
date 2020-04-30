@@ -1,6 +1,6 @@
 
-float4x4	ln_WorldViewProjection;
-float4x4	ln_World;
+#include <Lumino.fxh>
+
 float4x4	ln_ViewProjection_Light0;
 
 struct VSInput

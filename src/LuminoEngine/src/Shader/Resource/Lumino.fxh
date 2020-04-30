@@ -15,15 +15,18 @@ cbuffer LNRenderViewBuffer
 	/* [128] */ float3 ln_CameraPosition;
 	/* [144] */ float3 ln_CameraDirection;
 	/* [160] */ float2 ln_ViewportPixelSize;
-	/* [136] */ float ln_NearClip;
-	/* [140] */ float ln_FarClip;
+	/* [168] */ float ln_NearClip;
+	/* [172] */ float ln_FarClip;
 };
 
-
-float4x4	ln_World;
-float4x4	ln_WorldViewProjection;
-float4x4	ln_WorldView;
-float4x4	ln_WorldViewIT;
+cbuffer LNRenderElementBuffer
+{
+	/* [0]   */ float4x4	ln_World;
+	/* [64]  */ float4x4 ln_WorldViewProjection;
+	/* [128] */ float4x4	ln_WorldView;
+	/* [192] */ float4x4	ln_WorldViewIT;
+	/* [256] */ float4 ln_BoneTextureReciprocalSize;
+};
 sampler2D		ln_MaterialTexture;
 //SamplerState	ln_MaterialTextureSamplerState;
 

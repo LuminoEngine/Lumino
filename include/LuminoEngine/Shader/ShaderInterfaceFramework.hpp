@@ -23,6 +23,16 @@ struct alignas(16) LNRenderViewBuffer
     alignas(4) float ln_FarClip;
 };
 
+// cbuffer LNRenderElementBuffer
+struct alignas(16) LNRenderElementBuffer
+{
+    alignas(16) Matrix ln_World;
+    alignas(16) Matrix ln_WorldViewProjection;
+    alignas(16) Matrix ln_WorldView;
+    alignas(16) Matrix ln_WorldViewIT;
+    alignas(8) Vector4 ln_BoneTextureReciprocalSize;
+};
+
 // シェーダ変数セマンティクス
 enum class BuiltinSemantics
 {
@@ -31,32 +41,22 @@ enum class BuiltinSemantics
     Dummy,
 
     //--------------------
-    // Camera unit
-    View,
-    Projection,
-    ViewportPixelSize,
-    NearClip,
-    FarClip,
-    CameraPosition,
-    CameraDirection,
-
-    //--------------------
     // Element unit
     WorldViewProjection,
     World,
     WorldView,
     WorldViewIT, // transpose(inverse(WorldView));
 
-    LightEnables,     // [Mark only] bool[]
-    LightWVPMatrices, // [Mark only] matrix[]
-    LightDirections,  // [Mark only] vector[]
-    LightPositions,   // [Mark only] vector[]
-    LightZFars,       // [Mark only] float[]
-    LightDiffuses,    // [Mark only] vector[]
-    LightAmbients,    // [Mark only] vector[]
-    LightSpeculars,   // [Mark only] vector[]
+    //LightEnables,     // [Mark only] bool[]
+    //LightWVPMatrices, // [Mark only] matrix[]
+    //LightDirections,  // [Mark only] vector[]
+    //LightPositions,   // [Mark only] vector[]
+    //LightZFars,       // [Mark only] float[]
+    //LightDiffuses,    // [Mark only] vector[]
+    //LightAmbients,    // [Mark only] vector[]
+    //LightSpeculars,   // [Mark only] vector[]
 
-    BoneTextureReciprocalSize,  // internal
+    //BoneTextureReciprocalSize,  // internal
     BoneTexture,                // internal
     BoneLocalQuaternionTexture, // internal
 
@@ -225,6 +225,7 @@ private:
     //List<VariableKindPair> m_cameraVariables;
     ShaderConstantBuffer* m_renderViewBuffer = nullptr;
     List<VariableKindPair> m_elementVariables;
+    ShaderConstantBuffer* m_renderElementBuffer = nullptr;
     List<VariableKindPair> m_subsetVariables;
     // TODO: 実質↑のほとんどの変数は使うので、リストを分けるとかえって変にメモリ使ってしまうかも。
     // ↓のような全体でひとつのテーブル使う方がかえって検索効率もよくなる。後でこっちにする。
