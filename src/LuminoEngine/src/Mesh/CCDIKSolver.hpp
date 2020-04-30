@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#if 0
+
 namespace ln {
 class SkinnedMeshModel;
 class SkinnedMeshBone;
@@ -176,3 +178,4 @@ public:
 } // namespace detail
 } // namespace ln
 
+#endif

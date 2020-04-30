@@ -520,10 +520,13 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
         Ref<Mesh>  mesh;
         int sectionIndex;
 
+		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
+		//Ref<SkinnedMeshModel> skinnedMeshModel;
+
         virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
         {
             // TODO: boneTexture を送る仕組み
-            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex);
+            return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, nullptr);
         }
     };
 
@@ -537,6 +540,35 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
     element->sectionIndex = sectionIndex;
 
     // TODO: bounding
+}
+
+void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, MeshArmature* skeleton)
+{
+	class DrawSkinnedMesh : public detail::RenderDrawElement
+	{
+	public:
+		Ref<Mesh>  mesh;
+		int sectionIndex;
+
+		// SkinnedMesh の場合に、親インスタンスが破棄されないように参照を保持しておく
+		Ref<MeshArmature> skeleton;
+
+		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
+		{
+			// TODO: boneTexture を送る仕組み
+			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, skeleton);
+		}
+	};
+
+	m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
+	auto* element = m_builder->addNewDrawElement<DrawSkinnedMesh>(
+		m_manager->meshRenderFeature(),
+		m_builder->meshRenderFeatureStageParameters());
+	element->mesh = mesh;
+	element->sectionIndex = sectionIndex;
+	element->skeleton = skeleton;
+
+	// TODO: bounding
 }
 
 void RenderingContext::drawMeshInstanced(InstancedMeshList* list)

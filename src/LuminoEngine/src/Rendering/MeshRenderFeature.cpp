@@ -58,7 +58,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 	return result;
 }
 
-RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex)
+RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex, MeshArmature* skeleton)
 {
     if (LN_REQUIRE(mesh != nullptr)) return RequestBatchResult::Staging;
 
@@ -88,6 +88,7 @@ RequestBatchResult MeshRenderFeature::drawMesh(detail::RenderFeatureBatchList* b
 
     m_meshes.push_back(std::move(data));
     m_batchData.count++;
+	m_batchData.skeleton = skeleton;
 
 	return result;
 }
@@ -149,6 +150,7 @@ void MeshRenderFeature::beginRendering()
 	m_batchData.offset = 0;
 	m_batchData.count = 0;
 	m_batchData.instanced = false;
+	m_batchData.skeleton = nullptr;
 }
 
 void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList)
@@ -156,10 +158,12 @@ void MeshRenderFeature::submitBatch(GraphicsContext* context, detail::RenderFeat
 	auto batch = batchList->addNewBatch<Batch>(this);
 	batch->data = m_batchData;
 	batch->instancing = m_batchData.instanced;
+	batch->skeleton = m_batchData.skeleton;
 
 	m_batchData.offset = m_batchData.offset + m_batchData.count;
 	m_batchData.count = 0;
 	m_batchData.instanced = false;
+	m_batchData.skeleton = nullptr;
 }
 
 void MeshRenderFeature::renderBatch(GraphicsContext* context, RenderFeatureBatch* batch)

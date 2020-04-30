@@ -6,6 +6,7 @@ class Model;
 class Node;
 class Mesh;
 class Material;
+class Skin;
 }
 
 namespace ln {
@@ -60,6 +61,7 @@ private:
 	Ref<MeshNode> readNode(const tinygltf::Node& node);
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
 	Ref<Mesh> generateMesh(const MeshView& meshView) const;
+	Ref<MeshArmature> readSkin(const tinygltf::Skin& skin);
 
 
 	static bool FileExists(const std::string &abs_filename, void *user_data);

@@ -119,6 +119,7 @@ public:
 
     /** テクスチャが保持するビットマップデータにアクセスします。 */
     Bitmap2D* map(MapMode mode);
+    void unmap() {}
 
     /** リソースの使用方法を変更します。(default: Static) */
     void setResourceUsage(GraphicsResourceUsage usage);

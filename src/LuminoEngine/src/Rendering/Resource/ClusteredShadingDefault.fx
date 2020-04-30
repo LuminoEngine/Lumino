@@ -392,6 +392,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 {
 	LN_VSOutput_Common common = LN_ProcessVertex_SkinnedCommon(vsi);
+	//LN_VSOutput_Common common = LN_ProcessVertex_Common(vsi);
 	LN_VSOutput_ClusteredForward extra = LN_ProcessVertex_ClusteredForward(vsi);
 
 	_lngs_VSOutput output;
@@ -401,6 +402,8 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 	output.Color = common.Color;
 	output.WorldPos = extra.WorldPos;
 	output.VertexPos = extra.VertexPos;
+	
+	//output.Color.rgb = vsi.BlendWeight.rgb;
 	return output;
 
 	//_lngs_VSOutput o;

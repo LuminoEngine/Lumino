@@ -16,6 +16,7 @@ class AbstractMaterial;
 class MeshResource;
 class Mesh;
 class MeshContainer;
+class MeshArmature;
 class RenderViewPoint;
 class RenderView;
 class ImageEffect;
@@ -160,6 +161,7 @@ public:
     void drawMesh(MeshResource* meshResource, int sectionIndex);
 	//void drawMesh(MeshContainer* meshContainer, int sectionIndex);
     void drawMesh(Mesh* mesh, int sectionIndex);
+	void drawSkinnedMesh(Mesh* mesh, int sectionIndex, MeshArmature* skeleton);
 
 	void drawMeshInstanced(InstancedMeshList* list);
 

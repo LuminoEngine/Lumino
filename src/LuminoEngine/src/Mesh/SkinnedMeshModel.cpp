@@ -1,5 +1,7 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
+#include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "PmxImporter.hpp"	// TODO: 依存したくない
@@ -8,7 +10,7 @@
 
 namespace ln {
 
-
+#if 0
 //==============================================================================
 // SkinnedMeshBone
 
@@ -73,6 +75,46 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 		}
 	}
 }
+#endif
+
+
+//==============================================================================
+// MeshArmature
+
+MeshArmature::MeshArmature()
+{
+}
+
+bool MeshArmature::init()
+{
+	if (!Object::init()) return false;
+	return true;
+}
+
+void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
+{
+	auto bone = makeObject<MeshBone>();
+	bone->m_node = linkNode;
+	bone->m_inverseInitialMatrix = inverseInitialMatrix;
+	m_bones.add(bone);
+}
+
+void MeshArmature::updateSkinningMatrices()
+{
+	if (!m_skinningMatricesTexture || m_skinningMatricesTexture->height() != m_bones.size()) {
+		m_skinningMatricesTexture = makeObject<Texture2D>(4, m_bones.size(), TextureFormat::RGBA32F);
+		m_skinningMatricesTexture->setResourceUsage(GraphicsResourceUsage::Dynamic);
+	}
+
+	Bitmap2D* bitmap = m_skinningMatricesTexture->map(MapMode::Write);
+	Matrix* data = reinterpret_cast<Matrix*>(bitmap->data());
+
+	for (int i = 0; i < m_bones.size(); i++) {
+		data[i] = Matrix::Identity;
+	}
+
+	m_skinningMatricesTexture->unmap();
+}
 
 //==============================================================================
 // SkinnedMeshModel
@@ -87,6 +129,11 @@ SkinnedMeshModel::SkinnedMeshModel()
 {
 }
 
+void SkinnedMeshModel::addSkeleton(MeshArmature* skeleton)
+{
+	m_skeletons.add(skeleton);
+}
+
 void SkinnedMeshModel::beginUpdate()
 {
     // 全てのローカルトランスフォームをリセットする
@@ -94,10 +141,10 @@ void SkinnedMeshModel::beginUpdate()
     //		(IKはその時点のLocalTransformに対して処理を行うため、回転角度がどんどん増えたりする)
     //		なお、一連の更新の最後で行っているのは、アニメーションからの更新を外部で行っているため。
     // TODO: できれば一連の処理の中で必ず通るところに移動したい
-    for (SkinnedMeshBone* bone : m_allBoneList)
-    {
-        bone->resetLocalTransform();
-    }
+    //for (SkinnedMeshBone* bone : m_allBoneList)
+    //{
+    //    bone->resetLocalTransform();
+    //}
 
 }
 
@@ -162,21 +209,24 @@ void SkinnedMeshModel::postUpdate()
 
 void SkinnedMeshModel::updateBoneTransformHierarchy()
 {
-	for (SkinnedMeshBone* bone : m_rootBoneList)
-	{
-		bone->updateGlobalTransform(true);
-	}
+	//for (SkinnedMeshBone* bone : m_rootBoneList)
+	//{
+	//	bone->updateGlobalTransform(true);
+	//}
 }
 
 void SkinnedMeshModel::updateIK()
 {
-    detail::CCDIKSolver ik;
-    ik.owner = this;
-    ik.UpdateTransform();
+    //detail::CCDIKSolver ik;
+    //ik.owner = this;
+    //ik.UpdateTransform();
 }
 
 void SkinnedMeshModel::updateSkinningMatrices()
 {
+	for (auto& skeleton : m_skeletons) {
+		skeleton->updateSkinningMatrices();
+	}
 #if 0
 	// スキニング行列の作成
 	for (int i = 0; i < m_allBoneList.size(); i++)
@@ -212,21 +262,21 @@ void SkinnedMeshModel::updateSkinningMatrices()
 
 void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer)
 {
-    for (int i = 0; i < m_allBoneList.size(); i++)
-    {
-		matrixesBuffer[i] = m_allBoneList[i]->m_data->getInitialTranstormInv() * m_allBoneList[i]->getCombinedMatrix();
-        localQuaternionsBuffer[i] = Quaternion::makeFromRotationMatrix(matrixesBuffer[i]);
-    }
+  //  for (int i = 0; i < m_allBoneList.size(); i++)
+  //  {
+		//matrixesBuffer[i] = m_allBoneList[i]->m_data->getInitialTranstormInv() * m_allBoneList[i]->getCombinedMatrix();
+  //      localQuaternionsBuffer[i] = Quaternion::makeFromRotationMatrix(matrixesBuffer[i]);
+  //  }
 }
 
 int SkinnedMeshModel::getAnimationTargetElementCount() const
 {
-	return m_allBoneList.size();
+	return 0;//m_allBoneList.size();
 }
 
 const String& SkinnedMeshModel::getAnimationTargetElementName(int index) const
 {
-	return m_allBoneList[index]->name();
+	return String::Empty;//m_allBoneList[index]->name();
 }
 
 AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
@@ -236,10 +286,10 @@ AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int inde
 
 void SkinnedMeshModel::setAnimationTargetElementValue(int index, const AnimationValue& value)
 {
-	if (value.type() == AnimationValueType::Transform)
-	{
-		(*m_allBoneList[index]->localTransformPtr()) = value.getTransform();
-	}
+	//if (value.type() == AnimationValueType::Transform)
+	//{
+	//	(*m_allBoneList[index]->localTransformPtr()) = value.getTransform();
+	//}
 }
 
 } // namespace ln

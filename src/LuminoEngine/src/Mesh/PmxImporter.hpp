@@ -2,6 +2,8 @@
 #pragma once
 #include <LuminoEngine/Mesh/Mesh.hpp>
 
+#if 0
+
 namespace ln {
 class BinaryReader;
 class Texture2D;
@@ -513,3 +515,5 @@ private:
 
 } // namespace detail
 } // namespace ln
+
+#endif

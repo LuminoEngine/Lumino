@@ -13,6 +13,7 @@
 #include "MeshManager.hpp"
 #include "PmxImporter.hpp"
 
+#if 0
 namespace ln {
 namespace detail {
 
@@ -1173,3 +1174,5 @@ void PmxLoader::adjustAngle(Vector3* angles) const
 
 } // namespace detail
 } // namespace ln
+
+#endif

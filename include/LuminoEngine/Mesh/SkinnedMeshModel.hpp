@@ -5,6 +5,10 @@
 
 namespace ln {
 class SkinnedMeshModel;
+class MeshArmature;
+class Texture2D;
+
+#if 0
 namespace detail {
     class PmxBoneResource; 
     class PmxIKResource;
@@ -56,6 +60,46 @@ public:
 	AttitudeTransform m_localTransform;	// モーションを書き込むのはここ
 	Matrix m_combinedMatrix;	// 結合済み行列 ()
 };
+#endif
+
+// MeshNode を参照するためのデータ構造。
+// 頂点の BLEND_INDICES から参照されるのはこのインスタンス。
+// SkinnedMesh でのみ使用する。
+class MeshBone
+	: public Object
+{
+public:
+	//const String& name() const;
+
+private:
+	int m_node = -1;
+	Matrix m_inverseInitialMatrix;
+
+	friend class MeshArmature;
+};
+
+// Bone をまとめるデータ構造。
+// BoneTexture を生成する単位。
+// TODO: 名前、skelton のほうがいいかも
+class MeshArmature
+	: public Object
+{
+public:
+
+public:
+	// TODO: internal
+	void addBone(int linkNode, const Matrix& inverseInitialMatrix);
+	void updateSkinningMatrices();
+	const Ref<Texture2D>& skinningMatricesTexture() const { return m_skinningMatricesTexture; }
+
+LN_CONSTRUCT_ACCESS:
+	MeshArmature();
+	bool init();
+
+private:
+	List<Ref<MeshBone>> m_bones;
+	Ref<Texture2D> m_skinningMatricesTexture; 
+};
 
 class SkinnedMeshModel
 	: public StaticMeshModel
@@ -75,6 +119,8 @@ public:
 
 
     // TODO: internal
+	void addSkeleton(MeshArmature* skeleton);
+	const Ref<MeshArmature>& skeleton(int index) const { return m_skeletons[index]; }
 	void setWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::makeInverse(m_worldTransform); }
     void beginUpdate();
 	void preUpdate();
@@ -87,9 +133,9 @@ public:
 
     void writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion* localQuaternionsBuffer);
 
-    List<Ref<SkinnedMeshBone>>		m_allBoneList;				// 全ボーンリスト
-    List<SkinnedMeshBone*>			m_ikBoneList;
-    List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
+    //List<Ref<SkinnedMeshBone>>		m_allBoneList;				// 全ボーンリスト
+    //List<SkinnedMeshBone*>			m_ikBoneList;
+    //List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
 	Ref<AnimationController> m_animationController;
 
 protected:
@@ -104,6 +150,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	//List<Ref<MeshContainer>> m_meshContainers;
 	//List<Ref<AbstractMaterial>> m_materials;
+	List<Ref<MeshArmature>> m_skeletons;
 
 	Matrix		m_worldTransform;
 	Matrix		m_worldTransformInverse;

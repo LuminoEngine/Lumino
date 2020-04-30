@@ -12,6 +12,7 @@
 namespace ln {
 class MeshResource;
 class Mesh;
+class MeshArmature;
 class InstancedMeshList;
 namespace detail {
 
@@ -49,7 +50,7 @@ public:
 	void init(RenderingManager* manager);
 
 	RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, MeshResource* mesh, int sectionIndex);
-    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex);
+    RequestBatchResult drawMesh(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, Mesh* mesh, int sectionIndex, MeshArmature* skeleton);
 	RequestBatchResult drawMeshInstanced(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, InstancedMeshList* list);
 
 	RequestBatchResult attemptSubmitBatch(GraphicsContext* context, detail::RenderFeatureBatchList* batchList, bool instanced);
@@ -75,6 +76,7 @@ private:
 		int offset;
 		int count;
 		bool instanced;
+		MeshArmature* skeleton;
 	};
 
 	class Batch : public RenderFeatureBatch

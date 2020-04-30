@@ -260,15 +260,17 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		return mesh;
 	}
 	else {
+		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+		return nullptr;
 		// TODO: deprecated
 
 		//Ref<MeshResource> mesh;
 
-		PmxLoader  importer;
-		auto file = FileStream::create(filePath);
-		auto mesh = importer.load(this, file, filePath.parent(), false);
+		//PmxLoader  importer;
+		//auto file = FileStream::create(filePath);
+		//auto mesh = importer.load(this, file, filePath.parent(), false);
 
-		return mesh->createSkinnedMeshModel();
+		//return mesh->createSkinnedMeshModel();
 	}
 }
 

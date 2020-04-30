@@ -601,37 +601,58 @@ void* Mesh::acquireMappedIndexBuffer()
 	return m_indexBuffer.mappedBuffer;
 }
 
+VertexElementType Mesh::findVertexElementType(VertexElementUsage usage, int usageIndex) const
+{
+	// Find predefined vertex data.
+	if (usageIndex == 0) {
+		if (usage == VertexElementUsage::Position) return VertexElementType::Float3;
+		if (usage == VertexElementUsage::Normal) return VertexElementType::Float3;
+		if (usage == VertexElementUsage::TexCoord) return VertexElementType::Float2;
+		if (usage == VertexElementUsage::Color) return VertexElementType::Float4;
+		if (usage == VertexElementUsage::Tangent) return VertexElementType::Float3;
+		if (usage == VertexElementUsage::Binormal) return VertexElementType::Float3;
+		if (usage == VertexElementUsage::BlendWeight) return VertexElementType::Float4;
+		if (usage == VertexElementUsage::BlendIndices) return VertexElementType::Float4;
+	}
+
+	// Find extra data.
+	auto r = m_extraVertexBuffers.findIf([&](auto& x) { return x.usage == usage && x.usageIndex == usageIndex; });
+	if (!r) return r->type;
+
+	return VertexElementType::Unknown;
+}
+
 void Mesh::attemptResetVertexLayout()
 {
 	if (!m_vertexLayout) {
 		m_vertexLayout = makeObject<VertexLayout>();
 
-		int count = 0;
+		int streamIndex = 0;
 
 		if (m_mainVertexBuffer.buffer) {
-			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Position, 0);
-			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Normal, 0);
-			m_vertexLayout->addElement(count, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
-			m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::Color, 0);
-			count++;
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Position, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Normal, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Color, 0);
+			streamIndex++;
 		}
 
 		if (m_tangentsVertexBuffer.buffer) {
-			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
-			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
-			count++;
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
+			streamIndex++;
 		}
 
 		if (m_skinningVertexBuffer.buffer) {
-			m_vertexLayout->addElement(count, VertexElementType::Float3, VertexElementUsage::BlendWeight, 0);
-			m_vertexLayout->addElement(count, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
-			count++;
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::BlendIndices, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::BlendWeight, 0);
+			streamIndex++;
 		}
 
 		for (int i = 0; i < m_extraVertexBuffers.size(); i++) {
 			const auto& attr = m_extraVertexBuffers[i];
-			m_vertexLayout->addElement(count, attr.type, attr.usage, attr.usageIndex);
-			count++;
+			m_vertexLayout->addElement(streamIndex, attr.type, attr.usage, attr.usageIndex);
+			streamIndex++;
 		}
 	}
 }
@@ -728,7 +749,10 @@ void MeshContainer::calculateBounds()
 
 void MeshContainer::setMesh(Mesh* mesh)
 {
+	//if (LN_REQUIRE(mesh)) return;
+	//if (LN_REQUIRE(!mesh->m_owner)) return;
     m_lodMesh[0] = mesh;
+	//mesh->m_owner = this;
 }
 
 Mesh* MeshContainer::mesh() const

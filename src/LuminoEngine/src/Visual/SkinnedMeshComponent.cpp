@@ -91,7 +91,6 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 //#endif
 //
 
-	// TODO: ひとまず StaticMesh と同じ
 	for (const auto& node : m_model->meshNodes()) {
 		if (node->meshContainerIndex() >= 0) {
 			context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
@@ -103,7 +102,7 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 			if (mesh) {
 				for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
 					context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
-					context->drawMesh(mesh, iSection);
+					context->drawSkinnedMesh(mesh, iSection, m_model->skeleton(node->skeletonIndex));
 				}
 			}
 
