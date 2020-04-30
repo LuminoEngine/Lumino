@@ -111,6 +111,11 @@ void MeshArmature::updateSkinningMatrices()
 
 	for (int i = 0; i < m_bones.size(); i++) {
 		data[i] = Matrix::Identity;
+
+		// TODO: test
+		if (i == 0) {
+			data[i] = Matrix::makeRotationZ(0.3);
+		}
 	}
 
 	m_skinningMatricesTexture->unmap();

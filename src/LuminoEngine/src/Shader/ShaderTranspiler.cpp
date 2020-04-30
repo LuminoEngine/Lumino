@@ -570,6 +570,10 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			//LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
 
 
+            //if (info.name == "ln_BoneTextureReciprocalSize") {
+            //    std::cout << info.name << std::endl;
+            //}
+
 
             if (info.type == ShaderUniformType_Texture) {
                 DescriptorLayoutItem item;
