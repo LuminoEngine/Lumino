@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 			//"new", "test4",
 			//"new", "TH-10", "-t", "cmake",
             
-			"build", "Web",
+			//"build", "Web",
 			//"build", "Windows"
 
 			//"run", "Web", //"Windows",
@@ -41,6 +41,7 @@ int main(int argc, char** argv)
 
             //"fxc", "Assets/LineWave.fx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx",
+			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
 
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
