@@ -101,7 +101,7 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 	for (auto& mesh : m_model->meshes) {
 		auto meshContainer = readMesh(mesh);
 		if (!meshContainer) {
-			return nullptr;
+			return false;
 		}
 		meshModel->addMeshContainer(meshContainer);
 	}
@@ -109,7 +109,7 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 	for (auto& node : m_model->nodes) {
 		auto meshNode = readNode(node);
 		if (!meshNode) {
-			return nullptr;
+			return false;
 		}
 		meshModel->addNode(meshNode);
 	}
@@ -121,6 +121,8 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 	}
 
 	meshModel->updateNodeTransforms();
+
+	return true;
 }
 
 Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)

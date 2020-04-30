@@ -148,25 +148,7 @@ file(GLOB LN_SOURCES_ImageEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffe
 
 file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp)
 
-set(LN_SOURCES_Physics
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/CollisionShape.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsWorld2D.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/PhysicsObject.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/RigidBody.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/SoftBody.hpp
-    src/Physics/Internal.hpp
-    src/Physics/BulletUtils.hpp
-    src/Physics/CollisionShape.cpp
-    src/Physics/PhysicsManager.cpp
-    src/Physics/PhysicsManager.hpp
-    src/Physics/PhysicsObject.cpp
-    src/Physics/PhysicsWorld.cpp
-    src/Physics/PhysicsWorld2D.cpp
-    src/Physics/RigidBody.cpp
-    src/Physics/SoftBody.cpp
-)
+file(GLOB LN_SOURCES_Physics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Physics/*.hpp src/Physics/*.cpp src/Physics/*.hpp)
 
 file(GLOB LN_SOURCES_Asset ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Asset/*.hpp src/Asset/*.cpp src/Asset/*.hpp)
 
