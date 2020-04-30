@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Graphics/SamplerState.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Graphics/GraphicsManager.hpp"
@@ -401,10 +402,15 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				elementInfo.viewProjMatrix = &cameraInfo.viewProjMatrix;
 				elementInfo.WorldMatrix = (batch->worldTransformPtr()) ? *batch->worldTransformPtr() : Matrix::Identity;
 				elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * (*elementInfo.viewProjMatrix);
-				elementInfo.boneTexture = nullptr;	// TODO:
-				elementInfo.boneLocalQuaternionTexture = nullptr;	// TODO:
+				elementInfo.boneLocalQuaternionTexture = nullptr;	// TODO: (MMD SDEF)
+				if (batch->skeleton) {
+					elementInfo.boneTexture = batch->skeleton->skinningMatricesTexture();
+				}
+				else {
+					elementInfo.boneTexture = nullptr;
+				}
 
-				ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;	// TODO:
+				ShaderTechniqueClass_MeshProcess meshProcess = (elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh;
 				ShaderTechniqueClass_DrawMode drawMode = (batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive;
 				ShaderTechnique* tech = pass->selectShaderTechnique(
 					meshProcess,

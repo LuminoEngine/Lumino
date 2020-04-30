@@ -1,5 +1,6 @@
 ﻿
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/Scene/SkinnedMesh.hpp>
 using namespace ln;
 
 class App_Example_MeshViewer : public Application
@@ -12,7 +13,9 @@ class App_Example_MeshViewer : public Application
 
 
 
-		auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
+		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
+        auto mesh = SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh1.glb");
+        mesh->setShadingModel(ShadingModel::Unlit);
     }
 
     virtual void onUpdate() override

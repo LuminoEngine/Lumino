@@ -39,10 +39,10 @@ function(ln_add_pch project_name header_file_path source_file_path)
 	if (MSVC)
 		set(ln_compile_flags
 			#"/Yu\"${header_file_name}\" /FI\"${header_file_name}\""	# use PCH, ForcedIncludeFiles
-			"/Yu\"${header_file_name}\""
+			"/Yu\"${header_file_name}\" /FI\"${header_file_name}\""
 		)
 		#target_compile_definitions(${project_name} PUBLIC /FI\"${header_file_name}\")
-		target_compile_options(${project_name} PRIVATE /FI\"${header_file_name}\")
+		#target_compile_options(${project_name} PRIVATE /FI\"${header_file_name}\")
 
 	else()
 		# https://github.com/nanoant/CMakePCHCompiler/blob/master/CMakePCHCompiler.cmake

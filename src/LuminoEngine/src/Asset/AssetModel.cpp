@@ -11,7 +11,9 @@ namespace ln {
 
 LN_OBJECT_IMPLEMENT(AssetModel, Object) {}
 
-const String AssetModel::AssetFileExtension = u".lnasset";
+// 現在はエディタサポートが十分ではない。Asset は手書きも頻発する。
+// 独自拡張子だとテキストエディタのサポートが受けづらいので今は使わない。
+const String AssetModel::AssetFileExtension = u".yml";//u".lnasset";
 
 //Ref<AssetModel> AssetModel::create(Object* target)
 //{
@@ -77,7 +79,13 @@ void AssetModel::onSerialize2(Serializer2* sr)
         sr->writeObject(m_target);
     }
     else {
-        if (sr->readName(u"object")) m_target = sr->readObject();
+        if (m_externalObjectDeserialization) {
+            if (LN_REQUIRE(m_target)) return;
+            if (sr->readName(u"object")) sr->readObject(m_target);
+        }
+        else {
+            if (sr->readName(u"object")) m_target = sr->readObject();
+        }
         //m_target = sr->readObject(u"value1");
     }
 }

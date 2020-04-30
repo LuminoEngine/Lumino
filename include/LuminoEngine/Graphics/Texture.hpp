@@ -119,6 +119,7 @@ public:
 
     /** テクスチャが保持するビットマップデータにアクセスします。 */
     Bitmap2D* map(MapMode mode);
+    void unmap() {}
 
     /** リソースの使用方法を変更します。(default: Static) */
     void setResourceUsage(GraphicsResourceUsage usage);
@@ -141,10 +142,11 @@ public:
     //void setAssetSource(const Path& path) { m_assetSourcePath = path; }
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
-    virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
-    virtual void serialize(Archive& ar) override;
+    void onDispose(bool explicitDisposing) override;
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
+    detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
+    void serialize(Archive& ar) override;
+    void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();

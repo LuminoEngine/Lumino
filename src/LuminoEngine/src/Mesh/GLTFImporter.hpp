@@ -1,14 +1,17 @@
 ﻿
 #pragma once
 #include "MeshImporter.hpp"
-namespace tinygltf { 
+namespace tinygltf {
 class Model;
 class Node;
 class Mesh;
 class Material;
+class Skin;
 }
 
 namespace ln {
+class SkinnedMeshModel;
+
 namespace detail {
 
 class GLTFImporter
@@ -16,6 +19,7 @@ class GLTFImporter
 {
 public:
     Ref<StaticMeshModel> import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
+	Ref<SkinnedMeshModel> importSkinnedMesh(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 
 private:
 	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。
@@ -51,10 +55,13 @@ private:
 		std::vector<SectionView> sectionViews;
 	};
 
+	bool openGLTFModel(const AssetPath& assetPath);
+	bool readCommon(StaticMeshModel* meshModel);
     Ref<Material> readMaterial(const tinygltf::Material& material);
 	Ref<MeshNode> readNode(const tinygltf::Node& node);
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
 	Ref<Mesh> generateMesh(const MeshView& meshView) const;
+	Ref<MeshArmature> readSkin(const tinygltf::Skin& skin);
 
 
 	static bool FileExists(const std::string &abs_filename, void *user_data);
@@ -64,8 +71,8 @@ private:
 
 	AssetManager* m_assetManager;
     AssetPath m_basedir;
-	tinygltf::Model* m_model;
-    Ref<StaticMeshModel> m_meshModel;
+	DiagnosticsManager* m_diag;
+	std::shared_ptr<tinygltf::Model> m_model;
 };
 
 } // namespace detail

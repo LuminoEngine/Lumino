@@ -30,9 +30,20 @@ public:
     LN_METHOD()
     static Ref<Object> loadAsset(const StringRef& filePath);
 
+    /**
+     * 指定したアセットファイルへオブジェクトを保存します。
+     *
+     * 拡張子が無い場合は追加されます。
+     * Lumino 標準の拡張子以外を明示的に指定した場合、アセットを読み込むときも同じように明示する必要があります。
+     */
+    static void saveAsset(Object* obj, const StringRef& filePath);
 
-
-
+    /**
+     * 既存のオブジェクトに対して、指定したアセットファイルでデシリアライズを行います。
+     *
+     * このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
+     */
+    static void deserializeInstance(Object* obj, const StringRef& filePath);
 
 
 

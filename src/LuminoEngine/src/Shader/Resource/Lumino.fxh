@@ -29,8 +29,8 @@ struct LN_VSInput
 	float3	Normal			: NORMAL0;
 	float2	UV				: TEXCOORD0;
 	float4	Color			: COLOR0;
-	float4	BlendWeight		: BLENDWEIGHT;
 	float4	BlendIndices	: BLENDINDICES;
+	float4	BlendWeight		: BLENDWEIGHT;
 };
 
 struct LN_VSOutput_Common

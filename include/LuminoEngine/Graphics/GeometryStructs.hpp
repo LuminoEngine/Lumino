@@ -311,6 +311,7 @@ public:
     }
 
     void serialize(Archive& ar);
+    void serialize2(Serializer2& ar);
 
 public:
     bool operator==(const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }

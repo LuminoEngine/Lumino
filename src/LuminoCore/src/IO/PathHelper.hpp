@@ -1,4 +1,5 @@
-﻿#include "../Base/CRTHelper.h"
+﻿#pragma once
+#include "../Base/CRTHelper.h"
 
 namespace ln {
 namespace detail {

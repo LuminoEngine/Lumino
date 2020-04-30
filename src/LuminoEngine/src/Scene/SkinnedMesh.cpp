@@ -15,7 +15,7 @@ Ref<SkinnedMesh> SkinnedMesh::create()
     return makeObject<SkinnedMesh>();
 }
 
-Ref<SkinnedMesh> SkinnedMesh::create(const StringRef& filePath, float scale)
+Ref<SkinnedMesh> SkinnedMesh::load(const StringRef& filePath, float scale)
 {
     return makeObject<SkinnedMesh>(filePath, scale);
 }

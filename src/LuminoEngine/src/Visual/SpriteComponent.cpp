@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
@@ -38,6 +39,13 @@ void SpriteFrame::serialize(Archive& ar)
     ar & makeNVP(u"AnchorPoint", m_anchorPoint);
 }
 
+void SpriteFrame::serialize2(Serializer2& ar)
+{
+    Object::serialize2(ar);
+    ar & makeNVP(u"SourceRect", m_sourceRect);
+    ar & makeNVP(u"AnchorPoint", m_anchorPoint);
+}
+
 //=============================================================================
 // SpriteSheet
 /*
@@ -58,7 +66,7 @@ Ref<SpriteSheet> SpriteSheet::create(Texture* texture, int frameWidth, int frame
 }
 
 SpriteSheet::SpriteSheet()
-    : m_frames(makeList<Ref<SpriteFrame>>())
+    : m_frames()
 {
 }
 
@@ -89,7 +97,7 @@ Texture* SpriteSheet::texture() const
 
 SpriteFrame* SpriteSheet::frame(int index) const
 {
-	if (0 <= index && index < m_frames->size()) {
+	if (0 <= index && index < m_frames.size()) {
 		return m_frames[index];
 	}
 	else {
@@ -103,7 +111,7 @@ void SpriteSheet::clear()
     m_frameHeight = 0;
     m_anchorPoint = Vector2::NaN;
     m_texture = nullptr;
-    m_frames->clear();
+    m_frames.clear();
 }
 
 void SpriteSheet::splitFrames()
@@ -119,7 +127,7 @@ void SpriteSheet::splitFrames()
             auto frame = makeObject<SpriteFrame>();
             frame->setSourceRect(Rect(x * m_frameWidth, y * m_frameHeight, m_frameWidth, m_frameHeight));
             frame->setAnchorPoint(m_anchorPoint);
-            m_frames->add(frame);
+            m_frames.add(frame);
         }
     }
 }
@@ -149,6 +157,34 @@ void SpriteSheet::serialize(Archive& ar)
         }
         else {
             ar & makeNVP(u"Frames", m_frames);
+        }
+    }
+}
+
+void SpriteSheet::serialize2(Serializer2& ar)
+{
+    if (ar.isSaving()) {
+        ar & makeNVP(u"texture", m_texture);
+        if (m_frameWidth != 0 && m_frameHeight != 0) {
+            ar & makeNVP(u"frameWidth", m_frameWidth);
+            ar & makeNVP(u"frameHeight", m_frameHeight);
+            ar & makeNVP(u"anchorPoint", m_anchorPoint);
+        }
+        else {
+            ar & makeNVP(u"frames", m_frames);
+        }
+    }
+    else {
+        clear();
+        ar & makeNVP(u"texture", m_texture);
+        ar & makeNVP(u"frameWidth", m_frameWidth);
+        ar & makeNVP(u"frameHeight", m_frameHeight);
+        ar & makeNVP(u"anchorPoint", m_anchorPoint);
+        if (m_frameWidth != 0 && m_frameHeight != 0) {
+            splitFrames();
+        }
+        else {
+            ar & makeNVP(u"frames", m_frames);
         }
     }
 }

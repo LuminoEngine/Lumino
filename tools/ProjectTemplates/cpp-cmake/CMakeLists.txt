@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 project(LuminoApp)
+set(LN_MSVC_STATIC_RUNTIME ON)
 
 if (LUMINO_REPO_ROOT)
     # for engine development

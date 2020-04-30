@@ -28,9 +28,11 @@ public:
 	/** この CollisionShape が衝突判定のためのトリガーであるかを取得します。*/
 	bool isTrigger() const;
 
-	void setCenter(const Vector3& offset) { m_offset = offset; }
+	/** この形状のローカルオフセットを設定します。 */
+	void setPosition(const Vector3& value) { m_position = value; }
 
-	const Vector3& getCenter() const { return m_offset; }
+	/** この形状のローカルオフセットを取得します。 */
+	const Vector3& position() const { return m_position; }
 
     void setRotation(const Quaternion& value) { m_rotation = value; }
 
@@ -46,10 +48,10 @@ LN_INTERNAL_ACCESS:
 	btCollisionShape* getBtCollisionShape() const { return m_shape; }
 		
 private:
-	btCollisionShape*	m_shape;
-	Vector3				m_offset;
+	btCollisionShape* m_shape;
+	Vector3 m_position;
     Quaternion m_rotation;
-	bool				m_isTrigger;
+	bool m_isTrigger;
 };
 
 /**

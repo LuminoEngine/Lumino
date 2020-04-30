@@ -6,6 +6,7 @@
 #include <LinearMath/btMotionState.h>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
+#include "PhysicsManager.hpp"
 #include "BulletUtils.hpp"
 
 namespace ln {
@@ -87,6 +88,7 @@ RigidBody::~RigidBody()
 void RigidBody::init()
 {
     Object::init();
+    attemptAddToActiveWorld();
 }
 
 void RigidBody::init(CollisionShape* shape)
@@ -241,6 +243,13 @@ void RigidBody::clearForces()
 void RigidBody::addCollisionShape(CollisionShape* shape)
 {
     m_btShapeManager.addShape(shape);
+}
+
+void RigidBody::attemptAddToActiveWorld()
+{
+    if (auto& activeWorld = detail::EngineDomain::physicsManager()->activePhysicsWorld()) {
+        activeWorld->addPhysicsObject(this);
+    }
 }
 
 void RigidBody::activate()

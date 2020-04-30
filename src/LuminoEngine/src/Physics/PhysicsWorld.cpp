@@ -22,6 +22,7 @@
 #include <LuminoEngine/Physics/PhysicsObject.hpp>
 #include <LuminoEngine/Physics/RigidBody.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
+#include "PhysicsDebugRenderer.hpp"
 #include "BulletUtils.hpp"
 
 namespace ln {
@@ -30,11 +31,19 @@ namespace ln {
 // PhysicsDebugRenderer
 namespace detail {
 
-class PhysicsDebugRenderer
+class PhysicsDebugRenderer3D
     : public btIDebugDraw
 {
 public:
-    RenderingContext* context = nullptr;
+    void init()
+    {
+        m_renderer.init();
+    }
+
+    void render(RenderingContext* context)
+    {
+        m_renderer.render(context);
+    }
 
     virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override
     {
@@ -44,10 +53,10 @@ public:
     virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor) override
     {
         const float r = 0.7;    // 少し色を濃くする
-        context->drawLine(
+        m_renderer.drawLine(
             Vector3(from.getX(), from.getY(), from.getZ()),
-            Color(fromColor.getX() * r, fromColor.getY() * r, fromColor.getZ() * r, 1.0f),
             Vector3(to.getX(), to.getY(), to.getZ()),
+            Color(fromColor.getX() * r, fromColor.getY() * r, fromColor.getZ() * r, 1.0f),
             Color(toColor.getX() * r, toColor.getY() * r, toColor.getZ() * r, 1.0f));
     }
 
@@ -76,6 +85,7 @@ public:
 
 private:
     int m_debugMode = 0;
+    detail::PhysicsDebugRenderer m_renderer;
 };
 
 } // namespace detail
@@ -152,7 +162,8 @@ void PhysicsWorld::init()
     m_btWorld = LN_NEW btSoftRigidDynamicsWorld( m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig, NULL );
     //m_btWorld = new btDiscreteDynamicsWorld(m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig);
 
-    m_debugRenderer = std::make_unique<detail::PhysicsDebugRenderer>();
+    m_debugRenderer = std::make_unique<detail::PhysicsDebugRenderer3D>();
+    m_debugRenderer->init();
     m_btWorld->setDebugDrawer(m_debugRenderer.get());
     //m_btWorld->setInternalTickCallback(pickingPreTickCallback,this,true);
     //m_btWorld->getDispatchInfo().m_enableSPU = true;
@@ -281,11 +292,11 @@ void PhysicsWorld::stepSimulation(float elapsedSeconds)
 
 void PhysicsWorld::renderDebug(RenderingContext* context)
 {
-    context->pushState();
-    m_debugRenderer->context = context;
+    //context->pushState();
     m_btWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
     m_btWorld->debugDrawWorld();
-    context->popState();
+    m_debugRenderer->render(context);
+    //context->popState();
 }
 
 void PhysicsWorld::addObjectInternal(PhysicsObject* obj)

@@ -7,6 +7,7 @@ class GraphicsContext;
 class ShaderTechnique;
 class RenderFeature;
 class AbstractMaterial;
+class MeshArmature;
 
 namespace detail {
 class RenderingManager;
@@ -50,6 +51,7 @@ public:
 	// SpriteText で使っている。 TODO: これは MaskTexture みたいな位置づけにしてもいいかも。
 	Texture* overrideTexture = nullptr;
 	SamplerState* overrideSamplerState = nullptr;	// 共通の FontCache を AA 有無で描画したいときの区別
+	MeshArmature* skeleton = nullptr;
 
 	bool instancing = false;
 

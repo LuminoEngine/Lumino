@@ -180,6 +180,9 @@ struct MeshSection2
 	3~ はユーザー定義できる。
 	今は主に glTF 形式のモデルを読むときのカスタムフォーマットのために用意されている。
 */
+// MeshLOD は複数の Container で共有可能とする。
+// 特にデータサイズが大きくなるオブジェクトなので、一般的な形状では共有したいケースが多い。
+// そのため owner などのフィールドは持たない。
 class Mesh
 	: public Object
 {
@@ -214,6 +217,7 @@ public:
 	void* acquireMappedVertexBuffer(InterleavedVertexGroup group);
 	void* acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
 	void* acquireMappedIndexBuffer();
+	VertexElementType findVertexElementType(VertexElementUsage usage, int usageIndex) const;
 	IndexBufferFormat indexBufferFormat() const { return m_indexFormat; }
 
 LN_CONSTRUCT_ACCESS:
@@ -246,6 +250,7 @@ private:
 		VertexBufferEntry entry;
 	};
 
+	//MeshContainer* m_owner = nullptr;
 	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
 	VertexBufferEntry m_tangentsVertexBuffer;	// Tangent0, BiNormal0
 	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
@@ -259,7 +264,10 @@ private:
 	IndexBufferFormat m_indexFormat;
 
 	friend class MeshGeometryBuilder;
+	//friend class MeshContainer
 };
+
+
 
 // ひとつのメッシュモデルデータ内にいくつかのメッシュノードが含まれているとき、それを名前検索するために使用する。
 // 例えば、フィールドのモデルに ビジュアル用のメッシュとコリジョン用のメッシュが含まれている場合、名前検索でコリジョンを取り出して Phyiscs モジュールに渡したりする。
@@ -320,6 +328,8 @@ public:
     void setMeshContainerIndex(int value);
     int meshContainerIndex() const { return m_meshContainerIndex; }
 
+	int skeletonIndex = -1;
+
     void addChildIndex(int value);
 
     void setLocalTransform(const Matrix& value);
@@ -346,6 +356,9 @@ enum class InternalMeshModelType
     SkinnedMesh,
 };
 }
+
+
+
 
 class StaticMeshModel
 	: public Object

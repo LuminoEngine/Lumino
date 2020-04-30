@@ -223,6 +223,16 @@ public:
 		}
 	}
 
+	void writeNull()
+	{
+		if (current().containerType == SerializerStore2::ContainerType::Object) {
+			current().node[nextName] = YAML::Node(YAML::NodeType::Null);
+		}
+		else {
+			current().node.push_back(YAML::Node(YAML::NodeType::Null));
+		}
+	}
+
 	std::string str()
 	{
 		YAML::Emitter emitter;
@@ -289,7 +299,7 @@ public:
 		if (LN_REQUIRE(current().containerType == ContainerType::Object && current().node.Type() == YAML::NodeType::Map)) return false;
 
 		auto node = current().node[v];
-		if (node.Type() != YAML::NodeType::Null) {
+		if (node.Type() != YAML::NodeType::Null && node.Type() != YAML::NodeType::Undefined) {
 			current().readingNode = node;
 			return true;
 		}
@@ -497,13 +507,18 @@ void Serializer2::writeObject(Object* value)
 {
 	if (LN_REQUIRE(isSaving())) return;
 #if 1
-	beginWriteObject();
-	auto typeName = TypeInfo::getTypeInfo(value)->name();
-	m_store->nextName = "class." + str_to_ns(typeName);
-	beginWriteObject();
-	static_cast<Object*>(value)->serialize2(*this);
-	endWriteObject();
-	endWriteObject();
+	if (value) {
+		beginWriteObject();
+		auto typeName = TypeInfo::getTypeInfo(value)->name();
+		m_store->nextName = "class." + str_to_ns(typeName);
+		beginWriteObject();
+		static_cast<Object*>(value)->serialize2(*this);
+		endWriteObject();
+		endWriteObject();
+	}
+	else {
+		m_store->writeNull();
+	}
 #else
 	beginWriteObject();
 	auto typeName = TypeInfo::getTypeInfo(value)->name();
@@ -554,6 +569,27 @@ bool Serializer2::beginReadList(int* outItemCount)
 void Serializer2::endReadList()
 {
 	m_store->popRead();
+}
+
+bool Serializer2::beginList(int* outItemCount)
+{
+	if (isSaving()) {
+		beginWriteList();
+		return true;
+	}
+	else {
+		return beginReadList(outItemCount);
+	}
+}
+
+void Serializer2::endList()
+{
+	if (isSaving()) {
+		endWriteList();
+	}
+	else {
+		endReadList();
+	}
 }
 
 bool Serializer2::readName(const StringRef& name)
@@ -666,7 +702,12 @@ String Serializer2::readString()
 	return ns_to_str(v);
 }
 
-Ref<Object> Serializer2::readObject()
+Ref<Object> Serializer2::readObject(Object* existing)
+{
+	return readObjectInteral(nullptr, existing);
+}
+
+Ref<Object> Serializer2::readObjectInteral(std::function<Ref<Object>()> knownTypeCreator, Object* existing)
 {
 	if (LN_REQUIRE(isLoading())) return nullptr;
 
@@ -675,14 +716,31 @@ Ref<Object> Serializer2::readObject()
 
 	std::string typeName;
 	Ref<Object> obj;
-	if (m_store->readFirstProperty(&typeName)) {
-		// class. 以降
-		obj = TypeInfo::createInstance(String::fromStdString(typeName.substr(6)));
-	}
+	if (existing) {
+		obj = existing;
 
-	// fallback
-	if (!obj) {
-		obj = makeObject<Object>();
+		// 型が既知なので不要だが、1度でも子ノードにアクセスしておかないと cpp-yaml が正しく孫ノードを呼んでくれなかった
+		m_store->readFirstProperty(&typeName);
+	}
+	else {
+		if (m_store->readFirstProperty(&typeName)) {
+
+			if (typeName == "class.Object" && knownTypeCreator != nullptr) {
+				// save 時に Lumino の 型システムに登録されていないものは Object 型として保存される。
+				// ただ、Load 時に template として型が既知の場合はそちらを使用したいが、Object の場合は
+				// 完全にインスタンスの生成を既知の型から行うようにしてみる。
+				obj = knownTypeCreator();
+			}
+
+			if (!obj) {
+				obj = TypeInfo::createInstance(String::fromStdString(typeName.substr(6)));
+			}
+		}
+
+		// fallback
+		if (!obj) {
+			obj = makeObject<Object>();
+		}
 	}
 
 	beginReadObject();
@@ -693,7 +751,7 @@ Ref<Object> Serializer2::readObject()
 	return obj;
 #else
 	beginReadObject();
-	
+
 	Ref<Object> obj;
 
 	if (m_store->readName(".class")) {
@@ -737,6 +795,7 @@ String Serializer2::serialize(AssetModel* value, const String& basePath)
 	if (LN_REQUIRE(value)) return String::Empty;
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Save;
+	sr->m_basePath = basePath;
 	sr->m_store->initWrite();
 	static_cast<Object*>(value)->serialize2(*sr);
 	LN_ENSURE(sr->m_store->stack.size() == 1);
@@ -747,11 +806,24 @@ Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePa
 {
 	auto sr = makeObject<Serializer2>();
 	sr->m_mode = ArchiveMode::Load;
+	sr->m_basePath = basePath;
 	sr->m_store->initRead(str_to_ns(str));
 	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
 	auto asset = makeObject<AssetModel>();
 	static_cast<Object*>(asset)->serialize2(*sr);
 	return asset;
+}
+
+void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const String& basePath)
+{
+	asset->m_externalObjectDeserialization = true;
+
+	auto sr = makeObject<Serializer2>();
+	sr->m_mode = ArchiveMode::Load;
+	sr->m_basePath = basePath;
+	sr->m_store->initRead(str_to_ns(str));
+	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
+	static_cast<Object*>(asset)->serialize2(*sr);
 }
 #endif
 

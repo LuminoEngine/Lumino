@@ -11,20 +11,21 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
 
 namespace ln {
 namespace detail {
 
-Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 {
-	m_assetManager = assetManager;
-    m_basedir = assetPath.getParentAssetPath();//ln::Path(assetPath).parent();
-	auto stream = assetManager->openStreamFromAssetPath(assetPath);
+	m_basedir = assetPath.getParentAssetPath();
+	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
 	auto data = stream->readToEnd();
 
-	tinygltf::Model model;
+	m_model = std::make_shared<tinygltf::Model>();
+	//tinygltf::Model model;
 	tinygltf::TinyGLTF loader;
 	tinygltf::FsCallbacks fs = {
 		&FileExists,
@@ -37,51 +38,91 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Asse
 
 	std::string err;
 	std::string warn;
-    bool result;
-    if (data[0] == 'g' && data[1] == 'l' && data[2] == 'T' && data[3] == 'F') {
-        result = loader.LoadBinaryFromMemory(&model, &err, &warn, data.data(), data.size(), "");
-    }
-    else {
-        result = loader.LoadASCIIFromString(&model, &err, &warn, (const char*)data.data(), data.size(), "");
-    }
-	if (!err.empty()) diag->reportError(String::fromStdString(err));
-	if (!warn.empty()) diag->reportError(String::fromStdString(warn));
-	if (!result) {
-		return nullptr;
+	bool result;
+	if (data[0] == 'g' && data[1] == 'l' && data[2] == 'T' && data[3] == 'F') {
+		result = loader.LoadBinaryFromMemory(m_model.get(), &err, &warn, data.data(), data.size(), "");
 	}
 	else {
-		m_model = &model;
-        m_meshModel = makeObject<StaticMeshModel>();
-
-        for (auto& material : m_model->materials) {
-            m_meshModel->addMaterial(readMaterial(material));
-        }
-
-        for (auto& mesh : m_model->meshes) {
-            auto meshContainer = readMesh(mesh);
-            if (!meshContainer) {
-                return nullptr;
-            }
-            m_meshModel->addMeshContainer(meshContainer);
-        }
-
-        for (auto& node : m_model->nodes) {
-            auto meshNode = readNode(node);
-            if (!meshNode) {
-                return nullptr;
-            }
-            m_meshModel->addNode(meshNode);
-        }
-
-        int scene_to_display = model.defaultScene > -1 ? model.defaultScene : 0;
-        const tinygltf::Scene &scene = model.scenes[scene_to_display];
-        for (size_t i = 0; i < scene.nodes.size(); i++) {
-            m_meshModel->addRootNode(scene.nodes[i]);
-        }
-
-        m_meshModel->updateNodeTransforms();
-		return m_meshModel;
+		result = loader.LoadASCIIFromString(m_model.get(), &err, &warn, (const char*)data.data(), data.size(), "");
 	}
+	if (!err.empty()) m_diag->reportError(String::fromStdString(err));
+	if (!warn.empty()) m_diag->reportError(String::fromStdString(warn));
+
+
+	return result;
+}
+
+Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+{
+	m_assetManager = assetManager;
+	m_diag = diag;
+
+	if (!openGLTFModel(assetPath)) {
+		return nullptr;
+	}
+
+    auto meshModel = makeObject<StaticMeshModel>();
+
+	readCommon(meshModel);
+
+	return meshModel;
+}
+
+Ref<SkinnedMeshModel> GLTFImporter::GLTFImporter::importSkinnedMesh(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+{
+	m_assetManager = assetManager;
+	m_diag = diag;
+
+	if (!openGLTFModel(assetPath)) {
+		return nullptr;
+	}
+
+	auto meshModel = makeObject<SkinnedMeshModel>();
+
+	readCommon(meshModel);
+
+	for (auto& skin : m_model->skins) {
+		auto meshSkeleton = readSkin(skin);
+		if (!meshSkeleton) {
+			return nullptr;
+		}
+		meshModel->addSkeleton(meshSkeleton);
+	}
+
+	return meshModel;
+}
+
+bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
+{
+	for (auto& material : m_model->materials) {
+		meshModel->addMaterial(readMaterial(material));
+	}
+
+	for (auto& mesh : m_model->meshes) {
+		auto meshContainer = readMesh(mesh);
+		if (!meshContainer) {
+			return false;
+		}
+		meshModel->addMeshContainer(meshContainer);
+	}
+
+	for (auto& node : m_model->nodes) {
+		auto meshNode = readNode(node);
+		if (!meshNode) {
+			return false;
+		}
+		meshModel->addNode(meshNode);
+	}
+
+	int scene_to_display = m_model->defaultScene > -1 ? m_model->defaultScene : 0;
+	const tinygltf::Scene& scene = m_model->scenes[scene_to_display];
+	for (size_t i = 0; i < scene.nodes.size(); i++) {
+		meshModel->addRootNode(scene.nodes[i]);
+	}
+
+	meshModel->updateNodeTransforms();
+
+	return true;
 }
 
 Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
@@ -212,6 +253,7 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 
     auto coreNode = makeObject<MeshNode>();
     coreNode->setLocalTransform(nodeTransform);
+	coreNode->skeletonIndex = node.skin;
 
     if (node.mesh > -1) {
         assert(node.mesh < m_model->meshes.size());
@@ -255,53 +297,128 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 			vbView.count = accessor.count;
 
 			// Type
-			int elementSize = 1;
-			if (accessor.type == TINYGLTF_TYPE_SCALAR) {
-				vbView.type = VertexElementType::Float1;
-				elementSize = 1;
-			}
-			else if (accessor.type == TINYGLTF_TYPE_VEC2) {
-				vbView.type = VertexElementType::Float2;
-				elementSize = 2;
-			}
-			else if (accessor.type == TINYGLTF_TYPE_VEC3) {
-				vbView.type = VertexElementType::Float3;
-				elementSize = 3;
-			}
-			else if (accessor.type == TINYGLTF_TYPE_VEC4) {
-				vbView.type = VertexElementType::Float4;
-				elementSize = 4;
-			}
-			else {
-				LN_UNREACHABLE();
-				return nullptr;
-			}
-
 			// Usage
+			// https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#meshes
 			vbView.usage = VertexElementUsage::Unknown;
 			vbView.usageIndex = 0;
 			if (itr->first.compare("POSITION") == 0) {
 				vbView.usage = VertexElementUsage::Position;
 				vbView.usageIndex = 0;
+				if (accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+					vbView.type = VertexElementType::Float3;
+				}
+				else {
+					m_diag->reportError(u"Invalid vertex data type.");
+					return nullptr;
+				}
 			}
 			else if (itr->first.compare("NORMAL") == 0) {
 				vbView.usage = VertexElementUsage::Normal;
 				vbView.usageIndex = 0;
+				if (accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+					vbView.type = VertexElementType::Float3;
+				}
+				else {
+					m_diag->reportError(u"Invalid vertex data type.");
+					return nullptr;
+				}
+			}
+			else if (itr->first.compare("TANGENT") == 0) {
+				vbView.usage = VertexElementUsage::Tangent;
+				vbView.usageIndex = 0;
+				if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+					vbView.type = VertexElementType::Float4;
+				}
+				else {
+					m_diag->reportError(u"Invalid vertex data type.");
+					return nullptr;
+				}
 			}
 			else if (itr->first.compare("TEXCOORD_0") == 0) {
 				vbView.usage = VertexElementUsage::TexCoord;
 				vbView.usageIndex = 0;
+				if (accessor.type == TINYGLTF_TYPE_VEC2 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+					vbView.type = VertexElementType::Float2;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC2 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC2 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else {
+					m_diag->reportError(u"Invalid vertex data type.");
+					return nullptr;
+				}
 			}
-            else if (itr->first.compare("TANGENT") == 0) {
-                vbView.usage = VertexElementUsage::Tangent;
-                vbView.usageIndex = 0;
-            }
 			else if (itr->first.compare("COLOR_0") == 0) {
 				vbView.usage = VertexElementUsage::Color;
 				vbView.usageIndex = 0;
+				if (accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+					vbView.type = VertexElementType::Float3;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+					vbView.type = VertexElementType::Float4;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else {
+					m_diag->reportError(u"Invalid vertex data type.");
+					return nullptr;
+				}
+			}
+			else if (itr->first.compare("JOINTS_0") == 0) {
+				vbView.usage = VertexElementUsage::BlendIndices;
+				vbView.usageIndex = 0;
+				if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+					vbView.type = VertexElementType::Short4;
+				}
+				else {
+					m_diag->reportError(u"Invalid vertex data type.");
+					return nullptr;
+				}
+			}
+			else if (itr->first.compare("WEIGHTS_0") == 0) {
+				vbView.usage = VertexElementUsage::BlendWeight;
+				vbView.usageIndex = 0;
+				if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+					vbView.type = VertexElementType::Float4;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else if (accessor.type == TINYGLTF_TYPE_VEC4 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
+				else {
+					m_diag->reportError(u"Invalid vertex data type.");
+					return nullptr;
+				}
 			}
 			else {
-				LN_UNREACHABLE();
+				LN_NOTIMPLEMENTED();
 				return nullptr;
 			}
 
@@ -455,7 +572,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
         for (auto& vbView : section.vertexBufferViews) {
 			auto reservedGroup = coreMesh->getStandardElement(vbView.usage, vbView.usageIndex);
-            auto* rawbuf = static_cast<byte_t*>(coreMesh->acquireMappedVertexBuffer(vbView.type, vbView.usage, vbView.usageIndex));
+			auto destType = coreMesh->findVertexElementType(vbView.usage, vbView.usageIndex);
+            auto* rawbuf = static_cast<byte_t*>(coreMesh->acquireMappedVertexBuffer(destType, vbView.usage, vbView.usageIndex));
             auto* src = static_cast<const byte_t*>(vbView.data);// +vbView.byteOffset;
 
 			int offset = 0;
@@ -481,8 +599,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 			}
 			else if (reservedGroup == InterleavedVertexGroup::Skinning) {
 				stride = sizeof(VertexBlendWeight);
-				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
-				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+				if (vbView.usage == VertexElementUsage::BlendIndices) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, indices);
+				else if (vbView.usage == VertexElementUsage::BlendWeight) offset = LN_MEMBER_OFFSETOF(VertexBlendWeight, weights);
 				else {
 					LN_ERROR();
 				}
@@ -496,9 +614,26 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 				//}
 			}
 
-			int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
-			for (int i = 0; i < vertexCountInSection; i++) {
-				memcpy(&rawbuf[((vertexOffset + i) * stride) + offset], src + (vbView.byteStride * i), size);
+			if (destType != vbView.type) {
+				if (destType == VertexElementType::Float4 && vbView.type == VertexElementType::Short4) {
+					for (int i = 0; i < vertexCountInSection; i++) {
+						float* d = (float*)(&rawbuf[((vertexOffset + i) * stride) + offset]);
+						short* s = (short*)(src + (vbView.byteStride * i));
+						d[0] = (float)s[0];
+						d[1] = (float)s[1];
+						d[2] = (float)s[2];
+						d[3] = (float)s[3];
+					}
+				}
+				else {
+					LN_NOTIMPLEMENTED();
+				}
+			}
+			else {
+				int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
+				for (int i = 0; i < vertexCountInSection; i++) {
+					memcpy(&rawbuf[((vertexOffset + i) * stride) + offset], src + (vbView.byteStride * i), size);
+				}
 			}
 
 
@@ -611,6 +746,32 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 	return coreMesh;
+}
+
+Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
+{
+	// inverseBindMatrice はボーンの初期姿勢を打ち消して、原点に戻す行列。
+	// 最終的に BoneTexture などへ書き出すときにこれを乗算する。（Matrix::Identity なら変形が行われないようにする）
+	// src/LuminoEngine/sandbox/Assets/SkinnedMesh1.glb だと、2つめのボーンの
+	// - node の 座標 (初期姿勢) は Y=1
+	// - inverseBindMatrice は Y=-1
+	// となっている。
+
+	const tinygltf::Accessor& accessor = m_model->accessors[skin.inverseBindMatrices];
+	LN_CHECK(accessor.count == skin.joints.size());
+	LN_CHECK(accessor.type == TINYGLTF_TYPE_MAT4);
+	LN_CHECK(accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+
+	const tinygltf::BufferView& bufferView = m_model->bufferViews[accessor.bufferView];
+	const tinygltf::Buffer& buffer = m_model->buffers[bufferView.buffer];
+
+	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
+	auto armature = makeObject<MeshArmature>();
+	for (int i = 0; i < skin.joints.size(); i++) {
+		armature->addBone(skin.joints[i], inverseBindMatrices[i]);
+	}
+
+	return armature;
 }
 
 bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)

@@ -26,6 +26,8 @@ float4	ln_FogParams;
 float3 ln_CameraPosition;
 float3 ln_MainLightDirection;	// ライトの向き。Sun から地表へ向かう。ライトの正面方向
 
+//float2 ln_BoneTextureReciprocalSize;
+
 float _LN_CalcFogFactor(float depth)
 {
 	float f = ln_FogParams.a * depth;
@@ -392,6 +394,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 {
 	LN_VSOutput_Common common = LN_ProcessVertex_SkinnedCommon(vsi);
+	//LN_VSOutput_Common common = LN_ProcessVertex_Common(vsi);
 	LN_VSOutput_ClusteredForward extra = LN_ProcessVertex_ClusteredForward(vsi);
 
 	_lngs_VSOutput output;
@@ -401,6 +404,15 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 	output.Color = common.Color;
 	output.WorldPos = extra.WorldPos;
 	output.VertexPos = extra.VertexPos;
+	
+	//output.Color.rgb = vsi.BlendWeight.rgb;
+	//output.Color.rg = output.UV;
+	
+	//float x = 0.7;//2.0 / ln_BoneTextureReciprocalSize.x;
+	//float x = 1.0 * ln_BoneTextureReciprocalSize.x;
+	//float y = 0.0;// / ln_BoneTextureReciprocalSize.y;
+	//output.Color.rgb = tex2Dlod(ln_BoneTexture, float4(x, y, 0, 1)).rgb;
+	//output.Color = float4(x, 0, 0, 1);
 	return output;
 
 	//_lngs_VSOutput o;
@@ -465,6 +477,9 @@ float4	ln_MaterialAmbient;	// TODO: とりあえず MMD モデル用のために
 float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 {
 	//return float4(0, 1, 0, 1);
+	//return float4(input.Color.rgb, 1);
+	//return float4(input.UV, 0, 1);
+	//return float4(tex2D(ln_BoneTexture, input.UV).rgb, 1);
 	float4 c = tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color;
     clip(c.a - 0.0001);
 
