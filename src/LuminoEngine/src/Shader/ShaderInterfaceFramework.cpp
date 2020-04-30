@@ -153,8 +153,8 @@ void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 {
     if (m_renderViewBuffer) {
         LNRenderViewBuffer data;
-        data.ln_View = Matrix::makeTranspose(info.viewMatrix);
-        data.ln_Projection = Matrix::makeTranspose(info.projMatrix);
+        data.ln_View = info.viewMatrix;
+        data.ln_Projection = info.projMatrix;
         data.ln_ViewportPixelSize = info.viewPixelSize;
         data.ln_NearClip = info.nearClip;
         data.ln_FarClip = info.farClip;
@@ -169,11 +169,11 @@ void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo
     if (m_renderElementBuffer) {
         LNRenderElementBuffer data;
         // Matrix は送る前に転置が必要。TODO: なんとか使わずすむようにしたいけど…。
-        data.ln_World = Matrix::makeTranspose(info.WorldMatrix);
-        data.ln_WorldViewProjection = Matrix::makeTranspose(info.WorldViewProjectionMatrix);
-        data.ln_WorldView = Matrix::makeTranspose(info.WorldMatrix * cameraInfo.viewMatrix);
+        data.ln_World = info.WorldMatrix;
+        data.ln_WorldViewProjection =info.WorldViewProjectionMatrix;
+        data.ln_WorldView = info.WorldMatrix * cameraInfo.viewMatrix;
         // TODO: 毎回ここでやるのは重い
-        data.ln_WorldViewIT =Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix); // ここも転置が必要なんだけど、今はここで計算してるので結果的に転置は不要
+        data.ln_WorldViewIT = Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)); // ここも転置が必要なんだけど、今はここで計算してるので結果的に転置は不要
         
         if (info.boneTexture)
             data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
