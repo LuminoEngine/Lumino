@@ -323,9 +323,18 @@ private:
 class MeshNode : public Object
 {
 public:
+	void setPosition(const Vector3& value);
+	void setPosition(float x, float y, float z) { setPosition(Vector3(x, y, z)); }
+
 	void setRotation(const Quaternion& value);
 	void setRotation(float x, float y, float z) { setRotation(Quaternion::makeFromEulerAngles(Vector3(x, y, z))); }
 
+	void setScale(const Vector3& value);
+	void setScale(float x, float y, float z) { setScale(Vector3(x, y, z)); }
+	void setScale(float xyz) { setScale(Vector3(xyz, xyz, xyz)); }
+
+	void setName(const String& value) { m_name = value; }
+	const String& name() const { return m_name; }
 
     int index() const { return m_index; }
 
@@ -345,6 +354,7 @@ LN_CONSTRUCT_ACCESS:
     virtual ~MeshNode() = default;
 
 private:
+	String m_name;
     int m_index;
     int m_meshContainerIndex;
     List<int> m_children;
@@ -375,6 +385,8 @@ class StaticMeshModel
 {
 public:
     static Ref<StaticMeshModel> load(const StringRef& filePath, float scale = 1.0f);
+
+	MeshNode* findNode(StringRef name) const;
 
 	void addMeshContainer(MeshContainer* meshContainer);
     void addNode(MeshNode* node);

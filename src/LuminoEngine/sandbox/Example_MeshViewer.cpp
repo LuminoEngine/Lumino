@@ -1,8 +1,5 @@
 ﻿
 #include <LuminoEngine.hpp>
-#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Scene/SkinnedMesh.hpp>
-#include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
 using namespace ln;
 
 class App_Example_MeshViewer : public Application

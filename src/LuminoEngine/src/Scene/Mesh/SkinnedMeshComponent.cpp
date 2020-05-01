@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
+#include <LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 
 namespace ln {

@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "VisualComponent.hpp"
+#include "../../Visual/VisualComponent.hpp"
 
 namespace ln {
 class SkinnedMeshModel;

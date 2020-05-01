@@ -56,6 +56,7 @@ public:
 	// frames, animation
 
 
+	static Ref<SpriteSheet> load(StringRef path);
 	static Ref<SpriteSheet> create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint = Vector2::NaN);
 
     Texture* texture() const;

@@ -770,9 +770,19 @@ MeshNode::MeshNode()
 {
 }
 
+void MeshNode::setPosition(const Vector3& value)
+{
+	m_localTransform.translation = value;
+}
+
 void MeshNode::setRotation(const Quaternion& value)
 {
 	m_localTransform.rotation = value;
+}
+
+void MeshNode::setScale(const Vector3& value)
+{
+	m_localTransform.scale = value;
 }
 
 void MeshNode::setMeshContainerIndex(int value)
@@ -806,6 +816,11 @@ StaticMeshModel::StaticMeshModel()
 StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
     : m_type(type)
 {
+}
+
+MeshNode* StaticMeshModel::findNode(StringRef name) const
+{
+	return m_nodes.findIf([&](const auto& x) { return x->name() == name; }).valueOr(nullptr);
 }
 
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
