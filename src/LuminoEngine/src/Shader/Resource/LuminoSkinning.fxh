@@ -4,8 +4,6 @@
 
 float	 MMM_modelsize = 1.0;
 
-// ボーンテクスチャサイズの逆数
-const float2 ln_BoneTextureReciprocalSize = float2( 1.0/4.0, 1.0/2.0 );
 
 // ボーン用頂点テクスチャサンプラー宣言
 sampler2D ln_BoneTexture;

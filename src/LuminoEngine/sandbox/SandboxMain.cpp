@@ -13,9 +13,6 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Visual/SkinnedMeshComponent.hpp>
-#include <LuminoEngine/Scene/SkinnedMesh.hpp>
 #include <LuminoEngine/Scene/OffscreenWorldRenderView.hpp>
 #include <LuminoEngine/Animation/Animator.hpp>
 #include "../src/Mesh/MqoImporter.hpp"

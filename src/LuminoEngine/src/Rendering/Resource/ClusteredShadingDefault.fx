@@ -23,7 +23,6 @@ float4	ln_FogColorAndDensity;
 // .w : Height fog Density
 float4	ln_FogParams;
 
-float3 ln_CameraPosition;
 float3 ln_MainLightDirection;	// ライトの向き。Sun から地表へ向かう。ライトの正面方向
 
 //float2 ln_BoneTextureReciprocalSize;
@@ -412,7 +411,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 	//float x = 1.0 * ln_BoneTextureReciprocalSize.x;
 	//float y = 0.0;// / ln_BoneTextureReciprocalSize.y;
 	//output.Color.rgb = tex2Dlod(ln_BoneTexture, float4(x, y, 0, 1)).rgb;
-	//output.Color = float4(x, 0, 0, 1);
+	output.Color.x = ln_NearClip + ln_FarClip + ln_CameraPosition.x + ln_CameraDirection.x;
 	return output;
 
 	//_lngs_VSOutput o;

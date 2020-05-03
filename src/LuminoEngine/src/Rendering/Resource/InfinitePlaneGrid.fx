@@ -1,6 +1,7 @@
 
-float4x4 ln_WorldViewProjection;
-sampler2D ln_MaterialTexture;
+#include <Lumino.fxh>
+
+//sampler2D ln_MaterialTexture;
 //Texture2D ln_MaterialTexture;
 //SamplerState ln_MaterialTextureSamplerState;
 

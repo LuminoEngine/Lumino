@@ -252,7 +252,8 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 	}
 
     auto coreNode = makeObject<MeshNode>();
-    coreNode->setLocalTransform(nodeTransform);
+	coreNode->setName(String::fromStdString(node.name));
+    coreNode->setInitialLocalTransform(nodeTransform);
 	coreNode->skeletonIndex = node.skin;
 
     if (node.mesh > -1) {

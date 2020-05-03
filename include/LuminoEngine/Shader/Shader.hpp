@@ -178,6 +178,7 @@ private:
 
     friend class Shader;
     friend class ShaderPass;
+    friend class ShaderConstantBuffer;
     friend class detail::ShaderValueSerializer;
 };
 
@@ -191,7 +192,11 @@ public:
     /** 定数バッファの名前を取得します。 */
     const String& name() const { return m_name; }
 
-    /** 定数バッファにデータを設定します。通常、シェーダプログラムで定義したレイアウトと同じ構造体を転送します。 */
+    /** 
+     * 定数バッファにデータを設定します。通常、シェーダプログラムで定義したレイアウトと同じ構造体を転送します。
+     *
+     * データ内の float4x4 は自動的に転置されます。それ以外の行列型は呼び出し側で転置しないと、mul(v, M) の計算順に適合しません。
+     */
     void setData(const void* data, int size);
 
     /** 定数バッファのバイトサイズを取得します。 */

@@ -766,8 +766,23 @@ MeshNode::MeshNode()
     : m_index(-1)
     , m_meshContainerIndex(-1)
     , m_children()
-    , m_localTransform(Matrix::Identity)
+    , m_initialLocalTransform(Matrix::Identity)
 {
+}
+
+void MeshNode::setPosition(const Vector3& value)
+{
+	m_localTransform.translation = value;
+}
+
+void MeshNode::setRotation(const Quaternion& value)
+{
+	m_localTransform.rotation = value;
+}
+
+void MeshNode::setScale(const Vector3& value)
+{
+	m_localTransform.scale = value;
 }
 
 void MeshNode::setMeshContainerIndex(int value)
@@ -780,9 +795,9 @@ void MeshNode::addChildIndex(int value)
     m_children.add(value);
 }
 
-void MeshNode::setLocalTransform(const Matrix& value)
+void MeshNode::setInitialLocalTransform(const Matrix& value)
 {
-    m_localTransform = value;
+	m_initialLocalTransform = value;
 }
 
 //==============================================================================
@@ -801,6 +816,11 @@ StaticMeshModel::StaticMeshModel()
 StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
     : m_type(type)
 {
+}
+
+MeshNode* StaticMeshModel::findNode(StringRef name) const
+{
+	return m_nodes.findIf([&](const auto& x) { return x->name() == name; }).valueOr(nullptr);
 }
 
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
@@ -837,7 +857,12 @@ void StaticMeshModel::updateNodeTransforms()
 void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform)
 {
     auto node = m_nodes[nodeIndex];
-    m_nodeGlobalTransforms[nodeIndex] = node->localTransform() * parentTransform;   // NOTE: glTF はこの順である必要がある。
+
+	Matrix local = Matrix::makeScaling(node->m_localTransform.scale);
+	local.rotateQuaternion(node->m_localTransform.rotation);
+	local.translate(node->m_localTransform.translation);
+
+    m_nodeGlobalTransforms[nodeIndex] = node->initialLocalTransform() * local * parentTransform;   // NOTE: glTF はこの順である必要がある。
 
     for (int child : node->m_children) {
         updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex]);

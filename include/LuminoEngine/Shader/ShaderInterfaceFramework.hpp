@@ -8,7 +8,30 @@ namespace ln {
 class Texture;
 class Texture2D;
 class ShaderParameter;
+class ShaderConstantBuffer;
 namespace detail {
+
+// cbuffer LNRenderViewBuffer
+struct alignas(16) LNRenderViewBuffer
+{
+    alignas(16) Matrix ln_View;
+    alignas(16) Matrix ln_Projection;
+    alignas(16) Vector3 ln_CameraPosition;
+    alignas(16) Vector3 ln_CameraDirection;
+    alignas(8) Vector2 ln_ViewportPixelSize;
+    alignas(4) float ln_NearClip;
+    alignas(4) float ln_FarClip;
+};
+
+// cbuffer LNRenderElementBuffer
+struct alignas(16) LNRenderElementBuffer
+{
+    alignas(16) Matrix ln_World;
+    alignas(16) Matrix ln_WorldViewProjection;
+    alignas(16) Matrix ln_WorldView;
+    alignas(16) Matrix ln_WorldViewIT;
+    alignas(8) Vector4 ln_BoneTextureReciprocalSize;
+};
 
 // シェーダ変数セマンティクス
 enum class BuiltinSemantics
@@ -18,32 +41,22 @@ enum class BuiltinSemantics
     Dummy,
 
     //--------------------
-    // Camera unit
-    View,
-    Projection,
-    ViewportPixelSize,
-    NearClip,
-    FarClip,
-    CameraPosition,
-    CameraDirection,
-
-    //--------------------
     // Element unit
     WorldViewProjection,
     World,
     WorldView,
     WorldViewIT, // transpose(inverse(WorldView));
 
-    LightEnables,     // [Mark only] bool[]
-    LightWVPMatrices, // [Mark only] matrix[]
-    LightDirections,  // [Mark only] vector[]
-    LightPositions,   // [Mark only] vector[]
-    LightZFars,       // [Mark only] float[]
-    LightDiffuses,    // [Mark only] vector[]
-    LightAmbients,    // [Mark only] vector[]
-    LightSpeculars,   // [Mark only] vector[]
+    //LightEnables,     // [Mark only] bool[]
+    //LightWVPMatrices, // [Mark only] matrix[]
+    //LightDirections,  // [Mark only] vector[]
+    //LightPositions,   // [Mark only] vector[]
+    //LightZFars,       // [Mark only] float[]
+    //LightDiffuses,    // [Mark only] vector[]
+    //LightAmbients,    // [Mark only] vector[]
+    //LightSpeculars,   // [Mark only] vector[]
 
-    BoneTextureReciprocalSize,  // internal
+    //BoneTextureReciprocalSize,  // internal
     BoneTexture,                // internal
     BoneLocalQuaternionTexture, // internal
 
@@ -189,7 +202,8 @@ public:
     ShaderSemanticsManager();
 
     // call by shader creation time.
-    void prepareParameter(ShaderParameter* var);
+    void prepareParameter(ShaderParameter* var);    // deprecated
+    void prepareConstantBuffer(ShaderConstantBuffer* buffer);
 
     // call by rendering time.
     void updateSceneVariables(const SceneInfo& info);
@@ -208,8 +222,10 @@ private:
     };
 
     List<VariableKindPair> m_sceneVariables;
-    List<VariableKindPair> m_cameraVariables;
+    //List<VariableKindPair> m_cameraVariables;
+    ShaderConstantBuffer* m_renderViewBuffer = nullptr;
     List<VariableKindPair> m_elementVariables;
+    ShaderConstantBuffer* m_renderElementBuffer = nullptr;
     List<VariableKindPair> m_subsetVariables;
     // TODO: 実質↑のほとんどの変数は使うので、リストを分けるとかえって変にメモリ使ってしまうかも。
     // ↓のような全体でひとつのテーブル使う方がかえって検索効率もよくなる。後でこっちにする。

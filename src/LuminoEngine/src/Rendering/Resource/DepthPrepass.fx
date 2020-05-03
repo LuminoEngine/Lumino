@@ -4,10 +4,7 @@
  * 視点から離れるほど値が大きくなる。
  */
 
-float4x4 ln_WorldView;
-float4x4 ln_Projection;
-float ln_NearClip;
-float ln_FarClip;
+#include <Lumino.fxh>
 
 struct VSInput
 {

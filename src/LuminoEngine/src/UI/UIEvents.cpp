@@ -44,6 +44,9 @@ const UIEventType   UIEvents::SelectionChanged = 25;
 
 const UIEventType   UIEvents::Timer = 26;
 
+const UIEventType	UIEvents::Activated = 27;
+const UIEventType	UIEvents::Deactivated = 28;
+
 const UIEventType	UIEvents::ExecuteCommandEvent = 201;
 const UIEventType	UIEvents::CanExecuteCommandEvent = 202;
 const UIEventType	UIEvents::CanExecuteChangedEvent = 203;

@@ -32,32 +32,21 @@ void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir,
 //		Unity Builtin Shader variables
 //		https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html
 
-static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit =
-    {
-        {_LT("ln_View"), BuiltinSemantics::View},
-        {_LT("ln_Projection"), BuiltinSemantics::Projection},
-        {_LT("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize},
-        {_LT("ln_NearClip"), BuiltinSemantics::NearClip},
-        {_LT("ln_FarClip"), BuiltinSemantics::FarClip},
-        {_LT("ln_CameraPosition"), BuiltinSemantics::CameraPosition},
-        {_LT("ln_CameraDirection"), BuiltinSemantics::CameraDirection},
-};
-
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
     {
         {_LT("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection},
         {_LT("ln_World"), BuiltinSemantics::World},
         {_LT("ln_WorldView"), BuiltinSemantics::WorldView},
         {_LT("ln_WorldViewIT"), BuiltinSemantics::WorldViewIT},
-        {_LT("ln_LightEnables"), BuiltinSemantics::LightEnables},
-        {_LT("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices},
-        {_LT("ln_LightDirections"), BuiltinSemantics::LightDirections},
-        {_LT("ln_LightPositions"), BuiltinSemantics::LightPositions},
-        {_LT("ln_LightZFars"), BuiltinSemantics::LightZFars},
-        {_LT("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses},
-        {_LT("ln_LightAmbients"), BuiltinSemantics::LightAmbients},
-        {_LT("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars},
-        {_LT("ln_BoneTextureReciprocalSize"), BuiltinSemantics::BoneTextureReciprocalSize},
+        //{_LT("ln_LightEnables"), BuiltinSemantics::LightEnables},
+        //{_LT("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices},
+        //{_LT("ln_LightDirections"), BuiltinSemantics::LightDirections},
+        //{_LT("ln_LightPositions"), BuiltinSemantics::LightPositions},
+        //{_LT("ln_LightZFars"), BuiltinSemantics::LightZFars},
+        //{_LT("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses},
+        //{_LT("ln_LightAmbients"), BuiltinSemantics::LightAmbients},
+        //{_LT("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars},
+        //{_LT("ln_BoneTextureReciprocalSize"), BuiltinSemantics::BoneTextureReciprocalSize},
         {_LT("ln_BoneTexture"), BuiltinSemantics::BoneTexture},
         {_LT("ln_BoneLocalQuaternionTexture"), BuiltinSemantics::BoneLocalQuaternionTexture},
 };
@@ -99,27 +88,25 @@ static BuiltinSemanticsNamePair g_builtinSemanticsNamePairMap[] =
 
 ShaderSemanticsManager::ShaderSemanticsManager()
     : m_sceneVariables()
-    , m_cameraVariables()
     , m_elementVariables()
     , m_subsetVariables()
     , m_variablesTable{}
 //, m_lastCameraInfoId(0)
 //, m_tempBufferWriter(&m_tempBuffer)
 {
+    // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
+    assert(128 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
+    assert(144 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
+    assert(160 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_ViewportPixelSize));
+    assert(168 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
+    assert(172 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
+    assert(176 == sizeof(LNRenderViewBuffer));
+    assert(272 == sizeof(LNRenderElementBuffer));
 }
 
 void ShaderSemanticsManager::prepareParameter(ShaderParameter* var)
 {
     const String& name = var->name();
-
-    // try camera unit
-    {
-        auto itr = g_builtinNameMap_CameraUnit.find(name);
-        if (itr != g_builtinNameMap_CameraUnit.end()) {
-            m_cameraVariables.add({var, itr->second});
-            return;
-        }
-    }
 
     // try element unit
     {
@@ -148,57 +135,66 @@ void ShaderSemanticsManager::prepareParameter(ShaderParameter* var)
     }
 }
 
+void ShaderSemanticsManager::prepareConstantBuffer(ShaderConstantBuffer* buffer)
+{
+    if (buffer->name() == u"LNRenderViewBuffer") {
+        m_renderViewBuffer = buffer;
+    }
+    else if (buffer->name() == u"LNRenderElementBuffer") {
+        m_renderElementBuffer = buffer;
+    }
+}
+
 void ShaderSemanticsManager::updateSceneVariables(const SceneInfo& info)
 {
 }
 
 void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 {
-    for (const VariableKindPair& varInfo : m_cameraVariables) {
-        switch (varInfo.kind) {
-            case BuiltinSemantics::View:
-                varInfo.variable->setMatrix(info.viewMatrix);
-                break;
-            case BuiltinSemantics::Projection:
-                varInfo.variable->setMatrix(info.projMatrix);
-                break;
-            case BuiltinSemantics::ViewportPixelSize:
-                varInfo.variable->setVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
-                break;
-            case BuiltinSemantics::NearClip:
-                varInfo.variable->setFloat(info.nearClip);
-                break;
-            case BuiltinSemantics::FarClip:
-                varInfo.variable->setFloat(info.farClip);
-                break;
-            case BuiltinSemantics::CameraPosition:
-                varInfo.variable->setVector(Vector4(info.viewPosition, 0));
-                break;
-            case BuiltinSemantics::CameraDirection:
-                varInfo.variable->setVector(Vector4(info.viewDirection, 0));
-                break;
-            default:
-                break;
-        }
+    if (m_renderViewBuffer) {
+        LNRenderViewBuffer data;
+        data.ln_View = info.viewMatrix;
+        data.ln_Projection = info.projMatrix;
+        data.ln_ViewportPixelSize = info.viewPixelSize;
+        data.ln_NearClip = info.nearClip;
+        data.ln_FarClip = info.farClip;
+        data.ln_CameraPosition = info.viewPosition;
+        data.ln_CameraDirection = info.viewDirection;
+        m_renderViewBuffer->setData(&data, sizeof(data));
     }
 }
 
 void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
 {
+    if (m_renderElementBuffer) {
+        LNRenderElementBuffer data;
+        // Matrix は送る前に転置が必要。TODO: なんとか使わずすむようにしたいけど…。
+        data.ln_World = info.WorldMatrix;
+        data.ln_WorldViewProjection =info.WorldViewProjectionMatrix;
+        data.ln_WorldView = info.WorldMatrix * cameraInfo.viewMatrix;
+        // TODO: 毎回ここでやるのは重い
+        data.ln_WorldViewIT = Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)); // ここも転置が必要なんだけど、今はここで計算してるので結果的に転置は不要
+        
+        if (info.boneTexture)
+            data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
+
+        m_renderElementBuffer->setData(&data, sizeof(data));
+    }
+
     for (const VariableKindPair& varInfo : m_elementVariables) {
         switch (varInfo.kind) {
-            case BuiltinSemantics::WorldViewProjection:
-                varInfo.variable->setMatrix(info.WorldViewProjectionMatrix);
-                break;
-            case BuiltinSemantics::World:
-                varInfo.variable->setMatrix(info.WorldMatrix);
-                break;
-            case BuiltinSemantics::WorldView:
-                varInfo.variable->setMatrix(info.WorldMatrix * cameraInfo.viewMatrix);
-                break;
-            case BuiltinSemantics::WorldViewIT:
-                varInfo.variable->setMatrix(Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)));
-                break;
+            //case BuiltinSemantics::WorldViewProjection:
+            //    varInfo.variable->setMatrix(info.WorldViewProjectionMatrix);
+            //    break;
+            //case BuiltinSemantics::World:
+            //    varInfo.variable->setMatrix(info.WorldMatrix);
+            //    break;
+            //case BuiltinSemantics::WorldView:
+            //    varInfo.variable->setMatrix(info.WorldMatrix * cameraInfo.viewMatrix);
+            //    break;
+            //case BuiltinSemantics::WorldViewIT:
+            //    varInfo.variable->setMatrix(Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)));
+            //    break;
 
 #if 0
 			// TODO: 以下、ライト列挙時に確定したい。何回もこんな計算するのはちょっと・・
@@ -298,12 +294,12 @@ void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo
 			break;
 #endif
 
-            case BuiltinSemantics::BoneTextureReciprocalSize:
-				if (info.boneTexture)
-					varInfo.variable->setVector(Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0));
-				else
-					varInfo.variable->setVector(Vector4::Zero);
-                break;
+    //        case BuiltinSemantics::BoneTextureReciprocalSize:
+				//if (info.boneTexture)
+				//	varInfo.variable->setVector(Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0));
+				//else
+				//	varInfo.variable->setVector(Vector4::Zero);
+    //            break;
             case BuiltinSemantics::BoneTexture:
                 varInfo.variable->setTexture(info.boneTexture);
                 break;

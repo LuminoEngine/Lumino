@@ -101,6 +101,9 @@ public:
 
 	static const UIEventType	Timer;
 
+	static const UIEventType	Activated;
+	static const UIEventType	Deactivated;
+
     static const UIEventType	ExecuteCommandEvent;
     static const UIEventType	CanExecuteCommandEvent;
     static const UIEventType	CanExecuteChangedEvent;

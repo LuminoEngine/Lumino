@@ -147,6 +147,11 @@ void Sprite::setFrameIndex(int index)
 	m_component->setFrameIndex(index);
 }
 
+SpriteSheet* Sprite::spriteSheet() const
+{
+    return m_component->spriteSheet();
+}
+
 const Rect& Sprite::sourceRect() const
 {
     return m_component->sourceRect();

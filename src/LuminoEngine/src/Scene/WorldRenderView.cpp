@@ -410,7 +410,7 @@ void WorldRenderView::createGridPlane()
     //m_gridPlane = makeObject<StaticMeshModel>();
     //m_gridPlane->addMeshContainer(meshContainer);
 
-#if 1
+#if 0
 	static const unsigned char data[] =
 	{
 #include "../Rendering/Resource/InfinitePlaneGrid.lcfx.inl"
@@ -419,7 +419,7 @@ void WorldRenderView::createGridPlane()
 	MemoryStream stream(data, size);
 	auto shader = makeObject<Shader>(u"InfinitePlaneGrid", &stream);
 #else
-    auto shader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
+    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 #endif
     m_gridPlaneMaterial = makeObject<Material>();
     m_gridPlaneMaterial->setShader(shader);

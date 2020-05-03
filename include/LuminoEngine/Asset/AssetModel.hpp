@@ -56,6 +56,9 @@ public:
     LN_METHOD()
     Object* target() const;
 
+    template<class T>
+    T* targetAs() const { return dynamic_cast<T*>(target()); }  // TODO: できれば TypeInfo で型チェック
+
     Path assetFilePath() const { return  m_assetFilePath; }
 
 	Ref<AssetProperty> findProperty(const String& path);

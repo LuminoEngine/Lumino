@@ -19,6 +19,7 @@ UIControl::UIControl()
 	, m_logicalChildren(makeCollection<Ref<UIElement>>())
 {
 	m_objectManagementFlags.set(detail::ObjectManagementFlags::AutoAddToPrimaryElement);
+    m_specialElementFlags.set(detail::UISpecialElementFlags::Control);
     setFocusable(true);
 }
 
@@ -205,6 +206,26 @@ void UIControl::addAction(UIAction* action)
     m_actions->add(action);
 }
 
+Ref<EventConnection> UIControl::connectOnActivated(Ref<UIEventHandler> handler)
+{
+    return m_onActivated.connect(handler);
+}
+
+Ref<EventConnection> UIControl::connectOnDeactivated(Ref<UIEventHandler> handler)
+{
+    return m_onDeactivated.connect(handler);
+}
+
+void UIControl::onActivated()
+{
+    m_onActivated.raise(/*UIEventArgs::create(this, UIEvents::Activated)*/);
+}
+
+void UIControl::onDeactivated()
+{
+    m_onDeactivated.raise(/*UIEventArgs::create(this, UIEvents::Deactivated)*/);
+}
+
 void UIControl::onAddChild(UIElement* child)
 {
     addElement(child);
@@ -330,6 +351,28 @@ void UIControl::onLayoutPanelChanged(UILayoutPanel* newPanel)
 {
 }
 
+// activateInternal と deactivateInternal は、以前は UIElement が持っていた。しかし、
+// - 見た目だけを表現したい Shape をクリックしたときに前後関係が変わってほしくない。
+// - onActivate/onDeactivate を Event にしたいが、UIElement に Event を持たせるとまたメモリサイズが増える
+// 実際のところ onActivate/onDeactivate は Control の機能で十分と判断したのでこっちに持ってきている。
+void UIControl::activateInternal()
+{
+    if (m_visualParent) {
+        m_visualParent->moveVisualChildToForeground(this);
+        //m_visualParent->activateInternal();
+    }
+
+    onActivated();
+}
+
+void UIControl::deactivateInternal()
+{
+	//if (m_visualParent) {
+	//	m_visualParent->deactivateInternal();
+	//}
+
+    onDeactivated();
+}
 
 //==============================================================================
 // UIAligned3x3GridLayout

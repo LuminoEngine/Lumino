@@ -5,6 +5,8 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
+#include <LuminoEngine/Asset/AssetModel.hpp>
+#include "../Asset/AssetManager.hpp"
 #include "../Rendering/SpriteRenderFeature.hpp"
 
 namespace ln {
@@ -59,6 +61,15 @@ void SpriteFrame::serialize2(Serializer2& ar)
   SpriteSheet を使うのはドット絵がほとんど。どっちがよくある話かっていうと後者の方が圧倒的に多いだろう。
 */
 LN_OBJECT_IMPLEMENT(SpriteSheet, Object) {}
+
+Ref<SpriteSheet> SpriteSheet::load(StringRef path)
+{
+    auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromLocalFile(path);
+    if (auto obj = (assetModel) ? assetModel->targetAs<SpriteSheet>() : nullptr)
+        return obj;
+    else
+        return nullptr;
+}
 
 Ref<SpriteSheet> SpriteSheet::create(Texture* texture, int frameWidth, int frameHeight, const Vector2& anchorPoint)
 {
@@ -258,6 +269,11 @@ void SpriteComponent::setFrameSet(SpriteSheet* value)
 void SpriteComponent::setFrameIndex(int index)
 {
 	m_frameIndex = index;
+}
+
+SpriteSheet* SpriteComponent::spriteSheet() const
+{
+    return m_frameSet;
 }
 
 void SpriteComponent::onRender(RenderingContext* context)

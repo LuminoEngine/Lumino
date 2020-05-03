@@ -323,6 +323,19 @@ private:
 class MeshNode : public Object
 {
 public:
+	void setPosition(const Vector3& value);
+	void setPosition(float x, float y, float z) { setPosition(Vector3(x, y, z)); }
+
+	void setRotation(const Quaternion& value);
+	void setRotation(float x, float y, float z) { setRotation(Quaternion::makeFromEulerAngles(Vector3(x, y, z))); }
+
+	void setScale(const Vector3& value);
+	void setScale(float x, float y, float z) { setScale(Vector3(x, y, z)); }
+	void setScale(float xyz) { setScale(Vector3(xyz, xyz, xyz)); }
+
+	void setName(const String& value) { m_name = value; }
+	const String& name() const { return m_name; }
+
     int index() const { return m_index; }
 
     void setMeshContainerIndex(int value);
@@ -332,19 +345,26 @@ public:
 
     void addChildIndex(int value);
 
-    void setLocalTransform(const Matrix& value);
+    void setInitialLocalTransform(const Matrix& value);
 
-    const Matrix& localTransform() const { return m_localTransform; }
+    const Matrix& initialLocalTransform() const { return m_initialLocalTransform; }
     
 LN_CONSTRUCT_ACCESS:
 	MeshNode();
     virtual ~MeshNode() = default;
 
 private:
+	String m_name;
     int m_index;
     int m_meshContainerIndex;
     List<int> m_children;
-    Matrix m_localTransform;
+
+	// デフォルトの、親ノードからの相対姿勢。
+	// SkinnedMesh でもボーンの初期姿勢として参照するが、この値が実行中に変わることは無い。
+    Matrix m_initialLocalTransform;
+
+	// アニメーションを書き込むのはここ
+	AttitudeTransform m_localTransform;
 
     friend class StaticMeshModel;
 };
@@ -365,6 +385,8 @@ class StaticMeshModel
 {
 public:
     static Ref<StaticMeshModel> load(const StringRef& filePath, float scale = 1.0f);
+
+	MeshNode* findNode(StringRef name) const;
 
 	void addMeshContainer(MeshContainer* meshContainer);
     void addNode(MeshNode* node);

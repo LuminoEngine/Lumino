@@ -50,6 +50,7 @@
 #include "LuminoEngine/Font/Font.hpp"
 
 #include "LuminoEngine/Mesh/Mesh.hpp"
+#include "LuminoEngine/Mesh/SkinnedMeshModel.hpp"
 
 #include "LuminoEngine/Rendering/Common.hpp"
 #include "LuminoEngine/Rendering/Material.hpp"
@@ -70,7 +71,6 @@
 
 #include "LuminoEngine/Visual/LightComponent.hpp"
 #include "LuminoEngine/Visual/SpriteComponent.hpp"
-#include "LuminoEngine/Visual/StaticMeshComponent.hpp"
 
 #include "LuminoEngine/Scene/WorldRenderView.hpp"
 #include "LuminoEngine/Scene/World.hpp"
@@ -81,9 +81,12 @@
 #include "LuminoEngine/Scene/Light.hpp"
 #include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
-#include "LuminoEngine/Scene/Text/Text.hpp"
-#include "LuminoEngine/Scene/StaticMesh.hpp"
 #include "LuminoEngine/Scene/RigidBodyComponent.hpp"
+#include "LuminoEngine/Scene/Text/Text.hpp"
+#include "LuminoEngine/Scene/Mesh/StaticMeshComponent.hpp"
+#include "LuminoEngine/Scene/Mesh/StaticMesh.hpp"
+#include "LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp"
+#include "LuminoEngine/Scene/Mesh/SkinnedMesh.hpp"
 
 #include "LuminoEngine/Scene/Scene.hpp"
 #include "LuminoEngine/Scene/SceneConductor.hpp"
@@ -98,6 +101,7 @@
 #include "LuminoEngine/UI/UIGridLayout.hpp"
 #include "LuminoEngine/UI/UIWindow.hpp"
 #include "LuminoEngine/UI/UIButton.hpp"
+#include "LuminoEngine/UI/UIListBox.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 

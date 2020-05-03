@@ -394,9 +394,14 @@ void Shader::postInitialize()
     // find global constant buffer.
     {
         m_globalConstantBuffer = findConstantBuffer(u"_Global");
-        if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
-            m_globalConstantBuffer = m_buffers.front();
+        //if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
+        //    m_globalConstantBuffer = m_buffers.front();
+        //}
+
+        for (auto& cbuffer : m_buffers) {
+            m_semanticsManager.prepareConstantBuffer(cbuffer);
         }
+
     }
 
     // analyze semantices.
@@ -699,6 +704,15 @@ void ShaderConstantBuffer::init(Shader* owner, detail::IShaderUniformBuffer* rhi
 void ShaderConstantBuffer::setData(const void* data, int size)
 {
     m_buffer.assign(data, size);
+
+    for (const auto& param : m_parameters) {
+        const auto& desc = param->desc();
+        if (desc.type2 == detail::ShaderUniformType_Matrix &&
+            desc.columns == 4 && desc.rows == 4) {
+            Matrix* m = reinterpret_cast<Matrix*>(m_buffer.data() + desc.offset);
+            m->transpose();
+        }
+    }
 }
 
 ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) const

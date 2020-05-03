@@ -84,6 +84,7 @@ public:
 	/** SpriteSheet から適用するフレームインデックスを設定します。デフォルトは -1 で、これはフレームを使用しないことを示します。 */
 	void setFrameIndex(int index);
 
+    SpriteSheet* spriteSheet() const;
 
 
     /**

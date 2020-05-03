@@ -34,7 +34,7 @@ private:
 
 public:
 	typedef decltype(check(std::declval<T>())) type;
-	static bool const value = !type::value;
+	static bool const value = !type::value && !std::is_enum<T>::value;
 };
 
 } // namespace detail
@@ -304,6 +304,8 @@ private:
 	void writeValue(String& value) { writeString(value); }
 	template<typename T>
 	void writeValue(Ref<T>& value) { writeObject(value); }
+	template<typename T, typename std::enable_if<std::is_enum<T>::value, std::nullptr_t>::type = nullptr>
+	void writeValue(T& value) { writeInt32((int)value); }
 	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
 	void writeValue(T& value) { value.serialize2(*this); }
 	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
@@ -335,6 +337,8 @@ private:
 	void readValue(String& outValue) { outValue = readString(); }
 	template<typename T>
 	void readValue(Ref<T>& outValue) { outValue = dynamic_pointer_cast<T>(readObjectInteral([]() -> Ref<Object> { return detail::makeObjectHelper<T>(); }, nullptr)); }
+	template<typename T, typename std::enable_if<std::is_enum<T>::value, std::nullptr_t>::type = nullptr>
+	void readValue(T& value) { value = (T)readInt32(); }
 	template<typename T, typename std::enable_if<detail::has_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>
 	void readValue(T& outValue) { outValue.serialize2(*this); }
 	template<typename T, typename std::enable_if<detail::non_member_serialize2_function<T>::value, std::nullptr_t>::type = nullptr>

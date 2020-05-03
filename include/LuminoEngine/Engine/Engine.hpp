@@ -7,6 +7,7 @@ class UIContext;
 class UIFrameWindow;
 class UIViewport;
 class UIControl;
+class UIFocusNavigator;
 class WorldRenderView;
 class PhysicsWorld;
 class PhysicsWorld2D;
@@ -85,6 +86,10 @@ public:
 	/** デフォルトで作成されるメインの RenderView です。 */
 	LN_METHOD(Property)
 	static WorldRenderView* renderView();
+	
+	/** デフォルトで作成されるメインの UIFocusNavigator です。 */
+	LN_METHOD(Property)
+	static UIFocusNavigator* navigator();
 
 	static UIControl* ui() { return mainUIView(); }
 
