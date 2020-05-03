@@ -197,6 +197,15 @@ bool UIListView2::init()
     return true;
 }
 
+bool UIListView2::init(Ref<UIGetListItemCountCallback> itemCount, Ref<UIRefreshListItemContentCallback> refreshItem)
+{
+    if (!init()) return false;
+    m_getListItemCountCallback = itemCount;
+    m_refreshListItemContentCallback = refreshItem;
+    m_dirtyItemInstances = true;
+    return true;
+}
+
 Ref<UIListViewItem2> UIListView2::onGenerateItem()
 {
     return ln::makeObject2<UIListViewItem2>();
@@ -204,7 +213,12 @@ Ref<UIListViewItem2> UIListView2::onGenerateItem()
 
 void UIListView2::onRefreshItemContent(int index, UIListViewItem2* item)
 {
-    item->setText(0, String::fromNumber(index));
+    if (m_refreshListItemContentCallback) {
+        m_refreshListItemContentCallback->call(index, item);
+    }
+    else {
+        item->setText(0, String::fromNumber(index));
+    }
 }
 
 void UIListView2::onAddChild(UIElement* child)
@@ -246,10 +260,21 @@ Size UIListView2::arrangeOverride(UILayoutContext* layoutContext, const Size& fi
     return UIListItemsControl::arrangeOverride(layoutContext, finalSize);
 }
 
+int UIListView2::getModelItemCount() const
+{
+    if (m_listViewModel)
+        return m_listViewModel->getItemCount();
+    else if (m_getListItemCountCallback)
+        return m_getListItemCountCallback->call();
+    else
+        return 0;
+}
+
 void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, const Size& finalSize)
 {
     if (m_dirtyItemInstances) {
-        if (m_listViewModel->getItemCount() > 0) {
+        int modelItemCount = getModelItemCount();
+        if (modelItemCount > 0) {
 
             // 代表 Item から、Item の基本サイズを求めておく
             {
@@ -257,6 +282,7 @@ void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, con
                 if (m_logicalChildren->isEmpty()) {
                     representative = onGenerateItem();
                     addListItem(representative);
+                    m_dirtyItemContent = true;
                     // arrangeOverride の中で新たに作ったものは style 更新と masure しておかないと、サイズが取れない
                     representative->updateStyleHierarchical(layoutContext->styleContext(), m_finalStyle);
                     representative->measureLayout(layoutContext, finalSize);
@@ -272,7 +298,7 @@ void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, con
             // View サイズに収まる分だけ、足りない分の Item があれば作る。
             // 内容についてはこの時点では更新しない。
             int maxRequiredCount = std::ceil(finalSize.height / m_baseItemHeight);
-            int requiredCount = std::min(m_listViewModel->getItemCount(), maxRequiredCount);
+            int requiredCount = std::min(modelItemCount, maxRequiredCount);
             int diff = requiredCount - m_logicalChildren->size();
             for (int i = 0; i < diff; i++) {
                 addListItem(onGenerateItem());

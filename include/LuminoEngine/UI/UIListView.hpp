@@ -92,6 +92,10 @@ private:
     List<UIElement*> m_columnContents;
 };
 
+
+using UIGetListItemCountCallback = Delegate<int()>;
+using UIRefreshListItemContentCallback = Delegate<void(int index, UIListViewItem2* item)>;
+
 class UIListView2
     : public UIListItemsControl
 {
@@ -111,8 +115,10 @@ protected:
 LN_CONSTRUCT_ACCESS:
     UIListView2();
     bool init();
+    bool init(Ref<UIGetListItemCountCallback> itemCount, Ref<UIRefreshListItemContentCallback> refreshItem);
 
 private:
+    int getModelItemCount() const;
     void attemptRefreshItemInstance(UILayoutContext* layoutContext, const Size& finalSize);
     bool attemptRefreshContents();
 
@@ -120,6 +126,8 @@ private:
     float m_baseItemHeight = 0;
     bool m_dirtyItemInstances = true;
     bool m_dirtyItemContent = true;
+    Ref<UIGetListItemCountCallback> m_getListItemCountCallback;
+    Ref<UIRefreshListItemContentCallback> m_refreshListItemContentCallback;
 };
 
 } // namespace ln
