@@ -9,6 +9,7 @@
 #include <LuminoEngine/UI/UIRenderView.hpp>
 #include <LuminoEngine/UI/UIFrameWindow.hpp>
 #include <LuminoEngine/UI/UIViewport.hpp>
+#include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
@@ -274,6 +275,11 @@ AmbientLight* Engine::ambientLight()
 WorldRenderView* Engine::renderView()
 {
     return detail::EngineDomain::engineManager()->mainRenderView();
+}
+
+UIFocusNavigator* Engine::navigator()
+{
+    return static_cast<UIDomainProvidor*>(Engine::mainUIView())->focusNavigator();
 }
 
 PhysicsWorld* Engine::mainPhysicsWorld()

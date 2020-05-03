@@ -126,6 +126,9 @@ class UIListBox
 public:
     static Ref<UIListBox> create();
 
+	/** UIListBoxItem を追加し、そのインスタンスを返します。 */
+	UIListBoxItem* addItem(const ln::String& text);
+
 	// この UIElement のメイン要素と bind する Property を設定する。
 	// 具体的にどのような表示要素と bind するのかは実装により異なる。
 	// 例えば ListBox なら、Collection を bind することで ListBoxItem を生成する。

@@ -124,6 +124,7 @@ public:
 	void setFrameIndex(int index);
 	int frameIndex() const { return m_frameIndex; }
 
+	SpriteSheet* spriteSheet() const;
 
 
     /** 表示するテクスチャを水平に反転するかどうかを設定します。 */

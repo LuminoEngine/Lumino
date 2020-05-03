@@ -271,6 +271,11 @@ void SpriteComponent::setFrameIndex(int index)
 	m_frameIndex = index;
 }
 
+SpriteSheet* SpriteComponent::spriteSheet() const
+{
+    return m_frameSet;
+}
+
 void SpriteComponent::onRender(RenderingContext* context)
 {
 #if 1

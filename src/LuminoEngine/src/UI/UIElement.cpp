@@ -1099,21 +1099,6 @@ bool UIElement::isRenderVisible() const
     return m_finalStyle->visible == UIVisibility::Visible && m_internalVisibility == UIVisibility::Visible;
 }
 
-void UIElement::activateInternal()
-{
-	if (m_visualParent) {
-		m_visualParent->moveVisualChildToForeground(this);
-		//m_visualParent->activateInternal();
-	}
-}
-
-//void UIElement::deactivateInternal()
-//{
-//	//if (m_visualParent) {
-//	//	m_visualParent->deactivateInternal();
-//	//}
-//}
-
 void UIElement::moveVisualChildToForeground(UIElement* child)
 {
 	if (LN_REQUIRE(m_orderdVisualChildren)) return;

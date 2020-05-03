@@ -101,6 +101,7 @@
 #include "LuminoEngine/UI/UIGridLayout.hpp"
 #include "LuminoEngine/UI/UIWindow.hpp"
 #include "LuminoEngine/UI/UIButton.hpp"
+#include "LuminoEngine/UI/UIListBox.hpp"
 
 #include "LuminoEngine/Asset/Assets.hpp"
 

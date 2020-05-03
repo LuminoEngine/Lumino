@@ -353,6 +353,13 @@ bool UIListBox::init()
 	return true;
 }
 
+UIListBoxItem* UIListBox::addItem(const ln::String& text)
+{
+	auto item = UIListBoxItem::create(text);
+	addChild(item);
+	return item;
+}
+
 void UIListBox::bind(ObservablePropertyBase* prop)
 {
 	if (prop->type()->typeClass() == TypeInfoClass::Object) {

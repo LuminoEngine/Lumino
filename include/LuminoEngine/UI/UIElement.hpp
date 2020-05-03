@@ -531,8 +531,6 @@ public: // TODO: internal
     bool isRenderVisible() const;
     //bool isHitTestVisibleCore() const { return m_hitte && isRenderVisible(); }
 
-	void activateInternal();
-	//virtual void deactivateInternal();
 	void moveVisualChildToForeground(UIElement* child);
 
     void handleDetachFromUITree();

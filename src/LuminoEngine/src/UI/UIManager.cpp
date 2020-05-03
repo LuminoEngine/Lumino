@@ -285,6 +285,9 @@ void UIManager::activateTree(UIElement* element)
 		}
 
         // deactivate
+        if (e->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Control)) {
+            static_cast<UIControl*>(e)->deactivateInternal();
+        }
         if (e->focusable()) {
             auto args = UIEventArgs::create(e, UIEvents::LostFocusEvent, true);
             e->raiseEvent(args, UIEventRoutingStrategy::Direct);
@@ -302,7 +305,9 @@ void UIManager::activateTree(UIElement* element)
 		}
 
         // activate
-        e->activateInternal();
+        if (e->specialElementFlags().hasFlag(detail::UISpecialElementFlags::Control)) {
+            static_cast<UIControl*>(e)->activateInternal();
+        }
         if (e->focusable()) {
             auto args = UIEventArgs::create(e, UIEvents::GotFocusEvent, true);
             e->raiseEvent(args, UIEventRoutingStrategy::Direct);

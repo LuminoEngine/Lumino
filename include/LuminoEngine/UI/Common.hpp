@@ -78,6 +78,9 @@ enum class UISpecialElementFlags : uint8_t
     // 通常の論理ツリー上に配置され、レイアウトと描画は Adorner など別のフェーズで行う
     Popup = 1 << 2,
 
+    // UIControl. 
+    Control = 1 << 3,
+
     // 
     //LayoutInvisible = 1 << 3,
 

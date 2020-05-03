@@ -159,7 +159,19 @@ public:
 
     void addAction(UIAction* action);
 
+
+    /** Activated イベントの通知を受け取るコールバックを登録します。*/
+    //LN_METHOD(Event)
+    Ref<EventConnection> connectOnActivated(Ref<UIEventHandler> handler);
+
+    /** Unchecked イベントの通知を受け取るコールバックを登録します。*/
+    //LN_METHOD(Event)
+    Ref<EventConnection> connectOnDeactivated(Ref<UIEventHandler> handler);
+
 protected:
+    virtual void onActivated();
+    virtual void onDeactivated();
+
 	///** この要素内の子ビジュアル要素の数を取得します。 */
 	//virtual int getVisualChildrenCount() const;
 
@@ -181,12 +193,20 @@ protected:
     Ref<detail::UIAligned3x3GridLayoutArea> m_aligned3x3GridLayoutArea;
     List<Ref<UIElement>> m_inlineElements;
 private:
+    void activateInternal();
+    void deactivateInternal();
+    
+
 	List<Ref<UIActiveTimer>> m_activeTimers;
     Ref<List<Ref<UIAction>>> m_actions;
     Ref<Variant> m_data;
     //Ref<UILayoutPanel> m_layout;
 	//Size m_layoutDesiredSize;	// Layout is state-less
 
+    Event<UIEventHandler> m_onActivated;
+    Event<UIEventHandler> m_onDeactivated;
+
+    friend class detail::UIManager;
 };
 
 
