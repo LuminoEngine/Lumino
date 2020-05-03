@@ -226,6 +226,7 @@ class UILayoutContext
 {
 public:
 	float dpiScale() const { return m_dpiScale; }
+	UIStyleContext* styleContext() const { return m_styleContext; }
 
 	bool testLayoutEnabled(UIElement* element) const;
 
@@ -251,6 +252,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	float m_dpiScale;
+	UIStyleContext* m_styleContext = nullptr;
 	friend class UIFrameWindow;
 };
 

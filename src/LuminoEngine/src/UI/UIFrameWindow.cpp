@@ -397,6 +397,7 @@ void UIFrameWindow::updateLayoutTree()
 {
 	if (m_renderView) {
         m_layoutContext->m_dpiScale = platformWindow()->dpiFactor();
+        m_layoutContext->m_styleContext = m_context->styleContext();
 
 		//Rect clientRect(0, 0, m_clientSize);
 		m_renderView->setActualSize(m_clientSize);

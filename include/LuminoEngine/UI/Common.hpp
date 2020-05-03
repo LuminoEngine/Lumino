@@ -5,6 +5,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class UIStyleContext;
 class UICommand;
 class UIDomainProvidor;
 class UIViewport;

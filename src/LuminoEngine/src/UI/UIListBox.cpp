@@ -165,12 +165,14 @@ void UIListItemsControl::removeListItem(UIListItem* item)
 
 void UIListItemsControl::removeAllItems()
 {
-	for (const auto& item : *m_logicalChildren) {
-		static_pointer_cast<UIListItem>(item)->m_ownerListControl = nullptr;
-		item->setLogicalParent(nullptr);
-		m_itemsHostLayout->removeVisualChild(item);
+	if (!m_logicalChildren->isEmpty()) {
+		for (const auto& item : *m_logicalChildren) {
+			static_pointer_cast<UIListItem>(item)->m_ownerListControl = nullptr;
+			item->setLogicalParent(nullptr);
+			m_itemsHostLayout->removeVisualChild(item);
+		}
+		m_logicalChildren->clear();
 	}
-	m_logicalChildren->clear();
 }
 
 void UIListItemsControl::onRoutedEvent(UIEventArgs* e)
