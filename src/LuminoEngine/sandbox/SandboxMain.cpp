@@ -288,7 +288,7 @@ int main(int argc, char** argv)
 
     if (1) {
 		//Example_GameAudio();
-		Example_MeshViewer();
+		//Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
@@ -297,7 +297,7 @@ int main(int argc, char** argv)
 		//Sandbox_MeshTilemap();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
-		//UISandboxMain();
+		UISandboxMain();
         return 0;
     }
 

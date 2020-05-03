@@ -171,6 +171,7 @@ public:
 protected:
     virtual void onActivated();
     virtual void onDeactivated();
+    virtual void onLogicalChildRemoved(UIElement* removedElement);
 
 	///** この要素内の子ビジュアル要素の数を取得します。 */
 	//virtual int getVisualChildrenCount() const;

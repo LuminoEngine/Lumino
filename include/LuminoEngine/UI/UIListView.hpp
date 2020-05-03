@@ -75,16 +75,21 @@ class UIListViewItem2
     : public UIListItem
 {
 public:
+    void setContent(int columnId, UIElement* element);
+    void setText(int columnId, const ln::String& text);
 
 protected:
     // base interface
     const String& elementName() const override { static String name = u"UIListBoxItem"; return name; }
+    Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
+    void onLogicalChildRemoved(UIElement* removedElement) override;
 
 LN_CONSTRUCT_ACCESS:
     UIListViewItem2();
     bool init();
 
 private:
+    List<UIElement*> m_columnContents;
 };
 
 class UIListView2
@@ -94,11 +99,13 @@ public:
 
 protected:
     virtual Ref<UIListViewItem2> onGenerateItem();
+    virtual void onRefreshItemContent(int index, UIListViewItem2* item);
 
     // base interface
     const String& elementName() const override { static String name = u"UIListBox"; return name; }
     void onAddChild(UIElement* child) override;
     void onViewModelChanged(UIViewModel* newViewModel, UIViewModel* oldViewModel) override;
+    void onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle) override;
     Size arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
@@ -107,6 +114,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     void attemptRefreshItemInstance(UILayoutContext* layoutContext, const Size& finalSize);
+    bool attemptRefreshContents();
 
     Ref<UIListViewModel2> m_listViewModel;
     float m_baseItemHeight = 0;

@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include <LuminoEngine/UI/UILayoutPanel.hpp>
+#include <LuminoEngine/UI/UITextBlock.hpp>
 #include <LuminoEngine/UI/UIListView.hpp>
 
 namespace ln {
@@ -157,6 +158,32 @@ bool UIListViewItem2::init()
     return true;
 }
 
+void UIListViewItem2::setContent(int columnId, UIElement* element)
+{
+    if (LN_REQUIRE(element)) return;
+    if (LN_REQUIRE(element->logicalParent() != this)) return;
+    addElement(element);
+    m_columnContents.add(element);
+}
+
+void UIListViewItem2::setText(int columnId, const ln::String& text)
+{
+    // TODO: pooling
+    setContent(columnId, ln::UITextBlock::create(text));
+}
+
+Size UIListViewItem2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
+{
+    // TODO: m_columnContents をカラムごとにレイアウトする
+
+    return UIListItem::arrangeOverride(layoutContext, finalSize);
+}
+
+void UIListViewItem2::onLogicalChildRemoved(UIElement* removedElement)
+{
+    m_columnContents.remove(removedElement);
+}
+
 //==============================================================================
 // UIListView2
 
@@ -173,6 +200,11 @@ bool UIListView2::init()
 Ref<UIListViewItem2> UIListView2::onGenerateItem()
 {
     return ln::makeObject2<UIListViewItem2>();
+}
+
+void UIListView2::onRefreshItemContent(int index, UIListViewItem2* item)
+{
+    item->setText(0, String::fromNumber(index));
 }
 
 void UIListView2::onAddChild(UIElement* child)
@@ -193,19 +225,29 @@ void UIListView2::onViewModelChanged(UIViewModel* newViewModel, UIViewModel* old
     }
 }
 
+void UIListView2::onUpdateStyle(const UIStyleContext* styleContext, const detail::UIStyleInstance* finalStyle)
+{
+    attemptRefreshContents();
+    UIListItemsControl::onUpdateStyle(styleContext, finalStyle);
+}
+
 Size UIListView2::arrangeOverride(UILayoutContext* layoutContext, const Size& finalSize)
 {
     attemptRefreshItemInstance(layoutContext, finalSize);
+
+    if (attemptRefreshContents()) {
+        // Arrange で RefreshContents を実施した場合は、子要素の Style 更新と Measure を行っておく
+        for (auto& child: *m_logicalChildren) {
+            child->updateStyleHierarchical(layoutContext->styleContext(), m_finalStyle);
+            child->measureLayout(layoutContext, finalSize);
+        }
+    }
+
     return UIListItemsControl::arrangeOverride(layoutContext, finalSize);
 }
 
 void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, const Size& finalSize)
 {
-    //if (m_logicalChildren->size() != m_listViewModel->getItemCount()) {
-    //    // Model と View の item 数が異なっていれば refresh
-    //    m_dirtyItemInstances = true;
-    //}
-
     if (m_dirtyItemInstances) {
         if (m_listViewModel->getItemCount() > 0) {
 
@@ -225,16 +267,16 @@ void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, con
                 }
                 m_baseItemHeight = representative->desiredSize().height;
                 if (LN_ENSURE(m_baseItemHeight > 0.0f)) return;
+            }
 
-                // View サイズに収まる分だけ、足りない分の Item があれば作る。
-                // 内容についてはこの時点では更新しない。
-                int maxRequiredCount = std::ceil(finalSize.height / m_baseItemHeight);
-                int requiredCount = std::min(m_listViewModel->getItemCount(), maxRequiredCount);
-                int diff = requiredCount - m_logicalChildren->size();
-                for (int i = 0; i < diff; i++) {
-                    addListItem(onGenerateItem());
-                    m_dirtyItemContent = true;
-                }
+            // View サイズに収まる分だけ、足りない分の Item があれば作る。
+            // 内容についてはこの時点では更新しない。
+            int maxRequiredCount = std::ceil(finalSize.height / m_baseItemHeight);
+            int requiredCount = std::min(m_listViewModel->getItemCount(), maxRequiredCount);
+            int diff = requiredCount - m_logicalChildren->size();
+            for (int i = 0; i < diff; i++) {
+                addListItem(onGenerateItem());
+                m_dirtyItemContent = true;
             }
         }
         else {
@@ -242,6 +284,22 @@ void UIListView2::attemptRefreshItemInstance(UILayoutContext* layoutContext, con
         }
 
         m_dirtyItemInstances = true;
+    }
+}
+
+bool UIListView2::attemptRefreshContents()
+{
+    if (m_dirtyItemContent) {
+        // TODO: Scroll
+        for (int i = 0; i < m_logicalChildren->size(); i++) {
+            onRefreshItemContent(i, static_pointer_cast<UIListViewItem2>(m_logicalChildren->at(i)));
+        }
+
+        m_dirtyItemContent = false;
+        return true;
+    }
+    else {
+        return false;
     }
 }
 
