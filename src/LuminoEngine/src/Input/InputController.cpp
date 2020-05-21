@@ -28,6 +28,7 @@ InputController::InputController(detail::InputManager* manager)
 	, m_inputStateForAny()
 	, m_repeatIntervalStart(20)	// TODO 要調整。時間の方がいいかも？
 	, m_repeatIntervalStep(5)
+	, m_disabledUntilIdle(false)
 {
 	m_inputStateForAny = makeRef<detail::InputDeviceElement>();
 }
@@ -40,6 +41,7 @@ InputController::~InputController()
 //------------------------------------------------------------------------------
 bool InputController::pressed(const StringRef& bindingName) const
 {
+	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
 	return (state->state > 0);
@@ -48,6 +50,7 @@ bool InputController::pressed(const StringRef& bindingName) const
 //------------------------------------------------------------------------------
 bool InputController::triggered(const StringRef& bindingName) const
 {
+	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
 	return (state->state == 1);
@@ -56,6 +59,7 @@ bool InputController::triggered(const StringRef& bindingName) const
 //------------------------------------------------------------------------------
 bool InputController::triggeredOff(const StringRef& bindingName) const
 {
+	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
 	return (state->state == -1);
@@ -64,6 +68,7 @@ bool InputController::triggeredOff(const StringRef& bindingName) const
 //------------------------------------------------------------------------------
 bool InputController::repeated(const StringRef& bindingName) const
 {
+	if (m_disabledUntilIdle) return false;
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return false;
 	int s = state->state;
@@ -73,6 +78,7 @@ bool InputController::repeated(const StringRef& bindingName) const
 //------------------------------------------------------------------------------
 float InputController::getAxisValue(const StringRef& bindingName) const
 {
+	if (m_disabledUntilIdle) return 0.0f;
 	auto* state = LockupState(bindingName);
 	if (LN_REQUIRE_KEY(state)) return 0.0f;
 	return state->current;
@@ -193,6 +199,11 @@ void InputController::updateFrame(float elapsedTime)
 	}
 	m_inputStateForAny->updateFrame(elapsedTime, m_manager->repeatIntervalStartTime(), m_manager->repeatIntervalStepTime());
 	//UpdateOneInputState(&m_inputStateForAny);
+
+
+	if (m_inputStateForAny->state == 0) {
+		m_disabledUntilIdle = false;
+	}
 }
 
 //------------------------------------------------------------------------------
