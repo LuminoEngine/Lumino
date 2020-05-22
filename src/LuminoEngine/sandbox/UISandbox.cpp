@@ -100,6 +100,12 @@ public:
 			listbox1->addChild(u"item2");
 			listbox1->addChild(u"item3");
 			listbox1->addChild(u"item4");
+			//listbox1->addChild(u"item4");
+			//listbox1->addChild(u"item4");
+			//listbox1->addChild(u"item4");
+			//listbox1->addChild(u"item4");
+			//listbox1->addChild(u"item4");
+			//listbox1->setHeight(200);
 			layout1->addChild(listbox1);
 		}
 

@@ -100,6 +100,7 @@ void UIControl::removeElement(UIElement* element)
     m_logicalChildren->remove(element);
     element->setLogicalParent(nullptr);
 	removeVisualChild(element);
+    onLogicalChildRemoved(element);
 }
 
 void UIControl::removeAllChildren()
@@ -224,6 +225,10 @@ void UIControl::onActivated()
 void UIControl::onDeactivated()
 {
     m_onDeactivated.raise(/*UIEventArgs::create(this, UIEvents::Deactivated)*/);
+}
+
+void UIControl::onLogicalChildRemoved(UIElement* removedElement)
+{
 }
 
 void UIControl::onAddChild(UIElement* child)

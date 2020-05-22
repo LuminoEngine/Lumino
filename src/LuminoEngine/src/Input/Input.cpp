@@ -75,6 +75,11 @@ InputGesture* Input::getAnyActiveTriggered()
 	return detail::EngineDomain::inputManager()->getAnyActiveTriggered();
 }
 
+void Input::disableUntilIdle()
+{
+	return Input_activeDevice()->disableUntilIdle();
+}
+
 //==============================================================================
 // InputButton
 //==============================================================================

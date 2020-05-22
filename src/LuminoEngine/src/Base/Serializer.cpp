@@ -244,9 +244,17 @@ public:
 	//------------------------------
 	// Read
 
-	void initRead(const std::string& text)
+	bool initRead(const std::string& text)
 	{
-		stack.push_back(StackItem{ ContainerType::Object, YAML::Load(text) });
+		try {
+			auto doc = YAML::Load(text);
+			stack.push_back(StackItem{ ContainerType::Object, doc });
+			return true;
+		}
+		catch (YAML::ParserException& e) {
+			LN_LOG_ERROR << "YAML:" << e.mark.line << ":" << e.mark.column << ": " << e.msg;
+			return false;
+		}
 	}
 
 	bool pushRead(ContainerType requireContainerType, int* outItemCount)

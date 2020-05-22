@@ -1994,7 +1994,8 @@ const String UIVisualStates::CommonStates = u"CommonGroup";
 const String UIVisualStates::FocusStates = u"FocusGroup";
 const String UIVisualStates::CheckStates = u"CheckStates";
 const String UIVisualStates::ValidationStates = u"ValidationStates";
-const String UIVisualStates::SelectionStates = u"SelectionStates";
+const String UIVisualStates::SelectionStates = u"SelectionStates";;
+const String UIVisualStates::DisplayStates = u"DisplayStates";
 
 const String UIVisualStates::Normal = u"Normal";
 const String UIVisualStates::MouseOver = u"MouseOver";
@@ -2009,6 +2010,9 @@ const String UIVisualStates::UncheckedState = u"Unchecked";
 
 const String UIVisualStates::Unselected = u"Unselected";
 const String UIVisualStates::Selected = u"Selected";
+
+const String UIVisualStates::Opend = u"Opend";
+const String UIVisualStates::Closed = u"Closed";
 
 } // namespace ln
 

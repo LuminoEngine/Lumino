@@ -50,6 +50,8 @@ private:
 /**
  * 要素を線形に保持し、選択できるようにするシーケンスコンテナのベースクラスです。
  *
+ * LogicalChildren を UIListItem のリストとして扱います。
+ *
  * @note
  *   UIListBox, UIListView, UIMenuItem, UIComboBox, UITabBar
  */

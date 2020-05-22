@@ -26,6 +26,7 @@ public:
     void clearBindings(const StringRef& buttonName);
     void clearAllBindings();
     void setRepeatInterval(int start, int step);
+    void disableUntilIdle() { m_disabledUntilIdle = true; }
 
     void updateFrame(float elapsedTime);
 
@@ -56,6 +57,7 @@ private:
     Ref<detail::InputDeviceElement> m_inputStateForAny;
     int m_repeatIntervalStart;
     int m_repeatIntervalStep;
+    bool m_disabledUntilIdle;
 };
 
 } // namespace ln

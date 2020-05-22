@@ -74,6 +74,9 @@ public:
     //LN_METHOD()
     static InputGesture* getAnyActiveTriggered();
 
+    /** すべてのボタンが離されるまで入力を無効にします。 */
+    static void disableUntilIdle();
+
 private:
 };
 
