@@ -173,6 +173,7 @@ file(GLOB LN_SOURCES_Scene ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/*.hpp src
 file(GLOB LN_SOURCES_Scene_Text ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Text/*.hpp src/Scene/Text/*.cpp src/Scene/Text/*.hpp)
 file(GLOB LN_SOURCES_Scene_Shapes ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Shapes/*.hpp src/Scene/Shapes/*.cpp src/Scene/Shapes/*.hpp)
 file(GLOB LN_SOURCES_Scene_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/Mesh/*.hpp src/Scene/Mesh/*.cpp src/Scene/Mesh/*.hpp)
+file(GLOB LN_SOURCES_Scene_MeshTilemap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshTilemap/*.hpp src/Scene/MeshTilemap/*.cpp src/Scene/MeshTilemap/*.hpp)
 file(GLOB LN_SOURCES_Scene_MeshVoxelmap ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Scene/MeshVoxelmap/*.hpp src/Scene/MeshVoxelmap/*.cpp src/Scene/MeshVoxelmap/*.hpp)
 
 file(GLOB LN_SOURCES_UI ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/UI/*.hpp src/UI/*.cpp src/UI/*.hpp)
@@ -250,6 +251,7 @@ source_group("Scene" FILES ${LN_SOURCES_Scene})
 source_group("Scene\\Text" FILES ${LN_SOURCES_Scene_Text})
 source_group("Scene\\Shapes" FILES ${LN_SOURCES_Scene_Shapes})
 source_group("Scene\\Mesh" FILES ${LN_SOURCES_Scene_Mesh})
+source_group("Scene\\MeshTilemap" FILES ${LN_SOURCES_Scene_MeshTilemap})
 source_group("Scene\\MeshVoxelmap" FILES ${LN_SOURCES_Scene_MeshVoxelmap})
 source_group("UI" FILES ${LN_SOURCES_UI})
 source_group("Tilemap" FILES ${LN_SOURCES_Tilemap})
@@ -286,6 +288,7 @@ set(LN_SOURCES
     ${LN_SOURCES_Scene_Text}
     ${LN_SOURCES_Scene_Shapes}
     ${LN_SOURCES_Scene_Mesh}
+    ${LN_SOURCES_Scene_MeshTilemap}
     ${LN_SOURCES_Scene_MeshVoxelmap}
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
