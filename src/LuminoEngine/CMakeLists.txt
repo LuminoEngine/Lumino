@@ -118,7 +118,7 @@ set(LN_SOURCES_Audio_Device
     src/Audio/SDLAudioDevice.hpp
 )
 
-file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp)
+file(GLOB LN_SOURCES_Shader ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Shader/*.hpp src/Shader/*.cpp src/Shader/*.hpp src/Shader/*.md)
 
 file(GLOB LN_SOURCES_Graphics ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Graphics/*.hpp src/Graphics/*.cpp src/Graphics/*.hpp)
 file(GLOB LN_SOURCES_Graphics_OpenGL src/Graphics/OpenGL/*.cpp src/Graphics/OpenGL/*.hpp)

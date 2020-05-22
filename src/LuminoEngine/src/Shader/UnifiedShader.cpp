@@ -412,10 +412,10 @@ bool UnifiedShader::addCodeContainer(ShaderStage2 stage, const std::string& entr
     return true;
 }
 
-void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection)
+void UnifiedShader::setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code)
 {
     //if (LN_REQUIRE(refrection)) return;
-	m_codeContainers[idToIndex(container)].codes.push_back({triple, code/*, refrection*/ });
+	m_codeContainers[idToIndex(container)].codes.push_back({triple, code });
 }
 
 //void UnifiedShader::setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection)
@@ -542,52 +542,7 @@ void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
 void UnifiedShader::addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout)
 {
 	DescriptorLayout* descriptorLayout = &m_passes[idToIndex(pass)].descriptorLayout;
-
-	for (int iType = 0; iType < DescriptorType_Count; iType++) {
-
-		std::vector<DescriptorLayoutItem>* list = &descriptorLayout->getLayoutItems((DescriptorType)iType);
-		const std::vector<DescriptorLayoutItem>& srcList = layout.getLayoutItems((DescriptorType)iType);
-
-		for (auto& item : srcList)
-		{
-			auto itr = std::find_if(list->begin(), list->end(), [&](const DescriptorLayoutItem& x) { return x.name == item.name; });
-			if (itr != list->end()) {
-				itr->stageFlags |= item.stageFlags;
-
-				// Merge members
-				for (auto& m : item.members) {
-					auto itr2 = std::find_if(itr->members.begin(), itr->members.end(), [&](const ShaderUniformInfo& x) { return x.name == m.name; });
-					if (itr2 == itr->members.end()) {
-						itr->members.push_back(m);
-					}
-				}
-			}
-			else {
-				list->push_back(item);
-				list->back().binding = list->size() - 1;
-			}
-		}
-
-	}
-
-
-	//std::vector<DescriptorLayoutItem>* list = nullptr;
-	//switch (registerType)
-	//{
-	//case DescriptorType_UniformBuffer:
-	//	list = &descriptorLayout->uniformBufferRegister;
-	//	break;
-	//case DescriptorType_Texture:
-	//	list = &descriptorLayout->textureRegister;
-	//	break;
-	//case DescriptorType_SamplerState:
-	//	list = &descriptorLayout->samplerRegister;
-	//	break;
-	//default:
-	//	LN_UNREACHABLE();
-	//	return;
-	//}
-
+    descriptorLayout->mergeFrom(layout);
 }
 
 //void UnifiedShader::setRefrection(PassId pass, UnifiedShaderRefrectionInfo* buffers)
@@ -780,6 +735,35 @@ bool DescriptorLayout::isReferenceFromPixelStage(DescriptorType registerType) co
     auto& items = getLayoutItems(registerType);
     auto itr = std::find_if(items.begin(), items.end(), [](const DescriptorLayoutItem& x) { return (x.stageFlags & ShaderStageFlags_Pixel) != 0; });
     return itr != items.end();
+}
+
+void DescriptorLayout::mergeFrom(const DescriptorLayout& other)
+{
+    for (int iType = 0; iType < DescriptorType_Count; iType++) {
+
+        std::vector<DescriptorLayoutItem>* list = &getLayoutItems((DescriptorType)iType);
+        const std::vector<DescriptorLayoutItem>& srcList = other.getLayoutItems((DescriptorType)iType);
+
+        for (auto& item : srcList)
+        {
+            auto itr = std::find_if(list->begin(), list->end(), [&](const DescriptorLayoutItem& x) { return x.name == item.name; });
+            if (itr != list->end()) {
+                itr->stageFlags |= item.stageFlags;
+
+                // Merge members
+                for (auto& m : item.members) {
+                    auto itr2 = std::find_if(itr->members.begin(), itr->members.end(), [&](const ShaderUniformInfo& x) { return x.name == m.name; });
+                    if (itr2 == itr->members.end()) {
+                        itr->members.push_back(m);
+                    }
+                }
+            }
+            else {
+                list->push_back(item);
+                list->back().binding = list->size() - 1;
+            }
+        }
+    }
 }
 
 } // namespace detail

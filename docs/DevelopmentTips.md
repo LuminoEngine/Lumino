@@ -150,6 +150,21 @@ npm i -g textlint textlint-rule-preset-ja-technical-writing textlint-rule-max-te
     * 「ですます」調と「である」調の混在をチェックするルール
 
 
+PlantUML
+----------
+
+```
+choco install -y openjdk
+choco install -y graphviz
+```
+
+```
+ext install plantuml
+shd101wyy.markdown-preview-enhanced
+```
+
+プレビューは Alt+D.
+
 
 開発中のパッケージを使う
 ----------
