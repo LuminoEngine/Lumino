@@ -1,27 +1,27 @@
 ﻿
 #pragma once
 #include "Common.hpp"
-#include "MeshTileset.hpp"
+#include "MeshVoxelset.hpp"
 
 namespace ln {
 
-class MeshTilemapModel
+class MeshVoxelmapModel
 	: public Object
 {
     LN_OBJECT;
 public:
-	void setTileset(MeshTileset* tileset);
-	void addLayer(MeshTilemapLayer* layer);
+	void setTileset(MeshVoxelset* tileset);
+	void addLayer(MeshVoxelmapLayer* layer);
 
 	void draw(RenderingContext* context, const Matrix& transform);
 
 LN_CONSTRUCT_ACCESS:
-    MeshTilemapModel();
+    MeshVoxelmapModel();
 	void init();
 
 private:
-	Ref<MeshTileset> m_tileset;
-	List<Ref<MeshTilemapLayer>> m_layers;
+	Ref<MeshVoxelset> m_tileset;
+	List<Ref<MeshVoxelmapLayer>> m_layers;
 };
 
 } // namespace ln

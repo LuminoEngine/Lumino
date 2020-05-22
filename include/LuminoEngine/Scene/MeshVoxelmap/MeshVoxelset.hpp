@@ -12,7 +12,7 @@ enum class PredefinedMeshAutoTilesetMesh
 };
 
 
-class MeshAutoTileset
+class MeshAutoVoxelset
 	: public Object
 {
 public:
@@ -38,7 +38,7 @@ public:
 	void flushBatch(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:
-    MeshAutoTileset();
+    MeshAutoVoxelset();
 	void init();
 
 private:
@@ -50,7 +50,7 @@ private:
 	std::array<Ref<InstancedMeshList>, 6 * 48> m_dentMeshList;
 };
 
-class MeshTileset
+class MeshVoxelset
 	: public Object
 {
     LN_OBJECT;
@@ -73,10 +73,10 @@ public:
 	static int autoTileKindId(int tileId) { return (tileId < AutoTileOffset) ? -1 : ((tileId - AutoTileOffset) / AutoTileSetStride); }
 	static int localIdToGlobalId(int localTileId, int autotileKind) { return AutoTileSetStride * autotileKind + localTileId + AutoTileOffset; }
 
-	const Ref<MeshAutoTileset>& autotileSet(int akid) const { return m_autotileSet[akid]; }
+	const Ref<MeshAutoVoxelset>& autotileSet(int akid) const { return m_autotileSet[akid]; }
 
 LN_CONSTRUCT_ACCESS:
-    MeshTileset();
+    MeshVoxelset();
 	void init();
 
 private:
@@ -85,10 +85,10 @@ private:
 	void drawBatch(RenderingContext* context);
 
 	Ref<Material> m_material;
-	std::array<Ref<MeshAutoTileset>, 16> m_autotileSet;
+	std::array<Ref<MeshAutoVoxelset>, 16> m_autotileSet;
 
 
-	friend class MeshTilemapLayer;
+	friend class MeshVoxelmapLayer;
 };
 
 namespace detail {

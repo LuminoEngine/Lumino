@@ -6,7 +6,7 @@ namespace ln {
 namespace detail {
 
 //==============================================================================
-// MeshAutoTileset
+// MeshAutoVoxelset
 
 const Matrix VoxelmapMeshBuilder::RotationTransforms[6] = {
 	Matrix::makeRotationY(Math::PI / 2),

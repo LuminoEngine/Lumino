@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTileset.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
 
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
