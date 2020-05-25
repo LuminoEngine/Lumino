@@ -287,6 +287,8 @@ void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 
 void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
 {
+    m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
+
 	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
 		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
 		auto tech = makeObject<ShaderTechnique>(String::fromStdString(unifiedShader->techniqueName(techId)));
@@ -299,8 +301,12 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 
 			auto rhiPass = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
 			if (rhiPass) {
-				auto pass = makeObject<ShaderPass>(String::fromStdString(unifiedShader->passName(passId)), rhiPass);
-				pass->m_renderState = unifiedShader->renderState(passId);
+				auto pass = makeObject<ShaderPass>(
+                    String::fromStdString(unifiedShader->passName(passId)),
+                    rhiPass,
+                    unifiedShader->renderState(passId),
+                    unifiedShader->descriptorLayout(passId),
+                    m_descriptorLayout);
 				tech->addShaderPass(pass);
 				pass->setupParameters();
 			}
@@ -324,70 +330,6 @@ void Shader::onChangeDevice(detail::IGraphicsDevice* device)
 {
     LN_NOTIMPLEMENTED();
 }
-
-//Ref<detail::IShaderPass> Shader::createShaderPass(
-//    const char* vsData,
-//    size_t vsLen,
-//    const char* vsEntryPoint,
-//    const char* psData,
-//    size_t psLen,
-//    const char* psEntryPoint,
-//    DiagnosticsManager* diag,
-//    ShaderCompilationProperties* properties)
-//{
-//#ifdef LN_BUILD_EMBEDDED_SHADER_TRANSCOMPILER
-//	List<Path> includeDirs;
-//	if (properties) {
-//		for (auto& path : properties->m_includeDirectories)
-//			includeDirs.add(path);
-//	}
-//
-//	detail::UnifiedShaderCompiler compiler(m_manager, diag);
-//	if (!compiler.compileSingleCodes(
-//		vsData, vsLen, vsEntryPoint,
-//		psData, psLen, psEntryPoint,
-//		includeDirs, {})) {
-//		LN_ERROR();
-//		return nullptr;
-//	}
-//	if (!compiler.link()) {
-//		LN_ERROR();
-//		return nullptr;
-//	}
-//
-//	createFromUnifiedShader(compiler.unifiedShader(), diag);
-//#else
-//    LN_NOTIMPLEMENTED();
-//    return nullptr;
-//#endif
-//}
-
-//Ref<detail::IShaderPass> Shader::createRHIShaderPass(
-//    const byte_t* vsData,
-//    size_t vsLen,
-//    const byte_t* psData,
-//    size_t psLen,
-//	const detail::VertexInputAttributeTable* vertexInputAttributeTable,
-//    detail::UnifiedShaderRefrectionInfo* vertexShaderRefrection,
-//    detail::UnifiedShaderRefrectionInfo* pixelShaderRefrection,
-//    DiagnosticsManager* diag)
-//{
-//    LN_NOTIMPLEMENTED();
-//    return nullptr;
-//}
-//
-//void Shader::createSinglePassShader(const char* vsData, size_t vsLen, const char* psData, size_t psLen, DiagnosticsManager* diag, ShaderCompilationProperties* properties)
-//{
-//    auto rhiPass = createShaderPass(vsData, vsLen, "main", psData, psLen, "main", diag, properties);
-//
-//    auto tech = makeObject<ShaderTechnique>(u"Main"); // TODO: 名前指定できた方がいいかも
-//    tech->setOwner(this);
-//    m_techniques->add(tech);
-//
-//    auto pass = makeObject<ShaderPass>(u"Main", rhiPass);
-//    tech->addShaderPass(pass);
-//    pass->setupParameters();
-//}
 
 void Shader::postInitialize()
 {
@@ -779,7 +721,7 @@ ShaderPass::~ShaderPass()
 {
 }
 
-void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState)
+void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState, const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout)
 {
     if (LN_REQUIRE(rhiPass)) return;
     Object::init();
@@ -787,6 +729,8 @@ void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::
     m_name = name;
     m_rhiPass = rhiPass;
     m_renderState = renderState;
+
+    m_descriptorLayout.init(layout, globalLayout);
 }
 
 void ShaderPass::onDispose(bool explicitDisposing)
@@ -897,6 +841,151 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsConte
 {
     commitContantBuffers(graphicsContext, outModified);
     return m_rhiPass;
+}
+
+//=============================================================================
+// ShaderDescriptor
+
+ShaderDescriptor::ShaderDescriptor()
+{
+}
+
+bool ShaderDescriptor::init(Shader* ownerShader)
+{
+    if (LN_REQUIRE(ownerShader)) return false;
+    if (!Object::init()) return false;
+
+    m_ownerShader = ownerShader;
+
+    const auto& layout = m_ownerShader->descriptorLayout();
+
+    m_buffers.resize(layout->m_buffers.size());
+    for (int i = 0; i < layout->m_buffers.size(); i++) {
+        m_buffers[i].resize(layout->m_buffers[i].size);
+    }
+
+    m_textures.resize(layout->textureRegisterCount());
+    m_samplers.resize(layout->samplerRegisterCount());
+
+    return true;
+}
+
+//=============================================================================
+// ShaderDescriptorLayout
+
+ShaderDescriptorLayout::ShaderDescriptorLayout()
+{
+}
+
+bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
+{
+    if (!Object::init()) return false;
+
+    // 'b'
+    m_buffers.resize(layout.uniformBufferRegister.size());
+    for (int i = 0; i < layout.uniformBufferRegister.size(); i++) {
+        const auto& item = layout.uniformBufferRegister[i];
+        m_buffers[i].name = String::fromStdString(item.name);
+        m_buffers[i].size = item.size;
+
+        for (const auto& member : item.members) {
+            detail::ShaderUniformTypeDesc desc;
+            desc.type2 = static_cast<detail::ShaderUniformType>(member.type);
+
+            desc.rows = member.matrixRows;
+            desc.columns = member.matrixColumns;
+            desc.elements = member.arrayElements;
+            if (desc.columns == 0) { // OpenGL Dirver の動作に合わせる
+                desc.columns = member.vectorElements;// *sizeof(float);
+            }
+
+            desc.offset = member.offset;
+            if (member.arrayElements > 0) {
+                detail::ShaderHelper::resolveStd140Layout(member, &desc.arrayStride);
+            }
+            desc.matrixStride = member.matrixColumns * sizeof(float);
+
+
+            UniformMemberInfo memberInfo;
+            memberInfo.uniformBufferRegisterIndex = i;
+            memberInfo.name = String::fromStdString(member.name);
+            memberInfo.desc = desc;
+            m_members.add(memberInfo);
+        }
+    }
+
+    // 't'
+    m_textures.resize(layout.textureRegister.size());
+    for (int i = 0; i < layout.textureRegister.size(); i++) {
+        const auto& item = layout.textureRegister[i];
+        m_textures[i].name = String::fromStdString(item.name);
+    }
+
+    // 's'
+    m_samplers.resize(layout.samplerRegister.size());
+    for (int i = 0; i < layout.samplerRegister.size(); i++) {
+        const auto& item = layout.samplerRegister[i];
+        m_samplers[i].name = String::fromStdString(item.name);
+    }
+
+    return true;
+}
+
+int ShaderDescriptorLayout::findUniformBufferRegisterIndex(const ln::StringRef& name) const
+{
+    return m_buffers.indexOfIf([&](const auto& x) { return x.name == name; });
+}
+
+int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringRef& name) const
+{
+    return m_textures.indexOfIf([&](const auto& x) { return x.name == name; });
+}
+
+int ShaderDescriptorLayout::findSamplerRegisterIndex(const ln::StringRef& name) const
+{
+    return m_samplers.indexOfIf([&](const auto& x) { return x.name == name; });
+}
+
+//=============================================================================
+// ShaderPassDescriptorLayout
+
+void ShaderPassDescriptorLayout::init(const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout)
+{
+    m_buffers.resize(layout.uniformBufferRegister.size());
+    for (int i = 0; i < layout.uniformBufferRegister.size(); i++) {
+        const auto& item = layout.uniformBufferRegister[i];
+        m_buffers[i].dataIndex = globalLayout->findUniformBufferRegisterIndex(String::fromStdString(item.name));
+        m_buffers[i].bindingIndex = item.binding;
+        m_buffers[i].stageFlags = item.stageFlags;
+
+        if (LN_ENSURE(m_buffers[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_buffers[i].bindingIndex >= 0)) return;
+        if (LN_ENSURE(m_buffers[i].stageFlags != 0)) return;
+    }
+
+    m_textures.resize(layout.textureRegister.size());
+    for (int i = 0; i < layout.textureRegister.size(); i++) {
+        const auto& item = layout.textureRegister[i];
+        m_textures[i].dataIndex = globalLayout->findTextureRegisterIndex(String::fromStdString(item.name));
+        m_textures[i].bindingIndex = item.binding;
+        m_textures[i].stageFlags = item.stageFlags;
+
+        if (LN_ENSURE(m_textures[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_textures[i].bindingIndex >= 0)) return;
+        if (LN_ENSURE(m_textures[i].stageFlags != 0)) return;
+    }
+
+    m_samplers.resize(layout.samplerRegister.size());
+    for (int i = 0; i < layout.samplerRegister.size(); i++) {
+        const auto& item = layout.samplerRegister[i];
+        m_samplers[i].dataIndex = globalLayout->findSamplerRegisterIndex(String::fromStdString(item.name));
+        m_samplers[i].bindingIndex = item.binding;
+        m_samplers[i].stageFlags = item.stageFlags;
+
+        if (LN_ENSURE(m_samplers[i].dataIndex >= 0)) return;
+        if (LN_ENSURE(m_samplers[i].bindingIndex >= 0)) return;
+        if (LN_ENSURE(m_samplers[i].stageFlags != 0)) return;
+    }
 }
 
 } // namespace ln

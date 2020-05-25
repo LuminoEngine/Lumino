@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2019 lriki. Distributed under the MIT license.
 #pragma once
 
+#define LN_NEW_SHADER_UBO 1
+
 namespace ln {
 namespace detail {
 

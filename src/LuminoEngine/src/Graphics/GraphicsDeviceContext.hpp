@@ -199,7 +199,6 @@ public:
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
 	virtual INativeGraphicsInterface* getNativeInterface() const = 0;
-	//virtual ICommandList* getGraphicsContext() const = 0;
 	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
 	virtual ICommandQueue* getComputeCommandQueue() = 0;
 

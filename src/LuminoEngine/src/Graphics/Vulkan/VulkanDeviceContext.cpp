@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "VulkanDeviceContext.hpp"
 
@@ -3009,7 +3010,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 set.dstBinding = item.binding;
                 set.dstArrayElement = 0;
                 set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;// VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 set.pImageInfo = &m_textureDescripterImageInfo.back();
                 set.pBufferInfo = nullptr;
                 set.pTexelBufferView = nullptr;
@@ -3323,7 +3324,7 @@ Result VulkanShaderUniform::init(const ShaderUniformInfo& info/*, size_t memberB
     m_desc.offset = info.offset;
     //m_desc.size = 0;
     if (info.arrayElements > 0) {
-        VulkanHelper::resolveStd140Layout(info, &m_desc.arrayStride);
+        ShaderHelper::resolveStd140Layout(info, &m_desc.arrayStride);
     }
     m_desc.matrixStride = info.matrixColumns *sizeof(float);
 

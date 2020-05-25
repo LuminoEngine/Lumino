@@ -22,6 +22,173 @@ class IShaderPass;
 class IShaderUniformBuffer;
 }
 
+// UniformBuffer, sampler など、Shader の Data を保持する。
+// 本来は Pass に持たせるべきだが、そうするとユーザープログラムから Material(=Effect) として使いたい場合、
+// 全く同じ ShaderDescriptor がたくさん作られることになり、メモリの無駄が多くなる。#136 の問題も出てくる。
+// そのため ShaderPass と関係を持つのではなく、Shader と関係を持つようにする。
+class ShaderDescriptor final
+    : public Object
+{
+public:
+    int findUniformBufferIndex(const ln::StringRef& name) const;
+    int findTextureIndex(const ln::StringRef& name) const;
+    int findSamplerIndex(const ln::StringRef& name) const;
+
+    /** bool 値を設定します。 */
+    void setBool(int index, bool value);
+
+    /** 整数値を設定します。 */
+    void setInt(int index, int value);
+
+    /** 整数値の配列を設定します。 */
+    void setIntArray(int index, const int* value, int count);
+
+    /** 浮動小数点値を設定します。 */
+    void setFloat(int index, float value);
+
+    /** 浮動小数点値の配列を設定します。 */
+    void setFloatArray(int index, const float* value, int count);
+
+    /** ベクトルを設定します。 */
+    void setVector(int index, const Vector4& value);
+
+    /** ベクトルの配列を設定します。 */
+    void setVectorArray(int index, const Vector4* value, int count);
+
+    /** 行列を設定します。 */
+    void setMatrix(int index, const Matrix& value);
+
+    /** 行列の配列を設定します。 */
+    void setMatrixArray(int index, const Matrix* value, int count);
+
+    /** SamplerState を設定します。 */
+    void setSamplerState(int index, SamplerState* value);
+
+    /** テクスチャを設定します。 */
+    void setSampler(int index, Texture* value);
+
+    /** テクスチャを設定します。 */
+    void setTexture(int index, Texture* value);
+
+LN_CONSTRUCT_ACCESS:
+    ShaderDescriptor();
+    bool init(Shader* ownerShader);
+
+private:
+    struct BufferInfo
+    {
+        ByteBuffer buffer;
+        Ref<detail::IShaderUniformBuffer> rhiObject;
+    };
+
+    Ref<Shader> m_ownerShader;
+    List<ByteBuffer> m_buffers;
+    List<Ref<Texture>> m_textures;
+    List<Ref<Texture>> m_samplers;
+};
+
+// ShaderDescriptor と 1:1。 Global 情報。
+// 名前から UniformBuffer, Texture, SamplerState, Sampler を求める。
+// 名前から UniformBuffer の Member を求める。
+class ShaderDescriptorLayout final
+    : public Object
+{
+public:
+    int uniformBufferRegisterCount() const { return m_buffers.size(); }
+    int textureRegisterCount() const { return m_textures.size(); }
+    int samplerRegisterCount() const { return m_samplers.size(); }
+
+    int findUniformBufferRegisterIndex(const ln::StringRef& name) const;
+    int findTextureRegisterIndex(const ln::StringRef& name) const;
+    int findSamplerRegisterIndex(const ln::StringRef& name) const;
+
+LN_CONSTRUCT_ACCESS:
+    ShaderDescriptorLayout();
+    bool init(const detail::DescriptorLayout& layout);
+
+private:
+    struct UniformBufferRegisterInfo
+    {
+        String name;
+        size_t size;
+    };
+
+    struct UniformMemberInfo
+    {
+        int uniformBufferRegisterIndex;
+        String name;
+        detail::ShaderUniformTypeDesc desc;
+    };
+
+    struct TextureRegisterInfo
+    {
+        String name;
+    };
+
+    struct SamplerRegisterInfo
+    {
+        String name;
+    };
+
+    Ref<Shader> m_ownerShader;
+    List<UniformBufferRegisterInfo> m_buffers;
+    List<UniformMemberInfo> m_members;
+    List<TextureRegisterInfo> m_textures;
+    List<SamplerRegisterInfo> m_samplers;
+
+    friend class ShaderDescriptor;
+
+    /*
+        Note:
+
+        // DirectX 12
+        // https://docs.microsoft.com/en-us/windows/win32/direct3d12/resource-binding-in-hlsl
+        // SamplerState と sampler は s レジスタを使用する。
+        Texture2D<float4> tex0 : register(t0);
+        SamplerState samp0 : register(s0);
+        sampler2D input : register(s0);
+
+    */
+};
+
+// ShaderPass が持つレイアウト情報。
+// ShaderDescriptorLayout が共通でもっている各データを、どの binding に割り当てるかを管理する。
+struct ShaderPassDescriptorLayout
+{
+    struct UniformBufferRegisterInfo
+    {
+        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_buffers
+        int8_t bindingIndex;
+        uint8_t stageFlags; // ShaderStageFlags
+    };
+
+    struct TextureRegisterInfo
+    {
+        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_textures
+        int8_t bindingIndex;
+        uint8_t stageFlags; // ShaderStageFlags
+    };
+
+    struct SamplerRegisterInfo
+    {
+        int8_t dataIndex; // Index of ShaderDescriptorLayout.m_samplers
+        int8_t bindingIndex;
+        uint8_t stageFlags; // ShaderStageFlags
+    };
+
+    List<UniformBufferRegisterInfo> m_buffers;
+    List<TextureRegisterInfo> m_textures;
+    List<SamplerRegisterInfo> m_samplers;
+
+    void init(const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
+};
+
+
+
+
+
+
+
 /**
  * シェーダーを表すクラスです。
  *
@@ -97,6 +264,7 @@ LN_CONSTRUCT_ACCESS:
     void init(const String& name, Stream* stream);
 
 private:
+    const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
     detail::ShaderSemanticsManager* semanticsManager() { return &m_semanticsManager; }
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
@@ -107,6 +275,7 @@ private:
 
     detail::ShaderManager* m_manager;
     String m_name;
+    Ref<ShaderDescriptorLayout> m_descriptorLayout;
     List<Ref<ShaderConstantBuffer>> m_buffers;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
     List<Ref<ShaderParameter>> m_textureParameters;
@@ -115,11 +284,13 @@ private:
 
     friend class ShaderPass;
     friend class detail::ShaderHelper;
+    friend class ShaderDescriptor;
 };
 
 /**
  * シェーダプログラムに含まれる 1 つの入力パラメーターを表します。
  */
+// TODO: deprecated
 class LN_API ShaderParameter final
     : public Object
 {
@@ -280,6 +451,10 @@ public:
     /** パスの名前を取得します。 */
     const String& name() const { return m_name; }
 
+
+    // TODO: for test
+    const ShaderPassDescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
+
 protected:
     virtual void onDispose(bool explicitDisposing) override;
 
@@ -287,7 +462,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderPass();
     virtual ~ShaderPass();
-    void init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState = nullptr);
+    void init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState, const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
 
     struct ConstantBufferEntry
     {
@@ -303,8 +478,12 @@ private:
     ShaderTechnique* m_owner;
     String m_name;
     Ref<detail::IShaderPass> m_rhiPass;
+    ShaderPassDescriptorLayout m_descriptorLayout;
+
+    // deprecated
     List<ConstantBufferEntry> m_bufferEntries;
     List<ShaderParameter*> m_textureParameters;
+
     Ref<detail::ShaderRenderState> m_renderState;
 
     friend class Shader;
