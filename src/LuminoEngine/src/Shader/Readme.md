@@ -51,6 +51,38 @@ package "Effect" {
     - Material は、Shader が割り当てられた時、Global の DescriptorLayouts をもとに ContantBuffer を作る。
     - この ConstantBuffer へ書き込むときは、Pass が持っている DescriptorLayoutRef を元に、alive なフィールドにのみ書き込む。
 
+### Material との関係
+
+```plantuml
+left to right direction
+package "Material" {
+    package "Shader" {
+        [Submit()]
+        [Mapper(DescripterLayout)]
+    }
+    package "ShaderDescripter" {
+        [UniformBuffer]
+        [Samplers]
+    }
+}
+
+package "UserProgram" {
+    setFloat --> [Mapper(DescripterLayout)]
+    setTexture --> [Samplers]
+    setData --> [UniformBuffer]
+}
+
+package "RHI Thread" {
+    [UniformBufferRHI]
+}
+
+[Mapper(DescripterLayout)] -> [UniformBuffer]
+[UniformBuffer] --> [Submit()]
+[Samplers] --> [Submit()]
+[Submit()] --> [UniformBufferRHI] : Submit(Create bluk data)
+```
+
+- Material は setShader と同時に、ShaderDescripter を作成する。
 
 用語
 ----------
@@ -119,10 +151,6 @@ Texture が持っている SamplerState をセットする。(2018/12/30 時点�
 - lnCIS_ : マジックナンバー
 - lnT_<変数名> : texture 型変数の名前
 - lnS_<変数名> : SamplerState 型変数の名前
-
-
-
-
 
 
 

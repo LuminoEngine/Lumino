@@ -397,6 +397,8 @@ bool UnifiedShader::load(Stream* stream)
         }
     }
 
+    makeGlobalDescriptorLayout();
+
     return true;
 }
 
@@ -484,6 +486,14 @@ const std::string& UnifiedShader::entryPointName(CodeContainerId conteinreId) co
     return m_codeContainers[idToIndex(conteinreId)].entryPointName;
 }
 
+void UnifiedShader::makeGlobalDescriptorLayout()
+{
+    m_globalDescriptorLayout.clear();
+    for (const auto& pass : m_passes) {
+        m_globalDescriptorLayout.mergeFrom(pass.descriptorLayout);
+    }
+}
+
 bool UnifiedShader::addTechnique(const std::string& name, TechniqueId* outTech)
 {
     if (findTechniqueInfoIndex(name) >= 0) {
@@ -541,8 +551,11 @@ void UnifiedShader::setRenderState(PassId pass, ShaderRenderState* state)
 
 void UnifiedShader::addMergeDescriptorLayoutItem(PassId pass, const DescriptorLayout& layout)
 {
-	DescriptorLayout* descriptorLayout = &m_passes[idToIndex(pass)].descriptorLayout;
-    descriptorLayout->mergeFrom(layout);
+	DescriptorLayout& descriptorLayout = m_passes[idToIndex(pass)].descriptorLayout;
+    descriptorLayout.mergeFrom(layout);
+
+    // Apply global
+    m_globalDescriptorLayout.mergeFrom(descriptorLayout);
 }
 
 //void UnifiedShader::setRefrection(PassId pass, UnifiedShaderRefrectionInfo* buffers)
@@ -690,6 +703,13 @@ bool UnifiedShader::checkSignature(BinaryReader* r, const char* sig, size_t len,
 
 //=============================================================================
 // DescriptorLayout
+
+void DescriptorLayout::clear()
+{
+    uniformBufferRegister.clear();
+    textureRegister.clear();
+    samplerRegister.clear();
+}
 
 std::vector<DescriptorLayoutItem>& DescriptorLayout::getLayoutItems(DescriptorType registerType)
 {
