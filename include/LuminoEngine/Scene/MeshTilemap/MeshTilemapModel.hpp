@@ -16,8 +16,8 @@ public:
 	void draw(RenderingContext* context, const Matrix& transform);
 
 LN_CONSTRUCT_ACCESS:
-    MeshTilemapModel();
-	void init();
+	MeshTilemapModel();
+	bool init();
 
 private:
 	Ref<MeshTileset> m_tileset;

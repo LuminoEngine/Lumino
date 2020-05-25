@@ -332,11 +332,11 @@ bool UnifiedShaderCompiler::link()
                 auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Vertex, m_unifiedShader->entryPointName(containerId))];
                 
                 UnifiedShaderTriple triple1 = { "spv", 110, "" };
-                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode(), nullptr);
+                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode());
                 UnifiedShaderTriple triple2 = { "glsl", 400, "" };
-                m_unifiedShader->setCode(containerId, triple2, tp->generateGlsl(400, false), nullptr);
+                m_unifiedShader->setCode(containerId, triple2, tp->generateGlsl(400, false));
                 UnifiedShaderTriple triple3 = { "glsl", 300, "es" };
-                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(300, true), nullptr);
+                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(300, true));
             }
 
             // PixelShader
@@ -346,11 +346,11 @@ bool UnifiedShaderCompiler::link()
                 auto& tp = m_transpilerMap[makeKey2(m_unifiedShader->techniqueName(techId), m_unifiedShader->passName(passId), ShaderStage2_Fragment, m_unifiedShader->entryPointName(containerId))];
 
                 UnifiedShaderTriple triple1 = { "spv", 110, "" };
-                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode(), nullptr);
+                m_unifiedShader->setCode(containerId, triple1, tp->spirvCode());
                 UnifiedShaderTriple triple2 = { "glsl", 400, "" };
-                m_unifiedShader->setCode(containerId, triple2, tp->generateGlsl(400, false), nullptr);
+                m_unifiedShader->setCode(containerId, triple2, tp->generateGlsl(400, false));
                 UnifiedShaderTriple triple3 = { "glsl", 300, "es" };
-                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(300, true), nullptr);
+                m_unifiedShader->setCode(containerId, triple3, tp->generateGlsl(300, true));
             }
         }
     }

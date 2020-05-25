@@ -68,12 +68,12 @@ public:
 
 
     bool addCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId);
-    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
-    //void setCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code, UnifiedShaderRefrectionInfo* refrection);
+    void setCode(CodeContainerId container, const UnifiedShaderTriple& triple, const std::vector<byte_t>& code);
     bool hasCode(ShaderStage2 stage, const std::string& entryPointName, const UnifiedShaderTriple& triple) const;
     bool findCodeContainer(ShaderStage2 stage, const std::string& entryPointName, CodeContainerId* outId) const;
     const CodeInfo* findCode(CodeContainerId conteinreId, const UnifiedShaderTriple& triple) const;
     const std::string& entryPointName(CodeContainerId conteinreId) const;
+    void makeGlobalDescriptorLayout();
 
     bool addTechnique(const std::string& name, TechniqueId* outTech);
     int techniqueCount() const { return m_techniques.size(); }
@@ -98,6 +98,10 @@ public:
     //UnifiedShaderRefrectionInfo* refrection(PassId pass) const;
     void setAttributes(PassId pass, const std::vector<VertexInputAttribute>& attrs);
 	const std::vector<VertexInputAttribute>& attributes(PassId pass) const;
+
+    // DescriptorLayout.uniformBufferRegister のみ有効。
+    // それ以外は、値は入っているが binding が正しくないので使用できない。
+    const DescriptorLayout& globalDescriptorLayout() const { return m_globalDescriptorLayout; }
 
     void saveCodes(const StringRef& perfix) const;
 
@@ -141,6 +145,7 @@ private:
     List<CodeContainerInfo> m_codeContainers;
     List<TechniqueInfo> m_techniques;
     List<PassInfo> m_passes;
+    DescriptorLayout m_globalDescriptorLayout; // Result of merging all pass layouts
 };
 
 } // namespace detail

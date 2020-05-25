@@ -19,7 +19,7 @@ class ShaderManager;
 class GraphicsManager;
 class ShaderRenderState;
 
-// シェーダコード１つ分。
+// VertexShader, PixelShader など、シェーダコード１つ分。
 // HLSL 入力可能だが、technique 構文はあらかじめ取り除いておく必要がある。
 class ShaderCodeTranspiler
 {
@@ -47,7 +47,6 @@ public:
 	ShaderStage2 stage() const { return m_stage; }
 	const std::string& entryPoint() const { return m_entryPoint; }
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
-	const Ref<UnifiedShaderRefrectionInfo>& refrection() const { return m_refrection; }
 	std::vector<byte_t> spirvCode() const;
     std::vector<byte_t> generateGlsl(uint32_t version, bool es);
 
@@ -58,7 +57,6 @@ private:
     std::unique_ptr<glslang::TShader> m_shader;
     std::unique_ptr<glslang::TProgram> m_program;
 	std::vector<VertexInputAttribute> m_attributes;
-	Ref<UnifiedShaderRefrectionInfo> m_refrection;
     std::vector<uint32_t> m_spirvCode;
 
 };

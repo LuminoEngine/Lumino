@@ -1,10 +1,10 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/UI/UIComboBox.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTileset.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTilemapLayer.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTilemapModel.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTilemapComponent.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapLayer.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapComponent.hpp>
 using namespace ln;
 
 #include <Lumino.hpp>
@@ -61,13 +61,13 @@ class Sandbox_MeshTilemap_App : public Application
 		//staticMesh->setShadingModel(ShadingModel::Unlit);
 		////auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Box/glTF/Box.gltf");
 
-		auto meshTilemapModel = makeObject<MeshTilemapModel>();
+		auto meshTilemapModel = makeObject<MeshVoxelmapModel>();
 
-		auto meshTileset = makeObject<MeshTileset>();
+		auto meshTileset = makeObject<MeshVoxelset>();
 		meshTilemapModel->setTileset(meshTileset);
 
 		// TODO: test
-		auto layer = makeObject<MeshTilemapLayer>();
+		auto layer = makeObject<MeshVoxelmapLayer>();
 		layer->resize(20, 3, 20);
 
 		if (0) {
@@ -97,7 +97,7 @@ class Sandbox_MeshTilemap_App : public Application
 
 		meshTilemapModel->addLayer(layer);
 
-		auto meshTilemapComponent = makeObject<MeshTilemapComponent>();
+		auto meshTilemapComponent = makeObject<MeshVoxelmapComponent>();
 		meshTilemapComponent->setModel(meshTilemapModel);
 		auto meshTilemap = makeObject<VisualObject>();
 		meshTilemap->addComponent(meshTilemapComponent);

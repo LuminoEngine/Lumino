@@ -5,23 +5,23 @@
 
 namespace ln {
 
-class MeshTilemapComponent
+class MeshVoxelmapComponent
 	: public VisualComponent
 {
     LN_OBJECT;
 public:
-    MeshTilemapModel* model() const;
-    void setModel(MeshTilemapModel* value);
+    MeshVoxelmapModel* model() const;
+    void setModel(MeshVoxelmapModel* value);
 
 protected:
     virtual void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
-    MeshTilemapComponent();
+    MeshVoxelmapComponent();
 	void init();
 
 private:
-    Ref<MeshTilemapModel> m_model;
+    Ref<MeshVoxelmapModel> m_model;
 };
 
 } // namespace ln

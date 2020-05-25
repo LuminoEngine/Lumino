@@ -322,7 +322,6 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 {
     m_stage = stage;
 	m_entryPoint = entryPoint;
-    m_refrection = makeRef<UnifiedShaderRefrectionInfo>();
 
     LocalIncluder includer;
     includer.m_manager = m_manager;
@@ -484,18 +483,12 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
         // UniformBlocks
 		for (int i = 0; i < m_program->getNumLiveUniformBlocks(); i++)
 		{
-			ShaderUniformBufferInfo info;
-			info.name = m_program->getUniformBlockName(i);
-			info.size = m_program->getUniformBlockSize(i);
-
             DescriptorLayoutItem item;
-            item.name = info.name;
+            item.name = m_program->getUniformBlockName(i);
             item.stageFlags = stageFlags;
             item.binding = -1;
             item.size = m_program->getUniformBlockSize(i);
             descriptorLayout.uniformBufferRegister.push_back(std::move(item));
-
-            m_refrection->buffers.push_back(std::move(info));
 		}
 
 
@@ -545,17 +538,12 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 				return false;
 			}
 
-			//info.size = 0;
 			info.offset = m_program->getUniformBufferOffset(i);
 
 			info.vectorElements = type->getVectorSize();
 			info.arrayElements = m_program->getUniformArraySize(i);
 			info.matrixRows = type->getMatrixRows();
 			info.matrixColumns = type->getMatrixCols();
-
-			//auto aa = type->getTypeName();
-			//int a = GL_FLOAT_VEC4;
-			
 
 			LN_LOG_VERBOSE << "Uniform[" << i << "] : ";
 			LN_LOG_VERBOSE << "  name : " << info.name;
@@ -568,11 +556,6 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 			LN_LOG_VERBOSE << "  arrayElements : " << info.arrayElements;
 			LN_LOG_VERBOSE << "  matrixRows : " << info.matrixRows;
 			LN_LOG_VERBOSE << "  matrixColumns : " << info.matrixColumns;
-
-
-            //if (info.name == "ln_BoneTextureReciprocalSize") {
-            //    std::cout << info.name << std::endl;
-            //}
 
 
             if (info.type == ShaderUniformType_Texture) {
@@ -595,11 +578,6 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
                 if (ownerUiformBufferIndex >= 0)
                 {
                     descriptorLayout.uniformBufferRegister[ownerUiformBufferIndex].members.push_back(info);
-
-
-                    //LN_LOG_VERBOSE << "  ownerUiformBufferIndex : " << ownerUiformBufferIndex << "(" << m_program->getUniformBlockName(ownerUiformBufferIndex) << ")";
-
-                    m_refrection->buffers[ownerUiformBufferIndex].members.push_back(std::move(info));
                 }
                 else {
                     // TODO: texture など

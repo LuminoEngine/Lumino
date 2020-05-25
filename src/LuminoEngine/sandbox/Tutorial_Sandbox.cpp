@@ -1,10 +1,10 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/UI/UIComboBox.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTileset.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTilemapLayer.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTilemapModel.hpp>
-#include <LuminoEngine/Scene/MeshTilemap/MeshTilemapComponent.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelset.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapLayer.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapModel.hpp>
+#include <LuminoEngine/Scene/MeshVoxelmap/MeshVoxelmapComponent.hpp>
 #include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
 using namespace ln;
 

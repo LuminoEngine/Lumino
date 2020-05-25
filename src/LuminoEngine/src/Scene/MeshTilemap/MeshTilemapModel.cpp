@@ -14,12 +14,9 @@ MeshTilemapModel::MeshTilemapModel()
 {
 }
 
-void MeshTilemapModel::init()
+bool MeshTilemapModel::init()
 {
-    Object::init();
-
-
-
+    return Object::init();
 }
 
 void MeshTilemapModel::setTileset(MeshTileset* tileset)

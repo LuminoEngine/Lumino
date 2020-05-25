@@ -132,14 +132,6 @@ struct ShaderUniformBufferInfo
         std::vector<ShaderUniformBufferInfo>* out);
 };
 
-class UnifiedShaderRefrectionInfo
-    : public RefObject
-{
-public:
-    std::vector<ShaderUniformBufferInfo> buffers;
-};
-
-
 enum DescriptorType
 {
     DescriptorType_UniformBuffer = 0,
@@ -165,12 +157,10 @@ enum ShaderStageFlags
 struct DescriptorLayoutItem
 {
     std::string name;
-    //uint8_t type;       // DescriptorType
     uint8_t stageFlags; // ShaderStageFlags どのステージで使われるか
     uint8_t binding;
-    //uint8_t bufferIndex = 0xFF;    // UniformBuffer の場合、対応する DescriptorLayout::buffers のインデックス
 
-
+    // 以下、UniformBuffer でのみ使用
     uint32_t size = 0;		// UniformBuffer 全体のサイズ
     std::vector<ShaderUniformInfo> members;
 };
@@ -181,10 +171,13 @@ struct DescriptorLayout
     std::vector<DescriptorLayoutItem> textureRegister;
     std::vector<DescriptorLayoutItem> samplerRegister;
 
+    void clear();
 	std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType);
     const std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType) const;
     bool isReferenceFromVertexStage(DescriptorType registerType) const;
     bool isReferenceFromPixelStage(DescriptorType registerType) const;
+
+    void mergeFrom(const DescriptorLayout& other);
 };
 
 
