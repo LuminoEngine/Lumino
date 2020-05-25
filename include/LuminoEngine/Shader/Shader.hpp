@@ -140,7 +140,6 @@ private:
 
     /*
         Note:
-
         // DirectX 12
         // https://docs.microsoft.com/en-us/windows/win32/direct3d12/resource-binding-in-hlsl
         // SamplerState と sampler は s レジスタを使用する。
@@ -148,6 +147,10 @@ private:
         SamplerState samp0 : register(s0);
         sampler2D input : register(s0);
 
+        Note:
+        Vulkan は Inside RenderPass では vkCmdCopyBuffer 禁止なので、転送用の一時バッファが必要になる。
+        効率よくバッファ確保するのに SingleFrameAllocator の仕組みを入れたいところ。
+        ただ、このような制約があるのはぱっと見 Vulkan だけ。なので　Vulkan driver の中で隠蔽してみる。
     */
 };
 

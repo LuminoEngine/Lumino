@@ -3170,6 +3170,14 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         // UniformBuffer の内容を CopyCommand に乗せる。
         // Inside RenderPass では vkCmdCopyBuffer が禁止されているので、DeviceLocal に置いたメモリを使うのではなく、
         // 毎回新しい HostVisible な Buffer を作ってそれを使う。
+        // 
+        // ちなみに VertexBuffer などへのデータ転送の時は VertexBuffer へ CopyBuffer しているが、
+        // ここでは 1 コマンドバッファ内でのみ有効な VulkanBuffer を作って、それを直接 Descripter にセットしている。
+        // なぜこうしているのかというと、
+        // - VertexBuffer の動的な書き換えでは、Sprite のバッチ描画などで 巨大な Buffer の一部を書き換えることが多いため、毎回動的に確保するとメモリ消費がひどいことになる。
+        // - 対して UniformBuffer は、数 100 byte 程度の小さいバッファを毎フレーム大量に確保することになる。
+        //   リアルタイムグラフィックスでは、ずっと const な UBO はほとんど存在しない。小さな動的 Buffer の一部を頻繁に書き換えるよりも丸ごと転送してしまった方が簡単だし速い。
+        //   また Vulkan の仕様として Descripter の Write は CommandBuffer に乗るものではないので、基本的にドローコールの数だけ Descripter が必要となる。
         VulkanBuffer* buffer = commandBuffer->allocateBuffer(uniformBuffer->buffer()->size(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
         buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
 

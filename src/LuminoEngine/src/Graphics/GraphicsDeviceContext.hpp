@@ -138,6 +138,13 @@ struct ShaderPassCreateInfo
 	const std::vector<VertexInputAttribute>* attributes;
 };
 
+//struct ShaderDescriptorTableCreateInfo
+//{
+//	const std::vector<size_t> uniformDescriptorSizes;
+//	uint32_t textureDescriptorCount;
+//	uint32_t samplerDescriptorCount;
+//};
+
 class IGraphicsHelper
 {
 public:
@@ -623,18 +630,23 @@ protected:
 	virtual ~IShaderSamplerBuffer() = default;
 };
 
+// 実装は Backend ごとに結構変わるが、RHI としての使い方は VertexBuffer と同じにしたい。
+// 基本的に CommandBuffer 経由でデータをセットすることになる。
+// IShaderDescriptorTable は IShaderPass と 1:1 で存在する。
+// 更新は ICommandList::setDescriptorData()。
+// State が Submit されるとき、ShaderPass が持っている IShaderDescriptorTable を、Native の CommandBuffer へ乗せる。
 class IShaderDescriptorTable
 	: public IGraphicsDeviceObject
 {
 public:
-	// 'b' register
-	virtual void setData(int bindingIndex, const void* data, size_t size) = 0;
+	//// 'b' register
+	//virtual void setData(int bindingIndex, const void* data, size_t size) = 0;
 
-	// 't' register        TODO: 今は CombinedSampler もこっちだけど、それは DirectX12 に合わせて s にしたほうがいいかも。
-	virtual void setTexture(int bindingIndex, ITexture* texture) = 0;
+	//// 't' register        TODO: 今は CombinedSampler もこっちだけど、それは DirectX12 に合わせて s にしたほうがいいかも。
+	//virtual void setTexture(int bindingIndex, ITexture* texture) = 0;
 
-	// 's' register
-	virtual void setSamplerState(int bindingIndex, ISamplerState* samplerState) = 0;
+	//// 's' register
+	//virtual void setSamplerState(int bindingIndex, ISamplerState* samplerState) = 0;
 
 protected:
 };
