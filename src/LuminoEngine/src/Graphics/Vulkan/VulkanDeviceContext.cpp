@@ -3088,12 +3088,17 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
 				return false;
 			}
             buf->descriptorWriteInfoIndex = writeIndex;
-            buf->bindingIndex = item.binding;
+            //buf->bindingIndex = item.binding;
             writeIndex++;
 
 			m_uniformBuffers.push_back(buf);
 		}
 	}
+
+    m_descriptorTable = makeRef<VulkanShaderDescriptorTable>();
+    if (!m_descriptorTable->init(m_deviceContext, this, createInfo.descriptorLayout)) {
+        return false;
+    }
 
     return true;
 }
@@ -3102,6 +3107,11 @@ void VulkanShaderPass::dispose()
 {
     if (m_deviceContext) {
         VkDevice device = m_deviceContext->vulkanDevice();
+
+        if (m_descriptorTable) {
+            m_descriptorTable->dispose();
+            m_descriptorTable = nullptr;
+        }
 
         for (auto& buf : m_uniformBuffers) {
             buf->dispose();
@@ -3402,6 +3412,92 @@ void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t
 	e.descriptorWriteInfoIndex = writeInfoIndex;
 	e.bindingIndex = bindingIndex;
 	m_table.push_back(std::move(e));
+}
+
+//=============================================================================
+// VulkanShaderDescriptorTable
+
+VulkanShaderDescriptorTable::VulkanShaderDescriptorTable()
+{
+}
+
+bool VulkanShaderDescriptorTable::init(VulkanDevice* deviceContext, const VulkanShaderPass* ownerPass, const DescriptorLayout* descriptorLayout)
+{
+    uint32_t writeIndex = 0;
+
+    // UniformBuffers
+    for (const auto& item : descriptorLayout->uniformBufferRegister) {
+        UniformBufferInfo info;
+        info.descriptorWriteInfoIndex = writeIndex;
+        info.bindingIndex = item.binding;
+        info.buffer = std::make_shared<VulkanBuffer>();
+
+        // TRANSFER_DST に最適化
+        if (!info.buffer->init(
+            deviceContext, item.size,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
+            return false;
+        }
+
+        // Verify
+        const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
+        if (LN_ENSURE(writeInfo.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)) return false;
+        if (LN_ENSURE(writeInfo.dstBinding == info.bindingIndex)) return false;
+
+        m_uniforms.push_back(info);
+        writeIndex++;
+    }
+
+    // Textures
+    for (const auto& item : descriptorLayout->textureRegister) {
+        ImageBufferInfo info;
+        info.descriptorWriteInfoIndex = writeIndex;
+        info.bindingIndex = item.binding;
+        info.imageInfo.sampler = VK_NULL_HANDLE;
+        info.imageInfo.imageView = VK_NULL_HANDLE;
+        info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        // Verify
+        const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
+        if (LN_ENSURE(writeInfo.descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)) return false;
+        if (LN_ENSURE(writeInfo.dstBinding == info.bindingIndex)) return false;
+
+        m_textures.push_back(info);
+        writeIndex++;
+    }
+
+    // Samplers
+    for (const auto& item : descriptorLayout->samplerRegister) {
+        ImageBufferInfo info;
+        info.descriptorWriteInfoIndex = writeIndex;
+        info.bindingIndex = item.binding;
+        info.imageInfo.sampler = VK_NULL_HANDLE;
+        info.imageInfo.imageView = VK_NULL_HANDLE;
+        info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        // Verify
+        const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
+        if (LN_ENSURE(writeInfo.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLER)) return false;
+        if (LN_ENSURE(writeInfo.dstBinding == info.bindingIndex)) return false;
+
+        m_samplers.push_back(info);
+        writeIndex++;
+    }
+
+    return true;
+}
+
+void VulkanShaderDescriptorTable::dispose()
+{
+    IShaderDescriptorTable::dispose();
+
+    for (auto& info : m_uniforms) {
+        info.buffer->dispose();
+    }
+    m_uniforms.clear();
+    m_textures.clear();
+    m_samplers.clear();
 }
 
 } // namespace detail

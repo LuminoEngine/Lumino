@@ -32,6 +32,7 @@ class VulkanDepthBuffer;
 class VulkanShaderUniformBuffer;
 class VulkanShaderUniform;
 class VulkanLocalShaderSamplerBuffer;
+class VulkanShaderDescriptorTable;
 class VulkanNativeGraphicsInterface;
 
 class VulkanDevice
@@ -562,6 +563,8 @@ public:
     void releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool);
     //VulkanDescriptorSetsPool* recodingPool = nullptr; // CommandBuffer に対する、いわゆる UserData のイメージ
 
+    const VkWriteDescriptorSet& witeInfo(int index) const { return m_descriptorWriteInfo[index]; }
+
 private:
     VulkanDevice* m_deviceContext;
     VkShaderModule m_vertShaderModule;
@@ -578,6 +581,8 @@ private:
     std::vector<VkDescriptorBufferInfo> m_bufferDescriptorBufferInfo;
     std::vector<VkDescriptorImageInfo> m_textureDescripterImageInfo;
     std::vector<VkDescriptorImageInfo> m_samplerDescripterImageInfo;
+
+    Ref<VulkanShaderDescriptorTable> m_descriptorTable;
 };
 
 class VulkanShaderUniformBuffer
@@ -597,13 +602,13 @@ public:
     const std::vector<byte_t>& data() const { return m_data; }
     VulkanBuffer* buffer() { return &m_uniformBuffer; }
     VkBuffer vulkanBuffer() const { return m_uniformBuffer.nativeBuffer(); }
-    uint32_t descriptorWriteInfoIndex = 0;
-    uint32_t bindingIndex = 0;
+    uint32_t descriptorWriteInfoIndex = 0;  // index of VulkanShaderPass::m_descriptorWriteInfo
+    //uint32_t bindingIndex = 0;
 
 private:
 	std::string m_name;
 	std::vector<byte_t> m_data;
-	std::vector<int> m_bindingNumbers;
+	//std::vector<int> m_bindingNumbers;
     VulkanBuffer m_uniformBuffer;
     std::vector<Ref<VulkanShaderUniform>> m_members;
 };
@@ -661,6 +666,46 @@ private:
 
     std::vector<Entry> m_table;
 };
+
+
+class VulkanShaderDescriptorTable
+    : public IShaderDescriptorTable
+{
+public:
+    VulkanShaderDescriptorTable();
+    bool init(VulkanDevice* deviceContext, const VulkanShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
+    void dispose() override;
+
+private:
+    struct UniformBufferInfo
+    {
+        int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
+        int bindingIndex = 0;
+        std::shared_ptr<VulkanBuffer> buffer;
+    };
+    struct ImageBufferInfo
+    {
+        int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
+        int bindingIndex = 0;
+        VkDescriptorImageInfo imageInfo;
+        Ref<VulkanTexture> texture;
+        Ref<VulkanSamplerState> samplerState;
+    };
+
+    std::vector<UniformBufferInfo> m_uniforms;  // 'b' register
+    std::vector<ImageBufferInfo> m_textures;    // 't' register
+    std::vector<ImageBufferInfo> m_samplers;    // 's' register
+};
+
+
+
+
+
+
+
+
+
+
 
 class VulkanNativeGraphicsInterface : public IVulkanNativeGraphicsInterface
 {
