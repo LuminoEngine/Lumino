@@ -137,8 +137,8 @@ struct ShaderUniformBufferInfo
 enum DescriptorType
 {
     DescriptorType_UniformBuffer = 0,
-    DescriptorType_Texture = 1,
-    DescriptorType_SamplerState = 2,    // TODO: Sampler。たしか HLSL では sampler も SamplerState も s だったはず。Vulkan でも、CombinedSampler は普通の SamplerState としてシェーダから使える。
+    DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
+    DescriptorType_SamplerState = 2,
 
     DescriptorType_Count,
 };

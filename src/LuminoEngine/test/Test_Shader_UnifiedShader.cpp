@@ -22,6 +22,7 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
         detail::UnifiedShader* shader = compiler.unifiedShader();
 
         shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
+        //shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
     }
 
 
@@ -41,7 +42,6 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
         ASSERT_EQ(0, passDL.m_buffers[0].bindingIndex);
         ASSERT_EQ(detail::ShaderStageFlags_Pixel, passDL.m_buffers[0].stageFlags);
 
-        // TODO: sampler2D が texture に回ってきてるけどいいんだっけ？
         ASSERT_EQ(2, passDL.m_textures.size());
         ASSERT_EQ(0, passDL.m_textures[0].bindingIndex);
         ASSERT_EQ(0, passDL.m_textures[0].dataIndex);
@@ -68,7 +68,4 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
         ASSERT_EQ(0, passDL.m_textures[0].bindingIndex);
         ASSERT_EQ(detail::ShaderStageFlags_Pixel, passDL.m_textures[0].stageFlags);
     }
-
-    printf("");
-
 }

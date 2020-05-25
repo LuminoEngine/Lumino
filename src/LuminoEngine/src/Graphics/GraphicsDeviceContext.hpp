@@ -27,6 +27,7 @@ class IShaderPass;
 class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
+class IShaderDescriptorTable;
 class IPipeline;
 class NativeRenderPassCache;
 class NativePipelineCache;
@@ -620,6 +621,22 @@ public:
 protected:
 	IShaderSamplerBuffer();
 	virtual ~IShaderSamplerBuffer() = default;
+};
+
+class IShaderDescriptorTable
+	: public IGraphicsDeviceObject
+{
+public:
+	// 'b' register
+	virtual void setData(int bindingIndex, const void* data, size_t size) = 0;
+
+	// 't' register        TODO: 今は CombinedSampler もこっちだけど、それは DirectX12 に合わせて s にしたほうがいいかも。
+	virtual void setTexture(int bindingIndex, ITexture* texture) = 0;
+
+	// 's' register
+	virtual void setSamplerState(int bindingIndex, ISamplerState* samplerState) = 0;
+
+protected:
 };
 
 class IPipeline

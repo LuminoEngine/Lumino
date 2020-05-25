@@ -20,7 +20,7 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Shader_UnifiedShader.*"
+		"--gtest_filter=Test_Shader_UnifiedShader.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -28,8 +28,10 @@ GTEST_API_ int main(int argc, char **argv)
 	Logger::setLevel(LogLevel::Debug);
 	Logger::addStdErrAdapter();
 
+	auto tempPath = Path(Environment::specialFolderPath(SpecialFolder::Temporary), u"Lumino");
+
 	TestHelper::setAssetsDirPath(LN_LOCALFILE("Assets"));
-	TestHelper::setTempDirPath(Environment::specialFolderPath(SpecialFolder::Temporary));
+	TestHelper::setTempDirPath(tempPath);
 	TestEnv::setup();
 	int result = RUN_ALL_TESTS();
 	TestEnv::teardown();

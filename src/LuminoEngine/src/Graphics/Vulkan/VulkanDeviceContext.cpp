@@ -2938,7 +2938,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
     {
         // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
 
-        // 'b' register in HLSL
+        // set=0, 'b' register in HLSL
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->uniformBufferRegister.size());
@@ -2980,7 +2980,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[0]));
         }
 
-        // 't' register in HLSL
+        // set=1, 't' register in HLSL (Texture and CombinedSampler)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
@@ -3024,7 +3024,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
         }
 
-        // 's' register in HLSL (SamplerState and CombinedSampler)
+        // set=2, 's' register in HLSL (SamplerState)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->samplerRegister.size());
