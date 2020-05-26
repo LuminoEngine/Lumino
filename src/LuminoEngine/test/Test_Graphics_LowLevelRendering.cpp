@@ -22,8 +22,12 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 {
 	// # 時計回り (左ねじ) で描画できること
 	{
+#ifdef LN_NEW_SHADER_UBO
+		auto descriptor = m_shader1->descriptor();
+		descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+#else
 		m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
-
+#endif
 		Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
 		auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
 
@@ -57,7 +61,12 @@ TEST_F(Test_Graphics_LowLevelRendering, BasicTriangle)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, Clear)
 {
+#ifdef LN_NEW_SHADER_UBO
+	auto descriptor = m_shader1->descriptor();
+	descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+#else
     m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+#endif
 
     Vector4 v[] = { Vector4(0, 0.5, 0, 1), Vector4(0.5, -0.25, 0, 1), Vector4(-0.5, -0.25, 0, 1), };
     auto vertexBuffer = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
@@ -152,8 +161,13 @@ TEST_F(Test_Graphics_LowLevelRendering, Clear)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, VertexBuffer)
 {
+#ifdef LN_NEW_SHADER_UBO
+	auto descriptor = m_shader1->descriptor();
+	descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+#else
 	auto buffer1 = m_shader1->findConstantBuffer("ConstBuff");
 	buffer1->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+#endif
 
 	struct Param
 	{
@@ -348,8 +362,13 @@ TEST_F(Test_Graphics_LowLevelRendering, MultiStreamVertexBuffer)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 {
+#ifdef LN_NEW_SHADER_UBO
+	auto descriptor = m_shader1->descriptor();
+	descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(0, 0, 1, 1));
+#else
 	auto buffer1 = m_shader1->findConstantBuffer("ConstBuff");
 	buffer1->findParameter("g_color")->setVector(Vector4(0, 0, 1, 1));
+#endif
 
 	struct Param
 	{
@@ -456,7 +475,12 @@ TEST_F(Test_Graphics_LowLevelRendering, IndexBuffer)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_LowLevelRendering, ViewportAndScissor)
 {
+#ifdef LN_NEW_SHADER_UBO
+	auto descriptor = m_shader1->descriptor();
+	descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(1, 0, 0, 1));
+#else
 	m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+#endif
 
 	Vector4 v[] = {
 		Vector4(0, 0.5, 0, 1),
@@ -1280,7 +1304,12 @@ TEST_F(Test_Graphics_LowLevelRendering, RenderTarget)
 
         // まず renderTarget1 へ緑色の三角形を描く
         {
+#ifdef LN_NEW_SHADER_UBO
+			auto descriptor = m_shader1->descriptor();
+			descriptor->setVector(descriptor->descriptorLayout()->findUniformMemberIndex(u"g_color"), Vector4(0, 1, 0, 1));
+#else
             m_shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
+#endif
 			renderPass->setRenderTarget(0, renderTarget1);
 			ctx->beginRenderPass(renderPass);
             ctx->setVertexLayout(m_vertexDecl1);

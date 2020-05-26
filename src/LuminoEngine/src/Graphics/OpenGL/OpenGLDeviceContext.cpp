@@ -914,6 +914,11 @@ void GLGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, 
 	static_cast<GLTextureBase*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
 }
 
+void GLGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
+{
+	LN_NOTIMPLEMENTED();
+}
+
 void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	OpenGLHelper::clearBuffers(flags, color, z, stencil);
@@ -2112,6 +2117,12 @@ void GLShaderPass::dispose()
 	}
 
 	IShaderPass::dispose();
+}
+
+IShaderDescriptorTable* GLShaderPass::descriptorTable() const
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
 
 void GLShaderPass::apply() const

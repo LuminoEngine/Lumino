@@ -1099,6 +1099,12 @@ void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int
 	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
 }
 
+void VulkanGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
+{
+    VulkanShaderDescriptorTable* table = static_cast<VulkanShaderDescriptorTable*>(resource);
+    table->setData(data);
+}
+
 void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
     auto* renderPass = static_cast<VulkanRenderPass2*>(currentRenderPass());
@@ -3162,6 +3168,11 @@ void VulkanShaderPass::dispose()
     IShaderPass::dispose();
 }
 
+IShaderDescriptorTable* VulkanShaderPass::descriptorTable() const
+{
+    return m_descriptorTable;
+}
+
 IShaderUniformBuffer* VulkanShaderPass::getUniformBuffer(int index) const
 {
     return m_uniformBuffers[index];
@@ -3174,6 +3185,49 @@ IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
 {
+#ifdef LN_NEW_SHADER_UBO
+
+    const auto& uniforms = m_descriptorTable->uniforms();
+    for (int i = 0; i < uniforms.size(); i++) {
+        const auto& uniformBuffer = uniforms[i];
+
+        // UniformBuffer の内容を CopyCommand に乗せる。
+        // Inside RenderPass では vkCmdCopyBuffer が禁止されているので、DeviceLocal に置いたメモリを使うのではなく、
+        // 毎回新しい HostVisible な Buffer を作ってそれを使う。
+        // 
+        // ちなみに VertexBuffer などへのデータ転送の時は VertexBuffer へ CopyBuffer しているが、
+        // ここでは 1 コマンドバッファ内でのみ有効な VulkanBuffer を作って、それを直接 Descripter にセットしている。
+        // なぜこうしているのかというと、
+        // - VertexBuffer の動的な書き換えでは、特に Sprite のバッチ描画などで 巨大な Buffer の一部を書き換えることが多いため、毎回動的に確保するとメモリ消費がひどいことになる。
+        // - 対して UniformBuffer は、数 100 byte 程度の小さいバッファを毎フレーム大量に確保することになる。
+        //   リアルタイムグラフィックスでは、ずっと const な UBO はほとんど存在しない。小さな動的 Buffer の一部を頻繁に書き換えるよりも丸ごと転送してしまった方が簡単だし速い。
+        //   また Vulkan の仕様として Descripter の Write は CommandBuffer に乗るものではないので、基本的にドローコールの数だけ Descripter が必要となる。
+        VulkanBuffer* buffer = commandBuffer->allocateBuffer(uniformBuffer.data.size(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+        buffer->setData(0, uniformBuffer.data.data(), uniformBuffer.data.size());
+
+        VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
+        info.buffer = buffer->nativeBuffer();
+
+        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
+        writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
+    }
+
+    const auto& textures = m_descriptorTable->textures();
+    for (int i = 0; i < textures.size(); i++) {
+        const auto& info = textures[i];
+        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[info.descriptorWriteInfoIndex];
+        writeInfo.pImageInfo = &info.imageInfo;
+    }
+
+    const auto& samplers = m_descriptorTable->samplers();
+    for (int i = 0; i < samplers.size(); i++) {
+        const auto& info = samplers[i];
+        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[info.descriptorWriteInfoIndex];
+        writeInfo.pImageInfo = &info.imageInfo;
+    }
+
+
+#else
     for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
         auto& uniformBuffer = m_uniformBuffers[i];
 
@@ -3224,6 +3278,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
             LN_UNREACHABLE();
         }
     }
+#endif
 
     return m_descriptorWriteInfo;
 }
@@ -3430,15 +3485,16 @@ bool VulkanShaderDescriptorTable::init(VulkanDevice* deviceContext, const Vulkan
         UniformBufferInfo info;
         info.descriptorWriteInfoIndex = writeIndex;
         info.bindingIndex = item.binding;
-        info.buffer = std::make_shared<VulkanBuffer>();
+        info.data.resize(item.size);
+        //info.buffer = std::make_shared<VulkanBuffer>();
 
-        // TRANSFER_DST に最適化
-        if (!info.buffer->init(
-            deviceContext, item.size,
-            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-            return false;
-        }
+        //// TRANSFER_DST に最適化
+        //if (!info.buffer->init(
+        //    deviceContext, item.size,
+        //    VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        //    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
+        //    return false;
+        //}
 
         // Verify
         const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
@@ -3492,12 +3548,42 @@ void VulkanShaderDescriptorTable::dispose()
 {
     IShaderDescriptorTable::dispose();
 
-    for (auto& info : m_uniforms) {
-        info.buffer->dispose();
-    }
+    //for (auto& info : m_uniforms) {
+    //    info.buffer->dispose();
+    //}
     m_uniforms.clear();
     m_textures.clear();
     m_samplers.clear();
+}
+
+// ここではメンバに保持するだけ。次の SubmitState で、実際に Vulkan の DescripterSet を作り、CommandList に乗せて Transfar する。
+void VulkanShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* data)
+{
+    if (LN_REQUIRE(data)) return;
+    //if (LN_REQUIRE(data->uniforms.size() == m_uniforms.size())) return;
+    //if (LN_REQUIRE(data->textures.size() == m_textures.size())) return;
+    //if (LN_REQUIRE(data->samplers.size() == m_samplers.size())) return;
+
+    for (int i = 0; i < m_uniforms.size(); i++) {
+        if (LN_REQUIRE(data->uniforms[i].size == m_uniforms[i].data.size())) return;
+        memcpy(m_uniforms[i].data.data(), data->uniforms[i].data, m_uniforms[i].data.size());
+    }
+
+    for (int i = 0; i < m_textures.size(); i++) {
+        auto& info = m_textures[i];
+        info.texture = static_cast<VulkanTexture*>(data->textures[i]->texture);
+        info.samplerState = static_cast<VulkanSamplerState*>(data->textures[i]->stamplerState);
+        info.imageInfo.imageView = (info.texture) ? info.texture->image()->vulkanImageView() : 0;
+        info.imageInfo.sampler = (info.samplerState) ? info.samplerState->vulkanSampler() : 0;
+    }
+
+    for (int i = 0; i < m_samplers.size(); i++) {
+        auto& info = m_samplers[i];
+        info.texture = static_cast<VulkanTexture*>(data->samplers[i]->texture);
+        info.samplerState = static_cast<VulkanSamplerState*>(data->samplers[i]->stamplerState);
+        info.imageInfo.imageView = (info.texture) ? info.texture->image()->vulkanImageView() : 0;
+        info.imageInfo.sampler = (info.samplerState) ? info.samplerState->vulkanSampler() : 0;
+    }
 }
 
 } // namespace detail

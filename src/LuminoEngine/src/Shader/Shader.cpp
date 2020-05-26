@@ -288,6 +288,7 @@ void Shader::createFromStream(Stream* stream, DiagnosticsManager* diag)
 void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag)
 {
     m_descriptorLayout = makeObject<ShaderDescriptorLayout>(unifiedShader->globalDescriptorLayout());
+    m_descriptor = makeObject<ShaderDescriptor>(this);
 
 	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
 		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
@@ -471,6 +472,11 @@ Ref<ReadOnlyList<Ref<ShaderTechnique>>> Shader::techniques() const
 {
     return m_techniques;
 }
+
+//Ref<ShaderDescriptor> Shader::createDescriptor()
+//{
+//    return makeObject<ShaderDescriptor>(this);
+//}
 
 // TODO: 名前の指定方法をもう少しいい感じにしたい。ImageEffect を Forward_Geometry_UnLighting と書かなければならないなど、煩雑。
 ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const
@@ -843,6 +849,104 @@ detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsConte
     return m_rhiPass;
 }
 
+void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail::ICommandList* commandList, const ShaderDescriptor* descripter, bool* outModified)
+{
+    if (descripter) {
+        if (descripter != m_lastShaderDescriptor || m_lastShaderDescriptorRevision != descripter->m_revision) {
+
+            {
+                auto* manager = detail::GraphicsResourceInternal::manager(m_owner->shader());
+                const ShaderDescriptorLayout* globalLayout = m_owner->m_owner->descriptorLayout();
+                detail::ShaderDescriptorTableUpdateInfo updateInfo;
+
+                // まず UniformBuffer に必要なサイズを測る
+                size_t totalSize = 0;
+                for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+                    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+                        LN_NOTIMPLEMENTED();
+                        break;
+                    }
+                    updateInfo.uniforms[i].size = globalLayout->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].size;
+                    totalSize += updateInfo.uniforms[i].size;
+                }
+
+                // UniformBuffer に必要な領域をまとめて確保してデータコピー
+                detail::RenderBulkData uniformBufferData = detail::GraphicsContextInternal::getRenderingCommandList(graphicsContext)->allocateBulkData(totalSize);
+                size_t offset = 0;
+                for (int i = 0; i < m_descriptorLayout.m_buffers.size(); i++) {
+                    auto& view = updateInfo.uniforms[i];
+                    void* d = static_cast<byte_t*>(uniformBufferData.writableData()) + offset;
+                    memcpy(d, descripter->m_buffers[m_descriptorLayout.m_buffers[i].dataIndex].data(), view.size);
+                    view.data = d;
+                    offset += view.size;
+                }
+
+                // Textures
+                for (int i = 0; i < m_descriptorLayout.m_textures.size(); i++) {
+                    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+                        LN_NOTIMPLEMENTED();
+                        break;
+                    }
+                    const auto& info = m_descriptorLayout.m_textures[i];
+                    Texture* texture = descripter->m_textures[info.dataIndex];
+                    SamplerState* sampler = nullptr;
+                    if (texture && texture->samplerState())
+                        sampler = texture->samplerState();
+                    else
+                        sampler = manager->defaultSamplerState();
+
+                    bool modified = false;
+                    auto& view = updateInfo.textures[i];
+                    view->texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+                    view->stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+                    (*outModified) |= modified;
+                }
+
+                // Samplers
+                for (int i = 0; i < m_descriptorLayout.m_samplers.size(); i++) {
+                    if (i >= detail::ShaderDescriptorTableUpdateInfo::MaxElements) {
+                        LN_NOTIMPLEMENTED();
+                        break;
+                    }
+                    const auto& info = m_descriptorLayout.m_samplers[i];
+                    Texture* texture = descripter->m_samplers[info.dataIndex];
+                    SamplerState* sampler = nullptr;
+                    if (texture && texture->samplerState())
+                        sampler = texture->samplerState();
+                    else
+                        sampler = manager->defaultSamplerState();
+
+                    bool modified = false;
+                    auto& view = updateInfo.samplers[i];
+                    view->texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+                    view->stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+                    (*outModified) |= modified;
+                }
+
+                detail::IShaderDescriptorTable* rhiDescriptorTable = m_rhiPass->descriptorTable();
+
+                LN_ENQUEUE_RENDER_COMMAND_3(
+                    ShaderConstantBuffer_submitShaderDescriptor, graphicsContext,
+                    detail::ICommandList*, commandList,
+                    detail::IShaderDescriptorTable*, rhiDescriptorTable,
+                    detail::ShaderDescriptorTableUpdateInfo, updateInfo,
+                    {
+                        commandList->setDescriptorTableData(rhiDescriptorTable, &updateInfo);
+                    });
+            }
+
+
+            m_lastShaderDescriptor = m_lastShaderDescriptor;
+            m_lastShaderDescriptorRevision = descripter->m_revision;
+        }
+    }
+    else {
+        m_lastShaderDescriptor = nullptr;
+        m_lastShaderDescriptorRevision = 0;
+    }
+
+}
+
 //=============================================================================
 // ShaderDescriptor
 
@@ -868,6 +972,33 @@ bool ShaderDescriptor::init(Shader* ownerShader)
     m_samplers.resize(layout->samplerRegisterCount());
 
     return true;
+}
+
+ShaderDescriptorLayout* ShaderDescriptor::descriptorLayout() const
+{
+    return m_ownerShader->descriptorLayout();
+}
+
+//int ShaderDescriptor::findUniformBufferIndex(const ln::StringRef& name) const
+//{
+//    return m_ownerShader->descriptorLayout()->findUniformBufferRegisterIndex(name);
+//}
+//
+//int ShaderDescriptor::findTextureIndex(const ln::StringRef& name) const
+//{
+//    return m_ownerShader->descriptorLayout()->findTextureRegisterIndex(name);
+//}
+//
+//int ShaderDescriptor::findSamplerIndex(const ln::StringRef& name) const
+//{
+//    return m_ownerShader->descriptorLayout()->findSamplerRegisterIndex(name);
+//}
+
+void ShaderDescriptor::setVector(int index, const Vector4& value)
+{
+    const auto& member = descriptorLayout()->m_members[index];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
 }
 
 //=============================================================================
@@ -934,6 +1065,11 @@ bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
 int ShaderDescriptorLayout::findUniformBufferRegisterIndex(const ln::StringRef& name) const
 {
     return m_buffers.indexOfIf([&](const auto& x) { return x.name == name; });
+}
+
+int ShaderDescriptorLayout::findUniformMemberIndex(const ln::StringRef& name) const
+{
+    return m_members.indexOfIf([&](const auto& x) { return x.name == name; });
 }
 
 int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringRef& name) const

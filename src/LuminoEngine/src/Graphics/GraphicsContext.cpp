@@ -250,12 +250,12 @@ IndexBuffer* GraphicsContext::indexBuffer() const
     return m_staging.indexBuffer;
 }
 
-void GraphicsContext::setShaderPass(ShaderPass* pass)
+void GraphicsContext::setShaderPass(ShaderPass* value)
 {
-    if (m_staging.shaderPass != pass) {
-        if (pass) {
-            m_staging.shader = pass->shader();
-            m_staging.shaderPass = pass;
+    if (m_staging.shaderPass != value) {
+        if (value) {
+            m_staging.shader = value->shader();
+            m_staging.shaderPass = value;
         } else {
             m_staging.shader = nullptr;
             m_staging.shaderPass = nullptr;
@@ -268,6 +268,19 @@ ShaderPass* GraphicsContext::shaderPass() const
 {
     return m_staging.shaderPass;
 }
+
+//void GraphicsContext::setShaderDescriptor(ShaderDescriptor* value)
+//{
+//    if (m_staging.shaderDescriptor != value) {
+//        m_staging.shaderDescriptor = value;
+//        m_dirtyFlags |= DirtyFlags_ShaderDescriptor;
+//    }
+//}
+//
+//ShaderDescriptor* GraphicsContext::shaderDescriptor() const
+//{
+//    return m_staging.shaderDescriptor;
+//}
 
 //void GraphicsContext::setRenderPass(RenderPass* value)
 //{
@@ -503,6 +516,9 @@ detail::ICommandList* GraphicsContext::commitState()
     // といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
 
     bool resourceModified = false;
+    //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
+    m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shader->descriptor(), &resourceModified);
+
     detail::IShaderPass* shaderPassRHI = (m_staging.shaderPass) ? m_staging.shaderPass->resolveRHIObject(this, &resourceModified) : nullptr;
 
     bool vertexLayoutModified = false;

@@ -4,6 +4,8 @@
 #define LN_NEW_SHADER_UBO 1
 
 namespace ln {
+class ShaderDescriptor;
+
 namespace detail {
 
 struct UnifiedShaderTriple

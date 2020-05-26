@@ -126,6 +126,28 @@ struct ShaderVertexInputAttribute
 
 using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
 
+
+struct ShaderDescriptorBufferView
+{
+	const void* data;
+	uint32_t size;
+};
+
+struct ShaderDescriptorCombinedSampler
+{
+	ITexture* texture;
+	ISamplerState* stamplerState;
+};
+
+struct ShaderDescriptorTableUpdateInfo
+{
+	static const int MaxElements = 32;
+
+	std::array<ShaderDescriptorBufferView, MaxElements> uniforms = {};
+	std::array<ShaderDescriptorCombinedSampler*, MaxElements> textures = {};
+	std::array<ShaderDescriptorCombinedSampler*, MaxElements> samplers = {};
+};
+
 struct ShaderPassCreateInfo
 {
     const byte_t* vsCode;
@@ -305,6 +327,7 @@ public:
     void setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
+	void setDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data);
 
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
@@ -334,6 +357,7 @@ public:	// TODO:
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+	virtual void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
@@ -563,6 +587,7 @@ class IShaderPass
 public:
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	const VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
+	virtual IShaderDescriptorTable* descriptorTable() const = 0;
 
 	//virtual int getUniformCount() const = 0;
 	//virtual IShaderUniform* getUniform(int index) const = 0;

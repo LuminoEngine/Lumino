@@ -163,6 +163,7 @@ protected:
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+    virtual void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount) override;
@@ -543,6 +544,7 @@ public:
     VulkanShaderPass();
     Result init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
+    virtual IShaderDescriptorTable* descriptorTable() const;
     virtual int getUniformBufferCount() const override { return m_uniformBuffers.size(); }
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
@@ -609,7 +611,7 @@ private:
 	std::string m_name;
 	std::vector<byte_t> m_data;
 	//std::vector<int> m_bindingNumbers;
-    VulkanBuffer m_uniformBuffer;
+    VulkanBuffer m_uniformBuffer;   // TODO: 不要。サイズがわかればよい
     std::vector<Ref<VulkanShaderUniform>> m_members;
 };
 
@@ -672,25 +674,33 @@ class VulkanShaderDescriptorTable
     : public IShaderDescriptorTable
 {
 public:
-    VulkanShaderDescriptorTable();
-    bool init(VulkanDevice* deviceContext, const VulkanShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
-    void dispose() override;
-
-private:
     struct UniformBufferInfo
     {
         int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
         int bindingIndex = 0;
-        std::shared_ptr<VulkanBuffer> buffer;
+        std::vector<byte_t> data;
+        //std::shared_ptr<VulkanBuffer> buffer;
     };
     struct ImageBufferInfo
     {
         int descriptorWriteInfoIndex = -1;  // index of VulkanShaderPass::m_descriptorWriteInfo
+        //int descriptorImageInfoIndex;
         int bindingIndex = 0;
         VkDescriptorImageInfo imageInfo;
         Ref<VulkanTexture> texture;
         Ref<VulkanSamplerState> samplerState;
     };
+
+    VulkanShaderDescriptorTable();
+    bool init(VulkanDevice* deviceContext, const VulkanShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
+    void dispose() override;
+    void setData(const ShaderDescriptorTableUpdateInfo* data);
+
+    const std::vector<UniformBufferInfo>& uniforms() const { return m_uniforms; }
+    const std::vector<ImageBufferInfo>& textures() const { return m_textures; }
+    const std::vector<ImageBufferInfo>& samplers() const { return m_samplers; }
+
+private:
 
     std::vector<UniformBufferInfo> m_uniforms;  // 'b' register
     std::vector<ImageBufferInfo> m_textures;    // 't' register

@@ -12,6 +12,7 @@ class ShaderConstantBuffer;
 class ShaderParameter;
 class ShaderTechnique;
 class ShaderPass;
+class ShaderDescriptorLayout;
 class ShaderCompilationProperties;
 class GraphicsContext;
 namespace detail {
@@ -30,9 +31,10 @@ class ShaderDescriptor final
     : public Object
 {
 public:
-    int findUniformBufferIndex(const ln::StringRef& name) const;
-    int findTextureIndex(const ln::StringRef& name) const;
-    int findSamplerIndex(const ln::StringRef& name) const;
+    //int findUniformBufferIndex(const ln::StringRef& name) const;
+    //int findTextureIndex(const ln::StringRef& name) const;
+    //int findSamplerIndex(const ln::StringRef& name) const;
+    ShaderDescriptorLayout* descriptorLayout() const;
 
     /** bool 値を設定します。 */
     void setBool(int index, bool value);
@@ -78,16 +80,19 @@ private:
     struct BufferInfo
     {
         ByteBuffer buffer;
-        Ref<detail::IShaderUniformBuffer> rhiObject;
+        //Ref<detail::IShaderUniformBuffer> rhiObject;
     };
 
     Ref<Shader> m_ownerShader;
     List<ByteBuffer> m_buffers;
     List<Ref<Texture>> m_textures;
     List<Ref<Texture>> m_samplers;
+    int m_revision = 0;
+
+    friend class ShaderPass;
 };
 
-// ShaderDescriptor と 1:1。 Global 情報。
+// ShaderDescriptor と 1:1。つまり Global 情報。
 // 名前から UniformBuffer, Texture, SamplerState, Sampler を求める。
 // 名前から UniformBuffer の Member を求める。
 class ShaderDescriptorLayout final
@@ -99,6 +104,7 @@ public:
     int samplerRegisterCount() const { return m_samplers.size(); }
 
     int findUniformBufferRegisterIndex(const ln::StringRef& name) const;
+    int findUniformMemberIndex(const ln::StringRef& name) const;
     int findTextureRegisterIndex(const ln::StringRef& name) const;
     int findSamplerRegisterIndex(const ln::StringRef& name) const;
 
@@ -137,6 +143,7 @@ private:
     List<SamplerRegisterInfo> m_samplers;
 
     friend class ShaderDescriptor;
+    friend class ShaderPass;
 
     /*
         Note:
@@ -253,6 +260,11 @@ public:
     /** この Shader に含まれる ShaderTechnique を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderTechnique>>> techniques() const;
 
+    /** この Shader の DescriptorLayout をもとに、ShaderDescriptor を作成します。 */
+    //Ref<ShaderDescriptor> createDescriptor();
+
+    const Ref<ShaderDescriptor>& descriptor() const { return m_descriptor; }
+
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -279,6 +291,7 @@ private:
     detail::ShaderManager* m_manager;
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
+    Ref<ShaderDescriptor> m_descriptor;
     List<Ref<ShaderConstantBuffer>> m_buffers;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
     List<Ref<ShaderParameter>> m_textureParameters;
@@ -477,6 +490,7 @@ private:
     void setupParameters();
     void commitContantBuffers(GraphicsContext* graphicsContext, bool* outModified);
     detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
+    void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::ICommandList* commandList, const ShaderDescriptor* descripter, bool* outModified);
 
     ShaderTechnique* m_owner;
     String m_name;
@@ -488,6 +502,8 @@ private:
     List<ShaderParameter*> m_textureParameters;
 
     Ref<detail::ShaderRenderState> m_renderState;
+    const ShaderDescriptor* m_lastShaderDescriptor = nullptr;
+    int m_lastShaderDescriptorRevision = 0;
 
     friend class Shader;
     friend class ShaderTechnique;
