@@ -391,6 +391,96 @@ ShaderParameter* ShaderSemanticsManager::getParameterBySemantics(BuiltinSemantic
 }
 
 //=============================================================================
+// ShaderPassSemanticsManager
+
+static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShaderParametersMap =
+{
+    {_LT("ln_View"), BuiltinShaderParameters_ln_View},
+    {_LT("ln_Projection"), BuiltinShaderParameters_ln_Projection},
+    {_LT("ln_CameraPosition"), BuiltinShaderParameters_ln_CameraPosition},
+    {_LT("ln_CameraDirection"), BuiltinShaderParameters_ln_CameraDirection},
+    {_LT("ln_ViewportPixelSize"), BuiltinShaderParameters_ln_ViewportPixelSize},
+    {_LT("ln_NearClip"), BuiltinShaderParameters_ln_NearClip},
+    {_LT("ln_FarClip"), BuiltinShaderParameters_ln_FarClip},
+
+    {_LT("ln_World"), BuiltinShaderParameters_ln_World},
+    {_LT("ln_WorldViewProjection"), BuiltinShaderParameters_ln_WorldViewProjection},
+    {_LT("ln_WorldView"), BuiltinShaderParameters_ln_WorldView},
+    {_LT("ln_WorldViewIT"), BuiltinShaderParameters_ln_WorldViewIT},
+    {_LT("ln_BoneTextureReciprocalSize"), BuiltinShaderParameters_ln_BoneTextureReciprocalSize},
+
+    {_LT("ln_ColorScale"), BuiltinShaderParameters_ln_ColorScale},
+    {_LT("ln_BlendColor"), BuiltinShaderParameters_ln_BlendColor},
+    {_LT("ln_ToneColor"), BuiltinShaderParameters_ln_ToneColor},
+
+    {_LT("ln_MaterialTexture"), BuiltinShaderParameters_ln_MaterialTexture},
+    {_LT("ln_BoneTexture"), BuiltinShaderParameters_ln_BoneTexture},
+    {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderParameters_ln_BoneLocalQuaternionTexture},
+};
+
+static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinShaderUniformBuffersMap =
+{
+    {_LT("LNRenderViewBuffer"), BuiltinShaderUniformBuffers_LNRenderViewBuffer},
+    {_LT("LNRenderElementBuffer"), BuiltinShaderUniformBuffers_LNRenderElementBuffer},
+    {_LT("LNEffectColorBuffer"), BuiltinShaderUniformBuffers_LNEffectColorBuffer},
+};
+
+ShaderPassSemanticsManager::ShaderPassSemanticsManager()
+{
+    static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
+    reset();
+}
+
+void ShaderPassSemanticsManager::init(ShaderPass* shaderPass)
+{
+    const auto& globalLayout = shaderPass->shader()->descriptorLayout();
+    const auto& localLayout = shaderPass->descriptorLayout();
+
+    // UniformBuffers
+    for (const auto& localInfo : localLayout.m_buffers) {
+        const auto& globalInfo = globalLayout->m_buffers[localInfo.dataIndex];
+
+        auto itr = s_BuiltinShaderUniformBuffersMap.find(globalInfo.name);
+        if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
+            m_builtinUniformBuffers[itr->second] = localInfo.dataIndex;
+        }
+
+        for (const auto& memberInfo : globalLayout->m_members) {
+            auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
+            if (itr != s_BuiltinShaderParametersMap.end()) {
+                m_hasBuiltinShaderParameters |= (1 << itr->second);
+            }
+        }
+    }
+
+    // Textues
+    for (const auto& localInfo : localLayout.m_textures) {
+        const auto& globalInfo = globalLayout->m_textures[localInfo.dataIndex];
+
+        auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
+        if (itr != s_BuiltinShaderParametersMap.end()) {
+            m_hasBuiltinShaderParameters |= (1 << itr->second);
+        }
+    }
+
+    // Samplers
+    for (const auto& localInfo : localLayout.m_samplers) {
+        const auto& globalInfo = globalLayout->m_samplers[localInfo.dataIndex];
+
+        auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
+        if (itr != s_BuiltinShaderParametersMap.end()) {
+            m_hasBuiltinShaderParameters |= (1 << itr->second);
+        }
+    }
+}
+
+void ShaderPassSemanticsManager::reset()
+{
+    m_hasBuiltinShaderParameters = 0;
+    for (auto& i : m_builtinUniformBuffers) i = -1;
+}
+
+//=============================================================================
 // ShaderTechniqueClass
 
 void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet)

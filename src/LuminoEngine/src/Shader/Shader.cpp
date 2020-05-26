@@ -737,6 +737,7 @@ void ShaderPass::init(const String& name, detail::IShaderPass* rhiPass, detail::
     m_renderState = renderState;
 
     m_descriptorLayout.init(layout, globalLayout);
+
 }
 
 void ShaderPass::onDispose(bool explicitDisposing)
@@ -769,6 +770,9 @@ void ShaderPass::setupParameters()
             m_textureParameters.add(param);
         }
     }
+
+    m_semanticsManager = std::make_unique<detail::ShaderPassSemanticsManager>();
+    m_semanticsManager->init(this);
 }
 
 void ShaderPass::commitContantBuffers(GraphicsContext* graphicsContext, bool* outModified)

@@ -22,6 +22,7 @@ class ShaderManager;
 class UnifiedShader;
 class IShaderPass;
 class IShaderUniformBuffer;
+class ShaderPassSemanticsManager;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
@@ -102,6 +103,7 @@ LN_INTERNAL_NEW_OBJECT;
 };
 
 // ShaderDescriptor と 1:1。つまり Global 情報。
+// m_buffers, m_textures, m_samplers は ShaderDescriptor のそれぞれ と要素番号が一致する。
 // 名前から UniformBuffer, Texture, SamplerState, Sampler を求める。
 // 名前から UniformBuffer の Member を求める。
 class ShaderDescriptorLayout final
@@ -153,6 +155,7 @@ private:
 
     friend class ShaderDescriptor;
     friend class ShaderPass;
+    friend class detail::ShaderPassSemanticsManager;
 
     /*
         Note:
@@ -273,6 +276,7 @@ public:
     //Ref<ShaderDescriptor> createDescriptor();
 
     const Ref<ShaderDescriptor>& descriptor() const { return m_descriptor; }
+    const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
 
 
 protected:
@@ -288,7 +292,6 @@ LN_CONSTRUCT_ACCESS:
     void init(const String& name, Stream* stream);
 
 private:
-    const Ref<ShaderDescriptorLayout>& descriptorLayout() const { return m_descriptorLayout; }
     detail::ShaderSemanticsManager* semanticsManager() { return &m_semanticsManager; }
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
@@ -505,6 +508,7 @@ private:
     String m_name;
     Ref<detail::IShaderPass> m_rhiPass;
     ShaderPassDescriptorLayout m_descriptorLayout;
+    std::unique_ptr<detail::ShaderPassSemanticsManager> m_semanticsManager;
 
     // deprecated
     List<ConstantBufferEntry> m_bufferEntries;

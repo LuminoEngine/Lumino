@@ -232,6 +232,77 @@ private:
     std::array<ShaderParameter*, (int)BuiltinSemantics::_Count> m_variablesTable;
 };
 
+
+
+enum BuiltinShaderParameters
+{
+    // LNRenderViewBuffer
+    BuiltinShaderParameters_ln_View,
+    BuiltinShaderParameters_ln_Projection,
+    BuiltinShaderParameters_ln_CameraPosition,
+    BuiltinShaderParameters_ln_CameraDirection,
+    BuiltinShaderParameters_ln_ViewportPixelSize,
+    BuiltinShaderParameters_ln_NearClip,
+    BuiltinShaderParameters_ln_FarClip,
+
+    // LNRenderElementBuffer
+    BuiltinShaderParameters_ln_World,
+    BuiltinShaderParameters_ln_WorldViewProjection,
+    BuiltinShaderParameters_ln_WorldView,
+    BuiltinShaderParameters_ln_WorldViewIT,
+    BuiltinShaderParameters_ln_BoneTextureReciprocalSize,
+
+    // LNEffectColorBuffer
+    BuiltinShaderParameters_ln_ColorScale,
+    BuiltinShaderParameters_ln_BlendColor,
+    BuiltinShaderParameters_ln_ToneColor,
+
+    BuiltinShaderParameters_ln_MaterialTexture,
+    BuiltinShaderParameters_ln_BoneTexture,
+    BuiltinShaderParameters_ln_BoneLocalQuaternionTexture,
+
+    BuiltinShaderParameters__Count,
+};
+
+enum BuiltinShaderUniformBuffers
+{
+    BuiltinShaderUniformBuffers_LNRenderViewBuffer,
+    BuiltinShaderUniformBuffers_LNRenderElementBuffer,
+    BuiltinShaderUniformBuffers_LNEffectColorBuffer,
+    BuiltinShaderUniformBuffers__Count,
+};
+
+// セマンティクスが関係するシェーダ変数の管理
+class ShaderPassSemanticsManager
+{
+public:
+    ShaderPassSemanticsManager();
+    void init(ShaderPass* shaderPass);
+    void reset();
+
+    // call by rendering time.
+    void updateSceneVariables(const SceneInfo& info);
+    void updateCameraVariables(const CameraInfo& info);
+    void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
+    void updateSubsetVariables(const SubsetInfo& info);
+    void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
+    void updateSubsetVariables_Phong(const PhongMaterialData& materialData);
+    ShaderParameter* getParameterBySemantics(BuiltinSemantics semantics) const;
+
+private:
+    struct VariableKindPair
+    {
+        int index;  // member or texture or sampler index.
+        BuiltinSemantics kind;
+    };
+
+    // Boolean flags BuiltinShaderParameters
+    uint64_t m_hasBuiltinShaderParameters;
+
+    // Index of ShaderDescriptorLayout::m_buffers,m_textures,m_samplers
+    std::array<int, BuiltinShaderUniformBuffers__Count> m_builtinUniformBuffers;
+};
+
 // LigitingModel
 enum class ShaderTechniqueClass_Ligiting : uint8_t
 {
