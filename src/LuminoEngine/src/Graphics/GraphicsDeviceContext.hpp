@@ -144,8 +144,8 @@ struct ShaderDescriptorTableUpdateInfo
 	static const int MaxElements = 32;
 
 	std::array<ShaderDescriptorBufferView, MaxElements> uniforms = {};
-	std::array<ShaderDescriptorCombinedSampler*, MaxElements> textures = {};
-	std::array<ShaderDescriptorCombinedSampler*, MaxElements> samplers = {};
+	std::array<ShaderDescriptorCombinedSampler, MaxElements> textures = {};
+	std::array<ShaderDescriptorCombinedSampler, MaxElements> samplers = {};
 };
 
 struct ShaderPassCreateInfo

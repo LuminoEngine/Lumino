@@ -10,6 +10,7 @@ class Texture;
 class Shader;
 class ShaderConstantBuffer;
 class ShaderParameter;
+class ShaderParameter2;
 class ShaderTechnique;
 class ShaderPass;
 class ShaderDescriptorLayout;
@@ -37,40 +38,40 @@ public:
     ShaderDescriptorLayout* descriptorLayout() const;
 
     /** bool 値を設定します。 */
-    void setBool(int index, bool value);
+    void setBool(int memberIndex, bool value);
 
     /** 整数値を設定します。 */
-    void setInt(int index, int value);
+    void setInt(int memberIndex, int value);
 
     /** 整数値の配列を設定します。 */
-    void setIntArray(int index, const int* value, int count);
+    void setIntArray(int memberIndex, const int* value, int count);
 
     /** 浮動小数点値を設定します。 */
-    void setFloat(int index, float value);
+    void setFloat(int memberIndex, float value);
 
     /** 浮動小数点値の配列を設定します。 */
-    void setFloatArray(int index, const float* value, int count);
+    void setFloatArray(int memberIndex, const float* value, int count);
 
     /** ベクトルを設定します。 */
-    void setVector(int index, const Vector4& value);
+    void setVector(int memberIndex, const Vector4& value);
 
     /** ベクトルの配列を設定します。 */
-    void setVectorArray(int index, const Vector4* value, int count);
+    void setVectorArray(int memberIndex, const Vector4* value, int count);
 
     /** 行列を設定します。 */
-    void setMatrix(int index, const Matrix& value);
+    void setMatrix(int memberIndex, const Matrix& value);
 
     /** 行列の配列を設定します。 */
-    void setMatrixArray(int index, const Matrix* value, int count);
+    void setMatrixArray(int memberIndex, const Matrix* value, int count);
+
+    /** テクスチャを設定します。 */
+    void setTexture(int textureIndex, Texture* value);
+
+    /** テクスチャを設定します。 */
+    void setSampler(int textureIndex, Texture* value);
 
     /** SamplerState を設定します。 */
-    void setSamplerState(int index, SamplerState* value);
-
-    /** テクスチャを設定します。 */
-    void setSampler(int index, Texture* value);
-
-    /** テクスチャを設定します。 */
-    void setTexture(int index, Texture* value);
+    void setSamplerState(int samplerIndex, SamplerState* value);
 
 LN_CONSTRUCT_ACCESS:
     ShaderDescriptor();
@@ -86,10 +87,18 @@ private:
     Ref<Shader> m_ownerShader;
     List<ByteBuffer> m_buffers;
     List<Ref<Texture>> m_textures;
-    List<Ref<Texture>> m_samplers;
+    List<Ref<SamplerState>> m_samplers;
     int m_revision = 0;
 
     friend class ShaderPass;
+};
+
+class ShaderParameter2 final
+    : public Object
+{
+LN_INTERNAL_NEW_OBJECT;
+    ShaderParameter2();
+    void init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
 };
 
 // ShaderDescriptor と 1:1。つまり Global 情報。

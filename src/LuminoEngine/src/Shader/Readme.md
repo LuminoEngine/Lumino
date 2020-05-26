@@ -84,6 +84,53 @@ package "RHI Thread" {
 
 - Material は setShader と同時に、ShaderDescripter を作成する。
 
+
+0.9.0 時点の トランスパイラの動作について
+----------
+
+### register と binding
+
+Lumino としては入力は HLSL になるが、GLSL へは次のような考え方でマップする。
+
+- register 種類 -> GLSL の set
+- register(bX) の X -> GLSL の binding
+
+register と set の対応は次の通り。
+
+| register | set (DescriptorSet) |
+|----------|----------|
+| b        | 0        |
+| t        | 1        |
+| s        | 2        |
+
+イメージとしては次のような変換が行われる。
+
+```
+cbuffer ConstBuff0 : register(b1) { ... };
+```
+
+to
+
+```
+layout(set=0, binding=1) uniform ConstBuff0 { ... };
+```
+
+ただし、これはあくまでイメージ。0.9.0 時点では、実装優先で、次のようなルールでマップされている。
+
+- binding はレジスタ要素を見つけた順番で、0 から番号を割り振る。ユーザーが HLSL で指定したレジスタ番号は無視される。
+    - `TODO:` ユーザプログラムで UBO などを名前検索するときは問題ないが、レジスタ番号指定でデータをセットするときに問題になるので、修正が必要。
+- register の種類は、変数の型によって再割り当てされる。
+    - textureXD は register 't' (set=1) に割り当てられる。
+    - SamplerState は register 's' (set=2) に割り当てられる。
+    - `samplerXD は register 't' (set=1) に割り当てられる。`
+        - `TODO:` これも実装優先のための現状仕様だが、実際に HLSL 手書きするときは register(s0) とかを使うことが多いので、合わせたほうがいいだろう。
+
+実際の動きは `Test_Shader_UnifiedShader.LayoutTest2` を参照すること。
+
+このマップ処理は Lumino ShaderCodeTranspiler::mapIOAndGenerateSpirv() で行われる。
+
+
+
 用語
 ----------
 

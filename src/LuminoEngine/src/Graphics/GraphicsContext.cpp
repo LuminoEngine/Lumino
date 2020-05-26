@@ -516,10 +516,14 @@ detail::ICommandList* GraphicsContext::commitState()
     // といったように、同じオブジェクトを set したまま内容を更新した場合に反映されなくなる。
 
     bool resourceModified = false;
-    //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
-    m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shader->descriptor(), &resourceModified);
 
-    detail::IShaderPass* shaderPassRHI = (m_staging.shaderPass) ? m_staging.shaderPass->resolveRHIObject(this, &resourceModified) : nullptr;
+    detail::IShaderPass* shaderPassRHI = nullptr;
+    if (m_staging.shaderPass) {
+        //m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shaderDescriptor, &resourceModified);
+        m_staging.shaderPass->submitShaderDescriptor(this, m_rhiCommandList, m_staging.shader->descriptor(), &resourceModified);
+
+        shaderPassRHI = m_staging.shaderPass->resolveRHIObject(this, &resourceModified);
+    }
 
     bool vertexLayoutModified = false;
     detail::IVertexDeclaration* vertexLayoutRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(this, m_staging.VertexLayout, &vertexLayoutModified);

@@ -897,8 +897,8 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
 
                     bool modified = false;
                     auto& view = updateInfo.textures[i];
-                    view->texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
-                    view->stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+                    view.texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
+                    view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
                     (*outModified) |= modified;
                 }
 
@@ -909,17 +909,14 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
                         break;
                     }
                     const auto& info = m_descriptorLayout.m_samplers[i];
-                    Texture* texture = descripter->m_samplers[info.dataIndex];
-                    SamplerState* sampler = nullptr;
-                    if (texture && texture->samplerState())
-                        sampler = texture->samplerState();
-                    else
+                    SamplerState* sampler = descripter->m_samplers[info.dataIndex];
+                    if (!sampler)
                         sampler = manager->defaultSamplerState();
 
                     bool modified = false;
                     auto& view = updateInfo.samplers[i];
-                    view->texture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
-                    view->stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
+                    view.texture = nullptr;
+                    view.stamplerState = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
                     (*outModified) |= modified;
                 }
 
@@ -994,11 +991,77 @@ ShaderDescriptorLayout* ShaderDescriptor::descriptorLayout() const
 //    return m_ownerShader->descriptorLayout()->findSamplerRegisterIndex(name);
 //}
 
-void ShaderDescriptor::setVector(int index, const Vector4& value)
+
+
+void ShaderDescriptor::setInt(int memberIndex, int value)
 {
-    const auto& member = descriptorLayout()->m_members[index];
+    const auto& member = descriptorLayout()->m_members[memberIndex];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, buffer.data(), member.desc.offset, 1, 0);
+}
+
+void ShaderDescriptor::setIntArray(int memberIndex, const int* value, int count)
+{
+    const auto& member = descriptorLayout()->m_members[memberIndex];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+}
+
+void ShaderDescriptor::setFloat(int memberIndex, float value)
+{
+    const auto& member = descriptorLayout()->m_members[memberIndex];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, buffer.data(), member.desc.offset, 1, 0);
+}
+
+void ShaderDescriptor::setFloatArray(int memberIndex, const float* value, int count)
+{
+    const auto& member = descriptorLayout()->m_members[memberIndex];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride);
+}
+
+void ShaderDescriptor::setVector(int memberIndex, const Vector4& value)
+{
+    const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
     alignVectorsToBuffer((const byte_t*)&value, 4, 1, buffer.data(), member.desc.offset, 1, 0, member.desc.columns);
+}
+
+void ShaderDescriptor::setVectorArray(int memberIndex, const Vector4* value, int count)
+{
+    const auto& member = descriptorLayout()->m_members[memberIndex];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignVectorsToBuffer((const byte_t*)value, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.arrayStride, member.desc.columns);
+}
+
+void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
+{
+    const auto& member = descriptorLayout()->m_members[memberIndex];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, true);
+}
+
+void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
+{
+    const auto& member = descriptorLayout()->m_members[memberIndex];
+    auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
+    alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, true);
+}
+
+void ShaderDescriptor::setTexture(int textureIndex, Texture* value)
+{
+    m_textures[textureIndex] = value;
+}
+
+void ShaderDescriptor::setSampler(int textureIndex, Texture* value)
+{
+    m_textures[textureIndex] = value;
+}
+
+void ShaderDescriptor::setSamplerState(int samplerIndex, SamplerState* value)
+{
+    m_samplers[samplerIndex] = value;
 }
 
 //=============================================================================

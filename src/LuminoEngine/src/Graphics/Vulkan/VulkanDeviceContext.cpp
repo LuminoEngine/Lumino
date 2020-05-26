@@ -3217,6 +3217,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         const auto& info = textures[i];
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[info.descriptorWriteInfoIndex];
         writeInfo.pImageInfo = &info.imageInfo;
+        writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
     }
 
     const auto& samplers = m_descriptorTable->samplers();
@@ -3224,6 +3225,7 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         const auto& info = samplers[i];
         VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[info.descriptorWriteInfoIndex];
         writeInfo.pImageInfo = &info.imageInfo;
+        writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
     }
 
 
@@ -3571,16 +3573,16 @@ void VulkanShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo*
 
     for (int i = 0; i < m_textures.size(); i++) {
         auto& info = m_textures[i];
-        info.texture = static_cast<VulkanTexture*>(data->textures[i]->texture);
-        info.samplerState = static_cast<VulkanSamplerState*>(data->textures[i]->stamplerState);
+        info.texture = static_cast<VulkanTexture*>(data->textures[i].texture);
+        info.samplerState = static_cast<VulkanSamplerState*>(data->textures[i].stamplerState);
         info.imageInfo.imageView = (info.texture) ? info.texture->image()->vulkanImageView() : 0;
         info.imageInfo.sampler = (info.samplerState) ? info.samplerState->vulkanSampler() : 0;
     }
 
     for (int i = 0; i < m_samplers.size(); i++) {
         auto& info = m_samplers[i];
-        info.texture = static_cast<VulkanTexture*>(data->samplers[i]->texture);
-        info.samplerState = static_cast<VulkanSamplerState*>(data->samplers[i]->stamplerState);
+        info.texture = static_cast<VulkanTexture*>(data->samplers[i].texture);
+        info.samplerState = static_cast<VulkanSamplerState*>(data->samplers[i].stamplerState);
         info.imageInfo.imageView = (info.texture) ? info.texture->image()->vulkanImageView() : 0;
         info.imageInfo.sampler = (info.samplerState) ? info.samplerState->vulkanSampler() : 0;
     }
