@@ -7,7 +7,6 @@
 namespace ln {
 class Texture;
 class Texture2D;
-class ShaderConstantBuffer;
 class ShaderDescriptor;
 namespace detail {
 

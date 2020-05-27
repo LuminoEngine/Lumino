@@ -136,9 +136,7 @@ Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRe
 Shader::Shader()
     : m_manager(detail::EngineDomain::shaderManager())
     , m_name()
-    , m_buffers()
     , m_techniques(makeList<Ref<ShaderTechnique>>())
-    , m_globalConstantBuffer(nullptr)
 {
 }
 

@@ -8,7 +8,6 @@ namespace ln {
 class DiagnosticsManager;
 class Texture;
 class Shader;
-class ShaderConstantBuffer;
 class ShaderParameter2;
 class ShaderTechnique;
 class ShaderPass;
@@ -293,24 +292,9 @@ public:
      * @param[in]   name : パラメータの名前
      * @return      一致した ShaderParameter。見つからない場合は nullptr。
      *
-     * この関数の検索対象は次の通りです。
-     * - "_Global" という名前の付いた ShaderConstantBuffer (cbuffer 構文を使用せず、グローバルスコープに直接定義した変数)
-     * - texture 型のパラメータ
-     *
      * @attention 現在、SamplerState の設定は未サポートです。将来的には、この関数で SamplerState 型のパラメータを検索できるようにする予定です。
      */
-#ifdef LN_NEW_SHADER_UBO
     ShaderParameter2* findParameter(const StringRef& name) const;
-#else
-
-    /*
-     * 名前を指定してこの Shader に含まれる ShaderConstantBuffer を検索します。
-     *
-     * @param[in]   name : 定数バッファの名前
-     * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
-     */
-    ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
-#endif
 
     /*
      * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。
@@ -351,9 +335,7 @@ private:
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
     Ref<ShaderDescriptor> m_descriptor;
-    List<Ref<ShaderConstantBuffer>> m_buffers;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
-    ShaderConstantBuffer* m_globalConstantBuffer;
 
     friend class ShaderPass;
     friend class detail::ShaderHelper;
