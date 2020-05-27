@@ -42,6 +42,16 @@ struct alignas(16) LNEffectColorBuffer
     alignas(16) Vector4 ln_ToneColor;
 };
 
+// cbuffer LNPBRMaterialParameter
+struct alignas(16) LNPBRMaterialParameter
+{
+    alignas(16) Vector4 ln_MaterialColor;
+    alignas(16) Vector4 ln_MaterialEmissive;
+    alignas(4) float ln_MaterialRoughness;
+    alignas(4) float ln_MaterialMetallic;
+};
+
+
 // シェーダ変数セマンティクス
 enum class BuiltinSemantics
 {
@@ -266,6 +276,12 @@ enum BuiltinShaderParameters
     BuiltinShaderParameters_ln_BlendColor,
     BuiltinShaderParameters_ln_ToneColor,
 
+    // LNPBRMaterialParameter
+    BuiltinShaderParameters_ln_MaterialColor,
+    BuiltinShaderParameters_ln_MaterialEmissive,
+    BuiltinShaderParameters_ln_MaterialRoughness,
+    BuiltinShaderParameters_ln_MaterialMetallic,
+
     BuiltinShaderParameters__Count,
 };
 
@@ -274,6 +290,8 @@ enum BuiltinShaderUniformBuffers
     BuiltinShaderUniformBuffers_LNRenderViewBuffer,
     BuiltinShaderUniformBuffers_LNRenderElementBuffer,
     BuiltinShaderUniformBuffers_LNEffectColorBuffer,
+    BuiltinShaderUniformBuffers_LNPBRMaterialParameter,
+    
     BuiltinShaderUniformBuffers__Count,
 };
 

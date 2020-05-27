@@ -129,7 +129,7 @@ void AbstractMaterial::updateShaderVariables(Shader* target) const
     // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
 
     for (auto& pair : m_values) {
-        ShaderParameter* param = target->findParameter(pair.first);
+        auto* param = target->findParameter(pair.first);
         if (param) {
             switch (pair.second->type())
             {

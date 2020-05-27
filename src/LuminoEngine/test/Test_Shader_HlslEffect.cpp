@@ -29,7 +29,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	//* [ ] Basic rendering
 	{
 		auto shader1 = makeObject<Shader>(LN_ASSETFILE("Basic.fx"));
-		shader1->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+		shader1->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -49,7 +49,7 @@ TEST_F(Test_Graphics_HlslEffect, Basic)
 	//* [ ] Nested struct
 	{
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("NestedStruct.fx"));
-		shader2->findConstantBuffer("ConstBuff")->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
+		shader2->findParameter("g_color")->setVector(Vector4(0, 1, 0, 1));
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();
@@ -134,7 +134,7 @@ TEST_F(Test_Graphics_HlslEffect, Preprocess)
 		auto props = makeObject<ShaderCompilationProperties>();
 		props->addIncludeDirectory(LN_ASSETFILE(""));
 		auto shader2 = makeObject<Shader>(LN_ASSETFILE("PreprosessorTest.fx"), props);
-		shader2->findConstantBuffer("ConstBuff2")->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
+		shader2->findParameter("g_color")->setVector(Vector4(1, 0, 0, 1));
 
 		auto ctx = TestEnv::beginFrame();
 		auto cbb = TestEnv::mainWindowSwapChain()->currentBackbuffer();

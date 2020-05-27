@@ -338,10 +338,13 @@ void Shader::postInitialize()
 {
     // find global constant buffer.
     {
+#ifdef LN_NEW_SHADER_UBO
+#else
         m_globalConstantBuffer = findConstantBuffer(u"_Global");
         //if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
         //    m_globalConstantBuffer = m_buffers.front();
         //}
+#endif
 
         for (auto& cbuffer : m_buffers) {
             m_semanticsManager.prepareConstantBuffer(cbuffer);
@@ -363,80 +366,12 @@ void Shader::postInitialize()
     }
 }
 
-#if 0
-void Shader::setBool(const StringRef& name, bool value)
+#ifdef LN_NEW_SHADER_UBO
+ShaderParameter2* Shader::findParameter(const StringRef& name) const
 {
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setBool(value);
+    return m_descriptor->findParameter2(name);
 }
-
-void Shader::setInt(const StringRef& name, int value)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setInt(value);
-}
-
-void Shader::setBoolArray(const StringRef& name, const bool* value, int count)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setBoolArray(value, count);
-}
-
-void Shader::setFloat(const StringRef& name, float value)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setFloat(value);
-}
-
-void Shader::setFloatArray(const StringRef& name, const float* value, int count)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setFloatArray(value, count);
-}
-
-void Shader::setVector(const StringRef& name, const Vector4& value)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setVector(value);
-}
-
-void Shader::setVectorArray(const StringRef& name, const Vector4* value, int count)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setVectorArray(value, count);
-}
-
-void Shader::setMatrix(const StringRef& name, const Matrix& value)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setMatrix(value);
-}
-
-void Shader::setMatrixArray(const StringRef& name, const Matrix* value, int count)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setMatrixArray(value, count);
-}
-
-void Shader::setTexture(const StringRef& name, Texture* value)
-{
-	ShaderParameter* param = findParameter(name);
-	if (param) param->setTexture(value);
-}
-#endif
-
-//ShaderParameter* Shader::findParameter(const StringRef& name)
-//{
-//	for (auto& param : m_parameters)
-//	{
-//		if (param->name() == name)
-//		{
-//			return param;
-//		}
-//	}
-//	return nullptr;
-//}
-
+#else
 ShaderParameter* Shader::findParameter(const StringRef& name) const
 {
     // find global constant buffer.
@@ -459,6 +394,7 @@ ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name) const
     auto result = m_buffers.findIf([name](const ShaderConstantBuffer* buf) { return buf->name() == name; });
     return (result) ? *result : nullptr;
 }
+#endif
 
 ShaderTechnique* Shader::findTechnique(const StringRef& name) const
 {
@@ -981,12 +917,38 @@ bool ShaderDescriptor::init(Shader* ownerShader)
     m_textures.resize(layout->textureRegisterCount());
     m_samplers.resize(layout->samplerRegisterCount());
 
+
+
+    // parameters は Layout 側に持たせる方がメモリ効率はいいんだけど、
+    // ユーザープログラムからは使いづらくなってしまうのでこちらに置いている。
+    for (int i = 0; i < layout->m_buffers.size(); i++) {
+        m_parameters.add(makeObject<ShaderParameter2>(this, ShaderParameter2::IndexType::UniformBuffer, i));
+        //for (int j = 0; j < layout->m_buffers[i].members.size(); j++) {
+        //    auto param = makeObject<ShaderParameter2>(this, detail::DescriptorType_UniformBuffer, i, j);
+        //}
+    }
+    for (int i = 0; i < layout->m_members.size(); i++) {
+        m_parameters.add(makeObject<ShaderParameter2>(this, ShaderParameter2::IndexType::UniformMember, i));
+    }
+    for (int i = 0; i < layout->m_textures.size(); i++) {
+        m_parameters.add(makeObject<ShaderParameter2>(this, ShaderParameter2::IndexType::Texture, i));
+    }
+    for (int i = 0; i < layout->m_samplers.size(); i++) {
+        m_parameters.add(makeObject<ShaderParameter2>(this, ShaderParameter2::IndexType::SamplerState, i));
+    }
+
+
     return true;
 }
 
 ShaderDescriptorLayout* ShaderDescriptor::descriptorLayout() const
 {
     return m_ownerShader->descriptorLayout();
+}
+
+ShaderParameter2* ShaderDescriptor::findParameter2(const StringRef& name) const
+{
+    return m_parameters.findIf([&](auto& x) { return x->name() == name; }).valueOr(nullptr);
 }
 
 //int ShaderDescriptor::findUniformBufferIndex(const ln::StringRef& name) const
@@ -1174,6 +1136,106 @@ int ShaderDescriptorLayout::findTextureRegisterIndex(const ln::StringRef& name) 
 int ShaderDescriptorLayout::findSamplerRegisterIndex(const ln::StringRef& name) const
 {
     return m_samplers.indexOfIf([&](const auto& x) { return x.name == name; });
+}
+
+//=============================================================================
+// ShaderParameter2
+
+ShaderParameter2::ShaderParameter2()
+{
+}
+
+bool ShaderParameter2::init(ShaderDescriptor* owner, IndexType type, int dataIndex)
+{
+    if (!Object::init()) return false;
+    m_owner = owner;
+    m_indexType = type;
+    m_dataIndex = dataIndex;
+    return true;
+}
+
+const String ShaderParameter2::name() const
+{
+    switch (m_indexType)
+    {
+    case ln::ShaderParameter2::IndexType::UniformBuffer:
+        return m_owner->descriptorLayout()->m_buffers[m_dataIndex].name;
+    case ln::ShaderParameter2::IndexType::UniformMember:
+        return m_owner->descriptorLayout()->m_members[m_dataIndex].name;
+    case ln::ShaderParameter2::IndexType::Texture:
+        return m_owner->descriptorLayout()->m_textures[m_dataIndex].name;
+    case ln::ShaderParameter2::IndexType::SamplerState:
+        return m_owner->descriptorLayout()->m_samplers[m_dataIndex].name;
+    default:
+        LN_UNREACHABLE();
+        return String::Empty;
+    }
+}
+
+void ShaderParameter2::setData(const void* data, size_t size)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformBuffer)) return;
+    m_owner->setData(m_dataIndex, data, size);
+}
+
+void ShaderParameter2::setInt(int value)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setInt(m_dataIndex, value);
+}
+
+void ShaderParameter2::setIntArray(const int* value, int count)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setIntArray(m_dataIndex, value, count);
+}
+
+void ShaderParameter2::setFloat(float value)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setFloat(m_dataIndex, value);
+}
+
+void ShaderParameter2::setFloatArray(const float* value, int count)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setFloatArray(m_dataIndex, value, count);
+}
+
+void ShaderParameter2::setVector(const Vector4& value)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setVector(m_dataIndex, value);
+}
+
+void ShaderParameter2::setVectorArray(const Vector4* value, int count)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setVectorArray(m_dataIndex, value, count);
+}
+
+void ShaderParameter2::setMatrix(const Matrix& value)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setMatrix(m_dataIndex, value);
+}
+
+void ShaderParameter2::setMatrixArray(const Matrix* value, int count)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::UniformMember)) return;
+    m_owner->setMatrixArray(m_dataIndex, value, count);
+}
+
+void ShaderParameter2::setTexture(Texture* value)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::Texture)) return;
+    m_owner->setTexture(m_dataIndex, value);
+}
+
+void ShaderParameter2::setSamplerState(SamplerState* value)
+{
+    if (LN_REQUIRE(m_indexType == IndexType::SamplerState)) return;
+    m_owner->setSamplerState(m_dataIndex, value);
 }
 
 //=============================================================================

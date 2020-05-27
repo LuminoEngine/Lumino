@@ -73,7 +73,11 @@ void UnLigitingSceneRenderer::init(RenderingManager* manager)
 
 void UnLigitingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
+#ifdef LN_NEW_SHADER_UBO
+	ShaderParameter2* v;
+#else
 	ShaderParameter* v;
+#endif
 	detail::ShaderSemanticsManager* ssm = detail::ShaderHelper::semanticsManager(shader);
 
 	// TODO: Test

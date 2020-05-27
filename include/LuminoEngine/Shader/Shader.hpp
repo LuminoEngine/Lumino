@@ -38,10 +38,10 @@ public:
     //int findSamplerIndex(const ln::StringRef& name) const;
     ShaderDescriptorLayout* descriptorLayout() const;
 
-    void setData(int uniformBufferIndex, const void* data, size_t size);
 
-    /** bool 値を設定します。 */
-    void setBool(int memberIndex, bool value);
+    ShaderParameter2* findParameter2(const StringRef& name) const;
+
+    void setData(int uniformBufferIndex, const void* data, size_t size);
 
     /** 整数値を設定します。 */
     void setInt(int memberIndex, int value);
@@ -83,21 +83,14 @@ LN_CONSTRUCT_ACCESS:
     bool init(Shader* ownerShader);
 
 private:
-    Ref<Shader> m_ownerShader;
+    Shader* m_ownerShader;
     List<ByteBuffer> m_buffers;
     List<Ref<Texture>> m_textures;
     List<Ref<SamplerState>> m_samplers;
+    List<Ref<ShaderParameter2>> m_parameters;
     int m_revision = 0;
 
     friend class ShaderPass;
-};
-
-class ShaderParameter2 final
-    : public Object
-{
-LN_INTERNAL_NEW_OBJECT;
-    ShaderParameter2();
-    void init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
 };
 
 // ShaderDescriptor と 1:1。つまり Global 情報。
@@ -154,6 +147,7 @@ private:
 
     friend class ShaderDescriptor;
     friend class ShaderPass;
+    friend class ShaderParameter2;
     friend class detail::ShaderTechniqueSemanticsManager;
 
     /*
@@ -170,6 +164,62 @@ private:
         効率よくバッファ確保するのに SingleFrameAllocator の仕組みを入れたいところ。
         ただ、このような制約があるのはぱっと見 Vulkan だけ。なので　Vulkan driver の中で隠蔽してみる。
     */
+};
+
+class ShaderParameter2 final
+    : public Object
+{
+public:
+    const String name() const;
+
+    /** 整数値を設定します。 */
+    void setInt(int value);
+
+    /** 整数値の配列を設定します。 */
+    void setIntArray(const int* value, int count);
+
+    /** 浮動小数点値を設定します。 */
+    void setFloat(float value);
+
+    /** 浮動小数点値の配列を設定します。 */
+    void setFloatArray(const float* value, int count);
+
+    /** ベクトルを設定します。 */
+    void setVector(const Vector4& value);
+
+    /** ベクトルの配列を設定します。 */
+    void setVectorArray(const Vector4* value, int count);
+
+    /** 行列を設定します。 */
+    void setMatrix(const Matrix& value);
+
+    /** 行列の配列を設定します。 */
+    void setMatrixArray(const Matrix* value, int count);
+
+    /** テクスチャを設定します。 */
+    void setTexture(Texture* value);
+
+    /** SamplerState を設定します。 */
+    void setSamplerState(SamplerState* value);
+
+    void setData(const void* data, size_t size);
+
+    enum class IndexType
+    {
+        UniformBuffer,
+        UniformMember,
+        Texture,
+        SamplerState,
+    };
+
+LN_INTERNAL_NEW_OBJECT;
+    ShaderParameter2();
+    bool init(ShaderDescriptor* owner, IndexType type, int dataIndex);
+
+private:
+    ShaderDescriptor* m_owner;
+    IndexType m_indexType;
+    int m_dataIndex = 0;     // Index of ShaderDescriptorLayout::m_buffers,m_members,m_textures,m_samplers
 };
 
 // ShaderPass が持つレイアウト情報。
@@ -250,6 +300,9 @@ public:
      *
      * @attention 現在、SamplerState の設定は未サポートです。将来的には、この関数で SamplerState 型のパラメータを検索できるようにする予定です。
      */
+#ifdef LN_NEW_SHADER_UBO
+    ShaderParameter2* findParameter(const StringRef& name) const;
+#else
     ShaderParameter* findParameter(const StringRef& name) const;
 
     /*
@@ -259,6 +312,7 @@ public:
      * @return      一致した ShaderConstantBuffer。見つからない場合は nullptr。
      */
     ShaderConstantBuffer* findConstantBuffer(const StringRef& name) const;
+#endif
 
     /*
      * 名前を指定してこの Shader に含まれる ShaderTechnique を検索します。

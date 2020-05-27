@@ -412,6 +412,11 @@ static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShader
     {_LT("ln_ColorScale"), BuiltinShaderParameters_ln_ColorScale},
     {_LT("ln_BlendColor"), BuiltinShaderParameters_ln_BlendColor},
     {_LT("ln_ToneColor"), BuiltinShaderParameters_ln_ToneColor},
+
+    {_LT("ln_MaterialColor"), BuiltinShaderParameters_ln_MaterialColor},
+    {_LT("ln_MaterialEmissive"), BuiltinShaderParameters_ln_MaterialEmissive},
+    {_LT("ln_MaterialRoughness"), BuiltinShaderParameters_ln_MaterialRoughness},
+    {_LT("ln_MaterialMetallic"), BuiltinShaderParameters_ln_MaterialMetallic},
 };
 
 static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinShaderUniformBuffersMap =
@@ -419,6 +424,7 @@ static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinSh
     {_LT("LNRenderViewBuffer"), BuiltinShaderUniformBuffers_LNRenderViewBuffer},
     {_LT("LNRenderElementBuffer"), BuiltinShaderUniformBuffers_LNRenderElementBuffer},
     {_LT("LNEffectColorBuffer"), BuiltinShaderUniformBuffers_LNEffectColorBuffer},
+    {_LT("LNPBRMaterialParameter"), BuiltinShaderUniformBuffers_LNPBRMaterialParameter},
 };
 
 static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTexturesMap =
@@ -430,7 +436,17 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
 
 ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
 {
+    // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
+    assert(128 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
+    assert(144 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
+    assert(160 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_ViewportPixelSize));
+    assert(168 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
+    assert(172 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
+    static_assert(176 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(272 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
+
     reset();
 }
 
@@ -551,15 +567,6 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& in
         m_descriptor->setData(index, &data, sizeof(data));
     }
 
-    // TODO:
-    if (auto p = m_descriptor->ownerShader()->findParameter(u"ln_ColorScale"))
-        p->setVector(info.colorScale.toVector4());
-    if (auto p = m_descriptor->ownerShader()->findParameter(u"ln_BlendColor"))
-        p->setVector(info.blendColor.toVector4());
-    if (auto p = m_descriptor->ownerShader()->findParameter(u"ln_ToneColor"))
-        p->setVector(info.tone.toVector4());
-
-
 
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialTexture];
@@ -569,6 +576,17 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& in
 
 void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
 {
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNPBRMaterialParameter];
+    if (index >= 0) {
+        // 計算に時間がかかるものでもないため、個々のメンバの alive は確認しない
+        LNPBRMaterialParameter data = {
+            materialData.color.toVector4(),
+            materialData.emissive.toVector4(),
+            materialData.roughness,
+            materialData.metallic,
+        };
+        m_descriptor->setData(index, &data, sizeof(data));
+    }
 }
 
 //=============================================================================
