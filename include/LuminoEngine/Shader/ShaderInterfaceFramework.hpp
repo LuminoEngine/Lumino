@@ -287,11 +287,11 @@ enum BuiltinShaderTextures
 };
 
 // セマンティクスが関係するシェーダ変数の管理
-class ShaderPassSemanticsManager
+class ShaderTechniqueSemanticsManager
 {
 public:
-    ShaderPassSemanticsManager();
-    void init(ShaderPass* shaderPass);
+    ShaderTechniqueSemanticsManager();
+    void init(ShaderTechnique* technique);
     void reset();
 
     // call by rendering time.
@@ -309,7 +309,7 @@ private:
     //    BuiltinSemantics kind;
     //};
 
-    bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & v) != 0; }
+    bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & (1 << v)) != 0; }
 
     ShaderDescriptor* m_descriptor;
 

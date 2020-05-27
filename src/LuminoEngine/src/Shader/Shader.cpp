@@ -312,6 +312,8 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 				pass->setupParameters();
 			}
 		}
+
+        tech->setupSemanticsManager();
 	}
 }
 
@@ -699,6 +701,12 @@ void ShaderTechnique::init(const String& name)
     detail::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
 }
 
+void ShaderTechnique::setupSemanticsManager()
+{
+    m_semanticsManager = std::make_unique<detail::ShaderTechniqueSemanticsManager>();
+    m_semanticsManager->init(this);
+}
+
 Ref<ReadOnlyList<Ref<ShaderPass>>> ShaderTechnique::passes() const
 {
     return m_passes;
@@ -770,9 +778,6 @@ void ShaderPass::setupParameters()
             m_textureParameters.add(param);
         }
     }
-
-    m_semanticsManager = std::make_unique<detail::ShaderPassSemanticsManager>();
-    m_semanticsManager->init(this);
 }
 
 void ShaderPass::commitContantBuffers(GraphicsContext* graphicsContext, bool* outModified)
@@ -893,8 +898,12 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
                     }
                     const auto& info = m_descriptorLayout.m_textures[i];
                     Texture* texture = descripter->m_textures[info.dataIndex];
+                    if (!texture) {
+                        texture = manager->whiteTexture();
+                    }
+
                     SamplerState* sampler = nullptr;
-                    if (texture && texture->samplerState())
+                    if (texture->samplerState())
                         sampler = texture->samplerState();
                     else
                         sampler = manager->defaultSamplerState();

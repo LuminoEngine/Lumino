@@ -434,7 +434,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 
 
+#ifdef LN_NEW_SHADER_UBO
+				detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
+#else
 				detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
+#endif
 				//semanticsManager->updateCameraVariables(cameraInfo);
 				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 				//semanticsManager->updateSubsetVariables(subsetInfo);
@@ -450,7 +454,11 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				if (finalMaterial) {
 					PbrMaterialData pbrMaterialData;
 					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
+#ifdef LN_NEW_SHADER_UBO
 					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
+#else
+					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
+#endif
 					finalMaterial->updateShaderVariables(tech->shader());
 					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 				}

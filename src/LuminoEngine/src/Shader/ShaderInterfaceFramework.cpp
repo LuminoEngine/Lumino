@@ -391,7 +391,7 @@ ShaderParameter* ShaderSemanticsManager::getParameterBySemantics(BuiltinSemantic
 }
 
 //=============================================================================
-// ShaderPassSemanticsManager
+// ShaderTechniqueSemanticsManager
 
 static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShaderParametersMap =
 {
@@ -428,68 +428,73 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
     {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
 };
 
-ShaderPassSemanticsManager::ShaderPassSemanticsManager()
+ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
 {
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
     reset();
 }
 
-void ShaderPassSemanticsManager::init(ShaderPass* shaderPass)
+void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
 {
-    const auto& globalLayout = shaderPass->shader()->descriptorLayout();
-    const auto& localLayout = shaderPass->descriptorLayout();
+    m_descriptor = technique->shader()->descriptor();
+    const auto& globalLayout = technique->shader()->descriptorLayout();
 
-    // UniformBuffers
-    for (const auto& localInfo : localLayout.m_buffers) {
-        const auto& globalInfo = globalLayout->m_buffers[localInfo.dataIndex];
+    for (const auto& pass : technique->m_passes) {
 
-        auto itr = s_BuiltinShaderUniformBuffersMap.find(globalInfo.name);
-        if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
-            m_builtinUniformBuffers[itr->second] = localInfo.dataIndex;
-        }
+        const auto& localLayout = pass->descriptorLayout();
 
-        for (const auto& memberInfo : globalLayout->m_members) {
-            auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
-            if (itr != s_BuiltinShaderParametersMap.end()) {
-                m_hasBuiltinShaderParameters |= (1 << itr->second);
+        // UniformBuffers
+        for (const auto& localInfo : localLayout.m_buffers) {
+            const auto& globalInfo = globalLayout->m_buffers[localInfo.dataIndex];
+
+            auto itr = s_BuiltinShaderUniformBuffersMap.find(globalInfo.name);
+            if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
+                m_builtinUniformBuffers[itr->second] = localInfo.dataIndex;
+            }
+
+            for (const auto& memberInfo : globalLayout->m_members) {
+                auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
+                if (itr != s_BuiltinShaderParametersMap.end()) {
+                    m_hasBuiltinShaderParameters |= (1 << itr->second);
+                }
             }
         }
-    }
 
-    // Textues
-    for (const auto& localInfo : localLayout.m_textures) {
-        const auto& globalInfo = globalLayout->m_textures[localInfo.dataIndex];
+        // Textues
+        for (const auto& localInfo : localLayout.m_textures) {
+            const auto& globalInfo = globalLayout->m_textures[localInfo.dataIndex];
 
-        auto itr = s_BuiltinShaderTexturesMap.find(globalInfo.name);
-        if (itr != s_BuiltinShaderTexturesMap.end()) {
-            m_builtinShaderTextures[itr->second] = localInfo.dataIndex;
+            auto itr = s_BuiltinShaderTexturesMap.find(globalInfo.name);
+            if (itr != s_BuiltinShaderTexturesMap.end()) {
+                m_builtinShaderTextures[itr->second] = localInfo.dataIndex;
+            }
         }
+
+        //// Samplers
+        //for (const auto& localInfo : localLayout.m_samplers) {
+        //    const auto& globalInfo = globalLayout->m_samplers[localInfo.dataIndex];
+
+        //    auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
+        //    if (itr != s_BuiltinShaderParametersMap.end()) {
+        //        m_hasBuiltinShaderParameters |= (1 << itr->second);
+        //    }
+        //}
+
     }
 
-    //// Samplers
-    //for (const auto& localInfo : localLayout.m_samplers) {
-    //    const auto& globalInfo = globalLayout->m_samplers[localInfo.dataIndex];
-
-    //    auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
-    //    if (itr != s_BuiltinShaderParametersMap.end()) {
-    //        m_hasBuiltinShaderParameters |= (1 << itr->second);
-    //    }
-    //}
-
-    m_descriptor = shaderPass->shader()->descriptor();
 }
 
-void ShaderPassSemanticsManager::reset()
+void ShaderTechniqueSemanticsManager::reset()
 {
     m_hasBuiltinShaderParameters = 0;
     for (auto& i : m_builtinUniformBuffers) i = -1;
 }
 
-void ShaderPassSemanticsManager::updateSceneVariables(const SceneInfo& info)
+void ShaderTechniqueSemanticsManager::updateSceneVariables(const SceneInfo& info)
 {
 }
 
-void ShaderPassSemanticsManager::updateCameraVariables(const CameraInfo& info)
+void ShaderTechniqueSemanticsManager::updateCameraVariables(const CameraInfo& info)
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
     if (index >= 0) {
@@ -505,9 +510,9 @@ void ShaderPassSemanticsManager::updateCameraVariables(const CameraInfo& info)
     }
 }
 
-void ShaderPassSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
+void ShaderTechniqueSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
 {
-    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderElementBuffer];
     if (index >= 0) {
         LNRenderElementBuffer data;
         if (hasParameter(BuiltinShaderParameters_ln_World))
@@ -533,7 +538,7 @@ void ShaderPassSemanticsManager::updateElementVariables(const CameraInfo& camera
         m_descriptor->setTexture(index, info.boneLocalQuaternionTexture);
 }
 
-void ShaderPassSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
+void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 {
     int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNEffectColorBuffer];
     if (index >= 0) {
@@ -545,9 +550,24 @@ void ShaderPassSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
         };
         m_descriptor->setData(index, &data, sizeof(data));
     }
+
+    // TODO:
+    if (auto p = m_descriptor->ownerShader()->findParameter(u"ln_ColorScale"))
+        p->setVector(info.colorScale.toVector4());
+    if (auto p = m_descriptor->ownerShader()->findParameter(u"ln_BlendColor"))
+        p->setVector(info.blendColor.toVector4());
+    if (auto p = m_descriptor->ownerShader()->findParameter(u"ln_ToneColor"))
+        p->setVector(info.tone.toVector4());
+
+
+
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.materialTexture);
 }
 
-void ShaderPassSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
+void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
 {
 }
 

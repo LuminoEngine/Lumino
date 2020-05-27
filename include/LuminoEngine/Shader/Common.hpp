@@ -5,6 +5,7 @@
 
 namespace ln {
 class ShaderDescriptor;
+class ShaderTechnique;
 class ShaderPass;
 
 namespace detail {

@@ -22,7 +22,7 @@ class ShaderManager;
 class UnifiedShader;
 class IShaderPass;
 class IShaderUniformBuffer;
-class ShaderPassSemanticsManager;
+class ShaderTechniqueSemanticsManager;
 }
 
 // UniformBuffer, sampler など、Shader の Data を保持する。
@@ -75,6 +75,8 @@ public:
 
     /** SamplerState を設定します。 */
     void setSamplerState(int samplerIndex, SamplerState* value);
+
+    const Ref<Shader> ownerShader() const { return m_ownerShader; }
 
 LN_CONSTRUCT_ACCESS:
     ShaderDescriptor();
@@ -152,7 +154,7 @@ private:
 
     friend class ShaderDescriptor;
     friend class ShaderPass;
-    friend class detail::ShaderPassSemanticsManager;
+    friend class detail::ShaderTechniqueSemanticsManager;
 
     /*
         Note:
@@ -444,11 +446,14 @@ public:
     /** このテクニックに含まれる ShaderPass を取得します。 */
     Ref<ReadOnlyList<Ref<ShaderPass>>> passes() const;
 
+    detail::ShaderTechniqueSemanticsManager* semanticsManager2() { return m_semanticsManager.get(); }
+
 private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderTechnique();
     virtual ~ShaderTechnique();
     void init(const String& name);
+    void setupSemanticsManager();
 
     void setOwner(Shader* owner) { m_owner = owner; }
     void addShaderPass(ShaderPass* pass);
@@ -457,10 +462,12 @@ private:
     String m_name;
     Ref<List<Ref<ShaderPass>>> m_passes;
     detail::ShaderTechniqueClass m_techniqueClass;
+    std::unique_ptr<detail::ShaderTechniqueSemanticsManager> m_semanticsManager;
 
     friend class Shader;
     friend class ShaderPass;
     friend class detail::ShaderHelper;
+    friend class detail::ShaderTechniqueSemanticsManager;
 };
 
 /**
@@ -479,7 +486,6 @@ public:
 
     // TODO: for test
     const ShaderPassDescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
-    detail::ShaderPassSemanticsManager* semanticsManager2() { return m_semanticsManager.get(); }
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;
@@ -506,7 +512,6 @@ private:
     String m_name;
     Ref<detail::IShaderPass> m_rhiPass;
     ShaderPassDescriptorLayout m_descriptorLayout;
-    std::unique_ptr<detail::ShaderPassSemanticsManager> m_semanticsManager;
 
     // deprecated
     List<ConstantBufferEntry> m_bufferEntries;

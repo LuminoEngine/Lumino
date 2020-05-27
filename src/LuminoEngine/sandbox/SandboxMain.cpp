@@ -257,7 +257,7 @@ private:
 
 
 
-
+void Sandbox_EmptyApp();
 void Example_GameAudio();
 void Example_MeshViewer();
 void Example_MessageWindow();
@@ -287,6 +287,7 @@ int main(int argc, char** argv)
 
 
     if (1) {
+		Sandbox_EmptyApp();
 		//Example_GameAudio();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -297,9 +298,11 @@ int main(int argc, char** argv)
 		//Sandbox_MeshTilemap();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
-		UISandboxMain();
+		//UISandboxMain();
         return 0;
     }
+
+
 
 #if 0
 	{
