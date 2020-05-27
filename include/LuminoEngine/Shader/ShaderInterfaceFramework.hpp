@@ -9,6 +9,7 @@ class Texture;
 class Texture2D;
 class ShaderParameter;
 class ShaderConstantBuffer;
+class ShaderDescriptor;
 namespace detail {
 
 // cbuffer LNRenderViewBuffer
@@ -31,6 +32,14 @@ struct alignas(16) LNRenderElementBuffer
     alignas(16) Matrix ln_WorldView;
     alignas(16) Matrix ln_WorldViewIT;
     alignas(8) Vector4 ln_BoneTextureReciprocalSize;
+};
+
+// cbuffer LNEffectColorBuffer
+struct alignas(16) LNEffectColorBuffer
+{
+    alignas(16) Vector4 ln_ColorScale;
+    alignas(16) Vector4 ln_BlendColor;
+    alignas(16) Vector4 ln_ToneColor;
 };
 
 // シェーダ変数セマンティクス
@@ -257,10 +266,6 @@ enum BuiltinShaderParameters
     BuiltinShaderParameters_ln_BlendColor,
     BuiltinShaderParameters_ln_ToneColor,
 
-    BuiltinShaderParameters_ln_MaterialTexture,
-    BuiltinShaderParameters_ln_BoneTexture,
-    BuiltinShaderParameters_ln_BoneLocalQuaternionTexture,
-
     BuiltinShaderParameters__Count,
 };
 
@@ -270,6 +275,15 @@ enum BuiltinShaderUniformBuffers
     BuiltinShaderUniformBuffers_LNRenderElementBuffer,
     BuiltinShaderUniformBuffers_LNEffectColorBuffer,
     BuiltinShaderUniformBuffers__Count,
+};
+
+enum BuiltinShaderTextures
+{
+    BuiltinShaderTextures_ln_MaterialTexture,
+    BuiltinShaderTextures_ln_BoneTexture,
+    BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,
+
+    BuiltinShaderTextures__Count,
 };
 
 // セマンティクスが関係するシェーダ変数の管理
@@ -286,21 +300,27 @@ public:
     void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
     void updateSubsetVariables(const SubsetInfo& info);
     void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
-    void updateSubsetVariables_Phong(const PhongMaterialData& materialData);
-    ShaderParameter* getParameterBySemantics(BuiltinSemantics semantics) const;
+    //ShaderParameter* getParameterBySemantics(BuiltinSemantics semantics) const;
 
 private:
-    struct VariableKindPair
-    {
-        int index;  // member or texture or sampler index.
-        BuiltinSemantics kind;
-    };
+    //struct VariableKindPair
+    //{
+    //    int index;  // member or texture or sampler index.
+    //    BuiltinSemantics kind;
+    //};
+
+    bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & v) != 0; }
+
+    ShaderDescriptor* m_descriptor;
 
     // Boolean flags BuiltinShaderParameters
     uint64_t m_hasBuiltinShaderParameters;
 
-    // Index of ShaderDescriptorLayout::m_buffers,m_textures,m_samplers
+    // Index of ShaderDescriptorLayout::m_buffers
     std::array<int, BuiltinShaderUniformBuffers__Count> m_builtinUniformBuffers;
+
+    // Index of ShaderDescriptorLayout::m_textures
+    std::array<int, BuiltinShaderTextures__Count> m_builtinShaderTextures;
 };
 
 // LigitingModel

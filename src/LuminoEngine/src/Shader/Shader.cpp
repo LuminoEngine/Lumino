@@ -996,6 +996,22 @@ ShaderDescriptorLayout* ShaderDescriptor::descriptorLayout() const
 //}
 
 
+void ShaderDescriptor::setData(int uniformBufferIndex, const void* data, size_t size)
+{
+    auto& buffer = m_buffers[uniformBufferIndex];
+
+    buffer.assign(data, size);
+
+    // TODO: Shader 側で行優先にするべきかも…
+    for (const auto& member : descriptorLayout()->m_buffers[uniformBufferIndex].members) {
+        const auto& desc = descriptorLayout()->m_members[member].desc;//param->desc();
+        if (desc.type2 == detail::ShaderUniformType_Matrix &&
+            desc.columns == 4 && desc.rows == 4) {
+            Matrix* m = reinterpret_cast<Matrix*>(buffer.data() + desc.offset);
+            m->transpose();
+        }
+    }
+}
 
 void ShaderDescriptor::setInt(int memberIndex, int value)
 {
@@ -1109,6 +1125,8 @@ bool ShaderDescriptorLayout::init(const detail::DescriptorLayout& layout)
             memberInfo.name = String::fromStdString(member.name);
             memberInfo.desc = desc;
             m_members.add(memberInfo);
+
+            m_buffers[i].members.push_back(m_members.size() - 1);
         }
     }
 

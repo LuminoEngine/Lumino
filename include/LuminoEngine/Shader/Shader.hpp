@@ -38,6 +38,8 @@ public:
     //int findSamplerIndex(const ln::StringRef& name) const;
     ShaderDescriptorLayout* descriptorLayout() const;
 
+    void setData(int uniformBufferIndex, const void* data, size_t size);
+
     /** bool 値を設定します。 */
     void setBool(int memberIndex, bool value);
 
@@ -79,12 +81,6 @@ LN_CONSTRUCT_ACCESS:
     bool init(Shader* ownerShader);
 
 private:
-    struct BufferInfo
-    {
-        ByteBuffer buffer;
-        //Ref<detail::IShaderUniformBuffer> rhiObject;
-    };
-
     Ref<Shader> m_ownerShader;
     List<ByteBuffer> m_buffers;
     List<Ref<Texture>> m_textures;
@@ -128,6 +124,7 @@ private:
     {
         String name;
         size_t size;
+        std::vector<int> members;
     };
 
     struct UniformMemberInfo
@@ -482,6 +479,7 @@ public:
 
     // TODO: for test
     const ShaderPassDescriptorLayout& descriptorLayout() const { return m_descriptorLayout; }
+    detail::ShaderPassSemanticsManager* semanticsManager2() { return m_semanticsManager.get(); }
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;

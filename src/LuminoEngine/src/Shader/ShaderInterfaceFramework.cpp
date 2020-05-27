@@ -412,10 +412,6 @@ static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShader
     {_LT("ln_ColorScale"), BuiltinShaderParameters_ln_ColorScale},
     {_LT("ln_BlendColor"), BuiltinShaderParameters_ln_BlendColor},
     {_LT("ln_ToneColor"), BuiltinShaderParameters_ln_ToneColor},
-
-    {_LT("ln_MaterialTexture"), BuiltinShaderParameters_ln_MaterialTexture},
-    {_LT("ln_BoneTexture"), BuiltinShaderParameters_ln_BoneTexture},
-    {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderParameters_ln_BoneLocalQuaternionTexture},
 };
 
 static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinShaderUniformBuffersMap =
@@ -423,6 +419,13 @@ static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinSh
     {_LT("LNRenderViewBuffer"), BuiltinShaderUniformBuffers_LNRenderViewBuffer},
     {_LT("LNRenderElementBuffer"), BuiltinShaderUniformBuffers_LNRenderElementBuffer},
     {_LT("LNEffectColorBuffer"), BuiltinShaderUniformBuffers_LNEffectColorBuffer},
+};
+
+static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTexturesMap =
+{
+    {_LT("ln_MaterialTexture"), BuiltinShaderTextures_ln_MaterialTexture},
+    {_LT("ln_BoneTexture"), BuiltinShaderTextures_ln_BoneTexture},
+    {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
 };
 
 ShaderPassSemanticsManager::ShaderPassSemanticsManager()
@@ -457,27 +460,95 @@ void ShaderPassSemanticsManager::init(ShaderPass* shaderPass)
     for (const auto& localInfo : localLayout.m_textures) {
         const auto& globalInfo = globalLayout->m_textures[localInfo.dataIndex];
 
-        auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
-        if (itr != s_BuiltinShaderParametersMap.end()) {
-            m_hasBuiltinShaderParameters |= (1 << itr->second);
+        auto itr = s_BuiltinShaderTexturesMap.find(globalInfo.name);
+        if (itr != s_BuiltinShaderTexturesMap.end()) {
+            m_builtinShaderTextures[itr->second] = localInfo.dataIndex;
         }
     }
 
-    // Samplers
-    for (const auto& localInfo : localLayout.m_samplers) {
-        const auto& globalInfo = globalLayout->m_samplers[localInfo.dataIndex];
+    //// Samplers
+    //for (const auto& localInfo : localLayout.m_samplers) {
+    //    const auto& globalInfo = globalLayout->m_samplers[localInfo.dataIndex];
 
-        auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
-        if (itr != s_BuiltinShaderParametersMap.end()) {
-            m_hasBuiltinShaderParameters |= (1 << itr->second);
-        }
-    }
+    //    auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
+    //    if (itr != s_BuiltinShaderParametersMap.end()) {
+    //        m_hasBuiltinShaderParameters |= (1 << itr->second);
+    //    }
+    //}
+
+    m_descriptor = shaderPass->shader()->descriptor();
 }
 
 void ShaderPassSemanticsManager::reset()
 {
     m_hasBuiltinShaderParameters = 0;
     for (auto& i : m_builtinUniformBuffers) i = -1;
+}
+
+void ShaderPassSemanticsManager::updateSceneVariables(const SceneInfo& info)
+{
+}
+
+void ShaderPassSemanticsManager::updateCameraVariables(const CameraInfo& info)
+{
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
+    if (index >= 0) {
+        LNRenderViewBuffer data;
+        data.ln_View = info.viewMatrix;
+        data.ln_Projection = info.projMatrix;
+        data.ln_ViewportPixelSize = info.viewPixelSize;
+        data.ln_NearClip = info.nearClip;
+        data.ln_FarClip = info.farClip;
+        data.ln_CameraPosition = info.viewPosition;
+        data.ln_CameraDirection = info.viewDirection;
+        m_descriptor->setData(index, &data, sizeof(data));
+    }
+}
+
+void ShaderPassSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
+{
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
+    if (index >= 0) {
+        LNRenderElementBuffer data;
+        if (hasParameter(BuiltinShaderParameters_ln_World))
+            data.ln_World = info.WorldMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_WorldViewProjection))
+            data.ln_WorldViewProjection = info.WorldViewProjectionMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_WorldView))
+            data.ln_WorldView = info.WorldMatrix * cameraInfo.viewMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_WorldViewIT))
+            data.ln_WorldViewIT = Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix));
+        if (hasParameter(BuiltinShaderParameters_ln_BoneTextureReciprocalSize) && info.boneTexture)
+            data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
+
+        m_descriptor->setData(index, &data, sizeof(data));
+    }
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_BoneTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.boneTexture);
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_BoneLocalQuaternionTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.boneLocalQuaternionTexture);
+}
+
+void ShaderPassSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
+{
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNEffectColorBuffer];
+    if (index >= 0) {
+        // 計算に時間がかかるものでもないため、個々のメンバの alive は確認しない
+        LNEffectColorBuffer data = {
+            info.colorScale.withAlpha(info.colorScale.a * info.opacity).toVector4(),
+            info.blendColor.toVector4(),
+            info.tone.toVector4(),
+        };
+        m_descriptor->setData(index, &data, sizeof(data));
+    }
+}
+
+void ShaderPassSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
+{
 }
 
 //=============================================================================
