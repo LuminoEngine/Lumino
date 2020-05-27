@@ -2091,7 +2091,10 @@ void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& creat
 		return;
 	}
 
+#ifdef LN_NEW_SHADER_UBO
+#else
 	buildUniforms();
+#endif
 
 	m_descriptorTable = makeRef<GLShaderDescriptorTable>();
 	if (!m_descriptorTable->init(this, createInfo.descriptorLayout)) {
@@ -2133,15 +2136,18 @@ IShaderDescriptorTable* GLShaderPass::descriptorTable() const
 void GLShaderPass::apply() const
 {
 	GL_CHECK(glUseProgram(m_program));
-	//for (auto& buf : m_uniformBuffers) {
-	//	buf->bind(m_program);
-	//}
-
-
-
+#ifdef LN_NEW_SHADER_UBO
+#else
+	for (auto& buf : m_uniformBuffers) {
+		buf->bind(m_program);
+	}
 	if (m_samplerBuffer) {
 		m_samplerBuffer->bind();
 	}
+#endif
+
+
+
 
 	m_descriptorTable->bind(m_program);
 }
@@ -2775,6 +2781,7 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 			GL_CHECK(glGetActiveUniformBlockName(program, i, 128, &blockNameLen, blockName));
 
 			info.blockIndex = glGetUniformBlockIndex(program, blockName);
+			info.bindingPoint = i;
 			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
 
 			LN_LOG_VERBOSE << "uniform block " << i;
@@ -2790,6 +2797,60 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 			int index = descriptorLayout->findUniformBufferRegisterIndex(blockName);
 			if (index >= 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
 				m_uniformBuffers[index] = info;
+			}
+
+
+			GLint blockMemberCount;
+			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockMemberCount));
+
+			GLint indices[32];
+			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices));
+
+			GLint offsets[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_OFFSET, offsets));
+
+			//GLint elements[32];
+			//glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_SIZE, elements);
+
+			GLint arrayStrides[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_ARRAY_STRIDE, arrayStrides));
+
+			// 列間、または行間の stride (バイト単位)
+			GLint matrixStrides[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_MATRIX_STRIDE, matrixStrides));
+
+			GLint isRowMajors[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_IS_ROW_MAJOR, isRowMajors));
+
+			for (int iMember = 0; iMember < blockMemberCount; iMember++) {
+				GLsizei nameLen = 0;
+				GLsizei size = 0;
+				GLenum  type = 0;
+				GLchar  name[256] = { 0 };
+				GL_CHECK(glGetActiveUniform(program, indices[iMember], 256, &nameLen, &size, &type, name));
+				LN_LOG_VERBOSE << "uniform " << iMember;
+				LN_LOG_VERBOSE << "  name          : " << name;
+				LN_LOG_VERBOSE << "  index         : " << indices[iMember];	// uniform location (unique in program)
+				LN_LOG_VERBOSE << "  offset        : " << offsets[iMember];
+				LN_LOG_VERBOSE << "  array stride  : " << arrayStrides[iMember];
+				LN_LOG_VERBOSE << "  matrix stride : " << matrixStrides[iMember];
+				LN_LOG_VERBOSE << "  type          : " << type;
+				LN_LOG_VERBOSE << "  elements      : " << size;
+				//LN_LOG_VERBOSE << "  rows          : " << desc.rows;
+				//LN_LOG_VERBOSE << "  columns       : " << desc.columns;
+				LN_LOG_VERBOSE << "  row majors    : " << isRowMajors[iMember];
+				//LN_LOG_VERBOSE << "  data size     : " << dataSize;
+
+				// offset 検証。トランスパイラが求め offset と、今ここでコンパイルした結果が一致していることを確認する
+				{
+					// 名前は Buffer._Value のように、. でスコープが切られている。. の後ろを取り出す。
+					const auto localName = std::string(name).substr(blockNameLen + 1);
+					int offset = descriptorLayout->findUniformBufferMemberOffset(localName);
+					if (offset >= 0 && offsets[iMember] != offset) {
+						LN_NOTIMPLEMENTED();
+						return false;
+					}
+				}
 			}
 		}
 	}
@@ -2838,7 +2899,9 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 void GLShaderDescriptorTable::dispose()
 {
 	for (const auto& info : m_uniformBuffers) {
-		GL_CHECK(glDeleteBuffers(1, &info.ubo));
+		if (info.ubo) {
+			GL_CHECK(glDeleteBuffers(1, &info.ubo));
+		}
 	}
 	m_uniformBuffers.clear();
 	m_samplerUniforms.clear();
@@ -2851,9 +2914,11 @@ void GLShaderDescriptorTable::dispose()
 void GLShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* data)
 {
 	for (int i = 0; i < m_uniformBuffers.size(); i++) {
-		GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffers[i].ubo));
-		GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, data->uniforms[i].size, data->uniforms[i].data));
-		GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+		if (m_uniformBuffers[i].ubo) {
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffers[i].ubo));
+			GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, data->uniforms[i].size, data->uniforms[i].data));
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+		}
 	}
 
 	for (int i = 0; i < m_externalTextureUniforms.size(); i++) {
@@ -2869,11 +2934,13 @@ void GLShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* dat
 void GLShaderDescriptorTable::bind(GLuint program)
 {
 	for (const auto& info : m_uniformBuffers) {
-		// m_ubo を context 内の Global なテーブルの m_bindingPoint 番目にセット
-		GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, info.ubo));
+		if (info.ubo) {
+			// m_ubo を context 内の Global なテーブルの m_bindingPoint 番目にセット
+			GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, info.ubo));
 
-		// m_bindingPoint 番目にセットされている m_ubo を、m_blockIndex 番目の Uniform Buffer として使う
-		GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+			// m_bindingPoint 番目にセットされている m_ubo を、m_blockIndex 番目の Uniform Buffer として使う
+			GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+		}
 	}
 
 	for (int i = 0; i < m_samplerUniforms.size(); i++)
@@ -2882,9 +2949,11 @@ void GLShaderDescriptorTable::bind(GLuint program)
 		int unitIndex = i;
 
 		LN_CHECK(uniform.m_textureExternalUnifromIndex >= 0);
-		LN_CHECK(uniform.m_samplerExternalUnifromIndex >= 0);
+		//LN_CHECK(uniform.m_samplerExternalUnifromIndex >= 0);
 		GLTextureBase* t = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].texture;
-		GLSamplerState* samplerState = m_externalSamplerUniforms[uniform.m_samplerExternalUnifromIndex].samplerState;
+		GLSamplerState* samplerState = nullptr;
+		if (uniform.m_samplerExternalUnifromIndex >= 0)
+			samplerState = m_externalSamplerUniforms[uniform.m_samplerExternalUnifromIndex].samplerState;
 		if (!samplerState) {
 			samplerState = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].samplerState;
 		}

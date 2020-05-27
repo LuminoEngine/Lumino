@@ -185,6 +185,7 @@ struct DescriptorLayout
     int findUniformBufferRegisterIndex(const std::string& name) const;
     int findTextureRegisterIndex(const std::string& name) const;
     int findSamplerRegisterIndex(const std::string& name) const;
+    int findUniformBufferMemberOffset(const std::string& name) const;
 
     void mergeFrom(const DescriptorLayout& other);
 };

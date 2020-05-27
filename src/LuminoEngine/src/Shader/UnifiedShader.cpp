@@ -781,6 +781,16 @@ int DescriptorLayout::findSamplerRegisterIndex(const std::string& name) const
     return -1;
 }
 
+int DescriptorLayout::findUniformBufferMemberOffset(const std::string& name) const
+{
+    for (int i = 0; i < uniformBufferRegister.size(); i++) {
+        for (int j = 0; j < uniformBufferRegister[i].members.size(); j++) {
+            if (uniformBufferRegister[i].members[j].name == name) return uniformBufferRegister[i].members[j].offset;
+        }
+    }
+    return -1;
+}
+
 void DescriptorLayout::mergeFrom(const DescriptorLayout& other)
 {
     for (int iType = 0; iType < DescriptorType_Count; iType++) {

@@ -716,7 +716,10 @@ public:
 		GLuint bindingPoint = 0;	// こちらは自由に決めていい。
 		GLuint blockIndex = 0;	// これが layout(binding=) と一致させる値
 		GLint blockSize;
-		GLuint ubo = 0;
+
+		// null になることもある。DescriptorLayout 側のインデックスと一致させるため、
+		// UniformBufferInfo のインスタンスは作られるが、Active な UBO ではない場合 0 になる。
+		GLuint ubo = 0;		
 	};
 
 	// textureXD と samplerState を結合するためのデータ構造
