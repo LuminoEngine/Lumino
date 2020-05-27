@@ -7,7 +7,6 @@
 namespace ln {
 class Texture;
 class Texture2D;
-class ShaderParameter;
 class ShaderConstantBuffer;
 class ShaderDescriptor;
 namespace detail {
@@ -217,7 +216,6 @@ public:
     void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
     void updateSubsetVariables(const SubsetInfo& info);
     void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
-    //ShaderParameter* getParameterBySemantics(BuiltinSemantics semantics) const;
 
 private:
     //struct VariableKindPair

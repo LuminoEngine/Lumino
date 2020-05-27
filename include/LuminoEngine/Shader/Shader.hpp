@@ -9,7 +9,6 @@ class DiagnosticsManager;
 class Texture;
 class Shader;
 class ShaderConstantBuffer;
-class ShaderParameter;
 class ShaderParameter2;
 class ShaderTechnique;
 class ShaderPass;
@@ -303,7 +302,6 @@ public:
 #ifdef LN_NEW_SHADER_UBO
     ShaderParameter2* findParameter(const StringRef& name) const;
 #else
-    ShaderParameter* findParameter(const StringRef& name) const;
 
     /*
      * 名前を指定してこの Shader に含まれる ShaderConstantBuffer を検索します。
@@ -348,8 +346,6 @@ private:
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
 	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
-    ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
-    ShaderParameter* getOrCreateTextureParameter(const String& name);
 
     detail::ShaderManager* m_manager;
     String m_name;
@@ -357,128 +353,11 @@ private:
     Ref<ShaderDescriptor> m_descriptor;
     List<Ref<ShaderConstantBuffer>> m_buffers;
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
-    List<Ref<ShaderParameter>> m_textureParameters;
     ShaderConstantBuffer* m_globalConstantBuffer;
 
     friend class ShaderPass;
     friend class detail::ShaderHelper;
     friend class ShaderDescriptor;
-};
-
-/**
- * シェーダプログラムに含まれる 1 つの入力パラメーターを表します。
- */
-// TODO: deprecated
-class LN_API ShaderParameter final
-    : public Object
-{
-public:
-    /** パラメータの名前を取得します。 */
-    const String& name() const { return m_name; }
-
-    /** bool 値を設定します。 */
-    void setBool(bool value);
-
-    /** 整数値を設定します。 */
-    void setInt(int value);
-
-    /** 整数値の配列を設定します。 */
-    void setIntArray(const int* value, int count);
-
-    /** 浮動小数点値を設定します。 */
-    void setFloat(float value);
-
-    /** 浮動小数点値の配列を設定します。 */
-    void setFloatArray(const float* value, int count);
-
-    /** ベクトルを設定します。 */
-    void setVector(const Vector4& value);
-
-    /** ベクトルの配列を設定します。 */
-    void setVectorArray(const Vector4* value, int count);
-
-    /** 行列を設定します。 */
-    void setMatrix(const Matrix& value);
-
-    /** 行列の配列を設定します。 */
-    void setMatrixArray(const Matrix* value, int count);
-
-    /** テクスチャを設定します。 */
-    void setTexture(Texture* value);
-
-protected:
-    virtual void onDispose(bool explicitDisposing) override;
-
-private:
-    LN_INTERNAL_NEW_OBJECT;
-    ShaderParameter();
-    virtual ~ShaderParameter() = default;
-    void init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name);
-    void init(ShaderParameterClass parameterClass, const String& name);
-
-    const detail::ShaderUniformTypeDesc& desc() const { return m_desc; }
-    const Ref<Texture>& texture() const { return m_textureValue; }
-
-    ShaderConstantBuffer* m_owner;
-    ShaderParameterClass m_class;
-    detail::ShaderUniformTypeDesc m_desc;
-    String m_name;
-    Ref<Texture> m_textureValue;
-
-    friend class Shader;
-    friend class ShaderPass;
-    friend class ShaderConstantBuffer;
-    friend class detail::ShaderValueSerializer;
-};
-
-/**
- * シェーダプログラムに含まれる 1 つの定数バッファを表します。
- */
-class LN_API ShaderConstantBuffer final
-    : public Object
-{
-public:
-    /** 定数バッファの名前を取得します。 */
-    const String& name() const { return m_name; }
-
-    /** 
-     * 定数バッファにデータを設定します。通常、シェーダプログラムで定義したレイアウトと同じ構造体を転送します。
-     *
-     * データ内の float4x4 は自動的に転置されます。それ以外の行列型は呼び出し側で転置しないと、mul(v, M) の計算順に適合しません。
-     */
-    void setData(const void* data, int size);
-
-    /** 定数バッファのバイトサイズを取得します。 */
-    int size() const { return m_buffer.size(); }
-
-    /*
-     * 名前を指定してこの定数バッファに含まれる ShaderParameter を検索します。
-     *
-     * @param[in]   name : パラメータの名前
-     * @return      一致した ShaderParameter。見つからない場合は nullptr。
-     */
-    ShaderParameter* findParameter(const StringRef& name) const;
-
-private:
-    LN_INTERNAL_NEW_OBJECT;
-    ShaderConstantBuffer();
-    virtual ~ShaderConstantBuffer() = default;
-    void init(Shader* owner, detail::IShaderUniformBuffer* rhiObject);
-
-    Shader* owner() const { return m_owner; }
-    const std::string& asciiName() const { return m_asciiName; }
-    ByteBuffer& buffer() { return m_buffer; }
-    void commit(GraphicsContext* graphicsContext, detail::IShaderUniformBuffer* rhiObject);
-
-    Shader* m_owner;
-    String m_name;
-    std::string m_asciiName;
-    ByteBuffer m_buffer;
-    List<Ref<ShaderParameter>> m_parameters;
-
-    friend class Shader;
-    friend class ShaderParameter;
-    friend class ShaderPass;
 };
 
 /**

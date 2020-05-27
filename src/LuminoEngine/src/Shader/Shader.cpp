@@ -138,7 +138,6 @@ Shader::Shader()
     , m_name()
     , m_buffers()
     , m_techniques(makeList<Ref<ShaderTechnique>>())
-    , m_textureParameters()
     , m_globalConstantBuffer(nullptr)
 {
 }
@@ -329,35 +328,10 @@ void Shader::onChangeDevice(detail::IGraphicsDevice* device)
     LN_NOTIMPLEMENTED();
 }
 
-#ifdef LN_NEW_SHADER_UBO
 ShaderParameter2* Shader::findParameter(const StringRef& name) const
 {
     return m_descriptor->findParameter2(name);
 }
-#else
-ShaderParameter* Shader::findParameter(const StringRef& name) const
-{
-    // find global constant buffer.
-    if (m_globalConstantBuffer) {
-        ShaderParameter* result = m_globalConstantBuffer->findParameter(name);
-        if (result) {
-            return result;
-        }
-    }
-
-    // find texture params.
-    {
-        auto result = m_textureParameters.findIf([&](const Ref<ShaderParameter>& param) { return param->name() == name; });
-        return (result) ? *result : nullptr;
-    }
-}
-
-ShaderConstantBuffer* Shader::findConstantBuffer(const StringRef& name) const
-{
-    auto result = m_buffers.findIf([name](const ShaderConstantBuffer* buf) { return buf->name() == name; });
-    return (result) ? *result : nullptr;
-}
-#endif
 
 ShaderTechnique* Shader::findTechnique(const StringRef& name) const
 {
@@ -397,188 +371,6 @@ ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClass
     }
 
     return nullptr;
-}
-
-ShaderConstantBuffer* Shader::getOrCreateConstantBuffer(detail::IShaderUniformBuffer* rhiBuffer)
-{
-    for (auto& buffer : m_buffers) {
-        if (buffer->asciiName() == rhiBuffer->name()) {
-            LN_CHECK(rhiBuffer->bufferSize() == buffer->size());
-            return buffer;
-        }
-    }
-
-    auto buffer = makeObject<ShaderConstantBuffer>(this, rhiBuffer);
-    m_buffers.add(buffer);
-    return buffer;
-}
-
-ShaderParameter* Shader::getOrCreateTextureParameter(const String& name)
-{
-    auto result = m_textureParameters.findIf([&](const Ref<ShaderParameter>& param) { return param->name() == name; });
-    if (result) {
-        return *result;
-    } else {
-        auto param = makeObject<ShaderParameter>(ShaderParameterClass::Texture, name);
-        m_textureParameters.add(param);
-        return param;
-    }
-}
-
-//=============================================================================
-// ShaderParameter
-
-ShaderParameter::ShaderParameter()
-    : m_owner(nullptr)
-    , m_class(ShaderParameterClass::Constant)
-    , m_desc()
-    , m_name()
-    , m_textureValue(nullptr)
-{
-}
-
-void ShaderParameter::init(ShaderConstantBuffer* owner, const detail::ShaderUniformTypeDesc& desc, const String& name)
-{
-    Object::init();
-    m_owner = owner;
-    m_desc = desc;
-    m_name = name;
-}
-
-void ShaderParameter::init(ShaderParameterClass parameterClass, const String& name)
-{
-    Object::init();
-    m_class = parameterClass;
-    m_name = name;
-}
-
-void ShaderParameter::onDispose(bool explicitDisposing)
-{
-    Object::onDispose(explicitDisposing);
-}
-
-void ShaderParameter::setInt(int value)
-{
-    alignScalarsToBuffer((const byte_t*)&value, sizeof(int), 1, m_owner->buffer().data(), m_desc.offset, 1, 0);
-}
-
-void ShaderParameter::setIntArray(const int* value, int count)
-{
-    alignScalarsToBuffer((const byte_t*)value, sizeof(int), count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.arrayStride);
-}
-
-void ShaderParameter::setFloat(float value)
-{
-    alignScalarsToBuffer((const byte_t*)&value, sizeof(float), 1, m_owner->buffer().data(), m_desc.offset, 1, 0);
-}
-
-void ShaderParameter::setFloatArray(const float* value, int count)
-{
-    alignScalarsToBuffer((const byte_t*)value, sizeof(float), count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.arrayStride);
-}
-
-void ShaderParameter::setVector(const Vector4& value)
-{
-    alignVectorsToBuffer((const byte_t*)&value, 4, 1, m_owner->buffer().data(), m_desc.offset, 1, 0, m_desc.columns);
-}
-
-void ShaderParameter::setVectorArray(const Vector4* value, int count)
-{
-    alignVectorsToBuffer((const byte_t*)value, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.arrayStride, m_desc.columns);
-}
-
-void ShaderParameter::setMatrix(const Matrix& value)
-{
-    alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, m_owner->buffer().data(), m_desc.offset, 1, m_desc.matrixStride, 0, m_desc.rows, m_desc.columns, true);
-}
-
-void ShaderParameter::setMatrixArray(const Matrix* value, int count)
-{
-    alignMatricesToBuffer((const byte_t*)value, 4, 4, count, m_owner->buffer().data(), m_desc.offset, m_desc.elements, m_desc.matrixStride, m_desc.arrayStride, m_desc.rows, m_desc.columns, true);
-}
-
-void ShaderParameter::setTexture(Texture* value)
-{
-    m_textureValue = value;
-}
-
-#if 0
-void ShaderParameter::setBool(bool value)
-{
-	m_value.setBool(value);
-}
-
-
-void ShaderParameter::setBoolArray(const bool* value, int count)
-{
-	m_value.setBoolArray(value, count);
-}
-void ShaderParameter::setTexture(Texture* value)
-{
-	m_value.setTexture(value);
-}
-
-void ShaderParameter::setPointer(void* value)
-{
-	m_value.setPointer(value);
-}
-#endif
-
-//=============================================================================
-// ShaderConstantBuffer
-
-ShaderConstantBuffer::ShaderConstantBuffer()
-    : m_owner(nullptr)
-    , m_name()
-    , m_asciiName()
-    , m_buffer()
-    , m_parameters()
-{
-}
-
-void ShaderConstantBuffer::init(Shader* owner, detail::IShaderUniformBuffer* rhiObject)
-{
-    Object::init();
-    m_owner = owner;
-    m_name = String::fromStdString(rhiObject->name());
-    m_asciiName = rhiObject->name();
-    m_buffer.resize(rhiObject->bufferSize());
-
-    for (int i = 0; i < rhiObject->getUniformCount(); i++) {
-        detail::IShaderUniform* field = rhiObject->getUniform(i);
-        m_parameters.add(makeObject<ShaderParameter>(this, field->desc(), String::fromStdString(field->name())));
-    }
-}
-
-void ShaderConstantBuffer::setData(const void* data, int size)
-{
-    m_buffer.assign(data, size);
-
-    for (const auto& param : m_parameters) {
-        const auto& desc = param->desc();
-        if (desc.type2 == detail::ShaderUniformType_Matrix &&
-            desc.columns == 4 && desc.rows == 4) {
-            Matrix* m = reinterpret_cast<Matrix*>(m_buffer.data() + desc.offset);
-            m->transpose();
-        }
-    }
-}
-
-ShaderParameter* ShaderConstantBuffer::findParameter(const StringRef& name) const
-{
-    auto result = m_parameters.findIf([name](const ShaderParameter* param) { return param->name() == name; });
-    return (result) ? *result : nullptr;
-}
-
-void ShaderConstantBuffer::commit(GraphicsContext* graphicsContext, detail::IShaderUniformBuffer* rhiObject)
-{
-    detail::RenderBulkData data = detail::GraphicsContextInternal::getRenderingCommandList(graphicsContext)->allocateBulkData(m_buffer.size());
-    memcpy(data.writableData(), m_buffer.data(), data.size());
-
-    LN_ENQUEUE_RENDER_COMMAND_2(
-        ShaderConstantBuffer_commit, graphicsContext, detail::RenderBulkData, data, Ref<detail::IShaderUniformBuffer>, rhiObject, {
-            rhiObject->setData(data.data(), data.size());
-        });
 }
 
 //=============================================================================
