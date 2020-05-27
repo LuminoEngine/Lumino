@@ -2794,6 +2794,12 @@ bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const Descript
 			GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, info.blockSize, nullptr, GL_DYNAMIC_DRAW));
 			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
+			// OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
+			// 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
+			// 検索したいので、名前を合わせておく。
+			if (strcmp(blockName, "_Global") == 0)
+				blockName[0] = '$';
+
 			int index = descriptorLayout->findUniformBufferRegisterIndex(blockName);
 			if (index >= 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
 				m_uniformBuffers[index] = info;

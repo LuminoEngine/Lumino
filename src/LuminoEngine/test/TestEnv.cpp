@@ -14,7 +14,7 @@ void TestEnv::setup()
 	Logger::addStdErrAdapter();
 	EngineSettings::setMainWindowSize(160, 120);
 	//EngineSettings::setMainBackBufferSize(160, 120);
-	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::setGraphicsDebugEnabled(true);
     EngineSettings::setEngineFeatures(feature);
 	EngineSettings::addAssetDirectory(LN_LOCALFILE(u"Assets"));

@@ -1,5 +1,5 @@
 
-float4x4 _WorldViewProjection;
+float4x4 _WorldViewProjection;  // unused
 float4 _Color1;
 float4 _Color2;
 
