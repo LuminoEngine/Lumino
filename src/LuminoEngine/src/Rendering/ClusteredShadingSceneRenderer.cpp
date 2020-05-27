@@ -502,10 +502,18 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 
 void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique* technique)
 {
+	// TODO: 
+	// 毎回 findParameter していたのをテーブル対応にしたことで 50us → 1us 以下にできた。
+	// ただ、もう少し最適化の余地はある。以下のパラメータはシーン全体でひとつなので、
+	// 今 onSetAdditionalShaderPassVariables は DrawElement ごとに呼び出されているが、
+	// 事前に描画で使うシェーダを集めておいて Scene 単位はまとめて設定する。
+
+
+
 	Shader* shader = technique->shader();
 	const auto* ssm = technique->semanticsManager2();
 
-#ifdef LN_NEW_SHADER_UBO
+
 	ShaderParameter2* v;
 
 	const auto* params = sceneGlobalParams();
@@ -528,50 +536,8 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTec
 	if (v) {
 		v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
 	}
-#else
-	ShaderParameter* v;
-
-	// TODO: 
-	// 毎回 findParameter していたのをテーブル対応にしたことで 50us → 1us 以下にできた。
-	// ただ、もう少し最適化の余地はある。以下のパラメータはシーン全体でひとつなので、
-	// 今 onSetAdditionalShaderPassVariables は DrawElement ごとに呼び出されているが、
-	// 事前に描画で使うシェーダを集めておいて Scene 単位はまとめて設定する。
 
 #if 1
-	v = ssm->getParameterBySemantics(BuiltinSemantics::GlobalLightInfoTexture);
-	if (v) v->setTexture(m_lightClusters.getGlobalLightInfoTexture());
-
-	v = ssm->getParameterBySemantics(BuiltinSemantics::LocalLightInfoTexture);
-	if (v) v->setTexture(m_lightClusters.getLightInfoTexture());
-
-	v = ssm->getParameterBySemantics(BuiltinSemantics::LightClustersTexture);
-	if (v) v->setTexture(m_lightClusters.getClustersVolumeTexture());
-
-	v = ssm->getParameterBySemantics(BuiltinSemantics::NearClip2);
-	if (v) v->setFloat(m_lightClusters.m_nearClip);
-
-	v = ssm->getParameterBySemantics(BuiltinSemantics::FarClip2);
-	if (v) v->setFloat(m_lightClusters.m_farClip);
-
-	v = ssm->getParameterBySemantics(BuiltinSemantics::CameraPosition2);
-	if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
-
-	if (const auto* params = sceneGlobalParams()) {
-		v = ssm->getParameterBySemantics(BuiltinSemantics::FogColorAndDensity);
-		if (v) v->setVector(Vector4(params->fogColor.rgb() * params->fogColor.a, params->fogDensity));
-
-		v = ssm->getParameterBySemantics(BuiltinSemantics::FogParams);
-		if (v) v->setVector(Vector4(params->startDistance, params->lowerHeight, params->upperHeight, params->heightFogDensity));
-
-
-
-		// TODO: Test
-		if (mainLightInfo()) {
-			v = shader->findParameter(u"ln_MainLightDirection");
-			if (v) v->setVector(Vector4(mainLightInfo()->m_direction, 0.0f));
-		}
-	}
-
 
 #else
 	//static Shader* lastShader = nullptr;
@@ -608,7 +574,6 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTec
 
 	v = shader->findParameter(_T("ln_FogParams"));
 	if (v) v->setVector(Vector4(m_fogParams.color.rgb() * m_fogParams.color.a, m_fogParams.density));
-#endif
 #endif
 
 }

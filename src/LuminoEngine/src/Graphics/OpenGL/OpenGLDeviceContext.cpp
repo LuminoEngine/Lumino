@@ -2091,11 +2091,6 @@ void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& creat
 		return;
 	}
 
-#ifdef LN_NEW_SHADER_UBO
-#else
-	buildUniforms();
-#endif
-
 	m_descriptorTable = makeRef<GLShaderDescriptorTable>();
 	if (!m_descriptorTable->init(this, createInfo.descriptorLayout)) {
 		return;
@@ -2127,19 +2122,6 @@ IShaderDescriptorTable* GLShaderPass::descriptorTable() const
 void GLShaderPass::apply() const
 {
 	GL_CHECK(glUseProgram(m_program));
-#ifdef LN_NEW_SHADER_UBO
-#else
-	for (auto& buf : m_uniformBuffers) {
-		buf->bind(m_program);
-	}
-	if (m_samplerBuffer) {
-		m_samplerBuffer->bind();
-	}
-#endif
-
-
-
-
 	m_descriptorTable->bind(m_program);
 }
 

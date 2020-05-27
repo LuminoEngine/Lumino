@@ -450,11 +450,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				if (finalMaterial) {
 					PbrMaterialData pbrMaterialData;
 					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
-#ifdef LN_NEW_SHADER_UBO
 					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
-#else
-					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
-#endif
 					finalMaterial->updateShaderVariables(tech->shader());
 					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 				}

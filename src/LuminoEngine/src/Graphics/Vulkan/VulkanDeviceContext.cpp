@@ -3126,8 +3126,6 @@ IShaderDescriptorTable* VulkanShaderPass::descriptorTable() const
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
 {
-#ifdef LN_NEW_SHADER_UBO
-
     const auto& uniforms = m_descriptorTable->uniforms();
     for (int i = 0; i < uniforms.size(); i++) {
         const auto& uniformBuffer = uniforms[i];
@@ -3168,60 +3166,6 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         writeInfo.pImageInfo = &info.imageInfo;
         writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
     }
-
-
-#else
-    for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
-        auto& uniformBuffer = m_uniformBuffers[i];
-
-        // UniformBuffer の内容を CopyCommand に乗せる。
-        // Inside RenderPass では vkCmdCopyBuffer が禁止されているので、DeviceLocal に置いたメモリを使うのではなく、
-        // 毎回新しい HostVisible な Buffer を作ってそれを使う。
-        // 
-        // ちなみに VertexBuffer などへのデータ転送の時は VertexBuffer へ CopyBuffer しているが、
-        // ここでは 1 コマンドバッファ内でのみ有効な VulkanBuffer を作って、それを直接 Descripter にセットしている。
-        // なぜこうしているのかというと、
-        // - VertexBuffer の動的な書き換えでは、Sprite のバッチ描画などで 巨大な Buffer の一部を書き換えることが多いため、毎回動的に確保するとメモリ消費がひどいことになる。
-        // - 対して UniformBuffer は、数 100 byte 程度の小さいバッファを毎フレーム大量に確保することになる。
-        //   リアルタイムグラフィックスでは、ずっと const な UBO はほとんど存在しない。小さな動的 Buffer の一部を頻繁に書き換えるよりも丸ごと転送してしまった方が簡単だし速い。
-        //   また Vulkan の仕様として Descripter の Write は CommandBuffer に乗るものではないので、基本的にドローコールの数だけ Descripter が必要となる。
-        VulkanBuffer* buffer = commandBuffer->allocateBuffer(uniformBuffer->buffer()->size(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-        buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
-
-        VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
-        info.buffer = buffer->nativeBuffer();
-
-        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[i];
-        writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
-    }
-
-    int count = m_localShaderSamplerBuffer->registerCount();
-    for (int i = 0; i < count; i++) {
-        DescriptorType type = m_localShaderSamplerBuffer->descriptorType(i);
-        uint32_t imageIndex = m_localShaderSamplerBuffer->descriptorImageInfoIndex(i);
-        uint32_t writeIndex = m_localShaderSamplerBuffer->descriptorWriteInfoIndex(i);
-        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[writeIndex];
-
-        auto& texture = m_localShaderSamplerBuffer->texture(i);
-        auto& samplerState = m_localShaderSamplerBuffer->samplerState(i);
-
-        if (type == DescriptorType_Texture) {
-            VkDescriptorImageInfo& imageInfo = m_textureDescripterImageInfo[imageIndex];
-            imageInfo.imageView = (texture) ? texture->image()->vulkanImageView() : 0;
-            imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
-            writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
-        }
-        else if (type == DescriptorType_SamplerState) {
-            VkDescriptorImageInfo& imageInfo = m_samplerDescripterImageInfo[imageIndex];
-            imageInfo.imageView = (texture) ? texture->image()->vulkanImageView() : 0;
-            imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
-            writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
-        }
-        else {
-            LN_UNREACHABLE();
-        }
-    }
-#endif
 
     return m_descriptorWriteInfo;
 }
