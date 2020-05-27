@@ -99,9 +99,6 @@ class GLTextureBase;
 class GLRenderTargetTexture;
 class GLDepthBuffer;
 class GLShaderPass;
-class GLShaderUniformBuffer;
-class GLShaderUniform;
-class GLLocalShaderSamplerBuffer;
 class GLShaderDescriptorTable;
 
 class OpenGLDevice
@@ -592,119 +589,15 @@ public:
 	GLuint program() const { return m_program; }
 	void apply() const;
 
-	//virtual int getUniformCount() const override;
-	//virtual IShaderUniform* getUniform(int index) const override;
-	//virtual void setUniformValue(int index, const void* data, size_t size) override;
-
 	virtual int getUniformBufferCount() const override;
 	virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
 
 	virtual IShaderSamplerBuffer* samplerBuffer() const override;
 
 private:
-	void buildUniforms();
-
 	OpenGLDevice* m_context;
 	GLuint m_program;
-	List<Ref<GLShaderUniformBuffer>> m_uniformBuffers;
-	List<Ref<GLShaderUniform>> m_uniforms;
-	Ref<GLLocalShaderSamplerBuffer> m_samplerBuffer;
-
 	Ref<GLShaderDescriptorTable> m_descriptorTable;
-};
-
-class GLShaderUniformBuffer
-	: public IShaderUniformBuffer
-{
-public:
-	GLShaderUniformBuffer(const GLchar* blockName, GLuint blockIndex, GLint blockSize, GLuint bindingPoint);
-	virtual ~GLShaderUniformBuffer();
-	virtual void dispose() override;
-	void addUniform(GLShaderUniform* uniform) { m_uniforms.add(uniform); }
-	void bind(GLuint program);
-
-	virtual const std::string& name() const;
-	virtual int getUniformCount() const;
-	virtual IShaderUniform* getUniform(int index) const;
-	virtual size_t bufferSize() const { return m_blockSize; }
-	virtual void setData(const void* data, size_t size);
-
-private:
-	std::string m_name;
-	GLuint m_blockIndex;
-	GLint m_blockSize;
-	GLuint m_bindingPoint;
-	List<Ref<GLShaderUniform>> m_uniforms;
-	GLuint m_ubo;
-};
-
-class GLShaderUniform
-	: public IShaderUniform
-{
-public:
-	GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location);
-    virtual ~GLShaderUniform();
-	virtual void dispose() override;
-	virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
-	virtual const std::string& name() const override { return m_name; }
-
-	void setUniformValue(OpenGLDevice* context, const void* data, size_t size);
-
-	//GLint offsetOnBuffer() const {}
-	//GLint sizeOnBuffer() const;
-
-private:
-	ShaderUniformTypeDesc m_desc;
-	std::string m_name;
-	GLint m_location;	// [obsolete]
-
-	
-};
-
-// 変数名から独自のテーブルを構築する
-class GLLocalShaderSamplerBuffer
-	: public IShaderSamplerBuffer
-{
-public:
-	GLLocalShaderSamplerBuffer();
-	virtual ~GLLocalShaderSamplerBuffer() = default;
-	void addGlslSamplerUniform(const std::string& name, GLint uniformLocation);
-    void addIsRenderTargetUniform(const std::string& name, GLint uniformLocation);
-	void bind();
-
-	virtual int registerCount() const override;
-	virtual const std::string& getTextureRegisterName(int registerIndex) const override;
-	//virtual const std::string& getSamplerRegisterName(int registerIndex) const override;
-	virtual void setTexture(int registerIndex, ITexture* texture) override;
-	virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
-
-private:
-	// 外部に公開する Uniform 情報。
-	// lnCISlnTOg_texture1lnSOg_samplerState1 は、g_texture1 と g_samplerState1 の２つの uniform であるかのように公開する。
-	struct ExternalUnifrom
-	{
-		std::string name;
-		GLTextureBase* texture = nullptr;
-		GLSamplerState* samplerState = nullptr;
-	};
-
-	// 内部的な Uniform 情報。
-	// 実際の GLSL の Uniform と一致する。
-	struct Uniform
-	{
-		std::string name;	// lnCISlnTOg_texture1lnSOg_samplerState1 のような FullName
-		//std::string samplerRegisterName;
-		GLint uniformLocation = -1;
-        GLint isRenderTargetUniformLocation = -1;	// texture または sampler の場合、それが RenderTarget であるかを示す値を入力する Uniform の Loc。末尾が lnIsRT になっているもの。
-		int m_textureExternalUnifromIndex = -1;
-		int m_samplerExternalUnifromIndex = -1;
-		//ITexture* texture = nullptr;
-		//GLSamplerState* samplerState = nullptr;
-	};
-
-
-	std::vector<Uniform> m_table;
-	std::vector<ExternalUnifrom> m_externalUniforms;    // TODO: 名前、virtual のほうがいいかも
 };
 
 class GLShaderDescriptorTable

@@ -29,9 +29,6 @@ class VulkanGraphicsContext;
 class VulkanSwapChain;
 class VulkanRenderTarget;
 class VulkanDepthBuffer;
-class VulkanShaderUniformBuffer;
-class VulkanShaderUniform;
-class VulkanLocalShaderSamplerBuffer;
 class VulkanShaderDescriptorTable;
 class VulkanNativeGraphicsInterface;
 
@@ -545,7 +542,7 @@ public:
     Result init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
     virtual IShaderDescriptorTable* descriptorTable() const;
-    virtual int getUniformBufferCount() const override { return m_uniformBuffers.size(); }
+    virtual int getUniformBufferCount() const override { return 0; }
     virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
     virtual IShaderSamplerBuffer* samplerBuffer() const override;
     virtual void onBind() override { RefObjectHelper::retain(this); }
@@ -575,9 +572,7 @@ private:
     std::string m_fragEntryPointName;
     VkPipelineLayout m_pipelineLayout;
     std::array<VkDescriptorSetLayout, 3> m_descriptorSetLayouts;
-	std::vector<Ref<VulkanShaderUniformBuffer>> m_uniformBuffers;
     std::vector<Ref<VulkanDescriptorSetsPool>> m_descriptorSetsPools;
-    Ref<VulkanLocalShaderSamplerBuffer> m_localShaderSamplerBuffer;
 
     std::vector<VkWriteDescriptorSet> m_descriptorWriteInfo;
     std::vector<VkDescriptorBufferInfo> m_bufferDescriptorBufferInfo;
@@ -586,89 +581,6 @@ private:
 
     Ref<VulkanShaderDescriptorTable> m_descriptorTable;
 };
-
-class VulkanShaderUniformBuffer
-	: public IShaderUniformBuffer
-{
-public:
-	VulkanShaderUniformBuffer();
-	Result init(VulkanDevice* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members);
-	virtual void dispose() override;
-
-	virtual const std::string& name() const override { return m_name; }
-	virtual int getUniformCount() const override { return m_members.size(); }
-    virtual IShaderUniform* getUniform(int index) const override;
-	virtual size_t bufferSize() const override { return m_data.size(); }
-	virtual void setData(const void* data, size_t size) override;
-
-    const std::vector<byte_t>& data() const { return m_data; }
-    VulkanBuffer* buffer() { return &m_uniformBuffer; }
-    VkBuffer vulkanBuffer() const { return m_uniformBuffer.nativeBuffer(); }
-    uint32_t descriptorWriteInfoIndex = 0;  // index of VulkanShaderPass::m_descriptorWriteInfo
-    //uint32_t bindingIndex = 0;
-
-private:
-	std::string m_name;
-	std::vector<byte_t> m_data;
-	//std::vector<int> m_bindingNumbers;
-    VulkanBuffer m_uniformBuffer;   // TODO: 不要。サイズがわかればよい
-    std::vector<Ref<VulkanShaderUniform>> m_members;
-};
-
-class VulkanShaderUniform
-    : public IShaderUniform
-{
-public:
-    VulkanShaderUniform();
-    Result init(const ShaderUniformInfo& info/*, size_t memberByteSize*/);
-    virtual void dispose() override;
-    virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
-    virtual const std::string& name() const override { return m_name; }
-
-private:
-    ShaderUniformTypeDesc m_desc;
-    std::string m_name;
-};
-
-class VulkanLocalShaderSamplerBuffer
-    : public IShaderSamplerBuffer
-{
-public:
-    VulkanLocalShaderSamplerBuffer();
-    Result init(/*const DescriptorLayout* descriptorLayout*/);
-    virtual void dispose() override;
-
-    virtual int registerCount() const override { return m_table.size(); }
-    virtual const std::string& getTextureRegisterName(int registerIndex) const override { return m_table[registerIndex].name; }
-    //virtual const std::string& getSamplerRegisterName(int registerIndex) const override { return m_table[registerIndex].samplerRegisterName; }
-    virtual void setTexture(int registerIndex, ITexture* texture) override;
-    virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
-
-	void addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t imageInfoIndex, uint32_t writeInfoIndex);
-    DescriptorType descriptorType(int registerIndex) const { return m_table[registerIndex].type; }
-    const Ref<VulkanTexture>& texture(int registerIndex) const { return m_table[registerIndex].texture; }
-    const Ref<VulkanSamplerState>& samplerState(int registerIndex) const { return m_table[registerIndex].samplerState; }
-    uint32_t descriptorImageInfoIndex(int registerIndex) const { return m_table[registerIndex].descriptorImageInfoIndex; }
-    uint32_t descriptorWriteInfoIndex(int registerIndex) const { return m_table[registerIndex].descriptorWriteInfoIndex; }
-
-private:
-    // VkDescriptorImageInfo と同じような情報を持つ。
-    struct Entry
-    {
-        DescriptorType type;
-        std::string name;
-        //std::string textureRegisterName;
-        //std::string samplerRegisterName;
-        Ref<VulkanTexture> texture;
-        Ref<VulkanSamplerState> samplerState;
-        uint32_t descriptorImageInfoIndex;
-        uint32_t descriptorWriteInfoIndex;
-        uint32_t bindingIndex;
-    };
-
-    std::vector<Entry> m_table;
-};
-
 
 class VulkanShaderDescriptorTable
     : public IShaderDescriptorTable

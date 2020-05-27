@@ -999,13 +999,6 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 		{
 			auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 
-			// UniformBuffer は copy コマンドを使って更新できる。
-			// TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
-			//VulkanBuffer* buffer = m_recodingCommandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
-			//VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(shaderPass->getUniformBuffer(0));
-			//uniformBuffer->setData(&ubo, sizeof(ubo));
-
-
 			std::array<VkDescriptorSet, DescriptorType_Count> sets;
 			m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
 			vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
@@ -2934,12 +2927,6 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
     }
 
-	// SamplerBuffer
-	m_localShaderSamplerBuffer = makeRef<VulkanLocalShaderSamplerBuffer>();
-	if (!m_localShaderSamplerBuffer->init()) {
-		return false;
-	}
-
     // DescriptorSetLayout
     {
         // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
@@ -2992,8 +2979,6 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
             m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
             for (auto& item : createInfo.descriptorLayout->textureRegister) {
-                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
-
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
@@ -3036,8 +3021,6 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             layoutBindings.reserve(createInfo.descriptorLayout->samplerRegister.size());
             m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerRegister.size());
             for (auto& item : createInfo.descriptorLayout->samplerRegister) {
-                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_SamplerState, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
-
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
@@ -3084,23 +3067,6 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         LN_VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, m_deviceContext->vulkanAllocator(), &m_pipelineLayout));
     }
 
-	// UniformBuffers
-	{
-        uint32_t writeIndex = 0;
-		for (auto& item : createInfo.descriptorLayout->uniformBufferRegister)
-		{
-			auto buf = makeRef<VulkanShaderUniformBuffer>();
-			if (!buf->init(m_deviceContext, item.name, item.size, item.members)) {
-				return false;
-			}
-            buf->descriptorWriteInfoIndex = writeIndex;
-            //buf->bindingIndex = item.binding;
-            writeIndex++;
-
-			m_uniformBuffers.push_back(buf);
-		}
-	}
-
     m_descriptorTable = makeRef<VulkanShaderDescriptorTable>();
     if (!m_descriptorTable->init(m_deviceContext, this, createInfo.descriptorLayout)) {
         return false;
@@ -3119,25 +3085,10 @@ void VulkanShaderPass::dispose()
             m_descriptorTable = nullptr;
         }
 
-        for (auto& buf : m_uniformBuffers) {
-            buf->dispose();
-        }
-        m_uniformBuffers.clear();
-    
-        if (m_localShaderSamplerBuffer) {
-            m_localShaderSamplerBuffer->dispose();
-            m_localShaderSamplerBuffer = nullptr;
-        }
-
         for (auto& pool : m_descriptorSetsPools) {
             pool->dispose();
         }
         m_descriptorSetsPools.clear();
-
-        if (m_localShaderSamplerBuffer) {
-            m_localShaderSamplerBuffer->dispose();
-            m_localShaderSamplerBuffer = nullptr;
-        }
 
         if (m_pipelineLayout) {
             vkDestroyPipelineLayout(device, m_pipelineLayout, m_deviceContext->vulkanAllocator());
@@ -3175,12 +3126,14 @@ IShaderDescriptorTable* VulkanShaderPass::descriptorTable() const
 
 IShaderUniformBuffer* VulkanShaderPass::getUniformBuffer(int index) const
 {
-    return m_uniformBuffers[index];
+    LN_NOTIMPLEMENTED();
+    return nullptr;
 }
 
 IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
 {
-    return m_localShaderSamplerBuffer;
+    LN_NOTIMPLEMENTED();
+    return nullptr;
 }
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
@@ -3306,169 +3259,6 @@ void VulkanShaderPass::releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool)
     LN_DCHECK(pool);
     pool->reset();
     m_descriptorSetsPools.push_back(pool);
-}
-
-//==============================================================================
-// VulkanShaderUniformBuffer
-
-VulkanShaderUniformBuffer::VulkanShaderUniformBuffer()
-{
-}
-
-Result VulkanShaderUniformBuffer::init(VulkanDevice* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members)
-{
-	m_name = name;
-	if (m_name == "$Global") {
-		m_name = "_Global";
-	}
-
-	m_data.resize(size);
-
-    // TRANSFER_DST に最適化
-    if (!m_uniformBuffer.init(deviceContext, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-        return false;
-    }
-
-    for (auto& member : members) {
-
-        //size_t memberByteSize = 0;
-        //{
-        //    uint16_t nextOffset = UINT16_MAX;
-        //    for (size_t i = 0; i < members.size(); i++) {
-        //        if (member.offset < members[i].offset) {
-        //            nextOffset = std::min(nextOffset, members[i].offset);
-        //        }
-        //    }
-        //    if (nextOffset == UINT16_MAX) {
-        //        nextOffset = size;
-        //    }
-        //    memberByteSize = nextOffset - member.offset;
-        //}
-
-        auto buf = makeRef<VulkanShaderUniform>();
-        if (!buf->init(member)) {
-            return false;
-        }
-        m_members.push_back(buf);
-    }
-
-	return true;
-}
-
-void VulkanShaderUniformBuffer::dispose()
-{
-    for (auto& member : m_members) {
-        member->dispose();
-    }
-    m_members.clear();
-
-    m_uniformBuffer.dispose();
-	IShaderUniformBuffer::dispose();
-}
-
-IShaderUniform* VulkanShaderUniformBuffer::getUniform(int index) const
-{
-    return m_members[index];
-}
-
-void VulkanShaderUniformBuffer::setData(const void* data, size_t size)
-{
-	LN_DCHECK(size <= m_data.size());
-	memcpy(m_data.data(), data, size);
-}
-
-//=============================================================================
-// VulkanShaderUniform
-
-VulkanShaderUniform::VulkanShaderUniform()
-{
-}
-
-Result VulkanShaderUniform::init(const ShaderUniformInfo& info/*, size_t memberByteSize*/)
-{
-    m_name = info.name;
-    m_desc.type2 = (ShaderUniformType)info.type;
-    m_desc.rows = info.matrixRows;
-    m_desc.columns = info.matrixColumns;
-    m_desc.elements = info.arrayElements;
-
-    if (m_desc.columns == 0) { // OpenGL Dirver の動作に合わせる
-        m_desc.columns = info.vectorElements;// *sizeof(float);
-    }
-
-    m_desc.offset = info.offset;
-    //m_desc.size = 0;
-    if (info.arrayElements > 0) {
-        ShaderHelper::resolveStd140Layout(info, &m_desc.arrayStride);
-    }
-    m_desc.matrixStride = info.matrixColumns *sizeof(float);
-
-    return true;
-}
-
-void VulkanShaderUniform::dispose()
-{
-    IShaderUniform::dispose();
-}
-
-//=============================================================================
-// VulkanLocalShaderSamplerBuffer
-
-VulkanLocalShaderSamplerBuffer::VulkanLocalShaderSamplerBuffer()
-{
-}
-
-Result VulkanLocalShaderSamplerBuffer::init(/*const DescriptorLayout* descriptorLayout*/)
-{
-    //uint32_t writeIndex = descriptorLayout->uniformBufferRegister.size();
-
-    //// 't' register in HLSL
-    //for (auto& item : descriptorLayout->textureRegister) {
-    //    Entry e;
-    //    e.textureRegisterName = item.name;
-    //    e.descriptorWriteInfoIndex = writeIndex;
-    //    e.bindingIndex = item.binding;
-    //    m_table.push_back(e);
-    //    writeIndex++;
-    //}
-
-    //// 's' register in HLSL (SamplerState and CombinedSampler)
-    //for (auto& item : descriptorLayout->samplerRegister) {
-    //    Entry e;
-    //    e.samplerRegisterName = item.name;
-    //    e.descriptorWriteInfoIndex = writeIndex;
-    //    e.bindingIndex = item.binding;
-    //    m_table.push_back(e);
-    //    writeIndex++;
-    //}
-
-    return true;
-}
-
-void VulkanLocalShaderSamplerBuffer::dispose()
-{
-    IShaderSamplerBuffer::dispose();
-}
-
-void VulkanLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture)
-{
-    m_table[registerIndex].texture = static_cast<VulkanTexture*>(texture);
-}
-
-void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
-{
-    m_table[registerIndex].samplerState = static_cast<VulkanSamplerState*>(state);
-}
-
-void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t imageInfoIndex, uint32_t writeInfoIndex)
-{
-	Entry e;
-    e.type = type;
-	e.name = name;
-    e.descriptorImageInfoIndex = imageInfoIndex;
-	e.descriptorWriteInfoIndex = writeInfoIndex;
-	e.bindingIndex = bindingIndex;
-	m_table.push_back(std::move(e));
 }
 
 //=============================================================================

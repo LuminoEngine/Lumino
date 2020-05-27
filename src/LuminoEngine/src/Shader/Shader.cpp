@@ -309,7 +309,6 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
                     unifiedShader->descriptorLayout(passId),
                     m_descriptorLayout);
 				tech->addShaderPass(pass);
-				pass->setupParameters();
 			}
 		}
 
@@ -661,8 +660,6 @@ ShaderPass::ShaderPass()
     : m_owner(nullptr)
     , m_name()
     , m_rhiPass(nullptr)
-    , m_bufferEntries()
-    , m_textureParameters()
     , m_renderState(nullptr)
 {
 }
@@ -696,101 +693,9 @@ Shader* ShaderPass::shader() const
     return m_owner->shader();
 }
 
-void ShaderPass::setupParameters()
-{
-    m_bufferEntries.clear();
-
-    for (int i = 0; i < m_rhiPass->getUniformBufferCount(); i++) {
-        detail::IShaderUniformBuffer* rhi = m_rhiPass->getUniformBuffer(i);
-        ShaderConstantBuffer* buf = m_owner->shader()->getOrCreateConstantBuffer(rhi);
-        m_bufferEntries.add({buf, Ref<detail::IShaderUniformBuffer>(rhi)});
-    }
-
-    m_textureParameters.clear();
-    detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
-    if (samplerBuffer) {
-        for (int i = 0; i < samplerBuffer->registerCount(); i++) {
-            ShaderParameter* param = m_owner->shader()->getOrCreateTextureParameter(String::fromStdString(samplerBuffer->getTextureRegisterName(i)));
-            m_textureParameters.add(param);
-        }
-    }
-}
-
-void ShaderPass::commitContantBuffers(GraphicsContext* graphicsContext, bool* outModified)
-{
-    for (auto& e : m_bufferEntries) {
-        e.buffer->commit(graphicsContext, e.rhiObject);
-    }
-
-    // TODO: 1つのバッファにまとめるとか、一括で送りたい。
-    detail::IShaderSamplerBuffer* samplerBuffer = m_rhiPass->samplerBuffer();
-    if (samplerBuffer) {
-		for (int i = 0; i < samplerBuffer->registerCount(); i++) {
-			auto* manager = detail::GraphicsResourceInternal::manager(m_owner->shader());;
-			Texture* texture = m_textureParameters[i]->texture();
-
-			if (texture) {
-#ifdef LN_DEBUG	// 検証。描画先とサンプラに同時に同じテクスチャは使えない
-				{
-					const auto& renderPass = detail::GraphicsContextInternal::currentRenderPass(graphicsContext);
-					for (int i = 0; i < detail::MaxMultiRenderTargets; i++) {
-						if (renderPass->renderTarget(i) == texture) {
-							LN_ERROR();
-							return;
-						}
-					}
-				}
-#endif
-
-#if 1
-				SamplerState* sampler = nullptr;
-				if (texture && texture->samplerState()) {
-					sampler = texture->samplerState();
-				}
-				else {
-					sampler = manager->defaultSamplerState();
-				}
-
-				bool modified = false;
-				detail::ITexture* rhiTexture = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(graphicsContext, texture, &modified);
-                *outModified |= modified;
-				detail::ISamplerState* rhiSampler = detail::GraphicsResourceInternal::resolveRHIObject<detail::ISamplerState>(graphicsContext, sampler, &modified);
-                *outModified |= modified;
-				LN_ENQUEUE_RENDER_COMMAND_4(
-					ShaderConstantBuffer_commit_setTexture, graphicsContext, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
-						samplerBuffer->setTexture(i, rhiTexture);
-						samplerBuffer->setSamplerState(i, rhiSampler);
-				});
-#else
-				if (texture && texture->samplerState()) {
-					SamplerState* sampler = texture->samplerState();
-					detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
-					detail::ISamplerState* rhiSampler = (sampler) ? sampler->resolveRHIObject() : nullptr;
-					LN_ENQUEUE_RENDER_COMMAND_4(
-						ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, Ref<detail::ISamplerState>, rhiSampler, {
-							samplerBuffer->setTexture(i, rhiTexture);
-							samplerBuffer->setSamplerState(i, rhiSampler);
-						});
-				}
-				else {
-					detail::ITexture* rhiTexture = (texture) ? texture->resolveRHIObject() : nullptr;
-					LN_ENQUEUE_RENDER_COMMAND_3(
-						ShaderConstantBuffer_commit_setTexture, manager, detail::IShaderSamplerBuffer*, samplerBuffer, int, i, Ref<detail::ITexture>, rhiTexture, {
-							samplerBuffer->setTexture(i, rhiTexture);
-						});
-				}
-#endif
-			}
-			else {
-				// TODO: SamplerState のみの設定
-			}
-        }
-    }
-}
-
 detail::IShaderPass* ShaderPass::resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified)
 {
-    commitContantBuffers(graphicsContext, outModified);
+    // TODO: submitShaderDescriptor はここでやったほうがいいかも
     return m_rhiPass;
 }
 

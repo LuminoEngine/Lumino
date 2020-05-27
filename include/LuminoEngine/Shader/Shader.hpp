@@ -550,15 +550,7 @@ private:
     virtual ~ShaderPass();
     void init(const String& name, detail::IShaderPass* rhiPass, detail::ShaderRenderState* renderState, const detail::DescriptorLayout& layout, const ShaderDescriptorLayout* globalLayout);
 
-    struct ConstantBufferEntry
-    {
-        ShaderConstantBuffer* buffer;
-        Ref<detail::IShaderUniformBuffer> rhiObject;
-    };
-
     void setOwner(ShaderTechnique* owner) { m_owner = owner; }
-    void setupParameters();
-    void commitContantBuffers(GraphicsContext* graphicsContext, bool* outModified);
     detail::IShaderPass* resolveRHIObject(GraphicsContext* graphicsContext, bool* outModified);
     void submitShaderDescriptor(GraphicsContext* graphicsContext, detail::ICommandList* commandList, const ShaderDescriptor* descripter, bool* outModified);
 
@@ -566,10 +558,6 @@ private:
     String m_name;
     Ref<detail::IShaderPass> m_rhiPass;
     ShaderPassDescriptorLayout m_descriptorLayout;
-
-    // deprecated
-    List<ConstantBufferEntry> m_bufferEntries;
-    List<ShaderParameter*> m_textureParameters;
 
     Ref<detail::ShaderRenderState> m_renderState;
     const ShaderDescriptor* m_lastShaderDescriptor = nullptr;
