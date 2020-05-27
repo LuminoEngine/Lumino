@@ -71,12 +71,12 @@ void UnLigitingSceneRenderer::init(RenderingManager* manager)
 	addPass(pass);
 }
 
-void UnLigitingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
+void UnLigitingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique* technique)
 {
 	ShaderParameter2* v;
 
 	// TODO: Test
-	v = shader->findParameter(u"_LensflareOcclusionMap");
+	v = technique->shader()->findParameter(u"_LensflareOcclusionMap");
 	if (v) {
 		v->setTexture(lightOcclusionMap);
 	}

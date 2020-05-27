@@ -33,7 +33,7 @@ class UnLigitingSceneRenderer
 public:
 	void init(RenderingManager* manager);
 
-	virtual void onSetAdditionalShaderPassVariables(Shader* shader) override;
+	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique) override;
 
 	const Ref<UnLigitingSceneRendererPass>& rendererPass() const { return m_rendererPass; }
 

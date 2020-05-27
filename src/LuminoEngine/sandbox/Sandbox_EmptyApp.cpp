@@ -9,8 +9,20 @@ class App_Sandbox_EmptyApp : public Application
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-        auto sprite1 = Sprite::create(Texture2D::load(u"Sprite1"), 3, 3);
-        sprite1->setShadingModel(ShadingModel::Unlit);
+
+
+        Engine::renderView()->setGuideGridEnabled(true);
+        Engine::camera()->setPosition(5, 5, -5);
+        Engine::camera()->lookAt(0, 0, 0);
+
+        auto box1 = BoxMesh::create();
+        box1->setPosition(1, 0, 0);
+
+        auto box2 = BoxMesh::create();
+        box2->setPosition(0, 2, 0);
+
+        auto box3 = BoxMesh::create();
+        box3->setPosition(0, 0, 3);
     }
 
     void onUpdate() override

@@ -15,15 +15,10 @@
 float4	ln_AmbientColor;
 float4	ln_AmbientSkyColor;
 float4	ln_AmbientGroundColor;
-float4	ln_FogColorAndDensity;
 
-// .x : Start distance (distance from camera)
-// .y : Lower height
-// .z : Upper height
-// .w : Height fog Density
-float4	ln_FogParams;
 
-float3 ln_MainLightDirection;	// ライトの向き。Sun から地表へ向かう。ライトの正面方向
+
+
 
 //float2 ln_BoneTextureReciprocalSize;
 

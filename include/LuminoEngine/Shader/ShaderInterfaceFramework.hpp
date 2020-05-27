@@ -50,6 +50,16 @@ struct alignas(16) LNPBRMaterialParameter
     alignas(4) float ln_MaterialMetallic;
 };
 
+// cbuffer LNClusteredShadingParameters
+struct alignas(16) LNClusteredShadingParameters
+{
+    alignas(16) Vector4 ln_FogParams;
+    alignas(16) Vector4 ln_FogColorAndDensity;
+    alignas(16) Vector3 ln_MainLightDirection;
+    alignas(4) float ln_NearClip;
+    alignas(4) float ln_FarClip;
+};
+
 struct PbrMaterialData
 {
     Color color;
@@ -151,6 +161,19 @@ struct SubsetInfo
 	}
 };
 
+struct ClusteredShadingRendererInfo
+{
+    Texture2D* globalLightInfoTexture;
+    Texture2D* localLightInfoTexture;
+    Texture2D* lightClustersTexture;
+
+    Vector3 mainLightDirection;
+    Vector4 fogParams;
+    Vector4 fogColorAndDensity;
+    float nearClip;
+    float farClip;
+};
+
 enum BuiltinShaderParameters
 {
     // LNRenderViewBuffer
@@ -189,6 +212,7 @@ enum BuiltinShaderUniformBuffers
     BuiltinShaderUniformBuffers_LNRenderElementBuffer,
     BuiltinShaderUniformBuffers_LNEffectColorBuffer,
     BuiltinShaderUniformBuffers_LNPBRMaterialParameter,
+    BuiltinShaderUniformBuffers_LNClusteredShadingParameters,
     
     BuiltinShaderUniformBuffers__Count,
 };
@@ -198,6 +222,11 @@ enum BuiltinShaderTextures
     BuiltinShaderTextures_ln_MaterialTexture,
     BuiltinShaderTextures_ln_BoneTexture,
     BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,
+
+    // ForwardRendering
+    BuiltinShaderTextures_ln_ClustersTexture,
+    BuiltinShaderTextures_ln_GlobalLightInfoTexture,
+    BuiltinShaderTextures_ln_PointLightInfoTexture,
 
     BuiltinShaderTextures__Count,
 };
@@ -216,6 +245,7 @@ public:
     void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
     void updateSubsetVariables(const SubsetInfo& info);
     void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
+    void updateClusteredShadingVariables(const ClusteredShadingRendererInfo& info) const;
 
 private:
     //struct VariableKindPair

@@ -64,6 +64,7 @@ static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinSh
     {_LT("LNRenderElementBuffer"), BuiltinShaderUniformBuffers_LNRenderElementBuffer},
     {_LT("LNEffectColorBuffer"), BuiltinShaderUniformBuffers_LNEffectColorBuffer},
     {_LT("LNPBRMaterialParameter"), BuiltinShaderUniformBuffers_LNPBRMaterialParameter},
+    {_LT("LNClusteredShadingParameters"), BuiltinShaderUniformBuffers_LNClusteredShadingParameters},
 };
 
 static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTexturesMap =
@@ -71,6 +72,10 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
     {_LT("ln_MaterialTexture"), BuiltinShaderTextures_ln_MaterialTexture},
     {_LT("ln_BoneTexture"), BuiltinShaderTextures_ln_BoneTexture},
     {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
+
+    {_LT("ln_clustersTexture"), BuiltinShaderTextures_ln_ClustersTexture},
+    {_LT("ln_GlobalLightInfoTexture"), BuiltinShaderTextures_ln_GlobalLightInfoTexture},
+    {_LT("ln_pointLightInfoTexture"), BuiltinShaderTextures_ln_PointLightInfoTexture},
 };
 
 ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
@@ -226,6 +231,34 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMateria
         };
         m_descriptor->setData(index, &data, sizeof(data));
     }
+}
+
+void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(const ClusteredShadingRendererInfo& info) const
+{
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNClusteredShadingParameters];
+    if (index >= 0) {
+        // 計算に時間がかかるものでもないため、個々のメンバの alive は確認しない
+        LNClusteredShadingParameters data = {
+            info.fogParams,
+            info.fogColorAndDensity,
+            info.mainLightDirection,
+            info.nearClip,
+            info.farClip,
+        };
+        m_descriptor->setData(index, &data, sizeof(data));
+    }
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_ClustersTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.lightClustersTexture);
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_GlobalLightInfoTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.globalLightInfoTexture);
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_PointLightInfoTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.localLightInfoTexture);
 }
 
 //=============================================================================

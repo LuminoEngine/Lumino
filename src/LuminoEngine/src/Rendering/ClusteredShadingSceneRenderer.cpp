@@ -500,11 +500,34 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 	}
 }
 
-void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
+void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique* technique)
 {
+	Shader* shader = technique->shader();
+	const auto* ssm = technique->semanticsManager2();
 
 #ifdef LN_NEW_SHADER_UBO
 	ShaderParameter2* v;
+
+	const auto* params = sceneGlobalParams();
+
+	ClusteredShadingRendererInfo info = {
+		m_lightClusters.getGlobalLightInfoTexture(),
+		m_lightClusters.getLightInfoTexture(),
+		m_lightClusters.getClustersVolumeTexture(),
+		(mainLightInfo() ? mainLightInfo()->m_direction : Vector3(0, -1, 0)),
+		(params ? Vector4(params->startDistance, params->lowerHeight, params->upperHeight, params->heightFogDensity) : Vector4::Zero),
+		(params ? Vector4(params->fogColor.rgb() * params->fogColor.a, params->fogDensity) : Vector4::Zero),
+		m_lightClusters.m_nearClip,
+		m_lightClusters.m_farClip,
+	};
+
+	ssm->updateClusteredShadingVariables(info);
+
+	// TODO: Test
+	v = shader->findParameter(u"_LensflareOcclusionMap");
+	if (v) {
+		v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
+	}
 #else
 	ShaderParameter* v;
 
@@ -547,12 +570,6 @@ void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* s
 			v = shader->findParameter(u"ln_MainLightDirection");
 			if (v) v->setVector(Vector4(mainLightInfo()->m_direction, 0.0f));
 		}
-	}
-
-	// TODO: Test
-	v = shader->findParameter(u"_LensflareOcclusionMap");
-	if (v) {
-		v->setTexture(m_lightOcclusionPass->m_lensflareOcclusionMap);
 	}
 
 
