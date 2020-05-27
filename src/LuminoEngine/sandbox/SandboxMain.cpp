@@ -279,7 +279,7 @@ int main(int argc, char** argv)
 #endif
 	Logger::addStdErrAdapter();
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
+	//EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	EngineSettings::setDefaultUITheme(u"Chocotelier");
 	detail::EngineManager::s_settings.standaloneFpsControl = true;

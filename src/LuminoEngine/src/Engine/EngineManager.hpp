@@ -188,12 +188,14 @@ private:
 	//	bool 
 	//};
 
+	void resolveActiveGraphicsAPI();
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
 	void handleImGuiDebugLayer(UIEventArgs* e);
 	bool toggleDebugToolMode();
 	void setDebugToolMode(DebugToolMode mode);
 
 	EngineSettings m_settings;
+	GraphicsAPI m_activeGraphicsAPI;
 
     Ref<AssetManager> m_assetManager;
 	Ref<PlatformManager>				m_platformManager;

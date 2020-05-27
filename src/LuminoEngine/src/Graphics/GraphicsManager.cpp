@@ -136,10 +136,13 @@ void GraphicsManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "GraphicsManager Initialization started.";
 
+	if (LN_REQUIRE(settings.graphicsAPI != GraphicsAPI::Default)) return;
+
     m_assetManager = settings.assetManager;
 
 	// Create device context
 	{
+
 		if (settings.graphicsAPI == GraphicsAPI::Vulkan) {
 			createVulkanContext(settings);
 		}
