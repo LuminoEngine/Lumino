@@ -99,9 +99,7 @@ class GLTextureBase;
 class GLRenderTargetTexture;
 class GLDepthBuffer;
 class GLShaderPass;
-class GLShaderUniformBuffer;
-class GLShaderUniform;
-class GLLocalShaderSamplerBuffer;
+class GLShaderDescriptorTable;
 
 class OpenGLDevice
 	: public IGraphicsDevice
@@ -190,6 +188,7 @@ protected:
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
+	virtual void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) override;
 	virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount, int instanceCount) override;
@@ -553,7 +552,6 @@ public:
 	virtual void dispose() override;
 
     GLuint resolveId(bool mipmap) const { return (mipmap) ? m_idMip : m_id; }
-	//GLuint id2() const { return m_id; }
 
 private:
 	GLuint m_id;
@@ -585,122 +583,67 @@ public:
     virtual ~GLShaderPass();
 	void init(OpenGLDevice* context, const ShaderPassCreateInfo& createInfo, const byte_t* vsCode, int vsCodeLen, const byte_t* fsCodeLen, int psCodeLen, ShaderCompilationDiag* diag);
 	virtual void dispose() override;
+	virtual IShaderDescriptorTable* descriptorTable() const;
 
 	GLuint program() const { return m_program; }
 	void apply() const;
 
-	//virtual int getUniformCount() const override;
-	//virtual IShaderUniform* getUniform(int index) const override;
-	//virtual void setUniformValue(int index, const void* data, size_t size) override;
-
-	virtual int getUniformBufferCount() const override;
-	virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
-
-	virtual IShaderSamplerBuffer* samplerBuffer() const override;
-
 private:
-	void buildUniforms();
-
 	OpenGLDevice* m_context;
 	GLuint m_program;
-	List<Ref<GLShaderUniformBuffer>> m_uniformBuffers;
-	List<Ref<GLShaderUniform>> m_uniforms;
-	Ref<GLLocalShaderSamplerBuffer> m_samplerBuffer;
-
+	Ref<GLShaderDescriptorTable> m_descriptorTable;
 };
 
-class GLShaderUniformBuffer
-	: public IShaderUniformBuffer
+class GLShaderDescriptorTable
+	: public IShaderDescriptorTable
 {
 public:
-	GLShaderUniformBuffer(const GLchar* blockName, GLuint blockIndex, GLint blockSize, GLuint bindingPoint);
-	virtual ~GLShaderUniformBuffer();
-	virtual void dispose() override;
-	void addUniform(GLShaderUniform* uniform) { m_uniforms.add(uniform); }
-	void bind(GLuint program);
+	struct UniformBufferInfo
+	{
+		GLuint bindingPoint = 0;	// こちらは自由に決めていい。
+		GLuint blockIndex = 0;	// これが layout(binding=) と一致させる値
+		GLint blockSize;
 
-	virtual const std::string& name() const;
-	virtual int getUniformCount() const;
-	virtual IShaderUniform* getUniform(int index) const;
-	virtual size_t bufferSize() const { return m_blockSize; }
-	virtual void setData(const void* data, size_t size);
+		// null になることもある。DescriptorLayout 側のインデックスと一致させるため、
+		// UniformBufferInfo のインスタンスは作られるが、Active な UBO ではない場合 0 になる。
+		GLuint ubo = 0;		
+	};
 
-private:
-	std::string m_name;
-	GLuint m_blockIndex;
-	GLint m_blockSize;
-	GLuint m_bindingPoint;
-	List<Ref<GLShaderUniform>> m_uniforms;
-	GLuint m_ubo;
-};
+	// textureXD と samplerState を結合するためのデータ構造
+	struct SamplerUniformInfo
+	{
+		std::string name;	// lnCISlnTOg_texture1lnSOg_samplerState1 のような FullName
+		GLint uniformLocation = -1;
+		GLint isRenderTargetUniformLocation = -1;	// texture または sampler の場合、それが RenderTarget であるかを示す値を入力する Uniform の Loc。末尾が lnIsRT になっているもの。
+		int m_textureExternalUnifromIndex = -1;		// Index of m_externalTextureUniforms
+		int m_samplerExternalUnifromIndex = -1;		// Index of m_externalSamplerUniforms
+	};
 
-class GLShaderUniform
-	: public IShaderUniform
-{
-public:
-	GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location);
-    virtual ~GLShaderUniform();
-	virtual void dispose() override;
-	virtual const ShaderUniformTypeDesc& desc() const override { return m_desc; }
-	virtual const std::string& name() const override { return m_name; }
-
-	void setUniformValue(OpenGLDevice* context, const void* data, size_t size);
-
-	//GLint offsetOnBuffer() const {}
-	//GLint sizeOnBuffer() const;
-
-private:
-	ShaderUniformTypeDesc m_desc;
-	std::string m_name;
-	GLint m_location;	// [obsolete]
-
-	
-};
-
-// 変数名から独自のテーブルを構築する
-class GLLocalShaderSamplerBuffer
-	: public IShaderSamplerBuffer
-{
-public:
-	GLLocalShaderSamplerBuffer();
-	virtual ~GLLocalShaderSamplerBuffer() = default;
-	void addGlslSamplerUniform(const std::string& name, GLint uniformLocation);
-    void addIsRenderTargetUniform(const std::string& name, GLint uniformLocation);
-	void bind();
-
-	virtual int registerCount() const override;
-	virtual const std::string& getTextureRegisterName(int registerIndex) const override;
-	//virtual const std::string& getSamplerRegisterName(int registerIndex) const override;
-	virtual void setTexture(int registerIndex, ITexture* texture) override;
-	virtual void setSamplerState(int registerIndex, ISamplerState* state) override;
-
-private:
 	// 外部に公開する Uniform 情報。
 	// lnCISlnTOg_texture1lnSOg_samplerState1 は、g_texture1 と g_samplerState1 の２つの uniform であるかのように公開する。
 	struct ExternalUnifrom
 	{
-		std::string name;
+		std::string name;	// g_texture1, g_samplerState1 といった、ユーザーが定義した uniform 名
 		GLTextureBase* texture = nullptr;
 		GLSamplerState* samplerState = nullptr;
 	};
 
-	// 内部的な Uniform 情報。
-	// 実際の GLSL の Uniform と一致する。
-	struct Uniform
-	{
-		std::string name;	// lnCISlnTOg_texture1lnSOg_samplerState1 のような FullName
-		//std::string samplerRegisterName;
-		GLint uniformLocation = -1;
-        GLint isRenderTargetUniformLocation = -1;	// texture または sampler の場合、それが RenderTarget であるかを示す値を入力する Uniform の Loc。末尾が lnIsRT になっているもの。
-		int m_textureExternalUnifromIndex = -1;
-		int m_samplerExternalUnifromIndex = -1;
-		//ITexture* texture = nullptr;
-		//GLSamplerState* samplerState = nullptr;
-	};
+	GLShaderDescriptorTable();
+	bool init(const GLShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
+	void dispose() override;
+	void setData(const ShaderDescriptorTableUpdateInfo* data);
+	void bind(GLuint program);
+
+private:
+	void addGlslSamplerUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout);
+	void addIsRenderTargetUniform(const std::string& name, GLint uniformLocation);
 
 
-	std::vector<Uniform> m_table;
-	std::vector<ExternalUnifrom> m_externalUniforms;    // TODO: 名前、virtual のほうがいいかも
+	// 以下、要素番号は DescriptorLayout の各メンバの要素番号と一致する。bindingIndex ではない。
+	std::vector<UniformBufferInfo> m_uniformBuffers;
+	std::vector<SamplerUniformInfo> m_samplerUniforms;
+	std::vector<ExternalUnifrom> m_externalTextureUniforms;
+	std::vector<ExternalUnifrom> m_externalSamplerUniforms;
 };
 
 class GLPipeline
@@ -720,6 +663,9 @@ private:
 	DepthStencilStateDesc m_depthStencilState;
 	GLenum m_primitiveTopology;
 };
+
+
+
 
 //=============================================================================
 // empty implementation

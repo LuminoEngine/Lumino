@@ -434,7 +434,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 
 
-				detail::ShaderSemanticsManager* semanticsManager = ShaderHelper::semanticsManager(tech->shader());
+				detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
 				//semanticsManager->updateCameraVariables(cameraInfo);
 				//semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 				//semanticsManager->updateSubsetVariables(subsetInfo);
@@ -455,7 +455,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 				}
 
-				onSetAdditionalShaderPassVariables(tech->shader());
+				onSetAdditionalShaderPassVariables(tech);
 
 				for (ShaderPass* pass2 : tech->passes())
 				{
@@ -630,7 +630,7 @@ void SceneRenderer::onCollectLight(const DynamicLightInfo& light)
 {
 }
 
-void SceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
+void SceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique* technique)
 {
 }
 

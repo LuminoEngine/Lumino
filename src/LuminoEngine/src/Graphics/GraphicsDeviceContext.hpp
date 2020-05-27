@@ -27,6 +27,7 @@ class IShaderPass;
 class IShaderUniformBuffer;
 class IShaderUniform;
 class IShaderSamplerBuffer;
+class IShaderDescriptorTable;
 class IPipeline;
 class NativeRenderPassCache;
 class NativePipelineCache;
@@ -125,6 +126,29 @@ struct ShaderVertexInputAttribute
 
 using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
 
+
+struct ShaderDescriptorBufferView
+{
+	const void* data;
+	uint32_t size;
+};
+
+struct ShaderDescriptorCombinedSampler
+{
+	ITexture* texture;
+	ISamplerState* stamplerState;
+};
+
+struct ShaderDescriptorTableUpdateInfo
+{
+	static const int MaxElements = 32;
+
+	// 各要素番号は DataIndex。detail::DescriptorLayout の各メンバと一致する。BindingIndex ではない点に注意。
+	std::array<ShaderDescriptorBufferView, MaxElements> uniforms = {};
+	std::array<ShaderDescriptorCombinedSampler, MaxElements> textures = {};
+	std::array<ShaderDescriptorCombinedSampler, MaxElements> samplers = {};
+};
+
 struct ShaderPassCreateInfo
 {
     const byte_t* vsCode;
@@ -136,6 +160,13 @@ struct ShaderPassCreateInfo
     const DescriptorLayout* descriptorLayout;
 	const std::vector<VertexInputAttribute>* attributes;
 };
+
+//struct ShaderDescriptorTableCreateInfo
+//{
+//	const std::vector<size_t> uniformDescriptorSizes;
+//	uint32_t textureDescriptorCount;
+//	uint32_t samplerDescriptorCount;
+//};
 
 class IGraphicsHelper
 {
@@ -199,7 +230,6 @@ public:
 	void flushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget);  // 呼ぶ前に end しておくこと
 
 	virtual INativeGraphicsInterface* getNativeInterface() const = 0;
-	//virtual ICommandList* getGraphicsContext() const = 0;
 	virtual ICommandQueue* getGraphicsCommandQueue() = 0;
 	virtual ICommandQueue* getComputeCommandQueue() = 0;
 
@@ -298,6 +328,7 @@ public:
     void setSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length);
     void setSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize);
     void setSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize);
+	void setDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data);
 
     void clearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil);
     void drawPrimitive(int startVertex, int primitiveCount);
@@ -327,6 +358,7 @@ public:	// TODO:
 	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) = 0;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
+	virtual void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) = 0;
 
 	virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
@@ -556,18 +588,8 @@ class IShaderPass
 public:
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	const VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
-
-	//virtual int getUniformCount() const = 0;
-	//virtual IShaderUniform* getUniform(int index) const = 0;
-	//virtual void setUniformValue(int index, const void* data, size_t size) = 0;
-
-	virtual int getUniformBufferCount() const = 0;
-	virtual IShaderUniformBuffer* getUniformBuffer(int index) const = 0;
-
-	virtual IShaderSamplerBuffer* samplerBuffer() const = 0;
-
-
-	virtual void dispose();
+	virtual IShaderDescriptorTable* descriptorTable() const = 0;
+	void dispose() override;
 
 protected:
 	IShaderPass();
@@ -621,6 +643,27 @@ public:
 protected:
 	IShaderSamplerBuffer();
 	virtual ~IShaderSamplerBuffer() = default;
+};
+
+// 実装は Backend ごとに結構変わるが、RHI としての使い方は VertexBuffer と同じにしたい。
+// 基本的に CommandBuffer 経由でデータをセットすることになる。
+// IShaderDescriptorTable は IShaderPass と 1:1 で存在する。
+// 更新は ICommandList::setDescriptorData()。
+// State が Submit されるとき、ShaderPass が持っている IShaderDescriptorTable を、Native の CommandBuffer へ乗せる。
+class IShaderDescriptorTable
+	: public IGraphicsDeviceObject
+{
+public:
+	//// 'b' register
+	//virtual void setData(int bindingIndex, const void* data, size_t size) = 0;
+
+	//// 't' register        TODO: 今は CombinedSampler もこっちだけど、それは DirectX12 に合わせて s にしたほうがいいかも。
+	//virtual void setTexture(int bindingIndex, ITexture* texture) = 0;
+
+	//// 's' register
+	//virtual void setSamplerState(int bindingIndex, ISamplerState* samplerState) = 0;
+
+protected:
 };
 
 class IPipeline

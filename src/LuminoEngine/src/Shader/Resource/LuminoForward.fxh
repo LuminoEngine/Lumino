@@ -2,9 +2,28 @@
 #ifndef LUMINO_FORWARD_INCLUDED
 #define LUMINO_FORWARD_INCLUDED
 
-float		ln_nearClip;
-float		ln_farClip;
 //float3		ln_cameraPos;
+
+
+cbuffer LNClusteredShadingParameters
+{
+
+	
+// .x : Start distance (distance from camera)
+// .y : Lower height
+// .z : Upper height
+// .w : Height fog Density
+	float4	ln_FogParams;
+
+	float4	ln_FogColorAndDensity;
+
+	float3 ln_MainLightDirection;	// ライトの向き。Sun から地表へ向かう。ライトの正面方向
+
+
+	float		ln_nearClip;
+	float		ln_farClip;
+}
+
 
 sampler2D ln_clustersTexture;
 //Texture2D ln_clustersTexture;

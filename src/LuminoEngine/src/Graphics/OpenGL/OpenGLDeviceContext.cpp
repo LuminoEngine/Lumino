@@ -914,6 +914,12 @@ void GLGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, 
 	static_cast<GLTextureBase*>(resource)->setSubData3D(x, y, z, width, height, depth, data, dataSize);
 }
 
+void GLGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
+{
+	GLShaderDescriptorTable* table = static_cast<GLShaderDescriptorTable*>(resource);
+	table->setData(data);
+}
+
 void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	OpenGLHelper::clearBuffers(flags, color, z, stencil);
@@ -2036,7 +2042,7 @@ void GLSLShader::dispose()
 GLShaderPass::GLShaderPass()
 	: m_context(nullptr)
 	, m_program(0)
-	, m_uniforms()
+	, m_descriptorTable()
 {
 }
 
@@ -2085,23 +2091,17 @@ void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& creat
 		return;
 	}
 
-	buildUniforms();
+	m_descriptorTable = makeRef<GLShaderDescriptorTable>();
+	if (!m_descriptorTable->init(this, createInfo.descriptorLayout)) {
+		return;
+	}
 }
 
 void GLShaderPass::dispose()
 {
-	for (auto& p : m_uniformBuffers) {
-		p->dispose();
-	}
-	m_uniformBuffers.clear();
-
-	for (auto& p : m_uniforms) {
-		p->dispose();
-	}
-	m_uniforms.clear();
-
-	if (m_samplerBuffer) {
-		m_samplerBuffer = nullptr;
+	if (m_descriptorTable) {
+		m_descriptorTable->dispose();
+		m_descriptorTable = nullptr;
 	}
 
 	if (m_program)
@@ -2114,470 +2114,337 @@ void GLShaderPass::dispose()
 	IShaderPass::dispose();
 }
 
+IShaderDescriptorTable* GLShaderPass::descriptorTable() const
+{
+	return m_descriptorTable;
+}
+
 void GLShaderPass::apply() const
 {
 	GL_CHECK(glUseProgram(m_program));
-	for (auto& buf : m_uniformBuffers) {
-		buf->bind(m_program);
-	}
-
-	if (m_samplerBuffer) {
-		m_samplerBuffer->bind();
-	}
+	m_descriptorTable->bind(m_program);
 }
 
-//int GLShaderPass::getUniformCount() const
-//{
-//	return m_uniforms.size();
-//}
-//
-//IShaderUniform* GLShaderPass::getUniform(int index) const
-//{
-//	return m_uniforms[index];
-//}
-//
-//void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
-//{
-//	m_context->setActiveShaderPass(this);
-//	m_uniforms[index]->setUniformValue(m_context, data, size);
-//}
+//=============================================================================
+// GLShaderDescriptorTable
 
-int GLShaderPass::getUniformBufferCount() const
+GLShaderDescriptorTable::GLShaderDescriptorTable()
 {
-	return m_uniformBuffers.size();
 }
 
-IShaderUniformBuffer* GLShaderPass::getUniformBuffer(int index) const
+bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const DescriptorLayout* descriptorLayout)
 {
-	return m_uniformBuffers[index];
-}
+	m_uniformBuffers.resize(descriptorLayout->uniformBufferRegister.size());
+	m_externalTextureUniforms.resize(descriptorLayout->textureRegister.size());
+	m_externalSamplerUniforms.resize(descriptorLayout->samplerRegister.size());
 
-IShaderSamplerBuffer* GLShaderPass::samplerBuffer() const
-{
-	return m_samplerBuffer;
-}
+	/*
+	 Mac では binding を GLSL で直接指定できないので、コンパイル後、どの binding index が割り当てられたか自分で調べる必要がある。
+	*/
+	GLuint program = ownerPass->program();
 
-void GLShaderPass::buildUniforms()
-{
-	m_samplerBuffer = makeRef<GLLocalShaderSamplerBuffer>();
-
-	GLint count = 0;
-	GL_CHECK(glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &count));
-
-	for (int i = 0; i < count; i++)
+	// UniformBuffers
 	{
-		GLsizei name_len = 0;
-		GLsizei var_size = 0;
-		GLenum  var_type = 0;
-		GLchar  name[256] = { 0 };
-		GL_CHECK(glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name));
-
-		GLint loc = glGetUniformLocation(m_program, name);
-
-		ShaderUniformTypeDesc desc;
-		OpenGLHelper::convertVariableTypeGLToLN(
-			name, var_type, var_size,
-			&desc.type2, &desc.rows, &desc.columns, &desc.elements);
-
-		auto uniform = makeRef<GLShaderUniform>(desc, name, loc);
-		m_uniforms.add(uniform);
-
-		if (desc.type2 == ShaderUniformType_Texture)
+		GLint count;
+		GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
+		for (int i = 0; i < count; i++)
 		{
-			m_samplerBuffer->addGlslSamplerUniform(name, loc);
+			UniformBufferInfo info;
+
+			GLchar blockName[128];
+			GLsizei blockNameLen;
+			GL_CHECK(glGetActiveUniformBlockName(program, i, 128, &blockNameLen, blockName));
+
+			info.blockIndex = glGetUniformBlockIndex(program, blockName);
+			info.bindingPoint = i;
+			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
+
+			LN_LOG_VERBOSE << "uniform block " << i;
+			LN_LOG_VERBOSE << "  blockName  : " << blockName;
+			LN_LOG_VERBOSE << "  blockIndex : " << info.blockIndex;
+			LN_LOG_VERBOSE << "  blockSize  : " << info.blockSize;
+
+			GL_CHECK(glGenBuffers(1, &info.ubo));
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, info.ubo));
+			GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, info.blockSize, nullptr, GL_DYNAMIC_DRAW));
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+
+			// OpenGL の API では、グローバルに定義された uniform は _Global という UBO に入ってくる。
+			// 一方 glslang では同じように UBO にまとめられるが、名前は $Global となっている。
+			// 検索したいので、名前を合わせておく。
+			if (strcmp(blockName, "_Global") == 0)
+				blockName[0] = '$';
+
+			int index = descriptorLayout->findUniformBufferRegisterIndex(blockName);
+			if (index >= 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
+				m_uniformBuffers[index] = info;
+			}
+
+
+			GLint blockMemberCount;
+			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockMemberCount));
+
+			GLint indices[32];
+			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices));
+
+			GLint offsets[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_OFFSET, offsets));
+
+			//GLint elements[32];
+			//glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_SIZE, elements);
+
+			GLint arrayStrides[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_ARRAY_STRIDE, arrayStrides));
+
+			// 列間、または行間の stride (バイト単位)
+			GLint matrixStrides[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_MATRIX_STRIDE, matrixStrides));
+
+			GLint isRowMajors[32];
+			GL_CHECK(glGetActiveUniformsiv(program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_IS_ROW_MAJOR, isRowMajors));
+
+			for (int iMember = 0; iMember < blockMemberCount; iMember++) {
+				GLsizei nameLen = 0;
+				GLsizei size = 0;
+				GLenum  type = 0;
+				GLchar  name[256] = { 0 };
+				GL_CHECK(glGetActiveUniform(program, indices[iMember], 256, &nameLen, &size, &type, name));
+				LN_LOG_VERBOSE << "uniform " << iMember;
+				LN_LOG_VERBOSE << "  name          : " << name;
+				LN_LOG_VERBOSE << "  index         : " << indices[iMember];	// uniform location (unique in program)
+				LN_LOG_VERBOSE << "  offset        : " << offsets[iMember];
+				LN_LOG_VERBOSE << "  array stride  : " << arrayStrides[iMember];
+				LN_LOG_VERBOSE << "  matrix stride : " << matrixStrides[iMember];
+				LN_LOG_VERBOSE << "  type          : " << type;
+				LN_LOG_VERBOSE << "  elements      : " << size;
+				//LN_LOG_VERBOSE << "  rows          : " << desc.rows;
+				//LN_LOG_VERBOSE << "  columns       : " << desc.columns;
+				LN_LOG_VERBOSE << "  row majors    : " << isRowMajors[iMember];
+				//LN_LOG_VERBOSE << "  data size     : " << dataSize;
+
+				// offset 検証。トランスパイラが求め offset と、今ここでコンパイルした結果が一致していることを確認する
+				{
+					// 名前は Buffer._Value のように、. でスコープが切られている。. の後ろを取り出す。
+					const auto localName = std::string(name).substr(blockNameLen + 1);
+					int offset = descriptorLayout->findUniformBufferMemberOffset(localName);
+					if (offset >= 0 && offsets[iMember] != offset) {
+						LN_NOTIMPLEMENTED();
+						return false;
+					}
+				}
+
+#if 0			// TODO: 以下、dataSize を求めるときにひとつ後ろのメンバを参照しているが、ドライバによっては定義順で返さないこともあるのでこのままだと使えない。
+				// 検証。縦の大きさはデータサイズから求めたものと一致するはず
+				{
+					auto blockSize = info.blockSize;
+
+					size_t dataSize;
+					if (iMember < blockMemberCount - 1) {
+						dataSize = offsets[iMember + 1] - offsets[iMember];
+					}
+					else {
+						dataSize = blockSize - offsets[iMember];
+					}
+
+					ShaderUniformTypeDesc desc;
+					OpenGLHelper::convertVariableTypeGLToLN(
+						name, type, size,
+						&desc.type2, &desc.rows, &desc.columns, &desc.elements);
+
+					if (desc.matrixStride > 0 && desc.elements > 0) {
+
+						// https://www.opengl.org/archives/resources/faq/technical/transformations.htm
+						// https://stackoverflow.com/questions/17717600/confusion-between-c-and-opengl-matrix-order-row-major-vs-column-major
+						// mat3x4 の場合、col=3, row=4
+						// 実際のレイアウトは DirectX と同じ。GLSL で演算するときの意味が column_major であるか、という違い。
+						// float[] = {
+						//   { 0,  1,  2,  3, },
+						//   { 4,  5,  6,  7, },
+						//   { 8,  9, 10, 11, },
+						//   { x,  x,  x,  x, },	// ここは使われないので、全体サイズは 48 byte となる
+						// };
+						// mat3x4[3] の場合、dataSize は 144。elements は 3。matrixStride は 16。
+						// [2019/3/4] GeForce GTX 1060 で確認。
+
+						if (isRowMajors[iMember]) {
+							// Radeon HD 8490 で確認。
+							// GLSL でレイアウトを指定しない場合のデフォルトのメモリレイアウトは row_major であった。
+							// float[] = {
+							//   { 0,  4,  8, x, },
+							//   { 1,  5,  9, x, },
+							//   { 2,  6, 10, x, },
+							//   { 3,  7, 11, x, },
+							//             // ^ この列は使われないが、領域としては確保されている。全体サイズは 64byte となる。
+							// };
+							// dataSize=192, elements=3, matrixStride=16
+							// mat3x4 の場合、col=3, row=4 ← これは GeForce と同じ。
+							assert(desc.rows == dataSize / desc.elements / desc.matrixStride);
+						}
+						else {
+							// OpenGL default
+							assert(desc.columns == dataSize / desc.elements / desc.matrixStride);
+
+							//0 3 6 9
+							//1 4 7 10
+							//2 5 8 11
+							//x x x x
+						}
+					}
+				}
+#endif
+			}
 		}
-
-
-		//// テクスチャ型の変数にステージ番号を振っていく。
-		//if (passVar.Variable->getType() == ShaderVariableType::DeviceTexture)
-		//{
-		//	passVar.TextureStageIndex = textureVarCount;
-		//	textureVarCount++;
-		//}
-		//else
-		//{
-		//	passVar.TextureStageIndex = -1;
-		//}
 	}
 
-	// lnIsRT 用にもう一度回す
-	for (int i = 0; i < count; i++)
+	// Texture (CombinedSampler)
 	{
-		GLsizei name_len = 0;
-		GLsizei var_size = 0;
-		GLenum  var_type = 0;
-		GLchar  name[256] = { 0 };
-		GL_CHECK(glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name));
-		GLint loc = glGetUniformLocation(m_program, name);
+		GLint count;
+		GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count));
 
-		//if (strncmp(name, LN_CIS_PREFIX, std::strlen(LN_CIS_PREFIX)) == 0 && strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
-        if (strncmp(name + name_len - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0)
-		{
-			m_samplerBuffer->addIsRenderTargetUniform(name, loc);
-		}
-	}
-
-	GL_CHECK(glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
-	for (int i = 0; i < count; i++)
-	{
-		GLchar blockName[128];
-		GLsizei blockNameLen;
-		GL_CHECK(glGetActiveUniformBlockName(m_program, i, 128, &blockNameLen, blockName));
-
-		GLuint blockIndex = glGetUniformBlockIndex(m_program, blockName);
-
-		GLint blockSize;
-		GL_CHECK(glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize));
-		
-		auto uniformBlock = makeRef<GLShaderUniformBuffer>(blockName, blockIndex, blockSize, i);
-		m_uniformBuffers.add(uniformBlock);
-
-		LN_LOG_VERBOSE << "uniform block " << i;
-		LN_LOG_VERBOSE << "  blockName  : " << blockName;
-		LN_LOG_VERBOSE << "  blockIndex : " << blockIndex;
-		LN_LOG_VERBOSE << "  blockSize  : " << blockSize;
-
-		GLint blockMemberCount;
-		GL_CHECK(glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockMemberCount));
-
-		GLint indices[32];
-		GL_CHECK(glGetActiveUniformBlockiv(m_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices));
-
-		GLint offsets[32];
-		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_OFFSET, offsets));
-
-		//GLint elements[32];
-		//glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_SIZE, elements);
-
-		GLint arrayStrides[32];
-		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_ARRAY_STRIDE, arrayStrides));
-
-        // 列間、または行間の stride (バイト単位)
-		GLint matrixStrides[32];
-		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_MATRIX_STRIDE, matrixStrides));
-		
-		GLint isRowMajors[32];
-		GL_CHECK(glGetActiveUniformsiv(m_program, blockMemberCount, (const GLuint*)indices, GL_UNIFORM_IS_ROW_MAJOR, isRowMajors));
-
-		for (int iMember = 0; iMember < blockMemberCount; iMember++)
-		{
+		for (int i = 0; i < count; i++) {
 			GLsizei nameLen = 0;
-			GLsizei size = 0;
-			GLenum  type = 0;
+			GLsizei varSize = 0;
+			GLenum  varType = 0;
 			GLchar  name[256] = { 0 };
-			GL_CHECK(glGetActiveUniform(m_program, indices[iMember], 256, &nameLen, &size, &type, name));
+			GL_CHECK(glGetActiveUniform(program, i, 256, &nameLen, &varSize, &varType, name));
+			GLint loc = glGetUniformLocation(program, name);
 
 			ShaderUniformTypeDesc desc;
 			OpenGLHelper::convertVariableTypeGLToLN(
-				name, type, size,
+				name, varType, varSize,
 				&desc.type2, &desc.rows, &desc.columns, &desc.elements);
 
-			size_t dataSize;
-			if (iMember < blockMemberCount - 1) {
-				dataSize = offsets[iMember + 1] - offsets[iMember];
+			if (desc.type2 == ShaderUniformType_Texture) {
+				addGlslSamplerUniform(name, loc, descriptorLayout);
+			}
+		}
+
+		// lnIsRT 用にもう一度回す
+		for (int i = 0; i < count; i++)
+		{
+			GLsizei nameLen = 0;
+			GLsizei varSize = 0;
+			GLenum  varType = 0;
+			GLchar  name[256] = { 0 };
+			GL_CHECK(glGetActiveUniform(program, i, 256, &nameLen, &varSize, &varType, name));
+			GLint loc = glGetUniformLocation(program, name);
+
+			if (strncmp(name + nameLen - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0) {
+				addIsRenderTargetUniform(name, loc);
+			}
+		}
+	}
+	return true;
+}
+
+void GLShaderDescriptorTable::dispose()
+{
+	for (const auto& info : m_uniformBuffers) {
+		if (info.ubo) {
+			GL_CHECK(glDeleteBuffers(1, &info.ubo));
+		}
+	}
+	m_uniformBuffers.clear();
+	m_samplerUniforms.clear();
+	m_externalTextureUniforms.clear();
+	m_externalSamplerUniforms.clear();
+
+	IShaderDescriptorTable::dispose();
+}
+
+void GLShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* data)
+{
+	for (int i = 0; i < m_uniformBuffers.size(); i++) {
+		if (m_uniformBuffers[i].ubo) {
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffers[i].ubo));
+			GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, data->uniforms[i].size, data->uniforms[i].data));
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+		}
+	}
+
+	for (int i = 0; i < m_externalTextureUniforms.size(); i++) {
+		m_externalTextureUniforms[i].texture = static_cast<GLTextureBase*>(data->textures[i].texture);
+		m_externalTextureUniforms[i].samplerState = static_cast<GLSamplerState*>(data->textures[i].stamplerState);
+	}
+
+	for (int i = 0; i < m_externalSamplerUniforms.size(); i++) {
+		m_externalSamplerUniforms[i].samplerState = static_cast<GLSamplerState*>(data->samplers[i].stamplerState);
+	}
+}
+
+void GLShaderDescriptorTable::bind(GLuint program)
+{
+	for (const auto& info : m_uniformBuffers) {
+		if (info.ubo) {
+			// m_ubo を context 内の Global なテーブルの m_bindingPoint 番目にセット
+			GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, info.ubo));
+
+			// m_bindingPoint 番目にセットされている m_ubo を、m_blockIndex 番目の Uniform Buffer として使う
+			GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+		}
+	}
+
+	for (int i = 0; i < m_samplerUniforms.size(); i++)
+	{
+		const auto& uniform = m_samplerUniforms[i];
+		int unitIndex = i;
+
+		LN_CHECK(uniform.m_textureExternalUnifromIndex >= 0);
+		//LN_CHECK(uniform.m_samplerExternalUnifromIndex >= 0);
+		GLTextureBase* t = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].texture;
+		GLSamplerState* samplerState = nullptr;
+		if (uniform.m_samplerExternalUnifromIndex >= 0)
+			samplerState = m_externalSamplerUniforms[uniform.m_samplerExternalUnifromIndex].samplerState;
+		if (!samplerState) {
+			samplerState = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].samplerState;
+		}
+
+		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
+
+		bool mipmap = false;
+		bool renderTarget = false;
+		if (t) {
+			if (t->type() == DeviceTextureType::Texture3D) {
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, t->id()));
 			}
 			else {
-				dataSize = blockSize - offsets[iMember];
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, t->id()));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
 			}
+			mipmap = t->mipmap();
+			renderTarget = (t->type() == DeviceTextureType::RenderTarget);
+		}
+		else {
+			GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+		}
+		//GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
+		GL_CHECK(glBindSampler(unitIndex, (samplerState) ? samplerState->resolveId(mipmap) : 0));
+		GL_CHECK(glUniform1i(uniform.uniformLocation, unitIndex));
 
-			desc.offset = offsets[iMember];
-			//desc.size = dataSize;
-			desc.arrayStride = arrayStrides[iMember];
-			desc.matrixStride = matrixStrides[iMember];
-
-			// 検証。縦の大きさはデータサイズから求めたものと一致するはず
-			if (desc.matrixStride > 0 && desc.elements > 0) {
-
-                // https://www.opengl.org/archives/resources/faq/technical/transformations.htm
-                // https://stackoverflow.com/questions/17717600/confusion-between-c-and-opengl-matrix-order-row-major-vs-column-major
-                // mat3x4 の場合、col=3, row=4
-                // 実際のレイアウトは DirectX と同じ。GLSL で演算するときの意味が column_major であるか、という違い。
-				// float[] = {
-                //   { 0,  1,  2,  3, },
-                //   { 4,  5,  6,  7, },
-                //   { 8,  9, 10, 11, },
-                //   { x,  x,  x,  x, },	// ここは使われないので、全体サイズは 48 byte となる
-				// };
-                // mat3x4[3] の場合、dataSize は 144。elements は 3。matrixStride は 16。
-                // [2019/3/4] GeForce GTX 1060 で確認。
-
-                if (isRowMajors[iMember]) {
-					// Radeon HD 8490 で確認。
-					// GLSL でレイアウトを指定しない場合のデフォルトのメモリレイアウトは row_major であった。
-					// float[] = {
-					//   { 0,  4,  8, x, },
-					//   { 1,  5,  9, x, },
-					//   { 2,  6, 10, x, },
-					//   { 3,  7, 11, x, },
-					//             // ^ この列は使われないが、領域としては確保されている。全体サイズは 64byte となる。
-					// };
-					// dataSize=192, elements=3, matrixStride=16
-					// mat3x4 の場合、col=3, row=4 ← これは GeForce と同じ。
-                    assert(desc.rows == dataSize / desc.elements / desc.matrixStride);
-                }
-                else {
-                    // OpenGL default
-                    assert(desc.columns == dataSize / desc.elements / desc.matrixStride);
-                    
-                     //0 3 6 9
-                     //1 4 7 10
-                     //2 5 8 11
-                     //x x x x
-                }
-			}
-
-			char* localName = name;
-			if (strstr(localName, blockName) && localName[blockNameLen] == '.') {
-				// "Buffer.g_value" といったように、ブロック名が先頭についていることがあるので取り除いておく
-				localName += blockNameLen + 1;
-			}
-			char* bracket = strstr(localName, "[");
-			if (bracket) {
-				// 配列変数は "g_ary[0]" というような名前で出てくるので、後ろを削る。
-				*bracket = '\0';
-			}
-
-			auto uniform = makeRef<GLShaderUniform>(desc, localName, offsets[iMember]);
-			uniformBlock->addUniform(uniform);
-
-			LN_LOG_VERBOSE << "uniform " << iMember;
-			LN_LOG_VERBOSE << "  name          : " << name;
-			LN_LOG_VERBOSE << "  index         : " << indices[iMember];	// uniform location (unique in program)
-			LN_LOG_VERBOSE << "  offset        : " << offsets[iMember];
-			LN_LOG_VERBOSE << "  array stride  : " << arrayStrides[iMember];
-			LN_LOG_VERBOSE << "  matrix stride : " << matrixStrides[iMember];
-			LN_LOG_VERBOSE << "  type          : " << type;
-			LN_LOG_VERBOSE << "  elements      : " << size;
-			LN_LOG_VERBOSE << "  rows          : " << desc.rows;
-			LN_LOG_VERBOSE << "  columns       : " << desc.columns;
-			LN_LOG_VERBOSE << "  row majors    : " << isRowMajors[iMember];
-			LN_LOG_VERBOSE << "  data size     : " << dataSize;
+		if (uniform.isRenderTargetUniformLocation >= 0) {
+			GL_CHECK(glUniform1i(uniform.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
+			//if (t->type() == DeviceTextureType::RenderTarget) {
+			//    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
+			//}
+			//else {
+			//    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 0));
+			//}
 		}
 	}
 }
 
-//=============================================================================
-// GLShaderUniformBuffer
-
-GLShaderUniformBuffer::GLShaderUniformBuffer(const GLchar* blockName, GLuint blockIndex, GLint blockSize, GLuint bindingPoint)
-	: m_name(blockName)
-	, m_blockIndex(blockIndex)
-	, m_blockSize(blockSize)
-	, m_bindingPoint(bindingPoint)
-	, m_ubo(0)
-{
-	GL_CHECK(glGenBuffers(1, &m_ubo));
-	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
-	GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, m_blockSize, nullptr, GL_DYNAMIC_DRAW));
-	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-
-	
-}
-
-GLShaderUniformBuffer::~GLShaderUniformBuffer()
-{
-	if (m_ubo)
-	{
-		GL_CHECK(glDeleteBuffers(1, &m_ubo));
-		m_ubo = 0;
-	}
-}
-
-void GLShaderUniformBuffer::dispose()
-{
-	for (auto& p : m_uniforms) {
-		p->dispose();
-	}
-
-	IShaderUniformBuffer::dispose();
-}
-
-void GLShaderUniformBuffer::bind(GLuint program)
-{
-	// m_ubo を context 内の Global なテーブルの m_bindingPoint 番目にセット
-	GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, m_bindingPoint, m_ubo));
-
-	// m_bindingPoint 番目にセットされている m_ubo を、m_blockIndex 番目の Uniform Buffer として使う
-	GL_CHECK(glUniformBlockBinding(program, m_blockIndex, m_bindingPoint));
-}
-
-const std::string& GLShaderUniformBuffer::name() const
-{
-	return m_name;
-}
-
-int GLShaderUniformBuffer::getUniformCount() const
-{
-	return m_uniforms.size();
-}
-
-IShaderUniform* GLShaderUniformBuffer::getUniform(int index) const
-{
-	return m_uniforms[index];
-}
-
-void GLShaderUniformBuffer::setData(const void* data, size_t size)
-{
-	if (LN_REQUIRE(data)) return;
-	if (LN_REQUIRE(size == m_blockSize)) return;
-	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_ubo));
-	GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data));
-	GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-}
-
-
-//=============================================================================
-// GLShaderUniform
-
-GLShaderUniform::GLShaderUniform(const ShaderUniformTypeDesc& desc, const GLchar* name, GLint location)
-	: m_desc(desc)
-	, m_name(name)
-	, m_location(location)
-{
-}
-
-GLShaderUniform::~GLShaderUniform()
-{
-}
-
-void GLShaderUniform::dispose()
-{
-	IShaderUniform::dispose();
-}
-
-void GLShaderUniform::setUniformValue(OpenGLDevice* context, const void* data, size_t size)
-{
-	LN_CHECK(context);
-	LN_CHECK(data);
-
-	MemoryStream* tempBuffer = context->uniformTempBuffer();
-	BinaryWriter* tempWriter = context->uniformTempBufferWriter();
-	tempWriter->seek(0, SeekOrigin::Begin);
-
-
-    switch (m_desc.type2)
-    {
-    case ShaderUniformType_Bool:
-        if (!m_desc.isArray()) {
-            GL_CHECK(glUniform1i(m_location, *static_cast<const uint8_t*>(data)));
-        }
-        else {
-            const uint8_t* begin = static_cast<const uint8_t*>(data);
-            const uint8_t* end = begin + m_desc.elements;
-            std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
-            GL_CHECK(glUniform1iv(m_location, m_desc.elements, (const GLint*)tempBuffer->data()));
-        }
-        break;
-    case ShaderUniformType_Int:
-        if (!m_desc.isArray()) {
-            GL_CHECK(glUniform1i(m_location, *static_cast<const int32_t*>(data)));
-        }
-        else {
-            LN_NOTIMPLEMENTED();
-        }
-        break;
-    case ShaderUniformType_Float:
-        if (!m_desc.isArray()) {
-            GL_CHECK(glUniform1f(m_location, *static_cast<const float*>(data)));
-        }
-        else {
-            LN_NOTIMPLEMENTED();
-        }
-        break;
-    case ShaderUniformType_Vector:
-        if (!m_desc.isArray()) {
-            const Vector4* vec = static_cast<const Vector4*>(data);
-            if (m_desc.columns == 2) {
-                GL_CHECK(glUniform2f(m_location, vec->x, vec->y));
-            }
-            else if (m_desc.columns == 3) {
-                GL_CHECK(glUniform3f(m_location, vec->x, vec->y, vec->z));
-            }
-            else if (m_desc.columns == 4) {
-                GL_CHECK(glUniform4f(m_location, vec->x, vec->y, vec->z, vec->w));
-            }
-            else {
-                LN_UNREACHABLE();
-            }
-        }
-        else {
-            const Vector4* begin = static_cast<const Vector4*>(data);
-            const Vector4* end = begin + m_desc.elements;
-
-            if (m_desc.columns == 2)
-            {
-                std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 2); });
-                GL_CHECK(glUniform2fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
-            }
-            else if (m_desc.columns == 3)
-            {
-                std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 3); });
-                GL_CHECK(glUniform3fv(m_location, m_desc.elements, (const GLfloat*)tempBuffer->data()));
-            }
-            else if (m_desc.columns == 4)
-            {
-                GL_CHECK(glUniform4fv(m_location, m_desc.elements, (const GLfloat*)begin));
-            }
-            else
-            {
-                LN_UNREACHABLE();
-            }
-        }
-        break;
-    case ShaderUniformType_Matrix:
-        if (!m_desc.isArray()) {
-            GL_CHECK(glUniformMatrix4fv(m_location, 1, GL_FALSE, static_cast<const GLfloat*>(data)));
-        }
-        else {
-            GL_CHECK(glUniformMatrix4fv(m_location, m_desc.elements, GL_FALSE, static_cast<const GLfloat*>(data)));
-        }
-    case ShaderUniformType_Texture:
-        LN_NOTIMPLEMENTED();
-        //// textureStageIndex のテクスチャステージにバインド
-        //glActiveTexture(GL_TEXTURE0 + textureStageIndex);
-        //if (LN_ENSURE_GLERROR()) return;
-
-        //if (m_value.getDeviceTexture() != nullptr)
-        //	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.getDeviceTexture())->getGLTexture());
-        //else
-        //	glBindTexture(GL_TEXTURE_2D, 0);
-        //if (LN_ENSURE_GLERROR()) return;
-
-
-        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mSamplerState->MinFilter);
-        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mSamplerState->MagFilter);
-        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mSamplerState->AddressU);
-        ////LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mSamplerState->AddressV);
-
-        //// テクスチャステージ番号をセット
-        //glUniform1i(m_location, textureStageIndex);
-        //if (LN_ENSURE_GLERROR()) return;
-        break;
-    default:
-        LN_UNREACHABLE();
-        break;
-    }
-}
-
-
-//=============================================================================
-// GLLocalShaderSamplerBuffer
-
-GLLocalShaderSamplerBuffer::GLLocalShaderSamplerBuffer()
-	: m_table()
-{
-}
-
-void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, GLint uniformLocation)
+void GLShaderDescriptorTable::addGlslSamplerUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout)
 {
 	// 重複チェック
-	auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) { return x.name == name; });
-	if (itr != m_table.end()) {
+	auto itr = std::find_if(m_samplerUniforms.begin(), m_samplerUniforms.end(), [&](const SamplerUniformInfo& x) { return x.name == name; });
+	if (itr != m_samplerUniforms.end()) {
 		LN_ERROR();
 		return;
 	}
 
-	Uniform uniform;
+	SamplerUniformInfo uniform;
 	uniform.name = name;
 	uniform.uniformLocation = uniformLocation;
 
@@ -2590,138 +2457,64 @@ void GLLocalShaderSamplerBuffer::addGlslSamplerUniform(const std::string& name, 
 
 		ExternalUnifrom texture;
 		texture.name = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
-		m_externalUniforms.push_back(texture);
-		uniform.m_textureExternalUnifromIndex = m_externalUniforms.size() - 1;
+		int textureRegisterIndex = descriptorLayout->findTextureRegisterIndex(texture.name);
+		m_externalTextureUniforms[textureRegisterIndex] = texture;
+		uniform.m_textureExternalUnifromIndex = textureRegisterIndex;
 
 		ExternalUnifrom sampler;
 		sampler.name = name.substr(samplerSep + LN_SO_PREFIX_LEN);
-		m_externalUniforms.push_back(sampler);
-		uniform.m_samplerExternalUnifromIndex = m_externalUniforms.size() - 1;
+		int samplerRegisterIndex = descriptorLayout->findTextureRegisterIndex(texture.name);
+		m_externalSamplerUniforms[samplerRegisterIndex] = sampler;
+		uniform.m_samplerExternalUnifromIndex = samplerRegisterIndex;
 	}
 	else {
 		// 所定のキーワードを持たない場合は CombinedSampler
 
 		ExternalUnifrom sampler;
 		sampler.name = name;
-		m_externalUniforms.push_back(sampler);
-		uniform.m_textureExternalUnifromIndex = m_externalUniforms.size() - 1;
-        uniform.m_samplerExternalUnifromIndex = m_externalUniforms.size() - 1;
+		int samplerRegisterIndex = descriptorLayout->findTextureRegisterIndex(sampler.name);
+		m_externalTextureUniforms[samplerRegisterIndex] = sampler;
+		uniform.m_textureExternalUnifromIndex = samplerRegisterIndex;
 	}
 
-	m_table.push_back(uniform);
+	m_samplerUniforms.push_back(uniform);
 }
 
-void GLLocalShaderSamplerBuffer::addIsRenderTargetUniform(const std::string& name, GLint uniformLocation)
+void GLShaderDescriptorTable::addIsRenderTargetUniform(const std::string& name, GLint uniformLocation)
 {
-    //auto keyword = name.find(LN_CIS_PREFIX);
-    //auto textureSep = name.find(LN_TO_PREFIX);
-    //auto samplerSep = name.find(LN_SO_PREFIX);
+	//auto keyword = name.find(LN_CIS_PREFIX);
+	//auto textureSep = name.find(LN_TO_PREFIX);
+	//auto samplerSep = name.find(LN_SO_PREFIX);
 	auto rtMark = name.find(LN_IS_RT_POSTFIX);
-    if (rtMark != std::string::npos)
-    {
+	if (rtMark != std::string::npos)
+	{
 		auto targetName = name.substr(0, rtMark);
-		auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) { return x.name == targetName; });
-		if (itr != m_table.end()) {
+		auto itr = std::find_if(m_samplerUniforms.begin(), m_samplerUniforms.end(), [&](const SamplerUniformInfo& x) { return x.name == targetName; });
+		if (itr != m_samplerUniforms.end()) {
 			itr->isRenderTargetUniformLocation = uniformLocation;
 		}
 		else {
 			LN_UNREACHABLE();	// ここには来ないはず
 		}
 
-   //     auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
-   //     auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
-   //     auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) {
-   //         return x.textureRegisterName == textureName && x.samplerRegisterName == samplerName; });
-   //     if (itr != m_table.end()) {
-   //         itr->isRenderTargetUniformLocation = uniformLocation;
-   //     }
-   //     else {
-			//Uniform e;
-   //         e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
-   //         e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
-   //         e.isRenderTargetUniformLocation = uniformLocation;
-   //         m_table.push_back(e);
-   //     }
-    }
+		//     auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+		//     auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+		//     auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) {
+		//         return x.textureRegisterName == textureName && x.samplerRegisterName == samplerName; });
+		//     if (itr != m_table.end()) {
+		//         itr->isRenderTargetUniformLocation = uniformLocation;
+		//     }
+		//     else {
+				 //Uniform e;
+		//         e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+		//         e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+		//         e.isRenderTargetUniformLocation = uniformLocation;
+		//         m_table.push_back(e);
+		//     }
+	}
 	else {
 		LN_UNREACHABLE();	// ここには来ないはず
 	}
-}
-
-void GLLocalShaderSamplerBuffer::bind()
-{
-	for (int i = 0; i < m_table.size(); i++)
-	{
-        const Uniform& uniform = m_table[i];
-		int unitIndex = i;
-
-		LN_CHECK(uniform.m_textureExternalUnifromIndex >= 0);
-		LN_CHECK(uniform.m_samplerExternalUnifromIndex >= 0);
-		GLTextureBase* t = m_externalUniforms[uniform.m_textureExternalUnifromIndex].texture;
-		GLSamplerState* samplerState = m_externalUniforms[uniform.m_samplerExternalUnifromIndex].samplerState;
-		if (!samplerState) {
-			samplerState = m_externalUniforms[uniform.m_textureExternalUnifromIndex].samplerState;
-		}
-
-		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
-
-        bool mipmap = false;
-        bool renderTarget = false;
-		if (t) {
-			if (t->type() == DeviceTextureType::Texture3D) {
-				GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
-				GL_CHECK(glBindTexture(GL_TEXTURE_3D, t->id()));
-			}
-			else {
-				GL_CHECK(glBindTexture(GL_TEXTURE_2D, t->id()));
-				GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
-			}
-            mipmap = t->mipmap();
-            renderTarget = (t->type() == DeviceTextureType::RenderTarget);
-		}
-		else {
-			GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
-			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
-		}
-		//GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
-        GL_CHECK(glBindSampler(unitIndex, (samplerState) ? samplerState->resolveId(mipmap) : 0));
-		GL_CHECK(glUniform1i(uniform.uniformLocation, unitIndex));
-
-        if (uniform.isRenderTargetUniformLocation >= 0) {
-            GL_CHECK(glUniform1i(uniform.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
-            //if (t->type() == DeviceTextureType::RenderTarget) {
-            //    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
-            //}
-            //else {
-            //    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 0));
-            //}
-        }
-	}
-}
-
-int GLLocalShaderSamplerBuffer::registerCount() const
-{
-	return m_externalUniforms.size();
-}
-
-const std::string& GLLocalShaderSamplerBuffer::getTextureRegisterName(int registerIndex) const
-{
-	return m_externalUniforms[registerIndex].name;
-}
-
-//const std::string& GLLocalShaderSamplerBuffer::getSamplerRegisterName(int registerIndex) const
-//{
-//	return m_externalUniforms[registerIndex].samplerRegisterName;
-//}
-
-void GLLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture)
-{
-	m_externalUniforms[registerIndex].texture = static_cast<GLTextureBase*>(texture);
-}
-
-void GLLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
-{
-	m_externalUniforms[registerIndex].samplerState = static_cast<GLSamplerState*>(state);
 }
 
 //=============================================================================

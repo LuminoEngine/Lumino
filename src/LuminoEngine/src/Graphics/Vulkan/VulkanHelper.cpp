@@ -823,66 +823,6 @@ Result VulkanHelper::createImageView(VulkanDevice* deviceContext, VkImage image,
     return true;
 }
 
-// https://www.khronos.org/registry/vulkan/specs/1.0-wsi_extensions/html/vkspec.html#interfaces-resources
-// https://stackoverflow.com/questions/45638520/ubos-and-their-alignments-in-vulkan
-// https://qiita.com/hoboaki/items/b188c4495f4708c19002
-bool VulkanHelper::resolveStd140Layout(const ShaderUniformInfo& info, size_t* outAligndElemenSize)
-{
-    size_t aligndElemenSize = 0;
-    switch (info.type)
-    {
-        case ln::detail::ShaderUniformType_Unknown:
-            return false;
-        case ln::detail::ShaderUniformType_Bool:
-        case ln::detail::ShaderUniformType_Int:
-        case ln::detail::ShaderUniformType_Float:
-            aligndElemenSize = 4;
-            if (info.arrayElements > 0) {   // 配列の場合は 16byte alignment
-                aligndElemenSize = 16;
-            }
-            break;
-        case ln::detail::ShaderUniformType_Vector:
-            if (info.vectorElements == 2) {
-                aligndElemenSize = 8;
-            }
-            else if (info.vectorElements == 3 || info.vectorElements == 4) {
-                aligndElemenSize = 16;
-            }
-            else {
-                LN_NOTIMPLEMENTED();
-                return false;
-            }
-            if (info.arrayElements > 0) {   // 配列の場合は 16byte alignment
-                aligndElemenSize = 16;
-            }
-            break;
-        case ln::detail::ShaderUniformType_Matrix:
-        {
-            // https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)
-            // matNxM : N=columns, M=rows
-            // major 方向 (vecX) のサイズにかかわらず、minor 方向は配列として扱われるので、16byte アライメントになる。
-            size_t minorSize = 0;
-            if (1) {  // row-major
-                minorSize = info.matrixColumns;
-            }
-            else {      // column-major
-                minorSize = info.matrixRows;
-            }
-            aligndElemenSize = minorSize * 16;
-            break;
-        }
-        case ln::detail::ShaderUniformType_Texture:
-            LN_UNREACHABLE();
-            return false;
-        default:
-            LN_UNREACHABLE();
-            return false;
-    }
-
-    *outAligndElemenSize = aligndElemenSize;
-    return true;
-}
-
 //=============================================================================
 // AbstractVulkanAllocator
 

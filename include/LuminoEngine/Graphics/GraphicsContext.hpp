@@ -106,6 +106,12 @@ public:
     /** ShaderPass を取得します。 */
     ShaderPass* shaderPass() const;
 
+    ///** ShaderPass を設定します。 */
+    //void setShaderDescriptor(ShaderDescriptor* value);
+
+    ///** ShaderPass を取得します。 */
+    //ShaderDescriptor* shaderDescriptor() const;
+
     /** デフォルト設定を復元します。 */
     void resetState();
 
@@ -176,6 +182,7 @@ private:
         DirtyFlags_PrimitiveBuffers = 1 << 7,
         DirtyFlags_ShaderPass = 1 << 8,
 		DirtyFlags_RenderPass = 1 << 9,
+        DirtyFlags_ShaderDescriptor = 1 << 10,
         DirtyFlags_All = 0xFFFFFFFF,
     };
 
@@ -184,8 +191,6 @@ private:
         BlendStateDesc blendState;
         RasterizerStateDesc rasterizerState;
         DepthStencilStateDesc depthStencilState;
-        //std::array<Ref<RenderTargetTexture>, 4> renderTargets;
-        //Ref<DepthBuffer> depthBuffer;
         Rect viewportRect;
         Rect scissorRect;
         Ref<VertexLayout> VertexLayout;
@@ -193,6 +198,7 @@ private:
         Ref<IndexBuffer> indexBuffer;
         Ref<Shader> shader; // shaderPass owner, for keep reference.
         ShaderPass* shaderPass;
+        //Ref<ShaderDescriptor> shaderDescriptor;
         PrimitiveTopology topology;
 
         void reset();

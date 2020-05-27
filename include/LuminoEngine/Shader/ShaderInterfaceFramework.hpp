@@ -7,8 +7,7 @@
 namespace ln {
 class Texture;
 class Texture2D;
-class ShaderParameter;
-class ShaderConstantBuffer;
+class ShaderDescriptor;
 namespace detail {
 
 // cbuffer LNRenderViewBuffer
@@ -33,65 +32,31 @@ struct alignas(16) LNRenderElementBuffer
     alignas(8) Vector4 ln_BoneTextureReciprocalSize;
 };
 
-// シェーダ変数セマンティクス
-enum class BuiltinSemantics
+// cbuffer LNEffectColorBuffer
+struct alignas(16) LNEffectColorBuffer
 {
-    //--------------------
-    // Scene unit
-    Dummy,
+    alignas(16) Vector4 ln_ColorScale;
+    alignas(16) Vector4 ln_BlendColor;
+    alignas(16) Vector4 ln_ToneColor;
+};
 
-    //--------------------
-    // Element unit
-    WorldViewProjection,
-    World,
-    WorldView,
-    WorldViewIT, // transpose(inverse(WorldView));
+// cbuffer LNPBRMaterialParameter
+struct alignas(16) LNPBRMaterialParameter
+{
+    alignas(16) Vector4 ln_MaterialColor;
+    alignas(16) Vector4 ln_MaterialEmissive;
+    alignas(4) float ln_MaterialRoughness;
+    alignas(4) float ln_MaterialMetallic;
+};
 
-    //LightEnables,     // [Mark only] bool[]
-    //LightWVPMatrices, // [Mark only] matrix[]
-    //LightDirections,  // [Mark only] vector[]
-    //LightPositions,   // [Mark only] vector[]
-    //LightZFars,       // [Mark only] float[]
-    //LightDiffuses,    // [Mark only] vector[]
-    //LightAmbients,    // [Mark only] vector[]
-    //LightSpeculars,   // [Mark only] vector[]
-
-    //BoneTextureReciprocalSize,  // internal
-    BoneTexture,                // internal
-    BoneLocalQuaternionTexture, // internal
-
-    //--------------------
-    // Subset unit
-    MaterialTexture, // glslang の HLSL Parser が texture をサポートしていないため Texture2D 固定。
-
-    MaterialColor,     // [PBR] vector
-    MaterialRoughness, // [PBR] float
-    MaterialMetallic,  // [PBR] float
-                       //MaterialSpecular,		// [PBR] float
-    MaterialEmissive,  // [PBR] vector
-
-    PhongMaterialDiffuse,       // [Phong] vector
-    PhongMaterialAmbient,       // [Phong] vector
-    PhongMaterialEmmisive,      // [Phong] vector
-    PhongMaterialSpecularColor, // [Phong] vector
-    PhongMaterialSpecularPower, // [Phong] float
-
-    ColorScale, // vector (Built-in effect)
-    BlendColor, // vector (Built-in effect)
-    ToneColor,  // vector (Built-in effect)
-
-    //--------------------
-    // SceneRenderer internal
-    GlobalLightInfoTexture,
-    LocalLightInfoTexture,
-    LightClustersTexture,
-    NearClip2,
-    FarClip2,
-    CameraPosition2,
-	FogColorAndDensity,
-    FogParams,
-
-    _Count,
+// cbuffer LNClusteredShadingParameters
+struct alignas(16) LNClusteredShadingParameters
+{
+    alignas(16) Vector4 ln_FogParams;
+    alignas(16) Vector4 ln_FogColorAndDensity;
+    alignas(16) Vector3 ln_MainLightDirection;
+    alignas(4) float ln_NearClip;
+    alignas(4) float ln_FarClip;
 };
 
 struct PbrMaterialData
@@ -195,15 +160,83 @@ struct SubsetInfo
 	}
 };
 
+struct ClusteredShadingRendererInfo
+{
+    Texture2D* globalLightInfoTexture;
+    Texture2D* localLightInfoTexture;
+    Texture2D* lightClustersTexture;
+
+    Vector3 mainLightDirection;
+    Vector4 fogParams;
+    Vector4 fogColorAndDensity;
+    float nearClip;
+    float farClip;
+};
+
+enum BuiltinShaderParameters
+{
+    // LNRenderViewBuffer
+    BuiltinShaderParameters_ln_View,
+    BuiltinShaderParameters_ln_Projection,
+    BuiltinShaderParameters_ln_CameraPosition,
+    BuiltinShaderParameters_ln_CameraDirection,
+    BuiltinShaderParameters_ln_ViewportPixelSize,
+    BuiltinShaderParameters_ln_NearClip,
+    BuiltinShaderParameters_ln_FarClip,
+
+    // LNRenderElementBuffer
+    BuiltinShaderParameters_ln_World,
+    BuiltinShaderParameters_ln_WorldViewProjection,
+    BuiltinShaderParameters_ln_WorldView,
+    BuiltinShaderParameters_ln_WorldViewIT,
+    BuiltinShaderParameters_ln_BoneTextureReciprocalSize,
+
+    // LNEffectColorBuffer
+    BuiltinShaderParameters_ln_ColorScale,
+    BuiltinShaderParameters_ln_BlendColor,
+    BuiltinShaderParameters_ln_ToneColor,
+
+    // LNPBRMaterialParameter
+    BuiltinShaderParameters_ln_MaterialColor,
+    BuiltinShaderParameters_ln_MaterialEmissive,
+    BuiltinShaderParameters_ln_MaterialRoughness,
+    BuiltinShaderParameters_ln_MaterialMetallic,
+
+    BuiltinShaderParameters__Count,
+};
+
+enum BuiltinShaderUniformBuffers
+{
+    BuiltinShaderUniformBuffers_LNRenderViewBuffer,
+    BuiltinShaderUniformBuffers_LNRenderElementBuffer,
+    BuiltinShaderUniformBuffers_LNEffectColorBuffer,
+    BuiltinShaderUniformBuffers_LNPBRMaterialParameter,
+    BuiltinShaderUniformBuffers_LNClusteredShadingParameters,
+    
+    BuiltinShaderUniformBuffers__Count,
+};
+
+enum BuiltinShaderTextures
+{
+    BuiltinShaderTextures_ln_MaterialTexture,
+    BuiltinShaderTextures_ln_BoneTexture,
+    BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,
+
+    // ForwardRendering
+    BuiltinShaderTextures_ln_ClustersTexture,
+    BuiltinShaderTextures_ln_GlobalLightInfoTexture,
+    BuiltinShaderTextures_ln_PointLightInfoTexture,
+
+    BuiltinShaderTextures__Count,
+};
+
 // セマンティクスが関係するシェーダ変数の管理
-class ShaderSemanticsManager
+class ShaderTechniqueSemanticsManager
 {
 public:
-    ShaderSemanticsManager();
-
-    // call by shader creation time.
-    void prepareParameter(ShaderParameter* var);    // deprecated
-    void prepareConstantBuffer(ShaderConstantBuffer* buffer);
+    ShaderTechniqueSemanticsManager();
+    void init(ShaderTechnique* technique);
+    void reset();
 
     // call by rendering time.
     void updateSceneVariables(const SceneInfo& info);
@@ -211,25 +244,27 @@ public:
     void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
     void updateSubsetVariables(const SubsetInfo& info);
     void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
-    void updateSubsetVariables_Phong(const PhongMaterialData& materialData);
-    ShaderParameter* getParameterBySemantics(BuiltinSemantics semantics) const;
+    void updateClusteredShadingVariables(const ClusteredShadingRendererInfo& info) const;
 
 private:
-    struct VariableKindPair
-    {
-        ShaderParameter* variable;
-        BuiltinSemantics kind;
-    };
+    //struct VariableKindPair
+    //{
+    //    int index;  // member or texture or sampler index.
+    //    BuiltinSemantics kind;
+    //};
 
-    List<VariableKindPair> m_sceneVariables;
-    //List<VariableKindPair> m_cameraVariables;
-    ShaderConstantBuffer* m_renderViewBuffer = nullptr;
-    List<VariableKindPair> m_elementVariables;
-    ShaderConstantBuffer* m_renderElementBuffer = nullptr;
-    List<VariableKindPair> m_subsetVariables;
-    // TODO: 実質↑のほとんどの変数は使うので、リストを分けるとかえって変にメモリ使ってしまうかも。
-    // ↓のような全体でひとつのテーブル使う方がかえって検索効率もよくなる。後でこっちにする。
-    std::array<ShaderParameter*, (int)BuiltinSemantics::_Count> m_variablesTable;
+    bool hasParameter(BuiltinShaderParameters v) const { return (m_hasBuiltinShaderParameters & (1 << v)) != 0; }
+
+    ShaderDescriptor* m_descriptor;
+
+    // Boolean flags BuiltinShaderParameters
+    uint64_t m_hasBuiltinShaderParameters;
+
+    // Index of ShaderDescriptorLayout::m_buffers
+    std::array<int, BuiltinShaderUniformBuffers__Count> m_builtinUniformBuffers;
+
+    // Index of ShaderDescriptorLayout::m_textures
+    std::array<int, BuiltinShaderTextures__Count> m_builtinShaderTextures;
 };
 
 // LigitingModel

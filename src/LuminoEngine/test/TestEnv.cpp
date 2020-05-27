@@ -44,6 +44,7 @@ void TestEnv::setup()
 	LuminoCLI = Path::combine(Path(ln::Environment::executablePath()).parent().parent().parent().parent(), u"tools", u"LuminoCLI", u"Debug", u"lumino-cli.exe");
 #else
 #endif
+	LN_TEST_CLEAN_SCENE;
 }
 
 void TestEnv::teardown()

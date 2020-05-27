@@ -2,6 +2,10 @@
 #pragma once
 
 namespace ln {
+class ShaderDescriptor;
+class ShaderTechnique;
+class ShaderPass;
+
 namespace detail {
 
 struct UnifiedShaderTriple
@@ -135,8 +139,8 @@ struct ShaderUniformBufferInfo
 enum DescriptorType
 {
     DescriptorType_UniformBuffer = 0,
-    DescriptorType_Texture = 1,
-    DescriptorType_SamplerState = 2,    // TODO: Sampler。たしか HLSL では sampler も SamplerState も s だったはず。Vulkan でも、CombinedSampler は普通の SamplerState としてシェーダから使える。
+    DescriptorType_Texture = 1, // Texture, 兼 CombinedSampler
+    DescriptorType_SamplerState = 2,
 
     DescriptorType_Count,
 };
@@ -176,6 +180,10 @@ struct DescriptorLayout
     const std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType) const;
     bool isReferenceFromVertexStage(DescriptorType registerType) const;
     bool isReferenceFromPixelStage(DescriptorType registerType) const;
+    int findUniformBufferRegisterIndex(const std::string& name) const;
+    int findTextureRegisterIndex(const std::string& name) const;
+    int findSamplerRegisterIndex(const std::string& name) const;
+    int findUniformBufferMemberOffset(const std::string& name) const;
 
     void mergeFrom(const DescriptorLayout& other);
 };

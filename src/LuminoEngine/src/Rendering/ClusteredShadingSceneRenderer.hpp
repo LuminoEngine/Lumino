@@ -166,7 +166,7 @@ protected:
 
 	virtual void collect(const detail::CameraInfo& cameraInfo) override;
 	virtual void onCollectLight(const DynamicLightInfo& light) override;
-	virtual void onSetAdditionalShaderPassVariables(Shader* shader) override;
+	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique) override;
 
 private:
 	LightClusters				m_lightClusters;

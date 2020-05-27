@@ -222,10 +222,10 @@ void RenderFeature::updateRenderParameters(detail::RenderDrawElement* element, S
 
 void RenderFeature::updateRenderParametersDefault(ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
 {
-    detail::ShaderSemanticsManager* semanticsManager = detail::ShaderHelper::semanticsManager(tech->shader());
-    semanticsManager->updateCameraVariables(cameraInfo);
-    semanticsManager->updateElementVariables(cameraInfo, elementInfo);
-    semanticsManager->updateSubsetVariables(subsetInfo);
+	detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
+	semanticsManager->updateCameraVariables(cameraInfo);
+	semanticsManager->updateElementVariables(cameraInfo, elementInfo);
+	semanticsManager->updateSubsetVariables(subsetInfo);
 }
 
 //==============================================================================

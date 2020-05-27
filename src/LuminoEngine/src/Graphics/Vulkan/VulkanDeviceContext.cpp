@@ -2,6 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include <LuminoEngine/Platform/PlatformSupport.hpp>
+#include <LuminoEngine/Shader/ShaderHelper.hpp>
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include "VulkanDeviceContext.hpp"
 
@@ -998,13 +999,6 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 		{
 			auto* shaderPass = static_cast<VulkanShaderPass*>(state.shaderPass);
 
-			// UniformBuffer は copy コマンドを使って更新できる。
-			// TODO: ただし、texture や sampler は vkUpdateDescriptorSets でしか更新できないのでこれもキャッシュしたりする仕組みがほしいところ。
-			//VulkanBuffer* buffer = m_recodingCommandBuffer->cmdCopyBuffer(sizeof(ubo), &m_uniformBuffer);
-			//VulkanShaderUniformBuffer* uniformBuffer = static_cast<VulkanShaderUniformBuffer*>(shaderPass->getUniformBuffer(0));
-			//uniformBuffer->setData(&ubo, sizeof(ubo));
-
-
 			std::array<VkDescriptorSet, DescriptorType_Count> sets;
 			m_recodingCommandBuffer->allocateDescriptorSets(shaderPass, &sets);
 			vkCmdBindDescriptorSets(m_recodingCommandBuffer->vulkanCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPass->vulkanPipelineLayout(), 0, sets.size(), sets.data(), 0, nullptr);
@@ -1096,6 +1090,12 @@ void VulkanGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int
 	m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
 
 	static_cast<VulkanTexture*>(resource)->setSubData3D(this, x, y, z, width, height, depth, data, dataSize);
+}
+
+void VulkanGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
+{
+    VulkanShaderDescriptorTable* table = static_cast<VulkanShaderDescriptorTable*>(resource);
+    table->setData(data);
 }
 
 void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -2927,17 +2927,11 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         LN_VK_CHECK(vkCreateShaderModule(device, &shaderCreateInfo, m_deviceContext->vulkanAllocator(), &m_fragShaderModule));
     }
 
-	// SamplerBuffer
-	m_localShaderSamplerBuffer = makeRef<VulkanLocalShaderSamplerBuffer>();
-	if (!m_localShaderSamplerBuffer->init()) {
-		return false;
-	}
-
     // DescriptorSetLayout
     {
         // https://docs.microsoft.com/ja-jp/windows/desktop/direct3dhlsl/dx-graphics-hlsl-variable-register
 
-        // 'b' register in HLSL
+        // set=0, 'b' register in HLSL
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->uniformBufferRegister.size());
@@ -2979,14 +2973,12 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[0]));
         }
 
-        // 't' register in HLSL
+        // set=1, 't' register in HLSL (Texture and CombinedSampler)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->textureRegister.size());
             m_textureDescripterImageInfo.reserve(createInfo.descriptorLayout->textureRegister.size());
             for (auto& item : createInfo.descriptorLayout->textureRegister) {
-                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_Texture, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
-
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
@@ -3009,7 +3001,7 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
                 set.dstBinding = item.binding;
                 set.dstArrayElement = 0;
                 set.descriptorCount = 1;
-                set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;// VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;//VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 set.pImageInfo = &m_textureDescripterImageInfo.back();
                 set.pBufferInfo = nullptr;
                 set.pTexelBufferView = nullptr;
@@ -3023,14 +3015,12 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
             LN_VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, m_deviceContext->vulkanAllocator(), &m_descriptorSetLayouts[1]));
         }
 
-        // 's' register in HLSL (SamplerState and CombinedSampler)
+        // set=2, 's' register in HLSL (SamplerState)
         {
             std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
             layoutBindings.reserve(createInfo.descriptorLayout->samplerRegister.size());
             m_samplerDescripterImageInfo.reserve(createInfo.descriptorLayout->samplerRegister.size());
             for (auto& item : createInfo.descriptorLayout->samplerRegister) {
-                m_localShaderSamplerBuffer->addDescriptor(DescriptorType_SamplerState, item.binding, item.name, layoutBindings.size(), m_descriptorWriteInfo.size());
-
                 VkDescriptorSetLayoutBinding layoutBinding = {};
                 layoutBinding.binding = item.binding;
                 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER; //VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//   // VK_DESCRIPTOR_TYPE_SAMPLER としても使える。ただし、ImageView をセットしておく必要がある。
@@ -3077,22 +3067,10 @@ Result VulkanShaderPass::init(VulkanDevice* deviceContext, const ShaderPassCreat
         LN_VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, m_deviceContext->vulkanAllocator(), &m_pipelineLayout));
     }
 
-	// UniformBuffers
-	{
-        uint32_t writeIndex = 0;
-		for (auto& item : createInfo.descriptorLayout->uniformBufferRegister)
-		{
-			auto buf = makeRef<VulkanShaderUniformBuffer>();
-			if (!buf->init(m_deviceContext, item.name, item.size, item.members)) {
-				return false;
-			}
-            buf->descriptorWriteInfoIndex = writeIndex;
-            buf->bindingIndex = item.binding;
-            writeIndex++;
-
-			m_uniformBuffers.push_back(buf);
-		}
-	}
+    m_descriptorTable = makeRef<VulkanShaderDescriptorTable>();
+    if (!m_descriptorTable->init(m_deviceContext, this, createInfo.descriptorLayout)) {
+        return false;
+    }
 
     return true;
 }
@@ -3102,25 +3080,15 @@ void VulkanShaderPass::dispose()
     if (m_deviceContext) {
         VkDevice device = m_deviceContext->vulkanDevice();
 
-        for (auto& buf : m_uniformBuffers) {
-            buf->dispose();
-        }
-        m_uniformBuffers.clear();
-    
-        if (m_localShaderSamplerBuffer) {
-            m_localShaderSamplerBuffer->dispose();
-            m_localShaderSamplerBuffer = nullptr;
+        if (m_descriptorTable) {
+            m_descriptorTable->dispose();
+            m_descriptorTable = nullptr;
         }
 
         for (auto& pool : m_descriptorSetsPools) {
             pool->dispose();
         }
         m_descriptorSetsPools.clear();
-
-        if (m_localShaderSamplerBuffer) {
-            m_localShaderSamplerBuffer->dispose();
-            m_localShaderSamplerBuffer = nullptr;
-        }
 
         if (m_pipelineLayout) {
             vkDestroyPipelineLayout(device, m_pipelineLayout, m_deviceContext->vulkanAllocator());
@@ -3151,26 +3119,30 @@ void VulkanShaderPass::dispose()
     IShaderPass::dispose();
 }
 
-IShaderUniformBuffer* VulkanShaderPass::getUniformBuffer(int index) const
+IShaderDescriptorTable* VulkanShaderPass::descriptorTable() const
 {
-    return m_uniformBuffers[index];
-}
-
-IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
-{
-    return m_localShaderSamplerBuffer;
+    return m_descriptorTable;
 }
 
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
 {
-    for (size_t i = 0; i < m_uniformBuffers.size(); i++) {
-        auto& uniformBuffer = m_uniformBuffers[i];
+    const auto& uniforms = m_descriptorTable->uniforms();
+    for (int i = 0; i < uniforms.size(); i++) {
+        const auto& uniformBuffer = uniforms[i];
 
         // UniformBuffer の内容を CopyCommand に乗せる。
         // Inside RenderPass では vkCmdCopyBuffer が禁止されているので、DeviceLocal に置いたメモリを使うのではなく、
         // 毎回新しい HostVisible な Buffer を作ってそれを使う。
-        VulkanBuffer* buffer = commandBuffer->allocateBuffer(uniformBuffer->buffer()->size(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-        buffer->setData(0, uniformBuffer->data().data(), uniformBuffer->data().size());
+        // 
+        // ちなみに VertexBuffer などへのデータ転送の時は VertexBuffer へ CopyBuffer しているが、
+        // ここでは 1 コマンドバッファ内でのみ有効な VulkanBuffer を作って、それを直接 Descripter にセットしている。
+        // なぜこうしているのかというと、
+        // - VertexBuffer の動的な書き換えでは、特に Sprite のバッチ描画などで 巨大な Buffer の一部を書き換えることが多いため、毎回動的に確保するとメモリ消費がひどいことになる。
+        // - 対して UniformBuffer は、数 100 byte 程度の小さいバッファを毎フレーム大量に確保することになる。
+        //   リアルタイムグラフィックスでは、ずっと const な UBO はほとんど存在しない。小さな動的 Buffer の一部を頻繁に書き換えるよりも丸ごと転送してしまった方が簡単だし速い。
+        //   また Vulkan の仕様として Descripter の Write は CommandBuffer に乗るものではないので、基本的にドローコールの数だけ Descripter が必要となる。
+        VulkanBuffer* buffer = commandBuffer->allocateBuffer(uniformBuffer.data.size(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+        buffer->setData(0, uniformBuffer.data.data(), uniformBuffer.data.size());
 
         VkDescriptorBufferInfo& info = m_bufferDescriptorBufferInfo[i];
         info.buffer = buffer->nativeBuffer();
@@ -3179,31 +3151,20 @@ const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWrite
         writeInfo.dstSet = descriptorSets[DescriptorType_UniformBuffer];
     }
 
-    int count = m_localShaderSamplerBuffer->registerCount();
-    for (int i = 0; i < count; i++) {
-        DescriptorType type = m_localShaderSamplerBuffer->descriptorType(i);
-        uint32_t imageIndex = m_localShaderSamplerBuffer->descriptorImageInfoIndex(i);
-        uint32_t writeIndex = m_localShaderSamplerBuffer->descriptorWriteInfoIndex(i);
-        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[writeIndex];
+    const auto& textures = m_descriptorTable->textures();
+    for (int i = 0; i < textures.size(); i++) {
+        const auto& info = textures[i];
+        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[info.descriptorWriteInfoIndex];
+        writeInfo.pImageInfo = &info.imageInfo;
+        writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
+    }
 
-        auto& texture = m_localShaderSamplerBuffer->texture(i);
-        auto& samplerState = m_localShaderSamplerBuffer->samplerState(i);
-
-        if (type == DescriptorType_Texture) {
-            VkDescriptorImageInfo& imageInfo = m_textureDescripterImageInfo[imageIndex];
-            imageInfo.imageView = (texture) ? texture->image()->vulkanImageView() : 0;
-            imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
-            writeInfo.dstSet = descriptorSets[DescriptorType_Texture];
-        }
-        else if (type == DescriptorType_SamplerState) {
-            VkDescriptorImageInfo& imageInfo = m_samplerDescripterImageInfo[imageIndex];
-            imageInfo.imageView = (texture) ? texture->image()->vulkanImageView() : 0;
-            imageInfo.sampler = (samplerState) ? samplerState->vulkanSampler() : 0;
-            writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
-        }
-        else {
-            LN_UNREACHABLE();
-        }
+    const auto& samplers = m_descriptorTable->samplers();
+    for (int i = 0; i < samplers.size(); i++) {
+        const auto& info = samplers[i];
+        VkWriteDescriptorSet& writeInfo = m_descriptorWriteInfo[info.descriptorWriteInfoIndex];
+        writeInfo.pImageInfo = &info.imageInfo;
+        writeInfo.dstSet = descriptorSets[DescriptorType_SamplerState];
     }
 
     return m_descriptorWriteInfo;
@@ -3232,167 +3193,121 @@ void VulkanShaderPass::releaseDescriptorSetsPool(VulkanDescriptorSetsPool* pool)
     m_descriptorSetsPools.push_back(pool);
 }
 
-//==============================================================================
-// VulkanShaderUniformBuffer
+//=============================================================================
+// VulkanShaderDescriptorTable
 
-VulkanShaderUniformBuffer::VulkanShaderUniformBuffer()
+VulkanShaderDescriptorTable::VulkanShaderDescriptorTable()
 {
 }
 
-Result VulkanShaderUniformBuffer::init(VulkanDevice* deviceContext, const std::string& name, size_t size, const std::vector<ShaderUniformInfo>& members)
+bool VulkanShaderDescriptorTable::init(VulkanDevice* deviceContext, const VulkanShaderPass* ownerPass, const DescriptorLayout* descriptorLayout)
 {
-	m_name = name;
-	if (m_name == "$Global") {
-		m_name = "_Global";
-	}
+    uint32_t writeIndex = 0;
 
-	m_data.resize(size);
+    // UniformBuffers
+    for (const auto& item : descriptorLayout->uniformBufferRegister) {
+        UniformBufferInfo info;
+        info.descriptorWriteInfoIndex = writeIndex;
+        info.bindingIndex = item.binding;
+        info.data.resize(item.size);
+        //info.buffer = std::make_shared<VulkanBuffer>();
 
-    // TRANSFER_DST に最適化
-    if (!m_uniformBuffer.init(deviceContext, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
-        return false;
-    }
-
-    for (auto& member : members) {
-
-        //size_t memberByteSize = 0;
-        //{
-        //    uint16_t nextOffset = UINT16_MAX;
-        //    for (size_t i = 0; i < members.size(); i++) {
-        //        if (member.offset < members[i].offset) {
-        //            nextOffset = std::min(nextOffset, members[i].offset);
-        //        }
-        //    }
-        //    if (nextOffset == UINT16_MAX) {
-        //        nextOffset = size;
-        //    }
-        //    memberByteSize = nextOffset - member.offset;
+        //// TRANSFER_DST に最適化
+        //if (!info.buffer->init(
+        //    deviceContext, item.size,
+        //    VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        //    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, nullptr)) {
+        //    return false;
         //}
 
-        auto buf = makeRef<VulkanShaderUniform>();
-        if (!buf->init(member)) {
-            return false;
-        }
-        m_members.push_back(buf);
+        // Verify
+        const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
+        if (LN_ENSURE(writeInfo.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)) return false;
+        if (LN_ENSURE(writeInfo.dstBinding == info.bindingIndex)) return false;
+
+        m_uniforms.push_back(info);
+        writeIndex++;
     }
 
-	return true;
-}
+    // Textures
+    for (const auto& item : descriptorLayout->textureRegister) {
+        ImageBufferInfo info;
+        info.descriptorWriteInfoIndex = writeIndex;
+        info.bindingIndex = item.binding;
+        info.imageInfo.sampler = VK_NULL_HANDLE;
+        info.imageInfo.imageView = VK_NULL_HANDLE;
+        info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-void VulkanShaderUniformBuffer::dispose()
-{
-    for (auto& member : m_members) {
-        member->dispose();
-    }
-    m_members.clear();
+        // Verify
+        const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
+        if (LN_ENSURE(writeInfo.descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)) return false;
+        if (LN_ENSURE(writeInfo.dstBinding == info.bindingIndex)) return false;
 
-    m_uniformBuffer.dispose();
-	IShaderUniformBuffer::dispose();
-}
-
-IShaderUniform* VulkanShaderUniformBuffer::getUniform(int index) const
-{
-    return m_members[index];
-}
-
-void VulkanShaderUniformBuffer::setData(const void* data, size_t size)
-{
-	LN_DCHECK(size <= m_data.size());
-	memcpy(m_data.data(), data, size);
-}
-
-//=============================================================================
-// VulkanShaderUniform
-
-VulkanShaderUniform::VulkanShaderUniform()
-{
-}
-
-Result VulkanShaderUniform::init(const ShaderUniformInfo& info/*, size_t memberByteSize*/)
-{
-    m_name = info.name;
-    m_desc.type2 = (ShaderUniformType)info.type;
-    m_desc.rows = info.matrixRows;
-    m_desc.columns = info.matrixColumns;
-    m_desc.elements = info.arrayElements;
-
-    if (m_desc.columns == 0) { // OpenGL Dirver の動作に合わせる
-        m_desc.columns = info.vectorElements;// *sizeof(float);
+        m_textures.push_back(info);
+        writeIndex++;
     }
 
-    m_desc.offset = info.offset;
-    //m_desc.size = 0;
-    if (info.arrayElements > 0) {
-        VulkanHelper::resolveStd140Layout(info, &m_desc.arrayStride);
+    // Samplers
+    for (const auto& item : descriptorLayout->samplerRegister) {
+        ImageBufferInfo info;
+        info.descriptorWriteInfoIndex = writeIndex;
+        info.bindingIndex = item.binding;
+        info.imageInfo.sampler = VK_NULL_HANDLE;
+        info.imageInfo.imageView = VK_NULL_HANDLE;
+        info.imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        // Verify
+        const VkWriteDescriptorSet& writeInfo = ownerPass->witeInfo(info.descriptorWriteInfoIndex);
+        if (LN_ENSURE(writeInfo.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLER)) return false;
+        if (LN_ENSURE(writeInfo.dstBinding == info.bindingIndex)) return false;
+
+        m_samplers.push_back(info);
+        writeIndex++;
     }
-    m_desc.matrixStride = info.matrixColumns *sizeof(float);
 
     return true;
 }
 
-void VulkanShaderUniform::dispose()
+void VulkanShaderDescriptorTable::dispose()
 {
-    IShaderUniform::dispose();
-}
+    IShaderDescriptorTable::dispose();
 
-//=============================================================================
-// VulkanLocalShaderSamplerBuffer
-
-VulkanLocalShaderSamplerBuffer::VulkanLocalShaderSamplerBuffer()
-{
-}
-
-Result VulkanLocalShaderSamplerBuffer::init(/*const DescriptorLayout* descriptorLayout*/)
-{
-    //uint32_t writeIndex = descriptorLayout->uniformBufferRegister.size();
-
-    //// 't' register in HLSL
-    //for (auto& item : descriptorLayout->textureRegister) {
-    //    Entry e;
-    //    e.textureRegisterName = item.name;
-    //    e.descriptorWriteInfoIndex = writeIndex;
-    //    e.bindingIndex = item.binding;
-    //    m_table.push_back(e);
-    //    writeIndex++;
+    //for (auto& info : m_uniforms) {
+    //    info.buffer->dispose();
     //}
-
-    //// 's' register in HLSL (SamplerState and CombinedSampler)
-    //for (auto& item : descriptorLayout->samplerRegister) {
-    //    Entry e;
-    //    e.samplerRegisterName = item.name;
-    //    e.descriptorWriteInfoIndex = writeIndex;
-    //    e.bindingIndex = item.binding;
-    //    m_table.push_back(e);
-    //    writeIndex++;
-    //}
-
-    return true;
+    m_uniforms.clear();
+    m_textures.clear();
+    m_samplers.clear();
 }
 
-void VulkanLocalShaderSamplerBuffer::dispose()
+// ここではメンバに保持するだけ。次の SubmitState で、実際に Vulkan の DescripterSet を作り、CommandList に乗せて Transfar する。
+void VulkanShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* data)
 {
-    IShaderSamplerBuffer::dispose();
-}
+    if (LN_REQUIRE(data)) return;
+    //if (LN_REQUIRE(data->uniforms.size() == m_uniforms.size())) return;
+    //if (LN_REQUIRE(data->textures.size() == m_textures.size())) return;
+    //if (LN_REQUIRE(data->samplers.size() == m_samplers.size())) return;
 
-void VulkanLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture)
-{
-    m_table[registerIndex].texture = static_cast<VulkanTexture*>(texture);
-}
+    for (int i = 0; i < m_uniforms.size(); i++) {
+        if (LN_REQUIRE(data->uniforms[i].size == m_uniforms[i].data.size())) return;
+        memcpy(m_uniforms[i].data.data(), data->uniforms[i].data, m_uniforms[i].data.size());
+    }
 
-void VulkanLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
-{
-    m_table[registerIndex].samplerState = static_cast<VulkanSamplerState*>(state);
-}
+    for (int i = 0; i < m_textures.size(); i++) {
+        auto& info = m_textures[i];
+        info.texture = static_cast<VulkanTexture*>(data->textures[i].texture);
+        info.samplerState = static_cast<VulkanSamplerState*>(data->textures[i].stamplerState);
+        info.imageInfo.imageView = (info.texture) ? info.texture->image()->vulkanImageView() : 0;
+        info.imageInfo.sampler = (info.samplerState) ? info.samplerState->vulkanSampler() : 0;
+    }
 
-void VulkanLocalShaderSamplerBuffer::addDescriptor(DescriptorType type, uint32_t bindingIndex, const std::string& name, uint32_t imageInfoIndex, uint32_t writeInfoIndex)
-{
-	Entry e;
-    e.type = type;
-	e.name = name;
-    e.descriptorImageInfoIndex = imageInfoIndex;
-	e.descriptorWriteInfoIndex = writeInfoIndex;
-	e.bindingIndex = bindingIndex;
-	m_table.push_back(std::move(e));
+    for (int i = 0; i < m_samplers.size(); i++) {
+        auto& info = m_samplers[i];
+        info.texture = static_cast<VulkanTexture*>(data->samplers[i].texture);
+        info.samplerState = static_cast<VulkanSamplerState*>(data->samplers[i].stamplerState);
+        info.imageInfo.imageView = (info.texture) ? info.texture->image()->vulkanImageView() : 0;
+        info.imageInfo.sampler = (info.samplerState) ? info.samplerState->vulkanSampler() : 0;
+    }
 }
 
 } // namespace detail

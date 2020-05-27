@@ -334,6 +334,8 @@ void EngineManager::initializeCommon()
 	LN_LOG_ERROR << "__EMSCRIPTEN_PTHREADS__ disabled.";
 #endif
 
+	resolveActiveGraphicsAPI();
+
 	TaskScheduler::init();
 	m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 
@@ -372,12 +374,12 @@ void EngineManager::initializePlatformManager()
 		settings.mainWindowSettings.fullscreen = false;
 		settings.mainWindowSettings.resizable = true;
 		settings.mainWindowSettings.userWindow = m_settings.userMainWindow;
-		
-		if (m_settings.graphicsAPI == GraphicsAPI::Vulkan && GraphicsManager::checkVulkanSupported()) {
+
+		if (m_activeGraphicsAPI == GraphicsAPI::Vulkan) {
 			settings.mainWindowSettings.glfwNoAPI = true;
 		}
 		else {
-			settings.mainWindowSettings.glfwNoAPI = false; 
+			settings.mainWindowSettings.glfwNoAPI = false;
 		}
 
 		m_platformManager = ln::makeRef<PlatformManager>();
@@ -464,7 +466,7 @@ void EngineManager::initializeGraphicsManager()
 		GraphicsManager::Settings settings;
         settings.assetManager = m_assetManager;
 		settings.mainWindow = (m_settings.graphicsContextManagement) ? m_platformManager->mainWindow() : nullptr;
-		settings.graphicsAPI = m_settings.graphicsAPI;
+		settings.graphicsAPI = m_activeGraphicsAPI;
 		settings.debugMode = m_settings.graphicsDebugEnabled;
 
 		m_graphicsManager = ln::makeRef<GraphicsManager>();
@@ -846,6 +848,20 @@ void EngineManager::setMainWindow(ln::UIMainWindow* window)
 	//m_mainWindow->m_graphicsContext = m_graphicsManager->mainWindowGraphicsContext();
 
 	m_mainWindow->m_onImGuiLayer.connect(ln::bind(this, &EngineManager::handleImGuiDebugLayer));
+}
+
+void EngineManager::resolveActiveGraphicsAPI()
+{
+	m_activeGraphicsAPI = m_settings.graphicsAPI;
+
+	if (m_activeGraphicsAPI == GraphicsAPI::Default) {
+		if (GraphicsManager::checkVulkanSupported()) {
+			m_activeGraphicsAPI = GraphicsAPI::Vulkan;
+		}
+		else {
+			m_activeGraphicsAPI = GraphicsAPI::OpenGL;
+		}
+	}
 }
 
 bool EngineManager::onPlatformEvent(const PlatformEventArgs& e)

@@ -265,7 +265,6 @@ public:
     static int getPrimitiveVertexCount(PrimitiveTopology primitive, int primitiveCount);
 
     static Result createImageView(VulkanDevice* deviceContext, VkImage image, VkFormat format, uint32_t mipLevel, VkImageAspectFlags aspectFlags, VkImageView* outView);
-    static bool resolveStd140Layout(const ShaderUniformInfo& info, size_t* aligndElemenSize);
 };
 
 // VkAllocationCallbacks の本体。

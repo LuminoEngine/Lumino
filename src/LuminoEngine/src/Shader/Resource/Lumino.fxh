@@ -27,13 +27,17 @@ cbuffer LNRenderElementBuffer
 	/* [192] */ float4x4	ln_WorldViewIT;
 	/* [256] */ float4 ln_BoneTextureReciprocalSize;
 };
-sampler2D		ln_MaterialTexture;
-//SamplerState	ln_MaterialTextureSamplerState;
 
 // Builtin effect colors
-float4		ln_ColorScale = float4(1, 1, 1, 1);
-float4		ln_BlendColor = float4(0, 0, 0, 1);
-float4		ln_ToneColor = float4(0, 0, 0, 0);
+cbuffer LNEffectColorBuffer
+{
+	/* [0]  */ float4 ln_ColorScale;
+	/* [16] */ float4 ln_BlendColor;
+	/* [32] */ float4 ln_ToneColor;
+};
+
+sampler2D		ln_MaterialTexture;
+//SamplerState	ln_MaterialTextureSamplerState;
 
 struct LN_VSInput
 {

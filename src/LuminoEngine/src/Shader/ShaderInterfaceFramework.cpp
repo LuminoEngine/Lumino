@@ -26,73 +26,59 @@ void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir,
     farClip = f;
 }
 
-//==============================================================================
-// ShaderSemanticsManager
+//=============================================================================
+// ShaderTechniqueSemanticsManager
 //		参考:
 //		Unity Builtin Shader variables
 //		https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html
 
-static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
-    {
-        {_LT("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection},
-        {_LT("ln_World"), BuiltinSemantics::World},
-        {_LT("ln_WorldView"), BuiltinSemantics::WorldView},
-        {_LT("ln_WorldViewIT"), BuiltinSemantics::WorldViewIT},
-        //{_LT("ln_LightEnables"), BuiltinSemantics::LightEnables},
-        //{_LT("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices},
-        //{_LT("ln_LightDirections"), BuiltinSemantics::LightDirections},
-        //{_LT("ln_LightPositions"), BuiltinSemantics::LightPositions},
-        //{_LT("ln_LightZFars"), BuiltinSemantics::LightZFars},
-        //{_LT("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses},
-        //{_LT("ln_LightAmbients"), BuiltinSemantics::LightAmbients},
-        //{_LT("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars},
-        //{_LT("ln_BoneTextureReciprocalSize"), BuiltinSemantics::BoneTextureReciprocalSize},
-        {_LT("ln_BoneTexture"), BuiltinSemantics::BoneTexture},
-        {_LT("ln_BoneLocalQuaternionTexture"), BuiltinSemantics::BoneLocalQuaternionTexture},
-};
-
-static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
-    {
-        {_LT("ln_MaterialTexture"), BuiltinSemantics::MaterialTexture},
-        {_LT("ln_MaterialColor"), BuiltinSemantics::MaterialColor},
-        {_LT("ln_MaterialRoughness"), BuiltinSemantics::MaterialRoughness},
-        {_LT("ln_MaterialMetallic"), BuiltinSemantics::MaterialMetallic},
-        //{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
-        {_LT("ln_MaterialEmissive"), BuiltinSemantics::MaterialEmissive},
-        {_LT("ln_PhongMaterialDiffuse"), BuiltinSemantics::PhongMaterialDiffuse},
-        {_LT("ln_PhongMaterialAmbient"), BuiltinSemantics::PhongMaterialAmbient},
-        {_LT("ln_PhongMaterialEmmisive"), BuiltinSemantics::PhongMaterialEmmisive},
-        {_LT("ln_PhongMaterialSpecularColor"), BuiltinSemantics::PhongMaterialSpecularColor},
-        {_LT("ln_PhongMaterialSpecularPower"), BuiltinSemantics::PhongMaterialSpecularPower},
-        {_LT("ln_ColorScale"), BuiltinSemantics::ColorScale},
-        {_LT("ln_BlendColor"), BuiltinSemantics::BlendColor},
-        {_LT("ln_ToneColor"), BuiltinSemantics::ToneColor},
-};
-
-struct BuiltinSemanticsNamePair
+static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShaderParametersMap =
 {
-    String name;
-    BuiltinSemantics semantics;
-};
-static BuiltinSemanticsNamePair g_builtinSemanticsNamePairMap[] =
-    {
-        {_LT("ln_GlobalLightInfoTexture"), BuiltinSemantics::GlobalLightInfoTexture},
-        {_LT("ln_pointLightInfoTexture"), BuiltinSemantics::LocalLightInfoTexture},
-        {_LT("ln_clustersTexture"), BuiltinSemantics::LightClustersTexture},
-        {_LT("ln_nearClip"), BuiltinSemantics::NearClip2},
-        {_LT("ln_farClip"), BuiltinSemantics::FarClip2},
-        {_LT("ln_cameraPos"), BuiltinSemantics::CameraPosition2},
-		{_LT("ln_FogColorAndDensity"), BuiltinSemantics::FogColorAndDensity},
-		{_LT("ln_FogParams"), BuiltinSemantics::FogParams},
+    {_LT("ln_View"), BuiltinShaderParameters_ln_View},
+    {_LT("ln_Projection"), BuiltinShaderParameters_ln_Projection},
+    {_LT("ln_CameraPosition"), BuiltinShaderParameters_ln_CameraPosition},
+    {_LT("ln_CameraDirection"), BuiltinShaderParameters_ln_CameraDirection},
+    {_LT("ln_ViewportPixelSize"), BuiltinShaderParameters_ln_ViewportPixelSize},
+    {_LT("ln_NearClip"), BuiltinShaderParameters_ln_NearClip},
+    {_LT("ln_FarClip"), BuiltinShaderParameters_ln_FarClip},
+
+    {_LT("ln_World"), BuiltinShaderParameters_ln_World},
+    {_LT("ln_WorldViewProjection"), BuiltinShaderParameters_ln_WorldViewProjection},
+    {_LT("ln_WorldView"), BuiltinShaderParameters_ln_WorldView},
+    {_LT("ln_WorldViewIT"), BuiltinShaderParameters_ln_WorldViewIT},
+    {_LT("ln_BoneTextureReciprocalSize"), BuiltinShaderParameters_ln_BoneTextureReciprocalSize},
+
+    {_LT("ln_ColorScale"), BuiltinShaderParameters_ln_ColorScale},
+    {_LT("ln_BlendColor"), BuiltinShaderParameters_ln_BlendColor},
+    {_LT("ln_ToneColor"), BuiltinShaderParameters_ln_ToneColor},
+
+    {_LT("ln_MaterialColor"), BuiltinShaderParameters_ln_MaterialColor},
+    {_LT("ln_MaterialEmissive"), BuiltinShaderParameters_ln_MaterialEmissive},
+    {_LT("ln_MaterialRoughness"), BuiltinShaderParameters_ln_MaterialRoughness},
+    {_LT("ln_MaterialMetallic"), BuiltinShaderParameters_ln_MaterialMetallic},
 };
 
-ShaderSemanticsManager::ShaderSemanticsManager()
-    : m_sceneVariables()
-    , m_elementVariables()
-    , m_subsetVariables()
-    , m_variablesTable{}
-//, m_lastCameraInfoId(0)
-//, m_tempBufferWriter(&m_tempBuffer)
+static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinShaderUniformBuffersMap =
+{
+    {_LT("LNRenderViewBuffer"), BuiltinShaderUniformBuffers_LNRenderViewBuffer},
+    {_LT("LNRenderElementBuffer"), BuiltinShaderUniformBuffers_LNRenderElementBuffer},
+    {_LT("LNEffectColorBuffer"), BuiltinShaderUniformBuffers_LNEffectColorBuffer},
+    {_LT("LNPBRMaterialParameter"), BuiltinShaderUniformBuffers_LNPBRMaterialParameter},
+    {_LT("LNClusteredShadingParameters"), BuiltinShaderUniformBuffers_LNClusteredShadingParameters},
+};
+
+static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTexturesMap =
+{
+    {_LT("ln_MaterialTexture"), BuiltinShaderTextures_ln_MaterialTexture},
+    {_LT("ln_BoneTexture"), BuiltinShaderTextures_ln_BoneTexture},
+    {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
+
+    {_LT("ln_clustersTexture"), BuiltinShaderTextures_ln_ClustersTexture},
+    {_LT("ln_GlobalLightInfoTexture"), BuiltinShaderTextures_ln_GlobalLightInfoTexture},
+    {_LT("ln_pointLightInfoTexture"), BuiltinShaderTextures_ln_PointLightInfoTexture},
+};
+
+ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
 {
     // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
     assert(128 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
@@ -100,58 +86,78 @@ ShaderSemanticsManager::ShaderSemanticsManager()
     assert(160 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_ViewportPixelSize));
     assert(168 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
     assert(172 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
-    assert(176 == sizeof(LNRenderViewBuffer));
-    assert(272 == sizeof(LNRenderElementBuffer));
+    static_assert(176 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(272 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
+
+    reset();
 }
 
-void ShaderSemanticsManager::prepareParameter(ShaderParameter* var)
+void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
 {
-    const String& name = var->name();
+    m_descriptor = technique->shader()->descriptor();
+    const auto& globalLayout = technique->shader()->descriptorLayout();
 
-    // try element unit
-    {
-        auto itr = g_builtinNameMap_ElementUnit.find(name);
-        if (itr != g_builtinNameMap_ElementUnit.end()) {
-            m_elementVariables.add({var, itr->second});
-            return;
-        }
-    }
+    for (const auto& pass : technique->m_passes) {
 
-    // try subset unit
-    {
-        auto itr = g_builtinNameMap_SubsetUnit.find(name);
-        if (itr != g_builtinNameMap_SubsetUnit.end()) {
-            m_subsetVariables.add({var, itr->second});
-            return;
-        }
-    }
+        const auto& localLayout = pass->descriptorLayout();
 
-    {
-        for (auto& pair : g_builtinSemanticsNamePairMap) {
-            if (name == pair.name) {
-                m_variablesTable[(int)pair.semantics] = var;
+        // UniformBuffers
+        for (const auto& localInfo : localLayout.m_buffers) {
+            const auto& globalInfo = globalLayout->m_buffers[localInfo.dataIndex];
+
+            auto itr = s_BuiltinShaderUniformBuffersMap.find(globalInfo.name);
+            if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
+                m_builtinUniformBuffers[itr->second] = localInfo.dataIndex;
+            }
+
+            for (const auto& memberInfo : globalLayout->m_members) {
+                auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
+                if (itr != s_BuiltinShaderParametersMap.end()) {
+                    m_hasBuiltinShaderParameters |= (1 << itr->second);
+                }
             }
         }
+
+        // Textues
+        for (const auto& localInfo : localLayout.m_textures) {
+            const auto& globalInfo = globalLayout->m_textures[localInfo.dataIndex];
+
+            auto itr = s_BuiltinShaderTexturesMap.find(globalInfo.name);
+            if (itr != s_BuiltinShaderTexturesMap.end()) {
+                m_builtinShaderTextures[itr->second] = localInfo.dataIndex;
+            }
+        }
+
+        //// Samplers
+        //for (const auto& localInfo : localLayout.m_samplers) {
+        //    const auto& globalInfo = globalLayout->m_samplers[localInfo.dataIndex];
+
+        //    auto itr = s_BuiltinShaderParametersMap.find(globalInfo.name);
+        //    if (itr != s_BuiltinShaderParametersMap.end()) {
+        //        m_hasBuiltinShaderParameters |= (1 << itr->second);
+        //    }
+        //}
+
     }
+
 }
 
-void ShaderSemanticsManager::prepareConstantBuffer(ShaderConstantBuffer* buffer)
+void ShaderTechniqueSemanticsManager::reset()
 {
-    if (buffer->name() == u"LNRenderViewBuffer") {
-        m_renderViewBuffer = buffer;
-    }
-    else if (buffer->name() == u"LNRenderElementBuffer") {
-        m_renderElementBuffer = buffer;
-    }
+    m_hasBuiltinShaderParameters = 0;
+    for (auto& i : m_builtinUniformBuffers) i = -1;
 }
 
-void ShaderSemanticsManager::updateSceneVariables(const SceneInfo& info)
+void ShaderTechniqueSemanticsManager::updateSceneVariables(const SceneInfo& info)
 {
 }
 
-void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
+void ShaderTechniqueSemanticsManager::updateCameraVariables(const CameraInfo& info)
 {
-    if (m_renderViewBuffer) {
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderViewBuffer];
+    if (index >= 0) {
         LNRenderViewBuffer data;
         data.ln_View = info.viewMatrix;
         data.ln_Projection = info.projMatrix;
@@ -160,234 +166,99 @@ void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
         data.ln_FarClip = info.farClip;
         data.ln_CameraPosition = info.viewPosition;
         data.ln_CameraDirection = info.viewDirection;
-        m_renderViewBuffer->setData(&data, sizeof(data));
+        m_descriptor->setData(index, &data, sizeof(data));
     }
 }
 
-void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
+void ShaderTechniqueSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
 {
-    if (m_renderElementBuffer) {
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNRenderElementBuffer];
+    if (index >= 0) {
         LNRenderElementBuffer data;
-        // Matrix は送る前に転置が必要。TODO: なんとか使わずすむようにしたいけど…。
-        data.ln_World = info.WorldMatrix;
-        data.ln_WorldViewProjection =info.WorldViewProjectionMatrix;
-        data.ln_WorldView = info.WorldMatrix * cameraInfo.viewMatrix;
-        // TODO: 毎回ここでやるのは重い
-        data.ln_WorldViewIT = Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)); // ここも転置が必要なんだけど、今はここで計算してるので結果的に転置は不要
-        
-        if (info.boneTexture)
+        if (hasParameter(BuiltinShaderParameters_ln_World))
+            data.ln_World = info.WorldMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_WorldViewProjection))
+            data.ln_WorldViewProjection = info.WorldViewProjectionMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_WorldView))
+            data.ln_WorldView = info.WorldMatrix * cameraInfo.viewMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_WorldViewIT))
+            data.ln_WorldViewIT = Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix));
+        if (hasParameter(BuiltinShaderParameters_ln_BoneTextureReciprocalSize) && info.boneTexture)
             data.ln_BoneTextureReciprocalSize = Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0);
 
-        m_renderElementBuffer->setData(&data, sizeof(data));
+        m_descriptor->setData(index, &data, sizeof(data));
     }
 
-    for (const VariableKindPair& varInfo : m_elementVariables) {
-        switch (varInfo.kind) {
-            //case BuiltinSemantics::WorldViewProjection:
-            //    varInfo.variable->setMatrix(info.WorldViewProjectionMatrix);
-            //    break;
-            //case BuiltinSemantics::World:
-            //    varInfo.variable->setMatrix(info.WorldMatrix);
-            //    break;
-            //case BuiltinSemantics::WorldView:
-            //    varInfo.variable->setMatrix(info.WorldMatrix * cameraInfo.viewMatrix);
-            //    break;
-            //case BuiltinSemantics::WorldViewIT:
-            //    varInfo.variable->setMatrix(Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)));
-            //    break;
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_BoneTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.boneTexture);
 
-#if 0
-			// TODO: 以下、ライト列挙時に確定したい。何回もこんな計算するのはちょっと・・
-		case BuiltinSemantics::LightEnables:
-			m_tempBufferWriter.seek(0, SeekOrigin_Begin);
-			for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-			{
-				// TODO: WriteBool() がほしい
-				m_tempBufferWriter.writeUInt8((lights == nullptr) ? false : lights[i] != nullptr);
-			}
-			varInfo.variable->setBoolArray((const bool*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			break;
-		case BuiltinSemantics::LightWVPMatrices:
-			LN_NOTIMPLEMENTED();
-			//if (lights != nullptr)
-			//{
-			//	m_tempBufferWriter.Seek(0, SeekOrigin_Begin);
-			//	for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-			//	{
-			//		Matrix m = (lights[i] != nullptr) ? (lights[i]->transform * (*info.viewProjMatrix)) : Matrix::Identity;
-			//		m_tempBufferWriter.Write(&m, sizeof(Matrix));
-			//	}
-			//	varInfo.variable->setMatrixArray((const Matrix*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			//}
-			break;
-		case BuiltinSemantics::LightDirections:
-			if (lights != nullptr)
-			{
-				m_tempBufferWriter.seek(0, SeekOrigin_Begin);
-				for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-				{
-					// TODO: Vector4::Zero がほしい
-					Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->m_direction, 0) : Vector4(0, 0, 0, 0);
-					m_tempBufferWriter.write(&v, sizeof(Vector4));
-				}
-				varInfo.variable->setVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			}
-			break;
-		case BuiltinSemantics::LightPositions:
-			if (lights != nullptr)
-			{
-				for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-				{
-					// TODO: Vector4::Zero がほしい
-					Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->m_position, 0) : Vector4(0, 0, 0, 0);
-					m_tempBufferWriter.write(&v, sizeof(Vector4));
-				}
-				varInfo.variable->setVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			}
-			break;
-		case BuiltinSemantics::LightZFars:
-			if (lights != nullptr)
-			{
-				m_tempBufferWriter.seek(0, SeekOrigin_Begin);
-				for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-				{
-					m_tempBufferWriter.writeFloat((lights[i] != nullptr) ? lights[i]->m_shadowZFar : 0.0f);
-				}
-				varInfo.variable->setFloatArray((const float*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			}
-			break;
-		case BuiltinSemantics::LightDiffuses:
-			if (lights != nullptr)
-			{
-				m_tempBufferWriter.seek(0, SeekOrigin_Begin);
-				for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-				{
-					auto& v = (lights[i] != nullptr) ? lights[i]->m_diffuse : Color::Black;
-					m_tempBufferWriter.write(&v, sizeof(Color));
-				}
-				varInfo.variable->setVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			}
-			break;
-		case BuiltinSemantics::LightAmbients:
-			if (lights != nullptr)
-			{
-				m_tempBufferWriter.seek(0, SeekOrigin_Begin);
-				for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-				{
-					auto& v = (lights[i] != nullptr) ? lights[i]->m_ambient : Color::Transparency;		// TODO: デフォルト値は？
-					m_tempBufferWriter.write(&v, sizeof(Color));
-				}
-				varInfo.variable->setVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			}
-			break;
-		case BuiltinSemantics::LightSpeculars:
-			if (lights != nullptr)
-			{
-				m_tempBufferWriter.seek(0, SeekOrigin_Begin);
-				for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
-				{
-					auto& v = (lights[i] != nullptr) ? lights[i]->m_specular : Color::Black;		// TODO: デフォルト値は？
-					m_tempBufferWriter.write(&v, sizeof(Color));
-				}
-				varInfo.variable->setVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
-			}
-			break;
-#endif
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_BoneLocalQuaternionTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.boneLocalQuaternionTexture);
+}
 
-    //        case BuiltinSemantics::BoneTextureReciprocalSize:
-				//if (info.boneTexture)
-				//	varInfo.variable->setVector(Vector4(1.0f / info.boneTexture->width(), 1.0f / info.boneTexture->height(), 0, 0));
-				//else
-				//	varInfo.variable->setVector(Vector4::Zero);
-    //            break;
-            case BuiltinSemantics::BoneTexture:
-                varInfo.variable->setTexture(info.boneTexture);
-                break;
-            case BuiltinSemantics::BoneLocalQuaternionTexture:
-                varInfo.variable->setTexture(info.boneLocalQuaternionTexture);
-                break;
-            default:
-                break;
-        }
+void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
+{
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNEffectColorBuffer];
+    if (index >= 0) {
+        // 計算に時間がかかるものでもないため、個々のメンバの alive は確認しない
+        LNEffectColorBuffer data = {
+            info.colorScale.withAlpha(info.colorScale.a * info.opacity).toVector4(),
+            info.blendColor.toVector4(),
+            info.tone.toVector4(),
+        };
+        m_descriptor->setData(index, &data, sizeof(data));
+    }
+
+
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.materialTexture);
+}
+
+void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
+{
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNPBRMaterialParameter];
+    if (index >= 0) {
+        // 計算に時間がかかるものでもないため、個々のメンバの alive は確認しない
+        LNPBRMaterialParameter data = {
+            materialData.color.toVector4(),
+            materialData.emissive.toVector4(),
+            materialData.roughness,
+            materialData.metallic,
+        };
+        m_descriptor->setData(index, &data, sizeof(data));
     }
 }
 
-void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
+void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(const ClusteredShadingRendererInfo& info) const
 {
-    for (const VariableKindPair& varInfo : m_subsetVariables) {
-        switch (varInfo.kind) {
-            case BuiltinSemantics::MaterialTexture:
-                varInfo.variable->setTexture(info.materialTexture);
-                break;
-
-                // TODO: 以下、グループ化して 別の .fxh に分けておけば、include しないシェーダは全部この for 回さずパフォーマンス上げられそう
-            case BuiltinSemantics::ColorScale: {
-                Color c = info.colorScale;
-                c.a *= info.opacity;
-                varInfo.variable->setVector(c.toVector4());
-                break;
-            }
-            case BuiltinSemantics::BlendColor:
-                varInfo.variable->setVector(info.blendColor.toVector4());
-                break;
-            case BuiltinSemantics::ToneColor:
-                varInfo.variable->setVector(info.tone.toVector4());
-                break;
-            default:
-                break;
-        }
+    int index = m_builtinUniformBuffers[BuiltinShaderUniformBuffers_LNClusteredShadingParameters];
+    if (index >= 0) {
+        // 計算に時間がかかるものでもないため、個々のメンバの alive は確認しない
+        LNClusteredShadingParameters data = {
+            info.fogParams,
+            info.fogColorAndDensity,
+            info.mainLightDirection,
+            info.nearClip,
+            info.farClip,
+        };
+        m_descriptor->setData(index, &data, sizeof(data));
     }
-}
 
-void ShaderSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
-{
-    for (const VariableKindPair& varInfo : m_subsetVariables) {
-        switch (varInfo.kind) {
-            case BuiltinSemantics::MaterialColor:
-                varInfo.variable->setVector(materialData.color.toVector4());
-                break;
-            case BuiltinSemantics::MaterialRoughness:
-                varInfo.variable->setFloat(materialData.roughness);
-                break;
-            case BuiltinSemantics::MaterialMetallic:
-                varInfo.variable->setFloat(materialData.metallic);
-                break;
-                //case BuiltinSemantics::MaterialSpecular:
-                //	varInfo.variable->setFloat(materialData.specular);
-                //	break;
-            case BuiltinSemantics::MaterialEmissive:
-                varInfo.variable->setVector(materialData.emissive.toVector4());
-                break;
-        }
-    }
-}
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_ClustersTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.lightClustersTexture);
 
-void ShaderSemanticsManager::updateSubsetVariables_Phong(const PhongMaterialData& materialData)
-{
-    for (const VariableKindPair& varInfo : m_subsetVariables) {
-        switch (varInfo.kind) {
-            case BuiltinSemantics::PhongMaterialDiffuse:
-                varInfo.variable->setVector(materialData.diffuse.toVector4());
-                break;
-            case BuiltinSemantics::PhongMaterialAmbient:
-                varInfo.variable->setVector(materialData.ambient.toVector4());
-                break;
-            case BuiltinSemantics::PhongMaterialEmmisive:
-                varInfo.variable->setVector(materialData.emissive.toVector4());
-                break;
-            case BuiltinSemantics::PhongMaterialSpecularColor:
-                varInfo.variable->setVector(materialData.specular.toVector4());
-                break;
-            case BuiltinSemantics::PhongMaterialSpecularPower:
-                varInfo.variable->setFloat(materialData.power);
-                break;
-        }
-    }
-}
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_GlobalLightInfoTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.globalLightInfoTexture);
 
-ShaderParameter* ShaderSemanticsManager::getParameterBySemantics(BuiltinSemantics semantics) const
-{
-    return m_variablesTable[(int)semantics];
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_PointLightInfoTexture];
+    if (index >= 0)
+        m_descriptor->setTexture(index, info.localLightInfoTexture);
 }
 
 //=============================================================================
