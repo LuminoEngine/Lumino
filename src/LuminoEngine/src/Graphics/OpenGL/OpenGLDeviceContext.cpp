@@ -2143,40 +2143,6 @@ void GLShaderPass::apply() const
 	m_descriptorTable->bind(m_program);
 }
 
-//int GLShaderPass::getUniformCount() const
-//{
-//	return m_uniforms.size();
-//}
-//
-//IShaderUniform* GLShaderPass::getUniform(int index) const
-//{
-//	return m_uniforms[index];
-//}
-//
-//void GLShaderPass::setUniformValue(int index, const void* data, size_t size)
-//{
-//	m_context->setActiveShaderPass(this);
-//	m_uniforms[index]->setUniformValue(m_context, data, size);
-//}
-
-int GLShaderPass::getUniformBufferCount() const
-{
-	LN_NOTIMPLEMENTED();
-	return 0;
-}
-
-IShaderUniformBuffer* GLShaderPass::getUniformBuffer(int index) const
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
-}
-
-IShaderSamplerBuffer* GLShaderPass::samplerBuffer() const
-{
-	LN_NOTIMPLEMENTED();
-	return nullptr;
-}
-
 //=============================================================================
 // GLShaderDescriptorTable
 

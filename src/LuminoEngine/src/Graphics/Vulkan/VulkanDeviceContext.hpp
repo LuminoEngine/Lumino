@@ -542,9 +542,6 @@ public:
     Result init(VulkanDevice* deviceContext, const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag);
     void dispose();
     virtual IShaderDescriptorTable* descriptorTable() const;
-    virtual int getUniformBufferCount() const override { return 0; }
-    virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
-    virtual IShaderSamplerBuffer* samplerBuffer() const override;
     virtual void onBind() override { RefObjectHelper::retain(this); }
     virtual void onUnBind() override { RefObjectHelper::release(this); }
 

@@ -589,18 +589,7 @@ public:
 	const std::vector<VertexInputAttribute>& attributes() const { return m_attributes; }
 	const VertexInputAttribute* findAttribute(VertexElementUsage usage, int usageIndex) const;
 	virtual IShaderDescriptorTable* descriptorTable() const = 0;
-
-	//virtual int getUniformCount() const = 0;
-	//virtual IShaderUniform* getUniform(int index) const = 0;
-	//virtual void setUniformValue(int index, const void* data, size_t size) = 0;
-
-	virtual int getUniformBufferCount() const = 0;
-	virtual IShaderUniformBuffer* getUniformBuffer(int index) const = 0;
-
-	virtual IShaderSamplerBuffer* samplerBuffer() const = 0;
-
-
-	virtual void dispose();
+	void dispose() override;
 
 protected:
 	IShaderPass();

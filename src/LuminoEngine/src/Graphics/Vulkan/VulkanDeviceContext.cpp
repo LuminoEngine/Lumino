@@ -3124,18 +3124,6 @@ IShaderDescriptorTable* VulkanShaderPass::descriptorTable() const
     return m_descriptorTable;
 }
 
-IShaderUniformBuffer* VulkanShaderPass::getUniformBuffer(int index) const
-{
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
-IShaderSamplerBuffer* VulkanShaderPass::samplerBuffer() const
-{
-    LN_NOTIMPLEMENTED();
-    return nullptr;
-}
-
 const std::vector<VkWriteDescriptorSet>& VulkanShaderPass::submitDescriptorWriteInfo(VulkanCommandBuffer* commandBuffer, const std::array<VkDescriptorSet, DescriptorType_Count>& descriptorSets)
 {
 #ifdef LN_NEW_SHADER_UBO

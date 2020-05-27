@@ -552,7 +552,6 @@ public:
 	virtual void dispose() override;
 
     GLuint resolveId(bool mipmap) const { return (mipmap) ? m_idMip : m_id; }
-	//GLuint id2() const { return m_id; }
 
 private:
 	GLuint m_id;
@@ -588,11 +587,6 @@ public:
 
 	GLuint program() const { return m_program; }
 	void apply() const;
-
-	virtual int getUniformBufferCount() const override;
-	virtual IShaderUniformBuffer* getUniformBuffer(int index) const override;
-
-	virtual IShaderSamplerBuffer* samplerBuffer() const override;
 
 private:
 	OpenGLDevice* m_context;
