@@ -143,6 +143,7 @@ struct ShaderDescriptorTableUpdateInfo
 {
 	static const int MaxElements = 32;
 
+	// 各要素番号は DataIndex。detail::DescriptorLayout の各メンバと一致する。BindingIndex ではない点に注意。
 	std::array<ShaderDescriptorBufferView, MaxElements> uniforms = {};
 	std::array<ShaderDescriptorCombinedSampler, MaxElements> textures = {};
 	std::array<ShaderDescriptorCombinedSampler, MaxElements> samplers = {};

@@ -102,6 +102,7 @@ class GLShaderPass;
 class GLShaderUniformBuffer;
 class GLShaderUniform;
 class GLLocalShaderSamplerBuffer;
+class GLShaderDescriptorTable;
 
 class OpenGLDevice
 	: public IGraphicsDevice
@@ -609,6 +610,7 @@ private:
 	List<Ref<GLShaderUniform>> m_uniforms;
 	Ref<GLLocalShaderSamplerBuffer> m_samplerBuffer;
 
+	Ref<GLShaderDescriptorTable> m_descriptorTable;
 };
 
 class GLShaderUniformBuffer
@@ -705,6 +707,55 @@ private:
 	std::vector<ExternalUnifrom> m_externalUniforms;    // TODO: 名前、virtual のほうがいいかも
 };
 
+class GLShaderDescriptorTable
+	: public IShaderDescriptorTable
+{
+public:
+	struct UniformBufferInfo
+	{
+		GLuint bindingPoint = 0;	// こちらは自由に決めていい。
+		GLuint blockIndex = 0;	// これが layout(binding=) と一致させる値
+		GLint blockSize;
+		GLuint ubo = 0;
+	};
+
+	// textureXD と samplerState を結合するためのデータ構造
+	struct SamplerUniformInfo
+	{
+		std::string name;	// lnCISlnTOg_texture1lnSOg_samplerState1 のような FullName
+		GLint uniformLocation = -1;
+		GLint isRenderTargetUniformLocation = -1;	// texture または sampler の場合、それが RenderTarget であるかを示す値を入力する Uniform の Loc。末尾が lnIsRT になっているもの。
+		int m_textureExternalUnifromIndex = -1;		// Index of m_externalTextureUniforms
+		int m_samplerExternalUnifromIndex = -1;		// Index of m_externalSamplerUniforms
+	};
+
+	// 外部に公開する Uniform 情報。
+	// lnCISlnTOg_texture1lnSOg_samplerState1 は、g_texture1 と g_samplerState1 の２つの uniform であるかのように公開する。
+	struct ExternalUnifrom
+	{
+		std::string name;	// g_texture1, g_samplerState1 といった、ユーザーが定義した uniform 名
+		GLTextureBase* texture = nullptr;
+		GLSamplerState* samplerState = nullptr;
+	};
+
+	GLShaderDescriptorTable();
+	bool init(const GLShaderPass* ownerPass, const DescriptorLayout* descriptorLayout);
+	void dispose() override;
+	void setData(const ShaderDescriptorTableUpdateInfo* data);
+	void bind(GLuint program);
+
+private:
+	void addGlslSamplerUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout);
+	void addIsRenderTargetUniform(const std::string& name, GLint uniformLocation);
+
+
+	// 以下、要素番号は DescriptorLayout の各メンバの要素番号と一致する。bindingIndex ではない。
+	std::vector<UniformBufferInfo> m_uniformBuffers;
+	std::vector<SamplerUniformInfo> m_samplerUniforms;
+	std::vector<ExternalUnifrom> m_externalTextureUniforms;
+	std::vector<ExternalUnifrom> m_externalSamplerUniforms;
+};
+
 class GLPipeline
 	: public IPipeline
 {
@@ -722,6 +773,9 @@ private:
 	DepthStencilStateDesc m_depthStencilState;
 	GLenum m_primitiveTopology;
 };
+
+
+
 
 //=============================================================================
 // empty implementation

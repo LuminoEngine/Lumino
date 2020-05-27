@@ -182,6 +182,9 @@ struct DescriptorLayout
     const std::vector<DescriptorLayoutItem>& getLayoutItems(DescriptorType registerType) const;
     bool isReferenceFromVertexStage(DescriptorType registerType) const;
     bool isReferenceFromPixelStage(DescriptorType registerType) const;
+    int findUniformBufferRegisterIndex(const std::string& name) const;
+    int findTextureRegisterIndex(const std::string& name) const;
+    int findSamplerRegisterIndex(const std::string& name) const;
 
     void mergeFrom(const DescriptorLayout& other);
 };

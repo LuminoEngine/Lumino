@@ -916,7 +916,8 @@ void GLGraphicsContext::onSetSubData3D(ITexture* resource, int x, int y, int z, 
 
 void GLGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data)
 {
-	LN_NOTIMPLEMENTED();
+	GLShaderDescriptorTable* table = static_cast<GLShaderDescriptorTable*>(resource);
+	table->setData(data);
 }
 
 void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
@@ -2091,6 +2092,11 @@ void GLShaderPass::init(OpenGLDevice* context, const ShaderPassCreateInfo& creat
 	}
 
 	buildUniforms();
+
+	m_descriptorTable = makeRef<GLShaderDescriptorTable>();
+	if (!m_descriptorTable->init(this, createInfo.descriptorLayout)) {
+		return;
+	}
 }
 
 void GLShaderPass::dispose()
@@ -2121,20 +2127,23 @@ void GLShaderPass::dispose()
 
 IShaderDescriptorTable* GLShaderPass::descriptorTable() const
 {
-	LN_NOTIMPLEMENTED();
-	return nullptr;
+	return m_descriptorTable;
 }
 
 void GLShaderPass::apply() const
 {
 	GL_CHECK(glUseProgram(m_program));
-	for (auto& buf : m_uniformBuffers) {
-		buf->bind(m_program);
-	}
+	//for (auto& buf : m_uniformBuffers) {
+	//	buf->bind(m_program);
+	//}
+
+
 
 	if (m_samplerBuffer) {
 		m_samplerBuffer->bind();
 	}
+
+	m_descriptorTable->bind(m_program);
 }
 
 //int GLShaderPass::getUniformCount() const
@@ -2733,6 +2742,269 @@ void GLLocalShaderSamplerBuffer::setTexture(int registerIndex, ITexture* texture
 void GLLocalShaderSamplerBuffer::setSamplerState(int registerIndex, ISamplerState* state)
 {
 	m_externalUniforms[registerIndex].samplerState = static_cast<GLSamplerState*>(state);
+}
+
+//=============================================================================
+// GLShaderDescriptorTable
+
+GLShaderDescriptorTable::GLShaderDescriptorTable()
+{
+}
+
+bool GLShaderDescriptorTable::init(const GLShaderPass* ownerPass, const DescriptorLayout* descriptorLayout)
+{
+	m_uniformBuffers.resize(descriptorLayout->uniformBufferRegister.size());
+	m_externalTextureUniforms.resize(descriptorLayout->textureRegister.size());
+	m_externalSamplerUniforms.resize(descriptorLayout->samplerRegister.size());
+
+	/*
+	 Mac では binding を GLSL で直接指定できないので、コンパイル後、どの binding index が割り当てられたか自分で調べる必要がある。
+	*/
+	GLuint program = ownerPass->program();
+
+	// UniformBuffers
+	{
+		GLint count;
+		GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &count));
+		for (int i = 0; i < count; i++)
+		{
+			UniformBufferInfo info;
+
+			GLchar blockName[128];
+			GLsizei blockNameLen;
+			GL_CHECK(glGetActiveUniformBlockName(program, i, 128, &blockNameLen, blockName));
+
+			info.blockIndex = glGetUniformBlockIndex(program, blockName);
+			GL_CHECK(glGetActiveUniformBlockiv(program, info.blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &info.blockSize));
+
+			LN_LOG_VERBOSE << "uniform block " << i;
+			LN_LOG_VERBOSE << "  blockName  : " << blockName;
+			LN_LOG_VERBOSE << "  blockIndex : " << info.blockIndex;
+			LN_LOG_VERBOSE << "  blockSize  : " << info.blockSize;
+
+			GL_CHECK(glGenBuffers(1, &info.ubo));
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, info.ubo));
+			GL_CHECK(glBufferData(GL_UNIFORM_BUFFER, info.blockSize, nullptr, GL_DYNAMIC_DRAW));
+			GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+
+			int index = descriptorLayout->findUniformBufferRegisterIndex(blockName);
+			if (index >= 0) {	// 実際は参照していなくても、OpenGL の API からは ActiveUniform として取得できることがある
+				m_uniformBuffers[index] = info;
+			}
+		}
+	}
+
+	// Texture (CombinedSampler)
+	{
+		GLint count;
+		GL_CHECK(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count));
+
+		for (int i = 0; i < count; i++) {
+			GLsizei nameLen = 0;
+			GLsizei varSize = 0;
+			GLenum  varType = 0;
+			GLchar  name[256] = { 0 };
+			GL_CHECK(glGetActiveUniform(program, i, 256, &nameLen, &varSize, &varType, name));
+			GLint loc = glGetUniformLocation(program, name);
+
+			ShaderUniformTypeDesc desc;
+			OpenGLHelper::convertVariableTypeGLToLN(
+				name, varType, varSize,
+				&desc.type2, &desc.rows, &desc.columns, &desc.elements);
+
+			if (desc.type2 == ShaderUniformType_Texture) {
+				addGlslSamplerUniform(name, loc, descriptorLayout);
+			}
+		}
+
+		// lnIsRT 用にもう一度回す
+		for (int i = 0; i < count; i++)
+		{
+			GLsizei nameLen = 0;
+			GLsizei varSize = 0;
+			GLenum  varType = 0;
+			GLchar  name[256] = { 0 };
+			GL_CHECK(glGetActiveUniform(program, i, 256, &nameLen, &varSize, &varType, name));
+			GLint loc = glGetUniformLocation(program, name);
+
+			if (strncmp(name + nameLen - std::strlen(LN_IS_RT_POSTFIX), LN_IS_RT_POSTFIX, std::strlen(LN_IS_RT_POSTFIX)) == 0) {
+				addIsRenderTargetUniform(name, loc);
+			}
+		}
+	}
+	return true;
+}
+
+void GLShaderDescriptorTable::dispose()
+{
+	for (const auto& info : m_uniformBuffers) {
+		GL_CHECK(glDeleteBuffers(1, &info.ubo));
+	}
+	m_uniformBuffers.clear();
+	m_samplerUniforms.clear();
+	m_externalTextureUniforms.clear();
+	m_externalSamplerUniforms.clear();
+
+	IShaderDescriptorTable::dispose();
+}
+
+void GLShaderDescriptorTable::setData(const ShaderDescriptorTableUpdateInfo* data)
+{
+	for (int i = 0; i < m_uniformBuffers.size(); i++) {
+		GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffers[i].ubo));
+		GL_CHECK(glBufferSubData(GL_UNIFORM_BUFFER, 0, data->uniforms[i].size, data->uniforms[i].data));
+		GL_CHECK(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+	}
+
+	for (int i = 0; i < m_externalTextureUniforms.size(); i++) {
+		m_externalTextureUniforms[i].texture = static_cast<GLTextureBase*>(data->textures[i].texture);
+		m_externalTextureUniforms[i].samplerState = static_cast<GLSamplerState*>(data->textures[i].stamplerState);
+	}
+
+	for (int i = 0; i < m_externalSamplerUniforms.size(); i++) {
+		m_externalSamplerUniforms[i].samplerState = static_cast<GLSamplerState*>(data->samplers[i].stamplerState);
+	}
+}
+
+void GLShaderDescriptorTable::bind(GLuint program)
+{
+	for (const auto& info : m_uniformBuffers) {
+		// m_ubo を context 内の Global なテーブルの m_bindingPoint 番目にセット
+		GL_CHECK(glBindBufferBase(GL_UNIFORM_BUFFER, info.bindingPoint, info.ubo));
+
+		// m_bindingPoint 番目にセットされている m_ubo を、m_blockIndex 番目の Uniform Buffer として使う
+		GL_CHECK(glUniformBlockBinding(program, info.blockIndex, info.bindingPoint));
+	}
+
+	for (int i = 0; i < m_samplerUniforms.size(); i++)
+	{
+		const auto& uniform = m_samplerUniforms[i];
+		int unitIndex = i;
+
+		LN_CHECK(uniform.m_textureExternalUnifromIndex >= 0);
+		LN_CHECK(uniform.m_samplerExternalUnifromIndex >= 0);
+		GLTextureBase* t = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].texture;
+		GLSamplerState* samplerState = m_externalSamplerUniforms[uniform.m_samplerExternalUnifromIndex].samplerState;
+		if (!samplerState) {
+			samplerState = m_externalTextureUniforms[uniform.m_textureExternalUnifromIndex].samplerState;
+		}
+
+		GL_CHECK(glActiveTexture(GL_TEXTURE0 + unitIndex));
+
+		bool mipmap = false;
+		bool renderTarget = false;
+		if (t) {
+			if (t->type() == DeviceTextureType::Texture3D) {
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, t->id()));
+			}
+			else {
+				GL_CHECK(glBindTexture(GL_TEXTURE_2D, t->id()));
+				GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+			}
+			mipmap = t->mipmap();
+			renderTarget = (t->type() == DeviceTextureType::RenderTarget);
+		}
+		else {
+			GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+			GL_CHECK(glBindTexture(GL_TEXTURE_3D, 0));
+		}
+		//GL_CHECK(glBindSampler(unitIndex, (entry.samplerState) ? entry.samplerState->resolveId(t->mipmap()) : 0));
+		GL_CHECK(glBindSampler(unitIndex, (samplerState) ? samplerState->resolveId(mipmap) : 0));
+		GL_CHECK(glUniform1i(uniform.uniformLocation, unitIndex));
+
+		if (uniform.isRenderTargetUniformLocation >= 0) {
+			GL_CHECK(glUniform1i(uniform.isRenderTargetUniformLocation, (renderTarget) ? 1 : 0));
+			//if (t->type() == DeviceTextureType::RenderTarget) {
+			//    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 1));
+			//}
+			//else {
+			//    GL_CHECK(glUniform1i(entry.isRenderTargetUniformLocation, 0));
+			//}
+		}
+	}
+}
+
+void GLShaderDescriptorTable::addGlslSamplerUniform(const std::string& name, GLint uniformLocation, const DescriptorLayout* descriptorLayout)
+{
+	// 重複チェック
+	auto itr = std::find_if(m_samplerUniforms.begin(), m_samplerUniforms.end(), [&](const SamplerUniformInfo& x) { return x.name == name; });
+	if (itr != m_samplerUniforms.end()) {
+		LN_ERROR();
+		return;
+	}
+
+	SamplerUniformInfo uniform;
+	uniform.name = name;
+	uniform.uniformLocation = uniformLocation;
+
+	auto keyword = name.find(LN_CIS_PREFIX);
+	auto textureSep = name.find(LN_TO_PREFIX);
+	auto samplerSep = name.find(LN_SO_PREFIX);
+
+	if (keyword != std::string::npos && textureSep != std::string::npos && samplerSep && std::string::npos) {
+		// 所定のキーワードを持っていた場合は texture と samplerState に分割して登録
+
+		ExternalUnifrom texture;
+		texture.name = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+		int textureRegisterIndex = descriptorLayout->findTextureRegisterIndex(texture.name);
+		m_externalTextureUniforms[textureRegisterIndex] = texture;
+		uniform.m_textureExternalUnifromIndex = textureRegisterIndex;
+
+		ExternalUnifrom sampler;
+		sampler.name = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+		int samplerRegisterIndex = descriptorLayout->findTextureRegisterIndex(texture.name);
+		m_externalSamplerUniforms[samplerRegisterIndex] = sampler;
+		uniform.m_samplerExternalUnifromIndex = samplerRegisterIndex;
+	}
+	else {
+		// 所定のキーワードを持たない場合は CombinedSampler
+
+		ExternalUnifrom sampler;
+		sampler.name = name;
+		int samplerRegisterIndex = descriptorLayout->findTextureRegisterIndex(sampler.name);
+		m_externalTextureUniforms[samplerRegisterIndex] = sampler;
+		uniform.m_textureExternalUnifromIndex = samplerRegisterIndex;
+	}
+
+	m_samplerUniforms.push_back(uniform);
+}
+
+void GLShaderDescriptorTable::addIsRenderTargetUniform(const std::string& name, GLint uniformLocation)
+{
+	//auto keyword = name.find(LN_CIS_PREFIX);
+	//auto textureSep = name.find(LN_TO_PREFIX);
+	//auto samplerSep = name.find(LN_SO_PREFIX);
+	auto rtMark = name.find(LN_IS_RT_POSTFIX);
+	if (rtMark != std::string::npos)
+	{
+		auto targetName = name.substr(0, rtMark);
+		auto itr = std::find_if(m_samplerUniforms.begin(), m_samplerUniforms.end(), [&](const SamplerUniformInfo& x) { return x.name == targetName; });
+		if (itr != m_samplerUniforms.end()) {
+			itr->isRenderTargetUniformLocation = uniformLocation;
+		}
+		else {
+			LN_UNREACHABLE();	// ここには来ないはず
+		}
+
+		//     auto textureName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+		//     auto samplerName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+		//     auto itr = std::find_if(m_table.begin(), m_table.end(), [&](const Uniform& x) {
+		//         return x.textureRegisterName == textureName && x.samplerRegisterName == samplerName; });
+		//     if (itr != m_table.end()) {
+		//         itr->isRenderTargetUniformLocation = uniformLocation;
+		//     }
+		//     else {
+				 //Uniform e;
+		//         e.textureRegisterName = name.substr(textureSep + LN_TO_PREFIX_LEN, samplerSep - (textureSep + LN_TO_PREFIX_LEN));
+		//         e.samplerRegisterName = name.substr(samplerSep + LN_SO_PREFIX_LEN);
+		//         e.isRenderTargetUniformLocation = uniformLocation;
+		//         m_table.push_back(e);
+		//     }
+	}
+	else {
+		LN_UNREACHABLE();	// ここには来ないはず
+	}
 }
 
 //=============================================================================
