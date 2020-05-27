@@ -25,7 +25,6 @@ enum class ShaderParameterClass
 };
 
 namespace detail {
-class ShaderSemanticsManager;
 
 class ShaderParameterValue
 {
@@ -149,7 +148,6 @@ class ShaderHelper
 {
 public:
     static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
-    static detail::ShaderSemanticsManager* semanticsManager(Shader* shader);
     static ShaderTechnique* findTechniqueByClass(Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
     static const detail::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
     static bool resolveStd140Layout(const ShaderUniformInfo& info, size_t* outAligndElemenSize);

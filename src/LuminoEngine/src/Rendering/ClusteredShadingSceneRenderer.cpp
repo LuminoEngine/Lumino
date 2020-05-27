@@ -502,8 +502,6 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 
 void ClusteredShadingSceneRenderer::onSetAdditionalShaderPassVariables(Shader* shader)
 {
-	detail::ShaderSemanticsManager* ssm = detail::ShaderHelper::semanticsManager(shader);
-
 
 #ifdef LN_NEW_SHADER_UBO
 	ShaderParameter2* v;

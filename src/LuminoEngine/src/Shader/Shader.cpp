@@ -140,7 +140,6 @@ Shader::Shader()
     , m_techniques(makeList<Ref<ShaderTechnique>>())
     , m_textureParameters()
     , m_globalConstantBuffer(nullptr)
-    , m_semanticsManager()
 {
 }
 
@@ -190,7 +189,6 @@ void Shader::init(const StringRef& filePath, ShaderCompilationProperties* proper
 #endif
     }
 
-    postInitialize();
     m_name = Path(filePath).fileNameWithoutExtension();
 
     if (!properties || !properties->m_diag) {
@@ -243,7 +241,6 @@ void Shader::init(const StringRef& vertexShaderFilePath, const StringRef& pixelS
     //createSinglePassShader(
     //    reinterpret_cast<const char*>(vsData.data()), vsData.size(), reinterpret_cast<const char*>(psData.data()), psData.size(), localDiag, properties);
 
-    postInitialize();
     m_name = Path(vertexShaderFilePath).fileNameWithoutExtension();
     m_name += u",";
     m_name += Path(pixelShaderFilePath).fileNameWithoutExtension();
@@ -265,7 +262,6 @@ void Shader::init(const String& name, Stream* stream)
 
     createFromStream(stream, localDiag);
 
-    postInitialize();
     m_name = name;
 
     if (localDiag->hasError()) {
@@ -331,38 +327,6 @@ void Shader::onDispose(bool explicitDisposing)
 void Shader::onChangeDevice(detail::IGraphicsDevice* device)
 {
     LN_NOTIMPLEMENTED();
-}
-
-void Shader::postInitialize()
-{
-    // find global constant buffer.
-    {
-#ifdef LN_NEW_SHADER_UBO
-#else
-        m_globalConstantBuffer = findConstantBuffer(u"_Global");
-        //if (!m_globalConstantBuffer && !m_buffers.isEmpty()) {
-        //    m_globalConstantBuffer = m_buffers.front();
-        //}
-#endif
-
-        for (auto& cbuffer : m_buffers) {
-            m_semanticsManager.prepareConstantBuffer(cbuffer);
-        }
-
-    }
-
-    // analyze semantices.
-    {
-        if (m_globalConstantBuffer) {
-            for (auto& param : m_globalConstantBuffer->m_parameters) {
-                m_semanticsManager.prepareParameter(param);
-            }
-        }
-
-        for (auto& param : m_textureParameters) {
-            m_semanticsManager.prepareParameter(param);
-        }
-    }
 }
 
 #ifdef LN_NEW_SHADER_UBO

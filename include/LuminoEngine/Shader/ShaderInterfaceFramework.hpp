@@ -51,68 +51,6 @@ struct alignas(16) LNPBRMaterialParameter
     alignas(4) float ln_MaterialMetallic;
 };
 
-
-// シェーダ変数セマンティクス
-enum class BuiltinSemantics
-{
-    //--------------------
-    // Scene unit
-    Dummy,
-
-    //--------------------
-    // Element unit
-    WorldViewProjection,
-    World,
-    WorldView,
-    WorldViewIT, // transpose(inverse(WorldView));
-
-    //LightEnables,     // [Mark only] bool[]
-    //LightWVPMatrices, // [Mark only] matrix[]
-    //LightDirections,  // [Mark only] vector[]
-    //LightPositions,   // [Mark only] vector[]
-    //LightZFars,       // [Mark only] float[]
-    //LightDiffuses,    // [Mark only] vector[]
-    //LightAmbients,    // [Mark only] vector[]
-    //LightSpeculars,   // [Mark only] vector[]
-
-    //BoneTextureReciprocalSize,  // internal
-    BoneTexture,                // internal
-    BoneLocalQuaternionTexture, // internal
-
-    //--------------------
-    // Subset unit
-    MaterialTexture, // glslang の HLSL Parser が texture をサポートしていないため Texture2D 固定。
-
-    MaterialColor,     // [PBR] vector
-    MaterialRoughness, // [PBR] float
-    MaterialMetallic,  // [PBR] float
-                       //MaterialSpecular,		// [PBR] float
-    MaterialEmissive,  // [PBR] vector
-
-    PhongMaterialDiffuse,       // [Phong] vector
-    PhongMaterialAmbient,       // [Phong] vector
-    PhongMaterialEmmisive,      // [Phong] vector
-    PhongMaterialSpecularColor, // [Phong] vector
-    PhongMaterialSpecularPower, // [Phong] float
-
-    ColorScale, // vector (Built-in effect)
-    BlendColor, // vector (Built-in effect)
-    ToneColor,  // vector (Built-in effect)
-
-    //--------------------
-    // SceneRenderer internal
-    GlobalLightInfoTexture,
-    LocalLightInfoTexture,
-    LightClustersTexture,
-    NearClip2,
-    FarClip2,
-    CameraPosition2,
-	FogColorAndDensity,
-    FogParams,
-
-    _Count,
-};
-
 struct PbrMaterialData
 {
     Color color;
@@ -213,45 +151,6 @@ struct SubsetInfo
 			ColorTone::nearEqual(lhs.tone, rhs.tone);
 	}
 };
-
-// セマンティクスが関係するシェーダ変数の管理
-class ShaderSemanticsManager
-{
-public:
-    ShaderSemanticsManager();
-
-    // call by shader creation time.
-    void prepareParameter(ShaderParameter* var);    // deprecated
-    void prepareConstantBuffer(ShaderConstantBuffer* buffer);
-
-    // call by rendering time.
-    void updateSceneVariables(const SceneInfo& info);
-    void updateCameraVariables(const CameraInfo& info);
-    void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
-    void updateSubsetVariables(const SubsetInfo& info);
-    void updateSubsetVariables_PBR(const PbrMaterialData& materialData);
-    void updateSubsetVariables_Phong(const PhongMaterialData& materialData);
-    ShaderParameter* getParameterBySemantics(BuiltinSemantics semantics) const;
-
-private:
-    struct VariableKindPair
-    {
-        ShaderParameter* variable;
-        BuiltinSemantics kind;
-    };
-
-    List<VariableKindPair> m_sceneVariables;
-    //List<VariableKindPair> m_cameraVariables;
-    ShaderConstantBuffer* m_renderViewBuffer = nullptr;
-    List<VariableKindPair> m_elementVariables;
-    ShaderConstantBuffer* m_renderElementBuffer = nullptr;
-    List<VariableKindPair> m_subsetVariables;
-    // TODO: 実質↑のほとんどの変数は使うので、リストを分けるとかえって変にメモリ使ってしまうかも。
-    // ↓のような全体でひとつのテーブル使う方がかえって検索効率もよくなる。後でこっちにする。
-    std::array<ShaderParameter*, (int)BuiltinSemantics::_Count> m_variablesTable;
-};
-
-
 
 enum BuiltinShaderParameters
 {

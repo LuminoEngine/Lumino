@@ -345,11 +345,9 @@ LN_CONSTRUCT_ACCESS:
     void init(const String& name, Stream* stream);
 
 private:
-    detail::ShaderSemanticsManager* semanticsManager() { return &m_semanticsManager; }
     ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClass& techniqueClass) const;
     void createFromStream(Stream* stream, DiagnosticsManager* diag);
 	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
-    void postInitialize();
     ShaderConstantBuffer* getOrCreateConstantBuffer(detail::IShaderUniformBuffer* buffer);
     ShaderParameter* getOrCreateTextureParameter(const String& name);
 
@@ -361,7 +359,6 @@ private:
     Ref<List<Ref<ShaderTechnique>>> m_techniques;
     List<Ref<ShaderParameter>> m_textureParameters;
     ShaderConstantBuffer* m_globalConstantBuffer;
-    detail::ShaderSemanticsManager m_semanticsManager;
 
     friend class ShaderPass;
     friend class detail::ShaderHelper;
