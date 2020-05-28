@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
-#include "../Rendering/SpriteRenderFeature.hpp"
+#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 namespace detail {

@@ -1,13 +1,13 @@
 ﻿#pragma once
 #include "RenderStage.hpp"
-#include "BlitRenderFeature.hpp"
-#include "SpriteRenderFeature.hpp"
-#include "MeshRenderFeature.hpp"
-#include "PrimitiveRenderFeature.hpp"
-#include "SpriteTextRenderFeature.hpp"
-#include "FrameRectRenderFeature.hpp"
-#include "ShapesRenderFeature.hpp"
-#include "ExtensionRenderFeature.hpp"
+#include "RenderFeature/BlitRenderFeature.hpp"
+#include "RenderFeature/SpriteRenderFeature.hpp"
+#include "RenderFeature/MeshRenderFeature.hpp"
+#include "RenderFeature/PrimitiveRenderFeature.hpp"
+#include "RenderFeature/SpriteTextRenderFeature.hpp"
+#include "RenderFeature/FrameRectRenderFeature.hpp"
+#include "RenderFeature/ShapesRenderFeature.hpp"
+#include "RenderFeature/ExtensionRenderFeature.hpp"
 
 namespace ln {
 class RenderViewPoint;

@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../Font/FontGlyphCache.hpp"
-#include "../Font/TextLayoutEngine.hpp"
-#include "RenderStage.hpp"
-#include "RenderingManager.hpp"
+#include "../../Font/FontGlyphCache.hpp"
+#include "../../Font/TextLayoutEngine.hpp"
+#include "../RenderStage.hpp"
+#include "../RenderingManager.hpp"
 
 namespace ln {
 namespace detail {

@@ -7,7 +7,7 @@
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include "../Asset/AssetManager.hpp"
-#include "../Rendering/SpriteRenderFeature.hpp"
+#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 

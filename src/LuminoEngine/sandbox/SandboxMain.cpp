@@ -6,7 +6,6 @@
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Engine/EngineManager.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
-#include "../src/Rendering/SpriteRenderFeature.hpp"
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"

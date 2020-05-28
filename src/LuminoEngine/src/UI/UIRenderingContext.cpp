@@ -7,8 +7,8 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
-#include "../Rendering/FrameRectRenderFeature.hpp"
-#include "../Rendering/ShapesRenderFeature.hpp"
+#include "../Rendering/RenderFeature/FrameRectRenderFeature.hpp"
+#include "../Rendering/RenderFeature/ShapesRenderFeature.hpp"
 
 namespace ln {
 

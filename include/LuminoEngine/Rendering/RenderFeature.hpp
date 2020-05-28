@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <LuminoCore/Base/LinearAllocator.hpp>
+#include "Common.hpp"
 #include "../Shader/ShaderInterfaceFramework.hpp"
 
 namespace ln {

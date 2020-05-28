@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "../Graphics/GraphicsDeviceContext.hpp"
 #include <LuminoEngine/Graphics/GraphicsExtension.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "RenderStage.hpp"
+#include "../../Graphics/GraphicsDeviceContext.hpp"
+#include "../RenderStage.hpp"
 
 namespace ln {
 namespace detail {

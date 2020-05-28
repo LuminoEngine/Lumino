@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/UI/UIRenderingContext.hpp>
 #include <LuminoEngine/UI/UISprite.hpp>
-#include "../Rendering/SpriteRenderFeature.hpp"
+#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 

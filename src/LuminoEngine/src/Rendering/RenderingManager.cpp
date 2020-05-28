@@ -5,10 +5,10 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "DrawElementListBuilder.hpp"
-#include "BlitRenderFeature.hpp"
-#include "SpriteRenderFeature.hpp"
-#include "MeshRenderFeature.hpp"
-#include "ExtensionRenderFeature.hpp"
+#include "RenderFeature/BlitRenderFeature.hpp"
+#include "RenderFeature/SpriteRenderFeature.hpp"
+#include "RenderFeature/MeshRenderFeature.hpp"
+#include "RenderFeature/ExtensionRenderFeature.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {

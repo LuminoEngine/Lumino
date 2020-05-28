@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "RenderStage.hpp"
-#include "../Graphics/GraphicsManager.hpp"
-#include "../Mesh/MeshGenerater.hpp"
-#include "RenderingManager.hpp"
+#include "../../Graphics/GraphicsManager.hpp"
+#include "../../Mesh/MeshGenerater.hpp"
+#include "../RenderStage.hpp"
+#include "../RenderingManager.hpp"
 
 namespace ln {
 class MeshResource;

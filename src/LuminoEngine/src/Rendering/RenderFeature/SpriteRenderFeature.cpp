@@ -5,9 +5,9 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
-#include "../Graphics/GraphicsManager.hpp"
+#include "../../Graphics/GraphicsManager.hpp"
+#include "../RenderingManager.hpp"
 #include "SpriteRenderFeature.hpp"
-#include "RenderingManager.hpp"
 
 namespace ln {
 namespace detail {
