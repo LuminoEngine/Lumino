@@ -106,7 +106,7 @@ Ref<Tileset> Tileset::create()
 
 Ref<Tileset> Tileset::create(Texture* texture, int tilePixelWidth, int tilePixelHeight)
 {
-	auto material = makeObject<Material>();
+	auto material = makeObject<AbstractMaterial>();
 	material->setMainTexture(texture);
 	auto tileset = makeObject<Tileset>();
 	tileset->reset(material, tilePixelWidth, tilePixelHeight);
@@ -132,7 +132,7 @@ void Tileset::init()
     //m_material->setMainTexture(makeObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
 }
 
-void Tileset::reset(Material* material, int tilePixelWidth, int tilePixelHeight)
+void Tileset::reset(AbstractMaterial* material, int tilePixelWidth, int tilePixelHeight)
 {
     setMaterial(material);
     setTilePixelSize(tilePixelWidth, tilePixelHeight);
@@ -176,12 +176,12 @@ uint8_t Tileset::tilePassageFlags(int tileId) const
 	}
 }
 
-Material* Tileset::material() const
+AbstractMaterial* Tileset::material() const
 {
     return m_material;
 }
 
-void Tileset::setMaterial(Material* material)
+void Tileset::setMaterial(AbstractMaterial* material)
 {
     m_material = material;
     resetInfo();

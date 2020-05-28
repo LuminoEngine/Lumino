@@ -2,7 +2,6 @@
 #include "UIElement.hpp"
 
 namespace ln {
-class Material;
 
 /**
  * UI 要素として 2D 空間上に表示されるスプライトオブジェクトを表します。
@@ -50,7 +49,7 @@ protected:
     virtual void onRender(UIRenderingContext* context);
 
 private:
-    Ref<Material> m_material;
+    Ref<AbstractMaterial> m_material;
     Size m_size;
     Rect m_sourceRect;
 };

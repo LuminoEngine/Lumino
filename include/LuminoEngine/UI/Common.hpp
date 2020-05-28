@@ -5,6 +5,7 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class AbstractMaterial;
 class UIStyleContext;
 class UICommand;
 class UIDomainProvidor;

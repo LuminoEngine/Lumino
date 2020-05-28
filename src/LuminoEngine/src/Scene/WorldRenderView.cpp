@@ -51,7 +51,7 @@ void WorldRenderView::init()
 
     //m_clearRenderPass = makeObject<RenderPass>();
 
-    m_clearMaterial = makeObject<Material>();
+    m_clearMaterial = makeObject<AbstractMaterial>();
     m_clearMaterial->setShader(detail::EngineDomain::sceneManager()->atmosphereShader());
 
     createGridPlane();
@@ -421,7 +421,7 @@ void WorldRenderView::createGridPlane()
 #else
     auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/InfinitePlaneGrid.fx");
 #endif
-    m_gridPlaneMaterial = makeObject<Material>();
+    m_gridPlaneMaterial = makeObject<AbstractMaterial>();
     m_gridPlaneMaterial->setShader(shader);
     //m_gridPlane->addMaterial(material);
 

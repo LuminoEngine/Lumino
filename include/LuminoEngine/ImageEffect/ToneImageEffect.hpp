@@ -4,7 +4,6 @@
 
 namespace ln {
 namespace detail { class ToneImageEffectInstance; }
-class Material;
 
 class ToneImageEffect
 	: public ImageEffect
@@ -44,7 +43,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     ToneImageEffect* m_owner;
-    Ref<Material> m_material;
+    Ref<AbstractMaterial> m_material;
 };
 
 } // namespace detail

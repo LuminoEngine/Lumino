@@ -15,7 +15,7 @@ namespace detail {
 
 ImageEffectRenderer::ImageEffectRenderer()
     : m_manager(detail::EngineDomain::renderingManager())
-	, m_copyMaterial(makeObject<Material>())
+	, m_copyMaterial(makeObject<AbstractMaterial>())
 {
 }
 

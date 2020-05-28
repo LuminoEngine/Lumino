@@ -7,6 +7,10 @@ namespace ln {
 
 //==============================================================================
 // AbstractMaterial
+// https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
+// https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
+
+LN_OBJECT_IMPLEMENT(AbstractMaterial, Object) {}
 
 static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 static const float Material_DefaultRoughness = 0.5f;
@@ -14,8 +18,22 @@ static const float Material_DefaultMetallic = 0.5f;
 //static const float Material_DefaultSpecular = 0.5f;
 static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 
-AbstractMaterial::AbstractMaterial(detail::MaterialType type)
-	: m_type(type)
+Ref<AbstractMaterial> AbstractMaterial::create()
+{
+    return makeObject<AbstractMaterial>();
+}
+
+Ref<AbstractMaterial> AbstractMaterial::create(Texture* mainTexture)
+{
+    return makeObject<AbstractMaterial>(mainTexture);
+}
+
+Ref<AbstractMaterial> AbstractMaterial::create(Texture* mainTexture, ShadingModel shadingModel)
+{
+    return makeObject<AbstractMaterial>(mainTexture, shadingModel);
+}
+
+AbstractMaterial::AbstractMaterial()
 {
     m_data.color = Material_DefaultColor;
     m_data.roughness = Material_DefaultRoughness;
@@ -31,6 +49,25 @@ AbstractMaterial::~AbstractMaterial()
 void AbstractMaterial::init()
 {
 	Object::init();
+}
+
+void AbstractMaterial::init(Texture* mainTexture)
+{
+    init(mainTexture, ShadingModel::Default);
+}
+
+void AbstractMaterial::init(Texture* mainTexture, ShadingModel shadingModel)
+{
+    init();
+    setMainTexture(mainTexture);
+    this->shadingModel = shadingModel;
+}
+
+void AbstractMaterial::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
+{
+    init();
+    setMainTexture(mainTexture);
+    setColor(phongMaterialData.diffuse);
 }
 
 void AbstractMaterial::setMainTexture(Texture* value)
@@ -215,59 +252,8 @@ void AbstractMaterial::serialize(Archive& ar)
 
 //==============================================================================
 // Material
-// https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
-// https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
-
-LN_OBJECT_IMPLEMENT(Material, Object) {}
 
 
-Ref<Material> Material::create()
-{
-	return makeObject<Material>();
-}
-
-Ref<Material> Material::create(Texture* mainTexture)
-{
-    return makeObject<Material>(mainTexture);
-}
-
-Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
-{
-    return makeObject<Material>(mainTexture, shadingModel);
-}
-
-Material::Material()
-	: AbstractMaterial(detail::MaterialType::PBR)
-{
-}
-
-Material::~Material()
-{
-}
-
-void Material::init()
-{
-	AbstractMaterial::init();
-}
-
-void Material::init(Texture* mainTexture)
-{
-    init(mainTexture, ShadingModel::Default);
-}
-
-void Material::init(Texture* mainTexture, ShadingModel shadingModel)
-{
-    init();
-    setMainTexture(mainTexture);
-    this->shadingModel = shadingModel;
-}
-
-void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
-{
-    init();
-    setMainTexture(mainTexture);
-    setColor(phongMaterialData.diffuse);
-}
 
 
 ////==============================================================================

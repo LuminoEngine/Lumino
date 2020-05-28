@@ -36,7 +36,7 @@ RenderingManager::RenderingManager()
 void RenderingManager::init(const Settings& settings)
 {
     LN_LOG_DEBUG << "RenderingManager Initialization started.";
-    EngineDomain::registerType<Material>();
+    EngineDomain::registerType<AbstractMaterial>();
 
     m_graphicsManager = settings.graphicsManager;
     m_fontManager = settings.fontManager;
@@ -198,10 +198,10 @@ void RenderingManager::init(const Settings& settings)
 #endif
 
     {
-        m_builtinMaterials[(int)BuiltinMaterial::Default] = Material::create();
+        m_builtinMaterials[(int)BuiltinMaterial::Default] = AbstractMaterial::create();
     }
     {
-        auto material = Material::create();
+        auto material = AbstractMaterial::create();
         material->shadingModel = ShadingModel::Unlit;
         m_builtinMaterials[(int)BuiltinMaterial::Unlit] = material;
     }

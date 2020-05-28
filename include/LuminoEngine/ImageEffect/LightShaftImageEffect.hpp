@@ -2,7 +2,6 @@
 #include "ImageEffect.hpp"
 
 namespace ln {
-class Material;
 
 //class LightShaftImageEffect
 //    : public ImageEffect
@@ -18,7 +17,7 @@ class Material;
 //    void init();
 //
 //private:
-//	Ref<Material> m_radialBlur;
+//	Ref<AbstractMaterial> m_radialBlur;
 //};
 
 } // namespace ln

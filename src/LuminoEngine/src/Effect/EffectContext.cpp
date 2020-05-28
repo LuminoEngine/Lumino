@@ -164,7 +164,7 @@ void SpriteFrameEffectResource::init(const Size& spriteSize, SpriteSheet* sprite
     m_startNumber = startNumber;
     m_lastNumber = lastNumber;
     m_frameTime = frameTime;
-    m_material = makeObject<Material>();
+    m_material = makeObject<AbstractMaterial>();
     m_material->setMainTexture(m_spriteFrameSet->texture());
 }
 

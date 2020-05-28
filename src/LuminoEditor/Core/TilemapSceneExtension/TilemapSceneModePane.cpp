@@ -18,7 +18,7 @@ void TilemapSceneModePane::init(TilemapSceneEditorModel* model)
 	m_model = model;
 	setViewModel(m_model);
 
-    m_material = ln::makeObject<ln::Material>();
+    m_material = ln::makeObject<ln::AbstractMaterial>();
 	m_displayTileScale = ln::Vector2(1, 1);
 }
 

@@ -233,7 +233,7 @@ void SpriteComponent::init()
     m_sourceRect.set(0, 0, -1, -1);
     //setSize(Size(1, 1));
 
-    m_material = makeObject<Material>();
+    m_material = makeObject<AbstractMaterial>();
     //m_material->setEmissive(Color(1,1,1,0.5));
     setBlendMode(BlendMode::Alpha);
     setCullMode(CullMode::None);

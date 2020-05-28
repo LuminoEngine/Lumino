@@ -8,7 +8,6 @@
 namespace ln {
 class RenderingContext;
 class SpriteSheet;   // TODO:
-class Material;   // TODO:
 
 class Effect
 {
@@ -96,7 +95,7 @@ public: // TODO: private
     int m_startNumber;
     int m_lastNumber;
     float m_frameTime;
-    Ref<Material> m_material;
+    Ref<AbstractMaterial> m_material;
 };
 
 template<class T>

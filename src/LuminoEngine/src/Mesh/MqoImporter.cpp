@@ -170,7 +170,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 
         materialData.power = power;
 
-        auto material = makeObject<Material>(texture, materialData);
+        auto material = makeObject<AbstractMaterial>(texture, materialData);
 		visitMaterial(material);
 	}
 }

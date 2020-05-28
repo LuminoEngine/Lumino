@@ -4,7 +4,6 @@
 #include "VisualComponent.hpp"
 
 namespace ln {
-class Material;
 class World;
 class Component;
 
@@ -157,7 +156,7 @@ LN_CONSTRUCT_ACCESS:
 
 
 private:
-    Ref<Material> m_material;
+    Ref<AbstractMaterial> m_material;
     Size m_size;
     Rect m_sourceRect;
     Vector2 m_anchorPoint;

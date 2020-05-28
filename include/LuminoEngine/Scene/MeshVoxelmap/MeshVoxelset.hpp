@@ -18,7 +18,7 @@ class MeshAutoVoxelset
 public:
 	bool beveled[6];
 
-	void setMaterial(Material* value);
+	void setMaterial(AbstractMaterial* value);
 	void setAnimationFrames(int value) { m_animationFrameCount = value; }
 
 	// 正方形メッシュ, 上下面に Floor, 側面に Wall
@@ -42,7 +42,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
-	Ref<Material> m_material;
+	Ref<AbstractMaterial> m_material;
 	Vector2 m_frameUVOffset;
 	int m_animationFrameCount = 0;
 	Ref<Mesh> m_mesh;
@@ -84,7 +84,7 @@ private:
 	void drawTile(RenderingContext* context, const detail::MeshTile& tile, const detail::MeshTileFaceAdjacency& adjacency, const Matrix& transform, int animationFrame) const;
 	void drawBatch(RenderingContext* context);
 
-	Ref<Material> m_material;
+	Ref<AbstractMaterial> m_material;
 	std::array<Ref<MeshAutoVoxelset>, 16> m_autotileSet;
 
 

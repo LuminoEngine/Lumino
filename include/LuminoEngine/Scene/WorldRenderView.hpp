@@ -5,13 +5,11 @@
 #include "TransformControls.hpp"
 
 namespace ln {
-class Material;
 class World;
 class Camera;
 class RenderingContext;
 class StaticMeshModel;
 class MeshResource;
-class Material;
 class ImageEffect;
 namespace detail {
 class ImageEffectRenderer;
@@ -78,11 +76,11 @@ private:
     Ref<RenderViewPoint> m_viewPoint;
 	Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
 
-    Ref<Material> m_clearMaterial;
+    Ref<AbstractMaterial> m_clearMaterial;
 	Ref<StaticMeshModel> m_skyProjectionPlane;
 
     Ref<MeshResource> m_gridPlaneMesh;
-    Ref<Material> m_gridPlaneMaterial;
+    Ref<AbstractMaterial> m_gridPlaneMaterial;
     bool m_visibleGridPlane;
     bool m_physicsDebugDrawEnabled;
     bool m_gizmoEnabled;

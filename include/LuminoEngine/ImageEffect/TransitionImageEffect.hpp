@@ -4,7 +4,6 @@
 #include "ImageEffect.hpp"
 
 namespace ln {
-class Material;
 class Texture;
 namespace detail { class TransitionImageEffectInstance; }
 
@@ -84,9 +83,9 @@ private:
     // Transition source image.
     Ref<RenderTargetTexture> m_overrayTarget;
 
-    Ref<Material> m_withoutMaskMaterial;
-    Ref<Material> m_withMaskMaterial;
-    Ref<Material> m_copyMaterial;
+    Ref<AbstractMaterial> m_withoutMaskMaterial;
+    Ref<AbstractMaterial> m_withMaskMaterial;
+    Ref<AbstractMaterial> m_copyMaterial;
     Texture* m_maskTexture;
     int m_freezeRevision;
 };

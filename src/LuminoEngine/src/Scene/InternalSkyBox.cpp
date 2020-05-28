@@ -22,7 +22,7 @@ void InternalSkyBox::init()
 	Object::init();
 	auto shader = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SkyLowAltitudeOptimized);
 
-	m_material = makeObject<Material>();
+	m_material = makeObject<AbstractMaterial>();
 	m_material->setShader(shader);
     m_material->shadingModel = ShadingModel::Unlit;
 

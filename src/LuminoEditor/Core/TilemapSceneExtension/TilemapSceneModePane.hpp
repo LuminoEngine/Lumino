@@ -22,7 +22,7 @@ protected:
 private:
 	TilemapSceneEditorModel* m_model;
     Ref<ln::Tileset> m_tileset;
-    Ref<ln::Material> m_material;
+    Ref<ln::AbstractMaterial> m_material;
 	ln::Size m_tileSize;
 	ln::Vector2 m_displayTileScale;
 };

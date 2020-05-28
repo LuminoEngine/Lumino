@@ -6,7 +6,6 @@ class RenderingContext;
 class ImageEffect;
 using ImageEffectInstanceRenderer = ImageEffect;
 class ImageEffectInstance;
-class Material;
 namespace detail {
 
 class ImageEffectRenderer
@@ -36,7 +35,7 @@ private:
 
     List<Instance> m_imageEffectInstances;
     List<Instance> m_collectedImageEffectInstances;
-	Ref<Material> m_copyMaterial;
+	Ref<AbstractMaterial> m_copyMaterial;
 };
 
 } // namespace detail

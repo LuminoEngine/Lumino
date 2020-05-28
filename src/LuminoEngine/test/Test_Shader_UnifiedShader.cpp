@@ -22,7 +22,7 @@ TEST_F(Test_Shader_UnifiedShader, Basic)
         detail::UnifiedShader* shader = compiler.unifiedShader();
 
         shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
-        shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
+        //shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
     }
 
 
@@ -84,7 +84,7 @@ TEST_F(Test_Shader_UnifiedShader, LayoutTest2)
 
         detail::UnifiedShader* shader = compiler.unifiedShader();
         shader->save(LN_TEMPFILE("UnifiedShader.lcfx"));
-        shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
+        //shader->saveCodes(String(LN_TEMPFILE("")) + u"/");
     }
 
 

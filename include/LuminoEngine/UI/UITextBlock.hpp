@@ -2,7 +2,6 @@
 #include "UIElement.hpp"
 
 namespace ln {
-class Material;
 class RTDocument;
 //namespace detail {
 //class FlexText;

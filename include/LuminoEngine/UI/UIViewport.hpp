@@ -4,7 +4,6 @@
 namespace ln {
 class RenderView;
 class ImageEffect;
-class Material;
 namespace detail {
 class UIManager;
 class ImageEffectRenderer;
@@ -65,7 +64,7 @@ private:
     List<Ref<RenderView>> m_renderViews;
 	//Ref<RenderPass> m_renderPass;
     Size m_actualViewboxSize;
-    Ref<Material> m_blitMaterial;
+    Ref<AbstractMaterial> m_blitMaterial;
 	Ref<RenderTargetTexture> m_primaryTarget;
 	UIViewportPlacement m_placement;
 	Size m_viewBoxSize;

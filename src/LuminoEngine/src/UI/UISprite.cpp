@@ -35,7 +35,7 @@ void UISprite::init()
     UIElement::init();
 
 	setAlignments(HAlignment::Center, VAlignment::Center);
-    m_material = makeObject<Material>();
+    m_material = makeObject<AbstractMaterial>();
     m_size = Size(-1, -1);
     m_sourceRect = Rect(0, 0, -1, -1);
     setBlendMode(BlendMode::Alpha);

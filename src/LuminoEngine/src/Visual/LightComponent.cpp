@@ -177,13 +177,13 @@ void DirectionalLightComponent::init()
 
 #if 0
 	auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/LightDisc.fx");
-	m_material = makeObject<Material>();
+	m_material = makeObject<AbstractMaterial>();
 	m_material->setShader(shader);
 
 
 	auto tex2 = Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Flare1.png");
 	auto shader2 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/FlareSprite.fx");
-	m_spriteMaterial = makeObject<Material>();
+	m_spriteMaterial = makeObject<AbstractMaterial>();
 	m_spriteMaterial->setMainTexture(tex2);
 	m_spriteMaterial->setShader(shader2);
 #endif

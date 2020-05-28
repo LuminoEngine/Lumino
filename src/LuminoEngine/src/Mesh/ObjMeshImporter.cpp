@@ -273,7 +273,7 @@ Ref<StaticMeshModel> ObjMeshImporter::import(const Path& filePath, float scale, 
         Ref<Texture2D> texture = nullptr;//makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
         if (!material.diffuse_texname.empty())
             texture = Texture2D::load(Path(parentDirPath, String::fromStdString(material.diffuse_texname)));
-        auto m = makeObject<Material>(texture, materialData);
+        auto m = makeObject<AbstractMaterial>(texture, materialData);
         meshModel->addMaterial(m);
     }
 

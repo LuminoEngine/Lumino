@@ -4,7 +4,7 @@
 
 namespace ln {
 class Texture;
-class Material;
+class AbstractMaterial;
 class Mesh;
 class RenderingContext;
 class MeshVoxelset;

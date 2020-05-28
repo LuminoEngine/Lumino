@@ -22,7 +22,7 @@ namespace detail {
 
 Ref<AbstractMaterial> PmxMaterialResource::MakeCommonMaterial() const
 {
-    auto m = makeObject<Material>();
+    auto m = makeObject<AbstractMaterial>();
     m->setMainTexture(Texture);
     m->setColor(Diffuse);
     m->setEmissive(Emissive);

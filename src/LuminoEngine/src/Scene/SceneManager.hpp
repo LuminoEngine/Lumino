@@ -5,7 +5,6 @@
 
 namespace ln {
 class Shader;
-class Material;
 class World;
 
 namespace detail {
@@ -37,7 +36,7 @@ public:
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
 	const Ref<Raycaster>& raycasterCache() const { return m_raycasterCache; }
 
-	const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
+	const Ref<AbstractMaterial>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
     // テスト用の設定。
     // 0.9.0 以降、WorldObject は World へ自動追加しないようにしたい。
@@ -52,7 +51,7 @@ private:
 	Ref<Raycaster> m_raycasterCache;
 
 
-	Ref<Material> m_primitiveMeshDefaultMaterial;
+	Ref<AbstractMaterial> m_primitiveMeshDefaultMaterial;
 };
 
 } // namespace detail

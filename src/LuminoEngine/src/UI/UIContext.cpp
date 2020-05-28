@@ -41,7 +41,7 @@ void UIContext::init()
 	}
 
 
-	m_finalDefaultStyle->backgroundMaterial = makeObject<Material>();
+	m_finalDefaultStyle->backgroundMaterial = makeObject<AbstractMaterial>();
     detail::UIStyleInstance::updateStyleDataHelper(m_styleContext, nullptr, m_styleContext->mainTheme->defaultStyle(), m_finalDefaultStyle);
 }
 

@@ -6,15 +6,6 @@
 #include "../Shader/ShaderInterfaceFramework.hpp"
 
 namespace ln {
-namespace detail {
-
-enum class MaterialType : uint8_t
-{
-	PBR,
-	Phong,
-};
-
-} // namespace detail
 
 /**
 	@brief
@@ -23,6 +14,11 @@ enum class MaterialType : uint8_t
 class AbstractMaterial
 	: public Object
 {
+	LN_OBJECT;
+public:
+	static Ref<AbstractMaterial> create();
+	static Ref<AbstractMaterial> create(Texture* mainTexture);
+	static Ref<AbstractMaterial> create(Texture* mainTexture, ShadingModel shadingModel);
 	//LN_OBJECT;
 //public:
 //	static const String DiffuseParameter;
@@ -90,11 +86,13 @@ public:
 	Optional<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
 
 
-protected:
-	AbstractMaterial(detail::MaterialType type);
+LN_CONSTRUCT_ACCESS:
+	AbstractMaterial();
 	virtual ~AbstractMaterial();
 	void init();
-
+	void init(Texture* mainTexture);
+	void init(Texture* mainTexture, ShadingModel shadingModel);
+	void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
 
 //LN_INTERNAL_ACCESS:
 //	void reset();
@@ -169,7 +167,6 @@ protected:  // TODO:
 
 	detail::ShaderParameterValue* getValue(const ln::StringRef& name);
 
-	detail::MaterialType m_type;
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
@@ -226,23 +223,13 @@ private:
 class Material
 	: public AbstractMaterial
 {
-	LN_OBJECT;
 public:
-	static Ref<Material> create();
-    static Ref<Material> create(Texture* mainTexture);
-    static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);
 
 public:
 protected:
 
 
-LN_CONSTRUCT_ACCESS:
-	Material();
-	virtual ~Material();
-	void init();
-    void init(Texture* mainTexture);
-    void init(Texture* mainTexture, ShadingModel shadingModel);
-    void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
+public:
 
 private:
 };

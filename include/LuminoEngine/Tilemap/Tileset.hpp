@@ -6,7 +6,6 @@
 namespace ln {
 struct Size;
 class Texture;
-class Material;
 class RenderingContext;
 
 enum class TileCollisionType : uint8_t
@@ -18,7 +17,7 @@ class AutoTileset
 	: public Object
 {
 public:
-	Ref<Material> material;
+	Ref<AbstractMaterial> material;
 
 	// autotileId: 0~AutoTileUnitStride
 	// component: [top-left][top-right][bottom-left][bottom-light]
@@ -47,7 +46,7 @@ public:
 	static Ref<Tileset> create(Texture* texture, int tilePixelWidth, int tilePixelHeight);
 
     // util
-    void reset(Material* material, int tilePixelWidth, int tilePixelHeight);
+    void reset(AbstractMaterial* material, int tilePixelWidth, int tilePixelHeight);
 
     void resize(int tileCount);
     void setTilePixelSize(int width, int height);
@@ -60,9 +59,9 @@ public:
 
     int tilePixelWidth() const { return m_tilePixelWidth; }
     int tilePixelHeight() const { return m_tilePixelHeight; }
-    Material* material() const;
+    AbstractMaterial* material() const;
 
-    void setMaterial(Material* material);
+    void setMaterial(AbstractMaterial* material);
 
 	static int autoTileIndex(int tileId) { return (tileId < Tileset::AutoTileOffset) ? -1 : ((tileId - Tileset::AutoTileOffset) / Tileset::AutoTileSetStride); }
 	static int autoTileLocalId(int tileId) { return (tileId < Tileset::AutoTileOffset) ? -1 : tileId % Tileset::AutoTileUnitStride; }
@@ -115,7 +114,7 @@ private:
     //int m_horizontalTileCount;
     //Size m_tileUVSize;
     Vector2 m_tileScale;
-    Ref<Material> m_material;
+    Ref<AbstractMaterial> m_material;
     List<Tile> m_tiles;
 	List<Ref<AutoTileset>> m_autoTilesets;
 };

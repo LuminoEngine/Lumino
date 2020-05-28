@@ -85,7 +85,7 @@ void TilemapModel::init(const StringRef& filePath)
         // Tilesets
         for (const auto& tmxTileset : tmxMap.getTilesets())
         {
-            auto material = ln::Material::create();
+            auto material = ln::AbstractMaterial::create();
             material->setMainTexture(ln::Assets::loadTexture(ln::String::fromStdString(tmxTileset.getImagePath())));
 
             auto tileset = ln::makeObject<ln::Tileset>();

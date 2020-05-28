@@ -1,8 +1,8 @@
 ﻿
 #pragma once
+#include "Common.hpp"
 
 namespace ln {
-class Material;
 class RenderingContext;
 namespace detail {
 
@@ -16,7 +16,7 @@ public:
 	void render(RenderingContext* context, const RenderViewPoint* viewPoint);
 
 private:
-	Ref<Material> m_material;
+	Ref<AbstractMaterial> m_material;
     Vector3 m_lightDirection;
 };
 

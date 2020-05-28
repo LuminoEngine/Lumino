@@ -10,7 +10,6 @@
 namespace ln {
 //namespace detail { class ShadowCasterPass; }
 
-class Material;
 #if 0
 /** ライトのコンポーネントです。 */
 class LightComponent
@@ -253,8 +252,8 @@ private:
 	float m_intensity;
 	bool m_enabled;
 
-	Ref<Material> m_material;
-	Ref<Material> m_spriteMaterial;
+	Ref<AbstractMaterial> m_material;
+	Ref<AbstractMaterial> m_spriteMaterial;
 };
 
 /** ポイントライトのコンポーネントです。 */
