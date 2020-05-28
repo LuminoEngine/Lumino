@@ -607,6 +607,7 @@ bool ShaderModuleParser::readTechnique(const std::string& name, const YAML::Node
     int iPass = 0;
     for (const auto& passItemNode : passes) {
         HLSLPass passInfo;
+        passInfo.renderState = makeRef<ShaderRenderState>();
         if (!readPass(name, iPass, passItemNode, &passInfo)) {
             return false;
         }
