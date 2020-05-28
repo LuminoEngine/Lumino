@@ -1,6 +1,12 @@
 ﻿Rendering
 ==========
 
+```plantuml
+left to right direction
+[RenderingContext]
+```
+
+
 改善案
 ----------
 - [ ] RenderingContext を、ある程度ステートマシンやめる。
@@ -13,5 +19,5 @@
 	・早く実装するためのAPI (Cinder とか)
 	は分けたほうがいいと思う。
 	どっちつかずになると、またふらふら仕様変えることになりそう。
-- [ ] AbstractMaterial 廃止
+
 

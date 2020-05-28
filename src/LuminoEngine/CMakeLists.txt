@@ -142,7 +142,7 @@ set(LN_SOURCES_Font
 
 file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/Mesh/*.cpp src/Mesh/*.hpp)
 
-file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp)
+file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp src/Rendering/*.md)
 
 file(GLOB LN_SOURCES_ImageEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/*.hpp src/ImageEffect/*.cpp src/ImageEffect/*.hpp)
 
