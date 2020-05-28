@@ -448,8 +448,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 
 				if (finalMaterial) {
-					PbrMaterialData pbrMaterialData;
-					finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
+					PbrMaterialData pbrMaterialData = finalMaterial->getPbrMaterialData();
 					semanticsManager->updateSubsetVariables_PBR(pbrMaterialData);
 					finalMaterial->updateShaderVariables(tech->shader());
 					RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);

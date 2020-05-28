@@ -8,9 +8,20 @@ namespace ln {
 //==============================================================================
 // AbstractMaterial
 
+static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+static const float Material_DefaultRoughness = 0.5f;
+static const float Material_DefaultMetallic = 0.5f;
+//static const float Material_DefaultSpecular = 0.5f;
+static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
+
 AbstractMaterial::AbstractMaterial(detail::MaterialType type)
 	: m_type(type)
 {
+    m_data.color = Material_DefaultColor;
+    m_data.roughness = Material_DefaultRoughness;
+    m_data.metallic = Material_DefaultMetallic;
+    //m_data.specular = Material_DefaultSpecular;
+    m_data.emissive = Material_DefaultEmmisive;
 }
 
 AbstractMaterial::~AbstractMaterial()
@@ -30,6 +41,26 @@ void AbstractMaterial::setMainTexture(Texture* value)
 Texture* AbstractMaterial::mainTexture() const
 {
 	return m_mainTexture;
+}
+
+void AbstractMaterial::setColor(const Color& value)
+{
+    m_data.color = value;
+}
+
+void AbstractMaterial::setRoughness(float value)
+{
+    m_data.roughness = value;
+}
+
+void AbstractMaterial::setMetallic(float value)
+{
+    m_data.metallic = value;
+}
+
+void AbstractMaterial::setEmissive(const Color& value)
+{
+    m_data.emissive = value;
 }
 
 void AbstractMaterial::setShader(Shader* shader)
@@ -176,6 +207,12 @@ void AbstractMaterial::updateShaderVariables(Shader* target) const
     }
 }
 
+void AbstractMaterial::serialize(Archive& ar)
+{
+    AbstractMaterial::serialize(ar);
+    ar & makeNVP(u"mainTexture", m_mainTexture);
+}
+
 //==============================================================================
 // Material
 // https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
@@ -183,11 +220,6 @@ void AbstractMaterial::updateShaderVariables(Shader* target) const
 
 LN_OBJECT_IMPLEMENT(Material, Object) {}
 
-static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
-static const float Material_DefaultRoughness = 0.5f;
-static const float Material_DefaultMetallic = 0.5f;
-//static const float Material_DefaultSpecular = 0.5f;
-static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
 
 Ref<Material> Material::create()
 {
@@ -207,11 +239,6 @@ Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
 Material::Material()
 	: AbstractMaterial(detail::MaterialType::PBR)
 {
-	m_data.color = Material_DefaultColor;
-	m_data.roughness = Material_DefaultRoughness;
-	m_data.metallic = Material_DefaultMetallic;
-	//m_data.specular = Material_DefaultSpecular;
-    m_data.emissive = Material_DefaultEmmisive;
 }
 
 Material::~Material()
@@ -240,47 +267,6 @@ void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phong
     init();
     setMainTexture(mainTexture);
     setColor(phongMaterialData.diffuse);
-}
-
-void Material::setColor(const Color& value)
-{
-	m_data.color = value;
-}
-
-void Material::setRoughness(float value)
-{
-	m_data.roughness = value;
-}
-
-void Material::setMetallic(float value)
-{
-	m_data.metallic = value;
-}
-//
-//void Material::setSpecular(float value)
-//{
-//	m_data.specular = value;
-//}
-
-void Material::setEmissive(const Color& value)
-{
-    m_data.emissive = value;
-}
-
-void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData) const
-{
-	*outData = m_data;
-}
-
-void Material::translateToPhongMaterialData(detail::PhongMaterialData* outData) const
-{
-	LN_NOTIMPLEMENTED();
-}
-
-void Material::serialize(Archive& ar)
-{
-    AbstractMaterial::serialize(ar);
-    ar & makeNVP(u"mainTexture", m_mainTexture);
 }
 
 
@@ -356,11 +342,6 @@ void Material::serialize(Archive& ar)
 //	outData->roughness = Material_DefaultRoughness;
 //	outData->metallic = Material_DefaultMetallic;
 //	//outData->specular = Material_DefaultSpecular;
-//}
-//
-//void PhongMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)
-//{
-//	*outData = m_data;
 //}
 
 } // namespace ln

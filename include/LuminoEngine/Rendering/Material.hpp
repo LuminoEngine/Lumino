@@ -36,6 +36,14 @@ public:
 	void setMainTexture(Texture* value);
 	Texture* mainTexture() const;
 
+	void setColor(const Color& value);
+	void setRoughness(float value);
+	void setMetallic(float value);
+	void setEmissive(const Color& value);
+
+
+
+
 	void setShader(Shader* shader);
 	Shader* shader() const;
 
@@ -87,9 +95,6 @@ protected:
 	virtual ~AbstractMaterial();
 	void init();
 
-public: // TODO: internal
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const = 0;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const = 0;
 
 //LN_INTERNAL_ACCESS:
 //	void reset();
@@ -171,6 +176,8 @@ protected:  // TODO:
 
 protected:
 
+	LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serialize(Archive& ar) override;
 
 LN_INTERNAL_ACCESS:
 
@@ -204,6 +211,13 @@ LN_INTERNAL_ACCESS:
 	//void applyUserShaderValeues(Shader* targetShader);
 
 	//uint32_t getHashCode();
+
+private:
+	const detail::PbrMaterialData& getPbrMaterialData() const { return m_data; }
+
+	detail::PbrMaterialData m_data;
+
+	friend class detail::SceneRenderer;
 };
 
 /**
@@ -219,18 +233,8 @@ public:
     static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);
 
 public:
-	void setColor(const Color& value);
-	void setRoughness(float value);
-	void setMetallic(float value);
-	//void setSpecular(float value);  // TODO: 不要？http://envgameartist.blogspot.com/2014/12/pbr.html
-    void setEmissive(const Color& value);
-
 protected:
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const override;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const override;
 
-    LN_SERIALIZE_CLASS_VERSION(1);
-    virtual void serialize(Archive& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	Material();
@@ -241,7 +245,6 @@ LN_CONSTRUCT_ACCESS:
     void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
 
 private:
-	detail::PbrMaterialData m_data;
 };
 
 } // namespace ln

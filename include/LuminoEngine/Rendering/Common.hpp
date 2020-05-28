@@ -174,7 +174,7 @@ struct BoxElementShapeShadowStyle
 
 
 namespace detail {
-
+class SceneRenderer;
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {
