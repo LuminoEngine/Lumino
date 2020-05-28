@@ -2,7 +2,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include <LuminoEngine/Rendering/Drawing.hpp>
-#include "../RenderStage.hpp"
+#include "../RenderElement.hpp"
 #include "../RenderingManager.hpp"
 
 namespace ln {

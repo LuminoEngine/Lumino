@@ -14,6 +14,7 @@
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include "../Rendering/RenderStage.hpp"
+#include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Mesh/MeshGenerater.hpp"
 #include "../ImageEffect/ImageEffectRenderer.hpp"

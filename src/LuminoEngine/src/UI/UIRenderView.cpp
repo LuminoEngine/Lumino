@@ -11,6 +11,7 @@
 #include <LuminoEngine/UI/UIDialog.hpp>
 #include <LuminoEngine/UI/UIFocusNavigator.hpp>
 #include "../Rendering/RenderStage.hpp"
+#include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 
 namespace ln {

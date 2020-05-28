@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../RenderStage.hpp"
+#include "../RenderElement.hpp"
 #include "../RenderingManager.hpp"
 
 namespace ln {

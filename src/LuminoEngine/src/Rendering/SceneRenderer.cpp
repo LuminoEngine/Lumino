@@ -8,6 +8,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "RenderStage.hpp"
+#include "RenderElement.hpp"
 #include "RenderingPipeline.hpp"
 #include "RenderingManager.hpp"
 #include "SceneRenderer.hpp"

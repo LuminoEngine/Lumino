@@ -8,6 +8,7 @@
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "RenderingPipeline.hpp"
 #include "RenderStage.hpp"
+#include "RenderElement.hpp"
 
 namespace ln {
 namespace detail {

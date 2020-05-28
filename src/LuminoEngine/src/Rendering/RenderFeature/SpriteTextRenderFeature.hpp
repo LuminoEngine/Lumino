@@ -3,7 +3,7 @@
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
 #include "../../Font/FontGlyphCache.hpp"
 #include "../../Font/TextLayoutEngine.hpp"
-#include "../RenderStage.hpp"
+#include "../RenderElement.hpp"
 #include "../RenderingManager.hpp"
 
 namespace ln {
