@@ -97,33 +97,6 @@ private:
 	int m_buffersReservedSpriteCount;
 };
 
-class SpriteRenderFeatureStageParameters
-	: public RenderFeatureStageParameters
-{
-public:
-	InternalSpriteRenderer::State m_state;
-
-	SpriteRenderFeatureStageParameters()
-		: RenderFeatureStageParameters(CRCHash::compute("SpriteRenderFeatureStageParameters"))
-	{
-	}
-
-	virtual bool equals(const RenderFeatureStageParameters* other) override
-	{
-		if (typeId() != other->typeId()) return false;
-		if (this == other) return true;
-		return this->m_state == static_cast<const SpriteRenderFeatureStageParameters*>(other)->m_state;
-	}
-
-	virtual void copyTo(RenderFeatureStageParameters* params) override
-	{
-		LN_CHECK(typeId() == params->typeId());
-		static_cast<SpriteRenderFeatureStageParameters*>(params)->m_state = m_state;
-	}
-
-private:
-};
-
 class SpriteRenderFeature
 	: public RenderFeature
 {
@@ -166,32 +139,6 @@ private:
     bool m_stateChanged;
 };
 
-
-
-
-class SpriteRenderFeatureStageParameters2
-	: public RenderFeatureStageParameters
-{
-public:
-	SpriteRenderFeatureStageParameters2()
-		: RenderFeatureStageParameters(CRCHash::compute("SpriteRenderFeatureStageParameters2"))
-	{
-	}
-
-	virtual bool equals(const RenderFeatureStageParameters* other) override
-	{
-		if (typeId() != other->typeId()) return false;
-		if (this == other) return true;
-		return false;
-	}
-
-	virtual void copyTo(RenderFeatureStageParameters* params) override
-	{
-		LN_CHECK(typeId() == params->typeId());
-	}
-
-private:
-};
 
 class SpriteRenderFeature2 : public RenderFeature
 {

@@ -84,22 +84,11 @@ public:
     void pushState(bool reset); // ※ 単純に state を退避するための仕組みなので、OpenGL の push/pop Matrix のように transform の乗算などは行わない。
     void popState();
 
-    BlitRenderFeatureStageParameters* blitRenderFeatureStageParameters() { return &m_blitRenderFeatureStageParameters; }
-	SpriteRenderFeatureStageParameters* spriteRenderFeatureStageParameters() { return &m_spriteRenderFeatureStageParameters; }
-	SpriteRenderFeatureStageParameters2* spriteRenderFeatureStageParameters2() { return &m_spriteRenderFeatureStageParameters2; }
-	MeshRenderFeatureStageParameters* meshRenderFeatureStageParameters() { return &m_meshRenderFeatureStageParameters; }
-	MeshGeneraterRenderFeatureStageParameters* meshGeneraterRenderFeatureStageParameters() { return &m_meshGeneraterRenderFeatureStageParameters; }
-	SpriteTextRenderFeatureStageParameters* spriteTextRenderFeatureStageParameters() { return &m_spriteTextRenderFeatureStageParameters; }
-	FrameRectRenderFeatureStageParameters* frameRectRenderFeatureStageParameters() { return &m_frameRectRenderFeatureStageParameters; }
-	ShapesRenderFeatureStageParameters* shapesRenderFeatureStageParameters() { return &m_shapesRenderFeatureStageParameters; }
-    ExtensionRenderFeatureStageParameters* extensionRenderFeatureStageParameters() { return &m_extensionRenderFeatureStageParameters; }
-
 	template<class TElement>
 	TElement* addNewDrawElement(
-		RenderFeature* renderFeature,
-		RenderFeatureStageParameters* params)
+		RenderFeature* renderFeature)
 	{
-		RenderStage* stage = prepareRenderStage(renderFeature, params);
+		RenderStage* stage = prepareRenderStage(renderFeature);
 		if (LN_ENSURE(stage)) return nullptr;
 		TElement* element = m_targetList->newFrameData<TElement>();
 		m_targetList->addElement(stage, element);
@@ -139,7 +128,7 @@ private:
         All = 0xFFFF,
     };
 
-	RenderStage* prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters* featureParams);
+	RenderStage* prepareRenderStage(RenderFeature* renderFeature);
     void prepareRenderDrawElement(RenderDrawElement* newElement, RenderDrawElement* lastElement, RenderStage* stage);
     const Ref<State>& primaryState() { return m_aliveStateStack.front(); }
     const Ref<State>& primaryStateConst() const { return m_aliveStateStack.front(); }
@@ -154,21 +143,6 @@ private:
     List<Ref<State>> m_freeStateStack;
     List<Ref<State>> m_aliveStateStack;	// size >= 1
     int m_currentCommandFence;
-
-
-	// 以下、各 RenderFeature のステート。
-	// これは m_modified 対象外。代わりに prepareRenderStage() のたびに equals() でチェックされる。
-	// ユーザー定義する場合は外部でこれらを定義し、draw 時にそのポインタを指定する必要がある。
-	// (もしフレームワークに沿った流れでなくても大丈夫ならグローバル変数とかで受け取ったりしても大丈夫)
-    BlitRenderFeatureStageParameters m_blitRenderFeatureStageParameters;
-	SpriteRenderFeatureStageParameters m_spriteRenderFeatureStageParameters;
-	SpriteRenderFeatureStageParameters2 m_spriteRenderFeatureStageParameters2;
-	MeshRenderFeatureStageParameters m_meshRenderFeatureStageParameters;
-	MeshGeneraterRenderFeatureStageParameters m_meshGeneraterRenderFeatureStageParameters;
-	SpriteTextRenderFeatureStageParameters m_spriteTextRenderFeatureStageParameters;
-	FrameRectRenderFeatureStageParameters m_frameRectRenderFeatureStageParameters;
-	ShapesRenderFeatureStageParameters m_shapesRenderFeatureStageParameters;
-    ExtensionRenderFeatureStageParameters m_extensionRenderFeatureStageParameters;
 
     Ref<Material> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;

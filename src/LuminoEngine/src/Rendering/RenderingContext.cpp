@@ -168,7 +168,7 @@ void RenderingContext::clear(Flags<ClearFlags> flags, const Color& color, float 
 
     m_builder->advanceFence();
 
-	auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature(), nullptr);
+	auto* element = m_builder->addNewDrawElement<Clear>(m_manager->clearRenderFeature());
 	element->addFlags(detail::RenderDrawElementTypeFlags::Clear);
 	element->flags = flags;
 	element->color = color;
@@ -192,9 +192,7 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
     };
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::LineList);
-    auto* element = m_builder->addNewDrawElement<DrawLine>(
-        m_manager->meshGeneraterRenderFeature(),
-        m_builder->meshGeneraterRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<DrawLine>(m_manager->meshGeneraterRenderFeature());
     element->data.point1 = from;
     element->data.point1Color = fromColor;
     element->data.point2 = to;
@@ -217,9 +215,7 @@ void RenderingContext::drawPlane(float width, float depth, const Color& color)
     };
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<DrawPlane>(
-        m_manager->meshGeneraterRenderFeature(),
-        m_builder->meshGeneraterRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<DrawPlane>(m_manager->meshGeneraterRenderFeature());
     element->data.size.set(width, depth);
     element->data.setColor(color);
     //element->data.setTransform(/*element->combinedWorldMatrix()*/);
@@ -239,9 +235,7 @@ void RenderingContext::drawSphere(float radius, int slices, int stacks, const Co
     };
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<DrawSphere>(
-        m_manager->meshGeneraterRenderFeature(),
-        m_builder->meshGeneraterRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<DrawSphere>(m_manager->meshGeneraterRenderFeature());
     element->data.m_radius = radius;
     element->data.m_slices = slices;
     element->data.m_stacks = stacks;
@@ -265,9 +259,7 @@ void RenderingContext::drawBox(const Box& box, const Color& color, const Matrix&
 	};
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<DrawBox>(
-		m_manager->meshGeneraterRenderFeature(),
-		m_builder->meshGeneraterRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<DrawBox>(m_manager->meshGeneraterRenderFeature());
 	// TODO: box.center
 	element->data.m_size = Vector3(box.width, box.height, box.depth);
 	element->data.setColor(color);
@@ -290,9 +282,7 @@ void RenderingContext::drawScreenRectangle()
     m_builder->advanceFence();
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
-    auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(
-        m_manager->blitRenderFeature(),
-        m_builder->blitRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<DrawScreenRectangle>(m_manager->blitRenderFeature());
     element->targetPhase = RenderPhaseClass::Geometry;
 
     m_builder->advanceFence();
@@ -369,9 +359,7 @@ void RenderingContext::blit(Material* source, RenderTargetTexture* destination, 
 	m_builder->advanceFence();
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleStrip);	// TODO: この辺りは RenderFeature の描き方に依存するので、そっちからもらえるようにした方がいいかも
-	auto* element = m_builder->addNewDrawElement<Blit>(
-		m_manager->blitRenderFeature(),
-		m_builder->blitRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<Blit>(m_manager->blitRenderFeature());
 	element->targetPhase = phase;
 
     if (destination)
@@ -417,9 +405,7 @@ void RenderingContext::drawSprite(
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
 	m_builder->setMaterial(material);
-	auto* element = m_builder->addNewDrawElement<DrawSprite>(
-		m_manager->spriteRenderFeature2(),
-		m_builder->spriteRenderFeatureStageParameters2());
+	auto* element = m_builder->addNewDrawElement<DrawSprite>(m_manager->spriteRenderFeature2());
 	element->transform = transform;
 	element->size.set(size.width, size.height);
 	element->anchorRatio = anchor;
@@ -455,9 +441,7 @@ void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuff
 	};
 
 	m_builder->setPrimitiveTopology(topology);
-	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(
-		m_manager->primitiveRenderFeature(),
-		m_builder->meshGeneraterRenderFeatureStageParameters());	// TODO: めんどいので共有。あどで消すし…
+	auto* element = m_builder->addNewDrawElement<DrawPrimitive>(m_manager->primitiveRenderFeature());
 	element->vertexLayout = vertexDeclaration;
 	element->vertexBuffer = vertexBuffer;
 	element->startVertex = startVertex;
@@ -503,9 +487,7 @@ void RenderingContext::drawMesh(MeshResource* meshResource, int sectionIndex)
     if (meshResource->isInitialEmpty()) return;
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<DrawMesh>(
-        m_manager->meshRenderFeature(),
-        m_builder->meshRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<DrawMesh>(m_manager->meshRenderFeature());
     element->meshResource = meshResource;
     element->sectionIndex = sectionIndex;
 
@@ -533,9 +515,7 @@ void RenderingContext::drawMesh(Mesh* mesh, int sectionIndex)
     //if (meshResource->isInitialEmpty()) return;
 
     m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
-    auto* element = m_builder->addNewDrawElement<DrawMesh>(
-        m_manager->meshRenderFeature(),
-        m_builder->meshRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<DrawMesh>(m_manager->meshRenderFeature());
     element->mesh = mesh;
     element->sectionIndex = sectionIndex;
 
@@ -561,9 +541,7 @@ void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, MeshArmatur
 	};
 
 	m_builder->setPrimitiveTopology(mesh->sections()[sectionIndex].topology);
-	auto* element = m_builder->addNewDrawElement<DrawSkinnedMesh>(
-		m_manager->meshRenderFeature(),
-		m_builder->meshRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<DrawSkinnedMesh>(m_manager->meshRenderFeature());
 	element->mesh = mesh;
 	element->sectionIndex = sectionIndex;
 	element->skeleton = skeleton;
@@ -587,9 +565,7 @@ void RenderingContext::drawMeshInstanced(InstancedMeshList* list)
 	if (list->instanceCount() <= 0) return;
 
 	m_builder->setPrimitiveTopology(list->mesh()->sections()[list->sectionIndex()].topology);
-	auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(
-		m_manager->meshRenderFeature(),
-		m_builder->meshRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<DrawMeshInstanced>(m_manager->meshRenderFeature());
 	element->list = list;
 }
 
@@ -646,9 +622,7 @@ void RenderingContext::drawTextSprite(const StringRef& text, const Color& color,
 	}
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
-		m_manager->spriteTextRenderFeature(),
-		m_builder->spriteTextRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
 	element->formattedText = formattedText;
 	element->anchor = anchor;
 	element->baseDirection = baseDirection;
@@ -675,9 +649,7 @@ void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAli
     }
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
-        m_manager->spriteTextRenderFeature(),
-        m_builder->spriteTextRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
     element->formattedText = formattedText;
 	element->baseDirection = SpriteBaseDirection::Basic2D;
 
@@ -690,9 +662,7 @@ void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAli
 void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* font, const Matrix& transform)
 {
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<detail::DrawCharElement>(
-		m_manager->spriteTextRenderFeature(),
-		m_builder->spriteTextRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<detail::DrawCharElement>(m_manager->spriteTextRenderFeature());
 	element->codePoint = codePoint;
 	element->color = color;
     element->transform = transform;
@@ -715,9 +685,7 @@ void RenderingContext::drawChar(uint32_t codePoint, const Color& color, Font* fo
 void RenderingContext::drawFlexGlyphRun(detail::FlexGlyphRun* glyphRun)
 {
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(
-		m_manager->spriteTextRenderFeature(),
-		m_builder->spriteTextRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<detail::DrawTextElement>(m_manager->spriteTextRenderFeature());
 	element->glyphRun = glyphRun;
 	//element->flexText = makeRef<detail::FlexText>();	// TODO: cache
 	//element->flexText->copyFrom(text);
@@ -742,9 +710,7 @@ void RenderingContext::invokeExtensionRendering(INativeGraphicsExtension* extens
         }
     };
 
-    auto* element = m_builder->addNewDrawElement<InvokeExtensionRendering>(
-        m_manager->extensionRenderFeature(),
-        m_builder->extensionRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<InvokeExtensionRendering>(m_manager->extensionRenderFeature());
     element->extension = extension;
 
     // TODO: bounding

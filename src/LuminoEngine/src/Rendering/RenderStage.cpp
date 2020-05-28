@@ -89,27 +89,13 @@ void RenderDrawElement::calculateActualPriority()
 RenderStage::RenderStage()
 	: frameBufferStageParameters(nullptr)
 	, geometryStageParameters(nullptr)
-	, renderFeatureStageParameters(nullptr)
 	, renderFeature(nullptr)
 {
 }
 
 bool RenderStage::equals(const RenderStage* other) const
 {
-    // clear の場合は renderFeatureStageParameters が null になる。
-    bool renderFeatureStageParametersEqual = false;
-    if (renderFeatureStageParameters != other->renderFeatureStageParameters && renderFeatureStageParameters == nullptr) {
-        renderFeatureStageParametersEqual = true;
-    }
-    else if (renderFeatureStageParameters == nullptr || other->renderFeatureStageParameters == nullptr) {
-        renderFeatureStageParametersEqual = false;
-    }
-    else {
-        renderFeatureStageParametersEqual = renderFeatureStageParameters->equals(other->renderFeatureStageParameters);
-    }
-
 	return
-        renderFeatureStageParametersEqual &&
 		frameBufferStageParameters->equals(other->frameBufferStageParameters) &&
 		geometryStageParameters->equals(other->geometryStageParameters) &&
 		renderFeature == other->renderFeature;

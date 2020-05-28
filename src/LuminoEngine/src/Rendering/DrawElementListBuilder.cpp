@@ -307,7 +307,7 @@ void DrawElementListBuilder::popState()
 	}
 }
 
-RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature, RenderFeatureStageParameters * featureParams)
+RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFeature)
 {
 	RenderStage* lastStage = nullptr;
 	RenderStage* newStage = nullptr;
@@ -316,27 +316,6 @@ RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFea
 	}
 	else {
 		lastStage = m_targetList->last();
-
-		if (!m_modified)
-		{
-			if (lastStage->renderFeature != renderFeature) {
-				m_modified = true;
-			}
-		}
-
-		if (!m_modified)
-		{
-			// RenderFeatureStageParameters の変化確認
-			if (lastStage->renderFeatureStageParameters == nullptr && featureParams != nullptr ||
-				lastStage->renderFeatureStageParameters != nullptr && featureParams == nullptr) {
-				// 新しく持ったり、あるいは外したりするときは変化あり
-				m_modified = true;
-			}
-			else if (lastStage->renderFeatureStageParameters && featureParams &&
-				!lastStage->renderFeatureStageParameters->equals(featureParams)) {
-				m_modified = true;
-			}
-		}
 
 		if (m_modified) {
 			newStage = m_targetList->addNewRenderStage();
@@ -348,7 +327,6 @@ RenderStage* DrawElementListBuilder::prepareRenderStage(RenderFeature* renderFea
 	if (newStage) {
 		// ステートが変化したので新しい Stage が作られた。setup して返す
 		newStage->renderFeature = renderFeature;
-		newStage->renderFeatureStageParameters = featureParams;
 
         // FrameBufferStageParameters と GeometryStageParameters は、内容が本当に変更されていなければ、
         // メモリ節約のためにひとつ前の Stage が持っているものとインスタンスを共有する。

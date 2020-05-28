@@ -16,32 +16,6 @@ class MeshArmature;
 class InstancedMeshList;
 namespace detail {
 
-// 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
-// TODO: 後で消す。
-class MeshRenderFeatureStageParameters
-	: public RenderFeatureStageParameters
-{
-public:
-	MeshRenderFeatureStageParameters()
-		: RenderFeatureStageParameters(CRCHash::compute("MeshRenderFeatureStageParameters"))
-	{
-	}
-
-	virtual bool equals(const RenderFeatureStageParameters* other) override
-	{
-		if (typeId() != other->typeId()) return false;
-		if (this == other) return true;
-		return true;
-	}
-
-	virtual void copyTo(RenderFeatureStageParameters* params) override
-	{
-		LN_CHECK(typeId() == params->typeId());
-	}
-
-private:
-};
-
 class MeshRenderFeature	// TODO: MeshSectionRenderFeature
 	: public RenderFeature
 {

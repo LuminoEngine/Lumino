@@ -269,33 +269,6 @@ private:
 	CacheBuffer<uint16_t>		m_indexCache;
 };
 
-// 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
-// TODO: 後で消す。
-class ShapesRenderFeatureStageParameters
-	: public RenderFeatureStageParameters
-{
-public:
-	ShapesRenderFeatureStageParameters()
-		: RenderFeatureStageParameters(CRCHash::compute("ShapesRenderFeatureStageParameters"))
-	{
-	}
-
-	virtual bool equals(const RenderFeatureStageParameters* other) override
-	{
-		if (typeId() != other->typeId()) return false;
-		if (this == other) return true;
-		return true;
-	}
-
-	virtual void copyTo(RenderFeatureStageParameters* params) override
-	{
-		LN_CHECK(typeId() == params->typeId());
-	}
-
-private:
-};
-
-
 class BoxElementShapeCommandList
 {
 public:
