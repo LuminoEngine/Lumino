@@ -200,7 +200,54 @@ Texture が持っている SamplerState をセットする。(2018/12/30 時点�
 - lnS_<変数名> : SamplerState 型変数の名前
 
 
+GLSL と HLSL の Matrix layout (Matrix storage order)
+----------
+
+### 実際の動作
+
+- デフォルトの状態では、HLSL の floatXxX を GLSL の matXX に変換すると、`layout(row_major)` で修飾される。(例： layout(row_major) mat4 viewProjection;)
+- HLSL で `#pragma pack_matrix(row_major)` を宣言すると、変換された GLSL から `layout()` 修飾は消える。(GLSL のデフォルトになる)
+
+これらのことから、
+- `HLSL は HLSL の世界で`、 column_major がデフォルト
+- `GLSL は GLSL の世界で`、 column_major がデフォルト
+
+と推測できる。
+
+…本当に？
 
 
 
 
+[MSDN の GLSL-HLSL 対応表](https://docs.microsoft.com/ja-jp/windows/uwp/gaming/glsl-to-hlsl-reference) では、次のように説明されている。
+
+- GLSL: Row-major matrices (default)
+- HLSL: Column-major matrices (default)
+    - Row-major にしたいときは row_major で変数を修飾する必要がある。
+
+### glslang の動作
+
+ものすごく注意点として、`HLSL の layout 指定と、glslang の内部フォーマットは逆` だった。
+
+`#pragma pack_matrix(row_major)` をパースするときに、逆転させている。
+https://github.com/KhronosGroup/glslang/blob/master/hlsl/hlslParseHelper.cpp#L543-L551
+
+また、HLSL の layout 指定のトークンを解析するときにも逆転している。
+https://github.com/KhronosGroup/glslang/blob/master/hlsl/hlslGrammar.cpp#L690-L694
+
+
+
+
+
+https://github.com/KhronosGroup/glslang/blob/master/hlsl/hlslParseHelper.cpp#L76
+
+https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL)
+GLSL行列は常に列優先です。この仕様は、GLSLがバッファからデータをフェッチする方法のみを変更します。
+
+### とりあえず方針
+
+Lumino 側で転置するのは大変なので、シェーダが UBO をフェッチするときの設定に任せたい。
+
+そのためできるだけ ShaderTranspiler の中でカバーする。
+
+なお、もし Lumino 側で転置するとなると、4x4 行列以外も考えないとならないので負担激増する。

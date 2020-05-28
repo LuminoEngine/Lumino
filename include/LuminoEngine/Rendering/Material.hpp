@@ -39,8 +39,16 @@ public:
 	void setShader(Shader* shader);
 	Shader* shader() const;
 
+	/** 整数値を設定します。 */
 	void setInt(const StringRef& name, int value);
+
+	/** 整数値の配列を設定します。 */
+	void setIntArray(const StringRef& name, const int* value, int count);
+
+	/** 浮動小数点値を設定します。 */
 	void setFloat(const StringRef& name, float value);
+
+	/** 浮動小数点値の配列を設定します。 */
 	void setFloatArray(const StringRef& name, const float* values, int length);
 	void setVector(const StringRef& name, const Vector4& value);
 	void setVectorArray(const StringRef& name, const Vector4* values, int length);
@@ -199,7 +207,7 @@ LN_INTERNAL_ACCESS:
 };
 
 /**
- * 標準的な物理ベースレンダリングのマテリアルです。
+ * Material
  */
 class Material
 	: public AbstractMaterial
@@ -235,46 +243,6 @@ LN_CONSTRUCT_ACCESS:
 private:
 	detail::PbrMaterialData m_data;
 };
-
-
-/** 非物理ベースレンダリングで使用される Phong シェーディング用のマテリアルです。 */
-//class PhongMaterial
-//	: public AbstractMaterial
-//{
-//	//LN_OBJECT;
-//public:
-//	static const String DiffuseParameterName;
-//	static const String AmbientParameterName;
-//	static const String EmissiveParameterName;
-//	static const String SpecularParameterName;
-//	static const String SpecularPowerParameterName;
-//
-//	static const Color DefaultDiffuse;
-//	static const Color DefaultAmbient;
-//	static const Color DefaultSpecular;
-//	static const Color DefaultEmissive;
-//	static const float DefaultPower;
-//
-//	static Ref<PhongMaterial> create();
-//
-//	void setDiffuse(const Color& value);
-//	void setAmbient(const Color& value);
-//	void setEmissive(const Color& value);
-//	void setSpecular(const Color& value);
-//	void setSpecularPower(float value);
-//
-//protected:
-//	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
-//	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
-//
-//LN_CONSTRUCT_ACCESS:
-//	PhongMaterial();
-//	virtual ~PhongMaterial();
-//	void init();
-//
-//private:
-//	detail::PhongMaterialData m_data;
-//};
 
 } // namespace ln
 

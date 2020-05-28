@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2019 lriki. Distributed under the MIT license.
 #pragma once
 
+//#define LN_SHADER_UBO_TRANSPORSE_MATRIX
+
 namespace ln {
 class ShaderDescriptor;
 class ShaderTechnique;

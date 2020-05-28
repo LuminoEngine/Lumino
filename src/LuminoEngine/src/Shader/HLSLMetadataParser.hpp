@@ -5,6 +5,10 @@
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include "../Grammar/Token.hpp"
 
+namespace YAML {
+    class Node;
+}
+
 namespace ln {
 class Token;
 
@@ -90,6 +94,28 @@ private:
     Ref<List<Token>> m_tokens;
     int m_current;
     bool m_isLuminoShader;
+};
+
+/**
+  @module ~ @end
+ */
+class ShaderModuleParser
+{
+public:
+    int moduleBegin = 0;
+    int moduleEnd = 0;
+
+    std::vector<HLSLTechnique> techniques;
+    static bool checkHasModuleBlock(const char* code, size_t length);
+    bool parse(const char* code, size_t length, DiagnosticsManager* diag);
+
+private:
+    std::string findModuleTextRange(const char* code, size_t length, int* outBegin, int* outEnd);
+    bool readTechniques(const YAML::Node& techniques);
+    bool readTechnique(const std::string& name, const YAML::Node& technique);
+    bool readPass(const std::string& techName, int passIndex, const YAML::Node& passItemNode, HLSLPass* outPass);
+
+    DiagnosticsManager* m_diag;
 };
 
 } // namespace detail
