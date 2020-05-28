@@ -58,9 +58,6 @@ void RenderingManager::init(const Settings& settings)
     m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
 	m_renderFeatures.add(m_blitRenderFeature);
 
- //   m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
-	//m_renderFeatures.add(m_spriteRenderFeature);
-
 	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
 	m_renderFeatures.add(m_spriteRenderFeature2);
 

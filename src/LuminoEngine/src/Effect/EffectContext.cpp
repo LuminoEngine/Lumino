@@ -212,7 +212,7 @@ void SpriteFrameEffectEmitter::onRender(RenderingContext* renderingContext)
 
         Size renderSize;
         Rect renderSourceRect;
-        detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+        detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
             tex, m_data->m_spriteSize, sourceRect, &renderSize, &renderSourceRect);
 
        // Matrix transform = Matrix::makeTranslation(position());

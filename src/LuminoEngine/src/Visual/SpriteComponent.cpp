@@ -372,7 +372,7 @@ void SpriteComponent::onRender(RenderingContext* context)
 
     Size renderSize;
     Rect renderSourceRect;
-    detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+    detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
         tex, size, sourceRect, &renderSize, &renderSourceRect);
 
     context->drawSprite(

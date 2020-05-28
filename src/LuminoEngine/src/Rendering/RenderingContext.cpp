@@ -416,10 +416,7 @@ void RenderingContext::drawSprite(
     element->flipFlags = flipFlags;
 
     m_builder->setMaterial(oldMat);
-	// TODO
-	//detail::Sphere sphere;
-	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
-	//ptr->setLocalBoundingSphere(sphere);
+	// TODO: bounding
 }
 
 void RenderingContext::drawPrimitive(VertexLayout* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveTopology topology, int startVertex, int primitiveCount)
@@ -569,41 +566,6 @@ void RenderingContext::drawMeshInstanced(InstancedMeshList* list)
 	element->list = list;
 }
 
-//void RenderingContext::drawMesh(MeshContainer* meshContainer, int sectionIndex)
-//{
-//	class DrawMesh : public detail::RenderDrawElement
-//	{
-//	public:
-//		Ref<MeshContainer> meshContainer;
-//		int sectionIndex;
-//
-//		virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-//		{
-//			// TODO: LOD Level
-//			MeshResource* mesh = meshContainer->selectLODResource(0);
-//
-//			static_cast<detail::MeshRenderFeature*>(renderFeatures)->drawMesh(context, mesh, sectionIndex);
-//		}
-//	};
-//
-//
-//	MeshResource* mesh = meshContainer->meshResource();
-//	int materialIndex = mesh->sections()[sectionIndex].materialIndex;
-//
-//	m_builder->setMaterial(
-//		meshContainer->meshModel()->materials()[materialIndex]);
-//
-//	auto* element = m_builder->addNewDrawElement<DrawMesh>(
-//		m_manager->meshRenderFeature(),
-//		m_builder->meshRenderFeatureStageParameters());
-//	element->meshContainer = meshContainer;
-//	element->sectionIndex = sectionIndex;
-//	// TODO
-//	//detail::Sphere sphere;
-//	//detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
-//	//ptr->setLocalBoundingSphere(sphere);
-//}
-
 void RenderingContext::drawTextSprite(const StringRef& text, const Color& color, const Vector2& anchor, SpriteBaseDirection baseDirection, detail::FontRequester* font)
 {
 	if (text.isEmpty()) return;
@@ -653,7 +615,7 @@ void RenderingContext::drawText(const StringRef& text, const Rect& area, TextAli
     element->formattedText = formattedText;
 	element->baseDirection = SpriteBaseDirection::Basic2D;
 
-    // TODO
+    // TODO: bounding
     //detail::Sphere sphere;
     //detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
     //ptr->setLocalBoundingSphere(sphere);

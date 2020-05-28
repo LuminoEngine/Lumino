@@ -216,7 +216,7 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 
 				Size renderSize;
 				Rect renderSourceRect;
-				detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+				detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
 					texture, tileSize, sourceRect, &renderSize, &renderSourceRect);
 
 				context->drawSprite(
@@ -242,7 +242,7 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 		//Size worldSize(tile.sourceRect.width * m_tileScale.x, tile.sourceRect.height * m_tileScale.y);
 		Size renderSize;
 		Rect renderSourceRect;
-		detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+		detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
 			texture, tileSize, tile.sourceRect, &renderSize, &renderSourceRect);
 
 		context->drawSprite(

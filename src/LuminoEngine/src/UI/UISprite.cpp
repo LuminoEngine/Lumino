@@ -88,7 +88,7 @@ void UISprite::onRender(UIRenderingContext* context)
 {
     Size renderSize;
     Rect renderSourceRect;
-    detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+    detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
         m_material->mainTexture(), m_size, m_sourceRect, &renderSize, &renderSourceRect);
 
     context->drawSprite(
