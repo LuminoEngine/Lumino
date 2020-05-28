@@ -266,6 +266,7 @@ void Example_UIControls();
 void Example_Tilemap();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
+void Sandbox_Particle();
 void Sandbox_Voxel();
 void UISandboxMain();
 
@@ -286,7 +287,7 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		Sandbox_EmptyApp();
+		//Sandbox_EmptyApp();
 		//Example_GameAudio();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -295,6 +296,7 @@ int main(int argc, char** argv)
         //Example_UIControls();
 		//Example_Tilemap();
 		//Sandbox_MeshTilemap();
+        Sandbox_Particle();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();
@@ -608,25 +610,6 @@ int main(int argc, char** argv)
 	////text3->setPosition(Vector3(0, 400, 0));
 
 
-#if 0
-    auto material = PhongMaterial::create();
-    material->setMainTexture(Assets::loadTexture(u"D:/Proj/Lumino-0.4.0/Source/LuminoEngine/Test/UnitTest/Scene/TestData/Sprite1.png"));
-
-    auto m1 = SpriteParticleModel::create();
-    m1->setMaterial(material);
-    m1->setSpawnRate(1);
-    m1->setLifeTime(2.0f);
-    m1->m_maxParticles = 1;
-    m1->m_shapeType = ParticleEmitterShapeType::Cone;
-    m1->m_shapeParam.x = Math::PI * 0.1;
-    m1->m_shapeParam.y = 2;
-    auto cmp1 = makeObject<ParticleEmitterComponent>(m1);
-    cmp1->setCullMode(CullMode::None);
-    cmp1->setBlendMode(BlendMode::Alpha);
-
-    auto obj1 = makeObject<WorldObject>();
-    obj1->addComponent(cmp1);
-#endif
 
 #if 0
     auto material = PhongMaterial::create();
@@ -668,58 +651,6 @@ int main(int argc, char** argv)
     //obj1->addComponent(cmp1);
     //obj1->setPosition(5, 0, 0);
 
-#endif
-#if 0	// 雨
-    //Camera::GetMain3DCamera()->SetFarClip(10000);
-    auto m1 = SpriteParticleModel::create();
-    m1->m_maxParticles = 10000;
-    m1->setSpawnRate(1000);
-    m1->setLifeTime(1.0);
-    m1->m_loop = true;
-
-    m1->setSize(0.05, 0.05);
-
-    m1->m_shapeType = ParticleEmitterShapeType::Box;
-    m1->m_shapeParam.set(10, 0, 10);
-
-    m1->m_particleDirection = ParticleDirectionType::MovementDirection;
-    m1->m_forwardVelocity.minValue = -12;
-    m1->m_forwardVelocity.maxValue = -12;
-    m1->m_lengthScale = 10;
-
-    auto material = PhongMaterial::create();
-    material->setMainTexture(Assets::loadTexture("D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
-    m1->setMaterial(material);
-
-    auto particle1 = makeObject<ParticleEmitterComponent>(m1);
-    particle1->setBlendMode(BlendMode::Add);
-    auto obj1 = makeObject<WorldObject>();
-    obj1->addComponent(particle1);
-    obj1->setPosition(0, 5, 0);
-    //particle1->setAngles(Math::PI, 0, 0);
-
-
-
-    auto m2 = SpriteParticleModel::create();
-    m2->m_maxParticles = 1000;
-    m2->setSpawnRate(200);
-    m2->setLifeTime(0.2);
-    m2->m_loop = true;
-    m2->setSize(0.1, 0.1);
-    m2->m_minSizeVelocity = 3;
-    m2->m_maxSizeVelocity = 3;
-    m2->m_shapeType = ParticleEmitterShapeType::Box;
-    m2->m_shapeParam.set(10, 0, 10);
-    m2->m_particleDirection = ParticleDirectionType::Horizontal;
-    m2->setMaterial(material);
-
-    //auto particle2 = ParticleEmitter3D::create(m2);
-    //particle2->SetBlendMode(BlendMode::Add);
-    auto particle2 = makeObject<ParticleEmitterComponent>(m2);
-    particle2->setBlendMode(BlendMode::Add);
-    auto obj2 = makeObject<WorldObject>();
-    obj2->addComponent(particle2);
-    //obj2->setPosition(0, 12, 0);
 #endif
 
 
