@@ -183,7 +183,7 @@ public:
 
 	const Ref<LinearAllocatorPageManager>& stageDataPageManager() const { return m_stageDataPageManager; }
 	const Ref<Shader>& builtinShader(BuiltinShader shader) const { return m_builtinShaders[(int)shader]; }
-    const Ref<AbstractMaterial>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
+    const Ref<Material>& builtinMaterials(BuiltinMaterial material) const { return m_builtinMaterials[(int)material]; }
 
 private:
 	GraphicsManager* m_graphicsManager;
@@ -212,7 +212,7 @@ private:
 	Ref<LinearAllocatorPageManager> m_stageDataPageManager;
 
 	std::array<Ref<Shader>, 12> m_builtinShaders;
-    std::array<Ref<AbstractMaterial>, 2> m_builtinMaterials;
+    std::array<Ref<Material>, 2> m_builtinMaterials;
 };
 
 } // namespace detail

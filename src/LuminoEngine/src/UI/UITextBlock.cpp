@@ -117,7 +117,7 @@ void UITextBlock::onRender(UIRenderingContext* context)
 {
     //{
     //    auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
-    //    auto mat = AbstractMaterial::create(tex);
+    //    auto mat = Material::create(tex);
     //    context->drawBoxBackground(Rect(10, 20, 100, 200), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, mat, Rect(64, 0, 64, 64));
     //}
 

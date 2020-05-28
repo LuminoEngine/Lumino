@@ -57,7 +57,7 @@ ln::Result TilemapSceneEditorModel::createNewTilemapSceneAsset(lna::EditorContex
 
 	//tilesetMaterial->setMainTexture(ln::Texture2D::create((u"D:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/BaseChip_pipo.png")));
 	//auto tilesetTexture = ln::Assets::loadTexture(u"360782C3-EAD5-421E-8887-D2B10E09781C");
-	//auto tilesetMaterial = ln::makeObject<ln::AbstractMaterial>();
+	//auto tilesetMaterial = ln::makeObject<ln::Material>();
 	//tilesetMaterial->setMainTexture(tilesetTexture);
 
 	auto tileset = dynamic_cast<ln::Tileset*>(tilesetAsset->target()); //ln::makeObject<ln::Tileset>();

@@ -10,7 +10,7 @@
 namespace ln {
 class Shader;
 class GraphicsContext;
-class AbstractMaterial;
+class Material;
 class RenderFeature;
 namespace detail {
 class RenderStage;
@@ -147,7 +147,7 @@ class GeometryStageParameters
 {
 public:
 	// まだ確定状態となるわけではないので Optional が含まれることもある。
-	Ref<AbstractMaterial>			m_material;			// setMaterial() で指定されたマテリアル
+	Ref<Material>			m_material;			// setMaterial() で指定されたマテリアル
 	Optional<BlendMode>			m_blendMode;
 	Optional<CullMode>		m_cullingMode;
 	Optional<bool>				m_depthTestEnabled;
@@ -344,26 +344,26 @@ public:
 	const RectI& getScissorRectFinal() const { return frameBufferStageParameters->m_scissorRect; }
 
 
-	AbstractMaterial* getMaterialFinal(AbstractMaterial* priorityValue, AbstractMaterial* sceneDefaultMaterial) const;
-	ShadingModel getShadingModelFinal(const AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
-	BlendMode getBlendModeFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	CullMode getCullingModeFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-    ComparisonFunc getDepthTestFuncFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
-	bool isDepthWriteEnabledFinal(const AbstractMaterial* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	Material* getMaterialFinal(Material* priorityValue, Material* sceneDefaultMaterial) const;
+	ShadingModel getShadingModelFinal(const Material* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
+	BlendMode getBlendModeFinal(const Material* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	CullMode getCullingModeFinal(const Material* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+    ComparisonFunc getDepthTestFuncFinal(const Material* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
+	bool isDepthWriteEnabledFinal(const Material* finalMaterial = nullptr) const;	// getMaterialFinal() で確定した Material を渡すこと
 	//const Matrix& getTransformFinal() const { return geometryStageParameters->; }
 	//Brush* getBrushFinal() const { return renderingContextParameters.getBrush(); }
 	//Pen* getPenFinal() const { return nullptr; }	// TODO:
 	//Font* getFontFinal() const { return renderingContextParameters.getFont(); }
-	//AbstractMaterial* getPriorityMaterialFinal() const { return renderingContextParameters.getPriorityMaterial(); }
+	//Material* getPriorityMaterialFinal() const { return renderingContextParameters.getPriorityMaterial(); }
 	// BuiltinEffectData
-	//Shader* getShaderFinal(AbstractMaterial* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
+	//Shader* getShaderFinal(Material* finalMaterial) const;	// getMaterialFinal() で確定した Material を渡すこと
     float getOpacityFinal(RenderDrawElement* element) const;
     const Color& getColorScaleFinal(RenderDrawElement* element) const;
     const Color& getBlendColorFinal(RenderDrawElement* element) const;
     const ColorTone& getToneFinal(RenderDrawElement* element) const;
 
 	//static void applyFrameBufferStatus(RenderPass* renderPass, const RenderStage* stage, const FrameBuffer& defaultFrameBufferInPass);
-	static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const AbstractMaterial* priorityMaterial);
+	static void applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const Material* priorityMaterial);
 	static void makeBlendMode(BlendMode mode, RenderTargetBlendDesc* state);
 
 private:

@@ -6,7 +6,7 @@ namespace ln {
 class GraphicsContext;
 class ShaderTechnique;
 class RenderFeature;
-class AbstractMaterial;
+class Material;
 class MeshArmature;
 
 namespace detail {
@@ -41,8 +41,8 @@ public:
 
 	void setWorldTransformPtr(const Matrix* value) { m_worldTransform = value; }
 	const Matrix* worldTransformPtr() const { return m_worldTransform; }
-	void setFinalMaterial(const AbstractMaterial* value) { m_finalMaterial = value; }
-	const AbstractMaterial* finalMaterial() const { return m_finalMaterial; }
+	void setFinalMaterial(const Material* value) { m_finalMaterial = value; }
+	const Material* finalMaterial() const { return m_finalMaterial; }
 	void setSubsetInfo(const SubsetInfo& value) { m_subsetInfo = value; }
 	const SubsetInfo& subsetInfo() const { return m_subsetInfo; }
 	void setRenderPass(RenderPass* value) { m_renderPass = value; }
@@ -74,7 +74,7 @@ private:
 	// StaticMesh (サブセット単位) などはこれに値がセットされる。
 	const Matrix* m_worldTransform;
 
-	const AbstractMaterial* m_finalMaterial;
+	const Material* m_finalMaterial;
 	SubsetInfo m_subsetInfo;
 	RenderPass* m_renderPass;
 

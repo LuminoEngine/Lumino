@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 namespace ln {
-class AbstractMaterial;
+class Material;
 
 } // namespace ln
 

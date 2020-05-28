@@ -56,9 +56,9 @@ LN_CONSTRUCT_ACCESS:
 private:
     ScreenBlurImageEffect* m_owner;
 
-    Ref<AbstractMaterial> m_materialForCopySourceTo;
-    Ref<AbstractMaterial> m_materialForCopyAccumTo;
-    Ref<AbstractMaterial> m_material;
+    Ref<Material> m_materialForCopySourceTo;
+    Ref<Material> m_materialForCopyAccumTo;
+    Ref<Material> m_material;
     Ref<RenderTargetTexture> m_accumTexture;	// Save previous screen
 };
 

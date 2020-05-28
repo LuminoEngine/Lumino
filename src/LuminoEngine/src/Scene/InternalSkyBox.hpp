@@ -16,7 +16,7 @@ public:
 	void render(RenderingContext* context, const RenderViewPoint* viewPoint);
 
 private:
-	Ref<AbstractMaterial> m_material;
+	Ref<Material> m_material;
     Vector3 m_lightDirection;
 };
 

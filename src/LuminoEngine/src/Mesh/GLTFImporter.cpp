@@ -125,9 +125,9 @@ bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
 	return true;
 }
 
-Ref<AbstractMaterial> GLTFImporter::readMaterial(const tinygltf::Material& material)
+Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
 {
-    auto coreMaterial = makeObject<AbstractMaterial>();
+    auto coreMaterial = makeObject<Material>();
 
     {
         auto itr = material.values.find("baseColorFactor");

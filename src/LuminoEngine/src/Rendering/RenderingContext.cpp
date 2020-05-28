@@ -100,7 +100,7 @@ void RenderingContext::setOpacity(float value)
     m_builder->setOpacity(value);
 }
 
-void RenderingContext::setMaterial(AbstractMaterial* material)
+void RenderingContext::setMaterial(Material* material)
 {
     m_builder->setMaterial(material);
 }
@@ -304,7 +304,7 @@ void RenderingContext::drawScreenRectangle()
 //    blit(source, destination, nullptr);
 //}
 //
-//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material) 
+//void RenderingContext::blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material) 
 //{
 //    class Blit : public detail::RenderDrawElement
 //    {
@@ -343,7 +343,7 @@ void RenderingContext::drawScreenRectangle()
 //    m_builder->advanceFence();
 //}
 
-void RenderingContext::blit(AbstractMaterial* source, RenderTargetTexture* destination, RenderPhaseClass phase)
+void RenderingContext::blit(Material* source, RenderTargetTexture* destination, RenderPhaseClass phase)
 {
 	class Blit : public detail::RenderDrawElement
 	{
@@ -391,7 +391,7 @@ void RenderingContext::drawSprite(
 	SpriteBaseDirection baseDirection,
 	BillboardType billboardType,
     const Flags<detail::SpriteFlipFlags>& flipFlags,
-	AbstractMaterial* material)
+	Material* material)
 {
 	class DrawSprite : public detail::RenderDrawElement
 	{

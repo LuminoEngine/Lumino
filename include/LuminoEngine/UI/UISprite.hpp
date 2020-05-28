@@ -49,7 +49,7 @@ protected:
     virtual void onRender(UIRenderingContext* context);
 
 private:
-    Ref<AbstractMaterial> m_material;
+    Ref<Material> m_material;
     Size m_size;
     Rect m_sourceRect;
 };

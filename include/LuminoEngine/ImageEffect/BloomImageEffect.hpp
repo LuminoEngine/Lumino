@@ -61,13 +61,13 @@ private:
     List<Ref<RenderTargetTexture>> m_renderTargetsHorizontal;
     List<Ref<RenderTargetTexture>> m_renderTargetsVertical;
     Ref<SamplerState> m_samplerState;
-    Ref<AbstractMaterial> m_compositeMaterial;
+    Ref<Material> m_compositeMaterial;
     int m_viewWidth;
     int m_viewHeight;
 
-    List<Ref<AbstractMaterial>> m_separableBlurMaterialsH;
-    List<Ref<AbstractMaterial>> m_separableBlurMaterialsV;
-    Ref<AbstractMaterial> m_materialHighPassFilter;
+    List<Ref<Material>> m_separableBlurMaterialsH;
+    List<Ref<Material>> m_separableBlurMaterialsV;
+    Ref<Material> m_materialHighPassFilter;
 };
 
 } // namespace detail

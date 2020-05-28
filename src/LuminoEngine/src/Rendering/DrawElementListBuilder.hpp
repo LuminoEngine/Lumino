@@ -57,8 +57,8 @@ public:
 	void setPrimitiveTopology(PrimitiveTopology value);
 
 	void setShadingModel(const Optional<ShadingModel>& value);
-	void setMaterial(AbstractMaterial* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
-    AbstractMaterial* material() const;
+	void setMaterial(Material* value);  // 一度 set したマテリアルは描画完了まで変更してはならない。TODO: Freezed みたいな状態にしたい
+    Material* material() const;
 	void setTransfrom(const Matrix& value);
     void setBaseTransfrom(const Optional<Matrix>& value);
 	const Matrix& baseTransform() const;
@@ -170,7 +170,7 @@ private:
 	ShapesRenderFeatureStageParameters m_shapesRenderFeatureStageParameters;
     ExtensionRenderFeatureStageParameters m_extensionRenderFeatureStageParameters;
 
-    Ref<AbstractMaterial> m_defaultMaterial;
+    Ref<Material> m_defaultMaterial;
     Flags<DirtyFlags> m_dirtyFlags;
 	bool m_modified;
 

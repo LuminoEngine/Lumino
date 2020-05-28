@@ -6,7 +6,7 @@ namespace ln {
 class VertexLayout;
 class VertexBuffer;
 class IndexBuffer;
-class AbstractMaterial;
+class Material;
 class MeshContainer;
 class StaticMeshModel;
 class MeshGeometryBuilder;
@@ -390,12 +390,12 @@ public:
 
 	void addMeshContainer(MeshContainer* meshContainer);
     void addNode(MeshNode* node);
-	void addMaterial(AbstractMaterial* material);
+	void addMaterial(Material* material);
 
 
 	const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
     const List<Ref<MeshNode>>& meshNodes() const { return m_nodes; }
-    const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
+    const List<Ref<Material>>& materials() const { return m_materials; }
 
     void addRootNode(int index);
 
@@ -416,7 +416,7 @@ private:
     detail::InternalMeshModelType m_type;
 	List<Ref<MeshContainer>> m_meshContainers;
     List<Ref<MeshNode>> m_nodes;
-	List<Ref<AbstractMaterial>> m_materials;
+	List<Ref<Material>> m_materials;
     List<int> m_rootNodes;
 
     // 静的データである localTransform に対する動的データ。

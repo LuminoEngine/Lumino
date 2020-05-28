@@ -17,7 +17,7 @@ namespace ln {
 //    void init();
 //
 //private:
-//	Ref<AbstractMaterial> m_radialBlur;
+//	Ref<Material> m_radialBlur;
 //};
 
 } // namespace ln

@@ -22,13 +22,13 @@ TEST_F(Test_Rendering_RenderingContext, RenderTargetCrossDrawing)
     Engine::mainUIView()->addChild(element1);
 
 	auto tex1 = Texture2D::load(LN_ASSETFILE("Sprite2.png"));
-    auto mat1 = makeObject<AbstractMaterial>(tex1);
+    auto mat1 = makeObject<Material>(tex1);
 
     auto tex2 = RenderTargetTexture::create(160, 120);
-    auto mat2 = makeObject<AbstractMaterial>(tex2);
+    auto mat2 = makeObject<Material>(tex2);
 
     auto tex3 = RenderTargetTexture::create(160, 120);
-    auto mat3 = makeObject<AbstractMaterial>(tex3);
+    auto mat3 = makeObject<Material>(tex3);
 
     element1->render = [&](UIRenderingContext* context)
     {

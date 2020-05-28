@@ -36,7 +36,7 @@ public:
     const Ref<Shader>& atmosphereShader() const { return m_atmosphereShader; }
 	const Ref<Raycaster>& raycasterCache() const { return m_raycasterCache; }
 
-	const Ref<AbstractMaterial>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
+	const Ref<Material>& primitiveMeshDefaultMaterial() const { return m_primitiveMeshDefaultMaterial; };
 
     // テスト用の設定。
     // 0.9.0 以降、WorldObject は World へ自動追加しないようにしたい。
@@ -51,7 +51,7 @@ private:
 	Ref<Raycaster> m_raycasterCache;
 
 
-	Ref<AbstractMaterial> m_primitiveMeshDefaultMaterial;
+	Ref<Material> m_primitiveMeshDefaultMaterial;
 };
 
 } // namespace detail

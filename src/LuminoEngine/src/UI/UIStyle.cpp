@@ -1042,7 +1042,7 @@ void UIStyleInstance::setupDefault()
 
  //   auto tmp = makeObject<UIStyle>();
  //   tmp->setupDefault();
-	//backgroundMaterial = makeObject<AbstractMaterial>();
+	//backgroundMaterial = makeObject<Material>();
  //   mergeFrom(tmp);
 }
 

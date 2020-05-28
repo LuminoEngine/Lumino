@@ -12,7 +12,7 @@ namespace detail {
 DrawElementListBuilder::DrawElementListBuilder()
     : m_currentCommandFence(0)
 {
-    m_defaultMaterial = makeObject<AbstractMaterial>();
+    m_defaultMaterial = makeObject<Material>();
 }
 
 DrawElementListBuilder::~DrawElementListBuilder()
@@ -139,7 +139,7 @@ void DrawElementListBuilder::setShadingModel(const Optional<ShadingModel>& value
 	}
 }
 
-void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
+void DrawElementListBuilder::setMaterial(Material* value)
 {
     if (!value) {
         value = m_defaultMaterial;
@@ -151,7 +151,7 @@ void DrawElementListBuilder::setMaterial(AbstractMaterial* value)
 	}
 }
 
-AbstractMaterial* DrawElementListBuilder::material() const
+Material* DrawElementListBuilder::material() const
 {
     return primaryGeometryStageParameters().m_material;
 }

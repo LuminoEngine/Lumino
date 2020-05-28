@@ -43,7 +43,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     ToneImageEffect* m_owner;
-    Ref<AbstractMaterial> m_material;
+    Ref<Material> m_material;
 };
 
 } // namespace detail

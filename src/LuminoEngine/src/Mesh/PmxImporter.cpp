@@ -20,9 +20,9 @@ namespace detail {
 //==============================================================================
 // PmxMaterialResource
 
-Ref<AbstractMaterial> PmxMaterialResource::MakeCommonMaterial() const
+Ref<Material> PmxMaterialResource::MakeCommonMaterial() const
 {
-    auto m = makeObject<AbstractMaterial>();
+    auto m = makeObject<Material>();
     m->setMainTexture(Texture);
     m->setColor(Diffuse);
     m->setEmissive(Emissive);
@@ -32,34 +32,34 @@ Ref<AbstractMaterial> PmxMaterialResource::MakeCommonMaterial() const
     m->setRoughness(0.8);
 
 	//m->setBuiltinColorParameter(
-	//	AbstractMaterial::DiffuseParameter,
+	//	Material::DiffuseParameter,
 	//	Diffuse.r,
 	//	Diffuse.g,
 	//	Diffuse.b,
 	//	Diffuse.a);
 	//m->setBuiltinColorParameter(
-	//	AbstractMaterial::AmbientParameter,
+	//	Material::AmbientParameter,
 	//	Ambient.r,
 	//	Ambient.g,
 	//	Ambient.b,
 	//	Ambient.a);
 	//m->setBuiltinColorParameter(
-	//	AbstractMaterial::SpecularParameter,
+	//	Material::SpecularParameter,
 	//	Specular.r,
 	//	Specular.g,
 	//	Specular.b,
 	//	Specular.a);
 	//m->setBuiltinColorParameter(
-	//	AbstractMaterial::EmissiveParameter,
+	//	Material::EmissiveParameter,
 	//	Emissive.r,
 	//	Emissive.g,
 	//	Emissive.b,
 	//	Emissive.a);
 	//m->setBuiltinFloatParameter(
-	//	AbstractMaterial::PowerParameter,
+	//	Material::PowerParameter,
 	//	Power);
 	//m->setBuiltinTextureParameter(
-	//	AbstractMaterial::MaterialTextureParameter,
+	//	Material::MaterialTextureParameter,
 	//	Texture);
 
 	//if (DrawingFlags & PmxMaterialResource::DrawingFlag_Edge)
@@ -596,10 +596,10 @@ void PmxLoader::loadMaterials(BinaryReader* reader)
 		m_modelCore->materials[i] = m;;
 
 		// 材質名
-		/*m_modelCore->AbstractMaterial.Name = */readString(reader);
+		/*m_modelCore->Material.Name = */readString(reader);
 
 		// 材質英名
-		/*m_modelCore->AbstractMaterial.EnglishName = */readString(reader);
+		/*m_modelCore->Material.EnglishName = */readString(reader);
 
 		// Diffuse
 		reader->read(&m->Diffuse, sizeof(float) * 4);

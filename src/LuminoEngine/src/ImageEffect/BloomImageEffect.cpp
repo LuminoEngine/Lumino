@@ -83,14 +83,14 @@ bool BloomImageEffectInstance::init(BloomImageEffect* owner)
     const auto* manager = detail::EngineDomain::renderingManager();
 
     auto luminosityHighPassShader = manager->builtinShader(detail::BuiltinShader::LuminosityHighPassShader);
-    m_materialHighPassFilter = makeObject<AbstractMaterial>();
+    m_materialHighPassFilter = makeObject<Material>();
     m_materialHighPassFilter->setShader(luminosityHighPassShader);
     m_materialHighPassFilter->setBlendMode(BlendMode::Normal);
 
     auto separableBlurShader = manager->builtinShader(detail::BuiltinShader::SeperableBlur);
     int kernelSizeArray[] = { 3, 5, 8, 13, 21 };
     for (int i = 0; i < MIPS; i++) {
-        auto materialH = makeObject<AbstractMaterial>();
+        auto materialH = makeObject<Material>();
         materialH->setShader(separableBlurShader);
         materialH->setBlendMode(BlendMode::Normal);
         materialH->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
@@ -98,7 +98,7 @@ bool BloomImageEffectInstance::init(BloomImageEffect* owner)
         materialH->setVector(u"_Direction", Vector4(BlurDirectionX, 0.0f, 0.0f));
         m_separableBlurMaterialsH.add(materialH);
 
-        auto materialV = makeObject<AbstractMaterial>();
+        auto materialV = makeObject<Material>();
         materialV->setShader(separableBlurShader);
         materialV->setBlendMode(BlendMode::Normal);
         materialV->setInt(u"KERNEL_RADIUS", kernelSizeArray[i]);
@@ -108,7 +108,7 @@ bool BloomImageEffectInstance::init(BloomImageEffect* owner)
     }
 
     auto bloomCompositeShader = manager->builtinShader(detail::BuiltinShader::BloomComposite);
-    m_compositeMaterial = makeObject<AbstractMaterial>();
+    m_compositeMaterial = makeObject<Material>();
     m_compositeMaterial->setBlendMode(BlendMode::Normal);
     m_compositeMaterial->setShader(bloomCompositeShader);
 

@@ -24,7 +24,7 @@ void PlaneMeshComponent::init()
     VisualComponent::init();
 }
 
-void PlaneMeshComponent::setMaterial(AbstractMaterial* material)
+void PlaneMeshComponent::setMaterial(Material* material)
 {
     m_material = material;
 }
@@ -51,7 +51,7 @@ void SphereMeshComponent::init()
     VisualComponent::init();
 }
 
-void SphereMeshComponent::setMaterial(AbstractMaterial* material)
+void SphereMeshComponent::setMaterial(Material* material)
 {
     m_material = material;
 }
@@ -80,7 +80,7 @@ void BoxMeshComponent::init()
 	m_box = Box(1.0f);
 }
 
-void BoxMeshComponent::setMaterial(AbstractMaterial* material)
+void BoxMeshComponent::setMaterial(Material* material)
 {
 	m_material = material;
 }

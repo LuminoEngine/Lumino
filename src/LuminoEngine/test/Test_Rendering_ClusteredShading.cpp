@@ -17,7 +17,7 @@ TEST_F(Test_Rendering_ClusteredShading, Basic)
 		auto obj1 = makeObject<WorldObject>();
 		auto cmp1 = makeObject<PlaneMeshComponent>();
 		cmp1->setSize(10, 10);
-		auto mat1 = AbstractMaterial::create();
+		auto mat1 = Material::create();
 		obj1->addComponent(cmp1);
 		cmp1->setMaterial(mat1);
 

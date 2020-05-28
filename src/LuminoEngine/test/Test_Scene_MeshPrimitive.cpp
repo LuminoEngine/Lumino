@@ -35,7 +35,7 @@ TEST_F(Test_Scene_MeshPrimitive, Box)
 	{
 		auto obj1 = makeObject<WorldObject>();
 		auto cmp1 = makeObject<SphereMeshComponent>();
-		auto mat1 = AbstractMaterial::create();
+		auto mat1 = Material::create();
 		//mat1->setMetallic(1);
 		//mat1->setRoughness(1);
 		//mat2->setMainTexture(tex2);

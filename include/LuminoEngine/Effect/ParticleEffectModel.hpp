@@ -5,7 +5,7 @@
 
 namespace ln {
 class MeshResource;
-class AbstractMaterial;
+class Material;
 class RenderingContext;
 class SpriteParticleModel;
 
@@ -154,8 +154,8 @@ class SpriteParticleModel
 public:
 	static Ref<SpriteParticleModel> create();
 
-	void setMaterial(AbstractMaterial* material);
-    AbstractMaterial* getMaterial() const;
+	void setMaterial(Material* material);
+    Material* getMaterial() const;
 
 	void SetSubParticle(SpriteParticleModel* particle);
 
@@ -197,7 +197,7 @@ public: // TODO
 	//detail::ParticleData* getNextFreeParticleData(float emitterTime);
 	void spawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
 	void simulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
-	void render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, AbstractMaterial* material);
+	void render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
 
 public: // TODO
 	float makeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
@@ -206,7 +206,7 @@ public: // TODO
 	
 	detail::GraphicsManager*	m_manager;
 	Ref<MeshResource>		m_mesh;		// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よいかも？
-	Ref<AbstractMaterial>			m_material;
+	Ref<Material>			m_material;
 	Random			m_rand;
 
 

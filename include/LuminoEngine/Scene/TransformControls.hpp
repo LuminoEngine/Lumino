@@ -101,10 +101,10 @@ private:
     Point m_draggingStartViewPixelPoint;
 
     // Rendering resources
-    Ref<AbstractMaterial> m_xColorMaterial;
-    Ref<AbstractMaterial> m_yColorMaterial;
-    Ref<AbstractMaterial> m_zColorMaterial;
-    Ref<AbstractMaterial> m_activeColorMaterial;
+    Ref<Material> m_xColorMaterial;
+    Ref<Material> m_yColorMaterial;
+    Ref<Material> m_zColorMaterial;
+    Ref<Material> m_activeColorMaterial;
 
 };
 

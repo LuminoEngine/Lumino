@@ -940,7 +940,7 @@ int main(int argc, char** argv)
         {
             auto obj2 = makeObject<WorldObject>();
             auto cmp2 = makeObject<SphereMeshComponent>();
-            auto mat2 = AbstractMaterial::create();
+            auto mat2 = Material::create();
             mat2->setMetallic(static_cast<float>(i) / 5);
             mat2->setRoughness(std::max(static_cast<float>(y) / 5, 0.001f));
             //mat2->setMainTexture(tex2);
@@ -953,7 +953,7 @@ int main(int argc, char** argv)
 
     auto plane1 = makeObject<WorldObject>();
     auto planecmp2 = makeObject<PlaneMeshComponent>();
-    auto planemat2 = AbstractMaterial::create();
+    auto planemat2 = Material::create();
     //planemat2->setMetallic(0.1);
     //planemat2->setRoughness(0.1);
     plane1->addComponent(planecmp2);
@@ -967,7 +967,7 @@ int main(int argc, char** argv)
 #endif
 
 #if 0
-    auto meshMaterial = AbstractMaterial::create();
+    auto meshMaterial = Material::create();
     meshMaterial->setMainTexture(tex);
 
     auto meshRes = makeObject<MeshResource>();
@@ -1189,7 +1189,7 @@ int main(int argc, char** argv)
 		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
 		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
 		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
-		auto material = AbstractMaterial::create();
+		auto material = Material::create();
 		material->setMainTexture(tex1);
 
 #if 1
@@ -1281,7 +1281,7 @@ int main(int argc, char** argv)
 		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
 		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
 		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
-		auto material = AbstractMaterial::create();
+		auto material = Material::create();
 		material->setMainTexture(tex1);
 
 		while (Engine::update())
@@ -1347,7 +1347,7 @@ int main(int argc, char** argv)
 		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
 		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
 		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
-		auto material = AbstractMaterial::create();
+		auto material = Material::create();
 		material->setMainTexture(tex1);
 
 		while (Engine::update())

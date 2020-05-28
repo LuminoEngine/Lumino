@@ -81,7 +81,7 @@ void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner
 
 //void RenderFeatureBatchList::prepareState(const CameraInfo& cameraInfo, RenderStage* stage, RenderDrawElement* element)
 //{
-//	AbstractMaterial* finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
+//	Material* finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
 //	Texture* mainTexture = nullptr;
 //	if (finalMaterial) {
 //		mainTexture = finalMaterial->mainTexture();
@@ -125,7 +125,7 @@ void RenderFeatureBatchList::add(RenderFeatureBatch* batch, RenderFeature* owner
 //		{
 //			if (batch->type() == RenderDrawElementType::Geometry)
 //			{
-//				AbstractMaterial* finalMaterial = currentStage->getMaterialFinal(nullptr, m_manager->builtinMaterials(detail::BuiltinMaterial::Default));
+//				Material* finalMaterial = currentStage->getMaterialFinal(nullptr, m_manager->builtinMaterials(detail::BuiltinMaterial::Default));
 //				detail::RenderStage::applyGeometryStatus(graphicsContext, currentStage, finalMaterial);
 //
 //				Texture* mainTexture = nullptr;

@@ -24,7 +24,7 @@ namespace ln {
 //void LightShaftImageEffect::init()
 //{
 //    ImageEffect::init();
-//	m_radialBlur = makeObject<AbstractMaterial>();
+//	m_radialBlur = makeObject<Material>();
 //	m_radialBlur->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::RadialBlur));
 //}
 //

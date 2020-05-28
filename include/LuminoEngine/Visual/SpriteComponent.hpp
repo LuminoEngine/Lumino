@@ -156,7 +156,7 @@ LN_CONSTRUCT_ACCESS:
 
 
 private:
-    Ref<AbstractMaterial> m_material;
+    Ref<Material> m_material;
     Size m_size;
     Rect m_sourceRect;
     Vector2 m_anchorPoint;

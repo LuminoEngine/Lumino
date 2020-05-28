@@ -170,7 +170,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 
         materialData.power = power;
 
-        auto material = makeObject<AbstractMaterial>(texture, materialData);
+        auto material = makeObject<Material>(texture, materialData);
 		visitMaterial(material);
 	}
 }
@@ -355,7 +355,7 @@ void MqoImporter::visitMaterialChunk()
 {
 }
 
-void MqoImporter::visitMaterial(AbstractMaterial* material)
+void MqoImporter::visitMaterial(Material* material)
 {
 	m_model->addMaterial(material);
 }

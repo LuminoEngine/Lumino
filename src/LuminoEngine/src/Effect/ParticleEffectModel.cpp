@@ -194,13 +194,13 @@ void SpriteParticleModel::init()
 //}
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::setMaterial(AbstractMaterial* material)
+void SpriteParticleModel::setMaterial(Material* material)
 {
 	m_material = material;
 }
 
 //------------------------------------------------------------------------------
-AbstractMaterial* SpriteParticleModel::getMaterial() const
+Material* SpriteParticleModel::getMaterial() const
 {
 	return m_material;
 }
@@ -536,7 +536,7 @@ float SpriteParticleModel::makeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, AbstractMaterial* material)
+void SpriteParticleModel::render(RenderingContext* context, detail::SpriteParticleModelInstance* instance, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
 {
 
 	// 更新処理

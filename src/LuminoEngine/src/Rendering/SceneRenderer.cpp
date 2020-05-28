@@ -197,7 +197,7 @@ void SceneRenderer::render(
 	//coreRenderer->end();
 }
 
-//void SceneRenderer::setDefaultMaterial(AbstractMaterial* material)
+//void SceneRenderer::setDefaultMaterial(Material* material)
 //{
 //	m_defaultMaterial = material;
 //}
@@ -242,7 +242,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 		RenderPass* currentRenderPass = defaultRenderPass;
 		RenderStage* currentStage = nullptr;
 		const Matrix* currentWorldMatrix = nullptr;
-		AbstractMaterial* currentFinalMaterial = nullptr;
+		Material* currentFinalMaterial = nullptr;
 		SubsetInfo currentSubsetInfo;
         //int count = 0;
 		for (RenderDrawElement* element : m_renderingElementList)
@@ -277,7 +277,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				// ShaderDescripter
 				SubsetInfo subsetInfo;
 				const Matrix* worldMatrix = nullptr;
-				AbstractMaterial* finalMaterial = nullptr;
+				Material* finalMaterial = nullptr;
 				if (element->flags().hasFlag(RenderDrawElementTypeFlags::Clear)) {
 					subsetInfo.clear();
 				}
@@ -373,7 +373,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			}
 
 			const RenderStage* stage = batch->stage();
-			const AbstractMaterial* finalMaterial = batch->finalMaterial();
+			const Material* finalMaterial = batch->finalMaterial();
 			const SubsetInfo& subsetInfo = batch->subsetInfo();
 
 			// ステートの変わり目チェック
@@ -742,7 +742,7 @@ bool SceneRenderer::equalsFramebuffer(RenderPass* renderPass, const FrameBuffer&
 //	}
 //}
 
-//void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* stage, AbstractMaterial* priorityMaterial)
+//void SceneRenderer::applyGeometryStatus(GraphicsContext* context, RenderStage* stage, Material* priorityMaterial)
 //{
 //	// BlendState
 //	{

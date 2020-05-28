@@ -74,14 +74,14 @@ bool ScreenBlurImageEffectInstance::init(ScreenBlurImageEffect* owner)
 
     m_owner = owner;
 
-    m_material = makeObject<AbstractMaterial>();
+    m_material = makeObject<Material>();
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
     auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
     m_material->setShader(shader);
 
-    m_materialForCopySourceTo = makeObject<AbstractMaterial>();
-    m_materialForCopyAccumTo = makeObject<AbstractMaterial>();
+    m_materialForCopySourceTo = makeObject<Material>();
+    m_materialForCopyAccumTo = makeObject<Material>();
 
     return true;
 }

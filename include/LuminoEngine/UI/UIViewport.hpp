@@ -64,7 +64,7 @@ private:
     List<Ref<RenderView>> m_renderViews;
 	//Ref<RenderPass> m_renderPass;
     Size m_actualViewboxSize;
-    Ref<AbstractMaterial> m_blitMaterial;
+    Ref<Material> m_blitMaterial;
 	Ref<RenderTargetTexture> m_primaryTarget;
 	UIViewportPlacement m_placement;
 	Size m_viewBoxSize;

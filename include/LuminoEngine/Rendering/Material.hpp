@@ -11,14 +11,14 @@ namespace ln {
 	@brief
 */
 // TODO: フレーム開始～描画に使われた後にパラメータを変更できないようにする。わかりにくい不具合のもとになる。
-class AbstractMaterial
+class Material
 	: public Object
 {
 	LN_OBJECT;
 public:
-	static Ref<AbstractMaterial> create();
-	static Ref<AbstractMaterial> create(Texture* mainTexture);
-	static Ref<AbstractMaterial> create(Texture* mainTexture, ShadingModel shadingModel);
+	static Ref<Material> create();
+	static Ref<Material> create(Texture* mainTexture);
+	static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);
 	//LN_OBJECT;
 //public:
 //	static const String DiffuseParameter;
@@ -87,8 +87,8 @@ public:
 
 
 LN_CONSTRUCT_ACCESS:
-	AbstractMaterial();
-	virtual ~AbstractMaterial();
+	Material();
+	virtual ~Material();
 	void init();
 	void init(Texture* mainTexture);
 	void init(Texture* mainTexture, ShadingModel shadingModel);
@@ -178,7 +178,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 
-	bool equalStatus(const AbstractMaterial* other) const
+	bool equalStatus(const Material* other) const
 	{
 		if (LN_REQUIRE(other)) return false;
 		if (this == other) return true;
@@ -217,22 +217,6 @@ private:
 	friend class detail::SceneRenderer;
 };
 
-/**
- * Material
- */
-class Material
-	: public AbstractMaterial
-{
-public:
-
-public:
-protected:
-
-
-public:
-
-private:
-};
 
 } // namespace ln
 

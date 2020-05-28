@@ -59,7 +59,7 @@ bool ToneImageEffectInstance::init(ToneImageEffect* owner)
     m_owner = owner;
 
     auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
-    m_material = makeObject<AbstractMaterial>();
+    m_material = makeObject<Material>();
     m_material->setShader(shader);
 
     return true;

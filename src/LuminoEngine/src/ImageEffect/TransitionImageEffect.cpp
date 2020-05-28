@@ -91,13 +91,13 @@ bool TransitionImageEffectInstance::init(TransitionImageEffect* owner)
 
     m_owner = owner;
 
-    m_withoutMaskMaterial = makeObject<AbstractMaterial>();
+    m_withoutMaskMaterial = makeObject<Material>();
     m_withoutMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithoutMask.fx"));
 
-    m_withMaskMaterial = makeObject<AbstractMaterial>();
+    m_withMaskMaterial = makeObject<Material>();
     m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithMask.fx"));
     
-    m_copyMaterial = makeObject<AbstractMaterial>();
+    m_copyMaterial = makeObject<Material>();
     m_copyMaterial->shadingModel = ShadingModel::Unlit;
 
     return true;
@@ -182,7 +182,7 @@ void TransitionImageEffectInstance::renderFadeInOut(RenderingContext* context, R
 
     //std::cout << m_owner->m_factor.value() << std::endl;
 
-    AbstractMaterial* material = nullptr;
+    Material* material = nullptr;
     if (m_owner->m_maskTexture)
     {
         m_withMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());
@@ -221,7 +221,7 @@ void TransitionImageEffectInstance::renderCrossFade(RenderingContext* context, R
 {
 
 
-    AbstractMaterial* material = nullptr;
+    Material* material = nullptr;
     if (m_owner->m_maskTexture)
     {
         m_withMaskMaterial->setFloat(u"_Factor", m_owner->m_factor.value());

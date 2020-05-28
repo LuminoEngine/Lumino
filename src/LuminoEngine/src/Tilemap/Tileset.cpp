@@ -106,7 +106,7 @@ Ref<Tileset> Tileset::create()
 
 Ref<Tileset> Tileset::create(Texture* texture, int tilePixelWidth, int tilePixelHeight)
 {
-	auto material = makeObject<AbstractMaterial>();
+	auto material = makeObject<Material>();
 	material->setMainTexture(texture);
 	auto tileset = makeObject<Tileset>();
 	tileset->reset(material, tilePixelWidth, tilePixelHeight);
@@ -129,7 +129,7 @@ void Tileset::init()
     Object::init();
 }
 
-void Tileset::reset(AbstractMaterial* material, int tilePixelWidth, int tilePixelHeight)
+void Tileset::reset(Material* material, int tilePixelWidth, int tilePixelHeight)
 {
     setMaterial(material);
     setTilePixelSize(tilePixelWidth, tilePixelHeight);
@@ -173,12 +173,12 @@ uint8_t Tileset::tilePassageFlags(int tileId) const
 	}
 }
 
-AbstractMaterial* Tileset::material() const
+Material* Tileset::material() const
 {
     return m_material;
 }
 
-void Tileset::setMaterial(AbstractMaterial* material)
+void Tileset::setMaterial(Material* material)
 {
     m_material = material;
     resetInfo();

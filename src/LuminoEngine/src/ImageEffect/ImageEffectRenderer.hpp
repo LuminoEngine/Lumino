@@ -35,7 +35,7 @@ private:
 
     List<Instance> m_imageEffectInstances;
     List<Instance> m_collectedImageEffectInstances;
-	Ref<AbstractMaterial> m_copyMaterial;
+	Ref<Material> m_copyMaterial;
 };
 
 } // namespace detail

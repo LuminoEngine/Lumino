@@ -35,7 +35,7 @@ void UIViewport::init()
 	setVAlignment(VAlignment::Stretch);
 
     //m_imageEffectRenderer = makeRef<detail::ImageEffectRenderer>();
-    m_blitMaterial = makeObject<AbstractMaterial>();
+    m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
 
 	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");

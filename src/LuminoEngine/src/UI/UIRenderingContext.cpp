@@ -66,7 +66,7 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
     //}
 }
 
-//void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)
+//void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, Material* material*/, const Rect& textureSourceRect, const Color& color)
 //{
 //    //m_builder->setMaterial(material);
 //
@@ -144,7 +144,7 @@ void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyl
     element->commandList.addSubmitCommand(allocator);
 }
 
-void UIRenderingContext::drawImage(const Rect& destinationRect, AbstractMaterial* material)
+void UIRenderingContext::drawImage(const Rect& destinationRect, Material* material)
 {
     auto texture = material->mainTexture();
     drawSprite(

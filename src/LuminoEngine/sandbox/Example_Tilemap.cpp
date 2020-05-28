@@ -12,7 +12,7 @@ class App_Example_Tilemap : public Application
 
 
 		auto tilesetTexture = ln::Texture2D::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/Tileset-1.png");
-		auto tilesetMaterial = ln::makeObject<ln::AbstractMaterial>();
+		auto tilesetMaterial = ln::makeObject<ln::Material>();
 		tilesetMaterial->setMainTexture(tilesetTexture);
 
 		auto tileset = ln::makeObject<ln::Tileset>();
@@ -20,7 +20,7 @@ class App_Example_Tilemap : public Application
 
 		auto autotileset = ln::makeObject<ln::AutoTileset>();
 		auto autotilesetTexture = ln::Texture2D::load(u"C:/Proj/LN/PrivateProjects/HC0/Assets/Tilesets/AutoTileTest-1.png");
-		auto autotilesetMaterial = ln::AbstractMaterial::create(autotilesetTexture);
+		auto autotilesetMaterial = ln::Material::create(autotilesetTexture);
 		autotileset->material = autotilesetMaterial;
 		tileset->addAutoTileset(autotileset);
 

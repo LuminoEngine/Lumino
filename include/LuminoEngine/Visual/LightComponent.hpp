@@ -252,8 +252,8 @@ private:
 	float m_intensity;
 	bool m_enabled;
 
-	Ref<AbstractMaterial> m_material;
-	Ref<AbstractMaterial> m_spriteMaterial;
+	Ref<Material> m_material;
+	Ref<Material> m_spriteMaterial;
 };
 
 /** ポイントライトのコンポーネントです。 */

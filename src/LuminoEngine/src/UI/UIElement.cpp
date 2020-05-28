@@ -126,7 +126,7 @@ bool UIElement::init(const UICreationContext* context)
     m_dirtyFlags.set(detail::UIElementDirtyFlags::InitialLoading);
 
 	// TODO: Material も、実際に描画が必要な Element に限って作成した方がいいだろう
-	m_finalStyle->backgroundMaterial = makeObject<AbstractMaterial>();
+	m_finalStyle->backgroundMaterial = makeObject<Material>();
 
 	if (context->m_autoAddToPrimaryElement &&
         m_objectManagementFlags.hasFlag(detail::ObjectManagementFlags::AutoAddToPrimaryElement)) {
@@ -973,7 +973,7 @@ void UIElement::renderClient(UIRenderingContext* context, const Matrix& combined
 		if (m_finalStyle->backgroundColor.a > 0.0f) {
 			context->drawSolidRectangle(rect, m_finalStyle->backgroundColor);
 			//auto tex = makeObject<Texture2D>(u"D:/Proj/LN/HC1/Assets/Windowskin/window.png");
-			//auto mat = AbstractMaterial::create(tex);
+			//auto mat = Material::create(tex);
 			//context->drawBoxBackground(rect, m_finalStyle->cornerRadius, m_finalStyle->backgroundDrawMode, m_finalStyle->backgroundImageRect, m_finalStyle->backgroundColor);
 			//context->drawBoxBackground(finalGlobalRect(), Thickness(16), CornerRadius(), BrushImageDrawMode::BorderFrame, Rect(64, 0, 64, 64), m_finalStyle->backgroundColor);
 		}

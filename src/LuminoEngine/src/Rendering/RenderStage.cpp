@@ -123,7 +123,7 @@ void RenderStage::flush(GraphicsContext* context)
 	}
 }
 
-AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue, AbstractMaterial* sceneDefaultMaterial) const
+Material* RenderStage::getMaterialFinal(Material* priorityValue, Material* sceneDefaultMaterial) const
 {
 	// specified drawXXXX()
 	if (priorityValue) {
@@ -144,7 +144,7 @@ AbstractMaterial* RenderStage::getMaterialFinal(AbstractMaterial* priorityValue,
 	return sceneDefaultMaterial;
 }
 
-ShadingModel RenderStage::getShadingModelFinal(const AbstractMaterial* finalMaterial) const
+ShadingModel RenderStage::getShadingModelFinal(const Material* finalMaterial) const
 {
 	assert(finalMaterial);
 
@@ -156,7 +156,7 @@ ShadingModel RenderStage::getShadingModelFinal(const AbstractMaterial* finalMate
 	return finalMaterial->shadingModel;
 }
 
-BlendMode RenderStage::getBlendModeFinal(const AbstractMaterial* finalMaterial) const
+BlendMode RenderStage::getBlendModeFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getBlendMode().hasValue())
 		return finalMaterial->getBlendMode().value();
@@ -169,7 +169,7 @@ BlendMode RenderStage::getBlendModeFinal(const AbstractMaterial* finalMaterial) 
 	return BlendMode::Normal;
 }
 
-CullMode RenderStage::getCullingModeFinal(const AbstractMaterial* finalMaterial) const
+CullMode RenderStage::getCullingModeFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->getCullingMode().hasValue())
 		return finalMaterial->getCullingMode().value();
@@ -182,7 +182,7 @@ CullMode RenderStage::getCullingModeFinal(const AbstractMaterial* finalMaterial)
 	return CullMode::Back;
 }
 
-ComparisonFunc RenderStage::getDepthTestFuncFinal(const AbstractMaterial* finalMaterial) const
+ComparisonFunc RenderStage::getDepthTestFuncFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthTestEnabled().hasValue())
 		return (finalMaterial->isDepthTestEnabled().value()) ? ComparisonFunc::LessEqual : ComparisonFunc::Always;
@@ -195,7 +195,7 @@ ComparisonFunc RenderStage::getDepthTestFuncFinal(const AbstractMaterial* finalM
     return ComparisonFunc::LessEqual;
 }
 
-bool RenderStage::isDepthWriteEnabledFinal(const AbstractMaterial* finalMaterial) const
+bool RenderStage::isDepthWriteEnabledFinal(const Material* finalMaterial) const
 {
 	if (finalMaterial && finalMaterial->isDepthWriteEnabled().hasValue())
 		return finalMaterial->isDepthWriteEnabled().value();
@@ -276,7 +276,7 @@ const ColorTone& RenderStage::getToneFinal(RenderDrawElement* element) const
 //	}
 //}
 
-void RenderStage::applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const AbstractMaterial* priorityMaterial)
+void RenderStage::applyGeometryStatus(GraphicsContext* context, const RenderStage* stage, const Material* priorityMaterial)
 {
 	// BlendState
 	{

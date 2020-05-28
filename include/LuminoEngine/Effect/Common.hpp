@@ -3,7 +3,7 @@
 //#define LN_EFFEKSEER_ENABLED 1
 
 namespace ln {
-class AbstractMaterial;
+class Material;
 class EffectResource;
 namespace detail {
 class EffectManager;

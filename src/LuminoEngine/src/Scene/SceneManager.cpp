@@ -51,7 +51,7 @@ void SceneManager::init()
     m_atmosphereShader = Shader::create(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyFromAtmosphere.fx");
 #endif
 
-	m_primitiveMeshDefaultMaterial = makeObject<AbstractMaterial>();
+	m_primitiveMeshDefaultMaterial = makeObject<Material>();
 	m_primitiveMeshDefaultMaterial->setColor(Color(0.8f, 0.8f, 0.8f, 1.0));
 	m_primitiveMeshDefaultMaterial->setRoughness(0.5f);
 	m_primitiveMeshDefaultMaterial->setMetallic(0.0f);

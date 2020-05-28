@@ -17,7 +17,7 @@ class AutoTileset
 	: public Object
 {
 public:
-	Ref<AbstractMaterial> material;
+	Ref<Material> material;
 
 	// autotileId: 0~AutoTileUnitStride
 	// component: [top-left][top-right][bottom-left][bottom-light]
@@ -46,7 +46,7 @@ public:
 	static Ref<Tileset> create(Texture* texture, int tilePixelWidth, int tilePixelHeight);
 
     // util
-    void reset(AbstractMaterial* material, int tilePixelWidth, int tilePixelHeight);
+    void reset(Material* material, int tilePixelWidth, int tilePixelHeight);
 
     void resize(int tileCount);
     void setTilePixelSize(int width, int height);
@@ -59,9 +59,9 @@ public:
 
     int tilePixelWidth() const { return m_tilePixelWidth; }
     int tilePixelHeight() const { return m_tilePixelHeight; }
-    AbstractMaterial* material() const;
+    Material* material() const;
 
-    void setMaterial(AbstractMaterial* material);
+    void setMaterial(Material* material);
 
 	static int autoTileIndex(int tileId) { return (tileId < Tileset::AutoTileOffset) ? -1 : ((tileId - Tileset::AutoTileOffset) / Tileset::AutoTileSetStride); }
 	static int autoTileLocalId(int tileId) { return (tileId < Tileset::AutoTileOffset) ? -1 : tileId % Tileset::AutoTileUnitStride; }
@@ -114,7 +114,7 @@ private:
     //int m_horizontalTileCount;
     //Size m_tileUVSize;
     Vector2 m_tileScale;
-    Ref<AbstractMaterial> m_material;
+    Ref<Material> m_material;
     List<Tile> m_tiles;
 	List<Ref<AutoTileset>> m_autoTilesets;
 };

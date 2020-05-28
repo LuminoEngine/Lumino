@@ -34,16 +34,16 @@ void TransformControls::init()
 	//WorldObject::init();
     Object::init();
 
-    m_xColorMaterial = makeObject<AbstractMaterial>();
+    m_xColorMaterial = makeObject<Material>();
     m_xColorMaterial->setColor(Color::Red);
 
-    m_yColorMaterial = makeObject<AbstractMaterial>();
+    m_yColorMaterial = makeObject<Material>();
     m_yColorMaterial->setColor(Color::Green);
 
-    m_zColorMaterial = makeObject<AbstractMaterial>();
+    m_zColorMaterial = makeObject<Material>();
     m_zColorMaterial->setColor(Color::Blue);
 
-    m_activeColorMaterial = makeObject<AbstractMaterial>();
+    m_activeColorMaterial = makeObject<Material>();
     m_activeColorMaterial->setColor(Color::Yellow);
 }
 

@@ -57,7 +57,7 @@ private:
 
 	bool openGLTFModel(const AssetPath& assetPath);
 	bool readCommon(StaticMeshModel* meshModel);
-    Ref<AbstractMaterial> readMaterial(const tinygltf::Material& material);
+    Ref<Material> readMaterial(const tinygltf::Material& material);
 	Ref<MeshNode> readNode(const tinygltf::Node& node);
 	Ref<MeshContainer> readMesh(const tinygltf::Mesh& mesh);
 	Ref<Mesh> generateMesh(const MeshView& meshView) const;

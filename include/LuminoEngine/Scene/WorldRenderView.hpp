@@ -76,11 +76,11 @@ private:
     Ref<RenderViewPoint> m_viewPoint;
 	Ref<detail::ImageEffectRenderer> m_imageEffectRenderer;
 
-    Ref<AbstractMaterial> m_clearMaterial;
+    Ref<Material> m_clearMaterial;
 	Ref<StaticMeshModel> m_skyProjectionPlane;
 
     Ref<MeshResource> m_gridPlaneMesh;
-    Ref<AbstractMaterial> m_gridPlaneMaterial;
+    Ref<Material> m_gridPlaneMaterial;
     bool m_visibleGridPlane;
     bool m_physicsDebugDrawEnabled;
     bool m_gizmoEnabled;

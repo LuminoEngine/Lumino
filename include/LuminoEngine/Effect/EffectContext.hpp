@@ -95,7 +95,7 @@ public: // TODO: private
     int m_startNumber;
     int m_lastNumber;
     float m_frameTime;
-    Ref<AbstractMaterial> m_material;
+    Ref<Material> m_material;
 };
 
 template<class T>
