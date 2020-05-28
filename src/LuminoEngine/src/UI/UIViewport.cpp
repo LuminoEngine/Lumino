@@ -178,11 +178,6 @@ void UIViewport::onRender(UIRenderingContext* context)
 
     //detail::TextureInternal::readData(m_primaryTarget, graphicsContext)->save(u"test.png");
 
-
-	//auto tmp = Material::create(Texture2D::whiteTexture());
-	//context->blit(tmp, m_primaryTarget);
-
-
 	
 
 

@@ -127,9 +127,6 @@ Tileset::~Tileset()
 void Tileset::init()
 {
     Object::init();
-
-    //m_material = Material::create();
-    //m_material->setMainTexture(makeObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
 }
 
 void Tileset::reset(AbstractMaterial* material, int tilePixelWidth, int tilePixelHeight)

@@ -250,11 +250,6 @@ void AbstractMaterial::serialize(Archive& ar)
     ar & makeNVP(u"mainTexture", m_mainTexture);
 }
 
-//==============================================================================
-// Material
-
-
-
 
 ////==============================================================================
 //// PhongMaterial
