@@ -1,4 +1,33 @@
-﻿
+﻿/*
+ [2020/5/29] New ver 設計
+ ----------
+
+ モジュール分けを意識していきたい。今後も変化、というか機能追加ありそう。
+
+ ### ParticleStorage
+ 個々のパーティクルの姿勢などの情報やライフタイム、生成と、そのデータのやりくりをするリングバッファ的なものを管理するもの。
+
+ ### Modules
+ Unity や UE4 のモジュール。パーティクルに対して何か変化を与えたいときはこれを Model に追加していく。
+
+ ### Renderer
+ Shape の Module ごとに存在。
+
+ ### 関係
+
+ - ParticleEffectModel
+ - ParticleEffectEmitter
+ この 2 つが 1:1 で、ユーザープログラムに公開するもののメイン。
+
+ ParticleEffectEmitter
+ - 最低1つの ParticleEmitterInstance を持つ。Model が Sub-emitter の定義を持っていれば、ParticleEmitterInstance は必要に応じてたくさんつくられる。
+ - ShapeModule の key ごとに ParticleRenderer を持つ。
+ 
+ ParticleModel と ParticleModelInstance が 1:1。それぞれ、ParticleEffectModel と ParticleEmitterInstance が複数持つ。
+
+
+
+*/
 #include "Internal.hpp"
 #include <LuminoEngine/Mesh/Mesh.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>

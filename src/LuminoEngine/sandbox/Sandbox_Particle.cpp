@@ -10,7 +10,7 @@ class App_Sandbox_Particle : public Application
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
-#if 0
+#if 1
         auto material = Material::create();
         material->setMainTexture(Texture2D::load(u"Sprite1"));
         

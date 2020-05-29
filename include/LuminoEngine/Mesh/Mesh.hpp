@@ -226,6 +226,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 	void init(int vertexCount, int indexCount);
 	void init(int vertexCount, int indexCount, IndexBufferFormat indexFormat);
+	// TODO: section 1作る init ユーティリティも欲しい。addSection は本当に忘れやすい
 
 private:
 	void attemptResetVertexLayout();
