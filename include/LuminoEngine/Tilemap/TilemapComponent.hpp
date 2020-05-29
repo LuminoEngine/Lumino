@@ -3,7 +3,6 @@
 #include "../Visual/VisualComponent.hpp"
 
 namespace ln {
-class Material;
 class TilemapModel;
 class RigidBody2D;
 

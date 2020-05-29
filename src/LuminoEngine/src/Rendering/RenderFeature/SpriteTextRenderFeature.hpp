@@ -1,40 +1,14 @@
 ﻿#pragma once
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "../Font/FontGlyphCache.hpp"
-#include "../Font/TextLayoutEngine.hpp"
-#include "RenderStage.hpp"
-#include "RenderingManager.hpp"
+#include "../../Font/FontGlyphCache.hpp"
+#include "../../Font/TextLayoutEngine.hpp"
+#include "../RenderElement.hpp"
+#include "../RenderingManager.hpp"
 
 namespace ln {
 namespace detail {
 	
-// 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
-// TODO: 後で消す。
-class SpriteTextRenderFeatureStageParameters
-	: public RenderFeatureStageParameters
-{
-public:
-	SpriteTextRenderFeatureStageParameters()
-		: RenderFeatureStageParameters(CRCHash::compute("SpriteTextRenderFeatureStageParameters"))
-	{
-	}
-
-	virtual bool equals(const RenderFeatureStageParameters* other) override
-	{
-		if (typeId() != other->typeId()) return false;
-		if (this == other) return true;
-		return true;
-	}
-
-	virtual void copyTo(RenderFeatureStageParameters* params) override
-	{
-		LN_CHECK(typeId() == params->typeId());
-	}
-
-private:
-};
-
 class SpriteTextRenderFeature
 	: public RenderFeature
 	, public TextLayoutEngine

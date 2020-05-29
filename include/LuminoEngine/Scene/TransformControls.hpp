@@ -1,9 +1,9 @@
 ﻿
 #pragma once
+#include "Common.hpp"
 //#include "WorldObject.hpp"
 
 namespace ln {
-class Material;
 class RenderingContext;
 class UIEventArgs;
 class WorldObject;

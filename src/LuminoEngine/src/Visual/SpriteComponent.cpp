@@ -7,7 +7,7 @@
 #include <LuminoEngine/Visual/SpriteComponent.hpp>
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include "../Asset/AssetManager.hpp"
-#include "../Rendering/SpriteRenderFeature.hpp"
+#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 
@@ -372,7 +372,7 @@ void SpriteComponent::onRender(RenderingContext* context)
 
     Size renderSize;
     Rect renderSourceRect;
-    detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+    detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
         tex, size, sourceRect, &renderSize, &renderSourceRect);
 
     context->drawSprite(

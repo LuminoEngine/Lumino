@@ -6,111 +6,179 @@
 namespace ln {
 
 //==============================================================================
-// AbstractMaterial
+// Material
+// https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
+// https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
 
-AbstractMaterial::AbstractMaterial(detail::MaterialType type)
-	: m_type(type)
+LN_OBJECT_IMPLEMENT(Material, Object) {}
+
+static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+static const float Material_DefaultRoughness = 0.5f;
+static const float Material_DefaultMetallic = 0.5f;
+//static const float Material_DefaultSpecular = 0.5f;
+static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
+
+Ref<Material> Material::create()
+{
+    return makeObject<Material>();
+}
+
+Ref<Material> Material::create(Texture* mainTexture)
+{
+    return makeObject<Material>(mainTexture);
+}
+
+Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
+{
+    return makeObject<Material>(mainTexture, shadingModel);
+}
+
+Material::Material()
+{
+    m_data.color = Material_DefaultColor;
+    m_data.roughness = Material_DefaultRoughness;
+    m_data.metallic = Material_DefaultMetallic;
+    //m_data.specular = Material_DefaultSpecular;
+    m_data.emissive = Material_DefaultEmmisive;
+}
+
+Material::~Material()
 {
 }
 
-AbstractMaterial::~AbstractMaterial()
-{
-}
-
-void AbstractMaterial::init()
+void Material::init()
 {
 	Object::init();
 }
 
-void AbstractMaterial::setMainTexture(Texture* value)
+void Material::init(Texture* mainTexture)
+{
+    init(mainTexture, ShadingModel::Default);
+}
+
+void Material::init(Texture* mainTexture, ShadingModel shadingModel)
+{
+    init();
+    setMainTexture(mainTexture);
+    this->shadingModel = shadingModel;
+}
+
+void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
+{
+    init();
+    setMainTexture(mainTexture);
+    setColor(phongMaterialData.diffuse);
+}
+
+void Material::setMainTexture(Texture* value)
 {
 	m_mainTexture = value;
 }
 
-Texture* AbstractMaterial::mainTexture() const
+Texture* Material::mainTexture() const
 {
 	return m_mainTexture;
 }
 
-void AbstractMaterial::setShader(Shader* shader)
+void Material::setColor(const Color& value)
+{
+    m_data.color = value;
+}
+
+void Material::setRoughness(float value)
+{
+    m_data.roughness = value;
+}
+
+void Material::setMetallic(float value)
+{
+    m_data.metallic = value;
+}
+
+void Material::setEmissive(const Color& value)
+{
+    m_data.emissive = value;
+}
+
+void Material::setShader(Shader* shader)
 {
     m_shader = shader;
 }
 
-Shader* AbstractMaterial::shader() const
+Shader* Material::shader() const
 {
 	return m_shader;
 }
 
-void AbstractMaterial::setInt(const StringRef& name, int value)
+void Material::setInt(const StringRef& name, int value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setInt(value);
 }
 
-void AbstractMaterial::setFloat(const StringRef& name, float value)
+void Material::setFloat(const StringRef& name, float value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setFloat(value);
 }
 
-void AbstractMaterial::setFloatArray(const StringRef& name, const float* values, int length)
+void Material::setFloatArray(const StringRef& name, const float* values, int length)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setFloatArray(values, length);
 }
 
-void AbstractMaterial::setVector(const StringRef& name, const Vector4& value)
+void Material::setVector(const StringRef& name, const Vector4& value)
 {
     detail::ShaderParameterValue* param = getValue(name);
     param->setVector(value);
 }
 
-void AbstractMaterial::setVectorArray(const StringRef& name, const Vector4* values, int length)
+void Material::setVectorArray(const StringRef& name, const Vector4* values, int length)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setVectorArray(values, length);
 }
 
-void AbstractMaterial::setMatrix(const StringRef& name, const Matrix& value)
+void Material::setMatrix(const StringRef& name, const Matrix& value)
 {
     detail::ShaderParameterValue* param = getValue(name);
     param->setMatrix(value);
 }
 
-void AbstractMaterial::setTexture(const StringRef& name, Texture* value)
+void Material::setTexture(const StringRef& name, Texture* value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setTexture(value);
 }
 
-void AbstractMaterial::setColor(const StringRef& name, const Color& value)
+void Material::setColor(const StringRef& name, const Color& value)
 {
 	detail::ShaderParameterValue* param = getValue(name);
 	param->setVector(value.toVector4());
 }
 
-void AbstractMaterial::setBlendMode(Optional<BlendMode> mode)
+void Material::setBlendMode(Optional<BlendMode> mode)
 {
     blendMode = mode;
 }
 
-void AbstractMaterial::setCullingMode(Optional<CullMode> mode)
+void Material::setCullingMode(Optional<CullMode> mode)
 {
     cullingMode = mode;
 }
 
-void AbstractMaterial::setDepthTestEnabled(Optional<bool> enabled)
+void Material::setDepthTestEnabled(Optional<bool> enabled)
 {
     depthTestEnabled = enabled;
 }
 
-void AbstractMaterial::setDepthWriteEnabled(Optional<bool> enabled)
+void Material::setDepthWriteEnabled(Optional<bool> enabled)
 {
     depthWriteEnabled = enabled;
 }
 
-detail::ShaderParameterValue* AbstractMaterial::getValue(const ln::StringRef& name)
+detail::ShaderParameterValue* Material::getValue(const ln::StringRef& name)
 {
 	for (auto& pair : m_values) {
 		if (pair.first == name) {
@@ -123,7 +191,7 @@ detail::ShaderParameterValue* AbstractMaterial::getValue(const ln::StringRef& na
 	return m_values.back().second.get();
 }
 
-void AbstractMaterial::updateShaderVariables(Shader* target) const
+void Material::updateShaderVariables(Shader* target) const
 {
     // Material から Shader へ検索をかける。
     // Shader はビルトインの変数がいくつか含まれているので、この方が高速に検索できる。
@@ -176,110 +244,9 @@ void AbstractMaterial::updateShaderVariables(Shader* target) const
     }
 }
 
-//==============================================================================
-// Material
-// https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
-// https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
-
-LN_OBJECT_IMPLEMENT(Material, Object) {}
-
-static const Color Material_DefaultColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
-static const float Material_DefaultRoughness = 0.5f;
-static const float Material_DefaultMetallic = 0.5f;
-//static const float Material_DefaultSpecular = 0.5f;
-static const Color Material_DefaultEmmisive = Color(0, 0, 0, 0);
-
-Ref<Material> Material::create()
-{
-	return makeObject<Material>();
-}
-
-Ref<Material> Material::create(Texture* mainTexture)
-{
-    return makeObject<Material>(mainTexture);
-}
-
-Ref<Material> Material::create(Texture* mainTexture, ShadingModel shadingModel)
-{
-    return makeObject<Material>(mainTexture, shadingModel);
-}
-
-Material::Material()
-	: AbstractMaterial(detail::MaterialType::PBR)
-{
-	m_data.color = Material_DefaultColor;
-	m_data.roughness = Material_DefaultRoughness;
-	m_data.metallic = Material_DefaultMetallic;
-	//m_data.specular = Material_DefaultSpecular;
-    m_data.emissive = Material_DefaultEmmisive;
-}
-
-Material::~Material()
-{
-}
-
-void Material::init()
-{
-	AbstractMaterial::init();
-}
-
-void Material::init(Texture* mainTexture)
-{
-    init(mainTexture, ShadingModel::Default);
-}
-
-void Material::init(Texture* mainTexture, ShadingModel shadingModel)
-{
-    init();
-    setMainTexture(mainTexture);
-    this->shadingModel = shadingModel;
-}
-
-void Material::init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData)
-{
-    init();
-    setMainTexture(mainTexture);
-    setColor(phongMaterialData.diffuse);
-}
-
-void Material::setColor(const Color& value)
-{
-	m_data.color = value;
-}
-
-void Material::setRoughness(float value)
-{
-	m_data.roughness = value;
-}
-
-void Material::setMetallic(float value)
-{
-	m_data.metallic = value;
-}
-//
-//void Material::setSpecular(float value)
-//{
-//	m_data.specular = value;
-//}
-
-void Material::setEmissive(const Color& value)
-{
-    m_data.emissive = value;
-}
-
-void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData) const
-{
-	*outData = m_data;
-}
-
-void Material::translateToPhongMaterialData(detail::PhongMaterialData* outData) const
-{
-	LN_NOTIMPLEMENTED();
-}
-
 void Material::serialize(Archive& ar)
 {
-    AbstractMaterial::serialize(ar);
+    Material::serialize(ar);
     ar & makeNVP(u"mainTexture", m_mainTexture);
 }
 
@@ -307,7 +274,7 @@ void Material::serialize(Archive& ar)
 //}
 //
 //PhongMaterial::PhongMaterial()
-//	: AbstractMaterial(detail::MaterialType::Phong)
+//	: Material(detail::MaterialType::Phong)
 //{
 //}
 //
@@ -317,7 +284,7 @@ void Material::serialize(Archive& ar)
 //
 //void PhongMaterial::init()
 //{
-//	AbstractMaterial::init();
+//	Material::init();
 //}
 //
 //void PhongMaterial::setDiffuse(const Color& value)
@@ -356,11 +323,6 @@ void Material::serialize(Archive& ar)
 //	outData->roughness = Material_DefaultRoughness;
 //	outData->metallic = Material_DefaultMetallic;
 //	//outData->specular = Material_DefaultSpecular;
-//}
-//
-//void PhongMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)
-//{
-//	*outData = m_data;
 //}
 
 } // namespace ln

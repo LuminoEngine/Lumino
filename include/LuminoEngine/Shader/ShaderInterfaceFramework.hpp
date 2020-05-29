@@ -59,6 +59,12 @@ struct alignas(16) LNClusteredShadingParameters
     alignas(4) float ln_FarClip;
 };
 
+// Note: specular は簡単のため無し。
+// Three.js では無し。
+// https://threejs.org/docs/#api/en/materials/MeshStandardMaterial
+// UE4 では有るが、「0.5のままで十分」としている。
+// https://docs.unrealengine.com/ja/Engine/Rendering/Materials/HowTo/ShinyMaterials/index.html
+// http://envgameartist.blogspot.com/2014/12/pbr.html
 struct PbrMaterialData
 {
     Color color;

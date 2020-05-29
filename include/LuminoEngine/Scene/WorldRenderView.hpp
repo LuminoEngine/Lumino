@@ -5,13 +5,11 @@
 #include "TransformControls.hpp"
 
 namespace ln {
-class Material;
 class World;
 class Camera;
 class RenderingContext;
 class StaticMeshModel;
 class MeshResource;
-class Material;
 class ImageEffect;
 namespace detail {
 class ImageEffectRenderer;

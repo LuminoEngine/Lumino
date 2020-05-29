@@ -2,7 +2,6 @@
 #include "ImageEffect.hpp"
 
 namespace ln {
-class Material;
 
 //class LightShaftImageEffect
 //    : public ImageEffect

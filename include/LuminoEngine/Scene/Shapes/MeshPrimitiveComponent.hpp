@@ -4,7 +4,6 @@
 #include "../../Visual/VisualComponent.hpp"
 
 namespace ln {
-class Material;
 
 class PlaneMeshComponent
     : public VisualComponent

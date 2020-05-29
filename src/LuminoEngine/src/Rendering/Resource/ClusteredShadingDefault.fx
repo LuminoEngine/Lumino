@@ -1,6 +1,6 @@
 /* Lumino ShadingModel combined HLSL file (RawIR:Intermediate Representation) */
-
 //BEGIN_HLSL
+
 
 #include <Lumino.fxh>
 #include <LuminoForward.fxh>
@@ -533,4 +533,5 @@ technique Forward_Geometry_SkinnedMesh_UnLighting
 }
 
 //END_HLSL
+
 

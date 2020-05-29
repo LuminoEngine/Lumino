@@ -2,7 +2,6 @@
 #include "ImageEffect.hpp"
 
 namespace ln {
-class Material;
 namespace detail { class BloomImageEffectInstance; }
 
 class BloomImageEffect

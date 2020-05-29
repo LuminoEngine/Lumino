@@ -4,7 +4,6 @@
 
 namespace ln {
 namespace detail { class ToneImageEffectInstance; }
-class Material;
 
 class ToneImageEffect
 	: public ImageEffect

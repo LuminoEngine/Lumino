@@ -5,7 +5,7 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include "../Graphics/GraphicsDeviceContext.hpp"
+#include "../../Graphics/GraphicsDeviceContext.hpp"
 #include "PrimitiveRenderFeature.hpp"
 
 namespace ln {

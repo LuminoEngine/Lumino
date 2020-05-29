@@ -8,6 +8,7 @@ class Level;
 class Camera;
 class Raycaster;
 class RaycastResult;
+class Material;
 
 enum class LevelTransitionEffectMode
 {

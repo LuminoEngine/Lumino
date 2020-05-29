@@ -5,9 +5,9 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/Vertex.hpp>
-#include "../Graphics/GraphicsDeviceContext.hpp"
-#include "../Graphics/GraphicsManager.hpp"
-#include "../Rendering/RenderingManager.hpp"
+#include "../../Graphics/GraphicsDeviceContext.hpp"
+#include "../../Graphics/GraphicsManager.hpp"
+#include "../../Rendering/RenderingManager.hpp"
 #include "ShapesRenderFeature.hpp"
 
 

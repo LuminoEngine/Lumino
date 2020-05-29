@@ -4,7 +4,6 @@
 #include "ImageEffect.hpp"
 
 namespace ln {
-class Material;
 class Texture;
 namespace detail { class TransitionImageEffectInstance; }
 

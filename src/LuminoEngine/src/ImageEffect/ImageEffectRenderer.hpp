@@ -6,7 +6,6 @@ class RenderingContext;
 class ImageEffect;
 using ImageEffectInstanceRenderer = ImageEffect;
 class ImageEffectInstance;
-class Material;
 namespace detail {
 
 class ImageEffectRenderer

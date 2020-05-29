@@ -34,7 +34,8 @@ private:
 	ShaderManager* m_manager;
 	Ref<UnifiedShader> m_unifiedShader;
 	DiagnosticsManager* m_diag;
-	HLSLMetadataParser m_metadataParser;
+	std::vector<HLSLTechnique> m_metadataTechniques;
+	//HLSLMetadataParser m_metadataParser;
 	std::unordered_map<std::string, std::shared_ptr<ShaderCodeTranspiler>> m_transpilerMap;	// kei is "stage:entryPoint"
 	// TODO: ↑ unordered_map やめたい。順序付けされなくなるので。今は makeKey() で 1 とか 2 とか prefix つけることで対策している。
 };

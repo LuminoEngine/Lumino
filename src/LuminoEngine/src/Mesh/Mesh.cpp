@@ -836,7 +836,7 @@ void StaticMeshModel::addNode(MeshNode* node)
     m_nodes.add(node);
 }
 
-void StaticMeshModel::addMaterial(AbstractMaterial* material)
+void StaticMeshModel::addMaterial(Material* material)
 {
 	m_materials.add(material);
 }

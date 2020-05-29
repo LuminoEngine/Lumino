@@ -6,7 +6,7 @@ namespace ln {
 class Font;
 class Texture;
 class Shader;
-class AbstractMaterial;
+class Material;
 class UIStyle;
 class UILayoutContext;
 class UIElement;
@@ -96,7 +96,7 @@ class UIStyleInstance;
 //	Color backgroundColor;
 //	//Ref<Texture> backgroundImage;
 //	//Ref<Shader> backgroundShader;
-//	Ref<AbstractMaterial> backgroundMaterial;
+//	Ref<Material> backgroundMaterial;
 //
 //	// text
 //	Color textColor;

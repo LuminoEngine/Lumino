@@ -355,7 +355,7 @@ void MqoImporter::visitMaterialChunk()
 {
 }
 
-void MqoImporter::visitMaterial(AbstractMaterial* material)
+void MqoImporter::visitMaterial(Material* material)
 {
 	m_model->addMaterial(material);
 }

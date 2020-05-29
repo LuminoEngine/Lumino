@@ -5,8 +5,8 @@
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
-#include "../Graphics/GraphicsManager.hpp"
-#include "RenderingManager.hpp"
+#include "../../Graphics/GraphicsManager.hpp"
+#include "../RenderingManager.hpp"
 #include "MeshRenderFeature.hpp"
 
 namespace ln {

@@ -5,7 +5,6 @@
 
 namespace ln {
 class Shader;
-class Material;
 class World;
 
 namespace detail {

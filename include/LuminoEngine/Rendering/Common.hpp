@@ -7,6 +7,7 @@
 
 namespace ln {
 
+// Note: ShadingModel は組み込みの SurfaceShader を選択するもの。Unlit にしても陰はつく。
 enum class ShadingModel : uint8_t
 {
 	Default,
@@ -172,7 +173,7 @@ struct BoxElementShapeShadowStyle
 
 
 namespace detail {
-
+class SceneRenderer;
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {

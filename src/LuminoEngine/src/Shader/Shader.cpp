@@ -632,6 +632,7 @@ void ShaderDescriptor::setData(int uniformBufferIndex, const void* data, size_t 
 
     buffer.assign(data, size);
 
+#ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
     // TODO: Shader 側で行優先にするべきかも…
     for (const auto& member : descriptorLayout()->m_buffers[uniformBufferIndex].members) {
         const auto& desc = descriptorLayout()->m_members[member].desc;//param->desc();
@@ -641,6 +642,7 @@ void ShaderDescriptor::setData(int uniformBufferIndex, const void* data, size_t 
             m->transpose();
         }
     }
+#endif
 }
 
 void ShaderDescriptor::setInt(int memberIndex, int value)
@@ -687,16 +689,27 @@ void ShaderDescriptor::setVectorArray(int memberIndex, const Vector4* value, int
 
 void ShaderDescriptor::setMatrix(int memberIndex, const Matrix& value)
 {
+#ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
+    const bool transpose = true;
+#else
+    const bool transpose = false;
+#endif
+
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, true);
+    alignMatricesToBuffer((const byte_t*)&value, 4, 4, 1, buffer.data(), member.desc.offset, 1, member.desc.matrixStride, 0, member.desc.rows, member.desc.columns, transpose);
 }
 
 void ShaderDescriptor::setMatrixArray(int memberIndex, const Matrix* value, int count)
 {
+#ifdef LN_SHADER_UBO_TRANSPORSE_MATRIX
+    const bool transpose = true;
+#else
+    const bool transpose = false;
+#endif
     const auto& member = descriptorLayout()->m_members[memberIndex];
     auto& buffer = m_buffers[member.uniformBufferRegisterIndex];
-    alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, true);
+    alignMatricesToBuffer((const byte_t*)value, 4, 4, count, buffer.data(), member.desc.offset, member.desc.elements, member.desc.matrixStride, member.desc.arrayStride, member.desc.rows, member.desc.columns, transpose);
 }
 
 void ShaderDescriptor::setTexture(int textureIndex, Texture* value)

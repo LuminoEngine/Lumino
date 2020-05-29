@@ -8,7 +8,6 @@
 namespace ln {
 class RenderingContext;
 class SpriteSheet;   // TODO:
-class Material;   // TODO:
 
 class Effect
 {

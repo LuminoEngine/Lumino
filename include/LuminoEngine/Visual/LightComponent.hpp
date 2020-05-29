@@ -10,7 +10,6 @@
 namespace ln {
 //namespace detail { class ShadowCasterPass; }
 
-class Material;
 #if 0
 /** ライトのコンポーネントです。 */
 class LightComponent

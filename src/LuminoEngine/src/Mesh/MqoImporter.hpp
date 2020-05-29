@@ -46,7 +46,7 @@ protected:
 	DiagnosticsManager* diag() const { return m_diag; }
 
 	virtual void visitMaterialChunk() = 0;
-	virtual void visitMaterial(AbstractMaterial* material) = 0;
+	virtual void visitMaterial(Material* material) = 0;
 	virtual void visitObjectChunk(const StringRef& name) = 0;
 	virtual void visitVertexChunk(int vertexCount) = 0;
 	virtual void visitVertex(const Vector3& vertex, int index) = 0;
@@ -81,7 +81,7 @@ public:
 
 protected:
 	virtual void visitMaterialChunk() override;
-	virtual void visitMaterial(AbstractMaterial* material) override;
+	virtual void visitMaterial(Material* material) override;
 	virtual void visitObjectChunk(const StringRef& name) override;
 	virtual void visitVertexChunk(int vertexCount) override;
 	virtual void visitVertex(const Vector3& vertex, int index) override;

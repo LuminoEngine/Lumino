@@ -23,20 +23,36 @@ bool UnifiedShaderCompiler::compile(
 	char* inputCode, size_t inputCodeLength,
 	const List<Path>& includeDirectories, const List<String>& definitions)
 {
-	m_metadataParser.parse(inputCode, inputCodeLength, m_diag);
-	if (m_diag->hasError()) {
-		return false;
+	if (ShaderModuleParser::checkHasModuleBlock(inputCode, inputCodeLength)) {
+		ShaderModuleParser parser;
+		if (!parser.parse(inputCode, inputCodeLength, m_diag)) {
+			return false;
+		}
+		m_metadataTechniques = std::move(parser.techniques);
+
+		// @module ~ @end を空白で潰しておく
+		memset((inputCode + parser.moduleBegin), ' ', parser.moduleEnd - parser.moduleBegin);
+	}
+	else {
+		HLSLMetadataParser parser;
+		parser.parse(inputCode, inputCodeLength, m_diag);
+		if (m_diag->hasError()) {
+			return false;
+		}
+		m_metadataTechniques = std::move(parser.techniques);
 	}
 
+	
+
 	// glslang は hlsl の technique ブロックを理解できないので、空白で潰しておく
-	for (auto& tech : m_metadataParser.techniques) {
+	for (auto& tech : m_metadataTechniques) {
 		memset((inputCode + tech.blockBegin), ' ', tech.blockEnd - tech.blockBegin);
 	}
 
 #if 1
 
     // Tech と Pass を作り、各 Pass のシェーダを Compile
-    for (auto& tech : m_metadataParser.techniques)
+    for (auto& tech : m_metadataTechniques)
     {
         UnifiedShader::TechniqueId techId;
         if (!m_unifiedShader->addTechnique(tech.name, &techId)) {
@@ -98,7 +114,7 @@ bool UnifiedShaderCompiler::compile(
 #else
 
 	// まずは compile と link を行う
-	for (auto& tech : m_metadataParser.techniques)
+	for (auto& tech : m_metadataTechniques)
 	{
 		for (auto& pass : tech.passes)
 		{
@@ -223,7 +239,7 @@ bool UnifiedShaderCompiler::compileSingleCodes(
 #endif
 
     tech.passes.push_back(std::move(pass));
-    m_metadataParser.techniques.push_back(std::move(tech));
+	m_metadataTechniques.push_back(std::move(tech));
 
 
 	return true;
@@ -357,7 +373,7 @@ bool UnifiedShaderCompiler::link()
 
 
 	//// Tech と Pass を作る
-	//for (auto& tech : m_metadataParser.techniques)
+	//for (auto& tech : m_metadataTechniques)
 	//{
 	//	UnifiedShader::TechniqueId techId;
 	//	if (!m_unifiedShader->addTechnique(tech.name, &techId)) {

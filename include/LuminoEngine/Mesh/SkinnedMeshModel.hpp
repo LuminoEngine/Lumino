@@ -115,11 +115,11 @@ public:
 	AnimationController* animationController() const { return m_animationController; }
 
 	//void addMeshContainer(MeshContainer* meshContainer);
-	//void addMaterial(AbstractMaterial* material);
+	//void addMaterial(Material* material);
 
 
 	//const List<Ref<MeshContainer>>& meshContainers() const { return m_meshContainers; }
-	//const List<Ref<AbstractMaterial>>& materials() const { return m_materials; }
+	//const List<Ref<Material>>& materials() const { return m_materials; }
 
 
     // TODO: internal
@@ -153,7 +153,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	//List<Ref<MeshContainer>> m_meshContainers;
-	//List<Ref<AbstractMaterial>> m_materials;
+	//List<Ref<Material>> m_materials;
 	List<Ref<MeshArmature>> m_skeletons;
 
 	Matrix		m_worldTransform;

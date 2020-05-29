@@ -127,7 +127,13 @@ const TBuiltInResource DefaultTBuiltInResource = {
 class TPreamble
 {
 public:
-    TPreamble() {}
+    TPreamble()
+    {
+        // see Readme.md
+        // GLSL に変換されたとき、GLSL 側がデフォルトのレイアウトになるようにする。
+        // → Vukan で使ったとき、Lumino 側で転置する必要がなくなる。
+        text.append("#pragma pack_matrix(row_major)\n");
+    }
 
     bool isSet() const { return text.size() > 0; }
     const char* get() const { return text.c_str(); }
@@ -538,6 +544,12 @@ bool ShaderCodeTranspiler::compileAndLinkFromHlsl(
 				return false;
 			}
 
+            //if (type->isMatrix()) {
+            //    auto t = type->getQualifier();
+            //    const_cast<glslang::TQualifier&>(type->getQualifier()).layoutMatrix = glslang::ElmColumnMajor;
+            //    printf("");
+            //}
+
 			info.offset = m_program->getUniformBufferOffset(i);
 
 			info.vectorElements = type->getVectorSize();
@@ -604,7 +616,28 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
 
         virtual void visitSymbol(glslang::TIntermSymbol* symbol)
         {
-            if (symbol->getBasicType() == glslang::EbtBlock) {
+            auto name1 = symbol->getName();
+            //if (name1 == "ln_WorldViewProjection") {
+            //    printf("");
+
+            //}
+            //std::cout << name1 << std::endl;
+
+
+            //if (symbol->isMatrix()) {
+            //    auto pare = getParentNode();
+            //    auto parentS = pare->getAsSymbolNode();
+            //    auto parentST = pare->getAsTyped();
+            //    //auto t = pare->getBasicType();
+
+            //    auto name1 = symbol->getName();
+            //    //auto& name = symbol->getType().getTypeName();
+            //    //symbol->getWritableType().getQualifier().layoutMatrix = glslang::ElmColumnMajor;
+            //    printf("");
+
+            //}
+            //else 
+                if (symbol->getBasicType() == glslang::EbtBlock) {
                 auto& name = symbol->getType().getTypeName();
 
                 auto itr = std::find_if(
@@ -614,6 +647,7 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
                     symbol->getWritableType().getQualifier().layoutSet = DescriptorType_UniformBuffer;
                     symbol->getWritableType().getQualifier().layoutBinding = itr->binding;
                 }
+                    //symbol->getWritableType().getQualifier().layoutMatrix = glslang::ElmColumnMajor;
             }
             else if (symbol->getBasicType() == glslang::EbtSampler) {
                 auto& name = symbol->getName();
@@ -637,6 +671,18 @@ bool ShaderCodeTranspiler::mapIOAndGenerateSpirv(const DescriptorLayout& mergedD
                     }
                 }
             }
+        }
+        
+        // リテラル
+        void visitConstantUnion(glslang::TIntermConstantUnion* node) override
+        {
+        }
+
+        bool visitAggregate(glslang::TVisit visit, glslang::TIntermAggregate* node) override
+        {
+            //auto name = node->getName();
+            //std::cout << name << std::endl; 
+            return TIntermTraverser::visitAggregate(visit, node);
         }
     };
 

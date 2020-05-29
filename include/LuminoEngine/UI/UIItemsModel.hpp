@@ -3,7 +3,6 @@
 #include "UIContainerElement.hpp"
 
 namespace ln {
-class Material;
 class UICollectionViewModel;
 
 // row, column, parent を使って、Model 内のデータを一意に識別するためのキー

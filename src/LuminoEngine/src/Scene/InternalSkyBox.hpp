@@ -1,8 +1,8 @@
 ﻿
 #pragma once
+#include "Common.hpp"
 
 namespace ln {
-class Material;
 class RenderingContext;
 namespace detail {
 

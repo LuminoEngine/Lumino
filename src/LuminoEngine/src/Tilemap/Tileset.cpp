@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Tilemap/Tileset.hpp>
-#include "../Rendering/SpriteRenderFeature.hpp"
+#include "../Rendering/RenderFeature/SpriteRenderFeature.hpp"
 
 namespace ln {
 namespace detail {
@@ -127,9 +127,6 @@ Tileset::~Tileset()
 void Tileset::init()
 {
     Object::init();
-
-    //m_material = Material::create();
-    //m_material->setMainTexture(makeObject<Texture2D>(u"D:/tmp/110220c_as019.png"));
 }
 
 void Tileset::reset(Material* material, int tilePixelWidth, int tilePixelHeight)
@@ -219,7 +216,7 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 
 				Size renderSize;
 				Rect renderSourceRect;
-				detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+				detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
 					texture, tileSize, sourceRect, &renderSize, &renderSourceRect);
 
 				context->drawSprite(
@@ -245,7 +242,7 @@ void Tileset::drawTile(RenderingContext* context, int tileId, const Vector3& pos
 		//Size worldSize(tile.sourceRect.width * m_tileScale.x, tile.sourceRect.height * m_tileScale.y);
 		Size renderSize;
 		Rect renderSourceRect;
-		detail::SpriteRenderFeature::makeRenderSizeAndSourceRectHelper(
+		detail::SpriteRenderFeature2::makeRenderSizeAndSourceRectHelper(
 			texture, tileSize, tile.sourceRect, &renderSize, &renderSourceRect);
 
 		context->drawSprite(

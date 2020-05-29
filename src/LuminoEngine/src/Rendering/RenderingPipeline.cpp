@@ -3,6 +3,7 @@
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderStage.hpp"
+#include "RenderElement.hpp"
 #include "RenderingPipeline.hpp"
 #include "ClusteredShadingSceneRenderer.hpp"
 #include "UnLigitingSceneRenderer.hpp"

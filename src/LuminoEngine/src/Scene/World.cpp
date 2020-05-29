@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include "../Rendering/RenderStage.hpp"
 #include <LuminoEngine/Animation/AnimationContext.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld.hpp>
 #include <LuminoEngine/Physics/PhysicsWorld2D.hpp>
@@ -12,6 +11,8 @@
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
 #include <LuminoEngine/Scene/World.hpp>
+#include "../Rendering/RenderStage.hpp"
+#include "../Rendering/RenderElement.hpp"
 
 namespace ln {
 

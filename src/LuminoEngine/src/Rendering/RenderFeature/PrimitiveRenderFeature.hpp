@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <LuminoEngine/Rendering/RenderFeature.hpp>
-#include "RenderStage.hpp"
-#include "../Graphics/GraphicsManager.hpp"
-#include "../Mesh/MeshGenerater.hpp"
-#include "RenderingManager.hpp"
+#include "../../Graphics/GraphicsManager.hpp"
+#include "../../Mesh/MeshGenerater.hpp"
+#include "../RenderStage.hpp"
+#include "../RenderingManager.hpp"
 
 namespace ln {
 class MeshResource;
@@ -32,32 +32,6 @@ private:
     Ref<IVertexBuffer> m_vertexBuffer;
     Ref<IIndexBuffer> m_indexBuffer;
 
-};
-
-// 特に state とかないので不要なのだが、実装を他と合わせてイメージを持ちやすいようにしている。
-// TODO: 後で消す。
-class MeshGeneraterRenderFeatureStageParameters
-	: public RenderFeatureStageParameters
-{
-public:
-	MeshGeneraterRenderFeatureStageParameters()
-		: RenderFeatureStageParameters(CRCHash::compute("MeshGeneraterRenderFeatureStageParameters"))
-	{
-	}
-
-	virtual bool equals(const RenderFeatureStageParameters* other) override
-	{
-		if (typeId() != other->typeId()) return false;
-		if (this == other) return true;
-		return true;
-	}
-
-	virtual void copyTo(RenderFeatureStageParameters* params) override
-	{
-		LN_CHECK(typeId() == params->typeId());
-	}
-
-private:
 };
 
 // 単純なメッシュ形状を描画する。

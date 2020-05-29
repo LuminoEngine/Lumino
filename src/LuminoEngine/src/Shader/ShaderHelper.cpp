@@ -91,6 +91,16 @@ void ShaderParameterValue::setBoolArray(const bool* values, int count)
     dirty();
 }
 
+void ShaderParameterValue::setIntArray(const int* values, int count)
+{
+    m_type = ShaderVariableType::BoolArray;
+    allocValueBuffer(sizeof(int) * count);
+    if (values) {
+        memcpy(m_buffer.data(), values, sizeof(int) * count);
+    }
+    dirty();
+}
+
 void ShaderParameterValue::setFloat(float value)
 {
     m_type = ShaderVariableType::Float;

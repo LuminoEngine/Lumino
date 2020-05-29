@@ -6,7 +6,7 @@
 
 
 namespace ln {
-class AbstractMaterial;
+class Material;
 namespace detail {
 class RenderStage;
 class RenderDrawElement;
@@ -80,7 +80,7 @@ protected:
 	SceneRenderer();
 	void init();
 
-	//void setDefaultMaterial(AbstractMaterial* material);
+	//void setDefaultMaterial(Material* material);
 
 	void addPass(SceneRendererPass* pass);
 
@@ -112,7 +112,7 @@ private:
 
 	//const FrameBuffer* m_defaultFrameBuffer;
 	ZSortDistanceBase m_zSortDistanceBase;
-	//Ref<AbstractMaterial> m_defaultMaterial;
+	//Ref<Material> m_defaultMaterial;
 	//Ref<RenderPass> m_renderPass;
 	List<Ref<RenderPass>> m_renderPassPool;
 	int m_renderPassPoolUsed;

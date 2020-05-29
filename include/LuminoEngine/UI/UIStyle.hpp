@@ -570,7 +570,7 @@ public:
 
     // commited cache
     Ref<Font> font;
-    Ref<AbstractMaterial> backgroundMaterial;
+    Ref<Material> backgroundMaterial;
 
 	UITheme* theme = nullptr;
 

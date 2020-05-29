@@ -7,8 +7,8 @@
 #include <LuminoEngine/UI/UIStyle.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/DrawElementListBuilder.hpp"
-#include "../Rendering/FrameRectRenderFeature.hpp"
-#include "../Rendering/ShapesRenderFeature.hpp"
+#include "../Rendering/RenderFeature/FrameRectRenderFeature.hpp"
+#include "../Rendering/RenderFeature/ShapesRenderFeature.hpp"
 
 namespace ln {
 
@@ -52,9 +52,7 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
     //    drawSolidRectangle(rect, color);
     //}
     //else {
-        auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(
-            m_manager->frameRectRenderFeature(),
-            m_builder->frameRectRenderFeatureStageParameters());
+        auto* element = m_builder->addNewDrawElement<detail::DrawFrameRectElement>(m_manager->frameRectRenderFeature());
 
         element->rect = rect;
         element->transform = element->combinedWorldMatrix();
@@ -66,7 +64,7 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
     //}
 }
 
-//void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, AbstractMaterial* material*/, const Rect& textureSourceRect, const Color& color)
+//void UIRenderingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius, BrushImageDrawMode mode/*, Material* material*/, const Rect& textureSourceRect, const Color& color)
 //{
 //    //m_builder->setMaterial(material);
 //
@@ -101,9 +99,7 @@ void UIRenderingContext::drawImageBox(const Rect& rect, Sprite9DrawMode mode, co
 
 void UIRenderingContext::drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
-    auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
-        m_manager->shapesRenderFeature(),
-        m_builder->shapesRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
 
     element->commandList.drawBoxBorderLine(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, thickness, leftColor, topColor, rightColor, bottomColor, cornerRadius, borderInset);
 
@@ -118,9 +114,7 @@ void UIRenderingContext::drawBoxBorderLine(const Rect& rect, float thickness, co
 
 void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Vector2& offset, const Color& color, float blur, float width, bool inset)
 {
-	auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(
-		m_manager->shapesRenderFeature(),
-		m_builder->shapesRenderFeatureStageParameters());
+	auto* element = m_builder->addNewDrawElement<detail::DrawShapesElement>(m_manager->shapesRenderFeature());
 
 	element->commandList.addDrawBoxShadow(m_builder->targetList()->dataAllocator(), element->combinedWorldMatrix(), rect, cornerRadius, offset, color, blur, width, inset);
 
@@ -131,9 +125,7 @@ void UIRenderingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cor
 
 void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyle, const BoxElementShapeBackgroundStyle* backbroundStyle, const BoxElementShapeBorderStyle* borderStyle, const BoxElementShapeShadowStyle* shadowStyle)
 {
-    auto* element = m_builder->addNewDrawElement<detail::DrawBoxElementShape>(
-        m_manager->shapesRenderFeature(),
-        m_builder->shapesRenderFeatureStageParameters());
+    auto* element = m_builder->addNewDrawElement<detail::DrawBoxElementShape>(m_manager->shapesRenderFeature());
 
     auto& allocator = m_builder->targetList()->dataAllocator();
     element->commandList.addResetCommand(allocator);
@@ -144,7 +136,7 @@ void UIRenderingContext::drawBoxElement(const BoxElementShapeBaseStyle& baseStyl
     element->commandList.addSubmitCommand(allocator);
 }
 
-void UIRenderingContext::drawImage(const Rect& destinationRect, AbstractMaterial* material)
+void UIRenderingContext::drawImage(const Rect& destinationRect, Material* material)
 {
     auto texture = material->mainTexture();
     drawSprite(

@@ -4,7 +4,6 @@
 namespace ln {
 class RenderView;
 class ImageEffect;
-class Material;
 namespace detail {
 class UIManager;
 class ImageEffectRenderer;

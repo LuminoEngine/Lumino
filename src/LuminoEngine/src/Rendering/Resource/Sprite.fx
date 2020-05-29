@@ -88,21 +88,17 @@ float4 PSI_Main(LN_PSIInput input) : SV_TARGET
 }
 
 //------------------------------------------------------------------------------
+@module
+techniques:
+    Forward_Geometry_UnLighting:
+        passes:
+        -   Pass0:
+                vertexShader: VS_ClusteredForward_Geometry
+                pixelShader: PS_Main
 
-technique Forward_Geometry_UnLighting
-{
-    pass Pass1
-    {
-        VertexShader = VS_ClusteredForward_Geometry;
-        PixelShader = PS_Main;
-    }
-}
-
-technique Forward_Geometry_UnLighting_Instancing
-{
-    pass Pass1
-    {
-        VertexShader = VSI_Main;
-        PixelShader = PSI_Main;
-    }
-}
+    Forward_Geometry_UnLighting_Instancing:
+        passes:
+        -   Pass0:
+                vertexShader: VSI_Main
+                pixelShader: PSI_Main
+@end

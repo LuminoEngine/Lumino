@@ -6,23 +6,19 @@
 #include "../Shader/ShaderInterfaceFramework.hpp"
 
 namespace ln {
-namespace detail {
-
-enum class MaterialType : uint8_t
-{
-	PBR,
-	Phong,
-};
-
-} // namespace detail
 
 /**
 	@brief
 */
 // TODO: フレーム開始～描画に使われた後にパラメータを変更できないようにする。わかりにくい不具合のもとになる。
-class AbstractMaterial
+class Material
 	: public Object
 {
+	LN_OBJECT;
+public:
+	static Ref<Material> create();
+	static Ref<Material> create(Texture* mainTexture);
+	static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);
 	//LN_OBJECT;
 //public:
 //	static const String DiffuseParameter;
@@ -36,11 +32,27 @@ public:
 	void setMainTexture(Texture* value);
 	Texture* mainTexture() const;
 
+	void setColor(const Color& value);
+	void setRoughness(float value);
+	void setMetallic(float value);
+	void setEmissive(const Color& value);
+
+
+
+
 	void setShader(Shader* shader);
 	Shader* shader() const;
 
+	/** 整数値を設定します。 */
 	void setInt(const StringRef& name, int value);
+
+	/** 整数値の配列を設定します。 */
+	void setIntArray(const StringRef& name, const int* value, int count);
+
+	/** 浮動小数点値を設定します。 */
 	void setFloat(const StringRef& name, float value);
+
+	/** 浮動小数点値の配列を設定します。 */
 	void setFloatArray(const StringRef& name, const float* values, int length);
 	void setVector(const StringRef& name, const Vector4& value);
 	void setVectorArray(const StringRef& name, const Vector4* values, int length);
@@ -74,14 +86,13 @@ public:
 	Optional<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
 
 
-protected:
-	AbstractMaterial(detail::MaterialType type);
-	virtual ~AbstractMaterial();
+LN_CONSTRUCT_ACCESS:
+	Material();
+	virtual ~Material();
 	void init();
-
-public: // TODO: internal
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const = 0;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const = 0;
+	void init(Texture* mainTexture);
+	void init(Texture* mainTexture, ShadingModel shadingModel);
+	void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
 
 //LN_INTERNAL_ACCESS:
 //	void reset();
@@ -156,17 +167,18 @@ protected:  // TODO:
 
 	detail::ShaderParameterValue* getValue(const ln::StringRef& name);
 
-	detail::MaterialType m_type;
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 
 protected:
 
+	LN_SERIALIZE_CLASS_VERSION(1);
+	virtual void serialize(Archive& ar) override;
 
 LN_INTERNAL_ACCESS:
 
-	bool equalStatus(const AbstractMaterial* other) const
+	bool equalStatus(const Material* other) const
 	{
 		if (LN_REQUIRE(other)) return false;
 		if (this == other) return true;
@@ -196,85 +208,15 @@ LN_INTERNAL_ACCESS:
 	//void applyUserShaderValeues(Shader* targetShader);
 
 	//uint32_t getHashCode();
-};
-
-/**
- * 標準的な物理ベースレンダリングのマテリアルです。
- */
-class Material
-	: public AbstractMaterial
-{
-	LN_OBJECT;
-public:
-	static Ref<Material> create();
-    static Ref<Material> create(Texture* mainTexture);
-    static Ref<Material> create(Texture* mainTexture, ShadingModel shadingModel);
-
-public:
-	void setColor(const Color& value);
-	void setRoughness(float value);
-	void setMetallic(float value);
-	//void setSpecular(float value);  // TODO: 不要？http://envgameartist.blogspot.com/2014/12/pbr.html
-    void setEmissive(const Color& value);
-
-protected:
-	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) const override;
-	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) const override;
-
-    LN_SERIALIZE_CLASS_VERSION(1);
-    virtual void serialize(Archive& ar) override;
-
-LN_CONSTRUCT_ACCESS:
-	Material();
-	virtual ~Material();
-	void init();
-    void init(Texture* mainTexture);
-    void init(Texture* mainTexture, ShadingModel shadingModel);
-    void init(Texture* mainTexture, const detail::PhongMaterialData& phongMaterialData);
 
 private:
+	const detail::PbrMaterialData& getPbrMaterialData() const { return m_data; }
+
 	detail::PbrMaterialData m_data;
+
+	friend class detail::SceneRenderer;
 };
 
-
-/** 非物理ベースレンダリングで使用される Phong シェーディング用のマテリアルです。 */
-//class PhongMaterial
-//	: public AbstractMaterial
-//{
-//	//LN_OBJECT;
-//public:
-//	static const String DiffuseParameterName;
-//	static const String AmbientParameterName;
-//	static const String EmissiveParameterName;
-//	static const String SpecularParameterName;
-//	static const String SpecularPowerParameterName;
-//
-//	static const Color DefaultDiffuse;
-//	static const Color DefaultAmbient;
-//	static const Color DefaultSpecular;
-//	static const Color DefaultEmissive;
-//	static const float DefaultPower;
-//
-//	static Ref<PhongMaterial> create();
-//
-//	void setDiffuse(const Color& value);
-//	void setAmbient(const Color& value);
-//	void setEmissive(const Color& value);
-//	void setSpecular(const Color& value);
-//	void setSpecularPower(float value);
-//
-//protected:
-//	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
-//	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
-//
-//LN_CONSTRUCT_ACCESS:
-//	PhongMaterial();
-//	virtual ~PhongMaterial();
-//	void init();
-//
-//private:
-//	detail::PhongMaterialData m_data;
-//};
 
 } // namespace ln
 

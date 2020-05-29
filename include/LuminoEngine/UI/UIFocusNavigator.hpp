@@ -2,7 +2,6 @@
 #include "UIContainerElement.hpp"
 
 namespace ln {
-class Material;
 
 /**
  * 要素のフォーカス遷移を管理すためのコンテナ要素。

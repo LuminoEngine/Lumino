@@ -7,7 +7,7 @@
 namespace ln {
 class BinaryReader;
 class Texture2D;
-class AbstractMaterial;
+class Material;
 namespace detail {
 class MeshManager;
 class PmxSkinnedMeshResource;
@@ -150,7 +150,7 @@ public:
 		DrawingFlags = 0;
 	}
 
-	Ref<AbstractMaterial> MakeCommonMaterial() const;
+	Ref<Material> MakeCommonMaterial() const;
 };
 
 // 共有ボーンデータ

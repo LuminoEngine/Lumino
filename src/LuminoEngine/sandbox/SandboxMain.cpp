@@ -6,7 +6,6 @@
 #include "../src/Engine/EngineDomain.hpp"
 #include "../src/Engine/EngineManager.hpp"
 #include "../src/Rendering/RenderingManager.hpp"
-#include "../src/Rendering/SpriteRenderFeature.hpp"
 #include "../src/Rendering/DrawElementListBuilder.hpp"
 #include "../src/Rendering/UnLigitingSceneRenderer.hpp"
 #include "../src/Rendering/ClusteredShadingSceneRenderer.hpp"
@@ -267,6 +266,7 @@ void Example_UIControls();
 void Example_Tilemap();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
+void Sandbox_Particle();
 void Sandbox_Voxel();
 void UISandboxMain();
 
@@ -279,7 +279,7 @@ int main(int argc, char** argv)
 #endif
 	Logger::addStdErrAdapter();
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
-	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);//GraphicsAPI::Vulkan);//
+	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	EngineSettings::setDefaultUITheme(u"Chocotelier");
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
@@ -287,7 +287,7 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		Sandbox_EmptyApp();
+		//Sandbox_EmptyApp();
 		//Example_GameAudio();
 		//Example_MeshViewer();
         //Example_MessageWindow();
@@ -296,6 +296,7 @@ int main(int argc, char** argv)
         //Example_UIControls();
 		//Example_Tilemap();
 		//Sandbox_MeshTilemap();
+        Sandbox_Particle();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();
@@ -609,25 +610,6 @@ int main(int argc, char** argv)
 	////text3->setPosition(Vector3(0, 400, 0));
 
 
-#if 0
-    auto material = PhongMaterial::create();
-    material->setMainTexture(Assets::loadTexture(u"D:/Proj/Lumino-0.4.0/Source/LuminoEngine/Test/UnitTest/Scene/TestData/Sprite1.png"));
-
-    auto m1 = SpriteParticleModel::create();
-    m1->setMaterial(material);
-    m1->setSpawnRate(1);
-    m1->setLifeTime(2.0f);
-    m1->m_maxParticles = 1;
-    m1->m_shapeType = ParticleEmitterShapeType::Cone;
-    m1->m_shapeParam.x = Math::PI * 0.1;
-    m1->m_shapeParam.y = 2;
-    auto cmp1 = makeObject<ParticleEmitterComponent>(m1);
-    cmp1->setCullMode(CullMode::None);
-    cmp1->setBlendMode(BlendMode::Alpha);
-
-    auto obj1 = makeObject<WorldObject>();
-    obj1->addComponent(cmp1);
-#endif
 
 #if 0
     auto material = PhongMaterial::create();
@@ -669,58 +651,6 @@ int main(int argc, char** argv)
     //obj1->addComponent(cmp1);
     //obj1->setPosition(5, 0, 0);
 
-#endif
-#if 0	// 雨
-    //Camera::GetMain3DCamera()->SetFarClip(10000);
-    auto m1 = SpriteParticleModel::create();
-    m1->m_maxParticles = 10000;
-    m1->setSpawnRate(1000);
-    m1->setLifeTime(1.0);
-    m1->m_loop = true;
-
-    m1->setSize(0.05, 0.05);
-
-    m1->m_shapeType = ParticleEmitterShapeType::Box;
-    m1->m_shapeParam.set(10, 0, 10);
-
-    m1->m_particleDirection = ParticleDirectionType::MovementDirection;
-    m1->m_forwardVelocity.minValue = -12;
-    m1->m_forwardVelocity.maxValue = -12;
-    m1->m_lengthScale = 10;
-
-    auto material = PhongMaterial::create();
-    material->setMainTexture(Assets::loadTexture("D:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
-    m1->setMaterial(material);
-
-    auto particle1 = makeObject<ParticleEmitterComponent>(m1);
-    particle1->setBlendMode(BlendMode::Add);
-    auto obj1 = makeObject<WorldObject>();
-    obj1->addComponent(particle1);
-    obj1->setPosition(0, 5, 0);
-    //particle1->setAngles(Math::PI, 0, 0);
-
-
-
-    auto m2 = SpriteParticleModel::create();
-    m2->m_maxParticles = 1000;
-    m2->setSpawnRate(200);
-    m2->setLifeTime(0.2);
-    m2->m_loop = true;
-    m2->setSize(0.1, 0.1);
-    m2->m_minSizeVelocity = 3;
-    m2->m_maxSizeVelocity = 3;
-    m2->m_shapeType = ParticleEmitterShapeType::Box;
-    m2->m_shapeParam.set(10, 0, 10);
-    m2->m_particleDirection = ParticleDirectionType::Horizontal;
-    m2->setMaterial(material);
-
-    //auto particle2 = ParticleEmitter3D::create(m2);
-    //particle2->SetBlendMode(BlendMode::Add);
-    auto particle2 = makeObject<ParticleEmitterComponent>(m2);
-    particle2->setBlendMode(BlendMode::Add);
-    auto obj2 = makeObject<WorldObject>();
-    obj2->addComponent(particle2);
-    //obj2->setPosition(0, 12, 0);
 #endif
 
 
@@ -1084,372 +1014,6 @@ int main(int argc, char** argv)
         
     }
 
-
-#if 0
-	{
-		auto ss = FileStream::create(u"D:\\tmp\\light_song_instrumental_0.mp3");
-		detail::Mp3AudioDecoder dec;
-		auto diag = makeObject<DiagnosticsManager>();
-		dec.initialize(ss, diag);
-	}
-
-	
-#if 0
-	auto source = makeObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
-	auto panner = makeObject<AudioPannerNode>();
-	AudioNode::connect(source, panner);
-	AudioNode::connect(panner, AudioContext::primary()->destination());
-	source->setPlaybackRate(1.2);
-	source->start();
-#else
-	auto source = makeObject<AudioSourceNode>(u"D:\\tmp\\3_EventScene_variation2.wav");
-	//auto source = makeObject<AudioSourceNode>(u"D:\\tmp\\8_MapBGM2.wav");
-	AudioNode::connect(source, AudioContext::primary()->destination());
-	//source->setPlaybackRate(1.2);
-	source->start();
-#endif
-
-	auto shader = Shader::create(
-		LN_LOCALFILE("Assets/simple.vert"),
-		LN_LOCALFILE("Assets/simple.frag"));
-	//shader->setVector("g_color", Vector4(0, 1, 0, 1));
-
-	//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
-
-	struct Vertex
-	{
-		Vector4 pos;
-	};
-	Vertex v[] = {
-		Vector4(0, 1, 0, 1),
-		Vector4(-1, 1, 0, 1),
-		Vector4(0, -1, 0, 1),
-	};
-
-	auto vb = makeObject<VertexBuffer>(sizeof(v), v, GraphicsResourceUsage::Static);
-
-	auto decl = makeObject<VertexLayout>();
-	decl->addElement(0, VertexElementType::Float4, VertexElementUsage::Position, 0);
-
-	//auto renderTarget = makeObject<RenderTargetTexture>(32, 32, TextureFormat::RGBX32, false);
-
-
-
-
-	while (Engine::update())
-	{
-		class TestRenderView : public RenderView
-		{
-		public:
-			// 本番では、World が持っていたりする。
-			Ref<detail::WorldSceneGraphRenderingContext> m_context;
-
-			Ref<detail::DrawElementListCollector> m_elementListManager;
-
-			//Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
-			Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
-			
-			TestRenderView()
-			{
-				m_elementListManager = makeRef<detail::DrawElementListCollector>();
-				m_context = makeRef<detail::WorldSceneGraphRenderingContext>();
-				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_context->m_elementList);
-				addDrawElementListManager(m_elementListManager);
-
-				//m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
-				//m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
-				m_sceneRenderer = makeRef<detail::ClusteredShadingSceneRenderer>();
-				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
-			}
-
-			void render()
-			{
-
-				auto swapChain = Engine::mainWindow()->swapChain();
-				FrameBuffer fb;
-				fb.renderTarget[0] = swapChain->colorBuffer();
-				fb.depthBuffer = swapChain->depthBuffer();
-
-				{
-					Size size(fb.renderTarget[0]->width(), fb.renderTarget[0]->height());
-					Vector3 pos = Vector3(5, 5, -5);
-					mainCameraInfo.makePerspective(pos, Vector3::normalize(Vector3::Zero - pos), Math::PI / 3.0f, size, 0.1f, 100.0f);
-
-				}
-
-				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
-			}
-		};
-
-		auto renderView = makeObject<TestRenderView>();
-
-		auto tex1 = makeObject<Texture2D>(2, 2);
-		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
-		auto material = Material::create();
-		material->setMainTexture(tex1);
-
-#if 1
-		auto diag = makeObject<DiagnosticsManager>();
-		detail::MqoImporter importer;
-		auto meshModel = importer.import(detail::EngineDomain::meshManager(),
-			u"D:\\Documents\\LuminoProjects\\TestModels\\grass-1.mqo", diag);
-		auto meshContainer = meshModel->meshContainers()[0];
-
-		//meshModel->materials()[0]->setMainTexture(tex1);
-
-#else
-		auto meshRes = makeObject<MeshResource>();
-		meshRes->resizeVertexBuffer(4);
-		meshRes->resizeIndexBuffer(6);
-		meshRes->resizeSections(1);
-		meshRes->setVertex(0, Vertex{ Vector3(-3, 1, 0), -Vector3::UnitZ, Vector2(0, 0), Color::White });
-		meshRes->setVertex(1, Vertex{ Vector3(3, 1, 0), -Vector3::UnitZ, Vector2(1, 0), Color::White });
-		meshRes->setVertex(2, Vertex{ Vector3(-3, -1, 0), -Vector3::UnitZ, Vector2(0, 1), Color::White });
-		meshRes->setVertex(3, Vertex{ Vector3(3, -1, 0), -Vector3::UnitZ, Vector2(1, 1), Color::White });
-		meshRes->setIndex(0, 0);
-		meshRes->setIndex(1, 1);
-		meshRes->setIndex(2, 2);
-		meshRes->setIndex(3, 2);
-		meshRes->setIndex(4, 1);
-		meshRes->setIndex(5, 3);
-		meshRes->setSection(0, 0, 2, 0);
-
-		auto meshContainer = makeObject<MeshContainer>();
-		meshContainer->setMeshResource(meshRes);
-
-		auto meshModel = makeObject<StaticMeshModel>();
-		meshModel->addMeshContainer(meshContainer);
-		meshModel->addMaterial(material);
-#endif
-
-		while (Engine::update())
-		{
-			renderView->m_context->reset();
-
-			renderView->m_context->setCullingMode(CullMode::None);
-
-			renderView->m_context->drawMesh(meshContainer, 0);
-
-			renderView->m_context->addPointLight(Color::White, 1.0, Vector3(0, 1, -1), 10.0, 1.0);
-
-			renderView->render();
-		}
-#endif
-#if 0
-		class TestRenderView : public RenderView
-		{
-		public:
-			// 本番では、World が持っていたりする。
-			Ref<detail::WorldSceneGraphRenderingContext> m_context;
-
-			Ref<detail::DrawElementListCollector> m_elementListManager;
-
-			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
-
-			TestRenderView()
-			{
-				m_elementListManager = makeRef<detail::DrawElementListCollector>();
-				m_context = makeRef<detail::WorldSceneGraphRenderingContext>();
-				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_context->m_elementList);
-				addDrawElementListManager(m_elementListManager);
-
-				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
-				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
-			}
-
-			void render()
-			{
-
-				auto swapChain = Engine::mainWindow()->swapChain();
-				FrameBuffer fb;
-				fb.renderTarget[0] = swapChain->colorBuffer();
-				fb.depthBuffer = swapChain->depthBuffer();
-
-				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
-			}
-		};
-
-		auto renderView = makeObject<TestRenderView>();
-
-		auto tex1 = makeObject<Texture2D>(2, 2);
-		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
-		auto material = Material::create();
-		material->setMainTexture(tex1);
-
-		while (Engine::update())
-		{
-			renderView->m_context->reset();
-
-			renderView->m_context->drawSprite(
-				Matrix(), Size(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue,
-				SpriteBaseDirection::ZMinus, BillboardType::None, material);
-
-			renderView->render();
-
-			if (::GetKeyState('Z') < 0)
-			{
-				break;
-			}
-		}
-#endif
-#if 0
-		class TestRenderView : public RenderView
-		{
-		public:
-			// 本番では、World が持っていたりする。
-			Ref<detail::DrawElementListCollector> m_elementListManager;
-			Ref<detail::DrawElementList> m_elementList;
-
-			Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer;
-
-			TestRenderView()
-			{
-				m_elementListManager = makeRef<detail::DrawElementListCollector>();
-				m_elementList = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
-				m_elementListManager->addDrawElementList(detail::RendringPhase::Default, m_elementList);
-				addDrawElementListManager(m_elementListManager);
-
-				m_sceneRenderer = makeRef<detail::UnLigitingSceneRenderer>();
-				m_sceneRenderer->initialize(detail::EngineDomain::renderingManager());
-			}
-
-			void render()
-			{
-				auto swapChain = Engine::mainWindow()->swapChain();
-				FrameBuffer fb;
-				fb.renderTarget[0] = swapChain->colorBuffer();
-				fb.depthBuffer = swapChain->depthBuffer();
-
-				RenderView::render(Engine::graphicsContext(), fb, m_sceneRenderer);
-			}
-		};
-
-		auto renderView = makeObject<TestRenderView>();
-
-		auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
-		builder->setTargetList(renderView->m_elementList);
-
-		auto spriteRender = detail::EngineDomain::renderingManager()->spriteRenderFeature();
-
-
-
-		auto tex1 = makeObject<Texture2D>(2, 2);
-		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
-		auto material = Material::create();
-		material->setMainTexture(tex1);
-
-		while (Engine::update())
-		{
-			renderView->m_elementList->clear();
-			builder->reset();
-
-			class DrawSprite : public detail::RenderDrawElement
-			{
-			public:
-				virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-				{
-					static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-						Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
-				}
-			};
-
-			// drawSprite
-			{
-				builder->setMaterial(material);
-				auto* element = builder->addNewDrawElement<DrawSprite>(spriteRender, builder->spriteRenderFeatureStageParameters());
-			}
-
-			renderView->render();
-
-			if (::GetKeyState('Z') < 0)
-			{
-				break;
-			}
-		}
-#endif
-#if 0
-		auto shader = Shader::create(LN_LOCALFILE("Assets/SpriteTest.hlsl"));
-
-		//auto shader = Shader::create(
-		//	LN_LOCALFILE("Assets/simple.vert"),
-		//	LN_LOCALFILE("Assets/simple.frag"));
-		//shader->setVector("g_color", Vector4(0, 1, 0, 1));
-
-		//Engine::graphicsContext()->setShaderPass(shader->techniques()[0]->passes()[0]);
-
-		//auto tex1 = makeObject<Texture2D>(LN_LOCALFILE("Assets/Sprite1.png"));
-		auto tex1 = makeObject<Texture2D>(2, 2);
-		auto bmp1 = tex1->map(MapMode::Write);
-		bmp1->setPixel32(0, 0, ColorI(255, 0, 0, 255));
-		bmp1->setPixel32(1, 0, ColorI(255, 0, 255, 255));
-		bmp1->setPixel32(0, 1, ColorI(0, 255, 0, 255));
-		bmp1->setPixel32(1, 1, ColorI(0, 0, 255, 255));
-
-		ShaderParameter* param = shader->findParameter("g_texture1");
-		param->setTexture(tex1);
-
-		auto ctx = Engine::graphicsContext();
-		//ctx->setColorBuffer(0, Engine::mainWindow()->swapChain()->colorBuffer());
-
-		auto sr = detail::EngineDomain::renderingManager()->spriteRenderFeature();
-
-		auto list = makeRef<detail::DrawElementList>(detail::EngineDomain::renderingManager());
-		auto builder = detail::EngineDomain::renderingManager()->renderStageListBuilder();
-		builder->setTargetList(list);
-
-		int loop = 0;
-		while (Engine::update())
-		{
-			ctx->setShaderPass(shader->techniques()[0]->passes()[0]);
-
-			list->clear();
-			builder->reset();
-			class DrawSprite : public detail::RenderDrawElement
-			{
-			public:
-				virtual void onDraw(GraphicsContext* context, RenderFeature* renderFeatures) override
-				{
-					static_cast<detail::SpriteRenderFeature*>(renderFeatures)->drawRequest(
-						Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
-				}
-			};
-
-			auto* element = builder->addNewDrawElement<DrawSprite>(sr, builder->spriteRenderFeatureStageParameters());
-
-			auto* ie = list->headElement();
-			while (ie)
-			{
-				auto* stage = ie->stage();
-				// TODO: applystate
-				ie->onDraw(ctx, stage->renderFeature);
-				stage->flush();
-				ie = ie->next();
-			}
-
-			//ctx->drawPrimitive(PrimitiveType::TriangleList, 0, 1);
-
-			//sr->drawRequest(Matrix(), Vector2(1, 1), Vector2(0, 0), Rect(0, 0, 1, 1), Color::Blue, SpriteBaseDirection::ZMinus, BillboardType::None);
-			//sr->flush();
-
-			if (::GetKeyState('Z') < 0)
-			{
-				break;
-			}
-		}
-	}
-#endif
 
 	Engine::finalize();
 

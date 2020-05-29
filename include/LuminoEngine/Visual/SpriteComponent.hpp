@@ -4,7 +4,6 @@
 #include "VisualComponent.hpp"
 
 namespace ln {
-class Material;
 class World;
 class Component;
 

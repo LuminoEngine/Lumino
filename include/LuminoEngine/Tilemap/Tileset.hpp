@@ -6,7 +6,6 @@
 namespace ln {
 struct Size;
 class Texture;
-class Material;
 class RenderingContext;
 
 enum class TileCollisionType : uint8_t

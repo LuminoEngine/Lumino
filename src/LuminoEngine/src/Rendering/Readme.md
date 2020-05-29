@@ -1,6 +1,27 @@
 ﻿Rendering
 ==========
 
+
+```plantuml
+frame Data {
+    [RenderElement]
+    [RenderStage]
+    [RenderElementList]
+}
+
+frame DataBulder {
+    [RenderingContext]
+    [DrawElementListBuilder]
+}
+
+frame Renderer {
+    [SceneRenderer]
+    [Renderfeature]
+}
+```
+
+
+
 改善案
 ----------
 - [ ] RenderingContext を、ある程度ステートマシンやめる。
@@ -13,5 +34,5 @@
 	・早く実装するためのAPI (Cinder とか)
 	は分けたほうがいいと思う。
 	どっちつかずになると、またふらふら仕様変えることになりそう。
-- [ ] AbstractMaterial 廃止
+
 

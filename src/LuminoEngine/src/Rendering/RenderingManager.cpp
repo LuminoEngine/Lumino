@@ -5,10 +5,10 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include "../Engine/LinearAllocator.hpp"
 #include "DrawElementListBuilder.hpp"
-#include "BlitRenderFeature.hpp"
-#include "SpriteRenderFeature.hpp"
-#include "MeshRenderFeature.hpp"
-#include "ExtensionRenderFeature.hpp"
+#include "RenderFeature/BlitRenderFeature.hpp"
+#include "RenderFeature/SpriteRenderFeature.hpp"
+#include "RenderFeature/MeshRenderFeature.hpp"
+#include "RenderFeature/ExtensionRenderFeature.hpp"
 #include "RenderingManager.hpp"
 
 namespace ln {
@@ -57,9 +57,6 @@ void RenderingManager::init(const Settings& settings)
 
     m_blitRenderFeature = makeObject<BlitRenderFeature>(this);
 	m_renderFeatures.add(m_blitRenderFeature);
-
- //   m_spriteRenderFeature = makeObject<SpriteRenderFeature>(this);
-	//m_renderFeatures.add(m_spriteRenderFeature);
 
 	m_spriteRenderFeature2 = makeObject<SpriteRenderFeature2>(this);
 	m_renderFeatures.add(m_spriteRenderFeature2);
@@ -180,8 +177,8 @@ void RenderingManager::init(const Settings& settings)
 	}
 
 
-	m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
 	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
+	//m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
 #if 0
     m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
     m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.fx");

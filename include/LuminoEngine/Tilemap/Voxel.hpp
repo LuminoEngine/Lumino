@@ -42,7 +42,6 @@ private:
 #include "../Visual/VisualComponent.hpp"
 
 namespace ln {
-class Material;
 class RigidBody2D;
 
 class VoxelmapComponent

@@ -12,7 +12,7 @@ class VertexBuffer;
 class Texture;
 class RenderTargetTexture;
 class DepthBuffer;
-class AbstractMaterial;
+class Material;
 class MeshResource;
 class Mesh;
 class MeshContainer;
@@ -96,7 +96,7 @@ public:
 	/** @} */
 
     // デフォルトは nullptr。この場合、既定のマテリアルが使用される。
-    void setMaterial(AbstractMaterial* material);
+    void setMaterial(Material* material);
 
 
 
@@ -134,10 +134,10 @@ public:
     // これは主に Post effect の実装で使用します。
     // 実際に処理が行われるのはレンダリングパイプラインの ImageEffect フェーズです。
     // 通常、drawMesh や drawSprite とは実行されるタイミングが異なるため、Post effect の実装のみを目的として使用してください。
-    //void blit(AbstractMaterial* material);
+    //void blit(Material* material);
     //void blit(RenderTargetTexture* source, RenderTargetTexture* destination);
-    //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, AbstractMaterial* material);
-	void blit(AbstractMaterial* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::ImageEffect);
+    //void blit(RenderTargetTexture* source, RenderTargetTexture* destination, Material* material);
+	void blit(Material* source, RenderTargetTexture* destination, RenderPhaseClass phase = RenderPhaseClass::ImageEffect);
 
 	/** スプライトを描画します。 */
 	void drawSprite(
@@ -149,7 +149,7 @@ public:
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType,
         const Flags<detail::SpriteFlipFlags>& flipFlags,
-		AbstractMaterial* material);
+		Material* material);
 
 	// TODO: GraphicsのRenderPass内の map 禁止に伴い。Rendering で直接 VertexBuffer や IndexBuffer を扱うことを禁止したほうがいいかも。
 	// 代わりに、Mesh を使う。

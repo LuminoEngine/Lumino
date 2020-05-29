@@ -2,7 +2,6 @@
 #include "UIContainerElement.hpp"
 
 namespace ln {
-class Material;
 
 class UIWindow
     : public UIContainerElement

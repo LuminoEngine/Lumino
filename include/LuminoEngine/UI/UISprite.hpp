@@ -2,7 +2,6 @@
 #include "UIElement.hpp"
 
 namespace ln {
-class Material;
 
 /**
  * UI 要素として 2D 空間上に表示されるスプライトオブジェクトを表します。
