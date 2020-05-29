@@ -5,6 +5,9 @@
 #include "VisualComponent.hpp"
 
 namespace ln {
+namespace detail {
+class ParticleInstance2;
+}
 
 /**
     パーティクルエミッタのクラスです。

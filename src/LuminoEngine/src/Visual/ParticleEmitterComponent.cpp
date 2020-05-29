@@ -4,6 +4,7 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include "../Effect/ParticleEffectInstance.hpp"
 
 namespace ln {
 
@@ -78,6 +79,7 @@ void ParticleEmitterComponent2::init(ParticleModel2* model)
 void ParticleEmitterComponent2::onUpdate(float deltaTime)
 {
 	m_instance->setWorldTransform(worldObject()->worldMatrix());
+	m_instance->updateFrame(deltaTime);
 	//m_instance->m_worldTransform = worldObject()->worldMatrix();
 	//m_model->updateInstance(m_instance, deltaTime, m_instance->m_worldTransform);
 }

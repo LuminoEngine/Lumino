@@ -8,6 +8,7 @@ LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
+    return float4(1, 0, 0, 1);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
     
     // Alpha test
@@ -81,6 +82,7 @@ LN_VSIOutput VSI_Main(LN_VSIInput input)
 
 float4 PSI_Main(LN_PSIInput input) : SV_TARGET
 {
+    return float4(1, 0, 0, 1);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
     clip(color.a - 0.0001); // Alpha test
 
