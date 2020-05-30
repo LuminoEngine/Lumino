@@ -103,7 +103,7 @@ public:
 	const Matrix& worldTransform() const { return m_particleInstance->worldTransform(); }
 
 	void updateFrame(float deltaTime);
-	void render();
+	void render(RenderingContext* context);
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterInstance2();

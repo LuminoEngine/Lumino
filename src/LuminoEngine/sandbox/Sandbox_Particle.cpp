@@ -54,7 +54,7 @@ class App_Sandbox_Particle : public Application
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
-        m1->setSpawnRate(1000);
+        m1->setSpawnRate(10/*1000*/);
         m1->setLifeTime(1.0);
         particleModel->m_loop = true;
 

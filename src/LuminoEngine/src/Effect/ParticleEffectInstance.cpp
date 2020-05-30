@@ -49,7 +49,7 @@ void ParticleInstance2::render(RenderingContext* context)
     }
 
     for (auto& emitter : m_emitterInstances) {
-        emitter->render();
+        emitter->render(context);
     }
     
     for (auto& renderer : m_renderers) {
@@ -164,11 +164,11 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
     }
 }
 
-void ParticleEmitterInstance2::render()
+void ParticleEmitterInstance2::render(RenderingContext* context)
 {
     for (int i = m_sleepCount; i < m_activeParticles; i++) {
         const int currentDataIndex = m_particleIndices[i];
-        m_renderer->draw(&m_particleData[currentDataIndex]);
+        m_renderer->draw(context , &m_particleData[currentDataIndex]);
     }
 }
 
@@ -333,6 +333,10 @@ void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float d
 {
     particle->time += deltaTime;
     //particle->position.x += 0.01;
+
+
+    particle->linearVelocity += particle->linearAccel * deltaTime;
+    particle->position += particle->linearVelocity * deltaTime;
 
 }
 

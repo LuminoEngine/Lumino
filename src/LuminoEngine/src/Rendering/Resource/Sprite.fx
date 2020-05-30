@@ -8,7 +8,7 @@ LN_VSOutput_Common VS_ClusteredForward_Geometry(LN_VSInput input)
 
 float4 PS_Main(LN_PSInput_Common input) : SV_TARGET
 {
-    return float4(1, 0, 0, 1);
+    //return float4(1, 0, 0, 1);
     float4 color = tex2D(ln_MaterialTexture, input.UV) * input.Color;
     
     // Alpha test
@@ -55,16 +55,17 @@ LN_VSIOutput VSI_Main(LN_VSIInput input)
     //    input.InstanceTransform1.y, input.InstanceTransform2.y, input.InstanceTransform3.y, 0.0,
     //    input.InstanceTransform1.z, input.InstanceTransform2.z, input.InstanceTransform3.z, 0.0,
     //    input.InstanceTransform1.w, input.InstanceTransform2.w, input.InstanceTransform3.w, 0.0);
-#if 0
+#if 1
     float4x4 worldMatrix = float4x4(
         input.InstanceTransform0.x, input.InstanceTransform0.y, input.InstanceTransform0.z, input.InstanceTransform0.w,
         input.InstanceTransform1.x, input.InstanceTransform1.y, input.InstanceTransform1.z, input.InstanceTransform1.w,
         input.InstanceTransform2.x, input.InstanceTransform2.y, input.InstanceTransform2.z, input.InstanceTransform2.w,
         input.InstanceTransform3.x, input.InstanceTransform3.y, input.InstanceTransform3.z, input.InstanceTransform3.w);
     float4 worldPos = mul(float4(input.Pos, 1.0f), worldMatrix);
-#endif
+#else
     float4 worldPos = float4(input.Pos, 1.0f);
     worldPos.xyz += input.InstanceTransform3.xyz;
+#endif
 
 	LN_VSIOutput o;
 	//o.svPos			= mul(worldPos, ln_View);
