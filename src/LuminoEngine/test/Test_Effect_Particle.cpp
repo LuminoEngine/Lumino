@@ -158,26 +158,28 @@ TEST_F(Test_Effect_Particle, BoxShape)
 	}
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_Effect_Particle, ZSort)
-{
-	//auto particleModel = makeObject<ParticleModel2>();
-	//auto emitterModel = particleModel->emitters()[0];
-	//emitterModel->setLifeTime(10);
-	//emitterModel->setMaxParticles(2);
-	//emitterModel->setSpawnRate(1);
-
-	//auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
-	//auto emitterInstance = particleInstance->emitters()[0];
-
-	//{
-	//	particleInstance->updateFrame(1.0f);
-	//	ASSERT_EQ(10, emitterInstance->activeParticles());
-	//	for (int i = 0; i < 10; i++) {
-	//		auto pos = emitterInstance->particleData(i).position;
-	//		ASSERT_FLOAT_EQ(true, -5.0f <= pos.x && pos.x <= 5.0f);
-	//		ASSERT_FLOAT_EQ(true, -5.0f <= pos.y && pos.y <= 5.0f);
-	//		ASSERT_FLOAT_EQ(true, -5.0f <= pos.z && pos.z <= 5.0f);
-	//	}
-	//}
-}
+////------------------------------------------------------------------------------
+//TEST_F(Test_Effect_Particle, ZSort)
+//{
+//	auto particleModel = makeObject<ParticleModel2>();
+//	auto emitterModel = particleModel->emitters()[0];
+//	emitterModel->setLifeTime(10);
+//	emitterModel->setMaxParticles(2);
+//	emitterModel->setSpawnRate(2);
+//	emitterModel->m_forwardVelocity.set(0);
+//	emitterModel->m_velocity.set(Vector3(0, 0, -1));
+//
+//	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+//	auto emitterInstance = particleInstance->emitters()[0];
+//
+//	{
+//		particleInstance->updateFrame(1.0f);
+//		ASSERT_EQ(10, emitterInstance->activeParticles());
+//
+//
+//		auto pos0 = emitterInstance->particleData(0).position;
+//		auto pos1 = emitterInstance->particleData(1).position;
+//
+//		ASSERT_FLOAT_EQ(true, pos0.z < pos1.z);
+//	}
+//}

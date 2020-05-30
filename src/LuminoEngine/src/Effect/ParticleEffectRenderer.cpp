@@ -77,8 +77,8 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
     //  やってることは WorldObjectTransform::lookAt() とかと同じ。
     //  View 行列の回転成分を作るのと同じ要領で、Front を進行方向、Up をカメラへの方向と考えて計算する。
     const auto& viewPosition = context->viewPoint()->viewPosition;
-    const auto rotUp = Vector3::safeNormalize(viewPosition - particle->position, Vector3::UnitY);
-    const auto rotFront = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitZ);
+    const auto rotUp = Vector3::safeNormalize(viewPosition - particle->position, Vector3::UnitZ);
+    const auto rotFront = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitY); // 速度を持っていない場合は Y+ に進んでいることにする (Z+ だと Lumino デフォルト状態で表示できない)
     auto rotRight = Vector3::cross(rotUp, rotFront);
     if (Vector3::nearEqual(rotRight, Vector3::Zero)) {
         rotRight = Vector3::cross(Vector3::UnitZ, rotFront);
@@ -96,43 +96,12 @@ void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2
 
     // 愚直に Scale * Rotation * Position の行列乗算をパーティクルごとに繰り返すと
     // 計算負荷が馬鹿にならなくなるので、各要素を直接設定してしまう。
-    //const auto transform = Matrix(
-    //    scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
-    //    scale.y * rotFront.x, scale.y * rotFront.y, scale.y * rotFront.z, 0.0f,
-    //    scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
-    //    pos.x, pos.y, pos.z, 1.0f
-    //);
-    //const auto transform = Matrix(
-    //    scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
-    //    scale.y * rotUp.x, scale.y * rotUp.y, scale.y * rotUp.z, 0.0f,
-    //    scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
-    //    pos.x, pos.y, pos.z, 1.0f
-    //);
-    //const auto transform = Matrix(
-    //    scale.x * rotRight.x, scale.x * rotUp.x, scale.x * rotFront.x, 0.0f,
-    //    scale.y * rotRight.y, scale.y * rotUp.y, scale.y * rotFront.y, 0.0f,
-    //    scale.z * rotRight.z, scale.z * rotUp.z, scale.z * rotFront.z, 0.0f,
-    //    pos.x, pos.y, pos.z, 1.0f
-    //);
-    auto transform = //Matrix::multiply(
-        Matrix::makeScaling(scale) * 
-        Matrix(
-            rotRight.x, rotRight.y, rotRight.z, 0.0f,
-            rotUp.x, rotUp.y, rotUp.z, 0.0f,
-            rotFront.x, rotFront.y, rotFront.z, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f) //)
-    *Matrix::makeTranslation(pos);
-
-
-
-    const auto rot = Quaternion::lookRotation(rotFront, rotUp);
-    auto aa = rot.toEulerAngles();
-
-    //transform = Matrix::makeRotationQuaternion(Quaternion::lookRotation(rotFront, rotUp));
-    
-    
-    transform *= Matrix::makeTranslation(pos);
-
+    const auto transform = Matrix(
+        scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
+        scale.y * rotUp.x, scale.y * rotUp.y, scale.y * rotUp.z, 0.0f,
+        scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
+        pos.x, pos.y, pos.z, 1.0f
+    );
 
     m_batch->setTransform(transform);
     m_batch->drawMesh();

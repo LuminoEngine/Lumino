@@ -16,7 +16,7 @@ struct ParticleData2
 	//Vector3 position;
 
 
-	//Vector3 initialLinearVelocity;
+	Vector3 initialLinearVelocity;
 
 	// Newton dynamics
 	///Vector3 startPosition;

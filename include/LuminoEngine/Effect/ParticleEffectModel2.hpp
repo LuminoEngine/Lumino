@@ -88,6 +88,10 @@ public:
 	int m_burstCount = 1;	// 1度の放出タイミングで生成するパーティクル数
 
 
+	// Dynamics module
+	RadomRangeValue<Vector3> m_velocity;
+	RadomRangeValue<Vector3> m_acceleration;
+
 
 
 	ParticleEmitterShapeType m_shapeType = ParticleEmitterShapeType::Sphere;

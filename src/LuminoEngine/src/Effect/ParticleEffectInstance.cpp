@@ -330,13 +330,21 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
         //Vector3 worldPosition = Vector3::transformCoord(localFront, emitterTransform);
 
         particle->position = localPosition + localFront * makeRandom(particle, m_emitterModel->m_forwardPosition);
-        particle->linearVelocity = worldFront * makeRandom(particle, m_emitterModel->m_forwardVelocity);
-        particle->linearAccel = worldFront * makeRandom(particle, m_emitterModel->m_forwardAccel);
 
         particle->position.transformCoord(emitterTransform);
         //TODO: 回転だけのtransformCoord
         //data->positionVelocity.transformCoord(emitterTransform);
         //data->positionAccel.transformCoord(emitterTransform);
+
+
+        particle->linearVelocity = worldFront * makeRandom(particle, m_emitterModel->m_forwardVelocity);
+        particle->linearAccel = worldFront * makeRandom(particle, m_emitterModel->m_forwardAccel);
+
+
+
+        // Apply dinamics-module
+        particle->linearVelocity += makeRandom(particle, m_emitterModel->m_velocity);
+        particle->linearAccel += makeRandom(particle, m_emitterModel->m_acceleration);
     }
 }
 
