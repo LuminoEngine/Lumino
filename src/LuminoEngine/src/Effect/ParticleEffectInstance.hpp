@@ -32,6 +32,9 @@ struct ParticleData2
 	//float		m_forwardVelocity;
 	//float		m_forwardAccel;
 
+	float size;
+	float forwardScale;
+	float crossScale;
 
 
 	//float		size;

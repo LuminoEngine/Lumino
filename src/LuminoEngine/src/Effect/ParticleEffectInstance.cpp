@@ -251,6 +251,11 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
         particle->time = delayTime;
 
         particle->endLifeTime = makeRandom(particle, m_emitterModel->m_lifeTime.minValue, m_emitterModel->m_lifeTime.maxValue, m_emitterModel->m_lifeTime.randomSource);
+    
+    
+        particle->size = makeRandom(particle, m_emitterModel->m_size);
+        particle->forwardScale = makeRandom(particle, m_emitterModel->m_forwardScale);
+        particle->crossScale = makeRandom(particle, m_emitterModel->m_crossScale);
     }
 
     // Emitter shape

@@ -115,6 +115,9 @@ uint64_t SpriteParticleGeometry::calculateRendererHashKey() const
 ParticleEmitterModel2::ParticleEmitterModel2()
 {
     m_lifeTime = { 5.0f, 5.0f, ParticleRandomSource::Self };
+    m_size = { 1.0f, 1.0f, ParticleRandomSource::Self };
+    m_forwardScale = { 1.0f, 1.0f, ParticleRandomSource::Self };
+    m_crossScale = { 1.0f, 1.0f, ParticleRandomSource::Self };
 }
 
 bool ParticleEmitterModel2::init()

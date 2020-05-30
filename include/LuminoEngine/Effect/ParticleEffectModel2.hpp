@@ -82,6 +82,13 @@ public:
 	// Sphere,Cone の場合は放射方向、Box の場合は Y+.
 	
 
+
+	RadomRangeValue<float> m_size;			// default:1 ベースの geom 対するスケール値。
+	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸
+	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸
+
+
+
 LN_CONSTRUCT_ACCESS :
 	ParticleEmitterModel2();
 	bool init();

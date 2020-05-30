@@ -68,42 +68,35 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material)
 
 void SpriteParticleRenderer::draw(RenderingContext* context, const ParticleData2* particle)
 {
-    // particle の進行方向を lookat, 視点への方向を up として view 行列を作ってみる
-    Matrix rot;
-    {
-        ///auto target = Vector3::safeNormalize(particle->position + particle->linearVelocity, Vector3::UnitY);
-
-        // left-hand coord
-        //Vector3 f = Vector3::normalize(target - particle->position);
-        //f *= -1;
-        Vector3 f = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitZ);
-
-        Vector3 up = Vector3::normalize(context->viewPoint()->viewPosition - particle->position);
-        //up *= -1;
-        //up = -Vector3::UnitZ;
-        //Vector3 up = Vector3::UnitY;
-
-        Vector3 s = Vector3::cross(up, f);
-        if (Vector3::nearEqual(s, Vector3::Zero))
-        {
-            // TODO: https://jp.mathworks.com/help/matlab/ref/circshift.html?requestedDomain=www.mathworks.com
-            Vector3 u2 = Vector3::UnitZ;
-            //std::rotate<float*>(&u2.x, (&u2.x)+2, &u2.z);
-            s = Vector3::cross(u2, f);
-        }
-
-        s.mutatingNormalize();
-
-        Vector3 u = Vector3::cross(f, s);
-        rot = Matrix(
-            s.x, s.y, s.z, 0.0f,
-            u.x, u.y, u.z, 0.0f,
-            f.x, f.y, f.z, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f);
+    // Rotation
+    //  やってることは WorldObjectTransform::lookAt() とかと同じ。
+    //  View 行列の回転成分を作るのと同じ要領で、Front を進行方向、Up をカメラへの方向と考えて計算する。
+    const auto rotUp = Vector3::safeNormalize(context->viewPoint()->viewPosition - particle->position, Vector3::UnitY);
+    const auto rotFront = Vector3::safeNormalize(particle->linearVelocity, Vector3::UnitZ);
+    auto rotRight = Vector3(Vector3::cross(rotUp, rotFront));
+    if (Vector3::nearEqual(rotRight, Vector3::Zero)) {
+        rotRight = Vector3::cross(Vector3::UnitZ, rotFront);
     }
 
+    // Scale
+    const auto scale = Vector3(
+        particle->size * particle->crossScale,
+        particle->size * particle->crossScale,
+        particle->size * particle->forwardScale);
 
-    m_batch->setTransform(/*Matrix::makeRotationX(0.5) *  */rot * Matrix::makeTranslation(particle->position));
+    // Position
+    const auto pos = particle->position;
+
+    // 愚直に Scale * Rotation * Position の行列乗算をパーティクルごとに繰り返すと
+    // 計算負荷が馬鹿にならなくなるので、各要素を直接設定してしまう。
+    const auto transform = Matrix(
+        scale.x * rotRight.x, scale.x * rotRight.y, scale.x * rotRight.z, 0.0f,
+        scale.y * rotFront.x, scale.y * rotFront.y, scale.y * rotFront.z, 0.0f,
+        scale.z * rotFront.x, scale.z * rotFront.y, scale.z * rotFront.z, 0.0f,
+        pos.x, pos.y, pos.z, 1.0f
+    );
+
+    m_batch->setTransform(transform);
     m_batch->drawMesh();
 }
 
