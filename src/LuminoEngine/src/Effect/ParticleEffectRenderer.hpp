@@ -6,6 +6,7 @@ namespace ln {
 class InstancedMeshList;
 
 namespace detail {
+class RibbonRenderer;
 
 class ParticleRenderer2
 	: public ln::Object
@@ -45,6 +46,26 @@ LN_CONSTRUCT_ACCESS:
 private:
 	Ref<InstancedMeshList> m_batch;
 	Ref<Material> m_material;
+
+	Ref<RibbonRenderer> m_ribbonRenderer;	// TODO: tmp
+};
+
+
+class RibbonRenderer
+	: public RefObject
+{
+public:
+	RibbonRenderer();
+	bool init(int maxPoints);
+
+	void setMaterial(Material* material);
+	void resetBatch();
+	void addPoint(RenderingContext* context, const Vector3& pos, float width);
+	void submit(RenderingContext* context);
+
+private:
+	Ref<Material> m_material;
+	Ref<Mesh> m_mesh;
 };
 
 } // namespace detail

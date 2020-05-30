@@ -68,6 +68,12 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material)
     m_batch = makeObject<InstancedMeshList>(mesh, 0);
 
 
+
+    m_ribbonRenderer = makeRef<RibbonRenderer>();
+    if (!m_ribbonRenderer->init(1000)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -118,7 +124,79 @@ void SpriteParticleRenderer::submit(RenderingContext* context)
 
     context->setMaterial(m_material);
     context->drawMeshInstanced(m_batch);
+
+    m_ribbonRenderer->submit(context);
 }
+
+
+//==============================================================================
+// RibbonRenderer
+
+RibbonRenderer::RibbonRenderer()
+{
+}
+
+bool RibbonRenderer::init(int maxPoints)
+{
+    int squareCount = maxPoints;
+    int vertexCount = squareCount * 4;
+    if (LN_REQUIRE(vertexCount < UINT16_MAX)) return false;
+
+    m_mesh = makeObject<Mesh>(vertexCount, squareCount * 6, IndexBufferFormat::UInt16);
+    auto vertices = reinterpret_cast<Vertex*>(m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
+    auto indices = reinterpret_cast<uint16_t*>(m_mesh->acquireMappedIndexBuffer());
+
+    // Front: Z-
+    //vertices[0] = Vertex{ Vector3(-0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(0, 0), Color::White };
+    //vertices[1] = Vertex{ Vector3( 0.5,  0.5, 0.0), Vector3::UnitZ, Vector2(1, 0), Color::White };
+    //vertices[2] = Vertex{ Vector3(-0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(0, 1), Color::White };
+    //vertices[3] = Vertex{ Vector3( 0.5, -0.5, 0.0), Vector3::UnitZ, Vector2(1, 1), Color::White };
+    //indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
+
+    // Front: Y+, 進行方向を Z+ と考えたパターン。
+    vertices[0] = Vertex{ Vector3(0.5, 0.0, -0.5), Vector3::UnitZ, Vector2(0, 0), Color::White };
+    vertices[1] = Vertex{ Vector3(-0.5, 0.0, -0.5), Vector3::UnitZ, Vector2(1, 0), Color::White };
+    vertices[2] = Vertex{ Vector3(0.5, 0.0,  0.5), Vector3::UnitZ, Vector2(0, 1), Color::White };
+    vertices[3] = Vertex{ Vector3(-0.5, 0.0,  0.5), Vector3::UnitZ, Vector2(1, 1), Color::White };
+    indices[0] = 0; indices[1] = 1; indices[2] = 2; indices[3] = 2; indices[4] = 1; indices[5] = 3;
+
+
+    m_mesh->addSection(0, 2, 0, PrimitiveTopology::TriangleList);
+    //mesh->addSection(0, squareCount / 3, 0, PrimitiveTopology::TriangleList);
+
+
+
+
+    auto m_material = Material::create();
+    m_material->setMainTexture(Texture2D::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/Sprite1.png"));
+    m_material->shadingModel = ShadingModel::Unlit;
+    m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+
+
+    return true;
+}
+
+void RibbonRenderer::setMaterial(Material* material)
+{
+    m_material = material;
+}
+
+void RibbonRenderer::resetBatch()
+{
+}
+
+void RibbonRenderer::addPoint(RenderingContext* context, const Vector3& pos, float width)
+{
+}
+
+void RibbonRenderer::submit(RenderingContext* context)
+{
+    context->setTransfrom(Matrix::Identity);
+    context->setMaterial(m_material);
+    context->drawMesh(m_mesh, 0);
+}
+
 
 } // namespace detail
 } // namespace ln
