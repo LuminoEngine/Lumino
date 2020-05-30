@@ -50,6 +50,17 @@ class ParticleEmitterModel2
 public:
 	const Ref<ParticleGeometry>& geometry() const { return m_geometry; }
 
+
+
+	/** 同時に表示できるパーティクルの最大数を設定します。(default: 100) */
+	void setMaxParticles(int count) { m_maxParticles = count; }
+
+	/** 1秒間に放出するパーティクルの数を設定します。(default: 1) */
+	void setSpawnRate(float rate) { m_spawnRate = rate; }
+
+	/** パーティクルの生存時間を設定します。(default: 5.0) */
+	void setLifeTime(float time) { m_lifeTime.minValue = m_lifeTime.maxValue = time; }
+
 	// パーティクルのライフタイムを秒単位で
 	RadomRangeValue<float> m_lifeTime;
 

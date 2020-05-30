@@ -10,7 +10,7 @@ class App_Sandbox_Particle : public Application
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
-#if 1
+#if 0
         auto material = Material::create();
         material->setMainTexture(Texture2D::load(u"Sprite1"));
         
@@ -50,11 +50,13 @@ class App_Sandbox_Particle : public Application
 #endif
 #if 0	// 雨
         //Camera::GetMain3DCamera()->SetFarClip(10000);
-        auto m1 = SpriteParticleModel::create();
+        //auto m1 = SpriteParticleModel::create();
+        auto particleModel = makeObject<ParticleModel2>();
+        auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
         m1->setSpawnRate(1000);
         m1->setLifeTime(1.0);
-        m1->m_loop = true;
+        particleModel->m_loop = true;
 
         m1->setSize(0.05, 0.05);
 

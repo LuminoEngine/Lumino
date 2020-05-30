@@ -10,7 +10,13 @@ class ParticleRenderer2;
 
 struct ParticleData2
 {
-	Vector3		position;
+	// final transform
+	Vector3 position;
+	//Quaternion rotation;
+	//Vector3 position;
+
+
+
 
 	//// Physical
 	//Vector3		startPosition;
@@ -91,6 +97,7 @@ public:
 	Vector3 makeRandom(detail::ParticleData2* data, const RadomRangeValue<Vector3>& value) const;
 
 	const ParticleData2& particleData(int index) const { return m_particleData[index]; }
+	uint16_t activeParticles() const { return m_activeParticles; }
 
 	void updateFrame(float deltaTime);
 	void render();
@@ -104,7 +111,7 @@ private:
 	int maxParticles() const { return m_particleData.size(); }
 	void killDeactiveParticles(float deltaTime);
 	void updateSpawn(float deltaTime);
-	void spawnParticle();
+	void spawnParticle(float delayTime);
 	void killParticle(int index);
 	void simulateParticle(ParticleData2* particle, float deltaTime);
 

@@ -193,21 +193,22 @@ void ParticleEmitterInstance2::updateSpawn(float deltaTime)
 
     // create new particles
     {
-        const float oneSpawnDeltaTime = m_emitterModel->m_spawnRate;
+        const float oneSpawnDeltaTime = 1.0f / m_emitterModel->m_spawnRate;
         while (m_lastSpawnTime <= m_time)
         {
             // burstCount 分、まとめて spawn
             for (int i = 0; i < m_emitterModel->m_burstCount; i++) {
                 if (m_activeParticles < maxParticles()) {
-                    spawnParticle();
+                    spawnParticle(-(m_time - m_lastSpawnTime));
                 }
             }
             m_lastSpawnTime += oneSpawnDeltaTime;
         }
     }
+
 }
 
-void ParticleEmitterInstance2::spawnParticle()
+void ParticleEmitterInstance2::spawnParticle(float delayTime)
 {
     LN_CHECK(m_activeParticles < maxParticles());
 
@@ -220,7 +221,11 @@ void ParticleEmitterInstance2::spawnParticle()
     {
         particle->position = Vector3::Zero;
 
-        particle->time = 0.0f;
+        // 次の simulateParticle() で time を加算するとき、本来の時間になるようにする。
+        // 例えば 1s に 10 個生成する設定で、updateFrame() の deltaTime が 1 だった場合、
+        // updateSpawn() で 10 個作られるが、その際 delayTime は順に [-1.0, -0.9, -0.8...] といったように設定される。
+        // 次の updateFrame() 全 Particle に +1.0 されるので、更新が終わった時には本来の時間になる。
+        particle->time = delayTime;
 
         particle->endLifeTime = makeRandom(particle, m_emitterModel->m_lifeTime.minValue, m_emitterModel->m_lifeTime.maxValue, m_emitterModel->m_lifeTime.randomSource);
     }

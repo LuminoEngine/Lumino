@@ -50,3 +50,27 @@ TEST_F(Test_Effect_Particle, Lifetime)
 		}
 	}
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Effect_Particle, SpawnRate)
+{
+	auto particleModel = makeObject<ParticleModel2>();
+	auto emitterModel = particleModel->emitters()[0];
+	emitterModel->setLifeTime(5);
+	emitterModel->setMaxParticles(50);
+	emitterModel->setSpawnRate(10);			// 1s 10個
+
+	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
+	auto emitterInstance = particleInstance->emitters()[0];
+
+	{
+		// 1s 進めたら、10 個作られている
+		particleInstance->updateFrame(1.0f);
+		ASSERT_EQ(10, emitterInstance->activeParticles());
+
+		ASSERT_FLOAT_EQ(0.0, emitterInstance->particleData(0).time);
+		ASSERT_FLOAT_EQ(0.1, emitterInstance->particleData(1).time);
+		ASSERT_FLOAT_EQ(0.8, emitterInstance->particleData(8).time);
+		ASSERT_FLOAT_EQ(0.9, emitterInstance->particleData(9).time);
+	}
+}
