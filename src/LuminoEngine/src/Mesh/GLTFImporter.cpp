@@ -561,7 +561,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 		return nullptr;
 	}
 
-	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt);
+	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
 
 
 

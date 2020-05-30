@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoEngine/Rendering/Vertex.hpp>
 #include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
 #include "ParticleEffectInstance.hpp"
 
@@ -39,6 +40,8 @@ public:
 	void draw(RenderingContext* context, const ParticleData2* particle) override;
 	void submit(RenderingContext* context) override;
 
+	static Matrix makeRotationMatrix(const Vector3& viewPosition, const Vector3& nodePosition, const Vector3& nodeFront);
+
 LN_CONSTRUCT_ACCESS:
 	SpriteParticleRenderer();
 	bool init(uint64_t hashKey, Material* material);
@@ -60,12 +63,23 @@ public:
 
 	void setMaterial(Material* material);
 	void resetBatch();
+	void beginRibbon();
+	void endRibbon();
 	void addPoint(RenderingContext* context, const Vector3& pos, float width);
 	void submit(RenderingContext* context);
 
 private:
 	Ref<Material> m_material;
 	Ref<Mesh> m_mesh;
+
+	int m_currentRibbonNodeIndex = 0;
+	Vector3 m_lastPosition;
+	//Vector3 m_lastVelocity;
+
+	uint32_t m_vertexCount;
+	uint32_t m_indexCount;
+	Vertex* m_vertices;
+	uint16_t* m_indices;
 };
 
 } // namespace detail

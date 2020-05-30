@@ -208,6 +208,7 @@ public:
 
 	/** セクションの情報を追加します。 */
 	void addSection(int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
+	void setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology);
 
 	// TODO: internal
 	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
@@ -225,7 +226,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Mesh();
 	void init();
 	void init(int vertexCount, int indexCount);
-	void init(int vertexCount, int indexCount, IndexBufferFormat indexFormat);
+	void init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, GraphicsResourceUsage resourceUsage);
 	// TODO: section 1作る init ユーティリティも欲しい。addSection は本当に忘れやすい
 
 private:
@@ -263,6 +264,7 @@ private:
 	int m_vertexCount;
 	int m_indexCount;
 	IndexBufferFormat m_indexFormat;
+	GraphicsResourceUsage m_resourceUsage;
 
 	friend class MeshGeometryBuilder;
 	//friend class MeshContainer

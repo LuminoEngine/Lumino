@@ -332,6 +332,7 @@ bool MeshResource::isInitialEmpty() const
 // Mesh
 
 Mesh::Mesh()
+	: m_resourceUsage(GraphicsResourceUsage::Static)
 {
 }
 
@@ -352,12 +353,13 @@ void Mesh::init(int vertexCount, int indexCount)
 	m_indexFormat = detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount);
 }
 
-void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat)
+void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, GraphicsResourceUsage resourceUsage)
 {
 	init();
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
 	m_indexFormat = indexFormat;
+	m_resourceUsage = resourceUsage;
 }
 
 void Mesh::setVertex(int index, const Vertex& value)
@@ -414,6 +416,15 @@ void Mesh::addSection(int startIndex, int primitiveCount, int materialIndex, Pri
 	meshSection.materialIndex = materialIndex;
 	meshSection.topology = topology;
 	m_sections.add(meshSection);
+}
+
+void Mesh::setSection(int sectionIndex, int startIndex, int primitiveCount, int materialIndex, PrimitiveTopology topology)
+{
+	MeshSection2& meshSection = m_sections[sectionIndex];
+	meshSection.startIndex = startIndex;
+	meshSection.primitiveCount = primitiveCount;
+	meshSection.materialIndex = materialIndex;
+	meshSection.topology = topology;
 }
 
 void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB)
@@ -507,7 +518,7 @@ void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 	}
 	case InterleavedVertexGroup::Main:
 		if (!m_mainVertexBuffer.buffer) {
-			m_mainVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, GraphicsResourceUsage::Static);
+			m_mainVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(Vertex) * m_vertexCount, m_resourceUsage);
 
 			// set default
 			auto* buf = static_cast<Vertex*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
@@ -524,7 +535,7 @@ void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 
 	case InterleavedVertexGroup::Tangents:
 		if (!m_tangentsVertexBuffer.buffer) {
-			m_tangentsVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, GraphicsResourceUsage::Static);
+			m_tangentsVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, m_resourceUsage);
 
 			// set default
 			auto* buf = static_cast<VertexTangents*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
@@ -540,7 +551,7 @@ void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 
 	case InterleavedVertexGroup::Skinning:
 		if (!m_skinningVertexBuffer.buffer) {
-			m_skinningVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, GraphicsResourceUsage::Static);
+			m_skinningVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexBlendWeight) * m_vertexCount, m_resourceUsage);
 		}
 
 		if (!m_skinningVertexBuffer.mappedBuffer) {
@@ -565,7 +576,7 @@ void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage
 				LN_ERROR();
 				return nullptr;
 			}
-			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, GraphicsResourceUsage::Static);
+			auto vb = makeObject<VertexBuffer>(GraphicsHelper::getVertexElementTypeSize(type) * m_vertexCount, m_resourceUsage);
 			
 			VertexBufferEntry entry;
 			entry.buffer = vb;
@@ -591,7 +602,7 @@ void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage
 void* Mesh::acquireMappedIndexBuffer()
 {
 	if (!m_indexBuffer.buffer) {
-		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, GraphicsResourceUsage::Static);
+		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, m_resourceUsage);
 	}
 
 	if (!m_indexBuffer.mappedBuffer) {
