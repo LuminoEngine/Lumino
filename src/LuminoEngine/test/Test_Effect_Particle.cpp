@@ -87,6 +87,7 @@ TEST_F(Test_Effect_Particle, SphereShape)
 	// 半径 1.0 の表面上に一様に配置する
 	emitterModel->m_shapeType = ParticleEmitterShapeType::Sphere;
 	emitterModel->m_forwardPosition.set(1.0f);
+	emitterModel->m_forwardVelocity.set(0);
 
 	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
 	auto emitterInstance = particleInstance->emitters()[0];
@@ -113,7 +114,7 @@ TEST_F(Test_Effect_Particle, ConeShape)
 	emitterModel->m_shapeType = ParticleEmitterShapeType::Cone;
 	emitterModel->m_shapeParam.x = Math::PI / 3;
 	emitterModel->m_forwardPosition.set(1.0f);
-	emitterModel->m_forwardVelocity.set(1.0f);
+	emitterModel->m_forwardVelocity.set(0);
 
 	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
 	auto emitterInstance = particleInstance->emitters()[0];
@@ -126,7 +127,6 @@ TEST_F(Test_Effect_Particle, ConeShape)
 			ASSERT_FLOAT_EQ(1.0, emitterInstance->particleData(i).position.length());
 			// 有効角度が  (Math::PI / 3) なので、正面方向である Y+ の後ろにはないはず
 			ASSERT_EQ(true, emitterInstance->particleData(i).position.y > 0.0f);
-			ASSERT_EQ(true, emitterInstance->particleData(i).linearVelocity.y > 0.0f);
 		}
 	}
 }
@@ -142,6 +142,7 @@ TEST_F(Test_Effect_Particle, BoxShape)
 
 	emitterModel->m_shapeType = ParticleEmitterShapeType::Box;
 	emitterModel->m_shapeParam.set(10, 10, 10);
+	emitterModel->m_forwardVelocity.set(0);
 
 	auto particleInstance = makeObject<detail::ParticleInstance2>(particleModel);
 	auto emitterInstance = particleInstance->emitters()[0];
