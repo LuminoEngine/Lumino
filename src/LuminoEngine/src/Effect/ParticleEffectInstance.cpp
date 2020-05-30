@@ -177,7 +177,6 @@ void ParticleEmitterInstance2::render(RenderingContext* context)
             particle.zDistance = Vector3::dot(particle.position - viewPosition, viewDirection);
         }
 
-        // Z 値の大きい方から小さい方へソートする比較
         class SpriteCmpDepthBackToFront
         {
         public:
@@ -191,10 +190,6 @@ void ParticleEmitterInstance2::render(RenderingContext* context)
             }
         };
 
-        // ソート実施。
-        // ここで非アクティブなものは std::remove のようにリストの後ろに移動し、Zソートも同時に行われる。
-        // 少なくとも、前回アクティブだった数+今回の生成で増えた数をソート範囲にする。
-        //int sortRange = instance->m_mayActiveCount;
         SpriteCmpDepthBackToFront cmp;
         cmp.particleData = &m_particleData;
         std::sort(m_particleIndices.begin(), m_particleIndices.begin() + m_activeParticles, cmp);
@@ -241,10 +236,7 @@ void ParticleEmitterInstance2::killDeactiveParticles(float deltaTime)
 
 void ParticleEmitterInstance2::updateSpawn(float deltaTime)
 {
-
     m_time += deltaTime;
-
-    //auto dd = m_activeParticles;
 
     // create new particles
     {
@@ -260,10 +252,6 @@ void ParticleEmitterInstance2::updateSpawn(float deltaTime)
             m_lastSpawnTime += oneSpawnDeltaTime;
         }
     }
-
-    //printf("m_activeParticles: %d\n", m_activeParticles - dd);
-
-    //printf("new: %d\n", m_activeParticles - dd);
 }
 
 void ParticleEmitterInstance2::spawnParticle(float delayTime)

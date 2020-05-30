@@ -61,6 +61,7 @@
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
+#include "EffectManager.hpp"
 #include "ParticleEffectRenderer.hpp"
 
 namespace ln {
@@ -126,6 +127,8 @@ bool ParticleEmitterModel2::init()
 
     //auto geom = makeObject<SpriteParticleGeometry>();
     //m_geometry = geom;
+
+    m_geometry = detail::EngineDomain::effectManager()->defaultSpriteParticleGeometry();
 
     return true;
 }

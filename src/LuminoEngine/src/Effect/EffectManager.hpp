@@ -13,6 +13,7 @@ class GraphicsContext;
 class RenderingContext;
 namespace detail {
 class GraphicsManager;
+class RenderingManager;
 class LLGINativeGraphicsExtension;
 class FileInterface;
 class EffekseerEffect;
@@ -25,6 +26,7 @@ public:
 	{
         GraphicsManager* graphicsManager = nullptr;
         AssetManager* assetManager = nullptr;
+        RenderingManager* renderingManager = nullptr;
 	};
 
     EffectManager();
@@ -46,6 +48,8 @@ public:
 
     AssetManager* assetManager() const { return m_assetManager; }
 
+    const Ref<SpriteParticleGeometry>& defaultSpriteParticleGeometry() const { return m_defaultSpriteParticleGeometry; }
+
 private:
     GraphicsManager* m_graphicsManager;
     AssetManager* m_assetManager;
@@ -53,6 +57,8 @@ private:
     std::unique_ptr<FileInterface> m_fileInterface;
     ::Effekseer::Manager* m_efkManager;
     detail::ObjectCache<String, EffekseerEffect> m_efkEffectCache;
+
+    Ref<SpriteParticleGeometry> m_defaultSpriteParticleGeometry;
 };
 
 } // namespace detail

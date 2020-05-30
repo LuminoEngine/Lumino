@@ -108,7 +108,7 @@ public:
 	ParticleSortMode m_sortMode = ParticleSortMode::None;
 
 
-LN_CONSTRUCT_ACCESS :
+LN_CONSTRUCT_ACCESS:
 	ParticleEmitterModel2();
 	bool init();
 

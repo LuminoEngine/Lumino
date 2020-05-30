@@ -5,8 +5,11 @@
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Effect/ParticleEffectModel2.hpp>
 #include "../Graphics/GraphicsManager.hpp"
 #include "../Asset/AssetManager.hpp"
+#include "../Rendering/RenderingManager.hpp"
 #include "EffekseerEffect.hpp"
 #include "EffectManager.hpp"
 
@@ -355,6 +358,12 @@ void EffectManager::init(const Settings& settings)
     // 独自拡張可能、現在はファイルから読み込んでいる。
     //g_manager->SetSoundLoader(g_sound->CreateSoundLoader());
 #endif
+
+    m_defaultSpriteParticleGeometry = makeObject<SpriteParticleGeometry>();
+    auto material = makeObject<Material>();
+    material->setMainTexture(settings.graphicsManager->whiteTexture());
+    material->setShader(settings.renderingManager->builtinShader(BuiltinShader::Sprite));
+    m_defaultSpriteParticleGeometry->setMaterial(material);
 
     LN_LOG_DEBUG << "EffectManager Initialization ended.";
 }

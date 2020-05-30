@@ -12,9 +12,19 @@ class App_Sandbox_Particle : public Application
         Engine::renderView()->setBackgroundColor(Color::Gray);
 #if 0
         auto material = Material::create();
-        material->setMainTexture(Texture2D::load(u"Sprite1"));
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->shadingModel = ShadingModel::Unlit;
+        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
         
-        auto m1 = makeObject<ParticleModel2>();
+
+        auto particleModel = makeObject<ParticleModel2>();
+        auto m1 = particleModel->emitters()[0];
+        m1->setSpriteModule(material);
+        m1->setLifeTime(10);
+        m1->setMaxParticles(2);
+        m1->setSpawnRate(1);
+        m1->m_forwardVelocity.set(0);
+
         //m1->setMaterial(material);
         //m1->setSpawnRate(1);
         //m1->setLifeTime(2.0f);
@@ -22,7 +32,7 @@ class App_Sandbox_Particle : public Application
         //m1->m_shapeType = ParticleEmitterShapeType::Cone;
         //m1->m_shapeParam.x = Math::PI * 0.1;
         //m1->m_shapeParam.y = 2;
-        auto cmp1 = makeObject<ParticleEmitterComponent2>(m1);
+        auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
         cmp1->setCullMode(CullMode::None);
         cmp1->setBlendMode(BlendMode::Alpha);
 
@@ -52,17 +62,18 @@ class App_Sandbox_Particle : public Application
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
-        m1->setSpawnRate(1000);
+        //m1->setSpawnRate(1000);
+        m1->setSpawnRate(10);
         m1->setLifeTime(1.0);
         particleModel->m_loop = true;
 
         m1->m_shapeType = ParticleEmitterShapeType::Box;
         m1->m_shapeParam.set(10, 0, 10);
-        m1->m_forwardVelocity.minValue = -12;
-        m1->m_forwardVelocity.maxValue = -12;
+        m1->m_forwardVelocity.minValue = 12;
+        m1->m_forwardVelocity.maxValue = 12;
 
         //m1->m_size.set(0.05f);
-        m1->m_size.set(0.5f);
+        //m1->m_size.set(0.5f);
         //m1->m_forwardScale.set(10);
 
         //m1->m_particleDirection = ParticleDirectionType::MovementDirection;
