@@ -83,8 +83,10 @@ ParticleRenderer2* ParticleInstance2::acquireRenderer(ParticleGeometry* geometry
 // ParticleEmitterInstance2
 
 ParticleEmitterInstance2::ParticleEmitterInstance2()
-    : m_emitterModel(nullptr)
+    : m_particleInstance(nullptr)
+    , m_emitterModel(nullptr)
     , m_renderer(nullptr)
+    , m_sleepCount(0)
     , m_time(0.0f)
     , m_lastSpawnTime(0.0f)
 {
@@ -96,6 +98,7 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
     if (LN_REQUIRE(emitterModel)) return false;
     if (LN_REQUIRE(emitterModel->m_maxParticles < UINT16_MAX)) return false;
 
+    m_particleInstance = particleInstance;
     m_emitterModel = emitterModel;
 
     m_renderer = particleInstance->acquireRenderer(m_emitterModel->geometry());
@@ -111,6 +114,38 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
     return true;
 }
 
+float ParticleEmitterInstance2::makeRandom(detail::ParticleData2* data, const RadomRangeValue<float>& value) const
+{
+    return makeRandom(data, value.minValue, value.maxValue, value.randomSource);
+}
+
+Vector3 ParticleEmitterInstance2::makeRandom(detail::ParticleData2* data, const RadomRangeValue<Vector3>& value) const
+{
+    return Vector3(
+        makeRandom(data, value.minValue.x, value.maxValue.x, value.randomSource),
+        makeRandom(data, value.minValue.y, value.maxValue.y, value.randomSource),
+        makeRandom(data, value.minValue.z, value.maxValue.z, value.randomSource));
+}
+
+float ParticleEmitterInstance2::makeRandom(detail::ParticleData2* data, float minValue, float maxValue, ParticleRandomSource source) const
+{
+    if (minValue == maxValue) {
+        return minValue;
+    }
+    else if (source == ParticleRandomSource::ByBaseValue)
+    {
+        return Math::lerp(minValue, maxValue, data->randomMasterValue);
+    }
+    else if (source == ParticleRandomSource::ByBaseValueInverse)
+    {
+        return Math::lerp(minValue, maxValue, data->randomMasterValue);
+    }
+    else
+    {
+        return m_particleInstance->rand().nextFloat(minValue, maxValue);
+    }
+}
+
 void ParticleEmitterInstance2::updateFrame(float deltaTime)
 {
     if (1) {
@@ -122,7 +157,7 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
         }
 
 
-        for (int i = 0; i < m_activeParticles; i++) {
+        for (int i = m_sleepCount; i < m_activeParticles; i++) {
             const int currentIndex = m_particleIndices[i];
             simulateParticle(&m_particleData[currentIndex], deltaTime);
         }
@@ -131,7 +166,7 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
 
 void ParticleEmitterInstance2::render()
 {
-    for (int i = 0; i < m_activeParticles; i++) {
+    for (int i = m_sleepCount; i < m_activeParticles; i++) {
         const int currentIndex = m_particleIndices[i];
         m_renderer->draw(&m_particleData[currentIndex]);
     }
@@ -145,7 +180,7 @@ void ParticleEmitterInstance2::killDeactiveParticles(float deltaTime)
 
         // 今回の updateFrame で消滅する予定のものも含めて kill しておく。
         // こうしておくことで、空いた領域を 今回の updateFrame ですぐに使いまわすことができる。
-        if (particle.time + deltaTime > particle.lastLifeTime) {
+        if (particle.time + deltaTime >= particle.endLifeTime) {
             killParticle(currentIndex);
         }
     }
@@ -161,6 +196,7 @@ void ParticleEmitterInstance2::updateSpawn(float deltaTime)
         const float oneSpawnDeltaTime = m_emitterModel->m_spawnRate;
         while (m_lastSpawnTime <= m_time)
         {
+            // burstCount 分、まとめて spawn
             for (int i = 0; i < m_emitterModel->m_burstCount; i++) {
                 if (m_activeParticles < maxParticles()) {
                     spawnParticle();
@@ -185,18 +221,26 @@ void ParticleEmitterInstance2::spawnParticle()
         particle->position = Vector3::Zero;
 
         particle->time = 0.0f;
-        particle->lastLifeTime = 5.0f;
+
+        particle->endLifeTime = makeRandom(particle, m_emitterModel->m_lifeTime.minValue, m_emitterModel->m_lifeTime.maxValue, m_emitterModel->m_lifeTime.randomSource);
     }
 }
 
 void ParticleEmitterInstance2::killParticle(int index)
 {
-    // m_activeParticles-1 は、有効な最後の Particle。
-    // これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
-    // 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
-    m_particleIndices[index] = m_particleIndices[m_activeParticles - 1];
-    m_particleIndices[m_activeParticles - 1] = index;
-    m_activeParticles--;
+    if (isLoop()) {
+        // m_activeParticles-1 は、有効な最後の Particle。
+        // これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
+        // 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
+        m_particleIndices[index] = m_particleIndices[m_activeParticles - 1];
+        m_particleIndices[m_activeParticles - 1] = index;
+        m_activeParticles--;
+    }
+    else {
+        ParticleData2& particle = m_particleData[m_particleIndices[index]];
+        particle.time = particle.endLifeTime;
+        m_sleepCount++;
+    }
 }
 
 void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float deltaTime)

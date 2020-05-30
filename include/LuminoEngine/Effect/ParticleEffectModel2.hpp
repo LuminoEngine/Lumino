@@ -2,6 +2,7 @@
 #include "../Graphics/ColorStructs.hpp"
 #include "Common.hpp"
 #include "EffectModel.hpp"
+#include "ParticleEffectModel.hpp"
 
 namespace ln {
 class Material;
@@ -49,10 +50,14 @@ class ParticleEmitterModel2
 public:
 	const Ref<ParticleGeometry>& geometry() const { return m_geometry; }
 
+	// パーティクルのライフタイムを秒単位で
+	RadomRangeValue<float> m_lifeTime;
+
+
+
 	int m_maxParticles = 1;		// 粒子最大数
 	float m_spawnRate = 1;	// 1秒間に放出するパーティクル数
 	int m_burstCount = 1;	// 1度の放出タイミングで生成するパーティクル数
-
 
 
 LN_CONSTRUCT_ACCESS :
@@ -67,6 +72,8 @@ class ParticleModel2
 	: public EffectResource
 {
 public:
+	bool m_loop = true;
+
 	const List<Ref<ParticleEmitterModel2>>& emitters() const { return m_emitters; }
 
 

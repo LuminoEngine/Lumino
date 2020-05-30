@@ -36,8 +36,10 @@ struct ParticleData2
 	//Color		color;
 	//Color		colorVelocity;
 
+	float randomMasterValue = 0.0f;
+
 	float		spawnTime = -1.0f;	// 負値の場合は非アクティブ (instance time)
-	float		lastLifeTime = 0.0f;		// パーティクルの寿命時間 (instance time)
+	float		endLifeTime = 0.0f;		// パーティクルの寿命時間 (instance time)
 	float		time = 0.0f;	// 最後の更新時の時間 (instance time)
 	float		zDistance = 0.0f;			// Zソート用作業変数
 	//float		ramdomBaseValue = 0.0f;
@@ -46,7 +48,7 @@ struct ParticleData2
 
 	//bool		m_isTrailPoint = false;
 
-	bool isActive() const { return time <= lastLifeTime; }
+	bool isActive() const { return time < endLifeTime; }
 	//bool IsSleep() const { return endTime <= lastTime; }
 
 	// Active かつ sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
@@ -56,6 +58,10 @@ class ParticleInstance2
 	: public ln::Object
 {
 public:
+	const Ref<ParticleModel2>& model() const { return m_model; }
+	Random& rand() { return m_rand; }
+	const List<Ref<ParticleEmitterInstance2>> emitters() const { return m_emitterInstances; }
+
 	void setWorldTransform(const Matrix& value);
 
 	void updateFrame(float deltaTime);
@@ -69,17 +75,23 @@ LN_CONSTRUCT_ACCESS:
 	bool init(ParticleModel2* model);
 
 private:
-
 	Ref<ParticleModel2> m_model;
 	Matrix m_worldTransform;
 	List<Ref<ParticleEmitterInstance2>> m_emitterInstances;
 	List<Ref<ParticleRenderer2>> m_renderers;
+	Random m_rand;
 };
 
 class ParticleEmitterInstance2
 	: public ln::Object
 {
 public:
+	float makeRandom(detail::ParticleData2* data, float minValue, float maxValue, ParticleRandomSource source) const;
+	float makeRandom(detail::ParticleData2* data, const RadomRangeValue<float>& value) const;
+	Vector3 makeRandom(detail::ParticleData2* data, const RadomRangeValue<Vector3>& value) const;
+
+	const ParticleData2& particleData(int index) const { return m_particleData[index]; }
+
 	void updateFrame(float deltaTime);
 	void render();
 
@@ -88,6 +100,7 @@ LN_CONSTRUCT_ACCESS:
 	bool init(ParticleInstance2* particleInstance, ParticleEmitterModel2* emitterModel);
 
 private:
+	bool isLoop() const { return m_particleInstance->model()->m_loop; }
 	int maxParticles() const { return m_particleData.size(); }
 	void killDeactiveParticles(float deltaTime);
 	void updateSpawn(float deltaTime);
@@ -95,6 +108,7 @@ private:
 	void killParticle(int index);
 	void simulateParticle(ParticleData2* particle, float deltaTime);
 
+	ParticleInstance2* m_particleInstance;
 	ParticleEmitterModel2* m_emitterModel;
 	ParticleRenderer2* m_renderer;
 
@@ -103,7 +117,8 @@ private:
 
 	std::vector<ParticleData2> m_particleData;
 	std::vector<uint16_t> m_particleIndices;
-	int32_t m_activeParticles;
+	uint16_t m_activeParticles;
+	uint16_t m_sleepCount;	// ループOFFの時に使用する、再生が終わったパーティクルの数
 
 	float m_time;
 

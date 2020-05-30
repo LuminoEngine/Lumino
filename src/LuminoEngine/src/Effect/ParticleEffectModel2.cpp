@@ -1,4 +1,27 @@
 ﻿/*
+
+
+ [2020/5/30] Orbit と Newtondynamics
+ ----------
+ Lumino 従来の Orbit(Rotation) は、角速度を利用した竜巻や放射の表現にうまく利用できていた。
+
+ UE4 とかだと Orbit という名前らしい。
+
+ ただ、改めて整理してみると、Orbit と 通常の速度・加速度 (LinearVelocity) を合わせて使うのってどういうときだろう？
+ → Landscape プロジェクトの蘇生エフェクト
+
+ 同時使用はあり得るが、じゃあどちらを優先するべきだろう？
+
+ Linear -> Orbit かなぁ。UE4 と同じ。
+ まずは Linear で、個々のパーティクルのローカル姿勢を決める。その中で、Orbit を表現する。普通の Transform と同じ。
+ 逆の場合はちょっとパーティクル作るときのイメージがつかみにくくなるかも。恒星(Emitter位置)と惑星(Particle位置)で考えるみたいになる。
+
+ Linear -> Orbit で
+ - 竜巻を作るなら: Linear は速度Yは上昇。それ以外 0。Orbit の offset と角速度でぐるぐる回す。
+ - Landscape プロジェクトの蘇生エフェクト: 竜巻と同じだが、Y を下降にするだけ。
+
+
+
  [2020/5/29] New ver 設計
  ----------
 
@@ -25,7 +48,11 @@
  
  ParticleModel と ParticleModelInstance が 1:1。それぞれ、ParticleEffectModel と ParticleEmitterInstance が複数持つ。
 
+ ----------
 
+ - 小さいサイズの粒子ほど、遠くに飛ばしたい
+ - 小さいサイズの粒子ほど、早く動かしたい
+ - 
 
 */
 #include "Internal.hpp"
@@ -87,6 +114,7 @@ uint64_t SpriteParticleGeometry::calculateRendererHashKey() const
 
 ParticleEmitterModel2::ParticleEmitterModel2()
 {
+    m_lifeTime = { 5.0f, 5.0f, ParticleRandomSource::Self };
 }
 
 bool ParticleEmitterModel2::init()
