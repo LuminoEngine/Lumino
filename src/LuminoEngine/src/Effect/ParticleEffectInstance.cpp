@@ -158,8 +158,8 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
 
 
         for (int i = m_sleepCount; i < m_activeParticles; i++) {
-            const int currentIndex = m_particleIndices[i];
-            simulateParticle(&m_particleData[currentIndex], deltaTime);
+            const int currentDataIndex = m_particleIndices[i];
+            simulateParticle(&m_particleData[currentDataIndex], deltaTime);
         }
     }
 }
@@ -167,21 +167,39 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
 void ParticleEmitterInstance2::render()
 {
     for (int i = m_sleepCount; i < m_activeParticles; i++) {
-        const int currentIndex = m_particleIndices[i];
-        m_renderer->draw(&m_particleData[currentIndex]);
+        const int currentDataIndex = m_particleIndices[i];
+        m_renderer->draw(&m_particleData[currentDataIndex]);
     }
 }
 
 void ParticleEmitterInstance2::killDeactiveParticles(float deltaTime)
 {
     for (int i = m_activeParticles - 1; i >= 0; i--) {
-        const int currentIndex = m_particleIndices[i];
-        const ParticleData2& particle = m_particleData[currentIndex];
+        const int currentDataIndex = m_particleIndices[i];
+        const ParticleData2& particle = m_particleData[currentDataIndex];
 
         // 今回の updateFrame で消滅する予定のものも含めて kill しておく。
         // こうしておくことで、空いた領域を 今回の updateFrame ですぐに使いまわすことができる。
         if (particle.time + deltaTime >= particle.endLifeTime) {
-            killParticle(currentIndex);
+            //printf("kill: %f, %f\n", particle.time, particle.endLifeTime);
+            //killParticle(currentIndex);
+
+
+            if (isLoop()) {
+                // m_activeParticles-1 は、有効な最後の Particle。
+                // これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
+                // 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
+                m_particleIndices[i] = m_particleIndices[m_activeParticles - 1];
+                m_particleIndices[m_activeParticles - 1] = currentDataIndex;
+                m_activeParticles--;
+            }
+            else {
+                ParticleData2& particle = m_particleData[m_particleIndices[i]];
+                particle.time = particle.endLifeTime;
+                m_sleepCount++;
+            }
+
+
         }
     }
 }
@@ -190,6 +208,8 @@ void ParticleEmitterInstance2::updateSpawn(float deltaTime)
 {
 
     m_time += deltaTime;
+
+    //auto dd = m_activeParticles;
 
     // create new particles
     {
@@ -206,16 +226,19 @@ void ParticleEmitterInstance2::updateSpawn(float deltaTime)
         }
     }
 
+    //printf("m_activeParticles: %d\n", m_activeParticles - dd);
+
+    //printf("new: %d\n", m_activeParticles - dd);
 }
 
 void ParticleEmitterInstance2::spawnParticle(float delayTime)
 {
     LN_CHECK(m_activeParticles < maxParticles());
 
-    const int newParticleIndex = m_activeParticles;
+    const int newParticleDataIndex = m_particleIndices[m_activeParticles];
     m_activeParticles++;
 
-    ParticleData2* particle = &m_particleData[newParticleIndex];
+    ParticleData2* particle = &m_particleData[newParticleDataIndex];
 
     // Initialize particle
     {
@@ -289,22 +312,22 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
     }
 }
 
-void ParticleEmitterInstance2::killParticle(int index)
-{
-    if (isLoop()) {
-        // m_activeParticles-1 は、有効な最後の Particle。
-        // これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
-        // 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
-        m_particleIndices[index] = m_particleIndices[m_activeParticles - 1];
-        m_particleIndices[m_activeParticles - 1] = index;
-        m_activeParticles--;
-    }
-    else {
-        ParticleData2& particle = m_particleData[m_particleIndices[index]];
-        particle.time = particle.endLifeTime;
-        m_sleepCount++;
-    }
-}
+//void ParticleEmitterInstance2::killParticle(int index)
+//{
+//    if (isLoop()) {
+//        // m_activeParticles-1 は、有効な最後の Particle。
+//        // これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
+//        // 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
+//        m_particleIndices[index] = m_particleIndices[m_activeParticles - 1];
+//        m_particleIndices[m_activeParticles - 1] = index;
+//        m_activeParticles--;
+//    }
+//    else {
+//        ParticleData2& particle = m_particleData[m_particleIndices[index]];
+//        particle.time = particle.endLifeTime;
+//        m_sleepCount++;
+//    }
+//}
 
 void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float deltaTime)
 {

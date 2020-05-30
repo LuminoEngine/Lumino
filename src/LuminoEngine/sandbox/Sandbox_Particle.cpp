@@ -48,7 +48,7 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
-#if 0	// 雨
+#if 1	// 雨
         //Camera::GetMain3DCamera()->SetFarClip(10000);
         //auto m1 = SpriteParticleModel::create();
         auto particleModel = makeObject<ParticleModel2>();
@@ -60,28 +60,30 @@ class App_Sandbox_Particle : public Application
 
         m1->m_shapeType = ParticleEmitterShapeType::Box;
         m1->m_shapeParam.set(10, 0, 10);
-
-        m1->setSize(0.05, 0.05);
-
-        m1->m_particleDirection = ParticleDirectionType::MovementDirection;
         m1->m_forwardVelocity.minValue = -12;
         m1->m_forwardVelocity.maxValue = -12;
-        m1->m_lengthScale = 10;
 
-        auto material = Material::create();
-        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
-        material->shadingModel = ShadingModel::Unlit;
-        m1->setMaterial(material);
+        //m1->setSize(0.05, 0.05);
 
-        auto particle1 = makeObject<ParticleEmitterComponent>(m1);
-        particle1->setBlendMode(BlendMode::Add);
+        //m1->m_particleDirection = ParticleDirectionType::MovementDirection;
+        //m1->m_lengthScale = 10;
+
+        //auto material = Material::create();
+        //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
+        //material->shadingModel = ShadingModel::Unlit;
+        //m1->setMaterial(material);
+
+        auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        //particle1->setBlendMode(BlendMode::Add);
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(particle1);
-        obj1->setPosition(0, 5, 0);
+        //obj1->setPosition(0, 5, 0);
         //particle1->setAngles(Math::PI, 0, 0);
 
 
 
+        /*
+        // 波紋
         auto m2 = SpriteParticleModel::create();
         m2->m_maxParticles = 1000;
         m2->setSpawnRate(200);
@@ -102,6 +104,7 @@ class App_Sandbox_Particle : public Application
         auto obj2 = makeObject<WorldObject>();
         obj2->addComponent(particle2);
         //obj2->setPosition(0, 12, 0);
+        */
 #endif
 
     }

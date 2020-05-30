@@ -44,7 +44,7 @@ struct ParticleData2
 
 	float randomMasterValue = 0.0f;
 
-	float		spawnTime = -1.0f;	// 負値の場合は非アクティブ (instance time)
+	//float		spawnTime = -1.0f;	// 負値の場合は非アクティブ (instance time)
 	float		endLifeTime = 0.0f;		// パーティクルの寿命時間 (instance time)
 	float		time = 0.0f;	// 最後の更新時の時間 (instance time)
 	float		zDistance = 0.0f;			// Zソート用作業変数
