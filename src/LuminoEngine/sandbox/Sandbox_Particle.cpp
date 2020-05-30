@@ -10,7 +10,7 @@ class App_Sandbox_Particle : public Application
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
-#if 1
+#if 0
         auto material = Material::create();
         material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
         material->shadingModel = ShadingModel::Unlit;
@@ -59,12 +59,12 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
-#if 0	// 雨
+#if 1	// 雨
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
-        //m1->setSpawnRate(1000);
-        m1->setSpawnRate(10);
+        m1->setSpawnRate(1000);
+        //m1->setSpawnRate(10);
         m1->setLifeTime(1.0);
         particleModel->m_loop = true;
 

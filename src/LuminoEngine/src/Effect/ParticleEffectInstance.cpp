@@ -105,12 +105,12 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
 
     m_renderer = particleInstance->acquireRenderer(m_emitterModel->geometry());
 
-    m_particleData.resize(m_emitterModel->m_maxParticles);
-    m_activeParticles = 0;
+    m_particleStorage.resize(m_emitterModel->m_maxParticles);
 
-    m_particleIndices.resize(m_emitterModel->m_maxParticles);
-    for (int i = 0; i < m_emitterModel->m_maxParticles; i++) {
-        m_particleIndices[i] = i;
+    // Trail
+    {
+        int frameRate = 60;
+        int estimationNodeCount = (m_trailSeconds * frameRate) * m_emitterModel->m_maxParticles;
     }
 
     return true;
@@ -159,9 +159,9 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
         }
 
 
-        for (int i = m_sleepCount; i < m_activeParticles; i++) {
-            const int currentDataIndex = m_particleIndices[i];
-            simulateParticle(&m_particleData[currentDataIndex], deltaTime);
+        for (int i = m_sleepCount; i < activeParticles(); i++) {
+            const uint16_t currentDataId = m_particleStorage.dataId(i);
+            simulateParticle(&m_particleStorage.data(currentDataId), deltaTime);
         }
     }
 }
@@ -172,41 +172,42 @@ void ParticleEmitterInstance2::render(RenderingContext* context)
         const auto& viewPosition = context->viewPoint()->viewPosition;
         const auto& viewDirection = context->viewPoint()->viewDirection;
 
-        for (int i = m_sleepCount; i < m_activeParticles; i++) {
-            ParticleData2& particle = m_particleData[m_particleIndices[i]];
+        for (int i = m_sleepCount; i < activeParticles(); i++) {
+            const uint16_t currentDataId = m_particleStorage.dataId(i);
+            ParticleData2& particle = m_particleStorage.data(currentDataId);
             particle.zDistance = Vector3::dot(particle.position - viewPosition, viewDirection);
         }
 
         class SpriteCmpDepthBackToFront
         {
         public:
-            std::vector<detail::ParticleData2>* particleData;
+            IndicedNodeDataStorage<ParticleData2>* storage;
 
-            bool operator()(int left, int right)
+            bool operator()(int leftId, int rightId)
             {
-                const auto& lsp = particleData->at(left);
-                const auto& rsp = particleData->at(right);
+                const auto& lsp = storage->data(leftId);
+                const auto& rsp = storage->data(rightId);
                 return lsp.zDistance > rsp.zDistance;
             }
         };
 
         SpriteCmpDepthBackToFront cmp;
-        cmp.particleData = &m_particleData;
-        std::sort(m_particleIndices.begin(), m_particleIndices.begin() + m_activeParticles, cmp);
+        cmp.storage = &m_particleStorage;
+        std::sort(m_particleStorage.idList().begin(), m_particleStorage.idList().begin() + m_particleStorage.activeIdCount(), cmp);
     }
     
 
-    for (int i = m_sleepCount; i < m_activeParticles; i++) {
-        const int currentDataIndex = m_particleIndices[i];
-        m_renderer->draw(context , &m_particleData[currentDataIndex]);
+    for (int i = m_sleepCount; i < activeParticles(); i++) {
+        const int currentDataId = m_particleStorage.dataId(i);
+        m_renderer->draw(context , &m_particleStorage.data(currentDataId));
     }
 }
 
 void ParticleEmitterInstance2::killDeactiveParticles(float deltaTime)
 {
-    for (int i = m_activeParticles - 1; i >= 0; i--) {
-        const int currentDataIndex = m_particleIndices[i];
-        const ParticleData2& particle = m_particleData[currentDataIndex];
+    for (int i = activeParticles() - 1; i >= 0; i--) {
+        const int currentDataId = m_particleStorage.dataId(i);
+        ParticleData2& particle = m_particleStorage.data(currentDataId);
 
         // 今回の updateFrame で消滅する予定のものも含めて kill しておく。
         // こうしておくことで、空いた領域を 今回の updateFrame ですぐに使いまわすことができる。
@@ -216,15 +217,10 @@ void ParticleEmitterInstance2::killDeactiveParticles(float deltaTime)
 
 
             if (isLoop()) {
-                // m_activeParticles-1 は、有効な最後の Particle。
-                // これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
-                // 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
-                m_particleIndices[i] = m_particleIndices[m_activeParticles - 1];
-                m_particleIndices[m_activeParticles - 1] = currentDataIndex;
-                m_activeParticles--;
+                m_particleStorage.freeId(i);
             }
             else {
-                ParticleData2& particle = m_particleData[m_particleIndices[i]];
+                //ParticleData2& particle = m_particleStorage.data(currentDataId);
                 particle.time = particle.endLifeTime;
                 m_sleepCount++;
             }
@@ -245,7 +241,7 @@ void ParticleEmitterInstance2::updateSpawn(float deltaTime)
         {
             // burstCount 分、まとめて spawn
             for (int i = 0; i < m_emitterModel->m_burstCount; i++) {
-                if (m_activeParticles < maxParticles()) {
+                if (activeParticles() < maxParticles()) {
                     spawnParticle(-(m_time - m_lastSpawnTime));
                 }
             }
@@ -256,12 +252,12 @@ void ParticleEmitterInstance2::updateSpawn(float deltaTime)
 
 void ParticleEmitterInstance2::spawnParticle(float delayTime)
 {
-    LN_CHECK(m_activeParticles < maxParticles());
+    LN_CHECK(activeParticles() < maxParticles());
 
-    const int newParticleDataIndex = m_particleIndices[m_activeParticles];
-    m_activeParticles++;
+    const int newParticleDataId = m_particleStorage.newId();//m_particleIndices[m_activeParticles];
+    //m_activeParticles++;
 
-    ParticleData2* particle = &m_particleData[newParticleDataIndex];
+    ParticleData2* particle = &m_particleStorage.data(newParticleDataId);// &m_particleData[newParticleDataId];
 
     // Initialize particle
     {

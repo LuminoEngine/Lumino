@@ -7,6 +7,60 @@ namespace detail {
 class ParticleEmitterInstance2;
 class ParticleRenderer2;
 
+template<class T>
+class IndicedNodeDataStorage
+{
+public:
+	void resize(int size)
+	{
+		m_particleData.resize(size);
+		m_activeParticles = 0;
+
+		m_particleIndices.resize(size);
+		for (int i = 0; i < size; i++) {
+			m_particleIndices[i] = i;
+		}
+	}
+
+	// dataIndex() の 0 ~ dataId()-1 までが有効範囲
+	int activeIdCount() const { return m_activeParticles; }
+
+	uint16_t dataId(int index) const { return m_particleIndices[index]; }
+	T& data(uint16_t dataId) { return m_particleData[dataId]; }
+	const T& data(uint16_t dataId) const { return m_particleData[dataId]; }
+	int maxDataCount() const { return m_particleData.size(); }
+
+	uint16_t newId()
+	{
+		uint16_t newId = m_particleIndices[m_activeParticles];
+		m_activeParticles++;
+		return newId;
+	}
+
+	// index 番目の Id を free
+	void freeId(int index)
+	{
+		const int currentDataId = dataId(index);
+
+		// m_activeParticles-1 は、有効な最後の Particle。
+		// これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
+		// 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
+		m_particleIndices[index] = m_particleIndices[m_activeParticles - 1];
+		m_particleIndices[m_activeParticles - 1] = currentDataId;
+		m_activeParticles--;
+	}
+
+
+	// ソート用の公開
+	std::vector<uint16_t>& idList() { return m_particleIndices; }
+
+private:
+	std::vector<T> m_particleData;
+	std::vector<uint16_t> m_particleIndices;
+	uint16_t m_activeParticles;
+};
+
+
 
 struct ParticleData2
 {
@@ -101,12 +155,15 @@ public:
 	float makeRandom(detail::ParticleData2* data, const RadomRangeValue<float>& value) const;
 	Vector3 makeRandom(detail::ParticleData2* data, const RadomRangeValue<Vector3>& value) const;
 
-	const ParticleData2& particleData(int index) const { return m_particleData[index]; }
-	uint16_t activeParticles() const { return m_activeParticles; }
+	const ParticleData2& particleData(int index) const { return m_particleStorage.data(index); }
+	uint16_t activeParticles() const { return m_particleStorage.activeIdCount(); }
 	const Matrix& worldTransform() const { return m_particleInstance->worldTransform(); }
 
 	void updateFrame(float deltaTime);
 	void render(RenderingContext* context);
+
+
+	float m_trailSeconds = 1.0f;
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterInstance2();
@@ -114,7 +171,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	bool isLoop() const { return m_particleInstance->model()->m_loop; }
-	int maxParticles() const { return m_particleData.size(); }
+	int maxParticles() const { return m_particleStorage.maxDataCount(); }
+	//int activeParticles() const { return m_particleStorage.activeDataCount(); }
 	void killDeactiveParticles(float deltaTime);
 	void updateSpawn(float deltaTime);
 	void spawnParticle(float delayTime);
@@ -128,9 +186,7 @@ private:
 	// Sub-emitter がある場合、粒子の数だけ作られる
 	List<Ref<ParticleEmitterInstance2>> m_subEmitters;
 
-	std::vector<ParticleData2> m_particleData;
-	std::vector<uint16_t> m_particleIndices;
-	uint16_t m_activeParticles;
+	IndicedNodeDataStorage<ParticleData2> m_particleStorage;
 	uint16_t m_sleepCount;	// ループOFFの時に使用する、再生が終わったパーティクルの数
 
 	float m_time;

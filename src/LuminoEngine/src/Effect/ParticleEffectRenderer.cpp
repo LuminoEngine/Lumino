@@ -69,10 +69,10 @@ bool SpriteParticleRenderer::init(uint64_t hashKey, Material* material)
 
 
 
-    m_ribbonRenderer = makeRef<RibbonRenderer>();
-    if (!m_ribbonRenderer->init(1000)) {
-        return false;
-    }
+    //m_ribbonRenderer = makeRef<RibbonRenderer>();
+    //if (!m_ribbonRenderer->init(1000)) {
+    //    return false;
+    //}
 
     return true;
 }
@@ -141,7 +141,7 @@ void SpriteParticleRenderer::submit(RenderingContext* context)
     context->setMaterial(m_material);
     context->drawMeshInstanced(m_batch);
 
-    m_ribbonRenderer->submit(context);
+    //m_ribbonRenderer->submit(context);
 }
 
 Matrix SpriteParticleRenderer::makeRotationMatrix(const Vector3& viewPosition, const Vector3& nodePosition, const Vector3& nodeFront)
