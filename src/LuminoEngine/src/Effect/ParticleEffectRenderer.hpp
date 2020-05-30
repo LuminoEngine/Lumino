@@ -14,6 +14,8 @@ public:
 	ParticleGeometryType type() const { return m_type; }
 	uint64_t hashKey() const { return m_hashKey; }
 
+	//void applySort(RenderingContext* context, ParticleEmitterInstance2* emitterInstance);
+
 	virtual void draw(RenderingContext* context, const ParticleData2* particle) = 0;
 	virtual void resetBatch() = 0;
 	virtual void submit(RenderingContext* context) = 0;
@@ -32,8 +34,8 @@ class SpriteParticleRenderer
 	: public ParticleRenderer2
 {
 public:
-	void draw(RenderingContext* context, const ParticleData2* particle) override;
 	void resetBatch() override;
+	void draw(RenderingContext* context, const ParticleData2* particle) override;
 	void submit(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:

@@ -12,6 +12,21 @@ enum class ParticleGeometryType
 	Sprite,
 };
 
+/** パーティクルのソート方法 */
+enum class ParticleSortMode : uint8_t
+{
+	/** 
+	 * ソートを行いません。加算合成や減算合成で描画するパーティクルは、このモードにすると高速に処理できます。
+	 * 一方アルファ値を持つテクスチャは正しく描画できなくなります。(深度テストを無効化することである程度カバーできます)
+	 */
+	None,
+
+	/**
+	 * ビュー平面からの距離でソートを行います。
+	 */
+	DistanceToView,
+};
+
 class ParticleGeometry
 	: public ln::Object
 {
@@ -51,6 +66,8 @@ public:
 	const Ref<ParticleGeometry>& geometry() const { return m_geometry; }
 
 
+	void setSpriteModule(Material* material);
+
 
 	/** 同時に表示できるパーティクルの最大数を設定します。(default: 100) */
 	void setMaxParticles(int count) { m_maxParticles = count; }
@@ -87,6 +104,8 @@ public:
 	RadomRangeValue<float> m_forwardScale;	// default:1 進行方向に対するスケール値。通常、Z軸
 	RadomRangeValue<float> m_crossScale;	// default:1 進行方向以外に対するスケール値。XとY軸
 
+
+	ParticleSortMode m_sortMode = ParticleSortMode::None;
 
 
 LN_CONSTRUCT_ACCESS :

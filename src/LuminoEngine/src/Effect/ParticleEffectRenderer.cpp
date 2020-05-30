@@ -25,6 +25,11 @@ bool ParticleRenderer2::init(uint64_t hashKey)
     return true;
 }
 
+//void ParticleRenderer2::applySort(RenderingContext* context, ParticleEmitterInstance2* emitterInstance)
+//{
+//
+//}
+
 //==============================================================================
 // SpriteParticleRenderer
 

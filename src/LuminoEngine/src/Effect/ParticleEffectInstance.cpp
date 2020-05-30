@@ -1,6 +1,8 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Rendering/RenderView.hpp>
+#include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include "ParticleEffectRenderer.hpp"
 #include "ParticleEffectInstance.hpp"
 
@@ -166,6 +168,39 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
 
 void ParticleEmitterInstance2::render(RenderingContext* context)
 {
+    if (m_emitterModel->m_sortMode == ParticleSortMode::DistanceToView) {
+        const auto& viewPosition = context->viewPoint()->viewPosition;
+        const auto& viewDirection = context->viewPoint()->viewDirection;
+
+        for (int i = m_sleepCount; i < m_activeParticles; i++) {
+            ParticleData2& particle = m_particleData[m_particleIndices[i]];
+            particle.zDistance = Vector3::dot(particle.position - viewPosition, viewDirection);
+        }
+
+        // Z 値の大きい方から小さい方へソートする比較
+        class SpriteCmpDepthBackToFront
+        {
+        public:
+            std::vector<detail::ParticleData2>* particleData;
+
+            bool operator()(int left, int right)
+            {
+                const auto& lsp = particleData->at(left);
+                const auto& rsp = particleData->at(right);
+                return lsp.zDistance > rsp.zDistance;
+            }
+        };
+
+        // ソート実施。
+        // ここで非アクティブなものは std::remove のようにリストの後ろに移動し、Zソートも同時に行われる。
+        // 少なくとも、前回アクティブだった数+今回の生成で増えた数をソート範囲にする。
+        //int sortRange = instance->m_mayActiveCount;
+        SpriteCmpDepthBackToFront cmp;
+        cmp.particleData = &m_particleData;
+        std::sort(m_particleIndices.begin(), m_particleIndices.begin() + m_activeParticles, cmp);
+    }
+    
+
     for (int i = m_sleepCount; i < m_activeParticles; i++) {
         const int currentDataIndex = m_particleIndices[i];
         m_renderer->draw(context , &m_particleData[currentDataIndex]);

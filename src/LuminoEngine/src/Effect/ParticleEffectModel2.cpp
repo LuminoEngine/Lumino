@@ -91,10 +91,10 @@ bool SpriteParticleGeometry::init()
 {
     if (!Object::init()) return false;
 
-    m_material = makeObject<Material>();
-    m_material->setMainTexture(Texture2D::load(u"Sprite1"));
-    m_material->shadingModel = ShadingModel::Unlit;
-    m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+    //m_material = makeObject<Material>();
+    //m_material->setMainTexture(Texture2D::load(u"Sprite1"));
+    //m_material->shadingModel = ShadingModel::Unlit;
+    //m_material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
 
     return true;
 }
@@ -124,10 +124,17 @@ bool ParticleEmitterModel2::init()
 {
     if (!Object::init()) return false;
 
-    auto geom = makeObject<SpriteParticleGeometry>();
-    m_geometry = geom;
+    //auto geom = makeObject<SpriteParticleGeometry>();
+    //m_geometry = geom;
 
     return true;
+}
+
+void ParticleEmitterModel2::setSpriteModule(Material* material)
+{
+    auto geom = makeObject<SpriteParticleGeometry>();
+    geom->setMaterial(material);
+    m_geometry = geom;
 }
 
 //==============================================================================

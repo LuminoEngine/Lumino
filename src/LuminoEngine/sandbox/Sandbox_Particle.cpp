@@ -49,8 +49,6 @@ class App_Sandbox_Particle : public Application
         obj1->addComponent(cmp1);
 #endif
 #if 1	// 雨
-        //Camera::GetMain3DCamera()->SetFarClip(10000);
-        //auto m1 = SpriteParticleModel::create();
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
@@ -63,18 +61,22 @@ class App_Sandbox_Particle : public Application
         m1->m_forwardVelocity.minValue = -12;
         m1->m_forwardVelocity.maxValue = -12;
 
-        m1->m_size.set(0.05f);
-        m1->m_forwardScale.set(10);
+        //m1->m_size.set(0.05f);
+        m1->m_size.set(0.5f);
+        //m1->m_forwardScale.set(10);
 
         //m1->m_particleDirection = ParticleDirectionType::MovementDirection;
+        m1->m_sortMode = ParticleSortMode::DistanceToView;
 
-        //auto material = Material::create();
-        //material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1.png"));
-        //material->shadingModel = ShadingModel::Unlit;
-        //m1->setMaterial(material);
+        auto material = Material::create();
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->shadingModel = ShadingModel::Unlit;
+        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+        m1->setSpriteModule(material);
 
         auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
         //particle1->setBlendMode(BlendMode::Add);
+        particle1->setBlendMode(BlendMode::Alpha);
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(particle1);
         //obj1->setPosition(0, 5, 0);
