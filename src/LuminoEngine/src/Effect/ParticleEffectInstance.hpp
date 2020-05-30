@@ -16,12 +16,12 @@ struct ParticleData2
 	//Vector3 position;
 
 
+	//Vector3 initialLinearVelocity;
 
-
-	//// Physical
-	//Vector3		startPosition;
-	//Vector3		positionVelocity;
-	//Vector3		positionAccel;
+	// Newton dynamics
+	///Vector3 startPosition;
+	Vector3 linearVelocity;
+	Vector3 linearAccel;
 
 	//// Radial
 	//Vector3		m_axis;
@@ -65,8 +65,10 @@ class ParticleInstance2
 {
 public:
 	const Ref<ParticleModel2>& model() const { return m_model; }
+	const Matrix& worldTransform() const { return m_worldTransform; }
 	Random& rand() { return m_rand; }
 	const List<Ref<ParticleEmitterInstance2>> emitters() const { return m_emitterInstances; }
+
 
 	void setWorldTransform(const Matrix& value);
 
@@ -98,6 +100,7 @@ public:
 
 	const ParticleData2& particleData(int index) const { return m_particleData[index]; }
 	uint16_t activeParticles() const { return m_activeParticles; }
+	const Matrix& worldTransform() const { return m_particleInstance->worldTransform(); }
 
 	void updateFrame(float deltaTime);
 	void render();

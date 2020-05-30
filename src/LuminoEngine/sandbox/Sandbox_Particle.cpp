@@ -58,10 +58,10 @@ class App_Sandbox_Particle : public Application
         m1->setLifeTime(1.0);
         particleModel->m_loop = true;
 
-        m1->setSize(0.05, 0.05);
-
         m1->m_shapeType = ParticleEmitterShapeType::Box;
         m1->m_shapeParam.set(10, 0, 10);
+
+        m1->setSize(0.05, 0.05);
 
         m1->m_particleDirection = ParticleDirectionType::MovementDirection;
         m1->m_forwardVelocity.minValue = -12;

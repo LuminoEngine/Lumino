@@ -229,6 +229,64 @@ void ParticleEmitterInstance2::spawnParticle(float delayTime)
 
         particle->endLifeTime = makeRandom(particle, m_emitterModel->m_lifeTime.minValue, m_emitterModel->m_lifeTime.maxValue, m_emitterModel->m_lifeTime.randomSource);
     }
+
+    // Emitter shape
+    {
+        Vector3 localPosition = Vector3::Zero;
+        Vector3 localFront = Vector3::UnitZ;
+        const auto& shapeParam = m_emitterModel->m_shapeParam;
+
+        switch (m_emitterModel->m_shapeType)
+        {
+            case ParticleEmitterShapeType::Sphere:
+            {
+                localFront.x = makeRandom(particle, -1.0, 1.0, ParticleRandomSource::Self);
+                localFront.y = makeRandom(particle, -1.0, 1.0, ParticleRandomSource::Self);
+                localFront.z = makeRandom(particle, -1.0, 1.0, ParticleRandomSource::Self);
+                localFront = Vector3::safeNormalize(localFront, Vector3::UnitZ);
+                break;
+            }
+            case ParticleEmitterShapeType::Cone:
+            {
+                // まず、XZ 平面で Y+ を前方として角度制限付きの位置を求める。
+                float r = makeRandom(particle, 0.0f, shapeParam.x, ParticleRandomSource::Self);
+                Vector3 vec;
+                vec.y = sinf(r);	// TODO: Asm::sincos
+                vec.z = cosf(r);
+
+                // 次に、Y 軸周りの回転を行う。回転角度は 360度 ランダム。
+                r = makeRandom(particle, 0.0f, Math::PI * 2, ParticleRandomSource::Self);
+                localFront.x = sinf(r) * vec.y;
+                localFront.y = vec.z;
+                localFront.z = cosf(r) * vec.y;
+                break;
+            }
+            case ParticleEmitterShapeType::Box:
+            {
+                localPosition.x = makeRandom(particle, -shapeParam.x * 0.5f, shapeParam.x * 0.5f, ParticleRandomSource::Self);
+                localPosition.y = makeRandom(particle, -shapeParam.y * 0.5f, shapeParam.y * 0.5f, ParticleRandomSource::Self);
+                localPosition.z = makeRandom(particle, -shapeParam.z * 0.5f, shapeParam.z * 0.5f, ParticleRandomSource::Self);
+                localFront = Vector3::UnitY;
+                break;
+            }
+            default:
+                LN_UNREACHABLE();
+                break;
+        }
+
+        const Matrix& emitterTransform = worldTransform();
+        Vector3 worldFront = Vector3::transformCoord(localFront, emitterTransform);
+        //Vector3 worldPosition = Vector3::transformCoord(localFront, emitterTransform);
+
+        particle->position = localPosition + localFront * makeRandom(particle, m_emitterModel->m_forwardPosition);
+        particle->linearVelocity = worldFront * makeRandom(particle, m_emitterModel->m_forwardVelocity);
+        particle->linearAccel = worldFront * makeRandom(particle, m_emitterModel->m_forwardAccel);
+
+        particle->position.transformCoord(emitterTransform);
+        //TODO: 回転だけのtransformCoord
+        //data->positionVelocity.transformCoord(emitterTransform);
+        //data->positionAccel.transformCoord(emitterTransform);
+    }
 }
 
 void ParticleEmitterInstance2::killParticle(int index)
@@ -251,7 +309,8 @@ void ParticleEmitterInstance2::killParticle(int index)
 void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float deltaTime)
 {
     particle->time += deltaTime;
-    particle->position.x += 0.01;
+    //particle->position.x += 0.01;
+
 }
 
 } // namespace detail
