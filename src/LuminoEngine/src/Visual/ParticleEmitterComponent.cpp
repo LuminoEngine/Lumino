@@ -4,6 +4,7 @@
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
+#include "../Effect/ParticleEffectInstance.hpp"
 
 namespace ln {
 
@@ -53,6 +54,48 @@ void ParticleEmitterComponent::onRender(RenderingContext* renderer)
 		dir,
 		Matrix::makeInverse(renderer->viewPoint()->viewMatrix),
 		m_model->getMaterial());
+}
+
+
+//==============================================================================
+// ParticleEmitterComponent2
+//==============================================================================
+
+ParticleEmitterComponent2::ParticleEmitterComponent2()
+	: m_model(nullptr)
+{
+}
+
+void ParticleEmitterComponent2::init(ParticleModel2* model)
+{
+	if (LN_REQUIRE(model)) return;
+
+	VisualComponent::init();
+	//m_model = model;
+	//m_model->commit();
+	m_instance = makeObject<detail::ParticleInstance2>(model);
+}
+
+void ParticleEmitterComponent2::onUpdate(float deltaTime)
+{
+	m_instance->setWorldTransform(worldObject()->worldMatrix());
+	m_instance->updateFrame(deltaTime);
+	//m_instance->m_worldTransform = worldObject()->worldMatrix();
+	//m_model->updateInstance(m_instance, deltaTime, m_instance->m_worldTransform);
+}
+
+void ParticleEmitterComponent2::onRender(RenderingContext* context)
+{
+	m_instance->render(context);
+	//Vector3 dir = renderer->viewPoint()->viewDirection;
+	//m_model->render(
+	//	renderer,
+	//	m_instance,
+	//	//worldObject()->worldMatrix(),
+	//	renderer->viewPoint()->viewPosition,
+	//	dir,
+	//	Matrix::makeInverse(renderer->viewPoint()->viewMatrix),
+	//	m_model->getMaterial());
 }
 
 } // namespace ln

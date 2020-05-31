@@ -142,6 +142,8 @@ struct RadomRangeValue
 	T						minValue{};
 	T						maxValue{};
 	ParticleRandomSource	randomSource = ParticleRandomSource::Self;
+
+	void set(T v) { minValue = maxValue = v; }
 };
 
 /**

@@ -303,6 +303,9 @@ set(LN_SOURCES_SharedLib
 )
 
 
+if (LN_USE_FBX_IMPORTER)
+    list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_FBX_IMPORTER=1)
+endif()
 
 if (LN_EMSCRIPTEN)
     list(APPEND LN_PLATFORM_DEFINITIONS LN_USE_OPENAL=1)
@@ -319,6 +322,10 @@ elseif (WIN32)
     #list(APPEND LN_PLATFORM_LIBS user32 gdi32 winmm imm32 ole32 oleaut32 version uuid)
     list(APPEND LN_PLATFORM_LIBS winmm imm32 version)
     list(APPEND LN_PLATFORM_LIBS OpenAL)
+    if (LN_USE_FBX_IMPORTER)
+        list(APPEND LN_PLATFORM_LIBS LN::FBX)
+    endif()
+    
     
     #if (LN_USE_VULKAN)
     #    list(APPEND LN_PLATFORM_LIBS VulkanImported)

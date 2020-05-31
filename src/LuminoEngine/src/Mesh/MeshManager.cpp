@@ -9,6 +9,7 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
+#include "FbxImporter.hpp"
 #include "ObjMeshImporter.hpp"
 #include "PmxImporter.hpp"
 #include "MeshManager.hpp"
@@ -242,21 +243,31 @@ Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, fl
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
 {
-	static const Char* candidateExts[] = { u".gltf", u".glb" };
+	static const Char* candidateExts[] = { u".gltf", u".glb", u".fbx" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
 
 		Ref<SkinnedMeshModel> mesh;
+		auto diag = makeObject<DiagnosticsManager>();
 
+		if (path->path().hasExtension(u".fbx")) {
+#ifdef LN_USE_FBX_IMPORTER
+			FbxImporter importer;
+			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);
+#else
+			LN_ERROR(u"FBX not supported.");
+			return nullptr;
+#endif
+		}
+		else
 		{
-			auto diag = makeObject<DiagnosticsManager>();
 
 			GLTFImporter importer;
 			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);
 
-			diag->dumpToLog();
 		}
 
+		diag->dumpToLog();
 		return mesh;
 	}
 	else {

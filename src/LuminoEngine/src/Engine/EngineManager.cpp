@@ -510,11 +510,13 @@ void EngineManager::initializeEffectManager()
     if (!m_effectManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
         initializeGraphicsManager();
+		initializeRenderingManager();
         initializeAssetManager();
 
         EffectManager::Settings settings;
         settings.graphicsManager = m_graphicsManager;
         settings.assetManager = m_assetManager;
+		settings.renderingManager = m_renderingManager;
 
         m_effectManager = ln::makeRef<EffectManager>();
         m_effectManager->init(settings);

@@ -5,6 +5,9 @@
 namespace ln {
 class Material;
 class EffectResource;
+
+class SpriteParticleGeometry;
+
 namespace detail {
 class EffectManager;
 } // namespace detail
