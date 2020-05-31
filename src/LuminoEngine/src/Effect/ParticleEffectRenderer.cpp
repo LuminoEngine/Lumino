@@ -306,17 +306,17 @@ void RibbonRenderer::addPoint(RenderingContext* context, const Vector3& pos, flo
 
 void RibbonRenderer::submit(RenderingContext* context)
 {
-    //static  bool init = false;
-    //if (!init) {
-        resetBatch();
-        beginRibbon();
-        addPoint(context, Vector3(1, 0, 0), 1);
-        addPoint(context, Vector3(2, 0, 0), 1);
-        addPoint(context, Vector3(3, 0, 1), 1);
-        endRibbon();
+    ////static  bool init = false;
+    ////if (!init) {
+    //    resetBatch();
+    //    beginRibbon();
+    //    addPoint(context, Vector3(1, 0, 0), 1);
+    //    addPoint(context, Vector3(2, 0, 0), 1);
+    //    addPoint(context, Vector3(3, 0, 1), 1);
+    //    endRibbon();
 
-    //    init = true;
-    //}
+    ////    init = true;
+    ////}
 
 
     m_mesh->setSection(0, 0, m_indexCount / 3, 0, PrimitiveTopology::TriangleList);

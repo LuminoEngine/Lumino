@@ -50,7 +50,7 @@ private:
 	Ref<InstancedMeshList> m_batch;
 	Ref<Material> m_material;
 
-	Ref<RibbonRenderer> m_ribbonRenderer;	// TODO: tmp
+	//Ref<RibbonRenderer> m_ribbonRenderer;	// TODO: tmp
 };
 
 

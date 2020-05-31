@@ -111,6 +111,13 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
     {
         int frameRate = 60;
         int estimationNodeCount = (m_trailSeconds * frameRate) * m_emitterModel->m_maxParticles;
+        resizeTrailData(estimationNodeCount);
+        m_trailRateTime = m_trailSeconds /  frameRate;
+
+        m_ribbonRenderer = makeRef<RibbonRenderer>();
+        if (!m_ribbonRenderer->init(estimationNodeCount)) {
+            return false;
+        }
     }
 
     return true;
@@ -200,6 +207,37 @@ void ParticleEmitterInstance2::render(RenderingContext* context)
     for (int i = m_sleepCount; i < activeParticles(); i++) {
         const int currentDataId = m_particleStorage.dataId(i);
         m_renderer->draw(context , &m_particleStorage.data(currentDataId));
+    }
+
+
+
+
+    // Trail-module
+    if (m_ribbonRenderer) {
+        m_ribbonRenderer->resetBatch();
+
+        for (int i = m_sleepCount; i < activeParticles(); i++) {
+            const int currentDataId = m_particleStorage.dataId(i);
+            const auto& particle = m_particleStorage.data(currentDataId);
+
+
+            m_ribbonRenderer->beginRibbon();
+
+            int nodeId = particle.headTrailNodeId;
+            while (nodeId >= 0) {
+                const auto* node = trailData(nodeId);
+
+                m_ribbonRenderer->addPoint(context, node->pos, 0.2);
+
+                nodeId = node->nextId;
+            }
+
+            m_ribbonRenderer->endRibbon();
+        }
+
+
+
+        m_ribbonRenderer->submit(context);
     }
 }
 
@@ -370,6 +408,60 @@ void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float d
     particle->linearVelocity += particle->linearAccel * deltaTime;
     particle->position += particle->linearVelocity * deltaTime;
 
+
+
+    // Trail-module
+    if (isTrailEnabled())
+    {
+
+        //while (particle->lastTrailTime <= particle->time)
+        //{
+            // 新しく Node を作って、List の先頭に差し込む
+            {
+                int prevHeadId = particle->headTrailNodeId;
+                ParticleTrailNode* prevHead = nullptr;
+                if (prevHeadId >= 0) {
+                    prevHead = trailData(prevHeadId);
+                }
+
+                int newId = newTrailDataId();
+                ParticleTrailNode* node = trailData(newId);
+
+                particle->headTrailNodeId = newId;
+                if (prevHeadId >= 0) {
+                    node->nextId = prevHeadId;
+                }
+
+
+                node->pos = particle->position;
+            }
+
+
+            //particle->lastTrailTime += m_trailRateTime;
+        //}
+    }
+
+}
+
+void ParticleEmitterInstance2::resizeTrailData(int size)
+{
+    m_trailNodeData.resize(size);
+    for (int i = 0; i < size; i++) {
+        m_trailDataIdStack.push(i);
+    }
+}
+
+int ParticleEmitterInstance2::newTrailDataId()
+{
+    if (m_trailDataIdStack.empty()) return -1;
+    int id = m_trailDataIdStack.top();
+    m_trailDataIdStack.pop();
+    return id;
+}
+
+void ParticleEmitterInstance2::freeTrailDataId(int trailDataId)
+{
+    m_trailDataIdStack.push(trailDataId);
 }
 
 } // namespace detail

@@ -6,6 +6,7 @@ namespace ln {
 namespace detail {
 class ParticleEmitterInstance2;
 class ParticleRenderer2;
+class RibbonRenderer;
 
 template<class T>
 class IndicedNodeDataStorage
@@ -16,28 +17,29 @@ public:
 		m_particleData.resize(size);
 		m_activeParticles = 0;
 
-		m_particleIndices.resize(size);
+		m_particleIds.resize(size);
 		for (int i = 0; i < size; i++) {
-			m_particleIndices[i] = i;
+			m_particleIds[i] = i;
 		}
 	}
 
 	// dataIndex() の 0 ~ dataId()-1 までが有効範囲
 	int activeIdCount() const { return m_activeParticles; }
 
-	uint16_t dataId(int index) const { return m_particleIndices[index]; }
+	uint16_t dataId(int index) const { return m_particleIds[index]; }
 	T& data(uint16_t dataId) { return m_particleData[dataId]; }
 	const T& data(uint16_t dataId) const { return m_particleData[dataId]; }
 	int maxDataCount() const { return m_particleData.size(); }
 
 	uint16_t newId()
 	{
-		uint16_t newId = m_particleIndices[m_activeParticles];
+		uint16_t newId = m_particleIds[m_activeParticles];
 		m_activeParticles++;
 		return newId;
 	}
 
-	// index 番目の Id を free
+	// index 番目の Id を free.
+	// Id 直接指定の free は非効率なので禁止。基本的に for で回して、不要なものを free する。
 	void freeId(int index)
 	{
 		const int currentDataId = dataId(index);
@@ -45,22 +47,28 @@ public:
 		// m_activeParticles-1 は、有効な最後の Particle。
 		// これと、kill したい currentIndex を入れ替えることで、0~m_activeParticles までは
 		// 有効なパーティクルだけ残しつつ、効率的にインデックスを返却できる。
-		m_particleIndices[index] = m_particleIndices[m_activeParticles - 1];
-		m_particleIndices[m_activeParticles - 1] = currentDataId;
+		m_particleIds[index] = m_particleIds[m_activeParticles - 1];
+		m_particleIds[m_activeParticles - 1] = currentDataId;
 		m_activeParticles--;
 	}
 
 
 	// ソート用の公開
-	std::vector<uint16_t>& idList() { return m_particleIndices; }
+	std::vector<uint16_t>& idList() { return m_particleIds; }
 
 private:
 	std::vector<T> m_particleData;
-	std::vector<uint16_t> m_particleIndices;
+	std::vector<uint16_t> m_particleIds;
 	uint16_t m_activeParticles;
 };
 
+struct ParticleTrailNode
+{
+	int nextId = -1;	// linked list
 
+	Vector3 pos;
+	bool alive;
+};
 
 struct ParticleData2
 {
@@ -108,6 +116,10 @@ struct ParticleData2
 	//float		ramdomBaseValue = 0.0f;
 	//Vector3		currentDirection;
 
+
+	// Trail-module
+	int headTrailNodeId = -1;	// linked list
+	float lastTrailTime = 0;
 
 	//bool		m_isTrailPoint = false;
 
@@ -163,7 +175,8 @@ public:
 	void render(RenderingContext* context);
 
 
-	float m_trailSeconds = 1.0f;
+	float m_trailSeconds = 1.0f;	// input param
+	float m_trailRateTime = 0;	// 1s間に生成できる Node 数
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterInstance2();
@@ -186,6 +199,7 @@ private:
 	// Sub-emitter がある場合、粒子の数だけ作られる
 	List<Ref<ParticleEmitterInstance2>> m_subEmitters;
 
+
 	IndicedNodeDataStorage<ParticleData2> m_particleStorage;
 	uint16_t m_sleepCount;	// ループOFFの時に使用する、再生が終わったパーティクルの数
 
@@ -193,6 +207,17 @@ private:
 
 	// 最後に particle を spawn したときの時間。1フレームの生成数をコントロールするために使う。
 	float m_lastSpawnTime;
+
+
+
+	Ref<RibbonRenderer> m_ribbonRenderer;
+	std::vector<ParticleTrailNode> m_trailNodeData;
+	std::stack<int> m_trailDataIdStack;
+	bool isTrailEnabled() const { return m_trailRateTime > 0.0f; }
+	void resizeTrailData(int size);
+	int newTrailDataId();
+	void freeTrailDataId(int trailDataId);
+	ParticleTrailNode* trailData(int trailDataId) { return &m_trailNodeData[trailDataId]; }
 };
 
 } // namespace detail

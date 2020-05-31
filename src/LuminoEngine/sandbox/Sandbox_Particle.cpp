@@ -40,6 +40,38 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
+
+#if 1
+        auto material = Material::create();
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->shadingModel = ShadingModel::Unlit;
+        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+
+
+        auto particleModel = makeObject<ParticleModel2>();
+        auto m1 = particleModel->emitters()[0];
+        m1->setSpriteModule(material);
+        m1->setLifeTime(10);
+        m1->setMaxParticles(10);
+        m1->setSpawnRate(1);
+        //m1->m_forwardVelocity.set(0);
+        //m1->m_velocity.set(Vector3(0, 0, 1));
+        m1->m_acceleration.set(Vector3(0, -0.5, 0));
+
+        //m1->setMaterial(material);
+        //m1->setSpawnRate(1);
+        //m1->setLifeTime(2.0f);
+        //m1->m_maxParticles = 1;
+        //m1->m_shapeType = ParticleEmitterShapeType::Cone;
+        //m1->m_shapeParam.x = Math::PI * 0.1;
+        //m1->m_shapeParam.y = 2;
+        auto cmp1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        cmp1->setCullMode(CullMode::None);
+        cmp1->setBlendMode(BlendMode::Alpha);
+
+        auto obj1 = makeObject<WorldObject>();
+        obj1->addComponent(cmp1);
+#endif
 #if 0
         auto material = Material::create();
         material->setMainTexture(Texture2D::load(u"Sprite1"));
@@ -59,7 +91,7 @@ class App_Sandbox_Particle : public Application
         auto obj1 = makeObject<WorldObject>();
         obj1->addComponent(cmp1);
 #endif
-#if 1	// 雨
+#if 0	// 雨
         auto particleModel = makeObject<ParticleModel2>();
         auto m1 = particleModel->emitters()[0];
         m1->m_maxParticles = 10000;
