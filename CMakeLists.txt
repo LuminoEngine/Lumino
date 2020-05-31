@@ -56,7 +56,10 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 # Vulkan
 option(LN_USE_VULKAN "Vulkan" ON)
 
-# build unit test projects
+# FBX
+option(LN_USE_FBX_IMPORTER "FBX" OFF)
+
+# Effekseer
 option(LN_USE_Effekseer "Effekseer" OFF)
 
 #------------------------------------------------------------------------------

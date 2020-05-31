@@ -432,6 +432,23 @@ set_target_properties(yamlcpp PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${yamlcpp
 list(APPEND LN_EXTERNAL_LIBS yamlcpp)
 
 #--------------------------------------
+# FBX SDK
+
+if (LN_USE_FBX_IMPORTER)
+    if (WIN32)
+        #set(FBX_ROOT $ENV{FBXSDK_ROOT})
+        set(FBX_ROOT "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1")
+        
+        message("FBX_ROOT: ${FBX_ROOT}")
+        add_library(LN::FBX STATIC IMPORTED)
+        set_target_properties(LN::FBX PROPERTIES IMPORTED_LOCATION_RELEASE "${FBX_ROOT}/lib/vs2017/x64/release/libfbxsdk-mt.lib")
+        set_target_properties(LN::FBX PROPERTIES IMPORTED_LOCATION_DEBUG "${FBX_ROOT}/lib/vs2017/x64/debug/libfbxsdk-mt.lib")
+        set_target_properties(LN::FBX PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FBX_ROOT}/include")
+        list(APPEND LN_EXTERNAL_LIBS LN::FBX)
+    endif()
+endif()
+
+#--------------------------------------
 # Effekseer
 
 set(TEST_Effekseer_IncludeDirs

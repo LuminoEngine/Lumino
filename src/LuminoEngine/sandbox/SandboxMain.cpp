@@ -31,6 +31,11 @@
 #include <LuminoEngine/Visual/EmojiComponent.hpp>
 using namespace ln;
 
+//#include <fbxsdk.h>
+//
+//#pragma comment(lib, "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1/lib/vs2017/x64/debug/libfbxsdk-mt.lib")
+//#pragma comment(lib, "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1/lib/vs2017/x64/debug/libxml2-mt.lib")
+
 class TestProcessorNode : public AudioProcessorNode
 {
 public:
@@ -270,6 +275,135 @@ void Sandbox_Particle();
 void Sandbox_Voxel();
 void UISandboxMain();
 
+#if 0
+void DisplayMesh(FbxNode* node, const std::string& indent)
+{
+    FbxMesh* mesh = (FbxMesh*)node->GetNodeAttribute();
+
+    std::string name = mesh->GetName();
+
+
+    if (!name.size())
+    {
+        // FIXME:FbxMeshに名前がついていない場合は親のノードの名前を拝借
+        //       １つのノードが複数のメッシュを含む場合に適していない
+        name = mesh->GetNode()->GetName();
+    }
+    std::cout << indent << "Mesh Name: " << name << std::endl;
+
+
+    //DisplayIndex(mesh);
+    //DisplayPosition(mesh);
+
+}
+void DisplayContent(FbxNode* node, const std::string& indent)
+{
+    FbxNodeAttribute::EType lAttributeType;
+
+    if (node->GetNodeAttribute() == NULL)
+    {
+        std::cout << indent << "NULL Node Attribute\n\n";
+    }
+    else
+    {
+        lAttributeType = (node->GetNodeAttribute()->GetAttributeType());
+
+        switch (lAttributeType)
+        {
+        case FbxNodeAttribute::eUnknown:
+            std::cout << indent << "eUnknown" << std::endl;
+            break;
+        case FbxNodeAttribute::eNull:
+            std::cout << indent << "eNull" << std::endl;
+            break;
+        case FbxNodeAttribute::eMarker:
+            std::cout << indent << "eMarker" << std::endl;
+            break;
+        case FbxNodeAttribute::eSkeleton:
+            std::cout << indent << "eSkeleton" << std::endl;
+            break;
+        case FbxNodeAttribute::eMesh:
+            std::cout << indent << "eMesh" << std::endl;
+            DisplayMesh(node, indent);
+            break;
+        case FbxNodeAttribute::eNurbs:
+            std::cout << indent << "eNurbs" << std::endl;
+            break;
+        case FbxNodeAttribute::ePatch:
+            std::cout << indent << "ePatch" << std::endl;
+            break;
+        case FbxNodeAttribute::eCamera:
+            std::cout << indent << "eCamera" << std::endl;
+            break;
+        case FbxNodeAttribute::eCameraStereo:
+            std::cout << indent << "eCameraStereo" << std::endl;
+            break;
+        case FbxNodeAttribute::eCameraSwitcher:
+            std::cout << indent << "eCameraSwitcher" << std::endl;
+            break;
+        case FbxNodeAttribute::eLight:
+            std::cout << indent << "eLight" << std::endl;
+            break;
+        case FbxNodeAttribute::eOpticalReference:
+            std::cout << indent << "eOpticalReference" << std::endl;
+            break;
+        case FbxNodeAttribute::eOpticalMarker:
+            std::cout << indent << "eOpticalMarker" << std::endl;
+            break;
+        case FbxNodeAttribute::eNurbsCurve:
+            std::cout << indent << "eNurbsCurve" << std::endl;
+            break;
+        case FbxNodeAttribute::eTrimNurbsSurface:
+            std::cout << indent << "eTrimNurbsSurface" << std::endl;
+            break;
+        case FbxNodeAttribute::eBoundary:
+            std::cout << indent << "eBoundary" << std::endl;
+            break;
+        case FbxNodeAttribute::eNurbsSurface:
+            std::cout << indent << "eNurbsSurface" << std::endl;
+            break;
+        case FbxNodeAttribute::eShape:
+            std::cout << indent << "eShape" << std::endl;
+            break;
+        case FbxNodeAttribute::eLODGroup:
+            std::cout << indent << "eLODGroup" << std::endl;
+            break;
+        case FbxNodeAttribute::eSubDiv:
+            std::cout << indent << "eSubDiv" << std::endl;
+            break;
+        case FbxNodeAttribute::eCachedEffect:
+            std::cout << indent << "eCachedEffect" << std::endl;
+            break;
+        case FbxNodeAttribute::eLine:
+            std::cout << indent << "eLine" << std::endl;
+            break;
+        default:
+            std::cout << indent << "Unknown FbxNodeAttribute" << std::endl;
+            break;
+        }
+    }
+
+
+    for (int i = 0; i < node->GetChildCount(); i++)
+    {
+        DisplayContent(node->GetChild(i), indent + "  ");
+    }
+}
+
+void DisplayContent(FbxScene* scene)
+{
+    FbxNode* node = scene->GetRootNode();
+
+    if (node)
+    {
+        for (int i = 0; i < node->GetChildCount(); i++)
+        {
+            DisplayContent(node->GetChild(i), "");
+        }
+    }
+}
+#endif
+
 int main(int argc, char** argv)
 {
 	setlocale(LC_ALL, "");
@@ -285,18 +419,42 @@ int main(int argc, char** argv)
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 
+#if 0
+    FbxManager* manager = FbxManager::Create();
+    FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
+    manager->SetIOSettings(ios);
+    FbxScene* scene = FbxScene::Create(manager, "");
+
+    {
+        FbxImporter* importer = FbxImporter::Create(manager, "");
+        importer->Initialize("D:/Documents/UnityProjects/New Unity Project/Assets/UnityChan/SD_Kohaku_chanz/Models/Misaki_sum_humanoid.fbx", -1, manager->GetIOSettings());
+        importer->Import(scene);
+        importer->Destroy();
+
+        // 三角形化
+        FbxGeometryConverter geometryConverter(manager);
+        geometryConverter.Triangulate(scene, true);
+
+        DisplayContent(scene);
+    }
+
+
+    manager->Destroy();
+    return 0;
+#endif
+
 
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-		//Example_MeshViewer();
+		Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
 		//Sandbox_MeshTilemap();
-        Sandbox_Particle();
+        //Sandbox_Particle();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();
