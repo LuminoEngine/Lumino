@@ -40,6 +40,7 @@ public:
 
 	// index 番目の Id を free.
 	// Id 直接指定の free は非効率なので禁止。基本的に for で回して、不要なものを free する。
+	// 必ず逆順ループで回すこと。
 	void freeId(int index)
 	{
 		const int currentDataId = dataId(index);
@@ -62,13 +63,6 @@ private:
 	uint16_t m_activeParticles;
 };
 
-struct ParticleTrailNode
-{
-	int nextId = -1;	// linked list
-
-	Vector3 pos;
-	bool alive;
-};
 
 struct ParticleData2
 {
@@ -127,6 +121,21 @@ struct ParticleData2
 	//bool IsSleep() const { return endTime <= lastTime; }
 
 	// Active かつ sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
+};
+
+
+struct ParticleTrailNode
+{
+	ParticleData2* headParticle = nullptr;	// this が head である場合、this を参照している particleId
+	int prevId = -1;
+	int nextId = -1;	// linked list
+
+	int aliveQueuePrevId = -1;
+	int aliveQueueNextId = -1;
+
+	Vector3 pos;
+	float time;
+	bool alive;
 };
 
 class ParticleInstance2
@@ -211,13 +220,21 @@ private:
 
 
 	Ref<RibbonRenderer> m_ribbonRenderer;
-	std::vector<ParticleTrailNode> m_trailNodeData;
-	std::stack<int> m_trailDataIdStack;
+	//std::vector<ParticleTrailNode> m_trailNodeData;
+	//std::stack<int> m_trailDataIdStack;
+	IndicedNodeDataStorage<ParticleTrailNode> m_trailNodeStorage;
+	using TrailDataId = int64_t;
 	bool isTrailEnabled() const { return m_trailRateTime > 0.0f; }
 	void resizeTrailData(int size);
-	int newTrailDataId();
-	void freeTrailDataId(int trailDataId);
-	ParticleTrailNode* trailData(int trailDataId) { return &m_trailNodeData[trailDataId]; }
+	TrailDataId newTrailDataId();
+	//void freeTrailDataId(TrailDataId trailDataId);
+	ParticleTrailNode* trailData(TrailDataId trailDataId) { return &m_trailNodeStorage.data(trailDataId); }
+	int m_trailNodeAliveQueueHeadId = -1;
+	int m_trailNodeAliveQueueTailId = -1;
+	void enqueueAliveNode(TrailDataId id);
+	TrailDataId dequeueAliveNode();
+	void removeAliveNode(TrailDataId id);
+	void removeNode(TrailDataId id);
 };
 
 } // namespace detail

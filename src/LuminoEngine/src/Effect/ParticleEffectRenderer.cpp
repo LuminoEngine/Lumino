@@ -172,12 +172,13 @@ RibbonRenderer::RibbonRenderer()
 {
 }
 
-bool RibbonRenderer::init(int maxPoints)
+bool RibbonRenderer::init(int maxNodes)
 {
-    int squareCount = maxPoints;
+    int squareCount = maxNodes;
     int vertexCount = squareCount * 4;
     if (LN_REQUIRE(vertexCount < UINT16_MAX)) return false;
 
+    m_maxNodes = maxNodes;
     m_mesh = makeObject<Mesh>(vertexCount, squareCount * 6, IndexBufferFormat::UInt16, GraphicsResourceUsage::Dynamic);
     auto vertices = reinterpret_cast<Vertex*>(m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
     auto indices = reinterpret_cast<uint16_t*>(m_mesh->acquireMappedIndexBuffer());
@@ -220,6 +221,7 @@ void RibbonRenderer::setMaterial(Material* material)
 
 void RibbonRenderer::resetBatch()
 {
+    m_activeNodes = 0;
     m_vertexCount = 0;
     m_indexCount = 0;
     m_vertices = reinterpret_cast<Vertex*>(m_mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
@@ -233,10 +235,13 @@ void RibbonRenderer::beginRibbon()
 
 void RibbonRenderer::endRibbon()
 {
+    //printf("m_activeNodes: %d\n", m_activeNodes);
 }
 
 void RibbonRenderer::addPoint(RenderingContext* context, const Vector3& pos, float width)
 {
+    if (LN_REQUIRE(m_activeNodes < m_maxNodes)) return;
+
     if (m_currentRibbonNodeIndex == 0) {
 
     }
@@ -302,6 +307,7 @@ void RibbonRenderer::addPoint(RenderingContext* context, const Vector3& pos, flo
 
     m_lastPosition = pos;
     m_currentRibbonNodeIndex++;
+    m_activeNodes++;
 }
 
 void RibbonRenderer::submit(RenderingContext* context)

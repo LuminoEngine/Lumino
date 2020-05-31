@@ -59,7 +59,7 @@ class RibbonRenderer
 {
 public:
 	RibbonRenderer();
-	bool init(int maxPoints);
+	bool init(int maxNodes);
 
 	void setMaterial(Material* material);
 	void resetBatch();
@@ -71,6 +71,8 @@ public:
 private:
 	Ref<Material> m_material;
 	Ref<Mesh> m_mesh;
+	int m_maxNodes;
+	int m_activeNodes;
 
 	int m_currentRibbonNodeIndex = 0;
 	Vector3 m_lastPosition;
