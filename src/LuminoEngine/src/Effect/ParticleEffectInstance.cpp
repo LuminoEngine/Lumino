@@ -12,7 +12,6 @@ namespace detail {
 //==============================================================================
 // ParticleInstance2
 
-
 ParticleInstance2::ParticleInstance2()
 {
 }
@@ -107,18 +106,8 @@ bool ParticleEmitterInstance2::init(ParticleInstance2* particleInstance, Particl
 
     m_particleStorage.resize(m_emitterModel->m_maxParticles);
 
-    // Trail
-    {
-        int frameRate = 60;
-        int estimationNodeCount = (m_trailSeconds * frameRate) * m_emitterModel->m_maxParticles;
-        resizeTrailData(estimationNodeCount);
-        m_trailRateTime = m_trailSeconds /  frameRate;
+    m_moduleInsances = makeObject<TrailParticleModuleInstance>(this);
 
-        m_ribbonRenderer = makeRef<RibbonRenderer>();
-        if (!m_ribbonRenderer->init(estimationNodeCount)) {
-            return false;
-        }
-    }
 
     return true;
 }
@@ -171,36 +160,13 @@ void ParticleEmitterInstance2::updateFrame(float deltaTime)
             simulateParticle(&m_particleStorage.data(currentDataId), deltaTime);
         }
 
-
-        // Trail-module
-        {
-            for (int i = m_trailNodeStorage.activeIdCount() - 1; i >= 0; i--) {
-                const TrailDataId dataId = m_trailNodeStorage.dataId(i);
-                ParticleTrailNode* node = &m_trailNodeStorage.data(dataId);
-
-                node->time += deltaTime;
-                if (node->time >= m_trailSeconds) {
-                    // kill
-
-                    // Remove from linked-list
-                    //if (node->prevId >= 0) {
-                    //    ParticleTrailNode* prev = &m_trailNodeStorage.data(node->prevId);
-                    //    prev->nextId = node->nextId;
-                    //}
-                    //if (node->nextId >= 0) {
-                    //    ParticleTrailNode* next = &m_trailNodeStorage.data(node->nextId);
-                    //    next->prevId = node->prevId;
-                    //}
-                    //node->prevId = -1;
-                    //node->nextId = -1;
-                    removeNode(dataId);
-
-                    removeAliveNode(dataId);
-
-                    m_trailNodeStorage.freeId(i);
-                }
-            }
+        if (m_moduleInsances && m_moduleInsances->isTrailEnabled()) {
+            const ParticleDataId* idList = m_particleStorage.idList().data();
+            ParticleData2* dataList = m_particleStorage.dataList().data();
+            m_moduleInsances->onUpdateParticles(activeParticles() - m_sleepCount, idList + m_sleepCount, dataList, deltaTime);
         }
+
+
     }
 }
 
@@ -241,35 +207,12 @@ void ParticleEmitterInstance2::render(RenderingContext* context)
     }
 
 
-
-
-    // Trail-module
-    if (m_ribbonRenderer) {
-        m_ribbonRenderer->resetBatch();
-
-        for (int i = m_sleepCount; i < activeParticles(); i++) {
-            const int currentDataId = m_particleStorage.dataId(i);
-            const auto& particle = m_particleStorage.data(currentDataId);
-
-
-            m_ribbonRenderer->beginRibbon();
-
-            int nodeId = particle.headTrailNodeId;
-            while (nodeId >= 0) {
-                const auto* node = trailData(nodeId);
-
-                m_ribbonRenderer->addPoint(context, node->pos, 0.2);
-
-                nodeId = node->nextId;
-            }
-
-            m_ribbonRenderer->endRibbon();
-        }
-
-
-
-        m_ribbonRenderer->submit(context);
+    if (m_moduleInsances && m_moduleInsances->isTrailEnabled()) {
+        const ParticleDataId* idList = m_particleStorage.idList().data();
+        ParticleData2* dataList = m_particleStorage.dataList().data();
+        m_moduleInsances->onRenderParticles(activeParticles() - m_sleepCount, idList + m_sleepCount, dataList, context);
     }
+
 }
 
 void ParticleEmitterInstance2::killDeactiveParticles(float deltaTime)
@@ -287,13 +230,8 @@ void ParticleEmitterInstance2::killDeactiveParticles(float deltaTime)
 
             if (isLoop()) {
 
-                // Trail-module
-                if (particle->headTrailNodeId >= 0) {
-                    ParticleTrailNode* head = &m_trailNodeStorage.data(particle->headTrailNodeId);
-                    LN_DCHECK(head->headParticle == particle);
-                    head->headParticle = nullptr;
-                    particle->headTrailNodeId = -1;
-                    // TODO: head 以下すべて free する
+                if (m_moduleInsances) {
+                    m_moduleInsances->onKillParticle(particle);
                 }
 
 
@@ -452,13 +390,48 @@ void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float d
 
 
 
-    // Trail-module
-    if (isTrailEnabled())
-    {
+}
 
-        //while (particle->lastTrailTime <= particle->time)
-        //{
-            // 新しく Node を作って、List の先頭に差し込む
+//==============================================================================
+// TrailParticleModuleInstance
+
+TrailParticleModuleInstance::TrailParticleModuleInstance()
+{
+}
+
+bool TrailParticleModuleInstance::init(ParticleEmitterInstance2* emitterInstance)
+{
+    if (!Object::init()) return false;
+
+    // Trail
+    {
+        int frameRate = 60;
+        int estimationNodeCount = (m_trailSeconds * frameRate) * emitterInstance->emitterModel()->m_maxParticles;
+        resizeTrailData(estimationNodeCount);
+        m_trailRateTime = m_trailSeconds / frameRate;
+
+        m_ribbonRenderer = makeRef<RibbonRenderer>();
+        if (!m_ribbonRenderer->init(estimationNodeCount)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void TrailParticleModuleInstance::onUpdateParticles(int count, const ParticleDataId* idList, ParticleData2* dataList, float deltaTime)
+{
+
+    // Trail-module
+    {
+        for (int i = 0; i < count; i++) {
+            const ParticleDataId particleId = idList[i];
+            ParticleData2* particle = dataList + particleId;
+
+
+            //while (particle->lastTrailTime <= particle->time)
+            //{
+                // 新しく Node を作って、List の先頭に差し込む
             {
                 int prevHeadId = particle->headTrailNodeId;
                 ParticleTrailNode* prevHead = nullptr;
@@ -490,11 +463,87 @@ void ParticleEmitterInstance2::simulateParticle(ParticleData2* particle, float d
 
             //particle->lastTrailTime += m_trailRateTime;
         //}
+        }
     }
 
+    // Trail-module
+    {
+        for (int i = m_trailNodeStorage.activeIdCount() - 1; i >= 0; i--) {
+            const TrailDataId dataId = m_trailNodeStorage.dataId(i);
+            ParticleTrailNode* node = &m_trailNodeStorage.data(dataId);
+
+            node->time += deltaTime;
+            if (node->time >= m_trailSeconds) {
+                // kill
+
+                // Remove from linked-list
+                //if (node->prevId >= 0) {
+                //    ParticleTrailNode* prev = &m_trailNodeStorage.data(node->prevId);
+                //    prev->nextId = node->nextId;
+                //}
+                //if (node->nextId >= 0) {
+                //    ParticleTrailNode* next = &m_trailNodeStorage.data(node->nextId);
+                //    next->prevId = node->prevId;
+                //}
+                //node->prevId = -1;
+                //node->nextId = -1;
+                removeNode(dataId);
+
+                removeAliveNode(dataId);
+
+                m_trailNodeStorage.freeId(i);
+            }
+        }
+    }
 }
 
-void ParticleEmitterInstance2::resizeTrailData(int size)
+void TrailParticleModuleInstance::onKillParticle(ParticleData2* particle)
+{
+    // Trail-module
+    if (particle->headTrailNodeId >= 0) {
+        ParticleTrailNode* head = &m_trailNodeStorage.data(particle->headTrailNodeId);
+        LN_DCHECK(head->headParticle == particle);
+        head->headParticle = nullptr;
+        particle->headTrailNodeId = -1;
+        // TODO: head 以下すべて free する
+    }
+}
+
+void TrailParticleModuleInstance::onRenderParticles(int count, const ParticleDataId* idList, ParticleData2* dataList, RenderingContext* context)
+{
+    // Trail-module
+    if (m_ribbonRenderer) {
+        m_ribbonRenderer->resetBatch();
+
+        //for (int i = m_sleepCount; i < activeParticles(); i++) {
+        //    const int currentDataId = m_particleStorage.dataId(i);
+        //    const auto& particle = m_particleStorage.data(currentDataId);
+
+        for (int i = 0; i < count; i++) {
+            const ParticleDataId particleId = idList[i];
+            ParticleData2* particle = dataList + particleId;
+
+            m_ribbonRenderer->beginRibbon();
+
+            int nodeId = particle->headTrailNodeId;
+            while (nodeId >= 0) {
+                const auto* node = trailData(nodeId);
+
+                m_ribbonRenderer->addPoint(context, node->pos, 0.2);
+
+                nodeId = node->nextId;
+            }
+
+            m_ribbonRenderer->endRibbon();
+        }
+
+
+
+        m_ribbonRenderer->submit(context);
+    }
+}
+
+void TrailParticleModuleInstance::resizeTrailData(int size)
 {
     m_trailNodeStorage.resize(size);
     //m_trailNodeData.resize(size);
@@ -503,7 +552,7 @@ void ParticleEmitterInstance2::resizeTrailData(int size)
     //}
 }
 
-ParticleEmitterInstance2::TrailDataId ParticleEmitterInstance2::newTrailDataId()
+TrailParticleModuleInstance::TrailDataId TrailParticleModuleInstance::newTrailDataId()
 {
     TrailDataId id;
     if (m_trailNodeStorage.activeIdCount() >= m_trailNodeStorage.maxDataCount()) {
@@ -523,12 +572,39 @@ ParticleEmitterInstance2::TrailDataId ParticleEmitterInstance2::newTrailDataId()
     //return id;
 }
 
-//void ParticleEmitterInstance2::freeTrailDataId(int trailDataId)
-//{
-//    m_trailDataIdStack.push(trailDataId);
-//}
+void TrailParticleModuleInstance::removeNode(TrailDataId id)
+{
 
-void ParticleEmitterInstance2::enqueueAliveNode(TrailDataId id)
+    // 既につながれている別の List から取り除く
+    {
+        const TrailDataId selfId = id;
+        ParticleTrailNode* self = &m_trailNodeStorage.data(selfId);
+
+        if (self->headParticle) {
+            LN_DCHECK(self->headParticle->headTrailNodeId == selfId);
+            self->headParticle->headTrailNodeId = self->nextId;
+        }
+
+        if (self->prevId >= 0) {
+            ParticleTrailNode* prev = &m_trailNodeStorage.data(self->prevId);
+            LN_DCHECK(prev->nextId == selfId);
+            prev->nextId = self->nextId;
+        }
+
+        if (self->nextId >= 0) {
+            ParticleTrailNode* next = &m_trailNodeStorage.data(self->nextId);
+            LN_DCHECK(next->prevId == selfId);
+            next->prevId = self->prevId;
+        }
+
+        self->headParticle = nullptr;
+        self->prevId = -1;
+        self->nextId = -1;
+    }
+
+}
+
+void TrailParticleModuleInstance::enqueueAliveNode(TrailDataId id)
 {
     ParticleTrailNode* self = &m_trailNodeStorage.data(id);
     LN_CHECK(self->aliveQueuePrevId == -1);
@@ -556,7 +632,7 @@ void ParticleEmitterInstance2::enqueueAliveNode(TrailDataId id)
 
 }
 
-ParticleEmitterInstance2::TrailDataId ParticleEmitterInstance2::dequeueAliveNode()
+TrailParticleModuleInstance::TrailDataId TrailParticleModuleInstance::dequeueAliveNode()
 {
     TrailDataId retId = m_trailNodeAliveQueueHeadId;
 
@@ -580,7 +656,7 @@ ParticleEmitterInstance2::TrailDataId ParticleEmitterInstance2::dequeueAliveNode
     return retId;
 }
 
-void ParticleEmitterInstance2::removeAliveNode(TrailDataId id)
+void TrailParticleModuleInstance::removeAliveNode(TrailDataId id)
 {
     ParticleTrailNode* self = &m_trailNodeStorage.data(id);
 
@@ -613,38 +689,6 @@ void ParticleEmitterInstance2::removeAliveNode(TrailDataId id)
 
     self->aliveQueuePrevId = -1;
     self->aliveQueueNextId = -1;
-}
-
-void ParticleEmitterInstance2::removeNode(TrailDataId id)
-{
-
-    // 既につながれている別の List から取り除く
-    {
-        const TrailDataId selfId = id;
-        ParticleTrailNode* self = &m_trailNodeStorage.data(selfId);
-
-        if (self->headParticle) {
-            LN_DCHECK(self->headParticle->headTrailNodeId == selfId);
-            self->headParticle->headTrailNodeId = self->nextId;
-        }
-
-        if (self->prevId >= 0) {
-            ParticleTrailNode* prev = &m_trailNodeStorage.data(self->prevId);
-            LN_DCHECK(prev->nextId == selfId);
-            prev->nextId = self->nextId;
-        }
-
-        if (self->nextId >= 0) {
-            ParticleTrailNode* next = &m_trailNodeStorage.data(self->nextId);
-            LN_DCHECK(next->prevId == selfId);
-            next->prevId = self->prevId;
-        }
-
-        self->headParticle = nullptr;
-        self->prevId = -1;
-        self->nextId = -1;
-    }
-
 }
 
 } // namespace detail

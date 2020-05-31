@@ -7,6 +7,9 @@ namespace detail {
 class ParticleEmitterInstance2;
 class ParticleRenderer2;
 class RibbonRenderer;
+class TrailParticleModuleInstance;
+
+using ParticleDataId = uint16_t;
 
 template<class T>
 class IndicedNodeDataStorage
@@ -56,6 +59,8 @@ public:
 
 	// ソート用の公開
 	std::vector<uint16_t>& idList() { return m_particleIds; }
+
+	std::vector<T>& dataList() { return m_particleData; }
 
 private:
 	std::vector<T> m_particleData;
@@ -172,6 +177,9 @@ class ParticleEmitterInstance2
 	: public ln::Object
 {
 public:
+	const ParticleEmitterModel2* emitterModel() const { return m_emitterModel; }
+
+
 	float makeRandom(detail::ParticleData2* data, float minValue, float maxValue, ParticleRandomSource source) const;
 	float makeRandom(detail::ParticleData2* data, const RadomRangeValue<float>& value) const;
 	Vector3 makeRandom(detail::ParticleData2* data, const RadomRangeValue<Vector3>& value) const;
@@ -184,8 +192,6 @@ public:
 	void render(RenderingContext* context);
 
 
-	float m_trailSeconds = 1.0f;	// input param
-	float m_trailRateTime = 0;	// 1s間に生成できる Node 数
 
 LN_CONSTRUCT_ACCESS:
 	ParticleEmitterInstance2();
@@ -217,24 +223,63 @@ private:
 	// 最後に particle を spawn したときの時間。1フレームの生成数をコントロールするために使う。
 	float m_lastSpawnTime;
 
+	Ref<TrailParticleModuleInstance> m_moduleInsances;
+
+};
+
+class ParticleModuleInstance
+	: public ln::Object
+{
+};
+
+class TrailParticleModuleInstance
+	: public ln::Object
+{
+public:
+	float m_trailSeconds = 1.0f;	// input param
+	float m_trailRateTime = 0;	// 1s間に生成できる Node 数
+
+	using TrailDataId = int64_t;
+
+
+	void onUpdateParticles(int count, const ParticleDataId* idList, ParticleData2* dataList, float deltaTime);
+	void onKillParticle(ParticleData2* particle);
+	void onRenderParticles(int count, const ParticleDataId* idList, ParticleData2* dataList, RenderingContext* context);
+
+
+
+
+
+	bool isTrailEnabled() const { return m_trailRateTime > 0.0f; }
+	void resizeTrailData(int size);
+	TrailDataId newTrailDataId();
+	//void freeTrailDataId(TrailDataId trailDataId);
+	ParticleTrailNode* trailData(TrailDataId trailDataId) { return &m_trailNodeStorage.data(trailDataId); }
+
+
+
+	void removeNode(TrailDataId id);
+
+
+	void enqueueAliveNode(TrailDataId id);
+	TrailDataId dequeueAliveNode();
+	void removeAliveNode(TrailDataId id);
+
+LN_CONSTRUCT_ACCESS:
+	TrailParticleModuleInstance();
+	bool init(ParticleEmitterInstance2* emitterInstance);
+
+private:
 
 
 	Ref<RibbonRenderer> m_ribbonRenderer;
 	//std::vector<ParticleTrailNode> m_trailNodeData;
 	//std::stack<int> m_trailDataIdStack;
 	IndicedNodeDataStorage<ParticleTrailNode> m_trailNodeStorage;
-	using TrailDataId = int64_t;
-	bool isTrailEnabled() const { return m_trailRateTime > 0.0f; }
-	void resizeTrailData(int size);
-	TrailDataId newTrailDataId();
-	//void freeTrailDataId(TrailDataId trailDataId);
-	ParticleTrailNode* trailData(TrailDataId trailDataId) { return &m_trailNodeStorage.data(trailDataId); }
+
+
 	int m_trailNodeAliveQueueHeadId = -1;
 	int m_trailNodeAliveQueueTailId = -1;
-	void enqueueAliveNode(TrailDataId id);
-	TrailDataId dequeueAliveNode();
-	void removeAliveNode(TrailDataId id);
-	void removeNode(TrailDataId id);
 };
 
 } // namespace detail
