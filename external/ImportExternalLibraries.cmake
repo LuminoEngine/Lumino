@@ -436,10 +436,7 @@ list(APPEND LN_EXTERNAL_LIBS yamlcpp)
 
 if (LN_USE_FBX_IMPORTER)
     if (WIN32)
-        #set(FBX_ROOT $ENV{FBXSDK_ROOT})
-        set(FBX_ROOT "D:/Program Files/Autodesk/FBX/FBX SDK/2020.1")
-        
-        message("FBX_ROOT: ${FBX_ROOT}")
+        set(FBX_ROOT "${LN_FBX_SDK_PATH}")
         add_library(LN::FBX STATIC IMPORTED)
         set_target_properties(LN::FBX PROPERTIES IMPORTED_LOCATION_RELEASE "${FBX_ROOT}/lib/vs2017/x64/release/libfbxsdk-mt.lib")
         set_target_properties(LN::FBX PROPERTIES IMPORTED_LOCATION_DEBUG "${FBX_ROOT}/lib/vs2017/x64/debug/libfbxsdk-mt.lib")

@@ -57,7 +57,7 @@ option(LN_MSVC_USE_SDL "use SDL on MSVC" OFF)
 option(LN_USE_VULKAN "Vulkan" ON)
 
 # FBX
-option(LN_USE_FBX_IMPORTER "FBX" OFF)
+option(LN_FBX_SDK_PATH "FBX" "")
 
 # Effekseer
 option(LN_USE_Effekseer "Effekseer" OFF)
@@ -78,8 +78,10 @@ set(LUMINO_INCLUDE_DIRECTORIES
     "${LUMINO_ROOT_PATH}/src/LuminoEngine/include"
     "${LUMINO_ROOT_PATH}/src/LuminoEditor/Core")
 
-
-
+if (LN_FBX_SDK_PATH)
+    message("LN_FBX_SDK_PATH: ${LN_FBX_SDK_PATH}")
+    set(LN_USE_FBX_IMPORTER ON)
+endif()
 
 
 if (DEFINED EMSCRIPTEN)

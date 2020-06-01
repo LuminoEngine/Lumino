@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace LuminoBuild
 {
@@ -32,6 +33,8 @@ namespace LuminoBuild
         public static bool IsMacOSTarget { get { return Target.Contains("macOS"); } }
         public static bool IsIOSTarget { get { return Target.Contains("iOS"); } }
 
+        public static string FbxSdkVS2017 { get; private set; }
+
         public static TargetInfo[] Targets = new TargetInfo[]
         {
             //new TargetInfo(){ Name = "MSVC2017-x64-MT", LibraryExt = "*.lib", PdbCopy = true },
@@ -53,6 +56,7 @@ namespace LuminoBuild
             FromCI = Environment.GetEnvironmentVariable("LN_BUILD_FROM_CI") != null;
 
             InstallTools(builder);
+            FindFbxSdk();
         }
 
         private static void InstallTools(Builder builder)
@@ -110,6 +114,17 @@ namespace LuminoBuild
             AndoridBuildEnv.Initialize(builder);
 
             Directory.CreateDirectory(BuildToolsDir);
+        }
+
+        private static void FindFbxSdk()
+        {
+            var candidates = new string[]
+            {
+               @"C:\Program Files\Autodesk\FBX\FBX SDK\2020.0.1",
+               @"D:\Program Files\Autodesk\FBX\FBX SDK\2020.0.1",
+            };
+
+            FbxSdkVS2017 = candidates.FirstOrDefault(path => File.Exists(path));
         }
     }
 }
