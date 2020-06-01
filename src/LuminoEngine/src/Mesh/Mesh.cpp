@@ -504,6 +504,11 @@ InterleavedVertexGroup Mesh::getStandardElement(VertexElementUsage usage, int us
 			return InterleavedVertexGroup::Skinning;
 		}
 	}
+	else if (1 <= usageIndex && usageIndex <= 3) {
+		if (usage == VertexElementUsage::TexCoord) {
+			return InterleavedVertexGroup::AdditionalUV;
+		}
+	}
 	return InterleavedVertexGroup::Undefined;
 }
 
@@ -558,6 +563,16 @@ void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 			m_skinningVertexBuffer.mappedBuffer = m_skinningVertexBuffer.buffer->map(MapMode::Write);
 		}
 		return m_skinningVertexBuffer.mappedBuffer;
+
+	case InterleavedVertexGroup::AdditionalUV:
+		if (!m_additionalUVVertexBuffer.buffer) {
+			m_additionalUVVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexAdditionalUV) * m_vertexCount, m_resourceUsage);
+		}
+
+		if (!m_additionalUVVertexBuffer.mappedBuffer) {
+			m_additionalUVVertexBuffer.mappedBuffer = m_additionalUVVertexBuffer.buffer->map(MapMode::Write);
+		}
+		return m_additionalUVVertexBuffer.mappedBuffer;
 
 	default:
 		LN_UNREACHABLE();
@@ -624,6 +639,11 @@ VertexElementType Mesh::findVertexElementType(VertexElementUsage usage, int usag
 		if (usage == VertexElementUsage::Binormal) return VertexElementType::Float3;
 		if (usage == VertexElementUsage::BlendWeight) return VertexElementType::Float4;
 		if (usage == VertexElementUsage::BlendIndices) return VertexElementType::Float4;
+	}
+	if (usage == VertexElementUsage::TexCoord) {
+		if (1 <= usageIndex && usageIndex <= 3) {
+			return VertexElementType::Float4;
+		}
 	}
 
 	// Find extra data.

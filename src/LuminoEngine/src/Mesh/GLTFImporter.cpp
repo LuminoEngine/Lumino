@@ -335,9 +335,18 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					return nullptr;
 				}
 			}
-			else if (itr->first.compare("TEXCOORD_0") == 0) {
+			else if (itr->first.compare(0, 8, "TEXCOORD") == 0) {
+				if (itr->first.compare("TEXCOORD_0") == 0) {
+					vbView.usageIndex = 0;
+				}
+				else if (itr->first.compare("TEXCOORD_1") == 0) {
+					vbView.usageIndex = 1;
+				}
+				else {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
 				vbView.usage = VertexElementUsage::TexCoord;
-				vbView.usageIndex = 0;
 				if (accessor.type == TINYGLTF_TYPE_VEC2 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
 					vbView.type = VertexElementType::Float2;
 				}
@@ -616,6 +625,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 			}
 
 			if (destType != vbView.type) {
+				// Float4 <- Short4
 				if (destType == VertexElementType::Float4 && vbView.type == VertexElementType::Short4) {
 					for (int i = 0; i < vertexCountInSection; i++) {
 						float* d = (float*)(&rawbuf[((vertexOffset + i) * stride) + offset]);
@@ -624,6 +634,17 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						d[1] = (float)s[1];
 						d[2] = (float)s[2];
 						d[3] = (float)s[3];
+					}
+				}
+				// Float4 <- Float2. UV 座標など。
+				if (destType == VertexElementType::Float4 && vbView.type == VertexElementType::Float2) {
+					for (int i = 0; i < vertexCountInSection; i++) {
+						float* d = (float*)(&rawbuf[((vertexOffset + i) * stride) + offset]);
+						float* s = (float*)(src + (vbView.byteStride * i));
+						d[0] = s[0];
+						d[1] = s[1];
+						d[2] = 0.0f;
+						d[3] = 0.0f;
 					}
 				}
 				else {

@@ -30,9 +30,10 @@ struct VertexBlendWeight
 	float		weights[4];
 };
 
+// TEXCOORD_1,TEXCOORD_2,TEXCOORD_3
 struct VertexAdditionalUV
 {
-	Vector4		uv[4];
+	Vector4		uv[3];
 };
 
 struct VertexSdefInfo
