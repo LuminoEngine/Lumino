@@ -230,6 +230,8 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
             m[8], m[9], m[10], m[11],
             m[12], m[13], m[14], m[15]);
 
+		//nodeTransform *= Matrix::makeScaling(1, 1, -1);
+
 		//nodeTransform.set(	// transpose
 		//	m[0], m[4], m[8], m[12],
 		//	m[1], m[5], m[9], m[13],
@@ -661,6 +663,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 
+#if 0	// 単に z 反転しただけだと、Node 行列との齟齬がでるのか、正しい位置に描画されなくなる
 			// Flip Z (RH to LH)
 			{
 				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Position) {
@@ -688,7 +691,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 					}
 				}
 			}
-
+#endif
             // TODO: unmap 無いとめんどい以前に怖い
         }
 
@@ -716,7 +719,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
+					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 2) {
 					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
@@ -725,7 +728,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
+					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 4) {
 				}
@@ -741,7 +744,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
+					//flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
 				}
 				else {
 					LN_NOTIMPLEMENTED();

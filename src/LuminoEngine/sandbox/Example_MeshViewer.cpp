@@ -12,10 +12,12 @@ class App_Example_MeshViewer : public Application
 
 
         auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled.glb");
+        //auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
+        
 		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
         //auto mesh = SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
         //auto mesh = SkinnedMesh::load(u"D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
-        mesh->setShadingModel(ShadingModel::Unlit);
+        //mesh->setShadingModel(ShadingModel::Unlit);
 
         //auto model = mesh->skinnedMeshComponent()->model();
         //auto skeleton = model->skeleton(0);

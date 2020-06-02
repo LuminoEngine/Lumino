@@ -62,10 +62,15 @@ void StaticMeshComponent::onRender(RenderingContext* context)
     }
 #endif
 
+    static int count = 0;
 
     for (const auto& node : m_model->meshNodes()) {
-        if (node->meshContainerIndex() >= 0) {
-            context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
+        if (node->meshContainerIndex() >= 0 /*&& node->index() == count*/) {
+
+
+
+            //context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
+            context->setBaseTransfrom(m_model->nodeGlobalTransform(node->index()));
 
 
             const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
@@ -80,6 +85,8 @@ void StaticMeshComponent::onRender(RenderingContext* context)
 
         }
     }
+
+    count = (count + 1) % 100;
 }
 
 } // namespace ln
