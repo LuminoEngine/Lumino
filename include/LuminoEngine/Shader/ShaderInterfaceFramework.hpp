@@ -26,6 +26,7 @@ struct alignas(16) LNRenderViewBuffer
 struct alignas(16) LNRenderElementBuffer
 {
     alignas(16) Matrix ln_World;
+    alignas(16) Matrix ln_WorldI;
     alignas(16) Matrix ln_WorldViewProjection;
     alignas(16) Matrix ln_WorldView;
     alignas(16) Matrix ln_WorldViewIT;
@@ -139,6 +140,7 @@ struct SubsetInfo
 {
     // common material
     Texture* materialTexture;
+    Texture* normalMap;
 
     // builtin effect
     float opacity;
@@ -149,6 +151,7 @@ struct SubsetInfo
 	void clear()
 	{
 		materialTexture = nullptr;
+        normalMap = nullptr;
 		opacity = 0.0f;
 		colorScale = Color();
 		blendColor = Color();
@@ -159,6 +162,7 @@ struct SubsetInfo
 	{
 		return
 			lhs.materialTexture == rhs.materialTexture &&
+            lhs.normalMap == rhs.normalMap &&
 			Math::nearEqual(lhs.opacity, rhs.opacity) &&
 			Color::nearEqual(lhs.colorScale, rhs.colorScale) &&
 			Color::nearEqual(lhs.blendColor, rhs.blendColor) &&
@@ -192,6 +196,7 @@ enum BuiltinShaderParameters
 
     // LNRenderElementBuffer
     BuiltinShaderParameters_ln_World,
+    BuiltinShaderParameters_ln_WorldI,
     BuiltinShaderParameters_ln_WorldViewProjection,
     BuiltinShaderParameters_ln_WorldView,
     BuiltinShaderParameters_ln_WorldViewIT,
@@ -225,6 +230,7 @@ enum BuiltinShaderUniformBuffers
 enum BuiltinShaderTextures
 {
     BuiltinShaderTextures_ln_MaterialTexture,
+    BuiltinShaderTextures_ln_NormalMap,
     BuiltinShaderTextures_ln_BoneTexture,
     BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,
 

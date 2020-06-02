@@ -203,22 +203,29 @@ void RenderingContext::drawLine(const Vector3& from, const Color& fromColor, con
 
 void RenderingContext::drawPlane(float width, float depth, const Color& color)
 {
-    class DrawPlane : public detail::RenderDrawElement
-    {
-    public:
-        detail::PlaneMeshGenerater data;
+	drawPlane(width, depth, Vector2::Zero, Vector2::Ones, color);
+}
+
+void RenderingContext::drawPlane(float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color)
+{
+	class DrawPlane : public detail::RenderDrawElement
+	{
+	public:
+		detail::PlaneMeshGenerater data;
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-            return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
-        }
-    };
+			return static_cast<detail::MeshGeneraterRenderFeature*>(renderFeature)->drawMeshGenerater(&data);
+		}
+	};
 
 	m_builder->setPrimitiveTopology(PrimitiveTopology::TriangleList);
-    auto* element = m_builder->addNewDrawElement<DrawPlane>(m_manager->meshGeneraterRenderFeature());
-    element->data.size.set(width, depth);
-    element->data.setColor(color);
-    //element->data.setTransform(/*element->combinedWorldMatrix()*/);
+	auto* element = m_builder->addNewDrawElement<DrawPlane>(m_manager->meshGeneraterRenderFeature());
+	element->data.size.set(width, depth);
+	element->data.uv[0] = uv1;
+	element->data.uv[1] = uv2;
+	element->data.setColor(color);
+	//element->data.setTransform(/*element->combinedWorldMatrix()*/);
 }
 
 void RenderingContext::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)

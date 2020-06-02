@@ -79,7 +79,6 @@
 #include "LuminoEngine/Scene/CameraOrbitControlComponent.hpp"
 #include "LuminoEngine/Scene/Raycaster.hpp"
 #include "LuminoEngine/Scene/Light.hpp"
-#include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
 #include "LuminoEngine/Scene/Sprite.hpp"
 #include "LuminoEngine/Scene/RigidBodyComponent.hpp"
 #include "LuminoEngine/Scene/Text/Text.hpp"
@@ -87,6 +86,8 @@
 #include "LuminoEngine/Scene/Mesh/StaticMesh.hpp"
 #include "LuminoEngine/Scene/Mesh/SkinnedMeshComponent.hpp"
 #include "LuminoEngine/Scene/Mesh/SkinnedMesh.hpp"
+#include "LuminoEngine/Scene/Shapes/MeshPrimitives.hpp"
+#include "LuminoEngine/Scene/Shapes/MeshPrimitiveComponent.hpp"
 
 #include "LuminoEngine/Scene/Scene.hpp"
 #include "LuminoEngine/Scene/SceneConductor.hpp"

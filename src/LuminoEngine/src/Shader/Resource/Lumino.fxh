@@ -21,12 +21,13 @@ cbuffer LNRenderViewBuffer
 
 cbuffer LNRenderElementBuffer
 {
-	/* [0]   */ float4x4	ln_World;
-	/* [64]  */ float4x4 ln_WorldViewProjection;
-	/* [128] */ float4x4	ln_WorldView;
-	/* [192] */ float4x4	ln_WorldViewIT;
-	/* [256] */ float4 ln_BoneTextureReciprocalSize;
-};
+	/* [0]   */ float4x4 ln_World;
+	/* [64]  */ float4x4 ln_WorldI;
+	/* [128] */ float4x4 ln_WorldViewProjection;
+	/* [192] */ float4x4 ln_WorldView;
+	/* [256] */ float4x4 ln_WorldViewIT;
+	/* [320] */ float4 ln_BoneTextureReciprocalSize;
+};  /* [336] */
 
 // Builtin effect colors
 cbuffer LNEffectColorBuffer

@@ -10,8 +10,8 @@ namespace ln {
 // PlaneMeshComponent
 
 PlaneMeshComponent::PlaneMeshComponent()
-    : m_sizeX(10.0f)
-    , m_sizeY(10.0f)
+    : m_size(10.0f, 10.0f)
+    , m_uvParUnit(0.0f, 0.0f)
 {
 }
 
@@ -32,7 +32,12 @@ void PlaneMeshComponent::setMaterial(Material* material)
 void PlaneMeshComponent::onRender(RenderingContext* context)
 {
     context->setMaterial(m_material);
-    context->drawPlane(m_sizeX, m_sizeY, Color::White);
+
+    auto uv1 = Vector2(
+        Math::nearEqual(m_uvParUnit.x, 0.0f) ? 1.0f : m_size.x / m_uvParUnit.x,
+        Math::nearEqual(m_uvParUnit.y, 0.0f) ? 1.0f : m_size.y / m_uvParUnit.y);
+    
+    context->drawPlane(m_size.x, m_size.y, Vector2::Zero, uv1, Color::White);
 }
 
 //=============================================================================

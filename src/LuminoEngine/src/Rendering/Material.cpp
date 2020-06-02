@@ -80,6 +80,16 @@ Texture* Material::mainTexture() const
 	return m_mainTexture;
 }
 
+void Material::setNormalMap(Texture* value)
+{
+    m_normalMap = value;
+}
+
+Texture* Material::normalMap() const
+{
+    return m_normalMap;
+}
+
 void Material::setColor(const Color& value)
 {
     m_data.color = value;

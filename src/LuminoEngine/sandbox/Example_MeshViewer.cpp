@@ -11,8 +11,17 @@ class App_Example_MeshViewer : public Application
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
+        auto plane = PlaneMesh::create();
+        auto texture = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
+        texture->setMipmapEnabled(true);
+        auto planeMaterial = Material::create(texture);
+        planeMaterial->setNormalMap(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg"));
+        plane->planeMeshComponent()->setMaterial(planeMaterial);
+        plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
 
         auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled.glb");
+
+
         //auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");
         
 		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");

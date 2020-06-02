@@ -1,6 +1,35 @@
 /*
  Note:
-   計算は View 空間上で行われる。
+ 計算は View 空間上で行われる。
+ three.js のシェーダを参考にしているためその方式に合わせた…というのが正直なところ。
+ なぜ three.js がそのようにしている。
+
+ ゲームエンジンアーキテクチャでは Screen-Space の法線で G-Buffer 作っているらしい。
+ 
+ でもググると World-space で扱っている例も多く出てくる。
+ https://enginetrouble.net/2014/10/classic-deferred-shading-2014.html
+ http://asura.iaigiri.com/OpenGL/gl70.html
+
+ https://forum.unity.com/threads/shader-convert-normals-to-view-space-normals.285262/
+ > 私は屈折効果を作成しようとしています。私が見たものから、ビュー空間で法線を使用するとより良い結果が得られます。
+
+ https://stackoverflow.com/questions/37762692/calculating-view-space-normal-instead-of-world-space
+ SSAO の実装で役に立つらしい。0.4.0 時点の実装では使ってなかったが…。
+
+ 考察としては計算量が減る。
+ カメラの位置が (0,0,0) である空間をベースにしているので、
+ 例えば、
+ - ある位置とカメラの距離を知りたければ、引き算は不要で、length(pos) だけでいい。
+ - カメラの方向が知りたければ normalize(-pos)
+
+ https://stackoverflow.com/questions/17499976/why-do-you-use-camera-space-instead-of-model-space-for-normals
+ ここがわかりやすいかな。
+ - 鏡面反射の処理で計算を単純化できる。
+ ほとんどのケースでは Model-space でやっても問題ない。
+ でも、鏡面反射など多くの処理を取り入れる場合、Model-space より後段の View-space でやったほうが無難、という感じ。
+
+
+  IncidentLight | 入射光
  */
 
 #ifndef LUMINO_PBR_INCLUDED
@@ -30,6 +59,7 @@ cbuffer LNPBRMaterialParameter
 //------------------------------------------------------------------------------
 // PBR
 
+// 入射光情報。
 // DirectLightIrradiance 系関数の出力。
 // ピクセルへのライトごとの影響情報
 struct LN_IncidentLight

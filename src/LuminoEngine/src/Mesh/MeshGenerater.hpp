@@ -139,6 +139,7 @@ class PlaneMeshGenerater
 {
 public:
     Vector2	size;
+    std::array<Vector2, 2> uv;
 
     virtual int vertexCount() const override { return 4; }
     virtual int indexCount() const override { return 6; }
@@ -146,10 +147,14 @@ public:
     virtual void onGenerate(MeshGeneraterBuffer* buf) override
     {
         Vector2 half = size / 2;
-        buf->setV(0, Vector3(-half.x, 0, half.y), Vector2(0.0f, 0.0f), Vector3::UnitY);
-        buf->setV(1, Vector3(half.x, 0, half.y), Vector2(1.0f, 0.0f), Vector3::UnitY);
-        buf->setV(2, Vector3(-half.x, 0, -half.y), Vector2(0.0f, 1.0f), Vector3::UnitY);
-        buf->setV(3, Vector3(half.x, 0, -half.y), Vector2(1.0f, 1.0f), Vector3::UnitY);
+        //buf->setV(0, Vector3(-half.x, 0, half.y), Vector2(0.0f, 0.0f), Vector3::UnitY);
+        //buf->setV(1, Vector3(half.x, 0, half.y), Vector2(1.0f, 0.0f), Vector3::UnitY);
+        //buf->setV(2, Vector3(-half.x, 0, -half.y), Vector2(0.0f, 1.0f), Vector3::UnitY);
+        //buf->setV(3, Vector3(half.x, 0, -half.y), Vector2(1.0f, 1.0f), Vector3::UnitY);
+        buf->setV(0, Vector3(-half.x, 0, half.y), Vector2(uv[0].x, uv[0].y), Vector3::UnitY);
+        buf->setV(1, Vector3(half.x, 0, half.y), Vector2(uv[1].x, uv[0].y), Vector3::UnitY);
+        buf->setV(2, Vector3(-half.x, 0, -half.y), Vector2(uv[0].x, uv[1].y), Vector3::UnitY);
+        buf->setV(3, Vector3(half.x, 0, -half.y), Vector2(uv[1].x, uv[1].y), Vector3::UnitY);
         buf->setI(0, 0);
         buf->setI(1, 1);
         buf->setI(2, 2);
@@ -161,6 +166,7 @@ public:
     {
         MeshGenerater::copyFrom(other);
         size = other->size;
+        uv = other->uv;
     }
     LN_MESHGENERATOR_CLONE_IMPLEMENT(PlaneMeshGenerater);
 };
