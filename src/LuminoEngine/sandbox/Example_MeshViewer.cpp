@@ -9,6 +9,7 @@ class App_Example_MeshViewer : public Application
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
+        Engine::renderView()->setBackgroundColor(Color::Gray);
 
 
         auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled.glb");

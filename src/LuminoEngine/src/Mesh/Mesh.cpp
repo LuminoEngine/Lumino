@@ -617,8 +617,10 @@ void* Mesh::acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage
 void* Mesh::acquireMappedIndexBuffer()
 {
 	if (!m_indexBuffer.buffer) {
-		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, m_resourceUsage);
+		m_indexBuffer.buffer = makeObject<IndexBuffer>(m_indexCount, m_indexFormat, m_resourceUsage);
 	}
+
+	//detail::GraphicsResourceInternal::selectIndexBufferFormat(indexCount)
 
 	if (!m_indexBuffer.mappedBuffer) {
 		m_indexBuffer.mappedBuffer = m_indexBuffer.buffer->map(MapMode::Write);
@@ -879,17 +881,13 @@ void StaticMeshModel::addRootNode(int index)
 
 void StaticMeshModel::updateNodeTransforms()
 {
-
-	std::cout << "---- updateNodeTransforms s" << std::endl;
     m_nodeGlobalTransforms.resize(m_nodes.size());
     for (int index : m_rootNodes) {
-		std::cout << "Node " << index << std::endl;
-        updateNodeTransformsHierarchical(index, Matrix::Identity, "  ");
+        updateNodeTransformsHierarchical(index, Matrix::Identity);
     }
-	std::cout << "---- updateNodeTransforms e" << std::endl;
 }
 
-void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, std::string indent)
+void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform)
 {
     auto node = m_nodes[nodeIndex];
 
@@ -899,17 +897,12 @@ void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matr
 
     m_nodeGlobalTransforms[nodeIndex] = node->initialLocalTransform() * local * parentTransform;   // NOTE: glTF はこの順である必要がある。
 
-
 	// glview.cc と比べて Node の Transform の差分は無し。
 	float* m = m_nodeGlobalTransforms[nodeIndex].data();
-	std::cout << indent << "[";
 	for (int i = 0; i < 16; i++) std::cout << m[i] << ", ";
 
-	std::cout << "]" << std::endl;
     for (int child : node->m_children) {
-
-		std::cout << indent << "Node " << child << std::endl;
-        updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex], indent + "  ");
+        updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex]);
     }
 }
 

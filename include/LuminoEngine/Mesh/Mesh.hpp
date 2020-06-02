@@ -416,7 +416,7 @@ LN_CONSTRUCT_ACCESS:
     StaticMeshModel(detail::InternalMeshModelType type);
 
 private:
-    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, std::string indent);
+    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform);
 
     detail::InternalMeshModelType m_type;
 	List<Ref<MeshContainer>> m_meshContainers;

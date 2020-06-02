@@ -271,6 +271,13 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 	return coreNode;
 }
 
+// glTF の Mesh は小単位として Primitive というデータを持っている。
+// Primitive は 頂点バッファ、インデックスバッファ、1つのマテリアル から成る。
+// 1つのマテリアル を持つので、Lumino の Mesh だと 1つの Section に対応しそうに見えるが、
+// 頂点バッファ、インデックスバッファも持っている点に注意。
+//
+// Lumino の Mesh への変換としては、この Primitive が持っている個々の頂点バッファとインデックスバッファを
+// それぞれひとつのバッファに統合する方針で実装している。
 Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 {
     MeshView meshView;
@@ -496,15 +503,23 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 		}
 		else if (primitive.mode == TINYGLTF_MODE_TRIANGLE_STRIP) {
 			sectionView.topology = PrimitiveTopology::TriangleStrip;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_TRIANGLE_FAN) {
 			sectionView.topology = PrimitiveTopology::TriangleFan;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_POINTS) {
 			sectionView.topology = PrimitiveTopology::PointList;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_LINE) {
 			sectionView.topology = PrimitiveTopology::LineList;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_LINE_LOOP) {
 			LN_NOTIMPLEMENTED();
@@ -552,25 +567,27 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 	// count indices and measure element size.
 	int indexCount = 0;
-	int indexElementSize = 0;
+	//int indexElementSize = 0;
 	for (auto& section : meshView.sectionViews) {
 		indexCount += section.indexCount;
-		indexElementSize = std::max(indexElementSize, section.indexElementSize);
+	//	indexElementSize = std::max(indexElementSize, section.indexElementSize);
 	}
+	//int indexElementSize = detail::GraphicsResourceInternal::selectIndexBufferFormat(vertexCount);
 
-	// select index format.
-	IndexBufferFormat indexForamt;
-	if (indexElementSize == 1 || indexElementSize == 2) {
-		indexForamt = IndexBufferFormat::UInt16;
-		indexElementSize = 2;
-	}
-	else if (indexElementSize == 4) {
-		indexForamt = IndexBufferFormat::UInt32;
-	}
-	else {
-		LN_NOTIMPLEMENTED();
-		return nullptr;
-	}
+	//// select index format.
+	//IndexBufferFormat indexForamt;
+	//if (indexElementSize == 1 || indexElementSize == 2) {
+	//	indexForamt = IndexBufferFormat::UInt16;
+	//	indexElementSize = 2;
+	//}
+	//else if (indexElementSize == 4) {
+	//	indexForamt = IndexBufferFormat::UInt32;
+	//}
+	//else {
+	//	LN_NOTIMPLEMENTED();
+	//	return nullptr;
+	//}
+	IndexBufferFormat indexForamt = detail::GraphicsResourceInternal::selectIndexBufferFormat(vertexCount);
 
 	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
 
@@ -663,9 +680,9 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 
-#if 0	// 単に z 反転しただけだと、Node 行列との齟齬がでるのか、正しい位置に描画されなくなる
 			// Flip Z (RH to LH)
 			{
+#if 0	// 単に z 反転しただけだと、Node 行列との齟齬がでるのか、正しい位置に描画されなくなる
 				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Position) {
 					if (vbView.type == VertexElementType::Float3) {
 						auto* p = reinterpret_cast<Vertex*>(rawbuf);
@@ -678,7 +695,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						return nullptr;
 					}
 				}
-				else if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Normal) {
+				else
+				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Normal) {
 					if (vbView.type == VertexElementType::Float3) {
 						auto* p = reinterpret_cast<Vertex*>(rawbuf);
 						for (int i = 0; i < vertexCountInSection; i++) {
@@ -690,8 +708,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						return nullptr;
 					}
 				}
-			}
 #endif
+			}
             // TODO: unmap 無いとめんどい以前に怖い
         }
 
@@ -711,7 +729,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 		for (auto& section : meshView.sectionViews) {
 			int vertexCountInSection = section.vertexBufferViews[0].count;
 
-			if (indexElementSize == 2) {
+			if (indexForamt == IndexBufferFormat::UInt16) {
 				if (section.indexElementSize == 1) {
 					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
 					auto* s = static_cast<const uint8_t*>(section.indexData);
@@ -731,12 +749,13 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 4) {
+					LN_NOTIMPLEMENTED();
 				}
 				else {
 					LN_NOTIMPLEMENTED();
 				}
 			}
-			else if (indexElementSize == 4) {
+			else if (indexForamt == IndexBufferFormat::UInt32) {
 				if (section.indexElementSize == 4) {
 					auto* b = static_cast<uint32_t*>(buf) + indexOffset;
 					auto* s = static_cast<const uint32_t*>(section.indexData);
@@ -745,6 +764,18 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						assert(b[i] < vertexCount);
 					}
 					//flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
+				}
+				else if (section.indexElementSize == 2) {
+					// glTF の Mesh は primitive という小単位のMeshに分かれることがある。
+					// Mesh 全体としては UInt32 だが、primitive ごとにみると UInt16 となるようなこともある。
+					// Blender から大きなモデルをエクスポートするとこのような形になった。
+					auto* b = static_cast<uint32_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint16_t*>(section.indexData);
+					for (int i = 0; i < section.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
+					}
+					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else {
 					LN_NOTIMPLEMENTED();
@@ -769,6 +800,23 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 	}
 
+
+	//for (int vi = 0; vi < coreMesh->vertexCount(); vi++) {
+	//	auto v = coreMesh->vertex(vi);
+	//	v.position.print();
+	//	v.position.y = 0;
+	//	coreMesh->setVertex(vi, v);
+	//}
+	//for (int vi = 0; vi < coreMesh->indexCount(); vi++) {
+	//	auto v = coreMesh->index(vi);
+	//	std::cout << v << std::endl;
+	//}
+
+	//coreMesh->setIndex(0, 0);
+	//coreMesh->setIndex(1, 1);
+	//coreMesh->setIndex(2, 2);
+
+	//coreMesh->setSection(0, 0, 100, 0, PrimitiveTopology::TriangleList);
 
 	return coreMesh;
 }
