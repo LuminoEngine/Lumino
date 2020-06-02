@@ -168,6 +168,7 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 			vertexLayout->addElement(stream, VertexElementType::Float3, VertexElementUsage::Normal, 0);
 			vertexLayout->addElement(stream, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Color, 0);
+			vertexLayout->addElement(stream, VertexElementType::Float4, VertexElementUsage::Tangent, 0);
 			++stream;
 		}
 

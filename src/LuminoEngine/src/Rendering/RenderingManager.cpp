@@ -13,8 +13,13 @@
 
 namespace ln {
 
-const Vertex Vertex::Default;
-const VertexTangents VertexTangents::Default{ { 1, 0, 0 }, { 0, 1, 0 } };
+const Vertex Vertex::Default = {
+	{ 0, 0, 0 },
+	{ 0, 0, 1 },
+	{ 0, 0 },
+	{ 1, 1, 1, 1 },
+	{ 0, 0, 0, 1 },
+};
 const VertexBlendWeight VertexBlendWeight::Default{ {0, 0, 0, 0}, {0, 0, 0, 0} };
 
 namespace detail {
@@ -47,8 +52,9 @@ void RenderingManager::init(const Settings& settings)
         { 0, VertexElementType::Float3, VertexElementUsage::Normal, 0 },
         { 0, VertexElementType::Float2, VertexElementUsage::TexCoord, 0 },
         { 0, VertexElementType::Float4, VertexElementUsage::Color, 0 },
+		{ 0, VertexElementType::Float4, VertexElementUsage::Tangent, 0 },
     };
-    m_standardVertexDeclaration = makeObject<VertexLayout>(elements, 4);
+    m_standardVertexDeclaration = makeObject<VertexLayout>(elements, LN_ARRAY_SIZE_OF(elements));
     m_standardVertexDeclarationRHI = detail::GraphicsResourceInternal::resolveRHIObject<detail::IVertexDeclaration>(nullptr, m_standardVertexDeclaration, nullptr);
     //m_renderStageListBuilder = makeRef<DrawElementListBuilder>();
 

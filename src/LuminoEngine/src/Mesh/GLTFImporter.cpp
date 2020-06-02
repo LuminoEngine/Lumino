@@ -614,14 +614,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 				else if (vbView.usage == VertexElementUsage::Normal) offset = LN_MEMBER_OFFSETOF(Vertex, normal);
 				else if (vbView.usage == VertexElementUsage::TexCoord) offset = LN_MEMBER_OFFSETOF(Vertex, uv);
 				else if (vbView.usage == VertexElementUsage::Color) offset = LN_MEMBER_OFFSETOF(Vertex, color);
-				else {
-					LN_ERROR();
-				}
-			}
-			else if (reservedGroup == InterleavedVertexGroup::Tangents) {
-				stride = sizeof(VertexTangents);
-				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexTangents, tangent);
-				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexTangents, binormal);
+				else if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(Vertex, tangent);
 				else {
 					LN_ERROR();
 				}

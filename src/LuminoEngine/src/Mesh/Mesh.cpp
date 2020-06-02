@@ -435,10 +435,6 @@ void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLa
 			m_mainVertexBuffer.buffer->unmap();
 			m_mainVertexBuffer.mappedBuffer = nullptr;
 		}
-		if (m_tangentsVertexBuffer.mappedBuffer) {
-			m_tangentsVertexBuffer.buffer->unmap();
-			m_tangentsVertexBuffer.mappedBuffer = nullptr;
-		}
 		if (m_skinningVertexBuffer.mappedBuffer) {
 			m_skinningVertexBuffer.buffer->unmap();
 			m_skinningVertexBuffer.mappedBuffer = nullptr;
@@ -468,11 +464,6 @@ void Mesh::commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLa
 		count++;
 	}
 
-	if (m_tangentsVertexBuffer.buffer) {
-		(*outVBs)[count] = m_tangentsVertexBuffer.buffer;
-		count++;
-	}
-
 	if (m_skinningVertexBuffer.buffer) {
 		(*outVBs)[count] = m_skinningVertexBuffer.buffer;
 		count++;
@@ -492,12 +483,9 @@ InterleavedVertexGroup Mesh::getStandardElement(VertexElementUsage usage, int us
 		if (usage == VertexElementUsage::Position ||
 			usage == VertexElementUsage::Normal ||
 			usage == VertexElementUsage::Color ||
-			usage == VertexElementUsage::TexCoord) {
+			usage == VertexElementUsage::TexCoord ||
+			usage == VertexElementUsage::Tangent) {
 			return InterleavedVertexGroup::Main;
-		}
-		if (usage == VertexElementUsage::Tangent ||
-			usage == VertexElementUsage::Binormal) {
-			return InterleavedVertexGroup::Tangents;
 		}
 		if (usage == VertexElementUsage::BlendWeight ||
 			usage == VertexElementUsage::BlendIndices) {
@@ -537,22 +525,6 @@ void* Mesh::acquireMappedVertexBuffer(InterleavedVertexGroup group)
 			m_mainVertexBuffer.mappedBuffer = m_mainVertexBuffer.buffer->map(MapMode::Write);
 		}
 		return m_mainVertexBuffer.mappedBuffer;
-
-	case InterleavedVertexGroup::Tangents:
-		if (!m_tangentsVertexBuffer.buffer) {
-			m_tangentsVertexBuffer.buffer = makeObject<VertexBuffer>(sizeof(VertexTangents) * m_vertexCount, m_resourceUsage);
-
-			// set default
-			auto* buf = static_cast<VertexTangents*>(m_mainVertexBuffer.buffer->map(MapMode::Write));
-			for (int i = 0; i < m_vertexCount; i++) {
-				buf[i] = VertexTangents::Default;
-			}
-		}
-
-		if (!m_tangentsVertexBuffer.mappedBuffer) {
-			m_tangentsVertexBuffer.mappedBuffer = m_tangentsVertexBuffer.buffer->map(MapMode::Write);
-		}
-		return m_tangentsVertexBuffer.mappedBuffer;
 
 	case InterleavedVertexGroup::Skinning:
 		if (!m_skinningVertexBuffer.buffer) {
@@ -638,7 +610,7 @@ VertexElementType Mesh::findVertexElementType(VertexElementUsage usage, int usag
 		if (usage == VertexElementUsage::TexCoord) return VertexElementType::Float2;
 		if (usage == VertexElementUsage::Color) return VertexElementType::Float4;
 		if (usage == VertexElementUsage::Tangent) return VertexElementType::Float3;
-		if (usage == VertexElementUsage::Binormal) return VertexElementType::Float3;
+		//if (usage == VertexElementUsage::Binormal) return VertexElementType::Float3;
 		if (usage == VertexElementUsage::BlendWeight) return VertexElementType::Float4;
 		if (usage == VertexElementUsage::BlendIndices) return VertexElementType::Float4;
 	}
@@ -667,12 +639,7 @@ void Mesh::attemptResetVertexLayout()
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Normal, 0);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float2, VertexElementUsage::TexCoord, 0);
 			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Color, 0);
-			streamIndex++;
-		}
-
-		if (m_tangentsVertexBuffer.buffer) {
-			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Tangent, 0);
-			m_vertexLayout->addElement(streamIndex, VertexElementType::Float3, VertexElementUsage::Binormal, 0);
+			m_vertexLayout->addElement(streamIndex, VertexElementType::Float4, VertexElementUsage::Tangent, 0);
 			streamIndex++;
 		}
 

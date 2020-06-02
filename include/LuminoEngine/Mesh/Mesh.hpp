@@ -20,7 +20,6 @@ class MeshManager;
 enum class InterleavedVertexGroup
 {
 	Main,			// struct Vertex
-	Tangents,		// struct VertexTangents
 	Skinning,		// struct VertexBlendWeight
 	AdditionalUV,	// struct VertexAdditionalUV
 	Undefined,
@@ -166,9 +165,6 @@ struct MeshSection2
 			Float2 TexCoord.0
 			Float4 Color.0
 		Stream.1:
-			Float3 Tangent.0
-			Float3 Binormal.0
-		Stream.2:
 			Float3 BlendWeight.0
 			Float4 BlendIndices.0
 		Stream.X:
@@ -255,7 +251,6 @@ private:
 
 	//MeshContainer* m_owner = nullptr;
 	VertexBufferEntry m_mainVertexBuffer;		// struct Vertex. (Pos0, Normal0, UV0, Color0)
-	VertexBufferEntry m_tangentsVertexBuffer;	// Tangent0, BiNormal0
 	VertexBufferEntry m_skinningVertexBuffer;	// BlendWeignt0, BlendIndex0
 	VertexBufferEntry m_additionalUVVertexBuffer;	// TEXCOORD_1, TEXCOORD_2,TEXCOORD_3
 	List<VertexBufferAttribute> m_extraVertexBuffers;
