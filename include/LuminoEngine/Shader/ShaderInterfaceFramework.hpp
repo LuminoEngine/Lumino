@@ -284,8 +284,8 @@ private:
 struct ShaderTechniqueClass
 {
     bool defaultTechnique;  // "Default" とだけ書かれた tech は　SceneRederer のデフォルトよりも優先。主に DebugGrid など、ライトがないことなどでシェーディングモデルが切り替わっても同じ tech を使いたいケース用。
-    ShaderTechniqueClass_Ligiting ligiting = ShaderTechniqueClass_Ligiting::Forward;
-    ShaderTechniqueClass_Phase phase = ShaderTechniqueClass_Phase::Geometry;
+    //ShaderTechniqueClass_Ligiting ligiting = ShaderTechniqueClass_Ligiting::Forward;
+    ShaderTechniqueClass_Phase phase = ShaderTechniqueClass_Phase::Forward;
     ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
     ShaderTechniqueClass_ShadingModel shadingModel = ShaderTechniqueClass_ShadingModel::Default;
     ShaderTechniqueClass_DrawMode drawMode = ShaderTechniqueClass_DrawMode::Primitive;

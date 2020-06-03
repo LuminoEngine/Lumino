@@ -43,8 +43,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 	if (requestedShader) {
 		ShaderTechniqueClass key = {
             false,
-			ShaderTechniqueClass_Ligiting::Forward,
-			ShaderTechniqueClass_Phase::Geometry,
+			ShaderTechniqueClass_Phase::Forward,
 			requestedMeshProcess,
 			ShaderTechniqueClass_ShadingModel::Unlit,	// requestedShadingModel が同指定されていても、Pass 優先
 			drawMode,

@@ -151,8 +151,7 @@ ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 
 	ShaderTechniqueClass classSet;
 	classSet.defaultTechnique = false;
-	classSet.ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
-	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
+	classSet.phase = ShaderTechniqueClass_Phase::LightDisc;
 	classSet.meshProcess = requestedMeshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
 	classSet.drawMode = drawMode;
@@ -265,8 +264,7 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 
 	ShaderTechniqueClass classSet;
     classSet.defaultTechnique = false;
-	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
-	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
+	classSet.phase = ShaderTechniqueClass_Phase::Forward;
 	classSet.meshProcess = requestedMeshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
 	classSet.drawMode = drawMode;

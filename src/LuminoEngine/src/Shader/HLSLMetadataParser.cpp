@@ -442,7 +442,19 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
     if (!next()) return false;
     std::string value = getString(current());
 
-    if (equalString(name, "Normal", 6)) {
+    if (equalString(name, "Phase", 6)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_Phase value; } table[] = {
+            {"Forward", 7, ShaderTechniqueClass_Phase::Forward},
+            {"LightDisc", 9, ShaderTechniqueClass_Phase::LightDisc},
+            {"ShadowCaster", 12, ShaderTechniqueClass_Phase::ShadowCaster},
+            {"DepthPrepass", 12, ShaderTechniqueClass_Phase::DepthPrepass},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.phase)) {
+            m_diag->reportError(u"Phase: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
+    else if (equalString(name, "Normal", 6)) {
         const struct { const char* name; size_t len; ShaderTechniqueClass_Normal value; } table[] = {
             {"Default", 7, ShaderTechniqueClass_Normal::Default},
             {"NormalMap", 9, ShaderTechniqueClass_Normal::NormalMap},

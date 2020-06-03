@@ -10,20 +10,19 @@ class ShaderPass;
 
 namespace detail {
 
-
-// LigitingModel
-enum class ShaderTechniqueClass_Ligiting : uint8_t
-{
-    Forward, // default
-                // TODO: Differd
-                LightDisc,
-};
+//
+//// LigitingModel
+//enum class ShaderTechniqueClass_Ligiting : uint8_t
+//{
+//};
 
 enum class ShaderTechniqueClass_Phase : uint8_t
 {
-    Geometry, // default
-                // TODO: ShadowCaster
-                // TODO: DepthPrepass
+    Forward, // default
+    // TODO: Differd
+    LightDisc,
+    ShadowCaster,
+    DepthPrepass
 };
 
 // VertexFactory

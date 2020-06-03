@@ -279,8 +279,7 @@ void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(const Clus
 void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet)
 {
     outClassSet->defaultTechnique = false;
-    outClassSet->ligiting = ShaderTechniqueClass_Ligiting::Forward;
-    outClassSet->phase = ShaderTechniqueClass_Phase::Geometry;
+    outClassSet->phase = ShaderTechniqueClass_Phase::Forward;
     outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
     outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
     outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Primitive;
@@ -290,7 +289,7 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
     }
 	else if (String::compare(str, u"LightDisc", CaseSensitivity::CaseInsensitive) == 0)
 	{
-		outClassSet->ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
+        outClassSet->phase = ShaderTechniqueClass_Phase::LightDisc;
 	}
     else
     {
@@ -312,8 +311,7 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
 
 bool ShaderTechniqueClass::equals(const ShaderTechniqueClass& a, const ShaderTechniqueClass& b)
 {
-    return a.ligiting == b.ligiting &&
-           a.phase == b.phase &&
+    return a.phase == b.phase &&
            a.meshProcess == b.meshProcess &&
            a.shadingModel == b.shadingModel &&
            a.drawMode == b.drawMode;

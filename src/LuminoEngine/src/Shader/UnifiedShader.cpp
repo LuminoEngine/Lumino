@@ -106,7 +106,6 @@ bool UnifiedShader::save(const Path& filePath)
             // class
             {
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.defaultTechnique ? 1 : 0));
-                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.ligiting));
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.phase));
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.meshProcess));
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.shadingModel));
@@ -275,7 +274,6 @@ bool UnifiedShader::load(Stream* stream)
             // class
             if (fileVersion >= FileVersion_4) {
                 info.techniqueClass.defaultTechnique = reader->readUInt8() != 0;
-                info.techniqueClass.ligiting = static_cast<ShaderTechniqueClass_Ligiting>(reader->readUInt8());
                 info.techniqueClass.phase = static_cast<ShaderTechniqueClass_Phase>(reader->readUInt8());
                 info.techniqueClass.meshProcess = static_cast<ShaderTechniqueClass_MeshProcess>(reader->readUInt8());
                 info.techniqueClass.shadingModel = static_cast<ShaderTechniqueClass_ShadingModel>(reader->readUInt8());
