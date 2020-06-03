@@ -19,7 +19,7 @@ class App_Example_MeshViewer : public Application
         auto planeMaterial = Material::create(texture);
         auto normalMap = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg");
         normalMap->setMipmapEnabled(true);
-        planeMaterial->setNormalMap(normalMap);
+        //planeMaterial->setNormalMap(normalMap);
         m_plane->planeMeshComponent()->setMaterial(planeMaterial);
         //m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
         m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));

@@ -76,8 +76,7 @@ RenderPass* DepthPrepass::renderPass() const
 }
 
 ShaderTechnique* DepthPrepass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -141,8 +140,7 @@ bool LightOcclusionPass::filterElement(RenderDrawElement* element) const
 }
 
 ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -152,9 +150,10 @@ ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 	ShaderTechniqueClass classSet;
 	classSet.defaultTechnique = false;
 	classSet.phase = ShaderTechniqueClass_Phase::LightDisc;
-	classSet.meshProcess = requestedMeshProcess;
+	classSet.meshProcess = requester.meshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-	classSet.drawMode = drawMode;
+	classSet.drawMode = requester.drawMode;
+	classSet.normalClass = ShaderTechniqueClass_Normal::Default;
 	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
 	if (technique)
 		return technique;
@@ -248,8 +247,7 @@ RenderPass* ClusteredShadingGeometryRenderingPass::renderPass() const
 //}
 
 ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -265,9 +263,10 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 	ShaderTechniqueClass classSet;
     classSet.defaultTechnique = false;
 	classSet.phase = ShaderTechniqueClass_Phase::Forward;
-	classSet.meshProcess = requestedMeshProcess;
+	classSet.meshProcess = requester.meshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-	classSet.drawMode = drawMode;
+	classSet.drawMode = requester.drawMode;
+	classSet.normalClass = requester.normal;
     ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(shader, classSet);
 	if (technique)
 		return technique;
@@ -385,8 +384,7 @@ RenderPass* ShadowCasterPass::renderPass() const
 }
 
 ShaderTechnique* ShadowCasterPass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {

@@ -314,7 +314,8 @@ bool ShaderTechniqueClass::equals(const ShaderTechniqueClass& a, const ShaderTec
     return a.phase == b.phase &&
            a.meshProcess == b.meshProcess &&
            a.shadingModel == b.shadingModel &&
-           a.drawMode == b.drawMode;
+           a.drawMode == b.drawMode &&
+           a.normalClass == b.normalClass;
 }
 
 } // namespace detail

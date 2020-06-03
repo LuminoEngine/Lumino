@@ -16,8 +16,7 @@ public:
 	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
-		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-		ShaderTechniqueClass_DrawMode drawMode,
+		const ShaderTechniqueRequestClasses& requester,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) override;
 

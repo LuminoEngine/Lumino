@@ -34,8 +34,7 @@ RenderPass* UnLigitingSceneRendererPass::renderPass() const
 }
 
 ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -44,9 +43,10 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 		ShaderTechniqueClass key = {
             false,
 			ShaderTechniqueClass_Phase::Forward,
-			requestedMeshProcess,
+			requester.meshProcess,
 			ShaderTechniqueClass_ShadingModel::Unlit,	// requestedShadingModel が同指定されていても、Pass 優先
-			drawMode,
+			requester.drawMode,
+			ShaderTechniqueClass_Normal::Default,
 		};
 		tech = ShaderHelper::findTechniqueByClass(requestedShader, key);
 	}

@@ -584,6 +584,15 @@ technique ClusteredForward
 */
 technique Forward_Geometry
 {
+	Normal = Default;
+	pass Pass1
+	{
+		VertexShader = _lngs_VS_ClusteredForward_Geometry;
+		PixelShader	 = _lngs_PS_ClusteredForward_Geometry;
+	}
+}
+technique Forward_Geometry_NormalMap
+{
 	Normal = NormalMap;
 	pass Pass1
 	{
