@@ -609,7 +609,7 @@ VertexElementType Mesh::findVertexElementType(VertexElementUsage usage, int usag
 		if (usage == VertexElementUsage::Normal) return VertexElementType::Float3;
 		if (usage == VertexElementUsage::TexCoord) return VertexElementType::Float2;
 		if (usage == VertexElementUsage::Color) return VertexElementType::Float4;
-		if (usage == VertexElementUsage::Tangent) return VertexElementType::Float3;
+		if (usage == VertexElementUsage::Tangent) return VertexElementType::Float4;
 		//if (usage == VertexElementUsage::Binormal) return VertexElementType::Float3;
 		if (usage == VertexElementUsage::BlendWeight) return VertexElementType::Float4;
 		if (usage == VertexElementUsage::BlendIndices) return VertexElementType::Float4;
@@ -625,6 +625,141 @@ VertexElementType Mesh::findVertexElementType(VertexElementUsage usage, int usag
 	if (!r) return r->type;
 
 	return VertexElementType::Unknown;
+}
+
+template<typename TIndex>
+static void calculateTangentsInternal(int indexCount, const TIndex* indices, Vertex* vertices)
+{
+	// v0 について計算する
+	auto calculateTangent = [](
+		const Vector3& p0, const Vector2& uv0,
+		const Vector3& p1, const Vector2& uv1,
+		const Vector3& p2, const Vector2& uv2)
+	{
+		Vector3 deltaPos1 = p1 - p0;
+		Vector3 deltaPos2 = p2 - p0;
+		Vector2 deltaUV1 = uv1 - uv0;
+		Vector2 deltaUV2 = uv2 - uv0;
+
+		if (Vector3::nearEqual(deltaPos1, Vector3::Zero))
+			return Vector3::UnitX;
+		if (Vector3::nearEqual(deltaPos2, Vector3::Zero))
+			return Vector3::UnitX;
+		if (Vector2::nearEqual(deltaUV1, Vector2::Zero))
+			return Vector3::UnitX;
+		if (Vector2::nearEqual(deltaUV2, Vector2::Zero))
+			return Vector3::UnitX;
+
+		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+		return Vector3::normalize((deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r);
+	};
+
+	for (int i = 0; i < indexCount; i += 3) {
+		int i0 = indices[i + 0];
+		int i1 = indices[i + 1];
+		int i2 = indices[i + 2];
+		const auto& v0 = vertices[i0];
+		const auto& v1 = vertices[i1];
+		const auto& v2 = vertices[i2];
+
+#if 1
+		{
+			auto v = v0;
+			v.tangent = Vector4(calculateTangent(v0.position, v0.uv, v1.position, v1.uv, v2.position, v2.uv), 1.0f);
+			vertices[i0] = v;
+		}
+		{
+			auto v = v1;
+			v.tangent = Vector4(calculateTangent(v1.position, v1.uv, v2.position, v2.uv, v0.position, v0.uv), 1.0f);
+			vertices[i1] = v;
+		}
+		{
+			auto v = v2;
+			v.tangent = Vector4(calculateTangent(v2.position, v2.uv, v0.position, v0.uv, v1.position, v1.uv), 1.0f);
+			vertices[i2] = v;
+		}
+#elif 0
+		{
+			auto v = v0;
+			const auto t = calculateTangent(v0.position, v0.uv, v1.position, v1.uv, v2.position, v2.uv);
+			v.tangent = Vector4((v.tangent.xyz() + t) / 2, 1.0f);
+			//v.tangent = Vector4(1, 0, 0, 1);
+			coreMesh->setVertex(i0, v);
+		}
+		{
+			auto v = v1;
+			const auto t = calculateTangent(v1.position, v1.uv, v2.position, v2.uv, v0.position, v0.uv);
+			v.tangent = Vector4((v.tangent.xyz() + t) / 2, 1.0f);
+			//v.tangent = Vector4(1, 0, 0, 1);
+			coreMesh->setVertex(i1, v);
+		}
+		{
+			auto v = v2;
+			const auto t = calculateTangent(v2.position, v2.uv, v0.position, v0.uv, v1.position, v1.uv);
+			v.tangent = Vector4((v.tangent.xyz() + t) / 2, 1.0f);
+			//v.tangent = Vector4(1, 0, 0, 1);
+			coreMesh->setVertex(i2, v);
+		}
+
+#else
+		if (v0.tangent.xyz().lengthSquared() < 0.000001f) {
+			auto v = v0;
+			v.tangent = Vector4(calculateTangent(v0.position, v0.uv, v1.position, v1.uv, v2.position, v2.uv), 1.0f);
+			coreMesh->setVertex(i0, v);
+		}
+		if (v1.tangent.xyz().lengthSquared() < 0.000001f) {
+			auto v = v1;
+			v.tangent = Vector4(calculateTangent(v1.position, v1.uv, v2.position, v2.uv, v0.position, v0.uv), 1.0f);
+			coreMesh->setVertex(i1, v);
+		}
+		if (v2.tangent.xyz().lengthSquared() < 0.000001f) {
+			auto v = v2;
+			v.tangent = Vector4(calculateTangent(v2.position, v2.uv, v0.position, v0.uv, v1.position, v1.uv), 1.0f);
+			coreMesh->setVertex(i2, v);
+		}
+#endif
+
+		/*
+		Vector3 deltaPos1 = v1.position - v0.position;
+		Vector3 deltaPos2 = v2.position - v0.position;
+		Vector2 deltaUV1 = v1.uv - v0.uv;
+		Vector2 deltaUV2 = v2.uv - v0.uv;
+
+		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+		Vector3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+		//glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+		*/
+
+		//v0.tangent = Vector4(Vector3::normalize(tangent), 1.0f);
+		//coreMesh->setVertex(i0, v0);
+
+
+		//v.position.y = 0;
+		//coreMesh->setVertex(vi, v);
+		//printf("");
+	}
+}
+
+// TODO: 未テスト。Blender が接線をエクスポートしない問題の暫定対策として用意しているが、
+// ちゃんと公開する前にはテストすること。
+// https://github.com/KhronosGroup/glTF-Blender-IO/issues/172
+void Mesh::calculateTangents()
+{
+	if (LN_REQUIRE(isAllTriangleLists())) return;
+
+	Vertex* vertices = static_cast<Vertex*>(acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
+	if (indexBufferFormat() == IndexBufferFormat::UInt16) {
+		uint16_t* indices = static_cast<uint16_t*>(acquireMappedIndexBuffer());
+		calculateTangentsInternal(indexCount(), indices, vertices);
+	}
+	else if (indexBufferFormat() == IndexBufferFormat::UInt32) {
+		uint32_t* indices = static_cast<uint32_t*>(acquireMappedIndexBuffer());
+		calculateTangentsInternal(indexCount(), indices, vertices);
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+		return;
+	}
 }
 
 void Mesh::attemptResetVertexLayout()

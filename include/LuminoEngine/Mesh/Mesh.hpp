@@ -217,6 +217,8 @@ public:
 	void* acquireMappedIndexBuffer();
 	VertexElementType findVertexElementType(VertexElementUsage usage, int usageIndex) const;
 	IndexBufferFormat indexBufferFormat() const { return m_indexFormat; }
+	void calculateTangents();
+	bool isAllTriangleLists() const { return !m_sections.containsIf([](const MeshSection2& x) { return x.topology != PrimitiveTopology::TriangleList; }); }
 
 LN_CONSTRUCT_ACCESS:
 	Mesh();

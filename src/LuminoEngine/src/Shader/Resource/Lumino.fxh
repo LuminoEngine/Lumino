@@ -46,6 +46,7 @@ struct LN_VSInput
 	float3	Normal			: NORMAL0;
 	float2	UV				: TEXCOORD0;
 	float4	Color			: COLOR0;
+	float4  tangent: TANGENT;
 	float4	BlendIndices	: BLENDINDICES;
 	float4	BlendWeight		: BLENDWEIGHT;
 };
@@ -53,8 +54,12 @@ struct LN_VSInput
 struct LN_VSOutput_Common
 {
 	float4	svPos		: SV_POSITION;
+
+	/** 座標変換後の法線 [View-space] */
 	float3	Normal		: NORMAL0;
+
 	float2	UV			: TEXCOORD0;
+
 	float4	Color		: COLOR0;
 };
 

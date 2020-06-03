@@ -65,7 +65,10 @@ cbuffer LNPBRMaterialParameter
 struct LN_IncidentLight
 {
 	float3 color;
-	float3 direction;	// ピクセル位置 → ライト中心位置 への向きベクトル
+
+	/** ジオメトリ位置 (ピクセル位置) → ライト中心位置 への向きベクトル */
+	float3 direction;
+
 	bool visible;
 };
 
@@ -108,14 +111,18 @@ struct LN_HemisphereLight
 // ディレクショナルライトの情報
 struct LN_DirectionalLight
 {
+	/** ライトの向き (光の放射方向) [View-space] */
 	float3 direction;
+
 	float3 color;
 };
 
 // ポイントライトの情報
 struct LN_PointLight
 {
-	float3 position;	// View 空間上の、ライトの中心点
+	/** ライトの中心点 [View-space] */
+	float3 position;
+
 	float3 color;
 	float distance;
 	float decay;
@@ -124,8 +131,12 @@ struct LN_PointLight
 // スポットライトの情報
 struct LN_SpotLight
 {
+	/** ライトの中心点 [View-space] */
 	float3 position;
+	
+	/** ライトの向き (光の放射方向) [View-space] */
 	float3 direction;
+
 	float3 color;
 	float distance;
 	float decay;
@@ -179,7 +190,7 @@ float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, co
 void LN_GetDirectionalDirectLightIrradiance(const LN_DirectionalLight directionalLight, const LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
 	directLight.color = directionalLight.color;
-	directLight.direction = directionalLight.direction;
+	directLight.direction = -directionalLight.direction;
 	directLight.visible = true;
 }
 
@@ -213,14 +224,14 @@ void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const i
 	*/
 }
 
-// ポイントライトの放射輝度の計算
+// スポットライトの放射輝度の計算
 void LN_GetSpotDirectLightIrradiance(const in LN_SpotLight spotLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
 	float3 L = spotLight.position - geometry.position;
 	directLight.direction = normalize(L);
 
 	float lightDistance = length(L);
-	float angleCos = dot(directLight.direction, spotLight.direction);
+	float angleCos = dot(directLight.direction, -spotLight.direction);
 
 	if (angleCos > spotLight.coneCos && LN_TestLightInRange(lightDistance, spotLight.distance))
 	{
@@ -418,9 +429,6 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 
 	// TODO: ライトマップを使う場合はここで irradiance に適用する
 	// see lights_fragment_maps.glsl.js
-
-	// TODO: ひとまず
-	//reflectedLight.directDiffuse += irradiance * material.diffuseColor;
 
 	// see lights_fragment_end.glsl.js
 	LN_RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );

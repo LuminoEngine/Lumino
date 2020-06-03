@@ -21,14 +21,15 @@ struct HLSLPass
     std::string name;
     std::string vertexShader;  // for Raw HLSL
     std::string pixelShader;   // for Raw HLSL
-    std::string surfaceShader; // for Lumino HLSL
-    std::string shadingModel;  // for Lumino HLSL
-    std::string ligitingModel; // for Lumino HLSL
+    //std::string surfaceShader; // for Lumino HLSL
+    //std::string shadingModel;  // for Lumino HLSL
+    //std::string ligitingModel; // for Lumino HLSL
+    //std::string normal;         // for Lumino HLSL
 
     Ref<ShaderRenderState> renderState;
 
-    void save(BinaryWriter* w, int version);
-    void load(BinaryReader* r, int version);
+    //void save(BinaryWriter* w, int version);
+    //void load(BinaryReader* r, int version);
     //void save(JsonWriter* w, int version);
     //void load(JsonReader* r, int version);
 };
@@ -40,8 +41,8 @@ struct HLSLTechnique
     size_t blockBegin = 0; // "technique"
     size_t blockEnd = 0;   // next to "}"
 
-    void save(BinaryWriter* w, int version);
-    void load(BinaryReader* r, int version);
+    //void save(BinaryWriter* w, int version);
+    //void load(BinaryReader* r, int version);
     //void save(JsonWriter* w, int version);
     //void load(JsonReader* r, int version);
 

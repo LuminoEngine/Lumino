@@ -3,7 +3,8 @@
 #define TINYGLTF_IMPLEMENTATION
 //#define TINYGLTF_NO_FS
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../../../build/BuildCache/tinygltf/tiny_gltf.h"
+//#include "../../../build/BuildCache/tinygltf/tiny_gltf.h"
+#include "D:\Tech\Graphics\tinygltf\tiny_gltf.h"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
@@ -62,6 +63,7 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Asse
 	}
 
     auto meshModel = makeObject<StaticMeshModel>();
+	m_meshModel = meshModel;
 
 	readCommon(meshModel);
 
@@ -78,6 +80,7 @@ Ref<SkinnedMeshModel> GLTFImporter::GLTFImporter::importSkinnedMesh(AssetManager
 	}
 
 	auto meshModel = makeObject<SkinnedMeshModel>();
+	m_meshModel = meshModel;
 
 	readCommon(meshModel);
 
@@ -165,24 +168,9 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
         if (itr != material.values.end()) {
             auto itr2 = itr->second.json_double_value.find("index");
             assert(itr2 != itr->second.json_double_value.end());
-
             int index = static_cast<int>(itr2->second);
             const tinygltf::Texture& texture = m_model->textures[index];
-            const tinygltf::Image& image = m_model->images[texture.source];
-
-            Ref<Bitmap2D> bitmap;
-            if (image.pixel_type == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE &&  // GL_UNSIGNED_BYTE
-                image.component == 4 &&     // RGBA
-                image.bits == 8) {
-                bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
-            }
-            else {
-                LN_NOTIMPLEMENTED();
-                return nullptr;
-            }
-
-            auto coreTexture = makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
-            coreMaterial->setMainTexture(coreTexture);
+			coreMaterial->setMainTexture(loadTexture(texture));
         }
     }
 
@@ -193,6 +181,7 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
             assert(itr2 != itr->second.json_double_value.end());
             int index = static_cast<int>(itr2->second);
             // TODO:
+			m_diag->reportWarning(u"metallicRoughnessTexture not supported.");
         }
     }
 
@@ -202,7 +191,13 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
             auto itr2 = itr->second.json_double_value.find("index");
             assert(itr2 != itr->second.json_double_value.end());
             int index = static_cast<int>(itr2->second);
-            // TODO:
+			const tinygltf::Texture& texture = m_model->textures[index];
+			coreMaterial->setNormalMap(loadTexture(texture));
+
+			// Blender でマテリアルの Normal を HeightMap にすると、glTF ではここに流れてくる。
+			// ただし、glTF としては HeightMap はサポートされていない。
+			// https://github.com/KhronosGroup/glTF/issues/948
+			// いまは手動で直してもらうしかない。
         }
     }
 
@@ -550,6 +545,8 @@ void flipFaceIndex_Triangle(T* indices, int count)
 
 Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 {
+	bool hasTangentAttribute = false;
+
 	// Validation and count vertices.
 	int vertexCount = 0;
 	for (auto& section : meshView.sectionViews) {
@@ -649,7 +646,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 					}
 				}
 				// Float4 <- Float2. UV 座標など。
-				if (destType == VertexElementType::Float4 && vbView.type == VertexElementType::Float2) {
+				else if (destType == VertexElementType::Float4 && vbView.type == VertexElementType::Float2) {
 					for (int i = 0; i < vertexCountInSection; i++) {
 						float* d = (float*)(&rawbuf[((vertexOffset + i) * stride) + offset]);
 						float* s = (float*)(src + (vbView.byteStride * i));
@@ -664,12 +661,16 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 				}
 			}
 			else {
+				// Note:  Blender で接線を Export できた時は Float4 to Float4 でここに来る。Tangent.w は 1.0 になっている。
 				int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
 				for (int i = 0; i < vertexCountInSection; i++) {
 					memcpy(&rawbuf[((vertexOffset + i) * stride) + offset], src + (vbView.byteStride * i), size);
 				}
 			}
 
+			if (vbView.usage == VertexElementUsage::Tangent) {
+				hasTangentAttribute = true;
+			}
 
 
 
@@ -794,11 +795,21 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	}
 
 
-	//for (int vi = 0; vi < coreMesh->vertexCount(); vi++) {
+	bool hasNormalMap = coreMesh->sections().containsIf([this](const MeshSection2& x) { return (x.materialIndex >= 0) && m_meshModel->materials()[x.materialIndex]->normalMap() != nullptr; });
+	if (hasNormalMap) {
+		if (!hasTangentAttribute) {
+			coreMesh->calculateTangents();
+		}
+	}
+
+
+
+
+	//for (int vi = 0; vi < 100/*coreMesh->vertexCount()*/; vi++) {
 	//	auto v = coreMesh->vertex(vi);
-	//	v.position.print();
-	//	v.position.y = 0;
-	//	coreMesh->setVertex(vi, v);
+	//	//v.position.y = 0;
+	//	//coreMesh->setVertex(vi, v);
+	//	printf("");
 	//}
 	//for (int vi = 0; vi < coreMesh->indexCount(); vi++) {
 	//	auto v = coreMesh->index(vi);
@@ -838,6 +849,28 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	}
 
 	return armature;
+}
+
+Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
+{
+	// TODO: image->name で名前が取れるので、それでキャッシュ組んだ方がいいかも？
+	// でも glb の場合は glb ファイル作った時点のテクスチャの内容が glb 内部に埋め込まれるから
+	// キャッシュ組むとしたらどちらを優先するか指定できた方がいいかも。
+
+	const tinygltf::Image& image = m_model->images[texture.source];
+
+	Ref<Bitmap2D> bitmap;
+	if (image.pixel_type == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE &&  // GL_UNSIGNED_BYTE
+		image.component == 4 &&     // RGBA
+		image.bits == 8) {
+		bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+
+	return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
 }
 
 bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)

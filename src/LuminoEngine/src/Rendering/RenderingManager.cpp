@@ -18,7 +18,7 @@ const Vertex Vertex::Default = {
 	{ 0, 0, 1 },
 	{ 0, 0 },
 	{ 1, 1, 1, 1 },
-	{ 0, 0, 0, 1 },
+	{ 1, 0, 0, 1 },
 };
 const VertexBlendWeight VertexBlendWeight::Default{ {0, 0, 0, 0}, {0, 0, 0, 0} };
 

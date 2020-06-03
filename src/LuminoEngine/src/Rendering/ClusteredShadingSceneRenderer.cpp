@@ -487,8 +487,13 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 		m_lightClusters.addHemisphereLight(color, light.m_color2 * light.m_intensity);
 		break;
 	case LightType::Directional:
-		m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view.viewMatrix), color);
+	{
+		//auto a1 = transformDirection(-light.m_direction, view.viewMatrix);
+		//auto a2 = -transformDirection(light.m_direction, view.viewMatrix);
+		//m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view.viewMatrix), color);
+		m_lightClusters.addDirectionalLight(light.m_direction, color);
 		break;
+	}
 	case LightType::Point:
 		m_lightClusters.addPointLight(light.m_position, light.m_range, light.m_attenuation, color);
 		break;

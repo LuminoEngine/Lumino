@@ -10,7 +10,7 @@
 
 sampler2D ln_NormalMap;
 
-//#define LN_USE_NORMALMAP
+#define LN_USE_NORMALMAP
 float3 LN_UnpackNormal(float4 packednormal)
 {
 	return (packednormal.xyz * 2.0) - 1.0;
@@ -377,9 +377,10 @@ struct _lngs_VSOutput
 	float3	VertexPos	: TEXCOORD11;
 
 #ifdef LN_USE_NORMALMAP
-	float3	vEyeDirection	: TEXCOORD12;
-	float3	vLightDirection	: TEXCOORD13;
+	float3	vTangent	: TEXCOORD12;
+	float3	vBitangent	: TEXCOORD13;
 
+	float3	Debug	: TEXCOORD14;
 #endif
 };
 
@@ -399,6 +400,12 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 
 	
 #ifdef LN_USE_NORMALMAP
+	const float3 objectTangent = vsi.tangent.xyz;
+	const float3 transformedTangent = ( ln_WorldView * float4( objectTangent, 0.0 ) ).xyz;
+	output.vTangent = normalize( transformedTangent );
+	output.vBitangent = normalize( cross( output.Normal, output.vTangent ) * vsi.tangent.w );
+	output.Debug = objectTangent;
+/*
 	float3 eyePosition = ln_CameraPosition;
 	float3 lightPosition = float3(1, 1, -1);
 
@@ -426,6 +433,8 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
     vLightDirection.y = dot(b, light);
     vLightDirection.z = dot(n, light);
     output.vLightDirection = normalize(vLightDirection);
+	*/
+
 #endif
 
 	return output;
@@ -469,13 +478,19 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 struct _lngs_PSInput
 {
 	// common
-	float3	Normal		: NORMAL0;
+	float3	viewspaceNormal		: NORMAL0;
 	float2	UV			: TEXCOORD0;
 	float4	Color		: COLOR0;
 	
 	// clustered forward
 	float3	WorldPos	: TEXCOORD10;
 	float3	VertexPos	: TEXCOORD11;
+	
+#ifdef LN_USE_NORMALMAP
+	float3	vTangent	: TEXCOORD12;
+	float3	vBitangent	: TEXCOORD13;
+	float3	Debug	: TEXCOORD14;
+#endif
 };
 
 struct _lngs_PSOutput
@@ -488,9 +503,26 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 {
 	
 #ifdef LN_USE_NORMALMAP
-	float3 normal = LN_UnpackNormal(tex2D(ln_NormalMap, input.UV));
+	const float3 viewSpaceTangent = normalize(input.vTangent);
+	const float3 viewSpaceBitangent = normalize(input.vBitangent);
+	const float3 viewSpaceNormal = normalize(input.viewspaceNormal);
+	const float3 mapNormal = LN_UnpackNormal(tex2D(ln_NormalMap, input.UV));
+
+	const float3x3 vTBN = float3x3( viewSpaceTangent, viewSpaceBitangent, viewSpaceNormal );
+	const float3 normal = mul(mapNormal, vTBN);
+
+	/*
+	const float3 normal = normalize(float3(
+		dot(viewSpaceTangent, mapNormal),
+		dot(viewSpaceBitangent, mapNormal),
+		dot(viewSpaceNormal, mapNormal)));
+	const float3 normal = normalize(float3(
+		dot(mapNormal, viewSpaceTangent),
+		dot(mapNormal, viewSpaceBitangent),
+		dot(mapNormal, viewSpaceNormal)));
+	*/
 #else
-	float3 normal = input.Normal;
+	const float3 normal = input.viewspaceNormal;
 #endif
 
 	LN_SurfaceOutput surface;
@@ -511,11 +543,11 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	_lngs_PSOutput o;
 	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
 	o.color0.a = surface.Albedo.a;
-	//o.color0 = float4(1, 0, 0, 1);
 	o.color0 = LN_GetBuiltinEffectColor(o.color0);
 
-	//o.color0.r = ln_MaterialMetallic;
 	
+	//o.color0 = float4(input.viewspaceNormal, 1);
+	//o.color0 = float4(input.Debug, 1);
 	return o;
 }
 

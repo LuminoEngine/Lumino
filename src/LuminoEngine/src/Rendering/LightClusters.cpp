@@ -105,17 +105,17 @@ void LightClusters::addSpotLight(const Vector3& pos, float range, float attenuat
 	//info.posAndRange = Vector4(pos, range);
 	//info.directionAndAtt = Vector4(-direction, range);
 	info.posAndRange = Vector4(Vector3::transform(pos, m_view).xyz(), range);
-	info.directionAndAtt = Vector4(transformDirection(-direction, m_view), attenuation);
+	info.directionAndAtt = Vector4(transformDirection(direction, m_view), attenuation);
 	info.spotAngle = Vector4(cos(cone), cos(cone * (1.0 - penumbra)), 0, 0);
 	info.color = color;
 	m_lightInofs.add(info);
 }
 
-void LightClusters::addDirectionalLight(const Vector3& dir, const Color& color)
+void LightClusters::addDirectionalLight(const Vector3& direction, const Color& color)
 {
 	GlobalLightInfo info;
 	info.color = color;
-	info.directionAndType = Vector4(dir, 1.0f + FLT_EPSILON);
+	info.directionAndType = Vector4(transformDirection(direction, m_view), 1.0f + FLT_EPSILON);
 	m_globalLightInofs.add(info);
 }
 
