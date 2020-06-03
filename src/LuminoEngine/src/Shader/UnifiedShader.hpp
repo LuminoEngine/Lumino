@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <LuminoEngine/Engine/Diagnostics.hpp>
+#include <LuminoEngine/Shader/ShaderInterfaceFramework.hpp>
 #include "HLSLMetadataParser.hpp"
 #include "ShaderTranspiler.hpp"
 
@@ -55,6 +56,7 @@ public:
 		FileVersion_1 = 1,  // 0.7.0
         FileVersion_2,      // 0.8.0
 		FileVersion_3,      // 0.9.0
+        FileVersion_4,      // 0.10.0
 		FileVersion_Last,
 		FileVersion_Current = FileVersion_Last - 1,
 	};
@@ -75,10 +77,11 @@ public:
     const std::string& entryPointName(CodeContainerId conteinreId) const;
     void makeGlobalDescriptorLayout();
 
-    bool addTechnique(const std::string& name, TechniqueId* outTech);
+    bool addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass, TechniqueId* outTech);
     int techniqueCount() const { return m_techniques.size(); }
     TechniqueId techniqueId(int index) const { return indexToId(index); }
     const std::string& techniqueName(TechniqueId techId) const { return m_techniques[idToIndex(techId)].name; }
+    const ShaderTechniqueClass& techniqueClass(TechniqueId techId) const { return m_techniques[idToIndex(techId)].techniqueClass; }
 
     bool addPass(TechniqueId parentTech, const std::string& name, PassId* outPass);
     int getPassCountInTechnique(TechniqueId parentTech) const;
@@ -128,6 +131,7 @@ private:
     struct TechniqueInfo
     {
         std::string name;
+        ShaderTechniqueClass techniqueClass;
         List<PassId> passes;
     };
 

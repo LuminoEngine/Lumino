@@ -55,9 +55,16 @@ bool UnifiedShaderCompiler::compile(
     for (auto& tech : m_metadataTechniques)
     {
         UnifiedShader::TechniqueId techId;
-        if (!m_unifiedShader->addTechnique(tech.name, &techId)) {
+        if (!m_unifiedShader->addTechnique(tech.name, tech.techniqueClass, &techId)) {
             return false;
         }
+
+		List<String> actualDefinitions = definitions;
+		{
+			if (tech.techniqueClass.normalClass == ShaderTechniqueClass_Normal::NormalMap)
+				actualDefinitions.add(u"LN_USE_NORMALMAP=1");
+		}
+
 
         for (auto& pass : tech.passes)
         {
@@ -69,7 +76,7 @@ bool UnifiedShaderCompiler::compile(
             // Vertex shader
             {
                 auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
-                transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+                transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &actualDefinitions, m_diag);
                 if (m_diag->hasError()) {
                     return false;
                 }
@@ -89,7 +96,7 @@ bool UnifiedShaderCompiler::compile(
             // Pixel shader
             {
                 auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
-                transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+                transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &actualDefinitions, m_diag);
                 if (m_diag->hasError()) {
                     return false;
                 }
@@ -121,7 +128,7 @@ bool UnifiedShaderCompiler::compile(
 			// Vertex shader
 			{
 				auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
-				transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &definitions, m_diag);
+				transpiler->compileAndLinkFromHlsl(ShaderStage2_Vertex, inputCode, inputCodeLength, pass.vertexShader, includeDirectories, &actualDefinitions, m_diag);
 				if (m_diag->hasError()) {
 					return false;
 				}
@@ -131,7 +138,7 @@ bool UnifiedShaderCompiler::compile(
 			// Pixel shader
 			{
 				auto transpiler = std::make_shared<ShaderCodeTranspiler>(m_manager);
-				transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &definitions, m_diag);
+				transpiler->compileAndLinkFromHlsl(ShaderStage2_Fragment, inputCode, inputCodeLength, pass.pixelShader, includeDirectories, &actualDefinitions, m_diag);
 				if (m_diag->hasError()) {
 					return false;
 				}
@@ -162,7 +169,7 @@ bool UnifiedShaderCompiler::compileSingleCodes(
 #if 1
 
     UnifiedShader::TechniqueId techId;
-    if (!m_unifiedShader->addTechnique(tech.name, &techId)) {
+    if (!m_unifiedShader->addTechnique(tech.name, tech.techniqueClass, &techId)) {
         return false;
     }
 

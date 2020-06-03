@@ -10,6 +10,49 @@ class ShaderPass;
 
 namespace detail {
 
+
+// LigitingModel
+enum class ShaderTechniqueClass_Ligiting : uint8_t
+{
+    Forward, // default
+                // TODO: Differd
+                LightDisc,
+};
+
+enum class ShaderTechniqueClass_Phase : uint8_t
+{
+    Geometry, // default
+                // TODO: ShadowCaster
+                // TODO: DepthPrepass
+};
+
+// VertexFactory
+enum class ShaderTechniqueClass_MeshProcess : uint8_t
+{
+    StaticMesh, // default
+    SkinnedMesh,
+};
+
+// PixelShader
+enum class ShaderTechniqueClass_ShadingModel : uint8_t
+{
+    Default,
+    Unlit,
+};
+
+enum class ShaderTechniqueClass_DrawMode : uint8_t
+{
+    Primitive, // default
+    Instancing,
+};
+
+enum class ShaderTechniqueClass_Normal : uint8_t
+{
+    Default,
+    NormalMap,
+};
+
+
 struct UnifiedShaderTriple
 {
     std::string target;

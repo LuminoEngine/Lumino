@@ -13,7 +13,7 @@ class App_Example_MeshViewer : public Application
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
         m_plane = PlaneMesh::create();
-        m_plane->planeMeshComponent()->setSize(100, 100);
+        m_plane->planeMeshComponent()->setSize(10000, 10000);
         auto texture = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
         texture->setMipmapEnabled(true);
         auto planeMaterial = Material::create(texture);
@@ -24,7 +24,7 @@ class App_Example_MeshViewer : public Application
         //m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
         m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));
 
-        auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
+        //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
 
 
         //auto mesh = StaticMesh::create(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb");

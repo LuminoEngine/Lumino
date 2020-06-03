@@ -327,12 +327,20 @@ bool HLSLMetadataParser::nextTo(const char* word, int len)
 {
     do {
         m_current++;
+    } while (isSpaceToken(current()));
 
-    } while (
-        isSpaceToken(current()) ||
-        !equalString(current(), word, len));
+    if (!equalString(current(), word, len) || isEof()) {
+        m_diag->reportError(u"Expected " + String::fromCString(word, len));
+        return false;
+    }
 
-    return !isEof();
+    return true;
+
+    //} while (
+    //    isSpaceToken(current()) ||
+    //    !equalString(current(), word, len));
+
+    //return !isEof();
 }
 
 bool HLSLMetadataParser::isSpaceToken(const Token& token) const
@@ -395,15 +403,10 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 
     bool closed = false;
     while (next()) {
-        if (equalString(current(), "pass", 4)) {
-            HLSLPass pass;
-            pass.renderState = makeRef<ShaderRenderState>();
-            if (!parsePass(&pass)) return false;
-            tech->passes.push_back(std::move(pass));
-        } else if (equalString(current(), "}", 1)) {
-            closed = true;
-            break;
+        if (!parseTechniqueMemberList(tech, &closed)) {
+            return false;
         }
+        if (closed) break;
     }
     if (!closed) return false;
 
@@ -411,6 +414,46 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
     tech->blockEnd = current().location() + 1;
 
     return true;
+}
+
+bool HLSLMetadataParser::parseTechniqueMemberList(HLSLTechnique* tech, bool* outClosed)
+{
+    if (equalString(current(), "pass", 4)) {
+        HLSLPass pass;
+        pass.renderState = makeRef<ShaderRenderState>();
+        if (!parsePass(&pass)) return false;
+        tech->passes.push_back(std::move(pass));
+    }
+    else if (equalString(current(), "}", 1)) {
+        *outClosed = true;
+    }
+    else {
+        if (!parseTechniqueMember(tech)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
+{
+    const Token& name = current();
+    if (!nextTo('=')) return false;
+    if (!next()) return false;
+    std::string value = getString(current());
+
+    if (equalString(name, "Normal", 6)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_Normal value; } table[] = {
+            {"Default", 7, ShaderTechniqueClass_Normal::Default},
+            {"NormalMap", 9, ShaderTechniqueClass_Normal::NormalMap},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.normalClass)) {
+            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
+
+    if (!nextTo(';')) return false;
 }
 
 bool HLSLMetadataParser::parsePass(HLSLPass* pass)

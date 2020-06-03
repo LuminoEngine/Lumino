@@ -37,6 +37,7 @@ struct HLSLPass
 struct HLSLTechnique
 {
     std::string name;
+    ShaderTechniqueClass techniqueClass;
     std::vector<HLSLPass> passes;
     size_t blockBegin = 0; // "technique"
     size_t blockEnd = 0;   // next to "}"
@@ -73,6 +74,8 @@ private:
 
     bool parseCompileUnit();
     bool parseTechnique(HLSLTechnique* tech);
+    bool parseTechniqueMemberList(HLSLTechnique* tech, bool* outClosed);
+    bool parseTechniqueMember(HLSLTechnique* tech);
     bool parsePass(HLSLPass* pass);
     bool parseRenderState(HLSLPass* pass);
 

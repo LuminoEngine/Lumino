@@ -2,6 +2,7 @@
 #pragma once
 #include "Common.hpp"
 #include "../Graphics/GraphicsResource.hpp"
+#include "ShaderInterfaceFramework.hpp"
 #include "ShaderHelper.hpp"
 
 namespace ln {
@@ -364,7 +365,7 @@ private:
     LN_INTERNAL_NEW_OBJECT;
     ShaderTechnique();
     virtual ~ShaderTechnique();
-    void init(const String& name);
+    void init(const String& name, const detail::ShaderTechniqueClass& techniqueClass);
     void setupSemanticsManager();
 
     void setOwner(Shader* owner) { m_owner = owner; }

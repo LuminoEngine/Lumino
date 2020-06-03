@@ -10,7 +10,7 @@
 
 sampler2D ln_NormalMap;
 
-#define LN_USE_NORMALMAP
+//#define LN_USE_NORMALMAP
 float3 LN_UnpackNormal(float4 packednormal)
 {
 	return (packednormal.xyz * 2.0) - 1.0;
@@ -584,6 +584,7 @@ technique ClusteredForward
 */
 technique Forward_Geometry
 {
+	Normal = NormalMap;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry;
@@ -593,6 +594,7 @@ technique Forward_Geometry
 
 technique Forward_Geometry_StaticMesh_UnLighting
 {
+	Normal = Default;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry;
@@ -602,6 +604,7 @@ technique Forward_Geometry_StaticMesh_UnLighting
 
 technique Forward_Geometry_SkinnedMesh
 {
+	Normal = Default;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
@@ -611,6 +614,7 @@ technique Forward_Geometry_SkinnedMesh
 
 technique Forward_Geometry_SkinnedMesh_UnLighting
 {
+	Normal = Default;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
