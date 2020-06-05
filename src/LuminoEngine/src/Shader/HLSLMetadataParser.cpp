@@ -13,95 +13,97 @@ namespace detail {
 //=============================================================================
 // HLSLPass
 
-void HLSLPass::save(BinaryWriter* w, int version)
-{
-    HLSLTechnique::writeString(w, name);
-    HLSLTechnique::writeString(w, vertexShader);
-    HLSLTechnique::writeString(w, pixelShader);
-    HLSLTechnique::writeString(w, surfaceShader);
-    HLSLTechnique::writeString(w, shadingModel);
-    HLSLTechnique::writeString(w, ligitingModel);
+//void HLSLPass::save(BinaryWriter* w, int version)
+//{
+//    HLSLTechnique::writeString(w, name);
+//    HLSLTechnique::writeString(w, vertexShader);
+//    HLSLTechnique::writeString(w, pixelShader);
+//    HLSLTechnique::writeString(w, surfaceShader);
+//    HLSLTechnique::writeString(w, shadingModel);
+//    HLSLTechnique::writeString(w, ligitingModel);
+//    HLSLTechnique::writeString(w, normal);
+//
+//    //writeOptionalBool(w, renderState->blendEnable);
+//    //writeOptionalUInt8(w, renderState->sourceBlend);
+//    //writeOptionalUInt8(w, renderState->destinationBlend);
+//    //writeOptionalUInt8(w, renderState->blendOp);
+//    //writeOptionalUInt8(w, renderState->sourceBlendAlpha);
+//    //writeOptionalUInt8(w, renderState->destinationBlendAlpha);
+//    //writeOptionalUInt8(w, renderState->blendOpAlpha);
+//
+//    //writeOptionalUInt8(w, renderState->fillMode);
+//    //writeOptionalUInt8(w, renderState->cullMode);
+//
+//    //writeOptionalUInt8(w, renderState->depthTestFunc);
+//    //writeOptionalBool(w, renderState->depthWriteEnabled);
+//
+//    //writeOptionalBool(w, renderState->stencilEnabled);
+//    //writeOptionalUInt8(w, renderState->stencilReferenceValue);
+//    //writeOptionalUInt8(w, renderState->stencilFailOp);
+//    //writeOptionalUInt8(w, renderState->stencilDepthFailOp);
+//    //writeOptionalUInt8(w, renderState->stencilPassOp);
+//    //writeOptionalUInt8(w, renderState->stencilFunc);
+//}
 
-    //writeOptionalBool(w, renderState->blendEnable);
-    //writeOptionalUInt8(w, renderState->sourceBlend);
-    //writeOptionalUInt8(w, renderState->destinationBlend);
-    //writeOptionalUInt8(w, renderState->blendOp);
-    //writeOptionalUInt8(w, renderState->sourceBlendAlpha);
-    //writeOptionalUInt8(w, renderState->destinationBlendAlpha);
-    //writeOptionalUInt8(w, renderState->blendOpAlpha);
+//void HLSLPass::load(BinaryReader* r, int version)
+//{
+//    name = HLSLTechnique::readString(r);
+//    vertexShader = HLSLTechnique::readString(r);
+//    pixelShader = HLSLTechnique::readString(r);
+//    surfaceShader = HLSLTechnique::readString(r);
+//    shadingModel = HLSLTechnique::readString(r);
+//    ligitingModel = HLSLTechnique::readString(r);
+//    normal = HLSLTechnique::readString(r);
+//
+//    //readOptionalBool(r, &renderState->blendEnable);
+//    //readOptionalUInt8(r, &renderState->sourceBlend);
+//    //readOptionalUInt8(r, &renderState->destinationBlend);
+//    //readOptionalUInt8(r, &renderState->blendOp);
+//    //readOptionalUInt8(r, &renderState->sourceBlendAlpha);
+//    //readOptionalUInt8(r, &renderState->destinationBlendAlpha);
+//    //readOptionalUInt8(r, &renderState->blendOpAlpha);
+//
+//    //readOptionalUInt8(r, &renderState->fillMode);
+//    //readOptionalUInt8(r, &renderState->cullMode);
+//
+//    //readOptionalUInt8(r, &renderState->depthTestFunc);
+//    //readOptionalBool(r, &renderState->depthWriteEnabled);
+//
+//    //readOptionalBool(r, &renderState->stencilEnabled);
+//    //readOptionalUInt8(r, &renderState->stencilReferenceValue);
+//    //readOptionalUInt8(r, &renderState->stencilFailOp);
+//    //readOptionalUInt8(r, &renderState->stencilDepthFailOp);
+//    //readOptionalUInt8(r, &renderState->stencilPassOp);
+//    //readOptionalUInt8(r, &renderState->stencilFunc);
+//}
 
-    //writeOptionalUInt8(w, renderState->fillMode);
-    //writeOptionalUInt8(w, renderState->cullMode);
-
-    //writeOptionalUInt8(w, renderState->depthTestFunc);
-    //writeOptionalBool(w, renderState->depthWriteEnabled);
-
-    //writeOptionalBool(w, renderState->stencilEnabled);
-    //writeOptionalUInt8(w, renderState->stencilReferenceValue);
-    //writeOptionalUInt8(w, renderState->stencilFailOp);
-    //writeOptionalUInt8(w, renderState->stencilDepthFailOp);
-    //writeOptionalUInt8(w, renderState->stencilPassOp);
-    //writeOptionalUInt8(w, renderState->stencilFunc);
-}
-
-void HLSLPass::load(BinaryReader* r, int version)
-{
-    name = HLSLTechnique::readString(r);
-    vertexShader = HLSLTechnique::readString(r);
-    pixelShader = HLSLTechnique::readString(r);
-    surfaceShader = HLSLTechnique::readString(r);
-    shadingModel = HLSLTechnique::readString(r);
-    ligitingModel = HLSLTechnique::readString(r);
-
-    //readOptionalBool(r, &renderState->blendEnable);
-    //readOptionalUInt8(r, &renderState->sourceBlend);
-    //readOptionalUInt8(r, &renderState->destinationBlend);
-    //readOptionalUInt8(r, &renderState->blendOp);
-    //readOptionalUInt8(r, &renderState->sourceBlendAlpha);
-    //readOptionalUInt8(r, &renderState->destinationBlendAlpha);
-    //readOptionalUInt8(r, &renderState->blendOpAlpha);
-
-    //readOptionalUInt8(r, &renderState->fillMode);
-    //readOptionalUInt8(r, &renderState->cullMode);
-
-    //readOptionalUInt8(r, &renderState->depthTestFunc);
-    //readOptionalBool(r, &renderState->depthWriteEnabled);
-
-    //readOptionalBool(r, &renderState->stencilEnabled);
-    //readOptionalUInt8(r, &renderState->stencilReferenceValue);
-    //readOptionalUInt8(r, &renderState->stencilFailOp);
-    //readOptionalUInt8(r, &renderState->stencilDepthFailOp);
-    //readOptionalUInt8(r, &renderState->stencilPassOp);
-    //readOptionalUInt8(r, &renderState->stencilFunc);
-}
-
-//=============================================================================
-// HLSLTechnique
-
-void HLSLTechnique::save(BinaryWriter* w, int version)
-{
-    LN_CHECK(passes.size() < 255);
-    writeString(w, name);
-
-    // passes
-    w->writeUInt8(passes.size());
-    for (auto& pass : passes) {
-        pass.save(w, version);
-    }
-}
-
-void HLSLTechnique::load(BinaryReader* r, int version)
-{
-    name = readString(r);
-
-    // passes
-    int count = r->readUInt8();
-    for (int i = 0; i < count; i++) {
-        HLSLPass pass;
-        pass.load(r, version);
-        passes.push_back(std::move(pass));
-    }
-}
+////=============================================================================
+//// HLSLTechnique
+//
+//void HLSLTechnique::save(BinaryWriter* w, int version)
+//{
+//    LN_CHECK(passes.size() < 255);
+//    writeString(w, name);
+//
+//    // passes
+//    w->writeUInt8(passes.size());
+//    for (auto& pass : passes) {
+//        pass.save(w, version);
+//    }
+//}
+//
+//void HLSLTechnique::load(BinaryReader* r, int version)
+//{
+//    name = readString(r);
+//
+//    // passes
+//    int count = r->readUInt8();
+//    for (int i = 0; i < count; i++) {
+//        HLSLPass pass;
+//        pass.load(r, version);
+//        passes.push_back(std::move(pass));
+//    }
+//}
 
 void HLSLTechnique::writeString(BinaryWriter* w, const std::string& str)
 {
@@ -325,12 +327,20 @@ bool HLSLMetadataParser::nextTo(const char* word, int len)
 {
     do {
         m_current++;
+    } while (isSpaceToken(current()));
 
-    } while (
-        isSpaceToken(current()) ||
-        !equalString(current(), word, len));
+    if (!equalString(current(), word, len) || isEof()) {
+        m_diag->reportError(u"Expected " + String::fromCString(word, len));
+        return false;
+    }
 
-    return !isEof();
+    return true;
+
+    //} while (
+    //    isSpaceToken(current()) ||
+    //    !equalString(current(), word, len));
+
+    //return !isEof();
 }
 
 bool HLSLMetadataParser::isSpaceToken(const Token& token) const
@@ -393,15 +403,10 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 
     bool closed = false;
     while (next()) {
-        if (equalString(current(), "pass", 4)) {
-            HLSLPass pass;
-            pass.renderState = makeRef<ShaderRenderState>();
-            if (!parsePass(&pass)) return false;
-            tech->passes.push_back(std::move(pass));
-        } else if (equalString(current(), "}", 1)) {
-            closed = true;
-            break;
+        if (!parseTechniqueMemberList(tech, &closed)) {
+            return false;
         }
+        if (closed) break;
     }
     if (!closed) return false;
 
@@ -409,6 +414,58 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
     tech->blockEnd = current().location() + 1;
 
     return true;
+}
+
+bool HLSLMetadataParser::parseTechniqueMemberList(HLSLTechnique* tech, bool* outClosed)
+{
+    if (equalString(current(), "pass", 4)) {
+        HLSLPass pass;
+        pass.renderState = makeRef<ShaderRenderState>();
+        if (!parsePass(&pass)) return false;
+        tech->passes.push_back(std::move(pass));
+    }
+    else if (equalString(current(), "}", 1)) {
+        *outClosed = true;
+    }
+    else {
+        if (!parseTechniqueMember(tech)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
+{
+    const Token& name = current();
+    if (!nextTo('=')) return false;
+    if (!next()) return false;
+    std::string value = getString(current());
+
+    if (equalString(name, "Phase", 6)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_Phase value; } table[] = {
+            {"Forward", 7, ShaderTechniqueClass_Phase::Forward},
+            {"LightDisc", 9, ShaderTechniqueClass_Phase::LightDisc},
+            {"ShadowCaster", 12, ShaderTechniqueClass_Phase::ShadowCaster},
+            {"DepthPrepass", 12, ShaderTechniqueClass_Phase::DepthPrepass},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.phase)) {
+            m_diag->reportError(u"Phase: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
+    else if (equalString(name, "Normal", 6)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_Normal value; } table[] = {
+            {"Default", 7, ShaderTechniqueClass_Normal::Default},
+            {"NormalMap", 9, ShaderTechniqueClass_Normal::NormalMap},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.normalClass)) {
+            m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
+
+    if (!nextTo(';')) return false;
 }
 
 bool HLSLMetadataParser::parsePass(HLSLPass* pass)
@@ -454,20 +511,26 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
         //next();	// skip "compile"
         //next();	// skip "vs_x_x"
         pass->vertexShader = token;
-    } else if (equalString(name, "PixelShader", 11)) {
+    }
+    else if (equalString(name, "PixelShader", 11)) {
         //next();	// skip "compile"
         //next();	// skip "ps_x_x"
         pass->pixelShader = token;
-    } else if (equalString(name, "ShadingModel", 12)) {
-        pass->shadingModel = token;
-        m_isLuminoShader = true;
-    } else if (equalString(name, "LigitingModel", 13)) {
-        pass->ligitingModel = token;
-        m_isLuminoShader = true;
-    } else if (equalString(name, "SurfaceShader", 13)) {
-        pass->surfaceShader = token;
-        m_isLuminoShader = true;
     }
+    //} else if (equalString(name, "ShadingModel", 12)) {
+    //    pass->shadingModel = token;
+    //    m_isLuminoShader = true;
+    //} else if (equalString(name, "LigitingModel", 13)) {
+    //    pass->ligitingModel = token;
+    //    m_isLuminoShader = true;
+    //} else if (equalString(name, "SurfaceShader", 13)) {
+    //    pass->surfaceShader = token;
+    //    m_isLuminoShader = true;
+    //}
+    //else if (equalString(name, "Normal", 6)) {
+    //    pass->normal = token;
+    //    m_isLuminoShader = true;
+    //}
     //--------------------------------------------------
     // BlendStateDesc
     else if (equalString(name, "BlendEnable", 11)) {

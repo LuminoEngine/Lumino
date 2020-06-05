@@ -8,6 +8,15 @@
 #include <LuminoShadow.fxh>
 #include <LuminoSkinning.fxh>
 
+sampler2D ln_NormalMap;
+
+//#define LN_USE_NORMALMAP
+float3 LN_UnpackNormal(float4 packednormal)
+{
+	return (packednormal.xyz * 2.0) - 1.0;
+}
+
+
 //------------------------------------------------------------------------------
 // Lib (ClusteredForward)
 
@@ -366,6 +375,13 @@ struct _lngs_VSOutput
 	// clustered forward
 	float3	WorldPos	: TEXCOORD10;
 	float3	VertexPos	: TEXCOORD11;
+
+#ifdef LN_USE_NORMALMAP
+	float3	vTangent	: TEXCOORD12;
+	float3	vBitangent	: TEXCOORD13;
+
+	float3	Debug	: TEXCOORD14;
+#endif
 };
 
 // auto generation
@@ -381,6 +397,46 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 	output.Color = common.Color;
 	output.WorldPos = extra.WorldPos;
 	output.VertexPos = extra.VertexPos;
+
+	
+#ifdef LN_USE_NORMALMAP
+	const float3 objectTangent = vsi.tangent.xyz;
+	const float3 transformedTangent = ( ln_WorldView * float4( objectTangent, 0.0 ) ).xyz;
+	output.vTangent = normalize( transformedTangent );
+	output.vBitangent = normalize( cross( output.Normal, output.vTangent ) * vsi.tangent.w );
+	output.Debug = objectTangent;
+/*
+	float3 eyePosition = ln_CameraPosition;
+	float3 lightPosition = float3(1, 1, -1);
+
+    float3 invEye   = (ln_WorldI * float4(eyePosition, 0.0)).xyz;
+    float3 invLight = (ln_WorldI * float4(lightPosition, 0.0)).xyz;
+	float3 eye      = invEye - common.svPos.xyz;
+    float3 light    = invLight - common.svPos.xyz;
+
+
+
+	// ローカル空間上での接空間ベクトルの方向を求める
+	float3 normal = common.Normal;
+	float3 n = normalize(normal);
+    float3 t = normalize(cross(normal, float3(0.0, 1.0, 0.0)));
+    float3 b = cross(n, t);
+
+	// 視線ベクトルとライトベクトルを接空間上に変換
+    float3 vEyeDirection;
+	vEyeDirection.x   = dot(t, eye);
+    vEyeDirection.y   = dot(b, eye);
+    vEyeDirection.z   = dot(n, eye);
+    output.vEyeDirection = normalize(vEyeDirection);
+    float3 vLightDirection;
+    vLightDirection.x = dot(t, light);
+    vLightDirection.y = dot(b, light);
+    vLightDirection.z = dot(n, light);
+    output.vLightDirection = normalize(vLightDirection);
+	*/
+
+#endif
+
 	return output;
 }
 // auto generation
@@ -422,13 +478,19 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 struct _lngs_PSInput
 {
 	// common
-	float3	Normal		: NORMAL0;
+	float3	viewspaceNormal		: NORMAL0;
 	float2	UV			: TEXCOORD0;
 	float4	Color		: COLOR0;
 	
 	// clustered forward
 	float3	WorldPos	: TEXCOORD10;
 	float3	VertexPos	: TEXCOORD11;
+	
+#ifdef LN_USE_NORMALMAP
+	float3	vTangent	: TEXCOORD12;
+	float3	vBitangent	: TEXCOORD13;
+	float3	Debug	: TEXCOORD14;
+#endif
 };
 
 struct _lngs_PSOutput
@@ -439,8 +501,32 @@ struct _lngs_PSOutput
 
 _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 {
+	
+#ifdef LN_USE_NORMALMAP
+	const float3 viewSpaceTangent = normalize(input.vTangent);
+	const float3 viewSpaceBitangent = normalize(input.vBitangent);
+	const float3 viewSpaceNormal = normalize(input.viewspaceNormal);
+	const float3 mapNormal = LN_UnpackNormal(tex2D(ln_NormalMap, input.UV));
+
+	const float3x3 vTBN = float3x3( viewSpaceTangent, viewSpaceBitangent, viewSpaceNormal );
+	const float3 normal = mul(mapNormal, vTBN);
+
+	/*
+	const float3 normal = normalize(float3(
+		dot(viewSpaceTangent, mapNormal),
+		dot(viewSpaceBitangent, mapNormal),
+		dot(viewSpaceNormal, mapNormal)));
+	const float3 normal = normalize(float3(
+		dot(mapNormal, viewSpaceTangent),
+		dot(mapNormal, viewSpaceBitangent),
+		dot(mapNormal, viewSpaceNormal)));
+	*/
+#else
+	const float3 normal = input.viewspaceNormal;
+#endif
+
 	LN_SurfaceOutput surface;
-	_LN_InitSurfaceOutput(input.Normal, surface);
+	_LN_InitSurfaceOutput(normal, surface);
 
 	//surface.Normal = input.Normal;
 	
@@ -457,11 +543,11 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	_lngs_PSOutput o;
 	o.color0 = _LN_PS_ClusteredForward_Default(input.WorldPos, input.VertexPos, surface);
 	o.color0.a = surface.Albedo.a;
-	//o.color0 = float4(1, 0, 0, 1);
 	o.color0 = LN_GetBuiltinEffectColor(o.color0);
 
-	//o.color0.r = ln_MaterialMetallic;
 	
+	//o.color0 = float4(input.viewspaceNormal, 1);
+	//o.color0 = float4(input.Debug, 1);
 	return o;
 }
 
@@ -498,6 +584,16 @@ technique ClusteredForward
 */
 technique Forward_Geometry
 {
+	Normal = Default;
+	pass Pass1
+	{
+		VertexShader = _lngs_VS_ClusteredForward_Geometry;
+		PixelShader	 = _lngs_PS_ClusteredForward_Geometry;
+	}
+}
+technique Forward_Geometry_NormalMap
+{
+	Normal = NormalMap;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry;
@@ -507,6 +603,7 @@ technique Forward_Geometry
 
 technique Forward_Geometry_StaticMesh_UnLighting
 {
+	Normal = Default;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry;
@@ -516,6 +613,7 @@ technique Forward_Geometry_StaticMesh_UnLighting
 
 technique Forward_Geometry_SkinnedMesh
 {
+	Normal = Default;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;
@@ -525,6 +623,7 @@ technique Forward_Geometry_SkinnedMesh
 
 technique Forward_Geometry_SkinnedMesh_UnLighting
 {
+	Normal = Default;
 	pass Pass1
 	{
 		VertexShader = _lngs_VS_ClusteredForward_Geometry_SkinnedMesh;

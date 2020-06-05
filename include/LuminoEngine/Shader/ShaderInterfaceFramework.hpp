@@ -26,6 +26,7 @@ struct alignas(16) LNRenderViewBuffer
 struct alignas(16) LNRenderElementBuffer
 {
     alignas(16) Matrix ln_World;
+    alignas(16) Matrix ln_WorldI;
     alignas(16) Matrix ln_WorldViewProjection;
     alignas(16) Matrix ln_WorldView;
     alignas(16) Matrix ln_WorldViewIT;
@@ -139,6 +140,7 @@ struct SubsetInfo
 {
     // common material
     Texture* materialTexture;
+    Texture* normalMap;
 
     // builtin effect
     float opacity;
@@ -149,6 +151,7 @@ struct SubsetInfo
 	void clear()
 	{
 		materialTexture = nullptr;
+        normalMap = nullptr;
 		opacity = 0.0f;
 		colorScale = Color();
 		blendColor = Color();
@@ -159,6 +162,7 @@ struct SubsetInfo
 	{
 		return
 			lhs.materialTexture == rhs.materialTexture &&
+            lhs.normalMap == rhs.normalMap &&
 			Math::nearEqual(lhs.opacity, rhs.opacity) &&
 			Color::nearEqual(lhs.colorScale, rhs.colorScale) &&
 			Color::nearEqual(lhs.blendColor, rhs.blendColor) &&
@@ -192,6 +196,7 @@ enum BuiltinShaderParameters
 
     // LNRenderElementBuffer
     BuiltinShaderParameters_ln_World,
+    BuiltinShaderParameters_ln_WorldI,
     BuiltinShaderParameters_ln_WorldViewProjection,
     BuiltinShaderParameters_ln_WorldView,
     BuiltinShaderParameters_ln_WorldViewIT,
@@ -225,6 +230,7 @@ enum BuiltinShaderUniformBuffers
 enum BuiltinShaderTextures
 {
     BuiltinShaderTextures_ln_MaterialTexture,
+    BuiltinShaderTextures_ln_NormalMap,
     BuiltinShaderTextures_ln_BoneTexture,
     BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,
 
@@ -273,50 +279,17 @@ private:
     std::array<int, BuiltinShaderTextures__Count> m_builtinShaderTextures;
 };
 
-// LigitingModel
-enum class ShaderTechniqueClass_Ligiting : uint8_t
-{
-    Forward, // default
-             // TODO: Differd
-	LightDisc,
-};
-
-enum class ShaderTechniqueClass_Phase : uint8_t
-{
-    Geometry, // default
-              // TODO: ShadowCaster
-              // TODO: DepthPrepass
-};
-
-// VertexFactory
-enum class ShaderTechniqueClass_MeshProcess : uint8_t
-{
-    StaticMesh, // default
-    SkinnedMesh,
-};
-
-// PixelShader
-enum class ShaderTechniqueClass_ShadingModel : uint8_t
-{
-    Default,
-    Unlit,
-};
-
-enum class ShaderTechniqueClass_DrawMode : uint8_t
-{
-    Primitive, // default
-    Instancing,
-};
 
 // Rendering モジュールで、Pass が ShaderTechnique を検索するときに使うデータ
 struct ShaderTechniqueClass
 {
     bool defaultTechnique;  // "Default" とだけ書かれた tech は　SceneRederer のデフォルトよりも優先。主に DebugGrid など、ライトがないことなどでシェーディングモデルが切り替わっても同じ tech を使いたいケース用。
-    ShaderTechniqueClass_Ligiting ligiting;
-    ShaderTechniqueClass_Phase phase;
-    ShaderTechniqueClass_MeshProcess meshProcess;
-    ShaderTechniqueClass_ShadingModel shadingModel;
-    ShaderTechniqueClass_DrawMode drawMode;
+    //ShaderTechniqueClass_Ligiting ligiting = ShaderTechniqueClass_Ligiting::Forward;
+    ShaderTechniqueClass_Phase phase = ShaderTechniqueClass_Phase::Forward;
+    ShaderTechniqueClass_MeshProcess meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
+    ShaderTechniqueClass_ShadingModel shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+    ShaderTechniqueClass_DrawMode drawMode = ShaderTechniqueClass_DrawMode::Primitive;
+    ShaderTechniqueClass_Normal normalClass = ShaderTechniqueClass_Normal::Default;
 
     static void parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet);
     static bool equals(const ShaderTechniqueClass& a, const ShaderTechniqueClass& b);

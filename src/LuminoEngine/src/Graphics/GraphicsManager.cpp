@@ -194,6 +194,9 @@ void GraphicsManager::init(const Settings& settings)
         m_whiteTexture = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
         m_whiteTexture->clear(Color::White);
 
+		m_defaultNormalMap = makeObject<Texture2D>(32, 32, TextureFormat::RGBA8);
+		m_defaultNormalMap->clear(Color(0.0f, 0.0f, 1.0f, 1.0f));
+
 		m_defaultSamplerState = makeObject<SamplerState>();
 		m_defaultSamplerState->setFrozen(true);
 

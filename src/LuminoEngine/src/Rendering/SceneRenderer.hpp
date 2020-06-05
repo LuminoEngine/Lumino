@@ -19,6 +19,13 @@ enum class ZSortDistanceBase
 	CameraScreenDistance,	/**< カメラが映すスクリーン平面とノードの距離を使用する */
 };
 
+struct ShaderTechniqueRequestClasses
+{
+	ShaderTechniqueClass_MeshProcess meshProcess;
+	ShaderTechniqueClass_DrawMode drawMode;
+	ShaderTechniqueClass_Normal normal;
+};
+
 
 class SceneRendererPass
 	: public RefObject
@@ -44,8 +51,7 @@ public:
 
 	// Element の情報と派生 Pass から、最終的に使いたい ShaderTechnique を求める
 	virtual ShaderTechnique* selectShaderTechnique(
-		ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-		ShaderTechniqueClass_DrawMode drawMode,
+		const ShaderTechniqueRequestClasses& requester,
 		Shader* requestedShader,
 		ShadingModel requestedShadingModel) = 0;
 

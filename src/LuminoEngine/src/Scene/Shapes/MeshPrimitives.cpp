@@ -66,5 +66,30 @@ SphereMeshComponent* SphereMesh::sphereMeshComponent() const
 	return m_component;
 }
 
+//==============================================================================
+// PlaneMesh
+
+Ref<PlaneMesh> PlaneMesh::create()
+{
+	return makeObject<PlaneMesh>();
+}
+
+PlaneMesh::PlaneMesh()
+{
+}
+
+void PlaneMesh::init()
+{
+	VisualObject::init();
+	m_component = makeObject<PlaneMeshComponent>();
+	addComponent(m_component);
+	setMainVisualComponent(m_component);
+}
+
+PlaneMeshComponent* PlaneMesh::planeMeshComponent() const
+{
+	return m_component;
+}
+
 } // namespace ln
 

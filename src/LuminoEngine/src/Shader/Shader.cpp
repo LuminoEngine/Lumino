@@ -285,7 +285,7 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 
 	for (int iTech = 0; iTech < unifiedShader->techniqueCount(); iTech++) {
 		detail::UnifiedShader::TechniqueId techId = unifiedShader->techniqueId(iTech);
-		auto tech = makeObject<ShaderTechnique>(String::fromStdString(unifiedShader->techniqueName(techId)));
+		auto tech = makeObject<ShaderTechnique>(String::fromStdString(unifiedShader->techniqueName(techId)), unifiedShader->techniqueClass(techId));
 		tech->setOwner(this);
 		m_techniques->add(tech);
 
@@ -383,10 +383,11 @@ ShaderTechnique::~ShaderTechnique()
 {
 }
 
-void ShaderTechnique::init(const String& name)
+void ShaderTechnique::init(const String& name, const detail::ShaderTechniqueClass& techniqueClass)
 {
     Object::init();
     m_name = name;
+    m_techniqueClass = techniqueClass;
     detail::ShaderTechniqueClass::parseTechniqueClassString(m_name, &m_techniqueClass);
 }
 

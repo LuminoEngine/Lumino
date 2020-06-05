@@ -21,14 +21,15 @@ struct HLSLPass
     std::string name;
     std::string vertexShader;  // for Raw HLSL
     std::string pixelShader;   // for Raw HLSL
-    std::string surfaceShader; // for Lumino HLSL
-    std::string shadingModel;  // for Lumino HLSL
-    std::string ligitingModel; // for Lumino HLSL
+    //std::string surfaceShader; // for Lumino HLSL
+    //std::string shadingModel;  // for Lumino HLSL
+    //std::string ligitingModel; // for Lumino HLSL
+    //std::string normal;         // for Lumino HLSL
 
     Ref<ShaderRenderState> renderState;
 
-    void save(BinaryWriter* w, int version);
-    void load(BinaryReader* r, int version);
+    //void save(BinaryWriter* w, int version);
+    //void load(BinaryReader* r, int version);
     //void save(JsonWriter* w, int version);
     //void load(JsonReader* r, int version);
 };
@@ -36,12 +37,13 @@ struct HLSLPass
 struct HLSLTechnique
 {
     std::string name;
+    ShaderTechniqueClass techniqueClass;
     std::vector<HLSLPass> passes;
     size_t blockBegin = 0; // "technique"
     size_t blockEnd = 0;   // next to "}"
 
-    void save(BinaryWriter* w, int version);
-    void load(BinaryReader* r, int version);
+    //void save(BinaryWriter* w, int version);
+    //void load(BinaryReader* r, int version);
     //void save(JsonWriter* w, int version);
     //void load(JsonReader* r, int version);
 
@@ -72,6 +74,8 @@ private:
 
     bool parseCompileUnit();
     bool parseTechnique(HLSLTechnique* tech);
+    bool parseTechniqueMemberList(HLSLTechnique* tech, bool* outClosed);
+    bool parseTechniqueMember(HLSLTechnique* tech);
     bool parsePass(HLSLPass* pass);
     bool parseRenderState(HLSLPass* pass);
 

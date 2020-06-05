@@ -103,6 +103,16 @@ bool UnifiedShader::save(const Path& filePath)
             TechniqueInfo* info = &m_techniques[i];
             writeString(writer, info->name);
 
+            // class
+            {
+                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.defaultTechnique ? 1 : 0));
+                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.phase));
+                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.meshProcess));
+                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.shadingModel));
+                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.drawMode));
+                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.normalClass));
+            }
+
             // passes
             writer->writeUInt32(info->passes.size());
             for (int iPass = 0; iPass < info->passes.size(); iPass++) {
@@ -260,6 +270,16 @@ bool UnifiedShader::load(Stream* stream)
         for (size_t iTech = 0; iTech < count; iTech++) {
             TechniqueInfo info;
             info.name = readString(reader);
+
+            // class
+            if (fileVersion >= FileVersion_4) {
+                info.techniqueClass.defaultTechnique = reader->readUInt8() != 0;
+                info.techniqueClass.phase = static_cast<ShaderTechniqueClass_Phase>(reader->readUInt8());
+                info.techniqueClass.meshProcess = static_cast<ShaderTechniqueClass_MeshProcess>(reader->readUInt8());
+                info.techniqueClass.shadingModel = static_cast<ShaderTechniqueClass_ShadingModel>(reader->readUInt8());
+                info.techniqueClass.drawMode = static_cast<ShaderTechniqueClass_DrawMode>(reader->readUInt8());
+                info.techniqueClass.normalClass = static_cast<ShaderTechniqueClass_Normal>(reader->readUInt8());
+            }
 
             // passes
             size_t passCount = reader->readUInt32();
@@ -494,14 +514,14 @@ void UnifiedShader::makeGlobalDescriptorLayout()
     }
 }
 
-bool UnifiedShader::addTechnique(const std::string& name, TechniqueId* outTech)
+bool UnifiedShader::addTechnique(const std::string& name, const ShaderTechniqueClass& techniqueClass, TechniqueId* outTech)
 {
     if (findTechniqueInfoIndex(name) >= 0) {
         m_diag->reportError(String::fromStdString("Technique '" + name + "' is already exists."));
         return false;
     }
 
-    m_techniques.add({name});
+    m_techniques.add({name, techniqueClass });
     *outTech = indexToId(m_techniques.size() - 1);
     return true;
 }

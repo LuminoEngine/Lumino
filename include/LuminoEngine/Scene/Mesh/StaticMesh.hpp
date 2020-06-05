@@ -10,6 +10,7 @@ class StaticMesh
 {
 public:
     static Ref<StaticMesh> create();
+    static Ref<StaticMesh> create(StaticMeshModel* model);
     static Ref<StaticMesh> create(const StringRef& filePath, float scale = 1.0f);
 
     StaticMeshComponent* staticMeshComponent() const;
@@ -20,6 +21,7 @@ LN_CONSTRUCT_ACCESS:
 	StaticMesh();
 	virtual ~StaticMesh();
 	void init();
+    void init(StaticMeshModel* model);
     void init(const StringRef& filePath, float scale);
 
 private:

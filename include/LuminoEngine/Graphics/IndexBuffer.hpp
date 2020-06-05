@@ -82,7 +82,7 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create(int, IndexBufferFormat, const void*, GraphicsResourceUsage) */
     void init(int indexCount, IndexBufferFormat format, const void* initialData, GraphicsResourceUsage usage);
 
-	void init(int indexCount, GraphicsResourceUsage usage);
+	//void init(int indexCount, GraphicsResourceUsage usage);
 
 private:
     int getIndexStride() const;

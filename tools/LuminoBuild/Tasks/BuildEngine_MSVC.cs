@@ -69,9 +69,9 @@ namespace LuminoBuild.Tasks
 
                 var additional = "";
                 if (!string.IsNullOrEmpty(targetInfo.Arch))
-                {
                     additional += "-A " + targetInfo.Arch;
-                }
+                if (!string.IsNullOrEmpty(BuildEnvironment.FbxSdkVS2017))
+                    additional += "-DLN_FBX_SDK_PATH:STRING=\"{BuildEnvironment.FbxSdkVS2017}\"";
 
                 var args = new string[]
                 {

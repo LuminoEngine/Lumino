@@ -26,6 +26,7 @@ void MeshGeneraterBuffer::setV(int index, const Vector3&	position, const Vector2
     m_vertexBuffer[index].uv = uv;
     m_vertexBuffer[index].normal = normal;
     m_vertexBuffer[index].color = m_generator->color();
+    m_vertexBuffer[index].tangent = Vector4(1, 0, 0, 1);
 }
 
 

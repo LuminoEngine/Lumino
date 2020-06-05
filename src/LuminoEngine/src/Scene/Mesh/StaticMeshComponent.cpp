@@ -61,13 +61,10 @@ void StaticMeshComponent::onRender(RenderingContext* context)
         //}
     }
 #endif
-
-
     for (const auto& node : m_model->meshNodes()) {
         if (node->meshContainerIndex() >= 0) {
+
             context->setTransfrom(m_model->nodeGlobalTransform(node->index()));
-
-
             const auto& meshContainer = m_model->meshContainers()[node->meshContainerIndex()];
 
             Mesh* mesh = meshContainer->mesh();
@@ -77,7 +74,6 @@ void StaticMeshComponent::onRender(RenderingContext* context)
                     context->drawMesh(mesh, iSection);
                 }
             }
-
         }
     }
 }

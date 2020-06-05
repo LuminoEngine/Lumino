@@ -125,7 +125,7 @@ void DirectionalLight::init()
 	m_component = makeObject<DirectionalLightComponent>();
 	addComponent(m_component);
     setPosition(0, 0, 0);
-	setRotation(Math::degreesToRadians(50), Math::degreesToRadians(-30), 0);
+	setRotation(Math::degreesToRadians(50), Math::degreesToRadians(-30), 0);	// 右上手前から照らす
     //lookAt(Vector3(1, -1, 1));
 
 

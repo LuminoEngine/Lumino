@@ -4,6 +4,7 @@
 //#define TINYGLTF_NO_FS
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../../../build/BuildCache/tinygltf/tiny_gltf.h"
+//#include "D:\Tech\Graphics\tinygltf\tiny_gltf.h"
 #include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
@@ -62,6 +63,7 @@ Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const Asse
 	}
 
     auto meshModel = makeObject<StaticMeshModel>();
+	m_meshModel = meshModel;
 
 	readCommon(meshModel);
 
@@ -78,6 +80,7 @@ Ref<SkinnedMeshModel> GLTFImporter::GLTFImporter::importSkinnedMesh(AssetManager
 	}
 
 	auto meshModel = makeObject<SkinnedMeshModel>();
+	m_meshModel = meshModel;
 
 	readCommon(meshModel);
 
@@ -165,24 +168,9 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
         if (itr != material.values.end()) {
             auto itr2 = itr->second.json_double_value.find("index");
             assert(itr2 != itr->second.json_double_value.end());
-
             int index = static_cast<int>(itr2->second);
             const tinygltf::Texture& texture = m_model->textures[index];
-            const tinygltf::Image& image = m_model->images[texture.source];
-
-            Ref<Bitmap2D> bitmap;
-            if (image.pixel_type == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE &&  // GL_UNSIGNED_BYTE
-                image.component == 4 &&     // RGBA
-                image.bits == 8) {
-                bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
-            }
-            else {
-                LN_NOTIMPLEMENTED();
-                return nullptr;
-            }
-
-            auto coreTexture = makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
-            coreMaterial->setMainTexture(coreTexture);
+			coreMaterial->setMainTexture(loadTexture(texture));
         }
     }
 
@@ -193,6 +181,7 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
             assert(itr2 != itr->second.json_double_value.end());
             int index = static_cast<int>(itr2->second);
             // TODO:
+			m_diag->reportWarning(u"metallicRoughnessTexture not supported.");
         }
     }
 
@@ -202,7 +191,13 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
             auto itr2 = itr->second.json_double_value.find("index");
             assert(itr2 != itr->second.json_double_value.end());
             int index = static_cast<int>(itr2->second);
-            // TODO:
+			const tinygltf::Texture& texture = m_model->textures[index];
+			coreMaterial->setNormalMap(loadTexture(texture));
+
+			// Blender でマテリアルの Normal を HeightMap にすると、glTF ではここに流れてくる。
+			// ただし、glTF としては HeightMap はサポートされていない。
+			// https://github.com/KhronosGroup/glTF/issues/948
+			// いまは手動で直してもらうしかない。
         }
     }
 
@@ -229,6 +224,8 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
             m[4], m[5], m[6], m[7],
             m[8], m[9], m[10], m[11],
             m[12], m[13], m[14], m[15]);
+
+		//nodeTransform *= Matrix::makeScaling(1, 1, -1);
 
 		//nodeTransform.set(	// transpose
 		//	m[0], m[4], m[8], m[12],
@@ -269,6 +266,13 @@ Ref<MeshNode> GLTFImporter::readNode(const tinygltf::Node& node)
 	return coreNode;
 }
 
+// glTF の Mesh は小単位として Primitive というデータを持っている。
+// Primitive は 頂点バッファ、インデックスバッファ、1つのマテリアル から成る。
+// 1つのマテリアル を持つので、Lumino の Mesh だと 1つの Section に対応しそうに見えるが、
+// 頂点バッファ、インデックスバッファも持っている点に注意。
+//
+// Lumino の Mesh への変換としては、この Primitive が持っている個々の頂点バッファとインデックスバッファを
+// それぞれひとつのバッファに統合する方針で実装している。
 Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 {
     MeshView meshView;
@@ -335,9 +339,18 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 					return nullptr;
 				}
 			}
-			else if (itr->first.compare("TEXCOORD_0") == 0) {
+			else if (itr->first.compare(0, 8, "TEXCOORD") == 0) {
+				if (itr->first.compare("TEXCOORD_0") == 0) {
+					vbView.usageIndex = 0;
+				}
+				else if (itr->first.compare("TEXCOORD_1") == 0) {
+					vbView.usageIndex = 1;
+				}
+				else {
+					LN_NOTIMPLEMENTED();
+					return nullptr;
+				}
 				vbView.usage = VertexElementUsage::TexCoord;
-				vbView.usageIndex = 0;
 				if (accessor.type == TINYGLTF_TYPE_VEC2 && accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
 					vbView.type = VertexElementType::Float2;
 				}
@@ -485,15 +498,23 @@ Ref<MeshContainer> GLTFImporter::readMesh(const tinygltf::Mesh& mesh)
 		}
 		else if (primitive.mode == TINYGLTF_MODE_TRIANGLE_STRIP) {
 			sectionView.topology = PrimitiveTopology::TriangleStrip;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_TRIANGLE_FAN) {
 			sectionView.topology = PrimitiveTopology::TriangleFan;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_POINTS) {
 			sectionView.topology = PrimitiveTopology::PointList;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_LINE) {
 			sectionView.topology = PrimitiveTopology::LineList;
+			LN_NOTIMPLEMENTED();
+			return nullptr;
 		}
 		else if (primitive.mode == TINYGLTF_MODE_LINE_LOOP) {
 			LN_NOTIMPLEMENTED();
@@ -524,6 +545,8 @@ void flipFaceIndex_Triangle(T* indices, int count)
 
 Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 {
+	bool hasTangentAttribute = false;
+
 	// Validation and count vertices.
 	int vertexCount = 0;
 	for (auto& section : meshView.sectionViews) {
@@ -541,25 +564,27 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 	// count indices and measure element size.
 	int indexCount = 0;
-	int indexElementSize = 0;
+	//int indexElementSize = 0;
 	for (auto& section : meshView.sectionViews) {
 		indexCount += section.indexCount;
-		indexElementSize = std::max(indexElementSize, section.indexElementSize);
+	//	indexElementSize = std::max(indexElementSize, section.indexElementSize);
 	}
+	//int indexElementSize = detail::GraphicsResourceInternal::selectIndexBufferFormat(vertexCount);
 
-	// select index format.
-	IndexBufferFormat indexForamt;
-	if (indexElementSize == 1 || indexElementSize == 2) {
-		indexForamt = IndexBufferFormat::UInt16;
-		indexElementSize = 2;
-	}
-	else if (indexElementSize == 4) {
-		indexForamt = IndexBufferFormat::UInt32;
-	}
-	else {
-		LN_NOTIMPLEMENTED();
-		return nullptr;
-	}
+	//// select index format.
+	//IndexBufferFormat indexForamt;
+	//if (indexElementSize == 1 || indexElementSize == 2) {
+	//	indexForamt = IndexBufferFormat::UInt16;
+	//	indexElementSize = 2;
+	//}
+	//else if (indexElementSize == 4) {
+	//	indexForamt = IndexBufferFormat::UInt32;
+	//}
+	//else {
+	//	LN_NOTIMPLEMENTED();
+	//	return nullptr;
+	//}
+	IndexBufferFormat indexForamt = detail::GraphicsResourceInternal::selectIndexBufferFormat(vertexCount);
 
 	auto coreMesh = makeObject<Mesh>(vertexCount, indexCount, indexForamt, GraphicsResourceUsage::Static);
 
@@ -586,14 +611,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 				else if (vbView.usage == VertexElementUsage::Normal) offset = LN_MEMBER_OFFSETOF(Vertex, normal);
 				else if (vbView.usage == VertexElementUsage::TexCoord) offset = LN_MEMBER_OFFSETOF(Vertex, uv);
 				else if (vbView.usage == VertexElementUsage::Color) offset = LN_MEMBER_OFFSETOF(Vertex, color);
-				else {
-					LN_ERROR();
-				}
-			}
-			else if (reservedGroup == InterleavedVertexGroup::Tangents) {
-				stride = sizeof(VertexTangents);
-				if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(VertexTangents, tangent);
-				else if (vbView.usage == VertexElementUsage::Binormal) offset = LN_MEMBER_OFFSETOF(VertexTangents, binormal);
+				else if (vbView.usage == VertexElementUsage::Tangent) offset = LN_MEMBER_OFFSETOF(Vertex, tangent);
 				else {
 					LN_ERROR();
 				}
@@ -616,6 +634,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 			}
 
 			if (destType != vbView.type) {
+				// Float4 <- Short4
 				if (destType == VertexElementType::Float4 && vbView.type == VertexElementType::Short4) {
 					for (int i = 0; i < vertexCountInSection; i++) {
 						float* d = (float*)(&rawbuf[((vertexOffset + i) * stride) + offset]);
@@ -626,22 +645,38 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						d[3] = (float)s[3];
 					}
 				}
+				// Float4 <- Float2. UV 座標など。
+				else if (destType == VertexElementType::Float4 && vbView.type == VertexElementType::Float2) {
+					for (int i = 0; i < vertexCountInSection; i++) {
+						float* d = (float*)(&rawbuf[((vertexOffset + i) * stride) + offset]);
+						float* s = (float*)(src + (vbView.byteStride * i));
+						d[0] = s[0];
+						d[1] = s[1];
+						d[2] = 0.0f;
+						d[3] = 0.0f;
+					}
+				}
 				else {
 					LN_NOTIMPLEMENTED();
 				}
 			}
 			else {
+				// Note:  Blender で接線を Export できた時は Float4 to Float4 でここに来る。Tangent.w は 1.0 になっている。
 				int size = GraphicsHelper::getVertexElementTypeSize(vbView.type);
 				for (int i = 0; i < vertexCountInSection; i++) {
 					memcpy(&rawbuf[((vertexOffset + i) * stride) + offset], src + (vbView.byteStride * i), size);
 				}
 			}
 
+			if (vbView.usage == VertexElementUsage::Tangent) {
+				hasTangentAttribute = true;
+			}
 
 
 
 			// Flip Z (RH to LH)
 			{
+#if 0	// 単に z 反転しただけだと、Node 行列との齟齬がでるのか、正しい位置に描画されなくなる
 				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Position) {
 					if (vbView.type == VertexElementType::Float3) {
 						auto* p = reinterpret_cast<Vertex*>(rawbuf);
@@ -654,7 +689,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						return nullptr;
 					}
 				}
-				else if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Normal) {
+				else
+				if (reservedGroup == InterleavedVertexGroup::Main && vbView.usage == VertexElementUsage::Normal) {
 					if (vbView.type == VertexElementType::Float3) {
 						auto* p = reinterpret_cast<Vertex*>(rawbuf);
 						for (int i = 0; i < vertexCountInSection; i++) {
@@ -666,8 +702,8 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						return nullptr;
 					}
 				}
+#endif
 			}
-
             // TODO: unmap 無いとめんどい以前に怖い
         }
 
@@ -687,7 +723,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 		for (auto& section : meshView.sectionViews) {
 			int vertexCountInSection = section.vertexBufferViews[0].count;
 
-			if (indexElementSize == 2) {
+			if (indexForamt == IndexBufferFormat::UInt16) {
 				if (section.indexElementSize == 1) {
 					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
 					auto* s = static_cast<const uint8_t*>(section.indexData);
@@ -695,7 +731,7 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
+					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 2) {
 					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
@@ -704,15 +740,16 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
+					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 4) {
+					LN_NOTIMPLEMENTED();
 				}
 				else {
 					LN_NOTIMPLEMENTED();
 				}
 			}
-			else if (indexElementSize == 4) {
+			else if (indexForamt == IndexBufferFormat::UInt32) {
 				if (section.indexElementSize == 4) {
 					auto* b = static_cast<uint32_t*>(buf) + indexOffset;
 					auto* s = static_cast<const uint32_t*>(section.indexData);
@@ -720,7 +757,19 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
+					//flipFaceIndex_Triangle<uint32_t>(b, section.indexCount);
+				}
+				else if (section.indexElementSize == 2) {
+					// glTF の Mesh は primitive という小単位のMeshに分かれることがある。
+					// Mesh 全体としては UInt32 だが、primitive ごとにみると UInt16 となるようなこともある。
+					// Blender から大きなモデルをエクスポートするとこのような形になった。
+					auto* b = static_cast<uint32_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint16_t*>(section.indexData);
+					for (int i = 0; i < section.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
+					}
+					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else {
 					LN_NOTIMPLEMENTED();
@@ -745,6 +794,33 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 	}
 
+
+	bool hasNormalMap = coreMesh->sections().containsIf([this](const MeshSection2& x) { return (x.materialIndex >= 0) && m_meshModel->materials()[x.materialIndex]->normalMap() != nullptr; });
+	if (hasNormalMap) {
+		if (!hasTangentAttribute) {
+			coreMesh->calculateTangents();
+		}
+	}
+
+
+
+
+	//for (int vi = 0; vi < 100/*coreMesh->vertexCount()*/; vi++) {
+	//	auto v = coreMesh->vertex(vi);
+	//	//v.position.y = 0;
+	//	//coreMesh->setVertex(vi, v);
+	//	printf("");
+	//}
+	//for (int vi = 0; vi < coreMesh->indexCount(); vi++) {
+	//	auto v = coreMesh->index(vi);
+	//	std::cout << v << std::endl;
+	//}
+
+	//coreMesh->setIndex(0, 0);
+	//coreMesh->setIndex(1, 1);
+	//coreMesh->setIndex(2, 2);
+
+	//coreMesh->setSection(0, 0, 100, 0, PrimitiveTopology::TriangleList);
 
 	return coreMesh;
 }
@@ -773,6 +849,28 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	}
 
 	return armature;
+}
+
+Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
+{
+	// TODO: image->name で名前が取れるので、それでキャッシュ組んだ方がいいかも？
+	// でも glb の場合は glb ファイル作った時点のテクスチャの内容が glb 内部に埋め込まれるから
+	// キャッシュ組むとしたらどちらを優先するか指定できた方がいいかも。
+
+	const tinygltf::Image& image = m_model->images[texture.source];
+
+	Ref<Bitmap2D> bitmap;
+	if (image.pixel_type == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE &&  // GL_UNSIGNED_BYTE
+		image.component == 4 &&     // RGBA
+		image.bits == 8) {
+		bitmap = makeObject<Bitmap2D>(image.width, image.height, PixelFormat::RGBA8, image.image.data());
+	}
+	else {
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+
+	return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
 }
 
 bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)

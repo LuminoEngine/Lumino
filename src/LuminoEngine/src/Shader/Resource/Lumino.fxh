@@ -21,12 +21,13 @@ cbuffer LNRenderViewBuffer
 
 cbuffer LNRenderElementBuffer
 {
-	/* [0]   */ float4x4	ln_World;
-	/* [64]  */ float4x4 ln_WorldViewProjection;
-	/* [128] */ float4x4	ln_WorldView;
-	/* [192] */ float4x4	ln_WorldViewIT;
-	/* [256] */ float4 ln_BoneTextureReciprocalSize;
-};
+	/* [0]   */ float4x4 ln_World;
+	/* [64]  */ float4x4 ln_WorldI;
+	/* [128] */ float4x4 ln_WorldViewProjection;
+	/* [192] */ float4x4 ln_WorldView;
+	/* [256] */ float4x4 ln_WorldViewIT;
+	/* [320] */ float4 ln_BoneTextureReciprocalSize;
+};  /* [336] */
 
 // Builtin effect colors
 cbuffer LNEffectColorBuffer
@@ -45,6 +46,7 @@ struct LN_VSInput
 	float3	Normal			: NORMAL0;
 	float2	UV				: TEXCOORD0;
 	float4	Color			: COLOR0;
+	float4  tangent: TANGENT;
 	float4	BlendIndices	: BLENDINDICES;
 	float4	BlendWeight		: BLENDWEIGHT;
 };
@@ -52,8 +54,12 @@ struct LN_VSInput
 struct LN_VSOutput_Common
 {
 	float4	svPos		: SV_POSITION;
+
+	/** 座標変換後の法線 [View-space] */
 	float3	Normal		: NORMAL0;
+
 	float2	UV			: TEXCOORD0;
+
 	float4	Color		: COLOR0;
 };
 

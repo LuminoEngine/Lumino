@@ -32,6 +32,12 @@ public:
 	void setMainTexture(Texture* value);
 	Texture* mainTexture() const;
 
+
+	void setNormalMap(Texture* value);
+	Texture* normalMap() const;
+
+
+
 	void setColor(const Color& value);
 	void setRoughness(float value);
 	void setMetallic(float value);
@@ -169,6 +175,7 @@ protected:  // TODO:
 
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;
+	Ref<Texture> m_normalMap;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 
 protected:

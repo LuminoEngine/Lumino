@@ -1,6 +1,35 @@
 /*
  Note:
-   計算は View 空間上で行われる。
+ 計算は View 空間上で行われる。
+ three.js のシェーダを参考にしているためその方式に合わせた…というのが正直なところ。
+ なぜ three.js がそのようにしている。
+
+ ゲームエンジンアーキテクチャでは Screen-Space の法線で G-Buffer 作っているらしい。
+ 
+ でもググると World-space で扱っている例も多く出てくる。
+ https://enginetrouble.net/2014/10/classic-deferred-shading-2014.html
+ http://asura.iaigiri.com/OpenGL/gl70.html
+
+ https://forum.unity.com/threads/shader-convert-normals-to-view-space-normals.285262/
+ > 私は屈折効果を作成しようとしています。私が見たものから、ビュー空間で法線を使用するとより良い結果が得られます。
+
+ https://stackoverflow.com/questions/37762692/calculating-view-space-normal-instead-of-world-space
+ SSAO の実装で役に立つらしい。0.4.0 時点の実装では使ってなかったが…。
+
+ 考察としては計算量が減る。
+ カメラの位置が (0,0,0) である空間をベースにしているので、
+ 例えば、
+ - ある位置とカメラの距離を知りたければ、引き算は不要で、length(pos) だけでいい。
+ - カメラの方向が知りたければ normalize(-pos)
+
+ https://stackoverflow.com/questions/17499976/why-do-you-use-camera-space-instead-of-model-space-for-normals
+ ここがわかりやすいかな。
+ - 鏡面反射の処理で計算を単純化できる。
+ ほとんどのケースでは Model-space でやっても問題ない。
+ でも、鏡面反射など多くの処理を取り入れる場合、Model-space より後段の View-space でやったほうが無難、という感じ。
+
+
+  IncidentLight | 入射光
  */
 
 #ifndef LUMINO_PBR_INCLUDED
@@ -30,12 +59,16 @@ cbuffer LNPBRMaterialParameter
 //------------------------------------------------------------------------------
 // PBR
 
+// 入射光情報。
 // DirectLightIrradiance 系関数の出力。
 // ピクセルへのライトごとの影響情報
 struct LN_IncidentLight
 {
 	float3 color;
-	float3 direction;	// ピクセル位置 → ライト中心位置 への向きベクトル
+
+	/** ジオメトリ位置 (ピクセル位置) → ライト中心位置 への向きベクトル */
+	float3 direction;
+
 	bool visible;
 };
 
@@ -78,14 +111,18 @@ struct LN_HemisphereLight
 // ディレクショナルライトの情報
 struct LN_DirectionalLight
 {
+	/** ライトの向き (光の放射方向) [View-space] */
 	float3 direction;
+
 	float3 color;
 };
 
 // ポイントライトの情報
 struct LN_PointLight
 {
-	float3 position;	// View 空間上の、ライトの中心点
+	/** ライトの中心点 [View-space] */
+	float3 position;
+
 	float3 color;
 	float distance;
 	float decay;
@@ -94,8 +131,12 @@ struct LN_PointLight
 // スポットライトの情報
 struct LN_SpotLight
 {
+	/** ライトの中心点 [View-space] */
 	float3 position;
+	
+	/** ライトの向き (光の放射方向) [View-space] */
 	float3 direction;
+
 	float3 color;
 	float distance;
 	float decay;
@@ -149,7 +190,7 @@ float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, co
 void LN_GetDirectionalDirectLightIrradiance(const LN_DirectionalLight directionalLight, const LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
 	directLight.color = directionalLight.color;
-	directLight.direction = directionalLight.direction;
+	directLight.direction = -directionalLight.direction;
 	directLight.visible = true;
 }
 
@@ -183,14 +224,14 @@ void LN_GetPointDirectLightIrradiance(const in LN_PointLight pointLight, const i
 	*/
 }
 
-// ポイントライトの放射輝度の計算
+// スポットライトの放射輝度の計算
 void LN_GetSpotDirectLightIrradiance(const in LN_SpotLight spotLight, const in LN_PBRGeometry geometry, out LN_IncidentLight directLight)
 {
 	float3 L = spotLight.position - geometry.position;
 	directLight.direction = normalize(L);
 
 	float lightDistance = length(L);
-	float angleCos = dot(directLight.direction, spotLight.direction);
+	float angleCos = dot(directLight.direction, -spotLight.direction);
 
 	if (angleCos > spotLight.coneCos && LN_TestLightInRange(lightDistance, spotLight.distance))
 	{
@@ -388,9 +429,6 @@ float3 _LN_ComputePBRLocalLights(_LN_LocalLightContext localLightContext, const 
 
 	// TODO: ライトマップを使う場合はここで irradiance に適用する
 	// see lights_fragment_maps.glsl.js
-
-	// TODO: ひとまず
-	//reflectedLight.directDiffuse += irradiance * material.diffuseColor;
 
 	// see lights_fragment_end.glsl.js
 	LN_RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );

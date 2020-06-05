@@ -76,8 +76,7 @@ RenderPass* DepthPrepass::renderPass() const
 }
 
 ShaderTechnique* DepthPrepass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -141,8 +140,7 @@ bool LightOcclusionPass::filterElement(RenderDrawElement* element) const
 }
 
 ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -151,11 +149,11 @@ ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 
 	ShaderTechniqueClass classSet;
 	classSet.defaultTechnique = false;
-	classSet.ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
-	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
-	classSet.meshProcess = requestedMeshProcess;
+	classSet.phase = ShaderTechniqueClass_Phase::LightDisc;
+	classSet.meshProcess = requester.meshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-	classSet.drawMode = drawMode;
+	classSet.drawMode = requester.drawMode;
+	classSet.normalClass = ShaderTechniqueClass_Normal::Default;
 	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
 	if (technique)
 		return technique;
@@ -249,8 +247,7 @@ RenderPass* ClusteredShadingGeometryRenderingPass::renderPass() const
 //}
 
 ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -265,11 +262,11 @@ ShaderTechnique* ClusteredShadingGeometryRenderingPass::selectShaderTechnique(
 
 	ShaderTechniqueClass classSet;
     classSet.defaultTechnique = false;
-	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
-	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
-	classSet.meshProcess = requestedMeshProcess;
+	classSet.phase = ShaderTechniqueClass_Phase::Forward;
+	classSet.meshProcess = requester.meshProcess;
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
-	classSet.drawMode = drawMode;
+	classSet.drawMode = requester.drawMode;
+	classSet.normalClass = requester.normal;
     ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(shader, classSet);
 	if (technique)
 		return technique;
@@ -387,8 +384,7 @@ RenderPass* ShadowCasterPass::renderPass() const
 }
 
 ShaderTechnique* ShadowCasterPass::selectShaderTechnique(
-	ShaderTechniqueClass_MeshProcess requestedMeshProcess,
-	ShaderTechniqueClass_DrawMode drawMode,
+	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
@@ -487,8 +483,13 @@ void ClusteredShadingSceneRenderer::onCollectLight(const DynamicLightInfo& light
 		m_lightClusters.addHemisphereLight(color, light.m_color2 * light.m_intensity);
 		break;
 	case LightType::Directional:
-		m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view.viewMatrix), color);
+	{
+		//auto a1 = transformDirection(-light.m_direction, view.viewMatrix);
+		//auto a2 = -transformDirection(light.m_direction, view.viewMatrix);
+		//m_lightClusters.addDirectionalLight(transformDirection(-light.m_direction, view.viewMatrix), color);
+		m_lightClusters.addDirectionalLight(light.m_direction, color);
 		break;
+	}
 	case LightType::Point:
 		m_lightClusters.addPointLight(light.m_position, light.m_range, light.m_attenuation, color);
 		break;

@@ -43,6 +43,7 @@ static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShader
     {_LT("ln_FarClip"), BuiltinShaderParameters_ln_FarClip},
 
     {_LT("ln_World"), BuiltinShaderParameters_ln_World},
+    {_LT("ln_WorldI"), BuiltinShaderParameters_ln_WorldI},
     {_LT("ln_WorldViewProjection"), BuiltinShaderParameters_ln_WorldViewProjection},
     {_LT("ln_WorldView"), BuiltinShaderParameters_ln_WorldView},
     {_LT("ln_WorldViewIT"), BuiltinShaderParameters_ln_WorldViewIT},
@@ -70,9 +71,10 @@ static const std::unordered_map<String, BuiltinShaderUniformBuffers> s_BuiltinSh
 static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTexturesMap =
 {
     {_LT("ln_MaterialTexture"), BuiltinShaderTextures_ln_MaterialTexture},
+    {_LT("ln_NormalMap"), BuiltinShaderTextures_ln_NormalMap},
     {_LT("ln_BoneTexture"), BuiltinShaderTextures_ln_BoneTexture},
     {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
-
+    
     {_LT("ln_clustersTexture"), BuiltinShaderTextures_ln_ClustersTexture},
     {_LT("ln_GlobalLightInfoTexture"), BuiltinShaderTextures_ln_GlobalLightInfoTexture},
     {_LT("ln_pointLightInfoTexture"), BuiltinShaderTextures_ln_PointLightInfoTexture},
@@ -87,7 +89,7 @@ ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
     assert(168 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
     assert(172 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
     static_assert(176 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
-    static_assert(272 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    static_assert(336 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
 
@@ -177,6 +179,8 @@ void ShaderTechniqueSemanticsManager::updateElementVariables(const CameraInfo& c
         LNRenderElementBuffer data;
         if (hasParameter(BuiltinShaderParameters_ln_World))
             data.ln_World = info.WorldMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_WorldI))
+            data.ln_WorldI = Matrix::makeInverse(info.WorldMatrix);
         if (hasParameter(BuiltinShaderParameters_ln_WorldViewProjection))
             data.ln_WorldViewProjection = info.WorldViewProjectionMatrix;
         if (hasParameter(BuiltinShaderParameters_ln_WorldView))
@@ -214,8 +218,16 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& in
 
 
     index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialTexture];
-    if (index >= 0)
+    if (index >= 0) {
+        LN_DCHECK(info.materialTexture);
         m_descriptor->setTexture(index, info.materialTexture);
+    }
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_NormalMap];
+    if (index >= 0) {
+        LN_DCHECK(info.normalMap);
+        m_descriptor->setTexture(index, info.normalMap);
+    }
 }
 
 void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
@@ -267,8 +279,7 @@ void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(const Clus
 void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet)
 {
     outClassSet->defaultTechnique = false;
-    outClassSet->ligiting = ShaderTechniqueClass_Ligiting::Forward;
-    outClassSet->phase = ShaderTechniqueClass_Phase::Geometry;
+    outClassSet->phase = ShaderTechniqueClass_Phase::Forward;
     outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
     outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
     outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Primitive;
@@ -278,7 +289,7 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
     }
 	else if (String::compare(str, u"LightDisc", CaseSensitivity::CaseInsensitive) == 0)
 	{
-		outClassSet->ligiting = ShaderTechniqueClass_Ligiting::LightDisc;
+        outClassSet->phase = ShaderTechniqueClass_Phase::LightDisc;
 	}
     else
     {
@@ -300,11 +311,11 @@ void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTe
 
 bool ShaderTechniqueClass::equals(const ShaderTechniqueClass& a, const ShaderTechniqueClass& b)
 {
-    return a.ligiting == b.ligiting &&
-           a.phase == b.phase &&
+    return a.phase == b.phase &&
            a.meshProcess == b.meshProcess &&
            a.shadingModel == b.shadingModel &&
-           a.drawMode == b.drawMode;
+           a.drawMode == b.drawMode &&
+           a.normalClass == b.normalClass;
 }
 
 } // namespace detail

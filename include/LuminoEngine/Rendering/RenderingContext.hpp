@@ -125,6 +125,7 @@ public:
 
     void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
     void drawPlane(float width, float depth, const Color& color = Color::White);
+	void drawPlane(float width, float depth, const Vector2& uv1, const Vector2& uv2, const Color& color = Color::White);
     void drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform = Matrix());
 	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix());
 

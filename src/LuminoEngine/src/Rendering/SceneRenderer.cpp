@@ -292,10 +292,14 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 					finalMaterial = stage->getMaterialFinal(nullptr, m_manager->builtinMaterials(BuiltinMaterial::Default));
 
-					if (finalMaterial)
+					if (finalMaterial) {
 						subsetInfo.materialTexture = finalMaterial->mainTexture();
-					else
+						subsetInfo.normalMap = finalMaterial->normalMap();
+					}
+					else {
 						subsetInfo.materialTexture = nullptr;
+						subsetInfo.normalMap = nullptr;
+					}
 					subsetInfo.opacity = stage->getOpacityFinal(element);
 					subsetInfo.colorScale = stage->getColorScaleFinal(element);
 					subsetInfo.blendColor = stage->getBlendColorFinal(element);
@@ -411,11 +415,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					elementInfo.boneTexture = nullptr;
 				}
 
-				ShaderTechniqueClass_MeshProcess meshProcess = (elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh;
-				ShaderTechniqueClass_DrawMode drawMode = (batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive;
+				ShaderTechniqueRequestClasses requester = {
+					(elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh,
+					(batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive,
+					(subsetInfo.normalMap) ? ShaderTechniqueClass_Normal::NormalMap : ShaderTechniqueClass_Normal::Default,
+				};
 				ShaderTechnique* tech = pass->selectShaderTechnique(
-					meshProcess,
-					drawMode,
+					requester,
 					finalMaterial->shader(),
 					stage->getShadingModelFinal(finalMaterial));
 
@@ -432,6 +438,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 				if (!localSubsetInfo.materialTexture) {
 					localSubsetInfo.materialTexture = m_manager->graphicsManager()->whiteTexture();
+				}
+				if (!localSubsetInfo.normalMap) {
+					localSubsetInfo.normalMap = m_manager->graphicsManager()->defaultNormalMap();
 				}
 
 

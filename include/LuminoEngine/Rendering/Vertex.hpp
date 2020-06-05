@@ -12,14 +12,7 @@ struct Vertex
 	Vector3 normal;
 	Vector2 uv;
 	Color color;
-};
-
-struct VertexTangents
-{
-	static const VertexTangents Default;
-
-	Vector3 tangent;	// 接線ベクトル
-	Vector3 binormal;	// 従法線ベクトル
+	Vector4 tangent;	// 接線ベクトル, 従法線の符号
 };
 
 struct VertexBlendWeight
@@ -30,9 +23,10 @@ struct VertexBlendWeight
 	float		weights[4];
 };
 
+// TEXCOORD_1,TEXCOORD_2,TEXCOORD_3
 struct VertexAdditionalUV
 {
-	Vector4		uv[4];
+	Vector4		uv[3];
 };
 
 struct VertexSdefInfo
