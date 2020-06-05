@@ -92,16 +92,16 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
         }
 
 
-        //ClearInfo clearInfo;
-        //clearInfo.color = backgroundColor();
-        //clearInfo.depth = 1.0f;
-        //clearInfo.stencil = 0x00;
-        //if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-        //    clearInfo.flags = ClearFlags::All;
-        //}
-        //else {
-        //    clearInfo.flags = ClearFlags::Depth;
-        //}
+        ClearInfo clearInfo;
+        clearInfo.color = backgroundColor();
+        clearInfo.depth = 1.0f;
+        clearInfo.stencil = 0x00;
+        if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+            clearInfo.flags = ClearFlags::All;
+        }
+        else {
+            clearInfo.flags = ClearFlags::Depth | ClearFlags::Stencil;
+        }
 
         // build draw elements
         {
@@ -113,12 +113,12 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
             m_renderingContext->baseRenderView = this;
             m_renderingContext->clearImageEffects();
 
-            if (clearMode() == RenderViewClearMode::ColorAndDepth) {
-                m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
-            }
-            else {
-                m_renderingContext->clear(ClearFlags::Depth, backgroundColor(), 1.0f, 0x00);
-            }
+            //if (clearMode() == RenderViewClearMode::ColorAndDepth) {
+            //    m_renderingContext->clear(ClearFlags::All, backgroundColor(), 1.0f, 0x00);
+            //}
+            //else {
+            //    m_renderingContext->clear(ClearFlags::Depth, backgroundColor(), 1.0f, 0x00);
+            //}
 
             m_rootElement->render(m_renderingContext, Matrix());
 
@@ -138,7 +138,7 @@ void UIFrameRenderView::render(GraphicsContext* graphicsContext, RenderTargetTex
 
 
         assert(elementListManagers().size() == 1);
-        m_sceneRenderingPipeline->render(graphicsContext, renderTarget/*, clearInfo*/, &camera, elementListManagers().front());
+        m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front());
     }
 }
 

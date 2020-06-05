@@ -23,15 +23,15 @@ void RenderingPipeline::init()
     m_clearRenderPass = makeObject<RenderPass>();
 }
 
-void RenderingPipeline::clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo)
-{
-    if (clearInfo.flags != ClearFlags::None) {
-        m_clearRenderPass->setRenderTarget(0, renderTarget);
-        m_clearRenderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
-        graphicsContext->beginRenderPass(m_clearRenderPass);
-        graphicsContext->endRenderPass();
-    }
-}
+//void RenderingPipeline::clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo)
+//{
+//    if (clearInfo.flags != ClearFlags::None) {
+//        m_clearRenderPass->setRenderTarget(0, renderTarget);
+//        m_clearRenderPass->setClearValues(clearInfo.flags, clearInfo.color, clearInfo.depth, clearInfo.stencil);
+//        graphicsContext->beginRenderPass(m_clearRenderPass);
+//        graphicsContext->endRenderPass();
+//    }
+//}
 
 //==============================================================================
 // SceneRenderingPipeline
@@ -60,7 +60,7 @@ void SceneRenderingPipeline::init()
 void SceneRenderingPipeline::render(
     GraphicsContext* graphicsContext,
 	RenderTargetTexture* renderTarget,
-    //const ClearInfo& clearInfo,
+    const ClearInfo& mainPassClearInfo,
     const detail::CameraInfo* mainCameraInfo,
     detail::DrawElementListCollector* elementListCollector,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
@@ -72,22 +72,25 @@ void SceneRenderingPipeline::render(
 
     //clear(graphicsContext, renderTarget, clearInfo);
 
-    ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
+    //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
 
     //m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::BackgroundSky, nullptr);
 
+    m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
 
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Geometry, sceneGlobalParams);
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Geometry, sceneGlobalParams);
 
 
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
+    ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
+    m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
 
     {
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
 		m_sceneRenderer_ImageEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RenderPhaseClass::ImageEffect, nullptr);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::ImageEffect, nullptr);
     }
 
     // 誤用防止
@@ -119,7 +122,7 @@ void FlatRenderingPipeline::init()
 void FlatRenderingPipeline::render(
 	GraphicsContext* graphicsContext,
 	RenderTargetTexture* renderTarget,
-    //const ClearInfo& clearInfo,
+    const ClearInfo& mainPassClearInfo,
 	const detail::CameraInfo* mainCameraInfo,
     detail::DrawElementListCollector* elementListCollector)
 {
@@ -129,9 +132,9 @@ void FlatRenderingPipeline::render(
 	m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
 
     //clear(graphicsContext, renderTarget, clearInfo);
+    m_sceneRenderer->mainRenderPass()->setClearInfo(mainPassClearInfo);
 
-    ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
-	m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Geometry, nullptr);
+	m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Geometry, nullptr);
 
 	// TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
 	//m_sceneRenderer->render(graphicsContext, this, renderTarget, localClearInfo, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
@@ -140,7 +143,7 @@ void FlatRenderingPipeline::render(
         //ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
         CameraInfo camera;
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, localClearInfo, camera, RenderPhaseClass::ImageEffect, nullptr);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::ImageEffect, nullptr);
     }
 
 	// 誤用防止

@@ -32,6 +32,7 @@ VSOutput VS_WriteLinearDepth(VSInput input)
 
 float4 PS_WriteLinearDepth(PSInput input) : COLOR0
 {
+    return float4(0, 0, 1, 1);
     float z = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
     return float4(z, 0, 0, 1);
 }

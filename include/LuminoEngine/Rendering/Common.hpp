@@ -128,10 +128,10 @@ enum class RequestBatchResult
 
 struct ClearInfo
 {
-    ClearFlags flags;
+    ClearFlags flags = ClearFlags::None;
     Color color;
-    float depth;
-    uint8_t stencil;
+    float depth = 1.0f;
+    uint8_t stencil = 0x00;
 };
 
 

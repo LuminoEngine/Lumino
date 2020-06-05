@@ -11,6 +11,9 @@
 #include "RenderElement.hpp"
 
 namespace ln {
+
+Texture* g_normalMap = nullptr;
+
 namespace detail {
 
 #if 1
@@ -30,21 +33,31 @@ void DepthPrepass::init()
 {
 	SceneRendererPass::init();
 	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
+
+	if (Debug) {
+		m_depthMap = RenderTargetTexture::create(400, 300, TextureFormat::RGBA8);
+		g_normalMap = m_depthMap;
+	}
+	m_renderPass = makeObject<RenderPass>();
 }
 
 void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
 	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
-	m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+	if (!Debug) {
+		m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+	}
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
-	m_renderPass = makeObject<RenderPass>();
+
 }
 
 void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
 {
-	RenderTargetTexture::releaseTemporary(m_depthMap);
+	if (!Debug) {
+		RenderTargetTexture::releaseTemporary(m_depthMap);
+		m_depthMap = nullptr;
+	}
 	DepthBuffer::releaseTemporary(m_depthBuffer);
-	m_depthMap = nullptr;
 	m_depthBuffer = nullptr;
 }
 
@@ -52,7 +65,7 @@ void DepthPrepass::onBeginPass(GraphicsContext* context, RenderTargetTexture* re
 {
 	m_renderPass->setRenderTarget(0, m_depthMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
+	m_renderPass->setClearValues(ClearFlags::All, Color::Red, 1.0f, 0);
 }
 
 //void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -218,7 +231,9 @@ void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context
 {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::None, Color::Transparency, 1.0f, 0);
+	//m_renderPass->setClearValues(ClearFlags::None, Color::Transparency, 1.0f, 0);
+	const auto& info = clearInfo();
+	m_renderPass->setClearValues(info.flags, info.color, info.depth, info.stencil);
 }
 
 //void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -426,8 +441,8 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 	addPass(m_lightOcclusionPass);
 
 	// pass "Geometry"
-    auto geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
-	addPass(geometryPass);
+	m_geometryPass = makeObject<ClusteredShadingGeometryRenderingPass>(this);
+	addPass(m_geometryPass);
 
 	m_lightClusters.init();
 
@@ -447,6 +462,10 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 //
 //}
 
+SceneRendererPass* ClusteredShadingSceneRenderer::mainRenderPass() const
+{
+	return m_geometryPass;
+}
 
 void ClusteredShadingSceneRenderer::collect(const detail::CameraInfo& cameraInfo)
 {

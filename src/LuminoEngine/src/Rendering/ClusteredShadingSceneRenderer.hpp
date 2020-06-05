@@ -18,6 +18,7 @@ class DepthPrepass
 	: public SceneRendererPass
 {
 public:
+	static const int Debug = 1;
 	DepthPrepass();
 	virtual ~DepthPrepass();
 	void init();
@@ -149,6 +150,7 @@ public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
 	void init(RenderingManager* manager);
+	SceneRendererPass* mainRenderPass() const override;
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	//void setFogParams(const FogParams& params) { m_fogParams = params; }
 	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
@@ -170,6 +172,7 @@ private:
 	//FogParams					m_fogParams;
 	Ref<DepthPrepass>			m_depthPrepass;
 	Ref<LightOcclusionPass> m_lightOcclusionPass;
+	Ref<ClusteredShadingGeometryRenderingPass> m_geometryPass;
 };
 #endif
 
