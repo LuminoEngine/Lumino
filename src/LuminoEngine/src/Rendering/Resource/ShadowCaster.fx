@@ -39,8 +39,8 @@ technique Main
 {
 	pass ShadowCaster
 	{
-		VertexShader = VS_ShadowCaster();
-		PixelShader	 = PS_ShadowCaster();
+		VertexShader = VS_ShadowCaster;
+		PixelShader	 = PS_ShadowCaster;
 	}
 }
 
