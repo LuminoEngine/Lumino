@@ -86,8 +86,8 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     //m_compositeMaterial->setFloat(u"_SSRRadius", m_owner->m_bloomRadius);
     //m_compositeMaterial->setVectorArray(u"_SSRTintColors", bloomTintColors, MIPS);
 
-    auto proj = Matrix::makePerspectiveFovRH(context->viewPoint()->fovY, 640.0 / 480.0, 0.3, 1000);
-    //auto proj = context->viewPoint()->projMatrix;
+    //auto proj = Matrix::makePerspectiveFovRH(context->viewPoint()->fovY, 640.0 / 480.0, 0.3, 1000);
+    auto proj = context->viewPoint()->projMatrix;
     //auto tproj1 = Matrix::makeTranspose(proj);
     auto tproj1 = proj;
     auto tproj2 = Matrix::makeInverse(proj);
@@ -104,7 +104,7 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     context->blit(m_ssrMaterial, m_ssrTarget);
     g_srTarget = m_ssrTarget;
 
-#if 0
+#if 1
     context->blit(m_ssrMaterial, destination);
 #else
     m_ssrBlurMaterial1->setTexture(u"_ColorSampler", m_ssrTarget);

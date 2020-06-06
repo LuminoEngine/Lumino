@@ -50,7 +50,7 @@ VSOutput VS_WriteLinearDepth(VSInput input)
     VSOutput output;
     output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldView);
     //output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
-    output.ViewSpaceNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
+    output.ViewSpaceNormal = mul(input.Normal, (float3x3)ln_WorldViewIT);//mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
     //output.svPos = mul(output.ViewPos, ln_Projection);
     output.svPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
     output.UV = input.UV;
@@ -59,7 +59,7 @@ VSOutput VS_WriteLinearDepth(VSInput input)
     //output.ClipSpacePos.xyz /= output.ClipSpacePos.w;
     //output.ClipSpacePos.z = output.svPos.z / output.svPos.w;
 
-    output.ViewSpaceNormal.z *= -1.0;
+    //output.ViewSpaceNormal.z *= -1.0;
 
     return output;
 }
@@ -67,11 +67,16 @@ VSOutput VS_WriteLinearDepth(VSInput input)
 PSOutput PS_WriteLinearDepth(PSInput input)
 {
     // SSR 用。シャドウマップと同じく PS で w 除算で計算する。ViewSpace じゃなくて ClipSpace。
-    //float z = input.ClipSpacePos.z / input.ClipSpacePos.w;
-    float z = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
+    float projectedZ = input.ClipSpacePos.z / input.ClipSpacePos.w;
+
+    // 左手なので、near:0.0 ~ far:1.0
+    float linearZ = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
+
     //float z = input.ClipSpacePos.z;
     PSOutput output;
-    output.Normal = float4(LN_PackNormal(normalize(input.ViewSpaceNormal)), z); // normalize 必須
+
+    // 左手。Z+ が正面(奥)
+    output.Normal = float4(LN_PackNormal(normalize(input.ViewSpaceNormal)), projectedZ); // normalize 必須
     //output.Depth = float4(z, z, z, 1);
 
 #ifdef LN_USE_ROUGHNESS_MAP
@@ -80,7 +85,7 @@ PSOutput PS_WriteLinearDepth(PSInput input)
 #else
     float roughness = ln_MaterialRoughness;
 #endif
-    output.Material = float4(ln_MaterialMetallic, z, roughness, 1);
+    output.Material = float4(ln_MaterialMetallic, linearZ, roughness, 1);
     //output.Material = float4(0, z, 0, 1);
 
     return output;

@@ -29,6 +29,9 @@ class App_Experiment_SSR : public Application
         Engine::camera()->setPosition(0, 20, -50);
         Engine::camera()->lookAt(0, 0, 0);
 
+        auto tmp = Vector3::transformCoord(Vector3(0, 0, 10), Matrix::makeLookAtLH(Vector3(0, 0, -1), Vector3::Zero, Vector3::UnitY));
+
+
         m_sprite = Sprite::create(Texture2D::whiteTexture());
         m_sprite->setBlendMode(BlendMode::Normal);
         //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
