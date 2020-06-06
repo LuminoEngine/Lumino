@@ -123,12 +123,6 @@ float getViewSpaceLinearZTotViewSpaceZ(float linearZ) {
     return (linearZ * (CameraFar - CameraNear)) + CameraNear;
 }
 
-float getViewSpaceZ(float2 uv) {
-    const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
-    //return projectedZ;
-    return perspectiveDepthToViewZ(projectedZ);
-    //return getViewSpaceLinearZTotViewSpaceZ(getViewSpaceLinearZ(uv));
-}
 
 float3 getViewPosition(float2 inputUV, float projectedZ, float linearZ) {
     // ClipSpace 上の座標を求める
@@ -170,6 +164,22 @@ float3 getViewNormal(float2 screenPosition) {
     float3 rgb = tex2D(_NormalAndDepthSampler, screenPosition).xyz;
     float3 n = 2.0*rgb.xyz - 1.0;
     return normalize(n);
+}
+
+float getViewSpaceZ(float2 uv) {
+    const float linearZ = getViewSpaceLinearZ(uv);
+    //return getViewSpaceLinearZTotViewSpaceZ(getViewSpaceLinearZ(uv));
+
+    const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
+    // URL 先の図の、地面との衝突点と、その法線 (赤矢印)
+    // https://qiita.com/mebiusbox2/items/e69ef326b211880d7549#%E8%A1%9D%E7%AA%81%E5%88%A4%E5%AE%9A
+    float3 viewPosition = getViewPosition(uv, projectedZ, linearZ);
+    return viewPosition.z;
+
+
+    //const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
+    //return projectedZ;
+    //return perspectiveDepthToViewZ(projectedZ);
 }
 
 //----------------------------------------------------------------------------
@@ -216,7 +226,7 @@ bool traceCameraSpaceRay(
     float3 Q = Q0;
     float2 P;
 
-    if (true){
+    if (false){
         hitPixel.x = getViewSpaceZ( getUVFromViewSpacePosition(Q));// / 100;
         //hitPixel.x = Q.z / 100;
         return true;
@@ -243,9 +253,9 @@ bool traceCameraSpaceRay(
 
         intersect = rayIntersectsDepth(Q.z, hitPixel);
 
-        hitPixel.x = getViewSpaceZ(hitPixel) / 100;
-        hitPixel.x = Q.z / 1000;
-        intersect = true;
+        //hitPixel.x = getViewSpaceZ(hitPixel) / 100;
+        //hitPixel.x = Q.z / 1000;
+        //intersect = true;
         //hitPoint = 
         //hitPixel.x = getDepth(hitPixel);// / 10.0;
         //hitPixel.x = -0.01 * getViewZ(getDepth(hitPixel));// / 100.0;
@@ -368,6 +378,12 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     //float2 uv = getUVFromViewSpacePosition(viewPosition);
     //return float4(uv, 0, 1);
 
+    // この2つは同じ値にならないとダメ
+    //return float4(
+    //    getViewSpaceZ( getUVFromViewSpacePosition(viewPosition)) / 1000,
+    //    viewPosition.z / 1000,
+    //    0, 1);
+
     // 反射の原点と方向ベクトル。
     // rayDir は、視点から飛ばしたベクトルを反射させた方向が入るので、例えば手前向きの垂直の壁を、左斜め前から見ると反射ベクトルは (1, 0, 0) となり、赤く見える
     float3 rayOrg = viewPosition;
@@ -389,7 +405,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     //return float4(hitPoint, 1);
     //return float4((intersect ? 1 : 0), 0, 0, 1);
     //return float4(dotNV, 0, 0, 1);
-    return float4(hitPixel.x, 0, 0, 1);
+    //return float4(hitPixel.x, 0, 0, 1);
     //return float4(hitPixel.x, hitPixel.y, 0, 1);
     //return float4(iterationCount / _Iterations, 0, 0, 1);
     //return float4(hitPoint.xy, -hitPoint.z, 1);
