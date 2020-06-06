@@ -27,6 +27,7 @@ struct VSOutput
     float3 ViewSpaceNormal : NORMAL0;
     float4 ViewPos : TEXCOORD0;
     float2 UV : TEXCOORD1;
+    float4 ClipSpacePos : TEXCOORD2;
 };
 
 struct PSInput
@@ -34,6 +35,7 @@ struct PSInput
     float3 ViewSpaceNormal : NORMAL0;
     float4 ViewPos : TEXCOORD0;
     float2 UV : TEXCOORD1;
+    float4 ClipSpacePos : TEXCOORD2;
 };
 
 struct PSOutput
@@ -47,9 +49,15 @@ VSOutput VS_WriteLinearDepth(VSInput input)
 {
     VSOutput output;
     output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldView);
+    //output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
     output.ViewSpaceNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-    output.svPos = mul(output.ViewPos, ln_Projection);
+    //output.svPos = mul(output.ViewPos, ln_Projection);
+    output.svPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
     output.UV = input.UV;
+    output.ClipSpacePos = output.svPos;
+
+    //output.ClipSpacePos.xyz /= output.ClipSpacePos.w;
+    //output.ClipSpacePos.z = output.svPos.z / output.svPos.w;
 
     output.ViewSpaceNormal.z *= -1.0;
 
@@ -58,7 +66,10 @@ VSOutput VS_WriteLinearDepth(VSInput input)
 
 PSOutput PS_WriteLinearDepth(PSInput input)
 {
-    float z = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
+    // SSR 用。シャドウマップと同じく PS で w 除算で計算する。ViewSpace じゃなくて ClipSpace。
+    float z = input.ClipSpacePos.z / input.ClipSpacePos.w;
+    //float z = clipPos;//input.ClipSpacePos.z;//(input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
+    //float z = input.ClipSpacePos.z;
     PSOutput output;
     output.Normal = float4(LN_PackNormal(input.ViewSpaceNormal), z);
     //output.Depth = float4(z, z, z, 1);
@@ -69,7 +80,7 @@ PSOutput PS_WriteLinearDepth(PSInput input)
 #else
     float roughness = ln_MaterialRoughness;
 #endif
-    output.Material = float4(ln_MaterialMetallic, 0, roughness, 1);
+    output.Material = float4(ln_MaterialMetallic, z, roughness, 1);
 
     return output;
 }

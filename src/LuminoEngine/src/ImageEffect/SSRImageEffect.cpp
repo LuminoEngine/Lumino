@@ -11,6 +11,7 @@
 namespace ln {
     extern Texture* g_viewNormalMap;
     extern Texture* g_viewMaterialMap;
+    Texture* g_srTarget = nullptr;
 
 //==============================================================================
 // SSRImageEffect
@@ -74,11 +75,24 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     //m_compositeMaterial->setFloat(u"_SSRRadius", m_owner->m_bloomRadius);
     //m_compositeMaterial->setVectorArray(u"_SSRTintColors", bloomTintColors, MIPS);
 
+    auto proj = Matrix::makePerspectiveFovRH(context->viewPoint()->fovY, 640.0 / 480.0, 0.3, 1000);
+    //auto proj = context->viewPoint()->projMatrix;
+    auto tproj1 = Matrix::makeTranspose(proj);
+    //auto tproj1 = proj;
+    auto tproj2 = Matrix::makeInverse(proj);
+    //auto tproj2 = Matrix::makeTranspose(Matrix::makeInverse(proj));
+    //auto proj = context->viewPoint()->projMatrix;
+
     m_ssrMaterial->setTexture(u"_ColorSampler", source);
     m_ssrMaterial->setTexture(u"_NormalAndDepthSampler", g_viewNormalMap);
     m_ssrMaterial->setTexture(u"_MetalRoughSampler", g_viewMaterialMap);
-    m_ssrMaterial->setMatrix(u"_CameraProjectionMatrix", context->viewPoint()->projMatrix);
-    m_ssrMaterial->setMatrix(u"_CameraInverseProjectionMatrix", Matrix::makeInverse(context->viewPoint()->projMatrix));
+    m_ssrMaterial->setFloat(u"_Projection23", proj(2, 3));
+    m_ssrMaterial->setFloat(u"_Projection33", proj(3, 3));
+    m_ssrMaterial->setMatrix(u"_CameraProjectionMatrix", tproj1);
+    m_ssrMaterial->setMatrix(u"_CameraInverseProjectionMatrix", tproj2);
+    context->blit(m_ssrMaterial, m_ssrTarget);
+    g_srTarget = m_ssrTarget;
+
     context->blit(m_ssrMaterial, destination);
 }
 

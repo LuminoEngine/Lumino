@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include <LuminoEngine/Graphics/GraphicsContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
@@ -36,9 +37,14 @@ void ForwardGBufferPrepass::init()
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ForwardGBufferPrepass);
 
 	if (Debug) {
+		m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+
 		m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		m_depthMap->setSamplerState(m_samplerState);
 		m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		m_normalMap->setSamplerState(m_samplerState);
 		m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		m_materialMap->setSamplerState(m_samplerState);
 		g_viewNormalMap = m_depthMap;
 		g_viewMaterialMap = m_materialMap;
 	}

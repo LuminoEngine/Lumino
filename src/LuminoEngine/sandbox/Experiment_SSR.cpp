@@ -6,6 +6,7 @@ using namespace ln;
 namespace ln {
     extern Texture* g_viewNormalMap;
     extern Texture* g_viewMaterialMap;
+    extern Texture* g_srTarget;
 }
 
 class App_Experiment_SSR : public Application
@@ -22,6 +23,8 @@ class App_Experiment_SSR : public Application
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
+
+        Engine::camera()->setFarClip(100);
 
         m_sprite = Sprite::create(Texture2D::whiteTexture());
         m_sprite->setBlendMode(BlendMode::Normal);
@@ -116,7 +119,7 @@ class App_Experiment_SSR : public Application
         //printf("==========/n");
         //m_plane->setRotation(0, Engine::time() * 0.1, 0);
 
-        m_sprite->setTexture(ln::g_viewNormalMap);
+        m_sprite->setTexture(ln::g_srTarget);
         //m_sprite->setSize(320, 240);
         m_sprite->setPosition(0, 1, 0);
 

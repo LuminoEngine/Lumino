@@ -38,8 +38,16 @@ sampler2D _ColorSampler;
 sampler2D _NormalAndDepthSampler;
 sampler2D _MetalRoughSampler;
 //uniform float4 Resolution;    // xy: BufferSize, zw: InvBufferSize
-//float ln_NearClip;
-//float ln_FarClip;
+
+// TODO: postproces で描くと、0.0~1.0 になってしまうのどうするか考える
+//#define CameraNear (0.3)    // ln_NearClip
+//#define CameraFar (100.0)    // ln_FarClip
+const float CameraNear = 0.3;
+const float CameraFar = 100.0;
+
+float _Projection23;
+float _Projection33;
+
 float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
 float4x4 _CameraInverseProjectionMatrix; // inverse projection matrix (NDC to camera space)
 const float _Iterations = 50.0;                   // maximum ray iterations
@@ -60,32 +68,47 @@ float3 inverseTransformDirection(in float3 dir, in float4x4 mat) {
 }
 
 float viewZToOrthographicDepth(float viewZ) {
-    return (viewZ + ln_NearClip) / (ln_NearClip - ln_FarClip);
+    return (viewZ + CameraNear) / (CameraNear - CameraFar);
 }
 
 float perspectiveDepthToViewZ(float invClipZ) {
-    return (ln_NearClip*ln_FarClip) / ((ln_FarClip-ln_NearClip)*invClipZ-ln_FarClip);
+    return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*invClipZ-CameraFar);
 }
 
 float getDepth(float2 screenPosition) {
-    return tex2D(_NormalAndDepthSampler, screenPosition).a;
+    //return tex2D(_NormalAndDepthSampler, screenPosition).a;
+    return tex2D(_MetalRoughSampler, screenPosition).y;
 }
 
 float getLinearDepth(float2 screenPosition) {
     float fragCoordZ = tex2D(_NormalAndDepthSampler, screenPosition).a;
-    float nz = ln_NearClip * fragCoordZ;
-    return -nz / (ln_FarClip * (fragCoordZ-1.0) - nz);
+    float nz = CameraNear * fragCoordZ;
+    return -nz / (CameraFar * (fragCoordZ-1.0) - nz);
 }
 
+// 例えば CameraNear=0.3, CameraFar=100.0 とすると、
+// depth=1    -> -100
+// depth=0    -> -0.3
+// depth=0.98 -> -13
 float getViewZ(float depth) {
-    return (ln_NearClip*ln_FarClip) / ((ln_FarClip-ln_NearClip)*depth-ln_FarClip);
+    //return depth;
+    //return ((CameraFar-CameraNear)*depth-CameraFar);
+    return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*depth-CameraFar);
 }
 
+// depth: near:0~far:1
+// viewZ: ビュー空間上の Z 座標
 float3 getViewPosition(float2 screenPosition, float depth, float viewZ) {
-    float clipW = _CameraProjectionMatrix[2][3] * viewZ + _CameraProjectionMatrix[3][3];
+    screenPosition.y = (-screenPosition.y) + 1.0;
+    // _CameraProjectionMatrix[2][3] は 右手か左手かの符号。Matrix::makePerspectiveFovLH() 参考。
+    // 右手の場合は -1, 左手の場合は 1 になる。
+    // [3][3] は Perspective の場合は 0.0, Ortho の場合は 1.0 になる。
+    //float clipW = _CameraProjectionMatrix[2][3] * viewZ + _CameraProjectionMatrix[3][3];
+    float clipW = _Projection23 * viewZ + _Projection33;
     float4 clipPosition = float4((float3(screenPosition, depth) - 0.5)*2.0, 1.0);
     clipPosition *= clipW; // unprojection
-    return (_CameraInverseProjectionMatrix * clipPosition).xyz;
+    //return clipPosition.xyz;
+    return (mul(clipPosition, _CameraInverseProjectionMatrix)).xyz;
 }
 
 float3 getViewNormal(float2 screenPosition) {
@@ -113,8 +136,8 @@ bool traceCameraSpaceRay(
     // float rayDist = _MaxRayDistance;
 
     // Clip to the near plane
-    float rayLength = ((rayOrg.z + rayDir.z * rayDist) > -ln_NearClip) ?
-        (-ln_NearClip - rayOrg.z) / rayDir.z : rayDist;
+    float rayLength = ((rayOrg.z + rayDir.z * rayDist) > -CameraNear) ?
+        (-CameraNear - rayOrg.z) / rayDir.z : rayDist;
     float3 rayEnd = rayOrg + rayDir * rayLength;
 
     float3 Q0 = rayOrg;
@@ -220,15 +243,20 @@ float4 PS_Main(PS_Input input) : SV_TARGET
 {
     float depth = getDepth(input.UV);
     float viewZ = getViewZ(depth);
+    //return float4(-viewZ / 20, depth, 0, 1);
+    //return float4(CameraNear, CameraFar / 200, 0, 1);
+//    return float4(-_CameraProjectionMatrix[2][3] / 2, 0, 0, 1);
 
     float3 viewPosition = getViewPosition(input.UV, depth, viewZ);
     float3 viewNormal   = getViewNormal(input.UV);
+//return float4(viewPosition, 1);
 
     float4 metalRoughness = tex2D(_MetalRoughSampler, input.UV);
     float specularStrength = 1.0 - metalRoughness.z;
 
     float3 rayOrg = viewPosition;
     float3 rayDir = reflect(normalize(rayOrg), viewNormal);
+
 
     float2 hitPixel;
     float3 hitPoint;
@@ -237,8 +265,10 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     float dotNV = dot(normalize(-rayOrg), viewNormal);
     bool intersect = traceCameraSpaceRay(rayOrg, rayDir, dotNV, hitPixel, hitPoint, iterationCount);
     float alpha = calculateAlpha(input.UV, intersect, iterationCount, specularStrength, hitPixel, hitPoint, rayOrg, rayDir);
+    
 
     float3 color = tex2D(_ColorSampler, hitPixel).xyz;
+
     color = lerp(float3(.3), color, depth < 1.0 ? 1.0 : 0.0);
 
     return float4(color.xyz, alpha);

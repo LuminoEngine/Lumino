@@ -45,6 +45,7 @@ public:	// TODO:
 	Ref<RenderTargetTexture> m_materialMap;	// x, y, z:roughness,
 	Ref<DepthBuffer>	m_depthBuffer;
 	Ref<RenderPass> m_renderPass;
+	Ref<SamplerState> m_samplerState;	// TODO: 共通化
 };
 
 

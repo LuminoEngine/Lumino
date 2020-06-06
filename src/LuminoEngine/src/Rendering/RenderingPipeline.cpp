@@ -84,7 +84,9 @@ void SceneRenderingPipeline::render(
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
     m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
-    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
+    //m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
+    // TODO: ↑同じ SceneRenderer を2回 render するのはダメ。GBuffer がクリアされるので、この後のポストエフェクトの処理で利用できなくなる。
+    // 今は SSR テスト用に回避したいので、消しておく。
 
     {
         CameraInfo camera;

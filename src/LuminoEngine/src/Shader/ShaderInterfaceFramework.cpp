@@ -114,12 +114,11 @@ void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
             if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
                 m_builtinUniformBuffers[itr->second] = localInfo.dataIndex;
             }
-
-            for (const auto& memberInfo : globalLayout->m_members) {
-                auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
-                if (itr != s_BuiltinShaderParametersMap.end()) {
-                    m_hasBuiltinShaderParameters |= (1 << itr->second);
-                }
+        }
+        for (const auto& memberInfo : globalLayout->m_members) {
+            auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
+            if (itr != s_BuiltinShaderParametersMap.end()) {
+                m_hasBuiltinShaderParameters |= (1 << itr->second);
             }
         }
 

@@ -1520,7 +1520,10 @@ Matrix Matrix::makePerspectiveFovLH(float fovY, float aspect, float nearZ, float
 {
     float h = 1.f / tanf(fovY * 0.5f); // cot(fovY/2)
     return Matrix(
-        h / aspect, 0.0f, 0.0f, 0.0f, 0.0f, h, 0.0f, 0.0f, 0.0f, 0.0f, farZ / (farZ - nearZ), 1.0f, 0.0f, 0.0f, (-nearZ * farZ) / (farZ - nearZ), 0.0f);
+        h / aspect, 0.0f, 0.0f, 0.0f,
+        0.0f, h, 0.0f, 0.0f,
+        0.0f, 0.0f, farZ / (farZ - nearZ), 1.0f,
+        0.0f, 0.0f, (-nearZ * farZ) / (farZ - nearZ), 0.0f);
 }
 
 // static
@@ -1528,21 +1531,30 @@ Matrix Matrix::makePerspectiveFovRH(float fovY, float aspect, float nearZ, float
 {
     float h = 1.f / tanf(fovY * 0.5f); // cot(fovY/2)
     return Matrix(
-        h / aspect, 0.0f, 0.0f, 0.0f, 0.0f, h, 0.0f, 0.0f, 0.0f, 0.0f, farZ / (nearZ - farZ), -1.0f, 0.0f, 0.0f, (nearZ * farZ) / (nearZ - farZ), 0.0f);
+        h / aspect, 0.0f, 0.0f, 0.0f,
+        0.0f, h, 0.0f, 0.0f,
+        0.0f, 0.0f, farZ / (nearZ - farZ), -1.0f,
+        0.0f, 0.0f, (nearZ * farZ) / (nearZ - farZ), 0.0f);
 }
 
 // static
 Matrix Matrix::makeOrthoLH(float width, float height, float nearZ, float farZ)
 {
     return Matrix(
-        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, 2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f / (farZ - nearZ), 0.0f, 0.0f, 0.0f, -nearZ / (nearZ - farZ), 1.0f);
+        2.0f / width, 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f / height, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f / (farZ - nearZ),
+        0.0f, 0.0f, 0.0f, -nearZ / (nearZ - farZ), 1.0f);
 }
 
 // static
 Matrix Matrix::makeOrthoRH(float width, float height, float nearZ, float farZ)
 {
     return Matrix(
-        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, 2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f / (nearZ - farZ), 0.0f, 0.0f, 0.0f, nearZ / (nearZ - farZ), 1.0f);
+        2.0f / width, 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f / height, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f / (nearZ - farZ), 0.0f,
+        0.0f, 0.0f, nearZ / (nearZ - farZ), 1.0f);
 }
 
 // static
