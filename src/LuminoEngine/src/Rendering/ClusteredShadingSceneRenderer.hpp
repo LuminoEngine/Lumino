@@ -12,6 +12,7 @@ class ClusteredShadingSceneRenderer;
 // 一般的な Deferred Rendering の G-Buffer と比べて、色情報は出力しない。
 // 出力は以下の通り。
 // - SV_TARGET0: xyz=Normal (View-Space. 視点方向を向いているものは Z+), z=Depth
+// http://rarihoma.xvs.jp/wiki/#!UE4/GBuffer%E3%81%AB%E6%9B%B8%E3%81%8D%E8%BE%BC%E3%81%BE%E3%82%8C%E3%82%8B%E5%86%85%E5%AE%B9/i.md
 class ForwardGBufferPrepass
 	: public SceneRendererPass
 {
@@ -41,6 +42,7 @@ public:	// TODO:
 	Ref<Shader>					m_defaultShader;
 	Ref<RenderTargetTexture>	m_depthMap;
 	Ref<RenderTargetTexture>	m_normalMap;
+	Ref<RenderTargetTexture> m_materialMap;	// x, y, z:roughness,
 	Ref<DepthBuffer>	m_depthBuffer;
 	Ref<RenderPass> m_renderPass;
 };

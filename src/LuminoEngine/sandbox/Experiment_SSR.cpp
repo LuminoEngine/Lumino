@@ -3,13 +3,15 @@
 using namespace ln;
 
 namespace ln {
-    extern Texture* g_normalMap;
+    extern Texture* g_debugMap;
 }
 
 class App_Experiment_SSR : public Application
 {
     Ref<PlaneMesh> m_ground;
     Ref<PlaneMesh> m_walls[4];
+    Ref<BoxMesh> m_box;
+    Ref<SphereMesh> m_sphere;
 
     Ref<Sprite> m_sprite;
 
@@ -52,6 +54,16 @@ class App_Experiment_SSR : public Application
         m_walls[3] = PlaneMesh::create(wallMaterial);
         m_walls[3]->setPosition(0, 5, 5);
         m_walls[3]->setRotation(-Math::PI / 2, 0, 0);
+
+        auto boxMaterial = Material::create();
+        boxMaterial->setColor(Color::Green);
+        m_box = BoxMesh::create();
+        m_box->boxMeshComponent()->setMaterial(boxMaterial);
+
+        auto sphereMaterial = Material::create();
+        sphereMaterial->setColor(Color::Red);
+        m_sphere = SphereMesh::create();
+        m_sphere->sphereMeshComponent()->setMaterial(sphereMaterial);
 
         //m_walls[0] = PlaneMesh::create(groundMaterial);
         //m_walls[0]->setPosition(0.0, 20.0, 20.0);
@@ -97,9 +109,16 @@ class App_Experiment_SSR : public Application
         //printf("==========/n");
         //m_plane->setRotation(0, Engine::time() * 0.1, 0);
 
-        m_sprite->setTexture(ln::g_normalMap);
+        m_sprite->setTexture(ln::g_debugMap);
         //m_sprite->setSize(320, 240);
         m_sprite->setPosition(0, 1, 0);
+
+
+        m_box->setPosition(-2.5, 0.5, 0);
+        m_box->setRotation(0, Engine::time(), 0);
+
+        m_sphere->setPosition(2.5, std::sin(Engine::time()), 0);
+        
     }
 };
 

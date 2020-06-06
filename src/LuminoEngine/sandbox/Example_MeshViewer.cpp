@@ -2,10 +2,6 @@
 #include <LuminoEngine.hpp>
 using namespace ln;
 
-namespace ln {
-    extern Texture* g_normalMap;
-}
-
 class App_Example_MeshViewer : public Application
 {
     Ref<PlaneMesh> m_plane;
@@ -60,12 +56,6 @@ class App_Example_MeshViewer : public Application
 
     virtual void onUpdate() override
     {
-        //printf("==========\n");
-        //m_plane->setRotation(0, Engine::time() * 0.1, 0);
-
-        m_sprite->setTexture(ln::g_normalMap);
-        //m_sprite->setSize(320, 240);
-        m_sprite->setPosition(0, 1, 0);
     }
 };
 

@@ -12,7 +12,7 @@
 
 namespace ln {
 
-Texture* g_normalMap = nullptr;
+Texture* g_debugMap = nullptr;
 
 namespace detail {
 
@@ -37,7 +37,8 @@ void ForwardGBufferPrepass::init()
 	if (Debug) {
 		m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
 		m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
-		g_normalMap = m_depthMap;
+		m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		g_debugMap = m_materialMap;
 	}
 	m_renderPass = makeObject<RenderPass>();
 }
@@ -48,6 +49,7 @@ void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 	if (!Debug) {
 		m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
 		m_normalMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+		m_materialMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
 	}
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 
@@ -60,6 +62,8 @@ void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
 		m_depthMap = nullptr;
 		RenderTargetTexture::releaseTemporary(m_normalMap);
 		m_normalMap = nullptr;
+		RenderTargetTexture::releaseTemporary(m_materialMap);
+		m_materialMap = nullptr;
 	}
 	DepthBuffer::releaseTemporary(m_depthBuffer);
 	m_depthBuffer = nullptr;
@@ -68,7 +72,7 @@ void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
 void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, m_depthMap);
-	m_renderPass->setRenderTarget(1, m_normalMap);
+	m_renderPass->setRenderTarget(1, m_materialMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
 	m_renderPass->setClearValues(ClearFlags::All, Color::Gray, 1.0f, 0);
 }

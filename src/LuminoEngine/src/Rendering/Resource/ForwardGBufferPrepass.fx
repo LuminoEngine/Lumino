@@ -5,6 +5,8 @@
  */
 
 #include <Lumino.fxh>
+#include <LuminoForward.fxh>
+#include <LuminoPBR.fxh>
 
 // TODO: move to lib
 float3 LN_PackNormal(float3 normal)
@@ -35,6 +37,7 @@ struct PSOutput
 {
     //float4 Depth : SV_TARGET1;
     float4 Normal : SV_TARGET0;
+    float4 Material: SV_TARGET1;
 };
 
 VSOutput VS_WriteLinearDepth(VSInput input)
@@ -55,6 +58,7 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     PSOutput output;
     output.Normal = float4(LN_PackNormal(input.ViewSpaceNormal), z);
     //output.Depth = float4(z, z, z, 1);
+    output.Material = float4(ln_MaterialMetallic, 0, ln_MaterialRoughness, 1);
 
     return output;
 }
