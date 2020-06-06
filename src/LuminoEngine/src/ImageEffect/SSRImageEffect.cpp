@@ -49,10 +49,19 @@ bool SSRImageEffectInstance::init(SSRImageEffect* owner)
     m_owner = owner;
 
 
-    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSR.fx");
+    auto shader1 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSR.fx");
     m_ssrMaterial = makeObject<Material>();
-    m_ssrMaterial->setShader(shader);
+    m_ssrMaterial->setShader(shader1);
 
+    auto shader2 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRBlur.fx");
+    m_ssrBlurMaterial1 = makeObject<Material>();
+    m_ssrBlurMaterial1->setShader(shader2);
+    m_ssrBlurMaterial2 = makeObject<Material>();
+    m_ssrBlurMaterial2->setShader(shader2);
+
+    auto shader3 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRComposite.fx");
+    m_ssrCompositeMaterial = makeObject<Material>();
+    m_ssrCompositeMaterial->setShader(shader3);
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
@@ -93,7 +102,18 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     context->blit(m_ssrMaterial, m_ssrTarget);
     g_srTarget = m_ssrTarget;
 
-    context->blit(m_ssrMaterial, destination);
+    m_ssrBlurMaterial1->setTexture(u"_ColorSampler", m_ssrTarget);
+    context->blit(m_ssrBlurMaterial1, m_blurTarget1);
+
+    m_ssrBlurMaterial2->setTexture(u"_ColorSampler", m_blurTarget1);
+    context->blit(m_ssrBlurMaterial2, m_blurTarget2);
+
+    m_ssrCompositeMaterial->setTexture(u"_ColorSampler", source);
+    m_ssrCompositeMaterial->setTexture(u"_SSRSampler", m_ssrTarget);
+    context->blit(m_ssrCompositeMaterial, destination);
+    
+
+    //context->blit(m_ssrMaterial, destination);
 }
 
 void SSRImageEffectInstance::resetResources(int resx, int resy)

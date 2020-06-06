@@ -38,7 +38,8 @@ private:
 
     SSRImageEffect* m_owner;
     Ref<Material> m_ssrMaterial;
-    Ref<Material> m_ssrBlurMaterial;
+    Ref<Material> m_ssrBlurMaterial1;
+    Ref<Material> m_ssrBlurMaterial2;
     Ref<Material> m_ssrCompositeMaterial;
 
     int m_viewWidth;
