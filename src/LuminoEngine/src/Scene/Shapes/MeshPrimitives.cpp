@@ -74,16 +74,29 @@ Ref<PlaneMesh> PlaneMesh::create()
 	return makeObject<PlaneMesh>();
 }
 
+Ref<PlaneMesh> PlaneMesh::create(Material* material)
+{
+	return makeObject<PlaneMesh>(material);
+}
+
 PlaneMesh::PlaneMesh()
 {
 }
 
-void PlaneMesh::init()
+bool PlaneMesh::init()
 {
-	VisualObject::init();
+	if (!VisualObject::init()) return false;
 	m_component = makeObject<PlaneMeshComponent>();
 	addComponent(m_component);
 	setMainVisualComponent(m_component);
+	return true;
+}
+
+bool PlaneMesh::init(Material* material)
+{
+	if (!init()) return false;
+	m_component->setMaterial(material);
+	return true;
 }
 
 PlaneMeshComponent* PlaneMesh::planeMeshComponent() const

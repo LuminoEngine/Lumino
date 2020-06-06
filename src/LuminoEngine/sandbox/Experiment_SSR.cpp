@@ -6,9 +6,11 @@ namespace ln {
     extern Texture* g_normalMap;
 }
 
-class App_Example_MeshViewer : public Application
+class App_Experiment_SSR : public Application
 {
-    Ref<PlaneMesh> m_plane;
+    Ref<PlaneMesh> m_ground;
+    Ref<PlaneMesh> m_walls[4];
+
     Ref<Sprite> m_sprite;
 
     virtual void onInit() override
@@ -21,9 +23,41 @@ class App_Example_MeshViewer : public Application
         m_sprite->setBlendMode(BlendMode::Normal);
         //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
 
-        m_plane = PlaneMesh::create();
-        auto planeMaterial = Material::create(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));
-        m_plane->planeMeshComponent()->setMaterial(planeMaterial);
+        auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
+        m_ground = PlaneMesh::create(groundMaterial);
+
+        auto wallMaterial = Material::create();
+        //wallMaterial.bumpMap = textureLoader.load('assets/textures/brick_bump.jpg');
+        wallMaterial->setMainTexture(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/brick_diffuse.jpg"));
+        //wallMaterial.roughnessMap = textureLoader.load('assets/textures/brick_roughness.jpg');
+        //wallMaterial.bumpScale = 0.1;
+        //wallMaterial->shadingModel = ShadingModel::Unlit;
+
+        // X-
+        m_walls[0] = PlaneMesh::create(wallMaterial);
+        m_walls[0]->setPosition(-5, 5, 0);
+        m_walls[0]->setRotation(-Math::PI / 2, -Math::PI / 2, 0);
+
+        // X+
+        m_walls[1] = PlaneMesh::create(wallMaterial);
+        m_walls[1]->setPosition(5, 5, 0);
+        m_walls[1]->setRotation(-Math::PI / 2, Math::PI / 2, 0);
+
+        // Z-
+        m_walls[2] = PlaneMesh::create(wallMaterial);
+        m_walls[2]->setPosition(0, 5, -5);
+        m_walls[2]->setRotation(-Math::PI / 2, Math::PI, 0);
+
+        // Z+
+        m_walls[3] = PlaneMesh::create(wallMaterial);
+        m_walls[3]->setPosition(0, 5, 5);
+        m_walls[3]->setRotation(-Math::PI / 2, 0, 0);
+
+        //m_walls[0] = PlaneMesh::create(groundMaterial);
+        //m_walls[0]->setPosition(0.0, 20.0, 20.0);
+
+        //auto planeMaterial = Material::create();
+        //m_plane->planeMeshComponent()->setMaterial(planeMaterial);
 
         //auto sprite2 = Sprite::create(Texture2D::whiteTexture());
 
@@ -60,7 +94,7 @@ class App_Example_MeshViewer : public Application
 
     virtual void onUpdate() override
     {
-        //printf("==========\n");
+        //printf("==========/n");
         //m_plane->setRotation(0, Engine::time() * 0.1, 0);
 
         m_sprite->setTexture(ln::g_normalMap);
@@ -69,10 +103,9 @@ class App_Example_MeshViewer : public Application
     }
 };
 
-void Example_MeshViewer()
+void Experiment_SSR()
 {
-    //Logger::setLevel(LogLevel::Verbose);
-	App_Example_MeshViewer app;
+    App_Experiment_SSR app;
 	detail::ApplicationHelper::run(&app);
 }
 

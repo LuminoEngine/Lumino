@@ -115,15 +115,15 @@ void RenderingManager::init(const Settings& settings)
         MemoryStream stream(data, size);
         m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = makeObject<Shader>(u"ClusteredShadingDefault", &stream);
     }
-    // DepthPrepass
+    // ForwardGBufferPrepass
     {
         static const unsigned char data[] =
         {
-#include "Resource/DepthPrepass.lcfx.inl"
+#include "Resource/ForwardGBufferPrepass.lcfx.inl"
         };
         static const size_t size = LN_ARRAY_SIZE_OF(data);
         MemoryStream stream(data, size);
-        m_builtinShaders[(int)BuiltinShader::DepthPrepass] = makeObject<Shader>(u"DepthPrepass", &stream);
+        m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = makeObject<Shader>(u"ForwardGBufferPrepass", &stream);
     }
 	// BlackShader
 	{
@@ -182,12 +182,12 @@ void RenderingManager::init(const Settings& settings)
 		m_builtinShaders[(int)BuiltinShader::RadialBlur] = makeObject<Shader>(u"RadialBlur", &stream);
 	}
 
-	m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.fx");
+	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
 	//m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
 #if 0
     m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
-    m_builtinShaders[(int)BuiltinShader::DepthPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/DepthPrepass.fx");
+    m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	m_builtinShaders[(int)BuiltinShader::BlackShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlackShader.fx");
 	m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.fx");
 	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/LuminosityHighPassShader.fx");

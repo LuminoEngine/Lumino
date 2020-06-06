@@ -269,6 +269,7 @@ void Example_Navigator();
 void Example_SoundControl();
 void Example_UIControls();
 void Example_Tilemap();
+void Experiment_SSR();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
 void Sandbox_Particle();
@@ -447,12 +448,13 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-		Example_MeshViewer();
+		//Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
+        Experiment_SSR();
 		//Sandbox_MeshTilemap();
         //Sandbox_Particle();
 		//Tutorial_Sandbox();

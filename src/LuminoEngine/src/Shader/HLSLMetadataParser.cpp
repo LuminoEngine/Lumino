@@ -447,7 +447,7 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             {"Forward", 7, ShaderTechniqueClass_Phase::Forward},
             {"LightDisc", 9, ShaderTechniqueClass_Phase::LightDisc},
             {"ShadowCaster", 12, ShaderTechniqueClass_Phase::ShadowCaster},
-            {"DepthPrepass", 12, ShaderTechniqueClass_Phase::DepthPrepass},
+            {"ForwardGBufferPrepass", 12, ShaderTechniqueClass_Phase::ForwardGBufferPrepass},
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.phase)) {
             m_diag->reportError(u"Phase: Invalid value: " + String::fromStdString(value));

@@ -19,56 +19,61 @@ namespace detail {
 #if 1
 
 //==============================================================================
-// DepthPrepass
+// ForwardGBufferPrepass
 
-DepthPrepass::DepthPrepass()
+ForwardGBufferPrepass::ForwardGBufferPrepass()
 {
 }
 
-DepthPrepass::~DepthPrepass()
+ForwardGBufferPrepass::~ForwardGBufferPrepass()
 {
 }
 
-void DepthPrepass::init()
+void ForwardGBufferPrepass::init()
 {
 	SceneRendererPass::init();
-	m_defaultShader = manager()->builtinShader(BuiltinShader::DepthPrepass);
+	m_defaultShader = manager()->builtinShader(BuiltinShader::ForwardGBufferPrepass);
 
 	if (Debug) {
-		m_depthMap = RenderTargetTexture::create(400, 300, TextureFormat::RGBA8);
+		m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
 		g_normalMap = m_depthMap;
 	}
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void DepthPrepass::onBeginRender(SceneRenderer* sceneRenderer)
+void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
 	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
 	if (!Debug) {
 		m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+		m_normalMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
 	}
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 
 }
 
-void DepthPrepass::onEndRender(SceneRenderer* sceneRenderer)
+void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
 {
 	if (!Debug) {
 		RenderTargetTexture::releaseTemporary(m_depthMap);
 		m_depthMap = nullptr;
+		RenderTargetTexture::releaseTemporary(m_normalMap);
+		m_normalMap = nullptr;
 	}
 	DepthBuffer::releaseTemporary(m_depthBuffer);
 	m_depthBuffer = nullptr;
 }
 
-void DepthPrepass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, m_depthMap);
+	m_renderPass->setRenderTarget(1, m_normalMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::All, Color::Red, 1.0f, 0);
+	m_renderPass->setClearValues(ClearFlags::All, Color::Gray, 1.0f, 0);
 }
 
-//void DepthPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
+//void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
 //{
 //	frameBuffer->renderTarget[0] = m_depthMap;
 //	frameBuffer->depthBuffer = m_depthBuffer;
@@ -83,12 +88,12 @@ void DepthPrepass::onBeginPass(GraphicsContext* context, RenderTargetTexture* re
 //	m_renderPass->setClearValues(ClearFlags::All, Color::Transparency, 1.0f, 0);
 //}
 
-RenderPass* DepthPrepass::renderPass() const
+RenderPass* ForwardGBufferPrepass::renderPass() const
 {
 	return m_renderPass;
 }
 
-ShaderTechnique* DepthPrepass::selectShaderTechnique(
+ShaderTechnique* ForwardGBufferPrepass::selectShaderTechnique(
 	const ShaderTechniqueRequestClasses& requester,
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
@@ -433,8 +438,8 @@ void ClusteredShadingSceneRenderer::init(RenderingManager* manager)
 {
 	SceneRenderer::init();
 
-	m_depthPrepass = makeObject<DepthPrepass>();
-	//addPass(m_depthPrepass);
+	m_depthPrepass = makeObject<ForwardGBufferPrepass>();
+	addPass(m_depthPrepass);
 
 
 	m_lightOcclusionPass = makeObject<LightOcclusionPass>();

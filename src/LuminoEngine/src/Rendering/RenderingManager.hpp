@@ -26,7 +26,7 @@ enum class BuiltinShader
 {
 	Sprite,
 	ClusteredShadingDefault,
-	DepthPrepass,
+	ForwardGBufferPrepass,
 	ShadowCaster,
 	//LegacyDiffuse,		// Lambert Shading
 

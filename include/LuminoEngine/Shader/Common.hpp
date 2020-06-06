@@ -22,7 +22,7 @@ enum class ShaderTechniqueClass_Phase : uint8_t
     // TODO: Differd
     LightDisc,
     ShadowCaster,
-    DepthPrepass
+    ForwardGBufferPrepass
 };
 
 // VertexFactory
