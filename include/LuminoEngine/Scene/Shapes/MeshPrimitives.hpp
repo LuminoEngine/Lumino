@@ -52,7 +52,7 @@ private:
 };
 
 /**
- * 平面 (床・地面) のメッシュオブジェクトです。
+ * 平面 (床・地面) のメッシュオブジェクトです。デフォルトのサイズは、各軸 10 です。
  */
 LN_CLASS()
 class PlaneMesh
@@ -60,6 +60,7 @@ class PlaneMesh
 {
 public:
 	static Ref<PlaneMesh> create();
+	static Ref<PlaneMesh> create(Material* material);
 
 	PlaneMeshComponent* planeMeshComponent() const;
 
@@ -68,9 +69,13 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	PlaneMesh();
 
-	/** 各軸のサイズが 1 である BoxMesh を作成します。 */
+	/**  */
 	LN_METHOD()
-	void init();
+	bool init();
+
+	/**  */
+	LN_METHOD()
+	bool init(Material* material);
 
 private:
 	Ref<PlaneMeshComponent> m_component;

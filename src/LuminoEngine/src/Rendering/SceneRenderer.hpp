@@ -24,6 +24,7 @@ struct ShaderTechniqueRequestClasses
 	ShaderTechniqueClass_MeshProcess meshProcess;
 	ShaderTechniqueClass_DrawMode drawMode;
 	ShaderTechniqueClass_Normal normal;
+	ShaderTechniqueClass_Roughness roughness;
 };
 
 
@@ -60,7 +61,17 @@ public:
 
 	RenderingManager* manager() const { return m_manager; }
 
-	ShaderTechniqueClass_ShadingModel tlanslateShadingModel(ShadingModel value) { return (ShaderTechniqueClass_ShadingModel)value; }
+	static ShaderTechniqueClass_ShadingModel tlanslateShadingModel(ShadingModel value) { return (ShaderTechniqueClass_ShadingModel)value; }
+
+protected:
+	//static ShaderTechnique* selectShaderTechniqueHelper(
+	//	const ShaderTechniqueRequestClasses& requester,
+	//	Shader* requestedShader,
+	//	ShadingModel requestedShadingModel,
+	//	Shader* defaultShader,
+	//	ShaderTechnique* defaultTechnique,
+	//	ShaderTechniqueClass_Phase phase);
+
 
 private:
 	RenderingManager* m_manager;

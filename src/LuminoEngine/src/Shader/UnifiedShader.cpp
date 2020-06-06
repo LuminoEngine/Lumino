@@ -111,6 +111,7 @@ bool UnifiedShader::save(const Path& filePath)
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.shadingModel));
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.drawMode));
                 writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.normalClass));
+                writer->writeUInt8(static_cast<uint8_t>(info->techniqueClass.roughnessClass));
             }
 
             // passes
@@ -279,6 +280,7 @@ bool UnifiedShader::load(Stream* stream)
                 info.techniqueClass.shadingModel = static_cast<ShaderTechniqueClass_ShadingModel>(reader->readUInt8());
                 info.techniqueClass.drawMode = static_cast<ShaderTechniqueClass_DrawMode>(reader->readUInt8());
                 info.techniqueClass.normalClass = static_cast<ShaderTechniqueClass_Normal>(reader->readUInt8());
+                info.techniqueClass.roughnessClass = static_cast<ShaderTechniqueClass_Roughness>(reader->readUInt8());
             }
 
             // passes

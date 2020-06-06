@@ -55,6 +55,32 @@ void SceneRendererPass::onBeginPass(GraphicsContext* context, RenderTargetTextur
 {
 }
 
+//ShaderTechnique* SceneRendererPass::selectShaderTechniqueHelper(
+//	const ShaderTechniqueRequestClasses& requester,
+//	Shader* requestedShader,
+//	ShadingModel requestedShadingModel,
+//	Shader* defaultShader,
+//	ShaderTechnique* defaultTechnique,
+//	ShaderTechniqueClass_Phase phase)
+//{
+//	const Shader* actualShader = (requestedShader) ? requestedShader : defaultShader;
+//
+//	ShaderTechniqueClass classSet;
+//	classSet.defaultTechnique = false;
+//	classSet.phase = phase;
+//	classSet.meshProcess = requester.meshProcess;
+//	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
+//	classSet.drawMode = requester.drawMode;
+//	classSet.normalClass = requester.normal;
+//	classSet.roughnessClass = requester.roughness;
+//	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
+//	if (technique)
+//		return technique;
+//	else
+//		return defaultTechnique;
+//}
+
+//}
 //==============================================================================
 // SceneRenderer
 
@@ -291,10 +317,12 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					if (finalMaterial) {
 						subsetInfo.materialTexture = finalMaterial->mainTexture();
 						subsetInfo.normalMap = finalMaterial->normalMap();
+						subsetInfo.roughnessMap = finalMaterial->roughnessMap();
 					}
 					else {
 						subsetInfo.materialTexture = nullptr;
 						subsetInfo.normalMap = nullptr;
+						subsetInfo.roughnessMap = nullptr;
 					}
 					subsetInfo.opacity = stage->getOpacityFinal(element);
 					subsetInfo.colorScale = stage->getColorScaleFinal(element);
@@ -421,6 +449,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					(elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh,
 					(batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive,
 					(subsetInfo.normalMap) ? ShaderTechniqueClass_Normal::NormalMap : ShaderTechniqueClass_Normal::Default,
+					(subsetInfo.roughnessMap) ? ShaderTechniqueClass_Roughness::RoughnessMap : ShaderTechniqueClass_Roughness::Default,
 				};
 				ShaderTechnique* tech = pass->selectShaderTechnique(
 					requester,
@@ -443,6 +472,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 				if (!localSubsetInfo.normalMap) {
 					localSubsetInfo.normalMap = m_manager->graphicsManager()->defaultNormalMap();
+				}
+				if (!localSubsetInfo.roughnessMap) {
+					localSubsetInfo.roughnessMap = m_manager->graphicsManager()->blackTexture();
 				}
 
 

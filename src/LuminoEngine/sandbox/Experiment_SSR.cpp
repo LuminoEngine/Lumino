@@ -26,6 +26,7 @@ class App_Experiment_SSR : public Application
         //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
 
         auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
+        groundMaterial->setRoughnessMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));
         m_ground = PlaneMesh::create(groundMaterial);
 
         auto wallMaterial = Material::create();

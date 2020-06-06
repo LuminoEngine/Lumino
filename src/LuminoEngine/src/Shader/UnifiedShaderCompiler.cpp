@@ -63,6 +63,8 @@ bool UnifiedShaderCompiler::compile(
 		{
 			if (tech.techniqueClass.normalClass == ShaderTechniqueClass_Normal::NormalMap)
 				actualDefinitions.add(u"LN_USE_NORMALMAP=1");
+			if (tech.techniqueClass.roughnessClass == ShaderTechniqueClass_Roughness::RoughnessMap)
+				actualDefinitions.add(u"LN_USE_ROUGHNESS_MAP=1");
 		}
 
 

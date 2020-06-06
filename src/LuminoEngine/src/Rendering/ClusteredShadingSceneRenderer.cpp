@@ -102,8 +102,21 @@ ShaderTechnique* ForwardGBufferPrepass::selectShaderTechnique(
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
-	// force default
-	return m_defaultShader->techniques()->front();
+	const Shader* actualShader = (requestedShader) ? requestedShader : m_defaultShader;
+
+	ShaderTechniqueClass classSet;
+	classSet.defaultTechnique = false;
+	classSet.phase = ShaderTechniqueClass_Phase::ForwardGBufferPrepass;
+	classSet.meshProcess = requester.meshProcess;
+	classSet.drawMode = requester.drawMode;
+	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+	classSet.normalClass = requester.normal;		// Normal を出力したいので考慮する
+	classSet.roughnessClass = requester.roughness;  // Roughness を出力したいので考慮する
+	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(actualShader, classSet);
+	if (technique)
+		return technique;
+	else
+		return m_defaultShader->techniques()->front();
 }
 
 //==============================================================================
@@ -176,6 +189,7 @@ ShaderTechnique* LightOcclusionPass::selectShaderTechnique(
 	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
 	classSet.drawMode = requester.drawMode;
 	classSet.normalClass = ShaderTechniqueClass_Normal::Default;
+	classSet.roughnessClass = ShaderTechniqueClass_Roughness::Default;
 	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
 	if (technique)
 		return technique;

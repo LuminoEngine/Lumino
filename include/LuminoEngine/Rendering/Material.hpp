@@ -35,6 +35,8 @@ public:
 
 	void setNormalMap(Texture* value);
 	Texture* normalMap() const;
+	void setRoughnessMap(Texture* value);
+	Texture* roughnessMap() const;
 
 
 
@@ -176,6 +178,7 @@ protected:  // TODO:
 	Ref<Shader> m_shader;
 	Ref<Texture> m_mainTexture;
 	Ref<Texture> m_normalMap;
+	Ref<Texture> m_roughnessMap;
 	std::vector<std::pair<String, std::shared_ptr<detail::ShaderParameterValue>>> m_values;
 
 protected:

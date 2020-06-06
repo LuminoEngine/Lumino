@@ -37,8 +37,8 @@ cbuffer LNEffectColorBuffer
 	/* [32] */ float4 ln_ToneColor;
 };
 
-sampler2D		ln_MaterialTexture;
-//SamplerState	ln_MaterialTextureSamplerState;
+sampler2D ln_MaterialTexture;
+sampler2D ln_MaterialRoughnessMap;
 
 struct LN_VSInput
 {

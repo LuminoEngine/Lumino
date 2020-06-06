@@ -143,6 +143,7 @@ class RenderStateParser
 public:
     static bool equals(const std::string& str1, const char* str2, int str2len)
     {
+        if (str1.size() != str2len) return false;
         return StringHelper::compare(str1.c_str(), str1.size(), str2, str2len, str2len, CaseSensitivity::CaseInsensitive) == 0;
     }
 
@@ -442,12 +443,12 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
     if (!next()) return false;
     std::string value = getString(current());
 
-    if (equalString(name, "Phase", 6)) {
+    if (equalString(name, "Phase", 5)) {
         const struct { const char* name; size_t len; ShaderTechniqueClass_Phase value; } table[] = {
             {"Forward", 7, ShaderTechniqueClass_Phase::Forward},
             {"LightDisc", 9, ShaderTechniqueClass_Phase::LightDisc},
             {"ShadowCaster", 12, ShaderTechniqueClass_Phase::ShadowCaster},
-            {"ForwardGBufferPrepass", 12, ShaderTechniqueClass_Phase::ForwardGBufferPrepass},
+            {"ForwardGBufferPrepass", 21, ShaderTechniqueClass_Phase::ForwardGBufferPrepass},
         };
         if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.phase)) {
             m_diag->reportError(u"Phase: Invalid value: " + String::fromStdString(value));
@@ -463,6 +464,20 @@ bool HLSLMetadataParser::parseTechniqueMember(HLSLTechnique* tech)
             m_diag->reportError(u"Normal: Invalid value: " + String::fromStdString(value));
             return false;
         }
+    }
+    else if (equalString(name, "Roughness", 9)) {
+        const struct { const char* name; size_t len; ShaderTechniqueClass_Roughness value; } table[] = {
+            {"Default", 7, ShaderTechniqueClass_Roughness::Default},
+            {"RoughnessMap", 12, ShaderTechniqueClass_Roughness::RoughnessMap},
+        };
+        if (!RenderStateParser::findHelper(table, value, &tech->techniqueClass.roughnessClass)) {
+            m_diag->reportError(u"Roughness: Invalid value: " + String::fromStdString(value));
+            return false;
+        }
+    }
+    else {
+        m_diag->reportError(u"Invalid technique parameter: " + String::fromStdString(getString(name)));
+        return false;
     }
 
     if (!nextTo(';')) return false;

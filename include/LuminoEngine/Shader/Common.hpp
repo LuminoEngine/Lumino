@@ -51,6 +51,12 @@ enum class ShaderTechniqueClass_Normal : uint8_t
     NormalMap,
 };
 
+enum class ShaderTechniqueClass_Roughness : uint8_t
+{
+    Default,
+    RoughnessMap,
+};
+
 
 struct UnifiedShaderTriple
 {

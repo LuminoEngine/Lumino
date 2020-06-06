@@ -160,7 +160,7 @@ class ShaderHelper
 {
 public:
     static ShaderRenderState* getShaderRenderState(ShaderPass* pass);
-    static ShaderTechnique* findTechniqueByClass(Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
+    static ShaderTechnique* findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass);
     static const detail::ShaderTechniqueClass& techniqueClass(ShaderTechnique* technique);
     static bool resolveStd140Layout(const ShaderUniformInfo& info, size_t* outAligndElemenSize);
 };

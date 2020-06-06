@@ -48,6 +48,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 			ShaderTechniqueClass_ShadingModel::Unlit,	// requestedShadingModel が同指定されていても、Pass 優先
 			requester.drawMode,
 			ShaderTechniqueClass_Normal::Default,
+			ShaderTechniqueClass_Roughness::Default,
 		};
 		tech = ShaderHelper::findTechniqueByClass(requestedShader, key);
 	}

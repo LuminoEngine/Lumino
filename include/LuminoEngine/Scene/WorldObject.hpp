@@ -114,9 +114,9 @@ public:
 	LN_METHOD(OverloadPostfix = "Quaternion")
 	void setRotation(const Quaternion& rot) { m_transform->setRotation(rot); }
 
-	/** このオブジェクトの回転をオイラー角から設定します。(radian) */
+	/** このオブジェクトの回転をオイラー角から設定します(radian) 。回転順序は Z(Roll) > X(Pich) > Y(Yaw) です。 */
 	LN_METHOD()
-	void setRotation(float x, float y, float z) { setRotation(Quaternion::makeFromEulerAngles(Vector3(x, y, z))); }
+	void setRotation(float x, float y, float z) { setRotation(Quaternion::makeFromYawPitchRoll(y, x, z)); }
 
 	/** このオブジェクトの回転を取得します。 */
 	LN_METHOD(Property)

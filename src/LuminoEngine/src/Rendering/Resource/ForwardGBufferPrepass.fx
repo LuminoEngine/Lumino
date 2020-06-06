@@ -18,6 +18,7 @@ struct VSInput
 {
     float3 Pos : POSITION0;
     float3 Normal : NORMAL0;
+    float2 UV : TEXCOORD0;
 };
 
 struct VSOutput
@@ -25,12 +26,14 @@ struct VSOutput
     float4 svPos : SV_POSITION;
     float3 ViewSpaceNormal : NORMAL0;
     float4 ViewPos : TEXCOORD0;
+    float2 UV : TEXCOORD1;
 };
 
 struct PSInput
 {
     float3 ViewSpaceNormal : NORMAL0;
     float4 ViewPos : TEXCOORD0;
+    float2 UV : TEXCOORD1;
 };
 
 struct PSOutput
@@ -46,6 +49,7 @@ VSOutput VS_WriteLinearDepth(VSInput input)
     output.ViewPos = mul(float4(input.Pos, 1.0), ln_WorldView);
     output.ViewSpaceNormal = mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
     output.svPos = mul(output.ViewPos, ln_Projection);
+    output.UV = input.UV;
 
     output.ViewSpaceNormal.z *= -1.0;
 
@@ -58,13 +62,32 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     PSOutput output;
     output.Normal = float4(LN_PackNormal(input.ViewSpaceNormal), z);
     //output.Depth = float4(z, z, z, 1);
-    output.Material = float4(ln_MaterialMetallic, 0, ln_MaterialRoughness, 1);
+
+#ifdef LN_USE_ROUGHNESS_MAP
+    float roughness = tex2D(ln_MaterialRoughnessMap, input.UV);
+    // TODO: ln_MaterialRoughness を乗算する？
+#else
+    float roughness = ln_MaterialRoughness;
+#endif
+    output.Material = float4(ln_MaterialMetallic, 0, roughness, 1);
 
     return output;
 }
 
 technique Default
 {
+    Phase = ForwardGBufferPrepass;
+    pass Pass1
+    {
+        VertexShader = VS_WriteLinearDepth;
+        PixelShader = PS_WriteLinearDepth;
+    }
+}
+
+technique RoughnessMap
+{
+    Phase = ForwardGBufferPrepass;
+    Roughness = RoughnessMap;
     pass Pass1
     {
         VertexShader = VS_WriteLinearDepth;

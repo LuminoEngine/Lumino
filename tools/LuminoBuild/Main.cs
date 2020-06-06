@@ -18,7 +18,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                //args = new string[] { "BuildLocalPackage" };
+                args = new string[] { "BuildLocalPackage" };
 
                 //args = new string[] { "BuildEngine_AndroidJNI" };
                 //args = new string[] { "BuildExternalProjects", "MSVC2017-x64-MT" };//, "--enable-Effekseer" };
@@ -30,7 +30,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildEngine_Android" };
                 //args = new string[] { "MakePackage_Ruby" };
                 //args = new string[] { "BuildLLVM" };
-                args = new string[] { "BuildEmbeddedResources" };
+                //args = new string[] { "BuildEmbeddedResources" };
 
                 //args = new string[] { "MakeNativePackage" };
                 //args = new string[] { "MakeInstaller_Win32" };
