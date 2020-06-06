@@ -39,11 +39,11 @@ void ForwardGBufferPrepass::init()
 	if (Debug) {
 		m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
-		m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
 		m_depthMap->setSamplerState(m_samplerState);
-		m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
 		m_normalMap->setSamplerState(m_samplerState);
-		m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
+		m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
 		m_materialMap->setSamplerState(m_samplerState);
 		g_viewNormalMap = m_depthMap;
 		g_viewMaterialMap = m_materialMap;

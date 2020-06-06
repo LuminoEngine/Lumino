@@ -3,6 +3,15 @@
 
 
 //==============================================================================
+// Lib
+
+float2 LN_ClipSpacePositionToUV(float2 pos)
+{
+    //return pos.xy*0.5+0.5;
+    return (float2(1.0, -1.0) * pos) * 0.5 + 0.5;
+}
+
+//==============================================================================
 // Uniforms
 
 
@@ -43,14 +52,14 @@ sampler2D _MetalRoughSampler;
 //#define CameraNear (0.3)    // ln_NearClip
 //#define CameraFar (100.0)    // ln_FarClip
 const float CameraNear = 0.3;
-const float CameraFar = 100.0;
+const float CameraFar = 1000.0;
 
 float _Projection23;
 float _Projection33;
 
 float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
 float4x4 _CameraInverseProjectionMatrix; // inverse projection matrix (NDC to camera space)
-const float _Iterations = 50.0;                   // maximum ray iterations
+const float _Iterations = 150.0;                   // maximum ray iterations
 const float _BinarySearchIterations = 4.0;       // maximum binary search refinement iterations
 const float _Thickness = 1.0;                    // Z size in camera space of a pixel in the depth buffer = _Thickness
 const float _MaxRayDistance = 20.0;               // maximum distance of a ray
@@ -75,13 +84,15 @@ float perspectiveDepthToViewZ(float invClipZ) {
     return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*invClipZ-CameraFar);
 }
 
+// depth: near:0~far:1
 float getDepth(float2 screenPosition) {
     //return tex2D(_NormalAndDepthSampler, screenPosition).a;
     return tex2D(_MetalRoughSampler, screenPosition).y;
 }
 
 float getLinearDepth(float2 screenPosition) {
-    float fragCoordZ = tex2D(_NormalAndDepthSampler, screenPosition).a;
+    //float fragCoordZ = tex2D(_NormalAndDepthSampler, screenPosition).a;
+    float fragCoordZ = tex2D(_MetalRoughSampler, screenPosition).y;
     float nz = CameraNear * fragCoordZ;
     return -nz / (CameraFar * (fragCoordZ-1.0) - nz);
 }
@@ -91,13 +102,13 @@ float getLinearDepth(float2 screenPosition) {
 // depth=0    -> -0.3
 // depth=0.98 -> -13
 float getViewZ(float depth) {
-    //return depth;
+    return -depth;
     //return ((CameraFar-CameraNear)*depth-CameraFar);
-    return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*depth-CameraFar);
+    //return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*depth-CameraFar);
 }
 
 // depth: near:0~far:1
-// viewZ: ビュー空間上の Z 座標
+// viewZ: ビュー空間上の Z 座標  奥が Z-。
 float3 getViewPosition(float2 screenPosition, float depth, float viewZ) {
     screenPosition.y = (-screenPosition.y) + 1.0;
     // _CameraProjectionMatrix[2][3] は 右手か左手かの符号。Matrix::makePerspectiveFovLH() 参考。
@@ -113,14 +124,19 @@ float3 getViewPosition(float2 screenPosition, float depth, float viewZ) {
 
 float3 getViewNormal(float2 screenPosition) {
     float3 rgb = tex2D(_NormalAndDepthSampler, screenPosition).xyz;
-    return 2.0*rgb.xyz - 1.0;
+    float3 n = 2.0*rgb.xyz - 1.0;
+    return normalize(n);
 }
 
 //----------------------------------------------------------------------------
 bool rayIntersectsDepth(float z, float2 uv)
 {
     float sceneZMax = getViewZ(getDepth(uv));
-    float dist = z - sceneZMax;
+
+    // サンプリングポイント z が、ピクセルの z より手前にあるときは 0 より大きい。
+    // サンプリングポイント z が、ピクセルの z より奥あるときは 0 より小さい。
+    float dist = z - sceneZMax; 
+
     return dist < 0.0 && dist > -_Thickness;
 }
 
@@ -132,21 +148,31 @@ bool traceCameraSpaceRay(
     out float3 hitPoint,
     out float iterationCount)
 {
-    float rayDist = _MaxRayDistance * (1.0 - saturate(dotNV)*step(0.6,dotNV));
-    // float rayDist = _MaxRayDistance;
+    // どの程度レイを飛ばすか？
+    const float rayDist = _MaxRayDistance * (1.0 - saturate(dotNV)*step(0.6,dotNV));
+    //float rayDist = _MaxRayDistance;
 
     // Clip to the near plane
+    // クリップ領域外に飛ばしても意味がないので、無駄な計算をしないようにする
     float rayLength = ((rayOrg.z + rayDir.z * rayDist) > -CameraNear) ?
         (-CameraNear - rayOrg.z) / rayDir.z : rayDist;
+    //float rayLength = rayDist;
     float3 rayEnd = rayOrg + rayDir * rayLength;
 
     float3 Q0 = rayOrg;
     float3 Q1 = rayEnd;
-    float3 delta = Q1 - Q0;
-    float3 deltaStep = delta / _Iterations;
+    float3 delta = Q1 - Q0;     // 終点 - 開始点
+    float3 deltaStep = delta / _Iterations; // 1 iteration でどれだけ進めるか\
 
     float3 Q = Q0;
     float2 P;
+
+    if (false){
+        float4 clip = _CameraProjectionMatrix * float4(Q,1.0);
+        float2 uv = LN_ClipSpacePositionToUV(clip.xy / clip.w);
+        hitPixel.x = getDepth(uv);
+        return true;
+    }
     
     // Track ray step and derivatives in a float4 to parallelize
     bool intersect = false;
@@ -156,18 +182,28 @@ bool traceCameraSpaceRay(
         if (float(i) >= _Iterations) break;
         if (intersect) break;
 
+        // ViewSpace 上のサンプリング点を進める
         Q += deltaStep;
+
+        // ViewSpace の Q を ClipSpace に変換する。
         float4 clip = _CameraProjectionMatrix * float4(Q,1.0);
         P = clip.xy / clip.w;
 
-        hitPixel = P.xy*0.5+0.5;
+        // ClipSpace を UV 座標に直す（ここからまた深度をサンプリングする）
+        hitPixel = LN_ClipSpacePositionToUV(P.xy);
+
         intersect = rayIntersectsDepth(Q.z, hitPixel);
+
+        //intersect = true;
+        //hitPixel.x = getDepth(hitPixel);// / 10.0;
+        //hitPixel.x = -0.01 * getViewZ(getDepth(hitPixel));// / 100.0;
 
         count = float(i);
     }
 
     // Binary search refinement
-    if (_BinarySearchIterations > 1.0 && intersect)
+    //if (_BinarySearchIterations > 1.0 && intersect)
+    if (false)
     {
         Q -= deltaStep;
         deltaStep /= _BinarySearchIterations;
@@ -183,7 +219,8 @@ bool traceCameraSpaceRay(
             float4 clip = _CameraProjectionMatrix * float4(Q,1.0);
             P = clip.xy / clip.w;
 
-            hitPixel = P.xy*0.5+0.5;
+            //hitPixel = P.xy*0.5+0.5;
+            hitPixel = LN_ClipSpacePositionToUV(P.xy);
 
             originalStride *= 0.5;
             stride = rayIntersectsDepth(Q.z, hitPixel) ? -originalStride : originalStride;
@@ -192,6 +229,12 @@ bool traceCameraSpaceRay(
 
     hitPoint = Q;
     iterationCount = count;
+
+    //hitPixel.x = length(deltaStep);
+    //hitPixel.y = length(delta) / 50.0;
+    //hitPixel.x = rayLength / 40.0;
+    //hitPixel.x = length(delta) / 40.0;
+    hitPoint = normalize(delta);
 
     return intersect;
 }
@@ -241,29 +284,56 @@ struct PS_Input
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
+    //return float4(0, getDepth(input.UV), 0, 1);
+
     float depth = getDepth(input.UV);
     float viewZ = getViewZ(depth);
     //return float4(-viewZ / 20, depth, 0, 1);
     //return float4(CameraNear, CameraFar / 200, 0, 1);
 //    return float4(-_CameraProjectionMatrix[2][3] / 2, 0, 0, 1);
 
+    // URL 先の図の、地面との衝突点と、その法線 (赤矢印)
+    // https://qiita.com/mebiusbox2/items/e69ef326b211880d7549#%E8%A1%9D%E7%AA%81%E5%88%A4%E5%AE%9A
+    // viewPosition.z は奥が Z- となっている。
     float3 viewPosition = getViewPosition(input.UV, depth, viewZ);
     float3 viewNormal   = getViewNormal(input.UV);
-//return float4(viewPosition, 1);
+    // この時点の色を確認すると、右が赤、上が緑になるのが正しい。
+    // 拡大して、座標が 0~1のところを確認するとグラデーションしているのがわかる。
+    //return float4(viewPosition, 1);
+    //return float4(0, 0, -viewPosition.z / 100.0, 1);
+    // viewNormal は現時点では 手前を Z+ とした右手になってる。
+    //return float4(viewNormal, 1);
+
 
     float4 metalRoughness = tex2D(_MetalRoughSampler, input.UV);
     float specularStrength = 1.0 - metalRoughness.z;
 
+    // 反射の原点と方向ベクトル。
+    // rayDir は、視点から飛ばしたベクトルを反射させた方向が入るので、例えば手前向きの垂直の壁を、左斜め前から見ると反射ベクトルは (1, 0, 0) となり、赤く見える
     float3 rayOrg = viewPosition;
     float3 rayDir = reflect(normalize(rayOrg), viewNormal);
-
+    //rayDir.z *= -1.0;
+    //return float4(rayOrg.xy, -rayOrg.z / 10.0, 1);
+    //return float4(rayDir, 1);
 
     float2 hitPixel;
     float3 hitPoint;
     float iterationCount;
 
+    // 視点へ向かうベクトルと、法線の内積。
+    // 視点に対して対面するなら 1, 逆向きなら -1
     float dotNV = dot(normalize(-rayOrg), viewNormal);
+
     bool intersect = traceCameraSpaceRay(rayOrg, rayDir, dotNV, hitPixel, hitPoint, iterationCount);
+
+    //return float4((intersect ? 1 : 0), 0, 0, 1);
+    //return float4(dotNV, 0, 0, 1);
+    //return float4(hitPixel.x, 0, 0, 1);
+    //return float4(hitPixel.x, hitPixel.y, 0, 1);
+    //return float4(iterationCount / _Iterations, 0, 0, 1);
+    //return float4(hitPoint.xy, -hitPoint.z, 1);
+    
+
     float alpha = calculateAlpha(input.UV, intersect, iterationCount, specularStrength, hitPixel, hitPoint, rayOrg, rayDir);
     
 

@@ -24,7 +24,10 @@ class App_Experiment_SSR : public Application
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
-        Engine::camera()->setFarClip(100);
+        //Engine::camera()->setFarClip(100);
+        Engine::camera()->setFov(Math::degreesToRadians(50));
+        Engine::camera()->setPosition(0, 20, -50);
+        Engine::camera()->lookAt(0, 0, 0);
 
         m_sprite = Sprite::create(Texture2D::whiteTexture());
         m_sprite->setBlendMode(BlendMode::Normal);
@@ -33,6 +36,7 @@ class App_Experiment_SSR : public Application
         auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
         groundMaterial->setRoughnessMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));
         m_ground = PlaneMesh::create(groundMaterial);
+        m_ground->setScale(4);
 
         auto wallMaterial = Material::create();
         //wallMaterial.bumpMap = textureLoader.load('assets/textures/brick_bump.jpg');
@@ -43,33 +47,40 @@ class App_Experiment_SSR : public Application
 
         // X-
         m_walls[0] = PlaneMesh::create(wallMaterial);
-        m_walls[0]->setPosition(-5, 5, 0);
+        m_walls[0]->setPosition(-20, 20, 0);
         m_walls[0]->setRotation(-Math::PI / 2, -Math::PI / 2, 0);
+        m_walls[0]->setScale(4);
 
         // X+
         m_walls[1] = PlaneMesh::create(wallMaterial);
-        m_walls[1]->setPosition(5, 5, 0);
+        m_walls[1]->setPosition(20, 20, 0);
         m_walls[1]->setRotation(-Math::PI / 2, Math::PI / 2, 0);
+        m_walls[1]->setScale(4);
 
         // Z-
         m_walls[2] = PlaneMesh::create(wallMaterial);
-        m_walls[2]->setPosition(0, 5, -5);
+        m_walls[2]->setPosition(0, 20, -20);
         m_walls[2]->setRotation(-Math::PI / 2, Math::PI, 0);
+        m_walls[2]->setScale(4);
 
         // Z+
         m_walls[3] = PlaneMesh::create(wallMaterial);
-        m_walls[3]->setPosition(0, 5, 5);
+        m_walls[3]->setPosition(0, 20, 20);
         m_walls[3]->setRotation(-Math::PI / 2, 0, 0);
+        m_walls[3]->setScale(4);
 
         auto boxMaterial = Material::create();
         boxMaterial->setColor(Color::Green);
         m_box = BoxMesh::create();
         m_box->boxMeshComponent()->setMaterial(boxMaterial);
+        m_box->setScale(5, 10, 5);
 
         auto sphereMaterial = Material::create();
         sphereMaterial->setColor(Color::Red);
         m_sphere = SphereMesh::create();
+        //m_sphere->setScale(1.5);
         m_sphere->sphereMeshComponent()->setMaterial(sphereMaterial);
+        m_sphere->setScale(5);
 
 
         auto ssrImageEffect = makeObject<SSRImageEffect>();
@@ -119,15 +130,17 @@ class App_Experiment_SSR : public Application
         //printf("==========/n");
         //m_plane->setRotation(0, Engine::time() * 0.1, 0);
 
-        m_sprite->setTexture(ln::g_srTarget);
+        //m_sprite->setTexture(ln::g_srTarget);
         //m_sprite->setSize(320, 240);
-        m_sprite->setPosition(0, 1, 0);
-
+        m_sprite->setTexture(ln::g_viewMaterialMap);
+        m_sprite->setPosition(0, -10, 0);
+        m_sprite->setScale(10);
 
         m_box->setPosition(-2.5, 0.5, 0);
         m_box->setRotation(0, Engine::time(), 0);
 
-        m_sphere->setPosition(2.5, std::sin(Engine::time()), 0);
+        m_sphere->setPosition(2.5, 3.0 * std::sin(Engine::time()), 0);
+
         
     }
 };

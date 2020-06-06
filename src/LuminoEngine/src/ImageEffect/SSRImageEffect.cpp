@@ -7,7 +7,9 @@
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
-
+//
+//#include <LuminoEngine/Bitmap/Texture.hpp>
+//#include <LuminoEngine/Input/Input.hpp>
 namespace ln {
     extern Texture* g_viewNormalMap;
     extern Texture* g_viewMaterialMap;
@@ -86,8 +88,8 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
 
     auto proj = Matrix::makePerspectiveFovRH(context->viewPoint()->fovY, 640.0 / 480.0, 0.3, 1000);
     //auto proj = context->viewPoint()->projMatrix;
-    auto tproj1 = Matrix::makeTranspose(proj);
-    //auto tproj1 = proj;
+    //auto tproj1 = Matrix::makeTranspose(proj);
+    auto tproj1 = proj;
     auto tproj2 = Matrix::makeInverse(proj);
     //auto tproj2 = Matrix::makeTranspose(Matrix::makeInverse(proj));
     //auto proj = context->viewPoint()->projMatrix;
@@ -102,6 +104,9 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     context->blit(m_ssrMaterial, m_ssrTarget);
     g_srTarget = m_ssrTarget;
 
+#if 0
+    context->blit(m_ssrMaterial, destination);
+#else
     m_ssrBlurMaterial1->setTexture(u"_ColorSampler", m_ssrTarget);
     context->blit(m_ssrBlurMaterial1, m_blurTarget1);
 
@@ -111,9 +116,13 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     m_ssrCompositeMaterial->setTexture(u"_ColorSampler", source);
     m_ssrCompositeMaterial->setTexture(u"_SSRSampler", m_ssrTarget);
     context->blit(m_ssrCompositeMaterial, destination);
-    
+#endif
 
     //context->blit(m_ssrMaterial, destination);
+
+    //if (Input::triggered("submit")) {
+    //    detail::TextureInternal::readData(dynamic_cast<ln::RenderTargetTexture*>(g_viewMaterialMap), context->gra)->save(u"test.png");
+    //}
 }
 
 void SSRImageEffectInstance::resetResources(int resx, int resy)

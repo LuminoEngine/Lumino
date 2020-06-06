@@ -2859,8 +2859,8 @@ Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateD
 
 	VkSamplerCreateInfo samplerInfo = {};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-	samplerInfo.magFilter = filter;
-	samplerInfo.minFilter = filter;
+	samplerInfo.magFilter = VK_FILTER_LINEAR;
+	samplerInfo.minFilter = VK_FILTER_LINEAR;
 	samplerInfo.addressModeU = address;
 	samplerInfo.addressModeV = address;
 	samplerInfo.addressModeW = address;

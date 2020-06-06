@@ -67,11 +67,11 @@ VSOutput VS_WriteLinearDepth(VSInput input)
 PSOutput PS_WriteLinearDepth(PSInput input)
 {
     // SSR 用。シャドウマップと同じく PS で w 除算で計算する。ViewSpace じゃなくて ClipSpace。
-    float z = input.ClipSpacePos.z / input.ClipSpacePos.w;
-    //float z = clipPos;//input.ClipSpacePos.z;//(input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
+    //float z = input.ClipSpacePos.z / input.ClipSpacePos.w;
+    float z = (input.ViewPos.z - ln_NearClip) / (ln_FarClip - ln_NearClip);
     //float z = input.ClipSpacePos.z;
     PSOutput output;
-    output.Normal = float4(LN_PackNormal(input.ViewSpaceNormal), z);
+    output.Normal = float4(LN_PackNormal(normalize(input.ViewSpaceNormal)), z); // normalize 必須
     //output.Depth = float4(z, z, z, 1);
 
 #ifdef LN_USE_ROUGHNESS_MAP
@@ -81,6 +81,7 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     float roughness = ln_MaterialRoughness;
 #endif
     output.Material = float4(ln_MaterialMetallic, z, roughness, 1);
+    //output.Material = float4(0, z, 0, 1);
 
     return output;
 }
