@@ -12,7 +12,8 @@
 
 namespace ln {
 
-Texture* g_debugMap = nullptr;
+Texture* g_viewNormalMap = nullptr;
+Texture* g_viewMaterialMap = nullptr;
 
 namespace detail {
 
@@ -38,7 +39,8 @@ void ForwardGBufferPrepass::init()
 		m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
 		m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
 		m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
-		g_debugMap = m_materialMap;
+		g_viewNormalMap = m_depthMap;
+		g_viewMaterialMap = m_materialMap;
 	}
 	m_renderPass = makeObject<RenderPass>();
 }

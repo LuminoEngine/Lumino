@@ -1,9 +1,11 @@
 ﻿
 #include <LuminoEngine.hpp>
+#include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
 using namespace ln;
 
 namespace ln {
-    extern Texture* g_debugMap;
+    extern Texture* g_viewNormalMap;
+    extern Texture* g_viewMaterialMap;
 }
 
 class App_Experiment_SSR : public Application
@@ -66,6 +68,10 @@ class App_Experiment_SSR : public Application
         m_sphere = SphereMesh::create();
         m_sphere->sphereMeshComponent()->setMaterial(sphereMaterial);
 
+
+        auto ssrImageEffect = makeObject<SSRImageEffect>();
+        Engine::renderView()->addImageEffect(ssrImageEffect);
+
         //m_walls[0] = PlaneMesh::create(groundMaterial);
         //m_walls[0]->setPosition(0.0, 20.0, 20.0);
 
@@ -110,7 +116,7 @@ class App_Experiment_SSR : public Application
         //printf("==========/n");
         //m_plane->setRotation(0, Engine::time() * 0.1, 0);
 
-        m_sprite->setTexture(ln::g_debugMap);
+        m_sprite->setTexture(ln::g_viewNormalMap);
         //m_sprite->setSize(320, 240);
         m_sprite->setPosition(0, 1, 0);
 
