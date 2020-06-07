@@ -70,6 +70,7 @@ bool SSRImageEffectInstance::init(SSRImageEffect* owner)
     return true;
 }
 
+
 void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     int resx = source->width();
@@ -87,12 +88,41 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     //m_compositeMaterial->setVectorArray(u"_SSRTintColors", bloomTintColors, MIPS);
 
     //auto proj = Matrix::makePerspectiveFovRH(context->viewPoint()->fovY, 640.0 / 480.0, 0.3, 1000);
-    auto proj = context->viewPoint()->projMatrix;
+    const auto* viewPoint = context->viewPoint();
+    auto proj = viewPoint->projMatrix;
     //auto tproj1 = Matrix::makeTranspose(proj);
     auto tproj1 = proj;
     auto tproj2 = Matrix::makeInverse(proj);
     //auto tproj2 = Matrix::makeTranspose(Matrix::makeInverse(proj));
     //auto proj = context->viewPoint()->projMatrix;
+
+
+
+
+    auto pos = Vector3(1, 5, 10);
+    auto viewPos = Vector3::transformCoord(pos, viewPoint->viewMatrix);
+    auto clipPos = Vector3::transformCoord(viewPos, viewPoint->projMatrix);
+    auto viewPosR = Vector3::transformCoord(clipPos, Matrix::makeInverse(viewPoint->projMatrix));
+    auto viewPosR2 = Vector3::transform(clipPos, Matrix::makeInverse(viewPoint->projMatrix));
+    auto tt = viewPosR2.xyz() / viewPosR2.w;
+
+    auto pos2 = Vector3(1, 5, 10);
+    auto viewPos2t = Vector3::transform(pos2, viewPoint->viewMatrix);
+    auto viewPos2 = viewPos2t.xyz() / viewPos2t.w;
+    auto clipPos2t = Vector3::transform(viewPos2t.xyz() / viewPos2t.w, viewPoint->projMatrix);
+    auto clipPos2 = clipPos2t.xyz() / clipPos2t.w;
+    auto clipZ = clipPos2.z;
+    auto viewPos2R = Vector4::transform(Vector4(clipPos2.x, clipPos2.y, clipZ, 1.0), Matrix::makeInverse(viewPoint->projMatrix));
+    auto viewPos2R2 = viewPos2R.xyz() / viewPos2R.w;
+
+    //auto projMat = Matrix::makePerspectiveFovLH(Math::degreesToRadians(45), 640.0 / 480.0, 1.0, 100);
+    //auto viewMat = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);
+    //for (int i = 0; i < 100; i++) {
+    //    auto pos = Vector3(0, 0, i);
+    //    auto viewPos = Vector3::transformCoord(pos, viewMat);
+    //    auto clipPos = Vector3::transformCoord(viewPos, projMat);
+    //    printf("%f %f\n", viewPos.z, clipPos.z);
+    //}
 
     m_ssrMaterial->setTexture(u"_ColorSampler", source);
     m_ssrMaterial->setTexture(u"_NormalAndDepthSampler", g_viewNormalMap);
@@ -114,7 +144,7 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     context->blit(m_ssrBlurMaterial2, m_blurTarget2);
 
     m_ssrCompositeMaterial->setTexture(u"_ColorSampler", source);
-    m_ssrCompositeMaterial->setTexture(u"_SSRSampler", m_ssrTarget);
+    m_ssrCompositeMaterial->setTexture(u"_SSRSampler", m_blurTarget2);
     context->blit(m_ssrCompositeMaterial, destination);
 #endif
 

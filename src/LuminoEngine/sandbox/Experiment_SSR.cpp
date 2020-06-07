@@ -1,6 +1,7 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
+#include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 
 namespace ln {
@@ -29,6 +30,8 @@ class App_Experiment_SSR : public Application
         Engine::camera()->setPosition(0, 20, -50);
         Engine::camera()->lookAt(0, 0, 0);
 
+        Engine::light()->setIntensity(3);
+
         auto tmp = Vector3::transformCoord(Vector3(0, 0, 10), Matrix::makeLookAtLH(Vector3(0, 0, -1), Vector3::Zero, Vector3::UnitY));
 
 
@@ -38,6 +41,7 @@ class App_Experiment_SSR : public Application
 
         auto groundMaterial = Material::create(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-albedo.jpg"));
         groundMaterial->setRoughnessMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-roughness.jpg"));
+        //groundMaterial->setNormalMap(Texture2D::load(u"D:/Tech/Graphics/ssr/assets/textures/tidal-pool1-ue/tidal-pool1-normal-dx.jpg"));
         m_ground = PlaneMesh::create(groundMaterial);
         m_ground->setScale(4);
 
@@ -126,6 +130,68 @@ class App_Experiment_SSR : public Application
 
         //auto li = SpotLight::create();
         //li->setPosition(0, 0.1, 0);
+
+#if 0	// 雨
+        auto particleModel = makeObject<ParticleModel2>();
+        auto m1 = particleModel->emitters()[0];
+        m1->m_maxParticles = 10000;
+        m1->setSpawnRate(1000);
+        //m1->setSpawnRate(10);
+        m1->setLifeTime(1.0);
+        particleModel->m_loop = true;
+
+        m1->m_shapeType = ParticleEmitterShapeType::Box;
+        m1->m_shapeParam.set(10, 0, 10);
+        m1->m_forwardVelocity.minValue = 12;
+        m1->m_forwardVelocity.maxValue = 12;
+
+        //m1->m_size.set(0.05f);
+        //m1->m_size.set(0.5f);
+        //m1->m_forwardScale.set(10);
+
+        //m1->m_particleDirection = ParticleDirectionType::MovementDirection;
+        m1->m_sortMode = ParticleSortMode::DistanceToView;
+
+        auto material = Material::create();
+        material->setMainTexture(Texture2D::load("C:/Proj/LN/Lumino/src/LuminoEngine/test/Assets/Effect/Particle1-alpha.png"));
+        material->shadingModel = ShadingModel::Unlit;
+        material->setShader(Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx"));
+        m1->setSpriteModule(material);
+
+        auto particle1 = makeObject<ParticleEmitterComponent2>(particleModel);
+        //particle1->setBlendMode(BlendMode::Add);
+        particle1->setBlendMode(BlendMode::Alpha);
+        auto obj1 = makeObject<WorldObject>();
+        obj1->addComponent(particle1);
+        //obj1->setPosition(0, 5, 0);
+        //particle1->setAngles(Math::PI, 0, 0);
+
+
+
+        /*
+        // 波紋
+        auto m2 = SpriteParticleModel::create();
+        m2->m_maxParticles = 1000;
+        m2->setSpawnRate(200);
+        m2->setLifeTime(0.2);
+        m2->m_loop = true;
+        m2->setSize(0.1, 0.1);
+        m2->m_minSizeVelocity = 3;
+        m2->m_maxSizeVelocity = 3;
+        m2->m_shapeType = ParticleEmitterShapeType::Box;
+        m2->m_shapeParam.set(10, 0, 10);
+        m2->m_particleDirection = ParticleDirectionType::Horizontal;
+        m2->setMaterial(material);
+
+        //auto particle2 = ParticleEmitter3D::create(m2);
+        //particle2->SetBlendMode(BlendMode::Add);
+        auto particle2 = makeObject<ParticleEmitterComponent>(m2);
+        particle2->setBlendMode(BlendMode::Add);
+        auto obj2 = makeObject<WorldObject>();
+        obj2->addComponent(particle2);
+        //obj2->setPosition(0, 12, 0);
+        */
+#endif
     }
 
     virtual void onUpdate() override
@@ -139,10 +205,10 @@ class App_Experiment_SSR : public Application
         m_sprite->setPosition(0, -10, 0);
         m_sprite->setScale(10);
 
-        m_box->setPosition(-2.5, 0.5, 0);
+        m_box->setPosition(-4, 0.5, 0);
         m_box->setRotation(0, Engine::time(), 0);
 
-        m_sphere->setPosition(2.5, 3.0 * std::sin(Engine::time()), 0);
+        m_sphere->setPosition(4, 3.0 * std::sin(Engine::time()), 0);
 
         
     }
