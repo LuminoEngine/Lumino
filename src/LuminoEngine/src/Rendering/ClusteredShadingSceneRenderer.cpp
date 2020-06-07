@@ -110,7 +110,7 @@ ShaderTechnique* ForwardGBufferPrepass::selectShaderTechnique(
 	Shader* requestedShader,
 	ShadingModel requestedShadingModel)
 {
-	const Shader* actualShader = (requestedShader) ? requestedShader : m_defaultShader;
+	const Shader* actualShader = (requestedShader) ? requestedShader : m_defaultShader.get();
 
 	ShaderTechniqueClass classSet;
 	classSet.defaultTechnique = false;
