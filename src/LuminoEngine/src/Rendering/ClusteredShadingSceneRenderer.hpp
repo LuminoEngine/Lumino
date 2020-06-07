@@ -8,18 +8,18 @@ class ClusteredShadingSceneRenderer;
 
 #if 1
 
-//struct FogParams
-//{
-//	Color	color;
-//	float	density = 0.0f;
-//};
-
-class DepthPrepass
+// ClusteredShadingSceneRenderer 用の G-Buffer 生成パス。
+// 一般的な Deferred Rendering の G-Buffer と比べて、色情報は出力しない。
+// 出力は以下の通り。
+// - SV_TARGET0: xyz=Normal (View-Space. 視点方向を向いているものは Z+), z=Depth
+// http://rarihoma.xvs.jp/wiki/#!UE4/GBuffer%E3%81%AB%E6%9B%B8%E3%81%8D%E8%BE%BC%E3%81%BE%E3%82%8C%E3%82%8B%E5%86%85%E5%AE%B9/i.md
+class ForwardGBufferPrepass
 	: public SceneRendererPass
 {
 public:
-	DepthPrepass();
-	virtual ~DepthPrepass();
+	static const int Debug = 1;
+	ForwardGBufferPrepass();
+	virtual ~ForwardGBufferPrepass();
 	void init();
 
 
@@ -41,8 +41,11 @@ public:
 public:	// TODO:
 	Ref<Shader>					m_defaultShader;
 	Ref<RenderTargetTexture>	m_depthMap;
+	Ref<RenderTargetTexture>	m_normalMap;
+	Ref<RenderTargetTexture> m_materialMap;	// x, y, z:roughness,
 	Ref<DepthBuffer>	m_depthBuffer;
 	Ref<RenderPass> m_renderPass;
+	Ref<SamplerState> m_samplerState;	// TODO: 共通化
 };
 
 
@@ -149,9 +152,10 @@ public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
 	void init(RenderingManager* manager);
+	SceneRendererPass* mainRenderPass() const override;
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	//void setFogParams(const FogParams& params) { m_fogParams = params; }
-	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
+	ForwardGBufferPrepass* getDepthPrepass() const { return m_depthPrepass; }
 	const Ref<LightOcclusionPass>& lightOcclusionPass() const { return m_lightOcclusionPass; }
 
 	const LightClusters& lightClusters() const { return m_lightClusters; }
@@ -168,8 +172,9 @@ private:
 	LightClusters				m_lightClusters;
 	//SceneGlobalRenderSettings	m_renderSettings;
 	//FogParams					m_fogParams;
-	Ref<DepthPrepass>			m_depthPrepass;
+	Ref<ForwardGBufferPrepass>			m_depthPrepass;
 	Ref<LightOcclusionPass> m_lightOcclusionPass;
+	Ref<ClusteredShadingGeometryRenderingPass> m_geometryPass;
 };
 #endif
 

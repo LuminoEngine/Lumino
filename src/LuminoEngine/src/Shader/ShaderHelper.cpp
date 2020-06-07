@@ -438,7 +438,7 @@ ShaderRenderState* ShaderHelper::getShaderRenderState(ShaderPass* pass)
     return pass->m_renderState;
 }
 
-ShaderTechnique* ShaderHelper::findTechniqueByClass(Shader* shader, const detail::ShaderTechniqueClass& techniqueClass)
+ShaderTechnique* ShaderHelper::findTechniqueByClass(const Shader* shader, const detail::ShaderTechniqueClass& techniqueClass)
 {
     return shader->findTechniqueByClass(techniqueClass);
 }

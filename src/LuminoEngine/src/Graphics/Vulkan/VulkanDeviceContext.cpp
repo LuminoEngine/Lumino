@@ -446,7 +446,6 @@ Result VulkanDevice::pickPhysicalDevice()
 				vkGetPhysicalDeviceProperties2(gpuDevices[i],			/* [in ] Vulkan物理デバイスのハンドル */
 					&dev_props2);	/* [out] Vulkan物理デバイス情報が格納される */
 
-				printf("");
 				//VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT *pBlendOp = dev_props2.pNext;
 			}
 #endif
@@ -935,6 +934,13 @@ void VulkanGraphicsContext::onBeginRenderPass(IRenderPass* renderPass_)
 	renderPassInfo.clearValueCount = count;
 	renderPassInfo.pClearValues = clearValues;
 
+    //printf("BeginRenderPass (%f %f %f %f) RT:%p\n",
+    //    clearValues[0].color.float32[0],
+    //    clearValues[0].color.float32[1],
+    //    clearValues[0].color.float32[2],
+    //    clearValues[0].color.float32[3],
+    //    framebuffer->renderTargets()[0]);
+
 	vkCmdBeginRenderPass(m_recodingCommandBuffer->vulkanCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
@@ -1152,6 +1158,10 @@ void VulkanGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color,
 			attachments[count].clearValue.depthStencil.depth = z;
 			++count;
 		}
+
+        //printf("Clear (%f %f %f %f) RT:%p\n",
+        //    color.r, color.g, color.b, color.a,
+        //    framebuffer->renderTargets()[0]);
 
 		vkCmdClearAttachments(
 			m_recodingCommandBuffer->vulkanCommandBuffer()
@@ -2849,8 +2859,8 @@ Result VulkanSamplerState::init(VulkanDevice* deviceContext, const SamplerStateD
 
 	VkSamplerCreateInfo samplerInfo = {};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-	samplerInfo.magFilter = filter;
-	samplerInfo.minFilter = filter;
+	samplerInfo.magFilter = VK_FILTER_LINEAR;
+	samplerInfo.minFilter = VK_FILTER_LINEAR;
 	samplerInfo.addressModeU = address;
 	samplerInfo.addressModeV = address;
 	samplerInfo.addressModeW = address;

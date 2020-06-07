@@ -25,7 +25,8 @@ void UnLigitingSceneRendererPass::onBeginPass(GraphicsContext* context, RenderTa
 {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::None, Color::Transparency, 1.0f, 0);
+	const auto& info = clearInfo();
+	m_renderPass->setClearValues(info.flags, info.color, info.depth, info.stencil);
 }
 
 RenderPass* UnLigitingSceneRendererPass::renderPass() const
@@ -47,6 +48,7 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 			ShaderTechniqueClass_ShadingModel::Unlit,	// requestedShadingModel が同指定されていても、Pass 優先
 			requester.drawMode,
 			ShaderTechniqueClass_Normal::Default,
+			ShaderTechniqueClass_Roughness::Default,
 		};
 		tech = ShaderHelper::findTechniqueByClass(requestedShader, key);
 	}
@@ -65,9 +67,14 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 void UnLigitingSceneRenderer::init(RenderingManager* manager)
 {
 	SceneRenderer::init();
-	auto pass = makeRef<UnLigitingSceneRendererPass>();
-	pass->init(manager);
-	addPass(pass);
+	m_rendererPass = makeRef<UnLigitingSceneRendererPass>();
+	m_rendererPass->init(manager);
+	addPass(m_rendererPass);
+}
+
+SceneRendererPass* UnLigitingSceneRenderer::mainRenderPass() const
+{
+	return m_rendererPass;
 }
 
 void UnLigitingSceneRenderer::onSetAdditionalShaderPassVariables(ShaderTechnique* technique)

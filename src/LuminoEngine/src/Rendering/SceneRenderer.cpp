@@ -55,6 +55,32 @@ void SceneRendererPass::onBeginPass(GraphicsContext* context, RenderTargetTextur
 {
 }
 
+//ShaderTechnique* SceneRendererPass::selectShaderTechniqueHelper(
+//	const ShaderTechniqueRequestClasses& requester,
+//	Shader* requestedShader,
+//	ShadingModel requestedShadingModel,
+//	Shader* defaultShader,
+//	ShaderTechnique* defaultTechnique,
+//	ShaderTechniqueClass_Phase phase)
+//{
+//	const Shader* actualShader = (requestedShader) ? requestedShader : defaultShader;
+//
+//	ShaderTechniqueClass classSet;
+//	classSet.defaultTechnique = false;
+//	classSet.phase = phase;
+//	classSet.meshProcess = requester.meshProcess;
+//	classSet.shadingModel = tlanslateShadingModel(requestedShadingModel);
+//	classSet.drawMode = requester.drawMode;
+//	classSet.normalClass = requester.normal;
+//	classSet.roughnessClass = requester.roughness;
+//	ShaderTechnique* technique = ShaderHelper::findTechniqueByClass(requestedShader, classSet);
+//	if (technique)
+//		return technique;
+//	else
+//		return defaultTechnique;
+//}
+
+//}
 //==============================================================================
 // SceneRenderer
 
@@ -90,7 +116,6 @@ void SceneRenderer::render(
 	GraphicsContext* graphicsContext,
     RenderingPipeline* renderingPipeline,
 	RenderTargetTexture* renderTarget,
-    const ClearInfo& clearInfo,
     const CameraInfo& mainCameraInfo,
     RenderPhaseClass targetPhase,
 	const detail::SceneGlobalRenderParams* sceneGlobalParams)
@@ -101,7 +126,6 @@ void SceneRenderer::render(
 	//m_defaultFrameBuffer = &defaultFrameBuffer;
     m_mainCameraInfo = mainCameraInfo;
     m_targetPhase = targetPhase;
-    m_firstClearInfo = clearInfo;
 	m_sceneGlobalRenderParams = sceneGlobalParams;
 
 	//detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
@@ -215,7 +239,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
 	pass->onBeginPass(graphicsContext, renderTarget, depthBuffer);
 
-    ClearInfo clearInfo = m_firstClearInfo;
 	const detail::CameraInfo& cameraInfo = mainCameraInfo();
 
 	//pass->overrideCameraInfo(&cameraInfo);
@@ -269,7 +292,6 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				RenderPass* renderPass = nullptr;
 				if (submitRequested) {
 					renderPass = getOrCreateRenderPass(currentRenderPass, stage, defaultRenderPass/*renderTarget, depthBuffer*//*, clearInfo*/);
-					clearInfo.flags = ClearFlags::None; // first only
 				}
 				else {
 					renderPass = currentRenderPass;
@@ -295,10 +317,12 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					if (finalMaterial) {
 						subsetInfo.materialTexture = finalMaterial->mainTexture();
 						subsetInfo.normalMap = finalMaterial->normalMap();
+						subsetInfo.roughnessMap = finalMaterial->roughnessMap();
 					}
 					else {
 						subsetInfo.materialTexture = nullptr;
 						subsetInfo.normalMap = nullptr;
+						subsetInfo.roughnessMap = nullptr;
 					}
 					subsetInfo.opacity = stage->getOpacityFinal(element);
 					subsetInfo.colorScale = stage->getColorScaleFinal(element);
@@ -362,7 +386,13 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 
 	// Render batch-list.
 	{
-		RenderPass* currentRenderPass = nullptr;
+		RenderPass* currentRenderPass = defaultRenderPass;
+		if (currentRenderPass) {
+			// Batch が1つもないときでも、RenderPass は開始しておく。
+			// そうしないと画面がクリアされず、Vulkan バックエンドを使っているときに RenderTarget が不正な状態なままになる。
+			graphicsContext->beginRenderPass(currentRenderPass);
+		}
+
 		const RenderStage* currentStage = nullptr;
 		RenderFeatureBatch* batch = m_renderFeatureBatchList.firstBatch();
 		while (batch)
@@ -419,6 +449,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 					(elementInfo.boneTexture) ? ShaderTechniqueClass_MeshProcess::SkinnedMesh : ShaderTechniqueClass_MeshProcess::StaticMesh,
 					(batch->instancing) ? ShaderTechniqueClass_DrawMode::Instancing : ShaderTechniqueClass_DrawMode::Primitive,
 					(subsetInfo.normalMap) ? ShaderTechniqueClass_Normal::NormalMap : ShaderTechniqueClass_Normal::Default,
+					(subsetInfo.roughnessMap) ? ShaderTechniqueClass_Roughness::RoughnessMap : ShaderTechniqueClass_Roughness::Default,
 				};
 				ShaderTechnique* tech = pass->selectShaderTechnique(
 					requester,
@@ -441,6 +472,9 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 				}
 				if (!localSubsetInfo.normalMap) {
 					localSubsetInfo.normalMap = m_manager->graphicsManager()->defaultNormalMap();
+				}
+				if (!localSubsetInfo.roughnessMap) {
+					localSubsetInfo.roughnessMap = m_manager->graphicsManager()->blackTexture();
 				}
 
 

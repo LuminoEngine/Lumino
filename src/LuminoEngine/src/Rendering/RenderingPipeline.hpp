@@ -25,7 +25,7 @@ public:
     const detail::DrawElementListCollector* elementListCollector() const { return m_elementListCollector; }
 
 protected:
-    void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
+    //void clear(GraphicsContext* graphicsContext, RenderTargetTexture* renderTarget, const ClearInfo& clearInfo);
 
     //Ref<detail::FrameBufferCache> m_frameBufferCache;
     SizeI m_renderingFrameBufferSize;	// render() の内側だけで使える
@@ -44,7 +44,7 @@ public:
     void render(
         GraphicsContext* graphicsContext,
 		RenderTargetTexture* renderTarget,
-        //const ClearInfo& clearInfo,
+        const ClearInfo& mainPassClearInfo,
         const detail::CameraInfo* mainCameraInfo,
         detail::DrawElementListCollector* elementListCollector,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
@@ -65,7 +65,7 @@ public:
     void render(
         GraphicsContext* graphicsContext,
         RenderTargetTexture* renderTarget,
-        //const ClearInfo& clearInfo,
+        const ClearInfo& mainPassClearInfo,
 		const detail::CameraInfo* mainCameraInfo,
         detail::DrawElementListCollector* elementListCollector);
 

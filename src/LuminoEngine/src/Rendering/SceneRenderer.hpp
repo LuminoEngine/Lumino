@@ -24,6 +24,7 @@ struct ShaderTechniqueRequestClasses
 	ShaderTechniqueClass_MeshProcess meshProcess;
 	ShaderTechniqueClass_DrawMode drawMode;
 	ShaderTechniqueClass_Normal normal;
+	ShaderTechniqueClass_Roughness roughness;
 };
 
 
@@ -34,6 +35,9 @@ public:
 	SceneRendererPass();
 	virtual ~SceneRendererPass();
 	void init();
+
+	void setClearInfo(const ClearInfo& value) { m_clearInfo = value; }
+	const ClearInfo& clearInfo() const { return m_clearInfo; }
 
 	virtual void onBeginRender(SceneRenderer* sceneRenderer);
 	virtual void onEndRender(SceneRenderer* sceneRenderer);
@@ -57,10 +61,21 @@ public:
 
 	RenderingManager* manager() const { return m_manager; }
 
-	ShaderTechniqueClass_ShadingModel tlanslateShadingModel(ShadingModel value) { return (ShaderTechniqueClass_ShadingModel)value; }
+	static ShaderTechniqueClass_ShadingModel tlanslateShadingModel(ShadingModel value) { return (ShaderTechniqueClass_ShadingModel)value; }
+
+protected:
+	//static ShaderTechnique* selectShaderTechniqueHelper(
+	//	const ShaderTechniqueRequestClasses& requester,
+	//	Shader* requestedShader,
+	//	ShadingModel requestedShadingModel,
+	//	Shader* defaultShader,
+	//	ShaderTechnique* defaultTechnique,
+	//	ShaderTechniqueClass_Phase phase);
+
 
 private:
 	RenderingManager* m_manager;
+	ClearInfo m_clearInfo;
 };
 
 class SceneRenderer
@@ -71,10 +86,11 @@ public:
 		GraphicsContext* graphicsContext,
         RenderingPipeline* renderingPipeline,
 		RenderTargetTexture* renderTarget,
-        const ClearInfo& clearInfo,
         const detail::CameraInfo& mainCameraInfo,
         RenderPhaseClass targetPhase,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
+
+	virtual SceneRendererPass* mainRenderPass() const = 0;
 
     RenderingPipeline* renderingPipeline() const { return m_renderingPipeline; }
 	const detail::SceneGlobalRenderParams* sceneGlobalParams() const { return m_sceneGlobalRenderParams; }
@@ -122,8 +138,6 @@ private:
 	//Ref<RenderPass> m_renderPass;
 	List<Ref<RenderPass>> m_renderPassPool;
 	int m_renderPassPoolUsed;
-
-    ClearInfo m_firstClearInfo;
 
     // 1つのパイプラインの別フェーズで SceneRenderer を使うとき、
     // viewproj 行列を分けたいことがある (Default と ImageEffect など) ため、SceneRenderer 側に実態で持つ 

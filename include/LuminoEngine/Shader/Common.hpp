@@ -22,7 +22,7 @@ enum class ShaderTechniqueClass_Phase : uint8_t
     // TODO: Differd
     LightDisc,
     ShadowCaster,
-    DepthPrepass
+    ForwardGBufferPrepass
 };
 
 // VertexFactory
@@ -49,6 +49,12 @@ enum class ShaderTechniqueClass_Normal : uint8_t
 {
     Default,
     NormalMap,
+};
+
+enum class ShaderTechniqueClass_Roughness : uint8_t
+{
+    Default,
+    RoughnessMap,
 };
 
 

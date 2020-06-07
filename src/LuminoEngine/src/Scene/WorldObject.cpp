@@ -11,6 +11,9 @@ namespace ln {
 
 //==============================================================================
 // WorldObjectTransform
+//  Note: UE4 の回転順序は      X(Roll) > Y(Pich) > Z(Yaw)
+//  Note: three.js の回転順序は Z(Roll) > Y(Yaw) > X(Pich)
+//  Note: Unity の回転順序は    Z(Roll) > X(Pich) > Y(Yaw)
 
 namespace detail {
 

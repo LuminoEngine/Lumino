@@ -37,8 +37,8 @@ cbuffer LNEffectColorBuffer
 	/* [32] */ float4 ln_ToneColor;
 };
 
-sampler2D		ln_MaterialTexture;
-//SamplerState	ln_MaterialTextureSamplerState;
+sampler2D ln_MaterialTexture;
+sampler2D ln_MaterialRoughnessMap;
 
 struct LN_VSInput
 {
@@ -55,7 +55,7 @@ struct LN_VSOutput_Common
 {
 	float4	svPos		: SV_POSITION;
 
-	/** 座標変換後の法線 [View-space] */
+	/** 座標変換後の法線 [View-space] 左手座標系である点に注意。視点に対して、右は X+, 上はY+, 奥はZ+ */
 	float3	Normal		: NORMAL0;
 
 	float2	UV			: TEXCOORD0;

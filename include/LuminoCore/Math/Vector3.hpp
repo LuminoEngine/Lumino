@@ -170,6 +170,9 @@ public:
      * @param[in]   vec1    : 処理の基になるベクトル
      * @param[in]   vec2    : 処理の基になるベクトル
      * @return      2つのベクトルの内積
+     * @note
+     *   正規化された方向ベクトルの内積は、2つのベクトルのコサインを表します。
+     *   例えば、向きが完全に一致している場合は 1 を、反対の場合は -1 を返します。
      */
     static float dot(const Vector3& vec1, const Vector3& vec2);
 

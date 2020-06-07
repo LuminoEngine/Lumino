@@ -90,6 +90,16 @@ Texture* Material::normalMap() const
     return m_normalMap;
 }
 
+void Material::setRoughnessMap(Texture* value)
+{
+    m_roughnessMap = value;
+}
+
+Texture* Material::roughnessMap() const
+{
+    return m_roughnessMap;
+}
+
 void Material::setColor(const Color& value)
 {
     m_data.color = value;

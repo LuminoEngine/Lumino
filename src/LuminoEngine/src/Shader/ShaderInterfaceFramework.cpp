@@ -72,6 +72,7 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
 {
     {_LT("ln_MaterialTexture"), BuiltinShaderTextures_ln_MaterialTexture},
     {_LT("ln_NormalMap"), BuiltinShaderTextures_ln_NormalMap},
+    {_LT("ln_MaterialRoughnessMap"), BuiltinShaderTextures_ln_MaterialRoughnessMap},
     {_LT("ln_BoneTexture"), BuiltinShaderTextures_ln_BoneTexture},
     {_LT("ln_BoneLocalQuaternionTexture"), BuiltinShaderTextures_ln_BoneLocalQuaternionTexture},
     
@@ -113,12 +114,11 @@ void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
             if (itr != s_BuiltinShaderUniformBuffersMap.end()) {
                 m_builtinUniformBuffers[itr->second] = localInfo.dataIndex;
             }
-
-            for (const auto& memberInfo : globalLayout->m_members) {
-                auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
-                if (itr != s_BuiltinShaderParametersMap.end()) {
-                    m_hasBuiltinShaderParameters |= (1 << itr->second);
-                }
+        }
+        for (const auto& memberInfo : globalLayout->m_members) {
+            auto itr = s_BuiltinShaderParametersMap.find(memberInfo.name);
+            if (itr != s_BuiltinShaderParametersMap.end()) {
+                m_hasBuiltinShaderParameters |= (1 << itr->second);
             }
         }
 
@@ -228,6 +228,12 @@ void ShaderTechniqueSemanticsManager::updateSubsetVariables(const SubsetInfo& in
         LN_DCHECK(info.normalMap);
         m_descriptor->setTexture(index, info.normalMap);
     }
+
+    index = m_builtinShaderTextures[BuiltinShaderTextures_ln_MaterialRoughnessMap];
+    if (index >= 0) {
+        LN_DCHECK(info.roughnessMap);
+        m_descriptor->setTexture(index, info.roughnessMap);
+    }
 }
 
 void ShaderTechniqueSemanticsManager::updateSubsetVariables_PBR(const PbrMaterialData& materialData)
@@ -279,7 +285,7 @@ void ShaderTechniqueSemanticsManager::updateClusteredShadingVariables(const Clus
 void ShaderTechniqueClass::parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet)
 {
     outClassSet->defaultTechnique = false;
-    outClassSet->phase = ShaderTechniqueClass_Phase::Forward;
+    //outClassSet->phase = ShaderTechniqueClass_Phase::Forward;
     outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
     outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
     outClassSet->drawMode = ShaderTechniqueClass_DrawMode::Primitive;
@@ -315,7 +321,8 @@ bool ShaderTechniqueClass::equals(const ShaderTechniqueClass& a, const ShaderTec
            a.meshProcess == b.meshProcess &&
            a.shadingModel == b.shadingModel &&
            a.drawMode == b.drawMode &&
-           a.normalClass == b.normalClass;
+           a.normalClass == b.normalClass&&
+           a.roughnessClass == b.roughnessClass;
 }
 
 } // namespace detail

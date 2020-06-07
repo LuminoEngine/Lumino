@@ -141,6 +141,7 @@ struct SubsetInfo
     // common material
     Texture* materialTexture;
     Texture* normalMap;
+    Texture* roughnessMap;
 
     // builtin effect
     float opacity;
@@ -152,6 +153,7 @@ struct SubsetInfo
 	{
 		materialTexture = nullptr;
         normalMap = nullptr;
+        roughnessMap = nullptr;
 		opacity = 0.0f;
 		colorScale = Color();
 		blendColor = Color();
@@ -163,6 +165,7 @@ struct SubsetInfo
 		return
 			lhs.materialTexture == rhs.materialTexture &&
             lhs.normalMap == rhs.normalMap &&
+            lhs.roughnessMap == rhs.roughnessMap &&
 			Math::nearEqual(lhs.opacity, rhs.opacity) &&
 			Color::nearEqual(lhs.colorScale, rhs.colorScale) &&
 			Color::nearEqual(lhs.blendColor, rhs.blendColor) &&
@@ -229,8 +232,9 @@ enum BuiltinShaderUniformBuffers
 
 enum BuiltinShaderTextures
 {
-    BuiltinShaderTextures_ln_MaterialTexture,
-    BuiltinShaderTextures_ln_NormalMap,
+    BuiltinShaderTextures_ln_MaterialTexture, // TODO: MaterialMainTexture
+    BuiltinShaderTextures_ln_NormalMap, // TODO: MaterialNormalMap
+    BuiltinShaderTextures_ln_MaterialRoughnessMap,
     BuiltinShaderTextures_ln_BoneTexture,
     BuiltinShaderTextures_ln_BoneLocalQuaternionTexture,
 
@@ -290,6 +294,7 @@ struct ShaderTechniqueClass
     ShaderTechniqueClass_ShadingModel shadingModel = ShaderTechniqueClass_ShadingModel::Default;
     ShaderTechniqueClass_DrawMode drawMode = ShaderTechniqueClass_DrawMode::Primitive;
     ShaderTechniqueClass_Normal normalClass = ShaderTechniqueClass_Normal::Default;
+    ShaderTechniqueClass_Roughness roughnessClass = ShaderTechniqueClass_Roughness::Default;
 
     static void parseTechniqueClassString(const String& str, ShaderTechniqueClass* outClassSet);
     static bool equals(const ShaderTechniqueClass& a, const ShaderTechniqueClass& b);

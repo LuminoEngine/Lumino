@@ -5,6 +5,7 @@ using namespace ln;
 class App_Example_MeshViewer : public Application
 {
     Ref<PlaneMesh> m_plane;
+    Ref<Sprite> m_sprite;
 
     virtual void onInit() override
     {
@@ -12,17 +13,27 @@ class App_Example_MeshViewer : public Application
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
+        m_sprite = Sprite::create(Texture2D::whiteTexture());
+        m_sprite->setBlendMode(BlendMode::Normal);
+        //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
+
         m_plane = PlaneMesh::create();
-        m_plane->planeMeshComponent()->setSize(10000, 10000);
-        auto texture = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
-        texture->setMipmapEnabled(true);
-        auto planeMaterial = Material::create(texture);
-        auto normalMap = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg");
-        normalMap->setMipmapEnabled(true);
-        //planeMaterial->setNormalMap(normalMap);
+        auto planeMaterial = Material::create(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));
         m_plane->planeMeshComponent()->setMaterial(planeMaterial);
-        //m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
-        m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));
+
+        //auto sprite2 = Sprite::create(Texture2D::whiteTexture());
+
+        //m_plane = PlaneMesh::create();
+        //m_plane->planeMeshComponent()->setSize(10000, 10000);
+        //auto texture = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg");
+        //texture->setMipmapEnabled(true);
+        //auto planeMaterial = Material::create(texture);
+        //auto normalMap = Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Normal.jpg");
+        //normalMap->setMipmapEnabled(true);
+        ////planeMaterial->setNormalMap(normalMap);
+        //m_plane->planeMeshComponent()->setMaterial(planeMaterial);
+        ////m_plane->planeMeshComponent()->setUVParUnit(Vector2(0.5f, 0.5f));
+        //m_plane->planeMeshComponent()->setUVParUnit(Vector2(5, 5));
 
         //auto mesh = StaticMesh::create(u"D:/Materials/KitBash3D/WARZONE/Blender/untitled4.glb");
 
@@ -45,7 +56,6 @@ class App_Example_MeshViewer : public Application
 
     virtual void onUpdate() override
     {
-        //m_plane->setRotation(0, Engine::time() * 0.1, 0);
     }
 };
 

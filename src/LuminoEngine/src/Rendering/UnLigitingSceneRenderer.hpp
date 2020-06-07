@@ -12,6 +12,8 @@ public:
 
 	void init(RenderingManager* manager);
 
+
+
 	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual RenderPass* renderPass() const;
 
@@ -31,6 +33,8 @@ class UnLigitingSceneRenderer
 {
 public:
 	void init(RenderingManager* manager);
+
+	SceneRendererPass* mainRenderPass() const override;
 
 	virtual void onSetAdditionalShaderPassVariables(ShaderTechnique* technique) override;
 
