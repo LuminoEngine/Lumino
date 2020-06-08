@@ -88,7 +88,7 @@ public:
 	static WorldRenderView* renderView();
 	
 	/** デフォルトで作成されるメインの UIFocusNavigator です。 */
-	LN_METHOD(Property)
+	//LN_METHOD(Property)
 	static UIFocusNavigator* navigator();
 
 	static UIControl* ui() { return mainUIView(); }

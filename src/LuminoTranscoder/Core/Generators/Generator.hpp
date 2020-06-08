@@ -90,6 +90,9 @@ public:
 	ln::String makeFlatParamList(const MethodSymbol* method, FlatCharset charset) const;	// e.g) -> "int p1, int p2, int* outReturn"
 	ln::String makeFlatArgList(const MethodSymbol* method) const;
 
+	// e.g) -> LN_PIXEL_FORMAT_A8
+	ln::String makeFlatEnumMemberName(TypeSymbol* enumType, ConstantSymbol* member) const;
+
 private:
 	SymbolDatabase* m_database;
 	Ref<GeneratorConfiguration> m_config;

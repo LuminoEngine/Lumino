@@ -3,6 +3,7 @@
 #include "../Core/SymbolDatabase.hpp"
 #include "../Core/Generators/FlatCGenerator.hpp"
 #include "../Core/Generators/RubyExtGenerator.hpp"
+#include "../Core/Generators/HSPGenerator.hpp"
 #include "../Core/Generators/DotNetPInvokeGenerator.hpp"
 #include "../Core/Generators/DotnetClassGenerator.hpp"
 
@@ -125,23 +126,33 @@ int main(int argc, char** argv)
     config->flatCHeaderOutputDirOverride = LN_LOCALFILE("../../../include/LuminoEngine/Runtime");
     config->flatCSourceOutputDirOverride = LN_LOCALFILE("../../../src/LuminoEngine/src/Runtime");
 
+	//{
+	//	FlatCHeaderGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	FlatCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	RubyExtGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
+	//{
+	//	RubyYARDOCSourceGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
 	{
-		FlatCHeaderGenerator g;
+		HSPHeaderGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}
 	{
-		FlatCSourceGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		RubyExtGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
-	{
-		RubyYARDOCSourceGenerator g;
+		HSPCommandsGenerator g;
 		g.setup(db, config);
 		g.generate();
 	}

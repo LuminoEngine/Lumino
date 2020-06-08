@@ -8,11 +8,6 @@
 //==============================================================================
 // FlatCCommon
 
-ln::String FlatCCommon::makeEnumMemberName(GeneratorConfiguration* config, TypeSymbol* enumType, ConstantSymbol* member)
-{
-	return config->flatCOutputModuleName.toUpper() + u"_" + Generator::makeUpperSnakeName(enumType->shortName()) + u"_" + Generator::makeUpperSnakeName(member->name());
-}
-
 ln::String FlatCCommon::makeInstanceParamName(TypeSymbol* type)
 {
 	return type->shortName().toLower();
@@ -263,7 +258,7 @@ ln::String FlatCHeaderGenerator::makeEnumDecls() const
 
 		for (auto& member : symbol->constants()) {
 			code.AppendLine(makeDocumentComment(member->document()));
-			code.AppendLine(u"{0} = {1},", FlatCCommon::makeEnumMemberName(config(), symbol, member), member->value()->get<int>());
+			code.AppendLine(u"{0} = {1},", makeFlatEnumMemberName(symbol, member), member->value()->get<int>());
 			code.NewLine();
 		}
 

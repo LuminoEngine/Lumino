@@ -277,3 +277,8 @@ ln::String Generator::makeFlatArgList(const MethodSymbol* method) const
 	}
 	return argList.toString();
 }
+
+ln::String Generator::makeFlatEnumMemberName(TypeSymbol* enumType, ConstantSymbol* member) const
+{
+	return config()->flatCOutputModuleName.toUpper() + u"_" + Generator::makeUpperSnakeName(enumType->shortName()) + u"_" + Generator::makeUpperSnakeName(member->name());
+}
