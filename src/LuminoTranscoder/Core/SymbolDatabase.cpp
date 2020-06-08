@@ -354,6 +354,8 @@ ln::Result MethodSymbol::link()
 
 	if (!makeFlatParameters()) return false;
 
+	m_methodId = db()->generateMethodId();
+
 	return true;
 }
 

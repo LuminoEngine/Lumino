@@ -303,6 +303,8 @@ public:
 	bool hasReturnType() const { return m_returnType.type != PredefinedTypes::voidType; }
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
 
+	int methodId() const { return m_methodId; }
+
     bool isFieldAccessor() const { return m_linkedField != nullptr; }
     FieldSymbol* linkedField() const { return m_linkedField; }
 
@@ -327,6 +329,7 @@ private:
 	bool m_isVirtual = false;
 	bool m_isConstructor = false;
 	bool m_hasStringDecl = false;
+	int m_methodId = 0;
 
 	friend class TypeSymbol;
 };
@@ -504,6 +507,7 @@ public:
 
 	const Ref<PIDatabase>& pidb() const { return m_pidb; }
 	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
+	int generateMethodId() { return m_nextMethodId++; }
 
 public:
 	void initPredefineds();
@@ -521,6 +525,7 @@ private:
 	//ln::List<Ref<DelegateSymbol>> m_delegates;
 	ln::DiagnosticsManager* m_diag;
     TypeSymbol* m_rootObjectClass = nullptr;
+	int m_nextMethodId = 1;
 };
 
 
