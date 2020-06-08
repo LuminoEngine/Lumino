@@ -51,6 +51,14 @@ public:
 
 
 private:
+    // Note: 複数の SceneRenderer を持っているのは、描画フェーズの大きなまとまりごとに、Element の扱いを変えることで最適化するため。
+    // 例えば、http://cdn-ak.f.st-hatena.com/images/fotolife/h/hecomi/20160206/20160206190644.png や
+    // https://docs.unity3d.com/ja/current/Manual/GraphicsCommandBuffers.html の図を考えるとき、
+    // - DeferredRenderer では、Element を手前から奥にソートしたい。Sky, DebugDraw, PostEffect はここでは書きたくないのでソートの対象にもしたくない。
+    // - ForwardRenderer では、Element を奥から手前にソートしたい。Sky, DebugDraw, PostEffect はここでは書きたくないのでソートの対象にもしたくない。
+    // - 後段の統合 Renderer では基本的にソートはしたくない。ライティングも不要
+    // - 最後の UIRenderer は 2D スプライトの考え方でソートしたい。(今はサポートしてないけど)
+
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
     Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_ImageEffectPhase;
 };
