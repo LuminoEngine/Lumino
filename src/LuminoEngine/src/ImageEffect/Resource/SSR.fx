@@ -301,8 +301,8 @@ bool traceCameraSpaceRay(
     }
 
     // Binary search refinement
-    //if (_BinarySearchIterations > 1.0 && intersect)
-    if (false)
+    //   衝突点と、前回のサンプリング点の間を Binary search してずれを補う
+    if (_BinarySearchIterations > 1.0 && intersect)
     {
         Q -= deltaStep;
         deltaStep /= _BinarySearchIterations;
@@ -315,11 +315,12 @@ bool traceCameraSpaceRay(
             if (float(j) >= _BinarySearchIterations) break;
 
             Q += deltaStep * stride;
-            float4 clip = _CameraProjectionMatrix * float4(Q,1.0);
-            P = clip.xy / clip.w;
+            //float4 clip = _CameraProjectionMatrix * float4(Q,1.0);
+            //P = clip.xy / clip.w;
 
             //hitPixel = P.xy*0.5+0.5;
-            hitPixel = LN_ClipSpacePositionToUV(P.xy);
+            //hitPixel = LN_ClipSpacePositionToUV(P.xy);
+            hitPixel = getUVFromViewSpacePosition(Q);
 
             originalStride *= 0.5;
             stride = rayIntersectsDepth(Q.z, hitPixel) ? -originalStride : originalStride;

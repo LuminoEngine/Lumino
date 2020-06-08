@@ -50,6 +50,10 @@ private:
     Ref<RenderTargetTexture> m_compositeTarget;
     Ref<SamplerState> m_samplerState;
 
+    // Find optimization
+    ShaderParameter2* m_paramColorSampler;
+    ShaderParameter2* m_paramSSRSampler;
+
     //List<Ref<RenderTargetTexture>> m_renderTargetsHorizontal;
     //List<Ref<RenderTargetTexture>> m_renderTargetsVertical;
     //Ref<Material> m_compositeMaterial;

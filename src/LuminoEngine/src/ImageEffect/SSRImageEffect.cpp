@@ -64,6 +64,8 @@ bool SSRImageEffectInstance::init(SSRImageEffect* owner)
     auto shader3 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRComposite.fx");
     m_ssrCompositeMaterial = makeObject<Material>();
     m_ssrCompositeMaterial->setShader(shader3);
+    m_paramColorSampler = shader3->findParameter(u"_ColorSampler");
+    m_paramSSRSampler = shader3->findParameter(u"_SSRSampler");
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
@@ -143,8 +145,8 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     m_ssrBlurMaterial2->setTexture(u"_ColorSampler", m_blurTarget1);
     context->blit(m_ssrBlurMaterial2, m_blurTarget2);
 
-    m_ssrCompositeMaterial->setTexture(u"_ColorSampler", source);
-    m_ssrCompositeMaterial->setTexture(u"_SSRSampler", m_blurTarget2);
+    m_paramColorSampler->setTexture(source);
+    m_paramSSRSampler->setTexture(m_blurTarget2);
     context->blit(m_ssrCompositeMaterial, destination);
 #endif
 
