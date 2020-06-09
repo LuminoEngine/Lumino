@@ -1,3 +1,4 @@
+#include "LuminoHSP.h"
 
 //-----------------------------------------------------------------------------
 // struct LnVector3
@@ -55,7 +56,7 @@ static int hspLnVector3_GetSize(const PDAT *pdatl)
 
 static void hspLnVector3_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnVector3(pdat) = *((LnVector3*)(in));
+    *reinterpret_cast<LnVector3*>(pdat) = *reinterpret_cast<const LnVector3*>(in);
 }
 
 static void hspLnVector3_Init(HspVarProc* p)
@@ -77,22 +78,21 @@ static void hspLnVector3_Init(HspVarProc* p)
     g_LnVector3_typeid = p->flag;
 }
 
-static void hspLnVector3_reffunc(HspVarProc* p)
+static void hspLnVector3_reffunc(int* typeRes, void** retValPtr)
 {
     static LnVector3 returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.x = fetchVADouble();
-        returnValue.y = fetchVADouble();
-        returnValue.z = fetchVADouble();
+        returnValue.x = fetchVADouble_reffunc();
+        returnValue.y = fetchVADouble_reffunc();
+        returnValue.z = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnVector3_typeid();
-    return true;
 }
 
 
@@ -152,7 +152,7 @@ static int hspLnVector4_GetSize(const PDAT *pdatl)
 
 static void hspLnVector4_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnVector4(pdat) = *((LnVector4*)(in));
+    *reinterpret_cast<LnVector4*>(pdat) = *reinterpret_cast<const LnVector4*>(in);
 }
 
 static void hspLnVector4_Init(HspVarProc* p)
@@ -174,23 +174,22 @@ static void hspLnVector4_Init(HspVarProc* p)
     g_LnVector4_typeid = p->flag;
 }
 
-static void hspLnVector4_reffunc(HspVarProc* p)
+static void hspLnVector4_reffunc(int* typeRes, void** retValPtr)
 {
     static LnVector4 returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.x = fetchVADouble();
-        returnValue.y = fetchVADouble();
-        returnValue.z = fetchVADouble();
-        returnValue.w = fetchVADouble();
+        returnValue.x = fetchVADouble_reffunc();
+        returnValue.y = fetchVADouble_reffunc();
+        returnValue.z = fetchVADouble_reffunc();
+        returnValue.w = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnVector4_typeid();
-    return true;
 }
 
 
@@ -250,7 +249,7 @@ static int hspLnQuaternion_GetSize(const PDAT *pdatl)
 
 static void hspLnQuaternion_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnQuaternion(pdat) = *((LnQuaternion*)(in));
+    *reinterpret_cast<LnQuaternion*>(pdat) = *reinterpret_cast<const LnQuaternion*>(in);
 }
 
 static void hspLnQuaternion_Init(HspVarProc* p)
@@ -272,23 +271,22 @@ static void hspLnQuaternion_Init(HspVarProc* p)
     g_LnQuaternion_typeid = p->flag;
 }
 
-static void hspLnQuaternion_reffunc(HspVarProc* p)
+static void hspLnQuaternion_reffunc(int* typeRes, void** retValPtr)
 {
     static LnQuaternion returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.x = fetchVADouble();
-        returnValue.y = fetchVADouble();
-        returnValue.z = fetchVADouble();
-        returnValue.w = fetchVADouble();
+        returnValue.x = fetchVADouble_reffunc();
+        returnValue.y = fetchVADouble_reffunc();
+        returnValue.z = fetchVADouble_reffunc();
+        returnValue.w = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnQuaternion_typeid();
-    return true;
 }
 
 
@@ -348,7 +346,7 @@ static int hspLnMatrix_GetSize(const PDAT *pdatl)
 
 static void hspLnMatrix_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnMatrix(pdat) = *((LnMatrix*)(in));
+    *reinterpret_cast<LnMatrix*>(pdat) = *reinterpret_cast<const LnMatrix*>(in);
 }
 
 static void hspLnMatrix_Init(HspVarProc* p)
@@ -370,23 +368,37 @@ static void hspLnMatrix_Init(HspVarProc* p)
     g_LnMatrix_typeid = p->flag;
 }
 
-static void hspLnMatrix_reffunc(HspVarProc* p)
+static void hspLnMatrix_reffunc(int* typeRes, void** retValPtr)
 {
     static LnMatrix returnValue;
 
-    if (CheclDefault()) {
+
+    if (checkAndFetchDefault()) {
         LnMatrix_SetZeros(&returnValue);
-    } else {
-        returnValue.row0 = ????;
-        returnValue.row1 = ????;
-        returnValue.row2 = ????;
-        returnValue.row3 = ????;
     }
+    else {
+        returnValue.row0.x = fetchVADouble_reffunc();
+        returnValue.row0.y = fetchVADouble_reffunc();
+        returnValue.row0.z = fetchVADouble_reffunc();
+        returnValue.row0.w = fetchVADouble_reffunc();
+        returnValue.row1.x = fetchVADouble_reffunc();
+        returnValue.row1.y = fetchVADouble_reffunc();
+        returnValue.row1.z = fetchVADouble_reffunc();
+        returnValue.row1.w = fetchVADouble_reffunc();
+        returnValue.row2.x = fetchVADouble_reffunc();
+        returnValue.row2.y = fetchVADouble_reffunc();
+        returnValue.row2.z = fetchVADouble_reffunc();
+        returnValue.row2.w = fetchVADouble_reffunc();
+        returnValue.row3.x = fetchVADouble_reffunc();
+        returnValue.row3.y = fetchVADouble_reffunc();
+        returnValue.row3.z = fetchVADouble_reffunc();
+        returnValue.row3.w = fetchVADouble_reffunc();
+    }
+
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnMatrix_typeid();
-    return true;
 }
 
 
@@ -446,7 +458,7 @@ static int hspLnColor_GetSize(const PDAT *pdatl)
 
 static void hspLnColor_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnColor(pdat) = *((LnColor*)(in));
+    *reinterpret_cast<LnColor*>(pdat) = *reinterpret_cast<const LnColor*>(in);
 }
 
 static void hspLnColor_Init(HspVarProc* p)
@@ -468,23 +480,22 @@ static void hspLnColor_Init(HspVarProc* p)
     g_LnColor_typeid = p->flag;
 }
 
-static void hspLnColor_reffunc(HspVarProc* p)
+static void hspLnColor_reffunc(int* typeRes, void** retValPtr)
 {
     static LnColor returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.r = fetchVADouble();
-        returnValue.g = fetchVADouble();
-        returnValue.b = fetchVADouble();
-        returnValue.a = fetchVADouble();
+        returnValue.r = fetchVADouble_reffunc();
+        returnValue.g = fetchVADouble_reffunc();
+        returnValue.b = fetchVADouble_reffunc();
+        returnValue.a = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnColor_typeid();
-    return true;
 }
 
 
@@ -544,7 +555,7 @@ static int hspLnPoint_GetSize(const PDAT *pdatl)
 
 static void hspLnPoint_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnPoint(pdat) = *((LnPoint*)(in));
+    *reinterpret_cast<LnPoint*>(pdat) = *reinterpret_cast<const LnPoint*>(in);
 }
 
 static void hspLnPoint_Init(HspVarProc* p)
@@ -566,21 +577,20 @@ static void hspLnPoint_Init(HspVarProc* p)
     g_LnPoint_typeid = p->flag;
 }
 
-static void hspLnPoint_reffunc(HspVarProc* p)
+static void hspLnPoint_reffunc(int* typeRes, void** retValPtr)
 {
     static LnPoint returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.x = fetchVADouble();
-        returnValue.y = fetchVADouble();
+        returnValue.x = fetchVADouble_reffunc();
+        returnValue.y = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnPoint_typeid();
-    return true;
 }
 
 
@@ -640,7 +650,7 @@ static int hspLnSize_GetSize(const PDAT *pdatl)
 
 static void hspLnSize_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnSize(pdat) = *((LnSize*)(in));
+    *reinterpret_cast<LnSize*>(pdat) = *reinterpret_cast<const LnSize*>(in);
 }
 
 static void hspLnSize_Init(HspVarProc* p)
@@ -662,21 +672,20 @@ static void hspLnSize_Init(HspVarProc* p)
     g_LnSize_typeid = p->flag;
 }
 
-static void hspLnSize_reffunc(HspVarProc* p)
+static void hspLnSize_reffunc(int* typeRes, void** retValPtr)
 {
     static LnSize returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.width = fetchVADouble();
-        returnValue.height = fetchVADouble();
+        returnValue.width = fetchVADouble_reffunc();
+        returnValue.height = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnSize_typeid();
-    return true;
 }
 
 
@@ -736,7 +745,7 @@ static int hspLnRect_GetSize(const PDAT *pdatl)
 
 static void hspLnRect_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnRect(pdat) = *((LnRect*)(in));
+    *reinterpret_cast<LnRect*>(pdat) = *reinterpret_cast<const LnRect*>(in);
 }
 
 static void hspLnRect_Init(HspVarProc* p)
@@ -758,23 +767,22 @@ static void hspLnRect_Init(HspVarProc* p)
     g_LnRect_typeid = p->flag;
 }
 
-static void hspLnRect_reffunc(HspVarProc* p)
+static void hspLnRect_reffunc(int* typeRes, void** retValPtr)
 {
     static LnRect returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.x = fetchVADouble();
-        returnValue.y = fetchVADouble();
-        returnValue.width = fetchVADouble();
-        returnValue.height = fetchVADouble();
+        returnValue.x = fetchVADouble_reffunc();
+        returnValue.y = fetchVADouble_reffunc();
+        returnValue.width = fetchVADouble_reffunc();
+        returnValue.height = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnRect_typeid();
-    return true;
 }
 
 
@@ -834,7 +842,7 @@ static int hspLnThickness_GetSize(const PDAT *pdatl)
 
 static void hspLnThickness_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_LnThickness(pdat) = *((LnThickness*)(in));
+    *reinterpret_cast<LnThickness*>(pdat) = *reinterpret_cast<const LnThickness*>(in);
 }
 
 static void hspLnThickness_Init(HspVarProc* p)
@@ -856,23 +864,22 @@ static void hspLnThickness_Init(HspVarProc* p)
     g_LnThickness_typeid = p->flag;
 }
 
-static void hspLnThickness_reffunc(HspVarProc* p)
+static void hspLnThickness_reffunc(int* typeRes, void** retValPtr)
 {
     static LnThickness returnValue;
 
-    if (CheclDefault()) {
+    if (checkAndFetchDefault()) {
         memset(&returnValue, 0, sizeof(returnValue));
     } else {
-        returnValue.left = fetchVADouble();
-        returnValue.top = fetchVADouble();
-        returnValue.right = fetchVADouble();
-        returnValue.bottom = fetchVADouble();
+        returnValue.left = fetchVADouble_reffunc();
+        returnValue.top = fetchVADouble_reffunc();
+        returnValue.right = fetchVADouble_reffunc();
+        returnValue.bottom = fetchVADouble_reffunc();
     }
 
 
     *retValPtr = &returnValue;
     *typeRes = hspLnThickness_typeid();
-    return true;
 }
 
 
@@ -896,72 +903,72 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnPromiseFailureDelegate_Create
         case 0x70 : {
             // Fetch outPromiseFailureDelegate
-            const PVal* pval_outPromiseFailureDelegate;
+            PVal* pval_outPromiseFailureDelegate;
             const APTR aptr_outPromiseFailureDelegate = code_getva(&pval_outPromiseFailureDelegate);
             LnHandle local_outPromiseFailureDelegate;
 
             stat = LnPromiseFailureDelegate_Create(&local_outPromiseFailureDelegate);
-            code_setva(pval_outPromiseFailureDelegate, aptr_outPromiseFailureDelegate, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outPromiseFailureDelegate));
+            setVAInt(pval_outPromiseFailureDelegate, aptr_outPromiseFailureDelegate, local_outPromiseFailureDelegate);
 
             break;
         }
         // LnZVTestDelegate1_Create
         case 0x72 : {
             // Fetch outZVTestDelegate1
-            const PVal* pval_outZVTestDelegate1;
+            PVal* pval_outZVTestDelegate1;
             const APTR aptr_outZVTestDelegate1 = code_getva(&pval_outZVTestDelegate1);
             LnHandle local_outZVTestDelegate1;
 
             stat = LnZVTestDelegate1_Create(&local_outZVTestDelegate1);
-            code_setva(pval_outZVTestDelegate1, aptr_outZVTestDelegate1, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestDelegate1));
+            setVAInt(pval_outZVTestDelegate1, aptr_outZVTestDelegate1, local_outZVTestDelegate1);
 
             break;
         }
         // LnZVTestDelegate2_Create
         case 0x74 : {
             // Fetch outZVTestDelegate2
-            const PVal* pval_outZVTestDelegate2;
+            PVal* pval_outZVTestDelegate2;
             const APTR aptr_outZVTestDelegate2 = code_getva(&pval_outZVTestDelegate2);
             LnHandle local_outZVTestDelegate2;
 
             stat = LnZVTestDelegate2_Create(&local_outZVTestDelegate2);
-            code_setva(pval_outZVTestDelegate2, aptr_outZVTestDelegate2, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestDelegate2));
+            setVAInt(pval_outZVTestDelegate2, aptr_outZVTestDelegate2, local_outZVTestDelegate2);
 
             break;
         }
         // LnZVTestDelegate3_Create
         case 0x76 : {
             // Fetch outZVTestDelegate3
-            const PVal* pval_outZVTestDelegate3;
+            PVal* pval_outZVTestDelegate3;
             const APTR aptr_outZVTestDelegate3 = code_getva(&pval_outZVTestDelegate3);
             LnHandle local_outZVTestDelegate3;
 
             stat = LnZVTestDelegate3_Create(&local_outZVTestDelegate3);
-            code_setva(pval_outZVTestDelegate3, aptr_outZVTestDelegate3, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestDelegate3));
+            setVAInt(pval_outZVTestDelegate3, aptr_outZVTestDelegate3, local_outZVTestDelegate3);
 
             break;
         }
         // LnZVTestEventHandler1_Create
         case 0x78 : {
             // Fetch outZVTestEventHandler1
-            const PVal* pval_outZVTestEventHandler1;
+            PVal* pval_outZVTestEventHandler1;
             const APTR aptr_outZVTestEventHandler1 = code_getva(&pval_outZVTestEventHandler1);
             LnHandle local_outZVTestEventHandler1;
 
             stat = LnZVTestEventHandler1_Create(&local_outZVTestEventHandler1);
-            code_setva(pval_outZVTestEventHandler1, aptr_outZVTestEventHandler1, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestEventHandler1));
+            setVAInt(pval_outZVTestEventHandler1, aptr_outZVTestEventHandler1, local_outZVTestEventHandler1);
 
             break;
         }
         // LnZVTestEventHandler2_Create
         case 0x7A : {
             // Fetch outZVTestEventHandler2
-            const PVal* pval_outZVTestEventHandler2;
+            PVal* pval_outZVTestEventHandler2;
             const APTR aptr_outZVTestEventHandler2 = code_getva(&pval_outZVTestEventHandler2);
             LnHandle local_outZVTestEventHandler2;
 
             stat = LnZVTestEventHandler2_Create(&local_outZVTestEventHandler2);
-            code_setva(pval_outZVTestEventHandler2, aptr_outZVTestEventHandler2, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestEventHandler2));
+            setVAInt(pval_outZVTestEventHandler2, aptr_outZVTestEventHandler2, local_outZVTestEventHandler2);
 
             break;
         }
@@ -1070,12 +1077,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch b
             const auto local_b = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
             stat = LnZVTestClass1_CallTestDelegate2(local_zvtestclass1, local_a, local_b, &local_outReturn);
-            ??
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1094,12 +1101,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnZVTestClass1_LoadAsyncA(local_filePath, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1108,12 +1115,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnZVTestClass1_ExecuteAsync(local_zvtestclass1, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1122,12 +1129,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch zvtestclass1
             const auto local_zvtestclass1 = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
             stat = LnZVTestClass1_GetFilePathA(local_zvtestclass1, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_STR, local_outReturn.c_str());
+            setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1138,12 +1145,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch handler
             const auto local_handler = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnZVTestClass1_ConnectOnEvent1(local_zvtestclass1, local_handler, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1164,12 +1171,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch handler
             const auto local_handler = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnZVTestClass1_ConnectOnEvent2(local_zvtestclass1, local_handler, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1186,12 +1193,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnZVTestClass1_Create
         case 0x8C : {
             // Fetch outZVTestClass1
-            const PVal* pval_outZVTestClass1;
+            PVal* pval_outZVTestClass1;
             const APTR aptr_outZVTestClass1 = code_getva(&pval_outZVTestClass1);
             LnHandle local_outZVTestClass1;
 
             stat = LnZVTestClass1_Create(&local_outZVTestClass1);
-            code_setva(pval_outZVTestClass1, aptr_outZVTestClass1, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestClass1));
+            setVAInt(pval_outZVTestClass1, aptr_outZVTestClass1, local_outZVTestClass1);
 
             break;
         }
@@ -1200,24 +1207,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch zvtesteventargs1
             const auto local_zvtesteventargs1 = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
             stat = LnZVTestEventArgs1_GetValue(local_zvtesteventargs1, &local_outReturn);
-            ??
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnZVTestEventArgs1_Create
         case 0x8E : {
             // Fetch outZVTestEventArgs1
-            const PVal* pval_outZVTestEventArgs1;
+            PVal* pval_outZVTestEventArgs1;
             const APTR aptr_outZVTestEventArgs1 = code_getva(&pval_outZVTestEventArgs1);
             LnHandle local_outZVTestEventArgs1;
 
             stat = LnZVTestEventArgs1_Create(&local_outZVTestEventArgs1);
-            code_setva(pval_outZVTestEventArgs1, aptr_outZVTestEventArgs1, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestEventArgs1));
+            setVAInt(pval_outZVTestEventArgs1, aptr_outZVTestEventArgs1, local_outZVTestEventArgs1);
 
             break;
         }
@@ -1226,12 +1233,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch v
             const auto local_v = fetchVAInt();
             // Fetch outZVTestEventArgs1
-            const PVal* pval_outZVTestEventArgs1;
+            PVal* pval_outZVTestEventArgs1;
             const APTR aptr_outZVTestEventArgs1 = code_getva(&pval_outZVTestEventArgs1);
             LnHandle local_outZVTestEventArgs1;
 
             stat = LnZVTestEventArgs1_CreateWithValue(local_v, &local_outZVTestEventArgs1);
-            code_setva(pval_outZVTestEventArgs1, aptr_outZVTestEventArgs1, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outZVTestEventArgs1));
+            setVAInt(pval_outZVTestEventArgs1, aptr_outZVTestEventArgs1, local_outZVTestEventArgs1);
 
             break;
         }
@@ -1242,7 +1249,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch name
             const auto local_name = fetchVAString();
             // Fetch value
-            const auto local_value = fetchVAInt();
+            const auto local_value = static_cast<LnBool>(fetchVAInt());
 
             stat = LnSerializer_WriteBoolA(local_serializer, local_name, local_value);
 
@@ -1312,12 +1319,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch name
             const auto local_name = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnSerializer_ReadBoolA(local_serializer, local_name, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1328,12 +1335,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch name
             const auto local_name = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
             stat = LnSerializer_ReadIntA(local_serializer, local_name, &local_outReturn);
-            ??
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1344,12 +1351,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch name
             const auto local_name = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnSerializer_ReadFloatA(local_serializer, local_name, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1360,12 +1367,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch name
             const auto local_name = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
             stat = LnSerializer_ReadStringA(local_serializer, local_name, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_STR, local_outReturn.c_str());
+            setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1376,12 +1383,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch name
             const auto local_name = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnSerializer_ReadObjectA(local_serializer, local_name, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1392,12 +1399,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch basePath
             const auto local_basePath = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             const char* local_outReturn;
 
             stat = LnSerializer_SerializeA(local_value, local_basePath, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_STR, local_outReturn.c_str());
+            setVAStr(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1408,12 +1415,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch basePath
             const auto local_basePath = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnSerializer_DeserializeA(local_str, local_basePath, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1422,12 +1429,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch assetmodel
             const auto local_assetmodel = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnAssetModel_Target(local_assetmodel, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1436,12 +1443,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch target
             const auto local_target = fetchVAInt();
             // Fetch outAssetModel
-            const PVal* pval_outAssetModel;
+            PVal* pval_outAssetModel;
             const APTR aptr_outAssetModel = code_getva(&pval_outAssetModel);
             LnHandle local_outAssetModel;
 
             stat = LnAssetModel_Create(local_target, &local_outAssetModel);
-            code_setva(pval_outAssetModel, aptr_outAssetModel, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outAssetModel));
+            setVAInt(pval_outAssetModel, aptr_outAssetModel, local_outAssetModel);
 
             break;
         }
@@ -1462,12 +1469,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnAssets_LoadAssetFromLocalFileA(local_filePath, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1476,12 +1483,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnAssets_LoadAssetA(local_filePath, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1490,12 +1497,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnTexture2D_LoadA(local_filePath, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1504,12 +1511,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch code
             const auto local_code = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnTexture2D_LoadEmojiA(local_code, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1520,12 +1527,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVAInt();
             // Fetch outTexture2D
-            const PVal* pval_outTexture2D;
+            PVal* pval_outTexture2D;
             const APTR aptr_outTexture2D = code_getva(&pval_outTexture2D);
             LnHandle local_outTexture2D;
 
             stat = LnTexture2D_Create(local_width, local_height, &local_outTexture2D);
-            code_setva(pval_outTexture2D, aptr_outTexture2D, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outTexture2D));
+            setVAInt(pval_outTexture2D, aptr_outTexture2D, local_outTexture2D);
 
             break;
         }
@@ -1536,14 +1543,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVAInt();
             // Fetch format
-            const auto local_format = ????;
+            const auto local_format = static_cast<LnTextureFormat>(fetchVAInt());
             // Fetch outTexture2D
-            const PVal* pval_outTexture2D;
+            PVal* pval_outTexture2D;
             const APTR aptr_outTexture2D = code_getva(&pval_outTexture2D);
             LnHandle local_outTexture2D;
 
             stat = LnTexture2D_CreateWithFormat(local_width, local_height, local_format, &local_outTexture2D);
-            code_setva(pval_outTexture2D, aptr_outTexture2D, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outTexture2D));
+            setVAInt(pval_outTexture2D, aptr_outTexture2D, local_outTexture2D);
 
             break;
         }
@@ -1552,14 +1559,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch filePath
             const auto local_filePath = fetchVAString();
             // Fetch format
-            const auto local_format = ????;
+            const auto local_format = static_cast<LnTextureFormat>(fetchVAInt());
             // Fetch outTexture2D
-            const PVal* pval_outTexture2D;
+            PVal* pval_outTexture2D;
             const APTR aptr_outTexture2D = code_getva(&pval_outTexture2D);
             LnHandle local_outTexture2D;
 
             stat = LnTexture2D_CreateFromFileA(local_filePath, local_format, &local_outTexture2D);
-            code_setva(pval_outTexture2D, aptr_outTexture2D, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outTexture2D));
+            setVAInt(pval_outTexture2D, aptr_outTexture2D, local_outTexture2D);
 
             break;
         }
@@ -1568,7 +1575,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch value
-            const auto local_value = fetchVAInt();
+            const auto local_value = static_cast<LnBool>(fetchVAInt());
 
             stat = LnVisualComponent_SetVisible(local_visualcomponent, local_value);
 
@@ -1580,12 +1587,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch visualcomponent
             const auto local_visualcomponent = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnVisualComponent_IsVisible(local_visualcomponent, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1618,12 +1625,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch componentlist
             const auto local_componentlist = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             int local_outReturn;
 
             stat = LnComponentList_GetLength(local_componentlist, &local_outReturn);
-            ??
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1634,12 +1641,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch index
             const auto local_index = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnComponentList_GetItem(local_componentlist, local_index, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1648,9 +1655,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch pos
-            const auto local_pos = ????;
+            PVal* pval_pos;
+            CodeGetVA_TypeChecked(&pval_pos, LnVector3);
 
-            stat = LnWorldObject_SetPosition(local_worldobject, local_pos);
+            stat = LnWorldObject_SetPosition(local_worldobject, reinterpret_cast<const LnVector3*>(pval_pos->pt));
 
 
             break;
@@ -1676,12 +1684,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVector3 local_outReturn;
 
             stat = LnWorldObject_GetPosition(local_worldobject, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
 
             break;
         }
@@ -1690,9 +1698,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch rot
-            const auto local_rot = ????;
+            PVal* pval_rot;
+            CodeGetVA_TypeChecked(&pval_rot, LnQuaternion);
 
-            stat = LnWorldObject_SetRotationQuaternion(local_worldobject, local_rot);
+            stat = LnWorldObject_SetRotationQuaternion(local_worldobject, reinterpret_cast<const LnQuaternion*>(pval_rot->pt));
 
 
             break;
@@ -1718,12 +1727,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnQuaternion local_outReturn;
 
             stat = LnWorldObject_GetRotation(local_worldobject, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnQuaternion_typeid(), &local_outReturn);
 
             break;
         }
@@ -1732,9 +1741,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch scale
-            const auto local_scale = ????;
+            PVal* pval_scale;
+            CodeGetVA_TypeChecked(&pval_scale, LnVector3);
 
-            stat = LnWorldObject_SetScale(local_worldobject, local_scale);
+            stat = LnWorldObject_SetScale(local_worldobject, reinterpret_cast<const LnVector3*>(pval_scale->pt));
 
 
             break;
@@ -1772,12 +1782,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVector3 local_outReturn;
 
             stat = LnWorldObject_GetScale(local_worldobject, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
 
             break;
         }
@@ -1786,9 +1796,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch value
-            const auto local_value = ????;
+            PVal* pval_value;
+            CodeGetVA_TypeChecked(&pval_value, LnVector3);
 
-            stat = LnWorldObject_SetCenterPoint(local_worldobject, local_value);
+            stat = LnWorldObject_SetCenterPoint(local_worldobject, reinterpret_cast<const LnVector3*>(pval_value->pt));
 
 
             break;
@@ -1814,12 +1825,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVector3 local_outReturn;
 
             stat = LnWorldObject_GetCenterPoint(local_worldobject, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
 
             break;
         }
@@ -1828,9 +1839,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch target
-            const auto local_target = ????;
+            PVal* pval_target;
+            CodeGetVA_TypeChecked(&pval_target, LnVector3);
 
-            stat = LnWorldObject_LookAt(local_worldobject, local_target);
+            stat = LnWorldObject_LookAt(local_worldobject, reinterpret_cast<const LnVector3*>(pval_target->pt));
 
 
             break;
@@ -1868,12 +1880,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldobject
             const auto local_worldobject = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnWorldObject_GetComponents(local_worldobject, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1882,7 +1894,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch value
-            const auto local_value = fetchVAInt();
+            const auto local_value = static_cast<LnBool>(fetchVAInt());
 
             stat = LnVisualObject_SetVisible(local_visualobject, local_value);
 
@@ -1894,12 +1906,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch visualobject
             const auto local_visualobject = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnVisualObject_IsVisible(local_visualobject, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1908,7 +1920,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch enabled
-            const auto local_enabled = fetchVAInt();
+            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
 
             stat = LnDirectionalLight_SetEnabled(local_directionallight, local_enabled);
 
@@ -1920,12 +1932,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnDirectionalLight_IsEnabled(local_directionallight, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -1934,9 +1946,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch color
-            const auto local_color = ????;
+            PVal* pval_color;
+            CodeGetVA_TypeChecked(&pval_color, LnColor);
 
-            stat = LnDirectionalLight_SetColor(local_directionallight, local_color);
+            stat = LnDirectionalLight_SetColor(local_directionallight, reinterpret_cast<const LnColor*>(pval_color->pt));
 
 
             break;
@@ -1946,12 +1959,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnColor local_outReturn;
 
             stat = LnDirectionalLight_GetColor(local_directionallight, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnColor_typeid(), &local_outReturn);
 
             break;
         }
@@ -1972,38 +1985,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch directionallight
             const auto local_directionallight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnDirectionalLight_GetIntensity(local_directionallight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnDirectionalLight_Create
         case 0xF3 : {
             // Fetch outDirectionalLight
-            const PVal* pval_outDirectionalLight;
+            PVal* pval_outDirectionalLight;
             const APTR aptr_outDirectionalLight = code_getva(&pval_outDirectionalLight);
             LnHandle local_outDirectionalLight;
 
             stat = LnDirectionalLight_Create(&local_outDirectionalLight);
-            code_setva(pval_outDirectionalLight, aptr_outDirectionalLight, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outDirectionalLight));
+            setVAInt(pval_outDirectionalLight, aptr_outDirectionalLight, local_outDirectionalLight);
 
             break;
         }
         // LnDirectionalLight_CreateWithColor
         case 0xF4 : {
             // Fetch color
-            const auto local_color = ????;
+            PVal* pval_color;
+            CodeGetVA_TypeChecked(&pval_color, LnColor);
             // Fetch outDirectionalLight
-            const PVal* pval_outDirectionalLight;
+            PVal* pval_outDirectionalLight;
             const APTR aptr_outDirectionalLight = code_getva(&pval_outDirectionalLight);
             LnHandle local_outDirectionalLight;
 
-            stat = LnDirectionalLight_CreateWithColor(local_color, &local_outDirectionalLight);
-            code_setva(pval_outDirectionalLight, aptr_outDirectionalLight, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outDirectionalLight));
+            stat = LnDirectionalLight_CreateWithColor(reinterpret_cast<const LnColor*>(pval_color->pt), &local_outDirectionalLight);
+            setVAInt(pval_outDirectionalLight, aptr_outDirectionalLight, local_outDirectionalLight);
 
             break;
         }
@@ -2012,7 +2026,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch enabled
-            const auto local_enabled = fetchVAInt();
+            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
 
             stat = LnPointLight_SetEnabled(local_pointlight, local_enabled);
 
@@ -2024,12 +2038,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnPointLight_IsEnabled(local_pointlight, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2038,9 +2052,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch color
-            const auto local_color = ????;
+            PVal* pval_color;
+            CodeGetVA_TypeChecked(&pval_color, LnColor);
 
-            stat = LnPointLight_SetColor(local_pointlight, local_color);
+            stat = LnPointLight_SetColor(local_pointlight, reinterpret_cast<const LnColor*>(pval_color->pt));
 
 
             break;
@@ -2050,12 +2065,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnColor local_outReturn;
 
             stat = LnPointLight_GetColor(local_pointlight, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnColor_typeid(), &local_outReturn);
 
             break;
         }
@@ -2076,12 +2091,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnPointLight_GetIntensity(local_pointlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2102,12 +2117,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnPointLight_GetRange(local_pointlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2128,40 +2143,41 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch pointlight
             const auto local_pointlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnPointLight_GetAttenuation(local_pointlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnPointLight_Create
         case 0xFF : {
             // Fetch outPointLight
-            const PVal* pval_outPointLight;
+            PVal* pval_outPointLight;
             const APTR aptr_outPointLight = code_getva(&pval_outPointLight);
             LnHandle local_outPointLight;
 
             stat = LnPointLight_Create(&local_outPointLight);
-            code_setva(pval_outPointLight, aptr_outPointLight, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outPointLight));
+            setVAInt(pval_outPointLight, aptr_outPointLight, local_outPointLight);
 
             break;
         }
         // LnPointLight_CreateWithColorAndRange
         case 0x100 : {
             // Fetch color
-            const auto local_color = ????;
+            PVal* pval_color;
+            CodeGetVA_TypeChecked(&pval_color, LnColor);
             // Fetch range
             const auto local_range = fetchVADouble();
             // Fetch outPointLight
-            const PVal* pval_outPointLight;
+            PVal* pval_outPointLight;
             const APTR aptr_outPointLight = code_getva(&pval_outPointLight);
             LnHandle local_outPointLight;
 
-            stat = LnPointLight_CreateWithColorAndRange(local_color, local_range, &local_outPointLight);
-            code_setva(pval_outPointLight, aptr_outPointLight, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outPointLight));
+            stat = LnPointLight_CreateWithColorAndRange(reinterpret_cast<const LnColor*>(pval_color->pt), local_range, &local_outPointLight);
+            setVAInt(pval_outPointLight, aptr_outPointLight, local_outPointLight);
 
             break;
         }
@@ -2170,7 +2186,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch enabled
-            const auto local_enabled = fetchVAInt();
+            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
 
             stat = LnSpotLight_SetEnabled(local_spotlight, local_enabled);
 
@@ -2182,12 +2198,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnSpotLight_IsEnabled(local_spotlight, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2196,9 +2212,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch color
-            const auto local_color = ????;
+            PVal* pval_color;
+            CodeGetVA_TypeChecked(&pval_color, LnColor);
 
-            stat = LnSpotLight_SetColor(local_spotlight, local_color);
+            stat = LnSpotLight_SetColor(local_spotlight, reinterpret_cast<const LnColor*>(pval_color->pt));
 
 
             break;
@@ -2208,12 +2225,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnColor local_outReturn;
 
             stat = LnSpotLight_GetColor(local_spotlight, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnColor_typeid(), &local_outReturn);
 
             break;
         }
@@ -2234,12 +2251,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnSpotLight_GetIntensity(local_spotlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2260,12 +2277,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnSpotLight_GetRange(local_spotlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2286,12 +2303,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnSpotLight_GetAttenuation(local_spotlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2312,12 +2329,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnSpotLight_GetAngle(local_spotlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2338,54 +2355,55 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch spotlight
             const auto local_spotlight = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnSpotLight_GetPenumbra(local_spotlight, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnSpotLight_Create
         case 0x10F : {
             // Fetch outSpotLight
-            const PVal* pval_outSpotLight;
+            PVal* pval_outSpotLight;
             const APTR aptr_outSpotLight = code_getva(&pval_outSpotLight);
             LnHandle local_outSpotLight;
 
             stat = LnSpotLight_Create(&local_outSpotLight);
-            code_setva(pval_outSpotLight, aptr_outSpotLight, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outSpotLight));
+            setVAInt(pval_outSpotLight, aptr_outSpotLight, local_outSpotLight);
 
             break;
         }
         // LnSpotLight_CreateWithColorAndRange
         case 0x110 : {
             // Fetch color
-            const auto local_color = ????;
+            PVal* pval_color;
+            CodeGetVA_TypeChecked(&pval_color, LnColor);
             // Fetch range
             const auto local_range = fetchVADouble();
             // Fetch angle
             const auto local_angle = fetchVADouble();
             // Fetch outSpotLight
-            const PVal* pval_outSpotLight;
+            PVal* pval_outSpotLight;
             const APTR aptr_outSpotLight = code_getva(&pval_outSpotLight);
             LnHandle local_outSpotLight;
 
-            stat = LnSpotLight_CreateWithColorAndRange(local_color, local_range, local_angle, &local_outSpotLight);
-            code_setva(pval_outSpotLight, aptr_outSpotLight, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outSpotLight));
+            stat = LnSpotLight_CreateWithColorAndRange(reinterpret_cast<const LnColor*>(pval_color->pt), local_range, local_angle, &local_outSpotLight);
+            setVAInt(pval_outSpotLight, aptr_outSpotLight, local_outSpotLight);
 
             break;
         }
         // LnTestDelegate_Create
         case 0x112 : {
             // Fetch outTestDelegate
-            const PVal* pval_outTestDelegate;
+            PVal* pval_outTestDelegate;
             const APTR aptr_outTestDelegate = code_getva(&pval_outTestDelegate);
             LnHandle local_outTestDelegate;
 
             stat = LnTestDelegate_Create(&local_outTestDelegate);
-            code_setva(pval_outTestDelegate, aptr_outTestDelegate, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outTestDelegate));
+            setVAInt(pval_outTestDelegate, aptr_outTestDelegate, local_outTestDelegate);
 
             break;
         }
@@ -2406,9 +2424,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch sprite
             const auto local_sprite = fetchVAInt();
             // Fetch value
-            const auto local_value = ????;
+            PVal* pval_value;
+            CodeGetVA_TypeChecked(&pval_value, LnSize);
 
-            stat = LnSprite_SetSize(local_sprite, local_value);
+            stat = LnSprite_SetSize(local_sprite, reinterpret_cast<const LnSize*>(pval_value->pt));
 
 
             break;
@@ -2460,12 +2479,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnSprite_Create
         case 0x118 : {
             // Fetch outSprite
-            const PVal* pval_outSprite;
+            PVal* pval_outSprite;
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
             LnHandle local_outSprite;
 
             stat = LnSprite_Create(&local_outSprite);
-            code_setva(pval_outSprite, aptr_outSprite, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outSprite));
+            setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             break;
         }
@@ -2474,12 +2493,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch outSprite
-            const PVal* pval_outSprite;
+            PVal* pval_outSprite;
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
             LnHandle local_outSprite;
 
             stat = LnSprite_CreateWithTexture(local_texture, &local_outSprite);
-            code_setva(pval_outSprite, aptr_outSprite, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outSprite));
+            setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             break;
         }
@@ -2492,38 +2511,39 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch height
             const auto local_height = fetchVADouble();
             // Fetch outSprite
-            const PVal* pval_outSprite;
+            PVal* pval_outSprite;
             const APTR aptr_outSprite = code_getva(&pval_outSprite);
             LnHandle local_outSprite;
 
             stat = LnSprite_CreateWithTextureAndSize(local_texture, local_width, local_height, &local_outSprite);
-            code_setva(pval_outSprite, aptr_outSprite, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outSprite));
+            setVAInt(pval_outSprite, aptr_outSprite, local_outSprite);
 
             break;
         }
         // LnCameraOrbitControlComponent_Create
         case 0x11B : {
             // Fetch outCameraOrbitControlComponent
-            const PVal* pval_outCameraOrbitControlComponent;
+            PVal* pval_outCameraOrbitControlComponent;
             const APTR aptr_outCameraOrbitControlComponent = code_getva(&pval_outCameraOrbitControlComponent);
             LnHandle local_outCameraOrbitControlComponent;
 
             stat = LnCameraOrbitControlComponent_Create(&local_outCameraOrbitControlComponent);
-            code_setva(pval_outCameraOrbitControlComponent, aptr_outCameraOrbitControlComponent, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outCameraOrbitControlComponent));
+            setVAInt(pval_outCameraOrbitControlComponent, aptr_outCameraOrbitControlComponent, local_outCameraOrbitControlComponent);
 
             break;
         }
         // LnRaycaster_FromScreen
         case 0x11C : {
             // Fetch point
-            const auto local_point = ????;
+            PVal* pval_point;
+            CodeGetVA_TypeChecked(&pval_point, LnPoint);
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
-            stat = LnRaycaster_FromScreen(local_point, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            stat = LnRaycaster_FromScreen(reinterpret_cast<const LnPoint*>(pval_point->pt), &local_outReturn);
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2538,12 +2558,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch normalZ
             const auto local_normalZ = fetchVADouble();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnRaycaster_IntersectPlane(local_raycaster, local_normalX, local_normalY, local_normalZ, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -2552,12 +2572,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch raycastresult
             const auto local_raycastresult = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVector3 local_outReturn;
 
             stat = LnRaycastResult_GetPoint(local_raycastresult, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
 
             break;
         }
@@ -2566,7 +2586,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch value
-            const auto local_value = fetchVAInt();
+            const auto local_value = static_cast<LnBool>(fetchVAInt());
 
             stat = LnWorldRenderView_SetGuideGridEnabled(local_worldrenderview, local_value);
 
@@ -2578,36 +2598,36 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch worldrenderview
             const auto local_worldrenderview = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnWorldRenderView_GetGuideGridEnabled(local_worldrenderview, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnBoxMesh_Create
         case 0x121 : {
             // Fetch outBoxMesh
-            const PVal* pval_outBoxMesh;
+            PVal* pval_outBoxMesh;
             const APTR aptr_outBoxMesh = code_getva(&pval_outBoxMesh);
             LnHandle local_outBoxMesh;
 
             stat = LnBoxMesh_Create(&local_outBoxMesh);
-            code_setva(pval_outBoxMesh, aptr_outBoxMesh, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outBoxMesh));
+            setVAInt(pval_outBoxMesh, aptr_outBoxMesh, local_outBoxMesh);
 
             break;
         }
         // LnPlaneMesh_Create
         case 0x122 : {
             // Fetch outPlaneMesh
-            const PVal* pval_outPlaneMesh;
+            PVal* pval_outPlaneMesh;
             const APTR aptr_outPlaneMesh = code_getva(&pval_outPlaneMesh);
             LnHandle local_outPlaneMesh;
 
             stat = LnPlaneMesh_Create(&local_outPlaneMesh);
-            code_setva(pval_outPlaneMesh, aptr_outPlaneMesh, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outPlaneMesh));
+            setVAInt(pval_outPlaneMesh, aptr_outPlaneMesh, local_outPlaneMesh);
 
             break;
         }
@@ -2616,36 +2636,36 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uieventargs
             const auto local_uieventargs = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnUIEventArgs_Sender(local_uieventargs, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnUIGeneralEventHandler_Create
         case 0x125 : {
             // Fetch outUIGeneralEventHandler
-            const PVal* pval_outUIGeneralEventHandler;
+            PVal* pval_outUIGeneralEventHandler;
             const APTR aptr_outUIGeneralEventHandler = code_getva(&pval_outUIGeneralEventHandler);
             LnHandle local_outUIGeneralEventHandler;
 
             stat = LnUIGeneralEventHandler_Create(&local_outUIGeneralEventHandler);
-            code_setva(pval_outUIGeneralEventHandler, aptr_outUIGeneralEventHandler, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUIGeneralEventHandler));
+            setVAInt(pval_outUIGeneralEventHandler, aptr_outUIGeneralEventHandler, local_outUIGeneralEventHandler);
 
             break;
         }
         // LnUIEventHandler_Create
         case 0x127 : {
             // Fetch outUIEventHandler
-            const PVal* pval_outUIEventHandler;
+            PVal* pval_outUIEventHandler;
             const APTR aptr_outUIEventHandler = code_getva(&pval_outUIEventHandler);
             LnHandle local_outUIEventHandler;
 
             stat = LnUIEventHandler_Create(&local_outUIEventHandler);
-            code_setva(pval_outUIEventHandler, aptr_outUIEventHandler, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUIEventHandler));
+            setVAInt(pval_outUIEventHandler, aptr_outUIEventHandler, local_outUIEventHandler);
 
             break;
         }
@@ -2654,9 +2674,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch margin
-            const auto local_margin = ????;
+            PVal* pval_margin;
+            CodeGetVA_TypeChecked(&pval_margin, LnThickness);
 
-            stat = LnUIElement_SetMargin(local_uielement, local_margin);
+            stat = LnUIElement_SetMargin(local_uielement, reinterpret_cast<const LnThickness*>(pval_margin->pt));
 
 
             break;
@@ -2666,12 +2687,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnThickness local_outReturn;
 
             stat = LnUIElement_GetMargin(local_uielement, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnThickness_typeid(), &local_outReturn);
 
             break;
         }
@@ -2680,9 +2701,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch padding
-            const auto local_padding = ????;
+            PVal* pval_padding;
+            CodeGetVA_TypeChecked(&pval_padding, LnThickness);
 
-            stat = LnUIElement_SetPadding(local_uielement, local_padding);
+            stat = LnUIElement_SetPadding(local_uielement, reinterpret_cast<const LnThickness*>(pval_padding->pt));
 
 
             break;
@@ -2692,12 +2714,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnThickness local_outReturn;
 
             stat = LnUIElement_GetPadding(local_uielement, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnThickness_typeid(), &local_outReturn);
 
             break;
         }
@@ -2706,7 +2728,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
-            const auto local_value = ????;
+            const auto local_value = static_cast<LnHAlignment>(fetchVAInt());
 
             stat = LnUIElement_SetHAlignment(local_uielement, local_value);
 
@@ -2718,7 +2740,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHAlignment local_outReturn;
 
@@ -2732,7 +2754,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
-            const auto local_value = ????;
+            const auto local_value = static_cast<LnVAlignment>(fetchVAInt());
 
             stat = LnUIElement_SetVAlignment(local_uielement, local_value);
 
@@ -2744,7 +2766,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVAlignment local_outReturn;
 
@@ -2758,9 +2780,9 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch halign
-            const auto local_halign = ????;
+            const auto local_halign = static_cast<LnHAlignment>(fetchVAInt());
             // Fetch valign
-            const auto local_valign = ????;
+            const auto local_valign = static_cast<LnVAlignment>(fetchVAInt());
 
             stat = LnUIElement_SetAlignments(local_uielement, local_halign, local_valign);
 
@@ -2772,9 +2794,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch pos
-            const auto local_pos = ????;
+            PVal* pval_pos;
+            CodeGetVA_TypeChecked(&pval_pos, LnVector3);
 
-            stat = LnUIElement_SetPosition(local_uielement, local_pos);
+            stat = LnUIElement_SetPosition(local_uielement, reinterpret_cast<const LnVector3*>(pval_pos->pt));
 
 
             break;
@@ -2800,12 +2823,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVector3 local_outReturn;
 
             stat = LnUIElement_GetPosition(local_uielement, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
 
             break;
         }
@@ -2814,9 +2837,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch rot
-            const auto local_rot = ????;
+            PVal* pval_rot;
+            CodeGetVA_TypeChecked(&pval_rot, LnQuaternion);
 
-            stat = LnUIElement_SetRotation(local_uielement, local_rot);
+            stat = LnUIElement_SetRotation(local_uielement, reinterpret_cast<const LnQuaternion*>(pval_rot->pt));
 
 
             break;
@@ -2842,12 +2866,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnQuaternion local_outReturn;
 
             stat = LnUIElement_GetRotation(local_uielement, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnQuaternion_typeid(), &local_outReturn);
 
             break;
         }
@@ -2856,9 +2880,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch scale
-            const auto local_scale = ????;
+            PVal* pval_scale;
+            CodeGetVA_TypeChecked(&pval_scale, LnVector3);
 
-            stat = LnUIElement_SetScale(local_uielement, local_scale);
+            stat = LnUIElement_SetScale(local_uielement, reinterpret_cast<const LnVector3*>(pval_scale->pt));
 
 
             break;
@@ -2894,12 +2919,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVector3 local_outReturn;
 
             stat = LnUIElement_GetScale(local_uielement, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
 
             break;
         }
@@ -2908,9 +2933,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch value
-            const auto local_value = ????;
+            PVal* pval_value;
+            CodeGetVA_TypeChecked(&pval_value, LnVector3);
 
-            stat = LnUIElement_SetCenterPoint(local_uielement, local_value);
+            stat = LnUIElement_SetCenterPoint(local_uielement, reinterpret_cast<const LnVector3*>(pval_value->pt));
 
 
             break;
@@ -2936,12 +2962,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uielement
             const auto local_uielement = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnVector3 local_outReturn;
 
             stat = LnUIElement_GetCenterPoint(local_uielement, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnVector3_typeid(), &local_outReturn);
 
             break;
         }
@@ -2972,12 +2998,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnUIButton_Create
         case 0x140 : {
             // Fetch outUIButton
-            const PVal* pval_outUIButton;
+            PVal* pval_outUIButton;
             const APTR aptr_outUIButton = code_getva(&pval_outUIButton);
             LnHandle local_outUIButton;
 
             stat = LnUIButton_Create(&local_outUIButton);
-            code_setva(pval_outUIButton, aptr_outUIButton, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUIButton));
+            setVAInt(pval_outUIButton, aptr_outUIButton, local_outUIButton);
 
             break;
         }
@@ -2986,12 +3012,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch text
             const auto local_text = fetchVAString();
             // Fetch outUIButton
-            const PVal* pval_outUIButton;
+            PVal* pval_outUIButton;
             const APTR aptr_outUIButton = code_getva(&pval_outUIButton);
             LnHandle local_outUIButton;
 
             stat = LnUIButton_CreateWithTextA(local_text, &local_outUIButton);
-            code_setva(pval_outUIButton, aptr_outUIButton, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUIButton));
+            setVAInt(pval_outUIButton, aptr_outUIButton, local_outUIButton);
 
             break;
         }
@@ -3002,24 +3028,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch handler
             const auto local_handler = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnUIButton_ConnectOnClicked(local_uibutton, local_handler, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnUITextBlock_Create
         case 0x143 : {
             // Fetch outUITextBlock
-            const PVal* pval_outUITextBlock;
+            PVal* pval_outUITextBlock;
             const APTR aptr_outUITextBlock = code_getva(&pval_outUITextBlock);
             LnHandle local_outUITextBlock;
 
             stat = LnUITextBlock_Create(&local_outUITextBlock);
-            code_setva(pval_outUITextBlock, aptr_outUITextBlock, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUITextBlock));
+            setVAInt(pval_outUITextBlock, aptr_outUITextBlock, local_outUITextBlock);
 
             break;
         }
@@ -3028,12 +3054,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch text
             const auto local_text = fetchVAString();
             // Fetch outUITextBlock
-            const PVal* pval_outUITextBlock;
+            PVal* pval_outUITextBlock;
             const APTR aptr_outUITextBlock = code_getva(&pval_outUITextBlock);
             LnHandle local_outUITextBlock;
 
             stat = LnUITextBlock_CreateWithTextA(local_text, &local_outUITextBlock);
-            code_setva(pval_outUITextBlock, aptr_outUITextBlock, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUITextBlock));
+            setVAInt(pval_outUITextBlock, aptr_outUITextBlock, local_outUITextBlock);
 
             break;
         }
@@ -3054,9 +3080,10 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch rect
-            const auto local_rect = ????;
+            PVal* pval_rect;
+            CodeGetVA_TypeChecked(&pval_rect, LnRect);
 
-            stat = LnUISprite_SetSourceRect(local_uisprite, local_rect);
+            stat = LnUISprite_SetSourceRect(local_uisprite, reinterpret_cast<const LnRect*>(pval_rect->pt));
 
 
             break;
@@ -3084,24 +3111,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch uisprite
             const auto local_uisprite = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnRect local_outReturn;
 
             stat = LnUISprite_GetSourceRect(local_uisprite, &local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnRect_typeid(), &local_outReturn);
 
             break;
         }
         // LnUISprite_Create
         case 0x149 : {
             // Fetch outUISprite
-            const PVal* pval_outUISprite;
+            PVal* pval_outUISprite;
             const APTR aptr_outUISprite = code_getva(&pval_outUISprite);
             LnHandle local_outUISprite;
 
             stat = LnUISprite_Create(&local_outUISprite);
-            code_setva(pval_outUISprite, aptr_outUISprite, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUISprite));
+            setVAInt(pval_outUISprite, aptr_outUISprite, local_outUISprite);
 
             break;
         }
@@ -3110,12 +3137,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch texture
             const auto local_texture = fetchVAInt();
             // Fetch outUISprite
-            const PVal* pval_outUISprite;
+            PVal* pval_outUISprite;
             const APTR aptr_outUISprite = code_getva(&pval_outUISprite);
             LnHandle local_outUISprite;
 
             stat = LnUISprite_CreateWithTexture(local_texture, &local_outUISprite);
-            code_setva(pval_outUISprite, aptr_outUISprite, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outUISprite));
+            setVAInt(pval_outUISprite, aptr_outUISprite, local_outUISprite);
 
             break;
         }
@@ -3124,12 +3151,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnInput_PressedA(local_buttonName, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -3138,12 +3165,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnInput_TriggeredA(local_buttonName, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -3152,12 +3179,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnInput_TriggeredOffA(local_buttonName, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -3166,12 +3193,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnInput_RepeatedA(local_buttonName, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -3180,12 +3207,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch buttonName
             const auto local_buttonName = fetchVAString();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             float local_outReturn;
 
             stat = LnInput_GetAxisValueA(local_buttonName, &local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -3200,68 +3227,68 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnMouse_Pressed
         case 0x151 : {
             // Fetch button
-            const auto local_button = ????;
+            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnMouse_Pressed(local_button, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnMouse_Triggered
         case 0x152 : {
             // Fetch button
-            const auto local_button = ????;
+            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnMouse_Triggered(local_button, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnMouse_TriggeredOff
         case 0x153 : {
             // Fetch button
-            const auto local_button = ????;
+            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnMouse_TriggeredOff(local_button, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnMouse_Repeated
         case 0x154 : {
             // Fetch button
-            const auto local_button = ????;
+            const auto local_button = static_cast<LnMouseButtons>(fetchVAInt());
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnMouse_Repeated(local_button, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnMouse_Position
         case 0x155 : {
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnPoint local_outReturn;
 
             stat = LnMouse_Position(&local_outReturn);
-            ??
+            code_setva(pval_outReturn, aptr_outReturn, hspLnPoint_typeid(), &local_outReturn);
 
             break;
         }
@@ -3334,7 +3361,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnEngineSettings_SetDebugToolEnabled
         case 0x15C : {
             // Fetch enabled
-            const auto local_enabled = fetchVAInt();
+            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
 
             stat = LnEngineSettings_SetDebugToolEnabled(local_enabled);
 
@@ -3344,7 +3371,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnEngineSettings_SetEngineLogEnabled
         case 0x15D : {
             // Fetch enabled
-            const auto local_enabled = fetchVAInt();
+            const auto local_enabled = static_cast<LnBool>(fetchVAInt());
 
             stat = LnEngineSettings_SetEngineLogEnabled(local_enabled);
 
@@ -3380,60 +3407,60 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         // LnEngine_Update
         case 0x161 : {
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnBool local_outReturn;
 
             stat = LnEngine_Update(&local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnEngine_Time
         case 0x162 : {
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             double local_outReturn;
 
             stat = LnEngine_Time(&local_outReturn);
-            ??
+            setVADouble(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnEngine_GetCamera
         case 0x163 : {
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnEngine_GetCamera(&local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnEngine_GetLight
         case 0x164 : {
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnEngine_GetLight(&local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnEngine_GetRenderView
         case 0x165 : {
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnEngine_GetRenderView(&local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
@@ -3462,24 +3489,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch application
             const auto local_application = fetchVAInt();
             // Fetch outReturn
-            const PVal* pval_outReturn;
+            PVal* pval_outReturn;
             const APTR aptr_outReturn = code_getva(&pval_outReturn);
             LnHandle local_outReturn;
 
             stat = LnApplication_World(local_application, &local_outReturn);
-            code_setva(pval_outReturn, aptr_outReturn, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outReturn));
+            setVAInt(pval_outReturn, aptr_outReturn, local_outReturn);
 
             break;
         }
         // LnApplication_Create
         case 0x169 : {
             // Fetch outApplication
-            const PVal* pval_outApplication;
+            PVal* pval_outApplication;
             const APTR aptr_outApplication = code_getva(&pval_outApplication);
             LnHandle local_outApplication;
 
             stat = LnApplication_Create(&local_outApplication);
-            code_setva(pval_outApplication, aptr_outApplication, HSPVAR_FLAG_INT, static_cast<int32_t*>(&local_outApplication));
+            setVAInt(pval_outApplication, aptr_outApplication, local_outApplication);
 
             break;
         }
@@ -3510,11 +3537,12 @@ bool Commands_cmdfunc(int cmd, int* retVal)
             // Fetch time
             const auto local_time = fetchVADouble();
             // Fetch color
-            const auto local_color = ????;
+            PVal* pval_color;
+            CodeGetVA_TypeChecked(&pval_color, LnColor);
             // Fetch str
             const auto local_str = fetchVAString();
 
-            stat = LnDebug_PrintWithTimeAndColorA(local_time, local_color, local_str);
+            stat = LnDebug_PrintWithTimeAndColorA(local_time, reinterpret_cast<const LnColor*>(pval_color->pt), local_str);
 
 
             break;

@@ -97,7 +97,7 @@ static int hsp%%Type%%_GetSize(const PDAT *pdatl)
 
 static void hsp%%Type%%_Set(PVal* pval, PDAT* pdat, const void* in)
 {
-    *GetPtr_%%Type%%(pdat) = *((%%Type%%*)(in));
+    *reinterpret_cast<%%Type%%*>(pdat) = *reinterpret_cast<const %%Type%%*>(in);
 }
 
 static void hsp%%Type%%_Init(HspVarProc* p)
@@ -119,7 +119,7 @@ static void hsp%%Type%%_Init(HspVarProc* p)
     g_%%Type%%_typeid = p->flag;
 }
 
-static void hsp%%Type%%_reffunc(HspVarProc* p)
+static void hsp%%Type%%_reffunc(int* typeRes, void** retValPtr)
 {
     static %%Type%% returnValue;
 
@@ -127,7 +127,6 @@ static void hsp%%Type%%_reffunc(HspVarProc* p)
 
     *retValPtr = &returnValue;
     *typeRes = hsp%%Type%%_typeid();
-    return true;
 }
 )";
 
@@ -150,6 +149,7 @@ void HSPCommandsGenerator::generate()
 
 
     OutputBuffer code;
+    code.AppendLine(u"#include \"LuminoHSP.h\"");
     code.AppendLines(makeStructStorageCores());
     code.AppendLines(makeStorageCoreRegisterFunc());
     code.AppendLines(make_cmdfunc());
@@ -174,30 +174,61 @@ ln::String HSPCommandsGenerator::makeStructStorageCores() const
     for (const auto& structSymbol : db()->structs()) {
 
         OutputBuffer initializer;
-        initializer.IncreaseIndent();
-        initializer.AppendLine(u"if (checkDefault()) {");
-        initializer.IncreaseIndent();
-        {
-            // 関数形式の初期化で、引数が省略されている場合
-            if (structSymbol->fullName() == u"ln::Matrix") {
-                initializer.AppendLine(u"LnMatrix_SetZeros(&returnValue);");   // 行列の場合は単位行列にする TODO: Reset みたいな共通の名前の初期化関数作った方がいいかも
-            }
-            else {
-                initializer.AppendLine(u"memset(&returnValue, 0, sizeof(returnValue));");
-            }
+        if (structSymbol->fullName() == u"ln::Matrix") {
+            // フィールドに float を使うか Vector4 を使うかちょっと揺れてるので、直接書き込む
+            static const ln::String MatrixInitializerTemplate = uR"(
+if (checkAndFetchDefault()) {
+    LnMatrix_SetZeros(&returnValue);
+}
+else {
+    returnValue.row0.x = fetchVADouble_reffunc();
+    returnValue.row0.y = fetchVADouble_reffunc();
+    returnValue.row0.z = fetchVADouble_reffunc();
+    returnValue.row0.w = fetchVADouble_reffunc();
+    returnValue.row1.x = fetchVADouble_reffunc();
+    returnValue.row1.y = fetchVADouble_reffunc();
+    returnValue.row1.z = fetchVADouble_reffunc();
+    returnValue.row1.w = fetchVADouble_reffunc();
+    returnValue.row2.x = fetchVADouble_reffunc();
+    returnValue.row2.y = fetchVADouble_reffunc();
+    returnValue.row2.z = fetchVADouble_reffunc();
+    returnValue.row2.w = fetchVADouble_reffunc();
+    returnValue.row3.x = fetchVADouble_reffunc();
+    returnValue.row3.y = fetchVADouble_reffunc();
+    returnValue.row3.z = fetchVADouble_reffunc();
+    returnValue.row3.w = fetchVADouble_reffunc();
+}
+)";
+            initializer.IncreaseIndent();
+            initializer.AppendLines(MatrixInitializerTemplate);
+            initializer.DecreaseIndent();
         }
-        initializer.DecreaseIndent();
-        initializer.AppendLine(u"} else {");
-        initializer.IncreaseIndent();
-        {
-            // 各メンバ代入式
-            for (const auto& member : structSymbol->fields()) {
-                initializer.AppendLine(u"returnValue.{0} = {1};", member->name(), makeFetchVAExpr(member->type()));
+        else {
+            initializer.IncreaseIndent();
+            initializer.AppendLine(u"if (checkAndFetchDefault()) {");
+            initializer.IncreaseIndent();
+            {
+                //// 関数形式の初期化で、引数が省略されている場合
+                //if (structSymbol->fullName() == u"ln::Matrix") {
+                //    initializer.AppendLine(u"LnMatrix_SetZeros(&returnValue);");   // 行列の場合は単位行列にする TODO: Reset みたいな共通の名前の初期化関数作った方がいいかも
+                //}
+                //else {
+                    initializer.AppendLine(u"memset(&returnValue, 0, sizeof(returnValue));");
+                //}
             }
+            initializer.DecreaseIndent();
+            initializer.AppendLine(u"} else {");
+            initializer.IncreaseIndent();
+            {
+                // 各メンバ代入式
+                for (const auto& member : structSymbol->fields()) {
+                    initializer.AppendLine(u"returnValue.{0} = {1};", member->name(), makeFetchVAExpr(member->type(), true));
+                }
+            }
+            initializer.DecreaseIndent();
+            initializer.AppendLine(u"}");
+            initializer.DecreaseIndent();
         }
-        initializer.DecreaseIndent();
-        initializer.AppendLine(u"}");
-        initializer.DecreaseIndent();
 
         code.AppendLines(StructStorageCoreTemplate
             .replace(u"%%Type%%", makeFlatTypeName2(structSymbol))
@@ -241,6 +272,10 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
             //    return ln::String::Empty;
             //}
 
+            if (makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii) == u"LnZVTestEventHandler1_Create") {
+                printf("");
+            }
+
             code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
             code.AppendLine(u"case 0x{0:X} : {{", getMethodId(methodSymbol));
             code.IncreaseIndent();
@@ -272,13 +307,18 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
 
         if (param->isOut() || param->isReturn())
         {
-            prologue.AppendLine(u"const PVal* pval_{0};", param->name());
+            prologue.AppendLine(u"PVal* pval_{0};", param->name());
             prologue.AppendLine(u"const APTR aptr_{0} = code_getva(&pval_{0});", param->name());
             prologue.AppendLine(u"{0} {1};", makeFlatTypeName2(param->type()), localVarName);
 
 
             args.AppendCommad(u"&" + localVarName);
             epilogue.AppendLine(makeSetVAExpr(param));
+        }
+        else if (param->type()->isStruct()) {
+            prologue.AppendLine(u"PVal* pval_{0};", param->name());
+            prologue.AppendLine(u"CodeGetVA_TypeChecked(&pval_{0}, {1});", param->name(), makeFlatTypeName2(param->type()));
+            args.AppendCommad(u"reinterpret_cast<const {0}*>(pval_{1}->pt)", makeFlatTypeName2(param->type()), param->name());
         }
         else
         {
@@ -299,24 +339,30 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
     return code.toString();
 }
 
-ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol) const
+ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc) const
 {
+    const ln::Char* postfix = (reffunc) ? u"_reffunc" : u"";
+
+    if (typeSymbol == PredefinedTypes::boolType) {
+        return ln::String::format(u"static_cast<LnBool>(fetchVAInt{0}())", postfix);
+    }
     if (typeSymbol == PredefinedTypes::boolType ||
         typeSymbol == PredefinedTypes::intType ||
         typeSymbol == PredefinedTypes::int16Type ||
         typeSymbol == PredefinedTypes::uint32Type ||
         typeSymbol->isClass()) {
-        return u"fetchVAInt()";
+        return ln::String::format(u"fetchVAInt{0}()", postfix);
+    }
+    if (typeSymbol->isEnum()) {
+        return ln::String::format(u"static_cast<{0}>(fetchVAInt{1}())", makeFlatTypeName2(typeSymbol), postfix);
     }
     if (typeSymbol == PredefinedTypes::floatType ||
-        typeSymbol == PredefinedTypes::doubleType ||
-        typeSymbol->isClass()) {
-        return u"fetchVADouble()";
+        typeSymbol == PredefinedTypes::doubleType) {
+        return ln::String::format(u"fetchVADouble{0}()", postfix);
     }
     if (typeSymbol == PredefinedTypes::stringType ||
-        typeSymbol == PredefinedTypes::stringRefType ||
-        typeSymbol->isClass()) {
-        return u"fetchVAString()";
+        typeSymbol == PredefinedTypes::stringRefType) {
+        return ln::String::format(u"fetchVAString{0}()", postfix);
     }
     return u"????";
 }
@@ -324,7 +370,7 @@ ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol) c
 ln::String HSPCommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const
 {
     const auto localName = ln::String::format(u"local_" + paramSymbol->name());
-    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type()));
+    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type(), false));
 
     ////static ln::Ref<TypeSymbol>    voidType;
     ////static ln::Ref<TypeSymbol>    nullptrType;
@@ -359,18 +405,29 @@ ln::String HSPCommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* para
 
 ln::String HSPCommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const
 {
+    const TypeSymbol* typeSymbol = paramSymbol->type();
     const auto pvalName = ln::String::format(u"pval_" + paramSymbol->name());
     const auto aptrName = ln::String::format(u"aptr_" + paramSymbol->name());
     const auto localName = ln::String::format(u"local_" + paramSymbol->name());
 
-    if (paramSymbol->type() == PredefinedTypes::boolType ||
-        paramSymbol->type()->isClass()) {
-        return ln::String::format(u"code_setva({0}, {1}, HSPVAR_FLAG_INT, static_cast<int32_t*>(&{2}));", pvalName, aptrName, localName);
+    if (typeSymbol == PredefinedTypes::boolType ||
+        typeSymbol == PredefinedTypes::intType ||
+        typeSymbol == PredefinedTypes::int16Type ||
+        typeSymbol == PredefinedTypes::uint32Type ||
+        typeSymbol->isClass()) {
+        return ln::String::format(u"setVAInt({0}, {1}, {2});", pvalName, aptrName, localName);
     }
-    if (paramSymbol->type() == PredefinedTypes::stringType ||
-        paramSymbol->type() == PredefinedTypes::stringRefType ||
-        paramSymbol->type()->isClass()) {
-        return ln::String::format(u"code_setva({0}, {1}, HSPVAR_FLAG_STR, {2}.c_str());", pvalName, aptrName, localName);
+    if (typeSymbol == PredefinedTypes::floatType ||
+        typeSymbol == PredefinedTypes::doubleType) {
+        return ln::String::format(u"setVADouble({0}, {1}, {2});", pvalName, aptrName, localName);
+    }
+    if (typeSymbol == PredefinedTypes::stringType ||
+        typeSymbol == PredefinedTypes::stringRefType ||
+        typeSymbol->isClass()) {
+        return ln::String::format(u"setVAStr({0}, {1}, {2});", pvalName, aptrName, localName);
+    }
+    if (typeSymbol->isStruct()) {
+        return ln::String::format(u"code_setva({0}, {1}, hsp{2}_typeid(), &{3});", pvalName, aptrName, makeFlatTypeName2(typeSymbol), localName);
     }
 
     return u"??";

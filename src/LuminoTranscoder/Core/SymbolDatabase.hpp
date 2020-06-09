@@ -395,7 +395,7 @@ public:
 	bool isClass() const { return kind() == TypeKind::Class; }
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
-	bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }
+	bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }	// deprecated
 	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class
 
 
@@ -421,7 +421,7 @@ private:
 	TypeClass m_typeClass = TypeClass::None;
 	ln::String m_fullName;
 	ln::String m_shortName;
-	Ref<MethodSymbol> m_delegateProtoType;
+	Ref<MethodSymbol> m_delegateProtoType;	// Delegate<> の型引数部分のシグネチャを表す。 e.g.) "void(ZVTestEventArgs1* e)"
 	ln::List<Ref<FieldSymbol>> m_fields;
 	ln::List<Ref<ConstantSymbol>> m_constants;
 	ln::List<Ref<MethodSymbol>> m_publicMethods;

@@ -62,6 +62,9 @@ option(LN_FBX_SDK_PATH "FBX" "")
 # Effekseer
 option(LN_USE_Effekseer "Effekseer" OFF)
 
+# HSP
+option(LN_BUILD_BINDING_HSP "HSP Binding" "")
+
 #------------------------------------------------------------------------------
 
 message("LN_TARGET_ARCH:${LN_TARGET_ARCH}")
@@ -149,6 +152,9 @@ else()
     endif()
     if (LN_BUILD_EDITOR)
         add_subdirectory(src/LuminoEditor)
+    endif()
+    if (LN_BUILD_BINDING_HSP)
+        add_subdirectory(tools/Bindings/HSP)
     endif()
 endif()
 

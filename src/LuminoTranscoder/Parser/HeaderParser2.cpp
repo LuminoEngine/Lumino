@@ -556,7 +556,7 @@ public:
 
 									// ここまで来たら delegate として抽出する
 									auto typeInfo = ln::makeRef<PITypeInfo>();
-									typeInfo->kind = u"Delegate";
+									typeInfo->kind = u"Delegate_deprecated";
 									typeInfo->rawFullName = ln::String::fromStdString(decl->getQualifiedNameAsString());
 									typeInfo->document = parseDocument(decl);
 									m_parser->getDB()->types.add(typeInfo);
