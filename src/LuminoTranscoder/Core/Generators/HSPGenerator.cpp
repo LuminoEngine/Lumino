@@ -123,7 +123,7 @@ static void hsp%%Type%%_reffunc(HspVarProc* p)
 {
     static %%Type%% returnValue;
 
-    %%MemeberInitializer%%
+%%MemeberInitializer%%
 
     *retValPtr = &returnValue;
     *typeRes = hsp%%Type%%_typeid();
@@ -151,8 +151,10 @@ void HSPCommandsGenerator::generate()
 
     OutputBuffer code;
     code.AppendLines(makeStructStorageCores());
+    code.AppendLines(makeStorageCoreRegisterFunc());
     code.AppendLines(make_cmdfunc());
 
+    
     // save
     {
         auto outputDir = ln::Path(makeOutputFilePath(u"HSP", u""));
@@ -172,39 +174,52 @@ ln::String HSPCommandsGenerator::makeStructStorageCores() const
     for (const auto& structSymbol : db()->structs()) {
 
         OutputBuffer initializer;
-
-        initializer.AppendLine(u"if (CheclDefault()) {");
         initializer.IncreaseIndent();
-
+        initializer.AppendLine(u"if (checkDefault()) {");
+        initializer.IncreaseIndent();
+        {
+            // 関数形式の初期化で、引数が省略されている場合
+            if (structSymbol->fullName() == u"ln::Matrix") {
+                initializer.AppendLine(u"LnMatrix_SetZeros(&returnValue);");   // 行列の場合は単位行列にする TODO: Reset みたいな共通の名前の初期化関数作った方がいいかも
+            }
+            else {
+                initializer.AppendLine(u"memset(&returnValue, 0, sizeof(returnValue));");
+            }
+        }
         initializer.DecreaseIndent();
         initializer.AppendLine(u"} else {");
         initializer.IncreaseIndent();
-
+        {
+            // 各メンバ代入式
+            for (const auto& member : structSymbol->fields()) {
+                initializer.AppendLine(u"returnValue.{0} = {1};", member->name(), makeFetchVAExpr(member->type()));
+            }
+        }
         initializer.DecreaseIndent();
         initializer.AppendLine(u"}");
+        initializer.DecreaseIndent();
 
-
-        if (CheclDefault()) {
-            memset(&returnValue, 0, sizeof(returnValue));
-        }
-        else {
-        }
-        // デフォルトの場合の初期化式
-        string defaultExp = "memset(&returnValue, 0, sizeof(returnValue));";
-        if (originalName == "LNMatrix")
-            defaultExp = "LNMatrix_Identity(&returnValue);";   // 行列の場合は単位行列にする
-
-        // 各メンバ代入式
-        OutputBuffer initExp = new OutputBuffer(2);
-        foreach(var member in classType.StructData.Members)
-        {
-            initExp.AppendLine("returnValue.{0} = {1};", member.Name, "GetParamDouble()");
-        }
-
-
-        code.AppendLines(StructStorageCoreTemplate.replace(u"%%Type%%", makeFlatTypeName2(structSymbol)));
+        code.AppendLines(StructStorageCoreTemplate
+            .replace(u"%%Type%%", makeFlatTypeName2(structSymbol))
+            .replace(u"%%MemeberInitializer%%", initializer.toString()));
     }
     
+    return code.toString();
+}
+
+ln::String HSPCommandsGenerator::makeStorageCoreRegisterFunc() const
+{
+    OutputBuffer code;
+    code.AppendLine(u"void RegisterStructTypes(HSP3TYPEINFO * info)");
+    code.AppendLine(u"{");
+    code.IncreaseIndent();
+    
+    for (const auto& structSymbol : db()->structs()) {
+        code.AppendLine("registvar(-1, hsp{0}_Init);", makeFlatTypeName2(structSymbol));
+    }
+
+    code.DecreaseIndent();
+    code.AppendLine(u"}");
     return code.toString();
 }
 
@@ -284,39 +299,62 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
     return code.toString();
 }
 
+ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol) const
+{
+    if (typeSymbol == PredefinedTypes::boolType ||
+        typeSymbol == PredefinedTypes::intType ||
+        typeSymbol == PredefinedTypes::int16Type ||
+        typeSymbol == PredefinedTypes::uint32Type ||
+        typeSymbol->isClass()) {
+        return u"fetchVAInt()";
+    }
+    if (typeSymbol == PredefinedTypes::floatType ||
+        typeSymbol == PredefinedTypes::doubleType ||
+        typeSymbol->isClass()) {
+        return u"fetchVADouble()";
+    }
+    if (typeSymbol == PredefinedTypes::stringType ||
+        typeSymbol == PredefinedTypes::stringRefType ||
+        typeSymbol->isClass()) {
+        return u"fetchVAString()";
+    }
+    return u"????";
+}
+
 ln::String HSPCommandsGenerator::makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const
 {
     const auto localName = ln::String::format(u"local_" + paramSymbol->name());
+    return ln::String::format(u"const auto {0} = {1};", localName, makeFetchVAExpr(paramSymbol->type()));
 
-    //static ln::Ref<TypeSymbol>    voidType;
-    //static ln::Ref<TypeSymbol>    nullptrType;
-    //static ln::Ref<TypeSymbol>    boolType;
-    //static ln::Ref<TypeSymbol>    intType;
-    //static ln::Ref<TypeSymbol>    int16Type;
-    //static ln::Ref<TypeSymbol>    uint32Type;
-    //static ln::Ref<TypeSymbol>    floatType;
-    //static ln::Ref<TypeSymbol>    doubleType;
-    //static ln::Ref<TypeSymbol>    stringType;
-    //static ln::Ref<TypeSymbol>    stringRefType;
-    if (paramSymbol->type() == PredefinedTypes::boolType ||
-        paramSymbol->type() == PredefinedTypes::intType ||
-        paramSymbol->type() == PredefinedTypes::int16Type ||
-        paramSymbol->type() == PredefinedTypes::uint32Type ||
-        paramSymbol->type()->isClass()) {
-        return ln::String::format(u"const int {0} = fetchVAInt();", localName);
-    }
-    if (paramSymbol->type() == PredefinedTypes::floatType ||
-        paramSymbol->type() == PredefinedTypes::doubleType ||
-        paramSymbol->type()->isClass()) {
-        return ln::String::format(u"const double {0} = fetchVADouble();", localName);
-    }
-    if (paramSymbol->type() == PredefinedTypes::stringType ||
-        paramSymbol->type() == PredefinedTypes::stringRefType ||
-        paramSymbol->type()->isClass()) {
-        return ln::String::format(u"const std::string {0} = fetchVAString();", localName);
-    }
+    ////static ln::Ref<TypeSymbol>    voidType;
+    ////static ln::Ref<TypeSymbol>    nullptrType;
+    ////static ln::Ref<TypeSymbol>    boolType;
+    ////static ln::Ref<TypeSymbol>    intType;
+    ////static ln::Ref<TypeSymbol>    int16Type;
+    ////static ln::Ref<TypeSymbol>    uint32Type;
+    ////static ln::Ref<TypeSymbol>    floatType;
+    ////static ln::Ref<TypeSymbol>    doubleType;
+    ////static ln::Ref<TypeSymbol>    stringType;
+    ////static ln::Ref<TypeSymbol>    stringRefType;
+    //if (paramSymbol->type() == PredefinedTypes::boolType ||
+    //    paramSymbol->type() == PredefinedTypes::intType ||
+    //    paramSymbol->type() == PredefinedTypes::int16Type ||
+    //    paramSymbol->type() == PredefinedTypes::uint32Type ||
+    //    paramSymbol->type()->isClass()) {
+    //    return 
+    //}
+    //if (paramSymbol->type() == PredefinedTypes::floatType ||
+    //    paramSymbol->type() == PredefinedTypes::doubleType ||
+    //    paramSymbol->type()->isClass()) {
+    //    return ln::String::format(u"const double {0} = fetchVADouble();", localName);
+    //}
+    //if (paramSymbol->type() == PredefinedTypes::stringType ||
+    //    paramSymbol->type() == PredefinedTypes::stringRefType ||
+    //    paramSymbol->type()->isClass()) {
+    //    return ln::String::format(u"const std::string {0} = fetchVAString();", localName);
+    //}
 
-    return u"??";
+    //return u"??";
 }
 
 ln::String HSPCommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const

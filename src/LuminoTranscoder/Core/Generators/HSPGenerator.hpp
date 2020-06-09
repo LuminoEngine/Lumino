@@ -28,8 +28,10 @@ public:
 
 private:
     ln::String makeStructStorageCores() const;
+    ln::String makeStorageCoreRegisterFunc() const;
     ln::String make_cmdfunc() const;
     ln::String makeCallCommandBlock(const MethodSymbol* methodSymbol) const;
+    ln::String makeFetchVAExpr(const TypeSymbol* typeSymbol) const;
     ln::String makeGetVAExpr(const MethodParameterSymbol* paramSymbol) const;
     ln::String makeSetVAExpr(const MethodParameterSymbol* paramSymbol) const;
 
