@@ -40,6 +40,8 @@ void RenderingPipeline::init()
 //==============================================================================
 // SceneRenderingPipeline
 
+#define USE_TMP 1
+
 SceneRenderingPipeline::SceneRenderingPipeline()
     : m_sceneRenderer(nullptr)
 {
@@ -62,15 +64,18 @@ void SceneRenderingPipeline::init()
 
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+#ifndef USE_TMP
     m_viweNormalAndDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
     m_viweNormalAndDepthBuffer->setSamplerState(m_samplerState);
     m_viweDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
     m_viweDepthBuffer->setSamplerState(m_samplerState);
-    m_materialBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+    m_materialBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
     m_materialBuffer->setSamplerState(m_samplerState);
     g_viewNormalMap = m_viweNormalAndDepthBuffer;
     g_viewDepthMap = m_viweDepthBuffer;
     g_viewMaterialMap = m_materialBuffer;
+#endif 
+
 
     m_renderPass = makeObject<RenderPass>();
 }
@@ -91,6 +96,20 @@ void SceneRenderingPipeline::render(
 
     // Prepare G-Buffers
     {
+#ifdef USE_TMP
+        m_viweNormalAndDepthBuffer = RenderTargetTexture::realloc(m_viweNormalAndDepthBuffer, m_renderingFrameBufferSize.width, m_renderingFrameBufferSize.height, TextureFormat::RGBA8, false, m_samplerState);
+        m_viweDepthBuffer = RenderTargetTexture::realloc(m_viweDepthBuffer, m_renderingFrameBufferSize.width, m_renderingFrameBufferSize.height, TextureFormat::RGBA32F, false, m_samplerState);
+        m_materialBuffer = RenderTargetTexture::realloc(m_materialBuffer, m_renderingFrameBufferSize.width, m_renderingFrameBufferSize.height, TextureFormat::RGBA8, false, m_samplerState);
+        g_viewNormalMap = m_viweNormalAndDepthBuffer;
+        g_viewDepthMap = m_viweDepthBuffer;
+        g_viewMaterialMap = m_materialBuffer;
+#endif
+
+
+        assert(m_viweNormalAndDepthBuffer->format() == TextureFormat::RGBA8);
+        assert(m_viweDepthBuffer->format() == TextureFormat::RGBA32F);
+        assert(m_materialBuffer->format() == TextureFormat::RGBA8);
+
         // (0, 0, 0, 0) でクリアすると、G-Buffer 作成時に書き込まれなかったピクセルの法線が nan になる。
         // Vulkan だと PixelShader の出力が nan だと書き込みスキップされるみたいで、前フレームのごみが残ったりした。
         // 他の Backend だとどうだとかあるし、あんまり nan を出すべきではないだろうということで、とりあえず Z+ を入れておく。
@@ -124,6 +143,19 @@ void SceneRenderingPipeline::render(
         camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
 		m_sceneRenderer_ImageEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
         m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::ImageEffect, nullptr);
+    }
+
+    // Release G-Buffer
+    {
+#ifdef USE_TMP
+        //RenderTargetTexture::releaseTemporary(m_viweNormalAndDepthBuffer);
+        //m_viweNormalAndDepthBuffer = nullptr;
+        //RenderTargetTexture::releaseTemporary(m_viweDepthBuffer);
+        //m_viweDepthBuffer = nullptr;
+        //RenderTargetTexture::releaseTemporary(m_materialBuffer);
+        //m_materialBuffer = nullptr;
+
+#endif
     }
 
     // 誤用防止

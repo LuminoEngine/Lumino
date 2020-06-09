@@ -135,13 +135,13 @@ void RenderTargetTextureCacheManager::releaseObject(RenderTargetTexture* rt)
 	releaseBase(key, rt);
 }
 
-uint16_t RenderTargetTextureCacheManager::makeKey(const SizeI& size, TextureFormat format, bool mipmap)
+uint64_t RenderTargetTextureCacheManager::makeKey(const SizeI& size, TextureFormat format, bool mipmap)
 {
 	uint64_t w = (uint64_t)size.width;
 	uint64_t h = (uint64_t)size.height;
 	uint64_t f = (uint64_t)format;
 	uint64_t m = (mipmap) ? 1 : 0;
-	return m << 40 | f << 32 | h << 16 | w;
+	return (m << 40) | (f << 32) | (h << 16) | (w);
 }
 
 //==============================================================================
