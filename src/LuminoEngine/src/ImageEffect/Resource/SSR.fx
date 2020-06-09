@@ -1,6 +1,10 @@
 
 #include <Lumino.fxh>
 
+float3 LN_UnpackNormal(float3 packednormal)
+{
+	return (packednormal * 2.0) - 1.0;
+}
 
 //==============================================================================
 // Lib
@@ -70,6 +74,7 @@ VS_Output VS_Main(LN_VSInput input)
 #define MAX_BINARY_SEARCH_ITERATIONS 64
 sampler2D _ColorSampler;
 sampler2D _NormalAndDepthSampler;
+sampler2D _ViewDepthSampler;
 sampler2D _MetalRoughSampler;
 //uniform float4 Resolution;    // xy: BufferSize, zw: InvBufferSize
 
@@ -172,13 +177,14 @@ float2 getUVFromViewSpacePosition(float3 pos) {
 
 float3 getViewNormal(float2 screenPosition) {
     float3 rgb = tex2D(_NormalAndDepthSampler, screenPosition).xyz;
-    float3 n = 2.0*rgb.xyz - 1.0;
-    return normalize(n);
+    //float3 n = 2.0*rgb.xyz - 1.0;
+    return normalize(LN_UnpackNormal(rgb));
 }
 
 float getViewSpaceZ(float2 uv) {
 #if 1
-    const float clipSpaceZ = tex2D(_NormalAndDepthSampler, uv).a;
+    //const float clipSpaceZ = tex2D(_NormalAndDepthSampler, uv).a;
+    const float clipSpaceZ = tex2D(_ViewDepthSampler, uv).r;
     float4 clipPosition = float4(LN_UVToClipSpacePosition(uv), clipSpaceZ, 1.0);
     float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
     return pos.z / pos.w;
@@ -205,7 +211,7 @@ float getViewSpaceZ(float2 uv) {
 
 #endif
 
-#if 1   // 愚直のとりあえず成功版
+#if 0   // 愚直のとりあえず成功版
     const float linearZ = getViewSpaceLinearZ(uv);
     const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
     // URL 先の図の、地面との衝突点と、その法線 (赤矢印)
@@ -386,7 +392,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
 {
     //return float4(0, getDepth(input.UV), 0, 1);
 
-    const float projectedZ = tex2D(_NormalAndDepthSampler, input.UV).a;
+    const float projectedZ = tex2D(_ViewDepthSampler, input.UV).r;
 
     const float linearZ = getViewSpaceLinearZ(input.UV);
 
@@ -457,7 +463,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     
     float3 color = tex2D(_ColorSampler, hitPixel).xyz;
 
-    color = lerp(float3(.3), color, linearZ < 1.0 ? 1.0 : 0.0);
+    color = lerp(float3(.3), color, projectedZ < 1.0 ? 1.0 : 0.0);
 
     return float4(color.xyz, alpha);
 }

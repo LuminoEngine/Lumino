@@ -12,6 +12,7 @@
 
 namespace ln {
     Texture* g_viewNormalMap = nullptr;
+    Texture* g_viewDepthMap = nullptr;
     Texture* g_viewMaterialMap = nullptr;
 namespace detail {
 
@@ -61,11 +62,14 @@ void SceneRenderingPipeline::init()
 
 
     m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
-    m_viweNormalAndDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+    m_viweNormalAndDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA8);
     m_viweNormalAndDepthBuffer->setSamplerState(m_samplerState);
+    m_viweDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+    m_viweDepthBuffer->setSamplerState(m_samplerState);
     m_materialBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
     m_materialBuffer->setSamplerState(m_samplerState);
     g_viewNormalMap = m_viweNormalAndDepthBuffer;
+    g_viewDepthMap = m_viweDepthBuffer;
     g_viewMaterialMap = m_materialBuffer;
 
     m_renderPass = makeObject<RenderPass>();
@@ -91,7 +95,8 @@ void SceneRenderingPipeline::render(
         // Vulkan だと PixelShader の出力が nan だと書き込みスキップされるみたいで、前フレームのごみが残ったりした。
         // 他の Backend だとどうだとかあるし、あんまり nan を出すべきではないだろうということで、とりあえず Z+ を入れておく。
         m_renderPass->setRenderTarget(0, m_viweNormalAndDepthBuffer);
-        m_renderPass->setRenderTarget(1, m_materialBuffer);
+        m_renderPass->setRenderTarget(1, m_viweDepthBuffer);
+        m_renderPass->setRenderTarget(2, m_materialBuffer);
         m_renderPass->setClearValues(ClearFlags::Color, Color::Blue, 1.0f, 0);
         graphicsContext->beginRenderPass(m_renderPass);
         graphicsContext->endRenderPass();

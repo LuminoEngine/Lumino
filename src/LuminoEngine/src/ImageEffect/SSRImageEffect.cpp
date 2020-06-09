@@ -12,7 +12,9 @@
 //#include <LuminoEngine/Input/Input.hpp>
 namespace ln {
     extern Texture* g_viewNormalMap;
+    extern Texture* g_viewDepthMap;
     extern Texture* g_viewMaterialMap;
+    
     Texture* g_srTarget = nullptr;
 
 //==============================================================================
@@ -128,6 +130,7 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
 
     m_ssrMaterial->setTexture(u"_ColorSampler", source);
     m_ssrMaterial->setTexture(u"_NormalAndDepthSampler", g_viewNormalMap);
+    m_ssrMaterial->setTexture(u"_ViewDepthSampler", g_viewDepthMap);
     m_ssrMaterial->setTexture(u"_MetalRoughSampler", g_viewMaterialMap);
     m_ssrMaterial->setFloat(u"_Projection23", proj(2, 3));
     m_ssrMaterial->setFloat(u"_Projection33", proj(3, 3));
