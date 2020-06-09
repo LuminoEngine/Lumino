@@ -45,7 +45,7 @@ public:
 	// このパスのデフォルトの RenderPass を構築する。
 	// renderTarget と depthBuffer は、シーンレンダリングの最終出力先。
 	// もし G-Buffer を作るときなど、内部的な RenderTarget に書きたい場合はこれらは使用せずに派生側で各種バッファを用意する。
-	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 	// このパスを実行するときのデフォルトの RenderPass を取得する。
 	// インスタンスは、このパスの実行側の onBeginPass() で作っておく。

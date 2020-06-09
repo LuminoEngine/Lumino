@@ -51,7 +51,7 @@ bool SceneRendererPass::filterElement(RenderDrawElement* element) const
 }
 
 //void SceneRendererPass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
-void SceneRendererPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void SceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 }
 
@@ -237,7 +237,7 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 	m_renderingElementList.clear();
 
 	//FrameBuffer defaultFrameBuffer = *m_defaultFrameBuffer;
-	pass->onBeginPass(graphicsContext, renderTarget, depthBuffer);
+	pass->onBeginPass(this, graphicsContext, renderTarget, depthBuffer);
 
 	const detail::CameraInfo& cameraInfo = mainCameraInfo();
 

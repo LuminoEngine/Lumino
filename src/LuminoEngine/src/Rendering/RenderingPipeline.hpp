@@ -49,6 +49,8 @@ public:
         detail::DrawElementListCollector* elementListCollector,
 		const detail::SceneGlobalRenderParams* sceneGlobalParams);
 
+    const Ref<RenderTargetTexture>& viweNormalAndDepthBuffer() const { return m_viweNormalAndDepthBuffer; }
+    const Ref<RenderTargetTexture>& materialBuffer() const { return m_materialBuffer; }
 
 private:
     // Note: 複数の SceneRenderer を持っているのは、描画フェーズの大きなまとまりごとに、Element の扱いを変えることで最適化するため。
@@ -61,6 +63,16 @@ private:
 
     Ref<detail::ClusteredShadingSceneRenderer> m_sceneRenderer;
     Ref<detail::UnLigitingSceneRenderer> m_sceneRenderer_ImageEffectPhase;
+
+    // rgb: View space normal, a: depth (near=0.0 ~ far=1.0)
+    // TODO: UE4 や Unity など、多くは WorldSpace の normal を G-Buffer に書き込んでいる。
+    //       ここでは主にポストエフェクトに使う用に、view space normal を作っているが、必要になり次第、 world 用のも作ったほうがいいかも
+    Ref<RenderTargetTexture> m_viweNormalAndDepthBuffer;
+
+    // 
+    Ref<RenderTargetTexture> m_materialBuffer;
+
+    Ref<SamplerState> m_samplerState;	// TODO: 共通化
 };
 
 // ライティングしない Pipeline。UI で使う。

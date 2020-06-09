@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/SamplerState.hpp>
 #include <LuminoEngine/Graphics/RenderPass.hpp>
 #include "../Graphics/RenderTargetTextureCache.hpp"
 #include "RenderStage.hpp"
@@ -10,6 +11,8 @@
 #include "RenderingManager.hpp"
 
 namespace ln {
+    Texture* g_viewNormalMap = nullptr;
+    Texture* g_viewMaterialMap = nullptr;
 namespace detail {
 
 //==============================================================================
@@ -55,6 +58,15 @@ void SceneRenderingPipeline::init()
 
     m_sceneRenderer_ImageEffectPhase = makeRef<detail::UnLigitingSceneRenderer>();
     m_sceneRenderer_ImageEffectPhase->init(manager);
+
+
+    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+    m_viweNormalAndDepthBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+    m_viweNormalAndDepthBuffer->setSamplerState(m_samplerState);
+    m_materialBuffer = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+    m_materialBuffer->setSamplerState(m_samplerState);
+    g_viewNormalMap = m_viweNormalAndDepthBuffer;
+    g_viewMaterialMap = m_materialBuffer;
 }
 
 void SceneRenderingPipeline::render(
@@ -69,6 +81,13 @@ void SceneRenderingPipeline::render(
     m_elementListCollector->classify();
 
     m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
+
+
+    // Prepare G-Buffers
+    {
+
+    }
+
 
     //clear(graphicsContext, renderTarget, clearInfo);
 

@@ -26,7 +26,7 @@ public:
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
 
-	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
@@ -40,12 +40,11 @@ public:
 
 public:	// TODO:
 	Ref<Shader>					m_defaultShader;
-	Ref<RenderTargetTexture>	m_depthMap;
-	Ref<RenderTargetTexture>	m_normalMap;
-	Ref<RenderTargetTexture> m_materialMap;	// x, y, z:roughness,
+	//Ref<RenderTargetTexture>	m_depthMap;
+	//Ref<RenderTargetTexture>	m_normalMap;
+	//Ref<RenderTargetTexture> m_materialMap;	// x, y, z:roughness,
 	Ref<DepthBuffer>	m_depthBuffer;
 	Ref<RenderPass> m_renderPass;
-	Ref<SamplerState> m_samplerState;	// TODO: 共通化
 };
 
 
@@ -60,7 +59,7 @@ public:
 
 	virtual void onBeginRender(SceneRenderer* sceneRenderer) override;
 	virtual void onEndRender(SceneRenderer* sceneRenderer) override;
-	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual RenderPass* renderPass() const;
 	virtual bool filterElement(RenderDrawElement* element) const;
 	virtual ShaderTechnique* selectShaderTechnique(
@@ -86,7 +85,7 @@ public:
 	virtual ~ClusteredShadingGeometryRenderingPass();
 	void init(ClusteredShadingSceneRenderer* ownerRenderer);
 
-	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
@@ -123,7 +122,7 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	//virtual void onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer) override;
 	virtual RenderPass* renderPass() const;
 
