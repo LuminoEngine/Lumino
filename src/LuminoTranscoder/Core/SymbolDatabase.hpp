@@ -374,6 +374,7 @@ public:
 	TypeSymbol(SymbolDatabase* db);
 	ln::Result init(PITypeInfo* piType);
 	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
+	ln::Result initAsFunctionType(MethodSymbol* signeture);
 	ln::Result link();
 
 	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
@@ -389,7 +390,7 @@ public:
 	//const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
-	MethodSymbol* delegateProtoType() const { return m_delegateProtoType; }
+	MethodSymbol* delegateProtoType() const { return m_functionSignature; }
 
 	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
 	bool isClass() const { return kind() == TypeKind::Class; }
@@ -421,7 +422,7 @@ private:
 	TypeClass m_typeClass = TypeClass::None;
 	ln::String m_fullName;
 	ln::String m_shortName;
-	Ref<MethodSymbol> m_delegateProtoType;	// Delegate<> の型引数部分のシグネチャを表す。 e.g.) "void(ZVTestEventArgs1* e)"
+	Ref<MethodSymbol> m_functionSignature;	// Delegate<> の型引数部分やFunction 型のシグネチャを表す。 e.g.) "void(ZVTestEventArgs1* e)"
 	ln::List<Ref<FieldSymbol>> m_fields;
 	ln::List<Ref<ConstantSymbol>> m_constants;
 	ln::List<Ref<MethodSymbol>> m_publicMethods;

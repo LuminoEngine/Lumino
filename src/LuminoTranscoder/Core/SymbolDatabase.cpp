@@ -611,8 +611,8 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 	setFullName(m_piType->rawFullName);
 
 	if (m_piType->delegateProtoType) {
-		m_delegateProtoType = ln::makeRef<MethodSymbol>(db());
-		if (!m_delegateProtoType->init(m_piType->delegateProtoType, this)) {
+		m_functionSignature = ln::makeRef<MethodSymbol>(db());
+		if (!m_functionSignature->init(m_piType->delegateProtoType, this)) {
 			return false;
 		}
 	}
@@ -656,10 +656,19 @@ ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind type
 	return true;
 }
 
+ln::Result TypeSymbol::initAsFunctionType(MethodSymbol* signeture)
+{
+	if (LN_REQUIRE(signeture)) return false;
+	m_kind = TypeKind::Function;
+	m_typeClass = TypeClass::None;
+	m_functionSignature = signeture;
+	return true;
+}
+
 ln::Result TypeSymbol::link()
 {
-	if (m_delegateProtoType) {
-		if (!m_delegateProtoType->link()) {
+	if (m_functionSignature) {
+		if (!m_functionSignature->link()) {
 			return false;
 		}
 	}
@@ -895,8 +904,14 @@ ln::Result TypeSymbol::createSpecialSymbols()
 	}
 
 	if (isDelegateObject()) {
+		auto functonType = ln::makeRef<TypeSymbol>(db());
+		if (!functonType->initAsFunctionType(m_functionSignature)) return false;
+
+		auto param = ln::makeRef<MethodParameterSymbol>(db());
+		if (!param->init({ functonType, false }, u"callback")) return false;
+
 		auto s = ln::makeRef<MethodSymbol>(db());
-		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, {})) return false;
+		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, { param })) return false;
 		m_declaredMethods.add(s);
 	}
 

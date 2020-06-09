@@ -902,72 +902,84 @@ bool Commands_cmdfunc(int cmd, int* retVal)
     switch (cmd) {
         // LnPromiseFailureDelegate_Create
         case 0x70 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outPromiseFailureDelegate
             PVal* pval_outPromiseFailureDelegate;
             const APTR aptr_outPromiseFailureDelegate = code_getva(&pval_outPromiseFailureDelegate);
             LnHandle local_outPromiseFailureDelegate;
 
-            stat = LnPromiseFailureDelegate_Create(&local_outPromiseFailureDelegate);
+            stat = LnPromiseFailureDelegate_Create(local_callback, &local_outPromiseFailureDelegate);
             setVAInt(pval_outPromiseFailureDelegate, aptr_outPromiseFailureDelegate, local_outPromiseFailureDelegate);
 
             break;
         }
         // LnZVTestDelegate1_Create
         case 0x72 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outZVTestDelegate1
             PVal* pval_outZVTestDelegate1;
             const APTR aptr_outZVTestDelegate1 = code_getva(&pval_outZVTestDelegate1);
             LnHandle local_outZVTestDelegate1;
 
-            stat = LnZVTestDelegate1_Create(&local_outZVTestDelegate1);
+            stat = LnZVTestDelegate1_Create(local_callback, &local_outZVTestDelegate1);
             setVAInt(pval_outZVTestDelegate1, aptr_outZVTestDelegate1, local_outZVTestDelegate1);
 
             break;
         }
         // LnZVTestDelegate2_Create
         case 0x74 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outZVTestDelegate2
             PVal* pval_outZVTestDelegate2;
             const APTR aptr_outZVTestDelegate2 = code_getva(&pval_outZVTestDelegate2);
             LnHandle local_outZVTestDelegate2;
 
-            stat = LnZVTestDelegate2_Create(&local_outZVTestDelegate2);
+            stat = LnZVTestDelegate2_Create(local_callback, &local_outZVTestDelegate2);
             setVAInt(pval_outZVTestDelegate2, aptr_outZVTestDelegate2, local_outZVTestDelegate2);
 
             break;
         }
         // LnZVTestDelegate3_Create
         case 0x76 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outZVTestDelegate3
             PVal* pval_outZVTestDelegate3;
             const APTR aptr_outZVTestDelegate3 = code_getva(&pval_outZVTestDelegate3);
             LnHandle local_outZVTestDelegate3;
 
-            stat = LnZVTestDelegate3_Create(&local_outZVTestDelegate3);
+            stat = LnZVTestDelegate3_Create(local_callback, &local_outZVTestDelegate3);
             setVAInt(pval_outZVTestDelegate3, aptr_outZVTestDelegate3, local_outZVTestDelegate3);
 
             break;
         }
         // LnZVTestEventHandler1_Create
         case 0x78 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outZVTestEventHandler1
             PVal* pval_outZVTestEventHandler1;
             const APTR aptr_outZVTestEventHandler1 = code_getva(&pval_outZVTestEventHandler1);
             LnHandle local_outZVTestEventHandler1;
 
-            stat = LnZVTestEventHandler1_Create(&local_outZVTestEventHandler1);
+            stat = LnZVTestEventHandler1_Create(local_callback, &local_outZVTestEventHandler1);
             setVAInt(pval_outZVTestEventHandler1, aptr_outZVTestEventHandler1, local_outZVTestEventHandler1);
 
             break;
         }
         // LnZVTestEventHandler2_Create
         case 0x7A : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outZVTestEventHandler2
             PVal* pval_outZVTestEventHandler2;
             const APTR aptr_outZVTestEventHandler2 = code_getva(&pval_outZVTestEventHandler2);
             LnHandle local_outZVTestEventHandler2;
 
-            stat = LnZVTestEventHandler2_Create(&local_outZVTestEventHandler2);
+            stat = LnZVTestEventHandler2_Create(local_callback, &local_outZVTestEventHandler2);
             setVAInt(pval_outZVTestEventHandler2, aptr_outZVTestEventHandler2, local_outZVTestEventHandler2);
 
             break;
@@ -2397,12 +2409,14 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         }
         // LnTestDelegate_Create
         case 0x112 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outTestDelegate
             PVal* pval_outTestDelegate;
             const APTR aptr_outTestDelegate = code_getva(&pval_outTestDelegate);
             LnHandle local_outTestDelegate;
 
-            stat = LnTestDelegate_Create(&local_outTestDelegate);
+            stat = LnTestDelegate_Create(local_callback, &local_outTestDelegate);
             setVAInt(pval_outTestDelegate, aptr_outTestDelegate, local_outTestDelegate);
 
             break;
@@ -2647,24 +2661,28 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         }
         // LnUIGeneralEventHandler_Create
         case 0x125 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outUIGeneralEventHandler
             PVal* pval_outUIGeneralEventHandler;
             const APTR aptr_outUIGeneralEventHandler = code_getva(&pval_outUIGeneralEventHandler);
             LnHandle local_outUIGeneralEventHandler;
 
-            stat = LnUIGeneralEventHandler_Create(&local_outUIGeneralEventHandler);
+            stat = LnUIGeneralEventHandler_Create(local_callback, &local_outUIGeneralEventHandler);
             setVAInt(pval_outUIGeneralEventHandler, aptr_outUIGeneralEventHandler, local_outUIGeneralEventHandler);
 
             break;
         }
         // LnUIEventHandler_Create
         case 0x127 : {
+            // Fetch callback
+            const auto local_callback = ????;
             // Fetch outUIEventHandler
             PVal* pval_outUIEventHandler;
             const APTR aptr_outUIEventHandler = code_getva(&pval_outUIEventHandler);
             LnHandle local_outUIEventHandler;
 
-            stat = LnUIEventHandler_Create(&local_outUIEventHandler);
+            stat = LnUIEventHandler_Create(local_callback, &local_outUIEventHandler);
             setVAInt(pval_outUIEventHandler, aptr_outUIEventHandler, local_outUIEventHandler);
 
             break;

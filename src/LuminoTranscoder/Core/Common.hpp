@@ -16,7 +16,8 @@ enum class TypeKind
 	Struct,
 	Class,
 	Enum,
-	Delegate,
+	Delegate,	// deprecated
+	Function,	// raw function signature.
 };
 
 enum class TypeClass
