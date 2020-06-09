@@ -82,7 +82,7 @@ void ForwardGBufferPrepass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsCo
 	m_renderPass->setRenderTarget(0, renderingPipeline->viweNormalAndDepthBuffer());
 	m_renderPass->setRenderTarget(1, renderingPipeline->materialBuffer());
 	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::All, Color::Gray, 1.0f, 0);
+	m_renderPass->setClearValues(ClearFlags::Depth, Color::Gray, 1.0f, 0);
 }
 
 //void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)

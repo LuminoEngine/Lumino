@@ -67,6 +67,8 @@ void SceneRenderingPipeline::init()
     m_materialBuffer->setSamplerState(m_samplerState);
     g_viewNormalMap = m_viweNormalAndDepthBuffer;
     g_viewMaterialMap = m_materialBuffer;
+
+    m_renderPass = makeObject<RenderPass>();
 }
 
 void SceneRenderingPipeline::render(
@@ -85,7 +87,14 @@ void SceneRenderingPipeline::render(
 
     // Prepare G-Buffers
     {
-
+        // (0, 0, 0, 0) でクリアすると、G-Buffer 作成時に書き込まれなかったピクセルの法線が nan になる。
+        // Vulkan だと PixelShader の出力が nan だと書き込みスキップされるみたいで、前フレームのごみが残ったりした。
+        // 他の Backend だとどうだとかあるし、あんまり nan を出すべきではないだろうということで、とりあえず Z+ を入れておく。
+        m_renderPass->setRenderTarget(0, m_viweNormalAndDepthBuffer);
+        m_renderPass->setRenderTarget(1, m_materialBuffer);
+        m_renderPass->setClearValues(ClearFlags::Color, Color::Blue, 1.0f, 0);
+        graphicsContext->beginRenderPass(m_renderPass);
+        graphicsContext->endRenderPass();
     }
 
 
@@ -103,9 +112,7 @@ void SceneRenderingPipeline::render(
     // TODO: ひとまずテストとしてデバッグ用グリッドを描画したいため、効率は悪いけどここで BeforeTransparencies をやっておく。
     ClearInfo localClearInfo = { ClearFlags::None, Color(), 1.0f, 0x00 };
     m_sceneRenderer->mainRenderPass()->setClearInfo(localClearInfo); // 2回目の描画になるので、最初の結果が消えないようにしておく。
-    //m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
-    // TODO: ↑同じ SceneRenderer を2回 render するのはダメ。GBuffer がクリアされるので、この後のポストエフェクトの処理で利用できなくなる。
-    // 今は SSR テスト用に回避したいので、消しておく。
+    m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
 
     {
         CameraInfo camera;

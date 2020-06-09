@@ -73,6 +73,7 @@ private:
     Ref<RenderTargetTexture> m_materialBuffer;
 
     Ref<SamplerState> m_samplerState;	// TODO: 共通化
+    Ref<RenderPass> m_renderPass;
 };
 
 // ライティングしない Pipeline。UI で使う。
