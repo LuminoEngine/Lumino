@@ -180,6 +180,8 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         }
 
 
+        m_sceneRenderingPipeline->prepare(renderTarget);
+
         // DrawList 構築
         if (m_targetWorld) {
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);

@@ -41,6 +41,7 @@ public:
     virtual ~SceneRenderingPipeline();
 
     void init();
+    void prepare(RenderTargetTexture* renderTarget);
     void render(
         GraphicsContext* graphicsContext,
 		RenderTargetTexture* renderTarget,

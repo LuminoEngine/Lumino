@@ -80,19 +80,11 @@ void SceneRenderingPipeline::init()
     m_renderPass = makeObject<RenderPass>();
 }
 
-void SceneRenderingPipeline::render(
-    GraphicsContext* graphicsContext,
-	RenderTargetTexture* renderTarget,
-    const ClearInfo& mainPassClearInfo,
-    const detail::CameraInfo* mainCameraInfo,
-    detail::DrawElementListCollector* elementListCollector,
-	const detail::SceneGlobalRenderParams* sceneGlobalParams)
+void SceneRenderingPipeline::prepare(RenderTargetTexture* renderTarget)
 {
-    m_elementListCollector = elementListCollector;
-    m_elementListCollector->classify();
+    // ポストエフェクトで参照したいテクスチャのインスタンスだけ、先に作っておく
 
     m_renderingFrameBufferSize = SizeI(renderTarget->width(), renderTarget->height());
-
 
     // Prepare G-Buffers
     {
@@ -109,7 +101,24 @@ void SceneRenderingPipeline::render(
         assert(m_viweNormalAndDepthBuffer->format() == TextureFormat::RGBA8);
         assert(m_viweDepthBuffer->format() == TextureFormat::RGBA32F);
         assert(m_materialBuffer->format() == TextureFormat::RGBA8);
+    }
 
+}
+
+void SceneRenderingPipeline::render(
+    GraphicsContext* graphicsContext,
+	RenderTargetTexture* renderTarget,
+    const ClearInfo& mainPassClearInfo,
+    const detail::CameraInfo* mainCameraInfo,
+    detail::DrawElementListCollector* elementListCollector,
+	const detail::SceneGlobalRenderParams* sceneGlobalParams)
+{
+    m_elementListCollector = elementListCollector;
+    m_elementListCollector->classify();
+
+
+    // Prepare G-Buffers
+    {
         // (0, 0, 0, 0) でクリアすると、G-Buffer 作成時に書き込まれなかったピクセルの法線が nan になる。
         // Vulkan だと PixelShader の出力が nan だと書き込みスキップされるみたいで、前フレームのごみが残ったりした。
         // 他の Backend だとどうだとかあるし、あんまり nan を出すべきではないだろうということで、とりあえず Z+ を入れておく。
