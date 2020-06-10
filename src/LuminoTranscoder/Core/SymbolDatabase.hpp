@@ -282,6 +282,7 @@ public:
 	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
 	MethodParameterSymbol* flatThisParam() const { return !isStatic() ? m_flatParameters.front() : nullptr; }
 	MethodParameterSymbol* flatReturnParam() const { return hasReturnType() ? m_flatParameters.back() : nullptr; }
+	MethodParameterSymbol* flatConstructorOutputThisParam() const { return isConstructor() ? m_flatParameters.back() : nullptr; }
 	const MethodParameterSymbol* findFlatParameter(const ln::StringRef& name) const;
 	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
 	PropertySymbol* ownerProperty() const { return m_ownerProperty; }
@@ -396,6 +397,7 @@ public:
 	bool isClass() const { return kind() == TypeKind::Class; }
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
+	bool isFunction() const { return kind() == TypeKind::Function; }
 	bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }	// deprecated
 	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class
 
@@ -519,6 +521,8 @@ public:
 	TypeSymbol* getTypeSymbol(const ln::String& typeFullName) const;
 
 	QualType parseQualType(const ln::String& rawTypeName) const;
+
+	void registerTypeSymbol(TypeSymbol* type);
 
 private:
 	Ref<PIDatabase> m_pidb;

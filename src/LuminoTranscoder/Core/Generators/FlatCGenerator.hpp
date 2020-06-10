@@ -36,12 +36,11 @@ public:
 	void generate();
 
 private:
-
 	ln::String makeDocumentComment(DocumentInfo* doc) const;
 	ln::String makeMethodDocumentComment(const MethodSymbol* method) const;
     ln::String makeDelegateFuncPtrDecl(const TypeSymbol* delegateSymbol) const;
-
 	ln::String makeEnumDecls() const;
+	ln::String makeSubClassRegistrationInfo(const TypeSymbol* classSymbol) const;
 
 };
 

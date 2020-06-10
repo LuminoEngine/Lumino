@@ -102,6 +102,26 @@ ln::String Generator::makeFlatAPIDecl_CallOverrideBase(const TypeSymbol* leafCla
 	return ln::String::format(u"LN_FLAT_API LnResult {0}({1})", makeFlatAPIName_CallOverrideBase(leafClass, method, charset), params.toString());
 }
 
+ln::String Generator::makeFlatAPIName_OverrideFunc(const MethodSymbol* method, FlatCharset charset) const
+{
+	return ln::String::format(u"{0}_OverrideFunc", makeFlatShortFuncName(method, charset));
+}
+
+ln::String Generator::makeFlatAPIName_SubclassRegistrationInfo(const TypeSymbol* classSymbol) const
+{
+	return makeFlatClassName(classSymbol) + u"_SubclassRegistrationInfo";
+}
+
+ln::String Generator::makeFlatAPIName_RegisterSubclassTypeInfo(const TypeSymbol* classSymbol) const
+{
+	return makeFlatClassName(classSymbol) + u"_RegisterSubclassTypeInfo";
+}
+
+ln::String Generator::makeFlatAPIName_GetSubinstanceId(const TypeSymbol* classSymbol) const
+{
+	return makeFlatClassName(classSymbol) + u"_GetSubinstanceId";
+}
+
 ln::String Generator::makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const
 {
 	return ln::String::format(u"{0}_{1}_OverrideCallback", makeFlatClassName(leafClass), makeFlatShortFuncName(method, charset));

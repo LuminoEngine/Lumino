@@ -217,6 +217,7 @@ ln::Result MethodParameterSymbol::init(const QualType& qualType, const ln::Strin
 	LN_CHECK(!name.isEmpty());
 	m_qualType = qualType;
 	m_name = name;
+	m_isIn = true;	// FIXME: いまのところ内部的に作られるのは in だけ
 	return true;
 }
 
@@ -906,6 +907,7 @@ ln::Result TypeSymbol::createSpecialSymbols()
 	if (isDelegateObject()) {
 		auto functonType = ln::makeRef<TypeSymbol>(db());
 		if (!functonType->initAsFunctionType(m_functionSignature)) return false;
+		db()->registerTypeSymbol(functonType);
 
 		auto param = ln::makeRef<MethodParameterSymbol>(db());
 		if (!param->init({ functonType, false }, u"callback")) return false;
@@ -1045,8 +1047,9 @@ ln::Result SymbolDatabase::initTypes(PIDatabase* pidb)
 
 ln::Result SymbolDatabase::linkTypes()
 {
-	for (auto& t : m_allTypes) {
-		if (!t->link()) return false;
+	int count = m_allTypes.size();
+	for (int i = 0; i < count; i++) {	// iterate 中に m_allTypes へ新しい Type が add されることもある
+		if (!m_allTypes[i]->link()) return false;
 	}
 
 	return true;
@@ -1146,4 +1149,9 @@ QualType SymbolDatabase::parseQualType(const ln::String& rawTypeName) const
 	}
 
 	return qt;
+}
+
+void SymbolDatabase::registerTypeSymbol(TypeSymbol* type)
+{
+	m_allTypes.add(type);
 }

@@ -25,6 +25,7 @@ double fetchVADouble(double defaultValue);
 const char* fetchVAString();
 const char* fetchVAString(const char* defaultValue);
 void* fetchVARawData();
+unsigned short* fetchVALabelPointer();
 
 void setVAInt(PVal* pval, APTR aptr, int value);
 void setVADouble(PVal* pval, APTR aptr, double value);

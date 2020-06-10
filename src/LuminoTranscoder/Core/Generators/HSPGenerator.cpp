@@ -130,6 +130,8 @@ static void hsp%%Type%%_reffunc(int* typeRes, void** retValPtr)
 }
 )";
 
+
+
 void HSPCommandsGenerator::generate()
 {
     // Setup command map
@@ -152,6 +154,7 @@ void HSPCommandsGenerator::generate()
     code.AppendLine(u"#include \"LuminoHSP.h\"");
     code.AppendLines(makeStructStorageCores());
     code.AppendLines(makeStorageCoreRegisterFunc());
+    code.AppendLines(makeSubclassDefines());
     code.AppendLines(make_cmdfunc());
 
     
@@ -246,12 +249,77 @@ ln::String HSPCommandsGenerator::makeStorageCoreRegisterFunc() const
     code.IncreaseIndent();
     
     for (const auto& structSymbol : db()->structs()) {
-        code.AppendLine("registvar(-1, hsp{0}_Init);", makeFlatTypeName2(structSymbol));
+        code.AppendLine(u"registvar(-1, hsp{0}_Init);", makeFlatTypeName2(structSymbol));
     }
 
     code.DecreaseIndent();
     code.AppendLine(u"}");
     return code.toString();
+}
+
+ln::String HSPCommandsGenerator::makeSubclassDefines() const
+{
+    static const ln::String SubclassCommonTemplate = uR"(
+static void* HSPSubclass_%%FlatClassName%%_SubinstanceAlloc(LnHandle handle)
+{
+    return malloc(sizeof(HSPSubclass_%%FlatClassName%%));
+}
+
+static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LnHandle handle, void* subinstance)
+{
+    free(subinstance);
+}
+)";
+//    static const ln::String DelegateSubclassTemplate = uR"(
+//static void* %%HSPSubclassTypeName%%_DelegateLabelCaller(LnHandle handle)
+//{
+//    return malloc(sizeof(%%HSPSubclassTypeName%%));
+//}
+
+//)";
+
+    OutputBuffer code;
+
+    for (const auto& classSymbol : db()->classes()) {
+        code.AppendLine(u"//==============================================================================");
+        code.AppendLine(u"// " + classSymbol->fullName()).NewLine();
+
+        code.AppendLine(u"struct HSPSubclass_" + makeFlatClassName(classSymbol));
+        code.AppendLine(u"{");
+        code.IncreaseIndent();
+        {
+            if (classSymbol->isDelegateObject()) {
+                code.AppendLine(u"unsigned short* labelPointer = nullptr;");
+            }
+        }
+        code.DecreaseIndent();
+        code.AppendLine(u"};").NewLine();
+
+        code.AppendLines(SubclassCommonTemplate.replace(u"%%FlatClassName%%", makeFlatClassName(classSymbol))).NewLine();
+
+        // DelegateLabelCaller
+        if (classSymbol->isDelegateObject()) {
+            //OutputBuffer paramList;
+            //for (const auto& param : classSymbol->delegateProtoType()->flatParameters()) {
+
+            //}
+            const auto selfParamName = classSymbol->delegateProtoType()->flatThisParam()->name();
+
+            code.AppendLine(u"static LnResult {0}({1})", makeName_DelegateLabelCaller(classSymbol), makeFlatParamList(classSymbol->delegateProtoType(), FlatCharset::Ascii));
+            code.AppendLine(u"{");
+            code.IncreaseIndent();
+            {
+                code.AppendLine(u"auto* self = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), selfParamName);
+                code.AppendLine(u"stat = 0;");
+                code.AppendLine(u"code_call(self->labelPointer);");
+                code.AppendLine(u"return static_cast<LnResult>(stat);");
+            }
+            code.DecreaseIndent();
+            code.AppendLine(u"}").NewLine();
+        }
+    }
+
+    return code.toString().trim();
 }
 
 ln::String HSPCommandsGenerator::make_cmdfunc() const
@@ -282,7 +350,7 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
 
             code.AppendLines(makeCallCommandBlock(methodSymbol));
             
-            code.AppendLine(u"break;");
+            code.AppendLine(u"return true;");
             code.DecreaseIndent();
             code.AppendLine(u"}");
         }
@@ -291,6 +359,7 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
     code.DecreaseIndent();
     code.AppendLine(u"}");
     code.DecreaseIndent();
+    code.AppendLine(u"return false;");
     code.AppendLine(u"}");
     return code.toString();
 }
@@ -301,12 +370,20 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
     OutputBuffer args;
     OutputBuffer epilogue;
 
+    const TypeSymbol* classSymbol = methodSymbol->ownerType();
+
     for (const auto& param : methodSymbol->flatParameters()) {
         auto localVarName = u"local_" + param->name();
         prologue.AppendLine(u"// Fetch " + param->name());
 
-        if (param->isOut() || param->isReturn())
-        {
+        if (classSymbol->isDelegateObject() && methodSymbol->isConstructor() && param->type()->isFunction() && param->isIn()) {
+
+            prologue.AppendLine(makeGetVAExpr(param));
+            args.AppendCommad(makeName_DelegateLabelCaller(classSymbol));
+            epilogue.AppendLine(u"auto* self = reinterpret_cast<{0}*>({1}(local_{2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), methodSymbol->flatConstructorOutputThisParam()->name());
+            epilogue.AppendLine(u"self->labelPointer = {0};", localVarName);
+        }
+        else if (param->isOut() || param->isReturn()) {
             prologue.AppendLine(u"PVal* pval_{0};", param->name());
             prologue.AppendLine(u"const APTR aptr_{0} = code_getva(&pval_{0});", param->name());
             prologue.AppendLine(u"{0} {1};", makeFlatTypeName2(param->type()), localVarName);
@@ -320,8 +397,12 @@ ln::String HSPCommandsGenerator::makeCallCommandBlock(const MethodSymbol* method
             prologue.AppendLine(u"CodeGetVA_TypeChecked(&pval_{0}, {1});", param->name(), makeFlatTypeName2(param->type()));
             args.AppendCommad(u"reinterpret_cast<const {0}*>(pval_{1}->pt)", makeFlatTypeName2(param->type()), param->name());
         }
-        else
-        {
+        //else if (param->type()->isStruct()) {
+
+        //    auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate3*>(LnZVTestDelegate3_GetSubinstanceId(zvtestdelegate3));
+        //    epilogue.AppendLine(makeGetVAExpr(param));
+        //}
+        else {
             prologue.AppendLine(makeGetVAExpr(param));
             args.AppendCommad(localVarName);
         }
@@ -363,6 +444,9 @@ ln::String HSPCommandsGenerator::makeFetchVAExpr(const TypeSymbol* typeSymbol, b
     if (typeSymbol == PredefinedTypes::stringType ||
         typeSymbol == PredefinedTypes::stringRefType) {
         return ln::String::format(u"fetchVAString{0}()", postfix);
+    }
+    if (typeSymbol->isFunction()) {
+        return ln::String::format(u"fetchVALabelPointer{0}()", postfix);
     }
     return u"????";
 }
@@ -414,7 +498,8 @@ ln::String HSPCommandsGenerator::makeSetVAExpr(const MethodParameterSymbol* para
         typeSymbol == PredefinedTypes::intType ||
         typeSymbol == PredefinedTypes::int16Type ||
         typeSymbol == PredefinedTypes::uint32Type ||
-        typeSymbol->isClass()) {
+        typeSymbol->isClass() ||
+        typeSymbol->isEnum()) {
         return ln::String::format(u"setVAInt({0}, {1}, {2});", pvalName, aptrName, localName);
     }
     if (typeSymbol == PredefinedTypes::floatType ||

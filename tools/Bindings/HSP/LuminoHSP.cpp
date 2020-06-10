@@ -60,6 +60,11 @@ const char* fetchVAString(const char* defaultValue)
 	return code_getds(defaultValue);
 }
 
+unsigned short* fetchVALabelPointer()
+{
+	return code_getlb();
+}
+
 void* fetchVARawData()
 {
 	PVal* MemoryArray = exinfo->HspFunc_prm_getpval();
