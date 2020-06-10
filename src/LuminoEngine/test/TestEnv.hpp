@@ -37,4 +37,5 @@ public:
 #define ASSERT_SCREEN_S(filePath) ASSERT_TRUE(TestEnv::checkScreenShot(filePath, nullptr, 95, true))
 #define ASSERT_CURRENT_SCREEN(filePath) ASSERT_TRUE(TestEnv::checkScreenShot(filePath, TestEnv::mainWindowSwapChain()->currentBackbuffer()))
 #define ASSERT_RENDERTARGET(filePath, renderTarget) ASSERT_TRUE(TestEnv::checkScreenShot(filePath, renderTarget)) 
+#define ASSERT_RENDERTARGET_S(filePath, renderTarget) ASSERT_TRUE(TestEnv::checkScreenShot(filePath, renderTarget, 95, true)) 
 

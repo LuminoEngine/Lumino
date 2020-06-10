@@ -134,36 +134,11 @@ float3 getViewPosition(float2 inputUV, float projectedZ, float linearZ) {
     float4 clipPosition = float4(LN_UVToClipSpacePosition(inputUV), projectedZ, 1.0);
     //return clipPosition.xyz;
 
-#if 0
-    // Projection 逆変換
-    //   _Projection23: 右手の場合は -1, 左手の場合は 1 になる。
-    //   _Projection33: Perspective の場合は 0.0, Ortho の場合は 1.0 になる。
-    const float viewSpaceZ = getViewSpaceLinearZTotViewSpaceZ(linearZ);
-    float clipW = _Projection23 * viewSpaceZ + _Projection33;
-    clipPosition *= clipW; // unprojection
-    //return clipPosition.xyz;
-    float3 pos = (mul(clipPosition, _CameraInverseProjectionMatrix)).xyz;
-    pos.z *= -1.0;
-    return pos;
-#else
     float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
+    //float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
     float3 p = pos.xyz / pos.w;
     //p.z *= -1.0;
     return p;
-#endif
-
-    /*
-    screenPosition.y = (-screenPosition.y) + 1.0;
-    // _CameraProjectionMatrix[2][3] は 右手か左手かの符号。Matrix::makePerspectiveFovLH() 参考。
-    // 
-    // [3][3] は Perspective の場合は 0.0, Ortho の場合は 1.0 になる。
-    //float clipW = _CameraProjectionMatrix[2][3] * viewZ + _CameraProjectionMatrix[3][3];
-    float clipW = _Projection23 * viewZ + _Projection33;
-    float4 clipPosition = float4((float3(screenPosition, depth) - 0.5)*2.0, 1.0);
-    clipPosition *= clipW; // unprojection
-    //return clipPosition.xyz;
-    return (mul(clipPosition, _CameraInverseProjectionMatrix)).xyz;
-    */
 }
 
 float2 getUVFromViewSpacePosition(float3 pos) {
@@ -187,42 +162,9 @@ float getViewSpaceZ(float2 uv) {
     const float clipSpaceZ = tex2D(_ViewDepthSampler, uv).r;
     float4 clipPosition = float4(LN_UVToClipSpacePosition(uv), clipSpaceZ, 1.0);
     float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
+    //float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
     return pos.z / pos.w;
 #endif
-    //return getViewSpaceLinearZTotViewSpaceZ(getViewSpaceLinearZ(uv));
-    //const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
-    //return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*projectedZ-CameraFar);
-#if 0
-    const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
-    float4 clipPosition = float4(LN_UVToClipSpacePosition(uv), projectedZ, 1.0);
-
-
-    // m14 = 0,
-    // m24 = 0,
-    // m34 = 1 of -1,
-    // m44 = 0 of 1,
-
-    float w = 1.0f / ((vec.z * mat.m34) + mat.m44);
-
-    return Vector3(
-            ((vec.x * mat.m11) + (vec.y * mat.m21) + (vec.z * mat.m31) + mat.m41) * w,
-            ((vec.x * mat.m12) + (vec.y * mat.m22) + (vec.z * mat.m32) + mat.m42) * w,
-            ((vec.x * mat.m13) + (vec.y * mat.m23) + (vec.z * mat.m33) + mat.m43) * w);
-
-#endif
-
-#if 0   // 愚直のとりあえず成功版
-    const float linearZ = getViewSpaceLinearZ(uv);
-    const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
-    // URL 先の図の、地面との衝突点と、その法線 (赤矢印)
-    // https://qiita.com/mebiusbox2/items/e69ef326b211880d7549#%E8%A1%9D%E7%AA%81%E5%88%A4%E5%AE%9A
-    float3 viewPosition = getViewPosition(uv, projectedZ, linearZ);
-    return viewPosition.z;
-#endif
-
-    //const float projectedZ = tex2D(_NormalAndDepthSampler, uv).a;
-    //return projectedZ;
-    //return perspectiveDepthToViewZ(projectedZ);
 }
 
 //----------------------------------------------------------------------------
@@ -422,7 +364,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     //float2 uv = getUVFromViewSpacePosition(viewPosition);
     //return float4(getUVFromViewSpacePosition(viewPosition), 0, 1);
 
- #if 0   // この2つは同じ値にならないとダメ
+ #if 1   // この2つは同じ値にならないとダメ
     return float4(
         getViewSpaceZ( getUVFromViewSpacePosition(viewPosition)) / 100,
         viewPosition.z / 100,
