@@ -139,7 +139,7 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
     context->blit(m_ssrMaterial, m_ssrTarget);
     g_srTarget = m_ssrTarget;
 
-#if 1
+#if 0
     context->blit(m_ssrMaterial, destination);
 #else
     m_ssrBlurMaterial1->setTexture(u"_ColorSampler", m_ssrTarget);

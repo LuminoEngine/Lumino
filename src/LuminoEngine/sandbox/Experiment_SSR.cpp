@@ -21,7 +21,7 @@ class App_Experiment_SSR : public Application
 
     virtual void onInit() override
     {
-        Engine::renderView()->setGuideGridEnabled(true);
+        //Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 

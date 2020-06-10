@@ -4,6 +4,7 @@
 
 class Test_Effect_Particle : public ::testing::Test {};
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Effect_Particle, Lifetime)
 {
@@ -184,3 +185,5 @@ TEST_F(Test_Effect_Particle, BoxShape)
 //		ASSERT_FLOAT_EQ(true, pos0.z < pos1.z);
 //	}
 //}
+
+#endif

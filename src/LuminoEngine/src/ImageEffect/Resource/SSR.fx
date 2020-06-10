@@ -364,7 +364,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     //float2 uv = getUVFromViewSpacePosition(viewPosition);
     //return float4(getUVFromViewSpacePosition(viewPosition), 0, 1);
 
- #if 1   // この2つは同じ値にならないとダメ
+ #if 0   // この2つは同じ値にならないとダメ
     return float4(
         getViewSpaceZ( getUVFromViewSpacePosition(viewPosition)) / 100,
         viewPosition.z / 100,

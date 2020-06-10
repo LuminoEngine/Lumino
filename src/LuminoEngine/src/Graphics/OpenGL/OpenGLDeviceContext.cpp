@@ -206,6 +206,8 @@ public:
 			// しかし glClear は Scissor の影響を受けるので GL_SCISSOR_TEST を切っておく。
 			GL_CHECK(glDisable(GL_SCISSOR_TEST));
 
+			// アタッチされているすべてのカラーバッファ・デプスバッファをクリアする。
+			// 個別クリアしたいときは glClearBufferiv
 			GL_CHECK(glClear(glflags));
 
 			//GLint c[] = { 255, 0, 0, 255 };
@@ -899,6 +901,11 @@ void GLGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resourc
 
 void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+	//std::array<GLenum, MaxMultiRenderTargets> buffers = {
+	//	GL_COLOR_ATTACHMENT0, GL_NONE, GL_NONE, GL_NONE
+	//};
+	//GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
+
 	OpenGLHelper::clearBuffers(flags, color, z, stencil);
 }
 
