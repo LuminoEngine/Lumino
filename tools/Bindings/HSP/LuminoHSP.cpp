@@ -1,6 +1,6 @@
 #include "LuminoHSP.h"
 
-static bool g_leadSupport = false;
+bool g_leadSupport = false;
 
 void* hspCommon_GetBlockSize(PVal* pval, PDAT* pdat, int* size)
 {

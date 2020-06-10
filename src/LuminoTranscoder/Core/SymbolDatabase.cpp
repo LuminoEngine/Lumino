@@ -114,6 +114,7 @@ Symbol::Symbol(SymbolDatabase* db)
 {
 	m_document = ln::makeRef<DocumentInfo>();
 	m_metadata = ln::makeRef<MetadataInfo>();
+	m_symbolId = db->generateSymbolId();
 }
 
 ln::Result Symbol::init()
@@ -355,7 +356,7 @@ ln::Result MethodSymbol::link()
 
 	if (!makeFlatParameters()) return false;
 
-	m_methodId = db()->generateMethodId();
+	//m_methodId = db()->generateMethodId();
 
 	return true;
 }

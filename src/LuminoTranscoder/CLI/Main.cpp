@@ -151,11 +151,11 @@ int main(int argc, char** argv)
 		g.setup(db, config);
 		g.generate();
 	}
-	{
-		HSPCommandsGenerator g;
-		g.setup(db, config);
-		g.generate();
-	}
+	//{
+	//	HSPCommandsGenerator g;
+	//	g.setup(db, config);
+	//	g.generate();
+	//}
     //{
     //    DotNetPInvokeGenerator g;
     //    g.setup(db, config);

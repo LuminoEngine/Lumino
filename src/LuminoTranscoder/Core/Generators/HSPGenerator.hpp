@@ -6,7 +6,6 @@ class HSPGeneratorBase
 	: public Generator
 {
 protected:
-    int getMethodId(const MethodSymbol* methodSymbol) const { return methodSymbol->methodId() + 64; }
 };
 
 // .as
@@ -18,6 +17,8 @@ public:
 
 private:
     ln::String makeEnums() const;
+    ln::String makeStructs() const;
+    ln::String makeClasses() const;
 };
 
 class HSPCommandsGenerator
@@ -28,8 +29,9 @@ public:
 
 private:
     ln::String makeStructStorageCores() const;
-    ln::String makeStorageCoreRegisterFunc() const;
+    ln::String makeRegisterTypeFunc() const;
     ln::String makeSubclassDefines() const;
+    ln::String make_reffunc() const;
     ln::String make_cmdfunc() const;
     ln::String makeCallCommandBlock(const MethodSymbol* methodSymbol) const;
     ln::String makeFetchVAExpr(const TypeSymbol* typeSymbol, bool reffunc) const;
@@ -40,4 +42,6 @@ private:
 
     ln::String makeName_HSPSubclassType(const TypeSymbol* classSymbol) const { return u"HSPSubclass_" + makeFlatClassName(classSymbol); }
     ln::String makeName_DelegateLabelCaller(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_DelegateLabelCaller"; }
+    ln::String makeName_SubinstanceAlloc(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_SubinstanceAlloc"; }
+    ln::String makeName_SubinstanceFree(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_SubinstanceFree"; }
 };

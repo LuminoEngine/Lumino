@@ -12,6 +12,8 @@
 
 #include <LuminoEngine/Runtime/Lumino.FlatC.generated.h>
 
+extern bool g_leadSupport;
+
 void* hspCommon_GetBlockSize(PVal* pval, PDAT* pdat, int* size);
 void hspCommon_AllocBlock(PVal* pval, PDAT* pdat, int size);
 
