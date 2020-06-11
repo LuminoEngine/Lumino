@@ -1,4 +1,5 @@
 ﻿
+#include <LuminoEngine.hpp>
 #include "LuminoHSP.h"
 
 extern bool Structs_reffunc(int cmd, int* typeRes, void** retValPtr);
@@ -58,6 +59,10 @@ static int termfunc(int option)
 //-----------------------------------------------------------------------------
 EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 {
+	ln::Logger::setLevel(ln::LogLevel::Debug);
+	ln::Logger::addStdErrAdapter();
+	ln::Console::allocate();
+
 	//		プラグイン初期化 (実行・終了処理を登録します)
 	//
 	hsp3sdk_init(info);			// SDKの初期化(最初に行なって下さい)
@@ -71,7 +76,7 @@ EXPORT void WINAPI hsp3cmdinit(HSP3TYPEINFO* info)
 	info->eventfunc = eventfunc;	// イベント関数(eventfunc)の登録
 	*/
 
-	//RegisterTypes(info);
+	RegisterTypes(info);
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,

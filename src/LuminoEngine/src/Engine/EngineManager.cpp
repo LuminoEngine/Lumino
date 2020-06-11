@@ -298,48 +298,52 @@ void EngineManager::initializeAllManagers()
 
 void EngineManager::initializeCommon()
 {
-	LN_LOG_DEBUG << "EngineManager common initialization started.";
+	if (!m_commonInitialized) {
+		LN_LOG_DEBUG << "EngineManager common initialization started.";
 
 #if defined(LN_OS_DESKTOP)
-	{
-		if (m_settings.engineLogEnabled) {
-            // engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
-			auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
-			Logger::addFileAdapter(logfile.str().toStdString());
+		{
+			if (m_settings.engineLogEnabled) {
+				// engineLogFilePath 未指定の場合、スクリプト系言語だとそのランタイム実行ファイルを指してしまうので、カレントディレクトリに出力するようにする。
+				auto logfile = (m_settings.engineLogFilePath.isEmpty()) ? Path(u"lumino.log") : Path(m_settings.engineLogFilePath);
+				Logger::addFileAdapter(logfile.str().toStdString());
+			}
 		}
-	}
 #endif
 
 #if defined(LN_OS_WIN32)
 
-    // CoInitializeEx は ShowWindow() ～ DestroyWindow() の外側で呼び出さなければならない。
-    // http://blog.techlab-xe.net/archives/400
-    // 例えば ウィンドウ作成→DirectInput初期化みたいにするとき、Input モジュールの中で CoInitializeEx しているとこの罠にはまる。
-    // とりあえず、Platform モジュールでは COM は使わないが、他のモジュールとの連携に備え、初期化しておく。
+		// CoInitializeEx は ShowWindow() ～ DestroyWindow() の外側で呼び出さなければならない。
+		// http://blog.techlab-xe.net/archives/400
+		// 例えば ウィンドウ作成→DirectInput初期化みたいにするとき、Input モジュールの中で CoInitializeEx しているとこの罠にはまる。
+		// とりあえず、Platform モジュールでは COM は使わないが、他のモジュールとの連携に備え、初期化しておく。
 
-    if (m_settings.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
-    {
-        // エラーにはしない。別の設定で COM が初期化済みだったりすると失敗することがあるが、COM 自体は使えるようになっている
-        m_comInitialized = true;
-    }
+		if (m_settings.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
+		{
+			// エラーにはしない。別の設定で COM が初期化済みだったりすると失敗することがあるが、COM 自体は使えるようになっている
+			m_comInitialized = true;
+		}
 
-    // OleInitialize() するためには、CoInitializeEx() が STA(COINIT_APARTMENTTHREADED) で初期化されている必要がある
-    if (SUCCEEDED(::OleInitialize(NULL))) {
-        m_oleInitialized = true;
-    }
+		// OleInitialize() するためには、CoInitializeEx() が STA(COINIT_APARTMENTTHREADED) で初期化されている必要がある
+		if (SUCCEEDED(::OleInitialize(NULL))) {
+			m_oleInitialized = true;
+		}
 #endif
 
 #ifdef __EMSCRIPTEN_PTHREADS__
 #else
-	LN_LOG_ERROR << "__EMSCRIPTEN_PTHREADS__ disabled.";
+		LN_LOG_ERROR << "__EMSCRIPTEN_PTHREADS__ disabled.";
 #endif
 
-	resolveActiveGraphicsAPI();
+		resolveActiveGraphicsAPI();
 
-	TaskScheduler::init();
-	m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
+		TaskScheduler::init();
+		m_mainThreadTaskDispatcher = makeRef<Dispatcher>();
 
-	LN_LOG_DEBUG << "EngineManager common initialization ended.";
+		m_commonInitialized = true;
+
+		LN_LOG_DEBUG << "EngineManager common initialization ended.";
+	}
 }
 
 void EngineManager::initializeAssetManager()
@@ -856,7 +860,7 @@ void EngineManager::resolveActiveGraphicsAPI()
 {
 	m_activeGraphicsAPI = m_settings.graphicsAPI;
 
-	if (m_activeGraphicsAPI == GraphicsAPI::Default) {
+	if (m_activeGraphicsAPI == GraphicsAPI::Default || m_activeGraphicsAPI == GraphicsAPI::Vulkan) {
 		if (GraphicsManager::checkVulkanSupported()) {
 			m_activeGraphicsAPI = GraphicsAPI::Vulkan;
 		}

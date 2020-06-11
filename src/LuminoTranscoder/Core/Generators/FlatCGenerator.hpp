@@ -65,6 +65,15 @@ private:
 	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
 	//ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
 	//ln::String makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const;
+
+	ln::String makeSubinstanceAllocStmt() const
+	{
+		return ln::String(u"if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));");
+	}
+	ln::String makeSubinstanceFreeStmt() const
+	{
+		return ln::String(u"if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);");
+	}
 };
 
 

@@ -262,6 +262,7 @@ private:
 
 void Sandbox_EmptyApp();
 void Example_GameAudio();
+void Example_MainLoop();
 void Example_MeshViewer();
 void Example_MessageWindow();
 void Example_Navigator();
@@ -449,8 +450,9 @@ int main(int argc, char** argv)
 
 
     if (1) {
-		//Sandbox_EmptyApp();
+		Sandbox_EmptyApp();
 		//Example_GameAudio();
+        //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();

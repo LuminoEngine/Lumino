@@ -148,6 +148,7 @@ void Engine::initialize()
 {
 	detail::EngineDomain::engineContext()->initializeEngineManager();
     detail::EngineManager* manager = detail::EngineDomain::engineManager();
+    manager->initializeAllManagers();
     if (manager->settings().externalMainLoop) {
         beginFrame();
     }

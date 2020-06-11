@@ -25,6 +25,7 @@ namespace LuminoBuild
                 //args = new string[] { "BuildExternalProjects", "MSVC2019-x64-MT" };//, "--enable-Effekseer" };
                 //args = new string[] { "BuildExternalProjects", "Emscripten" };
                 //args = new string[] { "BuildExternalProjects", "Android-x86_64" };
+                //args = new string[] { "BuildExternalProjects", "MSVC2019-x86-MT" };
                 //args = new string[] { "BuildEngine_MSVC", "MSVC2019-x64-MT" };
                 //args = new string[] { "BuildEngine_Emscripten" };
                 //args = new string[] { "BuildEngine_Android" };

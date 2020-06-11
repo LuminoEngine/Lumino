@@ -493,8 +493,23 @@ ln::String FlatCSourceGenerator::generateDelegateObjects() const
 				}
 				code.DecreaseIndent();
 				code.AppendLine(u"})");
-				code.AppendLine(u"{}");
+				code.AppendLine(u"{");
+				code.IncreaseIndent();		// Constructor body.
+				{
+					code.AppendLine(makeSubinstanceAllocStmt());
+				}
+				code.DecreaseIndent();
+				code.AppendLine(u"}");
 				code.NewLine();
+
+				code.AppendLine(u"~{0}()");
+				code.AppendLine(u"{");
+				code.IncreaseIndent();		// Destructor body.
+				{
+					code.AppendLine(makeSubinstanceFreeStmt());
+				}
+				code.DecreaseIndent();
+				code.AppendLine(u"}");
 
 				// init()
 				code.AppendLine(u"void init({0} callback)", funcPtrType);
@@ -549,6 +564,7 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 				overrideCallbackDecl.AppendLine(u"static {0}* subclassInfo() {{ static {0} info; return &info; }}", makeFlatAPIName_SubclassRegistrationInfo(classSymbol));
 				overrideCallbackDecl.AppendLine(u"LnSubinstanceId m_subinstance = 0;");
 			}
+
 
 			for (auto& method : classSymbol->virtualMethods()) {
 				// field decl
@@ -621,6 +637,27 @@ ln::String FlatCSourceGenerator::generateWrapSubclassDecls() const
 			code.AppendLine(u"{");
 			code.AppendLine(u"public:");
 			code.IncreaseIndent();
+			{	
+				// Constructor
+				code.AppendLine(u"{0}()", makeWrapSubclassName(classSymbol));
+				code.AppendLine(u"{");
+				code.IncreaseIndent();
+				{
+					code.AppendLine(makeSubinstanceAllocStmt());
+				}
+				code.DecreaseIndent();
+				code.AppendLine(u"}");
+
+				// Destructor
+				code.AppendLine(u"~{0}()", makeWrapSubclassName(classSymbol));
+				code.AppendLine(u"{");
+				code.IncreaseIndent();
+				{
+					code.AppendLine(makeSubinstanceFreeStmt());
+				}
+				code.DecreaseIndent();
+				code.AppendLine(u"}");
+			}
 			code.AppendLine(overrideCallbackDecl.toString());
 			code.AppendLine(overrideMethod.toString());
 			code.DecreaseIndent();

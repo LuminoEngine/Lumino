@@ -2082,17 +2082,24 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         }
         // LnZVTestDelegate1_Create
         case 0x2D3 : {
+            printf("LnZVTestDelegate1_Create 1\n");
             // Fetch callback
             const auto local_callback = fetchVALabelPointer();
+            printf("LnZVTestDelegate1_Create 2\n");
             // Fetch outZVTestDelegate1
             PVal* pval_outZVTestDelegate1;
             const APTR aptr_outZVTestDelegate1 = code_getva(&pval_outZVTestDelegate1);
             LnHandle local_outZVTestDelegate1;
+            printf("LnZVTestDelegate1_Create 3\n");
 
             stat = LnZVTestDelegate1_Create(HSPSubclass_LnZVTestDelegate1_DelegateLabelCaller, &local_outZVTestDelegate1);
+            printf("LnZVTestDelegate1_Create 4\n");
             auto* self = reinterpret_cast<HSPSubclass_LnZVTestDelegate1*>(LnZVTestDelegate1_GetSubinstanceId(local_outZVTestDelegate1));
+            printf("LnZVTestDelegate1_Create 5\n");
             self->labelPointer = local_callback;
+            printf("LnZVTestDelegate1_Create 6\n");
             setVAInt(pval_outZVTestDelegate1, aptr_outZVTestDelegate1, local_outZVTestDelegate1);
+            printf("LnZVTestDelegate1_Create 7\n");
 
             return true;
         }
@@ -4590,9 +4597,7 @@ bool Commands_cmdfunc(int cmd, int* retVal)
         }
         // LnEngine_Initialize
         case 0x23A : {
-
             stat = LnEngine_Initialize();
-
 
             return true;
         }

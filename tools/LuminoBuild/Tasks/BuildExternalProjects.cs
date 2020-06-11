@@ -257,15 +257,15 @@ namespace LuminoBuild.Tasks
             }
             if (!Directory.Exists("SDL2"))
             {
-                var zip = Path.Combine(reposDir, "SDL2-2.0.8.zip");
+                var zip = Path.Combine(reposDir, "SDL2-2.0.12.zip");
                 using (var wc = new System.Net.WebClient())
                 {
-                    wc.DownloadFile("https://www.libsdl.org/release/SDL2-2.0.8.zip", zip);
+                    wc.DownloadFile("https://www.libsdl.org/release/SDL2-2.0.12.zip", zip);
                 }
 
-                Utils.ExtractZipFile(zip, Path.Combine(reposDir, "SDL2-2.0.8"));
+                Utils.ExtractZipFile(zip, Path.Combine(reposDir, "SDL2-2.0.12"));
                 System.Threading.Thread.Sleep(1000);
-                Directory.Move(Path.Combine(reposDir, "SDL2-2.0.8", "SDL2-2.0.8"), Path.Combine(reposDir, "SDL2"));
+                Directory.Move(Path.Combine(reposDir, "SDL2-2.0.12", "SDL2-2.0.12"), Path.Combine(reposDir, "SDL2"));
             }
             if (!Directory.Exists("freetype2"))
             {
