@@ -15,9 +15,12 @@ UnLigitingSceneRendererPass::UnLigitingSceneRendererPass()
 {
 }
 
-void UnLigitingSceneRendererPass::init(RenderingManager* manager)
+void UnLigitingSceneRendererPass::init(RenderingManager* manager, bool forPostEffect)
 {
-	m_defaultShader = manager->builtinShader(BuiltinShader::CopyScreen);
+	if (forPostEffect)
+		m_defaultShader = manager->builtinShader(BuiltinShader::CopyScreen);
+	else
+		m_defaultShader = manager->builtinShader(BuiltinShader::Sprite);
 	m_renderPass = makeObject<RenderPass>();
 }
 
@@ -64,11 +67,11 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 //==============================================================================
 // UnLigitingSceneRenderer
 
-void UnLigitingSceneRenderer::init(RenderingManager* manager)
+void UnLigitingSceneRenderer::init(RenderingManager* manager, bool forPostEffect)
 {
 	SceneRenderer::init();
 	m_rendererPass = makeRef<UnLigitingSceneRendererPass>();
-	m_rendererPass->init(manager);
+	m_rendererPass->init(manager, forPostEffect);
 	addPass(m_rendererPass);
 }
 

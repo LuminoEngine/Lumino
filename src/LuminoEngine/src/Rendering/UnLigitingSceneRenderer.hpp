@@ -10,7 +10,7 @@ class UnLigitingSceneRendererPass
 public:
 	UnLigitingSceneRendererPass();
 
-	void init(RenderingManager* manager);
+	void init(RenderingManager* manager, bool forPostEffect);
 
 
 
@@ -32,7 +32,7 @@ class UnLigitingSceneRenderer
 	: public SceneRenderer
 {
 public:
-	void init(RenderingManager* manager);
+	void init(RenderingManager* manager, bool forPostEffect = false);
 
 	SceneRendererPass* mainRenderPass() const override;
 

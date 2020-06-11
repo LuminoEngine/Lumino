@@ -1,3 +1,8 @@
+/*
+ * 計算はすべて左手座標系で行われる。
+ * View 空間なら、奥が Z+, 手前が Z-。
+ */
+
 
 #include <Lumino.fxh>
 
@@ -10,10 +15,7 @@ float3 LN_UnpackNormal(float3 packednormal)
 // Lib
 
 // TODO: postproces で描くと、0.0~1.0 になってしまうのどうするか考える
-//#define CameraNear (0.3)    // ln_NearClip
-//#define CameraFar (100.0)    // ln_FarClip
-const float CameraNear = 0.3;
-const float CameraFar = 1000.0;
+#define CameraNear    ln_NearClip
 
 // https://veldrid.dev/articles/backend-differences.html
 const float ln_ClipSpaceNearZ = 0.0;    // DX,Metal,Vulkan.  OpenGL の場合は -1.0
@@ -29,15 +31,6 @@ float2 LN_ClipSpacePositionToUV(float2 pos)
 float2 LN_UVToClipSpacePosition(float2 pos)
 {
     return ((pos - 0.5) * 2.0) * float2(1.0, -1.0);
-}
-
-float LN_ViewSpaceZToClipSpaceZ(float z)
-{
-    // near:0.0 ~ far:1.0
-    const float tz = (z - CameraNear) / (CameraFar - CameraNear);
-
-    // To native ClipSpace
-    return (tz * (ln_ClipSpaceFarZ - ln_ClipSpaceNearZ) + ln_ClipSpaceNearZ);
 }
 
 //==============================================================================
@@ -102,15 +95,6 @@ float3 inverseTransformDirection(in float3 dir, in float4x4 mat) {
   return normalize((float4(dir, 0.0) * mat).xyz);
 }
 
-float viewZToOrthographicDepth(float viewZ) {
-    return (viewZ + CameraNear) / (CameraNear - CameraFar);
-}
-
-float perspectiveDepthToViewZ(float invClipZ) {
-    //return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*invClipZ-CameraFar);
-    return -((CameraNear*CameraFar) / ((CameraFar-CameraNear)*invClipZ-CameraFar));
-}
-
 // depth: near:0~far:1
 //float getDepth(float2 screenPosition) {
     //return tex2D(_NormalAndDepthSampler, screenPosition).a;
@@ -120,14 +104,7 @@ float perspectiveDepthToViewZ(float invClipZ) {
 // LH. far=Z+
 float getViewSpaceLinearZ(float2 uv) {
     return tex2D(_MetalRoughSampler, uv).y;
-    //return ((CameraFar-CameraNear)*depth-CameraFar);
-    //return (CameraNear*CameraFar) / ((CameraFar-CameraNear)*depth-CameraFar);
 }
-
-float getViewSpaceLinearZTotViewSpaceZ(float linearZ) {
-    return (linearZ * (CameraFar - CameraNear)) + CameraNear;
-}
-
 
 float3 getViewPosition(float2 inputUV, float projectedZ, float linearZ) {
     // ClipSpace 上の座標を求める
@@ -194,13 +171,13 @@ bool traceCameraSpaceRay(
 {
     // どの程度レイを飛ばすか？
     const float rayDist = _MaxRayDistance * (1.0 - saturate(dotNV)*step(0.6,dotNV));
-    //float rayDist = _MaxRayDistance;
 
     // Clip to the near plane
     // クリップ領域外に飛ばしても意味がないので、無駄な計算をしないようにする
     //float rayLength = ((rayOrg.z + rayDir.z * rayDist) > -CameraNear) ?
     //    (-CameraNear - rayOrg.z) / rayDir.z : rayDist;
-    float rayLength = rayDist;
+    //float rayLength = rayDist;
+    float rayLength = ((rayOrg.z + rayDir.z * rayDist) < CameraNear) ? (CameraNear + rayOrg.z) / rayDir.z : rayDist;
     float3 rayEnd = rayOrg + rayDir * rayLength;
 
     float3 Q0 = rayOrg;
@@ -339,12 +316,6 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     const float linearZ = getViewSpaceLinearZ(input.UV);
 
     
-
-
-    //return float4(linearZ, 0, 0, 1);
-    //return float4(CameraNear, CameraFar / 200, 0, 1);
-//    return float4(-_CameraProjectionMatrix[2][3] / 2, 0, 0, 1);
-
     // URL 先の図の、地面との衝突点と、その法線 (赤矢印)
     // https://qiita.com/mebiusbox2/items/e69ef326b211880d7549#%E8%A1%9D%E7%AA%81%E5%88%A4%E5%AE%9A
     float3 viewPosition = getViewPosition(input.UV, projectedZ, linearZ);
