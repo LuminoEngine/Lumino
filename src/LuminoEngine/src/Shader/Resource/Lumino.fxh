@@ -155,4 +155,28 @@ float4 LN_GetBuiltinEffectColor(float4 inColor)
 	return LN_CalculateToneColor(outColor, ln_ToneColor);
 }
 
+/**
+ * 整数型の RGB テクスチャなどに書き込まれている 0.0 ~ 1.0 にパックされた法線を -1.0 ~ 1.0 に展開します。
+ */
+float3 LN_UnpackNormal(float3 packednormal)
+{
+	return (packednormal * 2.0) - 1.0;
+}
+
+/**
+ * Clip-space 上の xy 座標 (-1.0 ~ 1.0) を、UV 座標 (0.0 ~ 1.0) へ変換します。
+ */
+float2 LN_ClipSpacePositionToUV(float2 pos)
+{
+    return (float2(1.0, -1.0) * pos) * 0.5 + 0.5;
+}
+
+/**
+ * UV 座標 (0.0 ~ 1.0) を、Clip-space 上の xy 座標 (-1.0 ~ 1.0) へ変換します。
+ */
+float2 LN_UVToClipSpacePosition(float2 uv)
+{
+    return ((uv - 0.5) * 2.0) * float2(1.0, -1.0);
+}
+
 #endif // LUMINO_INCLUDED

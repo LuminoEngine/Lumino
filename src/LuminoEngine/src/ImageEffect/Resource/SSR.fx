@@ -3,39 +3,26 @@
  * View 空間なら、奥が Z+, 手前が Z-。
  */
 
-
 #include <Lumino.fxh>
 
-float3 LN_UnpackNormal(float3 packednormal)
-{
-	return (packednormal * 2.0) - 1.0;
-}
-
-//==============================================================================
-// Lib
-
-// TODO: postproces で描くと、0.0~1.0 になってしまうのどうするか考える
-#define CameraNear    ln_NearClip
-
+// TODO:
 // https://veldrid.dev/articles/backend-differences.html
 const float ln_ClipSpaceNearZ = 0.0;    // DX,Metal,Vulkan.  OpenGL の場合は -1.0
 const float ln_ClipSpaceFarZ = 1.0;
 
-float2 LN_ClipSpacePositionToUV(float2 pos)
-{
-    //return pos.xy*0.5+0.5;
-    return (float2(1.0, -1.0) * pos) * 0.5 + 0.5;
-    //return (float2(-1.0, -1.0) * pos) * 0.5 + 0.5;
-}
-
-float2 LN_UVToClipSpacePosition(float2 pos)
-{
-    return ((pos - 0.5) * 2.0) * float2(1.0, -1.0);
-}
-
 //==============================================================================
 // Uniforms
 
+sampler2D _ColorSampler;
+sampler2D _NormalAndDepthSampler;
+sampler2D _ViewDepthSampler;
+sampler2D _MetalRoughSampler;
+
+float _Projection23;
+float _Projection33;
+
+float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
+float4x4 _CameraInverseProjectionMatrix; // inverse projection matrix (NDC to camera space)
 
 //==============================================================================
 // Vertex shader
@@ -65,19 +52,6 @@ VS_Output VS_Main(LN_VSInput input)
 
 #define MAX_ITERATIONS 300
 #define MAX_BINARY_SEARCH_ITERATIONS 64
-sampler2D _ColorSampler;
-sampler2D _NormalAndDepthSampler;
-sampler2D _ViewDepthSampler;
-sampler2D _MetalRoughSampler;
-//uniform float4 Resolution;    // xy: BufferSize, zw: InvBufferSize
-
-
-
-float _Projection23;
-float _Projection33;
-
-float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
-float4x4 _CameraInverseProjectionMatrix; // inverse projection matrix (NDC to camera space)
 const float _Iterations = 50.0;                   // maximum ray iterations
 const float _BinarySearchIterations = 4.0;       // maximum binary search refinement iterations
 const float _Thickness = 1.0;                    // Z size in camera space of a pixel in the depth buffer = _Thickness
@@ -95,12 +69,6 @@ float3 inverseTransformDirection(in float3 dir, in float4x4 mat) {
   return normalize((float4(dir, 0.0) * mat).xyz);
 }
 
-// depth: near:0~far:1
-//float getDepth(float2 screenPosition) {
-    //return tex2D(_NormalAndDepthSampler, screenPosition).a;
-//    return tex2D(_MetalRoughSampler, screenPosition).y;
-//}
-
 // LH. far=Z+
 float getViewSpaceLinearZ(float2 uv) {
     return tex2D(_MetalRoughSampler, uv).y;
@@ -109,39 +77,29 @@ float getViewSpaceLinearZ(float2 uv) {
 float3 getViewPosition(float2 inputUV, float projectedZ, float linearZ) {
     // ClipSpace 上の座標を求める
     float4 clipPosition = float4(LN_UVToClipSpacePosition(inputUV), projectedZ, 1.0);
-    //return clipPosition.xyz;
-
     float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
     //float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
-    float3 p = pos.xyz / pos.w;
-    //p.z *= -1.0;
-    return p;
+    return pos.xyz / pos.w;
 }
 
 float2 getUVFromViewSpacePosition(float3 pos) {
-    //float4 clip = mul(float4(pos * float3(1, 1, -1), 1.0), _CameraProjectionMatrix);
-    //float2 uv = (clip.xy / clip.w);
-    //return float4(fmod(uv, 1.0), 0, 1);
     float4 clip = mul(_CameraProjectionMatrix, float4(pos, 1.0));
-
     return LN_ClipSpacePositionToUV(clip.xy / clip.w);;
 }
 
-float3 getViewNormal(float2 screenPosition) {
+float3 getViewNormal(float2 screenPosition)
+{
     float3 rgb = tex2D(_NormalAndDepthSampler, screenPosition).xyz;
-    //float3 n = 2.0*rgb.xyz - 1.0;
     return normalize(LN_UnpackNormal(rgb));
 }
 
-float getViewSpaceZ(float2 uv) {
-#if 1
-    //const float clipSpaceZ = tex2D(_NormalAndDepthSampler, uv).a;
+float getViewSpaceZ(float2 uv)
+{
     const float clipSpaceZ = tex2D(_ViewDepthSampler, uv).r;
     float4 clipPosition = float4(LN_UVToClipSpacePosition(uv), clipSpaceZ, 1.0);
     float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
     //float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
     return pos.z / pos.w;
-#endif
 }
 
 //----------------------------------------------------------------------------
@@ -155,10 +113,6 @@ bool rayIntersectsDepth(float z, float2 uv)
     float dist = z - sceneZ; 
 
     return dist > 0.0 && dist < _Thickness;
-    //return dist < 0.0;// && dist < _Thickness;
-    
-    //float dist = z - sceneZMax;
-    //return dist < 0.0 && dist > -Thickness;
 }
 
 bool traceCameraSpaceRay(
@@ -172,27 +126,18 @@ bool traceCameraSpaceRay(
     // どの程度レイを飛ばすか？
     const float rayDist = _MaxRayDistance * (1.0 - saturate(dotNV)*step(0.6,dotNV));
 
-    // Clip to the near plane
+    // Clip to the near plane.
     // クリップ領域外に飛ばしても意味がないので、無駄な計算をしないようにする
-    //float rayLength = ((rayOrg.z + rayDir.z * rayDist) > -CameraNear) ?
-    //    (-CameraNear - rayOrg.z) / rayDir.z : rayDist;
-    //float rayLength = rayDist;
-    float rayLength = ((rayOrg.z + rayDir.z * rayDist) < CameraNear) ? (CameraNear + rayOrg.z) / rayDir.z : rayDist;
+    float rayLength = ((rayOrg.z + rayDir.z * rayDist) < ln_NearClip) ? (ln_NearClip + rayOrg.z) / rayDir.z : rayDist;
     float3 rayEnd = rayOrg + rayDir * rayLength;
 
     float3 Q0 = rayOrg;
     float3 Q1 = rayEnd;
     float3 delta = Q1 - Q0;     // 終点 - 開始点
-    float3 deltaStep = delta / _Iterations; // 1 iteration でどれだけ進めるか\
+    float3 deltaStep = delta / _Iterations; // 1 iteration でどれだけ進めるか
 
     float3 Q = Q0;
     float2 P;
-
-    if (false){
-        hitPixel.x = getViewSpaceZ( getUVFromViewSpacePosition(Q));// / 100;
-        //hitPixel.x = Q.z / 100;
-        return true;
-    }
     
     // Track ray step and derivatives in a float4 to parallelize
     bool intersect = false;
@@ -205,22 +150,10 @@ bool traceCameraSpaceRay(
         // ViewSpace 上のサンプリング点を進める
         Q += deltaStep;
 
-        // ViewSpace の Q を ClipSpace に変換する。
-        //float4 clip = mul(float4(Q,1.0), _CameraProjectionMatrix);
-        //P = clip.xy / clip.w;
-
         // ClipSpace を UV 座標に直す（ここからまた深度をサンプリングする）
-        //hitPixel = LN_ClipSpacePositionToUV(P.xy);
         hitPixel = getUVFromViewSpacePosition(Q);
 
         intersect = rayIntersectsDepth(Q.z, hitPixel);
-
-        //hitPixel.x = getViewSpaceZ(hitPixel) / 100;
-        //hitPixel.x = Q.z / 1000;
-        //intersect = true;
-        //hitPoint = 
-        //hitPixel.x = getDepth(hitPixel);// / 10.0;
-        //hitPixel.x = -0.01 * getViewZ(getDepth(hitPixel));// / 100.0;
 
         count = float(i);
     }
@@ -240,11 +173,6 @@ bool traceCameraSpaceRay(
             if (float(j) >= _BinarySearchIterations) break;
 
             Q += deltaStep * stride;
-            //float4 clip = _CameraProjectionMatrix * float4(Q,1.0);
-            //P = clip.xy / clip.w;
-
-            //hitPixel = P.xy*0.5+0.5;
-            //hitPixel = LN_ClipSpacePositionToUV(P.xy);
             hitPixel = getUVFromViewSpacePosition(Q);
 
             originalStride *= 0.5;
@@ -254,12 +182,6 @@ bool traceCameraSpaceRay(
 
     hitPoint = Q;
     iterationCount = count;
-
-    //hitPixel.x = length(deltaStep);
-    //hitPixel.y = length(delta) / 50.0;
-    //hitPixel.x = rayLength / 40.0;
-    //hitPixel.x = length(delta) / 40.0;
-    //hitPoint = normalize(delta);
 
     return intersect;
 }
