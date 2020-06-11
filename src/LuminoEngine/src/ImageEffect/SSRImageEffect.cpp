@@ -103,21 +103,21 @@ void SSRImageEffectInstance::onRender(RenderingContext* context, RenderTargetTex
 
 
 
-    auto pos = Vector3(1, 5, 10);
-    auto viewPos = Vector3::transformCoord(pos, viewPoint->viewMatrix);
-    auto clipPos = Vector3::transformCoord(viewPos, viewPoint->projMatrix);
-    auto viewPosR = Vector3::transformCoord(clipPos, Matrix::makeInverse(viewPoint->projMatrix));
-    auto viewPosR2 = Vector3::transform(clipPos, Matrix::makeInverse(viewPoint->projMatrix));
-    auto tt = viewPosR2.xyz() / viewPosR2.w;
+    //auto pos = Vector3(1, 5, 10);
+    //auto viewPos = Vector3::transformCoord(pos, viewPoint->viewMatrix);
+    //auto clipPos = Vector3::transformCoord(viewPos, viewPoint->projMatrix);
+    //auto viewPosR = Vector3::transformCoord(clipPos, Matrix::makeInverse(viewPoint->projMatrix));
+    //auto viewPosR2 = Vector3::transform(clipPos, Matrix::makeInverse(viewPoint->projMatrix));
+    //auto tt = viewPosR2.xyz() / viewPosR2.w;
 
-    auto pos2 = Vector3(1, 5, 10);
-    auto viewPos2t = Vector3::transform(pos2, viewPoint->viewMatrix);
-    auto viewPos2 = viewPos2t.xyz() / viewPos2t.w;
-    auto clipPos2t = Vector3::transform(viewPos2t.xyz() / viewPos2t.w, viewPoint->projMatrix);
-    auto clipPos2 = clipPos2t.xyz() / clipPos2t.w;
-    auto clipZ = clipPos2.z;
-    auto viewPos2R = Vector4::transform(Vector4(clipPos2.x, clipPos2.y, clipZ, 1.0), Matrix::makeInverse(viewPoint->projMatrix));
-    auto viewPos2R2 = viewPos2R.xyz() / viewPos2R.w;
+    //auto pos2 = Vector3(1, 5, 10);
+    //auto viewPos2t = Vector3::transform(pos2, viewPoint->viewMatrix);
+    //auto viewPos2 = viewPos2t.xyz() / viewPos2t.w;
+    //auto clipPos2t = Vector3::transform(viewPos2t.xyz() / viewPos2t.w, viewPoint->projMatrix);
+    //auto clipPos2 = clipPos2t.xyz() / clipPos2t.w;
+    //auto clipZ = clipPos2.z;
+    //auto viewPos2R = Vector4::transform(Vector4(clipPos2.x, clipPos2.y, clipZ, 1.0), Matrix::makeInverse(viewPoint->projMatrix));
+    //auto viewPos2R2 = viewPos2R.xyz() / viewPos2R.w;
 
     //auto projMat = Matrix::makePerspectiveFovLH(Math::degreesToRadians(45), 640.0 / 480.0, 1.0, 100);
     //auto viewMat = Matrix::makeLookAtLH(Vector3::Zero, Vector3::UnitZ, Vector3::UnitY);

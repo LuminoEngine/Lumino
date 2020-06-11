@@ -41,7 +41,8 @@ int main(int argc, char** argv)
 
             //"fxc", "Assets/LineWave.fx",
             //"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx",
-			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
+			//"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx",
+			"fxc", "C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSR.fx", "--export=tmp"
 
             //"build", "assets",
 			//"fxc", "D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Graphics/SimplePosColor.fx"
@@ -182,6 +183,8 @@ static int processCommands(int argc, char** argv)
 	auto fxcCommand = parser.addCommand(u"fxc", u"Compile shader.");
 	auto fxcCommand_inputArg = fxcCommand->addPositionalArgument(u"input", u"Input file.");
 	auto fxcCommand_outputArg = fxcCommand->addPositionalArgument(u"output", u"Output file.", ln::CommandLinePositionalArgumentFlags::Optional);
+	auto fxcCommand_exportArg = fxcCommand->addValueOption(u"e", u"export", u"Export folder of output code.");
+
 
 	//--------------------------------------------------------------------------------
 	// build-assets command
@@ -294,6 +297,9 @@ static int processCommands(int argc, char** argv)
 			FxcCommand cmd;
 			if (fxcCommand_outputArg->hasValue()) {
 				cmd.outputFile = fxcCommand_outputArg->value();
+			}
+			if (fxcCommand_exportArg->hasValue()) {
+				cmd.exportDir = fxcCommand_exportArg->value();
 			}
 			return cmd.execute(fxcCommand_inputArg->value());
 		}

@@ -5,6 +5,6 @@
 
 int FxcCommand::execute(const ln::Path& inputFile)
 {
-	auto result = lna::BuildAssetHelper::buildShader(inputFile, outputFile);
+	auto result = lna::BuildAssetHelper::buildShader(inputFile, outputFile, exportDir);
 	return result ? 1 : 0;
 }

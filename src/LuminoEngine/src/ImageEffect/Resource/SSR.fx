@@ -21,6 +21,7 @@ sampler2D _MetalRoughSampler;
 float _Projection23;
 float _Projection33;
 
+//#define _CameraProjectionMatrix ln_Projection
 float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
 float4x4 _CameraInverseProjectionMatrix; // inverse projection matrix (NDC to camera space)
 
