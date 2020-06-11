@@ -148,10 +148,10 @@ void SceneRenderingPipeline::render(
     m_sceneRenderer->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::Gizmo, nullptr);
 
     {
-        CameraInfo camera;
-        camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
+        //CameraInfo camera;
+        //camera.makeUnproject(m_renderingFrameBufferSize.toFloatSize());
 		m_sceneRenderer_ImageEffectPhase->lightOcclusionMap = m_sceneRenderer->lightOcclusionPass()->lightOcclusionMap();
-        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, camera, RenderPhaseClass::ImageEffect, nullptr);
+        m_sceneRenderer_ImageEffectPhase->render(graphicsContext, this, renderTarget, *mainCameraInfo, RenderPhaseClass::ImageEffect, nullptr);
     }
 
     // Release G-Buffer

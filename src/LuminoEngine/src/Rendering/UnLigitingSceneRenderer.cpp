@@ -17,7 +17,7 @@ UnLigitingSceneRendererPass::UnLigitingSceneRendererPass()
 
 void UnLigitingSceneRendererPass::init(RenderingManager* manager)
 {
-	m_defaultShader = manager->builtinShader(BuiltinShader::Sprite);
+	m_defaultShader = manager->builtinShader(BuiltinShader::CopyScreen);
 	m_renderPass = makeObject<RenderPass>();
 }
 

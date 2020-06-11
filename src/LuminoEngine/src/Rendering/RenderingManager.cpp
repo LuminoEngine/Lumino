@@ -95,6 +95,16 @@ void RenderingManager::init(const Settings& settings)
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
+//	// CopyScreen
+//	{
+//		static const unsigned char data[] =
+//		{
+//#include "Resource/CopyScreen.lcfx.inl"
+//		};
+//		static const size_t size = LN_ARRAY_SIZE_OF(data);
+//		MemoryStream stream(data, size);
+//		m_builtinShaders[(int)BuiltinShader::CopyScreen] = makeObject<Shader>(u"CopyScreen", &stream);
+//	}
 	// Sprite
 	{
 		static const unsigned char data[] =
@@ -182,6 +192,7 @@ void RenderingManager::init(const Settings& settings)
 		m_builtinShaders[(int)BuiltinShader::RadialBlur] = makeObject<Shader>(u"RadialBlur", &stream);
 	}
 
+	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx");
 	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
 	//m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
