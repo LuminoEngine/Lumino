@@ -263,6 +263,12 @@ struct ShaderPassDescriptorLayout
  * シェーダーを表すクラスです。
  *
  * このクラスは DirectX9 ～ 11 世代に提供されていた「エフェクト」と同様の、シェーダーステージをまとめて管理・適用する機能を持っています。
+ *
+ * @note
+ * パラメータは通常 Material 経由で設定するが、Shader に直接設定することも可能。
+ * その場合 Material 側で持つデータ量や転送のオーバーヘッドは少なくなるが、以下の点に注意すること。
+ * - 値をシリアライズすることはできなくなる。
+ * - 複数の Material から参照される場合、値は共有される。
  */
 class LN_API Shader final
     : public GraphicsResource

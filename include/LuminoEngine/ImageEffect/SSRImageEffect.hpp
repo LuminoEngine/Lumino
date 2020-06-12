@@ -51,6 +51,12 @@ private:
     Ref<SamplerState> m_samplerState;
 
     // Find optimization
+    ShaderParameter2* m_ssrMaterial_ColorSampler;
+    ShaderParameter2* m_ssrMaterial_NormalAndDepthSampler;
+    ShaderParameter2* m_ssrMaterial_ViewDepthSampler;
+    ShaderParameter2* m_ssrMaterial_MetalRoughSampler;
+    //ShaderParameter2* m_ssrBlurMaterial1_ColorSampler;
+    //ShaderParameter2* m_ssrBlurMaterial2_ColorSampler;
     ShaderParameter2* m_paramColorSampler;
     ShaderParameter2* m_paramSSRSampler;
 

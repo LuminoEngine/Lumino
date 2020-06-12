@@ -30,7 +30,7 @@ VS_Output VS_Main(LN_VSInput input)
 
 //==============================================================================
 // Pixel shader
-sampler2D _ColorSampler;
+//sampler2D _ColorSampler;
 
 const float2 _Resolution = float2(640, 480);
 
@@ -47,7 +47,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     for (int i=-2; i<=2; i++) {
         for (int j=-2; j<=2; j++) {
             float2 offset = ((float2(float(i),float(j)))*texelSize);
-            result += tex2D(_ColorSampler, input.UV+offset);
+            result += tex2D(ln_MaterialTexture, input.UV+offset);
         }
     }
 
