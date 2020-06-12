@@ -223,7 +223,7 @@ void RenderFeature::updateRenderParameters(detail::RenderDrawElement* element, S
 void RenderFeature::updateRenderParametersDefault(ShaderTechnique* tech, const detail::CameraInfo& cameraInfo, const detail::ElementInfo& elementInfo, const detail::SubsetInfo& subsetInfo)
 {
 	detail::ShaderTechniqueSemanticsManager* semanticsManager = tech->semanticsManager2();
-	semanticsManager->updateCameraVariables(cameraInfo);
+	semanticsManager->updateCameraVariables(cameraInfo);	// TODO: ここだと element ごとに呼ばれるのでかなり無駄が多い。事前計算しておいて、memcpy で済ませたい
 	semanticsManager->updateElementVariables(cameraInfo, elementInfo);
 	semanticsManager->updateSubsetVariables(subsetInfo);
 }

@@ -18,13 +18,6 @@ sampler2D _NormalAndDepthSampler;
 sampler2D _ViewDepthSampler;
 sampler2D _MetalRoughSampler;
 
-float _Projection23;
-float _Projection33;
-
-#define _CameraProjectionMatrix ln_Projection
-//float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
-float4x4 _CameraInverseProjectionMatrix; // inverse projection matrix (NDC to camera space)
-
 //==============================================================================
 // Vertex shader
 
@@ -62,52 +55,43 @@ const float _EdgeExponent = 1.0;
 const float _FadeDistance = 10.0;
 const float _FadeExponent = 1.0;
 
-float3 transformDirection(in float3 dir, in float4x4 mat) {
-  return normalize((mat * float4(dir, 0.0)).xyz);
-}
-
-float3 inverseTransformDirection(in float3 dir, in float4x4 mat) {
-  return normalize((float4(dir, 0.0) * mat).xyz);
-}
-
 // LH. far=Z+
-float getViewSpaceLinearZ(float2 uv) {
+float GetViewSpaceLinearZ(float2 uv) {
     return tex2D(_MetalRoughSampler, uv).y;
 }
 
-float3 getViewPosition(float2 inputUV, float projectedZ, float linearZ) {
+float3 GetViewPosition(float2 inputUV, float projectedZ, float linearZ) {
     // ClipSpace 上の座標を求める
     float4 clipPosition = float4(LN_UVToClipSpacePosition(inputUV), projectedZ, 1.0);
-    //float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
-    float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
+    //float4 pos = (mul(ln_ProjectionI, clipPosition));
+    float4 pos = (mul(clipPosition, ln_ProjectionI));
     return pos.xyz / pos.w;
 }
 
-float2 getUVFromViewSpacePosition(float3 pos) {
-    //float4 clip = mul(_CameraProjectionMatrix, float4(pos, 1.0));
-    float4 clip = mul(float4(pos, 1.0), _CameraProjectionMatrix);
+float2 GetUVFromViewSpacePosition(float3 pos) {
+    //float4 clip = mul(ln_Projection, float4(pos, 1.0));
+    float4 clip = mul(float4(pos, 1.0), ln_Projection);
     return LN_ClipSpacePositionToUV(clip.xy / clip.w);;
 }
 
-float3 getViewNormal(float2 screenPosition)
+float3 GetViewNormal(float2 screenPosition)
 {
     float3 rgb = tex2D(_NormalAndDepthSampler, screenPosition).xyz;
     return normalize(LN_UnpackNormal(rgb));
 }
 
-float getViewSpaceZ(float2 uv)
+float GetViewSpaceZ(float2 uv)
 {
     const float clipSpaceZ = tex2D(_ViewDepthSampler, uv).r;
     float4 clipPosition = float4(LN_UVToClipSpacePosition(uv), clipSpaceZ, 1.0);
-    //float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
-    float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
+    //float4 pos = (mul(ln_ProjectionI, clipPosition));
+    float4 pos = (mul(clipPosition, ln_ProjectionI));
     return pos.z / pos.w;
 }
 
-//----------------------------------------------------------------------------
-bool rayIntersectsDepth(float z, float2 uv)
+bool RayIntersectsDepth(float z, float2 uv)
 {
-    float sceneZ = getViewSpaceZ(uv);
+    float sceneZ = GetViewSpaceZ(uv);
 
     // 遠い方が Z+.
     // サンプリングポイント z が、シーンのZ より手前にあるときは 0 より小さい。
@@ -117,7 +101,7 @@ bool rayIntersectsDepth(float z, float2 uv)
     return dist > 0.0 && dist < _Thickness;
 }
 
-bool traceCameraSpaceRay(
+bool TraceCameraSpaceRay(
     float3 rayOrg,
     float3 rayDir,
     float dotNV,
@@ -153,9 +137,9 @@ bool traceCameraSpaceRay(
         Q += deltaStep;
 
         // ClipSpace を UV 座標に直す（ここからまた深度をサンプリングする）
-        hitPixel = getUVFromViewSpacePosition(Q);
+        hitPixel = GetUVFromViewSpacePosition(Q);
 
-        intersect = rayIntersectsDepth(Q.z, hitPixel);
+        intersect = RayIntersectsDepth(Q.z, hitPixel);
 
         count = float(i);
     }
@@ -175,10 +159,10 @@ bool traceCameraSpaceRay(
             if (float(j) >= _BinarySearchIterations) break;
 
             Q += deltaStep * stride;
-            hitPixel = getUVFromViewSpacePosition(Q);
+            hitPixel = GetUVFromViewSpacePosition(Q);
 
             originalStride *= 0.5;
-            stride = rayIntersectsDepth(Q.z, hitPixel) ? -originalStride : originalStride;
+            stride = RayIntersectsDepth(Q.z, hitPixel) ? -originalStride : originalStride;
         }
     }
 
@@ -188,7 +172,7 @@ bool traceCameraSpaceRay(
     return intersect;
 }
 
-float calculateAlpha(
+float CalculateAlpha(
     float2 uv,
     bool intersect,
     float iterationCount,
@@ -223,9 +207,6 @@ float calculateAlpha(
     return alpha;
 }
 
-
-
-
 struct PS_Input
 {
     float2 UV : TEXCOORD0;
@@ -233,35 +214,25 @@ struct PS_Input
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    //return float4(0, getDepth(input.UV), 0, 1);
-
     const float projectedZ = tex2D(_ViewDepthSampler, input.UV).r;
+    const float linearZ = GetViewSpaceLinearZ(input.UV);
 
-    const float linearZ = getViewSpaceLinearZ(input.UV);
-
-    
     // URL 先の図の、地面との衝突点と、その法線 (赤矢印)
     // https://qiita.com/mebiusbox2/items/e69ef326b211880d7549#%E8%A1%9D%E7%AA%81%E5%88%A4%E5%AE%9A
-    float3 viewPosition = getViewPosition(input.UV, projectedZ, linearZ);
-    float3 viewNormal   = getViewNormal(input.UV);
+    float3 viewPosition = GetViewPosition(input.UV, projectedZ, linearZ);
+    float3 viewNormal   = GetViewNormal(input.UV);
+    
+ #if 0   // DEBUG: この2つは同じ値にならないとダメ
     // この時点の色を確認すると、右が赤、上が緑になるのが正しい。
     // 拡大して、座標が 0~1のところを確認するとグラデーションしているのがわかる。
     //return float4(viewPosition, 1);
-    //return float4(fmod(viewPosition, 1.0), 1);
-    //return float4(viewPosition / 10.0, 1);
     // viewNormal は左手。手前はZ-なので色がついているようには見えない。
     //return float4(viewNormal, 1);
+#endif
 
-    //float4 clip = mul(float4(viewPosition * float3(1, 1, -1), 1.0), _CameraProjectionMatrix);
-    //float2 uv = (clip.xy / clip.w);
-    //return float4(fmod(uv, 1.0), 0, 1);
-    //float2 uv = LN_ClipSpacePositionToUV(clip.xy / clip.w);
-    //float2 uv = getUVFromViewSpacePosition(viewPosition);
-    //return float4(getUVFromViewSpacePosition(viewPosition), 0, 1);
-
- #if 0   // この2つは同じ値にならないとダメ
+#if 0   // DEBUG: この2つは同じ値にならないとダメ
     return float4(
-        getViewSpaceZ( getUVFromViewSpacePosition(viewPosition)) / 100,
+        GetViewSpaceZ( GetUVFromViewSpacePosition(viewPosition)) / 100,
         viewPosition.z / 100,
         0, 1);
 #endif
@@ -270,9 +241,6 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     // rayDir は、視点から飛ばしたベクトルを反射させた方向が入るので、例えば手前向きの垂直の壁を、左斜め前から見ると反射ベクトルは (1, 0, 0) となり、赤く見える
     float3 rayOrg = viewPosition;
     float3 rayDir = reflect(normalize(rayOrg), viewNormal);
-    //return float4(rayOrg, 1);
-    //return float4(viewNormal, 1);
-    //return float4(rayDir, 1);
 
     float2 hitPixel;
     float3 hitPoint;
@@ -282,21 +250,12 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     // 視点に対して対面するなら 1, 逆向きなら -1
     float dotNV = dot(normalize(-rayOrg), viewNormal);
 
-    bool intersect = traceCameraSpaceRay(rayOrg, rayDir, dotNV, hitPixel, hitPoint, iterationCount);
+    bool intersect = TraceCameraSpaceRay(rayOrg, rayDir, dotNV, hitPixel, hitPoint, iterationCount);
 
-    //return float4(hitPoint, 1);
-    //return float4((intersect ? 1 : 0), 0, 0, 1);
-    //return float4(dotNV, 0, 0, 1);
-    //return float4(hitPixel.x, 0, 0, 1);
-    //return float4(hitPixel.x, hitPixel.y, 0, 1);
-    //return float4(iterationCount / _Iterations, 0, 0, 1);
-    //return float4(hitPoint.xy, -hitPoint.z, 1);
-    
-    
     const float4 metalRoughness = tex2D(_MetalRoughSampler, input.UV);
     const float specularStrength = 1.0 - metalRoughness.z;
 
-    float alpha = calculateAlpha(input.UV, intersect, iterationCount, specularStrength, hitPixel, hitPoint, rayOrg, rayDir);
+    float alpha = CalculateAlpha(input.UV, intersect, iterationCount, specularStrength, hitPixel, hitPoint, rayOrg, rayDir);
     
     float3 color = tex2D(_ColorSampler, hitPixel).xyz;
 

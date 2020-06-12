@@ -36,6 +36,7 @@ static const std::unordered_map<String, BuiltinShaderParameters> s_BuiltinShader
 {
     {_LT("ln_View"), BuiltinShaderParameters_ln_View},
     {_LT("ln_Projection"), BuiltinShaderParameters_ln_Projection},
+    {_LT("ln_ProjectionI"), BuiltinShaderParameters_ln_ProjectionI},
     {_LT("ln_CameraPosition"), BuiltinShaderParameters_ln_CameraPosition},
     {_LT("ln_CameraDirection"), BuiltinShaderParameters_ln_CameraDirection},
     {_LT("ln_ViewportPixelSize"), BuiltinShaderParameters_ln_ViewportPixelSize},
@@ -84,12 +85,12 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
 ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
 {
     // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
-    assert(128 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
-    assert(144 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
-    assert(160 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_ViewportPixelSize));
-    assert(168 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
-    assert(172 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
-    static_assert(176 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
+    assert(192 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraPosition));
+    assert(208 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_CameraDirection));
+    assert(224 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_ViewportPixelSize));
+    assert(232 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_NearClip));
+    assert(236 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_FarClip));
+    static_assert(240 == sizeof(LNRenderViewBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(336 == sizeof(LNRenderElementBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(48 == sizeof(LNEffectColorBuffer), "Invalid sizeof(LNRenderViewBuffer)");
     static_assert(BuiltinShaderParameters__Count < 64, "Invalid BuiltinShaderParameters__Count");
@@ -163,6 +164,8 @@ void ShaderTechniqueSemanticsManager::updateCameraVariables(const CameraInfo& in
         LNRenderViewBuffer data;
         data.ln_View = info.viewMatrix;
         data.ln_Projection = info.projMatrix;
+        if (hasParameter(BuiltinShaderParameters_ln_ProjectionI))
+            data.ln_ProjectionI = Matrix::makeInverse(info.projMatrix);
         data.ln_ViewportPixelSize = info.viewPixelSize;
         data.ln_NearClip = info.nearClip;
         data.ln_FarClip = info.farClip;

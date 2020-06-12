@@ -15,6 +15,7 @@ struct alignas(16) LNRenderViewBuffer
 {
     alignas(16) Matrix ln_View;
     alignas(16) Matrix ln_Projection;
+    alignas(16) Matrix ln_ProjectionI;
     alignas(16) Vector3 ln_CameraPosition;
     alignas(16) Vector3 ln_CameraDirection;
     alignas(8) Vector2 ln_ViewportPixelSize;
@@ -191,6 +192,7 @@ enum BuiltinShaderParameters
     // LNRenderViewBuffer
     BuiltinShaderParameters_ln_View,
     BuiltinShaderParameters_ln_Projection,
+    BuiltinShaderParameters_ln_ProjectionI,
     BuiltinShaderParameters_ln_CameraPosition,
     BuiltinShaderParameters_ln_CameraDirection,
     BuiltinShaderParameters_ln_ViewportPixelSize,

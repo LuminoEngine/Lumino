@@ -12,12 +12,13 @@ cbuffer LNRenderViewBuffer
 {
 	/* [0]   */ float4x4 ln_View;
 	/* [64]  */ float4x4 ln_Projection;
-	/* [128] */ float3 ln_CameraPosition;
-	/* [144] */ float3 ln_CameraDirection;
-	/* [160] */ float2 ln_ViewportPixelSize;
-	/* [168] */ float ln_NearClip;
-	/* [172] */ float ln_FarClip;
-};
+	/* [128] */ float4x4 ln_ProjectionI;
+	/* [192] */ float3 ln_CameraPosition;
+	/* [208] */ float3 ln_CameraDirection;
+	/* [224] */ float2 ln_ViewportPixelSize;
+	/* [232] */ float ln_NearClip;
+	/* [236] */ float ln_FarClip;
+};  /* [240] */
 
 cbuffer LNRenderElementBuffer
 {
