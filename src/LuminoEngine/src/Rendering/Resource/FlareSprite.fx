@@ -34,7 +34,7 @@ float2 screenToTex(float2 p)
 
 VS_Output VS_Main(LN_VSInput input)
 {
-    float inverseAspect = ln_ViewportPixelSize.y / ln_ViewportPixelSize.x;
+    float inverseAspect = ln_Resolution.y / ln_Resolution.x;
 
     // ln_WorldViewProjection は視点を向く回転も適用されている。
     float4 lightPos = mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);

@@ -308,7 +308,7 @@ LN_VSOutput_Common LN_ProcessVertex_SkinnedCommon(LN_VSInput input)
 	LN_VSOutput_Common o;
 	o.svPos			= mul(float4(local.Position, 1.0f), ln_WorldViewProjection);
 	o.Normal		= mul(float4(local.Normal, 1.0f), ln_WorldViewIT).xyz;
-	o.UV			= input.UV + (float2(0.5, 0.5) / ln_ViewportPixelSize);
+	o.UV			= input.UV + (float2(0.5, 0.5) / ln_Resolution.xy);
 	o.Color			= input.Color;
 	return o;
 }

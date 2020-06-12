@@ -2,7 +2,7 @@
 float3 frustumRayTL;
 float3 frustumRayTR;
 float3 frustumRayBL;
-float2 windowSize = float2(640, 480);//ln_ViewportPixelSize.xy;
+float2 windowSize = float2(640, 480);//ln_Resolution.xy;
 
 
 

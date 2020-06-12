@@ -48,7 +48,7 @@ float4 PS_Main(PS_Input input) : SV_TARGET
     // Sampled texture (_LensflareOcclusionMap) size.
     // FIXME: Originally, it should be the size of _LensflareOcclusionMap.
     //        Currently used only in Posteffect, and the size of in and out match, so leave it as is.
-    float2 texDim = ln_ViewportPixelSize;
+    float2 texDim = ln_Resolution.xy;
     float2 radialSize = float2(1.0 / texDim.x, 1.0 / texDim.y); // 1px size
     
     float2 UV = input.UV;

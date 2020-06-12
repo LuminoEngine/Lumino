@@ -13,12 +13,12 @@ cbuffer LNRenderViewBuffer
 	/* [0]   */ float4x4 ln_View;
 	/* [64]  */ float4x4 ln_Projection;
 	/* [128] */ float4x4 ln_ProjectionI;
-	/* [192] */ float3 ln_CameraPosition;
-	/* [208] */ float3 ln_CameraDirection;
-	/* [224] */ float2 ln_ViewportPixelSize;
-	/* [232] */ float ln_NearClip;
-	/* [236] */ float ln_FarClip;
-};  /* [240] */
+	/* [192] */ float4 ln_Resolution;
+	/* [208] */ float3 ln_CameraPosition;
+	/* [224] */ float3 ln_CameraDirection;
+	/* [240] */ float ln_NearClip;
+	/* [244] */ float ln_FarClip;
+};  /* [248(alignd:256)] */
 
 cbuffer LNRenderElementBuffer
 {
@@ -111,7 +111,7 @@ LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 	LN_VSOutput_Common o;
 	o.svPos			= mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
 	o.Normal		= mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-	o.UV			= input.UV;// + (float2(0.5, 0.5) / ln_ViewportPixelSize);
+	o.UV			= input.UV;// + (float2(0.5, 0.5) / ln_Resolution.xy);
 	o.Color			= input.Color;
 	return o;
 }
