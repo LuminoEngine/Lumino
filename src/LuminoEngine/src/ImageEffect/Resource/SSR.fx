@@ -21,8 +21,8 @@ sampler2D _MetalRoughSampler;
 float _Projection23;
 float _Projection33;
 
-//#define _CameraProjectionMatrix ln_Projection
-float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
+#define _CameraProjectionMatrix ln_Projection
+//float4x4 _CameraProjectionMatrix;        // projection matrix that maps to screen pixels (not NDC)
 float4x4 _CameraInverseProjectionMatrix; // inverse projection matrix (NDC to camera space)
 
 //==============================================================================
@@ -78,13 +78,14 @@ float getViewSpaceLinearZ(float2 uv) {
 float3 getViewPosition(float2 inputUV, float projectedZ, float linearZ) {
     // ClipSpace 上の座標を求める
     float4 clipPosition = float4(LN_UVToClipSpacePosition(inputUV), projectedZ, 1.0);
-    float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
-    //float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
+    //float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
+    float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
     return pos.xyz / pos.w;
 }
 
 float2 getUVFromViewSpacePosition(float3 pos) {
-    float4 clip = mul(_CameraProjectionMatrix, float4(pos, 1.0));
+    //float4 clip = mul(_CameraProjectionMatrix, float4(pos, 1.0));
+    float4 clip = mul(float4(pos, 1.0), _CameraProjectionMatrix);
     return LN_ClipSpacePositionToUV(clip.xy / clip.w);;
 }
 
@@ -98,8 +99,8 @@ float getViewSpaceZ(float2 uv)
 {
     const float clipSpaceZ = tex2D(_ViewDepthSampler, uv).r;
     float4 clipPosition = float4(LN_UVToClipSpacePosition(uv), clipSpaceZ, 1.0);
-    float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
-    //float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
+    //float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition));
+    float4 pos = (mul(clipPosition, _CameraInverseProjectionMatrix));
     return pos.z / pos.w;
 }
 
