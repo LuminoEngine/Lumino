@@ -23,6 +23,7 @@ private:
     ln::String makeClasses() const;
 };
 
+// .cpp
 class HSPCommandsGenerator
     : public HSPGeneratorBase
 {
@@ -46,4 +47,14 @@ private:
     ln::String makeName_DelegateLabelCaller(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_DelegateLabelCaller"; }
     ln::String makeName_SubinstanceAlloc(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_SubinstanceAlloc"; }
     ln::String makeName_SubinstanceFree(const TypeSymbol* classSymbol) const { return makeName_HSPSubclassType(classSymbol) + u"_SubinstanceFree"; }
+};
+
+// .hs
+class HSPHelpGenerator
+    : public HSPGeneratorBase
+{
+public:
+    void generate();
+
+private:
 };
