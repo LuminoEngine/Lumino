@@ -16,6 +16,8 @@ static const ln::String ASFileTemplate = uR"(
 
 %%Contents%%
 
+#cmd ln_args $1
+
 #endif // __lumino__
 )";
 
@@ -54,7 +56,7 @@ ln::String HSPHeaderGenerator::makeStructs() const
 {
     OutputBuffer code;
     for (const auto& structSymbol : db()->structs()) {
-        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), structSymbol->symbolId());
+        code.AppendLine("#cmd {0} ${1:X}", makeFlatTypeName2(structSymbol), getCommandId(structSymbol));
     }
     return code.toString();
 }
@@ -64,7 +66,7 @@ ln::String HSPHeaderGenerator::makeClasses() const
     OutputBuffer code;
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
-            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), methodSymbol->symbolId());
+            code.AppendLine("#cmd {0} ${1:X}", makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii), getCommandId(methodSymbol));
         }
     }
     return code.toString();
@@ -359,9 +361,23 @@ static void HSPSubclass_%%FlatClassName%%_SubinstanceFree(LnHandle handle, LnSub
             code.AppendLine(u"{");
             code.IncreaseIndent();
             {
+                const auto& params = classSymbol->delegateProtoType()->flatParameters();
+                for (int i = 0; i < params.size(); i++) {
+                    if (params[i]->isIn()) {
+                        code.AppendLine(u"setCallbackArg({0}, {1});", i, params[i]->name());
+                    }
+                }
+
                 code.AppendLine(u"auto* self = reinterpret_cast<{0}*>({1}({2}));", makeName_HSPSubclassType(classSymbol), makeFlatAPIName_GetSubinstanceId(classSymbol), selfParamName);
                 code.AppendLine(u"stat = 0;");
                 code.AppendLine(u"code_call(self->labelPointer);");
+
+                for (int i = 0; i < params.size(); i++) {
+                    if (params[i]->isOut()) {
+                        code.AppendLine(u"setCallbackOutput({0}, {1});", i, params[i]->name());
+                    }
+                }
+
                 code.AppendLine(u"return static_cast<LnResult>(stat);");
             }
             code.DecreaseIndent();
@@ -385,7 +401,7 @@ ln::String HSPCommandsGenerator::make_reffunc() const
         {
             for (const auto& structSymbol : db()->structs()) {
                 code.AppendLine(u"// " + makeFlatTypeName2(structSymbol));
-                code.AppendLine(u"case 0x{0:X} : {{", structSymbol->symbolId());
+                code.AppendLine(u"case 0x{0:X} : {{", getCommandId(structSymbol));
                 code.IncreaseIndent();
 
                 code.AppendLines(u"hsp{0}_reffunc(typeRes, retValPtr);", makeFlatTypeName2(structSymbol));
@@ -394,6 +410,14 @@ ln::String HSPCommandsGenerator::make_reffunc() const
                 code.DecreaseIndent();
                 code.AppendLine(u"}");
             }
+
+            code.AppendLine(u"// ln_args");
+            code.AppendLine(u"case 0x1 : {");
+            code.IncreaseIndent();
+            code.AppendLines(u"ln_args_reffunc(typeRes, retValPtr);");
+            code.AppendLine(u"return true;");
+            code.DecreaseIndent();
+            code.AppendLine(u"}");
         }
         code.DecreaseIndent();
         code.AppendLine(u"}");
@@ -417,7 +441,7 @@ ln::String HSPCommandsGenerator::make_cmdfunc() const
     for (const auto& classSymbol : db()->classes()) {
         for (const auto& methodSymbol : classSymbol->publicMethods()) {
             code.AppendLine(u"// " + makeFlatFullFuncName(methodSymbol, FlatCharset::Ascii));
-            code.AppendLine(u"case 0x{0:X} : {{", methodSymbol->symbolId());
+            code.AppendLine(u"case 0x{0:X} : {{", getCommandId(methodSymbol));
             code.IncreaseIndent();
 
             code.AppendLines(makeCallCommandBlock(methodSymbol));

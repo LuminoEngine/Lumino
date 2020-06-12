@@ -1,0 +1,28 @@
+#include "lumino.as"
+
+LnEngine_Initialize
+
+// *delegate1_callback を delegate1 でラップ
+LnZVTestDelegate1_Create *delegate1_callback, delegate1
+
+// いろいろな Delegate を保持するクラス
+LnZVTestClass1_Create testClass1
+
+LnZVTestClass1_SetTestDelegate1 testClass1, delegate1
+
+LnZVTestClass1_CallTestDelegate1 testClass1, 500
+
+repeat
+	end_requested = 0
+	LnEngine_Update end_requested
+
+	await 1000/60
+loop
+
+LnEngine_Finalize
+
+
+*delegate1_callback
+	mes ln_args(0)
+	mes ln_args(1)
+	return

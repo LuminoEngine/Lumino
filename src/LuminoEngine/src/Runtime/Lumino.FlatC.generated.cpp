@@ -4,26 +4,166 @@
 #include <LuminoEngine.hpp>
 #include "BindingValidation.hpp"
 
+class LNWS_ln_Object : public ln::Object
+{
+public:
+    static LnObject_SubclassRegistrationInfo* subclassInfo() { static LnObject_SubclassRegistrationInfo info; return &info; }
+    LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Object()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Object()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
+    static LnObject_OnSerialize_OverrideCallback s_LnObject_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnObject_OnSerialize_OverrideCallback) s_LnObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Object::onSerialize(ar);
+    }
+
+    // Virtual
+    static LnObject_OnSerialize2_OverrideCallback s_LnObject_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnObject_OnSerialize2_OverrideCallback) s_LnObject_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Object::onSerialize2(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_OverrideCallback = nullptr;
+LnObject_OnSerialize2_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize2_OverrideCallback = nullptr;
+
+class LNWS_ln_EventConnection : public ln::EventConnection
+{
+public:
+    static LnEventConnection_SubclassRegistrationInfo* subclassInfo() { static LnEventConnection_SubclassRegistrationInfo info; return &info; }
+    LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_EventConnection()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_EventConnection()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
+    static LnEventConnection_OnSerialize_OverrideCallback s_LnEventConnection_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnEventConnection_OnSerialize_OverrideCallback) s_LnEventConnection_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::EventConnection::onSerialize(ar);
+    }
+
+    // Virtual
+    static LnEventConnection_OnSerialize2_OverrideCallback s_LnEventConnection_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnEventConnection_OnSerialize2_OverrideCallback) s_LnEventConnection_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::EventConnection::onSerialize2(ar);
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+LnEventConnection_OnSerialize_OverrideCallback LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize_OverrideCallback = nullptr;
+LnEventConnection_OnSerialize2_OverrideCallback LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize2_OverrideCallback = nullptr;
+
 class LNWS_ln_PromiseFailureDelegate : public ln::PromiseFailureDelegate
 {
 public:
     static LnPromiseFailureDelegate_SubclassRegistrationInfo* subclassInfo() { static LnPromiseFailureDelegate_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
     LnPromiseFailureDelegateCallback m_callback;
 
-    LNWS_ln_PromiseFailureDelegate() : ln::PromiseFailureDelegate([this]() -> void
+    LNWS_ln_PromiseFailureDelegate()
+      : ln::PromiseFailureDelegate([this]() -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
         if (r != LN_SUCCESS) { LN_ERROR("LnPromiseFailureDelegateCallback"); }
     })
-    {}
-
-    void init(LnPromiseFailureDelegateCallback callback)
     {
-        ln::PromiseFailureDelegate::init();
-        m_callback = callback;
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
+
+    ~LNWS_ln_PromiseFailureDelegate()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnPromiseFailureDelegateCallback callback)
+    {
+        if (!ln::PromiseFailureDelegate::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
 };
+
 
 LN_FLAT_API LnResult LnPromiseFailureDelegate_Create(LnPromiseFailureDelegateCallback callback, LnHandle* outDelegate)
 {
@@ -31,26 +171,53 @@ LN_FLAT_API LnResult LnPromiseFailureDelegate_Create(LnPromiseFailureDelegateCal
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_PromiseFailureDelegate, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+
 class LNWS_ln_ZVTestDelegate1 : public ln::ZVTestDelegate1
 {
 public:
     static LnZVTestDelegate1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestDelegate1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
     LnZVTestDelegate1Callback m_callback;
 
-    LNWS_ln_ZVTestDelegate1() : ln::ZVTestDelegate1([this](int p1) -> void
+    LNWS_ln_ZVTestDelegate1()
+      : ln::ZVTestDelegate1([this](int p1) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), p1);
         if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate1Callback"); }
     })
-    {}
-
-    void init(LnZVTestDelegate1Callback callback)
     {
-        ln::ZVTestDelegate1::init();
-        m_callback = callback;
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
+
+    ~LNWS_ln_ZVTestDelegate1()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnZVTestDelegate1Callback callback)
+    {
+        if (!ln::ZVTestDelegate1::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
 };
+
 
 LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback, LnHandle* outDelegate)
 {
@@ -58,28 +225,55 @@ LN_FLAT_API LnResult LnZVTestDelegate1_Create(LnZVTestDelegate1Callback callback
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate1, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+
 class LNWS_ln_ZVTestDelegate2 : public ln::ZVTestDelegate2
 {
 public:
     static LnZVTestDelegate2_SubclassRegistrationInfo* subclassInfo() { static LnZVTestDelegate2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
     LnZVTestDelegate2Callback m_callback;
 
-    LNWS_ln_ZVTestDelegate2() : ln::ZVTestDelegate2([this](int p1, int p2) -> int
+    LNWS_ln_ZVTestDelegate2()
+      : ln::ZVTestDelegate2([this](int p1, int p2) -> int
     {
         int ret = {};
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), p1, p2, &ret);
         if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate2Callback"); }
         return ret;
     })
-    {}
-
-    void init(LnZVTestDelegate2Callback callback)
     {
-        ln::ZVTestDelegate2::init();
-        m_callback = callback;
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
+
+    ~LNWS_ln_ZVTestDelegate2()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnZVTestDelegate2Callback callback)
+    {
+        if (!ln::ZVTestDelegate2::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
 };
+
 
 LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback, LnHandle* outDelegate)
 {
@@ -87,26 +281,53 @@ LN_FLAT_API LnResult LnZVTestDelegate2_Create(LnZVTestDelegate2Callback callback
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate2, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+
 class LNWS_ln_ZVTestDelegate3 : public ln::ZVTestDelegate3
 {
 public:
     static LnZVTestDelegate3_SubclassRegistrationInfo* subclassInfo() { static LnZVTestDelegate3_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
     LnZVTestDelegate3Callback m_callback;
 
-    LNWS_ln_ZVTestDelegate3() : ln::ZVTestDelegate3([this](ln::ZVTestClass1* p1) -> void
+    LNWS_ln_ZVTestDelegate3()
+      : ln::ZVTestDelegate3([this](ln::ZVTestClass1* p1) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE_FROM_STRONG_REFERENCE(p1));
         if (r != LN_SUCCESS) { LN_ERROR("LnZVTestDelegate3Callback"); }
     })
-    {}
-
-    void init(LnZVTestDelegate3Callback callback)
     {
-        ln::ZVTestDelegate3::init();
-        m_callback = callback;
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
+
+    ~LNWS_ln_ZVTestDelegate3()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnZVTestDelegate3Callback callback)
+    {
+        if (!ln::ZVTestDelegate3::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
 };
+
 
 LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback, LnHandle* outDelegate)
 {
@@ -114,26 +335,53 @@ LN_FLAT_API LnResult LnZVTestDelegate3_Create(LnZVTestDelegate3Callback callback
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestDelegate3, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+
 class LNWS_ln_ZVTestEventHandler1 : public ln::ZVTestEventHandler1
 {
 public:
     static LnZVTestEventHandler1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestEventHandler1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
     LnZVTestEventHandler1Callback m_callback;
 
-    LNWS_ln_ZVTestEventHandler1() : ln::ZVTestEventHandler1([this]() -> void
+    LNWS_ln_ZVTestEventHandler1()
+      : ln::ZVTestEventHandler1([this]() -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
         if (r != LN_SUCCESS) { LN_ERROR("LnZVTestEventHandler1Callback"); }
     })
-    {}
-
-    void init(LnZVTestEventHandler1Callback callback)
     {
-        ln::ZVTestEventHandler1::init();
-        m_callback = callback;
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
+
+    ~LNWS_ln_ZVTestEventHandler1()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnZVTestEventHandler1Callback callback)
+    {
+        if (!ln::ZVTestEventHandler1::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
 };
+
 
 LN_FLAT_API LnResult LnZVTestEventHandler1_Create(LnZVTestEventHandler1Callback callback, LnHandle* outDelegate)
 {
@@ -141,26 +389,53 @@ LN_FLAT_API LnResult LnZVTestEventHandler1_Create(LnZVTestEventHandler1Callback 
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestEventHandler1, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
+
 class LNWS_ln_ZVTestEventHandler2 : public ln::ZVTestEventHandler2
 {
 public:
     static LnZVTestEventHandler2_SubclassRegistrationInfo* subclassInfo() { static LnZVTestEventHandler2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
     LnZVTestEventHandler2Callback m_callback;
 
-    LNWS_ln_ZVTestEventHandler2() : ln::ZVTestEventHandler2([this](ln::ZVTestEventArgs1* p1) -> void
+    LNWS_ln_ZVTestEventHandler2()
+      : ln::ZVTestEventHandler2([this](ln::ZVTestEventArgs1* p1) -> void
     {
         auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
         if (r != LN_SUCCESS) { LN_ERROR("LnZVTestEventHandler2Callback"); }
     })
-    {}
-
-    void init(LnZVTestEventHandler2Callback callback)
     {
-        ln::ZVTestEventHandler2::init();
-        m_callback = callback;
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
     }
+
+    ~LNWS_ln_ZVTestEventHandler2()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnZVTestEventHandler2Callback callback)
+    {
+        if (!ln::ZVTestEventHandler2::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
 };
+
 
 LN_FLAT_API LnResult LnZVTestEventHandler2_Create(LnZVTestEventHandler2Callback callback, LnHandle* outDelegate)
 {
@@ -168,185 +443,24 @@ LN_FLAT_API LnResult LnZVTestEventHandler2_Create(LnZVTestEventHandler2Callback 
     LNI_CREATE_OBJECT(outDelegate, LNWS_ln_ZVTestEventHandler2, init, callback);
     LNI_FUNC_TRY_END_RETURN;
 }
-class LNWS_ln_TestDelegate : public ln::TestDelegate
-{
-public:
-    static LnTestDelegate_SubclassRegistrationInfo* subclassInfo() { static LnTestDelegate_SubclassRegistrationInfo info; return &info; }
-    LnSubinstanceId m_subinstance = 0;
-    LnTestDelegateCallback m_callback;
-
-    LNWS_ln_TestDelegate() : ln::TestDelegate([this](int p1) -> int
-    {
-        int ret = {};
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), p1, &ret);
-        if (r != LN_SUCCESS) { LN_ERROR("LnTestDelegateCallback"); }
-        return ret;
-    })
-    {}
-
-    void init(LnTestDelegateCallback callback)
-    {
-        ln::TestDelegate::init();
-        m_callback = callback;
-    }
-};
-
-LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-class LNWS_ln_UIGeneralEventHandler : public ln::UIGeneralEventHandler
-{
-public:
-    static LnUIGeneralEventHandler_SubclassRegistrationInfo* subclassInfo() { static LnUIGeneralEventHandler_SubclassRegistrationInfo info; return &info; }
-    LnSubinstanceId m_subinstance = 0;
-    LnUIGeneralEventHandlerCallback m_callback;
-
-    LNWS_ln_UIGeneralEventHandler() : ln::UIGeneralEventHandler([this](ln::UIEventArgs* p1) -> void
-    {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
-        if (r != LN_SUCCESS) { LN_ERROR("LnUIGeneralEventHandlerCallback"); }
-    })
-    {}
-
-    void init(LnUIGeneralEventHandlerCallback callback)
-    {
-        ln::UIGeneralEventHandler::init();
-        m_callback = callback;
-    }
-};
-
-LN_FLAT_API LnResult LnUIGeneralEventHandler_Create(LnUIGeneralEventHandlerCallback callback, LnHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIGeneralEventHandler, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-class LNWS_ln_UIEventHandler : public ln::UIEventHandler
-{
-public:
-    static LnUIEventHandler_SubclassRegistrationInfo* subclassInfo() { static LnUIEventHandler_SubclassRegistrationInfo info; return &info; }
-    LnSubinstanceId m_subinstance = 0;
-    LnUIEventHandlerCallback m_callback;
-
-    LNWS_ln_UIEventHandler() : ln::UIEventHandler([this]() -> void
-    {
-        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
-        if (r != LN_SUCCESS) { LN_ERROR("LnUIEventHandlerCallback"); }
-    })
-    {}
-
-    void init(LnUIEventHandlerCallback callback)
-    {
-        ln::UIEventHandler::init();
-        m_callback = callback;
-    }
-};
-
-LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, LnHandle* outDelegate)
-{
-    LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIEventHandler, init, callback);
-    LNI_FUNC_TRY_END_RETURN;
-}
-
-class LNWS_ln_Object : public ln::Object
-{
-public:
-    static LnObject_SubclassRegistrationInfo* subclassInfo() { static LnObject_SubclassRegistrationInfo info; return &info; }
-    LnSubinstanceId m_subinstance = 0;
-    static LnObject_OnSerialize_OverrideCallback s_LnObject_OnSerialize_OverrideCallback; // deprecated
-    static LnObject_OnSerialize2_OverrideCallback s_LnObject_OnSerialize2_OverrideCallback; // deprecated
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnObject_OnSerialize_OverrideCallback) s_LnObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Object::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnObject_OnSerialize2_OverrideCallback) s_LnObject_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Object::onSerialize2(ar);
-    }
-
-};
-LnObject_OnSerialize_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize_OverrideCallback = nullptr;
-LnObject_OnSerialize2_OverrideCallback LNWS_ln_Object::s_LnObject_OnSerialize2_OverrideCallback = nullptr;
-
-
-class LNWS_ln_EventConnection : public ln::EventConnection
-{
-public:
-    static LnEventConnection_SubclassRegistrationInfo* subclassInfo() { static LnEventConnection_SubclassRegistrationInfo info; return &info; }
-    LnSubinstanceId m_subinstance = 0;
-    static LnEventConnection_OnSerialize_OverrideCallback s_LnEventConnection_OnSerialize_OverrideCallback; // deprecated
-    static LnEventConnection_OnSerialize2_OverrideCallback s_LnEventConnection_OnSerialize2_OverrideCallback; // deprecated
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnEventConnection_OnSerialize_OverrideCallback) s_LnEventConnection_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::EventConnection::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnEventConnection_OnSerialize2_OverrideCallback) s_LnEventConnection_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::EventConnection::onSerialize2(ar);
-    }
-
-};
-LnEventConnection_OnSerialize_OverrideCallback LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize_OverrideCallback = nullptr;
-LnEventConnection_OnSerialize2_OverrideCallback LNWS_ln_EventConnection::s_LnEventConnection_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_ZVTestPromise1 : public ln::ZVTestPromise1
 {
 public:
     static LnZVTestPromise1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestPromise1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_ZVTestPromise1()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_ZVTestPromise1()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -359,8 +473,6 @@ public:
         else
             return ln::TypeInfo::getTypeInfo<Object>();
     }
-
-
 
 };
 
@@ -370,6 +482,18 @@ class LNWS_ln_ZVTestPromise2 : public ln::ZVTestPromise2
 public:
     static LnZVTestPromise2_SubclassRegistrationInfo* subclassInfo() { static LnZVTestPromise2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_ZVTestPromise2()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_ZVTestPromise2()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -382,8 +506,6 @@ public:
         else
             return ln::TypeInfo::getTypeInfo<Object>();
     }
-
-
 
 };
 
@@ -393,8 +515,40 @@ class LNWS_ln_ZVTestClass1 : public ln::ZVTestClass1
 public:
     static LnZVTestClass1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestClass1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_ZVTestClass1()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_ZVTestClass1()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnZVTestClass1_OnSerialize_OverrideCallback s_LnZVTestClass1_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnZVTestClass1_OnSerialize_OverrideCallback) s_LnZVTestClass1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::ZVTestClass1::onSerialize(ar);
+    }
+
+    // Virtual
     static LnZVTestClass1_OnSerialize2_OverrideCallback s_LnZVTestClass1_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnZVTestClass1_OnSerialize2_OverrideCallback) s_LnZVTestClass1_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::ZVTestClass1::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -408,38 +562,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnZVTestClass1_OnSerialize_OverrideCallback) s_LnZVTestClass1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::ZVTestClass1::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnZVTestClass1_OnSerialize2_OverrideCallback) s_LnZVTestClass1_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::ZVTestClass1::onSerialize2(ar);
-    }
-
 };
+
 LnZVTestClass1_OnSerialize_OverrideCallback LNWS_ln_ZVTestClass1::s_LnZVTestClass1_OnSerialize_OverrideCallback = nullptr;
 LnZVTestClass1_OnSerialize2_OverrideCallback LNWS_ln_ZVTestClass1::s_LnZVTestClass1_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_ZVTestEventArgs1 : public ln::ZVTestEventArgs1
 {
 public:
     static LnZVTestEventArgs1_SubclassRegistrationInfo* subclassInfo() { static LnZVTestEventArgs1_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_ZVTestEventArgs1()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_ZVTestEventArgs1()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnZVTestEventArgs1_OnSerialize_OverrideCallback s_LnZVTestEventArgs1_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnZVTestEventArgs1_OnSerialize_OverrideCallback) s_LnZVTestEventArgs1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::ZVTestEventArgs1::onSerialize(ar);
+    }
+
+    // Virtual
     static LnZVTestEventArgs1_OnSerialize2_OverrideCallback s_LnZVTestEventArgs1_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnZVTestEventArgs1_OnSerialize2_OverrideCallback) s_LnZVTestEventArgs1_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::ZVTestEventArgs1::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -453,38 +619,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnZVTestEventArgs1_OnSerialize_OverrideCallback) s_LnZVTestEventArgs1_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::ZVTestEventArgs1::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnZVTestEventArgs1_OnSerialize2_OverrideCallback) s_LnZVTestEventArgs1_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::ZVTestEventArgs1::onSerialize2(ar);
-    }
-
 };
+
 LnZVTestEventArgs1_OnSerialize_OverrideCallback LNWS_ln_ZVTestEventArgs1::s_LnZVTestEventArgs1_OnSerialize_OverrideCallback = nullptr;
 LnZVTestEventArgs1_OnSerialize2_OverrideCallback LNWS_ln_ZVTestEventArgs1::s_LnZVTestEventArgs1_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Serializer : public ln::Serializer
 {
 public:
     static LnSerializer_SubclassRegistrationInfo* subclassInfo() { static LnSerializer_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Serializer()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Serializer()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnSerializer_OnSerialize_OverrideCallback s_LnSerializer_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSerializer_OnSerialize_OverrideCallback) s_LnSerializer_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Serializer::onSerialize(ar);
+    }
+
+    // Virtual
     static LnSerializer_OnSerialize2_OverrideCallback s_LnSerializer_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnSerializer_OnSerialize2_OverrideCallback) s_LnSerializer_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Serializer::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -498,38 +676,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnSerializer_OnSerialize_OverrideCallback) s_LnSerializer_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Serializer::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnSerializer_OnSerialize2_OverrideCallback) s_LnSerializer_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Serializer::onSerialize2(ar);
-    }
-
 };
+
 LnSerializer_OnSerialize_OverrideCallback LNWS_ln_Serializer::s_LnSerializer_OnSerialize_OverrideCallback = nullptr;
 LnSerializer_OnSerialize2_OverrideCallback LNWS_ln_Serializer::s_LnSerializer_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Serializer2 : public ln::Serializer2
 {
 public:
     static LnSerializer2_SubclassRegistrationInfo* subclassInfo() { static LnSerializer2_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Serializer2()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Serializer2()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnSerializer2_OnSerialize_OverrideCallback s_LnSerializer2_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSerializer2_OnSerialize_OverrideCallback) s_LnSerializer2_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Serializer2::onSerialize(ar);
+    }
+
+    // Virtual
     static LnSerializer2_OnSerialize2_OverrideCallback s_LnSerializer2_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnSerializer2_OnSerialize2_OverrideCallback) s_LnSerializer2_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Serializer2::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -543,38 +733,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnSerializer2_OnSerialize_OverrideCallback) s_LnSerializer2_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Serializer2::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnSerializer2_OnSerialize2_OverrideCallback) s_LnSerializer2_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Serializer2::onSerialize2(ar);
-    }
-
 };
+
 LnSerializer2_OnSerialize_OverrideCallback LNWS_ln_Serializer2::s_LnSerializer2_OnSerialize_OverrideCallback = nullptr;
 LnSerializer2_OnSerialize2_OverrideCallback LNWS_ln_Serializer2::s_LnSerializer2_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_AssetModel : public ln::AssetModel
 {
 public:
     static LnAssetModel_SubclassRegistrationInfo* subclassInfo() { static LnAssetModel_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_AssetModel()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_AssetModel()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnAssetModel_OnSerialize_OverrideCallback s_LnAssetModel_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnAssetModel_OnSerialize_OverrideCallback) s_LnAssetModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::AssetModel::onSerialize(ar);
+    }
+
+    // Virtual
     static LnAssetModel_OnSerialize2_OverrideCallback s_LnAssetModel_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnAssetModel_OnSerialize2_OverrideCallback) s_LnAssetModel_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::AssetModel::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -588,36 +790,14 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnAssetModel_OnSerialize_OverrideCallback) s_LnAssetModel_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::AssetModel::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnAssetModel_OnSerialize2_OverrideCallback) s_LnAssetModel_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::AssetModel::onSerialize2(ar);
-    }
-
 };
+
 LnAssetModel_OnSerialize_OverrideCallback LNWS_ln_AssetModel::s_LnAssetModel_OnSerialize_OverrideCallback = nullptr;
 LnAssetModel_OnSerialize2_OverrideCallback LNWS_ln_AssetModel::s_LnAssetModel_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Assets : public ln::Assets
 {
 public:
-
-
 };
 
 
@@ -626,8 +806,40 @@ class LNWS_ln_GraphicsResource : public ln::GraphicsResource
 public:
     static LnGraphicsResource_SubclassRegistrationInfo* subclassInfo() { static LnGraphicsResource_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_GraphicsResource()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_GraphicsResource()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnGraphicsResource_OnSerialize_OverrideCallback s_LnGraphicsResource_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnGraphicsResource_OnSerialize_OverrideCallback) s_LnGraphicsResource_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::GraphicsResource::onSerialize(ar);
+    }
+
+    // Virtual
     static LnGraphicsResource_OnSerialize2_OverrideCallback s_LnGraphicsResource_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnGraphicsResource_OnSerialize2_OverrideCallback) s_LnGraphicsResource_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::GraphicsResource::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -641,38 +853,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnGraphicsResource_OnSerialize_OverrideCallback) s_LnGraphicsResource_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::GraphicsResource::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnGraphicsResource_OnSerialize2_OverrideCallback) s_LnGraphicsResource_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::GraphicsResource::onSerialize2(ar);
-    }
-
 };
+
 LnGraphicsResource_OnSerialize_OverrideCallback LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize_OverrideCallback = nullptr;
 LnGraphicsResource_OnSerialize2_OverrideCallback LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Texture : public ln::Texture
 {
 public:
     static LnTexture_SubclassRegistrationInfo* subclassInfo() { static LnTexture_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Texture()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Texture()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnTexture_OnSerialize_OverrideCallback s_LnTexture_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnTexture_OnSerialize_OverrideCallback) s_LnTexture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Texture::onSerialize(ar);
+    }
+
+    // Virtual
     static LnTexture_OnSerialize2_OverrideCallback s_LnTexture_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnTexture_OnSerialize2_OverrideCallback) s_LnTexture_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Texture::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -686,38 +910,50 @@ public:
             return ln::TypeInfo::getTypeInfo<GraphicsResource>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnTexture_OnSerialize_OverrideCallback) s_LnTexture_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Texture::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnTexture_OnSerialize2_OverrideCallback) s_LnTexture_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Texture::onSerialize2(ar);
-    }
-
 };
+
 LnTexture_OnSerialize_OverrideCallback LNWS_ln_Texture::s_LnTexture_OnSerialize_OverrideCallback = nullptr;
 LnTexture_OnSerialize2_OverrideCallback LNWS_ln_Texture::s_LnTexture_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Texture2D : public ln::Texture2D
 {
 public:
     static LnTexture2D_SubclassRegistrationInfo* subclassInfo() { static LnTexture2D_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Texture2D()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Texture2D()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnTexture2D_OnSerialize_OverrideCallback s_LnTexture2D_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnTexture2D_OnSerialize_OverrideCallback) s_LnTexture2D_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Texture2D::onSerialize(ar);
+    }
+
+    // Virtual
     static LnTexture2D_OnSerialize2_OverrideCallback s_LnTexture2D_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnTexture2D_OnSerialize2_OverrideCallback) s_LnTexture2D_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Texture2D::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -731,38 +967,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Texture>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnTexture2D_OnSerialize_OverrideCallback) s_LnTexture2D_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Texture2D::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnTexture2D_OnSerialize2_OverrideCallback) s_LnTexture2D_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Texture2D::onSerialize2(ar);
-    }
-
 };
+
 LnTexture2D_OnSerialize_OverrideCallback LNWS_ln_Texture2D::s_LnTexture2D_OnSerialize_OverrideCallback = nullptr;
 LnTexture2D_OnSerialize2_OverrideCallback LNWS_ln_Texture2D::s_LnTexture2D_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_RenderView : public ln::RenderView
 {
 public:
     static LnRenderView_SubclassRegistrationInfo* subclassInfo() { static LnRenderView_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_RenderView()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_RenderView()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnRenderView_OnSerialize_OverrideCallback s_LnRenderView_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnRenderView_OnSerialize_OverrideCallback) s_LnRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::RenderView::onSerialize(ar);
+    }
+
+    // Virtual
     static LnRenderView_OnSerialize2_OverrideCallback s_LnRenderView_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnRenderView_OnSerialize2_OverrideCallback) s_LnRenderView_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::RenderView::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -776,38 +1024,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnRenderView_OnSerialize_OverrideCallback) s_LnRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::RenderView::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnRenderView_OnSerialize2_OverrideCallback) s_LnRenderView_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::RenderView::onSerialize2(ar);
-    }
-
 };
+
 LnRenderView_OnSerialize_OverrideCallback LNWS_ln_RenderView::s_LnRenderView_OnSerialize_OverrideCallback = nullptr;
 LnRenderView_OnSerialize2_OverrideCallback LNWS_ln_RenderView::s_LnRenderView_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Component : public ln::Component
 {
 public:
     static LnComponent_SubclassRegistrationInfo* subclassInfo() { static LnComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Component()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Component()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnComponent_OnSerialize_OverrideCallback s_LnComponent_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnComponent_OnSerialize_OverrideCallback) s_LnComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Component::onSerialize(ar);
+    }
+
+    // Virtual
     static LnComponent_OnSerialize2_OverrideCallback s_LnComponent_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnComponent_OnSerialize2_OverrideCallback) s_LnComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Component::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -821,38 +1081,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnComponent_OnSerialize_OverrideCallback) s_LnComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Component::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnComponent_OnSerialize2_OverrideCallback) s_LnComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Component::onSerialize2(ar);
-    }
-
 };
+
 LnComponent_OnSerialize_OverrideCallback LNWS_ln_Component::s_LnComponent_OnSerialize_OverrideCallback = nullptr;
 LnComponent_OnSerialize2_OverrideCallback LNWS_ln_Component::s_LnComponent_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_VisualComponent : public ln::VisualComponent
 {
 public:
     static LnVisualComponent_SubclassRegistrationInfo* subclassInfo() { static LnVisualComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_VisualComponent()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_VisualComponent()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnVisualComponent_OnSerialize_OverrideCallback s_LnVisualComponent_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnVisualComponent_OnSerialize_OverrideCallback) s_LnVisualComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::VisualComponent::onSerialize(ar);
+    }
+
+    // Virtual
     static LnVisualComponent_OnSerialize2_OverrideCallback s_LnVisualComponent_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnVisualComponent_OnSerialize2_OverrideCallback) s_LnVisualComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::VisualComponent::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -866,38 +1138,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Component>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnVisualComponent_OnSerialize_OverrideCallback) s_LnVisualComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::VisualComponent::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnVisualComponent_OnSerialize2_OverrideCallback) s_LnVisualComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::VisualComponent::onSerialize2(ar);
-    }
-
 };
+
 LnVisualComponent_OnSerialize_OverrideCallback LNWS_ln_VisualComponent::s_LnVisualComponent_OnSerialize_OverrideCallback = nullptr;
 LnVisualComponent_OnSerialize2_OverrideCallback LNWS_ln_VisualComponent::s_LnVisualComponent_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_SpriteComponent : public ln::SpriteComponent
 {
 public:
     static LnSpriteComponent_SubclassRegistrationInfo* subclassInfo() { static LnSpriteComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_SpriteComponent()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_SpriteComponent()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnSpriteComponent_OnSerialize_OverrideCallback s_LnSpriteComponent_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSpriteComponent_OnSerialize_OverrideCallback) s_LnSpriteComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::SpriteComponent::onSerialize(ar);
+    }
+
+    // Virtual
     static LnSpriteComponent_OnSerialize2_OverrideCallback s_LnSpriteComponent_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnSpriteComponent_OnSerialize2_OverrideCallback) s_LnSpriteComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::SpriteComponent::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -911,38 +1195,50 @@ public:
             return ln::TypeInfo::getTypeInfo<VisualComponent>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnSpriteComponent_OnSerialize_OverrideCallback) s_LnSpriteComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::SpriteComponent::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnSpriteComponent_OnSerialize2_OverrideCallback) s_LnSpriteComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::SpriteComponent::onSerialize2(ar);
-    }
-
 };
+
 LnSpriteComponent_OnSerialize_OverrideCallback LNWS_ln_SpriteComponent::s_LnSpriteComponent_OnSerialize_OverrideCallback = nullptr;
 LnSpriteComponent_OnSerialize2_OverrideCallback LNWS_ln_SpriteComponent::s_LnSpriteComponent_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_World : public ln::World
 {
 public:
     static LnWorld_SubclassRegistrationInfo* subclassInfo() { static LnWorld_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_World()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_World()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnWorld_OnSerialize_OverrideCallback s_LnWorld_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnWorld_OnSerialize_OverrideCallback) s_LnWorld_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::World::onSerialize(ar);
+    }
+
+    // Virtual
     static LnWorld_OnSerialize2_OverrideCallback s_LnWorld_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnWorld_OnSerialize2_OverrideCallback) s_LnWorld_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::World::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -956,38 +1252,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnWorld_OnSerialize_OverrideCallback) s_LnWorld_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::World::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnWorld_OnSerialize2_OverrideCallback) s_LnWorld_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::World::onSerialize2(ar);
-    }
-
 };
+
 LnWorld_OnSerialize_OverrideCallback LNWS_ln_World::s_LnWorld_OnSerialize_OverrideCallback = nullptr;
 LnWorld_OnSerialize2_OverrideCallback LNWS_ln_World::s_LnWorld_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_ComponentList : public ln::ComponentList
 {
 public:
     static LnComponentList_SubclassRegistrationInfo* subclassInfo() { static LnComponentList_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_ComponentList()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_ComponentList()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnComponentList_OnSerialize_OverrideCallback s_LnComponentList_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnComponentList_OnSerialize_OverrideCallback) s_LnComponentList_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::ComponentList::onSerialize(ar);
+    }
+
+    // Virtual
     static LnComponentList_OnSerialize2_OverrideCallback s_LnComponentList_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnComponentList_OnSerialize2_OverrideCallback) s_LnComponentList_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::ComponentList::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1001,39 +1309,61 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnComponentList_OnSerialize_OverrideCallback) s_LnComponentList_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::ComponentList::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnComponentList_OnSerialize2_OverrideCallback) s_LnComponentList_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::ComponentList::onSerialize2(ar);
-    }
-
 };
+
 LnComponentList_OnSerialize_OverrideCallback LNWS_ln_ComponentList::s_LnComponentList_OnSerialize_OverrideCallback = nullptr;
 LnComponentList_OnSerialize2_OverrideCallback LNWS_ln_ComponentList::s_LnComponentList_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_WorldObject : public ln::WorldObject
 {
 public:
     static LnWorldObject_SubclassRegistrationInfo* subclassInfo() { static LnWorldObject_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_WorldObject()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_WorldObject()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnWorldObject_OnSerialize_OverrideCallback s_LnWorldObject_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnWorldObject_OnSerialize_OverrideCallback) s_LnWorldObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::WorldObject::onSerialize(ar);
+    }
+
+    // Virtual
     static LnWorldObject_OnSerialize2_OverrideCallback s_LnWorldObject_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnWorldObject_OnSerialize2_OverrideCallback) s_LnWorldObject_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::WorldObject::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnWorldObject_OnUpdate_OverrideCallback s_LnWorldObject_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnWorldObject_OnUpdate_OverrideCallback) s_LnWorldObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::WorldObject::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1047,49 +1377,62 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnWorldObject_OnSerialize_OverrideCallback) s_LnWorldObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::WorldObject::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnWorldObject_OnSerialize2_OverrideCallback) s_LnWorldObject_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::WorldObject::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnWorldObject_OnUpdate_OverrideCallback) s_LnWorldObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::WorldObject::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnWorldObject_OnSerialize_OverrideCallback LNWS_ln_WorldObject::s_LnWorldObject_OnSerialize_OverrideCallback = nullptr;
 LnWorldObject_OnSerialize2_OverrideCallback LNWS_ln_WorldObject::s_LnWorldObject_OnSerialize2_OverrideCallback = nullptr;
 LnWorldObject_OnUpdate_OverrideCallback LNWS_ln_WorldObject::s_LnWorldObject_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_VisualObject : public ln::VisualObject
 {
 public:
     static LnVisualObject_SubclassRegistrationInfo* subclassInfo() { static LnVisualObject_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_VisualObject()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_VisualObject()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnVisualObject_OnSerialize_OverrideCallback s_LnVisualObject_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnVisualObject_OnSerialize_OverrideCallback) s_LnVisualObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::VisualObject::onSerialize(ar);
+    }
+
+    // Virtual
     static LnVisualObject_OnSerialize2_OverrideCallback s_LnVisualObject_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnVisualObject_OnSerialize2_OverrideCallback) s_LnVisualObject_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::VisualObject::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnVisualObject_OnUpdate_OverrideCallback s_LnVisualObject_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnVisualObject_OnUpdate_OverrideCallback) s_LnVisualObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::VisualObject::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1103,49 +1446,62 @@ public:
             return ln::TypeInfo::getTypeInfo<WorldObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnVisualObject_OnSerialize_OverrideCallback) s_LnVisualObject_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::VisualObject::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnVisualObject_OnSerialize2_OverrideCallback) s_LnVisualObject_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::VisualObject::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnVisualObject_OnUpdate_OverrideCallback) s_LnVisualObject_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::VisualObject::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnVisualObject_OnSerialize_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_OnSerialize_OverrideCallback = nullptr;
 LnVisualObject_OnSerialize2_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_OnSerialize2_OverrideCallback = nullptr;
 LnVisualObject_OnUpdate_OverrideCallback LNWS_ln_VisualObject::s_LnVisualObject_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Camera : public ln::Camera
 {
 public:
     static LnCamera_SubclassRegistrationInfo* subclassInfo() { static LnCamera_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Camera()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Camera()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnCamera_OnSerialize_OverrideCallback s_LnCamera_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnCamera_OnSerialize_OverrideCallback) s_LnCamera_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Camera::onSerialize(ar);
+    }
+
+    // Virtual
     static LnCamera_OnSerialize2_OverrideCallback s_LnCamera_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnCamera_OnSerialize2_OverrideCallback) s_LnCamera_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Camera::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnCamera_OnUpdate_OverrideCallback s_LnCamera_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnCamera_OnUpdate_OverrideCallback) s_LnCamera_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::Camera::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1159,49 +1515,62 @@ public:
             return ln::TypeInfo::getTypeInfo<WorldObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnCamera_OnSerialize_OverrideCallback) s_LnCamera_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Camera::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnCamera_OnSerialize2_OverrideCallback) s_LnCamera_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Camera::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnCamera_OnUpdate_OverrideCallback) s_LnCamera_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::Camera::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnCamera_OnSerialize_OverrideCallback LNWS_ln_Camera::s_LnCamera_OnSerialize_OverrideCallback = nullptr;
 LnCamera_OnSerialize2_OverrideCallback LNWS_ln_Camera::s_LnCamera_OnSerialize2_OverrideCallback = nullptr;
 LnCamera_OnUpdate_OverrideCallback LNWS_ln_Camera::s_LnCamera_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_DirectionalLight : public ln::DirectionalLight
 {
 public:
     static LnDirectionalLight_SubclassRegistrationInfo* subclassInfo() { static LnDirectionalLight_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_DirectionalLight()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_DirectionalLight()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnDirectionalLight_OnSerialize_OverrideCallback s_LnDirectionalLight_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnDirectionalLight_OnSerialize_OverrideCallback) s_LnDirectionalLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::DirectionalLight::onSerialize(ar);
+    }
+
+    // Virtual
     static LnDirectionalLight_OnSerialize2_OverrideCallback s_LnDirectionalLight_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnDirectionalLight_OnSerialize2_OverrideCallback) s_LnDirectionalLight_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::DirectionalLight::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnDirectionalLight_OnUpdate_OverrideCallback s_LnDirectionalLight_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnDirectionalLight_OnUpdate_OverrideCallback) s_LnDirectionalLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::DirectionalLight::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1215,49 +1584,62 @@ public:
             return ln::TypeInfo::getTypeInfo<WorldObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnDirectionalLight_OnSerialize_OverrideCallback) s_LnDirectionalLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::DirectionalLight::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnDirectionalLight_OnSerialize2_OverrideCallback) s_LnDirectionalLight_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::DirectionalLight::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnDirectionalLight_OnUpdate_OverrideCallback) s_LnDirectionalLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::DirectionalLight::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnDirectionalLight_OnSerialize_OverrideCallback LNWS_ln_DirectionalLight::s_LnDirectionalLight_OnSerialize_OverrideCallback = nullptr;
 LnDirectionalLight_OnSerialize2_OverrideCallback LNWS_ln_DirectionalLight::s_LnDirectionalLight_OnSerialize2_OverrideCallback = nullptr;
 LnDirectionalLight_OnUpdate_OverrideCallback LNWS_ln_DirectionalLight::s_LnDirectionalLight_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_PointLight : public ln::PointLight
 {
 public:
     static LnPointLight_SubclassRegistrationInfo* subclassInfo() { static LnPointLight_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_PointLight()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_PointLight()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnPointLight_OnSerialize_OverrideCallback s_LnPointLight_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnPointLight_OnSerialize_OverrideCallback) s_LnPointLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::PointLight::onSerialize(ar);
+    }
+
+    // Virtual
     static LnPointLight_OnSerialize2_OverrideCallback s_LnPointLight_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnPointLight_OnSerialize2_OverrideCallback) s_LnPointLight_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::PointLight::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnPointLight_OnUpdate_OverrideCallback s_LnPointLight_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnPointLight_OnUpdate_OverrideCallback) s_LnPointLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::PointLight::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1271,49 +1653,62 @@ public:
             return ln::TypeInfo::getTypeInfo<WorldObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnPointLight_OnSerialize_OverrideCallback) s_LnPointLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::PointLight::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnPointLight_OnSerialize2_OverrideCallback) s_LnPointLight_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::PointLight::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnPointLight_OnUpdate_OverrideCallback) s_LnPointLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::PointLight::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnPointLight_OnSerialize_OverrideCallback LNWS_ln_PointLight::s_LnPointLight_OnSerialize_OverrideCallback = nullptr;
 LnPointLight_OnSerialize2_OverrideCallback LNWS_ln_PointLight::s_LnPointLight_OnSerialize2_OverrideCallback = nullptr;
 LnPointLight_OnUpdate_OverrideCallback LNWS_ln_PointLight::s_LnPointLight_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_SpotLight : public ln::SpotLight
 {
 public:
     static LnSpotLight_SubclassRegistrationInfo* subclassInfo() { static LnSpotLight_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_SpotLight()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_SpotLight()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnSpotLight_OnSerialize_OverrideCallback s_LnSpotLight_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSpotLight_OnSerialize_OverrideCallback) s_LnSpotLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::SpotLight::onSerialize(ar);
+    }
+
+    // Virtual
     static LnSpotLight_OnSerialize2_OverrideCallback s_LnSpotLight_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnSpotLight_OnSerialize2_OverrideCallback) s_LnSpotLight_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::SpotLight::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnSpotLight_OnUpdate_OverrideCallback s_LnSpotLight_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnSpotLight_OnUpdate_OverrideCallback) s_LnSpotLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::SpotLight::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1327,49 +1722,118 @@ public:
             return ln::TypeInfo::getTypeInfo<WorldObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnSpotLight_OnSerialize_OverrideCallback) s_LnSpotLight_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::SpotLight::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnSpotLight_OnSerialize2_OverrideCallback) s_LnSpotLight_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::SpotLight::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnSpotLight_OnUpdate_OverrideCallback) s_LnSpotLight_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::SpotLight::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnSpotLight_OnSerialize_OverrideCallback LNWS_ln_SpotLight::s_LnSpotLight_OnSerialize_OverrideCallback = nullptr;
 LnSpotLight_OnSerialize2_OverrideCallback LNWS_ln_SpotLight::s_LnSpotLight_OnSerialize2_OverrideCallback = nullptr;
 LnSpotLight_OnUpdate_OverrideCallback LNWS_ln_SpotLight::s_LnSpotLight_OnUpdate_OverrideCallback = nullptr;
 
+class LNWS_ln_TestDelegate : public ln::TestDelegate
+{
+public:
+    static LnTestDelegate_SubclassRegistrationInfo* subclassInfo() { static LnTestDelegate_SubclassRegistrationInfo info; return &info; }
+    LnSubinstanceId m_subinstance = 0;
+
+    LnTestDelegateCallback m_callback;
+
+    LNWS_ln_TestDelegate()
+      : ln::TestDelegate([this](int p1) -> int
+    {
+        int ret = {};
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), p1, &ret);
+        if (r != LN_SUCCESS) { LN_ERROR("LnTestDelegateCallback"); }
+        return ret;
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_TestDelegate()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnTestDelegateCallback callback)
+    {
+        if (!ln::TestDelegate::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LnResult LnTestDelegate_Create(LnTestDelegateCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_TestDelegate, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 
 class LNWS_ln_Sprite : public ln::Sprite
 {
 public:
     static LnSprite_SubclassRegistrationInfo* subclassInfo() { static LnSprite_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Sprite()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Sprite()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnSprite_OnSerialize_OverrideCallback s_LnSprite_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnSprite_OnSerialize_OverrideCallback) s_LnSprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Sprite::onSerialize(ar);
+    }
+
+    // Virtual
     static LnSprite_OnSerialize2_OverrideCallback s_LnSprite_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnSprite_OnSerialize2_OverrideCallback) s_LnSprite_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Sprite::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnSprite_OnUpdate_OverrideCallback s_LnSprite_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnSprite_OnUpdate_OverrideCallback) s_LnSprite_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::Sprite::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1383,48 +1847,51 @@ public:
             return ln::TypeInfo::getTypeInfo<VisualObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnSprite_OnSerialize_OverrideCallback) s_LnSprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Sprite::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnSprite_OnSerialize2_OverrideCallback) s_LnSprite_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Sprite::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnSprite_OnUpdate_OverrideCallback) s_LnSprite_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::Sprite::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnSprite_OnSerialize_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnSerialize_OverrideCallback = nullptr;
 LnSprite_OnSerialize2_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnSerialize2_OverrideCallback = nullptr;
 LnSprite_OnUpdate_OverrideCallback LNWS_ln_Sprite::s_LnSprite_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_CameraOrbitControlComponent : public ln::CameraOrbitControlComponent
 {
 public:
     static LnCameraOrbitControlComponent_SubclassRegistrationInfo* subclassInfo() { static LnCameraOrbitControlComponent_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_CameraOrbitControlComponent()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_CameraOrbitControlComponent()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnCameraOrbitControlComponent_OnSerialize_OverrideCallback s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback) s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::CameraOrbitControlComponent::onSerialize(ar);
+    }
+
+    // Virtual
     static LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback s_LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback) s_LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::CameraOrbitControlComponent::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1438,38 +1905,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Component>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback) s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::CameraOrbitControlComponent::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback) s_LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::CameraOrbitControlComponent::onSerialize2(ar);
-    }
-
 };
+
 LnCameraOrbitControlComponent_OnSerialize_OverrideCallback LNWS_ln_CameraOrbitControlComponent::s_LnCameraOrbitControlComponent_OnSerialize_OverrideCallback = nullptr;
 LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback LNWS_ln_CameraOrbitControlComponent::s_LnCameraOrbitControlComponent_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Raycaster : public ln::Raycaster
 {
 public:
     static LnRaycaster_SubclassRegistrationInfo* subclassInfo() { static LnRaycaster_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Raycaster()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Raycaster()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnRaycaster_OnSerialize_OverrideCallback s_LnRaycaster_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnRaycaster_OnSerialize_OverrideCallback) s_LnRaycaster_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Raycaster::onSerialize(ar);
+    }
+
+    // Virtual
     static LnRaycaster_OnSerialize2_OverrideCallback s_LnRaycaster_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnRaycaster_OnSerialize2_OverrideCallback) s_LnRaycaster_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Raycaster::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1483,38 +1962,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnRaycaster_OnSerialize_OverrideCallback) s_LnRaycaster_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Raycaster::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnRaycaster_OnSerialize2_OverrideCallback) s_LnRaycaster_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Raycaster::onSerialize2(ar);
-    }
-
 };
+
 LnRaycaster_OnSerialize_OverrideCallback LNWS_ln_Raycaster::s_LnRaycaster_OnSerialize_OverrideCallback = nullptr;
 LnRaycaster_OnSerialize2_OverrideCallback LNWS_ln_Raycaster::s_LnRaycaster_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_RaycastResult : public ln::RaycastResult
 {
 public:
     static LnRaycastResult_SubclassRegistrationInfo* subclassInfo() { static LnRaycastResult_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_RaycastResult()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_RaycastResult()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnRaycastResult_OnSerialize_OverrideCallback s_LnRaycastResult_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnRaycastResult_OnSerialize_OverrideCallback) s_LnRaycastResult_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::RaycastResult::onSerialize(ar);
+    }
+
+    // Virtual
     static LnRaycastResult_OnSerialize2_OverrideCallback s_LnRaycastResult_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnRaycastResult_OnSerialize2_OverrideCallback) s_LnRaycastResult_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::RaycastResult::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1528,38 +2019,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnRaycastResult_OnSerialize_OverrideCallback) s_LnRaycastResult_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::RaycastResult::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnRaycastResult_OnSerialize2_OverrideCallback) s_LnRaycastResult_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::RaycastResult::onSerialize2(ar);
-    }
-
 };
+
 LnRaycastResult_OnSerialize_OverrideCallback LNWS_ln_RaycastResult::s_LnRaycastResult_OnSerialize_OverrideCallback = nullptr;
 LnRaycastResult_OnSerialize2_OverrideCallback LNWS_ln_RaycastResult::s_LnRaycastResult_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_WorldRenderView : public ln::WorldRenderView
 {
 public:
     static LnWorldRenderView_SubclassRegistrationInfo* subclassInfo() { static LnWorldRenderView_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_WorldRenderView()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_WorldRenderView()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnWorldRenderView_OnSerialize_OverrideCallback s_LnWorldRenderView_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnWorldRenderView_OnSerialize_OverrideCallback) s_LnWorldRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::WorldRenderView::onSerialize(ar);
+    }
+
+    // Virtual
     static LnWorldRenderView_OnSerialize2_OverrideCallback s_LnWorldRenderView_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnWorldRenderView_OnSerialize2_OverrideCallback) s_LnWorldRenderView_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::WorldRenderView::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1573,39 +2076,61 @@ public:
             return ln::TypeInfo::getTypeInfo<RenderView>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnWorldRenderView_OnSerialize_OverrideCallback) s_LnWorldRenderView_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::WorldRenderView::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnWorldRenderView_OnSerialize2_OverrideCallback) s_LnWorldRenderView_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::WorldRenderView::onSerialize2(ar);
-    }
-
 };
+
 LnWorldRenderView_OnSerialize_OverrideCallback LNWS_ln_WorldRenderView::s_LnWorldRenderView_OnSerialize_OverrideCallback = nullptr;
 LnWorldRenderView_OnSerialize2_OverrideCallback LNWS_ln_WorldRenderView::s_LnWorldRenderView_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_BoxMesh : public ln::BoxMesh
 {
 public:
     static LnBoxMesh_SubclassRegistrationInfo* subclassInfo() { static LnBoxMesh_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_BoxMesh()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_BoxMesh()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnBoxMesh_OnSerialize_OverrideCallback s_LnBoxMesh_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnBoxMesh_OnSerialize_OverrideCallback) s_LnBoxMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::BoxMesh::onSerialize(ar);
+    }
+
+    // Virtual
     static LnBoxMesh_OnSerialize2_OverrideCallback s_LnBoxMesh_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnBoxMesh_OnSerialize2_OverrideCallback) s_LnBoxMesh_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::BoxMesh::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnBoxMesh_OnUpdate_OverrideCallback s_LnBoxMesh_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnBoxMesh_OnUpdate_OverrideCallback) s_LnBoxMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::BoxMesh::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1619,49 +2144,62 @@ public:
             return ln::TypeInfo::getTypeInfo<VisualObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnBoxMesh_OnSerialize_OverrideCallback) s_LnBoxMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::BoxMesh::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnBoxMesh_OnSerialize2_OverrideCallback) s_LnBoxMesh_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::BoxMesh::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnBoxMesh_OnUpdate_OverrideCallback) s_LnBoxMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::BoxMesh::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnBoxMesh_OnSerialize_OverrideCallback LNWS_ln_BoxMesh::s_LnBoxMesh_OnSerialize_OverrideCallback = nullptr;
 LnBoxMesh_OnSerialize2_OverrideCallback LNWS_ln_BoxMesh::s_LnBoxMesh_OnSerialize2_OverrideCallback = nullptr;
 LnBoxMesh_OnUpdate_OverrideCallback LNWS_ln_BoxMesh::s_LnBoxMesh_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_PlaneMesh : public ln::PlaneMesh
 {
 public:
     static LnPlaneMesh_SubclassRegistrationInfo* subclassInfo() { static LnPlaneMesh_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_PlaneMesh()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_PlaneMesh()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnPlaneMesh_OnSerialize_OverrideCallback s_LnPlaneMesh_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnPlaneMesh_OnSerialize_OverrideCallback) s_LnPlaneMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::PlaneMesh::onSerialize(ar);
+    }
+
+    // Virtual
     static LnPlaneMesh_OnSerialize2_OverrideCallback s_LnPlaneMesh_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnPlaneMesh_OnSerialize2_OverrideCallback) s_LnPlaneMesh_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::PlaneMesh::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnPlaneMesh_OnUpdate_OverrideCallback s_LnPlaneMesh_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate(float elapsedSeconds) override
+    {
+        if (s_LnPlaneMesh_OnUpdate_OverrideCallback) s_LnPlaneMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
+    }
+    void onUpdate_CallBase(float elapsedSeconds)
+    {
+        ln::PlaneMesh::onUpdate(elapsedSeconds);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1675,48 +2213,51 @@ public:
             return ln::TypeInfo::getTypeInfo<VisualObject>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnPlaneMesh_OnSerialize_OverrideCallback) s_LnPlaneMesh_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::PlaneMesh::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnPlaneMesh_OnSerialize2_OverrideCallback) s_LnPlaneMesh_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::PlaneMesh::onSerialize2(ar);
-    }
-    virtual void onUpdate(float elapsedSeconds) override
-    {
-        if (s_LnPlaneMesh_OnUpdate_OverrideCallback) s_LnPlaneMesh_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), elapsedSeconds);
-    }
-
-    void onUpdate_CallBase(float elapsedSeconds)
-    {
-        ln::PlaneMesh::onUpdate(elapsedSeconds);
-    }
-
 };
+
 LnPlaneMesh_OnSerialize_OverrideCallback LNWS_ln_PlaneMesh::s_LnPlaneMesh_OnSerialize_OverrideCallback = nullptr;
 LnPlaneMesh_OnSerialize2_OverrideCallback LNWS_ln_PlaneMesh::s_LnPlaneMesh_OnSerialize2_OverrideCallback = nullptr;
 LnPlaneMesh_OnUpdate_OverrideCallback LNWS_ln_PlaneMesh::s_LnPlaneMesh_OnUpdate_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UIEventArgs : public ln::UIEventArgs
 {
 public:
     static LnUIEventArgs_SubclassRegistrationInfo* subclassInfo() { static LnUIEventArgs_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIEventArgs()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIEventArgs()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUIEventArgs_OnSerialize_OverrideCallback s_LnUIEventArgs_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIEventArgs_OnSerialize_OverrideCallback) s_LnUIEventArgs_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIEventArgs::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUIEventArgs_OnSerialize2_OverrideCallback s_LnUIEventArgs_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUIEventArgs_OnSerialize2_OverrideCallback) s_LnUIEventArgs_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIEventArgs::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1730,38 +2271,158 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUIEventArgs_OnSerialize_OverrideCallback) s_LnUIEventArgs_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UIEventArgs::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUIEventArgs_OnSerialize2_OverrideCallback) s_LnUIEventArgs_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UIEventArgs::onSerialize2(ar);
-    }
-
 };
+
 LnUIEventArgs_OnSerialize_OverrideCallback LNWS_ln_UIEventArgs::s_LnUIEventArgs_OnSerialize_OverrideCallback = nullptr;
 LnUIEventArgs_OnSerialize2_OverrideCallback LNWS_ln_UIEventArgs::s_LnUIEventArgs_OnSerialize2_OverrideCallback = nullptr;
 
+class LNWS_ln_UIGeneralEventHandler : public ln::UIGeneralEventHandler
+{
+public:
+    static LnUIGeneralEventHandler_SubclassRegistrationInfo* subclassInfo() { static LnUIGeneralEventHandler_SubclassRegistrationInfo info; return &info; }
+    LnSubinstanceId m_subinstance = 0;
+
+    LnUIGeneralEventHandlerCallback m_callback;
+
+    LNWS_ln_UIGeneralEventHandler()
+      : ln::UIGeneralEventHandler([this](ln::UIEventArgs* p1) -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(p1));
+        if (r != LN_SUCCESS) { LN_ERROR("LnUIGeneralEventHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIGeneralEventHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnUIGeneralEventHandlerCallback callback)
+    {
+        if (!ln::UIGeneralEventHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LnResult LnUIGeneralEventHandler_Create(LnUIGeneralEventHandlerCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIGeneralEventHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
+
+class LNWS_ln_UIEventHandler : public ln::UIEventHandler
+{
+public:
+    static LnUIEventHandler_SubclassRegistrationInfo* subclassInfo() { static LnUIEventHandler_SubclassRegistrationInfo info; return &info; }
+    LnSubinstanceId m_subinstance = 0;
+
+    LnUIEventHandlerCallback m_callback;
+
+    LNWS_ln_UIEventHandler()
+      : ln::UIEventHandler([this]() -> void
+    {
+        auto r = m_callback(LNI_OBJECT_TO_HANDLE(this));
+        if (r != LN_SUCCESS) { LN_ERROR("LnUIEventHandlerCallback"); }
+    })
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIEventHandler()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    bool init(LnUIEventHandlerCallback callback)
+    {
+        if (!ln::UIEventHandler::init()) return false;
+        m_callback = callback;
+        return true;
+    }
+
+    // TypeInfo
+    ln::TypeInfo* m_typeInfoOverride = nullptr;
+    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
+    {
+        m_typeInfoOverride = value;
+    }
+    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
+    {
+        if (m_typeInfoOverride)
+            return m_typeInfoOverride;
+        else
+            return ln::TypeInfo::getTypeInfo<Object>();
+    }
+
+};
+
+
+LN_FLAT_API LnResult LnUIEventHandler_Create(LnUIEventHandlerCallback callback, LnHandle* outDelegate)
+{
+    LNI_FUNC_TRY_BEGIN;
+    LNI_CREATE_OBJECT(outDelegate, LNWS_ln_UIEventHandler, init, callback);
+    LNI_FUNC_TRY_END_RETURN;
+}
 
 class LNWS_ln_UILayoutElement : public ln::UILayoutElement
 {
 public:
     static LnUILayoutElement_SubclassRegistrationInfo* subclassInfo() { static LnUILayoutElement_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UILayoutElement()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UILayoutElement()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUILayoutElement_OnSerialize_OverrideCallback s_LnUILayoutElement_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUILayoutElement_OnSerialize_OverrideCallback) s_LnUILayoutElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UILayoutElement::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUILayoutElement_OnSerialize2_OverrideCallback s_LnUILayoutElement_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUILayoutElement_OnSerialize2_OverrideCallback) s_LnUILayoutElement_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UILayoutElement::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1775,38 +2436,50 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUILayoutElement_OnSerialize_OverrideCallback) s_LnUILayoutElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UILayoutElement::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUILayoutElement_OnSerialize2_OverrideCallback) s_LnUILayoutElement_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UILayoutElement::onSerialize2(ar);
-    }
-
 };
+
 LnUILayoutElement_OnSerialize_OverrideCallback LNWS_ln_UILayoutElement::s_LnUILayoutElement_OnSerialize_OverrideCallback = nullptr;
 LnUILayoutElement_OnSerialize2_OverrideCallback LNWS_ln_UILayoutElement::s_LnUILayoutElement_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UIElement : public ln::UIElement
 {
 public:
     static LnUIElement_SubclassRegistrationInfo* subclassInfo() { static LnUIElement_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIElement()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIElement()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUIElement_OnSerialize_OverrideCallback s_LnUIElement_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIElement_OnSerialize_OverrideCallback) s_LnUIElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIElement::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUIElement_OnSerialize2_OverrideCallback s_LnUIElement_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUIElement_OnSerialize2_OverrideCallback) s_LnUIElement_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIElement::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1820,38 +2493,50 @@ public:
             return ln::TypeInfo::getTypeInfo<UILayoutElement>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUIElement_OnSerialize_OverrideCallback) s_LnUIElement_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UIElement::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUIElement_OnSerialize2_OverrideCallback) s_LnUIElement_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UIElement::onSerialize2(ar);
-    }
-
 };
+
 LnUIElement_OnSerialize_OverrideCallback LNWS_ln_UIElement::s_LnUIElement_OnSerialize_OverrideCallback = nullptr;
 LnUIElement_OnSerialize2_OverrideCallback LNWS_ln_UIElement::s_LnUIElement_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UIControl : public ln::UIControl
 {
 public:
     static LnUIControl_SubclassRegistrationInfo* subclassInfo() { static LnUIControl_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIControl()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIControl()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUIControl_OnSerialize_OverrideCallback s_LnUIControl_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIControl_OnSerialize_OverrideCallback) s_LnUIControl_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIControl::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUIControl_OnSerialize2_OverrideCallback s_LnUIControl_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUIControl_OnSerialize2_OverrideCallback) s_LnUIControl_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIControl::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1865,38 +2550,50 @@ public:
             return ln::TypeInfo::getTypeInfo<UIElement>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUIControl_OnSerialize_OverrideCallback) s_LnUIControl_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UIControl::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUIControl_OnSerialize2_OverrideCallback) s_LnUIControl_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UIControl::onSerialize2(ar);
-    }
-
 };
+
 LnUIControl_OnSerialize_OverrideCallback LNWS_ln_UIControl::s_LnUIControl_OnSerialize_OverrideCallback = nullptr;
 LnUIControl_OnSerialize2_OverrideCallback LNWS_ln_UIControl::s_LnUIControl_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UIButtonBase : public ln::UIButtonBase
 {
 public:
     static LnUIButtonBase_SubclassRegistrationInfo* subclassInfo() { static LnUIButtonBase_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIButtonBase()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIButtonBase()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUIButtonBase_OnSerialize_OverrideCallback s_LnUIButtonBase_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIButtonBase_OnSerialize_OverrideCallback) s_LnUIButtonBase_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIButtonBase::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUIButtonBase_OnSerialize2_OverrideCallback s_LnUIButtonBase_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUIButtonBase_OnSerialize2_OverrideCallback) s_LnUIButtonBase_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIButtonBase::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1910,38 +2607,50 @@ public:
             return ln::TypeInfo::getTypeInfo<UIControl>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUIButtonBase_OnSerialize_OverrideCallback) s_LnUIButtonBase_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UIButtonBase::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUIButtonBase_OnSerialize2_OverrideCallback) s_LnUIButtonBase_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UIButtonBase::onSerialize2(ar);
-    }
-
 };
+
 LnUIButtonBase_OnSerialize_OverrideCallback LNWS_ln_UIButtonBase::s_LnUIButtonBase_OnSerialize_OverrideCallback = nullptr;
 LnUIButtonBase_OnSerialize2_OverrideCallback LNWS_ln_UIButtonBase::s_LnUIButtonBase_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UIButton : public ln::UIButton
 {
 public:
     static LnUIButton_SubclassRegistrationInfo* subclassInfo() { static LnUIButton_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UIButton()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UIButton()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUIButton_OnSerialize_OverrideCallback s_LnUIButton_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUIButton_OnSerialize_OverrideCallback) s_LnUIButton_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UIButton::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUIButton_OnSerialize2_OverrideCallback s_LnUIButton_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUIButton_OnSerialize2_OverrideCallback) s_LnUIButton_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UIButton::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -1955,38 +2664,50 @@ public:
             return ln::TypeInfo::getTypeInfo<UIButtonBase>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUIButton_OnSerialize_OverrideCallback) s_LnUIButton_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UIButton::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUIButton_OnSerialize2_OverrideCallback) s_LnUIButton_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UIButton::onSerialize2(ar);
-    }
-
 };
+
 LnUIButton_OnSerialize_OverrideCallback LNWS_ln_UIButton::s_LnUIButton_OnSerialize_OverrideCallback = nullptr;
 LnUIButton_OnSerialize2_OverrideCallback LNWS_ln_UIButton::s_LnUIButton_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UITextBlock : public ln::UITextBlock
 {
 public:
     static LnUITextBlock_SubclassRegistrationInfo* subclassInfo() { static LnUITextBlock_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UITextBlock()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UITextBlock()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUITextBlock_OnSerialize_OverrideCallback s_LnUITextBlock_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUITextBlock_OnSerialize_OverrideCallback) s_LnUITextBlock_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UITextBlock::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUITextBlock_OnSerialize2_OverrideCallback s_LnUITextBlock_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUITextBlock_OnSerialize2_OverrideCallback) s_LnUITextBlock_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UITextBlock::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -2000,38 +2721,50 @@ public:
             return ln::TypeInfo::getTypeInfo<UIElement>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUITextBlock_OnSerialize_OverrideCallback) s_LnUITextBlock_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UITextBlock::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUITextBlock_OnSerialize2_OverrideCallback) s_LnUITextBlock_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UITextBlock::onSerialize2(ar);
-    }
-
 };
+
 LnUITextBlock_OnSerialize_OverrideCallback LNWS_ln_UITextBlock::s_LnUITextBlock_OnSerialize_OverrideCallback = nullptr;
 LnUITextBlock_OnSerialize2_OverrideCallback LNWS_ln_UITextBlock::s_LnUITextBlock_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_UISprite : public ln::UISprite
 {
 public:
     static LnUISprite_SubclassRegistrationInfo* subclassInfo() { static LnUISprite_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_UISprite()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_UISprite()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnUISprite_OnSerialize_OverrideCallback s_LnUISprite_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnUISprite_OnSerialize_OverrideCallback) s_LnUISprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::UISprite::onSerialize(ar);
+    }
+
+    // Virtual
     static LnUISprite_OnSerialize2_OverrideCallback s_LnUISprite_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnUISprite_OnSerialize2_OverrideCallback) s_LnUISprite_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::UISprite::onSerialize2(ar);
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -2045,60 +2778,32 @@ public:
             return ln::TypeInfo::getTypeInfo<UIElement>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnUISprite_OnSerialize_OverrideCallback) s_LnUISprite_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::UISprite::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnUISprite_OnSerialize2_OverrideCallback) s_LnUISprite_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::UISprite::onSerialize2(ar);
-    }
-
 };
+
 LnUISprite_OnSerialize_OverrideCallback LNWS_ln_UISprite::s_LnUISprite_OnSerialize_OverrideCallback = nullptr;
 LnUISprite_OnSerialize2_OverrideCallback LNWS_ln_UISprite::s_LnUISprite_OnSerialize2_OverrideCallback = nullptr;
-
 
 class LNWS_ln_Input : public ln::Input
 {
 public:
-
-
 };
 
 
 class LNWS_ln_Mouse : public ln::Mouse
 {
 public:
-
-
 };
 
 
 class LNWS_ln_EngineSettings : public ln::EngineSettings
 {
 public:
-
-
 };
 
 
 class LNWS_ln_Engine : public ln::Engine
 {
 public:
-
-
 };
 
 
@@ -2107,10 +2812,62 @@ class LNWS_ln_Application : public ln::Application
 public:
     static LnApplication_SubclassRegistrationInfo* subclassInfo() { static LnApplication_SubclassRegistrationInfo info; return &info; }
     LnSubinstanceId m_subinstance = 0;
+
+    LNWS_ln_Application()
+    {
+        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
+    }
+
+    ~LNWS_ln_Application()
+    {
+        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
+    }
+
+    // Virtual
     static LnApplication_OnSerialize_OverrideCallback s_LnApplication_OnSerialize_OverrideCallback; // deprecated
+    virtual void onSerialize(ln::Serializer* ar) override
+    {
+        if (s_LnApplication_OnSerialize_OverrideCallback) s_LnApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize_CallBase(ln::Serializer* ar)
+    {
+        ln::Application::onSerialize(ar);
+    }
+
+    // Virtual
     static LnApplication_OnSerialize2_OverrideCallback s_LnApplication_OnSerialize2_OverrideCallback; // deprecated
+    virtual void onSerialize2(ln::Serializer2* ar) override
+    {
+        if (s_LnApplication_OnSerialize2_OverrideCallback) s_LnApplication_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
+    }
+    void onSerialize2_CallBase(ln::Serializer2* ar)
+    {
+        ln::Application::onSerialize2(ar);
+    }
+
+    // Virtual
     static LnApplication_OnInit_OverrideCallback s_LnApplication_OnInit_OverrideCallback; // deprecated
+    virtual void onInit() override
+    {
+        if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+    void onInit_CallBase()
+    {
+        ln::Application::onInit();
+    }
+
+    // Virtual
     static LnApplication_OnUpdate_OverrideCallback s_LnApplication_OnUpdate_OverrideCallback; // deprecated
+    virtual void onUpdate() override
+    {
+        if (s_LnApplication_OnUpdate_OverrideCallback) s_LnApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
+    }
+    void onUpdate_CallBase()
+    {
+        ln::Application::onUpdate();
+    }
+
+    // TypeInfo
     ln::TypeInfo* m_typeInfoOverride = nullptr;
     virtual void setTypeInfoOverride(ln::TypeInfo* value) override
     {
@@ -2124,56 +2881,16 @@ public:
             return ln::TypeInfo::getTypeInfo<Object>();
     }
 
-
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnApplication_OnSerialize_OverrideCallback) s_LnApplication_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::Application::onSerialize(ar);
-    }
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnApplication_OnSerialize2_OverrideCallback) s_LnApplication_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::Application::onSerialize2(ar);
-    }
-    virtual void onInit() override
-    {
-        if (s_LnApplication_OnInit_OverrideCallback) s_LnApplication_OnInit_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    void onInit_CallBase()
-    {
-        ln::Application::onInit();
-    }
-    virtual void onUpdate() override
-    {
-        if (s_LnApplication_OnUpdate_OverrideCallback) s_LnApplication_OnUpdate_OverrideCallback(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    void onUpdate_CallBase()
-    {
-        ln::Application::onUpdate();
-    }
-
 };
+
 LnApplication_OnSerialize_OverrideCallback LNWS_ln_Application::s_LnApplication_OnSerialize_OverrideCallback = nullptr;
 LnApplication_OnSerialize2_OverrideCallback LNWS_ln_Application::s_LnApplication_OnSerialize2_OverrideCallback = nullptr;
 LnApplication_OnInit_OverrideCallback LNWS_ln_Application::s_LnApplication_OnInit_OverrideCallback = nullptr;
 LnApplication_OnUpdate_OverrideCallback LNWS_ln_Application::s_LnApplication_OnUpdate_OverrideCallback = nullptr;
 
-
 class LNWS_ln_Debug : public ln::Debug
 {
 public:
-
-
 };
 
 

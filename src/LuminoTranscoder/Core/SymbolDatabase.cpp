@@ -658,12 +658,13 @@ ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind type
 	return true;
 }
 
-ln::Result TypeSymbol::initAsFunctionType(MethodSymbol* signeture)
+ln::Result TypeSymbol::initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture)
 {
 	if (LN_REQUIRE(signeture)) return false;
 	m_kind = TypeKind::Function;
 	m_typeClass = TypeClass::None;
 	m_functionSignature = signeture;
+	setFullName(fullName);
 	return true;
 }
 
@@ -732,6 +733,7 @@ ln::Result TypeSymbol::link()
 			if (!m_baseClass) {
 				m_baseClass = db()->rootObjectClass();
 			}
+			if (LN_REQUIRE(m_baseClass->kind() == TypeKind::Class)) return false;
 		}
 	}
 	else {
@@ -907,7 +909,7 @@ ln::Result TypeSymbol::createSpecialSymbols()
 
 	if (isDelegateObject()) {
 		auto functonType = ln::makeRef<TypeSymbol>(db());
-		if (!functonType->initAsFunctionType(m_functionSignature)) return false;
+		if (!functonType->initAsFunctionType(fullName() + u"_Function", m_functionSignature)) return false;
 		db()->registerTypeSymbol(functonType);
 
 		auto param = ln::makeRef<MethodParameterSymbol>(db());

@@ -28,3 +28,12 @@ struct
 > LnWorldObject_SetPosition sprite1, ...   ; ここで型変換エラーになる
 > ```
 
+
+`#cmd` により登録され、関数形式の呼び出しを処理する reffunc へ流れます。
+
+初期化式は次のように定義できます。
+
+```
+vec = Vector3()
+vec = Vector3(1, 2, 3)
+```

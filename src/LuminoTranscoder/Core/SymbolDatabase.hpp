@@ -375,7 +375,7 @@ public:
 	TypeSymbol(SymbolDatabase* db);
 	ln::Result init(PITypeInfo* piType);
 	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
-	ln::Result initAsFunctionType(MethodSymbol* signeture);
+	ln::Result initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture);
 	ln::Result link();
 
 	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
