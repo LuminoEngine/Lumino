@@ -62,7 +62,7 @@ public:	// TODO: Editor integration
     WorldObject* findObjectByComponentType(const TypeInfo* type) const;
     void updateObjectsWorldMatrix();
     virtual void onPreUpdate(float elapsedSeconds);
-    void renderObjects(RenderingContext* context);
+    void collectRenderObjects(World* world, RenderingContext* context);
     void renderGizmos(RenderingContext* context);
 
 protected:

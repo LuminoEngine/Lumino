@@ -3,6 +3,7 @@
 #include "../../Visual/VisualComponent.hpp"
 
 namespace ln {
+class OffscreenWorldRenderView;
 
 LN_CLASS()
 class ReflectorComponent
@@ -20,6 +21,8 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 private:
+	Ref<RenderTargetTexture> m_renderTarget;
+	Ref<OffscreenWorldRenderView> m_offscreenRenderView;
 	Ref<Material> m_material;
 	Vector2 m_size;
 };

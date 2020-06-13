@@ -220,16 +220,15 @@ void Level::onPreUpdate(float elapsedSeconds)
     }
 }
 
-void Level::renderObjects(RenderingContext* context)
+void Level::collectRenderObjects(World* world, RenderingContext* context)
 {
-    for (auto& obj : m_rootWorldObjectList)
-    {
-        obj->render(context);
+    for (auto& obj : m_rootWorldObjectList) {
+        world->enqueueWorldRenderingElement(obj);
 
-        for (auto& c : *(obj->m_components))
-        {
+        for (auto& c : *(obj->m_components)) {
+
             c->onPrepareRender(context); // TODO: 全体の前にした方がいいかも
-            c->render(context);
+            world->enqueueWorldRenderingElement(c);
         }
     }
 }

@@ -87,8 +87,10 @@ public: // TODO: internal
     void updateObjectsWorldMatrix();
     void updateFrame(float elapsedSeconds);
 	detail::WorldSceneGraphRenderingContext* prepareRender(RenderViewPoint* viewPoint);
+    void prepareRender();
     void renderObjects();  // call by WorldRenderView
     void renderGizmos(RenderingContext* context);
+    void enqueueWorldRenderingElement(IWorldRenderingElement* element);
 
     Ref<AnimationContext> m_animationContext;
     Ref<PhysicsWorld> m_physicsWorld;
@@ -103,6 +105,7 @@ public: // TODO: internal
     Ref<List<Ref<Level>>> m_sceneList;
  //   Ref<List<Ref<WorldObject>>> m_rootWorldObjectList;
 	//List<WorldObject*> m_destroyList;
+    List<IWorldRenderingElement*> m_worldRenderingElement;
     Ref<detail::WorldSceneGraphRenderingContext> m_renderingContext;
 	//Ref<detail::WorldSceneGraphRenderingContext> m_debugRenderingContext;
     float m_timeScale;

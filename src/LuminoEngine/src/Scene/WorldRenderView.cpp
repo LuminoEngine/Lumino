@@ -336,6 +336,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 renderingContext->popState();
 			}
 
+            m_targetWorld->prepareRender();
             m_targetWorld->renderObjects();
 
             if (m_physicsDebugDrawEnabled) {

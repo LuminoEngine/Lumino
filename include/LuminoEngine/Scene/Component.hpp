@@ -14,6 +14,7 @@ namespace detail {
 LN_CLASS()
 class Component
 	: public Object
+    , public IWorldRenderingElement
 {
     LN_OBJECT;
 public:

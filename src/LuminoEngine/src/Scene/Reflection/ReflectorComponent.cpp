@@ -2,6 +2,7 @@
 #include "../Internal.hpp"
 #include <LuminoEngine/Font/Font.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
+#include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
 #include <LuminoEngine/Scene/Reflection/ReflectorComponent.hpp>
 
 namespace ln {
@@ -20,6 +21,14 @@ ReflectorComponent::ReflectorComponent()
 bool ReflectorComponent::init()
 {
 	if (!VisualComponent::init()) return false;
+
+    m_renderTarget = makeObject<RenderTargetTexture>(512, 512, TextureFormat::RGBA8, false);
+
+    m_offscreenRenderView = makeObject<OffscreenWorldRenderView>();
+    m_offscreenRenderView->setRenderTarget(m_renderTarget);
+
+    m_material = makeObject<Material>();
+    m_material->setColor(Color::Red);
 	return true;
 }
 
