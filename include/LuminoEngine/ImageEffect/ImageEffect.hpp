@@ -39,7 +39,8 @@ class ImageEffectInstance
 	: public Object
 {
 protected:
-	virtual void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
+	// 周辺状況やパラメータ的に描画の必要がなかった場合は false を返す。
+	virtual bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 private:
 	//ImageEffect* m_owner = nullptr;

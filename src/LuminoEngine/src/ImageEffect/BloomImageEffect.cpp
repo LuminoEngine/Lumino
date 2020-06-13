@@ -117,7 +117,7 @@ bool BloomImageEffectInstance::init(BloomImageEffect* owner)
     return true;
 }
 
-void BloomImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool BloomImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     int resx = source->width();
     int resy = source->height();
@@ -160,6 +160,8 @@ void BloomImageEffectInstance::onRender(RenderingContext* context, RenderTargetT
     m_compositeMaterial->setFloat(u"_BloomRadius", m_owner->m_bloomRadius);
     m_compositeMaterial->setVectorArray(u"_BloomTintColors", bloomTintColors, MIPS);
     context->blit(m_compositeMaterial, destination);
+
+    return true;
 }
 
 void BloomImageEffectInstance::resetResources(int resx, int resy)

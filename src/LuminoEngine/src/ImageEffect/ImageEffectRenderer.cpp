@@ -99,28 +99,35 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
         context->pushState(true);
         context->setDepthBuffer(nullptr);
 
+        bool renderd = false;
         int i = 0;
         for (auto& effect : m_collectedImageEffectInstances)
         {
             if (i == 0) {
-                effect.instance->onRender(context, inout, secondaryTarget);
+                renderd = effect.instance->onRender(context, inout, secondaryTarget);
             }
             else {
-                effect.instance->onRender(context, primaryTarget, secondaryTarget);
+                renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
             }
-            std::swap(primaryTarget, secondaryTarget);
-            i++;
+
+            if (renderd) {
+                std::swap(primaryTarget, secondaryTarget);
+                i++;
+            }
         }
         for (auto& effect : m_imageEffectInstances)
         {
             if (i == 0) {
-                effect.instance->onRender(context, inout, secondaryTarget);
+                renderd = effect.instance->onRender(context, inout, secondaryTarget);
             }
             else {
-                effect.instance->onRender(context, primaryTarget, secondaryTarget);
+                renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
             }
-            std::swap(primaryTarget, secondaryTarget);
-            i++;
+            
+            if (renderd) {
+                std::swap(primaryTarget, secondaryTarget);
+                i++;
+            }
         }
 
         context->resetState();

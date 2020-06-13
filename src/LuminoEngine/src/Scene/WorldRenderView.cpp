@@ -186,6 +186,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         if (m_targetWorld) {
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
             renderingContext->baseRenderView = this;
+            renderingContext->m_sceneRenderingPipeline = m_sceneRenderingPipeline;
             renderingContext->clearImageEffects();
 
 
@@ -374,13 +375,15 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
                 m_imageEffectRenderer->applyInSceneImageEffects(renderingContext->imageEffects());
 				m_imageEffectRenderer->render(renderingContext, renderTarget);
 			}
+
+            renderingContext->m_sceneRenderingPipeline = nullptr;
         }
 
 
 
         assert(elementListManagers().size() == 1);
 		m_sceneRenderingPipeline->render(graphicsContext, renderTarget, clearInfo, &camera, elementListManagers().front(), &m_targetWorld->masterScene()->m_sceneGlobalRenderParams);
-
+        
 		//graphicsContext->resetState();
 	}
 }

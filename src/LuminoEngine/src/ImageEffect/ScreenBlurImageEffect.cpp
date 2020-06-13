@@ -86,14 +86,14 @@ bool ScreenBlurImageEffectInstance::init(ScreenBlurImageEffect* owner)
     return true;
 }
 
-void ScreenBlurImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool ScreenBlurImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     m_materialForCopySourceTo->setMainTexture(source);
 
     float amount = m_owner->m_amountValue.value();
     if (amount <= 0.0f) {
-        context->blit(m_materialForCopySourceTo, destination);
-        return;
+        //context->blit(m_materialForCopySourceTo, destination);
+        return false;
     }
     else {
         const auto& scale = m_owner->m_scale;
@@ -135,6 +135,8 @@ void ScreenBlurImageEffectInstance::onRender(RenderingContext* context, RenderTa
         ////m_material->setMainTexture(source);
         ////context->blit(nullptr, destination, m_material);
         //context->blit(source, destination);
+
+        return true;
     }
 }
 

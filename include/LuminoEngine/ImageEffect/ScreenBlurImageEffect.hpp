@@ -47,7 +47,7 @@ class ScreenBlurImageEffectInstance
     : public ImageEffectInstance
 {
 protected:
-    void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     ScreenBlurImageEffectInstance();
