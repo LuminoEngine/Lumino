@@ -83,6 +83,10 @@ static const std::unordered_map<String, BuiltinShaderTextures> s_BuiltinShaderTe
 };
 
 ShaderTechniqueSemanticsManager::ShaderTechniqueSemanticsManager()
+    : m_descriptor(nullptr)
+    , m_hasBuiltinShaderParameters(0)
+    , m_builtinUniformBuffers({})
+    , m_builtinShaderTextures({})
 {
     // メモリレイアウトそのまま ConstantBuffer に転送するため、オフセットを検証しておく
     assert(192 == LN_MEMBER_OFFSETOF(LNRenderViewBuffer, ln_Resolution));
@@ -149,8 +153,9 @@ void ShaderTechniqueSemanticsManager::init(ShaderTechnique* technique)
 
 void ShaderTechniqueSemanticsManager::reset()
 {
-    m_hasBuiltinShaderParameters = 0;
+    //m_hasBuiltinShaderParameters = 0;
     for (auto& i : m_builtinUniformBuffers) i = -1;
+    for (auto& i : m_builtinShaderTextures) i = -1;
 }
 
 void ShaderTechniqueSemanticsManager::updateSceneVariables(const SceneInfo& info)
