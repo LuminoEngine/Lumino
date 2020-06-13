@@ -30,9 +30,6 @@ VS_Output VS_Main(LN_VSInput input)
 
 //==============================================================================
 // Pixel shader
-//sampler2D _ColorSampler;
-
-const float2 _Resolution = float2(640, 480);
 
 struct PS_Input
 {
@@ -41,7 +38,7 @@ struct PS_Input
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    float2 texelSize = (1.0 / _Resolution);
+    float2 texelSize = (1.0 / ln_Resolution.xy);
     float4 result = float4(0.0);
 
     for (int i=-2; i<=2; i++) {

@@ -43,7 +43,6 @@ float4 PS_Main(PS_Input input) : SV_TARGET
 {
     float4 color = tex2D(_ColorSampler, input.UV);
     float4 ssr = tex2D(_SSRSampler, input.UV);
-    //return float4(ssr.w, 0, 0, 1);
     return float4(lerp(color.xyz, ssr.xyz, ssr.w), 1.0);
 }
 
