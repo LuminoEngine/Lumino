@@ -251,11 +251,13 @@ detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* v
 	return m_renderingContext;
 }
 
-
+// Offscreen 描画など、何回か描画を行うものを List に集める。
+// ビューカリングなどはこの時点では行わない。
 void World::prepareRender()
 {
     m_renderingContext->world = this;
     m_worldRenderingElement.clear();
+    m_offscreenRenderViews.clear();
 
     m_masterScene->collectRenderObjects(this, m_renderingContext);
     for (auto& scene : m_sceneList) {
@@ -264,6 +266,8 @@ void World::prepareRender()
     if (auto* scene = m_sceneConductor->activeScene()) {
         scene->collectRenderObjects(this, m_renderingContext);
     }
+
+    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
 }
 
 void World::renderObjects()
@@ -284,7 +288,6 @@ void World::renderObjects()
     m_effectContext->render(m_renderingContext);
     m_renderingContext->popState();
 
-    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
 }
 
 void World::renderGizmos(RenderingContext* context)
@@ -301,6 +304,11 @@ void World::renderGizmos(RenderingContext* context)
 void World::enqueueWorldRenderingElement(IWorldRenderingElement* element)
 {
     m_worldRenderingElement.add(element);
+}
+
+void World::enqueueOffscreenRenderView(OffscreenWorldRenderView* element)
+{
+    m_offscreenRenderViews.add(element);
 }
 
 //==============================================================================

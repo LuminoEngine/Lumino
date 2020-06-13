@@ -13,7 +13,8 @@ class ReflectorComponent
 public:
 
 protected:
-    virtual void onRender(RenderingContext* context) override;
+	void onPrepareRender(RenderingContext* context) override;
+    void onRender(RenderingContext* context) override;
 
 LN_CONSTRUCT_ACCESS:
 	ReflectorComponent();

@@ -214,15 +214,17 @@ public:
     void setBaseBuiltinEffectData(const Optional<detail::BuiltinEffectData>& value);
     void setRenderPriority(int value);
     void setViewPoint(RenderViewPoint* value);
-	RenderView* baseRenderView = nullptr;
+	RenderView* baseRenderView = nullptr;	// for ImageEffect
     GraphicsContext* m_frameWindowRenderingGraphicsContext = nullptr;
 	//detail::RenderDrawElement* lastRenderDrawElement() const;
 	void setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value);
 	void collectImageEffect(ImageEffect* effect) { m_imageEffects.add(effect); }
 	const List<ImageEffect*>& imageEffects() const { return m_imageEffects; }
 	void clearImageEffects() { m_imageEffects.clear(); }
-	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;
+	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;	// for ImageEffect
 	RenderTargetTexture* gbuffer(GBuffer kind) const;
+	RenderView* currentRenderView = nullptr;	// Offscreen の場合はそれ
+
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

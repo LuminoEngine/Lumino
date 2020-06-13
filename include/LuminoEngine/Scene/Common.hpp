@@ -11,6 +11,7 @@ class Raycaster;
 class RaycastResult;
 class Material;
 class RenderingContext;
+class OffscreenWorldRenderView;
 class ReflectorComponent;
 
 enum class LevelTransitionEffectMode

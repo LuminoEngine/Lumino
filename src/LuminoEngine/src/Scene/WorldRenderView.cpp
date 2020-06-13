@@ -13,6 +13,7 @@
 #include <LuminoEngine/Scene/WorldRenderView.hpp>
 #include <LuminoEngine/Scene/Camera.hpp>
 #include <LuminoEngine/Scene/Light.hpp>
+#include <LuminoEngine/Scene/Reflection/OffscreenWorldRenderView.hpp>
 #include "../Rendering/RenderStage.hpp"
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
@@ -186,7 +187,7 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
         if (m_targetWorld) {
 			detail::WorldSceneGraphRenderingContext* renderingContext = m_targetWorld->prepareRender(m_viewPoint);
             renderingContext->baseRenderView = this;
-            renderingContext->m_sceneRenderingPipeline = m_sceneRenderingPipeline;
+            renderingContext->currentRenderView = this;
             renderingContext->clearImageEffects();
 
 
@@ -337,6 +338,13 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 			}
 
             m_targetWorld->prepareRender();
+
+            for (auto& offscreen : m_targetWorld->collectedOffscreenRenderViews()) {
+                renderingContext->currentRenderView = offscreen;
+                offscreen->render(graphicsContext, m_targetWorld);
+            }
+            renderingContext->currentRenderView = this;
+
             m_targetWorld->renderObjects();
 
             if (m_physicsDebugDrawEnabled) {
@@ -365,19 +373,25 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
             m_transformControls->setViewInfo(m_viewPoint->viewPosition, m_viewPoint->viewMatrix, m_viewPoint->projMatrix, m_viewPoint->viewPixelSize);
             m_transformControls->onRender(renderingContext);
 
+            // TODO: ここでやると Offscreen に書かれないので別の場所の方がいいかも
             detail::EngineDomain::effectManager()->testDraw(renderingContext);
             //detail::EngineDomain::effectManager()->testDraw2(graphicsContext);
 
-            if (!renderingContext->imageEffects().isEmpty()) {
-                acquireImageEffectPresenter();
+
+            {
+                renderingContext->m_sceneRenderingPipeline = m_sceneRenderingPipeline;
+
+                if (!renderingContext->imageEffects().isEmpty()) {
+                    acquireImageEffectPresenter();
+                }
+
+                if (m_imageEffectRenderer) {
+                    m_imageEffectRenderer->applyInSceneImageEffects(renderingContext->imageEffects());
+                    m_imageEffectRenderer->render(renderingContext, renderTarget);
+                }
+
+                renderingContext->m_sceneRenderingPipeline = nullptr;
             }
-
-			if (m_imageEffectRenderer) {
-                m_imageEffectRenderer->applyInSceneImageEffects(renderingContext->imageEffects());
-				m_imageEffectRenderer->render(renderingContext, renderTarget);
-			}
-
-            renderingContext->m_sceneRenderingPipeline = nullptr;
         }
 
 
