@@ -48,7 +48,8 @@ bool SSRImageEffectInstance::init(SSRImageEffect* owner)
     m_owner = owner;
 
 
-    auto shader1 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSR.fx");
+    //auto shader1 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRRayTracing.fx");
+    auto shader1 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRRayTracing);
     m_ssrMaterial = makeObject<Material>();
     m_ssrMaterial->setShader(shader1);
     m_ssrMaterial_ColorSampler = shader1->findParameter(u"_ColorSampler");
@@ -56,7 +57,8 @@ bool SSRImageEffectInstance::init(SSRImageEffect* owner)
     m_ssrMaterial_ViewDepthSampler = shader1->findParameter(u"_ViewDepthSampler");
     m_ssrMaterial_MetalRoughSampler = shader1->findParameter(u"_MetalRoughSampler");
 
-    auto shader2 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRBlur.fx");
+    //auto shader2 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRBlur.fx");
+    auto shader2 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRBlur);
     m_ssrBlurMaterial1 = makeObject<Material>();
     m_ssrBlurMaterial1->setShader(shader2);
     //m_ssrBlurMaterial1_ColorSampler = shader2->findParameter(u"_ColorSampler");
@@ -65,7 +67,8 @@ bool SSRImageEffectInstance::init(SSRImageEffect* owner)
     m_ssrBlurMaterial2->setShader(shader2);
     //m_ssrBlurMaterial2_ColorSampler = shader2->findParameter(u"_ColorSampler");
 
-    auto shader3 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRComposite.fx");
+    //auto shader3 = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSRComposite.fx");
+    auto shader3 = EngineDomain::renderingManager()->builtinShader(BuiltinShader::SSRComposite);
     m_ssrCompositeMaterial = makeObject<Material>();
     m_ssrCompositeMaterial->setShader(shader3);
     m_paramColorSampler = shader3->findParameter(u"_ColorSampler");

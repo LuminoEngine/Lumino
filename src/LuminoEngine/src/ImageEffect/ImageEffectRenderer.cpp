@@ -100,10 +100,10 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
         context->setDepthBuffer(nullptr);
 
         bool renderd = false;
-        int i = 0;
+        int renderCount = 0;
         for (auto& effect : m_collectedImageEffectInstances)
         {
-            if (i == 0) {
+            if (renderCount == 0) {
                 renderd = effect.instance->onRender(context, inout, secondaryTarget);
             }
             else {
@@ -112,12 +112,12 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
 
             if (renderd) {
                 std::swap(primaryTarget, secondaryTarget);
-                i++;
+                renderCount++;
             }
         }
         for (auto& effect : m_imageEffectInstances)
         {
-            if (i == 0) {
+            if (renderCount == 0) {
                 renderd = effect.instance->onRender(context, inout, secondaryTarget);
             }
             else {
@@ -126,14 +126,16 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
             
             if (renderd) {
                 std::swap(primaryTarget, secondaryTarget);
-                i++;
+                renderCount++;
             }
         }
 
         context->resetState();
 
-		m_copyMaterial->setMainTexture(primaryTarget);
-        context->blit(m_copyMaterial, inout);
+        if (renderCount >= 1) {
+            m_copyMaterial->setMainTexture(primaryTarget);
+            context->blit(m_copyMaterial, inout);
+        }
 
         context->popState();
 #endif
