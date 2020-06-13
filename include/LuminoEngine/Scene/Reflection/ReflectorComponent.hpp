@@ -11,6 +11,7 @@ class ReflectorComponent
 {
 	LN_OBJECT;
 public:
+	const Ref<RenderTargetTexture>& renderTarget() const { return m_renderTarget; }
 
 protected:
 	void onPrepareRender(RenderingContext* context) override;

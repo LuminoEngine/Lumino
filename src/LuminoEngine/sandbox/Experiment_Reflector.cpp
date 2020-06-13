@@ -1,6 +1,7 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Scene/Reflection/Reflector.hpp>
+#include <LuminoEngine/Scene/Reflection/ReflectorComponent.hpp>
 using namespace ln;
 
 class App_Experiment_Reflector : public Application
@@ -27,6 +28,7 @@ class App_Experiment_Reflector : public Application
 
 		auto reflector = Reflector::create();
 
+        auto sprite = UISprite::create(reflector->reflectorComponent()->renderTarget());
 	}
 
     virtual void onUpdate() override

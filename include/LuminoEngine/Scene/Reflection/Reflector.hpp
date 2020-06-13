@@ -17,6 +17,7 @@ public:
 	static Ref<Reflector> create();
 
 public:
+	const Ref<ReflectorComponent>& reflectorComponent() const { return m_component; }
 
 LN_CONSTRUCT_ACCESS:
 	Reflector();

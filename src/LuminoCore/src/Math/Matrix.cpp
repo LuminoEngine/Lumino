@@ -1146,7 +1146,10 @@ Matrix Matrix::makeRotationX(float r)
     float c, s;
     Asm::sincos(r, &s, &c);
     return Matrix(
-        1.0f, 0.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, c, s, 0.0f,
+        0.0f,-s, c, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 // static
@@ -1586,6 +1589,31 @@ Matrix Matrix::makeAffineTransformation(const Vector3& scaling, const Vector3& r
     m.translate(rotationCenter);
     m.translate(translation);
     return m;
+}
+
+Matrix Matrix::extractRotation(const Matrix& mat)
+{
+    Matrix result;
+    auto& d = result.m;
+    const auto& s = mat.m;
+
+    float scaleX = 1.0f / Vector3(s[0][0], s[1][0], s[2][0]).length();
+    float scaleY = 1.0f / Vector3(s[0][1], s[1][1], s[2][1]).length();
+    float scaleZ = 1.0f / Vector3(s[0][2], s[1][2], s[2][2]).length();
+
+    d[0][0] = s[0][0] * scaleX;
+    d[1][0] = s[1][0] * scaleX;
+    d[2][0] = s[2][0] * scaleX;
+    
+    d[0][1] = s[0][1] * scaleY;
+    d[1][1] = s[1][1] * scaleY;
+    d[2][1] = s[2][1] * scaleY;
+
+    d[0][1] = s[0][1] * scaleZ;
+    d[1][1] = s[1][1] * scaleZ;
+    d[2][1] = s[2][1] * scaleZ;
+
+    return result;
 }
 
 Matrix& Matrix::operator*=(const Matrix& matrix)
