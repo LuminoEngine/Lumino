@@ -1609,11 +1609,44 @@ Matrix Matrix::extractRotation(const Matrix& mat)
     d[1][1] = s[1][1] * scaleY;
     d[2][1] = s[2][1] * scaleY;
 
-    d[0][1] = s[0][1] * scaleZ;
-    d[1][1] = s[1][1] * scaleZ;
-    d[2][1] = s[2][1] * scaleZ;
+    d[0][2] = s[0][2] * scaleZ;
+    d[1][2] = s[1][2] * scaleZ;
+    d[2][2] = s[2][2] * scaleZ;
 
     return result;
+}
+
+// Note: inverse(lookAtLH) と同じ結果 (誤差はあるけど)
+Matrix Matrix::makeAffineLookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up)
+{
+    if (target == eye) return Matrix::Identity;
+
+    // left-hand coord
+    Vector3 f = Vector3::normalize(target - eye);
+
+
+    Vector3 s = Vector3::cross(up, f);
+    if (Vector3::nearEqual(s, Vector3::Zero))
+    {
+        if (Math::nearEqual(std::abs(up.z), 1.0f)) {
+            f.x += 0.0001f;
+        }
+        else {
+            f.z += 0.0001f;
+        }
+
+        f.mutatingNormalize();
+        s = Vector3::cross(up, f);
+    }
+
+    s.mutatingNormalize();
+
+    Vector3 u = Vector3::cross(f, s);
+    return Matrix(
+        s.x, s.y, s.z, 0.0f,
+        u.x, u.y, u.z, 0.0f,
+        f.x, f.y, f.z, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix& Matrix::operator*=(const Matrix& matrix)

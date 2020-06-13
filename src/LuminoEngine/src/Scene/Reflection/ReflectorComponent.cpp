@@ -28,7 +28,9 @@ bool ReflectorComponent::init()
     m_offscreenRenderView = makeObject<OffscreenWorldRenderView>();
     m_offscreenRenderView->setRenderTarget(m_renderTarget);
 
+    auto shader = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Reflector.fx");
     m_material = makeObject<Material>();
+    m_material->setShader(shader);
     //m_material->setColor(Color::Red);
     m_material->setMainTexture(m_renderTarget);
 
@@ -112,6 +114,62 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
             virtualCamera.nearClip = viewPoint->nearClip;
             virtualCamera.farClip = viewPoint->farClip;
         }
+
+
+
+        Matrix virtualCameraWorldMatrix = Matrix::makeAffineLookAtLH(
+            virtualCamera.viewPosition,
+            virtualCamera.viewPosition + virtualCamera.viewDirection,
+            up);
+        virtualCameraWorldMatrix.translate(virtualCamera.viewPosition);
+
+        // Update the texture matrix
+        //Matrix textureMatrix(
+        //    0.5, 0.0, 0.0, 0.5,
+        //    0.0, 0.5, 0.0, 0.5,
+        //    0.0, 0.0, 0.5, 0.5,
+        //    0.0, 0.0, 0.0, 1.0
+        //);
+        //textureMatrix.multiply(virtualCamera.projectionMatrix);
+        //textureMatrix.multiply(virtualCamera.matrixWorldInverse);
+        //textureMatrix.multiply(scope.matrixWorld);
+        //↑逆順注意。
+        // まず scope.matrixWorld で普通に座標変換。
+        // virtualCamera.matrixWorldInverse でカメラのローカル空間に変換 (普通に viewMatrix?)
+        // 最後に proj 変換。
+#if 0
+        Matrix textureMatrix(
+            0.5, 0.0, 0.0, 0.5,
+            0.0, 0.5, 0.0, 0.5,
+            0.0, 0.0, 0.5, 0.5,
+            0.0, 0.0, 0.0, 1.0
+        );
+        textureMatrix = Matrix::multiply(virtualCamera.projMatrix, textureMatrix);
+        textureMatrix = Matrix::multiply(Matrix::makeInverse(virtualCameraWorldMatrix), textureMatrix);
+        textureMatrix = Matrix::multiply(scope->worldMatrix(), textureMatrix);
+
+#else
+        //Matrix textureMatrix(
+        //    0.5, 0.0, 0.0, 0.0,
+        //    0.0, 0.5, 0.0, 0.0,
+        //    0.0, 0.0, 0.5, 0.0,
+        //    0.5, 0.5, 0.5, 1.0
+        //);
+        //textureMatrix = Matrix::multiply(textureMatrix, scope->worldMatrix());
+        //textureMatrix = Matrix::multiply(textureMatrix, Matrix::makeInverse(virtualCameraWorldMatrix));
+        //textureMatrix = Matrix::multiply(textureMatrix, virtualCamera.projMatrix);
+        //auto virtualCameraWorldMatrixInverse = Matrix::makeInverse(virtualCameraWorldMatrix);
+        //Matrix textureMatrix = scope->worldMatrix() * virtualCameraWorldMatrixInverse * virtualCamera.projMatrix
+        //* Matrix (
+        //        0.5, 0.0, 0.0, 0.0,
+        //        0.0, 0.5, 0.0, 0.0,
+        //        0.0, 0.0, 0.5, 0.0,
+        //        0.5, 0.5, 0.5, 1.0
+        //    );
+        Matrix textureMatrix = scope->worldMatrix() * virtualCamera.viewMatrix * virtualCamera.projMatrix;
+#endif
+
+        m_material->setMatrix(u"_TextureMatrix", textureMatrix);
     }
 
     context->world->enqueueOffscreenRenderView(m_offscreenRenderView);
@@ -119,8 +177,8 @@ void ReflectorComponent::onPrepareRender(RenderingContext* context)
 
 void ReflectorComponent::onRender(RenderingContext* context)
 {
-    if (context->currentRenderView == m_offscreenRenderView) {
-
+    //if (context->currentRenderView == m_offscreenRenderView) {
+    if (dynamic_cast<OffscreenWorldRenderView*>(context->currentRenderView)) {
     }
     else {
 

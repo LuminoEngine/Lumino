@@ -11,7 +11,7 @@ class App_Experiment_Reflector : public Application
 
     virtual void onInit() override
     {
-		Engine::renderView()->setGuideGridEnabled(true);
+		//Engine::renderView()->setGuideGridEnabled(true);
 		Engine::camera()->addComponent(CameraOrbitControlComponent::create());
 
         auto boxMaterial = Material::create();
@@ -26,16 +26,23 @@ class App_Experiment_Reflector : public Application
         m_sphere->sphereMeshComponent()->setMaterial(sphereMaterial);
         m_sphere->setScale(5);
 
-		auto reflector = Reflector::create();
 
-        auto sprite = UISprite::create(reflector->reflectorComponent()->renderTarget());
+        auto reflector2 = Reflector::create();
+        reflector2->setScale(2);
+        reflector2->setPosition(0, 10, 10);
+        reflector2->setRotation(-Math::PI / 2, 0, 0);
+
+		auto reflector = Reflector::create();
+        reflector->setScale(2);
+        reflector->setPosition(0, 0.5);
+        //auto sprite = UISprite::create(reflector->reflectorComponent()->renderTarget());
 	}
 
     virtual void onUpdate() override
     {
-        m_sphere->setPosition(4, 3.0 * std::sin(Engine::time()), 0);
+        m_sphere->setPosition(4, 3.0 * std::sin(Engine::time()) + 10, 0);
 
-        m_box->setPosition(-4, 5, 0);
+        m_box->setPosition(-4, 10, 0);
         m_box->setRotation(0, Engine::time(), 0);
 
     }
