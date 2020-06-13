@@ -95,6 +95,16 @@ void RenderingManager::init(const Settings& settings)
 
     m_stageDataPageManager = makeRef<LinearAllocatorPageManager>();
 
+//	// CopyScreen
+//	{
+//		static const unsigned char data[] =
+//		{
+//#include "Resource/CopyScreen.lcfx.inl"
+//		};
+//		static const size_t size = LN_ARRAY_SIZE_OF(data);
+//		MemoryStream stream(data, size);
+//		m_builtinShaders[(int)BuiltinShader::CopyScreen] = makeObject<Shader>(u"CopyScreen", &stream);
+//	}
 	// Sprite
 	{
 		static const unsigned char data[] =
@@ -172,16 +182,41 @@ void RenderingManager::init(const Settings& settings)
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject<Shader>(u"BloomComposite", &stream);
 	}
-	// RadialBlur
+
+	// SSRRayTracing
 	{
-		const unsigned char data[] =
-		{
-#include "../ImageEffect/Resource/RadialBlur.lcfx.inl"
+		const unsigned char data[] = {
+#include "../ImageEffect/Resource/SSRRayTracing.lcfx.inl"
 		};
-		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
-		m_builtinShaders[(int)BuiltinShader::RadialBlur] = makeObject<Shader>(u"RadialBlur", &stream);
+		createBuiltinShader(BuiltinShader::SSRRayTracing, u"SSRRayTracing", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SSRBlur
+	{
+		const unsigned char data[] = {
+#include "../ImageEffect/Resource/SSRBlur.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::SSRBlur, u"SSRBlur", data, LN_ARRAY_SIZE_OF(data));
+	}
+	// SSRComposite
+	{
+		const unsigned char data[] = {
+#include "../ImageEffect/Resource/SSRComposite.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::SSRComposite, u"SSRComposite", data, LN_ARRAY_SIZE_OF(data));
 	}
 
+
+	// RadialBlur
+	{
+		const unsigned char data[] = {
+#include "../ImageEffect/Resource/RadialBlur.lcfx.inl"
+		};
+		createBuiltinShader(BuiltinShader::RadialBlur, u"RadialBlur", data, LN_ARRAY_SIZE_OF(data));
+	}
+
+
+
+	m_builtinShaders[(int)BuiltinShader::CopyScreen] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/CopyScreen.fx");
 	m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	//m_builtinShaders[(int)BuiltinShader::Sprite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/Sprite.fx");
 	//m_builtinShaders[(int)BuiltinShader::ClusteredShadingDefault] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ClusteredShadingDefault.fx");
@@ -228,6 +263,12 @@ void RenderingManager::dispose()
 	//m_renderStageListBuilder = nullptr;
 	m_standardVertexDeclaration = nullptr;
     m_renderFeatures.clear();
+}
+
+void RenderingManager::createBuiltinShader(BuiltinShader index, const Char* name, const void* data, int dataLen)
+{
+	MemoryStream stream(data, dataLen);
+	m_builtinShaders[static_cast<int>(index)] = makeObject<Shader>(name, &stream);
 }
 
 } // namespace detail

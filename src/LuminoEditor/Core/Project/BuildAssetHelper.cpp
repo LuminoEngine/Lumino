@@ -24,7 +24,7 @@ ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const Project* project, co
 	auto workFile = ln::Path::combine(project->intermediateAssetsDir(), rel.parent(), inputFile.fileName().replaceExtension(ln::detail::UnifiedShader::FileExt));
 	ln::FileSystem::createDirectory(workFile.parent());
 
-	if (buildShader(inputFile, workFile) != 0) {
+	if (buildShader(inputFile, workFile, ln::Path::Empty) != 0) {
 		return false;
 	}
 
@@ -32,7 +32,7 @@ ln::Result BuildAssetHelper::buildShaderFromAutoBuild(const Project* project, co
 	return true;
 }
 
-ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile)
+ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir)
 {
 	ln::detail::ShaderManager::Settings settings;
 	auto manager = ln::makeRef<ln::detail::ShaderManager>();
@@ -40,7 +40,7 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 
 	auto diag = ln::makeObject<ln::DiagnosticsManager>();
 
-	auto result = generateShader(manager, inputFile, outputFile, diag);
+	auto result = generateShader(manager, inputFile, outputFile, exportDir, diag);
 
 	diag->dumpToLog();
 
@@ -49,10 +49,8 @@ ln::Result BuildAssetHelper::buildShader(const ln::Path& inputFile, const ln::Pa
 	return ((!result) || diag->hasError());
 }
 
-ln::Result BuildAssetHelper::generateShader(ln::detail::ShaderManager* manager, const ln::Path& inputFile, const ln::Path& outputFile, ln::DiagnosticsManager* diag)
+ln::Result BuildAssetHelper::generateShader(ln::detail::ShaderManager* manager, const ln::Path& inputFile, const ln::Path& outputFile, const ln::Path& exportDir, ln::DiagnosticsManager* diag)
 {
-	const bool saveCodes = false;
-
 	ln::Path inputFilePath = inputFile.canonicalize();
 	ln::Path outputFilePath = outputFile;
 	if (outputFilePath.isEmpty()) {
@@ -81,8 +79,9 @@ ln::Result BuildAssetHelper::generateShader(ln::detail::ShaderManager* manager, 
 	}
 
 	// dump intermediate codes.
-	if (saveCodes) {
-		compiler.unifiedShader()->saveCodes(outputFilePath);
+	if (!exportDir.isEmpty()) {
+		ln::FileSystem::createDirectory(exportDir);
+		compiler.unifiedShader()->saveCodes(exportDir.str() + u"/");
 	}
 
 	CLI::info(u"");

@@ -10,11 +10,11 @@ class UnLigitingSceneRendererPass
 public:
 	UnLigitingSceneRendererPass();
 
-	void init(RenderingManager* manager);
+	void init(RenderingManager* manager, bool forPostEffect);
 
 
 
-	virtual void onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 	virtual RenderPass* renderPass() const;
 
 	virtual ShaderTechnique* selectShaderTechnique(
@@ -32,7 +32,7 @@ class UnLigitingSceneRenderer
 	: public SceneRenderer
 {
 public:
-	void init(RenderingManager* manager);
+	void init(RenderingManager* manager, bool forPostEffect = false);
 
 	SceneRendererPass* mainRenderPass() const override;
 

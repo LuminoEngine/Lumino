@@ -12,12 +12,13 @@ cbuffer LNRenderViewBuffer
 {
 	/* [0]   */ float4x4 ln_View;
 	/* [64]  */ float4x4 ln_Projection;
-	/* [128] */ float3 ln_CameraPosition;
-	/* [144] */ float3 ln_CameraDirection;
-	/* [160] */ float2 ln_ViewportPixelSize;
-	/* [168] */ float ln_NearClip;
-	/* [172] */ float ln_FarClip;
-};
+	/* [128] */ float4x4 ln_ProjectionI;
+	/* [192] */ float4 ln_Resolution;
+	/* [208] */ float3 ln_CameraPosition;
+	/* [224] */ float3 ln_CameraDirection;
+	/* [240] */ float ln_NearClip;
+	/* [244] */ float ln_FarClip;
+};  /* [248(alignd:256)] */
 
 cbuffer LNRenderElementBuffer
 {
@@ -110,7 +111,7 @@ LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 	LN_VSOutput_Common o;
 	o.svPos			= mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
 	o.Normal		= mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-	o.UV			= input.UV;// + (float2(0.5, 0.5) / ln_ViewportPixelSize);
+	o.UV			= input.UV;// + (float2(0.5, 0.5) / ln_Resolution.xy);
 	o.Color			= input.Color;
 	return o;
 }
@@ -153,6 +154,30 @@ float4 LN_GetBuiltinEffectColor(float4 inColor)
 
 	// apply tone. (NTSC Coef method)
 	return LN_CalculateToneColor(outColor, ln_ToneColor);
+}
+
+/**
+ * 整数型の RGB テクスチャなどに書き込まれている 0.0 ~ 1.0 にパックされた法線を -1.0 ~ 1.0 に展開します。
+ */
+float3 LN_UnpackNormal(float3 packednormal)
+{
+	return (packednormal * 2.0) - 1.0;
+}
+
+/**
+ * Clip-space 上の xy 座標 (-1.0 ~ 1.0) を、UV 座標 (0.0 ~ 1.0) へ変換します。
+ */
+float2 LN_ClipSpacePositionToUV(float2 pos)
+{
+    return (float2(1.0, -1.0) * pos) * 0.5 + 0.5;
+}
+
+/**
+ * UV 座標 (0.0 ~ 1.0) を、Clip-space 上の xy 座標 (-1.0 ~ 1.0) へ変換します。
+ */
+float2 LN_UVToClipSpacePosition(float2 uv)
+{
+    return ((uv - 0.5) * 2.0) * float2(1.0, -1.0);
 }
 
 #endif // LUMINO_INCLUDED

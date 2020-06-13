@@ -397,6 +397,23 @@ void RenderTargetTexture::releaseTemporary(RenderTargetTexture* renderTarget)
     detail::EngineDomain::graphicsManager()->frameBufferCache()->release(renderTarget);
 }
 
+Ref<RenderTargetTexture> RenderTargetTexture::realloc(RenderTargetTexture* renderTarget, int width, int height, TextureFormat format, bool mipmap, SamplerState* samplerState)
+{
+    if (!renderTarget ||
+        renderTarget->width() != width ||
+        renderTarget->height() != height ||
+        renderTarget->format() != format ||
+        renderTarget->mipmap() != mipmap ||
+        renderTarget->samplerState() != samplerState) { // TODO: SamplerState だけ違うときは再構築不要. というか必要？
+        auto ptr = makeObject<RenderTargetTexture>(width, height, format, mipmap);
+        ptr->setSamplerState(samplerState);
+        return ptr;
+    }
+    else {
+        return renderTarget;
+    }
+}
+
 RenderTargetTexture::RenderTargetTexture()
     : m_rhiObject(nullptr)
     , m_ownerSwapchain(nullptr)

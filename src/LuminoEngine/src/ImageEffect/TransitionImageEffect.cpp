@@ -103,7 +103,7 @@ bool TransitionImageEffectInstance::init(TransitionImageEffect* owner)
     return true;
 }
 
-void TransitionImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+bool TransitionImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
     bool recreated = preparePreviousFrameTarget(source->width(), source->height());
     if (m_freezeRevision != m_owner->m_freezeRevision) {
@@ -128,9 +128,11 @@ void TransitionImageEffectInstance::onRender(RenderingContext* context, RenderTa
    // if (!m_owner->isRunning()) {
     if (Math::nearEqual(m_owner->m_factor.value(), 0.0f)) {
         // No effect apply.
+        // destination への転送は行わないが、prev として保存はしておく
         m_copyMaterial->setMainTexture(source);
-        context->blit(m_copyMaterial, destination);
+        //context->blit(m_copyMaterial, destination);
         context->blit(m_copyMaterial, m_previousFrameTarget);
+        return false;
     }
     else {
         if (m_maskTexture != m_owner->m_maskTexture) {
@@ -144,7 +146,9 @@ void TransitionImageEffectInstance::onRender(RenderingContext* context, RenderTa
         else if (m_owner->m_mode == TransitionImageEffect::Mode::CrossFade) {
             renderCrossFade(context, source, destination);
         }
+        return true;
     }
+
 }
 
 bool TransitionImageEffectInstance::preparePreviousFrameTarget(int width, int height)

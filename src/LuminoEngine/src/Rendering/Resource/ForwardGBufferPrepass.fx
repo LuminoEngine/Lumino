@@ -42,7 +42,8 @@ struct PSOutput
 {
     //float4 Depth : SV_TARGET1;
     float4 Normal : SV_TARGET0;
-    float4 Material: SV_TARGET1;
+    float4 Depth: SV_TARGET1;
+    float4 Material: SV_TARGET2;
 };
 
 VSOutput VS_WriteLinearDepth(VSInput input)
@@ -76,7 +77,10 @@ PSOutput PS_WriteLinearDepth(PSInput input)
     PSOutput output;
 
     // 左手。Z+ が正面(奥)
-    output.Normal = float4(LN_PackNormal(normalize(input.ViewSpaceNormal)), clipSpaceZ); // normalize 必須
+    output.Normal = float4(LN_PackNormal(normalize(input.ViewSpaceNormal)), 1.0); // normalize 必須
+
+    output.Depth = float4(clipSpaceZ, linearZ, 0.0, 1.0);
+    
     //output.Depth = float4(z, z, z, 1);
 
 #ifdef LN_USE_ROUGHNESS_MAP

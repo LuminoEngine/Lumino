@@ -99,34 +99,43 @@ void ImageEffectRenderer::render(RenderingContext* context, RenderTargetTexture*
         context->pushState(true);
         context->setDepthBuffer(nullptr);
 
-        int i = 0;
+        bool renderd = false;
+        int renderCount = 0;
         for (auto& effect : m_collectedImageEffectInstances)
         {
-            if (i == 0) {
-                effect.instance->onRender(context, inout, secondaryTarget);
+            if (renderCount == 0) {
+                renderd = effect.instance->onRender(context, inout, secondaryTarget);
             }
             else {
-                effect.instance->onRender(context, primaryTarget, secondaryTarget);
+                renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
             }
-            std::swap(primaryTarget, secondaryTarget);
-            i++;
+
+            if (renderd) {
+                std::swap(primaryTarget, secondaryTarget);
+                renderCount++;
+            }
         }
         for (auto& effect : m_imageEffectInstances)
         {
-            if (i == 0) {
-                effect.instance->onRender(context, inout, secondaryTarget);
+            if (renderCount == 0) {
+                renderd = effect.instance->onRender(context, inout, secondaryTarget);
             }
             else {
-                effect.instance->onRender(context, primaryTarget, secondaryTarget);
+                renderd = effect.instance->onRender(context, primaryTarget, secondaryTarget);
             }
-            std::swap(primaryTarget, secondaryTarget);
-            i++;
+            
+            if (renderd) {
+                std::swap(primaryTarget, secondaryTarget);
+                renderCount++;
+            }
         }
 
         context->resetState();
 
-		m_copyMaterial->setMainTexture(primaryTarget);
-        context->blit(m_copyMaterial, inout);
+        if (renderCount >= 1) {
+            m_copyMaterial->setMainTexture(primaryTarget);
+            context->blit(m_copyMaterial, inout);
+        }
 
         context->popState();
 #endif

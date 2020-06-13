@@ -200,6 +200,132 @@ Texture が持っている SamplerState をセットする。(2018/12/30 時点�
 - lnS_<変数名> : SamplerState 型変数の名前
 
 
+Issue? Global な uniform だけに layout(row_major) がつく？
+----------
+
+```
+// test.frag (HLSL)
+#pragma pack_matrix(row_major)
+
+float4x4 _CameraProjectionMatrix;
+
+cbuffer LNRenderViewBuffer
+{
+    float4x4 ln_Projection;
+};
+
+float4 main()
+{
+    float4 c = float4(1, 0, 0, 1);
+    c = mul(c, _CameraProjectionMatrix);
+    c = mul(c, ln_Projection);
+    return c;
+}
+```
+
+```
+C:\VulkanSDK\1.2.141.0\Bin\glslangValidator -e main -o test.spv -V -D test.frag
+C:\VulkanSDK\1.2.141.0\Bin\spirv-dis.exe test.spv
+```
+
+```
+OpName %_Global "$Global"
+OpMemberName %_Global 0 "_CameraProjectionMatrix"
+OpName %_ ""
+OpName %LNRenderViewBuffer "LNRenderViewBuffer"
+OpMemberName %LNRenderViewBuffer 0 "ln_Projection"
+OpName %__0 ""
+OpName %_entryPointOutput "@entryPointOutput"
+OpMemberDecorate %_Global 0 RowMajor            ← _CameraProjectionMatrix は RowMajor
+OpMemberDecorate %_Global 0 Offset 0
+OpMemberDecorate %_Global 0 MatrixStride 16
+OpDecorate %_Global Block
+OpDecorate %_ DescriptorSet 0
+OpDecorate %_ Binding 0
+OpMemberDecorate %LNRenderViewBuffer 0 ColMajor     ← ln_Projection は ColMajor
+OpMemberDecorate %LNRenderViewBuffer 0 Offset 0
+OpMemberDecorate %LNRenderViewBuffer 0 MatrixStride 16
+```
+
+`#pragma pack_matrix(row_major)` がない場合は↓
+
+```
+OpName %_Global "$Global"
+OpMemberName %_Global 0 "_CameraProjectionMatrix"
+OpName %_ ""
+OpName %LNRenderViewBuffer "LNRenderViewBuffer"
+OpMemberName %LNRenderViewBuffer 0 "ln_Projection"
+OpName %__0 ""
+OpName %_entryPointOutput "@entryPointOutput"
+OpMemberDecorate %_Global 0 RowMajor            ← _CameraProjectionMatrix は RowMajor
+OpMemberDecorate %_Global 0 Offset 0
+OpMemberDecorate %_Global 0 MatrixStride 16
+OpDecorate %_Global Block
+OpDecorate %_ DescriptorSet 0
+OpDecorate %_ Binding 0
+OpMemberDecorate %LNRenderViewBuffer 0 RowMajor     ← ln_Projection は RowMajor
+OpMemberDecorate %LNRenderViewBuffer 0 Offset 0
+OpMemberDecorate %LNRenderViewBuffer 0 MatrixStride 16
+```
+
+
+```
+C:\VulkanSDK\1.2.141.0\Bin\dxc -spirv -T ps_6_0 -E main test.frag -Fo test.spv
+```
+dxc を使うと、両方 ColMajor になる。glslang の問題っぽい。
+
+
+
+
+
+
+
+https://github.com/KhronosGroup/glslang/issues/789#issuecomment-288481630
+
+HLSL is row-major oriented. (行優先)
+SPIR-V is column-major oriented. (列優先)
+
+
+### 行列乗算の書き方の一般的なところ
+
+VulkanExample より
+
+```
+gl_Position = ubo.projection * ubo.view * ubo.model * boneTransform * vec4(inPos.xyz, 1.0);
+```
+
+DirectX-Graphics-Samples より
+
+```
+result.position = mul(float4(input.position, 1.0f), g_mWorldViewProj);
+```
+
+HLSL で書くなら、やっぱり matrix は後ろに持ってきたいかなぁ…。そうすると以下どちらかの対策が必要になる。
+- HLSL の行列を全部 row_major で修飾する or #pragma pack_matrix(row_major)
+- C++ 側で行列を転置する。
+
+
+
+
+
+```
+layout(std140) uniform _Global
+{
+    layout(row_major) mat4 _CameraProjectionMatrix;
+    layout(row_major) mat4 _CameraInverseProjectionMatrix;
+} _129;
+
+layout(std140) uniform LNRenderViewBuffer
+{
+    mat4 ln_View;
+    mat4 ln_Projection;
+} _241;
+```
+
+float4 pos = (mul(_CameraInverseProjectionMatrix, clipPosition)); で正しい変換となった。
+float4 pos = (mul(clipPosition, ln_Projection)); で正しい変換となった。
+
+
 GLSL と HLSL の Matrix layout (Matrix storage order)
 ----------
 

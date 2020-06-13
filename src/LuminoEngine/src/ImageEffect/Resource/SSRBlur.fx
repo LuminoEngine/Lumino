@@ -30,9 +30,6 @@ VS_Output VS_Main(LN_VSInput input)
 
 //==============================================================================
 // Pixel shader
-sampler2D _ColorSampler;
-
-const float2 _Resolution = float2(640, 480);
 
 struct PS_Input
 {
@@ -41,13 +38,13 @@ struct PS_Input
 
 float4 PS_Main(PS_Input input) : SV_TARGET
 {
-    float2 texelSize = (1.0 / _Resolution);
+    float2 texelSize = (1.0 / ln_Resolution.xy);
     float4 result = float4(0.0);
 
     for (int i=-2; i<=2; i++) {
         for (int j=-2; j<=2; j++) {
             float2 offset = ((float2(float(i),float(j)))*texelSize);
-            result += tex2D(_ColorSampler, input.UV+offset);
+            result += tex2D(ln_MaterialTexture, input.UV+offset);
         }
     }
 
@@ -65,3 +62,4 @@ technique Forward_Geometry_UnLighting
         PixelShader = PS_Main;
     }
 }
+

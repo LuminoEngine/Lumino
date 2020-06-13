@@ -206,6 +206,8 @@ public:
 			// しかし glClear は Scissor の影響を受けるので GL_SCISSOR_TEST を切っておく。
 			GL_CHECK(glDisable(GL_SCISSOR_TEST));
 
+			// アタッチされているすべてのカラーバッファ・デプスバッファをクリアする。
+			// 個別クリアしたいときは glClearBufferiv
 			GL_CHECK(glClear(glflags));
 
 			//GLint c[] = { 255, 0, 0, 255 };
@@ -547,29 +549,6 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 		auto& viewportRect = state.regionRects.viewportRect;
 		auto& scissorRect = state.regionRects.scissorRect;
 		auto targetSize = m_currentRenderPass->viewSize();
-
-		////GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
-		//GL_CHECK(glEnable(GL_SCISSOR_TEST));
-
-		//int vrx = viewportRect.x;
-		//int vry = targetSize.height - (viewportRect.y + viewportRect.height);
-		//int vrw = viewportRect.width;
-		//int vrh = viewportRect.height;
-		//GL_CHECK(glViewport(vrx, vry, vrw, vrh));
-
-		//int srx = scissorRect.x;
-		//int sry = targetSize.height - (scissorRect.y + scissorRect.height);
-		//int srw = scissorRect.width;
-		//int srh = scissorRect.height;
-		//GL_CHECK(glScissor(srx, sry, srw, srh));
-		////GL_CHECK(glScissor(scissorRect.x, targetSize.height - (scissorRect.y + scissorRect.height), scissorRect.width, scissorRect.height));
-
-
-
-		//printf("vr: %d %d %d %d\n", vrx, vry, vrw, vrh);
-		//printf("sr: %d %d %d %d\n", srx, sry, srw, srh);
-		//printf("targetSize: %d %d\n", targetSize.width, targetSize.height);
-		//printf("%d %d\n", viewportRect.height, scissorRect.height);
 
 		GL_CHECK(glViewport(viewportRect.x, targetSize.height - (viewportRect.y + viewportRect.height), viewportRect.width, viewportRect.height));
 		GL_CHECK(glEnable(GL_SCISSOR_TEST));
@@ -922,6 +901,11 @@ void GLGraphicsContext::onSetDescriptorTableData(IShaderDescriptorTable* resourc
 
 void GLGraphicsContext::onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+	//std::array<GLenum, MaxMultiRenderTargets> buffers = {
+	//	GL_COLOR_ATTACHMENT0, GL_NONE, GL_NONE, GL_NONE
+	//};
+	//GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
+
 	OpenGLHelper::clearBuffers(flags, color, z, stencil);
 }
 
@@ -1215,8 +1199,10 @@ void GLRenderPass::bind(GLGraphicsContext* context)
 	auto baseSize = viewSize();
 
 	// color buffers
+	std::array<GLenum, MaxMultiRenderTargets> buffers;
 	int renderTargetsCount = m_renderTargets.size();
 	int maxCount = std::min(renderTargetsCount, m_device->caps().MAX_COLOR_ATTACHMENTS);
+	//int actualCount = 0;
 	for (int i = 0; i < renderTargetsCount; ++i)
 	{
 		if (m_renderTargets[i])
@@ -1224,10 +1210,12 @@ void GLRenderPass::bind(GLGraphicsContext* context)
 			LN_CHECK(m_renderTargets[i]->realSize() == baseSize);
 			GLuint id = static_cast<GLTextureBase*>(m_renderTargets[i])->id();
 			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, id, 0));
+			buffers[i] = GL_COLOR_ATTACHMENT0 + i;
 		}
 		else
 		{
 			GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0));
+			buffers[i] = GL_NONE;
 		}
 	}
 
@@ -1248,6 +1236,8 @@ void GLRenderPass::bind(GLGraphicsContext* context)
 	LN_ENSURE(GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER),
 		"glCheckFramebufferStatus failed 0x%08x",
 		glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+	GL_CHECK(glDrawBuffers(buffers.size(), buffers.data()));
 
 
 	OpenGLHelper::clearBuffers(m_clearFlags, m_clearColor, m_clearDepth, m_clearStencil);

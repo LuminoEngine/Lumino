@@ -413,10 +413,13 @@ int main(int argc, char** argv)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 	Logger::addStdErrAdapter();
+    Logger::setLevel(LogLevel::Debug);
 	EngineSettings::setEngineFeatures(EngineFeature::Experimental);// EngineFeature::Public);// 
 	EngineSettings::setGraphicsAPI(GraphicsAPI::Vulkan);//GraphicsAPI::OpenGL);//
 	EngineSettings::addAssetDirectory(LN_LOCALFILE("Assets"));
 	EngineSettings::setDefaultUITheme(u"Chocotelier");
+    EngineSettings::setGraphicsDebugEnabled(true);
+    EngineSettings::setDebugToolEnabled(true);
 	detail::EngineManager::s_settings.standaloneFpsControl = true;
 	//detail::EngineDomain::engineManager()->settings().createMainLights = true;
 

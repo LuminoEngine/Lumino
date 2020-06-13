@@ -13,8 +13,6 @@
 
 namespace ln {
 
-Texture* g_viewNormalMap = nullptr;
-Texture* g_viewMaterialMap = nullptr;
 
 namespace detail {
 
@@ -37,27 +35,26 @@ void ForwardGBufferPrepass::init()
 	m_defaultShader = manager()->builtinShader(BuiltinShader::ForwardGBufferPrepass);
 
 	if (Debug) {
-		m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
-		m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
-		m_depthMap->setSamplerState(m_samplerState);
-		m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
-		m_normalMap->setSamplerState(m_samplerState);
-		m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
-		m_materialMap->setSamplerState(m_samplerState);
-		g_viewNormalMap = m_depthMap;
-		g_viewMaterialMap = m_materialMap;
+		//m_depthMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+		//m_depthMap->setSamplerState(m_samplerState);
+		//m_normalMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+		//m_normalMap->setSamplerState(m_samplerState);
+		//m_materialMap = RenderTargetTexture::create(640, 480, TextureFormat::RGBA32F);
+		//m_materialMap->setSamplerState(m_samplerState);
 	}
 	m_renderPass = makeObject<RenderPass>();
 }
 
 void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 {
-	auto size = sceneRenderer->renderingPipeline()->renderingFrameBufferSize();
+	const auto* renderingPipeline = sceneRenderer->renderingPipeline();
+
+	auto size = renderingPipeline->renderingFrameBufferSize();
 	if (!Debug) {
-		m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
-		m_normalMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
-		m_materialMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+		//m_depthMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+		//m_normalMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
+		//m_materialMap = RenderTargetTexture::getTemporary(size.width, size.height, TextureFormat::RGBA8, false);
 	}
 	m_depthBuffer = DepthBuffer::getTemporary(size.width, size.height);
 
@@ -65,24 +62,28 @@ void ForwardGBufferPrepass::onBeginRender(SceneRenderer* sceneRenderer)
 
 void ForwardGBufferPrepass::onEndRender(SceneRenderer* sceneRenderer)
 {
+	//const auto* renderingPipeline = sceneRenderer->renderingPipeline();
+
 	if (!Debug) {
-		RenderTargetTexture::releaseTemporary(m_depthMap);
-		m_depthMap = nullptr;
-		RenderTargetTexture::releaseTemporary(m_normalMap);
-		m_normalMap = nullptr;
-		RenderTargetTexture::releaseTemporary(m_materialMap);
-		m_materialMap = nullptr;
+		//RenderTargetTexture::releaseTemporary(m_depthMap);
+		//m_depthMap = nullptr;
+		//RenderTargetTexture::releaseTemporary(m_normalMap);
+		//m_normalMap = nullptr;
+		//RenderTargetTexture::releaseTemporary(m_materialMap);
+		//m_materialMap = nullptr;
 	}
 	DepthBuffer::releaseTemporary(m_depthBuffer);
 	m_depthBuffer = nullptr;
 }
 
-void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void ForwardGBufferPrepass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	m_renderPass->setRenderTarget(0, m_depthMap);
-	m_renderPass->setRenderTarget(1, m_materialMap);
+	const auto* renderingPipeline = static_cast<SceneRenderingPipeline*>(sceneRenderer->renderingPipeline());
+	m_renderPass->setRenderTarget(0, renderingPipeline->viweNormalAndDepthBuffer());
+	m_renderPass->setRenderTarget(1, renderingPipeline->viweDepthBuffer());
+	m_renderPass->setRenderTarget(2, renderingPipeline->materialBuffer());
 	m_renderPass->setDepthBuffer(m_depthBuffer);
-	m_renderPass->setClearValues(ClearFlags::All, Color::Gray, 1.0f, 0);
+	m_renderPass->setClearValues(ClearFlags::Depth, Color::Gray, 1.0f, 0);
 }
 
 //void ForwardGBufferPrepass::onBeginPass(GraphicsContext* context, FrameBuffer* frameBuffer)
@@ -157,7 +158,7 @@ void LightOcclusionPass::onEndRender(SceneRenderer* sceneRenderer)
 	m_depthBuffer = nullptr;
 }
 
-void LightOcclusionPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void LightOcclusionPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, m_lensflareOcclusionMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);
@@ -258,7 +259,7 @@ void ClusteredShadingGeometryRenderingPass::init(ClusteredShadingSceneRenderer* 
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void ClusteredShadingGeometryRenderingPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void ClusteredShadingGeometryRenderingPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
@@ -402,7 +403,7 @@ void ShadowCasterPass::init()
 //	return m_defaultShader;
 //}
 
-void ShadowCasterPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void ShadowCasterPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, m_shadowMap);
 	m_renderPass->setDepthBuffer(m_depthBuffer);

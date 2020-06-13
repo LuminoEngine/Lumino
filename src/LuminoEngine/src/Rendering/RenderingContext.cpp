@@ -12,8 +12,10 @@
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Font/FontManager.hpp"
 #include "../Mesh/MeshGenerater.hpp"
+#include "RenderingPipeline.hpp"
 #include "RenderingManager.hpp"
 #include "DrawElementListBuilder.hpp"
+
 
 namespace ln {
 
@@ -757,6 +759,24 @@ void RenderingContext::setViewPoint(RenderViewPoint* value)
 void RenderingContext::setAdditionalElementFlags(detail::RenderDrawElementTypeFlags value)
 {
 	m_builder->setAdditionalElementFlags(value);
+}
+
+RenderTargetTexture* RenderingContext::gbuffer(GBuffer kind) const
+{
+	if (!m_sceneRenderingPipeline) return nullptr;
+
+	switch (kind)
+	{
+	case ln::GBuffer::ViewNormalMap:
+		return m_sceneRenderingPipeline->viweNormalAndDepthBuffer();
+	case ln::GBuffer::ViewDepthMap:
+		return m_sceneRenderingPipeline->viweDepthBuffer();
+	case ln::GBuffer::ViewMaterialMap:
+		return m_sceneRenderingPipeline->materialBuffer();
+	default:
+		LN_UNREACHABLE();
+		return nullptr;
+	}
 }
 
 //detail::RenderDrawElement* RenderingContext::lastRenderDrawElement() const

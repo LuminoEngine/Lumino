@@ -206,11 +206,15 @@ public:
     static Ref<RenderTargetTexture> getTemporary(int width, int height, TextureFormat format, bool mipmap);
 
     /** getTemporary で取得した一時的な RenderTargetTexture を解放します。 */
+    // Note: 内部利用は禁止。外部の、特にカスタムのポストエフェクトを実装するときに使う。
     static void releaseTemporary(RenderTargetTexture* renderTarget);
 
     bool isBackbuffer() const { return m_ownerSwapchain != nullptr; }
 
     bool m_cleared = false;
+
+
+    static Ref<RenderTargetTexture> realloc(RenderTargetTexture* renderTarget, int width, int height, TextureFormat format, bool mipmap, SamplerState* samplerState);
 
 protected:
     virtual void onDispose(bool explicitDisposing) override;

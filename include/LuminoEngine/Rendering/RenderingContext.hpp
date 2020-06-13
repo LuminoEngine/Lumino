@@ -221,6 +221,8 @@ public:
 	void collectImageEffect(ImageEffect* effect) { m_imageEffects.add(effect); }
 	const List<ImageEffect*>& imageEffects() const { return m_imageEffects; }
 	void clearImageEffects() { m_imageEffects.clear(); }
+	detail::SceneRenderingPipeline* m_sceneRenderingPipeline = nullptr;
+	RenderTargetTexture* gbuffer(GBuffer kind) const;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	RenderingContext();

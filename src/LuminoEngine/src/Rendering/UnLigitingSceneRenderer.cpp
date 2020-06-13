@@ -15,13 +15,16 @@ UnLigitingSceneRendererPass::UnLigitingSceneRendererPass()
 {
 }
 
-void UnLigitingSceneRendererPass::init(RenderingManager* manager)
+void UnLigitingSceneRendererPass::init(RenderingManager* manager, bool forPostEffect)
 {
-	m_defaultShader = manager->builtinShader(BuiltinShader::Sprite);
+	if (forPostEffect)
+		m_defaultShader = manager->builtinShader(BuiltinShader::CopyScreen);
+	else
+		m_defaultShader = manager->builtinShader(BuiltinShader::Sprite);
 	m_renderPass = makeObject<RenderPass>();
 }
 
-void UnLigitingSceneRendererPass::onBeginPass(GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void UnLigitingSceneRendererPass::onBeginPass(SceneRenderer* sceneRenderer, GraphicsContext* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_renderPass->setRenderTarget(0, renderTarget);
 	m_renderPass->setDepthBuffer(depthBuffer);
@@ -64,11 +67,11 @@ ShaderTechnique* UnLigitingSceneRendererPass::selectShaderTechnique(
 //==============================================================================
 // UnLigitingSceneRenderer
 
-void UnLigitingSceneRenderer::init(RenderingManager* manager)
+void UnLigitingSceneRenderer::init(RenderingManager* manager, bool forPostEffect)
 {
 	SceneRenderer::init();
 	m_rendererPass = makeRef<UnLigitingSceneRendererPass>();
-	m_rendererPass->init(manager);
+	m_rendererPass->init(manager, forPostEffect);
 	addPass(m_rendererPass);
 }
 

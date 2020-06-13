@@ -171,9 +171,16 @@ struct BoxElementShapeShadowStyle
     bool shadowInset = false;
 };
 
+enum class GBuffer
+{
+	ViewNormalMap,	// experiment
+	ViewDepthMap,
+	ViewMaterialMap,
+};
 
 namespace detail {
 class SceneRenderer;
+class SceneRenderingPipeline;
 
 enum class RenderDrawElementTypeFlags : uint8_t
 {

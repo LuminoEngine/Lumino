@@ -1,5 +1,4 @@
 
-
 #include <Lumino.fxh>
 
 float4 _Tone;
@@ -31,7 +30,7 @@ VS_OUTPUT vsMain(LN_VSInput input)
     VS_OUTPUT output = (VS_OUTPUT)0;
 	output.svPos			= float4(input.Pos, 1.0f);//mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
 	output.Normal		= float4(0, 1, 0, 0);//input.Normal;//mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
-	output.UV			= input.UV;// + (float2(0.5, 0.5) / ln_ViewportPixelSize);
+	output.UV			= input.UV;// + (float2(0.5, 0.5) / ln_Resolution.xy);
 	output.Color			= input.Color;
 	return output;
 }
@@ -65,5 +64,4 @@ technique Forward_Geometry_UnLighting
         PixelShader = PS_Main;
     }
 }
-
 

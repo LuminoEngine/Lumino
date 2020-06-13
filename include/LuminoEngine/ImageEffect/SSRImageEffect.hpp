@@ -20,14 +20,13 @@ private:
     friend class detail::SSRImageEffectInstance;
 };
 
-
 namespace detail {
 
 class SSRImageEffectInstance
     : public ImageEffectInstance
 {
 protected:
-    void onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+    bool onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
     SSRImageEffectInstance();
@@ -50,13 +49,13 @@ private:
     Ref<RenderTargetTexture> m_compositeTarget;
     Ref<SamplerState> m_samplerState;
 
-    //List<Ref<RenderTargetTexture>> m_renderTargetsHorizontal;
-    //List<Ref<RenderTargetTexture>> m_renderTargetsVertical;
-    //Ref<Material> m_compositeMaterial;
-
-    //List<Ref<Material>> m_separableBlurMaterialsH;
-    //List<Ref<Material>> m_separableBlurMaterialsV;
-    //Ref<Material> m_materialHighPassFilter;
+    // Find optimization
+    ShaderParameter2* m_ssrMaterial_ColorSampler;
+    ShaderParameter2* m_ssrMaterial_NormalAndDepthSampler;
+    ShaderParameter2* m_ssrMaterial_ViewDepthSampler;
+    ShaderParameter2* m_ssrMaterial_MetalRoughSampler;
+    ShaderParameter2* m_paramColorSampler;
+    ShaderParameter2* m_paramSSRSampler;
 };
 
 } // namespace detail

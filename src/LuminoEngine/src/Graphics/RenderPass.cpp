@@ -145,9 +145,18 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
 		releaseRHI();
         m_dirty = false;
 
+		const RenderTargetTexture* primaryTarget = m_renderTargets[0];
+		if (LN_REQUIRE(primaryTarget, "RenderPass: [0] Invalid render target.")) return nullptr;
+		const Size primarySize(primaryTarget->width(), primaryTarget->height());
+
 		detail::NativeRenderPassCache::FindKey key;
 		for (auto i = 0; i < m_renderTargets.size(); i++) {
-			key.renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(context, m_renderTargets[i], nullptr);
+			RenderTargetTexture* rt = m_renderTargets[i];
+			if (rt) {
+				if (LN_REQUIRE(rt->width() == primarySize.width && rt->height() == primarySize.height, u"RenderPass: Invalid render target dimensions.")) return nullptr;
+			}
+
+			key.renderTargets[i] = detail::GraphicsResourceInternal::resolveRHIObject<detail::ITexture>(context, rt, nullptr);
 		}
 		key.depthBuffer = detail::GraphicsResourceInternal::resolveRHIObject<detail::IDepthBuffer>(context, m_depthBuffer, nullptr);
 		key.clearFlags = m_clearFlags;
@@ -162,6 +171,8 @@ detail::IRenderPass* RenderPass::resolveRHIObject(GraphicsContext* context, bool
         m_renderTargets[0]->m_cleared = true;
 
         if (m_depthBuffer) {
+			if (LN_REQUIRE(m_depthBuffer->width() == primarySize.width && m_depthBuffer->height() == primarySize.height, u"RenderPass: Invalid depth buffer dimensions.")) return nullptr;
+
             if (!m_depthBuffer->m_cleared && !testFlag(key.clearFlags, Flags<ClearFlags>(ClearFlags::Depth | ClearFlags::Stencil).get())) {
                 key.clearFlags = Flags<ClearFlags>(key.clearFlags) | ClearFlags::Depth | ClearFlags::Stencil;
                 m_dirty = true;

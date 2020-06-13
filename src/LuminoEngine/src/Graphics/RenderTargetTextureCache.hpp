@@ -47,7 +47,7 @@ public:
 	void releaseObject(RenderTargetTexture* rt);
 
 private:
-	uint16_t makeKey(const SizeI& size, TextureFormat format, bool mipmap);
+	uint64_t makeKey(const SizeI& size, TextureFormat format, bool mipmap);
 
 	GraphicsManager*	m_manager;
 };
