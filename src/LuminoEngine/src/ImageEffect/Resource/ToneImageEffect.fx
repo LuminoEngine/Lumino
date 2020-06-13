@@ -1,5 +1,4 @@
 
-
 #include <Lumino.fxh>
 
 float4 _Tone;
@@ -65,5 +64,4 @@ technique Forward_Geometry_UnLighting
         PixelShader = PS_Main;
     }
 }
-
 

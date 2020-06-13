@@ -4,12 +4,6 @@
 #include <LuminoEngine/Visual/ParticleEmitterComponent.hpp>
 using namespace ln;
 
-namespace ln {
-    extern Texture* g_viewNormalMap;
-    extern Texture* g_viewMaterialMap;
-    extern Texture* g_srTarget;
-}
-
 class App_Experiment_SSR : public Application
 {
     Ref<PlaneMesh> m_ground;
@@ -201,7 +195,7 @@ class App_Experiment_SSR : public Application
 
         //m_sprite->setTexture(ln::g_srTarget);
         //m_sprite->setSize(320, 240);
-        m_sprite->setTexture(ln::g_viewMaterialMap);
+        //m_sprite->setTexture(ln::g_viewMaterialMap);
         m_sprite->setPosition(0, -10, 0);
         m_sprite->setScale(10);
 
