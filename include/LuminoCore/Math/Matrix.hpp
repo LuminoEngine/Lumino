@@ -492,6 +492,11 @@ public:
      */
     static Matrix makeAffineTransformation(const Vector3& scaling, const Vector3& rotationCenter, const Quaternion& rotation, const Vector3& translation);
 
+    /** アフィン変換行列 から回転成分を抽出します。 */
+    static Matrix extractRotation(const Matrix& mat);
+
+    static Matrix makeAffineLookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up);
+
 public:
     Matrix& operator*=(const Matrix& mat);
 

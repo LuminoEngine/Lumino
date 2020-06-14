@@ -95,6 +95,7 @@ public:
 LN_CLASS()
 class WorldObject
 	: public Object
+	, public IWorldRenderingElement
 {
     LN_OBJECT;
 public:
@@ -234,7 +235,7 @@ public: // TODO:
 	void start();
     void preUpdateFrame();
     void updateFrame(float elapsedSeconds);
-    void render(RenderingContext* context);
+    void render(RenderingContext* context) override;
     void notifyTransformChanged();
     void resolveWorldMatrix();
     void updateWorldMatrixHierarchical();

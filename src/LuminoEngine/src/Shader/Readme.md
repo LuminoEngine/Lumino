@@ -1,6 +1,69 @@
 Shader
 ==========
 
+
+命名規則 (2020/6/15 時点)
+----------
+
+基本方針は [DirectX-Graphics-Samples](https://github.com/microsoft/DirectX-Graphics-Samples) に含まれている HLSL コードに従います。
+
+### 構造体・関数
+
+- `PascalCase` を使います。
+- `_` は含みません。これはビルトインのシンボルで名前空間を表現するために使用します。
+
+```hlsl
+// bad
+struct VS_Input { }
+float3 getNormal() { }
+float4 PS_Main() { }
+
+// good
+struct VSInput { }
+float3 GetNormal() { }
+float4 PSMain() { }
+```
+
+### 変数
+
+- `camelCase` を使います。
+- `_` は含みません。これはビルトインのシンボルで名前空間を表現するために使用します。
+
+```hlsl
+// bad
+float Dot_L;
+float3 Position: POSITION;  // struct or cbuffer member.
+
+// good
+float dotL;
+float3 position: POSITION;  // struct or cbuffer member.
+```
+
+### 公開シンボル (uniform 変数)
+
+- `camelCase` を使い、`_` プレフィックスを付けます。
+
+
+### 定数バッファ (uniform 変数)
+
+考え中…
+
+
+ライブラリとしての命名規則
+----------
+
+### ビルトインの変数と関数
+
+公開用のシンボルは名前空間を表現するために次の規則を設けます。
+
+- 変数は `ln_` プレフィックスを付けます。
+- 関数は `LN_` プレフィックスを付けます。
+
+
+
+
+----------
+
 計画中…
 
 ```plantuml

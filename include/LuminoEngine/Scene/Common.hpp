@@ -4,11 +4,15 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class World;
 class Level;
 class Camera;
 class Raycaster;
 class RaycastResult;
 class Material;
+class RenderingContext;
+class OffscreenWorldRenderView;
+class ReflectorComponent;
 
 enum class LevelTransitionEffectMode
 {
@@ -19,6 +23,15 @@ enum class LevelTransitionEffectMode
 
 	/**  */
 	CrossFade,
+};
+
+class IWorldRenderingElement
+{
+protected:
+	//virtual void onPrepareRender(RenderingContext* context) = 0;
+	virtual void render(RenderingContext* context) = 0;
+
+	friend class World;
 };
 
 } // namespace ln

@@ -251,22 +251,43 @@ detail::WorldSceneGraphRenderingContext* World::prepareRender(RenderViewPoint* v
 	return m_renderingContext;
 }
 
-void World::renderObjects()
+// Offscreen 描画など、何回か描画を行うものを List に集める。
+// ビューカリングなどはこの時点では行わない。
+void World::prepareRender()
 {
-	m_renderingContext->world = this;
-    m_masterScene->renderObjects(m_renderingContext);
+    m_renderingContext->world = this;
+    m_worldRenderingElement.clear();
+    m_offscreenRenderViews.clear();
+
+    m_masterScene->collectRenderObjects(this, m_renderingContext);
     for (auto& scene : m_sceneList) {
-        scene->renderObjects(m_renderingContext);
+        scene->collectRenderObjects(this, m_renderingContext);
     }
     if (auto* scene = m_sceneConductor->activeScene()) {
-        scene->renderObjects(m_renderingContext);
+        scene->collectRenderObjects(this, m_renderingContext);
+    }
+
+    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
+}
+
+void World::renderObjects()
+{
+    //m_masterScene->collectRenderObjects(m_renderingContext);
+    //for (auto& scene : m_sceneList) {
+    //    scene->renderObjects(m_renderingContext);
+    //}
+    //if (auto* scene = m_sceneConductor->activeScene()) {
+    //    scene->renderObjects(m_renderingContext);
+    //}
+    for (IWorldRenderingElement* element : m_worldRenderingElement) {
+        //element->onPrepareRender(m_renderingContext); // TODO: 全体の前にした方がいいかも
+        element->render(m_renderingContext);
     }
 
 	m_renderingContext->pushState(true);
     m_effectContext->render(m_renderingContext);
     m_renderingContext->popState();
 
-    m_renderingContext->collectImageEffect(m_sceneConductor->transitionEffect());
 }
 
 void World::renderGizmos(RenderingContext* context)
@@ -278,6 +299,16 @@ void World::renderGizmos(RenderingContext* context)
     if (auto* scene = m_sceneConductor->activeScene()) {
         scene->renderGizmos(context);
     }
+}
+
+void World::enqueueWorldRenderingElement(IWorldRenderingElement* element)
+{
+    m_worldRenderingElement.add(element);
+}
+
+void World::enqueueOffscreenRenderView(OffscreenWorldRenderView* element)
+{
+    m_offscreenRenderViews.add(element);
 }
 
 //==============================================================================

@@ -12,7 +12,6 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/Scene/OffscreenWorldRenderView.hpp>
 #include <LuminoEngine/Animation/Animator.hpp>
 #include "../src/Mesh/MqoImporter.hpp"
 #include "../src/Font/FontManager.hpp"
@@ -269,6 +268,7 @@ void Example_Navigator();
 void Example_SoundControl();
 void Example_UIControls();
 void Example_Tilemap();
+void Experiment_Reflector();
 void Experiment_SSR();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
@@ -457,7 +457,8 @@ int main(int argc, char** argv)
 		//Example_SoundControl();
         //Example_UIControls();
 		//Example_Tilemap();
-        Experiment_SSR();
+        Experiment_Reflector();
+        //Experiment_SSR();
 		//Sandbox_MeshTilemap();
         //Sandbox_Particle();
 		//Tutorial_Sandbox();

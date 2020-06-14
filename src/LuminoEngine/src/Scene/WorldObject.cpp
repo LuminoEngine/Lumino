@@ -61,6 +61,7 @@ void WorldObjectTransform::setCenterPoint(const Vector3& value)
     }
 }
 
+// TODO: use Matrix::lookAt
 void WorldObjectTransform::lookAt(const Vector3& target, const Vector3& up)
 {
     if (target == m_position) return;
