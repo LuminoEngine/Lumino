@@ -8,7 +8,7 @@
 namespace ln {
 
 //==============================================================================
-// Object
+// PredefinedTypes
 
 TypeInfo* PredefinedTypes::Bool;
 TypeInfo* PredefinedTypes::Char;
@@ -32,6 +32,9 @@ TypeInfo* PredefinedTypes::List;
 
 //==============================================================================
 // Object
+
+Ref<ObjectInitializeContext> ObjectInitializeContext::Default = makeRef<ObjectInitializeContext>();
+//Ref<ObjectInitializeContext> NoAutoAdd;
 
 
 Object::Object()
