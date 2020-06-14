@@ -32,6 +32,17 @@ Ref<Object> Assets::loadAsset(const StringRef& filePath)
         return nullptr;
 }
 
+void Assets::reloadAsset(const StringRef& filePath, Object* obj)
+{
+    auto assetPath = detail::EngineDomain::assetManager()->findAssetPath(filePath);
+    if (assetPath) {
+        detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
+    }
+    else {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+    }
+}
+
 void Assets::saveAsset(Object* obj, const StringRef& filePath)
 {
     auto model = makeObject<AssetModel>(obj);

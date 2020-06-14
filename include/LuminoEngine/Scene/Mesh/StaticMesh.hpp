@@ -3,11 +3,11 @@
 #include "../VisualObject.hpp"
 
 namespace ln {
-class StaticMeshComponent;
 
 class StaticMesh
 	: public VisualObject
 {
+    LN_OBJECT;
 public:
     static Ref<StaticMesh> create();
     static Ref<StaticMesh> create(StaticMeshModel* model);
@@ -16,6 +16,7 @@ public:
     StaticMeshComponent* staticMeshComponent() const;
 
 protected:
+    void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	StaticMesh();

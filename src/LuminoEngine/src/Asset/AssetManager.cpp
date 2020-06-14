@@ -182,12 +182,6 @@ Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath
     }
 }
 
-Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
-{
-    const Char* ext = AssetModel::AssetFileExtension.c_str();
-    return findAssetPath(filePath, &ext, 1);
-}
-
 Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& assetPath) const
 {
     auto stream = openStreamFromAssetPath(assetPath);
@@ -195,6 +189,12 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
     auto asset = Serializer2::deserialize(text, assetPath.getParentAssetPath().toString());
     asset->target()->setAssetPath(assetPath);
     return asset;
+}
+
+Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
+{
+    const Char* ext = AssetModel::AssetFileExtension.c_str();
+    return findAssetPath(filePath, &ext, 1);
 }
 
 void AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const

@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/Mesh.hpp>
@@ -10,6 +11,8 @@ namespace ln {
 
 //=============================================================================
 // StaticMeshComponent
+
+LN_OBJECT_IMPLEMENT(StaticMeshComponent, VisualComponent) {}
 
 StaticMeshComponent::StaticMeshComponent()
     : m_model(nullptr)
@@ -33,6 +36,12 @@ void StaticMeshComponent::setModel(StaticMeshModel* model)
 StaticMeshModel* StaticMeshComponent::model() const
 {
     return m_model;
+}
+
+void StaticMeshComponent::serialize2(Serializer2& ar)
+{
+    VisualComponent::serialize2(ar);
+    ar & makeNVP(u"model", m_model);
 }
 
 void StaticMeshComponent::onRender(RenderingContext* context)

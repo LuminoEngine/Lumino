@@ -29,6 +29,14 @@ public:
      */
     LN_METHOD()
     static Ref<Object> loadAsset(const StringRef& filePath);
+    
+    /**
+     * 指定したアセットファイルを読み込み、作成済みのオブジェクトへ適用します。
+     *
+     * このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
+     */
+    LN_METHOD()
+    static void reloadAsset(const StringRef& filePath, Object* obj);
 
     /**
      * 指定したアセットファイルへオブジェクトを保存します。
@@ -43,6 +51,7 @@ public:
      *
      * このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
      */
+    // obsolete: use reloadAsset
     static void deserializeInstance(Object* obj, const StringRef& filePath);
 
 

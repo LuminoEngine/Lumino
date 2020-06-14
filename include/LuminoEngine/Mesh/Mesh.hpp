@@ -408,12 +408,19 @@ public:
     const Matrix& nodeGlobalTransform(int nodeIndex) { return m_nodeGlobalTransforms[nodeIndex]; }
     void updateNodeTransforms();
 
+protected:
+	void serialize2(Serializer2& ar) override;
+
 LN_CONSTRUCT_ACCESS:
     StaticMeshModel();
     StaticMeshModel(detail::InternalMeshModelType type);
 
 private:
+	void clear();
     void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform);
+
+	detail::AssetPath m_filePath;
+	float m_scale;
 
     detail::InternalMeshModelType m_type;
 	List<Ref<MeshContainer>> m_meshContainers;
@@ -427,6 +434,8 @@ private:
     // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
     // データが無駄になったりする。
     List<Matrix> m_nodeGlobalTransforms;
+
+	friend class detail::MeshManager;
 };
 
 

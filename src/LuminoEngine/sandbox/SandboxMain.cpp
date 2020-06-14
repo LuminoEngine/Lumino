@@ -270,6 +270,7 @@ void Example_SoundControl();
 void Example_UIControls();
 void Example_Tilemap();
 void Experiment_Reflector();
+void Experiment_SerializeLevel();
 void Experiment_SSR();
 void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
@@ -460,6 +461,7 @@ int main(int argc, char** argv)
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_Reflector();
+        Experiment_SerializeLevel();
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
         //Sandbox_Particle();

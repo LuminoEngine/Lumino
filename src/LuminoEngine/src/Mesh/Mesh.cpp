@@ -6,6 +6,7 @@
 	それ以外でこれらのデータにアクセスしたい場合は必ず requestXXXX 系の関数でインスタンスを取得すること。
 */
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
@@ -940,7 +941,9 @@ void MeshNode::setInitialLocalTransform(const Matrix& value)
 
 Ref<StaticMeshModel> StaticMeshModel::load(const StringRef& filePath, float scale)
 {
-    return detail::EngineDomain::meshManager()->createStaticMeshModel(filePath, scale);
+	auto model = makeObject<StaticMeshModel>();
+    detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
+	return model;
 }
 
 StaticMeshModel::StaticMeshModel()
@@ -951,6 +954,26 @@ StaticMeshModel::StaticMeshModel()
 StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
     : m_type(type)
 {
+}
+
+void StaticMeshModel::clear()
+{
+	m_meshContainers = {};
+	m_nodes = {};
+	m_materials = {};
+	m_rootNodes = {};
+	m_nodeGlobalTransforms = {};
+}
+
+void StaticMeshModel::serialize2(Serializer2& ar)
+{
+	Object::serialize2(ar);
+	ar & makeNVP(u"filePath", m_filePath);
+
+	if (ar.isLoading()) {
+		clear();
+		detail::EngineDomain::meshManager()->loadStaticMeshModel(this, m_filePath, m_scale);
+	}
 }
 
 MeshNode* StaticMeshModel::findNode(StringRef name) const

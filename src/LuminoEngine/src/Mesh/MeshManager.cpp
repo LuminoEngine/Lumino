@@ -213,33 +213,34 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 	}
 }
 
-Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, float scale)
+void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale)
 {
 	static const Char* candidateExts[] = { u".gltf", u".glb" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
-
-		Ref<StaticMeshModel> mesh;
-
-		{
-			auto diag = makeObject<DiagnosticsManager>();
-
-			GLTFImporter importer;
-			mesh = importer.import(m_assetManager, *path, diag);
-
-			//ObjMeshImporter importer;
-			//mesh = importer.import(filePath, scale, diag);
-
-			diag->dumpToLog();
-		}
-
-		return mesh;
+		loadStaticMeshModel(model, *path, scale);
 	}
 	else {
 		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
-		return nullptr;
+	}
+}
+
+void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& assetPath, float scale)
+{
+	{
+		auto diag = makeObject<DiagnosticsManager>();
+
+		GLTFImporter importer;
+		bool result = importer.importAsStaticMesh(model, m_assetManager, assetPath, diag);
+
+		//ObjMeshImporter importer;
+		//mesh = importer.import(filePath, scale, diag);
+
+		diag->dumpToLog();
 	}
 
+	model->m_filePath = assetPath;
+	model->m_scale = scale;
 }
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
@@ -248,7 +249,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
 
-		Ref<SkinnedMeshModel> mesh;
+		Ref<SkinnedMeshModel> mesh = makeObject<SkinnedMeshModel>();
 		auto diag = makeObject<DiagnosticsManager>();
 
 		if (path->path().hasExtension(u".fbx")) {
@@ -264,7 +265,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		{
 
 			GLTFImporter importer;
-			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);
+			bool result = importer.importAsSkinnedMesh(mesh, m_assetManager, *path, diag);
 
 		}
 

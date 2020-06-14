@@ -16,6 +16,12 @@ class ObservablePropertyBase;
 template<class T>
 class TypeInfoTraits;
 
+class ObjectInitializeContext
+{
+public:
+    bool autoAdd = false;
+};
+
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;

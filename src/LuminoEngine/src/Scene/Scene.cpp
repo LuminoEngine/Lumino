@@ -13,6 +13,7 @@
     2 については、バトル画面のサブとしてメニュー画面を出したりする仕組み。
 */
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/WorldObject.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
@@ -243,9 +244,9 @@ void Level::renderGizmos(RenderingContext* context)
     }
 }
 
-void Level::serialize(Archive& ar)
+void Level::serialize2(Serializer2& ar)
 {
-    Object::serialize(ar);
+    Object::serialize2(ar);
 
     ar & ln::makeNVP(u"children", *m_rootWorldObjectList);
 
@@ -255,6 +256,11 @@ void Level::serialize(Archive& ar)
         }
     }
 }
+//
+//void Level::onSerialize2(Serializer2* ar) override
+//{
+//
+//}
 
 //==============================================================================
 // Scene

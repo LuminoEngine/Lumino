@@ -45,6 +45,7 @@ LN_CONSTRUCT_ACCESS:
 
 public:
     WorldObject* m_object;
+    //bool m_mainVisualComponent = false; // TODO: flags
 
 private:
     virtual void render(RenderingContext* context);

@@ -53,46 +53,44 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 	return result;
 }
 
-Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
 {
 	m_assetManager = assetManager;
 	m_diag = diag;
 
 	if (!openGLTFModel(assetPath)) {
-		return nullptr;
+		return false;
 	}
 
-    auto meshModel = makeObject<StaticMeshModel>();
-	m_meshModel = meshModel;
+	m_meshModel = model;
 
-	readCommon(meshModel);
+	readCommon(m_meshModel);
 
-	return meshModel;
+	return true;
 }
 
-Ref<SkinnedMeshModel> GLTFImporter::GLTFImporter::importSkinnedMesh(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::GLTFImporter::importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
 {
 	m_assetManager = assetManager;
 	m_diag = diag;
 
 	if (!openGLTFModel(assetPath)) {
-		return nullptr;
+		return false;
 	}
 
-	auto meshModel = makeObject<SkinnedMeshModel>();
-	m_meshModel = meshModel;
+	m_meshModel = model;
 
-	readCommon(meshModel);
+	readCommon(m_meshModel);
 
 	for (auto& skin : m_model->skins) {
 		auto meshSkeleton = readSkin(skin);
 		if (!meshSkeleton) {
 			return nullptr;
 		}
-		meshModel->addSkeleton(meshSkeleton);
+		model->addSkeleton(meshSkeleton);
 	}
 
-	return meshModel;
+	return true;
 }
 
 bool GLTFImporter::readCommon(StaticMeshModel* meshModel)

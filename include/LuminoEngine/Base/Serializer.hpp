@@ -372,6 +372,16 @@ void serialize2(Serializer2& ar, List<T>& value)
 	}
 }
 
+inline void serialize2(Serializer2& ar, detail::AssetPath& value)
+{
+	if (ar.isSaving()) {
+		ar.writeString(value.toString());
+	}
+	else {
+		value = detail::AssetPath::parseAssetPath(ar.readString());
+	}
+}
+
 inline void serialize2(Serializer2& ar, Vector2& value)
 {
 	int size = 0;

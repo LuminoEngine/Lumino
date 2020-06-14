@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -266,11 +267,11 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
-void WorldObject::serialize(Archive& ar)
+void WorldObject::serialize2(Serializer2& ar)
 {
-	Object::serialize(ar);
-	ar & ln::makeNVP(u"Components", *m_components);
-	ar & ln::makeNVP(u"Children", *m_children);
+	Object::serialize2(ar);
+	ar & ln::makeNVP(u"components", *m_components);
+	ar & ln::makeNVP(u"children", *m_children);
 
     if (ar.isLoading()) {
         for (auto& c : *m_components) {

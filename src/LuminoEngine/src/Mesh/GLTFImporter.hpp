@@ -19,8 +19,8 @@ class GLTFImporter
     : public MeshImporter
 {
 public:
-    Ref<StaticMeshModel> import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
-	Ref<SkinnedMeshModel> importSkinnedMesh(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
+    bool importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
+	bool importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 
 private:
 	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。

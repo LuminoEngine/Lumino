@@ -4,6 +4,9 @@
 #include "../Graphics/GeometryStructs.hpp"
 
 namespace ln {
+class StaticMeshModel;
+class StaticMeshComponent;
+
 class World;
 class Level;
 class Camera;
