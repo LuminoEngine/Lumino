@@ -1,0 +1,10 @@
+object:
+  class.Level:
+    children:
+      - class.StaticMesh:
+          components:
+            - class.StaticMeshComponent:
+                model:
+                  class.Object:
+                    filePath: asset://Assets/Models/Box-Red.gltf
+          children: ~
