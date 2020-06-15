@@ -13,14 +13,16 @@ LnZVTestClass1_SetTestDelegate1 testClass1, delegate1
 LnZVTestClass1_CallTestDelegate1 testClass1, 500
 
 repeat
-	end_requested = 0
-	LnEngine_Update end_requested
+	running = 0
+	LnEngine_Update running
+
+	if running == LN_FALSE: break
 
 	await 1000/60
 loop
 
 LnEngine_Finalize
-
+end
 
 *delegate1_callback
 	mes ln_args(0)

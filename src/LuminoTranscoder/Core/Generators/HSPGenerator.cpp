@@ -14,6 +14,9 @@ static const ln::String ASFileTemplate = uR"(
 
 #regcmd "_hsp3cmdinit@4","LuminoHSP.dll", 6
 
+#const global LN_TRUE 1
+#const global LN_FALSE 0
+
 %%Contents%%
 
 #cmd ln_args $1
