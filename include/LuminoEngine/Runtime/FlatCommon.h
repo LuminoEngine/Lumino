@@ -131,6 +131,10 @@ extern LN_FLAT_API LnResult LnTypeInfo_SetCreateInstanceCallback(int typeInfoId,
 extern LN_FLAT_API LnResult LnTypeInfo_SetManagedTypeInfoId(int typeInfoId, int managedTypeInfoId);
 extern LN_FLAT_API LnResult LnTypeInfo_GetManagedTypeInfoId(int typeInfoId, int* outManagedTypeInfoId);
 
+typedef uint64_t LnSubinstanceId;
+typedef LnSubinstanceId(*LnSubinstanceAllocFunc)(LnHandle object);
+typedef void(*LnSubinstanceFreeFunc)(LnHandle object, LnSubinstanceId subinstanceId);
+
 //==============================================================================
 
 /**

@@ -16,7 +16,7 @@ public:
 
 	//static ln::String makeFunkParamList(MethodSymbol* method);
 
-	static ln::String makeEnumMemberName(GeneratorConfiguration* config, TypeSymbol* enumType, ConstantSymbol* member);
+	
 
 
 	static ln::String makeCppQualTypeName(TypeSymbol* typeInfo);
@@ -36,12 +36,11 @@ public:
 	void generate();
 
 private:
-
 	ln::String makeDocumentComment(DocumentInfo* doc) const;
 	ln::String makeMethodDocumentComment(const MethodSymbol* method) const;
     ln::String makeDelegateFuncPtrDecl(const TypeSymbol* delegateSymbol) const;
-
 	ln::String makeEnumDecls() const;
+	ln::String makeSubClassRegistrationInfo(const TypeSymbol* classSymbol) const;
 
 };
 
@@ -66,6 +65,15 @@ private:
 	ln::String makeFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
 	//ln::String makeCharsetWrapperFuncBody(ln::Ref<TypeSymbol> typeInfo, ln::Ref<MethodSymbol> methodInfo, FlatCharset charset);
 	//ln::String makeEventConnectorFuncBody(const TypeSymbol* classInfo, const MethodSymbol* methodInfo) const;
+
+	ln::String makeSubinstanceAllocStmt() const
+	{
+		return ln::String(u"if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));");
+	}
+	ln::String makeSubinstanceFreeStmt() const
+	{
+		return ln::String(u"if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);");
+	}
 };
 
 

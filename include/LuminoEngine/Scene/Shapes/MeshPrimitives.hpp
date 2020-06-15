@@ -74,7 +74,6 @@ LN_CONSTRUCT_ACCESS:
 	bool init();
 
 	/**  */
-	LN_METHOD()
 	bool init(Material* material);
 
 private:

@@ -114,6 +114,7 @@ Symbol::Symbol(SymbolDatabase* db)
 {
 	m_document = ln::makeRef<DocumentInfo>();
 	m_metadata = ln::makeRef<MetadataInfo>();
+	m_symbolId = db->generateSymbolId();
 }
 
 ln::Result Symbol::init()
@@ -217,6 +218,7 @@ ln::Result MethodParameterSymbol::init(const QualType& qualType, const ln::Strin
 	LN_CHECK(!name.isEmpty());
 	m_qualType = qualType;
 	m_name = name;
+	m_isIn = true;	// FIXME: いまのところ内部的に作られるのは in だけ
 	return true;
 }
 
@@ -353,6 +355,8 @@ ln::Result MethodSymbol::link()
 	}
 
 	if (!makeFlatParameters()) return false;
+
+	//m_methodId = db()->generateMethodId();
 
 	return true;
 }
@@ -609,8 +613,8 @@ ln::Result TypeSymbol::init(PITypeInfo* piType)
 	setFullName(m_piType->rawFullName);
 
 	if (m_piType->delegateProtoType) {
-		m_delegateProtoType = ln::makeRef<MethodSymbol>(db());
-		if (!m_delegateProtoType->init(m_piType->delegateProtoType, this)) {
+		m_functionSignature = ln::makeRef<MethodSymbol>(db());
+		if (!m_functionSignature->init(m_piType->delegateProtoType, this)) {
 			return false;
 		}
 	}
@@ -654,10 +658,20 @@ ln::Result TypeSymbol::init(const ln::String& primitveRawFullName, TypeKind type
 	return true;
 }
 
+ln::Result TypeSymbol::initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture)
+{
+	if (LN_REQUIRE(signeture)) return false;
+	m_kind = TypeKind::Function;
+	m_typeClass = TypeClass::None;
+	m_functionSignature = signeture;
+	setFullName(fullName);
+	return true;
+}
+
 ln::Result TypeSymbol::link()
 {
-	if (m_delegateProtoType) {
-		if (!m_delegateProtoType->link()) {
+	if (m_functionSignature) {
+		if (!m_functionSignature->link()) {
 			return false;
 		}
 	}
@@ -719,6 +733,7 @@ ln::Result TypeSymbol::link()
 			if (!m_baseClass) {
 				m_baseClass = db()->rootObjectClass();
 			}
+			if (LN_REQUIRE(m_baseClass->kind() == TypeKind::Class)) return false;
 		}
 	}
 	else {
@@ -893,8 +908,15 @@ ln::Result TypeSymbol::createSpecialSymbols()
 	}
 
 	if (isDelegateObject()) {
+		auto functonType = ln::makeRef<TypeSymbol>(db());
+		if (!functonType->initAsFunctionType(fullName() + u"_Function", m_functionSignature)) return false;
+		db()->registerTypeSymbol(functonType);
+
+		auto param = ln::makeRef<MethodParameterSymbol>(db());
+		if (!param->init({ functonType, false }, u"callback")) return false;
+
 		auto s = ln::makeRef<MethodSymbol>(db());
-		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, {})) return false;
+		if (!s->init(this, u"init", { PredefinedTypes::voidType, false }, { param })) return false;
 		m_declaredMethods.add(s);
 	}
 
@@ -1028,8 +1050,9 @@ ln::Result SymbolDatabase::initTypes(PIDatabase* pidb)
 
 ln::Result SymbolDatabase::linkTypes()
 {
-	for (auto& t : m_allTypes) {
-		if (!t->link()) return false;
+	int count = m_allTypes.size();
+	for (int i = 0; i < count; i++) {	// iterate 中に m_allTypes へ新しい Type が add されることもある
+		if (!m_allTypes[i]->link()) return false;
 	}
 
 	return true;
@@ -1129,4 +1152,9 @@ QualType SymbolDatabase::parseQualType(const ln::String& rawTypeName) const
 	}
 
 	return qt;
+}
+
+void SymbolDatabase::registerTypeSymbol(TypeSymbol* type)
+{
+	m_allTypes.add(type);
 }

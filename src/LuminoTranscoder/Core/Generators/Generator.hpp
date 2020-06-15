@@ -73,12 +73,18 @@ public:
 	static ln::String camelToPascal(const ln::String& name);		// worldObject -> WorldObject
 	ln::String makeFlatClassName(const TypeSymbol* type) const;						// e.g) -> "LnTexture2D" ※クラス名のみ対応
 	ln::String makeFlatTypeName2(const TypeSymbol* type) const;						// e.g) -> "LnHandle", "LnBool", "int", "LnVector3"...
+
 	ln::String makeFlatAPIName_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LnTexture2D_SetManagedTypeInfoId"
 	ln::String makeFlatAPIDecl_SetManagedTypeInfoId(const TypeSymbol* type) const;	// e.g) -> "LN_FLAT_API void LnTexture2D_SetManagedTypeInfoId(int64_t id)"
 	ln::String makeFlatAPIName_SetOverrideCallback(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatAPIDecl_SetOverrideCallback(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatAPIName_CallOverrideBase(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeFlatAPIDecl_CallOverrideBase(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
+	ln::String makeFlatAPIName_OverrideFunc(const MethodSymbol* method, FlatCharset charset) const;
+	ln::String makeFlatAPIName_SubclassRegistrationInfo(const TypeSymbol* classSymbol) const;
+	ln::String makeFlatAPIName_RegisterSubclassTypeInfo(const TypeSymbol* classSymbol) const;
+	ln::String makeFlatAPIName_GetSubinstanceId(const TypeSymbol* classSymbol) const;
+
 	ln::String makeFlatVirutalCallbackFuncPtrName(const TypeSymbol* leafClass, const MethodSymbol* method, FlatCharset charset) const;
 	ln::String makeDelegateCallbackFuncPtrName(const TypeSymbol* delegateSymbol, FlatCharset charset) const;
 	ln::String makeFlatShortFuncName(const MethodSymbol* method, FlatCharset charset) const;		// e.g( -> "SetTexture"
@@ -89,6 +95,9 @@ public:
 	ln::String makeFlatCharTypeName(FlatCharset charset) const;
 	ln::String makeFlatParamList(const MethodSymbol* method, FlatCharset charset) const;	// e.g) -> "int p1, int p2, int* outReturn"
 	ln::String makeFlatArgList(const MethodSymbol* method) const;
+
+	// e.g) -> LN_PIXEL_FORMAT_A8
+	ln::String makeFlatEnumMemberName(TypeSymbol* enumType, ConstantSymbol* member) const;
 
 private:
 	SymbolDatabase* m_database;

@@ -131,6 +131,7 @@ public:
 	SymbolDatabase* db() const { return m_db; }
 	const Ref<DocumentInfo>& document() const { return m_document; }
 	const Ref<MetadataInfo>& metadata() const { return m_metadata; }
+	int symbolId() const { return m_symbolId; }
 
 protected:
 	Symbol(SymbolDatabase* db);
@@ -141,6 +142,7 @@ private:
 	SymbolDatabase* m_db;
 	Ref<DocumentInfo> m_document;
 	Ref<MetadataInfo> m_metadata;
+	int m_symbolId = 0;
 };
 
 //
@@ -282,6 +284,7 @@ public:
 	const ln::List<Ref<MethodParameterSymbol>>& flatParameters() const { return m_flatParameters; }
 	MethodParameterSymbol* flatThisParam() const { return !isStatic() ? m_flatParameters.front() : nullptr; }
 	MethodParameterSymbol* flatReturnParam() const { return hasReturnType() ? m_flatParameters.back() : nullptr; }
+	MethodParameterSymbol* flatConstructorOutputThisParam() const { return isConstructor() ? m_flatParameters.back() : nullptr; }
 	const MethodParameterSymbol* findFlatParameter(const ln::StringRef& name) const;
 	MethodOverloadInfo* overloadInfo() const { return m_overloadInfo; }
 	PropertySymbol* ownerProperty() const { return m_ownerProperty; }
@@ -302,6 +305,7 @@ public:
 
 	bool hasReturnType() const { return m_returnType.type != PredefinedTypes::voidType; }
 	bool hasStringDecl() const { return m_hasStringDecl; }	// いずれかの引数、戻り値に文字列型が含まれているか
+
 
     bool isFieldAccessor() const { return m_linkedField != nullptr; }
     FieldSymbol* linkedField() const { return m_linkedField; }
@@ -371,6 +375,7 @@ public:
 	TypeSymbol(SymbolDatabase* db);
 	ln::Result init(PITypeInfo* piType);
 	ln::Result init(const ln::String& primitveRawFullName, TypeKind typeKind, TypeClass typeClass);
+	ln::Result initAsFunctionType(const ln::String& fullName, MethodSymbol* signeture);
 	ln::Result link();
 
 	TypeKind kind() const { return m_kind; }//{ return (m_piType) ? m_piType->kindAsEnum() : TypeKind::Primitive; };
@@ -386,13 +391,14 @@ public:
 	//const ln::List<Ref<MethodSymbol>>& eventMethods() const { return m_eventMethods; }
 	TypeSymbol* baseClass() const { return m_baseClass; }
 	TypeSymbol* collectionItemType() const { return m_collectionItemType; }
-	MethodSymbol* delegateProtoType() const { return m_delegateProtoType; }
+	MethodSymbol* delegateProtoType() const { return m_functionSignature; }
 
 	bool isPrimitive() const { return kind() == TypeKind::Primitive; }
 	bool isClass() const { return kind() == TypeKind::Class; }
 	bool isStruct() const { return kind() == TypeKind::Struct; }
 	bool isEnum() const { return kind() == TypeKind::Enum; }
-	bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }
+	bool isFunction() const { return kind() == TypeKind::Function; }
+	bool isDelegate() const { return kind() == TypeKind::Delegate && !isDelegateObject(); }	// deprecated
 	bool isStatic() const { return metadata() ? metadata()->hasKey(u"Static") : false; }	// static-class
 
 
@@ -418,7 +424,7 @@ private:
 	TypeClass m_typeClass = TypeClass::None;
 	ln::String m_fullName;
 	ln::String m_shortName;
-	Ref<MethodSymbol> m_delegateProtoType;
+	Ref<MethodSymbol> m_functionSignature;	// Delegate<> の型引数部分やFunction 型のシグネチャを表す。 e.g.) "void(ZVTestEventArgs1* e)"
 	ln::List<Ref<FieldSymbol>> m_fields;
 	ln::List<Ref<ConstantSymbol>> m_constants;
 	ln::List<Ref<MethodSymbol>> m_publicMethods;
@@ -504,6 +510,7 @@ public:
 
 	const Ref<PIDatabase>& pidb() const { return m_pidb; }
 	const PIDocument* resolveCopyDoc(const PIDocument* pi) const;
+	int generateSymbolId() { return m_nextSymbolId++; }
 
 public:
 	void initPredefineds();
@@ -515,12 +522,15 @@ public:
 
 	QualType parseQualType(const ln::String& rawTypeName) const;
 
+	void registerTypeSymbol(TypeSymbol* type);
+
 private:
 	Ref<PIDatabase> m_pidb;
 	ln::List<Ref<TypeSymbol>> m_allTypes;
 	//ln::List<Ref<DelegateSymbol>> m_delegates;
 	ln::DiagnosticsManager* m_diag;
     TypeSymbol* m_rootObjectClass = nullptr;
+	int m_nextSymbolId = 1;
 };
 
 

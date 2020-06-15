@@ -197,6 +197,7 @@ private:
 	EngineSettings m_settings;
 	GraphicsAPI m_activeGraphicsAPI;
 
+	bool m_commonInitialized = false;
     Ref<AssetManager> m_assetManager;
 	Ref<PlatformManager>				m_platformManager;
 	Ref<AnimationManager>			m_animationManager;

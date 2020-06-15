@@ -35,6 +35,7 @@ namespace LuminoBuild.Tasks
             //{ "MSVC2017-x64-MD", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Arch="x64", StaticRuntime = "OFF" } },
             { "MSVC2017-x64-MT", new MSVCTargetInfo { Generator = "Visual Studio 15 Win64", Arch="", StaticRuntime = "ON" } },
             { "MSVC2019-x64-MT", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="x64", StaticRuntime = "ON" } },
+            { "MSVC2019-x86-MT", new MSVCTargetInfo { Generator = "Visual Studio 16 2019", Arch="Win32", StaticRuntime = "ON" } },
         };
 
         public override void Build(Builder builder)

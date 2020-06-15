@@ -72,6 +72,9 @@ public:
     // TODO: internal
     bool m_externalObjectDeserialization = false;
 
+protected:
+    void onSerialize2(Serializer2* sr) override;
+
 LN_CONSTRUCT_ACCESS:
     AssetModel();
 
@@ -90,7 +93,6 @@ private:
     LN_SERIALIZE_CLASS_VERSION(1);
     void serialize(Archive& ar);
 
-    void onSerialize2(Serializer2* sr) override;
 
     String m_assetType;
 	Ref<Object> m_target;

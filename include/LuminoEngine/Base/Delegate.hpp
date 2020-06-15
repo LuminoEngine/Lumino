@@ -35,9 +35,9 @@ LN_CONSTRUCT_ACCESS:
 		: m_function()
 	{}
 
-	void init()
+	bool init()
 	{
-		Object::init();
+		return Object::init();
 	}
 
 	void init(const std::function<TReturn(TArgs...)>& function)

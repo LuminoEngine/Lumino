@@ -322,6 +322,8 @@ public:
 	template<class TValue> void assign(const Ref<TValue>& value) { assign(value.get()); }
 	void assign(const Ref<List<Ref<Variant>>>& value);
 
+	//const void* getValueRawPtr() const { return reinterpret_cast<const void*>(&v_Bool); }
+
 private:
 	bool changeType(VariantType newType);
 	void copy(const Variant& value);

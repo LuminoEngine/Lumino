@@ -1197,7 +1197,7 @@ void VulkanGraphicsContext::onDrawExtension(INativeGraphicsExtension* extension)
 // VulkanSwapChain
 
 VulkanSwapChain::VulkanSwapChain()
-	: m_swapchain(nullptr)
+	: m_swapchain(VK_NULL_HANDLE)
 {
 }
 
