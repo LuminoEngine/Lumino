@@ -75,7 +75,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World();
 	virtual ~World();
-	void init(ObjectInitializeContext* context);
+	void init();
     virtual void onDispose(bool explicitDisposing) override;
 
 public: // TODO: internal

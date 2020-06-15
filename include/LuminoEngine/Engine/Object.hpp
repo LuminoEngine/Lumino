@@ -16,9 +16,21 @@ class ObservablePropertyBase;
 template<class T>
 class TypeInfoTraits;
 
-class ObjectInitializeContext
+// FIXME: 今のところグローバルオブジェクト。かなり苦肉の策。
+// すべての init() の引数に渡す？
+// → Binding が問題になる。init は コンストラクタとして公開しているのでそこに混ぜこんで公開するのもありだが…
+//   そもそも ObjectInitializeContext は内部用途がメインなので、ユーザープログラムからは基本的に意識させたくない。
+//   全部のコンストラクタにこれを必要とするのは "正しい" けど使いづらいだけ。
+//   Binding 側でクラスを実装するときも、今は「デフォルトコンストラクタを必ず作ってね」にしているが、
+//   ここに全部 ObjectInitializeContext が入り込むのはやだ。
+//   なので代案としてグローバル変数。切り詰めても ThreadLocalStorage か。
+// postInit() みたいなのを作って、ActiveWorkd への追加などはここでやる？
+// → 代替案としてはあり。後でちゃんと検討してみよう。
+class ObjectInitializeContext : public RefObject
 {
 public:
+    static Ref<ObjectInitializeContext> Default;
+
     bool autoAdd = false;
 };
 
