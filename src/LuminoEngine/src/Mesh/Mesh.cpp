@@ -941,9 +941,10 @@ void MeshNode::setInitialLocalTransform(const Matrix& value)
 
 Ref<StaticMeshModel> StaticMeshModel::load(const StringRef& filePath, float scale)
 {
-	auto model = makeObject<StaticMeshModel>();
-    detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
-	return model;
+	return detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, scale);
+	//auto model = makeObject<StaticMeshModel>();
+ //   detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
+	//return model;
 }
 
 StaticMeshModel::StaticMeshModel()

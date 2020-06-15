@@ -4,6 +4,7 @@
 #include "AssetManager.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include "../Graphics/MixHash.hpp"
 
 // TODO: for importer
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -255,6 +256,13 @@ String AssetPath::toString() const
 
     auto result = String::concat(scheme(), u"://", host());
     return  String::concat(result, pathPrefix, path().str());
+}
+
+uint64_t AssetPath::calculateHash() const
+{
+    uint64_t hash = std::hash<String>()(m_components->scheme);
+    hash = detail::hash_combine(hash, std::hash<String>()(m_components->host));
+    return detail::hash_combine(hash, std::hash<String>()(m_components->path.str()));
 }
 
 AssetPath::AssetPath()

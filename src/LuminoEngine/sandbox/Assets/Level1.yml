@@ -11,13 +11,3 @@ object:
                   class.Object:
                     filePath: asset://Assets/Models/Box-Red.gltf
           children: ~
-      - class.StaticMesh:
-          position: [10, 0, 0]
-          angles: [-0, 0, 0]
-          scale: [1, 1, 1]
-          components:
-            - class.StaticMeshComponent:
-                model:
-                  class.Object:
-                    filePath: asset://Assets/Models/Box-Blue.gltf
-          children: ~

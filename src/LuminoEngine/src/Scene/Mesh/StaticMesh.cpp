@@ -52,8 +52,9 @@ void StaticMesh::init(StaticMeshModel* model)
 
 void StaticMesh::init(const StringRef& filePath, float scale)
 {
-    auto model = makeObject<StaticMeshModel>();
-    detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
+    //auto model = makeObject<StaticMeshModel>();
+    //detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
+    auto model = detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, scale);
     init(model);
 }
 

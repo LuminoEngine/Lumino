@@ -70,6 +70,8 @@ public:
     AssetPath getParentAssetPath() const;  // 親フォルダ
     String toString() const;
     bool isNull() const { return m_components == nullptr; }
+    uint64_t calculateHash() const;
+
 
 private:
     struct Components

@@ -35,6 +35,11 @@ private:
     uint32_t m_value;
 };
 
+inline uint64_t hash_combine(uint64_t seed, uint64_t v)
+{
+    return seed ^ ((v) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+}
+
 } // namespace detail
 } // namespace ln
 

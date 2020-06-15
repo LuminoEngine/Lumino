@@ -93,6 +93,7 @@ void MeshManager::init(const Settings& settings)
 	m_graphicsManager = settings.graphicsManager;
 	m_assetManager = settings.assetManager;
 
+
 	//{
 	//	static VertexElement elements[] =
 	//	{
@@ -138,11 +139,15 @@ void MeshManager::init(const Settings& settings)
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
+	m_meshModelCache.init(64, 0);
+
     LN_LOG_DEBUG << "MeshManager Initialization ended.";
 }
 
 void MeshManager::dispose()
 {
+	m_meshModelCache.dispose();
+
     for (auto tex : m_mmdDefaultToonTexture)
     {
         tex.reset();
@@ -213,17 +218,45 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 	}
 }
 
-void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale)
+Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
 {
 	static const Char* candidateExts[] = { u".gltf", u".glb" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
-		loadStaticMeshModel(model, *path, scale);
+		return acquireStaticMeshModel(*path, scale);
 	}
 	else {
 		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+		return nullptr;
 	}
 }
+
+Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, float scale)
+{
+	uint64_t key = assetPath.calculateHash();
+	auto mesh = m_meshModelCache.findObject(key);
+	if (mesh) {
+		return mesh;
+	}
+	else {
+		mesh = makeObject<StaticMeshModel>();
+		m_meshModelCache.registerObject(key, mesh, 0);
+		return mesh;
+	}
+}
+
+// TODO: deprecaed
+//void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale)
+//{
+//	static const Char* candidateExts[] = { u".gltf", u".glb" };
+//	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
+//	if (path) {
+//		loadStaticMeshModel(model, *path, scale);
+//	}
+//	else {
+//		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+//	}
+//}
 
 void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& assetPath, float scale)
 {
@@ -298,6 +331,11 @@ Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& 
 
     return Texture2D::load(path);
 	//return m_assetManager->loadTexture(path);
+}
+
+void MeshManager::collectUnreferenceObjects()
+{
+	m_meshModelCache.collectUnreferenceObjects();
 }
 
 } // namespace detail
