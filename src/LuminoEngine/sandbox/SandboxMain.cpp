@@ -453,7 +453,7 @@ int main(int argc, char** argv)
     if (1) {
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
-        Example_MainLoop();
+        //Example_MainLoop();
 		//Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();

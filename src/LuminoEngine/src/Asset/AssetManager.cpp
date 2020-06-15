@@ -204,6 +204,8 @@ void AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const Asse
 
     auto asset = makeObject<AssetModel>(obj);
     Serializer2::deserializeInstance(asset, text, assetPath.getParentAssetPath().toString());
+
+    obj->setAssetPath(assetPath);
 }
 
 void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& filePath) const

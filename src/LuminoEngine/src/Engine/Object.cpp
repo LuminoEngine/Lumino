@@ -4,6 +4,7 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/VMProperty.hpp>
 #include "../Runtime/RuntimeManager.hpp"
+#include "../Asset/AssetManager.hpp"
 
 namespace ln {
 
@@ -119,6 +120,13 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 void Object::setTypeInfoOverride(TypeInfo* value)
 {
     LN_UNREACHABLE();
+}
+
+void Object::reloadAsset()
+{
+	if (!m_assetPath.isNull()) {
+		detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(this, m_assetPath);
+	}
 }
 
 //void Object::onSetAssetFilePath(const Path& filePath)

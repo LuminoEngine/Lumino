@@ -394,4 +394,17 @@ inline void serialize2(Serializer2& ar, Vector2& value)
 	ar.endList();
 }
 
+inline void serialize2(Serializer2& ar, Vector3& value)
+{
+	int size = 0;
+	ar.beginList(&size);
+	if (ar.isLoading()) {
+		assert(size == 3);	// TODO: error handling
+	}
+	ar.process(value.x);
+	ar.process(value.y);
+	ar.process(value.z);
+	ar.endList();
+}
+
 } // namespace ln

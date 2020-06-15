@@ -223,6 +223,8 @@ public:
 
     virtual void setTypeInfoOverride(TypeInfo* value);
 
+    void reloadAsset();
+
 private:
 	virtual void onRetained() override;
 	virtual void onReleased() override;

@@ -81,6 +81,8 @@ private:
     Quaternion m_rotation;
     Vector3 m_scale;
     Vector3 m_center;
+
+	friend class WorldObject;
 };
 
 class IWorldObjectVisitor

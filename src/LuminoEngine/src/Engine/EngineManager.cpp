@@ -43,6 +43,7 @@
 
 #include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
+#include <LuminoEngine/Scene/SceneConductor.hpp>
 
 namespace ln {
 namespace detail {
@@ -916,7 +917,25 @@ void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 		}
 	}
 
+
+	if (m_mainWorld) {
+		//ImGui::BeginChild("Levels");
+		Level* level = m_mainWorld->sceneConductor()->activeScene();
+		ImGui::Text("ActiveScene"); ImGui::SameLine(150);
+		if (ImGui::Button("Reload")) {
+			level->reloadAsset();
+		}
+		if (ImGui::Button("Save")) {
+			m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
+		}
+
+		//ImGui::EndChild();
+	}
+
 	ImGui::End();
+
+
+
 }
 
 bool EngineManager::toggleDebugToolMode()
