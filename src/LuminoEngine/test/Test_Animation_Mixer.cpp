@@ -52,3 +52,9 @@ TEST_F(Test_Animation_Mixer, Basic)
 	mixer1->advanceTime(1.0f);
 	ASSERT_FLOAT_EQ(10.0f, ctrl.m_bone1Value);
 }
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Animation_Mixer, VMD)
+{
+
+}
