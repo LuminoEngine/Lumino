@@ -22,6 +22,11 @@ class AnimationTargetElementBlendLink
 	: public RefObject
 {
 public:
+	AnimationTargetElementBlendLink(AnimationValueType type)
+	{
+		rootValue.resetType(type);
+	}
+
 	// Bone animation 用
 	String name;		// AnimationTargetElement の名前 (ボーン名など)
 	int targetIndex = -1;
@@ -234,7 +239,7 @@ public:
 
 	void advanceTime(float elapsedTime);
 	void updateTargetElements();
-	detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name);
+	detail::AnimationTargetElementBlendLink* requireAnimationTargetElementBlendLink(const StringRef& name);
 
 protected:
 

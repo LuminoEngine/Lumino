@@ -56,31 +56,7 @@ set(LN_SOURCES_Grammar
     src/Grammar/Token.hpp
 )
 
-set(LN_SOURCES_Animation
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Common.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Animation.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClip.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationClock.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationContext.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationController.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationCurve.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/AnimationTrack.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/Animator.hpp
-    ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/EasingFunctions.hpp
-    src/Animation/Internal.hpp
-    src/Animation/Animation.cpp
-    src/Animation/AnimationClip.cpp
-    src/Animation/AnimationClock.cpp
-    src/Animation/AnimationController.cpp
-    src/Animation/AnimationCurve.cpp
-    src/Animation/AnimationContext.cpp
-    src/Animation/AnimationManager.cpp
-    src/Animation/AnimationManager.hpp
-    src/Animation/AnimationTrack.cpp
-    src/Animation/Animator.cpp
-    src/Animation/VmdLoader.cpp
-    src/Animation/VmdLoader.hpp
-)
+file(GLOB LN_SOURCES_Animation ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Animation/*.hpp src/Animation/*.cpp src/Animation/*.hpp)
 
 set(LN_SOURCES_Input
     ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Input/Common.hpp
