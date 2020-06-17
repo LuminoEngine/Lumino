@@ -9,7 +9,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Animation/AnimationController.hpp>	// TODO: これは Importer の中で利用する必要はないはず
+#include <LuminoEngine/Animation/AnimationMixer.hpp>	// TODO: これは Importer の中で利用する必要はないはず
 #include "MeshManager.hpp"
 #include "PmxImporter.hpp"
 

@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <LuminoEngine/Animation/AnimationTrack.hpp>
-#include <LuminoEngine/Animation/AnimationController.hpp>
+#include <LuminoEngine/Animation/AnimationMixer.hpp>
 
 namespace ln {
 
@@ -40,7 +40,7 @@ void AnimationState::setLocalTime(float time)
 	m_localTime = time;
 }
 
-void AnimationState::attachToTarget(AnimationControllerCore* animatorController)
+void AnimationState::attachToTarget(AnimationMixerCore* animatorController)
 {
 	m_trackInstances.clear();
 
@@ -155,7 +155,7 @@ AnimationLayer::~AnimationLayer()
 {
 }
 
-void AnimationLayer::init(AnimationControllerCore* owner)
+void AnimationLayer::init(AnimationMixerCore* owner)
 {
 	Object::init();
 	m_owner = owner;
@@ -304,47 +304,47 @@ void AnimationLayer::transitionTo(AnimationState* state, float duration)
 }
 
 //==============================================================================
-// AnimationControllerCore
+// AnimationMixerCore
 
-AnimationControllerCore::AnimationControllerCore()
+AnimationMixerCore::AnimationMixerCore()
 	: m_layers()
 {
 }
 
-AnimationControllerCore::~AnimationControllerCore()
+AnimationMixerCore::~AnimationMixerCore()
 {
 }
 
-void AnimationControllerCore::init(detail::IAnimationControllerHolder* owner)
+void AnimationMixerCore::init(detail::IAnimationMixerCoreHolder* owner)
 {
 	Object::init();
 	m_owner = owner;
 }
 
-AnimationState* AnimationControllerCore::addClip(AnimationClip* animationClip)
+AnimationState* AnimationMixerCore::addClip(AnimationClip* animationClip)
 {
 	return m_layers[0]->addClipAndCreateState(animationClip);
 }
 
-AnimationState* AnimationControllerCore::addClip(const StringRef& stateName, AnimationClip* animationClip)
+AnimationState* AnimationMixerCore::addClip(const StringRef& stateName, AnimationClip* animationClip)
 {
 	AnimationState* state = addClip(animationClip);
 	state->setName(stateName);
 	return state;
 }
 
-void AnimationControllerCore::removeClip(AnimationClip* animationClip)
+void AnimationMixerCore::removeClip(AnimationClip* animationClip)
 {
 	m_layers[0]->removeClipAndDeleteState(animationClip);
 }
 
-void AnimationControllerCore::play(const StringRef& clipName, float duration)
+void AnimationMixerCore::play(const StringRef& clipName, float duration)
 {
 	AnimationState* state = m_layers[0]->findAnimationState(clipName);
 	m_layers[0]->transitionTo(state, duration);
 }
 
-void AnimationControllerCore::advanceTime(float elapsedTime)
+void AnimationMixerCore::advanceTime(float elapsedTime)
 {
 	for (auto& layer : m_layers)
 	{
@@ -354,7 +354,7 @@ void AnimationControllerCore::advanceTime(float elapsedTime)
 	updateTargetElements();
 }
 
-void AnimationControllerCore::updateTargetElements()
+void AnimationMixerCore::updateTargetElements()
 {
 	// reset
 	for (auto& link : m_targetElementBlendLinks)
@@ -385,7 +385,7 @@ void AnimationControllerCore::updateTargetElements()
 	}
 }
 
-detail::AnimationTargetElementBlendLink* AnimationControllerCore::findAnimationTargetElementBlendLink(const StringRef& name)
+detail::AnimationTargetElementBlendLink* AnimationMixerCore::findAnimationTargetElementBlendLink(const StringRef& name)
 {
 	auto data = m_targetElementBlendLinks.findIf([name](const Ref<detail::AnimationTargetElementBlendLink>& data) { return data->name == name; });
 	if (data)
@@ -396,6 +396,7 @@ detail::AnimationTargetElementBlendLink* AnimationControllerCore::findAnimationT
 
 
 
+#if 0
 
 
 AnimationController::AnimationController()
@@ -408,7 +409,7 @@ void AnimationController::init(IAnimationTargetObject* targetObject)
 
 	m_targetObject = targetObject;
 
-	m_core = makeObject<AnimationControllerCore>(this);
+	m_core = makeObject<AnimationMixerCore>(this);
 	m_core->addLayer(makeObject<AnimationLayer>(m_core));
 
 	int count = m_targetObject->getAnimationTargetElementCount();
@@ -434,5 +435,6 @@ void AnimationController::onUpdateTargetElement(const detail::AnimationTargetEle
 	}
 }
 
+#endif
 
 } // namespace ln

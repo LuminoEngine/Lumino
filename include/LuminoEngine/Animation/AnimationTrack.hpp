@@ -33,7 +33,7 @@ public:
 	const AttitudeTransform& getTransform() const { return v_Transform; }
 
 
-LN_INTERNAL_ACCESS:
+public:
 	AnimationValue();
 	AnimationValue(AnimationValueType type);
 	void resetType(AnimationValueType type);

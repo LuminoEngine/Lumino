@@ -10,7 +10,7 @@ namespace detail { class AnimationTargetElementBlendLink; }
 class AnimationValue;
 class AnimationTrack;
 class AnimationLayer;
-class AnimationControllerCore;
+class AnimationMixerCore;
 class AnimationController;
 
 
@@ -34,10 +34,15 @@ public:
 	bool affectAnimation = false;		// 更新処理の中で、実際に値がセットされたかどうか。セットされていないボーンにはデフォルト値をセットしたりする。
 };
 
-class IAnimationControllerHolder
+class IAnimationMixerCoreHolder
 {
 public:
-	virtual void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link) = 0;
+	// AnimationClip を add したとき、登録済みの Binding が無い場合に呼び出される。
+	// 派生側で new して返すが、対応する名前のボーンやプロパティを持っていない場合は null を返す。
+	// インスタンスは IAnimationMixerCoreHolder の実装側で管理する。
+	virtual detail::AnimationTargetElementBlendLink* onRequireBinidng(const String& name) = 0;
+
+	virtual void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding) = 0;
 };
 
 } // namespace detail
@@ -105,7 +110,7 @@ private:
 		detail::AnimationTargetElementBlendLink* blendLink;
 	};
 
-	void attachToTarget(AnimationControllerCore* animatorController);
+	void attachToTarget(AnimationMixerCore* animatorController);
 	float getBlendWeight() const { return m_blendWeight; }
 	void setBlendWeight(float weight) { m_blendWeight = weight; }
 	void updateTargetElements();
@@ -130,7 +135,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AnimationLayer();
 	virtual ~AnimationLayer();
-	void init(AnimationControllerCore* owner);
+	void init(AnimationMixerCore* owner);
 
 LN_INTERNAL_ACCESS:
 	AnimationState* addClipAndCreateState(AnimationClip* animationClip);
@@ -151,13 +156,39 @@ private:
 		float startingOffsetTime;
 	};
 
-	AnimationControllerCore* m_owner;
+	AnimationMixerCore* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
 	AnimationState* m_currentState;
 	Transition m_transition;
 };
 
-class AnimationControllerCore
+
+/*
+  AnimationController 設計方針 Note:
+	- Animator は、Component の派生。これはボーンアニメーションに限らず、アタッチ先の WorldObject 及び子 Components のプロパティにバインドする。
+	- AnimationController は、Object の派生。通常 SkinnedMeshModel と 1:1 で作ることになる (Three.js の AnimationMixier のイメージ)
+	これらの違いはプロパティのバインド先がプロパティかボーンorモーフかだけとしたい。
+
+	ゲーム作るときほとんどの場合は Animator を使う。SkinnedMeshComponent がボーンをプロパティとして公開し、それにバインドする形になる。
+
+	AnimationController は SkinnedMeshModel を直接コントロールするときに使う。SkeltalAnimationController とか名前変えてもいいかな。
+	Animator と比べて余計なプロパティ検索しないので軽量。ただし Editor からいじることはできない。
+	Component は使わず SkinnedMeshModel だけを使って描画したいときや、Component の中だけで完結させたい (パーティクルに SkinnedMesh を使うとか？) 時に使う。
+
+
+	使い方Note:
+		SkinnedMesh の場合
+		- アタッチしたとき、Bone の分だけ Link を作って addElementBlendLink() しておく。dataId には BoneIndex を入れておく。
+		- 後は addClip() されたときに内部で、この登録された Link を名前検索して Trask と紐づけられ、advanceTime() で値が更新される。
+		- 更新後、Link を for して dataId に対応する Bone 、Link.value をセットする。
+		プロパティアニメの場合
+		- Bone と違ってどのようなプロパティが WorldObject に現れるかわからないし、Dynamic に変わったりする。
+		  実際のところ Transform のアニメがほとんどで、他のプロパティはアニメの必要が無いものも多い。全部 Link 作るとメモリ効率悪い。
+		- addClip() されたときに、Clipが必要としているプロパティを検索して、ヒットすれば Link を作る方がいいかもしれない。
+		SkinnedMesh 考え直し
+		- プロパティアニメと同じ方法にしておこうか。やり方増やすとメンテ大変だし、実行速度としてもそれほど変わるものではない。
+*/
+class AnimationMixerCore
 	: public Object
 {
 public:
@@ -201,20 +232,20 @@ public:
 	///// AnimationTargetEntity の検索 (見つからなければ NULL)
 	//detail::AnimationTargetAttributeEntity* findAnimationTargetAttributeEntity(const String& name);
 
-protected:
-
-LN_CONSTRUCT_ACCESS:
-	AnimationControllerCore();
-	~AnimationControllerCore();
-	void init(detail::IAnimationControllerHolder* owner);
-
-LN_INTERNAL_ACCESS:
 	void advanceTime(float elapsedTime);
 	void updateTargetElements();
 	detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name);
 
+protected:
+
+LN_CONSTRUCT_ACCESS:
+	AnimationMixerCore();
+	~AnimationMixerCore();
+	void init(detail::IAnimationMixerCoreHolder* owner);
+
+LN_INTERNAL_ACCESS:
 private:
-	detail::IAnimationControllerHolder* m_owner;
+	detail::IAnimationMixerCoreHolder* m_owner;
 	List<Ref<AnimationLayer>> m_layers;
 	List<Ref<detail::AnimationTargetElementBlendLink>> m_targetElementBlendLinks;
 };
@@ -222,6 +253,7 @@ private:
 
 
 
+#if 0
 
 /** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
 class AnimationController
@@ -277,7 +309,9 @@ LN_INTERNAL_ACCESS:
 
 private:
 	IAnimationTargetObject* m_targetObject;
-	Ref<AnimationControllerCore> m_core;
+	Ref<AnimationMixerCore> m_core;
 };
+
+#endif
 
 } // namespace ln

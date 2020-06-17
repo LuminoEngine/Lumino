@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../Animation/AnimationController.hpp"
+#include "../Animation/AnimationMixer.hpp"
 #include "Mesh.hpp"
 
 namespace ln {
@@ -112,7 +112,7 @@ class SkinnedMeshModel
 public:
 	static Ref<SkinnedMeshModel> load(const StringRef& filePath);
 
-	AnimationController* animationController() const { return m_animationController; }
+	//AnimationController* animationController() const { return m_animationController; }
 
 	//void addMeshContainer(MeshContainer* meshContainer);
 	//void addMaterial(Material* material);
@@ -140,7 +140,7 @@ public:
     //List<Ref<SkinnedMeshBone>>		m_allBoneList;				// 全ボーンリスト
     //List<SkinnedMeshBone*>			m_ikBoneList;
     //List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
-	Ref<AnimationController> m_animationController;
+	//Ref<AnimationController> m_animationController;
 
 protected:
 	virtual int getAnimationTargetElementCount() const override;

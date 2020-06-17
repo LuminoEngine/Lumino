@@ -44,9 +44,9 @@ void SkinnedMeshComponent::onUpdate(float elapsedSeconds)
 	m_model->setWorldTransform(worldObject()->worldMatrix());
 
 	//m_meshModel->getAnimator()->advanceTime(elapsedTime);
-	if (m_model->animationController()) {
-		m_model->animationController()->advanceTime(elapsedSeconds);
-	}
+	//if (m_model->animationController()) {
+	//	m_model->animationController()->advanceTime(elapsedSeconds);
+	//}
 	//m_model->animationController()->updateTargetElements();
 	//static bool init = false;
 	//if (!init)
