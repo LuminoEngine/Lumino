@@ -569,6 +569,7 @@ private:
     void calcSDEFCorrection();
     void adjustPosition(Vector3* pos) const;
     void adjustAngle(Vector3* angles) const;
+    Ref<Material> makeMaterial(const PmxMaterial* pmxMaterial) const;
 
     detail::MeshManager* m_manager;
     DiagnosticsManager* m_diag;

@@ -636,8 +636,6 @@ bool PmxLoader::loadMaterials(BinaryReader* reader, Mesh* mesh)
 	int indexAttrOffset = 0;
 	for (int i = 0; i < materialCount; ++i)
 	{
-		//auto m = makeRef<PmxMaterialResource>();
-		//m_modelCore->materials[i] = m;;
 		PmxMaterial* m = &m_pmxMaterials[i];
 
 		// 材質名
@@ -1232,6 +1230,12 @@ void PmxLoader::adjustAngle(Vector3* angles) const
 		//if ((*y) >= Math::PI) 
 		//	(*y) -= Math::PI;
 	}
+}
+
+Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
+{
+	auto material = makeObject<Material>();
+	return material;
 }
 
 } // namespace detail
