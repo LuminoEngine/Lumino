@@ -398,7 +398,10 @@ void EngineManager::initializeAnimationManager()
 {
     if (!m_animationManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
+		initializeAssetManager();
+
         AnimationManager::Settings settings;
+		settings.assetManager = m_assetManager;
         m_animationManager = ln::makeRef<AnimationManager>();
         m_animationManager->init(settings);
     }

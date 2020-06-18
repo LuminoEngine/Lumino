@@ -211,6 +211,8 @@ public:
 	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
     const List<MeshSection2>& sections() const { return m_sections; }
 
+	void resetVertexBuffer(int vertexCount);
+	void resetIndexBuffer(int indexCount, IndexBufferFormat indexFormat);
 	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
 	void* acquireMappedVertexBuffer(InterleavedVertexGroup group);
 	void* acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
@@ -235,12 +237,16 @@ private:
 	{
 		Ref<VertexBuffer> buffer;
 		void* mappedBuffer = nullptr;
+
+		void reset();
 	};
 
 	struct IndexBufferEntry
 	{
 		Ref<IndexBuffer> buffer;
 		void* mappedBuffer = nullptr;
+
+		void reset();
 	};
 
 	struct VertexBufferAttribute

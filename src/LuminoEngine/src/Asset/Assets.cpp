@@ -234,6 +234,18 @@ String AssetPath::makeRelativePath(const AssetPath& basePath, const AssetPath& a
     return basePath.path().makeRelative(assetPath.path());
 }
 
+AssetPath AssetPath::resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount)
+{
+    auto path = detail::EngineDomain::assetManager()->findAssetPath(filePath, exts, extsCount);
+    if (path) {
+        return *path;
+    }
+    else {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        return AssetPath::makeEmpty();
+    }
+}
+
 AssetPath AssetPath::getParentAssetPath() const
 {
     AssetPath result = makeEmpty();

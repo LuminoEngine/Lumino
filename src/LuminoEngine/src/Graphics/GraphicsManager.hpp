@@ -63,6 +63,7 @@ public:
 
 	int registerExtension(INativeGraphicsExtension* extension);
 	void unregisterExtension(INativeGraphicsExtension* extension);
+	Ref<Texture> requestTexture(const AssetPath& assetPath);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }

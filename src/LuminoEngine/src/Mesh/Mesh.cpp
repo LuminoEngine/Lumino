@@ -332,6 +332,22 @@ bool MeshResource::isInitialEmpty() const
 //==============================================================================
 // Mesh
 
+void Mesh::VertexBufferEntry::reset()
+{
+	if (mappedBuffer) {
+		buffer->unmap();
+	}
+	buffer = nullptr;
+}
+
+void Mesh::IndexBufferEntry::reset()
+{
+	if (mappedBuffer) {
+		buffer->unmap();
+	}
+	buffer = nullptr;
+}
+
 Mesh::Mesh()
 	: m_resourceUsage(GraphicsResourceUsage::Static)
 {
@@ -361,6 +377,22 @@ void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, 
 	m_indexCount = indexCount;
 	m_indexFormat = indexFormat;
 	m_resourceUsage = resourceUsage;
+}
+
+void Mesh::resetVertexBuffer(int vertexCount)
+{
+	m_mainVertexBuffer.reset();
+	m_skinningVertexBuffer.reset();
+	m_additionalUVVertexBuffer.reset();
+	m_extraVertexBuffers.clear();
+	m_vertexCount = vertexCount;
+}
+
+void Mesh::resetIndexBuffer(int indexCount, IndexBufferFormat indexFormat)
+{
+	m_indexBuffer.reset();
+	m_indexCount = indexCount;
+	m_indexFormat = indexFormat;
 }
 
 void Mesh::setVertex(int index, const Vertex& value)

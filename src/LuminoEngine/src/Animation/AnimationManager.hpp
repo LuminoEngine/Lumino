@@ -1,5 +1,6 @@
-#pragma once
+﻿#pragma once
 #include <LuminoEngine/Animation/Common.hpp>
+#include "../Base/RefObjectCache.hpp"
 
 namespace ln {
 class AnimationClock;
@@ -11,6 +12,7 @@ class AnimationManager
 public:
 	struct Settings
 	{
+		AssetManager* assetManager = nullptr;
 	};
 
     AnimationManager();
@@ -22,10 +24,15 @@ public:
 
     void addClockToAffiliation(AnimationClock* clock, AnimationClockAffiliation affiliation);
 
+	Ref<AnimationClip> acquireAnimationClip(const AssetPath& assetPath);
+	void loadAnimationClip(AnimationClip* clip, const AssetPath& assetPath);
+
     void updateFrame(float elapsedSeconds);
 
 private:
+	AssetManager* m_assetManager;
     SceneManager* m_sceneManager;
+	ObjectCache<uint64_t, AnimationClip> m_animationClipCache;
 };
 
 } // namespace detail

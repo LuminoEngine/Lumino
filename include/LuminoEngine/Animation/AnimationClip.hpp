@@ -18,6 +18,7 @@ public:
     /** ひとつの AnimationTrack を持つ AnimationClip を作成します。 */
 	static Ref<AnimationClip> create(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
+	static Ref<AnimationClip> load(const StringRef& filePath);
 
 	/** アニメーションの繰り返しの動作を取得します。 */
 	AnimationWrapMode wrapMode() const { return m_wrapMode; }
@@ -43,22 +44,24 @@ protected:
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;
 	AnimationWrapMode m_wrapMode;
+
+	friend class detail::AnimationManager;
 };
 
-/**
-	@brief		Vocaloid Motion Data (.vmd) ファイル
-*/
-// TODO: 継承ではなく、Importer として、AnimationClip を構築
-class VmdAnimationClip
-	: public AnimationClip
-{
-public:
-	static Ref<VmdAnimationClip> create(const Path& filePath);
-
-LN_CONSTRUCT_ACCESS:
-	VmdAnimationClip();
-	virtual ~VmdAnimationClip();
-	void init(const Path& filePath);
-};
+///**
+//	@brief		Vocaloid Motion Data (.vmd) ファイル
+//*/
+//// TODO: 継承ではなく、Importer として、AnimationClip を構築
+//class VmdAnimationClip
+//	: public AnimationClip
+//{
+//public:
+//	static Ref<VmdAnimationClip> create(const Path& filePath);
+//
+//LN_CONSTRUCT_ACCESS:
+//	VmdAnimationClip();
+//	virtual ~VmdAnimationClip();
+//	void init(const Path& filePath);
+//};
 
 } // namespace ln

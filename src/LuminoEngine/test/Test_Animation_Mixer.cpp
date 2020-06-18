@@ -56,5 +56,11 @@ TEST_F(Test_Animation_Mixer, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Animation_Mixer, VMD)
 {
+	auto clip = AnimationClip::load(LN_ASSETFILE("Animation/Move1.vmd"));
 
+	//for (auto& track : clip->tracks()) {
+	//	std::cout << track->targetName() << std::endl;
+	//}
+
+	//printf("");
 }

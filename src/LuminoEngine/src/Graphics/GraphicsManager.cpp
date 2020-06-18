@@ -13,6 +13,7 @@
 #include "Vulkan/VulkanDeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
+#include "../Asset/AssetManager.hpp"
 
 namespace ln {
 
@@ -285,6 +286,18 @@ void GraphicsManager::unregisterExtension(INativeGraphicsExtension* extension)
 	if (LN_REQUIRE(extension)) return;
 	m_extensions.remove(extension);
 	extension->onUnloaded(m_deviceContext->getNativeInterface());
+}
+
+Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
+{
+	// TODO: cache
+	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
+	if (stream) {
+		return makeObject<Texture2D>(stream, TextureFormat::RGBA8);	// TODO: format
+	}
+	else {
+		return nullptr;
+	}
 }
 
 bool GraphicsManager::checkVulkanSupported()

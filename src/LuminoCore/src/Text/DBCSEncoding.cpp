@@ -85,6 +85,12 @@ int DBCSEncoding::getLeadExtraLength(const void* buffer, size_t bufferSize) cons
 	return (CheckDBCSLeadByte(m_tableInfo, *((const byte_t*)buffer))) ? 1 : 0;
 }
 
+bool DBCSEncoding::convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
+{
+	DBCSDecoder decoder(this, m_tableInfo);
+	return decoder.convertToUTF16(input, inputByteSize, output, outputElementSize, outResult);
+}
+
 bool DBCSEncoding::DBCSDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult)
 {
 	if (outputElementSize > 0) { output[0] = '\0'; }

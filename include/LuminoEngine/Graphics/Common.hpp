@@ -9,6 +9,7 @@ class SwapChain;
 class RenderPass;
 class Bitmap2D;
 class Bitmap3D;
+class Texture;
 class RenderTargetTexture;
 class DepthBuffer;
 class INativeGraphicsExtension;

@@ -47,6 +47,7 @@ public:
 	void collectUnreferenceObjects();
 
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+	AssetManager* assetManager() const { return m_assetManager; }
     const Ref<Texture2D>& getMMDDefaultToonTexture(int index) const { return  m_mmdDefaultToonTexture[index]; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 

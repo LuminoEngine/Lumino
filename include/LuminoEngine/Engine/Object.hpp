@@ -60,6 +60,10 @@ public:
     // basePath から見た assetPath を示す相対パスを返す。
     static String makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath);
 
+    // filePath から AssetPath を作る。ファイルが存在しない場合はエラーをレポートした後、Empty を返す。
+    //static AssetPath resolveAssetPath(const Path& filePath, const std::initializer_list<const Char*>& candidateExts);
+    static AssetPath resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount);
+
     AssetPath();
     AssetPath(const String& scheme, const String& host, const Path& path);
 
@@ -69,8 +73,10 @@ public:
 
     AssetPath getParentAssetPath() const;  // 親フォルダ
     String toString() const;
-    bool isNull() const { return m_components == nullptr; }
+    bool isNull() const noexcept { return m_components == nullptr; }
     uint64_t calculateHash() const;
+
+    explicit operator bool() const noexcept { return !isNull(); }
 
 
 private:
