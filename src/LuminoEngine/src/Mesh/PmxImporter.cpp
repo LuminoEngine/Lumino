@@ -373,6 +373,8 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 		return false;
 	}
 
+	return true;
+
 	// ボーン
 	if (!loadBones(&reader)) {
 		return false;
@@ -710,10 +712,13 @@ bool PmxLoader::loadMaterials(BinaryReader* reader, Mesh* mesh)
 
 		// 属性テーブルを埋める
 		mesh->addSection(indexAttrOffset, vc / 3, i, PrimitiveTopology::TriangleList);
+
+		m_model->addMaterial(makeMaterial(m));
+
 		indexAttrOffset += vc;
 	}
 
-	return false;
+	return true;
 }
 
 bool PmxLoader::loadBones(BinaryReader* reader)
@@ -1235,6 +1240,29 @@ void PmxLoader::adjustAngle(Vector3* angles) const
 Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 {
 	auto material = makeObject<Material>();
+
+	material->setMainTexture(pmxMaterial->Texture);
+	material->setColor(pmxMaterial->Diffuse);
+	material->setEmissive(pmxMaterial->Emissive);
+
+	// MMD 用ではないシェーダで描画される場合に備える
+	material->setMetallic(pmxMaterial->Power);
+	material->setRoughness(1.0 - pmxMaterial->Power);
+
+	material->setColor(u"_mmdAmbient", pmxMaterial->Ambient);
+	material->setColor(u"_mmdSpecular", pmxMaterial->Specular);
+	material->setTexture(u"_mmdToonTexture", pmxMaterial->ToonTexture);
+	material->setTexture(u"_mmdSphereTexture", pmxMaterial->SphereTexture);
+	material->setColor(u"_mmdToonColor", pmxMaterial->ToonColor);
+	material->setColor(u"_mmdEdgeColor", pmxMaterial->EdgeColor);
+	material->setFloat(u"_mmdEdgeSize", pmxMaterial->EdgeSize);
+	material->setColor(u"_mmdTextureCoe", pmxMaterial->TextureCoe);
+	material->setColor(u"_mmdSphereTextureCoe", pmxMaterial->SphereTextureCoe);
+	material->setColor(u"_mmdToonTextureCoe", pmxMaterial->ToonTextureCoe);
+
+	// TODO: DrawingFlags
+	// TODO: SphereMode
+
 	return material;
 }
 
