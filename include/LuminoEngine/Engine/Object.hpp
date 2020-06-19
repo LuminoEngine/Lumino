@@ -31,7 +31,7 @@ class ObjectInitializeContext : public RefObject
 public:
     static Ref<ObjectInitializeContext> Default;
 
-    bool autoAdd = false;
+    bool autoAdd = true;
 };
 
 namespace detail {

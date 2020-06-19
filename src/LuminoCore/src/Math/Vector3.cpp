@@ -17,6 +17,8 @@ const Vector3 Vector3::UnitX = Vector3(1, 0, 0);
 const Vector3 Vector3::UnitY = Vector3(0, 1, 0);
 const Vector3 Vector3::UnitZ = Vector3(0, 0, 1);
 const Vector3 Vector3::Ones = Vector3(1, 1, 1);
+const Vector3 Vector3::Minimum = Vector3(std::numeric_limits<float>::min(), std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
+const Vector3 Vector3::Maximum = Vector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
 Vector3::Vector3(const Vector2& vec, float z_)
 {

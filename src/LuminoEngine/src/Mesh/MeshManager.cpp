@@ -240,6 +240,7 @@ Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetP
 	}
 	else {
 		mesh = makeObject<StaticMeshModel>();
+		loadStaticMeshModel(mesh, assetPath, scale);
 		m_meshModelCache.registerObject(key, mesh, 0);
 		return mesh;
 	}

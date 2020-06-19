@@ -44,6 +44,12 @@ public:
     /** Vector3(1, 1, 1) */
     static const Vector3 Ones;
 
+    /** Vector3(FLT_MIN, FLT_MIN, FLT_MIN) */
+    static const Vector3 Minimum;
+
+    /** Vector3(FLT_MAX, FLT_MAX, FLT_MAX) */
+    static const Vector3 Maximum;
+
 public:
     /** すべての要素を 0.0 に設定してインスタンスを初期化します。 */
     LN_METHOD(OverloadPostfix = "Zeros")

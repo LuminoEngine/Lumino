@@ -486,5 +486,11 @@ private:
 	bool m_dirty;
 };
 
+class MeshHelper
+{
+public:
+	static Box makeAABB(const Vertex* vertices, uint32_t vertexCount);
+};
+
 } // namespace ln
 

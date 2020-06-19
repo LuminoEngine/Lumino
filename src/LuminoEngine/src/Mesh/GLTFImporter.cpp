@@ -729,7 +729,6 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 2) {
 					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
@@ -738,10 +737,14 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 4) {
-					LN_NOTIMPLEMENTED();
+					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint32_t*>(section.indexData);
+					for (int i = 0; i < section.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
+					}
 				}
 				else {
 					LN_NOTIMPLEMENTED();
@@ -802,7 +805,6 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 
-
 	//for (int vi = 0; vi < 100/*coreMesh->vertexCount()*/; vi++) {
 	//	auto v = coreMesh->vertex(vi);
 	//	//v.position.y = 0;
@@ -819,6 +821,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	//coreMesh->setIndex(2, 2);
 
 	//coreMesh->setSection(0, 0, 100, 0, PrimitiveTopology::TriangleList);
+
+	// TODO: set to mesh
+	auto aabb = MeshHelper::makeAABB(
+		static_cast<const Vertex*>(coreMesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main)),
+		vertexCount);
 
 	return coreMesh;
 }

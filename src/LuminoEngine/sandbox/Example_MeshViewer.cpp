@@ -13,13 +13,13 @@ class App_Example_MeshViewer : public Application
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
 
-        m_sprite = Sprite::create(Texture2D::whiteTexture());
-        m_sprite->setBlendMode(BlendMode::Normal);
+        //m_sprite = Sprite::create(Texture2D::whiteTexture());
+        //m_sprite->setBlendMode(BlendMode::Normal);
         //m_sprite->setAlignments(HAlignment::Left, VAlignment::Top);
 
-        m_plane = PlaneMesh::create();
-        auto planeMaterial = Material::create(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));
-        m_plane->planeMeshComponent()->setMaterial(planeMaterial);
+        //m_plane = PlaneMesh::create();
+        //auto planeMaterial = Material::create(Texture2D::load(u"D:/Materials/KitBash3D/WARZONE/Blender/KB3D_Debris_Diffuse.jpg"));
+        //m_plane->planeMeshComponent()->setMaterial(planeMaterial);
 
         //auto sprite2 = Sprite::create(Texture2D::whiteTexture());
 
@@ -43,6 +43,7 @@ class App_Example_MeshViewer : public Application
 		//auto mesh = StaticMesh::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/autotile-regions.glb");
         //auto mesh = SkinnedMesh::load(u"C:/Proj/LN/Lumino/src/LuminoEngine/sandbox/Assets/SkinnedMesh2.glb");
         //auto mesh = SkinnedMesh::load(u"D:/LocalProj/UnityChanSD/Misaki_sum_humanoid.fbx");
+        auto mesh = StaticMesh::create(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         //mesh->setShadingModel(ShadingModel::Unlit);
 
         //auto model = mesh->skinnedMeshComponent()->model();

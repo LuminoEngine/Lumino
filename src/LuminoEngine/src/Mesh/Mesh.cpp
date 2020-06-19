@@ -1149,6 +1149,24 @@ void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout*
 	(*outVBCount)++;
 }
 
+Box MeshHelper::makeAABB(const Vertex* vertices, uint32_t vertexCount)
+{
+	if (vertexCount == 0) return Box();
+
+	Vector3 aabbMin = Vector3::Maximum;
+	Vector3 aabbMax = Vector3::Minimum;
+	for (uint32_t i = 0; i < vertexCount; i++) {
+		const auto& v = vertices[i];
+		aabbMin.x = std::min(aabbMin.x, v.position.x);
+		aabbMin.y = std::min(aabbMin.y, v.position.y);
+		aabbMin.z = std::min(aabbMin.z, v.position.z);
+		aabbMax.x = std::max(aabbMax.x, v.position.x);
+		aabbMax.y = std::max(aabbMax.y, v.position.y);
+		aabbMax.z = std::max(aabbMax.z, v.position.z);
+	}
+
+	return Box(aabbMin, aabbMax);
+}
 
 namespace detail {
 
