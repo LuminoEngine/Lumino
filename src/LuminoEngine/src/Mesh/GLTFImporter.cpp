@@ -919,8 +919,13 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		みたいな感じになるかな。メッシュコンテナ名は省略可でもいいかも。
 	*/
 
-	auto weightsTrack = makeObject<ScalarAnimationTrack>();
-	auto weightsCurve = makeObject<KeyFrameAnimationCurve>();
+	//auto weightsTrack = makeObject<ScalarAnimationTrack>();
+	//auto weightsCurve = makeObject<KeyFrameAnimationCurve>();
+
+	struct TrackData
+	{
+
+	};
 
 	for (const auto& channel : animation.channels) {
 		const auto& sampler = animation.samplers[channel.sampler];
@@ -929,11 +934,13 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		const auto& inputAccessor = m_model->accessors[sampler.input];
 		const auto& inputBufferView = m_model->bufferViews[inputAccessor.bufferView];
 		const auto& inputBuffer = m_model->buffers[inputBufferView.buffer];
+		const auto* inputData = reinterpret_cast<const float*>(inputBuffer.data.data() + inputAccessor.byteOffset + inputBufferView.byteOffset);
 		if (LN_REQUIRE(inputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && inputAccessor.type == TINYGLTF_TYPE_SCALAR)) return nullptr;
 
 		const auto& outputAccessor = m_model->accessors[sampler.output];
 		const auto& outputBufferView = m_model->bufferViews[outputAccessor.bufferView];
 		const auto& outputBuffer = m_model->buffers[outputBufferView.buffer];
+		const auto* outputData = reinterpret_cast<const float*>(outputBuffer.data.data() + outputAccessor.byteOffset + outputBufferView.byteOffset);
 
 		if (inputAccessor.sparse.isSparse || outputAccessor.sparse.isSparse) {
 			LN_NOTIMPLEMENTED();
@@ -941,10 +948,8 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		}
 
 		if (channel.target_path == "weights") {
-			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && inputAccessor.type == TINYGLTF_TYPE_SCALAR)) return nullptr;
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_SCALAR)) return nullptr;
 
-			const auto* inputData = reinterpret_cast<const float*>(inputBuffer.data.data() + inputAccessor.byteOffset + inputBufferView.byteOffset);
-			const auto* outputData = reinterpret_cast<const float*>(outputBuffer.data.data() + outputAccessor.byteOffset + outputBufferView.byteOffset);
 			//sectionView.indexCount = indexAccessor.count;
 
 			for (int i = 0; i < inputAccessor.count; i++) {
@@ -954,14 +959,22 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 				std::cout << i << ": " << outputData[i] << std::endl;
 			}
 
-			
-			if (inputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT) {
+			LN_NOTIMPLEMENTED();
+		}
+		else if (channel.target_path == "translation") {
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC3)) return nullptr;
 
+			for (int i = 0; i < inputAccessor.count; i++) {
+				std::cout << i << ": " << inputData[i] << std::endl;
 			}
-			else {
-				LN_NOTIMPLEMENTED();
-				return nullptr;
+			for (int i = 0; i < outputAccessor.count; i++) {
+				std::cout << i << ": " << outputData[i] << std::endl;
 			}
+
+		}
+		else if (channel.target_path == "rotation") {
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC4)) return nullptr;
+
 		}
 
 

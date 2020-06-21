@@ -123,10 +123,30 @@ public:
 };
 
 /** (スキニングでは、ボーンアニメーションで使用) */
+// translation, rotation, scale をまとめて扱う。
+// - 個々の要素を Curve にすると、10 個も Curve ができる。さらに Key(AnimationKeyFrame) というやや大きめのデータもたくさんできる。
+//   AnimationKeyFrame は UI アニメやシネマなど、Editor から編集するようなものに対してメインに使う。
+//   対して skin mesh animation は基本的に外部のモデラーで変種したデータを扱う。↑に比べて大量のキーフレームができる傾向にある。
+// - Quaternion は slerp での補間を行う必要があるが、そのため個々の要素を Curve にするのは現実的ではない。
+//   また Edit 可能にしても、人間がいじれるものではない。（やるとしたらオイラー角度での編集か）
+// - 外部ファイルからアニメーションの方法を指定してくることもある (glTF は STEP, LINEAR, CUBICSPLINE がある)
+//   データの持ち方の考え方的に AnimationCurve を使った従来の方法とは異なり、↑のメモリ効率など インピーダンスミスマッチ がひどくなる。
 class TransformAnimationTrack
 	: public AnimationTrack
 {
 public:
+	struct Vector3Key
+	{
+		float time;
+		Vector3 value;
+	};
+
+	struct QuaternionKey
+	{
+		float time;
+		Quaternion value;
+	};
+	
 };
 
 } // namespace ln
