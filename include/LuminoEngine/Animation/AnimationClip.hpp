@@ -32,6 +32,9 @@ public:
 
 	float lastFrameTime() const { return m_lastFrameTime; }
 
+	void setName(const String& value) { m_name = value; }
+	const String& name() const { return m_name; }
+
 LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
@@ -39,7 +42,7 @@ LN_CONSTRUCT_ACCESS:
 	void init(/*const StringRef& name, */const StringRef& targetPath, const std::initializer_list<AnimationKeyFrame>& keyframes);
 
 protected:
-	//String m_name;
+	String m_name;
 	List<Ref<AnimationTrack>> m_tracks;
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;

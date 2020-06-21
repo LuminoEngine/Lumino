@@ -102,7 +102,14 @@ void SkinnedMeshComponent::onRender(RenderingContext* context)
 			if (mesh) {
 				for (int iSection = 0; iSection < mesh->sections().size(); iSection++) {
 					context->setMaterial(m_model->materials()[mesh->sections()[iSection].materialIndex]);
-					context->drawSkinnedMesh(mesh, iSection, m_model->skeleton(node->skeletonIndex));
+
+
+					if (node->skeletonIndex >= 0) {
+						context->drawSkinnedMesh(mesh, iSection, m_model->skeleton(node->skeletonIndex));
+					}
+					else {
+						context->drawMesh(mesh, iSection);
+					}
 				}
 			}
 

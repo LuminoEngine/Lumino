@@ -8,9 +8,11 @@ class Mesh;
 class Material;
 class Texture;
 class Skin;
+class Animation;
 }
 
 namespace ln {
+class AnimationClip;
 class SkinnedMeshModel;
 
 namespace detail {
@@ -64,6 +66,7 @@ private:
 	Ref<Mesh> generateMesh(const MeshView& meshView) const;
 	Ref<MeshArmature> readSkin(const tinygltf::Skin& skin);
 	Ref<Texture> loadTexture(const tinygltf::Texture& texture);
+	Ref<AnimationClip> readAnimation(const tinygltf::Animation& animation) const;
 
 	static bool FileExists(const std::string &abs_filename, void *user_data);
 	static std::string ExpandFilePath(const std::string &filepath, void *user_data);
@@ -75,6 +78,8 @@ private:
 	DiagnosticsManager* m_diag;
 	std::shared_ptr<tinygltf::Model> m_model;
 	StaticMeshModel* m_meshModel;
+
+	List<Ref<AnimationClip>> m_animationClips;
 };
 
 } // namespace detail
