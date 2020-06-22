@@ -341,6 +341,8 @@ public:
 	void setScale(float x, float y, float z) { setScale(Vector3(x, y, z)); }
 	void setScale(float xyz) { setScale(Vector3(xyz, xyz, xyz)); }
 
+	void setTransform(const AttitudeTransform& value);
+
 	void setName(const String& value) { m_name = value; }
 	const String& name() const { return m_name; }
 
@@ -395,6 +397,7 @@ public:
     static Ref<StaticMeshModel> load(const StringRef& filePath, float scale = 1.0f);
 
 	MeshNode* findNode(StringRef name) const;
+	int findNodeIndex(StringRef name) const;
 
 	void addMeshContainer(MeshContainer* meshContainer);
     void addNode(MeshNode* node);

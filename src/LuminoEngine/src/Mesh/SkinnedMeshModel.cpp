@@ -148,6 +148,11 @@ void SkinnedMeshModel::addSkeleton(MeshArmature* skeleton)
 	m_skeletons.add(skeleton);
 }
 
+AnimationController* SkinnedMeshModel::animationController() const
+{
+	return m_animationController;
+}
+
 void SkinnedMeshModel::beginUpdate()
 {
     // 全てのローカルトランスフォームをリセットする
@@ -285,27 +290,76 @@ void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion*
   //  }
 }
 
-int SkinnedMeshModel::getAnimationTargetElementCount() const
+//int SkinnedMeshModel::getAnimationTargetElementCount() const
+//{
+//	return 0;//m_allBoneList.size();
+//}
+//
+//const String& SkinnedMeshModel::getAnimationTargetElementName(int index) const
+//{
+//	return String::Empty;//m_allBoneList[index]->name();
+//}
+//
+//AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
+//{
+//	return AnimationValueType::Transform;
+//}
+//
+//void SkinnedMeshModel::setAnimationTargetElementValue(int index, const AnimationValue& value)
+//{
+//	//if (value.type() == AnimationValueType::Transform)
+//	//{
+//	//	(*m_allBoneList[index]->localTransformPtr()) = value.getTransform();
+//	//}
+//}
+
+
+//==============================================================================
+// AnimationController
+
+AnimationController::AnimationController()
 {
-	return 0;//m_allBoneList.size();
 }
 
-const String& SkinnedMeshModel::getAnimationTargetElementName(int index) const
+bool AnimationController::init(SkinnedMeshModel* model)
 {
-	return String::Empty;//m_allBoneList[index]->name();
+	if (!Object::init()) return false;
+	m_model = model;
+
+	m_core = makeObject<AnimationMixerCore>(this);
+	m_core->addLayer(makeObject<AnimationLayer>(m_core));
+	return true;
 }
 
-AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
+void AnimationController::advanceTime(float elapsedTime)
 {
-	return AnimationValueType::Transform;
+	m_core->advanceTime(elapsedTime);
 }
 
-void SkinnedMeshModel::setAnimationTargetElementValue(int index, const AnimationValue& value)
+detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(const String& name)
 {
-	//if (value.type() == AnimationValueType::Transform)
-	//{
-	//	(*m_allBoneList[index]->localTransformPtr()) = value.getTransform();
-	//}
+	auto tb = m_bindings.findIf([&](const auto& x) { return x->name == name; });
+	if (tb) {
+		return *tb;
+	}
+
+
+	int index = m_model->findNodeIndex(name);
+	if (index >= 0) {
+		auto binding = makeRef<detail::AnimationTargetElementBlendLink>(AnimationValueType::Transform);
+		binding->name = name;
+		binding->targetIndex = index;
+		m_bindings.add(binding);
+		return binding;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void AnimationController::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding)
+{
+	m_model->meshNodes()[binding->targetIndex]->setTransform(binding->rootValue.getTransform());
 }
 
 } // namespace ln

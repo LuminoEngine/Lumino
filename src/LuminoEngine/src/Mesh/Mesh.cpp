@@ -953,6 +953,11 @@ void MeshNode::setScale(const Vector3& value)
 	m_localTransform.scale = value;
 }
 
+void MeshNode::setTransform(const AttitudeTransform& value)
+{
+	m_localTransform = value;
+}
+
 void MeshNode::setMeshContainerIndex(int value)
 {
     m_meshContainerIndex = value;
@@ -1011,7 +1016,16 @@ void StaticMeshModel::serialize2(Serializer2& ar)
 
 MeshNode* StaticMeshModel::findNode(StringRef name) const
 {
-	return m_nodes.findIf([&](const auto& x) { return x->name() == name; }).valueOr(nullptr);
+	int index = findNodeIndex(name);
+	if (index < 0)
+		return nullptr;
+	else
+		return m_nodes[index];
+}
+
+int StaticMeshModel::findNodeIndex(StringRef name) const
+{
+	return m_nodes.indexOfIf([&](const auto& x) { return x->name() == name; });
 }
 
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)

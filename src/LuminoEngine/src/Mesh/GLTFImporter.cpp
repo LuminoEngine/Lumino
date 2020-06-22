@@ -897,14 +897,6 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 	auto clip = makeObject<AnimationClip>();
 	clip->setName(String::fromStdString(animation.name));
 
-
-
-	//if (animation.channels.size() == 1 && animation.channels[0].target_path == "weights") {
-
-	//}
-	//else {
-
-	//}
 	/*
 	Note:
 		input は time.
@@ -919,13 +911,34 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		みたいな感じになるかな。メッシュコンテナ名は省略可でもいいかも。
 	*/
 
-	//auto weightsTrack = makeObject<ScalarAnimationTrack>();
-	//auto weightsCurve = makeObject<KeyFrameAnimationCurve>();
-
-	struct TrackData
+	struct TransformTrackData
 	{
+		int translationFrames = 0;
+		const float* translationTimes;
+		const Vector3* translationValues;
+		TransformAnimationTrack::Interpolation translationInterpolation;
 
+		int rotationFrames = 0;
+		const float* rotationTimes;
+		const Quaternion* rotationValues;
+
+		int scaleFrames = 0;
+		const float* scaleTimes;
+		const Vector3* scaleValues;
+		TransformAnimationTrack::Interpolation scaleInterpolation;
+
+		static TransformAnimationTrack::Interpolation getInterpolation(const std::string& value)
+		{
+			if (value == "STEP") return TransformAnimationTrack::Interpolation::Step;
+			if (value == "LINEAR") return TransformAnimationTrack::Interpolation::Linear;
+			if (value == "CUBICSPLINE") return TransformAnimationTrack::Interpolation::CubicSpline;
+			LN_NOTIMPLEMENTED();
+			return TransformAnimationTrack::Interpolation::Step;
+		}
 	};
+
+	// key: node number
+	std::unordered_map<int, TransformTrackData> transformTrackMap;
 
 	for (const auto& channel : animation.channels) {
 		const auto& sampler = animation.samplers[channel.sampler];
@@ -963,32 +976,49 @@ Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animat
 		}
 		else if (channel.target_path == "translation") {
 			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC3)) return nullptr;
+			auto& data = transformTrackMap[channel.target_node];
+			data.translationFrames = inputAccessor.count;
+			data.translationTimes = inputData;
+			data.translationValues = reinterpret_cast<const Vector3*>(outputData);
+			data.translationInterpolation = TransformTrackData::getInterpolation(sampler.interpolation);
 
-			for (int i = 0; i < inputAccessor.count; i++) {
-				std::cout << i << ": " << inputData[i] << std::endl;
-			}
-			for (int i = 0; i < outputAccessor.count; i++) {
-				std::cout << i << ": " << outputData[i] << std::endl;
-			}
+			//for (int i = 0; i < inputAccessor.count; i++) {
+			//	std::cout << i << ": " << inputData[i] << std::endl;
+			//}
+			//for (int i = 0; i < outputAccessor.count; i++) {
+			//	std::cout << i << ": " << outputData[i] << std::endl;
+			//}
 
 		}
 		else if (channel.target_path == "rotation") {
 			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC4)) return nullptr;
-
+			auto& data = transformTrackMap[channel.target_node];
+			data.rotationFrames = inputAccessor.count;
+			data.rotationTimes = inputData;
+			data.rotationValues = reinterpret_cast<const Quaternion*>(outputData);
 		}
-
-
-		//if (channel.target_path == "weights") {
-		//	weightsCurve
-		//}
-
-
-		//auto track = makeObject<AnimationTrack>();
-		//track->setTargetName(String::fromStdString(node.name));
-
-		printf("");
+		else if (channel.target_path == "scale") {
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC4)) return nullptr;
+			auto& data = transformTrackMap[channel.target_node];
+			data.scaleFrames = inputAccessor.count;
+			data.scaleTimes = inputData;
+			data.scaleValues = reinterpret_cast<const Vector3*>(outputData);
+			data.scaleInterpolation = TransformTrackData::getInterpolation(sampler.interpolation);
+		}
 	}
 
+	for (const auto& pair : transformTrackMap) {
+		const auto& node = m_model->nodes[pair.first];
+		auto track = makeObject<TransformAnimationTrack>();
+		track->setTargetName(String::fromStdString(node.name));
+
+		const auto& data = pair.second;
+		if (data.translationFrames > 0) track->setupTranslations(data.translationFrames, data.translationTimes, data.translationValues, data.translationInterpolation);
+		if (data.rotationFrames > 0) track->setupRotations(data.rotationFrames, data.rotationTimes, data.rotationValues);
+		if (data.scaleFrames > 0) track->setupScales(data.scaleFrames, data.scaleTimes, data.scaleValues, data.scaleInterpolation);
+
+		clip->addTrack(track);
+	}
 
 	return clip;
 }

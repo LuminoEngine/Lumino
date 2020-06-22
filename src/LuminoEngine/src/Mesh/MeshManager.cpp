@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoEngine/Animation/AnimationMixer.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
 #include "FbxImporter.hpp"
@@ -270,6 +271,9 @@ void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& a
 		//ObjMeshImporter importer;
 		//mesh = importer.import(filePath, scale, diag);
 
+
+
+
 		diag->dumpToLog();
 	}
 
@@ -300,6 +304,16 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 
 			GLTFImporter importer;
 			bool result = importer.importAsSkinnedMesh(mesh, m_assetManager, *path, diag);
+
+
+			if (!importer.animationClips().isEmpty()) {
+				//auto mixer = makeObject<AnimationMixerCore>();
+				mesh->m_animationController = makeObject<AnimationController>(mesh);
+
+				for (auto& clip : importer.animationClips()) {
+					mesh->m_animationController->addClip(clip);
+				}
+			}
 
 		}
 

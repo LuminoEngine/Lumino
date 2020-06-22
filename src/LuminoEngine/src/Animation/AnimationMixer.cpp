@@ -323,7 +323,9 @@ void AnimationMixerCore::init(detail::IAnimationMixerCoreHolder* owner)
 
 AnimationState* AnimationMixerCore::addClip(AnimationClip* animationClip)
 {
-	return m_layers[0]->addClipAndCreateState(animationClip);
+	AnimationState* state = m_layers[0]->addClipAndCreateState(animationClip);
+	state->setName(animationClip->name());
+	return state;
 }
 
 AnimationState* AnimationMixerCore::addClip(const StringRef& stateName, AnimationClip* animationClip)

@@ -70,7 +70,7 @@ public:
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
-    void init();
+	bool init();
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
 	//void setTargetName(const String& name) { m_targetName = name; }
 
@@ -135,6 +135,13 @@ class TransformAnimationTrack
 	: public AnimationTrack
 {
 public:
+	enum class Interpolation
+	{
+		Step,
+		Linear,
+		CubicSpline,
+	};
+
 	struct Vector3Key
 	{
 		float time;
@@ -146,7 +153,28 @@ public:
 		float time;
 		Quaternion value;
 	};
-	
+
+	// for glTF
+	void setupTranslations(int frames, const float* times, const Vector3* values, Interpolation interpolation);
+	void setupRotations(int frames, const float* times, const Quaternion* values);
+	void setupScales(int frames, const float* times, const Vector3* values, Interpolation interpolation);
+
+LN_CONSTRUCT_ACCESS:
+	TransformAnimationTrack();
+
+	bool init();
+
+protected:
+	void evaluate(float time, AnimationValue* outResult) override;
+	float lastFrameTime() const override { return m_lastTime; }
+
+private:
+	std::vector<Vector3Key> m_translationKeys;
+	std::vector<QuaternionKey> m_rotationKeys;
+	std::vector<Vector3Key> m_scaleKeys;
+	Interpolation m_translationInterpolation;
+	Interpolation m_scaleInterpolation;
+	float m_lastTime;
 };
 
 } // namespace ln

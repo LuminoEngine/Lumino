@@ -24,6 +24,8 @@ public:
     bool importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 	bool importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag);
 
+	const List<Ref<AnimationClip>> animationClips() const { return m_animationClips; }
+
 private:
 	// ファイルからのデータ読み込み用。以下、ほとんど glTF 用なので importer 側にもっていってもいいかも。必要なデータを前もって集めておいて、バッファをまとめて確保するのに使う。
 	struct VertexBufferView

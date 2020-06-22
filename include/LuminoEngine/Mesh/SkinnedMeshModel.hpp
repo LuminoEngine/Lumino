@@ -7,6 +7,7 @@ namespace ln {
 class SkinnedMeshModel;
 class MeshArmature;
 class Texture2D;
+class AnimationController;
 
 #if 0
 namespace detail {
@@ -107,12 +108,12 @@ private:
 
 class SkinnedMeshModel
 	: public StaticMeshModel
-	, public IAnimationTargetObject
+	//, public IAnimationTargetObject
 {
 public:
 	static Ref<SkinnedMeshModel> load(const StringRef& filePath);
 
-	//AnimationController* animationController() const { return m_animationController; }
+	AnimationController* animationController() const;
 
 	//void addMeshContainer(MeshContainer* meshContainer);
 	//void addMaterial(Material* material);
@@ -140,24 +141,82 @@ public:
     //List<Ref<SkinnedMeshBone>>		m_allBoneList;				// 全ボーンリスト
     //List<SkinnedMeshBone*>			m_ikBoneList;
     //List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
-	//Ref<AnimationController> m_animationController;
+	Ref<AnimationController> m_animationController;
 
-protected:
-	virtual int getAnimationTargetElementCount() const override;
-	virtual const String& getAnimationTargetElementName(int index) const override;
-	virtual AnimationValueType getAnimationTargetElementValueType(int index) const override;
-	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) override;
+//protected:
+//	virtual int getAnimationTargetElementCount() const override;
+//	virtual const String& getAnimationTargetElementName(int index) const override;
+//	virtual AnimationValueType getAnimationTargetElementValueType(int index) const override;
+//	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) override;
 
 LN_CONSTRUCT_ACCESS:
     SkinnedMeshModel();
 
 private:
-	//List<Ref<MeshContainer>> m_meshContainers;
-	//List<Ref<Material>> m_materials;
 	List<Ref<MeshArmature>> m_skeletons;
 
 	Matrix		m_worldTransform;
 	Matrix		m_worldTransformInverse;
+};
+
+
+/** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
+class AnimationController final
+	: public Object
+	, public detail::IAnimationMixerCoreHolder
+{
+public:
+
+	/** アニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
+	AnimationState* addClip(AnimationClip* animationClip) { return m_core->addClip(animationClip); }
+
+	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
+	AnimationState* addClip(const StringRef& stateName, AnimationClip* animationClip) { m_core->addClip(stateName, animationClip); }
+
+	/** アニメーションクリップを除外します。 (レイヤー0 から除外されます) */
+	void removeClip(AnimationClip* animationClip) { m_core->removeClip(animationClip); }
+
+	/// 再生中であるかを確認する
+	//bool isPlaying() const;
+
+	/// 再生
+	void play(const StringRef& clipName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(clipName, duration); }
+
+	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
+	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);
+
+	///// クロスフェード
+	//void CrossFade(const lnKeyChar* animName, lnFloat fadeLength, PlayMode mode = StopSameLayer);
+
+	///// 前のアニメーションが終了した後、再生を開始する
+	//void PlayQueued(const lnKeyChar* animName, QueueMode queueMode = CompleteOthers, PlayMode playMode = StopSameLayer);
+
+	///// 前のアニメーションが終了するとき、クロスフェードで再生を開始する
+	//void CrossFadeQueued(const lnKeyChar* animName, lnFloat fadeLength, QueueMode queueMode = CompleteOthers, PlayMode playMode = StopSameLayer);
+
+	///// 同レイヤー内のアニメーション再生速度の同期
+	//void SyncLayer(int layer);
+
+
+public:
+	void advanceTime(float elapsedTime);
+
+
+	///// AnimationTargetEntity の検索 (見つからなければ NULL)
+	//detail::AnimationTargetAttributeEntity* findAnimationTargetAttributeEntity(const String& name);
+
+LN_CONSTRUCT_ACCESS:
+	AnimationController();
+	bool init(SkinnedMeshModel* model);
+
+protected:
+	detail::AnimationTargetElementBlendLink* onRequireBinidng(const String& name) override;
+	void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding) override;
+
+private:
+	SkinnedMeshModel* m_model;
+	Ref<AnimationMixerCore> m_core;
+	List<Ref<detail::AnimationTargetElementBlendLink>> m_bindings;
 };
 
 } // namespace ln

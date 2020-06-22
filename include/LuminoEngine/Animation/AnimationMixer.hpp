@@ -54,6 +54,7 @@ public:
 
 
 /** ブレンドされた値を設定するオブジェクトのインターフェイスです。 */
+// deprecated
 class IAnimationTargetObject
 {
 public:

@@ -46,10 +46,12 @@ class App_Example_MeshViewer : public Application
         //auto mesh = StaticMesh::create(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         //auto mesh = StaticMesh::create(u"D:/Materials/VRM/PronamaChan/PronamaChan.glb");
 
-        //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
+        auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf");
-        auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf");
+        //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf");
         
+        mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
+
         //mesh->setShadingModel(ShadingModel::Unlit);
 
         //auto model = mesh->skinnedMeshComponent()->model();
