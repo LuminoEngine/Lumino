@@ -221,7 +221,7 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 
 Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
 {
-	static const Char* candidateExts[] = { u".gltf", u".glb" };
+	static const Char* candidateExts[] = { u".gltf", u".glb", u".pmx" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
 		return acquireStaticMeshModel(*path, scale);
@@ -264,13 +264,15 @@ void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& a
 {
 	{
 		auto diag = makeObject<DiagnosticsManager>();
+	 {
 
-		GLTFImporter importer;
-		bool result = importer.importAsStaticMesh(model, m_assetManager, assetPath, diag);
+			GLTFImporter importer;
+			bool result = importer.importAsStaticMesh(model, m_assetManager, assetPath, diag);
 
-		//ObjMeshImporter importer;
-		//mesh = importer.import(filePath, scale, diag);
+			//ObjMeshImporter importer;
+			//mesh = importer.import(filePath, scale, diag);
 
+		}
 
 
 
@@ -290,7 +292,11 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		Ref<SkinnedMeshModel> mesh = makeObject<SkinnedMeshModel>();
 		auto diag = makeObject<DiagnosticsManager>();
 
-		if (path->path().hasExtension(u".fbx")) {
+		if (path->path().hasExtension(u".pmx")) {
+			PmxLoader importer(this, diag);
+			bool result = importer.load(mesh, *path, false);
+		}
+		else if (path->path().hasExtension(u".fbx")) {
 #ifdef LN_USE_FBX_IMPORTER
 			FbxImporter importer;
 			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);

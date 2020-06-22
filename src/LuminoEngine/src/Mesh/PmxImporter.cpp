@@ -347,6 +347,12 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 	}
 
 	auto mesh = makeObject<Mesh>();
+	auto meshContainer = makeObject<MeshContainer>();
+	meshContainer->setMesh(mesh);
+	m_model->addMeshContainer(meshContainer);
+	auto meshNode = makeObject<MeshNode>();
+	meshNode->setMeshContainerIndex(0);
+	m_model->addNode(meshNode);
 
 	// モデル情報
 	if (!loadModelInfo(&reader)) {
@@ -372,8 +378,6 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 	if (!loadMaterials(&reader, mesh)) {
 		return false;
 	}
-
-	return true;
 
 	// ボーン
 	if (!loadBones(&reader)) {
@@ -511,24 +515,24 @@ bool PmxLoader::loadVertices(BinaryReader* reader, Mesh* mesh)
 			}
 			case 3:	// SDEF
 			{
-				LN_NOTIMPLEMENTED();
-				//int i0 = reader->readInt(getBoneIndexSize());
-				//int i1 = reader->readInt(getBoneIndexSize());
-				//float w0 = reader->readFloat();
-				//skinningVertices[i].indices[0] = i0;
-				//skinningVertices[i].indices[1] = i1;
-				//skinningVertices[i].indices[2] = 0.0f;
-				//skinningVertices[i].indices[3] = 0.0f;
-				//skinningVertices[i].weights[0] = w0;
-				//skinningVertices[i].weights[1] = 1.0f - w0;
-				//skinningVertices[i].weights[2] = 0.0f;
-				//skinningVertices[i].weights[3] = 0.0f;
-				//Vector3 sdefC, sdefR0, sdefR1;
-				//reader->read(&sdefC, sizeof(float) * 3);
-				//reader->read(&sdefR0, sizeof(float) * 3);
-				//reader->read(&sdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
+				int i0 = reader->readInt(getBoneIndexSize());
+				int i1 = reader->readInt(getBoneIndexSize());
+				float w0 = reader->readFloat();
+				skinningVertices[i].indices[0] = i0;
+				skinningVertices[i].indices[1] = i1;
+				skinningVertices[i].indices[2] = 0.0f;
+				skinningVertices[i].indices[3] = 0.0f;
+				skinningVertices[i].weights[0] = w0;
+				skinningVertices[i].weights[1] = 1.0f - w0;
+				skinningVertices[i].weights[2] = 0.0f;
+				skinningVertices[i].weights[3] = 0.0f;
+				Vector3 sdefC, sdefR0, sdefR1;
+				reader->read(&sdefC, sizeof(float) * 3);
+				reader->read(&sdefR0, sizeof(float) * 3);
+				reader->read(&sdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
+		// TODO:
     //            m_modelCore->setSdefInfo(i, Vector4(sdefC, -1), sdefR0, sdefR1);
-				//m_hasSDEF = true;
+				m_hasSDEF = true;
 				break;
 			}
 		}
@@ -544,6 +548,11 @@ bool PmxLoader::loadVertices(BinaryReader* reader, Mesh* mesh)
 		aabbMax.x = std::max(aabbMax.x, baseVertex.Position.x);
 		aabbMax.y = std::max(aabbMax.y, baseVertex.Position.y);
 		aabbMax.z = std::max(aabbMax.z, baseVertex.Position.z);
+	}
+
+	if (m_hasSDEF) {
+		// TODO:
+		LN_WARNING(u"PMX SDEF is not implemented.");
 	}
 
 	// TODO: BoundingBox
@@ -618,7 +627,7 @@ bool PmxLoader::loadTextureTable(BinaryReader* reader)
 		String name = readString(reader);
 
 		auto assetPath = AssetPath::combineAssetPath(m_baseDir, name);
-		if (Texture* texture = m_manager->graphicsManager()->requestTexture(assetPath)) {
+		if (auto texture = m_manager->graphicsManager()->requestTexture(assetPath)) {
 			m_textureTable.add(texture);
 		}
 		else {
