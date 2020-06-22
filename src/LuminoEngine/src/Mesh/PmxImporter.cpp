@@ -1284,6 +1284,11 @@ void PmxLoader::buildSkeleton()
 		int nodeIndex = nodeIndexOffset + i;
 		auto node = m_model->meshNodes()[nodeIndex];
 
+		//Matrix world = Matrix::makeTranslation(pmxBone.OrgPosition);
+		//Matrix inv1 = Matrix::makeTranslation(-pmxBone.OrgPosition);
+		//Matrix inv2 = Matrix::makeInverse(Matrix::makeTranslation(pmxBone.OrgPosition));
+		//world *= inv2;
+
 		skeleton->addBone(nodeIndex, Matrix::makeTranslation(-pmxBone.OrgPosition));
 		//auto bone = makeObject<MeshBone>();
 		//skeleton->addBone(nodeIndex, );

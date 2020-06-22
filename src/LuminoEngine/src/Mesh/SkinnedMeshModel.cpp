@@ -119,10 +119,15 @@ void MeshArmature::updateSkinningMatrices(SkinnedMeshModel* model)
 		const auto& bone = m_bones[i];
 		
 		// GLTF
-		//data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
+		data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
 		// PMX
-		data[i] = bone->m_inverseInitialMatrix * model->nodeGlobalTransform(bone->m_node);
-
+		//data[i] = bone->m_inverseInitialMatrix * model->nodeGlobalTransform(bone->m_node);
+		// ↑どっちが正しい？
+		// Three.js のコードを見ると、GLTFLoader では読み取った inverseBindMatrices を Skeleton クラスのコンストラクタに
+		// そのまま渡している。転置とかはしていない。
+		// Skeleton コンストラクタは boneInverses が省略されると、bone が持っている World行列を単純に inverse して、
+		// boneInverses を作っている。calculateInverses: function () {　あたり。
+		// というか「逆行列をかけて元に戻す」の計算順序的には GLTF の方が正しい。
 
 		//// TODO: test
 		//if (i == 0) {

@@ -1086,11 +1086,11 @@ void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matr
 		*/
 		// TODO: * ではなく一気に作ったほうがはやいかも
 		Matrix local =
-			//Matrix::makeTranslation(-m_data->OrgPosition) *
+			//Matrix::makeTranslation(node->initialLocalTransform().position()) *
 			Matrix::makeScaling(node->m_localTransform.scale) *
 			Matrix::makeRotationQuaternion(node->m_localTransform.rotation) *
 			Matrix::makeTranslation(node->m_localTransform.translation);// *
-			//Matrix::makeTranslation(m_data->OrgPosition);
+			//Matrix::makeTranslation(node->initialLocalTransform().position());
 		local.translate(node->initialLocalTransform().position());
 		m_nodeGlobalTransforms[nodeIndex] = local;
 		m_nodeGlobalTransforms[nodeIndex] *= parentTransform;
