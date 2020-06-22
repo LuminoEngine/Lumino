@@ -43,19 +43,6 @@ enum class BoneType
 };
 LN_FLAGS_OPERATORS(BoneType);
 
-// ボーンフラグ 接続先(PMD子ボーン指定)表示方法
-enum BoneConnectType
-{
-    BoneConnectType_PositionOffset = 0,        // 座標オフセットで指定
-    BoneConnectType_Bone,                    // ボーンで指定
-};
-
-// ボーンフラグ ローカル付与 
-enum LocalProvideType
-{
-    LocalProvideType_UserTransformValue = 0,    // ユーザー変形値／IKリンク／多重付与
-    LocalProvideType_ParentLocalTransformValue,    // 親のローカル変形量
-};
 
 // モーフ種別
 enum ModelMorphType
@@ -208,44 +195,6 @@ private:
 };
 
 
-// 共有IKデータ
-class PmxIKResource
-    : public RefObject
-{
-public:
-    struct IKLink
-    {
-        int            LinkBoneIndex;        // IK構成ボーン番号
-        bool        IsRotateLimit;        // 回転制限をするか
-        Vector3        MinLimit;            // 下限
-        Vector3        MaxLimit;            // 上限
-    };
-
-public:
-    /* ① - ② - ③    ④
-    
-        ①② : IK影響下ボーン
-        ③    : IKTargetBone (PMX 仕様書では「IKターゲットボーン」、MMDX 等では「エフェクタ」と呼ばれる)
-        ④    : IKBone (PMX 仕様書 では「IKボーン」、MMDX 等では「ターゲットボーン」と呼ばれる。かかと等、「右足IK」のような名前になっている)
-
-        IKボーン はスキニングに影響しない。
-        IKボーン をゴールとしてソルブした IKターゲットボーン 及び IK影響下ボーン がスキニングに影響する。
-
-        もし自分で IK を操りたいときは、IKボーン の位置を操作することになる。
-        これは MMD 上でモーションを作る時も同じ。
-    */
-
-    int            IKBoneIndex;            // IKボーン (PMX では、この IK 情報を持つボーンを指す) TODO: いらない
-    int            IKTargetBoneIndex;        // IKターゲットボーン
-    int            LoopCount;                // 演算回数
-    float        IKRotateLimit;            // IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意
-
-    List<IKLink> IKLinks;            // IK影響ボーンと制限のリスト
-
-    /* PMD の場合の IKRotateLimit は以下の計算結果を格納する
-    *        PI * Fact * (iLink + 1)
-    */
-};
 
 
 // 共有モーフデータ
@@ -507,6 +456,105 @@ public:
     //Ref<Material> MakeCommonMaterial() const;
 };
 
+// ボーンフラグ
+enum PmxBoneFlags
+{
+    PmxBoneFlags_LinkTargetByBoneIndex = 0x0001, // enum PmxBoneConnectType 接続先(PMD子ボーン指定)表示方法 -> 0:座標オフセットで指定 1:ボーンで指定
+    PmxBoneFlags_CanRotate = 0x0002,                // 回転可能
+    PmxBoneFlags_CanMove = 0x0004,                   // 移動可能
+    PmxBoneFlags_IsVisible = 0x0008,                  // 表示
+    PmxBoneFlags_CanOperate = 0x0010,            // 操作可
+    PmxBoneFlags_IK = 0x0020,                    // IK
+    PmxBoneFlags_IK_Child = 0x0040,              // (PMX 仕様書記載なし)
+    PmxBoneFlags_LocalProvide = 0x0080,             // ローカル付与 | 付与対象 0:ユーザー変形値／IKリンク／多重付与 1:親のローカル変形量
+    PmxBoneFlags_IsRotateProvided = 0x0100,          // 回転付与
+    PmxBoneFlags_IsMoveProvided = 0x0200,             // 移動付与
+    PmxBoneFlags_IsFixAxis = 0x0400,               // 軸固定
+    PmxBoneFlags_IsLocalAxis = 0x0800,             // ローカル軸
+    PmxBoneFlags_TransformAfterPhysics = 0x1000, // 物理後変形
+    PmxBoneFlags_ParentTransform = 0x2000,       // 外部親変形
+};
+
+// ボーンフラグ 接続先(PMD子ボーン指定)表示方法
+enum PmxBoneConnectType
+{
+    PmxBoneConnectType_PositionOffset = 0,        // 座標オフセットで指定
+    PmxBoneConnectType_Bone,                    // ボーンで指定
+};
+
+// ボーンフラグ ローカル付与 
+enum PmxLocalProvideType
+{
+    PmxLocalProvideType_UserTransformValue = 0,    // ユーザー変形値／IKリンク／多重付与
+    PmxLocalProvideType_ParentLocalTransformValue,    // 親のローカル変形量
+};
+
+// 共有ボーンデータ
+struct PmxBone
+{
+    String                Name;                        // ボーン名
+    //String            EnglishName;                // ボーン英名
+    Vector3                OrgPosition;                // モデル原点からの位置
+    int                    ParentBoneIndex;            // 親ボーンのインデックス (-1 は無し)
+    int                    TransformLevel;                // [PMX] 変形階層  TOOD: IKボーン及びそのIKを親としている系列の変形階層を 0→1、回転影響下以下の変形階層を 0→2 (SortVal の考え方な気がする。MMM では使ってないみたい)
+
+    uint32_t    boneFlags;  // ボーンフラグ (enum PmxBoneFlags)
+
+    // ↓ボーンフラグにより使用するデータ
+    Vector3                PositionOffset;                // [接続先:0 の場合] 座標オフセット, ボーン位置からの相対分 (エディタでボーンを表示するときの、先端方向。ゲームとしては必要ない。デバッグ情報としてボーンを表示するときに利用できる)
+    int                    ConnectedBoneIndex;            // [接続先:1 の場合] 接続先ボーンのボーンIndex (エディタでボーンを表示するときの、先端方向。ゲームとしては必要ない。デバッグ情報としてボーンを表示するときに利用できる)
+    int                    ProvidedParentBoneIndex;    // [回転付与:1 または 移動付与:1 の場合] 付与親ボーンのボーンIndex
+    float                ProvidedRatio;                // [回転付与:1 または 移動付与:1 の場合] 付与率
+    Vector3                AxisDirectionVector;        // [軸固定:1 の場合] 軸の方向ベクトル (TODO: 捻じれの制限をつける。PMXE のボーンリストでは紫のアイコンで表示される。MMF では未対応だった)
+    Vector3                DimentionXDirectionVector;    // [ローカル軸:1 の場合] X軸の方向ベクトル (TODO: インパルスモーフで使用するようだ。今は未対応)
+    Vector3                DimentionZDirectionVector;    // [ローカル軸:1 の場合] Z軸の方向ベクトル (TODO: インパルスモーフで使用するようだ。今は未対応)
+    int                    KeyValue;                    // [外部親変形:1 の場合] Key値
+
+    PmxBoneConnectType boneConnect() const { return (boneFlags & PmxBoneFlags_LinkTargetByBoneIndex) ? PmxBoneConnectType_Bone : PmxBoneConnectType_PositionOffset; }
+    bool isRotateProvided() const { return (boneFlags & PmxBoneFlags_IsRotateProvided) != 0; }
+    bool isMoveProvided() const { return (boneFlags & PmxBoneFlags_IsMoveProvided) != 0; }
+    bool isFixAxis() const { return (boneFlags & PmxBoneFlags_IsFixAxis) != 0; }
+    bool isLocalAxis() const { return (boneFlags & PmxBoneFlags_IsLocalAxis) != 0; }
+    bool isParentTransform() const { return (boneFlags & PmxBoneFlags_ParentTransform) != 0; }
+    bool isIK() const { return (boneFlags & PmxBoneFlags_IK) != 0; }
+    //PmxLocalProvideType boneConnect() const { return (boneFlags & PmxBoneFlags_LinkTargetByBoneIndex) ? PmxBoneConnectType_Bone : PmxBoneConnectType_PositionOffset; }
+};
+
+struct PmxIKLink
+{
+    int LinkBoneIndex;        // IK構成ボーン番号
+    bool IsRotateLimit;        // 回転制限をするか
+    Vector3 MinLimit;            // 下限
+    Vector3 MaxLimit;            // 上限
+};
+
+// 共有IKデータ
+struct PmxIK
+{
+    /* ① - ② - ③    ④
+
+        ①② : IK影響下ボーン
+        ③    : IKTargetBone (PMX 仕様書では「IKターゲットボーン」、MMDX 等では「エフェクタ」と呼ばれる)
+        ④    : IKBone (PMX 仕様書 では「IKボーン」、MMDX 等では「ターゲットボーン」と呼ばれる。かかと等、「右足IK」のような名前になっている)
+
+        IKボーン はスキニングに影響しない。
+        IKボーン をゴールとしてソルブした IKターゲットボーン 及び IK影響下ボーン がスキニングに影響する。
+
+        もし自分で IK を操りたいときは、IKボーン の位置を操作することになる。
+        これは MMD 上でモーションを作る時も同じ。
+    */
+
+    int            IKBoneIndex;            // IKボーン (PMX では、この IK 情報を持つボーンを指す) TODO: いらない
+    int            IKTargetBoneIndex;        // IKターゲットボーン
+    int            LoopCount;                // 演算回数
+    float        IKRotateLimit;            // IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意
+
+    std::vector<PmxIKLink> IKLinks;            // IK影響ボーンと制限のリスト
+
+    /* PMD の場合の IKRotateLimit は以下の計算結果を格納する
+    *        PI * Fact * (iLink + 1)
+    */
+};
 
 class PmxLoader
 {
@@ -570,6 +618,7 @@ private:
     void adjustPosition(Vector3* pos) const;
     void adjustAngle(Vector3* angles) const;
     Ref<Material> makeMaterial(const PmxMaterial* pmxMaterial) const;
+    void buildSkeleton();
 
     detail::MeshManager* m_manager;
     DiagnosticsManager* m_diag;
@@ -579,6 +628,8 @@ private:
     PMX_Header m_pmxHeader;
     List<Ref<Texture>> m_textureTable;
     std::vector<PmxMaterial> m_pmxMaterials;
+    std::vector<PmxBone> m_pmxBones;
+    std::vector<PmxIK> m_iks;
 
 
     bool                            m_isDynamic;

@@ -6,6 +6,7 @@ class App_Example_MeshViewer : public Application
 {
     Ref<PlaneMesh> m_plane;
     Ref<Sprite> m_sprite;
+    Ref<MeshNode> m_node;
 
     virtual void onInit() override
     {
@@ -49,9 +50,15 @@ class App_Example_MeshViewer : public Application
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf");
-        auto mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        
         
         //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
+
+    
+        auto mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        auto model = mesh->skinnedMeshComponent()->model();
+        m_node = model->findNode(u"左腕");
+        m_node->setRotation(0, 0, Math::PI / 8);
 
         mesh->setShadingModel(ShadingModel::Unlit);
 
@@ -66,6 +73,7 @@ class App_Example_MeshViewer : public Application
 
     virtual void onUpdate() override
     {
+        m_node->setRotation(0, 0, Engine::time());
     }
 };
 

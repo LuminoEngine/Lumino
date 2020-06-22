@@ -118,13 +118,17 @@ void MeshArmature::updateSkinningMatrices(SkinnedMeshModel* model)
 	for (int i = 0; i < m_bones.size(); i++) {
 		const auto& bone = m_bones[i];
 		
+		// GLTF
+		//data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
+		// PMX
+		data[i] = bone->m_inverseInitialMatrix * model->nodeGlobalTransform(bone->m_node);
 
-		data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
 
 		//// TODO: test
 		//if (i == 0) {
 		//	data[i] = Matrix::makeRotationZ(0.3);
 		//}
+		//data[i] = Matrix::Identity;
 	}
 
 	m_skinningMatricesTexture->unmap();

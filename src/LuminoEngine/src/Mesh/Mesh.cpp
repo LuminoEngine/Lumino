@@ -1063,15 +1063,42 @@ void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matr
 {
     auto node = m_nodes[nodeIndex];
 
-	Matrix local = Matrix::makeScaling(node->m_localTransform.scale);
-	local.rotateQuaternion(node->m_localTransform.rotation);
-	local.translate(node->m_localTransform.translation);
+	if (0) {
+		Matrix local = Matrix::makeScaling(node->m_localTransform.scale);
+		local.rotateQuaternion(node->m_localTransform.rotation);
+		local.translate(node->m_localTransform.translation);
 
-    m_nodeGlobalTransforms[nodeIndex] = node->initialLocalTransform() * local * parentTransform;   // NOTE: glTF はこの順である必要がある。
+		//local.transpose();
+
+		//if (node->m_localTransform.rotation != Quaternion::Identity) {
+		//	printf("");
+		//}
+
+		m_nodeGlobalTransforms[nodeIndex] = node->initialLocalTransform() * local * parentTransform;   // NOTE: glTF はこの順である必要がある。
+	}
+	else {
+		/*
+		Matrix local;
+		local.translate(node->initialLocalTransform().position());
+		local.scale(node->m_localTransform.scale);
+		local.rotateQuaternion(node->m_localTransform.rotation);
+		local.translate(node->m_localTransform.translation);
+		*/
+		// TODO: * ではなく一気に作ったほうがはやいかも
+		Matrix local =
+			//Matrix::makeTranslation(-m_data->OrgPosition) *
+			Matrix::makeScaling(node->m_localTransform.scale) *
+			Matrix::makeRotationQuaternion(node->m_localTransform.rotation) *
+			Matrix::makeTranslation(node->m_localTransform.translation);// *
+			//Matrix::makeTranslation(m_data->OrgPosition);
+		local.translate(node->initialLocalTransform().position());
+		m_nodeGlobalTransforms[nodeIndex] = local;
+		m_nodeGlobalTransforms[nodeIndex] *= parentTransform;
+	}
 
 	// glview.cc と比べて Node の Transform の差分は無し。
-	float* m = m_nodeGlobalTransforms[nodeIndex].data();
-	for (int i = 0; i < 16; i++) std::cout << m[i] << ", ";
+	//float* m = m_nodeGlobalTransforms[nodeIndex].data();
+	//for (int i = 0; i < 16; i++) std::cout << m[i] << ", ";
 
     for (int child : node->m_children) {
         updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex]);

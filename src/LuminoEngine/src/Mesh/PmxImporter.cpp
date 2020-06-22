@@ -307,7 +307,7 @@ PmxLoader::PmxLoader(MeshManager* manager, DiagnosticsManager* diag)
 	, m_diag(diag)
 	, m_model(nullptr)
 {
-	m_rotateY180 = true;
+	m_rotateY180 = false;
 }
 
 PmxLoader::~PmxLoader()
@@ -352,6 +352,7 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 	m_model->addMeshContainer(meshContainer);
 	auto meshNode = makeObject<MeshNode>();
 	meshNode->setMeshContainerIndex(0);
+	meshNode->skeletonIndex = 0;
 	m_model->addNode(meshNode);
 
 	// モデル情報
@@ -404,8 +405,13 @@ bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool i
 		return false;
 	}
 
-	if (m_hasSDEF) {
-		calcSDEFCorrection();
+	// Build
+	{
+		if (m_hasSDEF) {
+			calcSDEFCorrection();
+		}
+
+		buildSkeleton();
 	}
 
 	return true;
@@ -732,22 +738,21 @@ bool PmxLoader::loadMaterials(BinaryReader* reader, Mesh* mesh)
 
 bool PmxLoader::loadBones(BinaryReader* reader)
 {
-	return false;
-#if 0
 	// ボーン数
 	int boneCount = reader->readInt32();
+	m_pmxBones.resize(boneCount);
 
 	// 親ボーンをインデックスから拾うため、まずはすべてインスタンス化
-	m_modelCore->bones.resize(boneCount);
-	for (int i = 0; i < boneCount; ++i)
-	{
-		m_modelCore->bones[i] = makeRef<PmxBoneResource>(m_modelCore, i);
-	}
+	//m_modelCore->bones.resize(boneCount);
+	//for (int i = 0; i < boneCount; ++i)
+	//{
+	//	m_modelCore->bones[i] = makeRef<PmxBoneResource>(m_modelCore, i);
+	//}
 
 	// データ読み込み
 	for (int i = 0; i < boneCount; ++i)
 	{
-		PmxBoneResource* bone = m_modelCore->bones[i];
+		PmxBone* bone = &m_pmxBones[i];
 
 		// ボーン名
 		bone->Name = readString(reader);
@@ -757,7 +762,7 @@ bool PmxLoader::loadBones(BinaryReader* reader)
 
 		// 初期位置
 		reader->read(&bone->OrgPosition, sizeof(float) * 3);
-		adjustPosition(&bone->OrgPosition);
+		//adjustPosition(&bone->OrgPosition);
 
 		// 親ボーンのボーンIndex
 		bone->ParentBoneIndex = (int)reader->readInt(getBoneIndexSize());
@@ -766,26 +771,9 @@ bool PmxLoader::loadBones(BinaryReader* reader)
 		bone->TransformLevel = reader->readInt32();
 
 		// ボーンフラグ
-		uint32_t flag = reader->readUInt16();
-		bone->BoneConnect = (flag & 0x0001) != 0 ? BoneConnectType_Bone : BoneConnectType_PositionOffset;
-		bone->CanRotate = (flag & 0x0002) != 0;
-		bone->CanMove = (flag & 0x0004) != 0;
-		bone->isVisible = (flag & 0x0008) != 0;
-		bone->CanOperate = (flag & 0x0010) != 0;
+		bone->boneFlags = reader->readUInt16();
 
-		bone->IsIK = (flag & 0x0020) != 0;
-		bone->LocalProvide = (flag & 0x0080) != 0 ? LocalProvideType_ParentLocalTransformValue : LocalProvideType_UserTransformValue;
-
-		bone->IsRotateProvided = (flag & 0x0100) != 0;
-		bone->IsMoveProvided = (flag & 0x0200) != 0;
-
-		bone->IsFixAxis = (flag & 0x0400) != 0;
-		bone->IsLocalAxis = (flag & 0x0800) != 0;
-
-		bone->TransformAfterPhysics = (flag & 0x1000) != 0;
-		bone->ParentTransform = (flag & 0x2000) != 0;
-
-		if (bone->BoneConnect == BoneConnectType_PositionOffset)
+		if (bone->boneConnect() == PmxBoneConnectType_PositionOffset)
 		{
 			// 座標オフセット, ボーン位置からの相対分
 			reader->read(&bone->PositionOffset, sizeof(float) * 3);
@@ -797,7 +785,7 @@ bool PmxLoader::loadBones(BinaryReader* reader)
 		}
 
 		// 回転付与:1 または 移動付与:1 の場合
-		if (bone->IsRotateProvided || bone->IsMoveProvided)
+		if (bone->isRotateProvided() || bone->isMoveProvided())
 		{
 			// 付与親ボーンのボーンIndex
 			bone->ProvidedParentBoneIndex = (int)reader->readInt(getBoneIndexSize());
@@ -805,36 +793,37 @@ bool PmxLoader::loadBones(BinaryReader* reader)
 		}
 
 		// 軸固定:1 の場合
-		if (bone->IsFixAxis) {
+		if (bone->isFixAxis()) {
 			reader->read(&bone->AxisDirectionVector, sizeof(float) * 3);
 		}
 
 		//  ローカル軸:1 の場合
-		if (bone->IsLocalAxis)
+		if (bone->isLocalAxis())
 		{
 			reader->read(&bone->DimentionXDirectionVector, sizeof(float) * 3);
 			reader->read(&bone->DimentionZDirectionVector, sizeof(float) * 3);
 		}
 
 		// 外部親変形:1 の場合
-		if (bone->ParentTransform) {
+		if (bone->isParentTransform()) {
 			bone->KeyValue = reader->readInt32();
 		}
 
 		// IK:1 の場合
-		if (bone->IsIK)
+		if (bone->isIK())
 		{
-			auto ik = makeRef<PmxIKResource>();
-			m_modelCore->iks.add(ik);
+			m_iks.push_back({});
+			PmxIK* ik = &m_iks.back();
+
 			ik->IKBoneIndex = i;							// 現在処理中のボーン番号
 			ik->IKTargetBoneIndex = (int)reader->readInt(getBoneIndexSize());
 			ik->LoopCount = reader->readInt32();
-			ik->IKRotateLimit = reader->readFloat()/* * 4*/;
+			ik->IKRotateLimit = reader->readFloat();
 
 			int ikLinkCount = reader->readInt32();
 			for (int i = 0; i < ikLinkCount; i++)
 			{
-				PmxIKResource::IKLink ikLink;
+				PmxIKLink ikLink;
 				ikLink.LinkBoneIndex = (int)reader->readInt(getBoneIndexSize());
 				ikLink.IsRotateLimit = (reader->readInt8() != 0);
 				if (ikLink.IsRotateLimit)
@@ -855,16 +844,17 @@ bool PmxLoader::loadBones(BinaryReader* reader)
 					ikLink.MaxLimit.clamp(EularMinimum, EularMaximum);
 				}
 
-				ik->IKLinks.add(ikLink);
+				ik->IKLinks.push_back(ikLink);
 			}
 		}
 	}
-#endif
+
+	return true;
 }
 
 bool PmxLoader::loadMorphs(BinaryReader* reader)
 {
-	return false;
+	return true;
 #if 0
 	m_modelCore->morphBase = makeRef<PmxMorphBaseResource>();
 
@@ -997,7 +987,7 @@ bool PmxLoader::loadMorphs(BinaryReader* reader)
 
 bool PmxLoader::loadDisplayFrame(BinaryReader* reader)
 {
-	return false;
+	return true;
 #if 0
 	// 表示枠はすべて読み飛ばす
 	int displayFrameCount = reader->readInt32();
@@ -1036,7 +1026,7 @@ bool PmxLoader::loadDisplayFrame(BinaryReader* reader)
 
 bool PmxLoader::loadRigidBodys(BinaryReader* reader)
 {
-	return false;
+	return true;
 #if 0
 	// 剛体数
 	int bodyCount = reader->readInt32();
@@ -1132,7 +1122,7 @@ bool PmxLoader::loadRigidBodys(BinaryReader* reader)
 
 bool PmxLoader::loadJoints(BinaryReader* reader)
 {
-	return false;
+	return true;
 #if 0
 	// ジョイント数
 	int jointCount = reader->readInt32();
@@ -1273,6 +1263,46 @@ Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 	// TODO: SphereMode
 
 	return material;
+}
+
+void PmxLoader::buildSkeleton()
+{
+	auto skeleton = makeObject<MeshArmature>();
+	m_model->addSkeleton(skeleton);
+
+	int nodeIndexOffset = m_model->meshNodes().size();
+
+	for (int i = 0; i < m_pmxBones.size(); i++) {
+		const PmxBone& pmxBone = m_pmxBones[i];
+		auto node = makeObject<MeshNode>();
+		node->setName(pmxBone.Name);
+		m_model->addNode(node);
+	}
+
+	for (int i = 0; i < m_pmxBones.size(); i++) {
+		const PmxBone& pmxBone = m_pmxBones[i];
+		int nodeIndex = nodeIndexOffset + i;
+		auto node = m_model->meshNodes()[nodeIndex];
+
+		skeleton->addBone(nodeIndex, Matrix::makeTranslation(-pmxBone.OrgPosition));
+		//auto bone = makeObject<MeshBone>();
+		//skeleton->addBone(nodeIndex, );
+
+		Vector3 offsetFromParent = (pmxBone.ParentBoneIndex >= 0) ?
+			pmxBone.OrgPosition - m_pmxBones[pmxBone.ParentBoneIndex].OrgPosition:	// 親からの相対座標 (子ボーンのローカル座標)
+			pmxBone.OrgPosition;	// モデル原点からのオフセット
+		node->setInitialLocalTransform(Matrix::makeTranslation(offsetFromParent));
+
+		m_model->addNode(node);
+
+		if (pmxBone.ParentBoneIndex < 0) {
+			m_model->addRootNode(nodeIndex);
+		}
+		else {
+			auto parentNode = m_model->meshNodes()[nodeIndexOffset + pmxBone.ParentBoneIndex];
+			parentNode->addChildIndex(nodeIndex);
+		}
+	}
 }
 
 } // namespace detail
