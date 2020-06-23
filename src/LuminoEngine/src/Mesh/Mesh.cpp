@@ -1063,7 +1063,7 @@ void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matr
 {
     auto node = m_nodes[nodeIndex];
 
-	if (0) {
+	if (1) {
 		Matrix local = Matrix::makeScaling(node->m_localTransform.scale);
 		local.rotateQuaternion(node->m_localTransform.rotation);
 		local.translate(node->m_localTransform.translation);
@@ -1074,7 +1074,7 @@ void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matr
 		//	printf("");
 		//}
 
-		m_nodeGlobalTransforms[nodeIndex] = node->initialLocalTransform() * local * parentTransform;   // NOTE: glTF はこの順である必要がある。
+		m_nodeGlobalTransforms[nodeIndex] = local * node->initialLocalTransform() * parentTransform;   // NOTE: glTF はこの順である必要がある。
 	}
 	else {
 		/*
