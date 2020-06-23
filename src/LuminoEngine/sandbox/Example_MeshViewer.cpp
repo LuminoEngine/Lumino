@@ -12,7 +12,7 @@ class App_Example_MeshViewer : public Application
     {
         Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
-        Engine::renderView()->setBackgroundColor(Color::Gray);
+        //Engine::renderView()->setBackgroundColor(Color::Gray);
 
         //m_sprite = Sprite::create(Texture2D::whiteTexture());
         //m_sprite->setBlendMode(BlendMode::Normal);
@@ -47,7 +47,7 @@ class App_Example_MeshViewer : public Application
         //auto mesh = StaticMesh::create(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         //auto mesh = StaticMesh::create(u"D:/Materials/VRM/PronamaChan/PronamaChan.glb");
 
-        //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
+        auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf");
         
@@ -55,10 +55,10 @@ class App_Example_MeshViewer : public Application
         //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
 
     
-        auto mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
-        auto model = mesh->skinnedMeshComponent()->model();
-        m_node = model->findNode(u"左腕");
-        m_node->setRotation(0, 0, Math::PI / 8);
+        //auto mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        //auto model = mesh->skinnedMeshComponent()->model();
+        //m_node = model->findNode(u"左腕");
+        //m_node->setRotation(0, 0, Math::PI / 8);
 
         mesh->setShadingModel(ShadingModel::Unlit);
 
@@ -69,11 +69,17 @@ class App_Example_MeshViewer : public Application
 
         //auto li = SpotLight::create();
         //li->setPosition(0, 0.1, 0);
+
+        auto window = UIWindow::create();
+        window->setSize(200, 200);
+        window->setAlignments(HAlignment::Left, VAlignment::Top);
+
+
     }
 
     virtual void onUpdate() override
     {
-        m_node->setRotation(0, 0, Engine::time());
+        //m_node->setRotation(0, 0, Engine::time());
     }
 };
 
