@@ -7,6 +7,10 @@ class App_Example_MeshViewer : public Application
     Ref<PlaneMesh> m_plane;
     Ref<Sprite> m_sprite;
     Ref<MeshNode> m_node;
+    Ref<SkinnedMesh> m_mesh;
+    Ref<SkinnedMeshModel> m_model;
+    Ref<AnimationState> m_idle;
+    Ref<AnimationState> m_walk;
 
     virtual void onInit() override
     {
@@ -55,18 +59,22 @@ class App_Example_MeshViewer : public Application
         //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
 
     
-        auto mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
-        auto model = mesh->skinnedMeshComponent()->model();
-        m_node = model->findNode(u"左腕");
+        m_mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        m_model = m_mesh->skinnedMeshComponent()->model();
+        m_node = m_model->findNode(u"左腕");
         m_node->setRotation(0, 0, Math::PI / 8);
 
-        mesh->setShadingModel(ShadingModel::Unlit);
+        m_mesh->setShadingModel(ShadingModel::Unlit);
 
 
 
-        auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
-        auto state = model->animationController()->addClip(clip);
-        model->animationController()->play(state);
+        //auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
+        auto clip1 = AnimationClip::load(u"D:/Materials/MMD/Motion/MMO用stand/stand2.vmd");
+        auto clip2 = AnimationClip::load(u"D:/Materials/MMD/Motion/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd");
+        
+        m_idle = m_model->animationController()->addClip(clip1);
+        m_walk = m_model->animationController()->addClip(clip2);
+        m_model->animationController()->play(m_idle);
 
 
         //auto model = mesh->skinnedMeshComponent()->model();
@@ -77,9 +85,9 @@ class App_Example_MeshViewer : public Application
         //auto li = SpotLight::create();
         //li->setPosition(0, 0.1, 0);
 
-        auto window = UIWindow::create();
-        window->setSize(200, 200);
-        window->setAlignments(HAlignment::Left, VAlignment::Top);
+        //auto window = UIWindow::create();
+        //window->setSize(200, 200);
+        //window->setAlignments(HAlignment::Left, VAlignment::Top);
 
 
     }
@@ -88,6 +96,30 @@ class App_Example_MeshViewer : public Application
     {
         //m_node->setRotation(0, 0, Engine::time());
         //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
+
+        float velocity = 0.15;
+
+        auto pos = m_mesh->position();
+
+        //if (Input::pressed(u"left")) {
+        //    pos.x -= 0.01;
+        //}
+
+        float h = -Input::getAxisValue(u"left") + Input::getAxisValue(u"right");
+        float v = -Input::getAxisValue(u"up") + Input::getAxisValue(u"down");
+        pos.x += h * velocity;
+        pos.z += v * velocity;
+
+        if (h != 0 || v != 0) {
+            auto dir = Vector3::normalize(-h, 0, -v);
+            m_mesh->lookAt(pos + dir);
+            m_model->animationController()->play(m_walk);
+        }
+        else {
+            m_model->animationController()->play(m_idle);
+        }
+
+        m_mesh->setPosition(pos);
     }
 };
 

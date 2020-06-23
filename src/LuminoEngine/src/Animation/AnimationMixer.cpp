@@ -125,6 +125,13 @@ void AnimationState::updateTargetElements()
 				t.rotation *= Quaternion::slerp(Quaternion::Identity, s.rotation, m_blendWeight);
 				t.translation += s.translation * m_blendWeight;
 				trackInstance.blendLink->affectAnimation = true;
+
+
+				auto& s1 = t.scale;
+				if (s1.x != 1 || s1.y != 1 || s1.z != 1) {
+					printf("");
+				}
+
 				break;
 			}
 			default:

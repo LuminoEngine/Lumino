@@ -384,6 +384,10 @@ void AnimationController::onUpdateTargetElement(const detail::AnimationTargetEle
 
 	m_model->meshNodes()[binding->targetIndex]->setTransform(binding->rootValue.getTransform());
 
+	//auto& s = binding->rootValue.getTransform().scale;
+	//if (s.x != 1 || s.y != 1 || s.z != 1) {
+	//	printf("");
+	//}
 
 	//if (binding->name == u"左腕") {
 	//	m_model->meshNodes()[binding->targetIndex]->resetLocalTransform();
