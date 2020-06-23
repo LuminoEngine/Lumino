@@ -47,7 +47,7 @@ class App_Example_MeshViewer : public Application
         //auto mesh = StaticMesh::create(u"D:/Materials/VRM/Alicia_VRM/Alicia/VRM/AliciaSolid.glb");
         //auto mesh = StaticMesh::create(u"D:/Materials/VRM/PronamaChan/PronamaChan.glb");
 
-        auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
+        //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf");
         //auto mesh = SkinnedMesh::load(u"D:/Tech/Graphics/glTF-Sample-Models/2.0/Monster/glTF/Monster.gltf");
         
@@ -55,12 +55,19 @@ class App_Example_MeshViewer : public Application
         //mesh->skinnedMeshComponent()->model()->animationController()->play(u"animation_AnimatedCube");
 
     
-        //auto mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
-        //auto model = mesh->skinnedMeshComponent()->model();
-        //m_node = model->findNode(u"左腕");
-        //m_node->setRotation(0, 0, Math::PI / 8);
+        auto mesh = SkinnedMesh::load(u"D:/Materials/MMD/Appearance Miku/Appearance Miku_BDEF.pmx");
+        auto model = mesh->skinnedMeshComponent()->model();
+        m_node = model->findNode(u"左腕");
+        m_node->setRotation(0, 0, Math::PI / 8);
 
         mesh->setShadingModel(ShadingModel::Unlit);
+
+
+
+        auto clip = AnimationClip::load(u"D:/Materials/MMD/Motion/■配布用（モーション）/歩き/歩行（歩幅5・直進）.vmd");
+        auto state = model->animationController()->addClip(clip);
+        model->animationController()->play(state);
+
 
         //auto model = mesh->skinnedMeshComponent()->model();
         //auto skeleton = model->skeleton(0);
@@ -80,6 +87,7 @@ class App_Example_MeshViewer : public Application
     virtual void onUpdate() override
     {
         //m_node->setRotation(0, 0, Engine::time());
+        //m_node->setRotation(Quaternion(0.00719260797, -0.0159967896, -0.317227066, 0.948187351));
     }
 };
 

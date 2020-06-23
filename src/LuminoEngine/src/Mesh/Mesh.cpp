@@ -973,6 +973,11 @@ void MeshNode::setInitialLocalTransform(const Matrix& value)
 	m_initialLocalTransform = value;
 }
 
+void MeshNode::resetLocalTransform()
+{
+	m_localTransform = AttitudeTransform::Identity;
+}
+
 //==============================================================================
 // StaticMeshModel
 
@@ -1062,6 +1067,12 @@ void StaticMeshModel::updateNodeTransforms()
 void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform)
 {
     auto node = m_nodes[nodeIndex];
+
+	//if (node->name() == u"右腕") {
+	//	std::cout << node->name() << std::endl;
+	//}
+	//std::cout << nodeIndex << std::endl;
+
 
 	if (1) {
 		Matrix local = Matrix::makeScaling(node->m_localTransform.scale);

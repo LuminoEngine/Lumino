@@ -180,7 +180,8 @@ public:
 	//bool isPlaying() const;
 
 	/// 再生
-	void play(const StringRef& clipName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(clipName, duration); }
+	void play(const StringRef& stateName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(stateName, duration); }
+	void play(AnimationState* state, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/) { m_core->play(state, duration); }
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
 	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);

@@ -169,10 +169,9 @@ void SkinnedMeshModel::beginUpdate()
     //		(IKはその時点のLocalTransformに対して処理を行うため、回転角度がどんどん増えたりする)
     //		なお、一連の更新の最後で行っているのは、アニメーションからの更新を外部で行っているため。
     // TODO: できれば一連の処理の中で必ず通るところに移動したい
-    //for (SkinnedMeshBone* bone : m_allBoneList)
-    //{
-    //    bone->resetLocalTransform();
-    //}
+  //  for (auto& node : meshNodes()) {
+		//node->resetLocalTransform();
+  //  }
 
 }
 
@@ -183,7 +182,7 @@ void SkinnedMeshModel::preUpdate()
 {
 
 
-	updateBoneTransformHierarchy();
+	//updateBoneTransformHierarchy();
 
 #ifdef SMESH_MIG
 	if (m_needResetMorph)
@@ -368,7 +367,21 @@ detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(c
 
 void AnimationController::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding)
 {
+
 	m_model->meshNodes()[binding->targetIndex]->setTransform(binding->rootValue.getTransform());
+
+
+	//if (binding->name == u"左腕") {
+	//	m_model->meshNodes()[binding->targetIndex]->resetLocalTransform();
+	//	//std::cout << binding->name << std::endl;
+	//}
+	//if (binding->name == u"左腕") {
+	//	Matrix m = Matrix::makeRotationQuaternion(binding->rootValue.getTransform().rotation);
+	//	auto v = Vector3::transformCoord(Vector3::UnitZ, m);
+	//	printf("%f\t%f\t%f\n", v.x, v.y, v.z);
+	//	//result.rotation = Quaternion::makeFromEulerAngles(Vector3(0, 0, time));
+	//}
+
 }
 
 } // namespace ln

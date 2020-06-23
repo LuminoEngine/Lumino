@@ -51,6 +51,7 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 {
 	AttitudeTransform result;
 
+
 	if (!m_vmdTrack->frames.isEmpty())
 	{
 		int keyIndex = 0;
@@ -94,6 +95,13 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 		result.rotation = Quaternion::Identity;
 		result.translation = Vector3::Zero;
 	}
+
+	//if (targetName() == u"左腕") {
+	//	Matrix m = Matrix::makeRotationQuaternion(result.rotation);
+	//	auto v = Vector3::transformCoord(Vector3::UnitZ, m);
+	//	printf("%f\t%f\t%f\n", v.x, v.y, v.z);
+	//	//result.rotation = Quaternion::makeFromEulerAngles(Vector3(0, 0, time));
+	//}
 
 	outResult->setTransform(result);
 }

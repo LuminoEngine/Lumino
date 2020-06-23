@@ -295,6 +295,7 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		if (path->path().hasExtension(u".pmx")) {
 			PmxLoader importer(this, diag);
 			bool result = importer.load(mesh, *path, false);
+			mesh->m_animationController = makeObject<AnimationController>(mesh);
 		}
 		else if (path->path().hasExtension(u".fbx")) {
 #ifdef LN_USE_FBX_IMPORTER

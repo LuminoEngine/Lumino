@@ -356,6 +356,7 @@ public:
     void addChildIndex(int value);
 
     void setInitialLocalTransform(const Matrix& value);
+	void resetLocalTransform();
 
     const Matrix& initialLocalTransform() const { return m_initialLocalTransform; }
     

@@ -343,6 +343,11 @@ void AnimationMixerCore::removeClip(AnimationClip* animationClip)
 void AnimationMixerCore::play(const StringRef& clipName, float duration)
 {
 	AnimationState* state = m_layers[0]->findAnimationState(clipName);
+	play(state, duration);
+}
+
+void AnimationMixerCore::play(AnimationState* state, float duration)
+{
 	m_layers[0]->transitionTo(state, duration);
 }
 

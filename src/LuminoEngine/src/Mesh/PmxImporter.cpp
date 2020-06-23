@@ -742,13 +742,6 @@ bool PmxLoader::loadBones(BinaryReader* reader)
 	int boneCount = reader->readInt32();
 	m_pmxBones.resize(boneCount);
 
-	// 親ボーンをインデックスから拾うため、まずはすべてインスタンス化
-	//m_modelCore->bones.resize(boneCount);
-	//for (int i = 0; i < boneCount; ++i)
-	//{
-	//	m_modelCore->bones[i] = makeRef<PmxBoneResource>(m_modelCore, i);
-	//}
-
 	// データ読み込み
 	for (int i = 0; i < boneCount; ++i)
 	{
