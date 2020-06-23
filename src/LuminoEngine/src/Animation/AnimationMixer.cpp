@@ -98,6 +98,7 @@ void AnimationState::updateTargetElements()
 		{
 			AnimationValue value(trackInstance.track->type());
 			AnimationValue& rootValue = trackInstance.blendLink->rootValue;
+			rootValue.m_totalBlendWeights += m_blendWeight;
 
 			trackInstance.track->evaluate(localTime, &value);
 
@@ -127,10 +128,10 @@ void AnimationState::updateTargetElements()
 				trackInstance.blendLink->affectAnimation = true;
 
 
-				auto& s1 = t.scale;
-				if (s1.x != 1 || s1.y != 1 || s1.z != 1) {
-					printf("");
-				}
+				//auto& s1 = t.scale;
+				//if (s1.x != 1 || s1.y != 1 || s1.z != 1) {
+				//	printf("");
+				//}
 
 				break;
 			}
@@ -387,6 +388,18 @@ void AnimationMixerCore::updateTargetElements()
 	// set
 	for (auto& link : m_targetElementBlendLinks)
 	{
+		if (link->rootValue.m_totalBlendWeights < 1.0f) {
+			// 2 つの state 遷移中、片方にしか Track が存在しなかったときに、値が中途半端になってしまうことがある。
+			// scale はデフォルト値が (1,1,1) であることを想定しているので、中途半端に Blend されると一瞬ボーンが縮小したりする。
+			// scale 以外はデフォルト値を 0.0 としているため、ケアは不要。
+
+			float t = 1.0f - link->rootValue.m_totalBlendWeights;
+			if (link->rootValue.type() == AnimationValueType::Transform) {
+				link->rootValue.v_Transform.scale += Vector3(t, t, t);
+			}
+
+		}
+
 		if (!link->affectAnimation)
 		{
 			if (link->rootValue.type() == AnimationValueType::Transform)

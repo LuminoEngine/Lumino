@@ -27,6 +27,7 @@ void AnimationValue::resetType(AnimationValueType type)
 
 void AnimationValue::clearValue()
 {
+	m_totalBlendWeights = 0.0f;
 	switch (m_type)
 	{
 	case AnimationValueType::Float:

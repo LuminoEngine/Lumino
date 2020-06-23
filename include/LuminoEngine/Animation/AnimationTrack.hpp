@@ -43,6 +43,7 @@ public:
 	void setTransform(const AttitudeTransform& value) { v_Transform = value; }
 
 	AnimationValueType	m_type;
+	float m_totalBlendWeights = 0.0f;
 	union
 	{
 		float v_Float;

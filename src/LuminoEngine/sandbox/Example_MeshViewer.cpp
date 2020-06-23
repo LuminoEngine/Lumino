@@ -12,6 +12,9 @@ class App_Example_MeshViewer : public Application
     Ref<AnimationState> m_idle;
     Ref<AnimationState> m_walk;
 
+    Vector3 m_targetPos;
+    Vector3 m_lookPos;
+
     virtual void onInit() override
     {
         Engine::renderView()->setGuideGridEnabled(true);
@@ -114,10 +117,19 @@ class App_Example_MeshViewer : public Application
             auto dir = Vector3::normalize(-h, 0, -v);
             m_mesh->lookAt(pos + dir);
             m_model->animationController()->play(m_walk);
+
+
+            m_targetPos = pos - dir * 10;
         }
         else {
             m_model->animationController()->play(m_idle);
         }
+
+        m_lookPos += (m_targetPos - m_lookPos) / 60;
+
+        Vector3 lookat = m_lookPos +Vector3(0, 10, 0);
+        Engine::camera()->setPosition(lookat + Vector3(0, 15, -30));
+        Engine::camera()->lookAt(lookat);
 
         m_mesh->setPosition(pos);
     }
