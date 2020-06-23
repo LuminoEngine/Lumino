@@ -1260,7 +1260,7 @@ Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
 
 void PmxLoader::buildSkeleton()
 {
-	auto skeleton = makeObject<MeshArmature>();
+	auto skeleton = makeObject<MeshArmature>(m_model);
 	m_model->addSkeleton(skeleton);
 
 	int nodeIndexOffset = m_model->meshNodes().size();
@@ -1291,7 +1291,7 @@ void PmxLoader::buildSkeleton()
 			pmxBone.OrgPosition;	// モデル原点からのオフセット
 		node->setInitialLocalTransform(Matrix::makeTranslation(offsetFromParent));
 
-		m_model->addNode(node);
+		//m_model->addNode(node);
 
 		if (pmxBone.ParentBoneIndex < 0) {
 			m_model->addRootNode(nodeIndex);
@@ -1300,6 +1300,28 @@ void PmxLoader::buildSkeleton()
 			auto parentNode = m_model->meshNodes()[nodeIndexOffset + pmxBone.ParentBoneIndex];
 			parentNode->addChildIndex(nodeIndex);
 		}
+	}
+
+
+	// IK
+	for (const auto& pmxIK : m_iks) {
+		auto ik = makeObject<MeshBoneIK>();
+		m_model->m_iks.add(ik);
+		ik->IKBoneIndex = pmxIK.IKBoneIndex;
+		ik->IKTargetBoneIndex = pmxIK.IKTargetBoneIndex;
+		ik->LoopCount = pmxIK.LoopCount;
+		ik->IKRotateLimit = pmxIK.IKRotateLimit;
+
+		for (const auto& pmxIKLink : pmxIK.IKLinks) {
+			auto ikChain = makeObject<MeshBoneIKChain>();
+			ik->IKLinks.add(ikChain);
+			ikChain->LinkBoneIndex = pmxIKLink.LinkBoneIndex;
+			ikChain->IsRotateLimit = pmxIKLink.IsRotateLimit;
+			ikChain->MinLimit = pmxIKLink.MinLimit;
+			ikChain->MaxLimit = pmxIKLink.MaxLimit;
+		}
+
+
 	}
 }
 

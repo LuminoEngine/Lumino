@@ -72,7 +72,14 @@ class MeshBone
 public:
 	//const String& name() const;
 
+	MeshNode* node() const;
+
+	//const AttitudeTransform& localTransform() const;
+
+	//const Matrix& globalMatrix() const;
+
 private:
+	MeshArmature* m_skeleton;
 	int m_node = -1;
 
 	// ボーンの初期姿勢を打ち消して、原点に戻す行列。
@@ -80,6 +87,30 @@ private:
 	Matrix m_inverseInitialMatrix;
 
 	friend class MeshArmature;
+};
+
+
+class MeshBoneIKChain
+	: public Object
+{
+public:
+
+	int LinkBoneIndex;        // IK構成ボーン番号
+	bool IsRotateLimit;        // 回転制限をするか
+	Vector3 MinLimit;            // 下限
+	Vector3 MaxLimit;            // 上限
+};
+
+class MeshBoneIK
+	: public Object
+{
+public:
+	int            IKBoneIndex;            // IKボーン (PMX では、この IK 情報を持つボーンを指す)
+	int            IKTargetBoneIndex;        // IKターゲットボーン
+	int            LoopCount;                // 演算回数
+	float        IKRotateLimit;            // IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意
+
+	List<Ref<MeshBoneIKChain>> IKLinks;            // IK影響ボーンと制限のリスト
 };
 
 // Bone をまとめるデータ構造。
@@ -99,9 +130,10 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	MeshArmature();
-	bool init();
+	bool init(SkinnedMeshModel* model);
 
-private:
+public:	// TODO:
+	SkinnedMeshModel* m_model = nullptr;
 	List<Ref<MeshBone>> m_bones;
 	Ref<Texture2D> m_skinningMatricesTexture; 
 };
@@ -141,7 +173,11 @@ public:
     //List<Ref<SkinnedMeshBone>>		m_allBoneList;				// 全ボーンリスト
     //List<SkinnedMeshBone*>			m_ikBoneList;
     //List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
+	
+	List<Ref<MeshBoneIK>> m_iks;
+
 	Ref<AnimationController> m_animationController;
+
 
 //protected:
 //	virtual int getAnimationTargetElementCount() const override;

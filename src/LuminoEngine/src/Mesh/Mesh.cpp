@@ -931,8 +931,10 @@ Mesh* MeshContainer::mesh() const
 // MeshNode
 
 MeshNode::MeshNode()
-    : m_index(-1)
+    : m_model(nullptr)
+	, m_index(-1)
     , m_meshContainerIndex(-1)
+	, m_parent(-1)
     , m_children()
     , m_initialLocalTransform(Matrix::Identity)
 {
@@ -966,6 +968,7 @@ void MeshNode::setMeshContainerIndex(int value)
 void MeshNode::addChildIndex(int value)
 {
     m_children.add(value);
+	m_model->m_nodes[value]->m_parent = m_index;
 }
 
 void MeshNode::setInitialLocalTransform(const Matrix& value)
@@ -976,6 +979,16 @@ void MeshNode::setInitialLocalTransform(const Matrix& value)
 void MeshNode::resetLocalTransform()
 {
 	m_localTransform = AttitudeTransform::Identity;
+}
+
+const Matrix& MeshNode::globalMatrix() const
+{
+	return m_model->m_nodeGlobalTransforms[m_index];
+}
+
+void MeshNode::updateGlobalTransform(bool hierarchical)
+{
+	m_model->updateNodeTransformsHierarchical(m_index, m_model->m_nodes[m_parent]->globalMatrix(), hierarchical);
 }
 
 //==============================================================================
@@ -1042,6 +1055,7 @@ void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 void StaticMeshModel::addNode(MeshNode* node)
 {
     if (LN_REQUIRE(node)) return;
+	node->m_model = this;
     node->m_index = m_nodes.size();
     m_nodes.add(node);
 }
@@ -1060,11 +1074,11 @@ void StaticMeshModel::updateNodeTransforms()
 {
     m_nodeGlobalTransforms.resize(m_nodes.size());
     for (int index : m_rootNodes) {
-        updateNodeTransformsHierarchical(index, Matrix::Identity);
+        updateNodeTransformsHierarchical(index, Matrix::Identity, true);
     }
 }
 
-void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform)
+void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical)
 {
     auto node = m_nodes[nodeIndex];
 
@@ -1111,9 +1125,11 @@ void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matr
 	//float* m = m_nodeGlobalTransforms[nodeIndex].data();
 	//for (int i = 0; i < 16; i++) std::cout << m[i] << ", ";
 
-    for (int child : node->m_children) {
-        updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex]);
-    }
+	if (hierarchical) {
+		for (int child : node->m_children) {
+			updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex], hierarchical);
+		}
+	}
 }
 
 //==============================================================================

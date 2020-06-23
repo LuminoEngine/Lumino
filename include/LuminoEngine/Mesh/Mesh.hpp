@@ -342,6 +342,7 @@ public:
 	void setScale(float xyz) { setScale(Vector3(xyz, xyz, xyz)); }
 
 	void setTransform(const AttitudeTransform& value);
+	const AttitudeTransform& localTransform() const { return m_localTransform; }
 
 	void setName(const String& value) { m_name = value; }
 	const String& name() const { return m_name; }
@@ -360,14 +361,20 @@ public:
 
     const Matrix& initialLocalTransform() const { return m_initialLocalTransform; }
     
+	const Matrix& globalMatrix() const;
+
+	void updateGlobalTransform(bool hierarchical);
+
 LN_CONSTRUCT_ACCESS:
 	MeshNode();
     virtual ~MeshNode() = default;
 
 private:
+	StaticMeshModel* m_model;
 	String m_name;
     int m_index;
     int m_meshContainerIndex;
+	int m_parent;
     List<int> m_children;
 
 	// デフォルトの、親ノードからの相対姿勢。
@@ -425,9 +432,9 @@ LN_CONSTRUCT_ACCESS:
     StaticMeshModel();
     StaticMeshModel(detail::InternalMeshModelType type);
 
-private:
+public:	// TODO:
 	void clear();
-    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform);
+    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical);
 
 	detail::AssetPath m_filePath;
 	float m_scale;

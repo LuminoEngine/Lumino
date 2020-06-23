@@ -862,7 +862,7 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	const tinygltf::Buffer& buffer = m_model->buffers[bufferView.buffer];
 
 	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
-	auto armature = makeObject<MeshArmature>();
+	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 		armature->addBone(skin.joints[i], inverseBindMatrices[i]);
 	}

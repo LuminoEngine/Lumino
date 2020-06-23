@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#if 0
+#if 1
 
 namespace ln {
 class SkinnedMeshModel;
-class SkinnedMeshBone;
+//class SkinnedMeshBone;
 namespace detail {
 
 class CCDIKSolver
@@ -12,43 +12,44 @@ class CCDIKSolver
 public:
 
 	SkinnedMeshModel* owner;
+	MeshArmature* m_skeleton;
 
 	void UpdateTransform()
 	{
-		for (SkinnedMeshBone* ikBone : owner->m_ikBoneList)
+		for (const auto& ik : owner->m_iks)
 		{
-			if (ikBone->m_ikInfo)
-			{
-				UpdateEachIKBoneTransform(ikBone->m_ikInfo);
-			}
+			UpdateEachIKBoneTransform(ik);
 		}
 	}
 
-	void UpdateEachIKBoneTransform(PmxIKResource* ik)
+	void UpdateEachIKBoneTransform(const MeshBoneIK* ik)
 	{
 		for (int iCalc = 0; iCalc < ik->LoopCount; iCalc++)
 		{
-			SkinnedMeshBone* ikBone = owner->m_allBoneList[ik->IKBoneIndex];			// IK ボーン (IK 情報を持つボーン。目標地点)
-			SkinnedMeshBone* effector = owner->m_allBoneList[ik->IKTargetBoneIndex];	// IK ターゲットボーン (エフェクタ。IKに向くべきボーンたちの中の先頭ボーン)
+			MeshBone* ikBone = m_skeleton->bone(ik->IKBoneIndex);			// IK ボーン (IK 情報を持つボーン。目標地点)
+			MeshBone* effector = m_skeleton->bone(ik->IKTargetBoneIndex);	// IK ターゲットボーン (エフェクタ。IKに向くべきボーンたちの中の先頭ボーン)
 
 			IKloop(ik, ikBone, effector);
 		}
 	}
-	void IKloop(PmxIKResource* ik, SkinnedMeshBone* ikBone, SkinnedMeshBone* effector)
+	void IKloop(const MeshBoneIK* ik, MeshBone* ikBone, MeshBone* effector)
 	{
+		MeshNode* ikBoneNode = ikBone->node();
+		MeshNode* effectorNode = effector->node();
 		//Vector3 TargetGlobalPos = Vector3::transformCoord(ikBone->GetCore()->OrgPosition, ikBone->getCombinedMatrix());
 
 		// IKボーンのグローバル位置
-		const Vector3& targetPos = ikBone->getCombinedMatrix().position();
+		const Vector3& targetPos = ikBoneNode->globalMatrix().position();
 
 		for (int iLink = 0; iLink < ik->IKLinks.size(); ++iLink)
 		{
-			PmxIKResource::IKLink& ikLink = ik->IKLinks[iLink];
-			SkinnedMeshBone* ikLinkBone = owner->m_allBoneList[ikLink.LinkBoneIndex];
+			const auto& ikLink = ik->IKLinks[iLink];
+			MeshBone* ikLinkBone = m_skeleton->bone(ikLink->LinkBoneIndex);
+			MeshNode* ikLinkBoneNode = ikLinkBone->node();
 
 			// ワールド座標系から注目ノードの局所座標系への変換
 			// (IKリンク基準のローカル座標系へ変換する行列)
-			Matrix toLinkLocal = Matrix::makeInverse(ikLinkBone->getCombinedMatrix());
+			Matrix toLinkLocal = Matrix::makeInverse(ikLinkBoneNode->globalMatrix());
 
 			//Vector3 effectorPos = Vector3::transformCoord(effector->GetCore()->OrgPosition, effector->getCombinedMatrix() * toLinkLocal);
 			//Vector3 link2Effector = Vector3::safeNormalize(effectorPos - ikLinkBone->GetCore()->OrgPosition);
@@ -57,7 +58,7 @@ public:
 			//Vector3 link2Target = Vector3::safeNormalize(targetPos - ikLinkBone->GetCore()->OrgPosition);
 
 			// エフェクタのグローバル位置
-			const Vector3& effPos = effector->getCombinedMatrix().position();
+			const Vector3& effPos = effectorNode->globalMatrix().position();
 
 			// 各ベクトルの座標変換を行い、検索中のボーンi基準の座標系にする
 			// (1) 注目ノード→エフェクタ位置へのベクトル(a)(注目ノード)
@@ -75,8 +76,10 @@ public:
 		}
 	}
 
-	void IKLinkCalc(PmxIKResource::IKLink& ikLink, SkinnedMeshBone* ikLinkBone, const Vector3& link2Effector, const Vector3& link2Target, float RotationLimited)
+	void IKLinkCalc(const MeshBoneIKChain* ikLink, MeshBone* ikLinkBone, const Vector3& link2Effector, const Vector3& link2Target, float RotationLimited)
 	{
+		MeshNode* ikLinkBoneNode = ikLinkBone->node();
+
 		// 回転角度を求める
 		float dot = Vector3::dot(link2Effector, link2Target);
 		if (dot > 1.0f) dot = 1.0f;
@@ -90,17 +93,18 @@ public:
 		// 軸を中心として回転する行列を作成する
 		Quaternion rotation = Quaternion(rotationAxis, rotationAngle);
 		rotation.normalize();
-		ikLinkBone->localTransformPtr()->rotation = rotation * ikLinkBone->localTransformPtr()->rotation;
+		ikLinkBoneNode->setRotation(rotation * ikLinkBoneNode->localTransform().rotation);
 
-		// 回転量制限
-		ikLinkBone->localTransformPtr()->rotation = RestrictRotation(ikLink, ikLinkBone->localTransformPtr()->rotation);
+		// 回転量制限 TODO: ↑と同じ？
+		//ikLinkBoneNode->localTransform()->rotation = RestrictRotation(ikLink, ikLinkBoneNode->localTransform()->rotation);
+		ikLinkBoneNode->setRotation(RestrictRotation(ikLink, ikLinkBoneNode->localTransform().rotation));
 
-		ikLinkBone->updateGlobalTransform(true);
+		ikLinkBoneNode->updateGlobalTransform(true);
 	}
 
-	Quaternion RestrictRotation(const PmxIKResource::IKLink& ikLink, const Quaternion& localRot)
+	Quaternion RestrictRotation(const MeshBoneIKChain* ikLink, const Quaternion& localRot)
 	{
-		if (!ikLink.IsRotateLimit) return localRot;
+		if (!ikLink->IsRotateLimit) return localRot;
 
 		RotationOrder type;
 		bool locked;
@@ -128,7 +132,7 @@ public:
 
 		// 角度修正
 		NormalizeEular(&euler);
-		euler.clamp(ikLink.MinLimit, ikLink.MaxLimit);
+		euler.clamp(ikLink->MinLimit, ikLink->MaxLimit);
 
 		// 戻す
 		return Quaternion::makeFromRotationMatrix(Matrix::makeRotationEulerAngles(euler, type));

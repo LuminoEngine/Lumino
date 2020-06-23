@@ -77,6 +77,13 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 }
 #endif
 
+//==============================================================================
+// MeshBone
+
+MeshNode* MeshBone::node() const
+{
+	return m_skeleton->m_model->m_nodes[m_node];
+}
 
 //==============================================================================
 // MeshArmature
@@ -85,9 +92,10 @@ MeshArmature::MeshArmature()
 {
 }
 
-bool MeshArmature::init()
+bool MeshArmature::init(SkinnedMeshModel* model)
 {
 	if (!Object::init()) return false;
+	m_model = model;
 	return true;
 }
 
@@ -96,9 +104,14 @@ MeshBone* MeshArmature::bone(int index) const
 	return m_bones[index];
 }
 
+//const Matrix& MeshArmature::boneGlobalMatrix(int index) const
+//{
+//}
+
 void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 {
 	auto bone = makeObject<MeshBone>();
+	bone->m_skeleton = this;
 	bone->m_node = linkNode;
 	bone->m_inverseInitialMatrix = inverseInitialMatrix;
 	m_bones.add(bone);
@@ -169,9 +182,9 @@ void SkinnedMeshModel::beginUpdate()
     //		(IKはその時点のLocalTransformに対して処理を行うため、回転角度がどんどん増えたりする)
     //		なお、一連の更新の最後で行っているのは、アニメーションからの更新を外部で行っているため。
     // TODO: できれば一連の処理の中で必ず通るところに移動したい
-  //  for (auto& node : meshNodes()) {
-		//node->resetLocalTransform();
-  //  }
+    for (auto& node : meshNodes()) {
+		node->resetLocalTransform();
+    }
 
 }
 
@@ -182,7 +195,7 @@ void SkinnedMeshModel::preUpdate()
 {
 
 
-	//updateBoneTransformHierarchy();
+	updateBoneTransformHierarchy();
 
 #ifdef SMESH_MIG
 	if (m_needResetMorph)
@@ -246,9 +259,10 @@ void SkinnedMeshModel::updateBoneTransformHierarchy()
 
 void SkinnedMeshModel::updateIK()
 {
-    //detail::CCDIKSolver ik;
-    //ik.owner = this;
-    //ik.UpdateTransform();
+    detail::CCDIKSolver ik;
+    ik.owner = this;
+	ik.m_skeleton = m_skeletons[0];
+    ik.UpdateTransform();
 }
 
 void SkinnedMeshModel::updateSkinningMatrices()

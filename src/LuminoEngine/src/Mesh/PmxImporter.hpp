@@ -535,16 +535,16 @@ struct PmxIK
 
         ①② : IK影響下ボーン
         ③    : IKTargetBone (PMX 仕様書では「IKターゲットボーン」、MMDX 等では「エフェクタ」と呼ばれる)
-        ④    : IKBone (PMX 仕様書 では「IKボーン」、MMDX 等では「ターゲットボーン」と呼ばれる。かかと等、「右足IK」のような名前になっている)
+        ④    : IKBone (PMX 仕様書 では「IKボーン」、MMDX 等では「ターゲットボーン」と呼ばれる。
+               BoneFlags の isIK が true であるボーンで、
+               「右つま先ＩＫ」「右足IK」のような名前になっている)
 
-        IKボーン はスキニングに影響しない。
-        IKボーン をゴールとしてソルブした IKターゲットボーン 及び IK影響下ボーン がスキニングに影響する。
 
         もし自分で IK を操りたいときは、IKボーン の位置を操作することになる。
         これは MMD 上でモーションを作る時も同じ。
     */
 
-    int            IKBoneIndex;            // IKボーン (PMX では、この IK 情報を持つボーンを指す) TODO: いらない
+    int            IKBoneIndex;            // IKボーン (PMX では、この IK 情報を持つボーンを指す)
     int            IKTargetBoneIndex;        // IKターゲットボーン
     int            LoopCount;                // 演算回数
     float        IKRotateLimit;            // IKループ計算時の1回あたりの制限角度 -> ラジアン角 | PMDのIK値とは4倍異なるので注意

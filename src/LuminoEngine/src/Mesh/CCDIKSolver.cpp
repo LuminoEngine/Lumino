@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.hpp"
-//#include "CCDIKSolver.hpp"
+#include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include "CCDIKSolver.hpp"
 
 namespace ln {
 namespace detail {
