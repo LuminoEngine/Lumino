@@ -1013,7 +1013,7 @@ void VulkanGraphicsContext::onSubmitStatus(const GraphicsContextState& state, ui
 	}
 }
 
-void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size)
+void* VulkanGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
 {
 	if (offset != 0) {
 		LN_NOTIMPLEMENTED();
@@ -1043,7 +1043,7 @@ void* VulkanGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t
 	}
 }
 
-void VulkanGraphicsContext::onUnmapResource(IGraphicsResource* resource)
+void VulkanGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
 {
 	switch (resource->resourceType())
 	{
@@ -1059,7 +1059,7 @@ void VulkanGraphicsContext::onUnmapResource(IGraphicsResource* resource)
 	}
 }
 
-void VulkanGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+void VulkanGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
 {
     // データ転送に使う vkCmdCopyBuffer() は RenderPass inside では使えないので、開いていればここで End しておく。次の onSubmitState() で再開される。
     m_recodingCommandBuffer->endRenderPassInRecordingIfNeeded();
