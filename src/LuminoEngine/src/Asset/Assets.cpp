@@ -66,16 +66,6 @@ bool Assets::existsFile(const StringRef& filePath)
     return detail::EngineDomain::assetManager()->existsFile(filePath);
 }
 
-//Ref<Texture2D> Assets::loadTexture(const StringRef& filePath)
-//{
-//    return detail::EngineDomain::assetManager()->loadTexture(filePath);
-//}
-
-Ref<Shader> Assets::loadShader(const StringRef& filePath)
-{
-    return detail::EngineDomain::assetManager()->loadShader(filePath);
-}
-
 Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 {
 	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
@@ -226,12 +216,12 @@ AssetPath AssetPath::combineAssetPath(const AssetPath& basePath, const String& l
     }
 }
 
-String AssetPath::makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath)
+Path AssetPath::makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath)
 {
     if (LN_REQUIRE(!basePath.isNull())) return String::Empty;
     if (LN_REQUIRE(String::compare(basePath.scheme(), assetPath.scheme(), CaseSensitivity::CaseInsensitive) == 0)) return String::Empty;
     if (LN_REQUIRE(String::compare(basePath.host(), assetPath.host(), CaseSensitivity::CaseInsensitive) == 0)) return String::Empty;
-    return basePath.path().makeRelative(assetPath.path());
+    return basePath.path().makeRelative(assetPath.path()).unify();
 }
 
 AssetPath AssetPath::resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount)

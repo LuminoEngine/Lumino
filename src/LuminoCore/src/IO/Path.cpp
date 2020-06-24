@@ -283,6 +283,11 @@ int Path::compare(const StringRef& path1, const StringRef& path2)
     return detail::PathTraits::comparePathString(path1.data(), path1.length(), path2.data(), path2.length());
 }
 
+bool Path::contains(const Path& subdir) const
+{
+    return detail::PathTraits::comparePathString(str().c_str(), length(), subdir.str().c_str(), length()) == 0;
+}
+
 Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const StringRef& relativeDirPath, SpecialFolderOption option)
 {
 	if (!relativeDirPath.isEmpty()) {

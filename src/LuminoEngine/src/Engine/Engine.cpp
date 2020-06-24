@@ -295,6 +295,11 @@ PhysicsWorld2D* Engine::mainPhysicsWorld2D()
 
 
 
+World* Engine::activeWorld()
+{
+    return detail::EngineDomain::engineManager()->sceneManager()->activeWorld();
+}
+
 void Engine::setActiveWorld(World* world)
 {
     detail::EngineDomain::engineManager()->sceneManager()->setActiveWorld(world);

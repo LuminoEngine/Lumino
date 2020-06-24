@@ -380,10 +380,16 @@ void SpriteComponent::onRender(RenderingContext* context)
         SpriteBaseDirection::ZMinus, BillboardType::None, m_flipFlags, m_material);
 #endif
 }
+//
+//void SpriteComponent::serialize(Archive& ar)
+//{
+//    VisualComponent::serialize(ar);
+//    ar & makeNVP(u"material", m_material);
+//}
 
-void SpriteComponent::serialize(Archive& ar)
+void SpriteComponent::serialize2(Serializer2& ar)
 {
-    VisualComponent::serialize(ar);
+    VisualComponent::serialize2(ar);
     ar & makeNVP(u"material", m_material);
 }
 

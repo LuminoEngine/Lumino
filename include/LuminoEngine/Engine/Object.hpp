@@ -58,7 +58,7 @@ public:
     static AssetPath combineAssetPath(const AssetPath& basePath, const String& localAssetPath);
 
     // basePath から見た assetPath を示す相対パスを返す。
-    static String makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath);
+    static Path makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath);
 
     // filePath から AssetPath を作る。ファイルが存在しない場合はエラーをレポートした後、Empty を返す。
     //static AssetPath resolveAssetPath(const Path& filePath, const std::initializer_list<const Char*>& candidateExts);

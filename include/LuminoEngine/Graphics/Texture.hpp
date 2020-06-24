@@ -161,7 +161,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
     Texture2D();
     virtual ~Texture2D();
-    void init();
+    bool init();
 
     /** @copydoc create(int, int) */
     LN_METHOD()
@@ -170,10 +170,6 @@ LN_CONSTRUCT_ACCESS:
     /** @copydoc create(int, int, TextureFormat) */
     LN_METHOD(OverloadPostfix = "WithFormat")
     void init(int width, int height, TextureFormat format);
-
-	/** @copydoc create(const StringRef&, TextureFormat) */
-	//LN_METHOD(OverloadPostfix = "FromFile")
- //   void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
 
     bool init(const Path& assetPath);
 

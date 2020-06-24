@@ -99,6 +99,7 @@ public:
     static PhysicsWorld2D* mainPhysicsWorld2D();
 
     // TODO: internal
+	static World* activeWorld();
     static void setActiveWorld(World* world);
 	static ln::Path findProjectLocalRoot();
 };

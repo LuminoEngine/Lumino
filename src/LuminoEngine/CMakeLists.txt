@@ -275,6 +275,7 @@ set(LN_SOURCES
     ${LN_SOURCES_UI}
     ${LN_SOURCES_Tilemap}
     ${LN_SOURCES_Runtime}
+    ${LN_COMMON_META_FILES}
 )
 
 set(LN_SOURCES_SharedLib

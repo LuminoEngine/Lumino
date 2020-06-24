@@ -62,9 +62,6 @@ public:
     Ref<Stream> openFileStream(const StringRef& filePath);
     [[deprecated]]
 	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
-	//Ref<Texture2D> loadTexture(const StringRef& filePath);
-    [[deprecated("-> findAssetPath, openStreamFromAssetPath")]]
-    Ref<Shader> loadShader(const StringRef& filePath);
     [[deprecated("-> findAssetPath, openStreamFromAssetPath")]]
     Ref<Object> loadAsset(const StringRef& filePath);
 
@@ -79,14 +76,19 @@ private:
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
     static bool tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outLocalPath);
+    FileSystemReader* primaryAssetDirectoryArchive() const { return m_fileSystemArchives[0]; }
 
     List<Ref<AssetArchive>> m_requestedArchives;
 	List<AssetArchive*> m_actualArchives;
 	AssetStorageAccessPriority m_storageAccessPriority;
     std::unordered_map<ln::Uuid, ln::Path> m_assetIndex;
-    Path m_primaryLocalAssetDirectory;
+    //Path m_primaryLocalAssetDirectory;
 
-    Ref<FileSystemReader> m_fileSystemArchive;
+    // file スキーマでアクセスできる Archive
+    Ref<FileSystemReader> m_localFileSystemArchive;
+
+    // asset スキーマでアクセスできる Archive。ファイルを保存できる。
+    List<FileSystemReader*> m_fileSystemArchives;
 };
 
 } // namespace detail

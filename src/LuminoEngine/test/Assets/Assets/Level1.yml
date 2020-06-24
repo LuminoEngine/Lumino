@@ -1,0 +1,15 @@
+object:
+  class.Level:
+    children:
+      - class.Sprite:
+          position: [0, 0, 0]
+          angles: [-0, 0, 0]
+          scale: [1, 1, 1]
+          components:
+            - class.SpriteComponent:
+                material:
+                  class.Material:
+                    mainTexture:
+                      class.Texture2D:
+                        source: dir/Sprite1.png
+          children: ~
