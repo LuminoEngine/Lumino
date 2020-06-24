@@ -5,7 +5,6 @@
 namespace ln {
 class GraphicsContext; 
 class CommandQueue;
-class Texture2D;
 class SamplerState;
 
 namespace detail {
@@ -63,6 +62,9 @@ public:
 	int registerExtension(INativeGraphicsExtension* extension);
 	void unregisterExtension(INativeGraphicsExtension* extension);
 	Ref<Texture> requestTexture(const AssetPath& assetPath);
+
+	Ref<Texture2D> loadTexture2D(const StringRef& filePath);
+	Ref<Texture2DPromise> loadTexture2DAsync(const StringRef& filePath);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }

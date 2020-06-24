@@ -106,12 +106,17 @@ partition "User program interface" {
 
 
 note left
+makeObject
+end note
+"YYYYManager::loadXXXX()" --> "XXXX::init(AssetPath)"
+
+
+note left
 AssetObject へ m_assetFilePath と、
 派生へ m_sourceFilePath を set。
 代替オブジェクト処理はここ。
 end note
-"YYYYManager::loadXXXX()" --> "AssetObject::reload()"
-
+"XXXX::init(AssetPath)" --> "AssetObject::reload()"
 "Asset::reload(XXXX)" --> "AssetObject::reload()"
 
 note left
@@ -173,5 +178,59 @@ Assets::reload(Mesh) したら、Mesh の sourceFile に起因する Asset は�
 
 例えば .gltf はテクスチャが埋め込まれていることがあるが、それに関わらずすべてリロードする。
 ただし、initialize の時のみ。ランタイム時はキャッシュ検索して同一リソースは共有したいため、常にリロードだとそれの障害となる。
+
+拡張子の省略について
+----------
+
+HTTP とかで Web 上のファイルを load するときは省略不可能。サーバ側で探す必要があるため。
+（ツクール MV はデータファイル上は拡張子を省略しているが、load するときに .png をつけていたりする）
+
+Lumino は基本方針として、先に アーカイブファイルをダウンロードし、以降はその中身だけを読み取るような使い方になる。
+
+もし `Texture2D::load("img/picture1.png")` HTTP fetch で Stream を得る でサーバまでデータを取りに行くなら、Archive を作ることになる。
+ファイルインデックスをダウンロードするみたいな対策はいいかもしれない。
+
+一方ユーザーデータを扱うために外部ファイルを入力できるようにするなら、`Texture2D::load("http://AAAA/img/picture1.png")` というのもありかもしれない。この場合は Path 先頭のスキーマを見ればいい。
+
+引き続き、省略は可能、で行ってみる。
+
+
+
+m_assetFilePath と m_assetSourcePath
+----------
+
+### m_assetFilePath
+
+型は Path. コメントに書いた通り。
+
+```
+// .yml のファイルパス。リロードのために使用する。
+// 絶対パスまたは相対パスで、相対パスの場合は Asset フォルダからの相対パス。
+// これはユーザープログラムから指定されたパスをそのまま覚えておいてリロードで使用するためのものであって、
+// 何かファイルに保存したりするものではない。
+// リロードのたびに findAssetPath() で AssetPath に解決して使う。
+// この性質上、開発中のみ使用し、リリースランタイムでは使用しない。
+```
+
+### m_assetSourcePath
+
+型は AssetPath。Path ではない。
+
+ただし、yml に保存するときはその yml ファイルの場所からの相対パスとなる点に注意。
+
+なぜかというと、これを使うようなデータ表現は、元となるデータファイル (.png や .gltf) がまずあって、それに補足情報を加える形で .yml が存在することになるため。
+これは Unity の .metadata のように、基本的に同じフォルダにおいて管理する。各種 load が拡張子を省略できるようになっているのも、このあたりを透過的に扱えるようにするため。
+
+またそのような metadata 的な使い方のほか、特に yml を手書きするときに別 Asset の参照を相対パスで書きたいことがある。
+
+そうすると プログラム内でも Path の相対パスで持っておいた方がよさそうに見えるのだが、
+ファイルロードのためにこの相対パスを絶対パス (少なくとも Asset フォルダからの相対パス) に直すためには、yml ファイルの Path(m_assetFilePath 相当) を知らなければならない。
+
+ここで問題なのが、yml ファイルに対応する Object と、今ここで考える m_assetSourcePath を持つ Object は遠く離れる可能性があるということ。
+
+例えば、Level の yml をロードするとき、そのシーングラフの深いところにいる Sprite や Shader が持っている Texture をロードしたいとき。
+ルートの yml のパスは serialize の引数から求めることができるが、その時点で結合して絶対パスとして m_assetSourcePath に保持しておかなければならない。
+Texture 自身を load したときは、その時点で Asset フォルダからのパスをベースに解決して持っておく。
+
 
 

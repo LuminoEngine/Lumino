@@ -267,6 +267,7 @@ void Example_MeshViewer();
 void Example_MessageWindow();
 void Example_Navigator();
 void Example_SoundControl();
+void Example_Sprite();
 void Example_UIControls();
 void Example_Tilemap();
 void Experiment_Reflector();
@@ -454,10 +455,11 @@ int main(int argc, char** argv)
 		//Sandbox_EmptyApp();
 		//Example_GameAudio();
         //Example_MainLoop();
-		Example_MeshViewer();
+		//Example_MeshViewer();
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
+        Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_Reflector();
@@ -926,7 +928,7 @@ int main(int argc, char** argv)
 	//auto light1 = AmbientLight::create();
  //   auto light2 = DirectionalLight::create();
 
-    auto tex = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
+    //auto tex = makeObject<Texture2D>(u"D:/tmp/110220c_as019.png");
     //auto tex = Assets::loadTexture(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/test/Assets/Sprite1.png");
     //tex->drawText(u"Hello!", Rect(0, 0, 100, 100), font, Color::White);
     //auto tex = makeObject<Texture2D>(2, 2);

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #pragma once
+#include "../Base/Promise.hpp"
 #include "../Shader/Common.hpp"
 
 namespace ln {
@@ -11,9 +12,17 @@ class RenderPass;
 class Bitmap2D;
 class Bitmap3D;
 class Texture;
+class Texture2D;
 class RenderTargetTexture;
 class DepthBuffer;
 class INativeGraphicsExtension;
+
+/**
+ * Texture2DPromise
+ */
+LN_PROMISE()
+using Texture2DPromise = Promise<Ref<Texture2D>>;
+
 
 /** 描画方式 */
 enum class RenderingType

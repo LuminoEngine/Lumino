@@ -8,6 +8,7 @@ class Shader;
 class AssetModel;
 namespace detail {
 class AssetArchive;
+class FileSystemReader;
 
 class AssetManager
 	: public RefObject
@@ -41,6 +42,7 @@ public:
     Optional<AssetPath> findAssetPath(const StringRef& filePath) const;
     bool existsAsset(const AssetPath& assetPath) const;
     Ref<Stream> openStreamFromAssetPath(const AssetPath& assetPath) const;
+    AssetPath resolveAssetPath(const AssetPath& assetPath, const Char** exts, int extsCount) const;
 
     Ref<AssetModel> loadAssetModelFromLocalFile(const String& filePath) const;
     Ref<AssetModel> loadAssetModelFromAssetPath(const AssetPath& assetPath) const;
@@ -83,6 +85,8 @@ private:
 	AssetStorageAccessPriority m_storageAccessPriority;
     std::unordered_map<ln::Uuid, ln::Path> m_assetIndex;
     Path m_primaryLocalAssetDirectory;
+
+    Ref<FileSystemReader> m_fileSystemArchive;
 };
 
 } // namespace detail

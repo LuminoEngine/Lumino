@@ -246,6 +246,22 @@ AssetPath AssetPath::resolveAssetPath(const Path& filePath, const Char** exts, s
     }
 }
 
+AssetPath AssetPath::resolveAssetPath(const AssetPath& assetPath, const Char** exts, size_t extsCount)
+{
+    return detail::EngineDomain::assetManager()->resolveAssetPath(assetPath, exts, extsCount);
+}
+
+bool AssetPath::isAssetFilePath() const
+{
+    if (!m_components) return false;
+    return m_components->path.hasExtension(AssetModel::AssetFileExtension);
+}
+
+bool AssetPath::isAssetFilePath(const Path& path)
+{
+    return path.hasExtension(AssetModel::AssetFileExtension);
+}
+
 AssetPath AssetPath::getParentAssetPath() const
 {
     AssetPath result = makeEmpty();

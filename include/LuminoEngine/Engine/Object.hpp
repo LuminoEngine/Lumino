@@ -63,6 +63,11 @@ public:
     // filePath から AssetPath を作る。ファイルが存在しない場合はエラーをレポートした後、Empty を返す。
     //static AssetPath resolveAssetPath(const Path& filePath, const std::initializer_list<const Char*>& candidateExts);
     static AssetPath resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount);
+    template<size_t N>
+    static AssetPath resolveAssetPath(const Path& filePath, const Char* (&candidateExts)[N])
+    {
+        return resolveAssetPath(filePath, candidateExts, N);
+    }
 
     AssetPath();
     AssetPath(const String& scheme, const String& host, const Path& path);
@@ -71,13 +76,22 @@ public:
     const String& host() const { return m_components->host; }
     const Path& path() const { return m_components->path; }
 
+    bool isAssetFilePath() const;   // .yml か
+    static bool isAssetFilePath(const Path& path);
     AssetPath getParentAssetPath() const;  // 親フォルダ
     String toString() const;
     bool isNull() const noexcept { return m_components == nullptr; }
+    bool hasValue() const noexcept { return !isNull(); }
     uint64_t calculateHash() const;
 
     explicit operator bool() const noexcept { return !isNull(); }
 
+    static AssetPath resolveAssetPath(const AssetPath& assetPath, const Char** exts, size_t extsCount);
+    template<size_t N>
+    static AssetPath resolveAssetPath(const AssetPath& assetPath, const Char*(&candidateExts)[N])
+    {
+        return resolveAssetPath(assetPath, candidateExts, N);
+    }
 
 private:
     struct Components

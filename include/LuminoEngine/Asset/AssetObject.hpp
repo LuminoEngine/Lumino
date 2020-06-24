@@ -16,12 +16,23 @@ class AssetObject
 public:
 
 protected:
+    const Path& assetPath() const { return m_assetFilePath; }
+    void setAssetPath(const Path& value);
+    void reload();
+    virtual void onLoadSourceFile() = 0;
 
 LN_CONSTRUCT_ACCESS:
     AssetObject();
     bool init();
 
 private:
+    // .yml のファイルパス。リロードのために使用する。
+    // 絶対パスまたは相対パスで、相対パスの場合は Asset フォルダからの相対パス。
+    // これはユーザープログラムから指定されたパスをそのまま覚えておいてリロードで使用するためのものであって、
+    // 何かファイルに保存したりするものではない。
+    // リロードのたびに findAssetPath() で AssetPath に解決して使う。
+    // この性質上、開発中のみ使用し、リリースランタイムでは使用しない。
+    Path m_assetFilePath;
 };
 
 } // namespace ln

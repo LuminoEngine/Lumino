@@ -300,6 +300,17 @@ Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
 	}
 }
 
+Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
+{
+	return makeObject<Texture2D>(filePath);
+}
+
+Ref<Texture2DPromise> GraphicsManager::loadTexture2DAsync(const StringRef& filePath)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
+}
+
 bool GraphicsManager::checkVulkanSupported()
 {
 #ifdef LN_USE_VULKAN

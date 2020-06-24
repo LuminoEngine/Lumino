@@ -19,6 +19,20 @@ bool AssetObject::init()
 	return Object::init();
 }
 
+void AssetObject::setAssetPath(const Path& value)
+{
+	m_assetFilePath = value;
+}
+
+void AssetObject::reload()
+{
+	if (detail::AssetPath::isAssetFilePath(m_assetFilePath)) {
+		LN_NOTIMPLEMENTED();
+	}
+	else {
+		onLoadSourceFile();
+	}
+}
 
 } // namespace ln
 

@@ -32,8 +32,8 @@ void AssetManager::init(const Settings& settings)
 
     m_storageAccessPriority = settings.assetStorageAccessPriority;
     if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
-        auto archive = makeRef<FileSystemReader>();
-        m_requestedArchives.add(archive);
+        m_fileSystemArchive = makeRef<FileSystemReader>();
+        m_requestedArchives.add(m_fileSystemArchive);
         refreshActualArchives();
         //addAssetDirectory(Environment::currentDirectory());
     }
@@ -87,6 +87,22 @@ void AssetManager::removeAllAssetDirectory()
 //	refreshActualArchives();
 //}
 //
+
+//Optional<AssetPath> AssetManager::findAssetPath(const AssetPath& assetPath, const Char** exts, int extsCount) const
+//{
+//    const Char* begin = filePath.data();
+//    const Char* end = filePath.data() + filePath.length();
+//    if (detail::PathTraits::getExtensionBegin(begin, end, false) != end) {
+//        // has extension
+//        paths->add(Path(filePath).unify());
+//    }
+//    else {
+//        for (int i = 0; i < extsCount; i++) {
+//            paths->add(Path(String(filePath) + exts[i]).unify());   // TODO: operator StringRef + Char*
+//        }
+//    }
+//}
+
 Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const
 {
     List<Path> paths;
@@ -168,6 +184,49 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const AssetPath& assetPath) co
     //}
 
     return nullptr;
+}
+
+AssetPath AssetManager::resolveAssetPath(const AssetPath& assetPath, const Char** exts, int extsCount) const
+{
+    // scheme や host が指定されている場合はそこを検索したい
+    AssetArchive* priorityArchive = nullptr;
+    if (assetPath.scheme() == AssetPath::FileSchemeName) {
+        if (m_fileSystemArchive) {
+            priorityArchive = m_fileSystemArchive;
+        }
+        else {
+            return AssetPath();
+        }
+    }
+    else if (!assetPath.host().isEmpty()) {
+        priorityArchive = m_actualArchives.findIf([&](const AssetArchive* ar) { return ar->name() == assetPath.host(); }).valueOr(nullptr);
+        if (!priorityArchive) {
+            return AssetPath();
+        }
+    }
+
+
+    AssetPath result;
+    for (int i = 0; i < extsCount; i++) {
+        Path localPath = (assetPath.path().hasExtension()) ? assetPath.path() : Path(assetPath.path() + exts[i]);
+
+        if (priorityArchive) {
+            if (priorityArchive->existsFile(localPath)) {
+                result = AssetPath(priorityArchive->scheme(), priorityArchive->name(), localPath);
+                break;
+            }
+        }
+        else {
+            for (auto& archive : m_actualArchives) {
+                if (archive->existsFile(localPath)) {
+                    result = AssetPath(archive->scheme(), archive->name(), localPath);
+                    break;
+                }
+            }
+        }
+    }
+
+    return result;
 }
 
 Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath) const
