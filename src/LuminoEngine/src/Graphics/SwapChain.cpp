@@ -43,7 +43,8 @@ void CommandList::reset()
 // SwapChain
 
 SwapChain::SwapChain()
-    : m_rhiObject(nullptr)
+    : m_manager(nullptr)
+	, m_rhiObject(nullptr)
     , m_backbuffers()
     , m_imageIndex(0)
 {
@@ -56,7 +57,9 @@ SwapChain::~SwapChain()
 void SwapChain::init(detail::PlatformWindow* window, const SizeI& backbufferSize)
 {
     // TODO: onChangeDevice でバックバッファをアタッチ
-    GraphicsResource::init();
+    Object::init();
+	detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+
     m_rhiObject = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createSwapChain(window, backbufferSize);
 	m_graphicsContext = makeObject<GraphicsContext>(detail::EngineDomain::graphicsManager()->renderingType());
 	resetRHIBackbuffers();
@@ -69,7 +72,9 @@ void SwapChain::onDispose(bool explicitDisposing)
     m_commandLists.clear();
     m_depthBuffers.clear();
 	m_backbuffers.clear();
-	GraphicsResource::onDispose(explicitDisposing);
+
+	detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+	Object::onDispose(explicitDisposing);
 }
 
 void SwapChain::onChangeDevice(detail::IGraphicsDevice* device)

@@ -10,7 +10,8 @@ namespace ln {
 // GraphicsCommandBuffer
 
 GraphicsCommandBuffer::GraphicsCommandBuffer()
-    : m_rhiObject()
+    : m_manager(nullptr)
+    , m_rhiObject()
 {
 }
 
@@ -20,12 +21,14 @@ GraphicsCommandBuffer::~GraphicsCommandBuffer()
 
 void GraphicsCommandBuffer::init()
 {
-    GraphicsResource::init();
+    Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 void GraphicsCommandBuffer::onDispose(bool explicitDisposing)
 {
-    GraphicsResource::onDispose(explicitDisposing);
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    Object::onDispose(explicitDisposing);
 }
 
 void GraphicsCommandBuffer::onChangeDevice(detail::IGraphicsDevice* device)

@@ -226,10 +226,10 @@ void GraphicsManager::dispose()
 		m_blackTexture = nullptr;
 	}
 
-	List<GraphicsResource*> removeList = m_graphicsResources;
+	List<IGraphicsResource*> removeList = m_graphicsResources;
 	m_graphicsResources.clear();
-	for (GraphicsResource* resource : removeList) {
-		resource->dispose();
+	for (IGraphicsResource* resource : removeList) {
+		resource->onManagerFinalizing();
 	}
 
 	m_frameBufferCache = nullptr;
@@ -263,12 +263,12 @@ void GraphicsManager::dispose()
 //    }
 //}
 
-void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
+void GraphicsManager::addGraphicsResource(IGraphicsResource* resource)
 {
 	m_graphicsResources.add(resource);
 }
 
-void GraphicsManager::removeGraphicsResource(GraphicsResource* resource)
+void GraphicsManager::removeGraphicsResource(IGraphicsResource* resource)
 {
 	m_graphicsResources.remove(resource);
 }

@@ -12,7 +12,8 @@ class TextureInternal;
 /** テクスチャのベースクラスです。 */
 LN_CLASS()
 class Texture
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
     LN_OBJECT;
 public:
@@ -38,11 +39,14 @@ protected:
     Texture();
     virtual ~Texture();
     void init();
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
     virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
     void setDesc(int width, int height, TextureFormat format);
 
+    detail::GraphicsManager* m_manager;
     int m_width;
     int m_height;
     TextureFormat m_format;

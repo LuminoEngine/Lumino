@@ -4,7 +4,6 @@
 
 namespace ln {
 class GraphicsContext; 
-class GraphicsResource;
 class CommandQueue;
 class Texture2D;
 class SamplerState;
@@ -39,8 +38,8 @@ public:
     //void enterRendering();
     //void leaveRendering();
 
-	void addGraphicsResource(GraphicsResource* resource);
-	void removeGraphicsResource(GraphicsResource* resource);
+	void addGraphicsResource(IGraphicsResource* resource);
+	void removeGraphicsResource(IGraphicsResource* resource);
 
     AssetManager* assetManager() const { return m_assetManager; }
 	// deviceContext() は、リソースの CRUD のみを目的として IGraphicsDevice にアクセスしたいときに使うこと。
@@ -94,7 +93,7 @@ private:
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;
-	List<GraphicsResource*> m_graphicsResources;
+	List<IGraphicsResource*> m_graphicsResources;
 	List<INativeGraphicsExtension*> m_extensions;
 
     Ref<Texture2D> m_blackTexture;

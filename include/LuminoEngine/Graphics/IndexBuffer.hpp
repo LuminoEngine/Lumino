@@ -10,7 +10,8 @@ class IIndexBuffer;
 
 /** インデックスバッファのクラスです。 */
 class IndexBuffer
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
     /**
@@ -69,8 +70,9 @@ public:
     void setResourcePool(GraphicsResourcePool pool);
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
     IndexBuffer();
@@ -93,6 +95,7 @@ private:
     static int getIndexBufferSize(IndexBufferFormat format, int indexCount) { return getIndexStride(format) * indexCount; }
     static bool shortLifeBuffer(GraphicsResourceUsage usage, GraphicsResourcePool pool) { return usage == GraphicsResourceUsage::Static && pool == GraphicsResourcePool::None; }
 
+    detail::GraphicsManager* m_manager;
     Ref<detail::IIndexBuffer> m_rhiObject;
     IndexBufferFormat m_format;
     GraphicsResourceUsage m_usage;

@@ -10,7 +10,8 @@ class IVertexBuffer;
 
 /** 頂点バッファのクラスです。 */
 class VertexBuffer
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
     /**
@@ -52,8 +53,9 @@ public:
     void setResourcePool(GraphicsResourcePool pool);
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
     VertexBuffer();
@@ -69,6 +71,7 @@ private:
     detail::IVertexBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
     bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
+    detail::GraphicsManager* m_manager;
     Ref<detail::IVertexBuffer> m_rhiObject;
     GraphicsResourceUsage m_usage;
     GraphicsResourcePool m_pool;

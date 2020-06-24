@@ -9,7 +9,8 @@ class IDepthBuffer;
 
 /** 深度バッファのクラスです。 */
 class DepthBuffer
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
     /**
@@ -34,8 +35,9 @@ public:
     bool m_cleared = false;
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	DepthBuffer();
@@ -47,6 +49,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::IDepthBuffer* resolveRHIObject(GraphicsContext* context, bool* outModified);
 
+    detail::GraphicsManager* m_manager;
     Ref<detail::IDepthBuffer> m_rhiObject;
     SizeI m_size;
 

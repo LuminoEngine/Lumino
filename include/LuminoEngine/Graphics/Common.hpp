@@ -3,6 +3,7 @@
 #include "../Shader/Common.hpp"
 
 namespace ln {
+class IGraphicsResource;
 class GraphicsContext;
 class SamplerState;
 class SwapChain;

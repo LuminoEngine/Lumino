@@ -20,16 +20,16 @@ public:
 protected:
 	TemporaryGraphicsResourceObjectCacheBase();
 	virtual ~TemporaryGraphicsResourceObjectCacheBase();
-	GraphicsResource* findBase(uint64_t key);
-	void insertBase(uint64_t key, GraphicsResource* obj);
-	void releaseBase(uint64_t key, GraphicsResource* obj);
+	Object* findBase(uint64_t key);
+	void insertBase(uint64_t key, Object* obj);
+	void releaseBase(uint64_t key, Object* obj);
 
 private:
 	struct Entry
 	{
 		int							refCount;// こが 0 であれば再利用できる
 		int							lifeFrames;	
-		Ref<GraphicsResource>	resourceObject;
+		Ref<Object>	resourceObject;
 	};
 	typedef std::vector<Entry>	RenderTargetList;
 

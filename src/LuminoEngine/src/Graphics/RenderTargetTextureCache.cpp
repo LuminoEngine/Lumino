@@ -53,7 +53,7 @@ void TemporaryGraphicsResourceObjectCacheBase::gcObjects()
 	}
 }
 
-GraphicsResource* TemporaryGraphicsResourceObjectCacheBase::findBase(uint64_t key)
+Object* TemporaryGraphicsResourceObjectCacheBase::findBase(uint64_t key)
 {
 	auto itr = m_renderTargetMap.find(key);
 	if (itr != m_renderTargetMap.end())
@@ -72,7 +72,7 @@ GraphicsResource* TemporaryGraphicsResourceObjectCacheBase::findBase(uint64_t ke
 	return nullptr;
 }
 
-void TemporaryGraphicsResourceObjectCacheBase::insertBase(uint64_t key, GraphicsResource* obj)
+void TemporaryGraphicsResourceObjectCacheBase::insertBase(uint64_t key, Object* obj)
 {
 	Entry e;
 	e.resourceObject = obj;
@@ -81,7 +81,7 @@ void TemporaryGraphicsResourceObjectCacheBase::insertBase(uint64_t key, Graphics
 	m_renderTargetMap[key].push_back(e);
 }
 
-void TemporaryGraphicsResourceObjectCacheBase::releaseBase(uint64_t key, GraphicsResource* obj)
+void TemporaryGraphicsResourceObjectCacheBase::releaseBase(uint64_t key, Object* obj)
 {
 	auto itr = m_renderTargetMap.find(key);
 	if (itr != m_renderTargetMap.end())
@@ -119,7 +119,7 @@ RenderTargetTexture* RenderTargetTextureCacheManager::requestObject(const SizeI&
 {
 	uint64_t key = makeKey(size, format, mipmap);
 	
-	GraphicsResource* obj = findBase(key);
+	Object* obj = findBase(key);
 	if (obj) return static_cast<RenderTargetTexture*>(obj);
 
 	auto t = makeObject<RenderTargetTexture>(size.width, size.height, format, mipmap);
@@ -159,7 +159,7 @@ DepthBuffer* DepthBufferCacheManager::requestObject(const SizeI& size)
 {
 	uint64_t key = makeKey(size);
 
-	GraphicsResource* obj = findBase(key);
+	Object* obj = findBase(key);
 	if (obj) return static_cast<DepthBuffer*>(obj);
 
 	//auto t = makeRef<DepthBuffer>();

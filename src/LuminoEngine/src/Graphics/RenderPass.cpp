@@ -18,7 +18,8 @@ namespace ln {
 // RenderPass
 
 RenderPass::RenderPass()
-    : m_rhiObject()
+    : m_manager(nullptr)
+	, m_rhiObject()
 	, m_renderTargets{}
 	, m_depthBuffer()
 	, m_clearFlags(ClearFlags::None)
@@ -36,12 +37,14 @@ RenderPass::~RenderPass()
 
 void RenderPass::init()
 {
-    GraphicsResource::init();
+	Object::init();
+	detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	init();
+
 	setRenderTarget(0, renderTarget);
 	setDepthBuffer(depthBuffer);
 }
@@ -49,7 +52,9 @@ void RenderPass::init(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffe
 void RenderPass::onDispose(bool explicitDisposing)
 {
 	releaseRHI();
-    GraphicsResource::onDispose(explicitDisposing);
+
+	detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+	Object::onDispose(explicitDisposing);
 }
 
 void RenderPass::setRenderTarget(int index, RenderTargetTexture* value)

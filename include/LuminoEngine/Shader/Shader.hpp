@@ -271,7 +271,8 @@ struct ShaderPassDescriptorLayout
  * - 複数の Material から参照される場合、値は共有される。
  */
 class LN_API Shader final
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
     /*
@@ -322,8 +323,9 @@ public:
 
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	Shader();
@@ -339,6 +341,7 @@ private:
 	void createFromUnifiedShader(detail::UnifiedShader* unifiedShader, DiagnosticsManager* diag);
 
     detail::ShaderManager* m_manager;
+    detail::GraphicsManager* m_graphicsManager;
     String m_name;
     Ref<ShaderDescriptorLayout> m_descriptorLayout;
     Ref<ShaderDescriptor> m_descriptor;
@@ -347,6 +350,7 @@ private:
     friend class ShaderPass;
     friend class detail::ShaderHelper;
     friend class ShaderDescriptor;
+    friend class detail::GraphicsResourceInternal;
 };
 
 /**

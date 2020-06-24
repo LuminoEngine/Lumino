@@ -20,10 +20,11 @@ namespace ln {
 //==============================================================================
 // Texture
 
-LN_OBJECT_IMPLEMENT(Texture, GraphicsResource) {}
+LN_OBJECT_IMPLEMENT(Texture, Object) {}
 
 Texture::Texture()
-    : m_width(0)
+    : m_manager(nullptr)
+    , m_width(0)
     , m_height(0)
     , m_format(TextureFormat::Unknown)
     , m_mipmap(false)
@@ -37,7 +38,14 @@ Texture::~Texture()
 
 void Texture::init()
 {
-    GraphicsResource::init();
+    Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+}
+
+void Texture::onDispose(bool explicitDisposing)
+{
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    Object::onDispose(explicitDisposing);
 }
 
 void Texture::setDesc(int width, int height, TextureFormat format)

@@ -135,6 +135,7 @@ Ref<Shader> Shader::create(const StringRef& vertexShaderFilePath, const StringRe
 
 Shader::Shader()
     : m_manager(detail::EngineDomain::shaderManager())
+    , m_graphicsManager(nullptr)
     , m_name()
     , m_techniques(makeList<Ref<ShaderTechnique>>())
 {
@@ -146,7 +147,8 @@ Shader::~Shader()
 
 void Shader::init()
 {
-    GraphicsResource::init();
+    Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_graphicsManager);
 }
 
 void Shader::init(const StringRef& filePath, ShaderCompilationProperties* properties)
@@ -293,7 +295,7 @@ void Shader::createFromUnifiedShader(detail::UnifiedShader* unifiedShader, Diagn
 		for (int iPass = 0; iPass < passCount; iPass++) {
 			detail::UnifiedShader::PassId passId = unifiedShader->getPassIdInTechnique(techId, iPass);
 
-			auto rhiPass = detail::GraphicsResourceInternal::manager(this)->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
+			auto rhiPass = m_graphicsManager->deviceContext()->createShaderPassFromUnifiedShaderPass(unifiedShader, passId, diag);
 			if (rhiPass) {
 				auto pass = makeObject<ShaderPass>(
                     String::fromStdString(unifiedShader->passName(passId)),
@@ -318,7 +320,8 @@ void Shader::onDispose(bool explicitDisposing)
     }
     m_techniques->clear();
 
-    GraphicsResource::onDispose(explicitDisposing);
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_graphicsManager);
+    Object::onDispose(explicitDisposing);
 }
 
 void Shader::onChangeDevice(detail::IGraphicsDevice* device)
@@ -460,7 +463,7 @@ void ShaderPass::submitShaderDescriptor(GraphicsContext* graphicsContext, detail
         if (descripter != m_lastShaderDescriptor || m_lastShaderDescriptorRevision != descripter->m_revision) {
 
             {
-                auto* manager = detail::GraphicsResourceInternal::manager(m_owner->shader());
+                auto* manager = m_owner->shader()->m_graphicsManager;
                 const ShaderDescriptorLayout* globalLayout = m_owner->m_owner->descriptorLayout();
                 detail::ShaderDescriptorTableUpdateInfo updateInfo;
 

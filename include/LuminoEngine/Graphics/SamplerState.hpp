@@ -7,7 +7,8 @@ namespace ln {
 
 /** サンプラーステートのクラスです。 */
 class SamplerState
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
     /**
@@ -55,8 +56,9 @@ public:
     bool anisotropyEnabled() const { return m_desc.anisotropy; }
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
     SamplerState();
@@ -78,6 +80,7 @@ private:
     detail::ISamplerState* resolveRHIObject(GraphicsContext* context, bool* outModified);
     void setFrozen(bool value) { m_frozen = value; }
 
+    detail::GraphicsManager* m_manager;
     Ref<detail::ISamplerState> m_rhiObject;
 	detail::SamplerStateData m_desc;
     bool m_modified;

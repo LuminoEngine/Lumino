@@ -9,7 +9,8 @@ class ICommandList;
 
 /**  */
 class GraphicsCommandBuffer
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
 
@@ -27,6 +28,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::ICommandList* resolveRHIObject(GraphicsContext* context, bool* outModified);
 
+    detail::GraphicsManager* m_manager;
     Ref<detail::ICommandList> m_rhiObject;
 
     friend class detail::GraphicsResourceInternal;
