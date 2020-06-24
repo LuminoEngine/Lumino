@@ -76,27 +76,27 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
     return detail::EngineDomain::assetManager()->openFileStream(filePath);
 }
 
-void Assets::serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
-{
-    String localPath;
-    if (ar.isSaving()) {
-        // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-        localPath = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), value->assetPath());
-    }
-
-    ar & makeNVP(name, localPath);
-
-    if (ar.isLoading()) {
-        auto assetPath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), localPath);
-        //value = dynamic_pointer_cast<Tileset>(Assets::loadAsset(assetPath));
-        auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromAssetPath(assetPath);
-        value = assetModel->target();
-        if (value) {
-            value->setAssetPath(assetPath);
-        }
-    }
-}
-
+//void Assets::serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
+//{
+//    String localPath;
+//    if (ar.isSaving()) {
+//        // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
+//        localPath = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), value->assetPath());
+//    }
+//
+//    ar & makeNVP(name, localPath);
+//
+//    if (ar.isLoading()) {
+//        auto assetPath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), localPath);
+//        //value = dynamic_pointer_cast<Tileset>(Assets::loadAsset(assetPath));
+//        auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromAssetPath(assetPath);
+//        value = assetModel->target();
+//        if (value) {
+//            value->setAssetPath(assetPath);
+//        }
+//    }
+//}
+//
 //=============================================================================
 // AssetImporter
 

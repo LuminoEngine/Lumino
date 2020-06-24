@@ -62,8 +62,6 @@ public:
     Ref<Stream> openFileStream(const StringRef& filePath);
     [[deprecated]]
 	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
-    [[deprecated("-> findAssetPath, openStreamFromAssetPath")]]
-    Ref<Object> loadAsset(const StringRef& filePath);
 
     // TODO: for develop & debug
     void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
@@ -71,8 +69,6 @@ public:
 private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
-	const Path& findFilePathFromIndex(const StringRef& id) const;
-    const Path& findFilePathInternal(const StringRef& filePath, const Char** exts, int extsCount);
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
     static bool tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outLocalPath);

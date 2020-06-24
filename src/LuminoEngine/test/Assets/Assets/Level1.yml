@@ -11,5 +11,5 @@ object:
                   class.Material:
                     mainTexture:
                       class.Texture2D:
-                        source: dir/Sprite1.png
+                        file: dir/Sprite1.png
           children: ~

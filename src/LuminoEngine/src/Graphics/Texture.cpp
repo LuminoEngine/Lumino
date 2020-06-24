@@ -377,7 +377,7 @@ void Texture2D::serialize2(Serializer2& ar)
         path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_sourceFilePath);
     }
 
-    ar& makeNVP(u"source", path);
+    ar & makeNVP(u"file", path);
 
     if (ar.isLoading()) {
         if (!path.isEmpty()) {

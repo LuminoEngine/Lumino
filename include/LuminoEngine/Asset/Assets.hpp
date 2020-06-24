@@ -69,22 +69,22 @@ public:
     //static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
     //static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
 
-    static void serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value);
+    //static void serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value);
 
-    // TODO: internal
-    template<typename TValue>
-    static void serializeAsAssetPath(Archive& ar, const StringRef& name, Ref<TValue>& value)
-    {
-        if (ar.isSaving()) {
-            Ref<Object> local = value;
-            serializeAsAssetPathInternal(ar, name, local);
-        }
-        else {
-            Ref<Object> local;
-            serializeAsAssetPathInternal(ar, name, local);
-            value = dynamic_pointer_cast<TValue>(local);
-        }
-    }
+    //// TODO: internal
+    //template<typename TValue>
+    //static void serializeAsAssetPath(Archive& ar, const StringRef& name, Ref<TValue>& value)
+    //{
+    //    if (ar.isSaving()) {
+    //        Ref<Object> local = value;
+    //        serializeAsAssetPathInternal(ar, name, local);
+    //    }
+    //    else {
+    //        Ref<Object> local;
+    //        serializeAsAssetPathInternal(ar, name, local);
+    //        value = dynamic_pointer_cast<TValue>(local);
+    //    }
+    //}
 
 };
 

@@ -422,23 +422,6 @@ Ref<ByteBuffer> AssetManager::readAllBytes(const StringRef& filePath)
 	return buffer;
 }
 
-Ref<Object> AssetManager::loadAsset(const StringRef& filePath)
-{
-    static const Char* exts[] = {
-        u".lnasset",
-    };
-
-    Path sourceFile;
-    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
-    if (LN_ENSURE_IO(stream, filePath)) return nullptr;
-    auto text = FileSystem::readAllText(stream);
-
-    auto asset = ln::makeObject<ln::AssetModel>();
-    JsonSerializer::deserialize(text, sourceFile.parent(), *asset);
-    //asset->onSetAssetFilePath(sourceFile);
-    return asset->target();
-}
-
 void AssetManager::buildAssetIndexFromLocalFiles(const ln::Path& assetDir)
 {
     m_assetIndex.clear();
@@ -522,17 +505,6 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 	}
 
 	return false;
-}
-
-const Path& AssetManager::findFilePathFromIndex(const StringRef& id) const
-{
-    auto itr = m_assetIndex.find(Uuid(id));
-    if (itr != m_assetIndex.end()) {
-        return itr->second;
-    }
-    else {
-        return Path::Empty;
-    }
 }
 
 Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath)
