@@ -44,21 +44,9 @@ public:
     }
 
 
-    template<class T>
-    static void initializeHelper_GraphicsResource(T* obj, GraphicsManager** manager)
-    {
-        *manager = detail::EngineDomain::graphicsManager();
-        (*manager)->addGraphicsResource(obj);
-    }
+    static void initializeHelper_GraphicsResource(IGraphicsResource* obj, GraphicsManager** manager);
 
-    template<class T>
-    static void finalizeHelper_GraphicsResource(T* obj, GraphicsManager** manager)
-    {
-        if (*manager) {
-            (*manager)->removeGraphicsResource(obj);
-            *manager = nullptr;
-        }
-    }
+    static void finalizeHelper_GraphicsResource(IGraphicsResource* obj, GraphicsManager** manager);
 };
 
 } // namespace detail

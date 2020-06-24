@@ -35,5 +35,21 @@ namespace ln {
 //	}
 //	Object::onDispose(explicitDisposing);
 //}
+ namespace detail {
+     
+void GraphicsResourceInternal::initializeHelper_GraphicsResource(IGraphicsResource* obj, GraphicsManager** manager)
+{
+    *manager = detail::EngineDomain::graphicsManager();
+    (*manager)->addGraphicsResource(obj);
+}
 
+void GraphicsResourceInternal::finalizeHelper_GraphicsResource(IGraphicsResource* obj, GraphicsManager** manager)
+{
+    if (*manager) {
+        (*manager)->removeGraphicsResource(obj);
+        *manager = nullptr;
+    }
+}
+
+} // namespace detail
 } // namespace ln
