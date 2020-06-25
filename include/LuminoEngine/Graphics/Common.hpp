@@ -339,6 +339,9 @@ public:
     static PixelFormat translateToPixelFormat(TextureFormat format);
     static TextureFormat translateToTextureFormat(PixelFormat format);
     static size_t getPixelSize(TextureFormat format);
+    static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
+    static size_t getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat::UInt16) ? 2 : 4; }
+
 };
 
 namespace detail {

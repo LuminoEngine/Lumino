@@ -19,7 +19,7 @@ struct alignas(16) LNRenderViewBuffer
     alignas(16) Vector4 ln_Resolution;
     alignas(16) Vector3 ln_CameraPosition;
     alignas(16) Vector3 ln_CameraDirection;
-    alignas(16) float ln_NearClip;
+    alignas(4) float ln_NearClip;
     alignas(4) float ln_FarClip;
 };
 

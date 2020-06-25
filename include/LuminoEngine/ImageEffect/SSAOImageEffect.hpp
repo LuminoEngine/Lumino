@@ -34,7 +34,9 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     SSAOImageEffect* m_owner;
-    Ref<Material> m_material;
+    Ref<SamplerState> m_samplerState;
+    Ref<Material> m_occlusionMaterial;
+    Ref<Material> m_blurAndCompositeMaterial;
 };
 
 } // namespace detail

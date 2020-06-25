@@ -14,7 +14,7 @@ public:
 	{
 	}
 
-    void setBuffer(Vertex* vertexBuffer, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
+    void setBuffer(Vertex* vertexBuffer/*, uint32_t vertexCount*/, void* indexBuffer, IndexBufferFormat indexFormat, uint32_t indexNumberOffset);
 
     void generate(MeshGenerater* generator);
 
@@ -43,8 +43,11 @@ public:
 	}
 
 private:
+    void transform(/*MeshGenerater* generator, int vertexCount*/);
+
 	LinearAllocator* m_allocator;
     Vertex* m_vertexBuffer;
+    //uint32_t m_vertexCount;
     void* m_indexBuffer;
     IndexBufferFormat m_indexFormat;
     uint32_t m_indexNumberOffset;
@@ -69,6 +72,7 @@ public:
     void setColor(const Color& color) { m_color = color; }
     const Color& color() const { return m_color; }
     void setTransform(const Matrix& transform) { m_transform = transform; }
+    const Matrix& transform() const { return m_transform; }
 
     //virtual size_t instanceSize() const = 0;
     //virtual void copyTo(MeshGenerater* other) const = 0;
@@ -78,18 +82,6 @@ public:
     virtual MeshGenerater* clone(LinearAllocator* allocator) const = 0;
     virtual void onGenerate(MeshGeneraterBuffer* buf) = 0;
 
-
-    void transform(Vertex* begin, int vertexCount)
-    {
-        if (!m_transform.isIdentity())
-        {
-            Vertex* end = begin + vertexCount;
-            for (Vertex* v = begin; v < end; v++)
-            {
-                v->position.transformCoord(m_transform);
-            }
-        }
-    }
 
 protected:
 
@@ -394,7 +386,7 @@ public:
             }
         }
 
-        transform(buf->vertexBuffer(), vertexCount());
+        //transform(buf->vertexBuffer(), vertexCount());
     }
 
     void makeSinCosTable(MeshGeneraterBuffer* buf)
@@ -503,7 +495,7 @@ public:
 		buf->setV(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 1.0f), Vector3::UnitY); ++v;	// ┛
 		setIndices(buf, i, 20);
 
-		transform(buf->vertexBuffer(), vertexCount());
+		//transform(buf->vertexBuffer(), vertexCount());
 	}
 };
 

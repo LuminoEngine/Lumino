@@ -58,6 +58,16 @@ void Vector3::transformCoord(const Matrix& mat)
     z = (tx * mat.m[0][2] + ty * mat.m[1][2] + tz * mat.m[2][2] + mat.m[3][2]) * w;
 }
 
+void Vector3::transformDirection(const Matrix& mat)
+{
+    float tx = x;
+    float ty = y;
+    float tz = z;
+    x = (tx * mat.m[0][0] + ty * mat.m[1][0] + tz * mat.m[2][0]);
+    y = (tx * mat.m[0][1] + ty * mat.m[1][1] + tz * mat.m[2][1]);
+    z = (tx * mat.m[0][2] + ty * mat.m[1][2] + tz * mat.m[2][2]);
+}
+
 bool Vector3::isNaNOrInf() const
 {
     return Math::isNaNOrInf(x) || Math::isNaNOrInf(y) || Math::isNaNOrInf(z);

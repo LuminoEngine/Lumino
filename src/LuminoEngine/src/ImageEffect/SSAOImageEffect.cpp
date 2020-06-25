@@ -34,7 +34,7 @@ namespace detail {
 
 SSAOImageEffectInstance::SSAOImageEffectInstance()
     : m_owner(nullptr)
-    , m_material(nullptr)
+    , m_occlusionMaterial(nullptr)
 {
 }
 
@@ -42,17 +42,40 @@ bool SSAOImageEffectInstance::init(SSAOImageEffect* owner)
 {
     if (!ImageEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSAOImageEffect.fx");
-    m_material = makeObject<Material>();
-    m_material->setShader(shader1);
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSAOOcclusionMap.fx");
+    m_occlusionMaterial = makeObject<Material>();
+    m_occlusionMaterial->setShader(shader1);
+
+    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSAOBlurAndComposite.fx");
+    m_blurAndCompositeMaterial = makeObject<Material>();
+    m_blurAndCompositeMaterial->setShader(shader2);
+
+    //m_blurAndCompositeMaterial
+
+    // TODO: 他と共有したいところ
+    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
 
     return true;
 }
 
 bool SSAOImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    m_material->setMainTexture(source);
-    context->blit(m_material, destination);
+    Ref<RenderTargetTexture> occlusionMap = RenderTargetTexture::getTemporary(source->width(), source->height(), TextureFormat::RGBA8, false);
+    occlusionMap->setSamplerState(m_samplerState);
+
+    Texture* viewNormalMap = context->gbuffer(GBuffer::ViewNormalMap);
+    Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
+
+    m_occlusionMaterial->setTexture(u"_screenSampler", viewNormalMap);
+    m_occlusionMaterial->setTexture(u"_viewDepthMap", viewDepthMap);
+    m_occlusionMaterial->setMainTexture(source);
+    context->blit(m_occlusionMaterial, occlusionMap);
+
+    m_blurAndCompositeMaterial->setTexture(u"_occlusionMap", occlusionMap);
+    m_blurAndCompositeMaterial->setMainTexture(source);
+    context->blit(m_blurAndCompositeMaterial, destination);
+
+    RenderTargetTexture::releaseTemporary(occlusionMap);
     return true;
 }
 

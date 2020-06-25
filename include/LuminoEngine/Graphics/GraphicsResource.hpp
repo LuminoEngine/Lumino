@@ -24,7 +24,6 @@ namespace detail {
 class GraphicsResourceInternal
 {
 public:
-    static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
 
     template<class T>
     static detail::GraphicsManager* manager(T* obj) { return obj->m_manager; }

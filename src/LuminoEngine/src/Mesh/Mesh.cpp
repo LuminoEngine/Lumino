@@ -212,7 +212,7 @@ void MeshResource::requestBuffers(VertexBufferGroup group, VertexBuffer** outVer
 	if (outIndexBuffer) {
         // prepare index buffer
         if (!m_indexBuffer) {
-            m_indexBuffer = ln::makeObject<IndexBuffer>(m_indexCount, detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount), m_usage);
+            m_indexBuffer = ln::makeObject<IndexBuffer>(m_indexCount, GraphicsHelper::selectIndexBufferFormat(m_vertexCount), m_usage);
         }
         else if (realIndexCount() != m_indexCount) {
             m_indexBuffer->resize(m_indexCount);
@@ -367,7 +367,7 @@ void Mesh::init(int vertexCount, int indexCount)
 	init();
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
-	m_indexFormat = detail::GraphicsResourceInternal::selectIndexBufferFormat(m_vertexCount);
+	m_indexFormat = GraphicsHelper::selectIndexBufferFormat(m_vertexCount);
 }
 
 void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, GraphicsResourceUsage resourceUsage)

@@ -36,9 +36,24 @@ void MeshGeometryBuilder::init()
 	m_color = Color::White;
 }
 
-void MeshGeometryBuilder::setTransform(const Matrix& value)
+void MeshGeometryBuilder::setTransform(const AttitudeTransform& value)
 {
 	m_transform = value;
+}
+
+void MeshGeometryBuilder::setPosition(const Vector3& value)
+{
+	m_transform.translation = value;
+}
+
+void MeshGeometryBuilder::setRotation(const Vector3& value)
+{
+	m_transform.rotation = Quaternion::makeFromEulerAngles(value);
+}
+
+void MeshGeometryBuilder::setScale(const Vector3& value)
+{
+	m_transform.scale = value;
 }
 
 void MeshGeometryBuilder::setColor(const Color& value)
@@ -63,6 +78,14 @@ void MeshGeometryBuilder::addBox(const Vector3& sizes)
 {
 	auto* g = newMeshGenerater<detail::RegularBoxMeshFactory>();
 	g->m_size = sizes;
+}
+
+void MeshGeometryBuilder::addSphere(float radius, int sliceH, int sliceV)
+{
+	auto* g = newMeshGenerater<detail::RegularSphereMeshFactory>();
+	g->m_radius = radius;
+	g->m_slices = sliceH;
+	g->m_stacks = sliceV;
 }
 
 void MeshGeometryBuilder::endSection()
@@ -92,14 +115,20 @@ Ref<Mesh> MeshGeometryBuilder::buildMesh()
 	int vertexOffset = 0;
 	int indexOffset = 0;
 	int sectionCount = 0;
+	int indexStride = GraphicsHelper::getIndexStride(mesh->indexBufferFormat());
 	for (const auto& section : m_currentMeshSections) {
 		int sectionIndexOffset = indexOffset;
 
 		for (int i = section.startGenerator; i < section.startGenerator + section.generatorCount; i++) {
 			const auto& g = m_generators[i];
-			detail::MeshGeneraterBuffer genBuffer(nullptr);	// TODO: allocator
-			genBuffer.setBuffer(static_cast<Vertex*>(mappedVB) + vertexOffset, mappedIB, mesh->indexBufferFormat(), indexOffset);
+			//int vertexCount = g.generator->vertexCount();
+			detail::MeshGeneraterBuffer genBuffer(m_allocator);
+			genBuffer.setBuffer(
+				static_cast<Vertex*>(mappedVB) + vertexOffset,
+				static_cast<byte_t*>(mappedIB) + indexOffset * indexStride,
+				mesh->indexBufferFormat(), vertexOffset);
 			genBuffer.generate(g.generator);
+			//genBuffer.transform(g.generator, vertexCount);
 
 			//int indexCount = g.generator->indexCount();
 
