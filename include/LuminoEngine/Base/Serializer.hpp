@@ -42,6 +42,7 @@ public:
 template<typename T> void serialize2(Serializer2& sr, List<T>& value);
 void serialize2(Serializer2& ar, detail::AssetPath& value);
 void serialize2(Serializer2& ar, Vector2& value);
+void serialize2(Serializer2& ar, Vector3& value);
 
 /** */
 LN_CLASS()
