@@ -57,7 +57,7 @@ endif()
 
 #------------------------------------------------------------------------------
 # ctest
-add_test(NAME LuminoCore-test-all COMMAND $<TARGET_FILE:LuminoCore-Test>)
+add_test(NAME LuminoCore-test-all COMMAND $<TARGET_FILE:LuminoCore-test>)
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #    CXX_STANDARD 11

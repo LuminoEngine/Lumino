@@ -13,4 +13,4 @@ ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
 #------------------------------------------------------------------------------
 # ctest
 
-add_test(NAME LuminoEngine-test-all COMMAND $<TARGET_FILE:LuminoEngine-Test>)
+add_test(NAME LuminoEngine-test-all COMMAND $<TARGET_FILE:LuminoEngine-test>)
