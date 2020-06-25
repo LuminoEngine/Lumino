@@ -1,6 +1,7 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
+#include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
 #include <LuminoEngine/ImageEffect/SSAOImageEffect.hpp>
 #include <LuminoEngine/ImageEffect/TonemapImageEffect.hpp>
 using namespace ln;
@@ -9,10 +10,10 @@ class App_Sandbox_PostEffect : public Application
 {
     void onInit() override
     {
-        Engine::renderView()->setGuideGridEnabled(true);
+        //Engine::renderView()->setGuideGridEnabled(true);
         Engine::camera()->addComponent(CameraOrbitControlComponent::create());
         Engine::renderView()->setBackgroundColor(Color::Gray);
-		Engine::ambientLight()->setIntensity(0.5);
+		//Engine::ambientLight()->setIntensity(0.5);
 
 		Engine::camera()->setFarClip(100);
         //auto mesh = StaticMesh::create(u"D:/Tech/Tools/cornellBox/BJS-2.79-Cycles-gltf/assets/cornellBox-2.79-Cycles-gltf.bin");
@@ -62,11 +63,18 @@ class App_Sandbox_PostEffect : public Application
         auto obj = makeObject<StaticMesh>(model);
 
 
+		auto effect2 = makeObject<SSRImageEffect>();
+		Engine::renderView()->addImageEffect(effect2);
+
 		auto effect1 = makeObject<SSAOImageEffect>();
 		Engine::renderView()->addImageEffect(effect1);
 
-        //auto effect1 = makeObject<TonemapImageEffect>();
-        //Engine::renderView()->addImageEffect(effect1);
+		auto effect4 = makeObject<BloomImageEffect>();
+		effect4->setStrength(0.1);
+		Engine::renderView()->addImageEffect(effect4);
+
+        auto effect3 = makeObject<TonemapImageEffect>();
+        Engine::renderView()->addImageEffect(effect3);
 
     }
 
