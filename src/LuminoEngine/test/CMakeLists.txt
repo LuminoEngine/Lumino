@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
-project(LuminoEngine-Test)
+project(LuminoEngine-test)
 
 file(GLOB LOCAL_SOURCES "*.hpp" "*.cpp")
 source_group("Sources" FILES ${LOCAL_SOURCES})
@@ -13,4 +13,4 @@ ln_add_pch(${PROJECT_NAME} "PCH.hpp" "PCH.cpp")
 #------------------------------------------------------------------------------
 # ctest
 
-add_test(NAME LuminoEngine-Test-all COMMAND $<TARGET_FILE:LuminoEngine-Test>)
+add_test(NAME LuminoEngine-test-all COMMAND $<TARGET_FILE:LuminoEngine-Test>)

@@ -460,7 +460,7 @@ int main(int argc, char** argv)
         //Example_MessageWindow();
         //Example_Navigator();
 		//Example_SoundControl();
-        Example_Sprite();
+        //Example_Sprite();
         //Example_UIControls();
 		//Example_Tilemap();
         //Experiment_Reflector();

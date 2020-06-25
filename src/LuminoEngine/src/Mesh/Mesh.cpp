@@ -1046,6 +1046,32 @@ int StaticMeshModel::findNodeIndex(StringRef name) const
 	return m_nodes.indexOfIf([&](const auto& x) { return x->name() == name; });
 }
 
+MeshContainer* StaticMeshModel::addMeshContainer(Mesh* mesh)
+{
+	auto meshContainer = makeObject<MeshContainer>();
+	meshContainer->setMesh(mesh);
+	meshContainer->m_index = m_meshContainers.size();
+	m_meshContainers.add(meshContainer);
+	return meshContainer;
+}
+
+MeshNode* StaticMeshModel::addNode()
+{
+	auto node = makeObject<MeshNode>();
+	node->m_model = this;
+	node->m_index = m_nodes.size();
+	m_nodes.add(node);
+	return node;
+}
+
+MeshNode* StaticMeshModel::addMeshContainerNode(Mesh* mesh)
+{
+	auto container = addMeshContainer(mesh);
+	auto node = addNode();
+	node->setMeshContainerIndex(container->m_index);
+	return node;
+}
+
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 {
 	if (LN_REQUIRE(meshContainer)) return;

@@ -319,6 +319,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+	int m_index = -1;
 	ln::String m_name;
 	Box m_boundingBox;
 	//List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
@@ -407,7 +408,13 @@ public:
 	MeshNode* findNode(StringRef name) const;
 	int findNodeIndex(StringRef name) const;
 
+	MeshNode* addNode();
+	MeshContainer* addMeshContainer(Mesh* mesh);
+	MeshNode* addMeshContainerNode(Mesh* mesh);
+
+	[[deprecated]]
 	void addMeshContainer(MeshContainer* meshContainer);
+	[[deprecated]]
     void addNode(MeshNode* node);
 	void addMaterial(Material* material);
 

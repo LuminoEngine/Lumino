@@ -20,7 +20,7 @@ void MeshGeneraterBuffer::generate(MeshGenerater* generator)
     m_generator->onGenerate(this);
 }
 
-void MeshGeneraterBuffer::setV(int index, const Vector3&	position, const Vector2& uv, const Vector3& normal)
+void MeshGeneraterBuffer::setV(int index, const Vector3& position, const Vector2& uv, const Vector3& normal)
 {
     m_vertexBuffer[index].position = position;
     m_vertexBuffer[index].uv = uv;
