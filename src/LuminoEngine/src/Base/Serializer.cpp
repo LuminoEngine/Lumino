@@ -812,26 +812,48 @@ String Serializer2::serialize(AssetModel* value, const String& basePath)
 
 Ref<AssetModel> Serializer2::deserialize(const String& str, const String& basePath)
 {
-	auto sr = makeObject<Serializer2>();
-	sr->m_mode = ArchiveMode::Load;
-	sr->m_basePath = basePath;
-	sr->m_store->initRead(str_to_ns(str));
-	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
-	auto asset = makeObject<AssetModel>();
-	static_cast<Object*>(asset)->serialize2(*sr);
-	return asset;
+	Ref<AssetModel> asset;
+
+	try {
+		ObjectInitializeContext::Default->autoAdd = false;
+
+		auto sr = makeObject<Serializer2>();
+		sr->m_mode = ArchiveMode::Load;
+		sr->m_basePath = basePath;
+		sr->m_store->initRead(str_to_ns(str));
+		//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
+		auto asset = makeObject<AssetModel>();
+		static_cast<Object*>(asset)->serialize2(*sr);
+
+		ObjectInitializeContext::Default->autoAdd = true;
+		return asset;
+	}
+	catch (...) {
+		ObjectInitializeContext::Default->autoAdd = true;
+		throw;
+	}
 }
 
 void Serializer2::deserializeInstance(AssetModel* asset, const String& str, const String& basePath)
 {
-	asset->m_externalObjectDeserialization = true;
+	try {
+		ObjectInitializeContext::Default->autoAdd = false;
 
-	auto sr = makeObject<Serializer2>();
-	sr->m_mode = ArchiveMode::Load;
-	sr->m_basePath = basePath;
-	sr->m_store->initRead(str_to_ns(str));
-	//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
-	static_cast<Object*>(asset)->serialize2(*sr);
+		asset->m_externalObjectDeserialization = true;
+
+		auto sr = makeObject<Serializer2>();
+		sr->m_mode = ArchiveMode::Load;
+		sr->m_basePath = basePath;
+		sr->m_store->initRead(str_to_ns(str));
+		//sr->m_store->stack.push_back(detail::SerializerStore2::StackItem{ detail::SerializerStore2::ContainerType::Object, ljson::parse(str.toStdString()) });
+		static_cast<Object*>(asset)->serialize2(*sr);
+
+		ObjectInitializeContext::Default->autoAdd = true;
+	}
+	catch (...) {
+		ObjectInitializeContext::Default->autoAdd = true;
+		throw;
+	}
 }
 #endif
 

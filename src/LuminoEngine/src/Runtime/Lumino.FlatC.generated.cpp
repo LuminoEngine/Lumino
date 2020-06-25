@@ -801,63 +801,6 @@ public:
 };
 
 
-class LNWS_ln_GraphicsResource : public ln::GraphicsResource
-{
-public:
-    static LnGraphicsResource_SubclassRegistrationInfo* subclassInfo() { static LnGraphicsResource_SubclassRegistrationInfo info; return &info; }
-    LnSubinstanceId m_subinstance = 0;
-
-    LNWS_ln_GraphicsResource()
-    {
-        if (subclassInfo()->subinstanceAllocFunc) m_subinstance = subclassInfo()->subinstanceAllocFunc(LNI_OBJECT_TO_HANDLE(this));
-    }
-
-    ~LNWS_ln_GraphicsResource()
-    {
-        if (subclassInfo()->subinstanceFreeFunc) subclassInfo()->subinstanceFreeFunc(LNI_OBJECT_TO_HANDLE(this), m_subinstance);
-    }
-
-    // Virtual
-    static LnGraphicsResource_OnSerialize_OverrideCallback s_LnGraphicsResource_OnSerialize_OverrideCallback; // deprecated
-    virtual void onSerialize(ln::Serializer* ar) override
-    {
-        if (s_LnGraphicsResource_OnSerialize_OverrideCallback) s_LnGraphicsResource_OnSerialize_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-    void onSerialize_CallBase(ln::Serializer* ar)
-    {
-        ln::GraphicsResource::onSerialize(ar);
-    }
-
-    // Virtual
-    static LnGraphicsResource_OnSerialize2_OverrideCallback s_LnGraphicsResource_OnSerialize2_OverrideCallback; // deprecated
-    virtual void onSerialize2(ln::Serializer2* ar) override
-    {
-        if (s_LnGraphicsResource_OnSerialize2_OverrideCallback) s_LnGraphicsResource_OnSerialize2_OverrideCallback(LNI_OBJECT_TO_HANDLE(this), LNI_OBJECT_TO_HANDLE(ar));
-    }
-    void onSerialize2_CallBase(ln::Serializer2* ar)
-    {
-        ln::GraphicsResource::onSerialize2(ar);
-    }
-
-    // TypeInfo
-    ln::TypeInfo* m_typeInfoOverride = nullptr;
-    virtual void setTypeInfoOverride(ln::TypeInfo* value) override
-    {
-        m_typeInfoOverride = value;
-    }
-    virtual ::ln::TypeInfo* _lnref_getThisTypeInfo() const override
-    {
-        if (m_typeInfoOverride)
-            return m_typeInfoOverride;
-        else
-            return ln::TypeInfo::getTypeInfo<Object>();
-    }
-
-};
-
-LnGraphicsResource_OnSerialize_OverrideCallback LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize_OverrideCallback = nullptr;
-LnGraphicsResource_OnSerialize2_OverrideCallback LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize2_OverrideCallback = nullptr;
-
 class LNWS_ln_Texture : public ln::Texture
 {
 public:
@@ -907,7 +850,7 @@ public:
         if (m_typeInfoOverride)
             return m_typeInfoOverride;
         else
-            return ln::TypeInfo::getTypeInfo<GraphicsResource>();
+            return ln::TypeInfo::getTypeInfo<Object>();
     }
 
 };
@@ -4319,57 +4262,21 @@ LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outRetu
 }
 
 
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
+LN_FLAT_API LnResult LnAssets_ReloadAsset(const LnChar* filePath, LnHandle obj)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_GraphicsResource, object)->onSerialize_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer, ar)));
+    (ln::Assets::reloadAsset(filePath, LNI_HANDLE_TO_OBJECT(ln::Object, obj)));
     LNI_FUNC_TRY_END_RETURN;
 }
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_SetOverrideCallback(LnGraphicsResource_OnSerialize_OverrideCallback callback)
-{
-    LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
 
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize2_CallOverrideBase(LnHandle object, LnHandle ar)
+
+LN_FLAT_API LnResult LnAssets_ReloadAssetA(const char* filePath, LnHandle obj)
 {
     LNI_FUNC_TRY_BEGIN;
-    (LNI_HANDLE_TO_OBJECT(LNWS_ln_GraphicsResource, object)->onSerialize2_CallBase(LNI_HANDLE_TO_OBJECT(ln::Serializer2, ar)));
+    (ln::Assets::reloadAsset(LNI_UTF8STRPTR_TO_STRING(filePath), LNI_HANDLE_TO_OBJECT(ln::Object, obj)));
     LNI_FUNC_TRY_END_RETURN;
 }
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize2_SetOverrideCallback(LnGraphicsResource_OnSerialize2_OverrideCallback callback)
-{
-    LNWS_ln_GraphicsResource::s_LnGraphicsResource_OnSerialize2_OverrideCallback = callback;
-    return LN_SUCCESS;
-}
 
-extern LN_FLAT_API int LnGraphicsResource_GetTypeInfoId()
-{
-    return ln::TypeInfo::getTypeInfo<ln::GraphicsResource>()->id();
-}
-
-LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id)
-{
-    ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::GraphicsResource>(), id);
-}
-
-void LnGraphicsResource_RegisterSubclassTypeInfo(const LnGraphicsResource_SubclassRegistrationInfo* info)
-{
-    if (info) {
-        ::ln::detail::TypeInfoInternal::setManagedTypeInfoId(::ln::TypeInfo::getTypeInfo<ln::GraphicsResource>(), info->subclassId);
-        *LNWS_ln_GraphicsResource::subclassInfo() = *info;
-    }
-}
-
-LnSubinstanceId LnGraphicsResource_GetSubinstanceId(LnHandle handle)
-{
-    if (handle) {
-        LNI_FUNC_TRY_BEGIN;
-        return (LNI_HANDLE_TO_OBJECT(LNWS_ln_GraphicsResource, handle))->m_subinstance;
-        LNI_FUNC_TRY_END_RETURN;
-    }
-    return 0;
-}
 
 LN_FLAT_API LnResult LnTexture_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar)
 {
@@ -4498,7 +4405,7 @@ LN_FLAT_API LnResult LnTexture2D_CreateWithFormat(int width, int height, LnTextu
 LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextureFormat format, LnHandle* outTexture2D)
 {
     LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, filePath, static_cast<ln::TextureFormat>(format));
+    //LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, filePath, static_cast<ln::TextureFormat>(format));
     LNI_FUNC_TRY_END_RETURN;
 }
 
@@ -4506,7 +4413,7 @@ LN_FLAT_API LnResult LnTexture2D_CreateFromFile(const LnChar* filePath, LnTextur
 LN_FLAT_API LnResult LnTexture2D_CreateFromFileA(const char* filePath, LnTextureFormat format, LnHandle* outTexture2D)
 {
     LNI_FUNC_TRY_BEGIN;
-    LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, LNI_UTF8STRPTR_TO_STRING(filePath), static_cast<ln::TextureFormat>(format));
+    //LNI_CREATE_OBJECT(outTexture2D, LNWS_ln_Texture2D, init, LNI_UTF8STRPTR_TO_STRING(filePath), static_cast<ln::TextureFormat>(format));
     LNI_FUNC_TRY_END_RETURN;
 }
 

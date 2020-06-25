@@ -66,8 +66,7 @@ public:	// TODO: Editor integration
     void renderGizmos(RenderingContext* context);
 
 protected:
-	LN_SERIALIZE_CLASS_VERSION(1);
-	void serialize(Archive& ar);
+	void serialize2(Serializer2& ar) override;
 
 
 LN_CONSTRUCT_ACCESS:

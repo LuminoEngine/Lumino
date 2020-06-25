@@ -541,7 +541,6 @@ void RenderingContext::drawSkinnedMesh(Mesh* mesh, int sectionIndex, MeshArmatur
 
 		virtual RequestBatchResult onRequestBatch(detail::RenderFeatureBatchList* batchList, GraphicsContext* context, RenderFeature* renderFeature, const detail::SubsetInfo* subsetInfo) override
 		{
-			// TODO: boneTexture を送る仕組み
 			return static_cast<detail::MeshRenderFeature*>(renderFeature)->drawMesh(batchList, context, mesh, sectionIndex, skeleton);
 		}
 	};

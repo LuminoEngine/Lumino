@@ -31,11 +31,12 @@ void AssetManager::init(const Settings& settings)
     LN_LOG_DEBUG << "AssetManager Initialization started.";
 
     m_storageAccessPriority = settings.assetStorageAccessPriority;
+
+    // "file" scheme でアクセスする Archive を登録する
     if (m_storageAccessPriority != AssetStorageAccessPriority::ArchiveOnly) {
-        auto archive = makeRef<FileSystemReader>();
-        m_requestedArchives.add(archive);
+        m_localFileSystemArchive = makeRef<FileSystemReader>();
+        m_requestedArchives.add(m_localFileSystemArchive);
         refreshActualArchives();
-        //addAssetDirectory(Environment::currentDirectory());
     }
 
     LN_LOG_DEBUG << "AssetManager Initialization ended.";
@@ -51,14 +52,16 @@ void AssetManager::dispose()
 
 void AssetManager::addAssetDirectory(const StringRef& path)
 {
+    // "asset" scheme でアクセスする Archive を登録する
 	auto archive = makeRef<FileSystemReader>();
 	archive->setRootPath(path);
 	m_requestedArchives.add(archive);
+    m_fileSystemArchives.add(archive);
 	refreshActualArchives();
 
-    if (m_primaryLocalAssetDirectory.isEmpty()) {
-        m_primaryLocalAssetDirectory = Path(path);
-    }
+    //if (m_primaryLocalAssetDirectory.isEmpty()) {
+    //    m_primaryLocalAssetDirectory = Path(path);
+    //}
 
     LN_LOG_INFO << "Asset directory added: " << path;
 }
@@ -87,6 +90,22 @@ void AssetManager::removeAllAssetDirectory()
 //	refreshActualArchives();
 //}
 //
+
+//Optional<AssetPath> AssetManager::findAssetPath(const AssetPath& assetPath, const Char** exts, int extsCount) const
+//{
+//    const Char* begin = filePath.data();
+//    const Char* end = filePath.data() + filePath.length();
+//    if (detail::PathTraits::getExtensionBegin(begin, end, false) != end) {
+//        // has extension
+//        paths->add(Path(filePath).unify());
+//    }
+//    else {
+//        for (int i = 0; i < extsCount; i++) {
+//            paths->add(Path(String(filePath) + exts[i]).unify());   // TODO: operator StringRef + Char*
+//        }
+//    }
+//}
+
 Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath, const Char** exts, int extsCount) const
 {
     List<Path> paths;
@@ -170,6 +189,49 @@ Ref<Stream> AssetManager::openStreamFromAssetPath(const AssetPath& assetPath) co
     return nullptr;
 }
 
+AssetPath AssetManager::resolveAssetPath(const AssetPath& assetPath, const Char** exts, int extsCount) const
+{
+    // scheme や host が指定されている場合はそこを検索したい
+    AssetArchive* priorityArchive = nullptr;
+    if (assetPath.scheme() == AssetPath::FileSchemeName) {
+        if (m_localFileSystemArchive) {
+            priorityArchive = m_localFileSystemArchive;
+        }
+        else {
+            return AssetPath();
+        }
+    }
+    else if (!assetPath.host().isEmpty()) {
+        priorityArchive = m_actualArchives.findIf([&](const AssetArchive* ar) { return ar->name() == assetPath.host(); }).valueOr(nullptr);
+        if (!priorityArchive) {
+            return AssetPath();
+        }
+    }
+
+
+    AssetPath result;
+    for (int i = 0; i < extsCount; i++) {
+        Path localPath = (assetPath.path().hasExtension()) ? assetPath.path() : Path(assetPath.path() + exts[i]);
+
+        if (priorityArchive) {
+            if (priorityArchive->existsFile(localPath)) {
+                result = AssetPath(priorityArchive->scheme(), priorityArchive->name(), localPath);
+                break;
+            }
+        }
+        else {
+            for (auto& archive : m_actualArchives) {
+                if (archive->existsFile(localPath)) {
+                    result = AssetPath(archive->scheme(), archive->name(), localPath);
+                    break;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath) const
 {
     auto assetPath = findAssetPath(filePath);
@@ -182,12 +244,6 @@ Ref<AssetModel> AssetManager::loadAssetModelFromLocalFile(const String& filePath
     }
 }
 
-Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
-{
-    const Char* ext = AssetModel::AssetFileExtension.c_str();
-    return findAssetPath(filePath, &ext, 1);
-}
-
 Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& assetPath) const
 {
     auto stream = openStreamFromAssetPath(assetPath);
@@ -197,6 +253,12 @@ Ref<AssetModel> AssetManager::loadAssetModelFromAssetPath(const AssetPath& asset
     return asset;
 }
 
+Optional<AssetPath> AssetManager::findAssetPath(const StringRef& filePath) const
+{
+    const Char* ext = AssetModel::AssetFileExtension.c_str();
+    return findAssetPath(filePath, &ext, 1);
+}
+
 void AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const AssetPath& assetPath) const
 {
     auto stream = openStreamFromAssetPath(assetPath);
@@ -204,18 +266,27 @@ void AssetManager::loadAssetModelFromAssetPathToInstance(Object* obj, const Asse
 
     auto asset = makeObject<AssetModel>(obj);
     Serializer2::deserializeInstance(asset, text, assetPath.getParentAssetPath().toString());
+
+    obj->setAssetPath(assetPath);
 }
 
 void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& filePath) const
 {
     if (LN_REQUIRE(asset)) return;
-    if (LN_REQUIRE(!m_primaryLocalAssetDirectory.isEmpty())) return;
+    if (LN_REQUIRE(!m_fileSystemArchives.isEmpty())) return;
 
     AssetPath assetPath;
     Path localPath;
     if (!filePath.isEmpty()) {
-        auto fullPath = Path(m_primaryLocalAssetDirectory, filePath);
-        assetPath = AssetPath::makeFromLocalFilePath(fullPath);
+        auto primaryArchive = primaryAssetDirectoryArchive();
+        auto primaryLocalAssetDirectory = primaryArchive->rootPath();
+        auto fullPath = Path(primaryLocalAssetDirectory, filePath);
+        if (primaryLocalAssetDirectory.contains(fullPath)) {
+            assetPath = AssetPath(primaryArchive->scheme(), primaryArchive->name(), primaryLocalAssetDirectory.makeRelative(fullPath));
+        }
+        else {
+            assetPath = AssetPath::makeFromLocalFilePath(fullPath);
+        }
         localPath = fullPath;
     }
     else if (!asset->target()->assetPath().isNull()) {
@@ -247,10 +318,14 @@ void AssetManager::saveAssetModelToLocalFile(AssetModel* asset, const String& fi
 
 String AssetManager::assetPathToLocalFullPath(const AssetPath& assetPath) const
 {
-    LN_CHECK(!m_primaryLocalAssetDirectory.isEmpty());
+    //LN_CHECK(!m_primaryLocalAssetDirectory.isEmpty());
     LN_CHECK(!assetPath.isNull());
     // TODO: assetPath の持ってる host に応じて 親フォルダを変えるべきか。
-    return Path(m_primaryLocalAssetDirectory, assetPath.path());
+
+    auto primaryArchive = primaryAssetDirectoryArchive();
+    auto primaryLocalAssetDirectory = primaryArchive->rootPath();
+
+    return Path(primaryLocalAssetDirectory, assetPath.path());
 }
 
 //String AssetManager::localFullPathToAssetPath(const String& localFullPath) const
@@ -347,64 +422,6 @@ Ref<ByteBuffer> AssetManager::readAllBytes(const StringRef& filePath)
 	return buffer;
 }
 
-//Ref<Texture2D> AssetManager::loadTexture(const StringRef& filePath)
-//{
-//    static const Char* exts[] = {
-//        u".png",
-//    };
-//
-//    auto path = findFilePathFromIndex(filePath);
-//    if (!path.isEmpty()) {
-//       auto asset = makeObject<AssetModel>();
-//       JsonSerializer::deserialize(ln::FileSystem::readAllText(path), path.parent(), *asset);
-//       return static_cast<Texture2D*>(asset->target());
-//    }
-//
-//	Path sourceFile;
-//    Ref<Stream> stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
-//
-//	// TODO: cache
-//
-//    // TODO: mipmap
-//	auto ref = makeObject<Texture2D>(stream, TextureFormat::RGBA8);
-//	ref->setAssetSource(sourceFile);
-//	return ref;
-//}
-
-Ref<Shader> AssetManager::loadShader(const StringRef& filePath)
-{
-    static const Char* exts[] = {
-        u".lcfx",
-        u".fx",
-    };
-
-	Path sourceFile;
-    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
-    if (LN_ENSURE_IO(stream, filePath)) return nullptr;
-
-    // TODO: cache
-
-    auto ref = makeObject<Shader>(Path(filePath).fileNameWithoutExtension(), stream);
-    return ref;
-}
-
-Ref<Object> AssetManager::loadAsset(const StringRef& filePath)
-{
-    static const Char* exts[] = {
-        u".lnasset",
-    };
-
-    Path sourceFile;
-    auto stream = openFileStreamInternal(filePath, exts, LN_ARRAY_SIZE_OF(exts), &sourceFile);
-    if (LN_ENSURE_IO(stream, filePath)) return nullptr;
-    auto text = FileSystem::readAllText(stream);
-
-    auto asset = ln::makeObject<ln::AssetModel>();
-    JsonSerializer::deserialize(text, sourceFile.parent(), *asset);
-    //asset->onSetAssetFilePath(sourceFile);
-    return asset->target();
-}
-
 void AssetManager::buildAssetIndexFromLocalFiles(const ln::Path& assetDir)
 {
     m_assetIndex.clear();
@@ -488,17 +505,6 @@ bool AssetManager::existsFileInternal(const StringRef& filePath, const Char** ex
 	}
 
 	return false;
-}
-
-const Path& AssetManager::findFilePathFromIndex(const StringRef& id) const
-{
-    auto itr = m_assetIndex.find(Uuid(id));
-    if (itr != m_assetIndex.end()) {
-        return itr->second;
-    }
-    else {
-        return Path::Empty;
-    }
 }
 
 Ref<Stream> AssetManager::openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath)

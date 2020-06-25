@@ -37,7 +37,8 @@ Ref<SamplerState> SamplerState::create(TextureFilterMode filter, TextureAddressM
 }
 
 SamplerState::SamplerState()
-    : m_rhiObject(nullptr)
+    : m_manager(nullptr)
+    , m_rhiObject(nullptr)
     , m_desc(detail::SamplerStateData::defaultState)
     , m_modified(true)
     , m_frozen(false)
@@ -50,25 +51,26 @@ SamplerState::~SamplerState()
 
 void SamplerState::init()
 {
-    GraphicsResource::init();
+    Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 void SamplerState::init(TextureFilterMode filter)
 {
-    GraphicsResource::init();
+    init();
     setFilterMode(filter);
 }
 
 void SamplerState::init(TextureFilterMode filter, TextureAddressMode address)
 {
-    GraphicsResource::init();
+    init();
     setFilterMode(filter);
     setAddressMode(address);
 }
 
 void SamplerState::init(TextureFilterMode filter, TextureAddressMode address, bool anisotropyEnabled)
 {
-    GraphicsResource::init();
+    init();
     setFilterMode(filter);
     setAddressMode(address);
     setAnisotropyEnabled(anisotropyEnabled);
@@ -77,7 +79,9 @@ void SamplerState::init(TextureFilterMode filter, TextureAddressMode address, bo
 void SamplerState::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();
-    GraphicsResource::onDispose(explicitDisposing);
+
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    Object::onDispose(explicitDisposing);
 }
 
 void SamplerState::setFilterMode(TextureFilterMode value)

@@ -29,6 +29,14 @@ public:
      */
     LN_METHOD()
     static Ref<Object> loadAsset(const StringRef& filePath);
+    
+    /**
+     * 指定したアセットファイルを読み込み、作成済みのオブジェクトへ適用します。
+     *
+     * このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
+     */
+    LN_METHOD()
+    static void reloadAsset(const StringRef& filePath, Object* obj);
 
     /**
      * 指定したアセットファイルへオブジェクトを保存します。
@@ -43,6 +51,7 @@ public:
      *
      * このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
      */
+    // obsolete: use reloadAsset
     static void deserializeInstance(Object* obj, const StringRef& filePath);
 
 
@@ -50,18 +59,6 @@ public:
 
     static bool existsFile(const StringRef& filePath);
 
-	/**
-	 * 指定したアセットを読み込み、テクスチャを作成します。
-	 *
-	 * @param[in]   filePath   : アセットのパス
-	 * @return		作成された Texture2D
-	 * 
-	 * 拡張子は不要です。
-	 * EngineSettings::addAsset~ で指定されたパスを検索します。
-	 */
-    //static Ref<Texture2D> loadTexture(const StringRef& filePath);
-
-    static Ref<Shader> loadShader(const StringRef& filePath);
 	static Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
 
 
@@ -72,22 +69,22 @@ public:
     //static String combineAssetPath(const String& assetFullBasePath, const String& localAssetPath);  // localAssetPath が asset:// から始まる場合はそれを採用。相対パスの場合は結合する。
     //static String makeRelativeAssetPath(const String& assetFullBasePath, const String& assetFullPath);
 
-    static void serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value);
+    //static void serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value);
 
-    // TODO: internal
-    template<typename TValue>
-    static void serializeAsAssetPath(Archive& ar, const StringRef& name, Ref<TValue>& value)
-    {
-        if (ar.isSaving()) {
-            Ref<Object> local = value;
-            serializeAsAssetPathInternal(ar, name, local);
-        }
-        else {
-            Ref<Object> local;
-            serializeAsAssetPathInternal(ar, name, local);
-            value = dynamic_pointer_cast<TValue>(local);
-        }
-    }
+    //// TODO: internal
+    //template<typename TValue>
+    //static void serializeAsAssetPath(Archive& ar, const StringRef& name, Ref<TValue>& value)
+    //{
+    //    if (ar.isSaving()) {
+    //        Ref<Object> local = value;
+    //        serializeAsAssetPathInternal(ar, name, local);
+    //    }
+    //    else {
+    //        Ref<Object> local;
+    //        serializeAsAssetPathInternal(ar, name, local);
+    //        value = dynamic_pointer_cast<TValue>(local);
+    //    }
+    //}
 
 };
 

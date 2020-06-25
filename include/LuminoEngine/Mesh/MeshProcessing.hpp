@@ -11,8 +11,17 @@ class MeshGeometryBuilder
 	: public Object
 {
 public:
+	void setTransform(const Matrix& value);
+
+	void setColor(const Color& value);
+
 	void beginSection();
+
+	// Y+
+	void addPlane(const Vector2& size, int sliceH, int sliceV);
+	
 	void addBox(const Vector3& sizes);
+
 	void endSection();
 
 	Ref<Mesh> buildMesh();
@@ -28,9 +37,14 @@ private:
 	{
 		void* buffer = m_allocator->allocate(sizeof(T));
 		T* data = new (buffer)T();
-		m_generators.add(data);
+		data->setTransform(m_transform);
+		data->setColor(m_color);
+		m_generators.add(Geometry{ data });
+		//allocateNextTransform();
 		return data;
 	}
+
+	//void allocateNextTransform();
 
 	struct Section
 	{
@@ -38,8 +52,16 @@ private:
 		int generatorCount;
 	};
 
+	struct Geometry
+	{
+		//const Matrix* transform;
+		/*const*/ detail::MeshGenerater* generator;
+	};
+
 	Ref<detail::LinearAllocator> m_allocator;
-	List<detail::MeshGenerater*> m_generators;
+	Matrix m_transform;
+	Color m_color;
+	List<Geometry> m_generators;
 	List<Section> m_currentMeshSections;
 };
 

@@ -16,6 +16,24 @@ class ObservablePropertyBase;
 template<class T>
 class TypeInfoTraits;
 
+// FIXME: 今のところグローバルオブジェクト。かなり苦肉の策。
+// すべての init() の引数に渡す？
+// → Binding が問題になる。init は コンストラクタとして公開しているのでそこに混ぜこんで公開するのもありだが…
+//   そもそも ObjectInitializeContext は内部用途がメインなので、ユーザープログラムからは基本的に意識させたくない。
+//   全部のコンストラクタにこれを必要とするのは "正しい" けど使いづらいだけ。
+//   Binding 側でクラスを実装するときも、今は「デフォルトコンストラクタを必ず作ってね」にしているが、
+//   ここに全部 ObjectInitializeContext が入り込むのはやだ。
+//   なので代案としてグローバル変数。切り詰めても ThreadLocalStorage か。
+// postInit() みたいなのを作って、ActiveWorkd への追加などはここでやる？
+// → 代替案としてはあり。後でちゃんと検討してみよう。
+class ObjectInitializeContext : public RefObject
+{
+public:
+    static Ref<ObjectInitializeContext> Default;
+
+    bool autoAdd = true;
+};
+
 namespace detail {
 class WeakRefInfo; 
 class ObjectHelper;
@@ -40,7 +58,16 @@ public:
     static AssetPath combineAssetPath(const AssetPath& basePath, const String& localAssetPath);
 
     // basePath から見た assetPath を示す相対パスを返す。
-    static String makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath);
+    static Path makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath);
+
+    // filePath から AssetPath を作る。ファイルが存在しない場合はエラーをレポートした後、Empty を返す。
+    //static AssetPath resolveAssetPath(const Path& filePath, const std::initializer_list<const Char*>& candidateExts);
+    static AssetPath resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount);
+    template<size_t N>
+    static AssetPath resolveAssetPath(const Path& filePath, const Char* (&candidateExts)[N])
+    {
+        return resolveAssetPath(filePath, candidateExts, N);
+    }
 
     AssetPath();
     AssetPath(const String& scheme, const String& host, const Path& path);
@@ -49,9 +76,22 @@ public:
     const String& host() const { return m_components->host; }
     const Path& path() const { return m_components->path; }
 
+    bool isAssetFilePath() const;   // .yml か
+    static bool isAssetFilePath(const Path& path);
     AssetPath getParentAssetPath() const;  // 親フォルダ
     String toString() const;
-    bool isNull() const { return m_components == nullptr; }
+    bool isNull() const noexcept { return m_components == nullptr; }
+    bool hasValue() const noexcept { return !isNull(); }
+    uint64_t calculateHash() const;
+
+    explicit operator bool() const noexcept { return !isNull(); }
+
+    static AssetPath resolveAssetPath(const AssetPath& assetPath, const Char** exts, size_t extsCount);
+    template<size_t N>
+    static AssetPath resolveAssetPath(const AssetPath& assetPath, const Char*(&candidateExts)[N])
+    {
+        return resolveAssetPath(assetPath, candidateExts, N);
+    }
 
 private:
     struct Components
@@ -204,6 +244,8 @@ public:
     const detail::AssetPath& assetPath() const { return m_assetPath; }
 
     virtual void setTypeInfoOverride(TypeInfo* value);
+
+    void reloadAsset();
 
 private:
 	virtual void onRetained() override;

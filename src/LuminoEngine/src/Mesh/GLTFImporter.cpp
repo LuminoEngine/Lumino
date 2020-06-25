@@ -12,6 +12,9 @@
 #include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include <LuminoEngine/Animation/AnimationCurve.hpp>
+#include <LuminoEngine/Animation/AnimationTrack.hpp>
+#include <LuminoEngine/Animation/AnimationClip.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
@@ -53,46 +56,55 @@ bool GLTFImporter::openGLTFModel(const AssetPath& assetPath)
 	return result;
 }
 
-Ref<StaticMeshModel> GLTFImporter::import(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::importAsStaticMesh(StaticMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
 {
 	m_assetManager = assetManager;
 	m_diag = diag;
 
 	if (!openGLTFModel(assetPath)) {
-		return nullptr;
+		return false;
 	}
 
-    auto meshModel = makeObject<StaticMeshModel>();
-	m_meshModel = meshModel;
+	m_meshModel = model;
 
-	readCommon(meshModel);
+	readCommon(m_meshModel);
 
-	return meshModel;
+	return true;
 }
 
-Ref<SkinnedMeshModel> GLTFImporter::GLTFImporter::importSkinnedMesh(AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
+bool GLTFImporter::GLTFImporter::importAsSkinnedMesh(SkinnedMeshModel* model, AssetManager* assetManager, const AssetPath& assetPath, DiagnosticsManager* diag)
 {
 	m_assetManager = assetManager;
 	m_diag = diag;
 
 	if (!openGLTFModel(assetPath)) {
-		return nullptr;
+		return false;
 	}
 
-	auto meshModel = makeObject<SkinnedMeshModel>();
-	m_meshModel = meshModel;
+	m_meshModel = model;
 
-	readCommon(meshModel);
+	readCommon(m_meshModel);
 
-	for (auto& skin : m_model->skins) {
+	for (const auto& skin : m_model->skins) {
 		auto meshSkeleton = readSkin(skin);
 		if (!meshSkeleton) {
-			return nullptr;
+			return false;
 		}
-		meshModel->addSkeleton(meshSkeleton);
+		model->addSkeleton(meshSkeleton);
 	}
 
-	return meshModel;
+	for (const auto& animation : m_model->animations) {
+		auto clip = readAnimation(animation);
+		if (!clip) {
+			return false;
+		}
+		if (clip->name().isEmpty()) {
+			clip->setName(String::fromNumber(m_animationClips.size()));
+		}
+		m_animationClips.add(clip);
+	}
+
+	return true;
 }
 
 bool GLTFImporter::readCommon(StaticMeshModel* meshModel)
@@ -156,7 +168,7 @@ Ref<Material> GLTFImporter::readMaterial(const tinygltf::Material& material)
         auto itr = material.values.find("roughnessFactor");
         if (itr != material.values.end()) {
             assert(itr->second.has_number_value);
-            coreMaterial->setMetallic(itr->second.number_value);
+            coreMaterial->setRoughness(itr->second.number_value);
         }
         else {
             coreMaterial->setRoughness(1.0f);    // glTF default
@@ -731,7 +743,6 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 2) {
 					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
@@ -740,10 +751,14 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 						b[i] = beginVertexIndex + s[i];
 						assert(b[i] < vertexCount);
 					}
-					//flipFaceIndex_Triangle<uint16_t>(b, section.indexCount);
 				}
 				else if (section.indexElementSize == 4) {
-					LN_NOTIMPLEMENTED();
+					auto* b = static_cast<uint16_t*>(buf) + indexOffset;
+					auto* s = static_cast<const uint32_t*>(section.indexData);
+					for (int i = 0; i < section.indexCount; i++) {
+						b[i] = beginVertexIndex + s[i];
+						assert(b[i] < vertexCount);
+					}
 				}
 				else {
 					LN_NOTIMPLEMENTED();
@@ -804,7 +819,6 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 
 
 
-
 	//for (int vi = 0; vi < 100/*coreMesh->vertexCount()*/; vi++) {
 	//	auto v = coreMesh->vertex(vi);
 	//	//v.position.y = 0;
@@ -821,6 +835,11 @@ Ref<Mesh> GLTFImporter::generateMesh(const MeshView& meshView) const
 	//coreMesh->setIndex(2, 2);
 
 	//coreMesh->setSection(0, 0, 100, 0, PrimitiveTopology::TriangleList);
+
+	// TODO: set to mesh
+	auto aabb = MeshHelper::makeAABB(
+		static_cast<const Vertex*>(coreMesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main)),
+		vertexCount);
 
 	return coreMesh;
 }
@@ -843,7 +862,7 @@ Ref<MeshArmature> GLTFImporter::readSkin(const tinygltf::Skin& skin)
 	const tinygltf::Buffer& buffer = m_model->buffers[bufferView.buffer];
 
 	const Matrix* inverseBindMatrices = (const Matrix*)(buffer.data.data() + accessor.byteOffset + bufferView.byteOffset);
-	auto armature = makeObject<MeshArmature>();
+	auto armature = makeObject<MeshArmature>(static_cast<SkinnedMeshModel*>(m_meshModel));
 	for (int i = 0; i < skin.joints.size(); i++) {
 		armature->addBone(skin.joints[i], inverseBindMatrices[i]);
 	}
@@ -871,6 +890,137 @@ Ref<Texture> GLTFImporter::loadTexture(const tinygltf::Texture& texture)
 	}
 
 	return makeObject<Texture2D>(bitmap, GraphicsHelper::translateToTextureFormat(bitmap->format()));
+}
+
+Ref<AnimationClip> GLTFImporter::readAnimation(const tinygltf::Animation& animation) const
+{
+	auto clip = makeObject<AnimationClip>();
+	clip->setName(String::fromStdString(animation.name));
+
+	/*
+	Note:
+		input は time.
+		output はキーの値。
+
+		weights の場合、time 1 つに対して output 2 つ以上出てくることがあるが、これは channel.target_node が参照しているノードの mesh の weights に対応する。
+		https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#morph-targets
+		※プロ生ちゃんモデルだと、mesh.weights は 0 個だけど mesh.primitives.targets は 30 個とかあった。
+
+		Lumino としてモーフィングアニメをサポートするときは、ScalarAnimationTrack を複数作って、
+		<メッシュコンテナ名>.<表情名 or 表情Index(outputのIndex=mesh.weightsのIndex)>
+		みたいな感じになるかな。メッシュコンテナ名は省略可でもいいかも。
+	*/
+
+	struct TransformTrackData
+	{
+		int translationFrames = 0;
+		const float* translationTimes;
+		const Vector3* translationValues;
+		TransformAnimationTrack::Interpolation translationInterpolation;
+
+		int rotationFrames = 0;
+		const float* rotationTimes;
+		const Quaternion* rotationValues;
+
+		int scaleFrames = 0;
+		const float* scaleTimes;
+		const Vector3* scaleValues;
+		TransformAnimationTrack::Interpolation scaleInterpolation;
+
+		static TransformAnimationTrack::Interpolation getInterpolation(const std::string& value)
+		{
+			if (value == "STEP") return TransformAnimationTrack::Interpolation::Step;
+			if (value == "LINEAR") return TransformAnimationTrack::Interpolation::Linear;
+			if (value == "CUBICSPLINE") return TransformAnimationTrack::Interpolation::CubicSpline;
+			LN_NOTIMPLEMENTED();
+			return TransformAnimationTrack::Interpolation::Step;
+		}
+	};
+
+	// key: node number
+	std::unordered_map<int, TransformTrackData> transformTrackMap;
+
+	for (const auto& channel : animation.channels) {
+		const auto& sampler = animation.samplers[channel.sampler];
+		const auto& node = m_model->nodes[channel.target_node];
+
+		const auto& inputAccessor = m_model->accessors[sampler.input];
+		const auto& inputBufferView = m_model->bufferViews[inputAccessor.bufferView];
+		const auto& inputBuffer = m_model->buffers[inputBufferView.buffer];
+		const auto* inputData = reinterpret_cast<const float*>(inputBuffer.data.data() + inputAccessor.byteOffset + inputBufferView.byteOffset);
+		if (LN_REQUIRE(inputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && inputAccessor.type == TINYGLTF_TYPE_SCALAR)) return nullptr;
+
+		const auto& outputAccessor = m_model->accessors[sampler.output];
+		const auto& outputBufferView = m_model->bufferViews[outputAccessor.bufferView];
+		const auto& outputBuffer = m_model->buffers[outputBufferView.buffer];
+		const auto* outputData = reinterpret_cast<const float*>(outputBuffer.data.data() + outputAccessor.byteOffset + outputBufferView.byteOffset);
+
+		if (inputAccessor.sparse.isSparse || outputAccessor.sparse.isSparse) {
+			LN_NOTIMPLEMENTED();
+			return nullptr;
+		}
+
+		if (channel.target_path == "weights") {
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_SCALAR)) return nullptr;
+
+			//sectionView.indexCount = indexAccessor.count;
+
+			for (int i = 0; i < inputAccessor.count; i++) {
+				std::cout << i << ": " << inputData[i] << std::endl;
+			}
+			for (int i = 0; i < outputAccessor.count; i++) {
+				std::cout << i << ": " << outputData[i] << std::endl;
+			}
+
+			LN_NOTIMPLEMENTED();
+		}
+		else if (channel.target_path == "translation") {
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC3)) return nullptr;
+			auto& data = transformTrackMap[channel.target_node];
+			data.translationFrames = inputAccessor.count;
+			data.translationTimes = inputData;
+			data.translationValues = reinterpret_cast<const Vector3*>(outputData);
+			data.translationInterpolation = TransformTrackData::getInterpolation(sampler.interpolation);
+
+			//for (int i = 0; i < inputAccessor.count; i++) {
+			//	std::cout << i << ": " << inputData[i] << std::endl;
+			//}
+			//for (int i = 0; i < outputAccessor.count; i++) {
+			//	std::cout << i << ": " << outputData[i] << std::endl;
+			//}
+
+		}
+		else if (channel.target_path == "rotation") {
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC4)) return nullptr;
+			auto& data = transformTrackMap[channel.target_node];
+			data.rotationFrames = inputAccessor.count;
+			data.rotationTimes = inputData;
+			data.rotationValues = reinterpret_cast<const Quaternion*>(outputData);
+		}
+		else if (channel.target_path == "scale") {
+			if (LN_REQUIRE(outputAccessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT && outputAccessor.type == TINYGLTF_TYPE_VEC4)) return nullptr;
+			auto& data = transformTrackMap[channel.target_node];
+			data.scaleFrames = inputAccessor.count;
+			data.scaleTimes = inputData;
+			data.scaleValues = reinterpret_cast<const Vector3*>(outputData);
+			data.scaleInterpolation = TransformTrackData::getInterpolation(sampler.interpolation);
+		}
+	}
+
+	for (const auto& pair : transformTrackMap) {
+		const auto& node = m_model->nodes[pair.first];
+		auto track = makeObject<TransformAnimationTrack>();
+		track->setTargetName(String::fromStdString(node.name));
+
+		const auto& data = pair.second;
+		if (data.translationFrames > 0) track->setupTranslations(data.translationFrames, data.translationTimes, data.translationValues, data.translationInterpolation);
+		if (data.rotationFrames > 0) track->setupRotations(data.rotationFrames, data.rotationTimes, data.rotationValues);
+		if (data.scaleFrames > 0) track->setupScales(data.scaleFrames, data.scaleTimes, data.scaleValues, data.scaleInterpolation);
+
+		clip->addTrack(track);
+	}
+
+	return clip;
 }
 
 bool GLTFImporter::FileExists(const std::string &abs_filename, void *user_data)

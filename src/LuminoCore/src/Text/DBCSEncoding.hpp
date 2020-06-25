@@ -26,6 +26,7 @@ public:
 	virtual byte_t* preamble() const override { return nullptr; }
 	virtual int getCharacterCount(const void* buffer, size_t bufferSize) const override;
 	virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const override;
+	virtual bool convertToUTF16Stateless(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, TextDecodeResult* outResult) override;
 
 private:
 	const TableInfo* m_tableInfo;

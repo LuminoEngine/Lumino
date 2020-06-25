@@ -219,15 +219,18 @@ int main(int argc, char** argv)
     LN_LOG_INFO << "SystemMultiByteEncoding: " << TextEncoding::systemMultiByteEncoding()->name();
     LN_LOG_INFO << "WideCharEncoding: " << TextEncoding::wideCharEncoding()->name();
 
-	char* testArgs[] =
-	{
-		argv[0],
-		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Base_String.insert",
-	};
-	argc = sizeof(testArgs) / sizeof(char*);
+	if (argc == 1) {
+		char* testArgs[] =
+		{
+			argv[0],
+			"--gtest_break_on_failure",
+			//"--gtest_filter=Test_Base_String.insert",
+		};
+		argc = sizeof(testArgs) / sizeof(char*);
+		argv = testArgs;
+	}
 
-	testing::InitGoogleTest(&argc, (char**)testArgs);
+	testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }
 

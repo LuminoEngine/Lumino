@@ -92,13 +92,15 @@ public:
     // TODO: internal
     void setRenderPriority(int value);
 
+protected:
+    void serialize2(Serializer2& ar) override;
+    void setMainVisualComponent(VisualComponent* component);
+
 LN_CONSTRUCT_ACCESS:
     VisualObject();
 	virtual ~VisualObject();
 	bool init();
 
-protected:
-    void setMainVisualComponent(VisualComponent* component);
 
 private:
     Ref<VisualComponent> m_component;

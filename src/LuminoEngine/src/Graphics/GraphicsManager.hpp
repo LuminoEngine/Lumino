@@ -4,9 +4,7 @@
 
 namespace ln {
 class GraphicsContext; 
-class GraphicsResource;
 class CommandQueue;
-class Texture2D;
 class SamplerState;
 
 namespace detail {
@@ -39,8 +37,8 @@ public:
     //void enterRendering();
     //void leaveRendering();
 
-	void addGraphicsResource(GraphicsResource* resource);
-	void removeGraphicsResource(GraphicsResource* resource);
+	void addGraphicsResource(IGraphicsResource* resource);
+	void removeGraphicsResource(IGraphicsResource* resource);
 
     AssetManager* assetManager() const { return m_assetManager; }
 	// deviceContext() は、リソースの CRUD のみを目的として IGraphicsDevice にアクセスしたいときに使うこと。
@@ -63,6 +61,10 @@ public:
 
 	int registerExtension(INativeGraphicsExtension* extension);
 	void unregisterExtension(INativeGraphicsExtension* extension);
+	Ref<Texture> requestTexture(const AssetPath& assetPath);
+
+	Ref<Texture2D> loadTexture2D(const StringRef& filePath);
+	Ref<Texture2DPromise> loadTexture2DAsync(const StringRef& filePath);
 
     const Ref<Texture2D>& blackTexture() const { return m_blackTexture; }
     const Ref<Texture2D>& whiteTexture() const { return m_whiteTexture; }
@@ -93,7 +95,7 @@ private:
 	Ref<RenderTargetTextureCacheManager> m_renderTargetTextureCacheManager;
 	Ref<DepthBufferCacheManager> m_depthBufferCacheManager;
 	Ref<FrameBufferCache> m_frameBufferCache;
-	List<GraphicsResource*> m_graphicsResources;
+	List<IGraphicsResource*> m_graphicsResources;
 	List<INativeGraphicsExtension*> m_extensions;
 
     Ref<Texture2D> m_blackTexture;

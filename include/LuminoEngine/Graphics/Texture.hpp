@@ -1,5 +1,7 @@
 ﻿#pragma once
+#include "../Asset/AssetObject.hpp"
 #include "../Font/Common.hpp"
+#include "Common.hpp"
 #include "GraphicsResource.hpp"
 #include "ColorStructs.hpp"
 #include "GeometryStructs.hpp"
@@ -12,7 +14,8 @@ class TextureInternal;
 /** テクスチャのベースクラスです。 */
 LN_CLASS()
 class Texture
-    : public GraphicsResource
+    : public AssetObject
+    , public IGraphicsResource
 {
     LN_OBJECT;
 public:
@@ -38,11 +41,15 @@ protected:
     Texture();
     virtual ~Texture();
     void init();
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onLoadSourceFile() override;
     virtual detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) = 0;
 
 private:
     void setDesc(int width, int height, TextureFormat format);
 
+    detail::GraphicsManager* m_manager;
     int m_width;
     int m_height;
     TextureFormat m_format;
@@ -85,7 +92,7 @@ public:
 	 *
 	 * このメソッドは TextureImporter のユーティリティです。
      */
-    static Ref<Texture2D> create(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
+    //static Ref<Texture2D> create(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
 
     /**
      * アセットからテクスチャを読み込みます。
@@ -97,6 +104,8 @@ public:
      */
 	LN_METHOD()
     static Ref<Texture2D> load(const StringRef& filePath);
+
+    static Ref<Texture2DPromise> loadAsync(const StringRef& filePath);
 
     /**
      * loadEmoji
@@ -147,11 +156,12 @@ protected:
     detail::ITexture* resolveRHIObject(GraphicsContext* context, bool* outModified) override;
     void serialize(Archive& ar) override;
     void serialize2(Serializer2& ar) override;
+    void onLoadSourceFile() override;
 
 LN_CONSTRUCT_ACCESS:
     Texture2D();
     virtual ~Texture2D();
-    void init();
+    bool init();
 
     /** @copydoc create(int, int) */
     LN_METHOD()
@@ -161,9 +171,7 @@ LN_CONSTRUCT_ACCESS:
     LN_METHOD(OverloadPostfix = "WithFormat")
     void init(int width, int height, TextureFormat format);
 
-	/** @copydoc create(const StringRef&, TextureFormat) */
-	LN_METHOD(OverloadPostfix = "FromFile")
-    void init(const StringRef& filePath, TextureFormat format = TextureFormat::RGBA8);
+    bool init(const Path& assetPath);
 
     void init(Stream* stream, TextureFormat format = TextureFormat::RGBA8);
     void init(Bitmap2D* bitmap, TextureFormat format = TextureFormat::RGBA8);
@@ -174,7 +182,7 @@ private:
     GraphicsResourcePool m_pool;
     Ref<Bitmap2D> m_bitmap;
     //Path m_assetSourcePath;
-    detail::AssetPath m_assetSourcePath;
+    detail::AssetPath m_sourceFilePath; // see Assets/README.md
     void* m_rhiLockedBuffer;
     bool m_initialUpdate;
     bool m_modified;

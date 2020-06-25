@@ -125,6 +125,8 @@ if (MSVC)
         set(LN_USE_SDL OFF)
     endif()
     add_definitions("/MP")
+
+    set(LN_COMMON_META_FILES "${CMAKE_CURRENT_LIST_DIR}/tools/VisualStudio/Lumino.natvis")
 endif()
 
 #------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <LuminoEngine/Base/Serializer.hpp>
 
 namespace ln {
 class Variant;
@@ -421,6 +422,28 @@ protected:
 		return m_newItemCache;
 	}
 
+	void serialize2(Serializer2& ar) override
+	{
+		if (ar.isSaving()) {
+			ar.beginWriteList();
+			for (auto& v : m_data) {
+				ar & v;
+			}
+			ar.endWriteList();
+		}
+		else {
+			int size = 0;
+			if (ar.beginReadList(&size)) {
+				m_data.resize(size);
+				for (auto& v : m_data) {
+					ar & v;
+				}
+				ar.endReadList();
+			}
+		}
+	}
+
+	friend class Serializer2;
 
 private:
 	std::vector<T> m_data;

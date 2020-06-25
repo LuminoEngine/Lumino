@@ -45,7 +45,8 @@ private:
 // 実際のところ Swapchaing の backbuffer をオフスクリーン的に使うべきではないし、
 // 普通に使う場合は endFrame() の直後に present() するだけなので、endFrame() で一緒にやってしまう。これで簡潔さと誤用防止、移植性upを狙ってみる。
 class LN_API SwapChain
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
     /** バックバッファを取得します。(返されるインスタンスはフレームごとに異なります。このインスタンスを保持しないでください) */
@@ -57,8 +58,9 @@ public:
 	void endFrame();
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
     SwapChain();
@@ -73,6 +75,7 @@ private:
     detail::ISwapChain* resolveRHIObject(GraphicsContext* context, bool* outModified) const;
     int imageIndex() const { return m_imageIndex; }
 
+    detail::GraphicsManager* m_manager;
     Ref<detail::ISwapChain> m_rhiObject;
 	std::vector<Ref<RenderTargetTexture>> m_backbuffers;
 	std::vector<Ref<DepthBuffer>> m_depthBuffers;

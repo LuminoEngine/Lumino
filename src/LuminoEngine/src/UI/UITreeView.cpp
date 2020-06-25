@@ -654,6 +654,28 @@ void UITreeItem2::setSelectedInternal(bool selected)
 //==============================================================================
 // UITreeView2
 
+/*
+    [2020/6/23] ViewModel 無しの方向に再設計してみる
+
+    そもそもなんで ViewModel を使いたくない？
+    - Item ごとに ViewModel クラスが必要になるため。ListView ならルートにひとつあれば足りるが、Tree はそうもいかない。
+    - Item は ViewModel でなければならないか、ViewModel でラップしなければならないためかなり煩わしい。
+        - いずれにしても ViewModel の派生を実装する必要がある。
+    
+    ViewModel が無いと不利な点は？
+    - 変更通知ができなくなる。たとえばシーンエディタのプロパティビューで名前を変更したら、Hieralchy へ反映したいとき。
+        - この場合は WorldObjectViewModel を作って、TreeItem と PropertyView に bind することになる。
+
+    今の setViewModel を、UIViewModel もらうんじゃなくて Object をもらうようにしてしまえば？
+    - Binding 使うときに煩わしいか。継承なんてリッチな機能の無い言語もある。
+    - HSP でカスタム TreeView を作るとしたら？
+        - setViewModel は intptr とかにしてほしい。整数でデータを表現できるようにしてほしい。
+        - 一緒にデータ数も渡したいかも。コールバックでアイテム数もらうのはつらい。
+        - GenerateItemContent コールバックで TreeItem の handle をもらう。これに データを示す整数値と、子要素数を set する。
+        - 必要に応じてこの handle に TextBlock や Button を add.
+    
+*/
+
 UITreeView2::UITreeView2()
     : m_scrollViewHelper()
 {

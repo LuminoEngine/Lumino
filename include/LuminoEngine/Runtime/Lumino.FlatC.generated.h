@@ -1096,31 +1096,13 @@ LN_FLAT_API LnResult LnAssets_LoadAssetFromLocalFileA(const char* filePath, LnHa
 LN_FLAT_API LnResult LnAssets_LoadAsset(const LnChar* filePath, LnHandle* outReturn);
 LN_FLAT_API LnResult LnAssets_LoadAssetA(const char* filePath, LnHandle* outReturn);
 
+/**
+    @brief 指定したアセットファイルを読み込み、作成済みのオブジェクトへ適用します。
+    @details このメソッドは Lumino の型システムを使用しないオブジェクトの読み込みに使用します。
+*/
+LN_FLAT_API LnResult LnAssets_ReloadAsset(const LnChar* filePath, LnHandle obj);
+LN_FLAT_API LnResult LnAssets_ReloadAssetA(const char* filePath, LnHandle obj);
 
-//==============================================================================
-// ln::GraphicsResource
-
-typedef LnResult(*LnGraphicsResource_OnSerialize_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_SetOverrideCallback(LnGraphicsResource_OnSerialize_OverrideCallback callback);
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize_CallOverrideBase(LnHandle object, LnHandle ar);
-typedef LnResult(*LnGraphicsResource_OnSerialize2_OverrideCallback)(LnHandle object, LnHandle ar);
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize2_SetOverrideCallback(LnGraphicsResource_OnSerialize2_OverrideCallback callback);
-LN_FLAT_API LnResult LnGraphicsResource_OnSerialize2_CallOverrideBase(LnHandle object, LnHandle ar);
-
-extern LN_FLAT_API int LnGraphicsResource_GetTypeInfoId();
-LN_FLAT_API void LnGraphicsResource_SetManagedTypeInfoId(int64_t id); // deprecated
-typedef struct tagLnGraphicsResource_SubclassRegistrationInfo
-{
-    int64_t subclassId;	// ManagedTypeInfoId
-    LnSubinstanceAllocFunc subinstanceAllocFunc;
-    LnSubinstanceFreeFunc subinstanceFreeFunc;
-    LnGraphicsResource_OnSerialize_OverrideCallback OnSerialize_OverrideFunc;
-    LnGraphicsResource_OnSerialize2_OverrideCallback OnSerialize2_OverrideFunc;
-
-} LnGraphicsResource_SubclassRegistrationInfo;
-
-extern LN_FLAT_API void LnGraphicsResource_RegisterSubclassTypeInfo(const LnGraphicsResource_SubclassRegistrationInfo* info);
-extern LN_FLAT_API LnSubinstanceId LnGraphicsResource_GetSubinstanceId(LnHandle handle);
 
 //==============================================================================
 // ln::Texture

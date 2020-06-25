@@ -837,7 +837,7 @@ void GLGraphicsContext::onSubmitStatus(const GraphicsContextState& state, uint32
 #endif
 }
 
-void* GLGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size)
+void* GLGraphicsContext::onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size)
 {
 	switch (resource->resourceType())
 	{
@@ -851,7 +851,7 @@ void* GLGraphicsContext::onMapResource(IGraphicsResource* resource, uint32_t off
 	}
 }
 
-void GLGraphicsContext::onUnmapResource(IGraphicsResource* resource)
+void GLGraphicsContext::onUnmapResource(IGraphicsRHIBuffer* resource)
 {
 	switch (resource->resourceType())
 	{
@@ -867,7 +867,7 @@ void GLGraphicsContext::onUnmapResource(IGraphicsResource* resource)
 	}
 }
 
-void GLGraphicsContext::onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length)
+void GLGraphicsContext::onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length)
 {
 	switch (resource->resourceType())
 	{

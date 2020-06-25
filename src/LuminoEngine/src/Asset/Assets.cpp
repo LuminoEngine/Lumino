@@ -4,6 +4,7 @@
 #include "AssetManager.hpp"
 #include <LuminoEngine/Asset/AssetModel.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
+#include "../Graphics/MixHash.hpp"
 
 // TODO: for importer
 #include <LuminoEngine/Graphics/Texture.hpp>
@@ -32,6 +33,17 @@ Ref<Object> Assets::loadAsset(const StringRef& filePath)
         return nullptr;
 }
 
+void Assets::reloadAsset(const StringRef& filePath, Object* obj)
+{
+    auto assetPath = detail::EngineDomain::assetManager()->findAssetPath(filePath);
+    if (assetPath) {
+        detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(obj, *assetPath);
+    }
+    else {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+    }
+}
+
 void Assets::saveAsset(Object* obj, const StringRef& filePath)
 {
     auto model = makeObject<AssetModel>(obj);
@@ -54,16 +66,6 @@ bool Assets::existsFile(const StringRef& filePath)
     return detail::EngineDomain::assetManager()->existsFile(filePath);
 }
 
-//Ref<Texture2D> Assets::loadTexture(const StringRef& filePath)
-//{
-//    return detail::EngineDomain::assetManager()->loadTexture(filePath);
-//}
-
-Ref<Shader> Assets::loadShader(const StringRef& filePath)
-{
-    return detail::EngineDomain::assetManager()->loadShader(filePath);
-}
-
 Ref<ByteBuffer> Assets::readAllBytes(const StringRef& filePath)
 {
 	return detail::EngineDomain::assetManager()->readAllBytes(filePath);
@@ -74,27 +76,27 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
     return detail::EngineDomain::assetManager()->openFileStream(filePath);
 }
 
-void Assets::serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
-{
-    String localPath;
-    if (ar.isSaving()) {
-        // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-        localPath = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), value->assetPath());
-    }
-
-    ar & makeNVP(name, localPath);
-
-    if (ar.isLoading()) {
-        auto assetPath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), localPath);
-        //value = dynamic_pointer_cast<Tileset>(Assets::loadAsset(assetPath));
-        auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromAssetPath(assetPath);
-        value = assetModel->target();
-        if (value) {
-            value->setAssetPath(assetPath);
-        }
-    }
-}
-
+//void Assets::serializeAsAssetPathInternal(Archive& ar, const StringRef& name, Ref<Object>& value)
+//{
+//    String localPath;
+//    if (ar.isSaving()) {
+//        // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
+//        localPath = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), value->assetPath());
+//    }
+//
+//    ar & makeNVP(name, localPath);
+//
+//    if (ar.isLoading()) {
+//        auto assetPath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), localPath);
+//        //value = dynamic_pointer_cast<Tileset>(Assets::loadAsset(assetPath));
+//        auto assetModel = detail::EngineDomain::assetManager()->loadAssetModelFromAssetPath(assetPath);
+//        value = assetModel->target();
+//        if (value) {
+//            value->setAssetPath(assetPath);
+//        }
+//    }
+//}
+//
 //=============================================================================
 // AssetImporter
 
@@ -214,12 +216,40 @@ AssetPath AssetPath::combineAssetPath(const AssetPath& basePath, const String& l
     }
 }
 
-String AssetPath::makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath)
+Path AssetPath::makeRelativePath(const AssetPath& basePath, const AssetPath& assetPath)
 {
     if (LN_REQUIRE(!basePath.isNull())) return String::Empty;
     if (LN_REQUIRE(String::compare(basePath.scheme(), assetPath.scheme(), CaseSensitivity::CaseInsensitive) == 0)) return String::Empty;
     if (LN_REQUIRE(String::compare(basePath.host(), assetPath.host(), CaseSensitivity::CaseInsensitive) == 0)) return String::Empty;
-    return basePath.path().makeRelative(assetPath.path());
+    return basePath.path().makeRelative(assetPath.path()).unify();
+}
+
+AssetPath AssetPath::resolveAssetPath(const Path& filePath, const Char** exts, size_t extsCount)
+{
+    auto path = detail::EngineDomain::assetManager()->findAssetPath(filePath, exts, extsCount);
+    if (path) {
+        return *path;
+    }
+    else {
+        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+        return AssetPath::makeEmpty();
+    }
+}
+
+AssetPath AssetPath::resolveAssetPath(const AssetPath& assetPath, const Char** exts, size_t extsCount)
+{
+    return detail::EngineDomain::assetManager()->resolveAssetPath(assetPath, exts, extsCount);
+}
+
+bool AssetPath::isAssetFilePath() const
+{
+    if (!m_components) return false;
+    return m_components->path.hasExtension(AssetModel::AssetFileExtension);
+}
+
+bool AssetPath::isAssetFilePath(const Path& path)
+{
+    return path.hasExtension(AssetModel::AssetFileExtension);
 }
 
 AssetPath AssetPath::getParentAssetPath() const
@@ -244,6 +274,13 @@ String AssetPath::toString() const
 
     auto result = String::concat(scheme(), u"://", host());
     return  String::concat(result, pathPrefix, path().str());
+}
+
+uint64_t AssetPath::calculateHash() const
+{
+    uint64_t hash = std::hash<String>()(m_components->scheme);
+    hash = detail::hash_combine(hash, std::hash<String>()(m_components->host));
+    return detail::hash_combine(hash, std::hash<String>()(m_components->path.str()));
 }
 
 AssetPath::AssetPath()

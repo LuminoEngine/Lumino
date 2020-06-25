@@ -8,23 +8,14 @@ class GraphicsResourceInternal;
 }
 
 /** Graphics 機能に関係するリソースのベースクラスです。*/
-LN_CLASS()
-class LN_API GraphicsResource
-    : public Object
+class IGraphicsResource
 {
-    LN_OBJECT;
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
+    virtual void onManagerFinalizing() = 0;
     virtual void onChangeDevice(detail::IGraphicsDevice* device) = 0;
 
-LN_CONSTRUCT_ACCESS:
-    GraphicsResource();
-    virtual ~GraphicsResource();
-    void init();
-
 private:
-    detail::GraphicsManager* m_manager;
-
+    friend class detail::GraphicsManager;
     friend class detail::GraphicsResourceInternal;
 };
 
@@ -35,7 +26,8 @@ class GraphicsResourceInternal
 public:
     static IndexBufferFormat selectIndexBufferFormat(int vertexCount) { return (vertexCount > 0xFFFF) ? IndexBufferFormat::UInt32 : IndexBufferFormat::UInt16; }
 
-    static detail::GraphicsManager* manager(GraphicsResource* obj) { return obj->m_manager; }
+    template<class T>
+    static detail::GraphicsManager* manager(T* obj) { return obj->m_manager; }
 
     template<class TReturn, class TObject>
     static TReturn* resolveRHIObject(GraphicsContext* context, const TObject& obj, bool* outModified)
@@ -50,6 +42,11 @@ public:
         }
         return rhi;
     }
+
+
+    static void initializeHelper_GraphicsResource(IGraphicsResource* obj, GraphicsManager** manager);
+
+    static void finalizeHelper_GraphicsResource(IGraphicsResource* obj, GraphicsManager** manager);
 };
 
 } // namespace detail

@@ -16,7 +16,8 @@ class IRenderPass;
 // ただし変更が発生するたびに IRenderPass の共有のためキャッシュを検索しに行くので、若干のオーバーヘッドが発生する。
 // 動的に変化させる必要が無ければ事前作成して、set～ はしないようにしておくとパフォーマンスが良くなる。
 class RenderPass
-    : public GraphicsResource
+    : public Object
+	, public IGraphicsResource
 {
 public:
 	/** RenderTarget を設定します。 */
@@ -46,8 +47,9 @@ public:
 	void setClearValues(ClearFlags flags, const Color& color, float depth, uint8_t stencil);
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-	virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+	void onManagerFinalizing() override { dispose(); }
+	void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	RenderPass();
@@ -62,6 +64,7 @@ private:
     detail::IRenderPass* resolveRHIObjectNoClear(GraphicsContext* context, bool* outModified);
 	void releaseRHI();
 
+	detail::GraphicsManager* m_manager;
     Ref<detail::IRenderPass> m_rhiObject;
     Ref<detail::IRenderPass> m_rhiObjectNoClear;
 	std::array<Ref<RenderTargetTexture>, GraphicsContext::MaxMultiRenderTargets> m_renderTargets;

@@ -8,6 +8,7 @@ class Shader;
 class AssetModel;
 namespace detail {
 class AssetArchive;
+class FileSystemReader;
 
 class AssetManager
 	: public RefObject
@@ -41,6 +42,7 @@ public:
     Optional<AssetPath> findAssetPath(const StringRef& filePath) const;
     bool existsAsset(const AssetPath& assetPath) const;
     Ref<Stream> openStreamFromAssetPath(const AssetPath& assetPath) const;
+    AssetPath resolveAssetPath(const AssetPath& assetPath, const Char** exts, int extsCount) const;
 
     Ref<AssetModel> loadAssetModelFromLocalFile(const String& filePath) const;
     Ref<AssetModel> loadAssetModelFromAssetPath(const AssetPath& assetPath) const;
@@ -60,11 +62,6 @@ public:
     Ref<Stream> openFileStream(const StringRef& filePath);
     [[deprecated]]
 	Ref<ByteBuffer> readAllBytes(const StringRef& filePath);
-	//Ref<Texture2D> loadTexture(const StringRef& filePath);
-    [[deprecated("-> findAssetPath, openStreamFromAssetPath")]]
-    Ref<Shader> loadShader(const StringRef& filePath);
-    [[deprecated("-> findAssetPath, openStreamFromAssetPath")]]
-    Ref<Object> loadAsset(const StringRef& filePath);
 
     // TODO: for develop & debug
     void buildAssetIndexFromLocalFiles(const ln::Path& assetDir);
@@ -72,17 +69,22 @@ public:
 private:
 	void refreshActualArchives();
 	bool existsFileInternal(const StringRef& filePath, const Char** exts, int extsCount) const;
-	const Path& findFilePathFromIndex(const StringRef& id) const;
-    const Path& findFilePathInternal(const StringRef& filePath, const Char** exts, int extsCount);
     Ref<Stream> openFileStreamInternal(const StringRef& filePath, const Char** exts, int extsCount, Path* outPath);
 	void makeFindPaths(const StringRef& filePath, const Char** exts, int extsCount, List<Path>* paths) const;
     static bool tryParseAssetPath(const String& assetPath, String* outArchiveName, Path* outLocalPath);
+    FileSystemReader* primaryAssetDirectoryArchive() const { return m_fileSystemArchives[0]; }
 
     List<Ref<AssetArchive>> m_requestedArchives;
 	List<AssetArchive*> m_actualArchives;
 	AssetStorageAccessPriority m_storageAccessPriority;
     std::unordered_map<ln::Uuid, ln::Path> m_assetIndex;
-    Path m_primaryLocalAssetDirectory;
+    //Path m_primaryLocalAssetDirectory;
+
+    // file スキーマでアクセスできる Archive
+    Ref<FileSystemReader> m_localFileSystemArchive;
+
+    // asset スキーマでアクセスできる Archive。ファイルを保存できる。
+    List<FileSystemReader*> m_fileSystemArchives;
 };
 
 } // namespace detail

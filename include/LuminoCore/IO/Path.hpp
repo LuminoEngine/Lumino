@@ -212,6 +212,9 @@ public:
      */
     static int compare(const StringRef& path1, const StringRef& path2);
 
+    // 指定パスが this に含まれるかを調べる。双方 が絶対パスでなければならない。
+    bool contains(const Path& subdir) const;
+
 public:
 	template<class... TArgs>
 	static Path combine(TArgs&&... args);

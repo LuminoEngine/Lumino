@@ -40,7 +40,9 @@ IndexBuffer::~IndexBuffer()
 
 void IndexBuffer::init(int indexCount, IndexBufferFormat format, GraphicsResourceUsage usage)
 {
-    GraphicsResource::init();
+    Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+
     m_format = format;
     m_usage = usage;
     m_modified = true;
@@ -64,7 +66,9 @@ void IndexBuffer::init(int indexCount, IndexBufferFormat format, const void* ini
 void IndexBuffer::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();
-    GraphicsResource::onDispose(explicitDisposing);
+
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    Object::onDispose(explicitDisposing);
 }
 
 int IndexBuffer::size() const

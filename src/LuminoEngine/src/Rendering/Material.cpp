@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 
@@ -264,12 +265,18 @@ void Material::updateShaderVariables(Shader* target) const
     }
 }
 
-void Material::serialize(Archive& ar)
+//void Material::serialize(Archive& ar)
+//{
+//    Material::serialize(ar);
+//    ar & makeNVP(u"mainTexture", m_mainTexture);
+//}
+//
+
+void Material::serialize2(Serializer2& ar)
 {
-    Material::serialize(ar);
+    Object::serialize2(ar);
     ar & makeNVP(u"mainTexture", m_mainTexture);
 }
-
 
 ////==============================================================================
 //// PhongMaterial

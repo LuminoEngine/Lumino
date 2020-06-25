@@ -10,7 +10,8 @@ class IVertexDeclaration;
 
 /** 頂点バッファのレイアウトを記述するためのクラスです。 */
 class VertexLayout
-    : public GraphicsResource
+    : public Object
+    , public IGraphicsResource
 {
 public:
     /** VertexLayout を作成します。 */
@@ -29,8 +30,9 @@ public:
     const List<VertexElement>& vertexElements() const { return m_vertexElements; }
 
 protected:
-    virtual void onDispose(bool explicitDisposing) override;
-    virtual void onChangeDevice(detail::IGraphicsDevice* device) override;
+    void onDispose(bool explicitDisposing) override;
+    void onManagerFinalizing() override { dispose(); }
+    void onChangeDevice(detail::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
     VertexLayout();
@@ -45,6 +47,7 @@ LN_CONSTRUCT_ACCESS:
 private:
     detail::IVertexDeclaration* resolveRHIObject(GraphicsContext* context, bool* outModified);
 
+    detail::GraphicsManager* m_manager;
     Ref<detail::IVertexDeclaration> m_deviceObj;
     List<VertexElement> m_vertexElements;
     bool m_modified;

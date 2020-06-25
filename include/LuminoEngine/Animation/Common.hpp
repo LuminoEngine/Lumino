@@ -2,6 +2,7 @@
 #pragma once
 
 namespace ln {
+class AnimationClip;
 
 /** アニメーションの繰り返し方法 */
 enum class AnimationWrapMode
@@ -49,5 +50,7 @@ enum class EasingMode
 	EaseOutCirc,
 	EaseInOutCirc,
 };
-
+namespace detail {
+class AnimationManager;
+} // namespace detail
 } // namespace ln

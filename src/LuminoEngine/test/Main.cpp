@@ -17,13 +17,17 @@ GTEST_API_ int main(int argc, char **argv)
         return 0;
     }
 
-	char* testArgs[] = {
-		argv[0],
-		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Graphics_LowLevelRendering.Texture"
-	};
-	argc = sizeof(testArgs) / sizeof(char*);
-	testing::InitGoogleTest(&argc, (char**)testArgs);
+	if (argc == 1) {
+		char* testArgs[] = {
+			argv[0],
+			"--gtest_break_on_failure",
+			//"--gtest_filter=Test_Asset_AssetFile.*"
+		};
+		argc = sizeof(testArgs) / sizeof(char*);
+		argv = testArgs;
+	}
+
+	testing::InitGoogleTest(&argc, argv);
 
 	Logger::setLevel(LogLevel::Debug);
 	Logger::addStdErrAdapter();

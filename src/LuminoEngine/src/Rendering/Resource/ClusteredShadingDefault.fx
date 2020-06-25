@@ -462,7 +462,7 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 	//float x = 1.0 * ln_BoneTextureReciprocalSize.x;
 	//float y = 0.0;// / ln_BoneTextureReciprocalSize.y;
 	//output.Color.rgb = tex2Dlod(ln_BoneTexture, float4(x, y, 0, 1)).rgb;
-	output.Color.x = ln_NearClip + ln_FarClip + ln_CameraPosition.x + ln_CameraDirection.x;
+	//output.Color.x = ln_NearClip + ln_FarClip + ln_CameraPosition.x + ln_CameraDirection.x;
 	return output;
 
 	//_lngs_VSOutput o;
@@ -556,13 +556,16 @@ float4	ln_MaterialAmbient;	// TODO: とりあえず MMD モデル用のために
 
 float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
 {
-	//return float4(0, 1, 0, 1);
+	//return float4(1, 0, 0, 1);
 	//return float4(input.Color.rgb, 1);
+	//return float4(tex2D(ln_MaterialTexture, input.UV).rgb, 1);
+	//return float4(ln_MaterialColor.rgb, 1);
 	//return float4(input.UV, 0, 1);
 	//return float4(tex2D(ln_BoneTexture, input.UV).rgb, 1);
 	float4 c = tex2D(ln_MaterialTexture, input.UV) * ln_MaterialColor * input.Color;
     clip(c.a - 0.0001);
 
+	//return float4(c);
 	return LN_GetBuiltinEffectColor(c);
 }
 

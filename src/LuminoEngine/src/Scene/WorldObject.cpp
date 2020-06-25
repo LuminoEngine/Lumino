@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Scene/Component.hpp>
 #include <LuminoEngine/Scene/World.hpp>
@@ -134,11 +135,11 @@ WorldObject::~WorldObject()
 {
 }
 
-bool WorldObject::init()
+bool WorldObject::init(/*ObjectInitializeContext* context*/)
 {
 	if (!Object::init()) return false;
 
-    if (detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
+    if (ObjectInitializeContext::Default->autoAdd && detail::EngineDomain::sceneManager()->autoAddingToActiveWorld) {
         World* activeWorld = detail::EngineDomain::sceneManager()->activeWorld();
         if (activeWorld) {
             activeWorld->add(this);
@@ -266,17 +267,28 @@ bool WorldObject::traverseRefrection(ReflectionObjectVisitor* visitor)
 	return false;
 }
 
-void WorldObject::serialize(Archive& ar)
+void WorldObject::serialize2(Serializer2& ar)
 {
-	Object::serialize(ar);
-	ar & ln::makeNVP(u"Components", *m_components);
-	ar & ln::makeNVP(u"Children", *m_children);
+	Object::serialize2(ar);
+
+    Vector3 eularAngles = m_transform->m_rotation.toEulerAngles();
+    
+	ar & ln::makeNVP(u"position", m_transform->m_position);
+	ar & ln::makeNVP(u"angles", eularAngles);   // Unity は Quaternion だけど、こっちは手打ち想定なので人が見やすい表現にする
+	ar & ln::makeNVP(u"scale", m_transform->m_scale);
+
+	ar & ln::makeNVP(u"components", *m_components);
+	ar & ln::makeNVP(u"children", *m_children);
 
     if (ar.isLoading()) {
+        m_transform->m_rotation = Quaternion::makeFromEulerAngles(eularAngles);
+
         for (auto& c : *m_components) {
             c->m_object = this;
             c->onAttached(this);
         }
+
+        notifyTransformChanged();
     }
 }
 

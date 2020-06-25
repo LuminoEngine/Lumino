@@ -7,6 +7,7 @@
 
 namespace ln {
 
+#if 0
 //==============================================================================
 // Animator
 
@@ -18,7 +19,7 @@ Ref<Animator> Animator::create()
 void Animator::init()
 {
 	Component::init();
-	m_core = makeObject<AnimationControllerCore>(this);
+	m_core = makeObject<AnimationMixerCore>(this);
 
 	// TODO: とりあえずの 1 こ
 	m_core->addLayer(makeObject<AnimationLayer>(m_core));
@@ -61,5 +62,6 @@ void Animator::onUpdateTargetElement(const detail::AnimationTargetElementBlendLi
         pair.second->setValue(pair.first, makeVariant(std::round(link->rootValue.getFloat())));	// TODO: Variant Pool
     }
 }
+#endif
 
 } // namespace ln

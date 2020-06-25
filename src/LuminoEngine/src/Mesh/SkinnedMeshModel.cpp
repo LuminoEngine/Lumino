@@ -77,6 +77,13 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 }
 #endif
 
+//==============================================================================
+// MeshBone
+
+MeshNode* MeshBone::node() const
+{
+	return m_skeleton->m_model->m_nodes[m_node];
+}
 
 //==============================================================================
 // MeshArmature
@@ -85,9 +92,10 @@ MeshArmature::MeshArmature()
 {
 }
 
-bool MeshArmature::init()
+bool MeshArmature::init(SkinnedMeshModel* model)
 {
 	if (!Object::init()) return false;
+	m_model = model;
 	return true;
 }
 
@@ -96,9 +104,14 @@ MeshBone* MeshArmature::bone(int index) const
 	return m_bones[index];
 }
 
+//const Matrix& MeshArmature::boneGlobalMatrix(int index) const
+//{
+//}
+
 void MeshArmature::addBone(int linkNode, const Matrix& inverseInitialMatrix)
 {
 	auto bone = makeObject<MeshBone>();
+	bone->m_skeleton = this;
 	bone->m_node = linkNode;
 	bone->m_inverseInitialMatrix = inverseInitialMatrix;
 	m_bones.add(bone);
@@ -118,13 +131,22 @@ void MeshArmature::updateSkinningMatrices(SkinnedMeshModel* model)
 	for (int i = 0; i < m_bones.size(); i++) {
 		const auto& bone = m_bones[i];
 		
-
-		data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
+		// GLTF
+		//data[i] = model->nodeGlobalTransform(bone->m_node) * bone->m_inverseInitialMatrix;
+		// PMX
+		data[i] = bone->m_inverseInitialMatrix * model->nodeGlobalTransform(bone->m_node);
+		// ↑どっちが正しい？
+		// Three.js のコードを見ると、GLTFLoader では読み取った inverseBindMatrices を Skeleton クラスのコンストラクタに
+		// そのまま渡している。転置とかはしていない。
+		// Skeleton コンストラクタは boneInverses が省略されると、bone が持っている World行列を単純に inverse して、
+		// boneInverses を作っている。calculateInverses: function () {　あたり。
+		// というか「逆行列をかけて元に戻す」の計算順序的には GLTF の方が正しい。
 
 		//// TODO: test
 		//if (i == 0) {
 		//	data[i] = Matrix::makeRotationZ(0.3);
 		//}
+		//data[i] = Matrix::Identity;
 	}
 
 	m_skinningMatricesTexture->unmap();
@@ -148,6 +170,11 @@ void SkinnedMeshModel::addSkeleton(MeshArmature* skeleton)
 	m_skeletons.add(skeleton);
 }
 
+AnimationController* SkinnedMeshModel::animationController() const
+{
+	return m_animationController;
+}
+
 void SkinnedMeshModel::beginUpdate()
 {
     // 全てのローカルトランスフォームをリセットする
@@ -155,10 +182,9 @@ void SkinnedMeshModel::beginUpdate()
     //		(IKはその時点のLocalTransformに対して処理を行うため、回転角度がどんどん増えたりする)
     //		なお、一連の更新の最後で行っているのは、アニメーションからの更新を外部で行っているため。
     // TODO: できれば一連の処理の中で必ず通るところに移動したい
-    //for (SkinnedMeshBone* bone : m_allBoneList)
-    //{
-    //    bone->resetLocalTransform();
-    //}
+    for (auto& node : meshNodes()) {
+		node->resetLocalTransform();
+    }
 
 }
 
@@ -233,9 +259,10 @@ void SkinnedMeshModel::updateBoneTransformHierarchy()
 
 void SkinnedMeshModel::updateIK()
 {
-    //detail::CCDIKSolver ik;
-    //ik.owner = this;
-    //ik.UpdateTransform();
+    detail::CCDIKSolver ik;
+    ik.owner = this;
+	ik.m_skeleton = m_skeletons[0];
+    ik.UpdateTransform();
 }
 
 void SkinnedMeshModel::updateSkinningMatrices()
@@ -285,27 +312,94 @@ void SkinnedMeshModel::writeSkinningMatrices(Matrix* matrixesBuffer, Quaternion*
   //  }
 }
 
-int SkinnedMeshModel::getAnimationTargetElementCount() const
+//int SkinnedMeshModel::getAnimationTargetElementCount() const
+//{
+//	return 0;//m_allBoneList.size();
+//}
+//
+//const String& SkinnedMeshModel::getAnimationTargetElementName(int index) const
+//{
+//	return String::Empty;//m_allBoneList[index]->name();
+//}
+//
+//AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
+//{
+//	return AnimationValueType::Transform;
+//}
+//
+//void SkinnedMeshModel::setAnimationTargetElementValue(int index, const AnimationValue& value)
+//{
+//	//if (value.type() == AnimationValueType::Transform)
+//	//{
+//	//	(*m_allBoneList[index]->localTransformPtr()) = value.getTransform();
+//	//}
+//}
+
+
+//==============================================================================
+// AnimationController
+
+AnimationController::AnimationController()
 {
-	return 0;//m_allBoneList.size();
 }
 
-const String& SkinnedMeshModel::getAnimationTargetElementName(int index) const
+bool AnimationController::init(SkinnedMeshModel* model)
 {
-	return String::Empty;//m_allBoneList[index]->name();
+	if (!Object::init()) return false;
+	m_model = model;
+
+	m_core = makeObject<AnimationMixerCore>(this);
+	m_core->addLayer(makeObject<AnimationLayer>(m_core));
+	return true;
 }
 
-AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
+void AnimationController::advanceTime(float elapsedTime)
 {
-	return AnimationValueType::Transform;
+	m_core->advanceTime(elapsedTime);
 }
 
-void SkinnedMeshModel::setAnimationTargetElementValue(int index, const AnimationValue& value)
+detail::AnimationTargetElementBlendLink* AnimationController::onRequireBinidng(const String& name)
 {
-	//if (value.type() == AnimationValueType::Transform)
-	//{
-	//	(*m_allBoneList[index]->localTransformPtr()) = value.getTransform();
+	auto tb = m_bindings.findIf([&](const auto& x) { return x->name == name; });
+	if (tb) {
+		return *tb;
+	}
+
+
+	int index = m_model->findNodeIndex(name);
+	if (index >= 0) {
+		auto binding = makeRef<detail::AnimationTargetElementBlendLink>(AnimationValueType::Transform);
+		binding->name = name;
+		binding->targetIndex = index;
+		m_bindings.add(binding);
+		return binding;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void AnimationController::onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* binding)
+{
+
+	m_model->meshNodes()[binding->targetIndex]->setTransform(binding->rootValue.getTransform());
+
+	//auto& s = binding->rootValue.getTransform().scale;
+	//if (s.x != 1 || s.y != 1 || s.z != 1) {
+	//	printf("");
 	//}
+
+	//if (binding->name == u"左腕") {
+	//	m_model->meshNodes()[binding->targetIndex]->resetLocalTransform();
+	//	//std::cout << binding->name << std::endl;
+	//}
+	//if (binding->name == u"左腕") {
+	//	Matrix m = Matrix::makeRotationQuaternion(binding->rootValue.getTransform().rotation);
+	//	auto v = Vector3::transformCoord(Vector3::UnitZ, m);
+	//	printf("%f\t%f\t%f\n", v.x, v.y, v.z);
+	//	//result.rotation = Quaternion::makeFromEulerAngles(Vector3(0, 0, time));
+	//}
+
 }
 
 } // namespace ln

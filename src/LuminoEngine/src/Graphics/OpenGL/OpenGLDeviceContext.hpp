@@ -183,9 +183,9 @@ protected:
 	virtual void onBeginRenderPass(IRenderPass* renderPass) override;
 	virtual void onEndRenderPass(IRenderPass* renderPass) override;
 	virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource, IPipeline* pipeline) override;
-	virtual void* onMapResource(IGraphicsResource* resource, uint32_t offset, uint32_t size) override;
-	virtual void onUnmapResource(IGraphicsResource* resource) override;
-	virtual void onSetSubData(IGraphicsResource* resource, size_t offset, const void* data, size_t length) override;
+	virtual void* onMapResource(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size) override;
+	virtual void onUnmapResource(IGraphicsRHIBuffer* resource) override;
+	virtual void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) override;
 	virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) override;
 	virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) override;
 	virtual void onSetDescriptorTableData(IShaderDescriptorTable* resource, const ShaderDescriptorTableUpdateInfo* data) override;

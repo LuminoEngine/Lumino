@@ -131,6 +131,7 @@ class FileSystemReader
 public:
 	FileSystemReader();
 	void setRootPath(const StringRef& path);
+	const Path& rootPath() const { return m_rootPath; }
     virtual const String& scheme() const;
     virtual const String& name() const;
 	virtual void close() override;

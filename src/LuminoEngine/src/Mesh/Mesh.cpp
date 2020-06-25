@@ -6,6 +6,7 @@
 	それ以外でこれらのデータにアクセスしたい場合は必ず requestXXXX 系の関数でインスタンスを取得すること。
 */
 #include "Internal.hpp"
+#include <LuminoEngine/Base/Serializer.hpp>
 #include <LuminoEngine/Graphics/VertexBuffer.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/VertexLayout.hpp>
@@ -331,6 +332,22 @@ bool MeshResource::isInitialEmpty() const
 //==============================================================================
 // Mesh
 
+void Mesh::VertexBufferEntry::reset()
+{
+	if (mappedBuffer) {
+		buffer->unmap();
+	}
+	buffer = nullptr;
+}
+
+void Mesh::IndexBufferEntry::reset()
+{
+	if (mappedBuffer) {
+		buffer->unmap();
+	}
+	buffer = nullptr;
+}
+
 Mesh::Mesh()
 	: m_resourceUsage(GraphicsResourceUsage::Static)
 {
@@ -360,6 +377,22 @@ void Mesh::init(int vertexCount, int indexCount, IndexBufferFormat indexFormat, 
 	m_indexCount = indexCount;
 	m_indexFormat = indexFormat;
 	m_resourceUsage = resourceUsage;
+}
+
+void Mesh::resetVertexBuffer(int vertexCount)
+{
+	m_mainVertexBuffer.reset();
+	m_skinningVertexBuffer.reset();
+	m_additionalUVVertexBuffer.reset();
+	m_extraVertexBuffers.clear();
+	m_vertexCount = vertexCount;
+}
+
+void Mesh::resetIndexBuffer(int indexCount, IndexBufferFormat indexFormat)
+{
+	m_indexBuffer.reset();
+	m_indexCount = indexCount;
+	m_indexFormat = indexFormat;
 }
 
 void Mesh::setVertex(int index, const Vertex& value)
@@ -898,8 +931,10 @@ Mesh* MeshContainer::mesh() const
 // MeshNode
 
 MeshNode::MeshNode()
-    : m_index(-1)
+    : m_model(nullptr)
+	, m_index(-1)
     , m_meshContainerIndex(-1)
+	, m_parent(-1)
     , m_children()
     , m_initialLocalTransform(Matrix::Identity)
 {
@@ -920,6 +955,11 @@ void MeshNode::setScale(const Vector3& value)
 	m_localTransform.scale = value;
 }
 
+void MeshNode::setTransform(const AttitudeTransform& value)
+{
+	m_localTransform = value;
+}
+
 void MeshNode::setMeshContainerIndex(int value)
 {
     m_meshContainerIndex = value;
@@ -928,6 +968,7 @@ void MeshNode::setMeshContainerIndex(int value)
 void MeshNode::addChildIndex(int value)
 {
     m_children.add(value);
+	m_model->m_nodes[value]->m_parent = m_index;
 }
 
 void MeshNode::setInitialLocalTransform(const Matrix& value)
@@ -935,12 +976,30 @@ void MeshNode::setInitialLocalTransform(const Matrix& value)
 	m_initialLocalTransform = value;
 }
 
+void MeshNode::resetLocalTransform()
+{
+	m_localTransform = AttitudeTransform::Identity;
+}
+
+const Matrix& MeshNode::globalMatrix() const
+{
+	return m_model->m_nodeGlobalTransforms[m_index];
+}
+
+void MeshNode::updateGlobalTransform(bool hierarchical)
+{
+	m_model->updateNodeTransformsHierarchical(m_index, m_model->m_nodes[m_parent]->globalMatrix(), hierarchical);
+}
+
 //==============================================================================
 // StaticMeshModel
 
 Ref<StaticMeshModel> StaticMeshModel::load(const StringRef& filePath, float scale)
 {
-    return detail::EngineDomain::meshManager()->createStaticMeshModel(filePath, scale);
+	return detail::EngineDomain::meshManager()->acquireStaticMeshModel(filePath, scale);
+	//auto model = makeObject<StaticMeshModel>();
+ //   detail::EngineDomain::meshManager()->loadStaticMeshModel(model, filePath, scale);
+	//return model;
 }
 
 StaticMeshModel::StaticMeshModel()
@@ -953,9 +1012,64 @@ StaticMeshModel::StaticMeshModel(detail::InternalMeshModelType type)
 {
 }
 
+void StaticMeshModel::clear()
+{
+	m_meshContainers = {};
+	m_nodes = {};
+	m_materials = {};
+	m_rootNodes = {};
+	m_nodeGlobalTransforms = {};
+}
+
+void StaticMeshModel::serialize2(Serializer2& ar)
+{
+	Object::serialize2(ar);
+	ar & makeNVP(u"filePath", m_filePath);
+
+	if (ar.isLoading()) {
+		clear();
+		detail::EngineDomain::meshManager()->loadStaticMeshModel(this, m_filePath, m_scale);
+	}
+}
+
 MeshNode* StaticMeshModel::findNode(StringRef name) const
 {
-	return m_nodes.findIf([&](const auto& x) { return x->name() == name; }).valueOr(nullptr);
+	int index = findNodeIndex(name);
+	if (index < 0)
+		return nullptr;
+	else
+		return m_nodes[index];
+}
+
+int StaticMeshModel::findNodeIndex(StringRef name) const
+{
+	return m_nodes.indexOfIf([&](const auto& x) { return x->name() == name; });
+}
+
+MeshContainer* StaticMeshModel::addMeshContainer(Mesh* mesh)
+{
+	auto meshContainer = makeObject<MeshContainer>();
+	meshContainer->setMesh(mesh);
+	meshContainer->m_index = m_meshContainers.size();
+	m_meshContainers.add(meshContainer);
+	return meshContainer;
+}
+
+MeshNode* StaticMeshModel::addNode()
+{
+	auto node = makeObject<MeshNode>();
+	node->m_model = this;
+	node->m_index = m_nodes.size();
+	m_nodes.add(node);
+	return node;
+}
+
+MeshNode* StaticMeshModel::addMeshContainerNode(Mesh* mesh)
+{
+	auto container = addMeshContainer(mesh);
+	auto node = addNode();
+	node->setMeshContainerIndex(container->m_index);
+	return node;
 }
 
 void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
@@ -967,6 +1081,7 @@ void StaticMeshModel::addMeshContainer(MeshContainer* meshContainer)
 void StaticMeshModel::addNode(MeshNode* node)
 {
     if (LN_REQUIRE(node)) return;
+	node->m_model = this;
     node->m_index = m_nodes.size();
     m_nodes.add(node);
 }
@@ -985,27 +1100,62 @@ void StaticMeshModel::updateNodeTransforms()
 {
     m_nodeGlobalTransforms.resize(m_nodes.size());
     for (int index : m_rootNodes) {
-        updateNodeTransformsHierarchical(index, Matrix::Identity);
+        updateNodeTransformsHierarchical(index, Matrix::Identity, true);
     }
 }
 
-void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform)
+void StaticMeshModel::updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical)
 {
     auto node = m_nodes[nodeIndex];
 
-	Matrix local = Matrix::makeScaling(node->m_localTransform.scale);
-	local.rotateQuaternion(node->m_localTransform.rotation);
-	local.translate(node->m_localTransform.translation);
+	//if (node->name() == u"右腕") {
+	//	std::cout << node->name() << std::endl;
+	//}
+	//std::cout << nodeIndex << std::endl;
 
-    m_nodeGlobalTransforms[nodeIndex] = node->initialLocalTransform() * local * parentTransform;   // NOTE: glTF はこの順である必要がある。
+
+	if (1) {
+		Matrix local = Matrix::makeScaling(node->m_localTransform.scale);
+		local.rotateQuaternion(node->m_localTransform.rotation);
+		local.translate(node->m_localTransform.translation);
+
+		//local.transpose();
+
+		//if (node->m_localTransform.rotation != Quaternion::Identity) {
+		//	printf("");
+		//}
+
+		m_nodeGlobalTransforms[nodeIndex] = local * node->initialLocalTransform() * parentTransform;   // NOTE: glTF はこの順である必要がある。
+	}
+	else {
+		/*
+		Matrix local;
+		local.translate(node->initialLocalTransform().position());
+		local.scale(node->m_localTransform.scale);
+		local.rotateQuaternion(node->m_localTransform.rotation);
+		local.translate(node->m_localTransform.translation);
+		*/
+		// TODO: * ではなく一気に作ったほうがはやいかも
+		Matrix local =
+			//Matrix::makeTranslation(node->initialLocalTransform().position()) *
+			Matrix::makeScaling(node->m_localTransform.scale) *
+			Matrix::makeRotationQuaternion(node->m_localTransform.rotation) *
+			Matrix::makeTranslation(node->m_localTransform.translation);// *
+			//Matrix::makeTranslation(node->initialLocalTransform().position());
+		local.translate(node->initialLocalTransform().position());
+		m_nodeGlobalTransforms[nodeIndex] = local;
+		m_nodeGlobalTransforms[nodeIndex] *= parentTransform;
+	}
 
 	// glview.cc と比べて Node の Transform の差分は無し。
-	float* m = m_nodeGlobalTransforms[nodeIndex].data();
-	for (int i = 0; i < 16; i++) std::cout << m[i] << ", ";
+	//float* m = m_nodeGlobalTransforms[nodeIndex].data();
+	//for (int i = 0; i < 16; i++) std::cout << m[i] << ", ";
 
-    for (int child : node->m_children) {
-        updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex]);
-    }
+	if (hierarchical) {
+		for (int child : node->m_children) {
+			updateNodeTransformsHierarchical(child, m_nodeGlobalTransforms[nodeIndex], hierarchical);
+		}
+	}
 }
 
 //==============================================================================
@@ -1093,6 +1243,24 @@ void InstancedMeshList::commitRenderData(MeshSection2* outSection, VertexLayout*
 	(*outVBCount)++;
 }
 
+Box MeshHelper::makeAABB(const Vertex* vertices, uint32_t vertexCount)
+{
+	if (vertexCount == 0) return Box();
+
+	Vector3 aabbMin = Vector3::Maximum;
+	Vector3 aabbMax = Vector3::Minimum;
+	for (uint32_t i = 0; i < vertexCount; i++) {
+		const auto& v = vertices[i];
+		aabbMin.x = std::min(aabbMin.x, v.position.x);
+		aabbMin.y = std::min(aabbMin.y, v.position.y);
+		aabbMin.z = std::min(aabbMin.z, v.position.z);
+		aabbMax.x = std::max(aabbMax.x, v.position.x);
+		aabbMax.y = std::max(aabbMax.y, v.position.y);
+		aabbMax.z = std::max(aabbMax.z, v.position.z);
+	}
+
+	return Box(aabbMin, aabbMax);
+}
 
 namespace detail {
 

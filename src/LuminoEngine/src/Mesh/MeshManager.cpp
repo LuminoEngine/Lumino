@@ -7,6 +7,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
+#include <LuminoEngine/Animation/AnimationMixer.hpp>
 #include "../Asset/AssetManager.hpp"
 #include "GLTFImporter.hpp"
 #include "FbxImporter.hpp"
@@ -93,6 +94,7 @@ void MeshManager::init(const Settings& settings)
 	m_graphicsManager = settings.graphicsManager;
 	m_assetManager = settings.assetManager;
 
+
 	//{
 	//	static VertexElement elements[] =
 	//	{
@@ -138,11 +140,15 @@ void MeshManager::init(const Settings& settings)
 
 	m_linearAllocatorPageManager = makeRef<LinearAllocatorPageManager>();
 
+	m_meshModelCache.init(64, 0);
+
     LN_LOG_DEBUG << "MeshManager Initialization ended.";
 }
 
 void MeshManager::dispose()
 {
+	m_meshModelCache.dispose();
+
     for (auto tex : m_mmdDefaultToonTexture)
     {
         tex.reset();
@@ -213,33 +219,68 @@ VertexLayout* MeshManager::getPredefinedVertexLayout(PredefinedVertexLayoutFlags
 	}
 }
 
-Ref<StaticMeshModel> MeshManager::createStaticMeshModel(const Path& filePath, float scale)
+Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const Path& filePath, float scale)
 {
-	static const Char* candidateExts[] = { u".gltf", u".glb" };
+	static const Char* candidateExts[] = { u".gltf", u".glb", u".pmx" };
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
-
-		Ref<StaticMeshModel> mesh;
-
-		{
-			auto diag = makeObject<DiagnosticsManager>();
-
-			GLTFImporter importer;
-			mesh = importer.import(m_assetManager, *path, diag);
-
-			//ObjMeshImporter importer;
-			//mesh = importer.import(filePath, scale, diag);
-
-			diag->dumpToLog();
-		}
-
-		return mesh;
+		return acquireStaticMeshModel(*path, scale);
 	}
 	else {
 		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
 		return nullptr;
 	}
+}
 
+Ref<StaticMeshModel> MeshManager::acquireStaticMeshModel(const AssetPath& assetPath, float scale)
+{
+	uint64_t key = assetPath.calculateHash();
+	auto mesh = m_meshModelCache.findObject(key);
+	if (mesh) {
+		return mesh;
+	}
+	else {
+		mesh = makeObject<StaticMeshModel>();
+		loadStaticMeshModel(mesh, assetPath, scale);
+		m_meshModelCache.registerObject(key, mesh, 0);
+		return mesh;
+	}
+}
+
+// TODO: deprecaed
+//void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale)
+//{
+//	static const Char* candidateExts[] = { u".gltf", u".glb" };
+//	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
+//	if (path) {
+//		loadStaticMeshModel(model, *path, scale);
+//	}
+//	else {
+//		LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
+//	}
+//}
+
+void MeshManager::loadStaticMeshModel(StaticMeshModel* model, const AssetPath& assetPath, float scale)
+{
+	{
+		auto diag = makeObject<DiagnosticsManager>();
+	 {
+
+			GLTFImporter importer;
+			bool result = importer.importAsStaticMesh(model, m_assetManager, assetPath, diag);
+
+			//ObjMeshImporter importer;
+			//mesh = importer.import(filePath, scale, diag);
+
+		}
+
+
+
+		diag->dumpToLog();
+	}
+
+	model->m_filePath = assetPath;
+	model->m_scale = scale;
 }
 
 Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, float scale)
@@ -248,10 +289,15 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 	auto path = m_assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
 	if (path) {
 
-		Ref<SkinnedMeshModel> mesh;
+		Ref<SkinnedMeshModel> mesh = makeObject<SkinnedMeshModel>();
 		auto diag = makeObject<DiagnosticsManager>();
 
-		if (path->path().hasExtension(u".fbx")) {
+		if (path->path().hasExtension(u".pmx")) {
+			PmxLoader importer(this, diag);
+			bool result = importer.load(mesh, *path, false);
+			mesh->m_animationController = makeObject<AnimationController>(mesh);
+		}
+		else if (path->path().hasExtension(u".fbx")) {
 #ifdef LN_USE_FBX_IMPORTER
 			FbxImporter importer;
 			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);
@@ -264,7 +310,17 @@ Ref<SkinnedMeshModel> MeshManager::createSkinnedMeshModel(const Path& filePath, 
 		{
 
 			GLTFImporter importer;
-			mesh = importer.importSkinnedMesh(m_assetManager, *path, diag);
+			bool result = importer.importAsSkinnedMesh(mesh, m_assetManager, *path, diag);
+
+
+			if (!importer.animationClips().isEmpty()) {
+				//auto mixer = makeObject<AnimationMixerCore>();
+				mesh->m_animationController = makeObject<AnimationController>(mesh);
+
+				for (auto& clip : importer.animationClips()) {
+					mesh->m_animationController->addClip(clip);
+				}
+			}
 
 		}
 
@@ -297,6 +353,11 @@ Ref<Texture> MeshManager::createTexture(const Path& parentDir, const StringRef& 
 
     return Texture2D::load(path);
 	//return m_assetManager->loadTexture(path);
+}
+
+void MeshManager::collectUnreferenceObjects()
+{
+	m_meshModelCache.collectUnreferenceObjects();
 }
 
 } // namespace detail

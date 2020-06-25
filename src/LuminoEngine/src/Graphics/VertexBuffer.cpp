@@ -39,7 +39,8 @@ Ref<VertexBuffer> VertexBuffer::create(size_t bufferSize, const void* initialDat
 }
 
 VertexBuffer::VertexBuffer()
-    : m_rhiObject(nullptr)
+    : m_manager(nullptr)
+    , m_rhiObject(nullptr)
     , m_usage(GraphicsResourceUsage::Static)
     , m_pool(GraphicsResourcePool::Managed)
     , m_primarySize(0)
@@ -57,7 +58,9 @@ VertexBuffer::~VertexBuffer()
 
 void VertexBuffer::init(size_t bufferSize, GraphicsResourceUsage usage)
 {
-    GraphicsResource::init();
+    Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+
     m_usage = usage;
     m_modified = true;
     resize(bufferSize);
@@ -75,7 +78,9 @@ void VertexBuffer::init(size_t bufferSize, const void* initialData, GraphicsReso
 void VertexBuffer::onDispose(bool explicitDisposing)
 {
     m_rhiObject.reset();
-    GraphicsResource::onDispose(explicitDisposing);
+
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    Object::onDispose(explicitDisposing);
 }
 
 int VertexBuffer::size() const

@@ -43,6 +43,7 @@
 
 #include "../Runtime/BindingValidation.hpp"
 #include <imgui.h>
+#include <LuminoEngine/Scene/SceneConductor.hpp>
 
 namespace ln {
 namespace detail {
@@ -397,7 +398,10 @@ void EngineManager::initializeAnimationManager()
 {
     if (!m_animationManager && m_settings.features.hasFlag(EngineFeature::Rendering))
     {
+		initializeAssetManager();
+
         AnimationManager::Settings settings;
+		settings.assetManager = m_assetManager;
         m_animationManager = ln::makeRef<AnimationManager>();
         m_animationManager->init(settings);
     }
@@ -797,6 +801,11 @@ void EngineManager::presentFrame()
     if (m_debugToolMode == DebugToolMode::Minimalized || m_debugToolMode == DebugToolMode::Activated) {
         m_platformManager->mainWindow()->setWindowTitle(String::format(u"FPS:{0:F1}({1:F1}), F8:Debug tool.", m_fpsController.totalFps(), m_fpsController.externalFps()));
     }
+
+	// TODO: Editor モードの時にも呼び出せるようにしないとだめそう
+	if (m_meshManager) {
+		m_meshManager->collectUnreferenceObjects();
+	}
 }
 
 void EngineManager::resetFrameDelay()
@@ -916,7 +925,25 @@ void EngineManager::handleImGuiDebugLayer(UIEventArgs* e)
 		}
 	}
 
+
+	if (m_mainWorld) {
+		//ImGui::BeginChild("Levels");
+		Level* level = m_mainWorld->sceneConductor()->activeScene();
+		ImGui::Text("ActiveScene"); ImGui::SameLine(150);
+		if (ImGui::Button("Reload")) {
+			level->reloadAsset();
+		}
+		if (ImGui::Button("Save")) {
+			m_assetManager->saveAssetModelToLocalFile(makeObject<AssetModel>(level));
+		}
+
+		//ImGui::EndChild();
+	}
+
 	ImGui::End();
+
+
+
 }
 
 bool EngineManager::toggleDebugToolMode()

@@ -233,6 +233,7 @@ bool TilemapModel::fetchTileset(int tileGlobalId, Tileset** outTileset, int* out
 void TilemapModel::serialize(Archive& ar)
 {
 	Object::serialize(ar);
+    LN_NOTIMPLEMENTED();
 
   //  String tilesetPath;
   //  if (ar.isSaving()) {
@@ -240,8 +241,8 @@ void TilemapModel::serialize(Archive& ar)
   //  }
 
 	//ar & makeNVP(u"tileset", tilesetPath);
-    Assets::serializeAsAssetPath(ar, u"tileset", m_tileset);
-	ar & makeNVP(u"layers", m_layers);
+ //   Assets::serializeAsAssetPath(ar, u"tileset", m_tileset);
+	//ar & makeNVP(u"layers", m_layers);
 
   //  if (ar.isLoading()) {
 		//setTileset(dynamic_pointer_cast<Tileset>(Assets::loadAsset(Path(ar.basePath(), tilesetPath))));

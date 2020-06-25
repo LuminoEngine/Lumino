@@ -33,7 +33,7 @@ public:
 	const AttitudeTransform& getTransform() const { return v_Transform; }
 
 
-LN_INTERNAL_ACCESS:
+public:
 	AnimationValue();
 	AnimationValue(AnimationValueType type);
 	void resetType(AnimationValueType type);
@@ -43,6 +43,7 @@ LN_INTERNAL_ACCESS:
 	void setTransform(const AttitudeTransform& value) { v_Transform = value; }
 
 	AnimationValueType	m_type;
+	float m_totalBlendWeights = 0.0f;
 	union
 	{
 		float v_Float;
@@ -70,7 +71,7 @@ public:
 protected:
 	AnimationTrack(AnimationValueType type);
 	virtual ~AnimationTrack();
-    void init();
+	bool init();
 	virtual void evaluate(float time, AnimationValue* outResult) = 0;
 	//void setTargetName(const String& name) { m_targetName = name; }
 
@@ -123,10 +124,58 @@ public:
 };
 
 /** (スキニングでは、ボーンアニメーションで使用) */
+// translation, rotation, scale をまとめて扱う。
+// - 個々の要素を Curve にすると、10 個も Curve ができる。さらに Key(AnimationKeyFrame) というやや大きめのデータもたくさんできる。
+//   AnimationKeyFrame は UI アニメやシネマなど、Editor から編集するようなものに対してメインに使う。
+//   対して skin mesh animation は基本的に外部のモデラーで変種したデータを扱う。↑に比べて大量のキーフレームができる傾向にある。
+// - Quaternion は slerp での補間を行う必要があるが、そのため個々の要素を Curve にするのは現実的ではない。
+//   また Edit 可能にしても、人間がいじれるものではない。（やるとしたらオイラー角度での編集か）
+// - 外部ファイルからアニメーションの方法を指定してくることもある (glTF は STEP, LINEAR, CUBICSPLINE がある)
+//   データの持ち方の考え方的に AnimationCurve を使った従来の方法とは異なり、↑のメモリ効率など インピーダンスミスマッチ がひどくなる。
 class TransformAnimationTrack
 	: public AnimationTrack
 {
 public:
+	enum class Interpolation
+	{
+		Step,
+		Linear,
+		CubicSpline,
+	};
+
+	struct Vector3Key
+	{
+		float time;
+		Vector3 value;
+	};
+
+	struct QuaternionKey
+	{
+		float time;
+		Quaternion value;
+	};
+
+	// for glTF
+	void setupTranslations(int frames, const float* times, const Vector3* values, Interpolation interpolation);
+	void setupRotations(int frames, const float* times, const Quaternion* values);
+	void setupScales(int frames, const float* times, const Vector3* values, Interpolation interpolation);
+
+LN_CONSTRUCT_ACCESS:
+	TransformAnimationTrack();
+
+	bool init();
+
+protected:
+	void evaluate(float time, AnimationValue* outResult) override;
+	float lastFrameTime() const override { return m_lastTime; }
+
+private:
+	std::vector<Vector3Key> m_translationKeys;
+	std::vector<QuaternionKey> m_rotationKeys;
+	std::vector<Vector3Key> m_scaleKeys;
+	Interpolation m_translationInterpolation;
+	Interpolation m_scaleInterpolation;
+	float m_lastTime;
 };
 
 } // namespace ln

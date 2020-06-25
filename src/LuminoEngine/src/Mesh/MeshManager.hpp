@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <unordered_map>
+#include "../Base/RefObjectCache.hpp"
 
 namespace ln {
 class DiagnosticsManager;
@@ -36,11 +37,17 @@ public:
 	void dispose();
 	VertexLayout* getPredefinedVertexLayout(PredefinedVertexLayoutFlags flags);
 
-    Ref<StaticMeshModel> createStaticMeshModel(const Path& filePath, float scale);
+	Ref<StaticMeshModel> acquireStaticMeshModel(const Path& filePath, float scale);
+	Ref<StaticMeshModel> acquireStaticMeshModel(const AssetPath& assetPath, float scale);
+    //void loadStaticMeshModel(StaticMeshModel* model, const Path& filePath, float scale);
+	void loadStaticMeshModel(StaticMeshModel* model, const AssetPath& assetPath, float scale);
     Ref<SkinnedMeshModel> createSkinnedMeshModel(const Path& filePath, float scale);
 	Ref<Texture> createTexture(const Path& parentDir, const StringRef& filePath, DiagnosticsManager* diag);
 
+	void collectUnreferenceObjects();
+
 	GraphicsManager* graphicsManager() const { return m_graphicsManager; }
+	AssetManager* assetManager() const { return m_assetManager; }
     const Ref<Texture2D>& getMMDDefaultToonTexture(int index) const { return  m_mmdDefaultToonTexture[index]; }
 	const Ref<LinearAllocatorPageManager>& linearAllocatorPageManager() const { return m_linearAllocatorPageManager; }
 
@@ -60,6 +67,7 @@ private:
     std::array<Ref<Texture2D>, 10> m_mmdDefaultToonTexture;
 
 	Ref<LinearAllocatorPageManager> m_linearAllocatorPageManager;
+	ObjectCache<uint64_t, StaticMeshModel> m_meshModelCache;
 };
 
 } // namespace detail

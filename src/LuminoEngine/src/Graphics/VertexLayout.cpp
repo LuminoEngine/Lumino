@@ -15,7 +15,8 @@ Ref<VertexLayout> VertexLayout::create()
 }
 
 VertexLayout::VertexLayout()
-    : m_deviceObj(nullptr)
+    : m_manager(nullptr)
+    , m_deviceObj(nullptr)
     , m_vertexElements()
     , m_modified(true)
 {
@@ -27,7 +28,8 @@ VertexLayout::~VertexLayout()
 
 void VertexLayout::init()
 {
-    GraphicsResource::init();
+    Object::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
 }
 
 void VertexLayout::init(const VertexElement* elements, int count)
@@ -44,7 +46,9 @@ void VertexLayout::init(const VertexElement* elements, int count)
 void VertexLayout::onDispose(bool explicitDisposing)
 {
     m_deviceObj = nullptr;
-    GraphicsResource::onDispose(explicitDisposing);
+
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    Object::onDispose(explicitDisposing);
 }
 
 void VertexLayout::addElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex, VertexInputRate rate)

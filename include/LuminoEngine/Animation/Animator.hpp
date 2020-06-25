@@ -1,11 +1,12 @@
 ﻿
 #pragma once
 #include "Common.hpp"
-#include "AnimationController.hpp"
+#include "AnimationMixer.hpp"
 #include "../Scene/Component.hpp"
 
 namespace ln {
 
+#if 0
 class Animator
 	: public Component
 	, public detail::IAnimationControllerHolder
@@ -26,7 +27,8 @@ private:
 	virtual void onUpdate(float elapsedSeconds) override;
 	virtual void onUpdateTargetElement(const detail::AnimationTargetElementBlendLink* link) override;
 
-	Ref<AnimationControllerCore> m_core;
+	Ref<AnimationMixerCore> m_core;
 };
+#endif
 
 } // namespace ln

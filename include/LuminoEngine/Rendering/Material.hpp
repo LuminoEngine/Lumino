@@ -183,8 +183,11 @@ protected:  // TODO:
 
 protected:
 
-	LN_SERIALIZE_CLASS_VERSION(1);
-	virtual void serialize(Archive& ar) override;
+	//LN_SERIALIZE_CLASS_VERSION(1);
+	//virtual void serialize(Archive& ar) override;
+
+
+	void serialize2(Serializer2& ar) override;
 
 LN_INTERNAL_ACCESS:
 

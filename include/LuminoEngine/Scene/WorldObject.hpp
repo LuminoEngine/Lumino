@@ -16,6 +16,8 @@ class RenderingContext;
 LN_CLASS()
 class ComponentList : public Collection<Ref<Component>>
 {
+public:
+	void serialize2(Serializer2& ar) override { Collection<Ref<Component>>::serialize2(ar); }
 
 };
 
@@ -79,6 +81,8 @@ private:
     Quaternion m_rotation;
     Vector3 m_scale;
     Vector3 m_center;
+
+	friend class ::ln::WorldObject;
 };
 
 class IWorldObjectVisitor
@@ -193,6 +197,9 @@ public:
     /** この WorldObject に含まれている Component のうち、指定した型である最初の Component を返します。 */
     Component* findComponentByType(const TypeInfo* type) const;
 
+	template<class TComponent>
+	TComponent* findComponent() const { return static_cast<TComponent*>(findComponentByType(TypeInfo::getTypeInfo<TComponent>())); }
+
     bool traverse(detail::IWorldObjectVisitor* visitor);
 
 	LN_METHOD(Property)
@@ -212,13 +219,12 @@ protected:
 	virtual bool traverseRefrection(ReflectionObjectVisitor* visitor);
 
 
-	LN_SERIALIZE_CLASS_VERSION(1);
-	virtual void serialize(Archive& ar) override;
+	void serialize2(Serializer2& ar) override;
 
 LN_CONSTRUCT_ACCESS:
 	WorldObject();
 	virtual ~WorldObject();
-	bool init();
+	bool init(/*ObjectInitializeContext* context*/);
 	virtual void onDispose(bool explicitDisposing) override;
 
 public: // TODO:

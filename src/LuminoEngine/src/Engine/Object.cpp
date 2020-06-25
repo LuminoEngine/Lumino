@@ -4,11 +4,12 @@
 #include <LuminoEngine/Engine/Property.hpp>
 #include <LuminoEngine/Engine/VMProperty.hpp>
 #include "../Runtime/RuntimeManager.hpp"
+#include "../Asset/AssetManager.hpp"
 
 namespace ln {
 
 //==============================================================================
-// Object
+// PredefinedTypes
 
 TypeInfo* PredefinedTypes::Bool;
 TypeInfo* PredefinedTypes::Char;
@@ -32,6 +33,9 @@ TypeInfo* PredefinedTypes::List;
 
 //==============================================================================
 // Object
+
+Ref<ObjectInitializeContext> ObjectInitializeContext::Default = makeRef<ObjectInitializeContext>();
+//Ref<ObjectInitializeContext> NoAutoAdd;
 
 
 Object::Object()
@@ -116,6 +120,13 @@ bool Object::traverseRefrection(ReflectionObjectVisitor* visitor)
 void Object::setTypeInfoOverride(TypeInfo* value)
 {
     LN_UNREACHABLE();
+}
+
+void Object::reloadAsset()
+{
+	if (!m_assetPath.isNull()) {
+		detail::EngineDomain::assetManager()->loadAssetModelFromAssetPathToInstance(this, m_assetPath);
+	}
 }
 
 //void Object::onSetAssetFilePath(const Path& filePath)

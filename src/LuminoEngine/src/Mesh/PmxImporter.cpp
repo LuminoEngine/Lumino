@@ -4,19 +4,23 @@
 #include "Internal.hpp"
 #include <float.h>
 #include <LuminoCore/IO/BinaryReader.hpp>
+#include <LuminoEngine/Engine/Diagnostics.hpp>
 #include <LuminoEngine/Graphics/IndexBuffer.hpp>
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Asset/Assets.hpp>
 #include <LuminoEngine/Mesh/SkinnedMeshModel.hpp>
-#include <LuminoEngine/Animation/AnimationController.hpp>	// TODO: これは Importer の中で利用する必要はないはず
+#include <LuminoEngine/Animation/AnimationMixer.hpp>	// TODO: これは Importer の中で利用する必要はないはず
+#include "../Asset/AssetManager.hpp"
+#include "../Graphics/GraphicsManager.hpp"
 #include "MeshManager.hpp"
 #include "PmxImporter.hpp"
 
-#if 0
+#if 1
 namespace ln {
 namespace detail {
 
+#if 0
 //==============================================================================
 // PmxMaterialResource
 
@@ -152,6 +156,10 @@ void PmxMorphBaseResource::apply(MeshResource* mesh)
 
 //==============================================================================
 // ModelCore
+
+PmxSkinnedMeshResource(AssetManager* assetManager, DiagnosticsManager* diag)
+{
+}
 
 PmxSkinnedMeshResource::~PmxSkinnedMeshResource()
 {
@@ -289,34 +297,37 @@ struct PMX_Vertex
 	float	EdgeWeight;			// エッジウェイト
 	float	Index;				// 頂点インデックス値
 };
+#endif
 
 //==============================================================================
 // PmxLoader
 
-PmxLoader::PmxLoader()
+PmxLoader::PmxLoader(MeshManager* manager, DiagnosticsManager* diag)
+	: m_manager(manager)
+	, m_diag(diag)
+	, m_model(nullptr)
 {
-	m_rotateY180 = true;
+	m_rotateY180 = false;
 }
 
 PmxLoader::~PmxLoader()
 {
 }
 
-Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::MeshManager* manager, Stream* stream, const Path& baseDir, bool isDynamic/*, ModelCreationFlag flags*/)
+bool PmxLoader::load(SkinnedMeshModel* model, const AssetPath& assetPath, bool isDynamic)
 {
-	m_manager = manager;
+	m_model = model;
 	m_isDynamic = isDynamic;
 	//m_flags = flags;
 	m_hasSDEF = false;
+
+	m_baseDir = assetPath.getParentAssetPath();
+	auto stream = m_manager->assetManager()->openStreamFromAssetPath(assetPath);
 
 	if (m_rotateY180)
 		m_adjustMatrix = Matrix::makeRotationY(Math::PI);
 
 	BinaryReader reader(stream);
-	//m_modelCore = Ref<PmxSkinnedMeshResource>::makeRef();
-	//m_modelCore->initialize(manager->getGraphicsManager(), MeshCreationFlags::DynamicBuffers);
-    m_modelCore = makeObject<PmxSkinnedMeshResource>();
-	m_modelCore->Format = ModelFormat_PMX;
 	
 	//-----------------------------------------------------
 	// ヘッダ
@@ -326,55 +337,90 @@ Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::MeshManager* manager, Stream
 		m_pmxHeader.Magic[2] != 'X' ||
 		m_pmxHeader.Magic[3] != ' ')
 	{
-		return nullptr;
+		m_diag->reportError(u"Invalid file signature.");
+		return false;
 	}
-	if (m_pmxHeader.Version < 2.0f)
-		return nullptr;
-		
+
+	if (m_pmxHeader.Version < 2.0f) {
+		m_diag->reportError(u"Invalid file version.");
+		return false;
+	}
+
+	auto mesh = makeObject<Mesh>();
+	auto meshContainer = makeObject<MeshContainer>();
+	meshContainer->setMesh(mesh);
+	m_model->addMeshContainer(meshContainer);
+	auto meshNode = makeObject<MeshNode>();
+	meshNode->setMeshContainerIndex(0);
+	meshNode->skeletonIndex = 0;
+	m_model->addNode(meshNode);
+
 	// モデル情報
-	loadModelInfo( &reader );
+	if (!loadModelInfo(&reader)) {
+		return false;
+	}
 
 	// 頂点
-	loadVertices( &reader );
-
-	// 頂点インデックス
-	loadIndices( &reader );
-
-	// テクスチャテーブル
-	loadTextureTable( &reader, baseDir );
-
-	// マテリアル
-	loadMaterials( &reader );
-
-	// ボーン
-	loadBones( &reader );
-
-	// モーフ
-	loadMorphs( &reader );
-
-	// 表示枠
-	loadDisplayFrame( &reader );
-
-	// 剛体
-	loadRigidBodys( &reader );
-
-	// ジョイント
-	loadJoints( &reader );
-
-	if (m_hasSDEF)
-	{
-		calcSDEFCorrection();
+	if (!loadVertices(&reader, mesh)) {
+		return false;
 	}
 
-    m_modelCore->refreshInitialValues();
+	// 頂点インデックス
+	if (!loadIndices(&reader, mesh)) {
+		return false;
+	}
 
-	return m_modelCore;
+	// テクスチャテーブル
+	if (!loadTextureTable(&reader)) {
+		return false;
+	}
+
+	// マテリアル
+	if (!loadMaterials(&reader, mesh)) {
+		return false;
+	}
+
+	// ボーン
+	if (!loadBones(&reader)) {
+		return false;
+	}
+
+	// モーフ
+	if (!loadMorphs(&reader)) {
+		return false;
+	}
+
+	// 表示枠
+	if (!loadDisplayFrame(&reader)) {
+		return false;
+	}
+
+	// 剛体
+	if (!loadRigidBodys(&reader)) {
+		return false;
+	}
+
+	// ジョイント
+	if (!loadJoints(&reader)) {
+		return false;
+	}
+
+	// Build
+	{
+		if (m_hasSDEF) {
+			calcSDEFCorrection();
+		}
+
+		buildSkeleton();
+	}
+
+	return true;
 }
 
-void PmxLoader::loadModelInfo(BinaryReader* reader)
+bool PmxLoader::loadModelInfo(BinaryReader* reader)
 {
 	// モデル名
-	m_modelCore->Name = readString(reader);
+	/*m_modelCore->Name = */readString(reader);
 
 	// モデル名英
 	/*m_modelCore->EnglishName = */readString(reader);
@@ -384,23 +430,26 @@ void PmxLoader::loadModelInfo(BinaryReader* reader)
 
 	// コメント英
 	/*m_modelCore->EnglishComment = */readString(reader);
+
+	return true;
 }
 
-void PmxLoader::loadVertices(BinaryReader* reader)
+bool PmxLoader::loadVertices(BinaryReader* reader, Mesh* mesh)
 {
 	// 頂点数
 	int vertexCount = reader->readInt32();
 
-	// 頂点バッファ作成
-	m_modelCore->resizeVertexBuffer(vertexCount);
-
-	// データを流し込む
 	struct BaseVertex
 	{
 		Vector3	Position;
 		Vector3	Normal;
 		Vector2	TexUV;
 	} baseVertex;
+
+	// 頂点バッファ作成
+	mesh->resetVertexBuffer(vertexCount);
+	auto* mainVertices = static_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
+	auto* skinningVertices = static_cast<VertexBlendWeight*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Skinning));
 
 	Vector3 aabbMin;
 	Vector3 aabbMax;
@@ -411,7 +460,12 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 		adjustPosition(&baseVertex.Position);
 		adjustPosition(&baseVertex.Normal);
 
-        m_modelCore->setVertex(i, Vertex{ baseVertex.Position, baseVertex.Normal, baseVertex.TexUV, Color::White });
+		mainVertices[i] = Vertex{
+			baseVertex.Position,
+			baseVertex.Normal,
+			baseVertex.TexUV,
+			Color::White,
+			Vector4(1, 0, 0, 1)};
 
 		// TODO: 追加UV
 		//for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)
@@ -428,9 +482,14 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 			case 0:	// BDEF1
 			{
 				int i0 = reader->readInt(getBoneIndexSize());
-				m_modelCore->setBlendIndices(i, i0, 0.0f, 0.0f, 0.0f);
-				m_modelCore->setBlendWeights(i, 1.0f, 0.0f, 0.0f, 0.0f);
-                m_modelCore->setSdefInfo(i, Vector4(0, 0, 0, -1), Vector3::Zero, Vector3::Zero);
+				skinningVertices[i].indices[0] = i0;
+				skinningVertices[i].indices[1] = 0.0f;
+				skinningVertices[i].indices[2] = 0.0f;
+				skinningVertices[i].indices[3] = 0.0f;
+				skinningVertices[i].weights[0] = 1.0f;
+				skinningVertices[i].weights[1] = 0.0f;
+				skinningVertices[i].weights[2] = 0.0f;
+				skinningVertices[i].weights[3] = 0.0f;
 				break;
 			}
 			case 1:	// BDEF2
@@ -438,24 +497,26 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 				int i0 = reader->readInt(getBoneIndexSize());
 				int i1 = reader->readInt(getBoneIndexSize());
 				float w0 = reader->readFloat();
-				m_modelCore->setBlendIndices(i, i0, i1, 0.0f, 0.0f);
-				m_modelCore->setBlendWeights(i, w0, 1.0f - w0, 0.0f, 0.0f);
-                m_modelCore->setSdefInfo(i, Vector4(0, 0, 0, -1), Vector3::Zero, Vector3::Zero);
+				skinningVertices[i].indices[0] = i0;
+				skinningVertices[i].indices[1] = i1;
+				skinningVertices[i].indices[2] = 0.0f;
+				skinningVertices[i].indices[3] = 0.0f;
+				skinningVertices[i].weights[0] = w0;
+				skinningVertices[i].weights[1] = 1.0f - w0;
+				skinningVertices[i].weights[2] = 0.0f;
+				skinningVertices[i].weights[3] = 0.0f;
 				break;
 			}
 			case 2:	// BDEF4
 			{
-				int i0 = reader->readInt(getBoneIndexSize());
-				int i1 = reader->readInt(getBoneIndexSize());
-				int i2 = reader->readInt(getBoneIndexSize());
-				int i3 = reader->readInt(getBoneIndexSize());
-				float w0 = reader->readFloat();
-				float w1 = reader->readFloat();
-				float w2 = reader->readFloat();
-				float w3 = reader->readFloat();
-				m_modelCore->setBlendIndices(i, i0, i1, i2, i3);
-				m_modelCore->setBlendWeights(i, w0, w1, w2, w3);
-                m_modelCore->setSdefInfo(i, Vector4(0, 0, 0, -1), Vector3::Zero, Vector3::Zero);
+				skinningVertices[i].indices[0] = reader->readInt(getBoneIndexSize());
+				skinningVertices[i].indices[1] = reader->readInt(getBoneIndexSize());
+				skinningVertices[i].indices[2] = reader->readInt(getBoneIndexSize());
+				skinningVertices[i].indices[3] = reader->readInt(getBoneIndexSize());
+				skinningVertices[i].weights[0] = reader->readFloat();
+				skinningVertices[i].weights[1] = reader->readFloat();
+				skinningVertices[i].weights[2] = reader->readFloat();
+				skinningVertices[i].weights[3] = reader->readFloat();
 				break;
 			}
 			case 3:	// SDEF
@@ -463,20 +524,28 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 				int i0 = reader->readInt(getBoneIndexSize());
 				int i1 = reader->readInt(getBoneIndexSize());
 				float w0 = reader->readFloat();
-				m_modelCore->setBlendIndices(i, i0, i1, 0.0f, 0.0f);
-				m_modelCore->setBlendWeights(i, w0, 1.0f - w0, 0.0f, 0.0f);
+				skinningVertices[i].indices[0] = i0;
+				skinningVertices[i].indices[1] = i1;
+				skinningVertices[i].indices[2] = 0.0f;
+				skinningVertices[i].indices[3] = 0.0f;
+				skinningVertices[i].weights[0] = w0;
+				skinningVertices[i].weights[1] = 1.0f - w0;
+				skinningVertices[i].weights[2] = 0.0f;
+				skinningVertices[i].weights[3] = 0.0f;
 				Vector3 sdefC, sdefR0, sdefR1;
 				reader->read(&sdefC, sizeof(float) * 3);
 				reader->read(&sdefR0, sizeof(float) * 3);
 				reader->read(&sdefR1, sizeof(float) * 3);	// TODO:※修正値を要計算
-                m_modelCore->setSdefInfo(i, Vector4(sdefC, -1), sdefR0, sdefR1);
+		// TODO:
+    //            m_modelCore->setSdefInfo(i, Vector4(sdefC, -1), sdefR0, sdefR1);
 				m_hasSDEF = true;
 				break;
 			}
 		}
 
-		// エッジ倍率
-		m_modelCore->setMmdExtra(i, reader->readFloat(), i);
+		// TODO: エッジ倍率
+		float edgeWeight = reader->readFloat();
+		//m_modelCore->setMmdExtra(i, , i);
 
 		// AABB
 		aabbMin.x = std::min(aabbMin.x, baseVertex.Position.x);
@@ -487,79 +556,70 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 		aabbMax.z = std::max(aabbMax.z, baseVertex.Position.z);
 	}
 
+	if (m_hasSDEF) {
+		// TODO:
+		LN_WARNING(u"PMX SDEF is not implemented.");
+	}
+
 	// TODO: BoundingBox
 	//m_modelCore->setBoundingBox(Box(aabbMin, aabbMax));
+
+	return true;
 }
 
-void PmxLoader::loadIndices(BinaryReader* reader)
+bool PmxLoader::loadIndices(BinaryReader* reader, Mesh* mesh)
 {
 	// インデックス数
 	int indexCount = reader->readInt32();
 
+	IndexBufferFormat indexFormat;
+	if (getVertexIndexSize() == 1 || getVertexIndexSize() == 2) {
+		indexFormat = IndexBufferFormat::UInt16;
+	}
+	else if (getVertexIndexSize() == 4) {
+		indexFormat = IndexBufferFormat::UInt32;
+	}
+	else {
+		m_diag->reportError(u"Invalid index format.");
+		return false;
+	}
+
 	// インデックスバッファ作成
-	//IndexBufferFormat format = IndexBufferFormat_UInt16;
-	//if (getVertexIndexSize() > 2) {
-	//	format = IndexBufferFormat_UInt16;
-	//}
-	//m_modelCore->resizeIndexBuffer(indexCount);
-	//m_modelCore->requestIndexBuffer()->setFormatInternal(format);
-	m_modelCore->resizeIndexBuffer(indexCount);
+	mesh->resetIndexBuffer(indexCount, indexFormat);
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);
 	reader->read(indicesBuffer.data(), indicesBuffer.size());
 
-	//IndexBuffer* ib = m_modelCore->requestIndexBuffer();
-	//void* buf = (uint16_t*)ib->getMappedData();
-
-	// 1 バイトインデックス
-	if (getVertexIndexSize() == 1)
-	{
-		auto indices = (const uint8_t*)indicesBuffer.data();
-		for (int i = 0; i < indexCount; i += 3)
-		{
-			m_modelCore->setIndex(i + 0, indices[i + 0]);
-			m_modelCore->setIndex(i + 1, indices[i + 1]);
-			m_modelCore->setIndex(i + 2, indices[i + 2]);
+	// uint8 -> uint16
+	if (getVertexIndexSize() == 1) {
+		auto* src = reinterpret_cast<const uint8_t*>(indicesBuffer.data());
+		auto* dst = reinterpret_cast<uint16_t*>(mesh->acquireMappedIndexBuffer());
+		for (int i = 0; i < indexCount; i += 3) {
+			dst[i + 0] = src[i + 0];
+			dst[i + 1] = src[i + 1];
+			dst[i + 2] = src[i + 2];
 		}
 	}
-	// 2 バイトインデックス
+	// uint16 -> uint16
 	else if (getVertexIndexSize() == 2)
 	{
-		auto indices = (const uint16_t*)indicesBuffer.data();
-		//memcpy(buf, indices, sizeof(uint16_t) * indexCount);
-		for (int i = 0; i < indexCount; i += 3)
-		{
-            m_modelCore->setIndex(i + 0, indices[i + 0]);
-            m_modelCore->setIndex(i + 1, indices[i + 1]);
-            m_modelCore->setIndex(i + 2, indices[i + 2]);
-
-			// PMX と Lumino では面方向が逆なので反転する
-			//m_modelCore->setIndex(i + 0, indices[i + 0]);
-			//m_modelCore->setIndex(i + 1, indices[i + 2]);
-			//m_modelCore->setIndex(i + 2, indices[i + 1]);
-		}
+		auto* src = reinterpret_cast<const uint16_t*>(indicesBuffer.data());
+		auto* dst = reinterpret_cast<uint16_t*>(mesh->acquireMappedIndexBuffer());
+		memcpy(dst, src, sizeof(uint16_t) * indexCount);
 	}
-	// 2 or 4 バイトインデックス
+	// uint32 -> uint32
 	else
 	{
-		auto indices = (const uint32_t*)indicesBuffer.data();
-		//memcpy(buf, indices, sizeof(uint32_t) * indexCount);
-		for (int i = 0; i < indexCount; i += 3)
-		{
-            m_modelCore->setIndex(i + 0, indices[i + 0]);
-            m_modelCore->setIndex(i + 1, indices[i + 1]);
-            m_modelCore->setIndex(i + 2, indices[i + 2]);
-
-			// PMX と Lumino では面方向が逆なので反転する
-			//m_modelCore->setIndex(i + 0, indices[i + 0]);
-			//m_modelCore->setIndex(i + 1, indices[i + 2]);
-			//m_modelCore->setIndex(i + 2, indices[i + 1]);
-		}
+		auto* src = reinterpret_cast<const uint32_t*>(indicesBuffer.data());
+		auto* dst = reinterpret_cast<uint32_t*>(mesh->acquireMappedIndexBuffer());
+		memcpy(dst, src, sizeof(uint32_t) * indexCount);
 	}
+
+	return true;
 }
 
-void PmxLoader::loadTextureTable(BinaryReader* reader, const Path& baseDir)
+bool PmxLoader::loadTextureTable(BinaryReader* reader)
 {
 	// テクスチャ数
 	int textureCount = reader->readInt32();
@@ -572,28 +632,28 @@ void PmxLoader::loadTextureTable(BinaryReader* reader, const Path& baseDir)
 		// テクスチャ名
 		String name = readString(reader);
 
-		// 作成
-		Path filePath(baseDir, name);
-        m_textureTable.add(makeObject<Texture2D>(filePath));
-        //m_textureTable.add(Assets::loadTexture(filePath));
-		//m_textureTable.add(m_manager->createTexture(baseDir, filePath, m_flags));
+		auto assetPath = AssetPath::combineAssetPath(m_baseDir, name);
+		if (auto texture = m_manager->graphicsManager()->requestTexture(assetPath)) {
+			m_textureTable.add(texture);
+		}
+		else {
+			m_diag->reportWarning(u"Texture not found: " + name);
+		}
 	}
+
+	return true;
 }
 
-void PmxLoader::loadMaterials(BinaryReader* reader)
+bool PmxLoader::loadMaterials(BinaryReader* reader, Mesh* mesh)
 {
 	// マテリアル数
 	int materialCount = reader->readInt32();
-
-	// メモリ確保
-	m_modelCore->materials.resize(materialCount);
-	m_modelCore->resizeSections(materialCount);
+	m_pmxMaterials.resize(materialCount);
 
 	int indexAttrOffset = 0;
 	for (int i = 0; i < materialCount; ++i)
 	{
-		auto m = makeRef<PmxMaterialResource>();
-		m_modelCore->materials[i] = m;;
+		PmxMaterial* m = &m_pmxMaterials[i];
 
 		// 材質名
 		/*m_modelCore->Material.Name = */readString(reader);
@@ -640,7 +700,7 @@ void PmxLoader::loadMaterials(BinaryReader* reader)
 		if (sphereTexture >= 0) {
 			m->SphereTexture = m_textureTable[sphereTexture];
 		}
-		m->SphereMode = (enum PmxMaterialResource::SphereMode)reader->readInt8();
+		m->SphereMode = static_cast<PmxSphereMode>(reader->readInt8());
 
 		// トゥーンテクスチャ
 		int shareToon = reader->readInt8();
@@ -666,27 +726,26 @@ void PmxLoader::loadMaterials(BinaryReader* reader)
 		int vc = reader->readInt32();
 
 		// 属性テーブルを埋める
-        m_modelCore->setSection(i, indexAttrOffset, vc / 3, i);
+		mesh->addSection(indexAttrOffset, vc / 3, i, PrimitiveTopology::TriangleList);
+
+		m_model->addMaterial(makeMaterial(m));
+
 		indexAttrOffset += vc;
 	}
+
+	return true;
 }
 
-void PmxLoader::loadBones(BinaryReader* reader)
+bool PmxLoader::loadBones(BinaryReader* reader)
 {
 	// ボーン数
 	int boneCount = reader->readInt32();
-
-	// 親ボーンをインデックスから拾うため、まずはすべてインスタンス化
-	m_modelCore->bones.resize(boneCount);
-	for (int i = 0; i < boneCount; ++i)
-	{
-		m_modelCore->bones[i] = makeRef<PmxBoneResource>(m_modelCore, i);
-	}
+	m_pmxBones.resize(boneCount);
 
 	// データ読み込み
 	for (int i = 0; i < boneCount; ++i)
 	{
-		PmxBoneResource* bone = m_modelCore->bones[i];
+		PmxBone* bone = &m_pmxBones[i];
 
 		// ボーン名
 		bone->Name = readString(reader);
@@ -696,7 +755,7 @@ void PmxLoader::loadBones(BinaryReader* reader)
 
 		// 初期位置
 		reader->read(&bone->OrgPosition, sizeof(float) * 3);
-		adjustPosition(&bone->OrgPosition);
+		//adjustPosition(&bone->OrgPosition);
 
 		// 親ボーンのボーンIndex
 		bone->ParentBoneIndex = (int)reader->readInt(getBoneIndexSize());
@@ -705,26 +764,9 @@ void PmxLoader::loadBones(BinaryReader* reader)
 		bone->TransformLevel = reader->readInt32();
 
 		// ボーンフラグ
-		uint32_t flag = reader->readUInt16();
-		bone->BoneConnect = (flag & 0x0001) != 0 ? BoneConnectType_Bone : BoneConnectType_PositionOffset;
-		bone->CanRotate = (flag & 0x0002) != 0;
-		bone->CanMove = (flag & 0x0004) != 0;
-		bone->isVisible = (flag & 0x0008) != 0;
-		bone->CanOperate = (flag & 0x0010) != 0;
+		bone->boneFlags = reader->readUInt16();
 
-		bone->IsIK = (flag & 0x0020) != 0;
-		bone->LocalProvide = (flag & 0x0080) != 0 ? LocalProvideType_ParentLocalTransformValue : LocalProvideType_UserTransformValue;
-
-		bone->IsRotateProvided = (flag & 0x0100) != 0;
-		bone->IsMoveProvided = (flag & 0x0200) != 0;
-
-		bone->IsFixAxis = (flag & 0x0400) != 0;
-		bone->IsLocalAxis = (flag & 0x0800) != 0;
-
-		bone->TransformAfterPhysics = (flag & 0x1000) != 0;
-		bone->ParentTransform = (flag & 0x2000) != 0;
-
-		if (bone->BoneConnect == BoneConnectType_PositionOffset)
+		if (bone->boneConnect() == PmxBoneConnectType_PositionOffset)
 		{
 			// 座標オフセット, ボーン位置からの相対分
 			reader->read(&bone->PositionOffset, sizeof(float) * 3);
@@ -736,7 +778,7 @@ void PmxLoader::loadBones(BinaryReader* reader)
 		}
 
 		// 回転付与:1 または 移動付与:1 の場合
-		if (bone->IsRotateProvided || bone->IsMoveProvided)
+		if (bone->isRotateProvided() || bone->isMoveProvided())
 		{
 			// 付与親ボーンのボーンIndex
 			bone->ProvidedParentBoneIndex = (int)reader->readInt(getBoneIndexSize());
@@ -744,36 +786,37 @@ void PmxLoader::loadBones(BinaryReader* reader)
 		}
 
 		// 軸固定:1 の場合
-		if (bone->IsFixAxis) {
+		if (bone->isFixAxis()) {
 			reader->read(&bone->AxisDirectionVector, sizeof(float) * 3);
 		}
 
 		//  ローカル軸:1 の場合
-		if (bone->IsLocalAxis)
+		if (bone->isLocalAxis())
 		{
 			reader->read(&bone->DimentionXDirectionVector, sizeof(float) * 3);
 			reader->read(&bone->DimentionZDirectionVector, sizeof(float) * 3);
 		}
 
 		// 外部親変形:1 の場合
-		if (bone->ParentTransform) {
+		if (bone->isParentTransform()) {
 			bone->KeyValue = reader->readInt32();
 		}
 
 		// IK:1 の場合
-		if (bone->IsIK)
+		if (bone->isIK())
 		{
-			auto ik = makeRef<PmxIKResource>();
-			m_modelCore->iks.add(ik);
+			m_iks.push_back({});
+			PmxIK* ik = &m_iks.back();
+
 			ik->IKBoneIndex = i;							// 現在処理中のボーン番号
 			ik->IKTargetBoneIndex = (int)reader->readInt(getBoneIndexSize());
 			ik->LoopCount = reader->readInt32();
-			ik->IKRotateLimit = reader->readFloat()/* * 4*/;
+			ik->IKRotateLimit = reader->readFloat();
 
 			int ikLinkCount = reader->readInt32();
 			for (int i = 0; i < ikLinkCount; i++)
 			{
-				PmxIKResource::IKLink ikLink;
+				PmxIKLink ikLink;
 				ikLink.LinkBoneIndex = (int)reader->readInt(getBoneIndexSize());
 				ikLink.IsRotateLimit = (reader->readInt8() != 0);
 				if (ikLink.IsRotateLimit)
@@ -794,14 +837,18 @@ void PmxLoader::loadBones(BinaryReader* reader)
 					ikLink.MaxLimit.clamp(EularMinimum, EularMaximum);
 				}
 
-				ik->IKLinks.add(ikLink);
+				ik->IKLinks.push_back(ikLink);
 			}
 		}
 	}
+
+	return true;
 }
 
-void PmxLoader::loadMorphs(BinaryReader* reader)
+bool PmxLoader::loadMorphs(BinaryReader* reader)
 {
+	return true;
+#if 0
 	m_modelCore->morphBase = makeRef<PmxMorphBaseResource>();
 
 	// モーフ数
@@ -928,10 +975,13 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 			}
 		}
 	}
+#endif
 }
 
-void PmxLoader::loadDisplayFrame(BinaryReader* reader)
+bool PmxLoader::loadDisplayFrame(BinaryReader* reader)
 {
+	return true;
+#if 0
 	// 表示枠はすべて読み飛ばす
 	int displayFrameCount = reader->readInt32();
 	for (int i = 0; i < displayFrameCount; i++)
@@ -964,10 +1014,13 @@ void PmxLoader::loadDisplayFrame(BinaryReader* reader)
 			}
 		}
 	}
+#endif
 }
 
-void PmxLoader::loadRigidBodys(BinaryReader* reader)
+bool PmxLoader::loadRigidBodys(BinaryReader* reader)
 {
+	return true;
+#if 0
 	// 剛体数
 	int bodyCount = reader->readInt32();
 	m_modelCore->rigidBodys.resize(bodyCount);
@@ -1057,10 +1110,13 @@ void PmxLoader::loadRigidBodys(BinaryReader* reader)
 			break;
 		}
 	}
+#endif
 }
 
-void PmxLoader::loadJoints(BinaryReader* reader)
+bool PmxLoader::loadJoints(BinaryReader* reader)
 {
+	return true;
+#if 0
 	// ジョイント数
 	int jointCount = reader->readInt32();
 	m_modelCore->joints.resize(jointCount);
@@ -1099,6 +1155,7 @@ void PmxLoader::loadJoints(BinaryReader* reader)
 		joint->SpringRotationStiffness.y = Math::degreesToRadians(joint->SpringRotationStiffness.y);
 		joint->SpringRotationStiffness.z = Math::degreesToRadians(joint->SpringRotationStiffness.z);
 	}
+#endif
 }
 
 String PmxLoader::readString(BinaryReader* reader)
@@ -1169,6 +1226,102 @@ void PmxLoader::adjustAngle(Vector3* angles) const
 		//(*y) += Math::PI;
 		//if ((*y) >= Math::PI) 
 		//	(*y) -= Math::PI;
+	}
+}
+
+Ref<Material> PmxLoader::makeMaterial(const PmxMaterial* pmxMaterial) const
+{
+	auto material = makeObject<Material>();
+
+	material->setMainTexture(pmxMaterial->Texture);
+	material->setColor(pmxMaterial->Diffuse);
+	material->setEmissive(pmxMaterial->Emissive);
+
+	// MMD 用ではないシェーダで描画される場合に備える
+	material->setMetallic(pmxMaterial->Power);
+	material->setRoughness(1.0 - pmxMaterial->Power);
+
+	material->setColor(u"_mmdAmbient", pmxMaterial->Ambient);
+	material->setColor(u"_mmdSpecular", pmxMaterial->Specular);
+	material->setTexture(u"_mmdToonTexture", pmxMaterial->ToonTexture);
+	material->setTexture(u"_mmdSphereTexture", pmxMaterial->SphereTexture);
+	material->setColor(u"_mmdToonColor", pmxMaterial->ToonColor);
+	material->setColor(u"_mmdEdgeColor", pmxMaterial->EdgeColor);
+	material->setFloat(u"_mmdEdgeSize", pmxMaterial->EdgeSize);
+	material->setColor(u"_mmdTextureCoe", pmxMaterial->TextureCoe);
+	material->setColor(u"_mmdSphereTextureCoe", pmxMaterial->SphereTextureCoe);
+	material->setColor(u"_mmdToonTextureCoe", pmxMaterial->ToonTextureCoe);
+
+	// TODO: DrawingFlags
+	// TODO: SphereMode
+
+	return material;
+}
+
+void PmxLoader::buildSkeleton()
+{
+	auto skeleton = makeObject<MeshArmature>(m_model);
+	m_model->addSkeleton(skeleton);
+
+	int nodeIndexOffset = m_model->meshNodes().size();
+
+	for (int i = 0; i < m_pmxBones.size(); i++) {
+		const PmxBone& pmxBone = m_pmxBones[i];
+		auto node = makeObject<MeshNode>();
+		node->setName(pmxBone.Name);
+		m_model->addNode(node);
+	}
+
+	for (int i = 0; i < m_pmxBones.size(); i++) {
+		const PmxBone& pmxBone = m_pmxBones[i];
+		int nodeIndex = nodeIndexOffset + i;
+		auto node = m_model->meshNodes()[nodeIndex];
+
+		//Matrix world = Matrix::makeTranslation(pmxBone.OrgPosition);
+		//Matrix inv1 = Matrix::makeTranslation(-pmxBone.OrgPosition);
+		//Matrix inv2 = Matrix::makeInverse(Matrix::makeTranslation(pmxBone.OrgPosition));
+		//world *= inv2;
+
+		skeleton->addBone(nodeIndex, Matrix::makeTranslation(-pmxBone.OrgPosition));
+		//auto bone = makeObject<MeshBone>();
+		//skeleton->addBone(nodeIndex, );
+
+		Vector3 offsetFromParent = (pmxBone.ParentBoneIndex >= 0) ?
+			pmxBone.OrgPosition - m_pmxBones[pmxBone.ParentBoneIndex].OrgPosition:	// 親からの相対座標 (子ボーンのローカル座標)
+			pmxBone.OrgPosition;	// モデル原点からのオフセット
+		node->setInitialLocalTransform(Matrix::makeTranslation(offsetFromParent));
+
+		//m_model->addNode(node);
+
+		if (pmxBone.ParentBoneIndex < 0) {
+			m_model->addRootNode(nodeIndex);
+		}
+		else {
+			auto parentNode = m_model->meshNodes()[nodeIndexOffset + pmxBone.ParentBoneIndex];
+			parentNode->addChildIndex(nodeIndex);
+		}
+	}
+
+
+	// IK
+	for (const auto& pmxIK : m_iks) {
+		auto ik = makeObject<MeshBoneIK>();
+		m_model->m_iks.add(ik);
+		ik->IKBoneIndex = pmxIK.IKBoneIndex;
+		ik->IKTargetBoneIndex = pmxIK.IKTargetBoneIndex;
+		ik->LoopCount = pmxIK.LoopCount;
+		ik->IKRotateLimit = pmxIK.IKRotateLimit;
+
+		for (const auto& pmxIKLink : pmxIK.IKLinks) {
+			auto ikChain = makeObject<MeshBoneIKChain>();
+			ik->IKLinks.add(ikChain);
+			ikChain->LinkBoneIndex = pmxIKLink.LinkBoneIndex;
+			ikChain->IsRotateLimit = pmxIKLink.IsRotateLimit;
+			ikChain->MinLimit = pmxIKLink.MinLimit;
+			ikChain->MaxLimit = pmxIKLink.MaxLimit;
+		}
+
+
 	}
 }
 

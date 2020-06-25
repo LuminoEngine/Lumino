@@ -13,6 +13,7 @@
 #include "Vulkan/VulkanDeviceContext.hpp"
 #endif
 #include "../Engine/LinearAllocator.hpp"
+#include "../Asset/AssetManager.hpp"
 
 namespace ln {
 
@@ -225,10 +226,10 @@ void GraphicsManager::dispose()
 		m_blackTexture = nullptr;
 	}
 
-	List<GraphicsResource*> removeList = m_graphicsResources;
+	List<IGraphicsResource*> removeList = m_graphicsResources;
 	m_graphicsResources.clear();
-	for (GraphicsResource* resource : removeList) {
-		resource->dispose();
+	for (IGraphicsResource* resource : removeList) {
+		resource->onManagerFinalizing();
 	}
 
 	m_frameBufferCache = nullptr;
@@ -262,12 +263,12 @@ void GraphicsManager::dispose()
 //    }
 //}
 
-void GraphicsManager::addGraphicsResource(GraphicsResource* resource)
+void GraphicsManager::addGraphicsResource(IGraphicsResource* resource)
 {
 	m_graphicsResources.add(resource);
 }
 
-void GraphicsManager::removeGraphicsResource(GraphicsResource* resource)
+void GraphicsManager::removeGraphicsResource(IGraphicsResource* resource)
 {
 	m_graphicsResources.remove(resource);
 }
@@ -285,6 +286,29 @@ void GraphicsManager::unregisterExtension(INativeGraphicsExtension* extension)
 	if (LN_REQUIRE(extension)) return;
 	m_extensions.remove(extension);
 	extension->onUnloaded(m_deviceContext->getNativeInterface());
+}
+
+Ref<Texture> GraphicsManager::requestTexture(const AssetPath& assetPath)
+{
+	// TODO: cache
+	auto stream = m_assetManager->openStreamFromAssetPath(assetPath);
+	if (stream) {
+		return makeObject<Texture2D>(stream, TextureFormat::RGBA8);	// TODO: format
+	}
+	else {
+		return nullptr;
+	}
+}
+
+Ref<Texture2D> GraphicsManager::loadTexture2D(const StringRef& filePath)
+{
+	return makeObject<Texture2D>(filePath);
+}
+
+Ref<Texture2DPromise> GraphicsManager::loadTexture2DAsync(const StringRef& filePath)
+{
+	LN_NOTIMPLEMENTED();
+	return nullptr;
 }
 
 bool GraphicsManager::checkVulkanSupported()

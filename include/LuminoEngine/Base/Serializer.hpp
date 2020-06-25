@@ -40,7 +40,9 @@ public:
 } // namespace detail
 
 template<typename T> void serialize2(Serializer2& sr, List<T>& value);
+void serialize2(Serializer2& ar, detail::AssetPath& value);
 void serialize2(Serializer2& ar, Vector2& value);
+void serialize2(Serializer2& ar, Vector3& value);
 
 /** */
 LN_CLASS()
@@ -372,6 +374,16 @@ void serialize2(Serializer2& ar, List<T>& value)
 	}
 }
 
+inline void serialize2(Serializer2& ar, detail::AssetPath& value)
+{
+	if (ar.isSaving()) {
+		ar.writeString(value.toString());
+	}
+	else {
+		value = detail::AssetPath::parseAssetPath(ar.readString());
+	}
+}
+
 inline void serialize2(Serializer2& ar, Vector2& value)
 {
 	int size = 0;
@@ -381,6 +393,19 @@ inline void serialize2(Serializer2& ar, Vector2& value)
 	}
 	ar.process(value.x);
 	ar.process(value.y);
+	ar.endList();
+}
+
+inline void serialize2(Serializer2& ar, Vector3& value)
+{
+	int size = 0;
+	ar.beginList(&size);
+	if (ar.isLoading()) {
+		assert(size == 3);	// TODO: error handling
+	}
+	ar.process(value.x);
+	ar.process(value.y);
+	ar.process(value.z);
 	ar.endList();
 }
 

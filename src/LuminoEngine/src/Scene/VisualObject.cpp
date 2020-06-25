@@ -128,6 +128,11 @@ void VisualObject::setRenderPriority(int value)
     mainVisualComponent()->setRenderPriority(value);
 }
 
+void VisualObject::serialize2(Serializer2& ar)
+{
+    WorldObject::serialize2(ar);
+}
+
 void VisualObject::setMainVisualComponent(VisualComponent* component)
 {
     m_component = component;

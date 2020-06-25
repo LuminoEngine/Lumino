@@ -20,10 +20,11 @@ namespace ln {
 //==============================================================================
 // Texture
 
-LN_OBJECT_IMPLEMENT(Texture, GraphicsResource) {}
+LN_OBJECT_IMPLEMENT(Texture, AssetObject) {}
 
 Texture::Texture()
-    : m_width(0)
+    : m_manager(nullptr)
+    , m_width(0)
     , m_height(0)
     , m_format(TextureFormat::Unknown)
     , m_mipmap(false)
@@ -37,7 +38,19 @@ Texture::~Texture()
 
 void Texture::init()
 {
-    GraphicsResource::init();
+    AssetObject::init();
+    detail::GraphicsResourceInternal::initializeHelper_GraphicsResource(this, &m_manager);
+}
+
+void Texture::onDispose(bool explicitDisposing)
+{
+    detail::GraphicsResourceInternal::finalizeHelper_GraphicsResource(this, &m_manager);
+    AssetObject::onDispose(explicitDisposing);
+}
+
+void Texture::onLoadSourceFile()
+{
+    LN_UNREACHABLE();
 }
 
 void Texture::setDesc(int width, int height, TextureFormat format)
@@ -60,6 +73,8 @@ void Texture::setSamplerState(SamplerState* value)
 //==============================================================================
 // Texture2D
 
+static const Char* s_Texture2D_candidateExts[] = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+
 LN_OBJECT_IMPLEMENT(Texture2D, Texture) {}
 
 Ref<Texture2D> Texture2D::create(int width, int height)
@@ -72,25 +87,19 @@ Ref<Texture2D> Texture2D::create(int width, int height, TextureFormat format)
     return makeObject<Texture2D>(width, height, format);
 }
 
-Ref<Texture2D> Texture2D::create(const StringRef& filePath, TextureFormat format)
-{
-	return makeObject<Texture2D>(filePath, format);
-}
+//Ref<Texture2D> Texture2D::create(const StringRef& filePath, TextureFormat format)
+//{
+//	return makeObject<Texture2D>(filePath, format);
+//}
 
 Ref<Texture2D> Texture2D::load(const StringRef& filePath)
 {
-    static const Char* candidateExts[] = { u".png", u".jpg", u".tga", u".bmp", u".gif" };
+    return detail::EngineDomain::graphicsManager()->loadTexture2D(filePath);
+}
 
-    auto assetManager = detail::EngineDomain::graphicsManager()->assetManager();
-    auto path = assetManager->findAssetPath(filePath, candidateExts, LN_ARRAY_SIZE_OF(candidateExts));
-    if (path) {
-        auto stream = assetManager->openStreamFromAssetPath(*path);
-        return makeObject<Texture2D>(stream, TextureFormat::RGBA8);	// TODO: format
-    }
-    else {
-        LN_WARNING(u"Asset not found: " + String(filePath));    // TODO: operator
-        return nullptr;
-    }
+Ref<Texture2DPromise> Texture2D::loadAsync(const StringRef& filePath)
+{
+    return detail::EngineDomain::graphicsManager()->loadTexture2DAsync(filePath);
 }
 
 Ref<Texture2D> Texture2D::loadEmoji(StringRef code)
@@ -151,9 +160,10 @@ Texture2D::~Texture2D()
 {
 }
 
-void Texture2D::init()
+bool Texture2D::init()
 {
     Texture::init();
+    return true;
 }
 
 void Texture2D::init(int width, int height)
@@ -172,11 +182,18 @@ void Texture2D::init(int width, int height, TextureFormat format)
     detail::TextureInternal::setDesc(this, width, height, format);
 }
 
-void Texture2D::init(const StringRef& filePath, TextureFormat format)
+bool Texture2D::init(const Path& assetPath)
 {
-    auto bitmap = makeObject<Bitmap2D>();
-    bitmap->load(filePath);
-    init(bitmap, format);
+    if (!init()) return false;
+
+    if (detail::AssetPath::isAssetFilePath(assetPath))
+        setAssetPath(assetPath);
+    else
+        m_sourceFilePath = detail::AssetPath::resolveAssetPath(assetPath, s_Texture2D_candidateExts);
+    
+    reload();
+
+    return true;
 }
 
 void Texture2D::init(Stream* stream, TextureFormat format)
@@ -323,28 +340,28 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
 void Texture2D::serialize(Archive& ar)
 {
     Texture::serialize(ar);
+    LN_NOTIMPLEMENTED();
 
+ //   // TODO: Object::assetPath 使いたい
+ //   String path;// =// m_assetSourcePath;
+	//if (ar.isSaving() && !m_assetSourcePath.isNull()) {
+	//	// save to relative path.
+ //       // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
+ //       path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_assetSourcePath);//Path(ar.basePath()).makeRelative(path);
+	//}
+	//
+	//ar & makeNVP(u"Source", path);
 
-    // TODO: Object::assetPath 使いたい
-    String path;// =// m_assetSourcePath;
-	if (ar.isSaving() && !m_assetSourcePath.isNull()) {
-		// save to relative path.
-        // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-        path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_assetSourcePath);//Path(ar.basePath()).makeRelative(path);
-	}
-	
-	ar & makeNVP(u"Source", path);
-
-    if (ar.isLoading()) {
-        if (!path.isEmpty()) {
-            // convert relative path to full path.
-            //m_assetSourcePath = detail::AssetManager::combineAssetPath(ar.basePath(), path);//Path(ar.basePath(), path);
-            m_assetSourcePath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path);
-            auto stream = detail::EngineDomain::assetManager()->openStreamFromAssetPath(m_assetSourcePath);
-            //auto stream = Assets::openFileStream(m_assetSourcePath);
-            init(stream);
-        }
-    }
+ //   if (ar.isLoading()) {
+ //       if (!path.isEmpty()) {
+ //           // convert relative path to full path.
+ //           //m_assetSourcePath = detail::AssetManager::combineAssetPath(ar.basePath(), path);//Path(ar.basePath(), path);
+ //           m_assetSourcePath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path);
+ //           auto stream = detail::EngineDomain::assetManager()->openStreamFromAssetPath(m_assetSourcePath);
+ //           //auto stream = Assets::openFileStream(m_assetSourcePath);
+ //           init(stream);
+ //       }
+ //   }
 }
 
 void Texture2D::serialize2(Serializer2& ar)
@@ -354,23 +371,45 @@ void Texture2D::serialize2(Serializer2& ar)
 
     // TODO: Object::assetPath 使いたい
     String path;// =// m_assetSourcePath;
-    if (ar.isSaving() && !m_assetSourcePath.isNull()) {
+    if (ar.isSaving() && !m_sourceFilePath.isNull()) {
         // save to relative path.
         // TODO: 毎回 parseAssetPath するのはアレなので、ar.basePath() の型を AssetPath にしたいところ。
-        path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_assetSourcePath);//Path(ar.basePath()).makeRelative(path);
+        path = detail::AssetPath::makeRelativePath(detail::AssetPath::parseAssetPath(ar.basePath()), m_sourceFilePath);
     }
 
-    ar& makeNVP(u"source", path);
+    ar & makeNVP(u"file", path);
 
     if (ar.isLoading()) {
         if (!path.isEmpty()) {
             // convert relative path to full path.
-            //m_assetSourcePath = detail::AssetManager::combineAssetPath(ar.basePath(), path);//Path(ar.basePath(), path);
-            m_assetSourcePath = detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path);
-            auto stream = detail::EngineDomain::assetManager()->openStreamFromAssetPath(m_assetSourcePath);
-            //auto stream = Assets::openFileStream(m_assetSourcePath);
-            init(stream);
+            m_sourceFilePath = detail::AssetPath::resolveAssetPath(
+                detail::AssetPath::combineAssetPath(detail::AssetPath::parseAssetPath(ar.basePath()), path),
+                s_Texture2D_candidateExts);
         }
+    }
+}
+
+void Texture2D::onLoadSourceFile()
+{
+    assert(!m_sourceFilePath.isNull());
+
+    auto assetManager = detail::GraphicsResourceInternal::manager(this)->assetManager();
+    auto stream = assetManager->openStreamFromAssetPath(m_sourceFilePath);
+    if (stream) {
+        auto bitmap = makeObject<Bitmap2D>();
+        bitmap->load(stream);
+
+        m_bitmap = bitmap;
+
+        // TODO: format
+        detail::TextureInternal::setDesc(this, m_bitmap->width(), m_bitmap->height(), TextureFormat::RGBA8);
+        // TODO: check and convert format
+
+        m_initialUpdate = true;
+        m_modified = true;
+    }
+    else {
+        LN_WARNING(u"Asset not found: " + m_sourceFilePath.toString());    // TODO: operator
     }
 }
 

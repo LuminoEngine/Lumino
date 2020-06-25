@@ -211,6 +211,8 @@ public:
 	void commitRenderData(int sectionIndex, MeshSection2* outSection, VertexLayout** outDecl, std::array<VertexBuffer*, 16>* outVBs, int* outVBCount, IndexBuffer** outIB);
     const List<MeshSection2>& sections() const { return m_sections; }
 
+	void resetVertexBuffer(int vertexCount);
+	void resetIndexBuffer(int indexCount, IndexBufferFormat indexFormat);
 	InterleavedVertexGroup getStandardElement(VertexElementUsage usage, int usageIndex) const;
 	void* acquireMappedVertexBuffer(InterleavedVertexGroup group);
 	void* acquireMappedVertexBuffer(VertexElementType type, VertexElementUsage usage, int usageIndex);
@@ -235,12 +237,16 @@ private:
 	{
 		Ref<VertexBuffer> buffer;
 		void* mappedBuffer = nullptr;
+
+		void reset();
 	};
 
 	struct IndexBufferEntry
 	{
 		Ref<IndexBuffer> buffer;
 		void* mappedBuffer = nullptr;
+
+		void reset();
 	};
 
 	struct VertexBufferAttribute
@@ -313,6 +319,7 @@ LN_CONSTRUCT_ACCESS:
 	void init();
 
 private:
+	int m_index = -1;
 	ln::String m_name;
 	Box m_boundingBox;
 	//List<Ref<MeshResource>> m_lodResources; // TODO: :obsolete
@@ -335,6 +342,9 @@ public:
 	void setScale(float x, float y, float z) { setScale(Vector3(x, y, z)); }
 	void setScale(float xyz) { setScale(Vector3(xyz, xyz, xyz)); }
 
+	void setTransform(const AttitudeTransform& value);
+	const AttitudeTransform& localTransform() const { return m_localTransform; }
+
 	void setName(const String& value) { m_name = value; }
 	const String& name() const { return m_name; }
 
@@ -348,17 +358,24 @@ public:
     void addChildIndex(int value);
 
     void setInitialLocalTransform(const Matrix& value);
+	void resetLocalTransform();
 
     const Matrix& initialLocalTransform() const { return m_initialLocalTransform; }
     
+	const Matrix& globalMatrix() const;
+
+	void updateGlobalTransform(bool hierarchical);
+
 LN_CONSTRUCT_ACCESS:
 	MeshNode();
     virtual ~MeshNode() = default;
 
 private:
+	StaticMeshModel* m_model;
 	String m_name;
     int m_index;
     int m_meshContainerIndex;
+	int m_parent;
     List<int> m_children;
 
 	// デフォルトの、親ノードからの相対姿勢。
@@ -389,8 +406,15 @@ public:
     static Ref<StaticMeshModel> load(const StringRef& filePath, float scale = 1.0f);
 
 	MeshNode* findNode(StringRef name) const;
+	int findNodeIndex(StringRef name) const;
 
+	MeshNode* addNode();
+	MeshContainer* addMeshContainer(Mesh* mesh);
+	MeshNode* addMeshContainerNode(Mesh* mesh);
+
+	[[deprecated]]
 	void addMeshContainer(MeshContainer* meshContainer);
+	[[deprecated]]
     void addNode(MeshNode* node);
 	void addMaterial(Material* material);
 
@@ -408,12 +432,19 @@ public:
     const Matrix& nodeGlobalTransform(int nodeIndex) { return m_nodeGlobalTransforms[nodeIndex]; }
     void updateNodeTransforms();
 
+protected:
+	void serialize2(Serializer2& ar) override;
+
 LN_CONSTRUCT_ACCESS:
     StaticMeshModel();
     StaticMeshModel(detail::InternalMeshModelType type);
 
-private:
-    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform);
+public:	// TODO:
+	void clear();
+    void updateNodeTransformsHierarchical(int nodeIndex, const Matrix& parentTransform, bool hierarchical);
+
+	detail::AssetPath m_filePath;
+	float m_scale;
 
     detail::InternalMeshModelType m_type;
 	List<Ref<MeshContainer>> m_meshContainers;
@@ -427,6 +458,8 @@ private:
     // でも Node は SkinndMesh と共用なので、Node 側に GlobalTransform を持たせるのは
     // データが無駄になったりする。
     List<Matrix> m_nodeGlobalTransforms;
+
+	friend class detail::MeshManager;
 };
 
 
@@ -469,6 +502,12 @@ private:
 	Ref<VertexBuffer> m_instanceBuffer;
 	VertexLayout* m_sourceVertexLayout;
 	bool m_dirty;
+};
+
+class MeshHelper
+{
+public:
+	static Box makeAABB(const Vertex* vertices, uint32_t vertexCount);
 };
 
 } // namespace ln
