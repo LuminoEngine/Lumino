@@ -34,7 +34,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
     DepthOfFieldImageEffect* m_owner;
-    Ref<Material> m_material;
+    Ref<Material> m_copyMaterial;
+    Ref<Material> m_dofMaterial;
 };
 
 } // namespace detail

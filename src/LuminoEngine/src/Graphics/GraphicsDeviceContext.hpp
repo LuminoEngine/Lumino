@@ -24,9 +24,9 @@ class ITexture;
 class IDepthBuffer;
 class ISamplerState;
 class IShaderPass;
-class IShaderUniformBuffer;
-class IShaderUniform;
-class IShaderSamplerBuffer;
+//class IShaderUniformBuffer;
+//class IShaderUniform;
+//class IShaderSamplerBuffer;
 class IShaderDescriptorTable;
 class IPipeline;
 class NativeRenderPassCache;
@@ -96,7 +96,6 @@ struct GraphicsContextState
     DeviceRegionRectsState regionRects;
     DevicePrimitiveState primitive;
     IShaderPass* shaderPass = nullptr;
-	//IRenderPass* renderPass = nullptr;
 };
 
 enum GraphicsContextStateDirtyFlags
@@ -125,7 +124,6 @@ struct ShaderVertexInputAttribute
 };
 
 using ShaderVertexInputAttributeTable = std::vector<ShaderVertexInputAttribute>;
-
 
 struct ShaderDescriptorBufferView
 {
@@ -160,13 +158,6 @@ struct ShaderPassCreateInfo
     const DescriptorLayout* descriptorLayout;
 	const std::vector<VertexInputAttribute>* attributes;
 };
-
-//struct ShaderDescriptorTableCreateInfo
-//{
-//	const std::vector<size_t> uniformDescriptorSizes;
-//	uint32_t textureDescriptorCount;
-//	uint32_t samplerDescriptorCount;
-//};
 
 class IGraphicsHelper
 {
@@ -259,36 +250,9 @@ protected:
 	virtual Ref<IShaderPass> onCreateShaderPass(const ShaderPassCreateInfo& createInfo, ShaderCompilationDiag* diag) = 0;
 	virtual void onFlushCommandBuffer(ICommandList* context, ITexture* affectRendreTarget) = 0;
 
-/////////
-	//virtual void onBeginCommandRecoding() = 0;
-	//virtual void onEndCommandRecoding() = 0;
-	//virtual void onUpdatePipelineState(const BlendStateDesc& blendState, const RasterizerStateDesc& rasterizerState, const DepthStencilStateDesc& depthStencilState) = 0;
-	//virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, IDepthBuffer* depthBuffer) = 0;
-	//virtual void onUpdateRegionRects(const RectI& viewportRect, const RectI& scissorRect, const SizeI& targetSize) = 0;
-	//virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, IVertexBuffer** vertexBuufers, int vertexBuffersCount, IIndexBuffer* indexBuffer) = 0;
-	//virtual void onUpdateShaderPass(IShaderPass* newPass) = 0;
- //   virtual void onSubmitStatus(const GraphicsContextState& state, uint32_t stateDirtyFlags, GraphicsContextSubmitSource submitSource) = 0;
-
- //   virtual void* onMapResource(IGraphicsRHIBuffer* resource) = 0;
- //   virtual void onUnmapResource(IGraphicsRHIBuffer* resource) = 0;
- //   virtual void onSetSubData(IGraphicsRHIBuffer* resource, size_t offset, const void* data, size_t length) = 0;
- //   virtual void onSetSubData2D(ITexture* resource, int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
- //   virtual void onSetSubData3D(ITexture* resource, int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
-
-	//virtual void onClearBuffers(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
-	//virtual void onDrawPrimitive(PrimitiveTopology primitive, int startVertex, int primitiveCount) = 0;
-	//virtual void onDrawPrimitiveIndexed(PrimitiveTopology primitive, int startIndex, int primitiveCount) = 0;
- //   virtual void onFlushCommandBuffer(ITexture* affectRendreTarget) = 0;
-
-	//virtual void onPresent(ISwapChain* swapChain) = 0;
-/////////
-
 public:	// TODO:
-	//void collectGarbageObjects();
-
 	GraphicsDeviceCaps m_caps;
 	std::vector<Ref<IGraphicsDeviceObject>> m_aliveObjects;
-
 	std::unique_ptr<NativeRenderPassCache> m_renderPassCache;
 	std::unique_ptr<NativePipelineCache> m_pipelineCache;
 };
@@ -317,10 +281,10 @@ public:
     void setShaderPass(IShaderPass* value);
     void setPrimitiveTopology(PrimitiveTopology value);
 
-	IVertexDeclaration* vertexDeclaration() const { return m_staging.pipelineState.vertexDeclaration; }
-	IVertexBuffer* vertexBuffer(int streamIndex) const { return m_staging.primitive.vertexBuffers[streamIndex]; }
-	IIndexBuffer* indexBuffer() const { return m_staging.primitive.indexBuffer; }
-	PrimitiveTopology primitiveTopology() const { return m_staging.pipelineState.topology; }
+	//IVertexDeclaration* vertexDeclaration() const { return m_staging.pipelineState.vertexDeclaration; }
+	//IVertexBuffer* vertexBuffer(int streamIndex) const { return m_staging.primitive.vertexBuffers[streamIndex]; }
+	//IIndexBuffer* indexBuffer() const { return m_staging.primitive.indexBuffer; }
+	//PrimitiveTopology primitiveTopology() const { return m_staging.pipelineState.topology; }
 
     // write only
     void* map(IGraphicsRHIBuffer* resource, uint32_t offset, uint32_t size);
@@ -507,46 +471,6 @@ public:
 	// データは up flow (上下反転)
 	virtual void readData(void* outData) = 0;
 
-
-	//void Clear(const Color& color);
-
-	//void setSubData(const PointI& point, RawBitmap* bitmap);
-
-
-
-	/// テクスチャの種類の取得
-	//virtual TextureType getTextureType() const = 0;
-
-	/// サーフェイスフォーマットの取得
-	//virtual TextureFormat getTextureFormat() const = 0;
-
-
-	///// 実際のサイズの取得 (デバイス依存により2のべき乗倍に拡張されたサイズ)
-	//virtual const SizeI& getRealSize() const = 0;
-
-	///// サンプラステートの設定
-	////virtual void setSamplerState(const SamplerState& state) = 0;
-
-	// データ転送 (TODO:部分更新は未実装…)
-	// data に渡されるイメージデータは上下が反転している状態。
-	//virtual void setSubData(int x, int y, int width, int height, const void* data, size_t dataSize) = 0;
-	//virtual void setSubData3D(int x, int y, int z, int width, int height, int depth, const void* data, size_t dataSize) = 0;
-
-	//virtual void setSubData3D(const BoxI& box, const void* data, size_t dataBytes) = 0;
-
-	//// (得られるデータは上下反転)
-	//virtual void getData(const RectI& rect, void* outData) = 0;
-
-	// 得られるデータは上下反転していない。レイアウトは RGBA
-	//virtual void readData(void* outData) {}
-
-
-	///// ロック (バッファは上下反転)
-	//virtual RawBitmap* lock() = 0;
-
-	///// アンロック
-	//virtual void unlock() = 0;
-
 	bool mipmap() const { return m_mipmap; }
 
 protected:
@@ -603,47 +527,47 @@ private:
 	friend class IGraphicsDevice;
 };
 
-class IShaderUniformBuffer
-	: public IGraphicsDeviceObject
-{
-public:
-	virtual const std::string& name() const = 0;
-	virtual int getUniformCount() const = 0;
-	virtual IShaderUniform* getUniform(int index) const = 0;
-	virtual size_t bufferSize() const = 0;
-	virtual void setData(const void* data, size_t size) = 0;
-
-protected:
-	IShaderUniformBuffer();
-	virtual ~IShaderUniformBuffer() = default;
-};
-
-class IShaderUniform
-	: public IGraphicsDeviceObject
-{
-public:
-	virtual const ShaderUniformTypeDesc& desc() const = 0;
-	virtual const std::string& name() const = 0;
-
-protected:
-	IShaderUniform();
-	virtual ~IShaderUniform() = default;
-};
-
-class IShaderSamplerBuffer
-	: public IGraphicsDeviceObject
-{
-public:
-	virtual int registerCount() const = 0;
-	virtual const std::string& getTextureRegisterName(int registerIndex) const = 0;
-	//virtual const std::string& getSamplerRegisterName(int registerIndex) const = 0;
-	virtual void setTexture(int registerIndex, ITexture* texture) = 0;
-	virtual void setSamplerState(int registerIndex, ISamplerState* state) = 0;
-
-protected:
-	IShaderSamplerBuffer();
-	virtual ~IShaderSamplerBuffer() = default;
-};
+//class IShaderUniformBuffer
+//	: public IGraphicsDeviceObject
+//{
+//public:
+//	virtual const std::string& name() const = 0;
+//	virtual int getUniformCount() const = 0;
+//	virtual IShaderUniform* getUniform(int index) const = 0;
+//	virtual size_t bufferSize() const = 0;
+//	virtual void setData(const void* data, size_t size) = 0;
+//
+//protected:
+//	IShaderUniformBuffer();
+//	virtual ~IShaderUniformBuffer() = default;
+//};
+//
+//class IShaderUniform
+//	: public IGraphicsDeviceObject
+//{
+//public:
+//	virtual const ShaderUniformTypeDesc& desc() const = 0;
+//	virtual const std::string& name() const = 0;
+//
+//protected:
+//	IShaderUniform();
+//	virtual ~IShaderUniform() = default;
+//};
+//
+//class IShaderSamplerBuffer
+//	: public IGraphicsDeviceObject
+//{
+//public:
+//	virtual int registerCount() const = 0;
+//	virtual const std::string& getTextureRegisterName(int registerIndex) const = 0;
+//	//virtual const std::string& getSamplerRegisterName(int registerIndex) const = 0;
+//	virtual void setTexture(int registerIndex, ITexture* texture) = 0;
+//	virtual void setSamplerState(int registerIndex, ISamplerState* state) = 0;
+//
+//protected:
+//	IShaderSamplerBuffer();
+//	virtual ~IShaderSamplerBuffer() = default;
+//};
 
 // 実装は Backend ごとに結構変わるが、RHI としての使い方は VertexBuffer と同じにしたい。
 // 基本的に CommandBuffer 経由でデータをセットすることになる。

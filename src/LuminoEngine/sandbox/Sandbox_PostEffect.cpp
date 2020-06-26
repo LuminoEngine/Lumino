@@ -64,14 +64,14 @@ class App_Sandbox_PostEffect : public Application
         auto obj = makeObject<StaticMesh>(model);
 
 
-		//auto effect2 = makeObject<SSRImageEffect>();
-		//Engine::renderView()->addImageEffect(effect2);
+		auto effect2 = makeObject<SSRImageEffect>();
+		Engine::renderView()->addImageEffect(effect2);
 
-		//auto effect1 = makeObject<SSAOImageEffect>();
-		//Engine::renderView()->addImageEffect(effect1);
+		auto effect1 = makeObject<SSAOImageEffect>();
+		Engine::renderView()->addImageEffect(effect1);
 
-		auto effect5 = makeObject<DepthOfFieldImageEffect>();
-		Engine::renderView()->addImageEffect(effect5);
+		//auto effect5 = makeObject<DepthOfFieldImageEffect>();
+		//Engine::renderView()->addImageEffect(effect5);
 		
 
 		//auto effect4 = makeObject<BloomImageEffect>();

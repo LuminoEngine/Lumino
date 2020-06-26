@@ -732,29 +732,29 @@ const VertexInputAttribute* IShaderPass::findAttribute(VertexElementUsage usage,
 	return nullptr;
 }
 
-//=============================================================================
-// IShaderPass
-
-IShaderUniformBuffer::IShaderUniformBuffer()
-{
-	LN_LOG_VERBOSE << "IShaderUniformBuffer [0x" << this << "] constructed.";
-}
-
-//=============================================================================
-// IShaderUniform
-
-IShaderUniform::IShaderUniform()
-{
-	LN_LOG_VERBOSE << "IShaderUniform [0x" << this << "] constructed.";
-}
+////=============================================================================
+//// IShaderPass
+//
+//IShaderUniformBuffer::IShaderUniformBuffer()
+//{
+//	LN_LOG_VERBOSE << "IShaderUniformBuffer [0x" << this << "] constructed.";
+//}
+//
+////=============================================================================
+//// IShaderUniform
+//
+//IShaderUniform::IShaderUniform()
+//{
+//	LN_LOG_VERBOSE << "IShaderUniform [0x" << this << "] constructed.";
+//}
 
 //=============================================================================
 // IShaderSamplerBuffer
 
-IShaderSamplerBuffer::IShaderSamplerBuffer()
-{
-	LN_LOG_VERBOSE << "IShaderSamplerBuffer [0x" << this << "] constructed.";
-}
+//IShaderSamplerBuffer::IShaderSamplerBuffer()
+//{
+//	LN_LOG_VERBOSE << "IShaderSamplerBuffer [0x" << this << "] constructed.";
+//}
 
 //=============================================================================
 // IPipeline
