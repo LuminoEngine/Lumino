@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TransitionImageEffect.hpp>
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
 #include "SceneManager.hpp"

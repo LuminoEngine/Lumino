@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/ImageEffect/ToneImageEffect.hpp>
+#include <LuminoEngine/PostEffect/ToneImageEffect.hpp>
 
 namespace ln {
 
@@ -58,7 +58,7 @@ bool ToneImageEffectInstance::init(ToneImageEffect* owner)
 
     m_owner = owner;
 
-    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
+    auto shader = makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneImageEffect.fx");
     m_material = makeObject<Material>();
     m_material->setShader(shader);
 

@@ -159,7 +159,7 @@ void RenderingManager::init(const Settings& settings)
 	{
 		const unsigned char data[] =
 		{
-#include "../ImageEffect/Resource/LuminosityHighPassShader.lcfx.inl"
+#include "../PostEffect/Resource/LuminosityHighPassShader.lcfx.inl"
 		};
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = makeObject<Shader>(u"LuminosityHighPassShader", &stream);
@@ -168,7 +168,7 @@ void RenderingManager::init(const Settings& settings)
 	{
 		const unsigned char data[] =
 		{
-#include "../ImageEffect/Resource/SeperableBlur.lcfx.inl"
+#include "../PostEffect/Resource/SeperableBlur.lcfx.inl"
 		};
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::SeperableBlur] = makeObject<Shader>(u"SeperableBlur", &stream);
@@ -177,7 +177,7 @@ void RenderingManager::init(const Settings& settings)
 	{
 		const unsigned char data[] =
 		{
-#include "../ImageEffect/Resource/BloomComposite.lcfx.inl"
+#include "../PostEffect/Resource/BloomComposite.lcfx.inl"
 		};
 		MemoryStream stream(data, LN_ARRAY_SIZE_OF(data));
 		m_builtinShaders[(int)BuiltinShader::BloomComposite] = makeObject<Shader>(u"BloomComposite", &stream);
@@ -186,21 +186,21 @@ void RenderingManager::init(const Settings& settings)
 	// SSRRayTracing
 	{
 		const unsigned char data[] = {
-#include "../ImageEffect/Resource/SSRRayTracing.lcfx.inl"
+#include "../PostEffect/Resource/SSRRayTracing.lcfx.inl"
 		};
 		createBuiltinShader(BuiltinShader::SSRRayTracing, u"SSRRayTracing", data, LN_ARRAY_SIZE_OF(data));
 	}
 	// SSRBlur
 	{
 		const unsigned char data[] = {
-#include "../ImageEffect/Resource/SSRBlur.lcfx.inl"
+#include "../PostEffect/Resource/SSRBlur.lcfx.inl"
 		};
 		createBuiltinShader(BuiltinShader::SSRBlur, u"SSRBlur", data, LN_ARRAY_SIZE_OF(data));
 	}
 	// SSRComposite
 	{
 		const unsigned char data[] = {
-#include "../ImageEffect/Resource/SSRComposite.lcfx.inl"
+#include "../PostEffect/Resource/SSRComposite.lcfx.inl"
 		};
 		createBuiltinShader(BuiltinShader::SSRComposite, u"SSRComposite", data, LN_ARRAY_SIZE_OF(data));
 	}
@@ -209,7 +209,7 @@ void RenderingManager::init(const Settings& settings)
 	// RadialBlur
 	{
 		const unsigned char data[] = {
-#include "../ImageEffect/Resource/RadialBlur.lcfx.inl"
+#include "../PostEffect/Resource/RadialBlur.lcfx.inl"
 		};
 		createBuiltinShader(BuiltinShader::RadialBlur, u"RadialBlur", data, LN_ARRAY_SIZE_OF(data));
 	}
@@ -225,14 +225,14 @@ void RenderingManager::init(const Settings& settings)
     m_builtinShaders[(int)BuiltinShader::ForwardGBufferPrepass] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ForwardGBufferPrepass.fx");
 	m_builtinShaders[(int)BuiltinShader::BlackShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/BlackShader.fx");
 	m_builtinShaders[(int)BuiltinShader::SkyLowAltitudeOptimized] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Scene/Resource/SkyLowAltitudeOptimized.fx");
-	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/LuminosityHighPassShader.fx");
-	m_builtinShaders[(int)BuiltinShader::SeperableBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SeperableBlur.fx");
-	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/BloomComposite.fx");
-	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/RadialBlur.fx");
+	m_builtinShaders[(int)BuiltinShader::LuminosityHighPassShader] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/LuminosityHighPassShader.fx");
+	m_builtinShaders[(int)BuiltinShader::SeperableBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SeperableBlur.fx");
+	m_builtinShaders[(int)BuiltinShader::BloomComposite] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/BloomComposite.fx");
+	m_builtinShaders[(int)BuiltinShader::RadialBlur] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/RadialBlur.fx");
 
     m_builtinShaders[(int)BuiltinShader::ShadowCaster] = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/Rendering/Resource/ShadowCaster.fx");
- //   m_builtinShaders[(int)BuiltinShader::ScreenBlurImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
-    //m_builtinShaders[(int)BuiltinShader::ToneImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
+ //   m_builtinShaders[(int)BuiltinShader::ScreenBlurImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlurImageEffect.fx");
+    //m_builtinShaders[(int)BuiltinShader::ToneImageEffect] = Shader::create(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneImageEffect.fx");
 #endif
 
     {

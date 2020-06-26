@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/ImageEffect/TonemapImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TonemapImageEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -42,7 +42,7 @@ bool TonemapImageEffectInstance::init(TonemapImageEffect* owner)
 {
     if (!ImageEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TonemapImageEffect.fx");
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TonemapImageEffect.fx");
     m_material = makeObject<Material>();
     m_material->setShader(shader1);
 

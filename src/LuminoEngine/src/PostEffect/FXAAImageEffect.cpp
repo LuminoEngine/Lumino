@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/ImageEffect/FXAAImageEffect.hpp>
+#include <LuminoEngine/PostEffect/FXAAImageEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -42,7 +42,7 @@ bool FXAAImageEffectInstance::init(FXAAImageEffect* owner)
 {
     if (!ImageEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/FXAAImageEffect.fx");
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/FXAAImageEffect.fx");
     m_material = makeObject<Material>();
     m_material->setShader(shader1);
 

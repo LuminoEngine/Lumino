@@ -2,7 +2,7 @@
 #include "Internal.hpp"
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
-#include <LuminoEngine/ImageEffect/ImageEffect.hpp>
+#include <LuminoEngine/PostEffect/ImageEffect.hpp>
 #include "ImageEffectRenderer.hpp"
 #include "../Graphics/RenderTargetTextureCache.hpp"
 #include "../Rendering/RenderingManager.hpp"

@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSRImageEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {

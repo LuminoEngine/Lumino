@@ -1,9 +1,9 @@
 ﻿
 #include <LuminoEngine.hpp>
 #include <LuminoEngine/Mesh/MeshProcessing.hpp>
-#include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
-#include <LuminoEngine/ImageEffect/SSAOImageEffect.hpp>
-#include <LuminoEngine/ImageEffect/TonemapImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSRImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSAOImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TonemapImageEffect.hpp>
 using namespace ln;
 
 class App_Sandbox_PostEffect : public Application

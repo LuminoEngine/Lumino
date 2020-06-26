@@ -3,7 +3,7 @@
 #include <LuminoEngine/Graphics/Texture.hpp>
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
-#include <LuminoEngine/ImageEffect/ScreenBlurImageEffect.hpp>
+#include <LuminoEngine/PostEffect/ScreenBlurImageEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -77,7 +77,7 @@ bool ScreenBlurImageEffectInstance::init(ScreenBlurImageEffect* owner)
     m_material = makeObject<Material>();
     //m_material->setShader(detail::EngineDomain::renderingManager()->builtinShader(detail::BuiltinShader::ScreenBlurImageEffect));
     //m_material->setBlendMode(BlendMode::Alpha);
-    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ScreenBlurImageEffect.fx");
+    auto shader = makeObject<Shader>(u"D:/Proj/Volkoff/Engine/Lumino/src/LuminoEngine/src/PostEffect/Resource/ScreenBlurImageEffect.fx");
     m_material->setShader(shader);
 
     m_materialForCopySourceTo = makeObject<Material>();

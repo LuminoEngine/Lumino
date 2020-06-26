@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/ImageEffect/SSAOImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSAOImageEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -42,11 +42,11 @@ bool SSAOImageEffectInstance::init(SSAOImageEffect* owner)
 {
     if (!ImageEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSAOOcclusionMap.fx");
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOOcclusionMap.fx");
     m_occlusionMaterial = makeObject<Material>();
     m_occlusionMaterial->setShader(shader1);
 
-    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/SSAOBlurAndComposite.fx");
+    auto shader2 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/SSAOBlurAndComposite.fx");
     m_blurAndCompositeMaterial = makeObject<Material>();
     m_blurAndCompositeMaterial->setShader(shader2);
 

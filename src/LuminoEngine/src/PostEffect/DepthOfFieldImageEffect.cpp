@@ -5,7 +5,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/ImageEffect/DepthOfFieldImageEffect.hpp>
+#include <LuminoEngine/PostEffect/DepthOfFieldImageEffect.hpp>
 #include "../Rendering/RenderingManager.hpp"
 
 namespace ln {
@@ -42,7 +42,7 @@ bool DepthOfFieldImageEffectInstance::init(DepthOfFieldImageEffect* owner)
 {
     if (!ImageEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/DepthOfFieldImageEffect.fx");
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/DepthOfFieldImageEffect.fx");
     m_material = makeObject<Material>();
     m_material->setShader(shader1);
 

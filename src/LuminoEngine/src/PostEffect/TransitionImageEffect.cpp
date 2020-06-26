@@ -4,7 +4,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderingContext.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
-#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TransitionImageEffect.hpp>
 
 namespace ln {
 
@@ -92,10 +92,10 @@ bool TransitionImageEffectInstance::init(TransitionImageEffect* owner)
     m_owner = owner;
 
     m_withoutMaskMaterial = makeObject<Material>();
-    m_withoutMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithoutMask.fx"));
+    m_withoutMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TransitionImageEffectWithoutMask.fx"));
 
     m_withMaskMaterial = makeObject<Material>();
-    m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/TransitionImageEffectWithMask.fx"));
+    m_withMaskMaterial->setShader(makeObject<Shader>(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/TransitionImageEffectWithMask.fx"));
     
     m_copyMaterial = makeObject<Material>();
     m_copyMaterial->shadingModel = ShadingModel::Unlit;

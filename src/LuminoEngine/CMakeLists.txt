@@ -121,7 +121,7 @@ file(GLOB LN_SOURCES_Mesh ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Mesh/*.hpp src/M
 file(GLOB LN_SOURCES_Rendering ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/*.hpp src/Rendering/*.cpp src/Rendering/*.hpp src/Rendering/*.md)
 file(GLOB LN_SOURCES_Rendering_RenderFeature ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Rendering/RenderFeature/*.hpp src/Rendering/RenderFeature/*.cpp src/Rendering/RenderFeature/*.hpp)
 
-file(GLOB LN_SOURCES_ImageEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/ImageEffect/*.hpp src/ImageEffect/*.cpp src/ImageEffect/*.hpp)
+file(GLOB LN_SOURCES_ImageEffect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/PostEffect/*.hpp src/PostEffect/*.cpp src/PostEffect/*.hpp)
 
 file(GLOB LN_SOURCES_Effect ${LN_ENGINE_INCLUDE_DIR}/LuminoEngine/Effect/*.hpp src/Effect/*.cpp src/Effect/*.hpp)
 

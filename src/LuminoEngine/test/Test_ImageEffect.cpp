@@ -1,5 +1,5 @@
 ﻿#include "Common.hpp"
-#include <LuminoEngine/ImageEffect/SSRImageEffect.hpp>
+#include <LuminoEngine/PostEffect/SSRImageEffect.hpp>
 
 //==============================================================================
 class Test_ImageEffect : public LuminoSceneTest
@@ -17,7 +17,7 @@ TEST_F(Test_ImageEffect, Bloom)
 	Engine::renderView()->addImageEffect(bloomEffect);
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN(LN_ASSETFILE("ImageEffect/Expects/ImageEffect-Bloom-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("PostEffect/Expects/ImageEffect-Bloom-1.png"));
 	Engine::renderView()->removeImageEffect(bloomEffect);
 	LN_TEST_CLEAN_SCENE;
 }
@@ -48,7 +48,7 @@ TEST_F(Test_ImageEffect, SSR)
 	Engine::renderView()->addImageEffect(ssrEffect);
 
 	TestEnv::updateFrame();
-	ASSERT_SCREEN(LN_ASSETFILE("ImageEffect/Expects/ImageEffect-SSR-1.png"));
+	ASSERT_SCREEN(LN_ASSETFILE("PostEffect/Expects/ImageEffect-SSR-1.png"));
 	Engine::renderView()->removeImageEffect(ssrEffect);
 	LN_TEST_CLEAN_SCENE;
 }

@@ -19,7 +19,7 @@
 #include <LuminoEngine/Scene/Scene.hpp>
 #include <LuminoEngine/Scene/World.hpp>
 #include <LuminoEngine/Scene/SceneConductor.hpp>
-#include <LuminoEngine/ImageEffect/TransitionImageEffect.hpp>
+#include <LuminoEngine/PostEffect/TransitionImageEffect.hpp>
 #include "../Engine/EngineManager.hpp"
 #include "SceneManager.hpp"
 

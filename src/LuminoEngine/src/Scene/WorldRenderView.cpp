@@ -18,7 +18,7 @@
 #include "../Rendering/RenderElement.hpp"
 #include "../Rendering/RenderingPipeline.hpp"
 #include "../Mesh/MeshGenerater.hpp"
-#include "../ImageEffect/ImageEffectRenderer.hpp"
+#include "../PostEffect/ImageEffectRenderer.hpp"
 #include "SceneManager.hpp"
 #include "InternalSkyBox.hpp"
 #include "../Effect/EffectManager.hpp"  // TODO: test

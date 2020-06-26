@@ -10,7 +10,7 @@
 #include <LuminoEngine/Rendering/Material.hpp>
 #include <LuminoEngine/Rendering/RenderView.hpp>
 #include "../Graphics/GraphicsManager.hpp"
-#include "../ImageEffect/ImageEffectRenderer.hpp"
+#include "../PostEffect/ImageEffectRenderer.hpp"
 #include "UIManager.hpp"
 
 namespace ln {
@@ -38,7 +38,7 @@ void UIViewport::init()
     m_blitMaterial = makeObject<Material>();
 	m_blitMaterial->setBlendMode(BlendMode::Normal);
 
-	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/ImageEffect/Resource/ToneImageEffect.fx");
+	//auto shader = makeObject<Shader>(u"D:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/ToneImageEffect.fx");
 	//m_blitMaterial->setShader(shader);
 
 	//m_renderPass = makeObject<RenderPass>();
