@@ -416,15 +416,25 @@ void SceneRenderer::renderPass(GraphicsContext* graphicsContext, RenderTargetTex
 			{
 				currentStage = stage;
 				//RenderStage::applyFrameBufferStatus(m_renderPass, currentStage, defaultFrameBuffer);
-		        const RectI& rect = stage->getScissorRectFinal();
-		        if (rect.width < 0) {
+		        const RectI& scissorRect = stage->getScissorRectFinal();
+		        if (scissorRect.width < 0) {
                     RenderPass* renderPass = (currentRenderPass) ? currentRenderPass : pass->renderPass();
                     auto renderTarget = renderPass->renderTarget(0);
                     graphicsContext->setScissorRect(Rect(0, 0, renderTarget->width(), renderTarget->height()));
 		        }
                 else {
-                    graphicsContext->setScissorRect(rect.toFloatRect());
+                    graphicsContext->setScissorRect(scissorRect.toFloatRect());
                 }
+
+				const RectI& viewportRect = stage->getViewportRectFinal();
+				if (viewportRect.width < 0) {
+					RenderPass* renderPass = (currentRenderPass) ? currentRenderPass : pass->renderPass();
+					auto renderTarget = renderPass->renderTarget(0);
+					graphicsContext->setViewportRect(Rect(0, 0, renderTarget->width(), renderTarget->height()));
+				}
+				else {
+					graphicsContext->setViewportRect(viewportRect.toFloatRect());
+				}
 			}
 
 			if (!finalMaterial) {

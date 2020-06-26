@@ -42,7 +42,7 @@ bool DepthOfFieldImageEffectInstance::init(DepthOfFieldImageEffect* owner)
 {
     if (!ImageEffectInstance::init()) return false;
 
-    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/DepthOfFieldImageEffect.fx");
+    auto shader1 = Shader::create(u"C:/Proj/LN/Lumino/src/LuminoEngine/src/PostEffect/Resource/Copy.fx");
     m_material = makeObject<Material>();
     m_material->setShader(shader1);
 
@@ -51,8 +51,20 @@ bool DepthOfFieldImageEffectInstance::init(DepthOfFieldImageEffect* owner)
 
 bool DepthOfFieldImageEffectInstance::onRender(RenderingContext* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-    m_material->setMainTexture(source);
-    context->blit(m_material, destination);
+    auto rect = RectI(0, 0, source->width() / 2, source->height() / 2);
+    for (int i = 0; i < 4; i++)
+    {
+        context->setViewportRect(rect);
+        m_material->setMainTexture(source);
+        context->blit(m_material, destination);
+
+        rect.y += rect.height;
+        rect.width /= 2;
+        rect.height /= 2;
+    }
+
+    //context->setScissorRect(RectI(0, 0, 320, 240));
+    
     return true;
 }
 
