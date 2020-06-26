@@ -70,16 +70,16 @@ class App_Sandbox_PostEffect : public Application
 		auto effect1 = makeObject<SSAOImageEffect>();
 		Engine::renderView()->addImageEffect(effect1);
 
-		//auto effect5 = makeObject<DepthOfFieldImageEffect>();
-		//Engine::renderView()->addImageEffect(effect5);
+		auto effect5 = makeObject<DepthOfFieldImageEffect>();
+		Engine::renderView()->addImageEffect(effect5);
 		
 
-		//auto effect4 = makeObject<BloomImageEffect>();
-		//effect4->setStrength(0.1);
-		//Engine::renderView()->addImageEffect(effect4);
+		auto effect4 = makeObject<BloomImageEffect>();
+		effect4->setStrength(0.1);
+		Engine::renderView()->addImageEffect(effect4);
 
-  //      auto effect3 = makeObject<TonemapImageEffect>();
-  //      Engine::renderView()->addImageEffect(effect3);
+        auto effect3 = makeObject<TonemapImageEffect>();
+        Engine::renderView()->addImageEffect(effect3);
 
 
     }

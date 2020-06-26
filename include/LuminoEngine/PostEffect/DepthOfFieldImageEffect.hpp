@@ -36,6 +36,7 @@ private:
     DepthOfFieldImageEffect* m_owner;
     Ref<Material> m_copyMaterial;
     Ref<Material> m_dofMaterial;
+    Ref<SamplerState> m_samplerState;
 };
 
 } // namespace detail

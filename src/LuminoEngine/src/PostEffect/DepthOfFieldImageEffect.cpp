@@ -50,6 +50,9 @@ bool DepthOfFieldImageEffectInstance::init(DepthOfFieldImageEffect* owner)
     m_dofMaterial = makeObject<Material>();
     m_dofMaterial->setShader(shader2);
 
+    // TODO: 他と共有したいところ
+    m_samplerState = makeObject<SamplerState>(TextureFilterMode::Linear, TextureAddressMode::Clamp);
+
     return true;
 }
 
@@ -58,10 +61,18 @@ bool DepthOfFieldImageEffectInstance::onRender(RenderingContext* context, Render
     auto dofTexture = RenderTargetTexture::getTemporary(source->width() / 2, source->height(), TextureFormat::RGBA8, false);
     Texture* viewDepthMap = context->gbuffer(GBuffer::ViewDepthMap);
 
+    int margin = 2;
+
     auto rect = RectI(0, 0, source->width() / 2, source->height() / 2);
     for (int i = 0; i < 8; i++)
     {
         context->setViewportRect(rect);
+        //context->setViewportRect(
+        //    RectI(
+        //        rect.x + margin,
+        //        rect.y + margin,
+        //        std::max(1, rect.width - margin * 2),
+        //        std::max(1, rect.height - margin * 2)));
         m_copyMaterial->setMainTexture(source);
         context->blit(m_copyMaterial, dofTexture);
         //context->blit(m_copyMaterial, destination);
@@ -70,9 +81,13 @@ bool DepthOfFieldImageEffectInstance::onRender(RenderingContext* context, Render
         rect.width /= 2;
         rect.height /= 2;
     }
+    context->setViewportRect(RectI::Empty);
 
     //context->setScissorRect(RectI(0, 0, 320, 240));
+    dofTexture->setSamplerState(m_samplerState);
+    viewDepthMap->setSamplerState(m_samplerState);
 
+    m_dofMaterial->setMainTexture(source);
     m_dofMaterial->setTexture(u"_depthTex", viewDepthMap);
     m_dofMaterial->setTexture(u"_dofTex", dofTexture);
     context->blit(m_dofMaterial, destination);
