@@ -277,6 +277,7 @@ void Tutorial_Sandbox();
 void Sandbox_MeshTilemap();
 void Sandbox_Particle();
 void Sandbox_PostEffect();
+void Sandbox_Sky();
 void Sandbox_Voxel();
 void UISandboxMain();
 
@@ -468,7 +469,8 @@ int main(int argc, char** argv)
         //Experiment_SSR();
 		//Sandbox_MeshTilemap();
         //Sandbox_Particle();
-        Sandbox_PostEffect();
+        //Sandbox_PostEffect();
+        Sandbox_Sky();
 		//Tutorial_Sandbox();
 		//Sandbox_Voxel();
 		//UISandboxMain();

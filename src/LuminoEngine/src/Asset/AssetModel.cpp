@@ -20,6 +20,8 @@ const String AssetModel::AssetFileExtension = u".yml";//u".lnasset";
 //	return makeObject<AssetModel>(target);
 //}
 
+const String AssetModel::EngineAssetsDirectory = u"Engine";
+
 AssetModel::AssetModel()
     : m_target(nullptr)
 	, m_parent(nullptr)

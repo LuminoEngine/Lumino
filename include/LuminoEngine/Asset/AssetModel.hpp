@@ -43,6 +43,7 @@ class AssetModel
 	LN_OBJECT;
 public:
     static const String AssetFileExtension; // ".lnasset"
+    static const String EngineAssetsDirectory;
 
     // TODO: テスト用の一時機能。Asset の作成は AssetDatabase を使わなけばならない
 	//static Ref<AssetModel> create(Object* target);

@@ -97,6 +97,12 @@ Ref<Stream> Assets::openFileStream(const StringRef& filePath)
 //    }
 //}
 //
+
+const String& Assets::engineAssetsDirectory()
+{
+    return AssetModel::EngineAssetsDirectory;
+}
+
 //=============================================================================
 // AssetImporter
 

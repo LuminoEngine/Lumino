@@ -15,6 +15,7 @@ namespace detail {
 class PostEffectRenderer;
 class SceneRenderingPipeline;
 class InternalSkyBox;
+class InternalSkyDome;
 }
 
 /**
@@ -86,6 +87,7 @@ private:
     bool m_gizmoEnabled;
 
 	Ref<detail::InternalSkyBox> m_internalSkyBox;
+    Ref<detail::InternalSkyDome> m_internalSkyDome;
     Ref<TransformControls> m_transformControls; // TODO: gizmo でまとめる？
 };
 

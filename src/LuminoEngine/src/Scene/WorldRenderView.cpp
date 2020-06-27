@@ -90,7 +90,13 @@ void WorldRenderView::init()
 #endif
     }
 
+    // TODO: 遅延作成
 	m_internalSkyBox = makeObject<detail::InternalSkyBox>();
+    m_internalSkyDome = makeRef<detail::InternalSkyDome>();
+    if (!m_internalSkyDome->init()) {
+        LN_ERROR();
+        return;
+    }
 
     m_transformControls = makeObject<TransformControls>();
 }
@@ -336,6 +342,10 @@ void WorldRenderView::render(GraphicsContext* graphicsContext, RenderTargetTextu
 #endif
                 renderingContext->popState();
 			}
+            else if (clearMode() == RenderViewClearMode::SkyDome) {
+                m_internalSkyDome->render(renderingContext, m_viewPoint);
+            }
+
 
             m_targetWorld->prepareRender();
 

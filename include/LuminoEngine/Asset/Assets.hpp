@@ -86,6 +86,7 @@ public:
     //    }
     //}
 
+    static const String& engineAssetsDirectory();
 };
 
 class AssetImporter

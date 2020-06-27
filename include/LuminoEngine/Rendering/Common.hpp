@@ -70,6 +70,7 @@ enum class RenderViewClearMode
 	ColorAndDepth,
 	Sky,
 	Sky0,
+	SkyDome,
 };
 
 // DrawElement の大分類。SceneRenderer に投入する DrawElement を決める。
