@@ -443,8 +443,7 @@ Ref<RenderTargetTexture> RenderTargetTexture::realloc(RenderTargetTexture* rende
         renderTarget->width() != width ||
         renderTarget->height() != height ||
         renderTarget->format() != format ||
-        renderTarget->mipmap() != mipmap ||
-        renderTarget->samplerState() != samplerState) { // TODO: SamplerState だけ違うときは再構築不要. というか必要？
+        renderTarget->mipmap() != mipmap) { // NOTE: SamplerState はチェック不要。というかどこかで変えたのを戻し忘れると毎回 RenderTarget 作り直しになってしまう
         auto ptr = makeObject<RenderTargetTexture>(width, height, format, mipmap);
         ptr->setSamplerState(samplerState);
         return ptr;
