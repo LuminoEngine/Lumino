@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.hpp"
+#include <LuminoEngine/Graphics/Bitmap.hpp>
 #include <LuminoEngine/Platform/PlatformWindow.hpp>
 #include "OpenGLDeviceContext.hpp"
 
@@ -344,6 +345,7 @@ void OpenGLDevice::onGetCaps(GraphicsDeviceCaps* outCaps)
 	outCaps->requestedShaderTriple.version = 400;
 	outCaps->requestedShaderTriple.option = "";
 #endif
+	outCaps->imageLayoytVFlip = true;
 }
 
 Ref<ISwapChain> OpenGLDevice::onCreateSwapChain(PlatformWindow* window, const SizeI& backbufferSize)
@@ -1836,15 +1838,20 @@ void GLRenderTargetTexture::dispose()
 
 void GLRenderTargetTexture::readData(void* outData)
 {
+	//auto buf = makeObject<Bitmap2D>(m_size.width, m_size.height, GraphicsHelper::translateToPixelFormat(m_textureFormat));
+
 #ifdef GL_GLES_PROTOTYPES
 	// OpenGL ES is glGetTexImage unsupported
 	// http://oppyen.hatenablog.com/entry/2016/10/21/071612
 #else
 	GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, m_id));
+	//GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, buf->data()));
 	GL_CHECK(glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, outData));
 	GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 #endif
+
+	//BitmapHelper::blitRawSimple(outData, buf->data(), m_size.width, m_size.height, GraphicsHelper::getPixelSize(m_textureFormat), true);
 }
 
 SizeI GLRenderTargetTexture::realSize()

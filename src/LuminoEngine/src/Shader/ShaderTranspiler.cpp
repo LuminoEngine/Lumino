@@ -859,42 +859,48 @@ std::vector<byte_t> ShaderCodeTranspiler::generateGlsl(uint32_t version, bool es
 
     // テクスチャサンプリング時にレンダリングターゲットであるかを判断し、上下反転するマクロコードを挿入する。
     {
-        std::string declsIsRT;
-        for (auto& name : combinedImageSamplerNames) {
-            declsIsRT += "uniform int " + name + (LN_IS_RT_POSTFIX ";");
-        }
 
-        if (es) {
-            if (m_stage == ShaderStage2_Vertex) {
-                // VertexShader は精度指定子を記述する必要はないので、自動生成はされない。
-                // https://qiita.com/konweb/items/ec8fa8cd3bc33df14933#%E7%B2%BE%E5%BA%A6%E4%BF%AE%E9%A3%BE%E5%AD%90
-                code = code.insert(16, declsIsRT + "\n" + "vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-                                                          "#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
-                                                      "#line 1\n");
-            } else {
-                code = code.insert(16 + 45, declsIsRT + "\n" + "highp vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-                                                               "#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
-                                                      "#line 1\n");
-            }
+        code = code.insert(13, "vec4 LN_xxTexture(sampler2D s, vec2 uv) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); }\n"
+            "vec4 LN_xxTexture(sampler3D s, vec3 uv) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); }\n"
+            "#define texture(s, uv) LN_xxTexture(s, uv)\n"
+            "#line 1\n");
 
-			// GLSL ES は言語仕様としては ## をサポートしていないので、ここでプリプロセッサを解決しておく。
-			// https://www.khronos.org/registry/OpenGL/specs/es/3.0/GLSL_ES_Specification_3.00.pdf
-			const char* shaderCode[1] = { code.c_str() };
-			const int shaderLenght[1] = { static_cast<int>(code.length()) };
-			const char* shaderName[1] = { "shadercode" };
-			auto shader = std::make_unique<glslang::TShader>(LNStageToEShLanguage(m_stage));
-			shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
-			glslang::TShader::ForbidIncluder forbidIncluder;
-			std::string processedCode;
-			bool r = shader->preprocess(&DefaultTBuiltInResource, 300, EProfile::EEsProfile, true, false, EShMessages::EShMsgOnlyPreprocessor, &processedCode, forbidIncluder);
-			code = processedCode;
+   //     std::string declsIsRT;
+   //     for (auto& name : combinedImageSamplerNames) {
+   //         declsIsRT += "uniform int " + name + (LN_IS_RT_POSTFIX ";");
+   //     }
 
-        } else {
-            code = code.insert(13, declsIsRT + "\n" + "vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
-                                                      "vec4 LN_xxTexture(int isRT, sampler3D s, vec3 uv) { if (isRT != 0) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); } else { return texture(s, uv); } }\n"
-                                                      "#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
-                                                      "#line 1\n");
-        }
+   //     if (es) {
+   //         if (m_stage == ShaderStage2_Vertex) {
+   //             // VertexShader は精度指定子を記述する必要はないので、自動生成はされない。
+   //             // https://qiita.com/konweb/items/ec8fa8cd3bc33df14933#%E7%B2%BE%E5%BA%A6%E4%BF%AE%E9%A3%BE%E5%AD%90
+   //             code = code.insert(16, declsIsRT + "\n" + "vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+   //                                                       "#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
+   //                                                   "#line 1\n");
+   //         } else {
+   //             code = code.insert(16 + 45, declsIsRT + "\n" + "highp vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { if (isRT != 0) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); } else { return texture(s, uv); } }\n"
+   //                                                            "#define texture(s, uv) LN_xxTexture(s##lnIsRT, s, uv)\n"
+   //                                                   "#line 1\n");
+   //         }
+
+			//// GLSL ES は言語仕様としては ## をサポートしていないので、ここでプリプロセッサを解決しておく。
+			//// https://www.khronos.org/registry/OpenGL/specs/es/3.0/GLSL_ES_Specification_3.00.pdf
+			//const char* shaderCode[1] = { code.c_str() };
+			//const int shaderLenght[1] = { static_cast<int>(code.length()) };
+			//const char* shaderName[1] = { "shadercode" };
+			//auto shader = std::make_unique<glslang::TShader>(LNStageToEShLanguage(m_stage));
+			//shader->setStringsWithLengthsAndNames(shaderCode, shaderLenght, shaderName, 1);
+			//glslang::TShader::ForbidIncluder forbidIncluder;
+			//std::string processedCode;
+			//bool r = shader->preprocess(&DefaultTBuiltInResource, 300, EProfile::EEsProfile, true, false, EShMessages::EShMsgOnlyPreprocessor, &processedCode, forbidIncluder);
+			//code = processedCode;
+
+   //     } else {
+   //         code = code.insert(13, declsIsRT + "\n" + "vec4 LN_xxTexture(int isRT, sampler2D s, vec2 uv) { return texture(s, vec2(uv.x, (uv.y * -1.0) + 1.0)); }\n"
+   //                                                   "vec4 LN_xxTexture(int isRT, sampler3D s, vec3 uv) { return texture(s, vec3(uv.x, (uv.y * -1.0) + 1.0, uv.z)); }\n"
+   //                                                   "#define texture(s, uv) LN_xxTexture(s, uv)\n"
+   //                                                   "#line 1\n");
+   //     }
 
         /*
 			DirectX に合わせたテクスチャ座標系(左上が原点)で OpenGL を使おうとすると、

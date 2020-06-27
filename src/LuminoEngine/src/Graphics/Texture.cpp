@@ -300,15 +300,16 @@ detail::ITexture* Texture2D::resolveRHIObject(GraphicsContext* context, bool* ou
         if (m_rhiLockedBuffer) {
             LN_NOTIMPLEMENTED();
         } else {
+            detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             SizeI bmpSize(m_bitmap->width(), m_bitmap->height());
             detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
+                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
-            detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
             if (!m_rhiObject || m_usage != m_rhiObject->usage() || mipmap() != m_rhiObject->mipmap()) {
-                m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), m_bitmap->data());
+                m_rhiObject = deviceContext->createTexture2D(m_usage, width(), height(), format(), mipmap(), bmpRawData.data());
             } else {
                 context->interruptCurrentRenderPassFromResolveRHI();
                 detail::ITexture* rhiObject = m_rhiObject;
@@ -542,7 +543,11 @@ Ref<Bitmap2D> RenderTargetTexture::readData(GraphicsContext* context)
         rhiObject->readData(bitmap->data());
   //  }
 
-    bitmap->flipVerticalFlow();
+    detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+    if (deviceContext->caps().imageLayoytVFlip) {
+        bitmap->flipVerticalFlow();
+    }
+    //
     return bitmap;
 }
 
@@ -659,13 +664,14 @@ detail::ITexture* Texture3D::resolveRHIObject(GraphicsContext* context, bool* ou
         if (m_rhiLockedBuffer) {
             LN_NOTIMPLEMENTED();
         } else {
+            detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
+
             ByteBuffer* bmpBuffer = m_bitmap->rawBuffer();
             BoxSizeI bmpSize = {m_bitmap->width(), m_bitmap->height(), m_bitmap->depth()};
             detail::RenderBulkData bmpRawData = detail::GraphicsContextInternal::getRenderingCommandList(context)->allocateBulkData(bmpBuffer->size());
             detail::BitmapHelper::blitRawSimple3D(
-                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), false);
+                bmpRawData.writableData(), bmpBuffer->data(), m_bitmap->width(), m_bitmap->height(), m_bitmap->depth(), Bitmap2D::getPixelFormatByteSize(m_bitmap->format()), deviceContext->caps().imageLayoytVFlip);
 
-            detail::IGraphicsDevice* deviceContext = detail::GraphicsResourceInternal::manager(this)->deviceContext();
             if (!m_rhiObject || m_usage != m_rhiObject->usage()) {
                 m_rhiObject = deviceContext->createTexture3D(m_usage, width(), height(), depth(), format(), mipmap(), m_bitmap->data());
             } else {
