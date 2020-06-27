@@ -83,18 +83,20 @@ bool InternalSkyDome::init()
     m_model = StaticMeshModel::load(u"Sphere.glb");
     auto mesh = m_model->meshContainers()[0]->mesh();
     {
+        Vector3 m;
+        for (int i = 0; i < mesh->vertexCount(); i++) {
+            auto& v = mesh->vertex(i);
+            m.x = std::max(m.x, std::abs(v.position.x));
+            m.y = std::max(m.y, std::abs(v.position.y));
+            m.z = std::max(m.z, std::abs(v.position.z));
+        }
+        float maxLen = std::max(m.x, std::max(m.y, m.z));
+
         StreamWriter writer(u"vertices.txt");
         for (int i = 0; i < mesh->vertexCount(); i++) {
             auto& v = mesh->vertex(i);
-            //printf("{{%f, %f, %f}, {%f, %f, %f}, {%f, %f}, {%f, %f, %f, %f}, {%f, %f, %f, %f}}",
-            //writer.writeLineFormat(u"{{{{{0}, {1}, {2}}}, {{{3}, {4}, {5}}}, {{{6}, {7}}}, {{{8}, {9}, {10}, {11}}}, {{{12}, {13}, {14}, {15}}}}}",
-            //    v.position.x, v.position.y, v.position.z,
-            //    v.normal.x, v.normal.y, v.normal.z,
-            //    v.uv.x, v.uv.y,
-            //    v.color.r, v.color.g, v.color.b, v.color.a,
-            //    v.tangent.x, v.tangent.y, v.tangent.z, v.tangent.w);
-            writer.writeLineFormat(u"{{{{{0}, {1}, {2}}}, {{{3}, {4}, {5}}}, {{{6}, {7}}}}}",
-                v.position.x, v.position.y, v.position.z,
+            writer.writeLineFormat(u"{{{{{0}, {1}, {2}}}, {{{3}, {4}, {5}}}, {{{6}, {7}}}}},",
+                v.position.x / maxLen, v.position.y / maxLen, v.position.z / maxLen,
                 v.normal.x, v.normal.y, v.normal.z,
                 v.uv.x, v.uv.y);
         }
@@ -119,7 +121,7 @@ bool InternalSkyDome::init()
 
         auto* vertices = static_cast<Vertex*>(mesh->acquireMappedVertexBuffer(InterleavedVertexGroup::Main));
         for (int i = 0; i < vertexCount; i++) {
-            vertices[i].position = s_skyDomeVertices[i].pos / 10;
+            vertices[i].position = s_skyDomeVertices[i].pos;
             vertices[i].normal = s_skyDomeVertices[i].normal;
             vertices[i].uv = s_skyDomeVertices[i].uv;
             vertices[i].color = Color::White;
@@ -161,7 +163,6 @@ bool InternalSkyDome::init()
     m_material->setTexture(u"_mainCloudsTexture", _mainCloudsTexture);
     m_material->setTexture(u"_secondCloudsTexture", _secondCloudsTexture);
     m_material->setMainTexture(_secondCloudsTexture);
-
 
     {
         auto r = ln::KeyFrameAnimationCurve::create();
@@ -381,7 +382,6 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         m_material->setFloat(u"_ThirdCloudsIntensity", 0.25);
         m_material->setFloat(u"_AllCloudsFalloffIntensity", 0.95);
         m_material->setFloat(u"_AllCloudsIntensity", 1.1);
-        
 
         /*
             Super Heavy:
@@ -417,8 +417,8 @@ void InternalSkyDome::render(RenderingContext* context, const RenderViewPoint* v
         */
     }
 
-    Matrix transform = //Matrix::makeScaling(100);
-        transform.makeTranslation(viewPoint->viewPosition);
+    Matrix transform = Matrix::makeScaling(viewPoint->farClip - 0.0001);    // 視界最遠まで拡大してみる
+    transform.translate(viewPoint->viewPosition);
 
     for (const auto& node : m_model->meshNodes()) {
         if (node->meshContainerIndex() >= 0) {
